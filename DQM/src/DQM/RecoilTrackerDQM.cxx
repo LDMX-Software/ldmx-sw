@@ -27,9 +27,10 @@ namespace ldmx {
         // If the collection of findable tracks doesn't exist, stop processing
         // the event.
         if (!event.exists("FindableTracks")) return;
-
+    
+        auto recoilTrackID = 0; 
         // Get the collection of simulated particles from the event
-        const std::vector<FindableTrackResult> tracks 
+        /*const std::vector<FindableTrackResult> tracks 
             = event.getCollection<FindableTrackResult>("FindableTracks");
 
         TrackMaps map = Analysis::getFindableTrackMaps(tracks);
@@ -51,7 +52,7 @@ namespace ldmx {
         std::vector<double> recoilVertex = recoil->getVertex();
         histograms_.fill("recoil_vx",recoilVertex[0]);  
         histograms_.fill("recoil_vy",recoilVertex[1]);  
-        histograms_.fill("recoil_vz",recoilVertex[2]);  
+        histograms_.fill("recoil_vz",recoilVertex[2]);  */
 
         double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
         const SimTrackerHit* spHit{nullptr}; 
@@ -93,12 +94,12 @@ namespace ldmx {
         if (event.exists("TrackerVeto")) { 
 
             // Get the collection of trackerVeto results
-            const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
+            /*const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
 
             // Check if the event passes the tracker veto
             if (trackerVeto.passesVeto()) { 
                 passesTrackVeto = true; 
-            }
+            }*/
         }
 
         if (passesTrackVeto) { 
