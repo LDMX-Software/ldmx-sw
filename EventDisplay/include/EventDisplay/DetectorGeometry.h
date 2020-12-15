@@ -20,7 +20,7 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "SimCore/Event/SimTrackerHit.h" //recoil hits
-#include "Event/HcalHit.h"
+#include "Hcal/Event/HcalHit.h"
 #include "Ecal/Event/EcalHit.h"
 
 namespace ldmx {
