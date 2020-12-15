@@ -10,7 +10,7 @@
 #include "DetDescr/HcalID.h"
 #include "EventDisplay/DetectorGeometry.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Event/HcalHit.h"
+#include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "SimCore/Event/SimParticle.h"
