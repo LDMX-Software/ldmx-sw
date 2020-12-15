@@ -367,7 +367,7 @@ macro(setup_test)
                         "${multiValueArgs}" ${ARGN})
 
   # Find all the test
-  file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z].cxx)
+  file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z]*.cxx)
 
   # Add all test to the global list of test sources
   set(test_sources
@@ -379,6 +379,7 @@ macro(setup_test)
       ${test_dep} ${setup_test_dependencies}
       CACHE INTERNAL "test_dep")
 
+    message(STATUS ${test_sources})
 endmacro()
 
 macro(build_test)
