@@ -65,7 +65,7 @@ endif()
 # here.
 set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 
-add_subdirectory(Event)
+add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
 add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
