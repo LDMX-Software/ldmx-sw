@@ -20,15 +20,11 @@ if(BUILD_EVENT_ONLY)
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
    
-    # Get all of the event sources that will be included in this library.
-    file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/Ecal/Event/*.cxx)
-
     # Generate the files needed to build the event classes.
     setup_library(module Ecal
                   name Event
                   dependencies ROOT::Core 
                                Event::Event SimCore::Event 
-                  sources ${EVENT_SRC_FILES}
                   register_target)
 
     return()
