@@ -89,7 +89,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Need to define the sources here because of the addition of EventDic
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Framework/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Framework/[a-zA-Z]*.cxx)
 
 # Setup the library
 setup_library(module Framework 
