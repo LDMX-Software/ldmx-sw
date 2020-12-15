@@ -21,7 +21,7 @@ if(BUILD_EVENT_ONLY)
   # Generate the files needed to build the event classes.
   setup_library(module Hcal
                 name Event
-                dependencies ROOT::Core Event::Event
+                dependencies ROOT::Core Recon::Event
                 register_target)
   return()
 
@@ -29,7 +29,7 @@ endif()
 
 setup_library(module Hcal
               dependencies ROOT::Physics 
-              Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
+              Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Hcal)
