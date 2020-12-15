@@ -125,12 +125,9 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-if(BUILD_EVE_ONLY)
-    
-    #message(STATUS "Building the event display.")
-    add_subdirectory(EventDisplay)
-
-endif()
+#if(BUILD_EVE_ONLY)
+#    add_subdirectory(EventDisplay)
+#endif()
 
 
 # If enabled, build all test.  The test are assumed to reside inside of the
