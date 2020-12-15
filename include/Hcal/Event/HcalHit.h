@@ -8,7 +8,7 @@
 #define HCAL_EVENT_HCALHIT_H_
 
 // LDMX
-#include "Event/CalorimeterHit.h"
+#include "Recon/Event/CalorimeterHit.h"
 
 namespace ldmx {
 
