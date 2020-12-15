@@ -7,7 +7,7 @@
 #include <set>
 
 // ldmx-sw
-#include "Event/EventConstants.h"
+#include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
 namespace ldmx {
