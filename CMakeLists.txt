@@ -18,14 +18,10 @@ if(BUILD_EVENT_ONLY)
   register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalVetoResult" )
   register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalHit" type "collection")
 
-  file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/Hcal/Event/*.cxx)
-
   # Generate the files needed to build the event classes.
   setup_library(module Hcal
                 name Event
                 dependencies ROOT::Core Event::Event
-                #               Event::Event SimCore::Event 
-                sources ${EVENT_SRC_FILES}
                 register_target)
   return()
 
