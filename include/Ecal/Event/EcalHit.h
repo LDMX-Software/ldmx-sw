@@ -10,7 +10,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/CalorimeterHit.h"
+#include "Recon/Event/CalorimeterHit.h"
 
 namespace ldmx {
 
