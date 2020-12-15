@@ -47,12 +47,12 @@ class OverlayProducer(ldmxcfg.Producer) :
 
     Examples
     --------
-        from LDMX.EventProc.overlay import OverlayProducer
+        from LDMX.Recon.overlay import OverlayProducer
         p.sequence.append( OverlayProducer( myPileupFileName.root ) )
     """
 
     def __init__(self,fileName,name = 'OverlayProducer') :
-        super().__init__(name,'ldmx::OverlayProducer','EventProc')
+        super().__init__(name,'ldmx::OverlayProducer','Recon')
 
 
         self.overlayFileName = fileName 
