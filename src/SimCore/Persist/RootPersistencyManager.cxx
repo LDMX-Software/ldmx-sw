@@ -10,7 +10,7 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Event/EventConstants.h"
+#include "Recon/Event/EventConstants.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
