@@ -202,12 +202,16 @@ endmacro()
 
 macro(setup_data)
 
+  set(oneValueArgs module)
+  cmake_parse_arguments(setup_data "${options}" "${oneValueArgs}"
+                        "${multiValueArgs}" ${ARGN})
+
   # If the data directory exists, install it to the data directory
   if(EXISTS ${PROJECT_SOURCE_DIR}/data)
     file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
     foreach(data_file ${data_files})
       install(FILES ${data_file}
-              DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
+              DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_data_module})
     endforeach()
   endif()
 
