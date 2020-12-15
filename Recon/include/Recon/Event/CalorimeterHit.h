@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_CALORIMETERHIT_H_
-#define EVENT_CALORIMETERHIT_H_
+#ifndef RECON_EVENT_CALORIMETERHIT_H_
+#define RECON_EVENT_CALORIMETERHIT_H_
 
 // ROOT
 #include "TObject.h" //For ClassDef
@@ -221,4 +221,4 @@ namespace ldmx {
 
 }
 
-#endif /* EVENT_CALORIMETERHIT_H_ */
+#endif /* RECON_EVENT_CALORIMETERHIT_H_ */

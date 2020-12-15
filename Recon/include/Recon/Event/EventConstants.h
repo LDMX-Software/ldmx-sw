@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_EVENTCONSTANTS_H_
-#define EVENT_EVENTCONSTANTS_H_
+#ifndef RECON_EVENT_EVENTCONSTANTS_H_
+#define RECON_EVENT_EVENTCONSTANTS_H_
 
 #include <string>
 

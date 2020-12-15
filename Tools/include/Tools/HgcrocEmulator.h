@@ -3,7 +3,7 @@
 #define TOOLS_HGCROCEMULATOR_H
 
 #include "Tools/NoiseGenerator.h"
-#include "Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Conditions/SimpleTableCondition.h"

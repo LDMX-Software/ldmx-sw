@@ -13,7 +13,7 @@ find_package(ROOT CONFIG REQUIRED)
 
 setup_library(module DQM
               dependencies ROOT::Physics 
-                           Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr
+                           Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/DQM)
