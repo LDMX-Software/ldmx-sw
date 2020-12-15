@@ -32,10 +32,9 @@ if(BUILD_EVENT_ONLY)
 endif()
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
-  ${PROJECT_SOURCE_DIR}/src/Recon/Examples/*.cxx
-  ${PROJECT_SOURCE_DIR}/src/Recon/Overlay/*.cxx
-  ${PROJECT_SOURCE_DIR}/src/Recon/Skims/*.cxx
-  ${PROJECT_SOURCE_DIR}/src/Recon/Trigger/*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/Examples/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/Skims/[a-zA-z]*.cxx
 )
 
 setup_library(module Recon
