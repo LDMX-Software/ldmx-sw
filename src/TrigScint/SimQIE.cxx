@@ -7,7 +7,7 @@
 #include <exception>
 #include"TMath.h"
 #include"TrigScint/SimQIE.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 namespace ldmx {
 
   SimQIE::SimQIE() {}
