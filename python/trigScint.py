@@ -68,8 +68,8 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintQIEDigisUp"
         self.input_pulse_shape="Expo" # Name of the input pulse class
-        self.expo_k=0.1
-        self.expo_tmax=5.0
+        self.expo_k=0.1          # Inverse of decay time of piece-wise exponential 
+        self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
         self.maxts=5             # No. of time samples to analyze
         self.toff_overall = 30.0 # Global time offset
         self.tdc_thr = 3.4       # Threshold current in uA for TDC latch
