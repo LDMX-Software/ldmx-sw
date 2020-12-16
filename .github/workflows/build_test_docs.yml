@@ -39,16 +39,11 @@ jobs:
     - name: Build and Install
       run: docker run -i -v $(pwd):$(pwd) $image $(pwd)/build make install
 
-    # run test executable and test configs using the docker environment
-    #   The test executable is hard-coded here and in the cmake macro build_test
-    #   The test configs are retrieved and ran through fire, exiting if any error out
-    #       The set of test configs is any file matching 'ldmx-sw/*/test/*.py'
+    # Run the test using ctest. The --verbose parameter displays the output 
+    # you would typically see with catch.
     - name: Test the build
       run: |
-          cd ../ &&
-          export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for c in `ls ldmx-sw/*/test/*.py`; do if ! docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $(pwd) fire $c; then exit 1; fi; done
+          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build ctest --verbose 
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
