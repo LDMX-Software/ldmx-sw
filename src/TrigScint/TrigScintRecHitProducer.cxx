@@ -15,6 +15,8 @@ TrigScintRecHitProducer::~TrigScintRecHitProducer() {}
 void TrigScintRecHitProducer::configure(Parameters &parameters) {
 
   // Configure this instance of the producer
+  pedestal_ = parameters.getParameter<double>("pedestal");
+  gain_ = parameters.getParameter<double>("gain");
   mevPerMip_ = parameters.getParameter<double>("mev_per_mip");
   pePerMip_ = parameters.getParameter<double>("pe_per_mip");
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
@@ -26,17 +28,32 @@ void TrigScintRecHitProducer::configure(Parameters &parameters) {
 
 void TrigScintRecHitProducer::produce(Event &event) {
 
+  // initialize QIE object for linearizing ADCs
+  SimQIE qie;
+
   // looper over sim hits and aggregate energy depositions for each detID
   const auto digis{
       event.getCollection<TrigScintQIEDigis>(inputCollection_, inputPassName_)};
 
+  std::vector<TrigScintHit> trigScintHits;
   for (const auto &digi : digis) {
-
-    TrigScintID id(digi.getID());
+    
+    TrigScintHit hit;
+    hit.setModuleID(0);
+    hit.setBarID(digi.chanID);
+    hit.setBeamEfrac(-1.);
+    hit.setAmplitude( qie.ADC2Q( digi.adcs[1] ) );
+    if( digi.tdcs[1] > 49 )
+      hit.setTime(-1);
+    else
+      hit.setTime(digi.tdcs[1]*0.5);
+    hit.setEnergy( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) / gain_ * mevPerMip_ / pePerMip_ );
+    hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) / gain_ );
+    
+    trigScintHits.push_back(hit);
 
   }
   // Create the container to hold the digitized trigger scintillator hits.
-  std::vector<TrigScintHit> trigScintHits;
 
   event.add(outputCollection_, trigScintHits);
 }
