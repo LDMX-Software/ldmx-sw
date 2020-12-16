@@ -26,6 +26,7 @@ if(BUILD_EVENT_ONLY)
   setup_library(module TrigScint name Event
                 dependencies ROOT::Core
                              Hcal::Event
+			     TrigScint::Event
                              Recon::Event
                 register_target)
 
