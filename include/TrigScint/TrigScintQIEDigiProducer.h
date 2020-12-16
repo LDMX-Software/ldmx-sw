@@ -115,6 +115,18 @@ namespace ldmx {
     /// no. of time samples analysed by QIE
     int maxts_;
     
+    /// QIE TDC Current threshold
+    float tdc_thr;
+    
+    /// QIE pedestal
+    float pedestal;
+    
+    /// QIE electronic noise
+    float elec_noise;
+
+    /// SiPM Gain
+    float sipm_gain;
+    
     SimQIE* smq{nullptr};
 
   };

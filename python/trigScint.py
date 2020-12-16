@@ -70,8 +70,13 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.input_pulse_shape="Expo" # Name of the input pulse class
         self.expo_k=0.1
         self.expo_tmax=5.0
-        self.maxts=5
-        self.toff_overall = 30.0
+        self.maxts=5             # No. of time samples to analyze
+        self.toff_overall = 30.0 # Global time offset
+        self.tdc_thr = 3.4       # Threshold current in uA for TDC latch
+        self.pedestal= 6.0       # QIE pedestal value (in fC)
+        self.elec_noise = 1.5    # Electronic noise (in fC)
+        self.sipm_gain = 1.e6    # SiPM Gain
+
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
