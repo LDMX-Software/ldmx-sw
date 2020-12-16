@@ -379,10 +379,16 @@ macro(setup_test)
       ${test_dep} ${setup_test_dependencies}
       CACHE INTERNAL "test_dep")
 
-    message(STATUS ${test_sources})
+  # Add the module to the list of tags
+  get_filename_component(module ${PROJECT_SOURCE_DIR} NAME) 
+  set(test_modules ${test_modules} ${module} 
+      CACHE INTERNAL "test_modules")
+
 endmacro()
 
 macro(build_test)
+
+  enable_testing()
 
   # If test have been enabled, attempt to find catch.  If catch hasn't found, it
   # will be downloaded locally.
@@ -410,7 +416,9 @@ macro(build_test)
   target_link_libraries(run_test PRIVATE Catch2::Interface ${test_dep})
 
   # Install the run_test  executable
-  install(TARGETS run_test DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+  foreach(entry ${test_modules})
+    add_test(NAME ${entry} COMMAND run_test "[${entry}]")
+  endforeach()
 
 endmacro()
 
@@ -421,4 +429,5 @@ macro(clear_cache_variables)
   unset(bus_passengers CACHE)
   unset(test_sources CACHE)
   unset(test_dep CACHE)
+  unset(test_modules CACHE)
 endmacro()
