@@ -4,7 +4,7 @@
  * @author Niramay Gogate, Texas Tech University
  */
 
-#include "Event/TrigScintQIEDigis.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include <iostream>
 #include <exception>
 ClassImp(ldmx::TrigScintQIEDigis);
