@@ -31,7 +31,7 @@
 #include "Framework/Parameters.h" 
 
 // QIE output class
-#include "Event/TrigScintQIEDigis.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/SimQIE.h"
 
 namespace ldmx {
