@@ -16,7 +16,7 @@
 #include "DetDescr/TrigScintID.h"
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintHit.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "Tools/NoiseGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
@@ -24,6 +24,11 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
 #include "Framework/Configure/Parameters.h" 
+
+/*~~~~~~~~~~~*/
+/* TrigScint */
+/*~~~~~~~~~~~*/
+#include "TrigScint/SimQIE.h"
 
 namespace ldmx {
 
@@ -66,6 +71,12 @@ class TrigScintRecHitProducer : public Producer {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
+
+  /// SiPM gain
+  double gain_{1e6};
+
+  /// QIE pedestal
+  double pedestal_{6.0};
 
   /// Total MeV per MIP
   double mevPerMip_{1.40};
