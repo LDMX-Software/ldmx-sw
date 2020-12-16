@@ -39,6 +39,12 @@ namespace ldmx {
     SimQIE(float pd, float sg, uint64_t seed);
 
     /**
+     * Set current threshold for TDC latch
+     * @param gg = gain
+     */
+    void SetTDCThreshold(float thr);
+
+    /**
      * Set gain of SiPM
      * @param gg = gain
      */

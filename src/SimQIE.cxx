@@ -26,6 +26,10 @@ namespace ldmx {
     sg = SG;
   }
 
+  void SimQIE::SetTDCThreshold(float thr) {
+    tdc_thr = thr;
+  }
+  
   void SimQIE::SetGain(float gg) {
     gain = gg*16e-5;		// to convert from 1.6e-19 to fC
   }
