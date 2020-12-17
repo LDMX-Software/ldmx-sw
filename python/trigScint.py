@@ -114,7 +114,7 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
                                   # >>>both are for converting edep to PEs 
         self.pe_per_mip = 100.    #/
         self.pedestal= 6.0        # QIE pedestal value (in fC)
-        self.gain = 1000000.      # SiPM Gain
+        self.gain = 1.e6      # SiPM Gain
         self.input_collection="trigScintQIEDigisUp"
         self.input_pass_name=""   #take any pass
         self.output_collection="trigScintRecHitsUp"
@@ -130,7 +130,7 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
     def down() : 
         """Get the rechit producer for downstream pad"""
         rechit = TrigScintRecHitProducer( 'trigScintRecHitsDown' )
-        rechit.input_collection  = 'trigScintQIEDigisDown'
+        rechit.input_collection  = 'trigScintQIEDigisDn'
         rechit.output_collection = 'trigScintRecHitsDown'
         return rechit
 
@@ -192,8 +192,6 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
-
-
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
