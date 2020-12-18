@@ -1,6 +1,8 @@
 
 #include "DQM/TrigScintDQM.h" 
 
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace ldmx { 
 
     TrigScintDQM::TrigScintDQM(const std::string &name, Process &process) : 

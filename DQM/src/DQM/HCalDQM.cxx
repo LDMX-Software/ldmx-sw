@@ -1,6 +1,9 @@
 
 #include "DQM/HCalDQM.h" 
 
+#include "Hcal/Event/HcalVetoResult.h"
+#include "Hcal/Event/HcalHit.h"
+
 namespace ldmx { 
 
     HCalDQM::HCalDQM(const std::string &name, Process &process) : 

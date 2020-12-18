@@ -1,4 +1,8 @@
 #include "Recon/OverlayProducer.h"
+
+#include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 #include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
