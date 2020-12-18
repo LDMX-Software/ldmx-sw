@@ -368,7 +368,14 @@ macro(setup_test)
 
   # Find all the test
   file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z]*.cxx)
+  file(GLOB py_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z]*.py)
 
+  # If the directory contains python unit test of configurations, copy them
+  # over to the test directory within the build directory.
+  if(py_files)
+    file(COPY ${py_files} DESTINATION ${CMAKE_BINARY_DIR}/test)
+  endif()
+  
   # Add all test to the global list of test sources
   set(test_sources
       ${test_sources} ${src_files}
@@ -395,14 +402,14 @@ macro(build_test)
   find_package(Catch2 2.13.0)
 
   # Create the Catch2 main exectuable if it doesn't exist
-  if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx)
+  if(NOT EXISTS ${CMAKE_BINARY_DIR}/test/run_test.cxx)
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx
+    file(WRITE ${CMAKE_BINARY_DIR}/test/run_test.cxx
          "#define CATCH_CONFIG_MAIN\n#include \"catch.hpp\"")
 
     message(
       STATUS
-        "Writing Catch2 main to: ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx"
+        "Writing Catch2 main to: ${CMAKE_BINARY_DIR}/test/run_test.cxx"
     )
   endif()
 
@@ -410,14 +417,15 @@ macro(build_test)
   # contains the test from the different modules.  Each of the modules needs to
   # setup the test they want to run.
   add_executable(
-    run_test ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx
+    run_test ${CMAKE_BINARY_DIR}/test/run_test.cxx
              ${test_sources})
   target_include_directories(run_test PRIVATE ${CATCH2_INCLUDE_DIR})
   target_link_libraries(run_test PRIVATE Catch2::Interface ${test_dep})
 
   # Install the run_test  executable
   foreach(entry ${test_modules})
-    add_test(NAME ${entry} COMMAND run_test "[${entry}]")
+    add_test(NAME ${entry} COMMAND run_test "[${entry}]" 
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test)
   endforeach()
 
 endmacro()
