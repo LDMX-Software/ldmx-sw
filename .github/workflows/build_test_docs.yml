@@ -1,12 +1,13 @@
 
 name: Tests
 
-# we are going to run this action whenever we push to master or make a PR onto master
+# we are going to run this action whenever we push to trunk or make a PR onto 
+# trunk
 on:
   push:
-    branches: [ master ]
+    branches: [ trunk ]
   pull_request:
-    branches: [ master ]
+    branches: [ trunk ]
 
 jobs:
   # this action only has one job
@@ -79,13 +80,13 @@ jobs:
     #   using the ldmx organization token for access and saving the changes with the
     #   commit message of the commit that activated this action
     - name: Deploy the Docs
-      if: ${{ github.event_name == 'push' }} #only deploy when the master actually changes
+      if: ${{ github.event_name == 'push' }} #only deploy when the trunk actually changes
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
         commit_message: ${{ github.event.head_commit.message }}
         external_repository: LDMX-Software/ldmx-software.github.io
-        publish_branch: master 
+        publish_branch: trunk 
         publish_dir: ./docs/html
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
