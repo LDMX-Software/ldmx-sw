@@ -10,12 +10,12 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 #include "Framework/Logger.h"
 #include "Framework/ConditionsIOV.h"
 #include "Framework/ConditionsObject.h"
