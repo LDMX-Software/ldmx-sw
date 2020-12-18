@@ -1,8 +1,8 @@
 #include "Ecal/EcalVetoProcessor.h"
 
 // LDMX
-#include "Event/EcalHit.h"
-#include "Event/EventConstants.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Recon/Event/EventConstants.h"
 #include "DetDescr/SimSpecialID.h"
 
 /*~~~~~~~~~~~*/

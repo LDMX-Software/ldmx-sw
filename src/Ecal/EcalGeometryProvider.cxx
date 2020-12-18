@@ -1,7 +1,7 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/ConditionsObjectProvider.h"
-#include "Event/RunHeader.h"
-#include "Event/EventHeader.h"
+#include "Framework/RunHeader.h"
+#include "Framework/EventHeader.h"
 #include <sys/types.h>
 #include <regex.h>
 

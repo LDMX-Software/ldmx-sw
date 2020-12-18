@@ -17,7 +17,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EventDef.h"
+#include "Framework/EventDef.h" 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
 #include "Framework/EventProcessor.h"

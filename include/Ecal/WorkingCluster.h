@@ -4,7 +4,7 @@
 #ifndef ECAL_WORKINGCLUSTER_H_
 #define ECAL_WORKINGCLUSTER_H_
 
-#include "Event/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 #include <vector>
 #include <iostream>
 #include "TLorentzVector.h"
