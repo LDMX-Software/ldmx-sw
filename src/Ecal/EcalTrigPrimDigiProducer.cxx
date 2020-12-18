@@ -1,7 +1,7 @@
 #include "Ecal/EcalTrigPrimDigiProducer.h"
 
 #include "Ecal/EcalTriggerGeometry.h"
-#include "Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 #include "Tools/HgcrocTriggerCalculations.h"
 
 namespace ldmx {

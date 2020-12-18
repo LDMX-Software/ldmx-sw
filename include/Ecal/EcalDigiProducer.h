@@ -19,9 +19,9 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/HgcrocDigiCollection.h"
-#include "Event/EventConstants.h"
-#include "Event/SimCalorimeterHit.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/EventConstants.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"

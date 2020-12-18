@@ -1,6 +1,6 @@
 
 #include "DetDescr/EcalHexReadout.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalTriggerID.h"
 #include "Ecal/EcalTriggerGeometry.h"
