@@ -130,9 +130,6 @@ endif()
 #endif()
 
 
-# If enabled, build all test.  The test are assumed to reside inside of the
-# directory "test" within each module.  The main
-option(BUILD_TESTS "Build and link the run-test executable." OFF)
-if(BUILD_TESTS)
-    build_test()
-endif()
+# Build all test.  The test are assumed to reside inside of the directory 
+# "test" within each module.  The main
+build_test()
