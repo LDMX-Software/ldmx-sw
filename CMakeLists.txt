@@ -7,8 +7,34 @@ project(TrigScint VERSION 2.1.0
                   LANGUAGES CXX
 )
 
-setup_library(name TrigScint
-              dependencies DARK::Framework DARK::Event DARK::DetDescr DARK::Tools
-              python_install_path ${PYTHON_INSTALL_PREFIX}
+# Search and configure ROOT
+find_package(ROOT CONFIG REQUIRED)
+
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
+
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintHit" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintCluster" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintTrack" type "collection" )
+  
+  # Generate the files needed to build the event classes.
+  setup_library(module TrigScint name Event
+                dependencies ROOT::Core
+                             Hcal::Event
+                             Recon::Event
+                register_target)
+
+  return()
+
+endif()
+
+setup_library(module TrigScint
+              dependencies Framework::Framework Recon::Event DetDescr::DetDescr
+                           Tools::Tools SimCore::Event
 )
+
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/TrigScint)
 
