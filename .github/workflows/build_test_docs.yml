@@ -32,8 +32,7 @@ jobs:
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake --version &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake -DBUILD_TESTS=ON ..
+          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
@@ -43,7 +42,9 @@ jobs:
     # you would typically see with catch.
     - name: Test the build
       run: |
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build ctest --verbose 
+          cd ../ &&
+          export LDMX_BASE=$(pwd) &&
+          docker run -i -r LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
