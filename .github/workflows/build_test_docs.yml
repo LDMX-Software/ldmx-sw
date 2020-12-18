@@ -44,7 +44,7 @@ jobs:
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -r LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
