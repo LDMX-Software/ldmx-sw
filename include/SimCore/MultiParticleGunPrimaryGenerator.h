@@ -37,11 +37,11 @@
 //-------------//
 //   LDMX-SW   //
 //-------------//
-#include "Event/EventConstants.h"
-#include "Event/EventHeader.h"
+#include "Recon/Event/EventConstants.h"
+#include "Framework/EventHeader.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 #include "SimCore/PrimaryGenerator.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 

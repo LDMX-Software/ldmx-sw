@@ -26,7 +26,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 // Forward declarations
 class G4Event; 

@@ -1,41 +1,64 @@
-
 # Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(SimCore VERSION 2.1.0
-                DESCRIPTION "Core classes needed to run the Simulator."
-                LANGUAGES CXX
-)
+project(
+  SimCore
+  VERSION 2.1.0
+  DESCRIPTION "Core classes needed to run the Simulator."
+  LANGUAGES CXX)
 
-# Check if the project specifc macros have been loaded. If not, and the 
-# stand alone build option has been given, clone the project locally and 
-# include them.  Otherwise, error out.
-if (NOT build_macros_found)
-    if (stand_alone_build)
-        # Pull in the cmake module as an external package.
-    else()
-        message(FATAL_ERROR "Project specific build modules have not been loaded.")
-    endif()
+# Search and configure ROOT
+find_package(ROOT CONFIG REQUIRED)
+
+# Search for Boost
+find_package(Boost REQUIRED
+             COMPONENTS log)
+
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
+
+  register_event_object(module_path "SimCore/Event" namespace "ldmx" 
+                        class "SimCalorimeterHit" type "collection")
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+                        class "SimTrackerHit" type "collection")
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+                        class "SimParticle" type "map" key "int")
+
+  # Generate the files needed to build the event classes.
+  setup_library(module SimCore name Event
+                dependencies ROOT::Core
+                register_target)
+
+  return()
+
 endif()
 
 # Configure Geant4
 setup_geant4_target()
 
-# Search and configure ROOT
-find_package(ROOT CONFIG REQUIRED)
+# Get a list of all of the source files.
+file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
 
-# Setup the library 
-setup_library(name SimCore 
-              dependencies Geant4::Interface 
-                           ROOT::Physics 
-                           DARK::Framework DARK::DetDescr
-              python_install_path ${PYTHON_INSTALL_PREFIX}
-)
+# Setup the library
+setup_library(module SimCore
+              dependencies Geant4::Interface
+                           ROOT::Physics
+                           Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr
+                           Boost::log
+                           "${registered_targets}"
+              sources ${SRC_FILES})
+
+# Testing includes .py files as well as .cxx files in test directory
+setup_test(dependencies SimCore::SimCore)
 
 # Set some target properties
-set_target_properties(SimCore PROPERTIES 
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+set_target_properties(SimCore
+                      PROPERTIES CXX_STANDARD 17
+                      CXX_STANDARD_REQUIRED YES
+                      CXX_EXTENSIONS NO)
+
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
