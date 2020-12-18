@@ -6,11 +6,11 @@
 /*   ldmx-sw   */
 /***************/
 
-#include "Event/EventConstants.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Event/TrigScintHit.h"
+#include "Recon/Event/EventConstants.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "TrigScint/Event/TrigScintHit.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 
