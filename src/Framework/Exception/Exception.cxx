@@ -152,7 +152,7 @@ static std::string Backtrace(int skip = 1) throw ()
     return trace_buf.str();
 }
 
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 namespace ldmx {
   void Exception::buildStackTrace() throw () {

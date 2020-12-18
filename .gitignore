@@ -11,3 +11,8 @@
 /data
 /build*
 /install*
+
+#ignore auto-generated files
+include/Framework/EventDef.h
+include/Framework/EventLinkDef.h
+include/Framework/Version.h
