@@ -1,5 +1,7 @@
 
 #include "DQM/HCalDQM.h"
+#include "Hcal/Event/HcalVetoResult.h"
+#include "Hcal/Event/HcalHit.h"
 
 namespace dqm {
 
