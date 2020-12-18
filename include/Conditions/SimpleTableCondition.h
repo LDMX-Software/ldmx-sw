@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/ConditionsObject.h"
 
 namespace ldmx {
