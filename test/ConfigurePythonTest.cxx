@@ -1,80 +1,88 @@
-#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
-#include "Framework/ConfigurePython.h" //headers defining what we will be testing
-#include "Framework/Process.h"
+#include <fstream> // ifstream, ofstream
+
+#include "catch.hpp" // Catch2 Macros, TEST_CASE, REQUIRE
+
+#include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Process.h"
 
-#include <fstream>
+namespace framework {
+namespace test {
 
-namespace ldmx { namespace test {
+/**
+ * @class TestConfig
+ * @brief Defines a test Producer to test the passing of configuration
+ * variables
+ */
+class TestConfig : public ldmx::Producer {
 
-    /**
-     * @class TestConfig
-     * @brief Defines a dummy Producer to test the passing of configuration variables
-     */
-    class TestConfig : public Producer {
+public:
+  /**
+   * Constructor
+   *
+   * Follows the standard form for a ldmx::Producer.
+   *
+   * Checks that the passed name is the same as
+   * what is written to the python config script.
+   */
+  TestConfig(const std::string &name, ldmx::Process &process)
+      : ldmx::Producer(name, process) {
+    CHECK(name == "test_instance");
+  }
 
-        public:
+  /**
+   * Configure function
+   *
+   * Checks:
+   * - int parameter
+   * - double parameter
+   * - string parameter
+   * - dictionary parameter
+   * - vector of ints parameter
+   * - vector of doubles parameter
+   * - vector of strings parameter
+   */
+  void configure(ldmx::Parameters &parameters) final override {
 
-            /**
-             * Constructor
-             *
-             * Follows the standard form for a ldmx::Producer.
-             *
-             * Checks that the passed name is the same as
-             * what is written to the python config script.
-             */
-            TestConfig(const std::string& name, Process& process) :
-                Producer(name, process) {
+    // Check parameters
+    CHECK(parameters.getParameter<int>("test_int") == 9);
+    CHECK(parameters.getParameter<double>("test_double") == Approx(7.7));
+    CHECK(parameters.getParameter<std::string>("test_string") == "Yay!");
 
-                    CHECK( name == "testInstance" );
-            }
+    // Check dictionary
+    auto test_dict{parameters.getParameter<ldmx::Parameters>("test_dict")};
+    CHECK(test_dict.getParameter<int>("one") == 1);
+    CHECK(test_dict.getParameter<double>("two") == 2.0);
 
-            /**
-             * Configure function
-             *
-             * Checks:
-             * - int parameter
-             * - double parameter
-             * - string parameter
-             * - dictionary parameter
-             * - vector of ints parameter
-             * - vector of doubles parameter
-             * - vector of strings parameter
-             */ 
-            void configure(Parameters& parameters) final override {
-            
-                CHECK( parameters.getParameter< int >("testInt") == 9 );
-                CHECK( parameters.getParameter< double >("testDouble") == Approx( 7.7 ) );
-                CHECK( parameters.getParameter< std::string >("testString") == "Yay!" );
+    // Check int vector
+    std::vector<int> int_vect{1, 2, 3};
+    auto test_int_vec{
+        parameters.getParameter<std::vector<int>>("test_int_vec")};
+    REQUIRE(test_int_vec.size() == int_vect.size());
+    for (std::size_t i{0}; i < test_int_vec.size(); i++)
+      CHECK(test_int_vec.at(i) == int_vect.at(i));
 
-                auto testDict{parameters.getParameter<Parameters>("testDict")};
-                CHECK( testDict.getParameter<int   >("one") == 1 );
-                CHECK( testDict.getParameter<double>("two") == 2.0 );
+    // Check double vec
+    std::vector<double> double_vec{0.1, 0.2, 0.3};
+    auto test_double_vec{
+        parameters.getParameter<std::vector<double>>("test_double_vec")};
+    REQUIRE(test_double_vec.size() == double_vec.size());
+    for (std::size_t i{0}; i < test_double_vec.size(); i++)
+      CHECK(test_double_vec.at(i) == double_vec.at(i));
 
-                std::vector<int> correctIntVec = { 1 , 2 , 3 };
-                auto testIntVec{parameters.getParameter<std::vector<int>>("testIntVec")};
-                REQUIRE( testIntVec.size() == correctIntVec.size() );
-                for(std::size_t i{0}; i < testIntVec.size(); i++) CHECK( testIntVec.at(i) == correctIntVec.at(i) );
+    // Check string vector
+    std::vector<std::string> string_vec{"first", "second", "third"};
+    auto test_string_vec{
+        parameters.getParameter<std::vector<std::string>>("test_string_vec")};
+    REQUIRE(test_string_vec.size() == string_vec.size());
+    for (std::size_t i{0}; i < test_string_vec.size(); i++)
+      CHECK(test_string_vec.at(i) == string_vec.at(i));
+  }
 
-                std::vector<double> correctDoubleVec = { 0.1 , 0.2 , 0.3 };
-                auto testDoubleVec{parameters.getParameter<std::vector<double>>("testDoubleVec")};
-                REQUIRE( testDoubleVec.size() == correctDoubleVec.size() );
-                for(std::size_t i{0}; i < testDoubleVec.size(); i++) CHECK( testDoubleVec.at(i) == correctDoubleVec.at(i) );
-
-                std::vector<std::string> correctStringVec = { "first" , "second" , "third" };
-                auto testStringVec{parameters.getParameter<std::vector<std::string>>("testStringVec")};
-                REQUIRE( testStringVec.size() == correctStringVec.size() );
-                for(std::size_t i{0}; i < testStringVec.size(); i++) CHECK( testStringVec.at(i) == correctStringVec.at(i) );
-            }
-
-            /**
-             * I don't do anything.
-             */
-            virtual void produce(Event&) { }
-
-    };
-
+  // I don't do anything.
+  virtual void produce(ldmx::Event &) {}
+};
 
 /**
  * @func removeFile
@@ -84,14 +92,12 @@ namespace ldmx { namespace test {
  * Sometimes it is helpful to leave the generated files, so
  * maybe we can make the removal optional?
  */
-static bool removeFile(const char * filepath) {
-    return remove( filepath ) == 0;
-}
+static bool removeFile(const char *filepath) { return remove(filepath) == 0; }
 
-} //test
-} //ldmx
+} // namespace test
+} // namespace framework
 
-DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
+DECLARE_PRODUCER_NS(framework::test, TestConfig)
 
 /**
  * Test for Configure Python class
@@ -103,65 +109,49 @@ DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
  * - TODO pass histogram info to EventProcessors
  * - TODO pass class objects to EventProcessors
  */
-TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
+TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
-    const std::string configFileName{"test_config_script.py"};
-    
-    std::ofstream testPyScript( configFileName );
+  const std::string config_file_name{"config_python_test_config.py"};
 
-    testPyScript << "from LDMX.Framework import ldmxcfg" << std::endl;
+  // Arguments to pass to ConfigurePython constructor
+  char *args[1];
 
-    testPyScript << "testProcess    = ldmxcfg.Process( 'test' )" << std::endl;
-    testPyScript << "testProcess.inputFiles = [ 'input1' , 'input2' ]" << std::endl;
-    testPyScript << "testProcess.logFrequency = 9" << std::endl;
-    testPyScript << "testProcess.skimDefaultIsKeep = False" << std::endl;
+  // Process handle
+  ldmx::ProcessHandle p;
 
-    testPyScript << "class TestProcessor(ldmxcfg.Producer):" << std::endl;
-    testPyScript << "    def __init__(self):" << std::endl;
-    testPyScript << "        super().__init__( 'testInstance' , 'ldmx::test::TestConfig' , 'Framework' )" << std::endl;
-    testPyScript << "        self.testInt = 9" << std::endl;
-    testPyScript << "        self.testDouble = 7.7" << std::endl;
-    testPyScript << "        self.testString = 'Yay!'" << std::endl;
-    testPyScript << "        self.testIntVec = [ 1 , 2 , 3 ]" << std::endl;
-    testPyScript << "        self.testDict = { 'one' : 1, 'two' : 2.0 }" << std::endl;
-    testPyScript << "        self.testDoubleVec = [ 0.1 , 0.2 , 0.3 ]" << std::endl;
-    testPyScript << "        self.testStringVec = [ 'first' , 'second' , 'third' ]" << std::endl;
+  // Run a check of the python configuration class without arguments.
+  SECTION("No arguments to python script") {
 
-    testPyScript << "testProcess.sequence = [ TestProcessor() ]" << std::endl;
+    ldmx::ConfigurePython cfg(config_file_name, args, 0);
+    p = cfg.makeProcess();
 
-    using namespace ldmx;
+    CHECK(p->getPassName() == "test");
+  }
 
-    char *args[1];
+  // Update the python config so we can pass the log frequency as a parameter.
+  std::ifstream in_file;
+  std::ofstream out_file;
 
-    ProcessHandle p;
+  in_file.open(config_file_name.c_str(), std::ios::in | std::ios::binary);
 
-    int correctLogFreq{9};
+  const std::string config_file_name_arg{"config_python_test_config_arg.py"};
+  out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
+  out_file << in_file.rdbuf();
+  out_file << "import sys" << std::endl;
+  out_file << "p.logFrequency = int(sys.argv[1])" << std::endl;
 
-    SECTION( "no arguments to python script" ) {
+  in_file.close();
+  out_file.close();
 
-        testPyScript.close();
+  // Pass the log frequency as a parameter to the process and check that it
+  // was set correctly.
+  auto correct_log_freq{9000};
+  SECTION("Single argument to python script") {
 
-        ConfigurePython cfg( configFileName , args , 0 );
+    args[0] = "9000";
+    ldmx::ConfigurePython cfg(config_file_name_arg, args, 1);
+    p = cfg.makeProcess();
 
-        p = cfg.makeProcess();
-    }
-
-    SECTION( "one argument to python script" ) {
-
-        testPyScript << "import sys" << std::endl;
-        testPyScript << "testProcess.logFrequency = int(sys.argv[1])" << std::endl;
-        testPyScript.close();
-
-        args[0] = "9000";
-        correctLogFreq = 9000;
-
-        ConfigurePython cfg( configFileName , args , 1 );
-
-        p = cfg.makeProcess();
-    }
-
-    CHECK( p->getPassName() == "test" );
-    CHECK( p->getLogFrequency() == correctLogFreq );
-
-    CHECK( test::removeFile( configFileName.c_str() ) );
+    CHECK(p->getLogFrequency() == correct_log_freq);
+  }
 }
