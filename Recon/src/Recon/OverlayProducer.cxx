@@ -385,7 +385,7 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
                     << overlayFile_->getFileName();
     ldmx_log(debug) << "onProcessStart () successful. Got event info: ";
-    overlayFile_->getEvent()->Print(verbosity_);
+    overlayFile_->getEvent()->Print();
   }
 
   return;
