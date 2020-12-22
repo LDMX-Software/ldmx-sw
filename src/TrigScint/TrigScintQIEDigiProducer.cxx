@@ -60,39 +60,19 @@ namespace ldmx {
 	(parameters.getParameter< double >("expo_tmax"));
     }
 
-    noiseGenerator_ =std::make_unique<NoiseGenerator>(meanNoise_, false);
-
-  }
-
-  TrigScintID TrigScintQIEDigiProducer::generateRandomID(int module) {
-
-    TrigScintID tempID(module,random_->Integer(stripsPerArray_));
-    if ( module >= TrigScintSection::NUM_SECTIONS ) {
-      // Throw an exception
-      std::cout<<"WARNING [TrigScintQIEDigiProducer::generateRandomID]: "
-	       <<"TrigScintSection is not known"
-	       <<std::endl;
-    }
-
-    return tempID;
   }
 
   void TrigScintQIEDigiProducer::produce(Event& event) {
 
     // Need to handle seeding on the first event
-    if (!noiseGenerator_->hasSeed()) {
+    if (!hasSeed()) {
       const auto& rseed = getCondition<RandomNumberSeedService>
+	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+      const auto& rseed2 =getCondition<RandomNumberSeedService>
 	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
         
       random_ =
 	std::make_unique<TRandom3>(rseed.getSeed(outputCollection_));
-      noiseGenerator_->setNoiseThreshold(1);
-      (RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-      noiseGenerator_->seedGenerator(rseed.getSeed(outputCollection_
-						   +"NoiseGenerator"));
-      const auto& rseed2 =
-	getCondition<RandomNumberSeedService>
-	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
       smq = new SimQIE
 	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
       smq->SetGain(sipm_gain);
@@ -101,10 +81,6 @@ namespace ldmx {
       smq->SetTDCThreshold(tdc_thr);
     }
 
-    std::map<TrigScintID, int> cellPEs;
-    std::map<TrigScintID, float> Edep;
-    std::set<TrigScintID> noiseHitIDs;
-
     // To simulate multiple pulses coming at different times, SiPMS
     float TrueEdep[stripsPerArray_];
     Expo* ex[stripsPerArray_]={0};
@@ -112,37 +88,17 @@ namespace ldmx {
       ex[i] = new Expo(pulse_params[0],pulse_params[1]);
       TrueEdep[i]=0;
     }
-    auto numRecHits{0};
 
     // loop over sim hits and aggregate energy depositions for each detID
     const auto simHits{event.getCollection< SimCalorimeterHit >
 	(inputCollection_,inputPassName_)};
-    auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
-
-    int module{-1};
 
     for (const auto& simHit : simHits) {
 
       TrigScintID id(simHit.getID());
 
-      // set module ID for Edep.
-      module = id.module();
-      std::vector<float> position = simHit.getPosition();
-
       if (verbose_) {
 	std::cout << id << std::endl;
-      }
-
-      if (Edep.find(id) == Edep.end()) {
-
-      	// first hit, initialize
-      	Edep[id] = simHit.getEdep();
-      	numRecHits++;
-      }
-      else {
-
-      	// not first hit, aggregate, and store the largest radius hit
-      	Edep[id] += simHit.getEdep();
       }
 
       double PulseAmp =
