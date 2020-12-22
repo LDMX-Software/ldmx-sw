@@ -10,7 +10,6 @@
     <a href="http://perso.crans.org/besson/LICENSE.html" alt="GPLv3 license">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Docker%20Image/badge.svg" />
     <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Tests/badge.svg" />
 </p>
 
@@ -38,7 +37,7 @@ Command | Purpose
 `ldmx make install` | Install ldmx-sw
 `ldmx fire config.py` | Use ldmx-sw application and processors with input python configuration
 `ldmx python3 analysis.py` | Run python-based analysis
-`ldmx ./bin/mg5_aMC` | Run MadGraph5 inside (ubuntu-based) container
+`ldmx ./bin/mg5_aMC` | Run MadGraph5 inside container with `f77` compiler
 
 ### Other Container Configuration Commands
 

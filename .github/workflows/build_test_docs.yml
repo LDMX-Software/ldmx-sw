@@ -5,7 +5,6 @@ on:
   push:
     branches: '**' #all branches
     tags: 'v*.*.*' #all version tags
-  pull_request: #all pull requests
 
 jobs:
   build-test:
@@ -103,7 +102,6 @@ jobs:
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
 
   generate-image:
-    if: ${{ github.event_name == 'push' }} #only generate production image if pushing a commit
     needs: build-test #will only generate production image if build-test finishes successfully
     runs-on: ubuntu-latest
     defaults:
@@ -149,7 +147,7 @@ jobs:
             #not default branch and production image repo is defined
             _repo=$(cat .github/workflows/production_image_repo)
             if [ "$_repo" = "ldmx/pro" ]; then
-              echo "Can't push a non-master branch commit to 'ldmx/pro'. Create your own repository."
+              echo "Can't push a non-trunk branch commit to 'ldmx/pro'. Create your own repository."
               exit 2
             fi
           else
