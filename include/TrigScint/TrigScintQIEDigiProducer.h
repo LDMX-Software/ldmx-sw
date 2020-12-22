@@ -21,7 +21,6 @@
 #include "DetDescr/TrigScintID.h"
 #include "TrigScint/Event/TrigScintHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "Tools/NoiseGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -49,8 +48,6 @@ namespace ldmx {
   class TrigScintQIEDigiProducer : public Producer {
 
  public:
-    typedef int layer;
-    typedef std::pair<double, double> zboundaries;
     TrigScintQIEDigiProducer(const std::string& name, Process& process);
     ~TrigScintQIEDigiProducer(); 
 
@@ -62,16 +59,12 @@ namespace ldmx {
      */
     void configure(Parameters& parameters) final override;
     void produce(Event& event);
-    TrigScintID generateRandomID(int module);
     /** Has been seeded? */
     bool hasSeed() const { return random_.get()!=nullptr; }
 
  private:
     /// Random number generator 
     std::unique_ptr<TRandom3> random_{nullptr}; 
-            
-    /// Generate noise
-    std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
     /// Class to set the verbosity level.  
     // TODO: Make use of the global verbose parameter. 
