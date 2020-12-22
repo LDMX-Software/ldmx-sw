@@ -7,7 +7,7 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
-#define BIASING_MIDSHOWER_DEV_DEBUG
+//#define BIASING_MIDSHOWER_DEV_DEBUG
 
 namespace ldmx {
 
@@ -35,6 +35,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
   if (isOutsideCalorimeterRegion(step)) return;
 
   if (anyCreatedViaNuclear(step->GetSecondaryInCurrentStep())) {
+    // there are interesting secondaries in this step
     double pre_energy = step->GetPreStepPoint()->GetTotalEnergy();
     double post_energy = step->GetPostStepPoint()->GetTotalEnergy();
     total_process_energy_ += pre_energy - post_energy;
@@ -51,13 +52,11 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
               << track->GetTrackID() << " which went from " << pre_energy
               << " MeV to " << post_energy << " via a nuclear process." << std::endl;
 #endif
-
-    auto track_info =
-        dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-
     // make sure this track is saved
-    track_info->setSaveFlag(true);
-  }  // there are interesting secondaries in this step
+    save(track);
+  } else if (const G4Track* track{step->GetTrack()};
+      track->GetCurrentStepNumber() == 1 and
+      isNuclearProcess(track->GetCreatorProcess())) { save(track); }
 }
 
 void MidShowerNuclearBkgdFilter::NewStage() {
@@ -82,19 +81,32 @@ bool MidShowerNuclearBkgdFilter::isOutsideCalorimeterRegion(const G4Step* step) 
   return true;
 }
 
+bool MidShowerNuclearBkgdFilter::isNuclearProcess(const G4VProcess* proc) const {
+  if (proc) {
+    const G4String& proc_name{proc->GetProcessName()};
+    for (auto const& option : nuclear_processes_) {
+      if (proc_name.contains(option))
+        return true;
+    } //loop over nuclear processes
+  } //pointer exists
+  return false;
+}
+
 bool MidShowerNuclearBkgdFilter::anyCreatedViaNuclear(
     const std::vector<const G4Track*>* list) const {
   if (not list) return false;  // was list even created?
   for (auto const& track : *list) {
-    const G4VProcess* creator = track->GetCreatorProcess();
-    if (creator) {
-      for (auto const& proc : nuclear_processes_) {
-        if (creator->GetProcessName().contains(proc)) 
-          return true;
-      } //loop over nuclear processes
-    } //creator process exists (i.e. track is not primary)
-  }
+    if (isNuclearProcess(track->GetCreatorProcess()))
+      return true;
+  }//loop over tracks in list
   return false;
+}
+
+void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
+  auto track_info = 
+    dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+  track_info->setSaveFlag(true);
+  return;
 }
 
 void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {

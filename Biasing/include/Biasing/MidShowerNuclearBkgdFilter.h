@@ -6,6 +6,9 @@
 /*~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
+/// Forward declaration of virtual process class
+class G4VProcess;
+
 namespace ldmx {
 
 /**
@@ -100,6 +103,16 @@ class MidShowerNuclearBkgdFilter : public UserAction {
   bool isOutsideCalorimeterRegion(const G4Step* step) const;
 
   /**
+   * Checks if the passed process is any of the nuclear interactions
+   *
+   * @note A 'nullptr' process is not a nuclear process.
+   *
+   * @param[in] proc G4VProcess* to check
+   * @return true if process is one of the nuclear interactions
+   */
+  bool isNuclearProcess(const G4VProcess* proc) const;
+
+  /**
    * Checks if any of the passed tracks were created via the nuclear processes.
    *
    * @note Ignores tracks that don't have an assigned creator process.
@@ -108,10 +121,22 @@ class MidShowerNuclearBkgdFilter : public UserAction {
    * This is because sometimes the configured process will end up bing biased
    * and the full process name will wrapped by 'biasWrapper()'.
    *
+   * @see isNuclearProcess
+   *
    * @param[in] list vector list of tracks to check
    * @return true if any of the listed tracks was created via the configured process
    */
   bool anyCreatedViaNuclear(const std::vector<const G4Track*>* list) const;
+
+  /**
+   * Helper to save the passed track
+   *
+   * @note Assumes user track information has already been created
+   * for the input track.
+   *
+   * @param[in] track G4Track to persist into output
+   */
+  void save(const G4Track* track) const;
 
   /**
    * Helper to abort an event with a message
