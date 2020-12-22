@@ -10,7 +10,6 @@
 #include<iostream>
 #include"TMath.h"
 #include"TrigScint/QIEInputPulse.h"
-/// #include"TRandomGen.h"
 #include"TRandom3.h"
 
 namespace ldmx {
@@ -130,10 +129,10 @@ namespace ldmx {
     
     /// TDC threshold (default 3.74 microAmpere)
     float tdc_thr = 3.74;
+
     /// Random number generator (required for noise simulation)
     std::unique_ptr<TRandom3> rand_ptr{nullptr};
     TRandom3* trg;
-    /// TRandomGen<ROOT::Math::MixMaxEngine<240,0>>* trg;
 
     /// mean of gaussian noise (Pedestal)
     float mu=0;

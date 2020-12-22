@@ -76,6 +76,7 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.pedestal= 6.0       # QIE pedestal value (in fC)
         self.elec_noise = 1.5    # Electronic noise (in fC)
         self.sipm_gain = 1.e6    # SiPM Gain
+        self.qie_sf = 40.        # QIE sampling frequency in MHz
 
         import time
         self.randomSeed = int(time.time())
