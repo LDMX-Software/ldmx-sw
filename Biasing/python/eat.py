@@ -15,7 +15,7 @@ from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 from LDMX.Biasing import util
 
-def midshower_nuclear( detector ) :
+def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_energy ) :
     """Example configuration for producing mid-shower nuclear interactions in
     the ECal that fake a missing energy (ME) signal.
        
@@ -28,6 +28,12 @@ def midshower_nuclear( detector ) :
 
     detector : str
         Name of the detector
+    bias_factor : float
+        Factor to multiply EN/PN xsecs by
+    bias_threshold : float
+        Minium energy [MeV] to bias a particle
+    min_nuclear_energy : float
+        Minium total energy [MeV] that went nuclear to keep event
 
     Returns
     -------
@@ -38,7 +44,7 @@ def midshower_nuclear( detector ) :
     -------
 
         from LDMX.Biasing import eat
-        eat_pn_sim = eat.midshower_nuclear('ldmx-det-v12')
+        eat_pn_sim = eat.midshower_nuclear('ldmx-det-v12',1000.,1700.)
 
     """
 
@@ -56,11 +62,6 @@ def midshower_nuclear( detector ) :
     
     from LDMX.SimCore import generators
     sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
-
-    # Biasing parameters are the same for both EN and PN
-    #   so they maintain their relative rate differences
-    bias_threshold = 1000. #MeV
-    bias_factor = 100.
     
     # Enable and configure the biasing
     from LDMX.SimCore import bias_operators
@@ -76,7 +77,7 @@ def midshower_nuclear( detector ) :
             # Make sure all particles above 1500MeV are processed first
             util.PartialEnergySorter(bias_threshold),
             # Make sure a total of 1700MeV energy went PN in ECal
-            filters.MidShowerNuclearBkgdFilter(1700.),
+            filters.MidShowerNuclearBkgdFilter(min_nuclear_energy),
             # Calculate event weight using step weights as factors
             util.WeightByStep()
     ]
