@@ -118,7 +118,11 @@ namespace ldmx {
 
     /// SiPM Gain
     float sipm_gain;
-    
+
+    /// QIE sampling frequency [in MHz]
+    float s_freq;
+
+    /// SimQIE pointer
     SimQIE* smq{nullptr};
 
   };

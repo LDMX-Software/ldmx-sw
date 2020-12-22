@@ -51,6 +51,8 @@ namespace ldmx {
       parameters.getParameter< double >("elec_noise");
     sipm_gain 		=
       parameters.getParameter< double >("sipm_gain");
+    s_freq 		=
+      parameters.getParameter< double >("qie_sf");
       
     if ( input_pulse_shape_ == "Expo") {
       pulse_params.clear();
@@ -59,7 +61,6 @@ namespace ldmx {
       pulse_params.push_back
 	(parameters.getParameter< double >("expo_tmax"));
     }
-
   }
 
   void TrigScintQIEDigiProducer::produce(Event& event) {
@@ -76,7 +77,7 @@ namespace ldmx {
       smq = new SimQIE
 	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
       smq->SetGain(sipm_gain);
-      smq->SetFreq();
+      smq->SetFreq(s_freq);
       smq->SetNTimeSamples(maxts_);
       smq->SetTDCThreshold(tdc_thr);
     }
@@ -111,7 +112,9 @@ namespace ldmx {
     std::vector<TrigScintQIEDigis> QDigis;
 
     double TotalNoise = meanNoise_*maxts_;
-    double SamplingTime = 25;	// 1/sampling freq.
+
+    // time period[ns] = 1000/sampling freq.[MHz]
+    double SamplingTime = 1000/s_freq;
     
     for(int bar_id=0;bar_id<stripsPerArray_;bar_id++) {
 
