@@ -54,6 +54,8 @@ namespace ldmx {
     int ID=8;
     int a=0;
     int b=16;
+
+    // Binary search to find the subrange
     while(b-a!=1) {
       if (qq>edges[(a+b)/2]) {
 	a=(a+b)/2;
@@ -64,7 +66,7 @@ namespace ldmx {
   }
 
   // Function to convert ADCs back to charge
-  // Working: The method checks to which QIE subrange does the ADC correspnd to
+  // The method checks to which QIE subrange does the ADC correspnd to
   // and returns the mean charge of the correspnding bin in the subrange
   float SimQIE::ADC2Q(int adc) {
     if (adc<= 0) return -16;

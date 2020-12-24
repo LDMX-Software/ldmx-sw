@@ -74,6 +74,8 @@ namespace ldmx {
         
       random_ =
 	std::make_unique<TRandom3>(rseed.getSeed(outputCollection_));
+
+      // Initialize SimQIE instance with pedestal, electronic noise and the random seed
       smq = new SimQIE
 	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
 
@@ -87,6 +89,8 @@ namespace ldmx {
     float TrueEdep[stripsPerArray_];
     Expo* ex[stripsPerArray_]={0};
     for(int i=0;i<stripsPerArray_;i++){
+      
+      // Set the pulse shape with fixed parameters given by config. file
       ex[i] = new Expo(pulse_params[0],pulse_params[1]);
       TrueEdep[i]=0;
     }
@@ -103,9 +107,17 @@ namespace ldmx {
 	std::cout << id << std::endl;
       }
 
+      // Simulating the noise corresponding to uncertainity in
+      // detecting scintillating photons.
+      // Poissonian distribution with mean = mean PEs generated
       double PulseAmp =
 	random_->Poisson(simHit.getEdep() / mevPerMip_ * pePerMip_);
+
+      // Adding a pulse for every sim hit recorded.
+      // time offset = global offset+simhit time
       ex[id.bar()]->AddPulse(toff_overall_+simHit.getTime(),PulseAmp);
+
+      // incrementing true energy deposited in appropriate bar.
       TrueEdep[id.bar()]+=simHit.getEdep();
     }
 
@@ -116,15 +128,20 @@ namespace ldmx {
 
     // time period[ns] = 1000/sampling freq.[MHz]
     double SamplingTime = 1000/s_freq;
-    
+
+    // Loop over all the bars available.
     for(int bar_id=0;bar_id<stripsPerArray_;bar_id++) {
 
       // Dark current simulation
+      // e-hole pairs may be generated at random times in SiPM
+      // due to thermal fluctuations. 
+      // Every e- thus generated, mimicks a Photo Electron.
+      // Hence we will creat 1PE pulses for each electron generated.
       int n_noise_pulses = random_->Poisson(TotalNoise);
-      	for(int i=0;i<n_noise_pulses;i++) {
-      	  ex[bar_id]->AddPulse
-	    (random_->Uniform(0,maxts_*SamplingTime),1);
-      	}
+      for(int i=0;i<n_noise_pulses;i++) {
+	ex[bar_id]->AddPulse
+	  (random_->Uniform(0,maxts_*SamplingTime),1);
+      }
 
       // Storing the "good" digis
       if(smq->PulseCut(ex[bar_id])) {
@@ -136,6 +153,9 @@ namespace ldmx {
 	QIEInfo.SetCID(smq->CapID(ex[bar_id]));
 	QIEInfo.truePE = TrueEdep[bar_id] / mevPerMip_ * pePerMip_;
 
+
+	// true -> there is atleast some true energy deposited in the bar
+	// false-> All the pulses recorded are from dark noise
 	QIEInfo.IsNoisy= (TrueEdep[bar_id]==0);
 	// QIEInfo.IsNoisy= (ex[bar_id]->npulses==n_noise_pulses);
 	QDigis.push_back(QIEInfo);
