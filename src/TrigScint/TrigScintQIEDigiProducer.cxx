@@ -66,7 +66,7 @@ namespace ldmx {
   void TrigScintQIEDigiProducer::produce(Event& event) {
 
     // Need to handle seeding on the first event
-    if (!hasSeed()) {
+    if (random_.get()==nullptr) {
       const auto& rseed = getCondition<RandomNumberSeedService>
 	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
       const auto& rseed2 =getCondition<RandomNumberSeedService>
@@ -76,6 +76,7 @@ namespace ldmx {
 	std::make_unique<TRandom3>(rseed.getSeed(outputCollection_));
       smq = new SimQIE
 	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
+
       smq->SetGain(sipm_gain);
       smq->SetFreq(s_freq);
       smq->SetNTimeSamples(maxts_);

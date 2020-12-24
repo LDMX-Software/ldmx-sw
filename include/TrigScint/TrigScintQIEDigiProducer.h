@@ -59,8 +59,6 @@ namespace ldmx {
      */
     void configure(Parameters& parameters) final override;
     void produce(Event& event);
-    /** Has been seeded? */
-    bool hasSeed() const { return random_.get()!=nullptr; }
 
  private:
     /// Random number generator 
