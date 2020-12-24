@@ -127,7 +127,7 @@ namespace ldmx {
 
       // Storing the "good" digis
       if(smq->PulseCut(ex[bar_id])) {
-	TrigScintQIEDigis QIEInfo(maxts_);
+	TrigScintQIEDigis QIEInfo;
 	QIEInfo.chanID = bar_id;
 
 	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));

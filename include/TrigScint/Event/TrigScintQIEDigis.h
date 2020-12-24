@@ -20,12 +20,6 @@ namespace ldmx {
   public:
 
     /**
-     * constructor
-     * @param maxTS_ no. of time samples to be digitized
-     */
-    TrigScintQIEDigis(int maxTS_);
-
-    /**
      * Default constructor
      */
     TrigScintQIEDigis(){};
@@ -37,7 +31,7 @@ namespace ldmx {
   
     /**
      * Print ifo about the class
-     * @note required by Event/include/Event/EventDef.h
+     * @note required by EventDef.h
      */
     void Print(Option_t *option = "") const;
 
@@ -49,13 +43,10 @@ namespace ldmx {
 
     /**
      * A dummy operator overloading
-     * @note required for declaring std::vector<> in Event/include/Event/EventDef.h
+     * @note required for declaring std::vector<> in EventDef.h
      */  
     bool operator < ( const TrigScintQIEDigis &rhs ) const
     { return this->chanID < rhs.chanID;}
-
-    /// no. of time samples stored
-    int maxTS;
 
     /**
      * Get ADCs of all time samples
@@ -76,21 +67,20 @@ namespace ldmx {
      * Store adcs of all time samples
      * @param adc_ array of adcs
      */
-    void SetADC(int* adc_);
+    void SetADC(std::vector<int> adc_) {adcs = adc_;}
 
     /**
      * Store tdcs of all time samples
      * @param tdc_ array of tdcs
      */
-    void SetTDC(int* tdc_);
+    void SetTDC(std::vector<int> tdc_) {tdcs = tdc_;}
 
     /**
      * Store cids of all time samples
      * @param cid_ array of cids
      */
-    void SetCID(int* cid_);
+    void SetCID(std::vector<int> cid_) {cids = cid_;}
 
-    // private:
     /// channel ID
     int chanID;
     /// Net input no. of PEs
