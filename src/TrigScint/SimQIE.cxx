@@ -102,12 +102,12 @@ namespace ldmx {
 
   // Function that returns an array of ADCs each corresponding to
   // one time sample
-  int* SimQIE::Out_ADC(QIEInputPulse* pp) {
-    int* OP = new int[maxts_];
-
+  std::vector<int> SimQIE::Out_ADC(QIEInputPulse* pp) {
+    std::vector<int> OP;
+    
     for(int i=0;i<maxts_;i++) {
       float QQ = pp->Integrate(i*tau,i*tau+tau);
-      OP[i]=Q2ADC(QQ);
+      OP.push_back(Q2ADC(QQ));
     }
     return OP;
   }
@@ -125,22 +125,23 @@ namespace ldmx {
 
   // Function that returns an array of TDCs each corresponding to
   // one time sample
-  int* SimQIE::Out_TDC(QIEInputPulse* pp) {
-    int* OP = new int[maxts_];
+  std::vector<int> SimQIE::Out_TDC(QIEInputPulse* pp) {
+    std::vector<int> OP;
 
     for(int i=0;i<maxts_;i++) {
-      OP[i] = TDC(pp,tau*i);
+      OP.push_back(TDC(pp,tau*i));
     }
     return OP;
   }
 
   // Function that returns an array of Caoacitor IDs
   // each corresponding to one time sample
-  int* SimQIE::CapID(QIEInputPulse* pp) {
-    int* OP = new int[maxts_];
-    OP[0] = trg->Integer(4);
+  std::vector<int> SimQIE::CapID(QIEInputPulse* pp) {
+    std::vector<int> OP;
+
+    OP.push_back(trg->Integer(4));
     for(int i=0;i<maxts_;i++) {
-      OP[i+1]=(OP[i]+1)%4;
+      OP.push_back((OP[i]+1)%4);
     }
     return OP;
   }

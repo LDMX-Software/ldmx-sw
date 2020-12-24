@@ -11,31 +11,20 @@ ClassImp(ldmx::TrigScintQIEDigis);
 
 namespace ldmx {
 
-  TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_=5) {
-    maxTS = maxTS_;
-  }
-
-  void TrigScintQIEDigis::SetADC(int* adc_) {
-    for(int i=0;i<maxTS;i++) {
-      adcs.push_back(adc_[i]);
-    }
-  }
+  // void TrigScintQIEDigis::SetADC(std::vector<int> adc_) {
+  //   adcs = adc_;
+  // }
   
-  void TrigScintQIEDigis::SetTDC(int* tdc_) {
-    for(int i=0;i<maxTS;i++) {
-      tdcs.push_back(tdc_[i]);
-    }
-  }
+  // void TrigScintQIEDigis::SetTDC(std::vector<int> tdc_) {
+  //   tdcs = tdc_;
+  // }
   
-  void TrigScintQIEDigis::SetCID(int* cid_) {
-    for(int i=0;i<maxTS;i++) {
-      cids.push_back(cid_[i]);
-    }
-  }
+  // void TrigScintQIEDigis::SetCID(std::vector<int> cid_) {
+  //   cids = cid_;
+  // }
   
   void TrigScintQIEDigis::Print(Option_t* option) const {
     std::cout<<"TrigScintQIEDigis { "
-	     <<"maxTS= "<<maxTS<<", "
 	     <<"chanID= "<<chanID<<", "
 	     <<"ADC[0]= "<<adcs[0]<<", "
 	     <<"TDC[0]= "<<tdcs[0]<<", "
@@ -45,4 +34,3 @@ namespace ldmx {
 
   void TrigScintQIEDigis::Clear(Option_t* option) {}
 }
-// DECLARE_PRODUCER_NS(ldmx, TrigScintQIEDigis);

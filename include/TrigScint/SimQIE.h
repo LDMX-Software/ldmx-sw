@@ -86,19 +86,19 @@ namespace ldmx {
      * Complete set of ADCs for the pulse
      * @param pp = pointer to pulse instance
      */
-    int* Out_ADC(QIEInputPulse* pp);	/// Output per time sample, for N time samples
+    std::vector<int> Out_ADC(QIEInputPulse* pp);
 
     /**
      * Complete set of TDCs for the pulse
      * @param pp = pointer to pulse instance
      */
-    int* Out_TDC(QIEInputPulse* pp);
+    std::vector<int> Out_TDC(QIEInputPulse* pp);
 
     /**
      * Complete set of Capacitor IDs for the pulse
      * @param pp = pointer to pulse instance
      */
-    int* CapID(QIEInputPulse* pp);
+    std::vector<int> CapID(QIEInputPulse* pp);
 
     /**
      * Method to check if the pulse is good to be stored
