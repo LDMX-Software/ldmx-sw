@@ -17,3 +17,6 @@ setup_library(module Biasing
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Biasing)
+
+# All of the .py files in the test directory should be tested
+setup_test(config_dir ${PROJECT_SOURCE_DIR}/test)
