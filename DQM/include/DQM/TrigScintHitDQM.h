@@ -1,8 +1,8 @@
 /**
  * @file TrigScintHitDQM.h
- * @brief Analyzer used for TrigScint HitDQM. 
+ * @brief Analyzer used for TrigScint HitDQM.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Lene Kristian Bryngemark, Stanford University 
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef _DQM_TRIGSCINTHIT_DQM_H_
@@ -21,43 +21,39 @@
 #include "Tools/AnalysisUtils.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
-namespace ldmx { 
+namespace ldmx {
 
-    class TrigScintHitDQM : public Analyzer { 
-    
-        public: 
+class TrigScintHitDQM : public Analyzer {
+ public:
+  /** Constructor */
+  TrigScintHitDQM(const std::string &name, Process &process);
 
-            /** Constructor */
-            TrigScintHitDQM(const std::string &name, Process &process);
+  /** Destructor */
+  ~TrigScintHitDQM();
 
-            /** Destructor */
-            ~TrigScintHitDQM();
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param pSet Set of parameters used to configure this processor.
+   */
+  void configure(Parameters &pSet);
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param pSet Set of parameters used to configure this processor.
-             */
-            void configure(Parameters &pSet);
- 
-            /**
-             * Process the event and make histograms ro summaries.
-             *
-             * @param event The event to analyze.
-             */
-            void analyze(const Event& event);
+  /**
+   * Process the event and make histograms ro summaries.
+   *
+   * @param event The event to analyze.
+   */
+  void analyze(const Event &event);
 
-            /** Method executed before processing of events begins. */
-            void onProcessStart();
+  /** Method executed before processing of events begins. */
+  void onProcessStart();
 
-        private:
+ private:
+  /** Name of trigger pad hit  collection. */
+  std::string hitCollectionName_{"TriggerPadUpDigiHits"};
+  std::string padName_{"_up"};
+};
 
-            /** Name of trigger pad hit  collection. */
-            std::string hitCollectionName_{"TriggerPadUpDigiHits"}; 
-	        std::string padName_{"_up"}; 
+}  // namespace ldmx
 
-    };    
-    
-} // ldmx
-
-#endif // _DQM_TRIGSCINTHIT_DQM_H_
+#endif  // _DQM_TRIGSCINTHIT_DQM_H_

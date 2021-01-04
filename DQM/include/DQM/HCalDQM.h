@@ -14,45 +14,41 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h" 
 
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx { 
+namespace ldmx {
 
-    class HCalDQM : public Analyzer { 
-    
-        public: 
+class HCalDQM : public Analyzer {
+ public:
+  /** Constructor */
+  HCalDQM(const std::string& name, Process& process);
 
-            /** Constructor */
-            HCalDQM(const std::string &name, Process &process);
+  /** Destructor */
+  ~HCalDQM() {}
 
-            /** Destructor */
-            ~HCalDQM() { }
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(Parameters& parameters) final override;
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param parameters Set of parameters used to configure this processor.
-             */
-            void configure(Parameters& parameters) final override; 
- 
-            /**
-             * Process the event and make histograms ro summaries.
-             *
-             * @param event The event to analyze.
-             */
-            void analyze(const Event& event);
+  /**
+   * Process the event and make histograms ro summaries.
+   *
+   * @param event The event to analyze.
+   */
+  void analyze(const Event& event);
 
-        private:
+ private:
+  /** The maximum PE threshold used for the veto. */
+  float maxPEThreshold_{5};
+};
 
-            /** The maximum PE threshold used for the veto. */
-            float maxPEThreshold_{5}; 
-            
-    };    
-    
-} // ldmx
+}  // namespace ldmx
 
-#endif // _DQM_HCAL_DQM_H_
+#endif  // _DQM_HCAL_DQM_H_
