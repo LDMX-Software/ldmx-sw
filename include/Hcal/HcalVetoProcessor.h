@@ -1,6 +1,6 @@
 /**
  * @file HcalVetoProcessor.h
- * @brief Processor that determines if an event is vetoed by the Hcal. 
+ * @brief Processor that determines if an event is vetoed by the Hcal.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -15,54 +15,50 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/HcalVetoResult.h"
 #include "Event/HcalHit.h"
+#include "Event/HcalVetoResult.h"
+#include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h" 
 
-namespace ldmx { 
+namespace ldmx {
 
-    class HcalVetoProcessor : public Producer { 
-        
-        public: 
+class HcalVetoProcessor : public Producer {
+ public:
+  /** Constructor */
+  HcalVetoProcessor(const std::string &name, Process &process);
 
-            /** Constructor */
-            HcalVetoProcessor(const std::string &name, Process &process); 
+  /** Destructor */
+  ~HcalVetoProcessor();
 
-            /** Destructor */
-            ~HcalVetoProcessor();
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(Parameters &parameters) final override;
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param parameters Set of parameters used to configure this processor.
-             */
-            void configure(Parameters& parameters) final override;
+  /**
+   * Run the processor and create a collection of results which
+   * indicate if the event passes/fails the Hcal veto.
+   *
+   * @param event The event to process.
+   */
+  void produce(Event &event);
 
-            /**
-             * Run the processor and create a collection of results which 
-             * indicate if the event passes/fails the Hcal veto.
-             *
-             * @param event The event to process.
-             */
-            void produce(Event &event);
- 
-        private:
+ private:
+  /** Total PE threshold. */
+  double totalPEThreshold_{8};
 
-            /** Total PE threshold. */
-            double totalPEThreshold_{8};
+  /** Maximum hit time that should be considered by the veto. */
+  float maxTime_{50};  // ns
 
-            /** Maximum hit time that should be considered by the veto. */
-            float maxTime_{50}; // ns
+  /** Maximum z depth that a hit can have. */
+  float maxDepth_{4000};  // mm
 
-            /** Maximum z depth that a hit can have. */
-            float maxDepth_{4000}; // mm 
+  /** The minimum number of PE needed for a hit. */
+  float minPE_{1};
 
-            /** The minimum number of PE needed for a hit. */
-            float minPE_{1}; 
+};  // HcalVetoProcessor
+}  // namespace ldmx
 
-    }; // HcalVetoProcessor
-}
-
-#endif // HCAL_HCALVETOPROCESSOR_H_
-
+#endif  // HCAL_HCALVETOPROCESSOR_H_

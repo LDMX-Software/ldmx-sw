@@ -12,86 +12,79 @@
 
 namespace ldmx {
 
-    /**
-     * @class HcalHit
-     * @brief Stores reconstructed hit information from the HCAL
-     *
-     * @note This class represents the reconstructed hit information
-     * from the HCAL, providing particular information for the HCAL,
-     * above and beyond what is available in the CalorimeterHit.
-     */
-    class HcalHit : public CalorimeterHit {
+/**
+ * @class HcalHit
+ * @brief Stores reconstructed hit information from the HCAL
+ *
+ * @note This class represents the reconstructed hit information
+ * from the HCAL, providing particular information for the HCAL,
+ * above and beyond what is available in the CalorimeterHit.
+ */
+class HcalHit : public CalorimeterHit {
+ public:
+  /**
+   * Class constructor.
+   */
+  HcalHit() {}
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~HcalHit() {}
 
-            /**
-             * Class constructor.
-             */
-            HcalHit() {
-            }
+  /**
+   * Clear the data in the object.
+   */
+  void Clear();
 
-            /**
-             * Class destructor.
-             */
-            virtual ~HcalHit() {
-            }
+  /**
+   * Print out the object.
+   */
+  void Print() const;
 
-            /**
-             * Clear the data in the object.
-             */
-            void Clear();
+  /**
+   * Get the number of photoelectrons estimated for this hit.
+   * @return Number of photoelectrons, including noise which affects the
+   * estimate.
+   */
+  float getPE() const { return pe_; }
 
-            /**
-             * Print out the object.
-             */
-            void Print() const;
+  /**
+   * Get the minimum number of photoelectrons estimated for this hit if two
+   * sided readout.
+   * @return Minimum number of photoelectrons, including noise which affects the
+   * estimate.
+   */
+  float getMinPE() const { return minpe_; }
 
-            /**
-             * Get the number of photoelectrons estimated for this hit.
-             * @return Number of photoelectrons, including noise which affects the estimate.
-             */
-            float getPE() const {
-                return pe_;
-            }
+  /**
+   * Set the number of photoelectrons estimated for this hit.
+   * @param pe Number of photoelectrons, including noise which affects the
+   * estimate.
+   */
+  void setPE(float pe) { pe_ = pe; }
 
-            /**
-             * Get the minimum number of photoelectrons estimated for this hit if two sided readout.
-             * @return Minimum number of photoelectrons, including noise which affects the estimate.
-             */
-            float getMinPE() const {
-                return minpe_;
-            }            
+  /**
+   * Set the minimum number of photoelectrons estimated for this hit.
+   * @param pe Minimum number of photoelectrons, including noise which affects
+   * the estimate.
+   */
+  void setMinPE(float minpe) { minpe_ = minpe; }
 
-            /**
-             * Set the number of photoelectrons estimated for this hit.
-             * @param pe Number of photoelectrons, including noise which affects the estimate.
-             */
-            void setPE(float pe) {
-                pe_ = pe;
-            }
+ private:
+  /** The number of PE estimated for this hit. */
+  float pe_{0};
 
-            /**
-             * Set the minimum number of photoelectrons estimated for this hit.
-             * @param pe Minimum number of photoelectrons, including noise which affects the estimate.
-             */
-            void setMinPE(float minpe) {
-                minpe_ = minpe;
-            }            
+  /** The minimum number of PE estimated for this hit, different from pe_ when
+   * you have two ended readout */
+  float minpe_{-99};
 
-        private:
+  /**
+   * The ROOT class definition.
+   */
+  ClassDef(HcalHit, 2);
+};
 
-            /** The number of PE estimated for this hit. */
-            float pe_{0};
-
-            /** The minimum number of PE estimated for this hit, different from pe_ when you have two ended readout */
-            float minpe_{-99};
-
-            /**
-             * The ROOT class definition.
-             */
-            ClassDef(HcalHit, 2);
-    };
-
-}
+}  // namespace ldmx
 
 #endif /* HCAL_EVENT_HCALHIT_H_ */
