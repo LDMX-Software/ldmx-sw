@@ -21,7 +21,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGeneratorManager.h" 
+#include "SimCore/PrimaryGeneratorManager.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -29,94 +29,91 @@
 #include "Framework/Configure/Parameters.h"
 
 // Forward declarations
-class G4Event; 
+class G4Event;
 class TRandom3;
 
 namespace ldmx {
 
-    /**
-     * @class PrimaryGeneratorAction
-     * @brief Implementation of Geant4 primary generator action
-     */
-    class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+/**
+ * @class PrimaryGeneratorAction
+ * @brief Implementation of Geant4 primary generator action
+ */
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+ public:
+  /*
+   * Constructor
+   *
+   * @param parameters The parameters used to configure the primary
+   *                   generator action.
+   */
+  PrimaryGeneratorAction(Parameters& parameters);
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~PrimaryGeneratorAction();
 
-            /*
-             * Constructor
-             *
-             * @param parameters The parameters used to configure the primary
-             *                   generator action. 
-             */  
-            PrimaryGeneratorAction(Parameters& parameters);
+  /**
+   * Generate the event.
+   * @param event The Geant4 event.
+   */
+  void GeneratePrimaries(G4Event* event) final override;
 
-            /**
-             * Class destructor.
-             */
-            virtual ~PrimaryGeneratorAction();
+ private:
+  /**
+   * Smearing beamspot
+   * @param event The Geant4 event.
+   */
+  void smearingBeamspot(G4Event* event);
 
-            /**
-             * Generate the event.
-             * @param event The Geant4 event.
-             */
-            void GeneratePrimaries(G4Event* event) final override;
+  /**
+   * Set UserInformation for primary vertices if they haven't been set before.
+   *
+   * Some features downstream of the primaries require certain user info to
+   * function properly. This ensures that it happens.
+   *
+   * Makes sure that each particle on each primary vertex has
+   *  1. A defined UserPrimaryParticleInformation member
+   *  2. The HepEvtStatus for this primary info is non-zero
+   *
+   * @param event Geant4 event to go through primaries
+   */
+  void setUserPrimaryInfo(G4Event* event);
 
-        private:
+  /// Manager of all generators used by the event
+  PrimaryGeneratorManager& manager_;
 
-            /**
-             * Smearing beamspot
-             * @param event The Geant4 event.
-             */
-            void smearingBeamspot(G4Event* event);
+  /// Random number generator
+  std::unique_ptr<TRandom3> random_;
 
-            /**
-             * Set UserInformation for primary vertices if they haven't been set before.
-             *
-             * Some features downstream of the primaries require certain user info to function
-             * properly. This ensures that it happens.
-             *
-             * Makes sure that each particle on each primary vertex has
-             *  1. A defined UserPrimaryParticleInformation member
-             *  2. The HepEvtStatus for this primary info is non-zero
-             *
-             * @param event Geant4 event to go through primaries
-             */
-            void setUserPrimaryInfo(G4Event* event);
+  /// The parameters used to configure the primary generator of choice
+  Parameters parameters_;
 
-            /// Manager of all generators used by the event
-            PrimaryGeneratorManager &manager_;
+  /**
+   * Flag denoting whether the vertex position of a particle
+   * should be smeared.
+   */
+  bool useBeamspot_{false};
 
-            /// Random number generator
-            std::unique_ptr< TRandom3 > random_;
+  /** Extent of the beamspot in x. */
+  double beamspotXSize_{0};
 
-            /// The parameters used to configure the primary generator of choice
-            Parameters parameters_; 
+  /** Extent of the beamspot in y. */
+  double beamspotYSize_{0};
 
-            /** 
-             * Flag denoting whether the vertex position of a particle 
-             * should be smeared.
-             */ 
-            bool useBeamspot_{false};
-            
-            /** Extent of the beamspot in x. */
-            double beamspotXSize_{0};            
-            
-            /** Extent of the beamspot in y. */
-            double beamspotYSize_{0};   
+  /** Extent of the beamspot in y. */
+  double beamspotZSize_{0.};
 
-            /** Extent of the beamspot in y. */
-            double beamspotZSize_{0.};   
+  /**
+   * Should we time-shift so that the primary vertices arrive (or originate)
+   * at t=0ns at z=0mm?
+   *
+   * @note This should remain true unless the user knows what they are doing!
+   */
+  bool time_shift_primaries_{true};
 
-            /**
-             * Should we time-shift so that the primary vertices arrive (or originate)
-             * at t=0ns at z=0mm?
-             *
-             * @note This should remain true unless the user knows what they are doing!
-             */
-            bool time_shift_primaries_{true};
+};  // PrimaryGeneratorAction
 
-    };  // PrimaryGeneratorAction
+}  // namespace ldmx
 
-} // ldmx
-
-#endif // SIMCORE_PRIMARYGENERATORACTION_H
+#endif  // SIMCORE_PRIMARYGENERATORACTION_H

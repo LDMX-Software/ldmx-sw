@@ -36,8 +36,7 @@ namespace ldmx {
  * @see AuxInfoReader
  */
 class DetectorConstruction : public G4VUserDetectorConstruction {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param theParser GDML parser defining the geometry.
@@ -68,7 +67,7 @@ public:
     return auxInfoReader_->getDetectorHeader();
   }
 
-private:
+ private:
   /**
    * The GDML parser defining the detector.
    */
@@ -83,6 +82,6 @@ private:
   Parameters parameters_;
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

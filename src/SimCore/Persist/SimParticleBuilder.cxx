@@ -3,9 +3,9 @@
 #include <string>
 
 // LDMX
-#include "Recon/Event/EventConstants.h"
 #include "Framework/Event.h"
 #include "Framework/Exception/Exception.h"
+#include "Recon/Event/EventConstants.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/G4TrackerHit.h"
 #include "SimCore/UserTrackingAction.h"
@@ -29,7 +29,6 @@ SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
 SimParticleBuilder::~SimParticleBuilder() {}
 
 void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
-
   // Get the trajectory container for the event.
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
@@ -43,7 +42,6 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
 
   // Fill information into the particles.
   for (auto trajectory : *trajectories->GetVector()) {
-
     Trajectory *traj = static_cast<Trajectory *>(trajectory);
 
     SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
@@ -78,13 +76,13 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
         // this parent has been found in the particle map
         outputParticleMap[traj->GetParentID()].addDaughter(
             trajectory->GetTrackID());
-      } // check if parent exists in output map
-    }   // check if particle has a parent
+      }  // check if parent exists in output map
+    }    // check if particle has a parent
   }
 
   // Add the collection data to the output event.
   outputEvent->add("SimParticles", outputParticleMap);
 }
 
-} // namespace persist
-} // namespace simcore
+}  // namespace persist
+}  // namespace simcore

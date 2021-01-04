@@ -13,22 +13,18 @@
 
 namespace ldmx {
 
-    UserRunAction::UserRunAction() {
-    }
+UserRunAction::UserRunAction() {}
 
-    UserRunAction::~UserRunAction() {
-    }
+UserRunAction::~UserRunAction() {}
 
-    void UserRunAction::BeginOfRunAction(const G4Run* run) {
-        
-        // Call user run action
-        for( auto& runAction : runActions_) runAction->BeginOfRunAction(run); 
-    }
-
-    void UserRunAction::EndOfRunAction(const G4Run* run) {
-        
-        // Call user run action
-        for( auto& runAction : runActions_) runAction->EndOfRunAction(run); 
-    }
-
+void UserRunAction::BeginOfRunAction(const G4Run* run) {
+  // Call user run action
+  for (auto& runAction : runActions_) runAction->BeginOfRunAction(run);
 }
+
+void UserRunAction::EndOfRunAction(const G4Run* run) {
+  // Call user run action
+  for (auto& runAction : runActions_) runAction->EndOfRunAction(run);
+}
+
+}  // namespace ldmx
