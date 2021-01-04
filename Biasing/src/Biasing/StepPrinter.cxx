@@ -6,51 +6,51 @@
 /*~~~~~~~~~~~~*/
 #include "G4Step.hh"
 
-namespace ldmx { 
+namespace ldmx {
 
-    StepPrinter::StepPrinter(const std::string& name, Parameters& parameters) 
-        : UserAction(name, parameters) {
-            trackID_ = parameters.getParameter< int >("track_id"); 
-    }
+StepPrinter::StepPrinter(const std::string& name, Parameters& parameters)
+    : UserAction(name, parameters) {
+  trackID_ = parameters.getParameter<int>("track_id");
+}
 
-    StepPrinter::~StepPrinter() {}
+StepPrinter::~StepPrinter() {}
 
-    void StepPrinter::stepping(const G4Step* step) {
+void StepPrinter::stepping(const G4Step* step) {
+  // Get the track associated with this step
+  auto track{step->GetTrack()};
 
-        // Get the track associated with this step
-        auto track{step->GetTrack()}; 
-        
-        if (auto trackID{track->GetTrackID()}; (trackID_ > 0) && (trackID != trackID_)) return; 
+  if (auto trackID{track->GetTrackID()};
+      (trackID_ > 0) && (trackID != trackID_))
+    return;
 
-        // Get the particle name.
-        auto particleName{track->GetParticleDefinition()->GetParticleName()};
-        
-        // Get the energy of the particle 
-        auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
+  // Get the particle name.
+  auto particleName{track->GetParticleDefinition()->GetParticleName()};
 
-        // Get the volume the particle is in.
-        auto volume{track->GetVolume()->GetName()};
+  // Get the energy of the particle
+  auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
 
-        // Get the next volume
-        auto nextVolume{track->GetNextVolume()->GetName()}; 
+  // Get the volume the particle is in.
+  auto volume{track->GetVolume()->GetName()};
 
-        // Get the region
-        auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; 
-        
-        std::cout << "*******************************\n"
-                  << "*   Step " << track->GetCurrentStepNumber() << "\n"
-                  << "********************************\n"
-                  << "\tEnergy of " << particleName << " : " << energy << "\n"   
-                  << "\tTrack ID: " << track->GetTrackID()  << "\n" 
-                  << "\tStep #: "   << track->GetCurrentStepNumber() << "\n"
-                  << "\tParticle currently in " << volume << "\n"  
-                  << "\tRegion: " << region << "\n"
-                  << "\tNext volume: " << nextVolume << "\n" 
-                  << "********************************\n"
-                  << std::endl;
-        
-    }
+  // Get the next volume
+  auto nextVolume{track->GetNextVolume()->GetName()};
 
-} // ldmx
+  // Get the region
+  auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
 
-DECLARE_ACTION(ldmx, StepPrinter) 
+  std::cout << "*******************************\n"
+            << "*   Step " << track->GetCurrentStepNumber() << "\n"
+            << "********************************\n"
+            << "\tEnergy of " << particleName << " : " << energy << "\n"
+            << "\tTrack ID: " << track->GetTrackID() << "\n"
+            << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
+            << "\tParticle currently in " << volume << "\n"
+            << "\tRegion: " << region << "\n"
+            << "\tNext volume: " << nextVolume << "\n"
+            << "********************************\n"
+            << std::endl;
+}
+
+}  // namespace ldmx
+
+DECLARE_ACTION(ldmx, StepPrinter)
