@@ -79,7 +79,6 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.qie_sf = 40.        # QIE sampling frequency in MHz
 
         import time
-        self.randomSeed = int(time.time())
         self.verbose = False
 
     def up() :
