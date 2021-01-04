@@ -10,138 +10,133 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalID.h"
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Framework/EventProcessor.h"
+#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 
 #include "Tools/ONNXRuntime.h"
 
-//C++
+// C++
 #include <map>
 #include <memory>
 
 namespace ldmx {
 
-    /**
-     * @class EcalVetoProcessor
-     * @brief Determines if event is vetoable using ECAL hit information
-     */
-    class EcalVetoProcessor: public Producer {
+/**
+ * @class EcalVetoProcessor
+ * @brief Determines if event is vetoable using ECAL hit information
+ */
+class EcalVetoProcessor : public Producer {
+ public:
+  typedef std::pair<EcalID, float> CellEnergyPair;
 
-        public:
+  typedef std::pair<float, float> XYCoords;
 
-      typedef std::pair<EcalID, float> CellEnergyPair;
+  EcalVetoProcessor(const std::string& name, Process& process)
+      : Producer(name, process) {}
 
-            typedef std::pair<float, float> XYCoords;
+  virtual ~EcalVetoProcessor() {}
 
-            EcalVetoProcessor(const std::string& name, Process& process) :
-                    Producer(name, process) {
-            }
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(Parameters& parameters) final override;
 
-            virtual ~EcalVetoProcessor() { }
+  void produce(Event& event);
 
-            /**
-             * Configure the processor using the given user specified parameters.
-             *
-             * @param parameters Set of parameters used to configure this processor.
-             */
-            void configure(Parameters& parameters) final override;
+ private:
+  /** Wrappers for ecalHexReadout functions. See hitToPair().
+   *  Necessary to easily combine cellID with moduleID to get unique ID of
+   *  hit in layer. In future: combine celID+moduleID+layerID.
+   */
+  bool isInShowerInnerRing(EcalID centroidID, EcalID probeID) {
+    return hexReadout_->isNN(centroidID, probeID);
+  }
+  bool isInShowerOuterRing(EcalID centroidID, EcalID probeID) {
+    return hexReadout_->isNNN(centroidID, probeID);
+  }
+  std::pair<double, double> getCellCentroidXYPair(EcalID centroidID) {
+    return hexReadout_->getCellCenterAbsolute(centroidID);
+  }
+  std::vector<EcalID> getInnerRingCellIds(EcalID id) {
+    return hexReadout_->getNN(id);
+  }
+  std::vector<EcalID> getOuterRingCellIds(EcalID id) {
+    return hexReadout_->getNNN(id);
+  }
 
-            void produce(Event& event);
+  void clearProcessor();
 
-        private:
+  EcalID hitID(const EcalHit& hit) const { return EcalID(hit.getID()); }
 
-            /** Wrappers for ecalHexReadout functions. See hitToPair().
-             *  Necessary to easily combine cellID with moduleID to get unique ID of
-             *  hit in layer. In future: combine celID+moduleID+layerID.
-             */
-            bool isInShowerInnerRing(EcalID centroidID, EcalID probeID){
-                return hexReadout_->isNN(centroidID, probeID);
-            }
-            bool isInShowerOuterRing(EcalID centroidID, EcalID probeID){
-                return hexReadout_->isNNN(centroidID, probeID);
-            }
-            std::pair<double,double> getCellCentroidXYPair(EcalID centroidID){
-                return hexReadout_->getCellCenterAbsolute(centroidID);
-            }
-            std::vector<EcalID> getInnerRingCellIds(EcalID id){
-                return hexReadout_->getNN(id);
-            }
-            std::vector<EcalID> getOuterRingCellIds(EcalID id){
-                return hexReadout_->getNNN(id);
-            }
+  /* Function to calculate the energy weighted shower centroid */
+  EcalID GetShowerCentroidIDAndRMS(const std::vector<EcalHit>& ecalRecHits,
+                                   double& showerRMS);
 
-            void clearProcessor();
+  /* Function to load up empty vector of hit maps */
+  void fillHitMap(const std::vector<EcalHit>& ecalRecHits,
+                  std::map<EcalID, float>& cellMap_);
 
-            EcalID hitID(const EcalHit &hit) const { return EcalID(hit.getID()); }
+  /* Function to take loaded hit maps and find isolated hits in them */
+  void fillIsolatedHitMap(const std::vector<EcalHit>& ecalRecHits,
+                          EcalID globalCentroid,
+                          std::map<EcalID, float>& cellMap_,
+                          std::map<EcalID, float>& cellMapIso_,
+                          bool doTight = false);
 
-            /* Function to calculate the energy weighted shower centroid */
-            EcalID GetShowerCentroidIDAndRMS(const std::vector< EcalHit > &ecalRecHits, double & showerRMS);
+  std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
+                                      std::vector<float> position);
 
-            /* Function to load up empty vector of hit maps */
-            void fillHitMap(const std::vector< EcalHit > &ecalRecHits,
-                    std::map<EcalID, float>& cellMap_);
+  void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
-            /* Function to take loaded hit maps and find isolated hits in them */
-            void fillIsolatedHitMap(const std::vector< EcalHit > &ecalRecHits,
-                    EcalID globalCentroid,
-                    std::map<EcalID, float>& cellMap_,
-                    std::map<EcalID, float>& cellMapIso_,
-                    bool doTight = false);
+ private:
+  std::map<EcalID, float> cellMap_;
+  std::map<EcalID, float> cellMapTightIso_;
 
-            std::vector<XYCoords> getTrajectory(std::vector<double> momentum, std::vector<float> position);
+  std::vector<float> ecalLayerEdepRaw_;
+  std::vector<float> ecalLayerEdepReadout_;
+  std::vector<float> ecalLayerTime_;
+  std::vector<float> mapsx;
+  std::vector<float> mapsy;
 
-            void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
+  int nEcalLayers_{0};
+  int backEcalStartingLayer_{0};
+  int nReadoutHits_{0};
+  int deepestLayerHit_{0};
+  int doBdt_{0};
 
-        private:
-            std::map<EcalID, float> cellMap_;
-            std::map<EcalID, float> cellMapTightIso_;
+  double summedDet_{0};
+  double summedTightIso_{0};
+  double maxCellDep_{0};
+  double showerRMS_{0};
+  double xStd_{0};
+  double yStd_{0};
+  double avgLayerHit_{0};
+  double stdLayerHit_{0};
+  double ecalBackEnergy_{0};
 
-            std::vector<float> ecalLayerEdepRaw_;
-            std::vector<float> ecalLayerEdepReadout_;
-            std::vector<float> ecalLayerTime_;
-            std::vector<float> mapsx;
-            std::vector<float> mapsy;
+  double bdtCutVal_{0};
 
+  bool verbose_{false};
+  bool doesPassVeto_{false};
 
-            int nEcalLayers_{0};
-            int backEcalStartingLayer_{0};
-            int nReadoutHits_{0};
-            int deepestLayerHit_{0};
-            int doBdt_{0};
+  const EcalHexReadout* hexReadout_;
 
+  std::string bdtFileName_;
+  std::string cellFileNamexy_;
+  std::vector<float> bdtFeatures_;
 
-            double summedDet_{0};
-            double summedTightIso_{0};
-            double maxCellDep_{0};
-            double showerRMS_{0};
-            double xStd_{0};
-            double yStd_{0};
-            double avgLayerHit_{0};
-            double stdLayerHit_{0};
-            double ecalBackEnergy_{0};
+  std::string rec_pass_name_;
 
-            double bdtCutVal_{0};
+  /** Name of the collection which will containt the results. */
+  std::string collectionName_{"EcalVeto"};
 
-            bool verbose_{false};
-            bool doesPassVeto_{false};
+  std::unique_ptr<Ort::ONNXRuntime> rt_;
+};
 
-            const EcalHexReadout* hexReadout_;
-
-            std::string bdtFileName_;
-            std::string cellFileNamexy_;
-            std::vector<float> bdtFeatures_;
-            
-            std::string rec_pass_name_;
-
-            /** Name of the collection which will containt the results. */
-            std::string collectionName_{"EcalVeto"};
-
-            std::unique_ptr<Ort::ONNXRuntime> rt_;
-
-    };
-
-}
+}  // namespace ldmx
 
 #endif
