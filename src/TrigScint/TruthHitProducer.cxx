@@ -9,7 +9,6 @@ TruthHitProducer::TruthHitProducer(const std::string &name, Process &process)
 TruthHitProducer::~TruthHitProducer() {}
 
 void TruthHitProducer::configure(Parameters &parameters) {
-
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
@@ -26,7 +25,6 @@ void TruthHitProducer::configure(Parameters &parameters) {
 }
 
 void TruthHitProducer::produce(Event &event) {
-
   // Check if the collection exists.  If not, don't bother processing the event.
   if (!event.exists(inputCollection_)) {
     ldmx_log(error) << "No input collection called " << inputCollection_
@@ -45,7 +43,6 @@ void TruthHitProducer::produce(Event &event) {
     bool keep{false};
     // check if hit is from beam electron and, if so, add to output collection
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
-
       auto contrib = simHit.getContrib(i);
       if (verbose_) {
         ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.trackID
@@ -64,12 +61,11 @@ void TruthHitProducer::produce(Event &event) {
           keep = true;
         }
       }
-      if (keep)
-        truthBeamElectrons.push_back(simHit);
+      if (keep) truthBeamElectrons.push_back(simHit);
     }
   }
   event.add(outputCollection_, truthBeamElectrons);
 }
-} // namespace ldmx
+}  // namespace ldmx
 
 DECLARE_PRODUCER_NS(ldmx, TruthHitProducer)

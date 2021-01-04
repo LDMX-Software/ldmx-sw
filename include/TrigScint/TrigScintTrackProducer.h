@@ -3,12 +3,12 @@
 #define EVENTPROC_TRIGSCINTTRACKPRODUCER_H
 
 // LDMX Framework
+#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintTrack.h"
-#include "Framework/Event.h"
-#include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
 
 namespace ldmx {
 
@@ -17,7 +17,7 @@ namespace ldmx {
  * @brief making tracks from trigger scintillator clusters
  */
 class TrigScintTrackProducer : public ldmx::Producer {
-public:
+ public:
   TrigScintTrackProducer(const std::string &name, ldmx::Process &process)
       : ldmx::Producer(name, process) {}
 
@@ -33,7 +33,7 @@ public:
 
   virtual void onProcessEnd();
 
-private:
+ private:
   // collection of produced tracks
   std::vector<TrigScintTrack> tracks_;
 
@@ -65,6 +65,6 @@ private:
   // track residual in units of channel nb (will not be content weighted)
   float residual_{0.};
 };
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // EVENTPROC_TRIGSCINTTRACKPRODUCER_H 
+#endif  // EVENTPROC_TRIGSCINTTRACKPRODUCER_H

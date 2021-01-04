@@ -6,11 +6,11 @@
 /*   ldmx-sw   */
 /***************/
 
+#include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "TrigScint/Event/TrigScintHit.h"
-#include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 
@@ -21,8 +21,7 @@ namespace ldmx {
  * that can then be fed to digi etc like anything else.
  */
 class TruthHitProducer : public Producer {
-
-public:
+ public:
   /**
    * Constructor.
    *
@@ -68,8 +67,8 @@ public:
   /// selected sim hits
   std::string outputCollection_;
 
-}; // TruthHitProducer
+};  // TruthHitProducer
 
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // TRIGSCINT_TRUTHHITPRODUCER_H_
+#endif  // TRIGSCINT_TRUTHHITPRODUCER_H_

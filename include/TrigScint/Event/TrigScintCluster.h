@@ -18,8 +18,7 @@ namespace ldmx {
  * the ECal cluster functionality
  */
 class TrigScintCluster {
-
-public:
+ public:
   /**
    * Class constructor.
    */
@@ -33,12 +32,12 @@ public:
   /**
    * Print a description of this object.
    */
-  void Print(Option_t *option = "") const; // override;
+  void Print(Option_t *option = "") const;  // override;
 
   /**
    * Reset the TrigScintCluster object.
    */
-  void Clear(Option_t *option = ""); // override;
+  void Clear(Option_t *option = "");  // override;
 
   /**
    * Take in the hits that make up the cluster.
@@ -138,7 +137,7 @@ public:
     return this->getEnergy() < rhs.getEnergy();
   }
 
-private:
+ private:
   // hits forming the cluster
   std::vector<unsigned int> hitIDs_;
 
@@ -180,6 +179,6 @@ private:
    */
   ClassDef(TrigScintCluster, 1);
 };
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // TRIGSCINT_EVENT_TRIGSCINTCLUSTER_H_ 
+#endif  // TRIGSCINT_EVENT_TRIGSCINTCLUSTER_H_
