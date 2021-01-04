@@ -1,7 +1,7 @@
 
-#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
-#include "DetDescr/EcalID.h" //creating unique cell IDs
+#include "DetDescr/EcalID.h"  //creating unique cell IDs
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
@@ -95,7 +95,6 @@ static const bool NTUPLIZE_ENERGIES = true;
  * in one event.
  */
 class EcalFakeSimHits : public ldmx::Producer {
-
   /**
    * Maximum energy to make a simulated hit for [MeV]
    *
@@ -122,8 +121,9 @@ class EcalFakeSimHits : public ldmx::Producer {
   /// current energy of the sim hit we are on
   double currEnergy_ = minEnergy_;
 
-public:
-  EcalFakeSimHits(const std::string &name, ldmx::Process &p) : ldmx::Producer(name, p) {}
+ public:
+  EcalFakeSimHits(const std::string &name, ldmx::Process &p)
+      : ldmx::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
   void beforeNewRun(ldmx::RunHeader &header) {
@@ -131,25 +131,24 @@ public:
   }
 
   void produce(ldmx::Event &event) final override {
-
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
 
     ldmx::EcalID id(0, 0, 0);
     pretendSimHits[0].setID(id.raw());
     pretendSimHits[0].addContrib(
-        -1 // incidentID
+        -1  // incidentID
         ,
-        -1 // trackID
+        -1  // trackID
         ,
-        0 // pdg ID
+        0  // pdg ID
         ,
-        currEnergy_ // edep
+        currEnergy_  // edep
         ,
-        1. // time - 299mm is about 1ns from target and in middle of ECal
+        1.  // time - 299mm is about 1ns from target and in middle of ECal
     );
     pretendSimHits[0].setPosition(0., 0.,
-                                  299.); // sim position in middle of ECal
+                                  299.);  // sim position in middle of ECal
 
     // needs to be correct collection name
     REQUIRE_NOTHROW(event.add("EcalSimHits", pretendSimHits));
@@ -158,7 +157,7 @@ public:
 
     return;
   }
-}; // EcalFakeSimHits
+};  // EcalFakeSimHits
 
 /**
  * @class EcalCheckEnergyReconstruction
@@ -172,14 +171,12 @@ public:
  * - Noise generation has been turned off
  */
 class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
-
-public:
+ public:
   EcalCheckEnergyReconstruction(const std::string &name, ldmx::Process &p)
       : ldmx::Analyzer(name, p) {}
   ~EcalCheckEnergyReconstruction() {}
 
   void onProcessStart() final override {
-
     getHistoDirectory();
     ntuple_.create("EcalDigiTest");
     ntuple_.addVar<float>("EcalDigiTest", "SimEnergy");
@@ -195,15 +192,16 @@ public:
   }
 
   void analyze(const ldmx::Event &event) final override {
-
-    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
+    const auto simHits =
+        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
 
     REQUIRE(simHits.size() == 1);
 
     float truth_energy = simHits.at(0).getEdep();
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
-    const auto daqDigis{event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
+    const auto daqDigis{
+        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
 
     CHECK(daqDigis.getNumDigis() == 1);
     auto daqDigi = daqDigis.getDigi(0);
@@ -253,10 +251,10 @@ public:
 
     return;
   }
-}; // EcalCheckEnergyReconstruction
+};  // EcalCheckEnergyReconstruction
 
-} // namespace test
-} // namespace ecal
+}  // namespace test
+}  // namespace ecal
 
 DECLARE_PRODUCER_NS(ecal::test, EcalFakeSimHits)
 DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
@@ -275,7 +273,6 @@ DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
  * @TODO check layer weights are being calculated correctly somehow
  */
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
-
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
 
   char **args;

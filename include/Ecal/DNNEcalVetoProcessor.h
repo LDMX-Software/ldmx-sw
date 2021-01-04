@@ -1,6 +1,7 @@
 /**
  * @file DNNDNNEcalVetoProcessor.h
- * @brief Class that determines if event is vetoable using ECAL hit information w/ a deep neural network
+ * @brief Class that determines if event is vetoable using ECAL hit information
+ * w/ a deep neural network
  * @author Huilin Qu, UCSB
  */
 
@@ -11,62 +12,63 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
-#include "Framework/EventProcessor.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 
 #include "Tools/ONNXRuntime.h"
 
 namespace ldmx {
 
+/**
+ * @class DNNEcalVetoProcessor
+ * @brief Determines if event is vetoable using ECAL hit information w/ a deep
+ * neural network
+ */
+class DNNEcalVetoProcessor : public Producer {
+ public:
+  DNNEcalVetoProcessor(const std::string& name, Process& process);
+  virtual ~DNNEcalVetoProcessor() {}
+  void configure(Parameters& parameters) final override;
+  void produce(Event& event);
+
+ private:
   /**
-   * @class DNNEcalVetoProcessor
-   * @brief Determines if event is vetoable using ECAL hit information w/ a deep neural network
+   * Make inputs to the DNN from ECAL RecHits.
+   * @param ecalRecHits The EcalHit collection.
    */
-  class DNNEcalVetoProcessor: public Producer {
+  void make_inputs(const EcalHexReadout& geom,
+                   const std::vector<EcalHit>& ecalRecHits);
 
-  public:
-    DNNEcalVetoProcessor(const std::string& name, Process& process);
-    virtual ~DNNEcalVetoProcessor() {}
-    void configure(Parameters& parameters) final override;
-    void produce(Event& event);
+ private:
+  /** Maximum number of hits allowed in ECAL. Events with more hits will be
+   * marked as BKG directly without running the DNN. */
+  constexpr static unsigned int max_num_hits_ = 50;
 
-  private:
-    /**
-     * Make inputs to the DNN from ECAL RecHits.
-     * @param ecalRecHits The EcalHit collection.
-     */
-    void make_inputs(const EcalHexReadout& geom, const std::vector<EcalHit>& ecalRecHits);
+  constexpr static unsigned int n_coordinate_dim_ = 3;
+  constexpr static unsigned int coordinate_x_offset_ = 0;
+  constexpr static unsigned int coordinate_y_offset_ = max_num_hits_;
+  constexpr static unsigned int coordinate_z_offset_ = 2 * max_num_hits_;
 
-  private:
-    /** Maximum number of hits allowed in ECAL. Events with more hits will be marked as BKG directly without running the DNN. */
-    constexpr static unsigned int max_num_hits_ = 50;
+  constexpr static unsigned int n_feature_dim_ = 5;
+  constexpr static unsigned int feature_x_offset_ = 0;
+  constexpr static unsigned int feature_y_offset_ = max_num_hits_;
+  constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
+  constexpr static unsigned int feature_layerid_offset_ = 3 * max_num_hits_;
+  constexpr static unsigned int feature_energy_offset_ = 4 * max_num_hits_;
 
-    constexpr static unsigned int n_coordinate_dim_ = 3;
-    constexpr static unsigned int coordinate_x_offset_ = 0;
-    constexpr static unsigned int coordinate_y_offset_ = max_num_hits_;
-    constexpr static unsigned int coordinate_z_offset_ = 2 * max_num_hits_;
+  const static std::vector<std::string> input_names_;
+  const static std::vector<unsigned int> input_sizes_;
 
-    constexpr static unsigned int n_feature_dim_ = 5;
-    constexpr static unsigned int feature_x_offset_ = 0;
-    constexpr static unsigned int feature_y_offset_ = max_num_hits_;
-    constexpr static unsigned int feature_z_offset_ = 2 * max_num_hits_;
-    constexpr static unsigned int feature_layerid_offset_ = 3 * max_num_hits_;
-    constexpr static unsigned int feature_energy_offset_ = 4 * max_num_hits_;
+  float disc_cut_ = -99;
+  std::vector<std::vector<float>> data_;
+  std::unique_ptr<Ort::ONNXRuntime> rt_;
 
-    const static std::vector<std::string> input_names_;
-    const static std::vector<unsigned int> input_sizes_;
+  /** Name of the collection which will containt the results. */
+  std::string collectionName_{"DNNEcalVeto"};
 
-    float disc_cut_ = -99;
-    std::vector<std::vector<float>> data_;
-    std::unique_ptr<Ort::ONNXRuntime> rt_;
+  bool debug_ = false;
+};
 
-    /** Name of the collection which will containt the results. */
-    std::string collectionName_{"DNNEcalVeto"};
-
-    bool debug_ = false;
-
-  };
-
-}
+}  // namespace ldmx
 
 #endif
