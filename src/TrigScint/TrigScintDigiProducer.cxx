@@ -1,6 +1,6 @@
 #include "TrigScint/TrigScintDigiProducer.h"
-#include "Framework/RandomNumberSeedService.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/RandomNumberSeedService.h"
 
 #include <iostream>
 
@@ -13,7 +13,6 @@ TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
 TrigScintDigiProducer::~TrigScintDigiProducer() {}
 
 void TrigScintDigiProducer::configure(Parameters &parameters) {
-
   // Configure this instance of the producer
   stripsPerArray_ = parameters.getParameter<int>("number_of_strips");
   numberOfArrays_ = parameters.getParameter<int>("number_of_arrays");
@@ -33,7 +32,6 @@ void TrigScintDigiProducer::configure(Parameters &parameters) {
 }
 
 TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
-
   TrigScintID tempID(module, random_->Integer(stripsPerArray_));
   if (module >= TrigScintSection::NUM_SECTIONS) {
     // Throw an exception
@@ -46,14 +44,14 @@ TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
 }
 
 void TrigScintDigiProducer::produce(Event &event) {
-
   // Need to handle seeding on the first event
   if (!noiseGenerator_->hasSeed()) {
-	const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-	noiseGenerator_->seedGenerator(rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
+    const auto &rseed = getCondition<RandomNumberSeedService>(
+        RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    noiseGenerator_->seedGenerator(
+        rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
   }
 
-  
   std::map<TrigScintID, int> cellPEs;
   std::map<TrigScintID, int> cellMinPEs;
   std::map<TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
@@ -68,7 +66,6 @@ void TrigScintDigiProducer::produce(Event &event) {
 
   int module{-1};
   for (const auto &simHit : simHits) {
-
     TrigScintID id(simHit.getID());
 
     // Just set the module ID to use for noise hits here.  Given that
@@ -85,7 +82,6 @@ void TrigScintDigiProducer::produce(Event &event) {
 
     // check if hits is from beam electron and, if so, add to beamFrac
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
-
       auto contrib = simHit.getContrib(i);
       if (verbose_) {
         std::cout << "contrib " << i << " trackID: " << contrib.trackID
@@ -110,7 +106,6 @@ void TrigScintDigiProducer::produce(Event &event) {
     // to lead to a problem since we can't measure them anyway except roughly y
     // and z, which is encoded in the ids.
     if (Edep.find(id) == Edep.end()) {
-
       // first hit, initialize
       Edep[id] = simHit.getEdep();
       Time[id] = simHit.getTime() * simHit.getEdep();
@@ -120,7 +115,6 @@ void TrigScintDigiProducer::produce(Event &event) {
       numRecHits++;
 
     } else {
-
       // not first hit, aggregate, and store the largest radius hit
       Xpos[id] += position[0] * simHit.getEdep();
       Ypos[id] += position[1] * simHit.getEdep();
@@ -150,7 +144,6 @@ void TrigScintDigiProducer::produce(Event &event) {
 
     // If a cell has a PE count above threshold, persit the hit.
     if (cellPEs[id] >= 1) {
-
       TrigScintHit hit;
       hit.setID(id.raw());
       hit.setPE(cellPEs[id]);
@@ -162,7 +155,7 @@ void TrigScintDigiProducer::produce(Event &event) {
       hit.setYPos(Ypos[id]);
       hit.setZPos(Zpos[id]);
       hit.setModuleID(module);
-      hit.setBarID(id.bar()); // getFieldValue("bar"));
+      hit.setBarID(id.bar());  // getFieldValue("bar"));
       hit.setNoise(false);
       hit.setBeamEfrac(beamFrac[id] / depEnergy);
 
@@ -170,7 +163,6 @@ void TrigScintDigiProducer::produce(Event &event) {
     }
 
     if (verbose_) {
-
       std::cout << id << std::endl;
       std::cout << "Edep: " << Edep[id] << std::endl;
       std::cout << "numPEs: " << cellPEs[id] << std::endl;
@@ -178,21 +170,20 @@ void TrigScintDigiProducer::produce(Event &event) {
       std::cout << "z: " << Zpos[id] << std::endl;
       std::cout << "\t X: " << Xpos[id] << "\t Y: " << Ypos[id]
                 << "\t Z: " << Zpos[id] << std::endl;
-    } // end verbose
+    }  // end verbose
   }
 
   // ------------------------------- Noise simulation -----------------------//
   // ------------------------------------------------------------------------//
-  int numEmptyCells =
-      stripsPerArray_ - numRecHits; // only simulating for single array until
-                                    // all arrays are merged into one collection
+  int numEmptyCells = stripsPerArray_ -
+                      numRecHits;  // only simulating for single array until
+                                   // all arrays are merged into one collection
   std::vector<double> noiseHits_PE =
       noiseGenerator_->generateNoiseHits(numEmptyCells);
 
   TrigScintID tempID;
 
   for (auto &noiseHitPE : noiseHits_PE) {
-
     TrigScintHit hit;
     // generate random ID from remaining cells
     do {
@@ -224,6 +215,6 @@ void TrigScintDigiProducer::produce(Event &event) {
 
   event.add(outputCollection_, trigScintHits);
 }
-} // namespace ldmx
+}  // namespace ldmx
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);
