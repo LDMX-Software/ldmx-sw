@@ -1,6 +1,6 @@
 /**
  * @file GammaToMuPairXsecBiasingPlugin.h
- * @brief Geant4 Biasing Operator used to bias the occurence of muon pair 
+ * @brief Geant4 Biasing Operator used to bias the occurence of muon pair
  *        conversions by modifying the cross-section.
  * @author Omar Moreno
  *         SLAC National Accelerator Laboratory
@@ -11,27 +11,24 @@
 
 #include "SimCore/PhotoNuclearXsecBiasingOperator.h"
 
-namespace ldmx { 
-    
-    class GammaToMuPairXsecBiasingOperator : public PhotoNuclearXsecBiasingOperator { 
-        
-        public: 
+namespace ldmx {
 
-            /** Constructor */
-            GammaToMuPairXsecBiasingOperator(std::string name); 
+class GammaToMuPairXsecBiasingOperator
+    : public PhotoNuclearXsecBiasingOperator {
+ public:
+  /** Constructor */
+  GammaToMuPairXsecBiasingOperator(std::string name);
 
-            /** Destructor */
-            ~GammaToMuPairXsecBiasingOperator(); 
-        
-        protected:
+  /** Destructor */
+  ~GammaToMuPairXsecBiasingOperator();
 
-            virtual std::string getProcessToBias() { return GAMMATOMUPAIR_PROCESS; }
-        
-        private: 
+ protected:
+  virtual std::string getProcessToBias() { return GAMMATOMUPAIR_PROCESS; }
 
-            /** Geant4 gamma->mu+mu- process name. */
-            static const std::string GAMMATOMUPAIR_PROCESS;
-    };
-}
+ private:
+  /** Geant4 gamma->mu+mu- process name. */
+  static const std::string GAMMATOMUPAIR_PROCESS;
+};
+}  // namespace ldmx
 
-#endif // BIASING_GAMMATOMUPAIRXSECBIASINGOPERATOR_H_
+#endif  // BIASING_GAMMATOMUPAIRXSECBIASINGOPERATOR_H_

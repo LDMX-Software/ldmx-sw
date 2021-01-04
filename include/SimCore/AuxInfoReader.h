@@ -24,8 +24,7 @@ namespace ldmx {
  * tags that reference these objects by name.
  */
 class AuxInfoReader {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param parser The GDML parser.
@@ -54,7 +53,7 @@ public:
    */
   ldmx::DetectorHeader *getDetectorHeader() { return detectorHeader_; }
 
-private:
+ private:
   /**
    * Create a sensitive detector from GDML data.
    * @param sdType The type of the sensitive detector.
@@ -92,7 +91,7 @@ private:
   void createDetectorHeader(G4String detectorVersion,
                             const G4GDMLAuxListType *auxInfoList);
 
-private:
+ private:
   /**
    * The GDML parser.
    */
@@ -115,6 +114,6 @@ private:
   ConditionsInterface &conditionsIntf_;
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif
