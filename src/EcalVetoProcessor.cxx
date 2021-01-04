@@ -434,7 +434,6 @@ namespace ldmx {
 
 
         // MIP tracking starts here
-        //std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
 
         /* Goal:  Calculate nStraightTracks (self-explanatory), nLinregTracks (tracks found by linreg algorithm),
         ** firstNearPhLayer (layer of the first hit near the photon trajectory), epAng (angle between the projected
@@ -448,26 +447,21 @@ namespace ldmx {
         TVector3 p_traj_end;
         if(ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
-            //std::cout << "     Found electron and photon trajectory" << std::endl;
             e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
             e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second,    LAYER_Z_POSITIONS.back());
             p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
             p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, LAYER_Z_POSITIONS.back());
 
-            // TEMPORARILY COMMENTED for testing purposes
             TVector3 evec   = e_traj_end - e_traj_start;
             TVector3 e_norm = evec.Unit();
             TVector3 pvec   = p_traj_end - p_traj_start;
             TVector3 p_norm = pvec.Unit();
             float epDot = e_norm.Dot(p_norm);
-            //std::cout << "Assigning norm" << std::endl;
             epAng_ = acos(epDot) * 180.0 / M_PI;  //In degrees for legibility
             epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) + 
                            pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
-            //std::cout << "epAng=" << epAng_ << ", epSep=" << epSep_ << std::endl;
         } else {
             /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
-            //std::cout << "Missing trajectory: len(etraj)=" << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
             e_traj_start = TVector3(999,999,0);
             e_traj_end = TVector3(999,999,999);
             p_traj_start = TVector3(1000,1000,0);
@@ -478,8 +472,6 @@ namespace ldmx {
 
         /* Compute firstNearPhLayer */
         firstNearPhLayer_ = LAYER_Z_POSITIONS.size();
-        //std::cout << "trackingHitList contains " << trackingHitList.size() << " hits." << std::endl;
-
         
         if(photon_trajectory.size() != 0) {  //if ptraj doesn't exist, leave phlayer at the default value
             for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
@@ -490,19 +482,9 @@ namespace ldmx {
                 }
             }
         }
-        //std::cout << "Found firstNearPhLayer:  " << firstNearPhLayer_ << std::endl;
-        //std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
-
-
-        // Actual tracking begins here.
-
-
-        // Straight track finding:
 
         //First, sort list by decreasing layer number
         std::sort(trackingHitList.begin(), trackingHitList.end(), [](HitData ha, HitData hb) {return ha.layer > hb.layer;});
-
-        
 
         // Info for current track:
         int track[34];  //list of hit numbers in track; 34=maximum theoretical length
@@ -552,20 +534,9 @@ namespace ldmx {
 
         //std::cout << "Found " << nStraightTracks_ << " straight tracks" << std::endl;
 
-        // OPTIONAL:  If a track is found, immediately skip the relatively slow linreg section.
-        // Downside:  Can't do this if nLinregTracks is used in the BDT.
-
-
-
-
         // Linreg tracking:
-        //std::cout << "BEGINNING LINREG TRACKING" << std::endl;
-
-        //int track[34];
-        //int trackLen;
         int hitsInRegion[50];
         int nHitsInRegion;
-        //int currenthit;
         
         TMatrixD svdMatrix(3,3);
         TMatrixD Vm(3,3);
@@ -659,10 +630,8 @@ namespace ldmx {
         }
         
 
-        std::cout << "Found " << nLinregTracks_ << " linreg tracks" << std::endl;
+        #std::cout << "Found " << nLinregTracks_ << " linreg tracks" << std::endl;
 
-
-        //std::cout << "TRACKING COMPLETED." << std::endl;
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
