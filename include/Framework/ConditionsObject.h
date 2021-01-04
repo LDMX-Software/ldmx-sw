@@ -1,6 +1,7 @@
 /**
  * @file ConditionsObject.h
- * @brief Base class for conditions information like pedestals, gains, electronics maps, etc
+ * @brief Base class for conditions information like pedestals, gains,
+ * electronics maps, etc
  * @author Jeremy Mans, University of Minnesota
  */
 #ifndef FRAMEWORK_CONDITIONSOBJECT_H_
@@ -19,25 +20,25 @@ class ConditionsObject {
   /**
    * Class constructor
    */
-  ConditionsObject(const std::string& name) : name_(name) { }
-        
+  ConditionsObject(const std::string& name) : name_(name) {}
+
   /**
    * Destructor
    */
-  virtual ~ConditionsObject() { }
-        
+  virtual ~ConditionsObject() {}
+
   /**
    * Get the name of this object
    */
   std::string getName() const { return name_; }
-        
+
  private:
-  /** 
+  /**
    * Name of the object
    */
   std::string name_;
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

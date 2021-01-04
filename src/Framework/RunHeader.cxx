@@ -31,4 +31,4 @@ void RunHeader::stream(std::ostream &s) const {
 
 void RunHeader::Print() const { stream(std::cout); }
 
-} // namespace ldmx
+}  // namespace ldmx

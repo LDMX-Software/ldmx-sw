@@ -1,6 +1,7 @@
 /**
  * @file PluginFactory.h
- * @brief Class which provides a singleton module factory that creates EventProcessor objects
+ * @brief Class which provides a singleton module factory that creates
+ * EventProcessor objects
  * @author Jeremy Mans, University of Minnesota
  */
 
@@ -8,8 +9,8 @@
 #define FRAMEWORK_EVENTPROCESSORFACTORY_H_
 
 // LDMX
-#include "Framework/EventProcessor.h"
 #include "Framework/ConditionsObjectProvider.h"
+#include "Framework/EventProcessor.h"
 
 // STL
 #include <map>
@@ -23,16 +24,12 @@ namespace ldmx {
  * @brief Singleton module factory that creates EventProcessor objects.
  */
 class PluginFactory {
-
  public:
-
   /**
    * Get the factory instance.
    * @return The factory.
    */
-  static PluginFactory& getInstance() {
-    return theFactory_;
-  }
+  static PluginFactory& getInstance() { return theFactory_; }
 
   /**
    * Register the event processor.
@@ -40,16 +37,21 @@ class PluginFactory {
    * @param classtype The type of class associated with processor.
    * @param maker TODO.
    */
-  void registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker);
+  void registerEventProcessor(const std::string& classname, int classtype,
+                              EventProcessorMaker* maker);
 
   /**
    * Register a conditions object provider
-   * @param classname The name of the class associated with the conditions object provider.
-   * @param classtype The type of class associated with conditions object provider.
+   * @param classname The name of the class associated with the conditions
+   * object provider.
+   * @param classtype The type of class associated with conditions object
+   * provider.
    * @param maker TODO.
    */
-  void registerConditionsObjectProvider(const std::string& classname, int classtype, ConditionsObjectProviderMaker* maker);
-      
+  void registerConditionsObjectProvider(const std::string& classname,
+                                        int classtype,
+                                        ConditionsObjectProviderMaker* maker);
+
   /**
    * Get the classes associated with the processor.
    * @return a vector of strings corresponding to processor classes.
@@ -68,7 +70,9 @@ class PluginFactory {
    * @param moduleInstanceName TODO.
    * @param process The process handle
    */
-  EventProcessor* createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process);
+  EventProcessor* createEventProcessor(const std::string& classname,
+                                       const std::string& moduleInstanceName,
+                                       Process& process);
 
   /**
    * Make a conditions object provider
@@ -77,7 +81,9 @@ class PluginFactory {
    * @param params Parameters for the conditoons object provider
    * @param process The process handle
    */
-  ConditionsObjectProvider* createConditionsObjectProvider(const std::string& classname, const std::string& objName, const std::string& tagname, const Parameters& params, Process& process);
+  ConditionsObjectProvider* createConditionsObjectProvider(
+      const std::string& classname, const std::string& objName,
+      const std::string& tagname, const Parameters& params, Process& process);
 
   /**
    * Load a library.
@@ -86,7 +92,6 @@ class PluginFactory {
   void loadLibrary(const std::string& libname);
 
  private:
-
   /**
    * Constructor
    */
@@ -113,6 +118,6 @@ class PluginFactory {
   static PluginFactory theFactory_;
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

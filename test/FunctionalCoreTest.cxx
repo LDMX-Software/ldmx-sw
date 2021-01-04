@@ -3,147 +3,142 @@
  * @brief Test the operation of Framework processing
  *
  * @author Tom Eichlersmith, University of Minnesota
- *  
+ *
  */
-#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
-#include <cstdio> //for remove
-#include "TH1F.h" //for test histogram
-#include "TFile.h" //to open and check root files
-#include "TTreeReader.h" //to check output event files
+#include <cstdio>         //for remove
+#include "TFile.h"        //to open and check root files
+#include "TH1F.h"         //for test histogram
+#include "TTreeReader.h"  //to check output event files
 
-#include "Framework/Process.h"
-#include "Framework/EventProcessor.h"
 #include "Framework/EventFile.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/Process.h"
 
-namespace ldmx { namespace test {
+namespace ldmx {
+namespace test {
 
 /**
  * @class TestProducer
- * Bare producer that creates a collection and an object and puts them 
+ * Bare producer that creates a collection and an object and puts them
  * on the event bus.
  *
  * The pattern this producer creates is the following:
- * - The vector of Calorimeter hits has the same number of entries as the event number
+ * - The vector of Calorimeter hits has the same number of entries as the event
+ * number
  * - The IDs of the calorimeter hits are set to 10*eventNumber+their_index
  * - The input object is an HcalVetoResult where events with an event index pass
  * - The max PE hit in the HcalVetoResult has an ID equal to the event index
  * - If a run header is created, the event count and the run number are equal
  *
- * Checks 
+ * Checks
  * - Event::add function does not throw any errors.
- * - Writes and adds a run header where the run number and the number of events are the same.
+ * - Writes and adds a run header where the run number and the number of events
+ * are the same.
  * - sets a storage hint
  */
 class TestProducer : public Producer {
+  /// number of events we've gotten to
+  int events_;
 
-        /// number of events we've gotten to
-        int events_;
+  /// should we create the run header?
+  bool createRunHeader_;
 
-        /// should we create the run header?
-        bool createRunHeader_;
+ public:
+  TestProducer(const std::string& name, Process& p) : Producer(name, p) {}
+  ~TestProducer() {}
 
-    public:
+  void configure(Parameters& p) final override {
+    createRunHeader_ = p.getParameter<bool>("createRunHeader");
+  }
 
-        TestProducer(const std::string &name,Process& p) : Producer( name , p ) { }
-        ~TestProducer() { }
+  void beforeNewRun(RunHeader& header) final override {
+    if (not createRunHeader_) return;
+    header.setIntParameter("Should Be Run Number", header.getRunNumber());
+    return;
+  }
 
-        void configure(Parameters& p) final override {
-            createRunHeader_ = p.getParameter<bool>("createRunHeader");
-        }
+  void produce(Event& event) final override {
+    int i_event = event.getEventNumber();
 
-        void beforeNewRun(RunHeader& header) final override {
-            if(not createRunHeader_) return;
-            header.setIntParameter( "Should Be Run Number" , header.getRunNumber() );
-            return;
-        }
+    REQUIRE(i_event > 0);
 
-        void produce(Event& event) final override {
+    std::vector<CalorimeterHit> caloHits;
+    for (int i = 0; i < i_event; i++) {
+      caloHits.emplace_back();
+      caloHits.back().setID(i_event * 10 + i);
+    }
 
-            int i_event = event.getEventNumber();
+    REQUIRE_NOTHROW(event.add("TestCollection", caloHits));
 
-            REQUIRE( i_event > 0 );
+    HcalHit maxPEHit;
+    maxPEHit.setID(i_event);
 
-            std::vector<CalorimeterHit> caloHits;
-            for ( int i = 0; i < i_event; i++ ) {
-                caloHits.emplace_back();
-                caloHits.back().setID( i_event*10 + i );
-            }
+    HcalVetoResult res;
+    res.setMaxPEHit(maxPEHit);
+    res.setVetoResult(i_event % 2 == 0);
 
-            REQUIRE_NOTHROW( event.add( "TestCollection" , caloHits ) );
+    REQUIRE_NOTHROW(event.add("TestObject", res));
 
-            HcalHit maxPEHit;
-            maxPEHit.setID( i_event );
+    events_ = i_event;
 
-            HcalVetoResult res;
-            res.setMaxPEHit( maxPEHit );
-            res.setVetoResult( i_event % 2 == 0 );
+    if (res.passesVeto()) setStorageHint(hint_mustKeep);
 
-            REQUIRE_NOTHROW( event.add( "TestObject" , res ) );
-
-            events_ = i_event;
-
-            if ( res.passesVeto() ) setStorageHint( hint_mustKeep );
-
-            return;
-        }
-};//TestProducer
-
+    return;
+  }
+};  // TestProducer
 
 /**
  * @class TestAnalyzer
  * Bare analyzer that looks for objects matching what the TestProducer put in.
  *
  * Checks
- * - the correct number and contents following the pattern produced by TestProducer.
+ * - the correct number and contents following the pattern produced by
+ * TestProducer.
  * - Event::getCollection and Event::getObject don't throw errors.
  */
 class TestAnalyzer : public Analyzer {
+ public:
+  TestAnalyzer(const std::string& name, Process& p) : Analyzer(name, p) {}
+  ~TestAnalyzer() {}
 
-    public:
+  void onProcessStart() final override {
+    REQUIRE_NOTHROW(getHistoDirectory());
+    test_hist_ = new TH1F("test_hist_", "Test Histogram", 101, -50, 50);
+    test_hist_->SetCanExtend(TH1::kAllAxes);
+  }
 
-        TestAnalyzer(const std::string& name,Process& p) : Analyzer( name , p ) { }
-        ~TestAnalyzer() { }
+  void analyze(const Event& event) final override {
+    int i_event = event.getEventNumber();
 
-        void onProcessStart() final override {
-            REQUIRE_NOTHROW(getHistoDirectory());
-            test_hist_ = new TH1F( 
-                    "test_hist_" , "Test Histogram",
-                    101, -50, 50 );
-            test_hist_->SetCanExtend(TH1::kAllAxes);
-        }
+    REQUIRE(i_event > 0);
 
-        void analyze(const Event& event) final override {
+    std::vector<CalorimeterHit> caloHits;
+    REQUIRE_NOTHROW(caloHits =
+                        event.getCollection<CalorimeterHit>("TestCollection"));
 
-            int i_event = event.getEventNumber();
+    CHECK(caloHits.size() == i_event);
+    for (unsigned int i = 0; i < caloHits.size(); i++) {
+      CHECK(caloHits.at(i).getID() == i_event * 10 + i);
+      test_hist_->Fill(caloHits.at(i).getID());
+    }
 
-            REQUIRE( i_event > 0 );
+    HcalVetoResult vetoRes;
+    REQUIRE_NOTHROW(vetoRes = event.getObject<HcalVetoResult>("TestObject"));
 
-            std::vector<CalorimeterHit> caloHits;
-            REQUIRE_NOTHROW(caloHits = event.getCollection<CalorimeterHit>( "TestCollection" ));
+    auto maxPEHit{vetoRes.getMaxPEHit()};
 
-            CHECK( caloHits.size() == i_event );
-            for ( unsigned int i = 0; i < caloHits.size(); i++ ) {
-                CHECK( caloHits.at(i).getID() == i_event*10 + i );
-                test_hist_->Fill( caloHits.at(i).getID() );
-            }
+    CHECK(maxPEHit.getID() == i_event);
+    CHECK(vetoRes.passesVeto() == (i_event % 2 == 0));
 
-            HcalVetoResult vetoRes;
-            REQUIRE_NOTHROW(vetoRes = event.getObject<HcalVetoResult>( "TestObject" ));
+    return;
+  }
 
-            auto maxPEHit{vetoRes.getMaxPEHit()};
-
-            CHECK( maxPEHit.getID()     == i_event );
-            CHECK( vetoRes.passesVeto() == (i_event%2==0) );
-
-            return;
-        }
-
-    private:
-
-        /// test histogram filled with event indices
-        TH1F *test_hist_;
-};//TestAnalyzer
+ private:
+  /// test histogram filled with event indices
+  TH1F* test_hist_;
+};  // TestAnalyzer
 
 /**
  * @class isGoodHistogramFile
@@ -161,51 +156,51 @@ class TestAnalyzer : public Analyzer {
  * - The histogram has the correct number of entries
  */
 class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
-    private:
-        /// Correct number of entries
-        int correctGetEntries_;
+ private:
+  /// Correct number of entries
+  int correctGetEntries_;
 
-    public:
+ public:
+  /**
+   * Constructor
+   *
+   * Sets the correct event indices
+   */
+  isGoodHistogramFile(int const& n) : correctGetEntries_(n) {}
 
-        /**
-         * Constructor
-         *
-         * Sets the correct event indices
-         */
-        isGoodHistogramFile( int const& n ) : correctGetEntries_(n) { }
+  /**
+   * Performs the test for this matcher
+   *
+   * Opens up the histogram file and makes sure of a few things.
+   * - The histogram 'test_hist_' is in the 'TestAnalyzer' directory
+   * - The histogram has the correct number of entries
+   */
+  bool match(const std::string& filename) const override {
+    // Open file
+    TFile* f = TFile::Open(filename.c_str());
+    if (!f) return false;
+    TDirectory* d = (TDirectory*)f->Get("TestAnalyzer");
+    if (!d) return false;
+    TH1F* h = (TH1F*)d->Get("test_hist_");
+    if (!h) return false;
 
-        /**
-         * Performs the test for this matcher
-         *
-         * Opens up the histogram file and makes sure of a few things.
-         * - The histogram 'test_hist_' is in the 'TestAnalyzer' directory
-         * - The histogram has the correct number of entries
-         */
-        bool match( const std::string& filename ) const override {
-            
-            //Open file
-            TFile *f = TFile::Open( filename.c_str() );
-            if (!f) return false;
-            TDirectory *d = (TDirectory*)f->Get( "TestAnalyzer" );
-            if (!d) return false;
-            TH1F* h = (TH1F*)d->Get("test_hist_");
-            if (!h) return false;
+    return (h->GetEntries() == correctGetEntries_);
+  }
 
-            return ( h->GetEntries() == correctGetEntries_ );
-        }
-
-        /**
-         * Describe this matcher in a helpful, human-readable way.
-         *
-         * This string is written as if stating a fact about
-         * the object it is matching.
-         */
-        virtual std::string describe() const override {
-            std::ostringstream ss;
-            ss << "has the histogram 'TestAnalyzer/test_hist_' with the number of entries " << correctGetEntries_;
-            return ss.str();
-        }
-}; //isGoodHistogramFile
+  /**
+   * Describe this matcher in a helpful, human-readable way.
+   *
+   * This string is written as if stating a fact about
+   * the object it is matching.
+   */
+  virtual std::string describe() const override {
+    std::ostringstream ss;
+    ss << "has the histogram 'TestAnalyzer/test_hist_' with the number of "
+          "entries "
+       << correctGetEntries_;
+    return ss.str();
+  }
+};  // isGoodHistogramFile
 
 /**
  * @class isGoodEventFile
@@ -214,122 +209,158 @@ class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
  * - Event File exists and is readable
  * - Has the LDMX_Events TTree
  * - Events tree has correct number of entries
- * - if existCollection: looks through collections on the event tree to make sure they have the same form as set by TestProducer
- * - if existObject: looks through objects on event tree to make sure they have the same form as set by TestProducer
+ * - if existCollection: looks through collections on the event tree to make
+ * sure they have the same form as set by TestProducer
+ * - if existObject: looks through objects on event tree to make sure they have
+ * the same form as set by TestProducer
  * - Has the LDMX_Run TTree
  * - Run tree has correct number of entries
  * - RunHeaders in RunTree have matching RunNumbers and EventCounts
  */
 class isGoodEventFile : public Catch::MatcherBase<std::string> {
-    private:
-        /// pass name to check the collection and/or object for
-        std::string pass_;
+ private:
+  /// pass name to check the collection and/or object for
+  std::string pass_;
 
-        /// correct number of entries in the event ttree
-        int entries_;
+  /// correct number of entries in the event ttree
+  int entries_;
 
-        /// correct number of runs
-        int runs_;
+  /// correct number of runs
+  int runs_;
 
-        /// collection should exist in file
-        bool existCollection_;
+  /// collection should exist in file
+  bool existCollection_;
 
-        /// object should exist in file
-        bool existObject_;
+  /// object should exist in file
+  bool existObject_;
 
-    public:
+ public:
+  /**
+   * Constructor
+   *
+   * Sets the correct number of entries and the other checking parameters
+   */
+  isGoodEventFile(const std::string& pass, const int& entries, const int& runs,
+                  bool existColl = true, bool existObj = true)
+      : pass_(pass),
+        entries_(entries),
+        runs_(runs),
+        existCollection_(existColl),
+        existObject_(existObj) {}
 
-        /**
-         * Constructor
-         *
-         * Sets the correct number of entries and the other checking parameters
-         */
-        isGoodEventFile( 
-                const std::string& pass , const int& entries , const int& runs , bool existColl = true , bool existObj = true )
-            : pass_(pass), entries_(entries), runs_(runs), existCollection_(existColl), existObject_(existObj) { }
+  /**
+   * Actually do the matching
+   *
+   * The event and run tree names are hardcoded.
+   * The branchnames are also hardcoded.
+   *
+   * @param[in] filename name of event file to check
+   */
+  bool match(const std::string& filename) const override {
+    TFile* f = TFile::Open(filename.c_str());
+    if (!f) return false;
 
-        /**
-         * Actually do the matching
-         *
-         * The event and run tree names are hardcoded.
-         * The branchnames are also hardcoded.
-         *
-         * @param[in] filename name of event file to check
-         */
-        bool match(const std::string& filename ) const override {
+    TTreeReader events("LDMX_Events", f);
 
-            TFile *f = TFile::Open( filename.c_str() );
-            if (!f) return false;
-        
-            TTreeReader events( "LDMX_Events" , f );
-        
-            if ( events.GetEntries(true) != entries_ ) { f->Close(); return false; }
+    if (events.GetEntries(true) != entries_) {
+      f->Close();
+      return false;
+    }
 
-            //Event tree should _always_ have the EventHeader
-            TTreeReaderValue<EventHeader> header( events , "EventHeader" );
-        
-            if ( existCollection_ ) {
-                //make sure collection matches pattern
-                TTreeReaderValue<std::vector<CalorimeterHit>> collection( events , ("TestCollection_"+pass_).c_str() );
-                while ( events.Next() ) {
-                    if ( collection->size() != header->getEventNumber() ) { f->Close(); return false; }
-                    for ( unsigned int i = 0; i < collection->size(); i++ )
-                        if ( collection->at(i).getID() != header->getEventNumber()*10+i ) { f->Close(); return false; }
-                }
-                //restart in case checking object as well
-                events.Restart();
-            } else {
-                //check to make sure collection is NOT there
-                auto t{(TTree*)f->Get("LDMX_Events")};
-                if (t and t->GetBranch( ("TestCollection_"+pass_).c_str() ) ) { f->Close(); return false; }
-            }
+    // Event tree should _always_ have the EventHeader
+    TTreeReaderValue<EventHeader> header(events, "EventHeader");
 
-            if ( existObject_ ) {
-                //make sure object matches pattern
-                TTreeReaderValue<HcalVetoResult> object( events , ("TestObject_"+pass_).c_str() );
-                while( events.Next() ) {
-                    if ( object->getMaxPEHit().getID() != header->getEventNumber() ) { f->Close(); return false; }
-                }
-            } else {
-                //check to make sure object is NOT there
-                auto t{(TTree*)f->Get("LDMX_Events")};
-                if (t and t->GetBranch( ("TestObject_"+pass_).c_str() ) ) { f->Close(); return false; }
-            }
-
-            TTreeReader runs( "LDMX_Run" , f );
-
-            if ( runs.GetEntries(true) != runs_ ) { f->Close(); return false; }
-
-            TTreeReaderValue<RunHeader> runHeader( runs , "RunHeader" );
-
-            while ( runs.Next() ) {
-                if ( runHeader->getRunNumber() != runHeader->getIntParameter( "Should Be Run Number" ) ) { f->Close(); return false; }
-            }
-             
+    if (existCollection_) {
+      // make sure collection matches pattern
+      TTreeReaderValue<std::vector<CalorimeterHit>> collection(
+          events, ("TestCollection_" + pass_).c_str());
+      while (events.Next()) {
+        if (collection->size() != header->getEventNumber()) {
+          f->Close();
+          return false;
+        }
+        for (unsigned int i = 0; i < collection->size(); i++)
+          if (collection->at(i).getID() != header->getEventNumber() * 10 + i) {
             f->Close();
-            
-            return true;
+            return false;
+          }
+      }
+      // restart in case checking object as well
+      events.Restart();
+    } else {
+      // check to make sure collection is NOT there
+      auto t{(TTree*)f->Get("LDMX_Events")};
+      if (t and t->GetBranch(("TestCollection_" + pass_).c_str())) {
+        f->Close();
+        return false;
+      }
+    }
+
+    if (existObject_) {
+      // make sure object matches pattern
+      TTreeReaderValue<HcalVetoResult> object(events,
+                                              ("TestObject_" + pass_).c_str());
+      while (events.Next()) {
+        if (object->getMaxPEHit().getID() != header->getEventNumber()) {
+          f->Close();
+          return false;
         }
+      }
+    } else {
+      // check to make sure object is NOT there
+      auto t{(TTree*)f->Get("LDMX_Events")};
+      if (t and t->GetBranch(("TestObject_" + pass_).c_str())) {
+        f->Close();
+        return false;
+      }
+    }
 
-        /**
-         * Human-readable statement for any match that is true.
-         */
-        virtual std::string describe() const override {
-            std::ostringstream ss;
-            ss << "can be opened and has the correct number of entries in the event tree and the run tree.";
+    TTreeReader runs("LDMX_Run", f);
 
-            ss << " TestCollection_" << pass_ << " was verified to "; 
-            if ( existCollection_ ) ss << " be the correct pattern.";
-            else                    ss << " not be in the file.";
+    if (runs.GetEntries(true) != runs_) {
+      f->Close();
+      return false;
+    }
 
-            ss << " TestObject_" << pass_ << " was verified to "; 
-            if ( existObject_ ) ss << " be the correct pattern.";
-            else                ss << " not be in the file.";
+    TTreeReaderValue<RunHeader> runHeader(runs, "RunHeader");
 
-            return ss.str();
-        }
+    while (runs.Next()) {
+      if (runHeader->getRunNumber() !=
+          runHeader->getIntParameter("Should Be Run Number")) {
+        f->Close();
+        return false;
+      }
+    }
 
-}; //isGoodEventFile
+    f->Close();
+
+    return true;
+  }
+
+  /**
+   * Human-readable statement for any match that is true.
+   */
+  virtual std::string describe() const override {
+    std::ostringstream ss;
+    ss << "can be opened and has the correct number of entries in the event "
+          "tree and the run tree.";
+
+    ss << " TestCollection_" << pass_ << " was verified to ";
+    if (existCollection_)
+      ss << " be the correct pattern.";
+    else
+      ss << " not be in the file.";
+
+    ss << " TestObject_" << pass_ << " was verified to ";
+    if (existObject_)
+      ss << " be the correct pattern.";
+    else
+      ss << " not be in the file.";
+
+    return ss.str();
+  }
+
+};  // isGoodEventFile
 
 /**
  * @func removeFile
@@ -340,32 +371,34 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * maybe we can make the removal optional?
  */
 static bool removeFile(const std::string& filepath) {
-    return remove( filepath.c_str() ) == 0;
+  return remove(filepath.c_str()) == 0;
 }
 
 /**
  * @func run the process for the input parameters
  */
-static bool runProcess(const std::map<std::string,std::any> &parameters) {
-    Parameters configuration;
-    configuration.setParameters(parameters);
-    ProcessHandle p;
-    try {
-        p = std::make_unique<Process>(configuration);
-    } catch (Exception& e) {
-        std::cerr << "Config Error [" << e.name() << "] : " << e.message() << std::endl;
-        std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
-        return false;
-    }
-    p->run();
-    return true;
+static bool runProcess(const std::map<std::string, std::any>& parameters) {
+  Parameters configuration;
+  configuration.setParameters(parameters);
+  ProcessHandle p;
+  try {
+    p = std::make_unique<Process>(configuration);
+  } catch (Exception& e) {
+    std::cerr << "Config Error [" << e.name() << "] : " << e.message()
+              << std::endl;
+    std::cerr << "  at " << e.module() << ":" << e.line() << " in "
+              << e.function() << std::endl;
+    return false;
+  }
+  p->run();
+  return true;
 }
 
-} //test
-} //ldmx
+}  // namespace test
+}  // namespace ldmx
 
-DECLARE_PRODUCER_NS(ldmx::test,TestProducer)
-DECLARE_ANALYZER_NS(ldmx::test,TestAnalyzer)
+DECLARE_PRODUCER_NS(ldmx::test, TestProducer)
+DECLARE_ANALYZER_NS(ldmx::test, TestAnalyzer)
 
 /**
  * Test for C++ Framework processing.
@@ -374,13 +407,15 @@ DECLARE_ANALYZER_NS(ldmx::test,TestAnalyzer)
  * Python configuration, Simulation, and other add-on functionalities
  * are tested separately.
  *
- * This test does not check complicated combinations for drop/keep rules and skimming rules. 
- * I (Tom E) avoided this because this test is already very large and complicated.
+ * This test does not check complicated combinations for drop/keep rules and
+ * skimming rules. I (Tom E) avoided this because this test is already very
+ * large and complicated.
  * TODO write a more full (and separate) test for these parts of the framework.
  *
  * Assumptions:
- *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed from core
- *  - Any object behaves like a HcalVetoResult when viewed from core 
+ *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed
+ * from core
+ *  - Any object behaves like a HcalVetoResult when viewed from core
  *
  * What does this even test?
  *  - Event::add an object and a vector of objects (changing size and content)
@@ -398,244 +433,246 @@ DECLARE_ANALYZER_NS(ldmx::test,TestAnalyzer)
  *  - drop/keep rules for event bus passengers
  *  - skimming events (only keeping events meeting a certain criteria)
  */
-TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
+TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
+  using namespace ldmx;
 
-    using namespace ldmx;
+  // these parameters aren't tested/changed, so we set them out here
+  std::map<std::string, std::any> process;
+  process["passName"] = std::string("test");
+  process["compressionSetting"] = 9;
+  process["maxTriesPerEvent"] = 1;
+  process["logFrequency"] = -1;
+  process["termLogLevel"] = 4;
+  process["fileLogLevel"] = 4;
+  process["logFileName"] = std::string();
 
-    //these parameters aren't tested/changed, so we set them out here
-    std::map< std::string , std::any > process;
-    process["passName"] = std::string("test");
-    process["compressionSetting"] = 9; 
-    process["maxTriesPerEvent"] = 1; 
-    process["logFrequency"] = -1; 
-    process["termLogLevel"] = 4; 
-    process["fileLogLevel"] = 4; 
-    process["logFileName"] = std::string(); 
+  process["histogramFile"] =
+      std::string("");                  // will be changed in some branches
+  process["maxEvents"] = -1;            // will be changed
+  process["skimDefaultIsKeep"] = true;  // will be changed in some branches
+  process["run"] = -1;                  // will be changed in some branches
 
-    process["histogramFile"] = std::string(""); //will be changed in some branches
-    process["maxEvents"] = -1;  //will be changed
-    process["skimDefaultIsKeep"] = true;  //will be changed in some branches
-    process["run"] = -1; //will be changed in some branches
+  std::map<std::string, std::any> producerParameters;
+  producerParameters["className"] = std::string("ldmx::test::TestProducer");
+  producerParameters["instanceName"] = std::string("TestProducer");
+  producerParameters["createRunHeader"] = false;
 
-    std::map< std::string , std::any > producerParameters;
-    producerParameters["className"] = std::string("ldmx::test::TestProducer");
-    producerParameters["instanceName"] = std::string("TestProducer");
-    producerParameters["createRunHeader"] = false;
+  std::map<std::string, std::any> analyzerParameters;
+  analyzerParameters["className"] = std::string("ldmx::test::TestAnalyzer");
+  analyzerParameters["instanceName"] = std::string("TestAnalyzer");
 
-    std::map< std::string , std::any > analyzerParameters;
-    analyzerParameters["className"] = std::string("ldmx::test::TestAnalyzer");
-    analyzerParameters["instanceName"] = std::string("TestAnalyzer");
+  // parameters classes to wrap parameters in
+  Parameters processConfig, producerConfig,
+      analyzerConfig;  // parameters classes to wrap parameters in
+  analyzerConfig.setParameters(analyzerParameters);
 
-    //parameters classes to wrap parameters in
-    Parameters processConfig, producerConfig, analyzerConfig; //parameters classes to wrap parameters in
-    analyzerConfig.setParameters(analyzerParameters);
+  // declare used and re-used types, not used in all branches
+  std::vector<Parameters> sequence;
+  std::vector<std::string> inputFiles, outputFiles;
 
-    //declare used and re-used types, not used in all branches
-    std::vector<Parameters> sequence;
-    std::vector<std::string> inputFiles, outputFiles;
+  SECTION("Production Mode") {
+    // no input files, only output files
 
-    SECTION( "Production Mode" ) {
-        //no input files, only output files
+    outputFiles = {"test_productionmode_events.root"};
+    process["outputFiles"] = outputFiles;
+    process["maxEvents"] = 3;
+    process["run"] = 3;
 
-        outputFiles = { "test_productionmode_events.root" };
-        process["outputFiles"] = outputFiles;
-        process["maxEvents"] = 3;
-        process["run"] = 3;
-        
-        producerParameters["createRunHeader"] = true;
+    producerParameters["createRunHeader"] = true;
+    producerConfig.setParameters(producerParameters);
+
+    sequence = {producerConfig};
+    process["sequence"] = sequence;
+
+    SECTION("only producers") {
+      SECTION("no drop/keep rules") {
+        // Process owns and deletes the processors
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 3, 1));
+      }
+
+      SECTION("drop TestCollection") {
+        std::vector<std::string> keep = {"drop .*Collection.*"};
+        process["keep"] = keep;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0),
+                   test::isGoodEventFile("test", 3, 1, false));
+      }
+
+      SECTION("skim for even indexed events") {
+        process["skimDefaultIsKeep"] = false;
+        std::vector<std::string> rules = {"TestProducer", ""};
+        process["skimRules"] = rules;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 1, 1));
+      }
+    }
+
+    SECTION("with Analyses") {
+      std::string hist_file_path =
+          "test_productionmode_withanalyses_hists.root";
+
+      process["histogramFile"] = hist_file_path;
+
+      sequence.push_back(analyzerConfig);
+      process["sequence"] = sequence;
+
+      SECTION("no drop/keep rules") {
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 3, 1));
+      }
+
+      SECTION("drop TestCollection") {
+        std::vector<std::string> keep = {"drop .*Collection.*"};
+        process["keep"] = keep;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0),
+                   test::isGoodEventFile("test", 3, 1, false));
+      }
+
+      SECTION("skim for even indexed events") {
+        process["skimDefaultIsKeep"] = false;
+        std::vector<std::string> rules = {"TestProducer", ""};
+        process["skimRules"] = rules;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 1, 1));
+      }
+
+      CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 3));
+      CHECK(test::removeFile(hist_file_path));
+    }
+
+    CHECK(test::removeFile(outputFiles.at(0)));
+  }  // Production Mode
+
+  SECTION("Need Input Files") {
+    inputFiles = {"test_needinputfiles_2_events.root",
+                  "test_needinputfiles_3_events.root",
+                  "test_needinputfiles_4_events.root"};
+
+    producerParameters["createRunHeader"] = true;
+    producerConfig.setParameters(producerParameters);
+
+    sequence = {producerConfig};
+
+    auto makeInputs = process;
+    makeInputs["passName"] = std::string("makeInputs");
+    makeInputs["sequence"] = sequence;
+
+    outputFiles = {inputFiles.at(0)};
+    makeInputs["outputFiles"] = outputFiles;
+    makeInputs["maxEvents"] = 2;
+    makeInputs["run"] = 2;
+
+    REQUIRE(test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(0), test::isGoodEventFile("makeInputs", 2, 1));
+
+    outputFiles = {inputFiles.at(1)};
+    makeInputs["outputFiles"] = outputFiles;
+    makeInputs["maxEvents"] = 3;
+    makeInputs["run"] = 3;
+
+    REQUIRE(test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(1), test::isGoodEventFile("makeInputs", 3, 1));
+
+    outputFiles = {inputFiles.at(2)};
+    makeInputs["outputFiles"] = outputFiles;
+    makeInputs["maxEvents"] = 4;
+    makeInputs["run"] = 4;
+
+    REQUIRE(test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(2), test::isGoodEventFile("makeInputs", 4, 1));
+
+    SECTION("Analysis Mode") {
+      // no output files, only histogram output
+
+      sequence = {analyzerConfig};
+      process["sequence"] = sequence;
+
+      std::string hist_file_path = "test_analysismode_hists.root";
+      process["histogramFile"] = hist_file_path;
+
+      SECTION("one input file") {
+        std::vector<std::string> inputFile = {inputFiles.at(0)};
+        process["inputFiles"] = inputFile;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2));
+        CHECK(test::removeFile(hist_file_path));
+      }
+
+      SECTION("multiple input files") {
+        process["inputFiles"] = inputFiles;
+        REQUIRE(test::runProcess(process));
+        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
+                                                             1 + 2 + 3 + 4));
+        CHECK(test::removeFile(hist_file_path));
+      }
+
+    }  // Analysis Mode
+
+    SECTION("Merge Mode") {
+      // many input files to one output file
+
+      process["inputFiles"] = inputFiles;
+
+      std::string event_file_path = "test_mergemode_events.root";
+      outputFiles = {event_file_path};
+      process["outputFiles"] = outputFiles;
+
+      SECTION("with analyzers") {
+        sequence = {analyzerConfig};
+
+        std::string hist_file_path = "test_mergemode_withanalyzers_hists.root";
+
+        process["sequence"] = sequence;
+        process["histogramFile"] = hist_file_path;
+
+        SECTION("no drop/keep rules") {
+          REQUIRE(test::runProcess(process));
+          CHECK_THAT(event_file_path,
+                     test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3));
+        }
+
+        SECTION("drop TestCollection") {
+          std::vector<std::string> keep = {"drop .*Collection.*"};
+          process["keep"] = keep;
+          REQUIRE(test::runProcess(process));
+          CHECK_THAT(event_file_path,
+                     test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3, false));
+        }
+
+        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
+                                                             1 + 2 + 3 + 4));
+        CHECK(test::removeFile(hist_file_path));
+      }
+
+      SECTION("with producers") {
+        producerParameters["createRunHeader"] = false;
         producerConfig.setParameters(producerParameters);
+        sequence = {producerConfig};
 
-        sequence = { producerConfig };
         process["sequence"] = sequence;
 
-        SECTION( "only producers" ) {
-            
-            SECTION( "no drop/keep rules" ) {
-                //Process owns and deletes the processors
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 ) );
-            }
-            
-            SECTION( "drop TestCollection" ) {
-                std::vector<std::string> keep = { "drop .*Collection.*" };
-                process[ "keep" ] = keep;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 , false ) );
-            }
-
-            SECTION( "skim for even indexed events" ) {
-                process["skimDefaultIsKeep"] = false;
-                std::vector<std::string> rules = { "TestProducer" , "" };
-                process["skimRules"] = rules;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 1 , 1 ) );
-            }
-
-        }
-        
-        SECTION( "with Analyses" ) {
-            std::string hist_file_path = "test_productionmode_withanalyses_hists.root";
-
-            process["histogramFile"] = hist_file_path;
-
-            sequence.push_back( analyzerConfig );
-            process["sequence"] = sequence;
-
-            SECTION( "no drop/keep rules" ) {
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 ) );
-            }
-
-            SECTION( "drop TestCollection" ) {
-                std::vector<std::string> keep = { "drop .*Collection.*" };
-                process[ "keep" ] = keep;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 , false ) );
-            }
-
-            SECTION( "skim for even indexed events" ) {
-                process["skimDefaultIsKeep"] = false;
-                std::vector<std::string> rules = { "TestProducer" , "" };
-                process["skimRules"] = rules;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 1 , 1 ) );
-            }
-
-            CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+3 ) );
-            CHECK( test::removeFile( hist_file_path ) );
+        SECTION("not listening to storage hints") {
+          REQUIRE(test::runProcess(process));
+          CHECK_THAT(event_file_path,
+                     test::isGoodEventFile("test", 2 + 3 + 4, 3));
         }
 
-        CHECK( test::removeFile( outputFiles.at(0) ) );
-    }//Production Mode
+        SECTION("skim for even indexed events") {
+          process["skimDefaultIsKeep"] = false;
+          std::vector<std::string> rules = {"TestProducer", ""};
+          process["skimRules"] = rules;
+          REQUIRE(test::runProcess(process));
+          CHECK_THAT(event_file_path,
+                     test::isGoodEventFile("test", 1 + 1 + 2, 3));
+        }
+      }
 
-    SECTION( "Need Input Files" ) {
+      CHECK(test::removeFile(event_file_path));
 
-        inputFiles = { 
-            "test_needinputfiles_2_events.root" 
-            ,"test_needinputfiles_3_events.root" 
-            ,"test_needinputfiles_4_events.root" 
-        };
+    }  // Merge Mode
 
-        producerParameters["createRunHeader"] = true;
-        producerConfig.setParameters(producerParameters);
+  }  // need input files
 
-        sequence = { producerConfig };
-
-        auto makeInputs = process;
-        makeInputs["passName"] = std::string("makeInputs");
-        makeInputs["sequence"] = sequence;
-
-        outputFiles = { inputFiles.at(0) };
-        makeInputs["outputFiles"] = outputFiles;
-        makeInputs["maxEvents"] = 2;
-        makeInputs["run"] = 2;
-
-        REQUIRE( test::runProcess(makeInputs) );
-        REQUIRE_THAT( inputFiles.at(0) , test::isGoodEventFile( "makeInputs" , 2 , 1) );
-    
-        outputFiles = { inputFiles.at(1) };
-        makeInputs["outputFiles"] = outputFiles;
-        makeInputs["maxEvents"] = 3;
-        makeInputs["run"] = 3;
-
-        REQUIRE( test::runProcess(makeInputs) );
-        REQUIRE_THAT( inputFiles.at(1) , test::isGoodEventFile( "makeInputs" , 3 , 1) );
-
-        outputFiles = { inputFiles.at(2) };
-        makeInputs["outputFiles"] = outputFiles;
-        makeInputs["maxEvents"] = 4;
-        makeInputs["run"] = 4;
-
-        REQUIRE( test::runProcess(makeInputs) );
-        REQUIRE_THAT( inputFiles.at(2) , test::isGoodEventFile( "makeInputs" , 4 , 1) );
-
-        SECTION( "Analysis Mode" ) {
-            //no output files, only histogram output
-
-            sequence = { analyzerConfig };
-            process["sequence"] = sequence;
-
-            std::string hist_file_path = "test_analysismode_hists.root";
-            process["histogramFile"] = hist_file_path;
-
-            SECTION( "one input file" ) {
-                std::vector<std::string> inputFile = { inputFiles.at(0) };
-                process["inputFiles"] = inputFile;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2 ) );
-                CHECK( test::removeFile( hist_file_path ) );
-            }
-            
-            SECTION( "multiple input files" ) {
-                process["inputFiles"] = inputFiles;
-                REQUIRE( test::runProcess(process) );
-                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( test::removeFile( hist_file_path ) );
-            }
-
-        }//Analysis Mode
-
-        SECTION( "Merge Mode" ) {
-            //many input files to one output file
-            
-            process["inputFiles"] = inputFiles;
-
-            std::string event_file_path = "test_mergemode_events.root";
-            outputFiles = { event_file_path };
-            process["outputFiles"] = outputFiles;
-    
-            SECTION( "with analyzers" ) {
-
-                sequence = { analyzerConfig };
-
-                std::string hist_file_path = "test_mergemode_withanalyzers_hists.root";
-
-                process["sequence"] = sequence;
-                process["histogramFile"] = hist_file_path;
-    
-                SECTION( "no drop/keep rules" ) {
-                    REQUIRE( test::runProcess(process) );
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
-                }
-
-                SECTION( "drop TestCollection" ) {
-                    std::vector<std::string> keep = { "drop .*Collection.*" };
-                    process["keep"] = keep;
-                    REQUIRE( test::runProcess(process) );
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
-                }
-
-                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( test::removeFile( hist_file_path ) );
-            }
-    
-            SECTION( "with producers" ) {
-                
-                producerParameters["createRunHeader"] = false;
-                producerConfig.setParameters(producerParameters);
-                sequence = { producerConfig };
-
-                process["sequence"] = sequence;
-
-                SECTION( "not listening to storage hints" ) {
-                    REQUIRE( test::runProcess(process) );
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 2+3+4 , 3 ) );
-                }
-
-                SECTION( "skim for even indexed events" ) {
-                    process["skimDefaultIsKeep"] = false;
-                    std::vector<std::string> rules = { "TestProducer" , "" };
-                    process["skimRules"] = rules;
-                    REQUIRE( test::runProcess(process) );
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1+1+2 , 3 ) );
-                }
-
-            }
-
-            CHECK( test::removeFile( event_file_path ) );
-
-        } //Merge Mode
-
-    } //need input files
-
-}//process test
+}  // process test
