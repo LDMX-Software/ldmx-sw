@@ -28,8 +28,7 @@ class RunHeader;
  * @brief Manages a file of events
  */
 class EventFile {
-
-public:
+ public:
   /**
    * Constructor to make a general file.
    *
@@ -188,7 +187,7 @@ public:
 
   const std::string &getFileName() { return fileName_; }
 
-private:
+ private:
   /**
    * Fill the internal map of run numbers to RunHeader objects from the input
    * file.
@@ -207,7 +206,7 @@ private:
    */
   void importRunHeaders();
 
-private:
+ private:
   /** The number of entries in the tree. */
   Long64_t entries_{-1};
 
@@ -264,6 +263,6 @@ private:
    */
   std::map<int, std::pair<bool, RunHeader *>> runMap_;
 };
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

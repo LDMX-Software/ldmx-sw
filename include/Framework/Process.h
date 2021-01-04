@@ -33,8 +33,7 @@ class Event;
  * @brief Class which represents the process under execution.
  */
 class Process {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param configuration Parameters to configure process with
@@ -125,7 +124,7 @@ public:
    */
   static Process getDummy() { return std::move(Process()); }
 
-private:
+ private:
   /**
    * Private dummy constructor
    * We hide it here because it shouldn't be used anywhere else.
@@ -133,7 +132,7 @@ private:
   Process() : conditions_{*this} { /** nothing on purpose */
   }
 
-private:
+ private:
   /** Processing pass name. */
   std::string passname_;
 
@@ -205,6 +204,6 @@ private:
  * to ldmx-app.
  */
 typedef std::unique_ptr<Process> ProcessHandle;
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

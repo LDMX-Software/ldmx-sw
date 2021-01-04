@@ -1,7 +1,7 @@
 
-#include <fstream> // ifstream, ofstream
+#include <fstream>  // ifstream, ofstream
 
-#include "catch.hpp" // Catch2 Macros, TEST_CASE, REQUIRE
+#include "catch.hpp"  // Catch2 Macros, TEST_CASE, REQUIRE
 
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
@@ -16,8 +16,7 @@ namespace test {
  * variables
  */
 class TestConfig : public ldmx::Producer {
-
-public:
+ public:
   /**
    * Constructor
    *
@@ -44,7 +43,6 @@ public:
    * - vector of strings parameter
    */
   void configure(ldmx::Parameters &parameters) final override {
-
     // Check parameters
     CHECK(parameters.getParameter<int>("test_int") == 9);
     CHECK(parameters.getParameter<double>("test_double") == Approx(7.7));
@@ -94,8 +92,8 @@ public:
  */
 static bool removeFile(const char *filepath) { return remove(filepath) == 0; }
 
-} // namespace test
-} // namespace framework
+}  // namespace test
+}  // namespace framework
 
 DECLARE_PRODUCER_NS(framework::test, TestConfig)
 
@@ -110,7 +108,6 @@ DECLARE_PRODUCER_NS(framework::test, TestConfig)
  * - TODO pass class objects to EventProcessors
  */
 TEST_CASE("Configure Python Test", "[Framework][functionality]") {
-
   const std::string config_file_name{"config_python_test_config.py"};
 
   // Arguments to pass to ConfigurePython constructor
@@ -121,7 +118,6 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   // Run a check of the python configuration class without arguments.
   SECTION("No arguments to python script") {
-
     ldmx::ConfigurePython cfg(config_file_name, args, 0);
     p = cfg.makeProcess();
 
@@ -147,7 +143,6 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // was set correctly.
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
-
     args[0] = "9000";
     ldmx::ConfigurePython cfg(config_file_name_arg, args, 1);
     p = cfg.makeProcess();

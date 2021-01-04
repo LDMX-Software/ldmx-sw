@@ -9,8 +9,10 @@
 namespace ldmx {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
-    : process_{process}, name_{name},
-      histograms_{name}, theLog_{logging::makeLogger(name)} {}
+    : process_{process},
+      name_{name},
+      histograms_{name},
+      theLog_{logging::makeLogger(name)} {}
 
 Conditions &EventProcessor::getConditions() const {
   return process_.getConditions();
@@ -24,7 +26,7 @@ TDirectory *EventProcessor::getHistoDirectory() {
   if (!histoDir_) {
     histoDir_ = process_.makeHistoDirectory(name_);
   }
-  histoDir_->cd(); // make this the current directory
+  histoDir_->cd();  // make this the current directory
   return histoDir_;
 }
 
@@ -67,4 +69,4 @@ Producer::Producer(const std::string &name, Process &process)
 
 Analyzer::Analyzer(const std::string &name, Process &process)
     : EventProcessor(name, process) {}
-} // namespace ldmx
+}  // namespace ldmx
