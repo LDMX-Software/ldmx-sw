@@ -11,9 +11,9 @@
 #include <vector>
 
 // LDMX Framework
+#include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 
@@ -21,7 +21,7 @@ namespace ldmx {
  * Class to overlay in-time pile-up events from an overlay file
  */
 class OverlayProducer : public Producer {
-public:
+ public:
   OverlayProducer(const std::string &name, Process &process)
       : Producer(name, process), overlayEvent_{"overlay"} {}
 
@@ -60,7 +60,7 @@ public:
    */
   void onProcessStart() final override;
 
-private:
+ private:
   /**
    * Pileup overlay events input file name
    */
@@ -163,6 +163,6 @@ private:
   int overlayTrackID_{-1000};
   int overlayPdgCode_{0};
 };
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif /* RECON_OVERLAY_OVERLAYPRODUCER_H */
