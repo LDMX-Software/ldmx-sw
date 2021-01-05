@@ -210,6 +210,8 @@ function ldmx() {
         singularity run \
             --no-home \
             --bind ${LDMX_BASE} \
+            --cleanenv \
+            --env LDMX_BASE=${LDMX_BASE} \
             ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
     fi
     cd - &> /dev/null #go back outside the container
