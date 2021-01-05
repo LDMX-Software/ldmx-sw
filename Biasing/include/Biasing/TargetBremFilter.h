@@ -16,7 +16,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User action that allows a user to filter out events that don't result in
@@ -69,6 +69,6 @@ class TargetBremFilter : public UserAction {
   bool killRecoil_{false};
 
 };  // TargetBremFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_TARGETBREMFILTER_H

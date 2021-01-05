@@ -17,7 +17,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(const std::string& name,
                                                        Parameters& parameters)
@@ -72,6 +72,6 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
   // again.
   trackInfo->tagPNGamma(false);
 }
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, PhotoNuclearProductsFilter)

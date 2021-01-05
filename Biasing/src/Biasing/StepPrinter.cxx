@@ -6,7 +6,7 @@
 /*~~~~~~~~~~~~*/
 #include "G4Step.hh"
 
-namespace ldmx {
+namespace biasing {
 
 StepPrinter::StepPrinter(const std::string& name, Parameters& parameters)
     : UserAction(name, parameters) {
@@ -51,6 +51,6 @@ void StepPrinter::stepping(const G4Step* step) {
             << std::endl;
 }
 
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, StepPrinter)

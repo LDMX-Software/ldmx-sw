@@ -30,7 +30,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace biasing {
 
 class DarkBremFilter : public UserAction {
  public:
@@ -96,6 +96,6 @@ class DarkBremFilter : public UserAction {
   std::string volumeName_;
 
 };  // DarkBremFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_DARKBREMFILTER_H__
