@@ -550,7 +550,7 @@ namespace ldmx {
         int hitNums_best[3];
         int hitNums[3];
         
-        std::cout << "Entering linreg tracking loop" << std::endl;        
+        //std::cout << "Entering linreg tracking loop" << std::endl;        
         for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
             //std::cout << "iHit " << iHit << std::endl;
             trackLen = 0;
@@ -630,7 +630,7 @@ namespace ldmx {
         }
         
 
-        #std::cout << "Found " << nLinregTracks_ << " linreg tracks" << std::endl;
+        //std::cout << "Found " << nLinregTracks_ << " linreg tracks" << std::endl;
 
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
