@@ -584,8 +584,21 @@ namespace ldmx {
                             hdt(hInd,lInd) = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
                         }
                     }
+
+                    // Check for singular matrix; .Determinant() doesn't work on singular matrices
+                    float det = hdt[0][0]*(hdt[1][1]*hdt[2][2] - hdt[2][1]*hdt[1][2])
+                              + hdt[1][0]*(hdt[2][1]*hdt[0][2] - hdt[0][1]*hdt[2][2])
+                              + hdt[2][0]*(hdt[0][1]*hdt[1][2] - hdt[1][1]*hdt[0][2]);
+                    if(det==0) {
+                        continue;
+                    }
+
                     TDecompSVD svdObj = TDecompSVD(hdt);
-                    svdObj.Decompose();
+                    bool decomposed = svdObj.Decompose();
+                    if(!decomposed) {
+                        std::cout << "Failed to decompose.  Matrix:" << std::endl;
+                        hdt.Print();
+                    }
                     Vm = svdObj.GetV();
                     for (int hInd = 0; hInd < 3; hInd++) {
                         slopeVec(hInd) = Vm[0][hInd]; //NOTE:  Make sure it's not [hInd][0]
