@@ -19,7 +19,7 @@
 // Forward declarations
 class G4Step;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User stepping action used to filter events that see the incident electron
@@ -57,6 +57,6 @@ class TaggerVetoFilter : public UserAction {
 
 };  // TaggerVetoFilter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_TAGGERVETOFILTER_H

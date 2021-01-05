@@ -20,7 +20,7 @@
 class G4Step;
 class G4Track;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User action plugin that filters events that don't see a hard brem from
@@ -63,6 +63,6 @@ class EcalProcessFilter : public UserAction {
   std::string process_{""};
 
 };  // EcalProcessFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_ECALPROCESSFILTER_H

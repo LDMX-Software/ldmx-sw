@@ -15,7 +15,7 @@
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 EcalProcessFilter::EcalProcessFilter(const std::string& name,
                                      Parameters& parameters)
@@ -132,6 +132,6 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     eventInfo->setWeight(track->GetWeight());
   }
 }
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, EcalProcessFilter)

@@ -14,7 +14,7 @@
 // Forward declaration
 class G4Step;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User action used to filter out photo-nuclear events that don't see
@@ -58,6 +58,6 @@ class PhotoNuclearProductsFilter : public UserAction {
 
 };  // PhotoNuclearProductsFilter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_PROTONUCLEARPRODUCTSFILTER_H

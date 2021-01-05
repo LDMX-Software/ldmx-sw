@@ -17,7 +17,7 @@
 class G4Step;
 class G4Event;
 
-namespace ldmx {
+namespace biasing {
 
 class TargetENProcessFilter : public UserAction {
  public:
@@ -60,6 +60,6 @@ class TargetENProcessFilter : public UserAction {
 
 };  // TargetENProcessFilter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_TARGETPROCESSFILTER_H

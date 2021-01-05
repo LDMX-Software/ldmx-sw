@@ -12,7 +12,7 @@
 /*~~~~~~~~~~~~*/
 #include "G4RunManager.hh"
 
-namespace ldmx {
+namespace biasing {
 
 TargetENProcessFilter::TargetENProcessFilter(const std::string& name,
                                              Parameters& parameters)
@@ -100,6 +100,6 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
 void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
   reactionOccurred_ = false;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, TargetENProcessFilter)

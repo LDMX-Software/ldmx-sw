@@ -13,7 +13,7 @@
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 TargetBremFilter::TargetBremFilter(const std::string& name,
                                    Parameters& parameters)
@@ -129,6 +129,6 @@ void TargetBremFilter::stepping(const G4Step* step) {
 }
 
 void TargetBremFilter::EndOfEventAction(const G4Event*) {}
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, TargetBremFilter)

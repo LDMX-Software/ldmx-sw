@@ -11,7 +11,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 TrackProcessFilter::TrackProcessFilter(const std::string& name,
                                        Parameters& parameters)
@@ -32,6 +32,6 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
       trackInfo->setSaveFlag(false);
   }
 }
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, TrackProcessFilter)
