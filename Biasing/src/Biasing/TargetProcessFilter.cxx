@@ -21,7 +21,7 @@
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 TargetProcessFilter::TargetProcessFilter(const std::string& name,
                                          Parameters& parameters)
@@ -122,6 +122,6 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 }
 
 void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, TargetProcessFilter)

@@ -16,7 +16,7 @@
 // Forward declarations
 class G4Step;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User stepping action used to print the details of a step.
@@ -52,6 +52,6 @@ class StepPrinter : public UserAction {
 
 };  // StepPrinter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // SIMCORE_STEPPRINTER_H

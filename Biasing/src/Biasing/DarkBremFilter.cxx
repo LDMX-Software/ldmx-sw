@@ -11,7 +11,7 @@
 
 #include "SimCore/G4APrime.h"
 
-namespace ldmx {
+namespace biasing {
 
 DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
     : UserAction(name, parameters) {
@@ -130,6 +130,6 @@ bool DarkBremFilter::hasAPrime(const G4TrackVector* secondaries) const {
   }
   return false;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, DarkBremFilter)

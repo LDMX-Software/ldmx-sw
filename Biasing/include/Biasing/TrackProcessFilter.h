@@ -19,7 +19,7 @@
 // Forward declarations
 class G4Track;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * Filter used to tag tracks for persistence based on the process they were
@@ -61,6 +61,6 @@ class TrackProcessFilter : public UserAction {
 
 };  // TrackProcessFilter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_TRACKPROCESSFILTER_H

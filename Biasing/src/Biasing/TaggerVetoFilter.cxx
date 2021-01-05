@@ -7,7 +7,7 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
-namespace ldmx {
+namespace biasing {
 
 TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
                                    Parameters& parameters)
@@ -46,6 +46,6 @@ void TaggerVetoFilter::stepping(const G4Step* step) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace biasing
 
 DECLARE_ACTION(ldmx, TaggerVetoFilter)

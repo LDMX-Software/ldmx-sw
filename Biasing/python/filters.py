@@ -30,7 +30,7 @@ class TargetBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
-        super().__init__("target_brem_filter", "ldmx::TargetBremFilter")
+        super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -49,7 +49,7 @@ class EcalProcessFilter(simcfg.UserAction):
     """
 
     def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'ldmx::EcalProcessFilter')
+        super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -66,7 +66,7 @@ class TargetENFilter(simcfg.UserAction) :
     """
 
     def __init__(self,recoil_thresh = 2500.) :
-        super().__init__("target_en_process_filter","ldmx::TargetENProcessFilter")
+        super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -77,7 +77,7 @@ class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
     def __init__(self) :
-        super().__init__("target_process_filter", "ldmx::TargetProcessFilter")
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -94,7 +94,7 @@ class DarkBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,vol='target'):
-        super().__init__('%s_ap_filter'%vol,'ldmx::DarkBremFilter')
+        super().__init__('%s_ap_filter'%vol,'biasing::DarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -112,7 +112,7 @@ class TaggerVetoFilter(simcfg.UserAction):
     """
     
     def __init__(self,thresh=3800.) :
-        super().__init__('tagger_veto_filter','ldmx::TaggerVetoFilter')
+        super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -129,7 +129,7 @@ class TrackProcessFilter(simcfg.UserAction):
     """
 
     def __init__(self,process_name) :
-        super().__init__('%s_track_filter'%process_name, 'ldmx::TrackProcessFilter' )
+        super().__init__('%s_track_filter'%process_name, 'biasing::TrackProcessFilter' )
 
         from LDMX.Biasing import include
         include.library()
