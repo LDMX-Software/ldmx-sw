@@ -1,6 +1,7 @@
 #include "TrigScint/TrigScintQIEDigiProducer.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
 
 #include <iostream>
 
@@ -103,9 +104,7 @@ namespace ldmx {
 
       TrigScintID id(simHit.getID());
 
-      if (verbose_) {
-	std::cout << id << std::endl;
-      }
+      ldmx_log(debug) << "Processing sim hit " << id ;
 
       // Simulating the noise corresponding to uncertainity in
       // detecting scintillating photons.
