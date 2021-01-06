@@ -61,7 +61,20 @@ namespace ldmx {
 	(parameters.getParameter< double >("expo_k"));
       pulse_params.push_back
 	(parameters.getParameter< double >("expo_tmax"));
+
+      ldmx_log(debug) <<"expo_k ="<<	pulse_params[0];
+      ldmx_log(debug) <<"expo_tmax ="<<	pulse_params[1];
     }
+
+    // Debug mode: print parameter values.
+    ldmx_log(debug) <<"maxts_ ="<<		maxts_;
+    ldmx_log(debug) <<"toff_overall_ ="<<	toff_overall_;
+    ldmx_log(debug) <<"input_pulse_shape_ ="<<input_pulse_shape_;
+    ldmx_log(debug) <<"tdc_thr ="<<		tdc_thr;
+    ldmx_log(debug) <<"pedestal ="<<		pedestal;
+    ldmx_log(debug) <<"elec_noise ="<<	elec_noise;
+    ldmx_log(debug) <<"sipm_gain ="<<		sipm_gain;
+    ldmx_log(debug) <<"s_freq ="<<		s_freq;
   }
 
   void TrigScintQIEDigiProducer::produce(Event& event) {
@@ -84,6 +97,7 @@ namespace ldmx {
       smq->SetFreq(s_freq);
       smq->SetNTimeSamples(maxts_);
       smq->SetTDCThreshold(tdc_thr);
+
     }
 
     // To simulate multiple pulses coming at different times, SiPMS
