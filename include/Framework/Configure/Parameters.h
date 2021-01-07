@@ -18,7 +18,8 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace framework {
+namespace config {
 
 /**
  * Class encapsulating parameters for configuring a processor.
@@ -137,7 +138,7 @@ class Parameters {
   std::map<std::string, std::any> parameters_;
 
 };  // Parameters
-
-}  // namespace ldmx
+} // namespace config
+}  // namespace framework
 
 #endif  // FRAMEWORK_PARAMETERS_H

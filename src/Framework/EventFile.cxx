@@ -9,7 +9,7 @@
 #include "Framework/RunHeader.h"
 #include "Recon/Event/EventConstants.h"
 
-namespace ldmx {
+namespace framework {
 
 EventFile::EventFile(const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput,
@@ -57,11 +57,11 @@ EventFile::EventFile(const std::string &filename, EventFile *parent,
                                        "' is not readable or does not exist.");
     }
 
-    tree_ = (TTree *)(file_->Get(EventConstants::EVENT_TREE_NAME.c_str()));
+    tree_ = (TTree *)(file_->Get(recon::event::EventConstants::EVENT_TREE_NAME.c_str()));
     if (!tree_) {
       EXCEPTION_RAISE("FileError",
                       "File '" + fileName_ + "' does not have a TTree named '" +
-                          EventConstants::EVENT_TREE_NAME + "' in it.");
+                          recon::event::EventConstants::EVENT_TREE_NAME + "' in it.");
     }
     entries_ = tree_->GetEntriesFast();
   }
@@ -286,7 +286,7 @@ void EventFile::close() {
 
     // create the branch on this tree
     RunHeader *theHandle = nullptr;
-    runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &theHandle,
+    runTree->Branch("RunHeader", recon::event::EventConstants::RUN_HEADER.c_str(), &theHandle,
                     32000, 3);
 
     // copy over the run headers into the tree
@@ -349,4 +349,4 @@ void EventFile::importRunHeaders() {
 
   return;
 }
-}  // namespace ldmx
+}  // namespace framework

@@ -4,11 +4,11 @@
 #include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 
-namespace ldmx {
+namespace framework {
 
 ConditionsObjectProvider::ConditionsObjectProvider(const std::string& objname,
                                                    const std::string& tagname,
-                                                   const Parameters& params,
+                                                   const framework::config::Parameters& params,
                                                    Process& process)
     : process_{process},
       objectName_{objname},
@@ -17,7 +17,7 @@ ConditionsObjectProvider::ConditionsObjectProvider(const std::string& objname,
 
 std::pair<const ConditionsObject*, ConditionsIOV>
 ConditionsObjectProvider::requestParentCondition(const std::string& name,
-                                                 const EventHeader& context) {
+                                                 const ldmx::EventHeader& context) {
   const ConditionsObject* obj = process_.getConditions().getConditionPtr(name);
   ConditionsIOV iov = process_.getConditions().getConditionIOV(name);
   return std::make_pair(obj, iov);
@@ -29,4 +29,4 @@ void ConditionsObjectProvider::declare(const std::string& classname,
       classname, CLASSTYPE, maker);
 }
 
-}  // namespace ldmx
+}  // namespace framework

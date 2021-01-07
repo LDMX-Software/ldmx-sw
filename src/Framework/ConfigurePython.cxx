@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace ldmx {
+namespace framework {
 
 /**
  * Turn the input python string object into a C++ string.
@@ -128,7 +128,7 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
           // If the objects stored in the list doesn't
           // satisfy any of the above conditions, just
           // create a vector of parameters objects
-          std::vector<Parameters> vals;
+          std::vector<framework::config::Parameters> vals;
           for (auto j{0}; j < PyList_Size(value); ++j) {
             auto elem{PyList_GetItem(value, j)};
 
@@ -145,7 +145,7 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
       //(same logic as last option for a list)
 
       // RECURSION zoinks!
-      Parameters val;
+      framework::config::Parameters val;
       val.setParameters(getMembers(value));
 
       params[skey] = val;
@@ -259,4 +259,4 @@ ProcessHandle ConfigurePython::makeProcess() {
   return std::make_unique<Process>(configuration_);
 }
 
-}  // namespace ldmx
+}  // namespace framework

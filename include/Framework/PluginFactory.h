@@ -17,7 +17,7 @@
 #include <set>
 #include <vector>
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class PluginFactory
@@ -83,7 +83,7 @@ class PluginFactory {
    */
   ConditionsObjectProvider* createConditionsObjectProvider(
       const std::string& classname, const std::string& objName,
-      const std::string& tagname, const Parameters& params, Process& process);
+      const std::string& tagname, const framework::config::Parameters& params, Process& process);
 
   /**
    * Load a library.
@@ -118,6 +118,6 @@ class PluginFactory {
   static PluginFactory theFactory_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif

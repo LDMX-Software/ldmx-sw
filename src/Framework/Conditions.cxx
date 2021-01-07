@@ -3,14 +3,14 @@
 #include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 
-namespace ldmx {
+namespace framework {
 
 Conditions::Conditions(Process& p) : process_{p} {}
 
 void Conditions::createConditionsObjectProvider(const std::string& classname,
                                                 const std::string& objname,
                                                 const std::string& tagname,
-                                                const Parameters& params) {
+                                                const framework::config::Parameters& params) {
   ConditionsObjectProvider* cop =
       PluginFactory::getInstance().createConditionsObjectProvider(
           classname, objname, tagname, params, process_);
@@ -54,7 +54,7 @@ ConditionsIOV Conditions::getConditionIOV(
 
 const ConditionsObject* Conditions::getConditionPtr(
     const std::string& condition_name) {
-  const EventHeader& context = *(process_.getEventHeader());
+  const ldmx::EventHeader& context = *(process_.getEventHeader());
   auto cacheptr = cache_.find(condition_name);
 
   if (cacheptr == cache_.end()) {
@@ -111,4 +111,4 @@ const ConditionsObject* Conditions::getConditionPtr(
   }
 }
 
-}  // namespace ldmx
+}  // namespace framework

@@ -7,7 +7,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Process.h"
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class ConfigurePython
@@ -68,10 +68,10 @@ class ConfigurePython {
    * a key called 'sequence' that has a value of a vector
    * of Parmaeters, each one corresponding to a processor.
    */
-  Parameters configuration_;
+  framework::config::Parameters configuration_;
 
 };  // ConfigurePython
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif  // FRAMEWORK_CONFIGURE_PYTHON_H

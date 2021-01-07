@@ -13,7 +13,7 @@
 #include "Framework/ConditionsObject.h"
 #include "Framework/ConditionsObjectProvider.h"
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class RandomNumberSeedService
@@ -49,7 +49,7 @@ class RandomNumberSeedService : public ConditionsObject,
    * @param[in] process reference to the running process object
    */
   RandomNumberSeedService(const std::string& name, const std::string& tagname,
-                          const Parameters& parameters, Process& process);
+                          const framework::config::Parameters& parameters, Process& process);
 
   /**
    * Configure the seed service when a new run starts
@@ -102,7 +102,7 @@ class RandomNumberSeedService : public ConditionsObject,
    * @returns reference to ourselves and unlimited interval of validity
    */
   virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const EventHeader& context);
+      const ldmx::EventHeader& context);
 
   /**
    * This object is both the provider of the seed service and the conditions
@@ -148,6 +148,6 @@ class RandomNumberSeedService : public ConditionsObject,
   mutable std::map<std::string, uint64_t> seeds_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif  // FRAMEWORK_RANDOMNUMBERSEEDSERVICE_H_

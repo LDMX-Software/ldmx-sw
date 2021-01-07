@@ -16,9 +16,9 @@
 #include "TFile.h"
 #include "TROOT.h"
 
-namespace ldmx {
+namespace framework {
 
-Process::Process(const Parameters &configuration) : conditions_{*this} {
+Process::Process(const framework::config::Parameters &configuration) : conditions_{*this} {
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
   logFileName_ = configuration.getParameter<std::string>("logFileName", "");
@@ -58,7 +58,7 @@ Process::Process(const Parameters &configuration) : conditions_{*this} {
   }
 
   auto sequence{
-      configuration.getParameter<std::vector<Parameters>>("sequence", {})};
+      configuration.getParameter<std::vector<framework::config::Parameters>>("sequence", {})};
   if (sequence.empty() &&
       configuration.getParameter<bool>("testingMode", false)) {
     EXCEPTION_RAISE(
@@ -79,7 +79,7 @@ Process::Process(const Parameters &configuration) : conditions_{*this} {
               "'. Did you load the library that this class is apart of?");
     }
     auto histograms{
-        proc.getParameter<std::vector<Parameters>>("histograms", {})};
+        proc.getParameter<std::vector<framework::config::Parameters>>("histograms", {})};
     if (!histograms.empty()) {
       ep->getHistoDirectory();
       ep->createHistograms(histograms);
@@ -89,7 +89,7 @@ Process::Process(const Parameters &configuration) : conditions_{*this} {
   }
 
   auto conditionsObjectProviders{
-      configuration.getParameter<std::vector<Parameters>>(
+      configuration.getParameter<std::vector<framework::config::Parameters>>(
           "conditionsObjectProviders", {})};
   for (auto cop : conditionsObjectProviders) {
     auto className{cop.getParameter<std::string>("className")};
@@ -168,7 +168,7 @@ void Process::run() {
 
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
-      EventHeader &eh = theEvent.getEventHeader();
+      ldmx::EventHeader &eh = theEvent.getEventHeader();
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
@@ -314,7 +314,7 @@ void Process::run() {
             // read from
             conditions_.onNewRun(runHeader);
             for (auto module : sequence_) module->onNewRun(runHeader);
-          } catch (const Exception &) {
+          } catch (const framework::exception::Exception &) {
             ldmx_log(warn) << "Run header for run " << wasRun
                            << " was not found!";
           }
@@ -430,4 +430,4 @@ TDirectory *Process::openHistoFile() {
 
   return owner;
 }
-}  // namespace ldmx
+}  // namespace framework

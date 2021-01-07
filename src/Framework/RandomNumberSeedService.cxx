@@ -4,7 +4,7 @@
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
 
-namespace ldmx {
+namespace framework {
 
 const std::string RandomNumberSeedService::CONDITIONS_OBJECT_NAME =
     "RandomNumberSeedService";
@@ -26,7 +26,7 @@ void RandomNumberSeedService::stream(std::ostream& s) const {
 
 RandomNumberSeedService::RandomNumberSeedService(const std::string& name,
                                                  const std::string& tagname,
-                                                 const Parameters& parameters,
+                                                 const framework::config::Parameters& parameters,
                                                  Process& process)
     : ConditionsObject(CONDITIONS_OBJECT_NAME),
       ConditionsObjectProvider(CONDITIONS_OBJECT_NAME, tagname, parameters,
@@ -78,7 +78,7 @@ std::vector<std::string> RandomNumberSeedService::getSeedNames() const {
 }
 
 std::pair<const ConditionsObject*, ConditionsIOV>
-RandomNumberSeedService::getCondition(const EventHeader& context) {
+RandomNumberSeedService::getCondition(const ldmx::EventHeader& context) {
   if (!initialized_) {
     if (seedMode_ == SEED_RUN) {
       masterSeed_ = context.getRun();
@@ -89,5 +89,5 @@ RandomNumberSeedService::getCondition(const EventHeader& context) {
       this, ConditionsIOV(true, true));
 }
 
-}  // namespace ldmx
-DECLARE_CONDITIONS_PROVIDER_NS(ldmx, RandomNumberSeedService)
+}  // namespace framework
+DECLARE_CONDITIONS_PROVIDER_NS(framework, RandomNumberSeedService)

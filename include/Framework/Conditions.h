@@ -26,7 +26,7 @@
 #include <any>
 #include <map>
 
-namespace ldmx {
+namespace framework {
 
 class Process;
 class ConditionsObjectProvider;
@@ -110,7 +110,7 @@ class Conditions {
   void createConditionsObjectProvider(const std::string& classname,
                                       const std::string& instancename,
                                       const std::string& tagname,
-                                      const Parameters& params);
+                                      const framework::config::Parameters& params);
 
  private:
   /** Handle to the Process. */
@@ -135,6 +135,6 @@ class Conditions {
   std::map<std::string, CacheEntry> cache_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif

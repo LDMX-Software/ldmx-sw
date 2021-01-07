@@ -15,18 +15,18 @@ namespace test {
  * @brief Defines a test Producer to test the passing of configuration
  * variables
  */
-class TestConfig : public ldmx::Producer {
+class TestConfig : public framework::Producer {
  public:
   /**
    * Constructor
    *
-   * Follows the standard form for a ldmx::Producer.
+   * Follows the standard form for a framework::Producer.
    *
    * Checks that the passed name is the same as
    * what is written to the python config script.
    */
-  TestConfig(const std::string &name, ldmx::Process &process)
-      : ldmx::Producer(name, process) {
+  TestConfig(const std::string &name, framework::Process &process)
+      : framework::Producer(name, process) {
     CHECK(name == "test_instance");
   }
 
@@ -42,14 +42,14 @@ class TestConfig : public ldmx::Producer {
    * - vector of doubles parameter
    * - vector of strings parameter
    */
-  void configure(ldmx::Parameters &parameters) final override {
+  void configure(framework::config::Parameters &parameters) final override {
     // Check parameters
     CHECK(parameters.getParameter<int>("test_int") == 9);
     CHECK(parameters.getParameter<double>("test_double") == Approx(7.7));
     CHECK(parameters.getParameter<std::string>("test_string") == "Yay!");
 
     // Check dictionary
-    auto test_dict{parameters.getParameter<ldmx::Parameters>("test_dict")};
+    auto test_dict{parameters.getParameter<framework::config::Parameters>("test_dict")};
     CHECK(test_dict.getParameter<int>("one") == 1);
     CHECK(test_dict.getParameter<double>("two") == 2.0);
 
@@ -79,7 +79,7 @@ class TestConfig : public ldmx::Producer {
   }
 
   // I don't do anything.
-  virtual void produce(ldmx::Event &) {}
+  virtual void produce(framework::Event &) {}
 };
 
 /**
@@ -114,11 +114,11 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   char *args[1];
 
   // Process handle
-  ldmx::ProcessHandle p;
+  framework::ProcessHandle p;
 
   // Run a check of the python configuration class without arguments.
   SECTION("No arguments to python script") {
-    ldmx::ConfigurePython cfg(config_file_name, args, 0);
+    framework::ConfigurePython cfg(config_file_name, args, 0);
     p = cfg.makeProcess();
 
     CHECK(p->getPassName() == "test");
@@ -144,7 +144,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
     args[0] = "9000";
-    ldmx::ConfigurePython cfg(config_file_name_arg, args, 1);
+    framework::ConfigurePython cfg(config_file_name_arg, args, 1);
     p = cfg.makeProcess();
 
     CHECK(p->getLogFrequency() == correct_log_freq);

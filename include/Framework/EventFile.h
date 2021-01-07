@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-namespace ldmx {
+namespace framework {
 
 class RunHeader;
 
@@ -263,6 +263,6 @@ class EventFile {
    */
   std::map<int, std::pair<bool, RunHeader *>> runMap_;
 };
-}  // namespace ldmx
+}  // namespace framework
 
 #endif

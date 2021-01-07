@@ -14,7 +14,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class HistogramPool
@@ -189,6 +189,6 @@ class HistogramHelper {
     return HistogramPool::getInstance().get(name_ + "_" + name);
   }
 };
-}  // namespace ldmx
+}  // namespace framework
 
 #endif  // __FRAMEWORK_HISTOGRAM_POOL_H__

@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class ConditionsObject
@@ -39,6 +39,6 @@ class ConditionsObject {
   std::string name_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif
