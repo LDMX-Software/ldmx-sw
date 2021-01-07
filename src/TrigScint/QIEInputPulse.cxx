@@ -46,23 +46,27 @@ namespace ldmx {
   float Bimoid::Integrate(float T1, float T2){
     float val=0;
     for(int id=0;id<npulses;id++){
-      if (T2<toff_[id]) return 0;
-      // Normalization constant
-      float nc = (ft-rt)*log(2)/ampl_[id];
-      float t1 = T1;
-      float t2 = T2;
-      if (T1<0) t1 = 0;
-      
-      float I1 =
-	rt*log(1+exp((t1-toff_[id])/rt)) -
-	ft*log(1+exp((t1-toff_[id])/ft));
-      float I2 =
-	rt*log(1+exp((t2-toff_[id])/rt)) -
-	ft*log(1+exp((t2-toff_[id])/ft));
-      val += (I2-I1)/nc;
+      if (ampl_[id]>0 && T2>toff_[id]){
+	val += I_Int(T2,id)-I_Int(T1,id);
+      }
     }
     return val;
   }
+
+  float Bimoid::I_Int(float T, int id){
+    if (T<=toff_[id]) return 0;
+    // Normalization constant
+    float nc = (ft-rt)*log(2)/ampl_[id];
+
+    float t=T-toff_[id];	// time relative to offset
+
+    float II =			// Integral
+      rt*log(1+exp((t-toff_[id])/rt)) -
+      ft*log(1+exp((t-toff_[id])/ft));
+
+    return II/nc;
+  }
+
 
   float Bimoid::Max(int id){
     float a = 0;

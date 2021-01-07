@@ -90,6 +90,11 @@ namespace ldmx {
     float EvalSingle(float T, int id) final;
 
     /**
+     * Indefinite integral at time T
+     */
+    float I_Int(float T, int id);
+
+    /**
      * Integrate the pulse from T1 to T2
      */
     float Integrate(float T1,float T2) final;
