@@ -1,7 +1,7 @@
 
 #include "Framework/NtupleManager.h"
 
-namespace ldmx {
+namespace framework {
 
 NtupleManager::NtupleManager() {}
 
@@ -43,4 +43,4 @@ void NtupleManager::clear() {
     variables_[element.first] = -9999;
   }
 }
-}  // namespace ldmx
+}  // namespace framework

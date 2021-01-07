@@ -13,15 +13,17 @@
 #include <iostream>
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace framework {
 class ConditionsIOV;
 }
 
-std::ostream& operator<<(std::ostream&, const ldmx::ConditionsIOV& iov);
+std::ostream& operator<<(std::ostream&, const framework::ConditionsIOV& iov);
 
 namespace ldmx {
-
 class EventHeader;
+}
+namespace framework {
+
 
 /**
  * @class ConditionsIOV
@@ -60,7 +62,7 @@ class ConditionsIOV {
 
   /** Checks to see if this condition is valid for the given event using
    * information from the header */
-  bool validForEvent(const EventHeader& eh) const;
+  bool validForEvent(const ldmx::EventHeader& eh) const;
 
   /** Checks to see if this IOV overlaps with the given IOV */
   bool overlaps(const ConditionsIOV& iov) const;
@@ -93,6 +95,6 @@ class ConditionsIOV {
   /** Is this Condition valid for simulation? */
   bool validForMC_;
 };
-}  // namespace ldmx
+}  // namespace framework
 
 #endif  // FRAMEWORK_CONDITIONSIOV_H_

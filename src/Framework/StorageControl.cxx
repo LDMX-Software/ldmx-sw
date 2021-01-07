@@ -3,12 +3,12 @@
 #include <sys/types.h>
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace framework {
 
 void StorageControl::resetEventState() { hints_.clear(); }
 
 void StorageControl::addHint(const std::string& processor_name,
-                             ldmx::StorageControlHint hint,
+                             framework::StorageControlHint hint,
                              const std::string& purposeString) {
   hints_.push_back(Hint());
   hints_.back().evpName_ = processor_name;
@@ -80,4 +80,4 @@ bool StorageControl::keepEvent() const {
   // at the end, go with the default
   return defaultIsKeep_;
 }
-}  // namespace ldmx
+}  // namespace framework

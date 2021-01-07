@@ -15,10 +15,10 @@
 #include "Framework/Process.h"
 
 /**
- * @namespace ldmx
+ * @namespace framework
  * @brief All classes in the ldmx-sw project use this namespace.
  */
-using namespace ldmx;
+//using namespace framework;
 
 // This code allows ldmx-app to exit gracefully when Ctrl-c is used. It is
 // currently causing segfaults when certain processors are used.  The code
@@ -73,11 +73,11 @@ int main(int argc, char* argv[]) {
 
   std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
 
-  ProcessHandle p;
+  framework::ProcessHandle p;
   try {
-    ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy - 1);
+    framework::ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy - 1);
     p = cfg.makeProcess();
-  } catch (Exception& e) {
+  } catch (framework::exception::Exception& e) {
     std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
               << std::endl;
     std::cerr << "  at " << e.module() << ":" << e.line() << " in "
@@ -110,19 +110,19 @@ int main(int argc, char* argv[]) {
 
   try {
     p->run();
-  } catch (Exception& e) {
+  } catch (framework::exception::Exception& e) {
     // Process::run opens up the logging using the parameters passed to it from
     // python
     //  if an Exception is thrown, we haven't gotten to the end of Process::run
     //  where logging is closed, so we can do one more error message and then
     //  close it.
-    auto theLog_{logging::makeLogger(
+    auto theLog_{framework::logging::makeLogger(
         "fire")};  // ldmx_log macro needs this variable to be named 'theLog_'
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "
                     << e.function() << "\nStack trace: " << std::endl
                     << e.stackTrace();
-    logging::close();
+    framework::logging::close();
     return 127;  // return non-zero error-status
   }
 

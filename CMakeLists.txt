@@ -51,13 +51,13 @@ install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h
 # Register both the event and run headers with the event bus and ROOT dictionary
 register_event_object(module_path "Framework" namespace "ldmx" 
                       class "EventHeader")
-register_event_object(module_path "Framework" namespace "ldmx" class "RunHeader"
+register_event_object(module_path "Framework" namespace "framework" class "RunHeader"
                       type "dict_only")
 
 build_event_bus(path ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h)
 
 # Build the ROOT dictionary from registered event objects
-build_dict(name "Event" namespace ldmx
+build_dict(name "Event"
            template ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h.in)
 
 # Unfortunately, the headers need to be included globably for the dictionary to

@@ -13,7 +13,7 @@
 // STL
 #include <string>
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class ProductTag
@@ -68,11 +68,11 @@ class ProductTag {
   std::string typename_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 /**
- * Print/stream method for ldmx::ProductTag
+ * Print/stream method for framework::ProductTag
  */
-std::ostream& operator<<(std::ostream&, const ldmx::ProductTag&);
+std::ostream& operator<<(std::ostream&, const framework::ProductTag&);
 
 #endif

@@ -2,10 +2,10 @@
 #include <dlfcn.h>
 #include "Framework/EventProcessor.h"
 
-ldmx::PluginFactory ldmx::PluginFactory::theFactory_
+framework::PluginFactory framework::PluginFactory::theFactory_
     __attribute((init_priority(500)));
 
-namespace ldmx {
+namespace framework {
 
 PluginFactory::PluginFactory() {}
 
@@ -73,7 +73,7 @@ EventProcessor* PluginFactory::createEventProcessor(
 
 ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(
     const std::string& classname, const std::string& objName,
-    const std::string& tagname, const Parameters& params, Process& process) {
+    const std::string& tagname, const framework::config::Parameters& params, Process& process) {
   auto ptr = moduleInfo_.find(classname);
   if (ptr == moduleInfo_.end() || ptr->second.cop_maker == 0) {
     return 0;
@@ -95,4 +95,4 @@ void PluginFactory::loadLibrary(const std::string& libname) {
   librariesLoaded_.insert(libname);
 }
 
-}  // namespace ldmx
+}  // namespace framework

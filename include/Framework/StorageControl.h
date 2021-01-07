@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace ldmx {
+namespace framework {
 
 typedef enum enum_StorageControlHint {
   hint_Undefined = 0,
@@ -49,7 +49,7 @@ class StorageControl {
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
-  void addHint(const std::string& processor_name, ldmx::StorageControlHint hint,
+  void addHint(const std::string& processor_name, framework::StorageControlHint hint,
                const std::string& purposeString);
 
   /**
@@ -129,6 +129,6 @@ class StorageControl {
    */
   std::vector<Rule> rules_;
 };
-}  // namespace ldmx
+}  // namespace framework
 
 #endif

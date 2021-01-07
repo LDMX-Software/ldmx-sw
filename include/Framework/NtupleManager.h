@@ -24,7 +24,7 @@
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 
-namespace ldmx {
+namespace framework {
 
 /**
  * @class NtupleManager
@@ -141,6 +141,6 @@ class NtupleManager {
 
 };  // NtupleManager
 
-}  // namespace ldmx
+}  // namespace framework
 
 #endif  // _NTUPLE_MANAGER_H_

@@ -6,7 +6,7 @@
 #include "Framework/RunHeader.h"
 #include "TDirectory.h"
 
-namespace ldmx {
+namespace framework {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
     : process_{process},
@@ -18,7 +18,7 @@ Conditions &EventProcessor::getConditions() const {
   return process_.getConditions();
 }
 
-const EventHeader &EventProcessor::getEventHeader() const {
+const ldmx::EventHeader &EventProcessor::getEventHeader() const {
   return *(process_.getEventHeader());
 }
 
@@ -30,7 +30,7 @@ TDirectory *EventProcessor::getHistoDirectory() {
   return histoDir_;
 }
 
-void EventProcessor::setStorageHint(ldmx::StorageControlHint hint,
+void EventProcessor::setStorageHint(framework::StorageControlHint hint,
                                     const std::string &purposeString) {
   process_.getStorageController().addHint(name_, hint, purposeString);
 }
@@ -47,7 +47,7 @@ void EventProcessor::declare(const std::string &classname, int classtype,
                                                       maker);
 }
 
-void EventProcessor::createHistograms(const std::vector<Parameters> &histos) {
+void EventProcessor::createHistograms(const std::vector<framework::config::Parameters> &histos) {
   for (auto const &h : histos) {
     auto name{h.getParameter<std::string>("name")};
     auto xLabel{h.getParameter<std::string>("xlabel")};
@@ -69,4 +69,4 @@ Producer::Producer(const std::string &name, Process &process)
 
 Analyzer::Analyzer(const std::string &name, Process &process)
     : EventProcessor(name, process) {}
-}  // namespace ldmx
+}  // namespace framework

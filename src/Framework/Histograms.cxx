@@ -13,7 +13,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 
-namespace ldmx {
+namespace framework {
 
 HistogramPool::HistogramPool() {
   gStyle->SetOptStat(0);
@@ -158,4 +158,4 @@ void HistogramHelper::create(const std::string& name, const std::string& xLabel,
   // Insert it into the pool of histograms for later use
   HistogramPool::getInstance().insert(fullName, hist);
 }
-}  // namespace ldmx
+}  // namespace framework

@@ -25,18 +25,20 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <map>
-
 namespace ldmx {
+class EventHeader;
+}
+
+namespace framework {
 
 class Process;
 class ConditionsObjectProvider;
-class EventHeader;
 class RunHeader;
 
 /** Typedef for PluginFactory use. */
 typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(
     const std::string& objname, const std::string& tagname,
-    const Parameters& params, Process& process);
+    const framework::config::Parameters& params, Process& process);
 
 /**
  * @class ConditionsObjectProvider
@@ -63,7 +65,7 @@ class ConditionsObjectProvider {
    */
   ConditionsObjectProvider(const std::string& objname,
                            const std::string& tagname,
-                           const Parameters& parameters, Process& process);
+                           const framework::config::Parameters& parameters, Process& process);
 
   /**
    * Class destructor.
@@ -75,7 +77,7 @@ class ConditionsObjectProvider {
    * Must be implemented by any Conditions providers.
    */
   virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const EventHeader& context) = 0;
+      const ldmx::EventHeader& context) = 0;
 
   /**
    * Called by conditions system when done with a conditions object, appropriate
@@ -125,7 +127,7 @@ class ConditionsObjectProvider {
  protected:
   /** Request another condition needed to construct this condition */
   std::pair<const ConditionsObject*, ConditionsIOV> requestParentCondition(
-      const std::string& name, const EventHeader& context);
+      const std::string& name, const ldmx::EventHeader& context);
 
   /// The logger for this ConditionsObjectProvider
   logging::logger theLog_;
@@ -144,7 +146,7 @@ class ConditionsObjectProvider {
   std::string tagname_;
 };
 
-}  // namespace ldmx
+}  // namespace framework
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER(CLASS)
@@ -158,13 +160,13 @@ class ConditionsObjectProvider {
  * file.
  */
 #define DECLARE_CONDITIONS_PROVIDER(CLASS)                                \
-  ldmx::ConditionsObjectProvider* CLASS##_ldmx_make(                      \
+  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                      \
       const std::string& name, const std::string& tagname,                \
-      const ldmx::Parameters& params, ldmx::Process& process) {           \
+      const framework::config::Parameters& params, framework::Process& process) {           \
     return new CLASS(name, tagname, params, process);                     \
   }                                                                       \
   __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() { \
-    ldmx::ConditionsObjectProvider::declare(#CLASS, &CLASS##_ldmx_make);  \
+    framework::ConditionsObjectProvider::declare(#CLASS, &CLASS##_ldmx_make);  \
   }
 
 /**
@@ -177,13 +179,13 @@ class ConditionsObjectProvider {
  * DECLARE_CONDITIONS_PROVIDER() in the associated implementation (.cxx) file.
  */
 #define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS)                           \
-  ldmx::ConditionsObjectProvider* CLASS##_ldmx_make(                        \
+  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                        \
       const std::string& name, const std::string& tagname,                  \
-      const ldmx::Parameters& params, ldmx::Process& process) {             \
+      const framework::config::Parameters& params, framework::Process& process) {             \
     return new NS::CLASS(name, tagname, params, process);                   \
   }                                                                         \
   __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {   \
-    ldmx::ConditionsObjectProvider::declare(                                \
+    framework::ConditionsObjectProvider::declare(                                \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##_ldmx_make); \
   }
 
