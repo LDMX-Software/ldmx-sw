@@ -118,7 +118,8 @@ namespace ldmx {
 
       TrigScintID id(simHit.getID());
 
-      ldmx_log(debug) << "Processing sim hit " << id ;
+      ldmx_log(info) << "Processing sim hit with bar ID: "
+		      << id.bar() ;
 
       // Simulating the noise corresponding to uncertainity in
       // detecting scintillating photons.
