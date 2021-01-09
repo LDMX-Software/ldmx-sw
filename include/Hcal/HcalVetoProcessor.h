@@ -20,12 +20,12 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace hcal {
 
-class HcalVetoProcessor : public Producer {
+class HcalVetoProcessor : public framework::Producer {
  public:
   /** Constructor */
-  HcalVetoProcessor(const std::string &name, Process &process);
+  HcalVetoProcessor(const std::string &name, framework::Process &process);
 
   /** Destructor */
   ~HcalVetoProcessor();
@@ -35,7 +35,7 @@ class HcalVetoProcessor : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Run the processor and create a collection of results which
@@ -43,7 +43,7 @@ class HcalVetoProcessor : public Producer {
    *
    * @param event The event to process.
    */
-  void produce(Event &event);
+  void produce(framework::Event &event);
 
  private:
   /** Total PE threshold. */
@@ -59,6 +59,6 @@ class HcalVetoProcessor : public Producer {
   float minPE_{1};
 
 };  // HcalVetoProcessor
-}  // namespace ldmx
+}  // namespace hcal
 
 #endif  // HCAL_HCALVETOPROCESSOR_H_

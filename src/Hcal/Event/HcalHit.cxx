@@ -3,20 +3,22 @@
 // STL
 #include <iostream>
 
-ClassImp(ldmx::HcalHit)
+ClassImp(hcal::event::HcalHit)
 
-    namespace ldmx {
-  void HcalHit::Clear() {
-    CalorimeterHit::Clear();
-    pe_ = 0;
-    minpe_ = -99;
-  }
-
-  void HcalHit::Print() const {
-    std::cout << "HcalHit { "
-              << "id: " << std::hex << getID() << std::dec
-              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-              << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
-              << "}" << std::endl;
-  }
+namespace hcal {
+namespace event {
+void HcalHit::Clear() {
+  recon::event::CalorimeterHit::Clear();
+  pe_ = 0;
+  minpe_ = -99;
 }
+
+void HcalHit::Print() const {
+  std::cout << "HcalHit { "
+            << "id: " << std::hex << getID() << std::dec
+            << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
+            << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}"
+            << std::endl;
+}
+} // namespace event
+} // namespace hcal

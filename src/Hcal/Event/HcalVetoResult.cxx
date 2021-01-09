@@ -1,10 +1,3 @@
-/**
- * @file HcalVetoResult.h
- * @brief Class used to encapsulate the results obtained from
- *        HcalVetoProcessor.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "Hcal/Event/HcalVetoResult.h"
 
 //----------------//
@@ -17,18 +10,20 @@
 //-------------//
 #include "Hcal/Event/HcalHit.h"
 
-ClassImp(ldmx::HcalVetoResult)
+ClassImp(hcal::event::HcalVetoResult)
 
-    namespace ldmx {
-  HcalVetoResult::HcalVetoResult() {}
+namespace hcal {
+namespace event {
+HcalVetoResult::HcalVetoResult() {}
 
-  HcalVetoResult::~HcalVetoResult() {}
+HcalVetoResult::~HcalVetoResult() {}
 
-  void HcalVetoResult::Clear() { passesVeto_ = false; }
+void HcalVetoResult::Clear() { passesVeto_ = false; }
 
-  void HcalVetoResult::Print() const {
-    std::cout << "[ HcalVetoResult ]: Passes veto : "
-              << " Passes veto: " << passesVeto_ << std::endl;
-    maxPEHit_.Print();
-  }
+void HcalVetoResult::Print() const {
+  std::cout << "[ HcalVetoResult ]: Passes veto : "
+            << " Passes veto: " << passesVeto_ << std::endl;
+  maxPEHit_.Print();
 }
+} // namespace event
+} // namespace hcal

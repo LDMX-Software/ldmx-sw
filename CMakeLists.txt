@@ -15,8 +15,8 @@ find_package(ROOT CONFIG REQUIRED)
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
   
-  register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalVetoResult" )
-  register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalHit" type "collection")
+  register_event_object( module_path "Hcal/Event" namespace "hcal::event" class "HcalVetoResult" )
+  register_event_object( module_path "Hcal/Event" namespace "hcal::event" class "HcalHit" type "collection")
 
   # Generate the files needed to build the event classes.
   setup_library(module Hcal

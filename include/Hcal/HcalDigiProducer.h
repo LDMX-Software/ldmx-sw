@@ -19,15 +19,15 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 
-namespace ldmx {
+namespace hcal {
 
 /**
  * @class HcalDigiProducer
  * @brief Performs digitization of simulated HCal data
  */
-class HcalDigiProducer : public Producer {
+class HcalDigiProducer : public framework::Producer {
  public:
-  HcalDigiProducer(const std::string& name, Process& process);
+  HcalDigiProducer(const std::string& name, framework::Process& process);
 
   virtual ~HcalDigiProducer() { ; }
 
@@ -36,19 +36,19 @@ class HcalDigiProducer : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
-  HcalID generateRandomID(HcalID::HcalSection sec);
-  void constructNoiseHit(std::vector<HcalHit>&, HcalID::HcalSection, double,
+  ldmx::HcalID generateRandomID(ldmx::HcalID::HcalSection sec);
+  void constructNoiseHit(std::vector<hcal::event::HcalHit>&, ldmx::HcalID::HcalSection, double,
                          double, const std::map<unsigned int, float>&,
                          std::unordered_set<unsigned int>&);
 
  private:
   bool verbose_{false};
   std::unique_ptr<TRandom3> random_{nullptr};
-  std::unique_ptr<NoiseGenerator> noiseGenerator_{nullptr};
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
 
   double meanNoise_{0};
   int nProcessed_{0};
@@ -67,6 +67,6 @@ class HcalDigiProducer : public Producer {
   int SUPER_STRIP_SIZE_{1};
 };
 
-}  // namespace ldmx
+}  // namespace hcal
 
 #endif
