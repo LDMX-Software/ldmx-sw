@@ -12,7 +12,7 @@
 //----------------//
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class EcalRecProducer
@@ -21,12 +21,12 @@ namespace ldmx {
  * Reconstruction is done from the EcalDigi samples.
  * Some hard-coded parameters are used for position and energy calculation.
  */
-class EcalTrigPrimDigiProducer : public Producer {
+class EcalTrigPrimDigiProducer : public framework::Producer {
  public:
   /**
    * Constructor
    */
-  EcalTrigPrimDigiProducer(const std::string& name, Process& process);
+  EcalTrigPrimDigiProducer(const std::string& name, framework::Process& process);
 
   /**
    * Grabs configure parameters from the python config file.
@@ -36,13 +36,13 @@ class EcalTrigPrimDigiProducer : public Producer {
    * inputDigiPassName     "" <-- blank means take any pass if only one
    * collection exists
    */
-  virtual void configure(Parameters&);
+  virtual void configure(framework::config::Parameters&);
 
   /**
    * Produce EcalHits and put them into the event bus using the
    * EcalDigis as input.
    */
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
  private:
   /** Digi Collection Name to use as input */
@@ -54,6 +54,6 @@ class EcalTrigPrimDigiProducer : public Producer {
   /** Conditions object for the calibration information */
   std::string condObjName_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif  // EVENTPROC_ECALTRIGPRIMDIGIPRODUCER_H_INC

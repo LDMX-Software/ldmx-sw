@@ -21,19 +21,19 @@
 #include <map>
 #include <memory>
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class EcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information
  */
-class EcalVetoProcessor : public Producer {
+class EcalVetoProcessor : public framework::Producer {
  public:
-  typedef std::pair<EcalID, float> CellEnergyPair;
+  typedef std::pair<ldmx::EcalID, float> CellEnergyPair;
 
   typedef std::pair<float, float> XYCoords;
 
-  EcalVetoProcessor(const std::string& name, Process& process)
+  EcalVetoProcessor(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
   virtual ~EcalVetoProcessor() {}
@@ -43,58 +43,58 @@ class EcalVetoProcessor : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(Event& event);
+  void produce(framework::Event& event);
 
  private:
   /** Wrappers for ecalHexReadout functions. See hitToPair().
    *  Necessary to easily combine cellID with moduleID to get unique ID of
    *  hit in layer. In future: combine celID+moduleID+layerID.
    */
-  bool isInShowerInnerRing(EcalID centroidID, EcalID probeID) {
+  bool isInShowerInnerRing(ldmx::EcalID centroidID, ldmx::EcalID probeID) {
     return hexReadout_->isNN(centroidID, probeID);
   }
-  bool isInShowerOuterRing(EcalID centroidID, EcalID probeID) {
+  bool isInShowerOuterRing(ldmx::EcalID centroidID, ldmx::EcalID probeID) {
     return hexReadout_->isNNN(centroidID, probeID);
   }
-  std::pair<double, double> getCellCentroidXYPair(EcalID centroidID) {
+  std::pair<double, double> getCellCentroidXYPair(ldmx::EcalID centroidID) {
     return hexReadout_->getCellCenterAbsolute(centroidID);
   }
-  std::vector<EcalID> getInnerRingCellIds(EcalID id) {
+  std::vector<ldmx::EcalID> getInnerRingCellIds(ldmx::EcalID id) {
     return hexReadout_->getNN(id);
   }
-  std::vector<EcalID> getOuterRingCellIds(EcalID id) {
+  std::vector<ldmx::EcalID> getOuterRingCellIds(ldmx::EcalID id) {
     return hexReadout_->getNNN(id);
   }
 
   void clearProcessor();
 
-  EcalID hitID(const EcalHit& hit) const { return EcalID(hit.getID()); }
+  ldmx::EcalID hitID(const ecal::event::EcalHit& hit) const { return ldmx::EcalID(hit.getID()); }
 
   /* Function to calculate the energy weighted shower centroid */
-  EcalID GetShowerCentroidIDAndRMS(const std::vector<EcalHit>& ecalRecHits,
+  ldmx::EcalID GetShowerCentroidIDAndRMS(const std::vector<ecal::event::EcalHit>& ecalRecHits,
                                    double& showerRMS);
 
   /* Function to load up empty vector of hit maps */
-  void fillHitMap(const std::vector<EcalHit>& ecalRecHits,
-                  std::map<EcalID, float>& cellMap_);
+  void fillHitMap(const std::vector<ecal::event::EcalHit>& ecalRecHits,
+                  std::map<ldmx::EcalID, float>& cellMap_);
 
   /* Function to take loaded hit maps and find isolated hits in them */
-  void fillIsolatedHitMap(const std::vector<EcalHit>& ecalRecHits,
-                          EcalID globalCentroid,
-                          std::map<EcalID, float>& cellMap_,
-                          std::map<EcalID, float>& cellMapIso_,
+  void fillIsolatedHitMap(const std::vector<ecal::event::EcalHit>& ecalRecHits,
+                          ldmx::EcalID globalCentroid,
+                          std::map<ldmx::EcalID, float>& cellMap_,
+                          std::map<ldmx::EcalID, float>& cellMapIso_,
                           bool doTight = false);
 
   std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
                                       std::vector<float> position);
 
-  void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
+  void buildBDTFeatureVector(const ecal::event::EcalVetoResult& result);
 
  private:
-  std::map<EcalID, float> cellMap_;
-  std::map<EcalID, float> cellMapTightIso_;
+  std::map<ldmx::EcalID, float> cellMap_;
+  std::map<ldmx::EcalID, float> cellMapTightIso_;
 
   std::vector<float> ecalLayerEdepRaw_;
   std::vector<float> ecalLayerEdepReadout_;
@@ -123,7 +123,7 @@ class EcalVetoProcessor : public Producer {
   bool verbose_{false};
   bool doesPassVeto_{false};
 
-  const EcalHexReadout* hexReadout_;
+  const ldmx::EcalHexReadout* hexReadout_;
 
   std::string bdtFileName_;
   std::string cellFileNamexy_;
@@ -134,9 +134,9 @@ class EcalVetoProcessor : public Producer {
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalVeto"};
 
-  std::unique_ptr<Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 };
 
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

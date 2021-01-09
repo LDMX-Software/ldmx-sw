@@ -11,13 +11,13 @@
 #include <math.h>
 #include <map>
 
-namespace ldmx {
+namespace ecal {
 
 template <class WeightClass>
 
 class TemplatedClusterFinder {
  public:
-  void add(const EcalHit* eh, const EcalHexReadout& hex) {
+  void add(const ecal::event::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
     clusters_.push_back(WorkingCluster(eh, hex));
   }
 
@@ -96,6 +96,6 @@ class TemplatedClusterFinder {
   std::map<int, double> transitionWeights_;
   std::vector<WorkingCluster> clusters_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

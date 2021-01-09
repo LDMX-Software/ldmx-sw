@@ -8,25 +8,25 @@
 #include "Ecal/EcalDigiProducer.h"
 #include "Framework/RandomNumberSeedService.h"
 
-namespace ldmx {
+namespace ecal {
 
-EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process)
+EcalDigiProducer::EcalDigiProducer(const std::string& name, framework::Process& process)
     : Producer(name, process) {
   // noise generator by default uses a Gausian model for noise
   //  i.e. It assumes the noise is distributed around a mean (setPedestal)
   //  with a certain RMS (setNoise) and then calculates
   //  how many hits should be generated for a given number of empty
   //  channels and a minimum readout value (setNoiseThreshold)
-  noiseGenerator_ = std::make_unique<NoiseGenerator>();
+  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
 }
 
 EcalDigiProducer::~EcalDigiProducer() {}
 
-void EcalDigiProducer::configure(Parameters& ps) {
+void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   // settings of readout chip
   //  used  in actual digitization
-  auto hgcrocParams = ps.getParameter<Parameters>("hgcroc");
-  hgcroc_ = std::make_unique<HgcrocEmulator>(hgcrocParams);
+  auto hgcrocParams = ps.getParameter<framework::config::Parameters>("hgcroc");
+  hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcrocParams);
   gain_ = hgcrocParams.getParameter<double>("gain");
   pedestal_ = hgcrocParams.getParameter<double>("pedestal");
   clockCycle_ = hgcrocParams.getParameter<double>("clockCycle");
@@ -58,28 +58,28 @@ void EcalDigiProducer::configure(Parameters& ps) {
       gain_ * readoutThreshold_);  // threshold for readout in mV
 }
 
-void EcalDigiProducer::produce(Event& event) {
+void EcalDigiProducer::produce(framework::Event& event) {
   // Need to handle seeding on the first event
   if (!noiseGenerator_->hasSeed()) {
-    const auto& rseed = getCondition<RandomNumberSeedService>(
-        RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     noiseGenerator_->seedGenerator(
         rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
   }
   if (noiseInjector_.get() == nullptr) {
-    const auto& rseed = getCondition<RandomNumberSeedService>(
-        RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     noiseInjector_ = std::make_unique<TRandom3>(
         rseed.getSeed("EcalDigiProducer::NoiseInjector"));
   }
   if (!hgcroc_->hasSeed()) {
-    const auto& rseed = getCondition<RandomNumberSeedService>(
-        RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
   }
 
   // Empty collection to be filled
-  HgcrocDigiCollection ecalDigis;
+  recon::event::HgcrocDigiCollection ecalDigis;
   ecalDigis.setNumSamplesPerDigi(nADCs_);
   ecalDigis.setSampleOfInterestIndex(iSOI_);
 
@@ -96,7 +96,7 @@ void EcalDigiProducer::produce(Event& event) {
   //  one SimCalorimeterHit is generated per cell, but multiple "contributions"
   //  are still handled within SimCalorimeterHit
   auto ecalSimHits{
-      event.getCollection<SimCalorimeterHit>(inputCollName_, inputPassName_)};
+      event.getCollection<simcore::event::SimCalorimeterHit>(inputCollName_, inputPassName_)};
 
   /* debug printout
   std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" <<
@@ -133,7 +133,7 @@ void EcalDigiProducer::produce(Event& event) {
      */
     // container emulator uses to write out samples and
     // transfer samples into the digi collection
-    std::vector<HgcrocDigiCollection::Sample> digiToAdd;
+    std::vector<recon::event::HgcrocDigiCollection::Sample> digiToAdd;
     if (hgcroc_->digitize(hitID, voltages, times, digiToAdd)) {
       ecalDigis.addDigi(hitID, digiToAdd);
     }
@@ -150,7 +150,7 @@ void EcalDigiProducer::produce(Event& event) {
     //  These are used in the noise generation so that we can randomly
     //  distribute the noise uniformly throughout the ECal channels.
     const auto& hexGeom =
-        getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+        getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
     int nEcalLayers = hexGeom.getNumLayers();
     int nModulesPerLayer = hexGeom.getNumModulesPerLayer();
     int nCellsPerModule = hexGeom.getNumCellsPerModule();
@@ -169,7 +169,7 @@ void EcalDigiProducer::produce(Event& event) {
         int layerID = noiseInjector_->Integer(nEcalLayers);
         int moduleID = noiseInjector_->Integer(nModulesPerLayer);
         int cellID = noiseInjector_->Integer(nCellsPerModule);
-        auto detID = EcalID(layerID, moduleID, cellID);
+        auto detID = ldmx::EcalID(layerID, moduleID, cellID);
         noiseID = detID.raw();
       } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
       filledDetIDs.insert(noiseID);
@@ -183,7 +183,7 @@ void EcalDigiProducer::produce(Event& event) {
       //  we need to convert it to the amplitdue above the pedestal
       voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
 
-      std::vector<HgcrocDigiCollection::Sample> digiToAdd;
+      std::vector<recon::event::HgcrocDigiCollection::Sample> digiToAdd;
       if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
         ecalDigis.addDigi(noiseID, digiToAdd);
       }
@@ -195,6 +195,6 @@ void EcalDigiProducer::produce(Event& event) {
   return;
 }  // produce
 
-}  // namespace ldmx
+}  // namespace ecal
 
-DECLARE_PRODUCER_NS(ldmx, EcalDigiProducer);
+DECLARE_PRODUCER_NS(ecal, EcalDigiProducer);

@@ -10,30 +10,30 @@
 #include "Ecal/Event/EcalHit.h"
 #include "TLorentzVector.h"
 
-namespace ldmx {
+namespace ecal {
 
 class WorkingCluster {
  public:
-  WorkingCluster(const EcalHit* eh, const EcalHexReadout& geom);
+  WorkingCluster(const ecal::event::EcalHit* eh, const ldmx::EcalHexReadout& geom);
 
   ~WorkingCluster(){};
 
-  void add(const EcalHit* eh, const EcalHexReadout& geom);
+  void add(const ecal::event::EcalHit* eh, const ldmx::EcalHexReadout& geom);
 
   void add(const WorkingCluster& wc);
 
   const TLorentzVector& centroid() const { return centroid_; }
 
-  std::vector<const EcalHit*> getHits() const { return hits_; }
+  std::vector<const ecal::event::EcalHit*> getHits() const { return hits_; }
 
   bool empty() const { return hits_.empty(); }
 
   void clear() { hits_.clear(); }
 
  private:
-  std::vector<const EcalHit*> hits_;
+  std::vector<const ecal::event::EcalHit*> hits_;
   TLorentzVector centroid_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

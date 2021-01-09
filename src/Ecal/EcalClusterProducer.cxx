@@ -6,15 +6,15 @@
 
 #include "Ecal/EcalClusterProducer.h"
 
-namespace ldmx {
+namespace ecal {
 
 EcalClusterProducer::EcalClusterProducer(const std::string& name,
-                                         Process& process)
+                                         framework::Process& process)
     : Producer(name, process) {}
 
 EcalClusterProducer::~EcalClusterProducer() {}
 
-void EcalClusterProducer::configure(Parameters& parameters) {
+void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   cutoff_ = parameters.getParameter<double>("cutoff");
   seedThreshold_ = parameters.getParameter<double>("seedThreshold");
   digisPassName_ = parameters.getParameter<std::string>("digisPassName");
@@ -23,15 +23,15 @@ void EcalClusterProducer::configure(Parameters& parameters) {
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 }
 
-void EcalClusterProducer::produce(Event& event) {
+void EcalClusterProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const EcalHexReadout& hexReadout =
-      getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout =
+      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   TemplatedClusterFinder<MyClusterWeight> cf;
 
-  std::vector<EcalHit> ecalHits =
-      event.getCollection<EcalHit>("ecalDigis", digisPassName_);
+  std::vector<ecal::event::EcalHit> ecalHits =
+      event.getCollection<ecal::event::EcalHit>("ecalDigis", digisPassName_);
   int nEcalDigis = ecalHits.size();
 
   // Don't do anything if there are no ECal digis!
@@ -39,7 +39,7 @@ void EcalClusterProducer::produce(Event& event) {
     return;
   }
 
-  for (EcalHit& hit : ecalHits) {
+  for (ecal::event::EcalHit& hit : ecalHits) {
     // Skip zero energy digis.
     if (hit.getEnergy() == 0) {
       continue;
@@ -53,7 +53,7 @@ void EcalClusterProducer::produce(Event& event) {
 
   std::map<int, double> cWeights = cf.getWeights();
 
-  ClusterAlgoResult algoResult;
+  ecal::event::ClusterAlgoResult algoResult;
   algoResult.set(algoName_, 3, cWeights.rbegin()->first);
   algoResult.setAlgoVar(0, cutoff_);
   algoResult.setAlgoVar(1, seedThreshold_);
@@ -64,9 +64,9 @@ void EcalClusterProducer::produce(Event& event) {
     algoResult.setWeight(it->first, it->second / 100);
   }
 
-  std::vector<EcalCluster> ecalClusters;
+  std::vector<ecal::event::EcalCluster> ecalClusters;
   for (int aWC = 0; aWC < wcVec.size(); aWC++) {
-    EcalCluster cluster;
+    ecal::event::EcalCluster cluster;
 
     cluster.setEnergy(wcVec[aWC].centroid().E());
     cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
@@ -81,6 +81,6 @@ void EcalClusterProducer::produce(Event& event) {
   event.add(clusterCollName_, ecalClusters);
   event.add(algoCollName_, algoResult);
 }
-}  // namespace ldmx
+}  // namespace ecal
 
-DECLARE_PRODUCER_NS(ldmx, EcalClusterProducer);
+DECLARE_PRODUCER_NS(ecal, EcalClusterProducer);

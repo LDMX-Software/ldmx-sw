@@ -5,13 +5,13 @@
 #include "Ecal/WorkingCluster.h"
 #include <iostream>
 
-namespace ldmx {
+namespace ecal {
 
-WorkingCluster::WorkingCluster(const EcalHit* eh, const EcalHexReadout& hex) {
+WorkingCluster::WorkingCluster(const ecal::event::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
   add(eh, hex);
 }
 
-void WorkingCluster::add(const EcalHit* eh, const EcalHexReadout& hex) {
+void WorkingCluster::add(const ecal::event::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
   double hitE = eh->getEnergy();
 
   double hitX, hitY, hitZ;
@@ -46,10 +46,10 @@ void WorkingCluster::add(const WorkingCluster& wc) {
 
   centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
 
-  std::vector<const EcalHit*> clusterHits = wc.getHits();
+  std::vector<const ecal::event::EcalHit*> clusterHits = wc.getHits();
 
   for (size_t i = 0; i < clusterHits.size(); i++) {
     hits_.push_back(clusterHits[i]);
   }
 }
-}  // namespace ldmx
+}  // namespace ecal

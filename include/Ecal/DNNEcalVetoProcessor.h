@@ -17,27 +17,27 @@
 
 #include "Tools/ONNXRuntime.h"
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class DNNEcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information w/ a deep
  * neural network
  */
-class DNNEcalVetoProcessor : public Producer {
+class DNNEcalVetoProcessor : public framework::Producer {
  public:
-  DNNEcalVetoProcessor(const std::string& name, Process& process);
+  DNNEcalVetoProcessor(const std::string& name, framework::Process& process);
   virtual ~DNNEcalVetoProcessor() {}
-  void configure(Parameters& parameters) final override;
-  void produce(Event& event);
+  void configure(framework::config::Parameters& parameters) final override;
+  void produce(framework::Event& event);
 
  private:
   /**
    * Make inputs to the DNN from ECAL RecHits.
    * @param ecalRecHits The EcalHit collection.
    */
-  void make_inputs(const EcalHexReadout& geom,
-                   const std::vector<EcalHit>& ecalRecHits);
+  void make_inputs(const ldmx::EcalHexReadout& geom,
+                   const std::vector<ecal::event::EcalHit>& ecalRecHits);
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be
@@ -61,7 +61,7 @@ class DNNEcalVetoProcessor : public Producer {
 
   float disc_cut_ = -99;
   std::vector<std::vector<float>> data_;
-  std::unique_ptr<Ort::ONNXRuntime> rt_;
+  std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"DNNEcalVeto"};
@@ -69,6 +69,6 @@ class DNNEcalVetoProcessor : public Producer {
   bool debug_ = false;
 };
 
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Ecal/WorkingCluster.h"
 
-namespace ldmx {
+namespace ecal {
 
 class MyClusterWeight {
  public:
@@ -51,6 +51,6 @@ class MyClusterWeight {
     }
   }
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

@@ -36,15 +36,15 @@
 #include <memory>
 #include <tuple>
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class EcalClusterProducer
  * @brief Simple algorithm that does clustering in the ECal
  */
-class EcalClusterProducer : public Producer {
+class EcalClusterProducer : public framework::Producer {
  public:
-  EcalClusterProducer(const std::string& name, Process& process);
+  EcalClusterProducer(const std::string& name, framework::Process& process);
 
   virtual ~EcalClusterProducer();
 
@@ -53,9 +53,9 @@ class EcalClusterProducer : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
  private:
   double seedThreshold_{0};
@@ -67,6 +67,6 @@ class EcalClusterProducer : public Producer {
   /** The name of the cluster algorithm used. */
   TString algoName_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

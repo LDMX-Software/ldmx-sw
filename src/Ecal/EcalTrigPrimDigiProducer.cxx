@@ -4,38 +4,38 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Tools/HgcrocTriggerCalculations.h"
 
-namespace ldmx {
+namespace ecal {
 EcalTrigPrimDigiProducer::EcalTrigPrimDigiProducer(const std::string& name,
-                                                   Process& process)
+                                                   framework::Process& process)
     : Producer(name, process) {}
 
-void EcalTrigPrimDigiProducer::configure(Parameters& ps) {
+void EcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
   digiPassName_ = ps.getParameter<std::string>("digiPassName");
   condObjName_ =
       ps.getParameter<std::string>("condObjName", "EcalTrigPrimDigiConditions");
 }
 
-void EcalTrigPrimDigiProducer::produce(Event& event) {
+void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   const EcalTriggerGeometry& geom = getCondition<EcalTriggerGeometry>(
       EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  const HgcrocDigiCollection& ecalDigis =
-      event.getObject<HgcrocDigiCollection>(digiCollName_, digiPassName_);
+  const recon::event::HgcrocDigiCollection& ecalDigis =
+      event.getObject<recon::event::HgcrocDigiCollection>(digiCollName_, digiPassName_);
 
   // get the calibration object
-  const IntegerTableCondition& conditions =
-      getCondition<IntegerTableCondition>(condObjName_);
+  const conditions::IntegerTableCondition& conditions =
+      getCondition<conditions::IntegerTableCondition>(condObjName_);
 
   // construct the calculator...
-  HgcrocTriggerCalculations calc(conditions);
+  ldmx::HgcrocTriggerCalculations calc(conditions);
 
   // Loop over the digis
   for (unsigned int ix = 0; ix < ecalDigis.getNumDigis(); ix++) {
-    const HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
+    const recon::event::HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
     // std::cout << EcalID(pdigi.id()) << pdigi << std::endl;
 
-    EcalTriggerID tid = geom.belongsTo(EcalID(pdigi.id()));
+    ldmx::EcalTriggerID tid = geom.belongsTo(ldmx::EcalID(pdigi.id()));
 
     if (!tid.null()) {
       int tot = 0;
@@ -48,11 +48,11 @@ void EcalTrigPrimDigiProducer::produce(Event& event) {
   calc.compressDigis(9);  // 9 is the number for Ecal...
 
   const std::map<unsigned int, uint8_t>& results = calc.compressedEnergies();
-  HgcrocTrigDigiCollection tdigis;
+  recon::event::HgcrocTrigDigiCollection tdigis;
 
   for (auto result : results) {
     if (result.second > 0) {
-      tdigis.push_back(HgcrocTrigDigi(result.first, result.second));
+      tdigis.push_back(recon::event::HgcrocTrigDigi(result.first, result.second));
       // std::cout << EcalTriggerID(result.first) << "  " << tdigis.back() <<
       // std::endl;
     }
@@ -61,5 +61,5 @@ void EcalTrigPrimDigiProducer::produce(Event& event) {
   // std::cout << ecalDigis.size() << " " << tdigis.size() << std::endl;
   event.add(getName(), tdigis);
 }
-}  // namespace ldmx
-DECLARE_PRODUCER_NS(ldmx, EcalTrigPrimDigiProducer);
+}  // namespace ecal
+DECLARE_PRODUCER_NS(ecal, EcalTrigPrimDigiProducer);

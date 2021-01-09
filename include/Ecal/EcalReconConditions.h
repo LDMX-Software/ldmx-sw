@@ -5,7 +5,7 @@
 #include "Conditions/SimpleTableCondition.h"
 #include "DetDescr/EcalID.h"
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * Class to wrap around an double table of conditions.
@@ -44,7 +44,7 @@ class EcalReconConditions {
    * @param[in] table double table of reconstruction conditions
    * @param[in] validate true if you want to check the columns
    */
-  EcalReconConditions(const DoubleTableCondition& table, bool validate = true);
+  EcalReconConditions(const conditions::DoubleTableCondition& table, bool validate = true);
 
   /**
    * get the ADC pedestal
@@ -52,7 +52,7 @@ class EcalReconConditions {
    * @param[in] id ECal ID for specific chip
    * @returns the ADC pedestal for that chip in counts
    */
-  double adcPedestal(const EcalID& id) const {
+  double adcPedestal(const ldmx::EcalID& id) const {
     return the_table_.get(id.raw(), IADC_PEDESTAL);
   }
 
@@ -66,7 +66,7 @@ class EcalReconConditions {
    * @param[in] id raw ID for specific chip
    * @returns the ADC threshold for that chip in fC/counts
    */
-  double adcGain(const EcalID& id) const {
+  double adcGain(const ldmx::EcalID& id) const {
     return the_table_.get(id.raw(), IADC_GAIN);
   }
 
@@ -76,7 +76,7 @@ class EcalReconConditions {
    * @param[in] id ECal ID for specific chip
    * @returns the TOT pedestal for that chip in counts
    */
-  double totPedestal(const EcalID& id) const {
+  double totPedestal(const ldmx::EcalID& id) const {
     return the_table_.get(id.raw(), ITOT_PEDESTAL);
   }
 
@@ -90,15 +90,15 @@ class EcalReconConditions {
    * @param[in] id ECal ID for specific chip
    * @returns the TOT gain for that chip in fC/counts
    */
-  double totGain(const EcalID& id) const {
+  double totGain(const ldmx::EcalID& id) const {
     return the_table_.get(id.raw(), ITOT_GAIN);
   }
 
  private:
   /// reference to the table of conditions storing the chip conditions
-  const DoubleTableCondition& the_table_;
+  const conditions::DoubleTableCondition& the_table_;
 };  // EcalReconConditions
 
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif  // ECAL_ECALRECONCONDITIONS_H_

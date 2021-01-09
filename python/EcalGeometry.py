@@ -2,7 +2,7 @@
 from LDMX.Framework import ldmxcfg
 
 class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
-    """Provider that provides access to Ecal geometry (EcalHexReadout)
+    """Provider that provides access to Ecal geometry (ldmx::EcalHexReadout)
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 EcalGeometryProvider.getInstance()
 
 class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
-    """Provider that provides access to Ecal geometry (EcalHexReadout)
+    """Provider that provides access to Ecal geometry (ldmx::EcalHexReadout)
 
     Parameters
     ----------

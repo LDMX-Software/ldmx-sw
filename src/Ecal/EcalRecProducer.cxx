@@ -8,14 +8,14 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Ecal/EcalReconConditions.h"
 
-namespace ldmx {
+namespace ecal {
 
-EcalRecProducer::EcalRecProducer(const std::string& name, Process& process)
+EcalRecProducer::EcalRecProducer(const std::string& name, framework::Process& process)
     : Producer(name, process) {}
 
 EcalRecProducer::~EcalRecProducer() {}
 
-void EcalRecProducer::configure(Parameters& ps) {
+void EcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
   digiPassName_ = ps.getParameter<std::string>("digiPassName");
@@ -32,18 +32,18 @@ void EcalRecProducer::configure(Parameters& ps) {
   charge_per_mip_ = ps.getParameter<double>("charge_per_mip");
 }
 
-void EcalRecProducer::produce(Event& event) {
+void EcalRecProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const EcalHexReadout& hexReadout =
-      getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout =
+      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Get the reconstruction parameters
   EcalReconConditions the_conditions(
-      getCondition<DoubleTableCondition>(EcalReconConditions::CONDITIONS_NAME));
+      getCondition<conditions::DoubleTableCondition>(EcalReconConditions::CONDITIONS_NAME));
 
-  std::vector<EcalHit> ecalRecHits;
+  std::vector<ecal::event::EcalHit> ecalRecHits;
   auto ecalDigis =
-      event.getObject<HgcrocDigiCollection>(digiCollName_, digiPassName_);
+      event.getObject<recon::event::HgcrocDigiCollection>(digiCollName_, digiPassName_);
   int numDigiHits = ecalDigis.getNumDigis();
   // loop through digis
   for (unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++) {
@@ -51,7 +51,7 @@ void EcalRecProducer::produce(Event& event) {
 
     // ID from first digi sample
     //  assuming rest of samples have same ID
-    EcalID id(digi.id());
+    ldmx::EcalID id(digi.id());
 
     // ID to real space position
     double x, y, z;
@@ -150,7 +150,7 @@ void EcalRecProducer::produce(Event& event) {
         secondOrderEnergyCorrection_;
 
     // copy over information to rec hit structure in new collection
-    EcalHit recHit;
+    ecal::event::EcalHit recHit;
     recHit.setID(id.raw());
     recHit.setXPos(x);
     recHit.setYPos(y);
@@ -165,7 +165,7 @@ void EcalRecProducer::produce(Event& event) {
   if (event.exists(simHitCollName_, simHitPassName_)) {
     // ecal sim hits exist ==> label which hits are real and which are pure
     // noise
-    auto ecalSimHits{event.getCollection<SimCalorimeterHit>(simHitCollName_,
+    auto ecalSimHits{event.getCollection<simcore::event::SimCalorimeterHit>(simHitCollName_,
                                                             simHitPassName_)};
     std::set<int> real_hits;
     for (auto const& sim_hit : ecalSimHits) real_hits.insert(sim_hit.getID());
@@ -177,6 +177,6 @@ void EcalRecProducer::produce(Event& event) {
   event.add(recHitCollName_, ecalRecHits);
 }
 
-}  // namespace ldmx
+}  // namespace ecal
 
-DECLARE_PRODUCER_NS(ldmx, EcalRecProducer);
+DECLARE_PRODUCER_NS(ecal, EcalRecProducer);

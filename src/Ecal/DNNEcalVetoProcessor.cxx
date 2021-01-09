@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-namespace ldmx {
+namespace ecal {
 
 const std::vector<std::string> DNNEcalVetoProcessor::input_names_{"coordinates",
                                                                   "features"};
@@ -13,16 +13,16 @@ const std::vector<unsigned int> DNNEcalVetoProcessor::input_sizes_{
     n_coordinate_dim_ * max_num_hits_, n_feature_dim_* max_num_hits_};
 
 DNNEcalVetoProcessor::DNNEcalVetoProcessor(const std::string& name,
-                                           Process& process)
+                                           framework::Process& process)
     : Producer(name, process) {
   for (const auto& s : input_sizes_) {
     data_.emplace_back(s, 0);
   }
 }
 
-void DNNEcalVetoProcessor::configure(Parameters& parameters) {
+void DNNEcalVetoProcessor::configure(framework::config::Parameters& parameters) {
   disc_cut_ = parameters.getParameter<double>("disc_cut");
-  rt_ = std::make_unique<Ort::ONNXRuntime>(
+  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
       parameters.getParameter<std::string>("model_path"));
 
   // debug mode
@@ -32,18 +32,18 @@ void DNNEcalVetoProcessor::configure(Parameters& parameters) {
   collectionName_ = parameters.getParameter<std::string>("collection_name");
 }
 
-void DNNEcalVetoProcessor::produce(Event& event) {
-  EcalVetoResult result;
+void DNNEcalVetoProcessor::produce(framework::Event& event) {
+  ecal::event::EcalVetoResult result;
 
   // Get the Ecal Geometry
-  const EcalHexReadout& hexReadout =
-      getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout =
+      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of digitized Ecal hits from the event.
-  const auto ecalRecHits = event.getCollection<EcalHit>("EcalRecHits");
+  const auto ecalRecHits = event.getCollection<ecal::event::EcalHit>("EcalRecHits");
   auto nhits =
       std::count_if(ecalRecHits.begin(), ecalRecHits.end(),
-                    [](const EcalHit& hit) { return hit.getEnergy() > 0; });
+                    [](const ecal::event::EcalHit& hit) { return hit.getEnergy() > 0; });
 
   if (nhits < max_num_hits_) {
     // make inputs
@@ -63,16 +63,16 @@ void DNNEcalVetoProcessor::produce(Event& event) {
 
   // If the event passes the veto, keep it. Otherwise, drop the event.
   if (result.passesVeto()) {
-    setStorageHint(hint_shouldKeep);
+    setStorageHint(framework::hint_shouldKeep);
   } else {
-    setStorageHint(hint_shouldDrop);
+    setStorageHint(framework::hint_shouldDrop);
   }
 
   event.add(collectionName_, result);
 }
 
 void DNNEcalVetoProcessor::make_inputs(
-    const EcalHexReadout& geom, const std::vector<EcalHit>& ecalRecHits) {
+    const ldmx::EcalHexReadout& geom, const std::vector<ecal::event::EcalHit>& ecalRecHits) {
   // clear data
   for (auto& v : data_) {
     std::fill(v.begin(), v.end(), 0);
@@ -88,7 +88,7 @@ void DNNEcalVetoProcessor::make_inputs(
     data_[0].at(coordinate_y_offset_ + idx) = y;
     data_[0].at(coordinate_z_offset_ + idx) = z;
 
-    EcalID id(hit.getID());
+    ldmx::EcalID id(hit.getID());
     data_[1].at(feature_x_offset_ + idx) = x;
     data_[1].at(feature_y_offset_ + idx) = y;
     data_[1].at(feature_z_offset_ + idx) = z;
@@ -111,6 +111,6 @@ void DNNEcalVetoProcessor::make_inputs(
   }  // debug
 }
 
-}  // namespace ldmx
+}  // namespace ecal
 
-DECLARE_PRODUCER_NS(ldmx, DNNEcalVetoProcessor);
+DECLARE_PRODUCER_NS(ecal, DNNEcalVetoProcessor);
