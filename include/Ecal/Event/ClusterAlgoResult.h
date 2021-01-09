@@ -16,7 +16,8 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace ecal {
+namespace event {
 
 /**
  * @class ClusterAlgoResult
@@ -151,6 +152,7 @@ class ClusterAlgoResult {
 
   ClassDef(ClusterAlgoResult, 1);
 };
-}  // namespace ldmx
+}
+}  // namespace ecal
 
 #endif

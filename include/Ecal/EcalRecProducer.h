@@ -22,7 +22,7 @@
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class EcalRecProducer
@@ -31,12 +31,12 @@ namespace ldmx {
  * Reconstruction is done from the EcalDigi samples.
  * Some hard-coded parameters are used for position and energy calculation.
  */
-class EcalRecProducer : public Producer {
+class EcalRecProducer : public framework::Producer {
  public:
   /**
    * Constructor
    */
-  EcalRecProducer(const std::string& name, Process& process);
+  EcalRecProducer(const std::string& name, framework::Process& process);
 
   /**
    * Destructor
@@ -46,7 +46,7 @@ class EcalRecProducer : public Producer {
   /**
    * Grabs configure parameters from the python config file.
    */
-  virtual void configure(Parameters&);
+  virtual void configure(framework::config::Parameters&);
 
   /**
    * Produce EcalHits and put them into the event bus using the
@@ -56,7 +56,7 @@ class EcalRecProducer : public Producer {
    * and reconstructs their energy using knowledge of how
    * the chip operates and the position using EcalHexReadout.
    */
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
  private:
   /** Digi Collection Name to use as input */
@@ -103,6 +103,6 @@ class EcalRecProducer : public Producer {
    */
   double secondOrderEnergyCorrection_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

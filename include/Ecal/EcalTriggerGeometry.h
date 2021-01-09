@@ -18,45 +18,48 @@
 #include <vector>
 
 namespace ldmx {
-
 class EcalHexReadout;
+}
+
+namespace ecal {
+
 
 /**
  * @class EcalTriggerGeometry
  * @brief defines the relationship between precision cells and trigger cells and
  * provides geometry information for trigger cells
  */
-class EcalTriggerGeometry : public ConditionsObject {
+class EcalTriggerGeometry : public framework::ConditionsObject {
  public:
   static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalTriggerGeometry"};
 
-  EcalTriggerGeometry(int symmetry, const EcalHexReadout* ecalGeom = 0);
+  EcalTriggerGeometry(int symmetry, const ldmx::EcalHexReadout* ecalGeom = 0);
 
   /**
    * Returns the set of precision (full-granularity/DAQ) cells which are
    * associated with the given trigger cell.
    */
-  std::vector<EcalID> contentsOfTriggerCell(EcalTriggerID triggerCell) const;
+  std::vector<ldmx::EcalID> contentsOfTriggerCell(ldmx::EcalTriggerID triggerCell) const;
 
   /**
    * Returns the set of precision (full-granularity/DAQ) cell which is the
    * center of the given trigger cell.
    */
-  EcalID centerInTriggerCell(EcalTriggerID triggerCell) const;
+  ldmx::EcalID centerInTriggerCell(ldmx::EcalTriggerID triggerCell) const;
 
   /**
    * Returns which trigger cell this precision cell is associated with, or a
    * null id if there is no such association.
    */
-  EcalTriggerID belongsTo(EcalID precisionCell) const;
+  ldmx::EcalTriggerID belongsTo(ldmx::EcalID precisionCell) const;
 
   /** Returns the center of the given trigger cell, depends on Ecal Geometry
-   * (EcalHexReadout) */
-  std::pair<double, double> globalPosition(EcalTriggerID triggerCell) const;
+   * (ldmx::EcalHexReadout) */
+  std::pair<double, double> globalPosition(ldmx::EcalTriggerID triggerCell) const;
 
   /** Returns the local (within module) center of the given trigger cell,
-   * depends on Ecal Geometry (EcalHexReadout) */
-  std::pair<double, double> localPosition(EcalTriggerID triggerCell) const;
+   * depends on Ecal Geometry (ldmx::EcalHexReadout) */
+  std::pair<double, double> localPosition(ldmx::EcalTriggerID triggerCell) const;
 
  private:
   /** Identifies what symmetries apply in this case, such as all layers being
@@ -65,15 +68,15 @@ class EcalTriggerGeometry : public ConditionsObject {
   */
   int symmetry_;
   /** Reference to the Ecal geometry used for trigger geometry information */
-  const EcalHexReadout* ecalGeometry_;
+  const ldmx::EcalHexReadout* ecalGeometry_;
   /** Map of precision cells to trigger cells, under symmetry assumptions
    */
-  std::map<EcalID, EcalTriggerID> precision2trigger_;
+  std::map<ldmx::EcalID, ldmx::EcalTriggerID> precision2trigger_;
   /** Map of trigger cells to precision cells, under symmetry assumptions
    */
-  std::map<EcalTriggerID, std::vector<EcalID> > trigger2precision_;
+  std::map<ldmx::EcalTriggerID, std::vector<ldmx::EcalID> > trigger2precision_;
 };
 
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif  // ECAL_ECALTRIGGERGEOMETRY_H_

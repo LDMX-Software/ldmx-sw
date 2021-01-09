@@ -39,7 +39,7 @@ int main() {
   ps["gap"] = 1.0;
   ps["nCellRHeight"] = 35.3;
   ps["verbose"] = 2;
-  ldmx::Parameters params;
+  framework::config::Parameters params;
   params.setParameters(ps);
 
   ldmx::EcalHexReadout* phexReadout = ldmx::EcalHexReadout::debugMake(params);
@@ -112,7 +112,7 @@ int main() {
   c->SaveAs("Cell_UV_Cell_Position_Map.pdf");
 
   // and now for triggers
-  ldmx::EcalTriggerGeometry trigG(0x100, &hexReadout);
+  ecal::EcalTriggerGeometry trigG(0x100, &hexReadout);
   polyMap->SetTitle(
       "Trigger Cell Summing Map; X Position Relative to Module [mm];Y Position "
       "Relative to Module [mm]");

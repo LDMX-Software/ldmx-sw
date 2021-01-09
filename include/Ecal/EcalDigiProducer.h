@@ -28,19 +28,19 @@
 #include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
 
-namespace ldmx {
+namespace ecal {
 
 /**
  * @class EcalDigiProducer
  * @brief Performs basic ECal digitization
  */
-class EcalDigiProducer : public Producer {
+class EcalDigiProducer : public framework::Producer {
  public:
   /**
    * Constructor
    * Makes unique noise generator and injector for this class
    */
-  EcalDigiProducer(const std::string& name, Process& process);
+  EcalDigiProducer(const std::string& name, framework::Process& process);
 
   /**
    * Destructor
@@ -53,12 +53,12 @@ class EcalDigiProducer : public Producer {
    * Sets event constants and configures the noise generator, noise injector,
    * and pulse function. Creates digi collection
    */
-  virtual void configure(Parameters&);
+  virtual void configure(framework::config::Parameters&);
 
   /**
    * Simulates measurement of pulse and creates digi collection for input event.
    */
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
  private:
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ class EcalDigiProducer : public Producer {
   bool noise_{true};
 
   /// Hgcroc Emulator to digitize analog voltage signals
-  std::unique_ptr<HgcrocEmulator> hgcroc_;
+  std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 
   /// Total number of channels in the ECal
   int nTotalChannels_;
@@ -111,11 +111,11 @@ class EcalDigiProducer : public Producer {
   double ns_;
 
   /// Generates noise hits based off of number of cells that are not hit
-  std::unique_ptr<NoiseGenerator> noiseGenerator_;
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
 
   /// Generates Gaussian noise on top of real hits
   std::unique_ptr<TRandom3> noiseInjector_;
 };
-}  // namespace ldmx
+}  // namespace ecal
 
 #endif

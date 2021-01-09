@@ -94,7 +94,7 @@ static const bool NTUPLIZE_ENERGIES = true;
  * cells so that we can compare them to the correct energy
  * in one event.
  */
-class EcalFakeSimHits : public ldmx::Producer {
+class EcalFakeSimHits : public framework::Producer {
   /**
    * Maximum energy to make a simulated hit for [MeV]
    *
@@ -122,17 +122,17 @@ class EcalFakeSimHits : public ldmx::Producer {
   double currEnergy_ = minEnergy_;
 
  public:
-  EcalFakeSimHits(const std::string &name, ldmx::Process &p)
-      : ldmx::Producer(name, p) {}
+  EcalFakeSimHits(const std::string &name, framework::Process &p)
+      : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) {
+  void beforeNewRun(framework::RunHeader &header) {
     header.setDetectorName("ldmx-det-v12");
   }
 
-  void produce(ldmx::Event &event) final override {
+  void produce(framework::Event &event) final override {
     // put in a single sim hit
-    std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
+    std::vector<simcore::event::SimCalorimeterHit> pretendSimHits(1);
 
     ldmx::EcalID id(0, 0, 0);
     pretendSimHits[0].setID(id.raw());
@@ -170,10 +170,10 @@ class EcalFakeSimHits : public ldmx::Producer {
  * - Only one sim hit per event
  * - Noise generation has been turned off
  */
-class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
+class EcalCheckEnergyReconstruction : public framework::Analyzer {
  public:
-  EcalCheckEnergyReconstruction(const std::string &name, ldmx::Process &p)
-      : ldmx::Analyzer(name, p) {}
+  EcalCheckEnergyReconstruction(const std::string &name, framework::Process &p)
+      : framework::Analyzer(name, p) {}
   ~EcalCheckEnergyReconstruction() {}
 
   void onProcessStart() final override {
@@ -191,9 +191,9 @@ class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
     ntuple_.addVar<int>("EcalDigiTest", "TrigPrimDigiLinear");
   }
 
-  void analyze(const ldmx::Event &event) final override {
+  void analyze(const framework::Event &event) final override {
     const auto simHits =
-        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
+        event.getCollection<simcore::event::SimCalorimeterHit>("EcalSimHits");
 
     REQUIRE(simHits.size() == 1);
 
@@ -201,7 +201,7 @@ class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
     const auto daqDigis{
-        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
+        event.getObject<recon::event::HgcrocDigiCollection>("EcalDigis")};
 
     CHECK(daqDigis.getNumDigis() == 1);
     auto daqDigi = daqDigis.getDigi(0);
@@ -211,7 +211,7 @@ class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
     ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
     ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
-    const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
+    const auto recHits = event.getCollection<ecal::event::EcalHit>("EcalRecHits");
     CHECK(recHits.size() == 1);
 
     auto hit = recHits.at(0);
@@ -231,7 +231,7 @@ class EcalCheckEnergyReconstruction : public ldmx::Analyzer {
     ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
     const auto trigDigis{
-        event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+        event.getObject<recon::event::HgcrocTrigDigiCollection>("ecalTrigDigis")};
     CHECK(trigDigis.size() == 1);
 
     auto trigDigi = trigDigis.at(0);
@@ -276,9 +276,9 @@ TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
 
   char **args;
-  ldmx::ProcessHandle p;
+  framework::ProcessHandle p;
 
-  ldmx::ConfigurePython cfg(config_file, args, 0);
+  framework::ConfigurePython cfg(config_file, args, 0);
   REQUIRE_NOTHROW(p = cfg.makeProcess());
   p->run();
 }

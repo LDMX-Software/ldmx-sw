@@ -1,18 +1,13 @@
-/**
- * @file EcalHit.h
- * @brief Class that stores reconstructed hit information from the ECAL
- * @author Jeremy Mans, University of Minnesota
- */
-
-#ifndef EVENT_ECALHIT_H_
-#define EVENT_ECALHIT_H_
+#ifndef ECAL_EVENT_ECALHIT_H_
+#define ECAL_EVENT_ECALHIT_H_
 
 //----------//
 //   LDMX   //
 //----------//
 #include "Recon/Event/CalorimeterHit.h"
 
-namespace ldmx {
+namespace ecal {
+namespace event {
 
 /**
  * @class EcalHit
@@ -22,7 +17,7 @@ namespace ldmx {
  * from the ECAL, providing particular information for the ECAL,
  * above and beyond what is available in the CalorimeterHit.
  */
-class EcalHit : public CalorimeterHit {
+class EcalHit : public recon::event::CalorimeterHit {
  public:
   /** Constructor. */
   EcalHit() {}
@@ -40,6 +35,7 @@ class EcalHit : public CalorimeterHit {
   /** The ROOT class definition. */
   ClassDef(EcalHit, 3);
 };
-}  // namespace ldmx
+}
+}  // namespace ecal
 
 #endif /* EVENT_ECALHIT_H_ */

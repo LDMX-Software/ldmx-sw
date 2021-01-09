@@ -16,7 +16,7 @@
 #include <cmath>
 #include <fstream>
 
-namespace ldmx {
+namespace ecal {
 
 // arrays holding 68% containment radius per layer for different bins in
 // momentum/angle
@@ -77,7 +77,7 @@ const std::vector<double> radius68_thetagt20 = {
     209.2764728201696};
 
 void EcalVetoProcessor::buildBDTFeatureVector(
-    const ldmx::EcalVetoResult &result) {
+    const ecal::event::EcalVetoResult &result) {
   bdtFeatures_.clear();
   bdtFeatures_.push_back(result.getNReadoutHits());
   bdtFeatures_.push_back(result.getSummedDet());
@@ -114,10 +114,10 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getEcalBackEnergy());
 }
 
-void EcalVetoProcessor::configure(Parameters &parameters) {
+void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   doBdt_ = parameters.getParameter<bool>("do_bdt");
   if (doBdt_) {
-    rt_ = std::make_unique<Ort::ONNXRuntime>(
+    rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
         parameters.getParameter<std::string>("bdt_file"));
   }
 
@@ -172,13 +172,13 @@ void EcalVetoProcessor::clearProcessor() {
   std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
 }
 
-void EcalVetoProcessor::produce(Event &event) {
+void EcalVetoProcessor::produce(framework::Event &event) {
   // Get the Ecal Geometry
-  const EcalHexReadout &hexReadout =
-      getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout &hexReadout =
+      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
   hexReadout_ = &hexReadout;
 
-  EcalVetoResult result;
+  ecal::event::EcalVetoResult result;
 
   clearProcessor();
 
@@ -196,16 +196,16 @@ void EcalVetoProcessor::produce(Event &event) {
     //
 
     // Get the collection of simulated particles from the event
-    auto particleMap{event.getMap<int, SimParticle>("SimParticles")};
+    auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
 
     // Search for the recoil electron
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find ECAL SP hit for recoil electron
-    auto ecalSpHits{event.getCollection<SimTrackerHit>("EcalScoringPlaneHits")};
+    auto ecalSpHits{event.getCollection<simcore::event::SimTrackerHit>("EcalScoringPlaneHits")};
     float pmax = 0;
-    for (SimTrackerHit &spHit : ecalSpHits) {
-      SimSpecialID hit_id(spHit.getID());
+    for (simcore::event::SimTrackerHit &spHit : ecalSpHits) {
+      ldmx::SimSpecialID hit_id(spHit.getID());
       if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
       if (spHit.getTrackID() == recoilTrackID) {
@@ -222,11 +222,11 @@ void EcalVetoProcessor::produce(Event &event) {
 
     // Find target SP hit for recoil electron
     if (event.exists("TargetScoringPlaneHits")) {
-      std::vector<SimTrackerHit> targetSpHits =
-          event.getCollection<SimTrackerHit>("TargetScoringPlaneHits");
+      std::vector<simcore::event::SimTrackerHit> targetSpHits =
+          event.getCollection<simcore::event::SimTrackerHit>("TargetScoringPlaneHits");
       pmax = 0;
-      for (SimTrackerHit &spHit : targetSpHits) {
-        SimSpecialID hit_id(spHit.getID());
+      for (simcore::event::SimTrackerHit &spHit : targetSpHits) {
+        ldmx::SimSpecialID hit_id(spHit.getID());
         if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
         if (spHit.getTrackID() == recoilTrackID) {
@@ -275,10 +275,10 @@ void EcalVetoProcessor::produce(Event &event) {
   std::vector<double> photon_radii = radius68_thetalt10_plt500;
 
   // Get the collection of digitized Ecal hits from the event.
-  const std::vector<EcalHit> ecalRecHits =
-      event.getCollection<EcalHit>("EcalRecHits", rec_pass_name_);
+  const std::vector<ecal::event::EcalHit> ecalRecHits =
+      event.getCollection<ecal::event::EcalHit>("EcalRecHits", rec_pass_name_);
 
-  EcalID globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
+  ldmx::EcalID globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
   /* ~~ Fill the hit map ~~ O(n)  */
   fillHitMap(ecalRecHits, cellMap_);
   bool doTight = true;
@@ -304,9 +304,9 @@ void EcalVetoProcessor::produce(Event &event) {
   std::vector<float> outsideContainmentXstd(nregions, 0.0);
   std::vector<float> outsideContainmentYstd(nregions, 0.0);
 
-  for (const EcalHit &hit : ecalRecHits) {
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
     // Layer-wise quantities
-    EcalID id = hitID(hit);
+    ldmx::EcalID id = hitID(hit);
     ecalLayerEdepRaw_[id.layer()] =
         ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
     if (id.layer() >= 20) ecalBackEnergy_ += hit.getEnergy();
@@ -388,8 +388,8 @@ void EcalVetoProcessor::produce(Event &event) {
   }
 
   // Loop over hits a second time to find the standard deviations.
-  for (const EcalHit &hit : ecalRecHits) {
-    EcalID id = hitID(hit);
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+    ldmx::EcalID id = hitID(hit);
     if (hit.getEnergy() > 0) {
       xStd_ +=
           pow((getCellCentroidXYPair(id).first - xMean), 2) * hit.getEnergy();
@@ -510,7 +510,7 @@ void EcalVetoProcessor::produce(Event &event) {
 
   if (doBdt_) {
     buildBDTFeatureVector(result);
-    Ort::FloatArrays inputs({bdtFeatures_});
+    ldmx::Ort::FloatArrays inputs({bdtFeatures_});
     float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
     result.setVetoResult(pred > bdtCutVal_);
     result.setDiscValue(pred);
@@ -519,31 +519,31 @@ void EcalVetoProcessor::produce(Event &event) {
     // If the event passes the veto, keep it. Otherwise,
     // drop the event.
     if (result.passesVeto() && inside) {
-      setStorageHint(hint_shouldKeep);
+      setStorageHint(framework::hint_shouldKeep);
     } else {
-      setStorageHint(hint_shouldDrop);
+      setStorageHint(framework::hint_shouldDrop);
     }
   }
 
   if (inside) {
-    setStorageHint(hint_shouldKeep);
+    setStorageHint(framework::hint_shouldKeep);
   } else {
-    setStorageHint(hint_shouldDrop);
+    setStorageHint(framework::hint_shouldDrop);
   }
   event.add(collectionName_, result);
   hexReadout_ = 0;
 }
 
 /* Function to calculate the energy weighted shower centroid */
-EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
-    const std::vector<EcalHit> &ecalRecHits, double &showerRMS) {
+ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
+    const std::vector<ecal::event::EcalHit> &ecalRecHits, double &showerRMS) {
   auto wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
   float sumEdep = 0;
-  EcalID returnCellId;
+  ldmx::EcalID returnCellId;
 
   // Calculate Energy Weighted Centroid
-  for (const EcalHit &hit : ecalRecHits) {
-    EcalID id = hitID(hit);
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+    ldmx::EcalID id = hitID(hit);
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
     XYCoords centroidCoords = getCellCentroidXYPair(id);
     wgtCentroidCoords.first = wgtCentroidCoords.first +
@@ -559,7 +559,7 @@ EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
                                  : wgtCentroidCoords.second;
   // Find Nearest Cell to Centroid
   float maxDist = 1e6;
-  for (const EcalHit &hit : ecalRecHits) {
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
     XYCoords centroidCoords = getCellCentroidXYPair(hitID(hit));
 
     float deltaR =
@@ -573,26 +573,26 @@ EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     }
   }
   if (sumEdep > 0) showerRMS = showerRMS / sumEdep;
-  return EcalID(0, returnCellId.module(), returnCellId.cell());  // flatten
+  return ldmx::EcalID(0, returnCellId.module(), returnCellId.cell());  // flatten
 }
 
 /* Function to load up empty vector of hit maps */
-void EcalVetoProcessor::fillHitMap(const std::vector<EcalHit> &ecalRecHits,
-                                   std::map<EcalID, float> &cellMap_) {
-  for (const EcalHit &hit : ecalRecHits) {
-    EcalID id = hitID(hit);
+void EcalVetoProcessor::fillHitMap(const std::vector<ecal::event::EcalHit> &ecalRecHits,
+                                   std::map<ldmx::EcalID, float> &cellMap_) {
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+    ldmx::EcalID id = hitID(hit);
     cellMap_.emplace(id, hit.getEnergy());
   }
 }
 
 void EcalVetoProcessor::fillIsolatedHitMap(
-    const std::vector<EcalHit> &ecalRecHits, EcalID globalCentroid,
-    std::map<EcalID, float> &cellMap_, std::map<EcalID, float> &cellMapIso_,
+    const std::vector<ecal::event::EcalHit> &ecalRecHits, ldmx::EcalID globalCentroid,
+    std::map<ldmx::EcalID, float> &cellMap_, std::map<ldmx::EcalID, float> &cellMapIso_,
     bool doTight) {
-  for (const EcalHit &hit : ecalRecHits) {
-    auto isolatedHit = std::make_pair(true, EcalID());
-    EcalID id = hitID(hit);
-    EcalID flatid(0, id.module(), id.cell());
+  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+    auto isolatedHit = std::make_pair(true, ldmx::EcalID());
+    ldmx::EcalID id = hitID(hit);
+    ldmx::EcalID flatid(0, id.module(), id.cell());
     if (doTight) {
       // Disregard hits that are on the centroid.
       if (flatid == globalCentroid) continue;
@@ -607,12 +607,12 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     // Get neighboring cell id's and try to look them up in the full cell map
     // (constant speed algo.)
     //  these ideas are only cell/module (must ignore layer)
-    std::vector<EcalID> cellNbrIds = getInnerRingCellIds(id);
+    std::vector<ldmx::EcalID> cellNbrIds = getInnerRingCellIds(id);
 
     for (int k = 0; k < 6; k++) {
       // update neighbor ID to the current layer
       cellNbrIds[k] =
-          EcalID(id.layer(), cellNbrIds[k].module(), cellNbrIds[k].cell());
+          ldmx::EcalID(id.layer(), cellNbrIds[k].module(), cellNbrIds[k].cell());
       // look in cell hit map to see if it is there
       if (cellMap_.find(cellNbrIds[k]) != cellMap_.end()) {
         isolatedHit = std::make_pair(false, cellNbrIds[k]);
@@ -644,6 +644,6 @@ std::vector<std::pair<float, float> > EcalVetoProcessor::getTrajectory(
   return positions;
 }
 
-}  // namespace ldmx
+}  // namespace ecal
 
-DECLARE_PRODUCER_NS(ldmx, EcalVetoProcessor);
+DECLARE_PRODUCER_NS(ecal, EcalVetoProcessor);

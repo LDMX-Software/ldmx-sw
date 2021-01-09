@@ -18,7 +18,8 @@
 // ldmx-sw
 #include "Ecal/Event/EcalHit.h"
 
-namespace ldmx {
+namespace ecal {
+namespace event {
 
 /**
  * @class EcalCluster
@@ -51,7 +52,7 @@ class EcalCluster {
    * @param hit The digi hit's entry number in the events digi
    * collection.
    */
-  void addHits(const std::vector<const EcalHit*> hitsVec);
+  void addHits(const std::vector<const ecal::event::EcalHit*> hitsVec);
 
   /**
    * Sets total energy for the cluster.
@@ -110,6 +111,7 @@ class EcalCluster {
 
   ClassDef(EcalCluster, 1);
 };
-}  // namespace ldmx
+}
+}  // namespace ecal
 
 #endif
