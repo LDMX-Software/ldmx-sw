@@ -111,14 +111,11 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   EventHeader &eventHeader = event_->getEventHeader();
 
   // Set the event weight
-  double weight{1};
-  if (anEvent->GetUserInformation() != nullptr) {
-    weight = static_cast<UserEventInformation *>(anEvent->GetUserInformation())
-                 ->getWeight();
-  } else if (anEvent->GetPrimaryVertex(0)) {
-    weight = anEvent->GetPrimaryVertex(0)->GetWeight();
-  }
-  eventHeader.setWeight(weight);
+  auto event_info{static_cast<UserEventInformation*>(anEvent->GetUserInformation())};
+
+  eventHeader.setWeight(event_info->getWeight());
+  eventHeader.setFloatParameter("total_photonuclear_energy"  , event_info->getPNEnergy());
+  eventHeader.setFloatParameter("total_electronuclear_energy", event_info->getENEnergy());
 
   // Save the state of the random engine to an output stream. A string
   // is then extracted and saved to the event header.
