@@ -16,12 +16,12 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx {
+namespace recon {
 
-class RecoilMissesEcalSkimmer : public Producer {
+class RecoilMissesEcalSkimmer : public framework::Producer {
  public:
   /** Constructor */
-  RecoilMissesEcalSkimmer(const std::string &name, Process &process);
+  RecoilMissesEcalSkimmer(const std::string &name, framework::Process &process);
 
   /** Destructor */
   ~RecoilMissesEcalSkimmer();
@@ -32,9 +32,9 @@ class RecoilMissesEcalSkimmer : public Producer {
    *
    * @param event The event to process.
    */
-  void produce(Event &event);
+  void produce(framework::Event &event);
 
 };  // RecoilMissesEcalSkimmer
-}  // namespace ldmx
+}  // namespace recon
 
 #endif  // RECON_SKIMS_RECOILMISSESECALSKIMMER_H_

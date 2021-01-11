@@ -9,7 +9,8 @@
 
 #include <string>
 
-namespace ldmx {
+namespace recon {
+namespace event {
 
 /**
  * @class EventConstants
@@ -49,7 +50,7 @@ class EventConstants {
   static const std::string PN_WEIGHT;
 
 };  // class EventConstants
-
-}  // namespace ldmx
+}
+}  // namespace recon
 
 #endif
