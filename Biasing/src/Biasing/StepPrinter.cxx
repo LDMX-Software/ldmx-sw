@@ -8,8 +8,8 @@
 
 namespace biasing {
 
-StepPrinter::StepPrinter(const std::string& name, Parameters& parameters)
-    : UserAction(name, parameters) {
+StepPrinter::StepPrinter(const std::string& name, framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   trackID_ = parameters.getParameter<int>("track_id");
 }
 
@@ -53,4 +53,4 @@ void StepPrinter::stepping(const G4Step* step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, StepPrinter)
+DECLARE_ACTION(biasing, StepPrinter)

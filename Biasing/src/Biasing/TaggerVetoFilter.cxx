@@ -10,8 +10,8 @@
 namespace biasing {
 
 TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
-                                   Parameters& parameters)
-    : UserAction(name, parameters) {
+                                   framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
 
@@ -48,4 +48,4 @@ void TaggerVetoFilter::stepping(const G4Step* step) {
 
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, TaggerVetoFilter)
+DECLARE_ACTION(biasing, TaggerVetoFilter)

@@ -26,7 +26,7 @@ namespace biasing {
  * fall below an energy threshold before reaching the target.
  *
  */
-class TaggerVetoFilter : public UserAction {
+class TaggerVetoFilter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -35,7 +35,7 @@ class TaggerVetoFilter : public UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TaggerVetoFilter(const std::string& name, Parameters& parameters);
+  TaggerVetoFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TaggerVetoFilter();
@@ -49,7 +49,7 @@ class TaggerVetoFilter : public UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
 
  private:
   /// Energy below which an incident electron should be vetoed.

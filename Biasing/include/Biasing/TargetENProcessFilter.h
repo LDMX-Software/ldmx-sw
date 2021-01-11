@@ -19,12 +19,12 @@ class G4Event;
 
 namespace biasing {
 
-class TargetENProcessFilter : public UserAction {
+class TargetENProcessFilter : public simcore::UserAction {
  public:
   /**
    * Class constructor.
    */
-  TargetENProcessFilter(const std::string& name, Parameters& parameters);
+  TargetENProcessFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TargetENProcessFilter();
@@ -41,8 +41,8 @@ class TargetENProcessFilter : public UserAction {
   void EndOfEventAction(const G4Event*) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::EVENT, TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::EVENT, simcore::TYPE::STEPPING};
   }
 
  private:

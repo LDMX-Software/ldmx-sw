@@ -21,7 +21,7 @@ namespace biasing {
 /**
  * User stepping action used to print the details of a step.
  */
-class StepPrinter : public UserAction {
+class StepPrinter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -30,7 +30,7 @@ class StepPrinter : public UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  StepPrinter(const std::string& name, Parameters& parameters);
+  StepPrinter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~StepPrinter();
@@ -44,7 +44,7 @@ class StepPrinter : public UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
 
  private:
   /// The track ID to filter on
