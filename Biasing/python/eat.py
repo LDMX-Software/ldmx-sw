@@ -78,8 +78,6 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
             util.PartialEnergySorter(bias_threshold),
             # Make sure a total of 1700MeV energy went PN in ECal
             filters.MidShowerNuclearBkgdFilter(min_nuclear_energy),
-            # Calculate event weight using step weights as factors
-            util.WeightByStep()
     ]
 
     return sim
