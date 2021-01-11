@@ -10,7 +10,7 @@
 
 #include "Conditions/SimpleTableCondition.h"
 
-namespace ldmx {
+namespace conditions {
 
 // using an internal namespace for these support classes to avoid any clashes
 namespace utility {
@@ -25,7 +25,7 @@ class SimpleTableStreamerCSV {
    */
   static void store(const IntegerTableCondition&, std::ostream&,
                     bool expandIds = true);
-  static void store(const DoubleTableCondition&, std::ostream&,
+  static void store(const conditions::DoubleTableCondition&, std::ostream&,
                     bool expandIds = true);
   /** Load the table from a stream
    * Columns must be defined by the user.  Matching columns from the CSV file
@@ -35,9 +35,9 @@ class SimpleTableStreamerCSV {
    * construct a detector id using the interpreter.
    */
   static void load(IntegerTableCondition&, std::istream&);
-  static void load(DoubleTableCondition&, std::istream&);
+  static void load(conditions::DoubleTableCondition&, std::istream&);
 };
 }  // namespace utility
-}  // namespace ldmx
+}  // namespace conditions
 
 #endif

@@ -11,18 +11,18 @@
 #include "Framework/ConditionsObject.h"
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace conditions {
 
 /**
  * @class Base type for conditions objects which are tables indexed by raw
  * detector id values
  */
-class BaseTableCondition : public ConditionsObject {
+class BaseTableCondition : public framework::ConditionsObject {
  public:
   /** Create table with given set of columns */
   BaseTableCondition(const std::string& name,
                      const std::vector<std::string>& columns)
-      : ConditionsObject{name}, columns_{columns}, idMask_{0xFFFFFFFFu} {
+      : framework::ConditionsObject{name}, columns_{columns}, idMask_{0xFFFFFFFFu} {
     columnCount_ = (unsigned int)(columns.size());
   }
 
@@ -204,6 +204,6 @@ class IntegerTableCondition : public HomogenousTableCondition<int> {
   virtual ~IntegerTableCondition() {}
 };
 
-}  // namespace ldmx
+}  // namespace conditions
 
 #endif

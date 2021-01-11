@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "Conditions/SimpleTableCondition.h"
 
-namespace ldmx {
+namespace conditions {
 
 std::size_t BaseTableCondition::findKey(unsigned int id) const {
   unsigned int effid = id & idMask_;
@@ -20,4 +20,4 @@ std::size_t BaseTableCondition::findKeyInsert(unsigned int id) const {
   return std::distance(keys_.begin(), ptr);
 }
 
-}  // namespace ldmx
+}  // namespace conditions

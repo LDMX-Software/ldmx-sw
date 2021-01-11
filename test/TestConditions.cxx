@@ -13,7 +13,7 @@
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
 
-namespace ldmx {
+namespace conditions {
 namespace test {
 
 template <class T>
@@ -23,8 +23,8 @@ void matchesMeta(const T& a, const T& b) {
   REQUIRE(a.getColumnNames() == b.getColumnNames());
 }
 
-void matchesAll(const ldmx::DoubleTableCondition& a,
-                const ldmx::DoubleTableCondition& b) {
+void matchesAll(const conditions::DoubleTableCondition& a,
+                const conditions::DoubleTableCondition& b) {
   matchesMeta(a, b);
   for (unsigned int i = 0; i < a.getRowCount(); i++) {
     std::pair<unsigned int, std::vector<double>> ar = a.getRow(i);
@@ -40,8 +40,8 @@ void matchesAll(const ldmx::DoubleTableCondition& a,
   }
 }
 
-void matchesAll(const ldmx::IntegerTableCondition& a,
-                const ldmx::IntegerTableCondition& b) {
+void matchesAll(const conditions::IntegerTableCondition& a,
+                const conditions::IntegerTableCondition& b) {
   matchesMeta(a, b);
   for (unsigned int i = 0; i < a.getRowCount(); i++)
     REQUIRE(a.getRow(i) == b.getRow(i));
@@ -58,7 +58,6 @@ using Catch::Matchers::Contains;
  */
 
 TEST_CASE("Conditions", "[Framework][Conditions]") {
-  using namespace ldmx;
 
   // create a simple table
 
@@ -67,7 +66,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   IntegerTableCondition itable("ITable", columns);
 
   for (int key = 100; key > 0; key -= 10) {
-    EcalID id(1, 1, key);
+    ldmx::EcalID id(1, 1, key);
     std::vector<int> vals;
     vals.push_back(key * 2);
     vals.push_back(key / 2);
@@ -76,10 +75,10 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   }
 
   std::vector<std::string> columnsd({"SQRT", "EXP", "LOG"});
-  DoubleTableCondition dtable("DTable", columnsd);
+  conditions::DoubleTableCondition dtable("DTable", columnsd);
 
   for (int key = 1; key < 8; key += 2) {
-    HcalID id(1, 1, key);
+    ldmx::HcalID id(1, 1, key);
     std::vector<double> vals;
     vals.push_back(sqrt(key));
     vals.push_back(exp(key * 5));
@@ -92,7 +91,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
     REQUIRE(itable.getColumnCount() == 3);
 
-    EcalID id(1, 1, 20);
+    ldmx::EcalID id(1, 1, 20);
     REQUIRE(itable.get(id.raw(), 1) == 10);
 
     REQUIRE_THROWS_WITH(itable.add(2, std::vector<int>(2)),
@@ -109,13 +108,13 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
     CHECK(row.second.at(2) == (50 * 50));
 
-    EcalID id2(1, 1, 60);
+    ldmx::EcalID id2(1, 1, 60);
 
     CHECK(itable.getByName(id2.raw(), "Q") == 30);
   }
   SECTION("Testing CSV IO") {
     std::stringstream ss;
-    ldmx::utility::SimpleTableStreamerCSV::store(itable, ss, true);
+    conditions::utility::SimpleTableStreamerCSV::store(itable, ss, true);
 
     std::string image1 = ss.str();
     const char* expected1 =
@@ -133,7 +132,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
     std::stringstream ss_read1(image1);
     IntegerTableCondition itable2("ITable", columns);
-    ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read1);
+    conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read1);
 
     matchesAll(itable, itable2);
 
@@ -141,7 +140,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     std::string image2("B,A,Q,V\n0,40,50,100\n0,60,70,90\n");
     std::stringstream ss_read2(image2);
     REQUIRE_THROWS_WITH(
-        ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read2),
+        conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read2),
         Contains("Malformed CSV file with no DetId or subdetector column"));
 
     // missing column example
@@ -152,7 +151,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
         "45\n0x14021064,200,50\n");
     std::stringstream ss_read3(image3);
     REQUIRE_THROWS_WITH(
-        ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read3),
+        conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read3),
         Contains("Missing column"));
 
     // varying line lengths example
@@ -161,7 +160,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
         "900\n");
     std::stringstream ss_read4(image4);
     REQUIRE_THROWS_WITH(
-        ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read4),
+        conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read4),
         Contains("Mismatched number of columns (3!=4) on line 3"));
   }
 
@@ -178,9 +177,9 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     fputs(cfg, f);
     fclose(f);
 
-    ldmx::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    ldmx::ProcessHandle hp = cp.makeProcess();
-    EventHeader cxt;
+    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
+    framework::ProcessHandle hp = cp.makeProcess();
+    ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
@@ -196,8 +195,8 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   SECTION("Testing file loading") {
     std::ofstream fs("/tmp/dump_double.csv");
     std::stringstream ss;
-    ldmx::utility::SimpleTableStreamerCSV::store(dtable, fs, true);
-    ldmx::utility::SimpleTableStreamerCSV::store(dtable, ss, true);
+    conditions::utility::SimpleTableStreamerCSV::store(dtable, fs, true);
+    conditions::utility::SimpleTableStreamerCSV::store(dtable, ss, true);
     fs.close();
     //	std::cout << "Step 1" << std::endl << ss.str();
 
@@ -214,18 +213,18 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     fputs(cfg, f);
     fclose(f);
 
-    ldmx::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
-    ldmx::ProcessHandle hp = cp.makeProcess();
-    EventHeader cxt;
+    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
+    framework::ProcessHandle hp = cp.makeProcess();
+    ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
-    const DoubleTableCondition& fTable1 =
-        hp->getConditions().getCondition<DoubleTableCondition>(
+    const conditions::DoubleTableCondition& fTable1 =
+        hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
     cxt.setRun(119);
-    const DoubleTableCondition& fTable2 =
-        hp->getConditions().getCondition<DoubleTableCondition>(
+    const conditions::DoubleTableCondition& fTable2 =
+        hp->getConditions().getCondition<conditions::DoubleTableCondition>(
             "test_table_file");
     matchesAll(dtable, fTable1);
     matchesAll(dtable, fTable2);
@@ -241,9 +240,9 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
       fputs(cfg,f);
       fclose(f);
 
-      ldmx::ConfigurePython cp("/tmp/test_cond.py",0,0);
-      ldmx::ProcessHandle hp=cp.makeProcess();
-      EventHeader cxt;
+      framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
+      framework::ProcessHandle hp=cp.makeProcess();
+      ldmx::EventHeader cxt;
       hp->setEventHeader(&cxt);
 
       const IntegerTableCondition&
@@ -253,4 +252,4 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   */
 }
 }  // namespace test
-}  // namespace ldmx
+}  // namespace conditions
