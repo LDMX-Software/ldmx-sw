@@ -26,7 +26,7 @@
 
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 typedef std::variant<UserRunAction*, UserEventAction*, UserTrackingAction*,
                      USteppingAction*, UserStackingAction*>
@@ -57,7 +57,7 @@ class UserActionManager {
    *
    */
   void createAction(const std::string& className,
-                    const std::string& instanceName, Parameters& parameters);
+                    const std::string& instanceName, framework::config::Parameters& parameters);
 
  private:
   /// UserActionManager instance
@@ -86,6 +86,6 @@ class UserActionManager {
 
 };  // UserActionManager
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_USERACTIONMANAGER_H

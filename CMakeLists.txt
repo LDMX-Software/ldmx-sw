@@ -18,11 +18,11 @@ find_package(Boost REQUIRED
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
 
-  register_event_object(module_path "SimCore/Event" namespace "ldmx" 
+  register_event_object(module_path "SimCore/Event" namespace "simcore::event" 
                         class "SimCalorimeterHit" type "collection")
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+  register_event_object(module_path "SimCore/Event" namespace "simcore::event"
                         class "SimTrackerHit" type "collection")
-  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+  register_event_object(module_path "SimCore/Event" namespace "simcore::event"
                         class "SimParticle" type "map" key "int")
 
   # Generate the files needed to build the event classes.

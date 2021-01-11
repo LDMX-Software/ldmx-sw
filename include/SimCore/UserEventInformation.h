@@ -3,7 +3,7 @@
 
 #include "G4VUserEventInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * Encapsulates user defined information associated with a Geant4 event.
@@ -50,6 +50,6 @@ class UserEventInformation : public G4VUserEventInformation {
   /// The event weight
   double weight_{1.};
 };
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_USEREVENTINFORMATION_H

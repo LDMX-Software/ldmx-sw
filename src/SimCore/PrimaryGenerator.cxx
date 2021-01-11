@@ -9,10 +9,10 @@
 
 #include "SimCore/PrimaryGeneratorManager.h"
 
-namespace ldmx {
+namespace simcore {
 
 PrimaryGenerator::PrimaryGenerator(const std::string& name,
-                                   Parameters& parameters) {
+                                   framework::config::Parameters& parameters) {
   name_ = name;
   parameters_ = parameters;
 }
@@ -23,4 +23,4 @@ void PrimaryGenerator::declare(const std::string& className,
                                PrimaryGeneratorBuilder* builder) {
   PrimaryGeneratorManager::getInstance().registerGenerator(className, builder);
 }
-}  // namespace ldmx
+}  // namespace simcore

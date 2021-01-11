@@ -3,7 +3,7 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 LHEReader::LHEReader(std::string& filename) {
   std::cout << "Opening LHE file " << filename << std::endl;
@@ -68,4 +68,4 @@ LHEEvent* LHEReader::readNextEvent() {
   return nextEvent;
 }
 
-}  // namespace ldmx
+}  // namespace simcore

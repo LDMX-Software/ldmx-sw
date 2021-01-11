@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace ldmx {
+namespace simcore {
 
 MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
                                        double yOffset, double zOffset)
@@ -257,4 +257,4 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4],
   }
 }
 
-}  // namespace ldmx
+}  // namespace simcore

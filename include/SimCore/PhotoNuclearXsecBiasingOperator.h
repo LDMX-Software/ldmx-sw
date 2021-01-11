@@ -34,7 +34,7 @@
 //----------//
 #include "XsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 class PhotoNuclearXsecBiasingOperator : public XsecBiasingOperator {
  public:
@@ -74,6 +74,6 @@ class PhotoNuclearXsecBiasingOperator : public XsecBiasingOperator {
   double pnXsecBiased_{0};
 
 };  // PhotoNuclearXsecBiasingOperator
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMPLUGINS_PHOTONUCLEARXSECBIASINGOPERATOR_H_

@@ -17,7 +17,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4VTrajectoryPoint.hh"
 
-using namespace ldmx;
+using namespace simcore;
 
 namespace simcore {
 namespace persist {
@@ -28,23 +28,23 @@ SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
 
 SimParticleBuilder::~SimParticleBuilder() {}
 
-void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
+void SimParticleBuilder::buildSimParticles(framework::Event *outputEvent) {
   // Get the trajectory container for the event.
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
 
   // Create empty SimParticle objects and create the map of track ID to
   // particles.
-  std::map<int, SimParticle> outputParticleMap;
+  std::map<int, simcore::event::SimParticle> outputParticleMap;
   for (auto trajectory : *trajectories->GetVector()) {
-    outputParticleMap[trajectory->GetTrackID()] = SimParticle();
+    outputParticleMap[trajectory->GetTrackID()] = simcore::event::SimParticle();
   }
 
   // Fill information into the particles.
   for (auto trajectory : *trajectories->GetVector()) {
     Trajectory *traj = static_cast<Trajectory *>(trajectory);
 
-    SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
+    simcore::event::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
 
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());

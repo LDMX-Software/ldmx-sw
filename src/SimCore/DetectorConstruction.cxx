@@ -5,10 +5,10 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace simcore {
 
 DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser,
-                                           Parameters& parameters,
+                                           framework::config::Parameters& parameters,
                                            ConditionsInterface& ci)
     : parser_(theParser),
       auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)) {
@@ -92,4 +92,4 @@ void DetectorConstruction::ConstructSDandField() {
     }
   }
 }
-}  // namespace ldmx
+}  // namespace simcore

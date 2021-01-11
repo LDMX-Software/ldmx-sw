@@ -38,8 +38,8 @@
 namespace simcore {
 namespace persist {
 
-RootPersistencyManager::RootPersistencyManager(EventFile &file,
-                                               Parameters &parameters,
+RootPersistencyManager::RootPersistencyManager(framework::EventFile &file,
+                                               framework::config::Parameters &parameters,
                                                const int &runNumber,
                                                ConditionsInterface &ci)
     : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(),
@@ -106,7 +106,7 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
 
 void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
-  EventHeader &eventHeader = event_->getEventHeader();
+  ldmx::EventHeader &eventHeader = event_->getEventHeader();
 
   // Set the event weight
   double weight{1};
@@ -127,7 +127,7 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
 }
 
 void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
-                                                  Event *outputEvent) {
+                                                  framework::Event *outputEvent) {
   // Get the HC of this event.
   G4HCofThisEvent *hce = anEvent->GetHCofThisEvent();
   int nColl = hce->GetNumberOfCollections();
@@ -148,7 +148,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
       // Write G4TrackerHit collection to output SimTrackerHit collection.
       G4TrackerHitsCollection *trackerHitsColl =
           dynamic_cast<G4TrackerHitsCollection *>(hc);
-      std::vector<SimTrackerHit> outputColl;
+      std::vector<simcore::event::SimTrackerHit> outputColl;
       writeTrackerHitsCollection(trackerHitsColl, outputColl);
 
       // Add hits collection to output event.
@@ -157,8 +157,8 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
     } else if (dynamic_cast<G4CalorimeterHitsCollection *>(hc) != nullptr) {
       G4CalorimeterHitsCollection *calHitsColl =
           dynamic_cast<G4CalorimeterHitsCollection *>(hc);
-      std::vector<SimCalorimeterHit> outputColl;
-      if (collName == EventConstants::ECAL_SIM_HITS) {
+      std::vector<simcore::event::SimCalorimeterHit> outputColl;
+      if (collName == recon::event::EventConstants::ECAL_SIM_HITS) {
         // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit
         // collection using helper class.
         ecalHitIO_.writeHitsCollection(calHitsColl, outputColl);
@@ -178,7 +178,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
 }
 
 void RootPersistencyManager::writeTrackerHitsCollection(
-    G4TrackerHitsCollection *hc, std::vector<SimTrackerHit> &outputColl) {
+    G4TrackerHitsCollection *hc, std::vector<simcore::event::SimTrackerHit> &outputColl) {
   outputColl.clear();
   int nHits = hc->GetSize();
   for (int iHit = 0; iHit < nHits; iHit++) {
@@ -186,7 +186,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
     const G4ThreeVector &momentum = g4hit->getMomentum();
     const G4ThreeVector &position = g4hit->getPosition();
 
-    SimTrackerHit simTrackerHit;
+    simcore::event::SimTrackerHit simTrackerHit;
     simTrackerHit.setID(g4hit->getID());
     simTrackerHit.setTime(g4hit->getTime());
     simTrackerHit.setLayerID(g4hit->getLayerID());
@@ -207,7 +207,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
 
 void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHitsCollection *hc,
-    std::vector<SimCalorimeterHit> &outputColl) {
+    std::vector<simcore::event::SimCalorimeterHit> &outputColl) {
   // get ancestral tracking information
   auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
@@ -216,7 +216,7 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHit *g4hit = (G4CalorimeterHit *)hc->GetHit(iHit);
     const G4ThreeVector &pos = g4hit->getPosition();
 
-    SimCalorimeterHit simHit;
+    simcore::event::SimCalorimeterHit simHit;
     simHit.setID(g4hit->getID());
     simHit.addContrib(trackMap->findIncident(g4hit->getTrackID()),
                       g4hit->getTrackID(), g4hit->getPdgCode(),

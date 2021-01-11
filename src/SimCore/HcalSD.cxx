@@ -18,7 +18,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace ldmx {
+namespace simcore {
 
 HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID)
     : CalorimeterSD(name, collectionName),
@@ -137,9 +137,9 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Odd layers have bars horizontal
   // Even layers have bars vertical
   // 5cm wide bars are HARD-CODED
-  if (section == HcalID::BACK && layer % 2 == 1)
+  if (section == ldmx::HcalID::BACK && layer % 2 == 1)
     stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-  else if (section == HcalID::BACK && layer % 2 == 0)
+  else if (section == ldmx::HcalID::BACK && layer % 2 == 0)
     stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
   else
     stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
@@ -154,7 +154,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // std::endl; std::cout << "Layer = " << layer << "\t section = " << section
   // << "\t strip = " << stripID << std::endl;
 
-  HcalID id(section, layer, stripID);
+  ldmx::HcalID id(section, layer, stripID);
   hit->setID(id.raw());
 
   // Set the track ID on the hit.
@@ -166,10 +166,10 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =
   // aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-  // if (section==HcalID::BACK) hit->setPosition(position[0], position[1],
-  // volumePosition.z()); elseif (section==HcalID::TOP ||
-  // section==HcalID::BOTTOM) hit->setPosition(position[0], volumePosition.y(),
-  // position[2]); elseif (section==HcalID::LEFT || section==HcalID::RIGHT)
+  // if (section==ldmx::HcalID::BACK) hit->setPosition(position[0], position[1],
+  // volumePosition.z()); elseif (section==ldmx::HcalID::TOP ||
+  // section==ldmx::HcalID::BOTTOM) hit->setPosition(position[0], volumePosition.y(),
+  // position[2]); elseif (section==ldmx::HcalID::LEFT || section==ldmx::HcalID::RIGHT)
   // hit->setPosition(volumePosition.x(),position[1] , position[2]);
 
   if (this->verboseLevel > 2) {
@@ -186,4 +186,4 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
   return true;
 }
-}  // namespace ldmx
+}  // namespace simcore

@@ -3,26 +3,27 @@
 
 #include "Framework/Configure/Parameters.h"
 
-ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName,
-                                   ConditionsInterface& ci)
-    : G4VUserParallelWorld(worldName),
-      parser_(parser),
-      auxInfoReader_(new AuxInfoReader(parser, Parameters(), ci)) {}
+namespace simcore {
 
-ldmx::ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
+ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName,
+                             ConditionsInterface &ci)
+    : G4VUserParallelWorld(worldName), parser_(parser),
+      auxInfoReader_(new AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
 
-void ldmx::ParallelWorld::Construct() {}
+ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
 
-void ldmx::ParallelWorld::ConstructSD() {
-  G4VPhysicalVolume* worldPhysical = GetWorld();
-  G4LogicalVolume* worldLogical = worldPhysical->GetLogicalVolume();
+void ParallelWorld::Construct() {}
 
-  G4LogicalVolume* parallelWorldLogical =
+void ParallelWorld::ConstructSD() {
+  G4VPhysicalVolume *worldPhysical = GetWorld();
+  G4LogicalVolume *worldLogical = worldPhysical->GetLogicalVolume();
+
+  G4LogicalVolume *parallelWorldLogical =
       parser_->GetWorldVolume()->GetLogicalVolume();
   auxInfoReader_->readGlobalAuxInfo();
 
   for (int index = 0; index < parallelWorldLogical->GetNoDaughters(); index++) {
-    G4VPhysicalVolume* physicalVol = parallelWorldLogical->GetDaughter(index);
+    G4VPhysicalVolume *physicalVol = parallelWorldLogical->GetDaughter(index);
     std::cout << "[ ParallelWorld ]: Adding : " << physicalVol->GetName()
               << " to parallel world." << std::endl;
     worldLogical->AddDaughter(physicalVol);
@@ -30,3 +31,4 @@ void ldmx::ParallelWorld::ConstructSD() {
 
   auxInfoReader_->assignAuxInfoToVolumes();
 }
+} // namespace simcore

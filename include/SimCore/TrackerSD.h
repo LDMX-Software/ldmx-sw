@@ -16,7 +16,7 @@
 /*~~~~~~~~~~~~~~~~~~~~*/
 #include "SimCore/G4TrackerHit.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class TrackerSD
@@ -63,10 +63,10 @@ class TrackerSD : public G4VSensitiveDetector {
   G4TrackerHitsCollection* hitsCollection_;
 
   /// The detector ID
-  SubdetectorIDType subDetID_;
+  ldmx::SubdetectorIDType subDetID_;
 
 };  // TrackerID
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_TRACKERSD_H

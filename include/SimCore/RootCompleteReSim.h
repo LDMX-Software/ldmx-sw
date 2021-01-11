@@ -32,7 +32,7 @@
 
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 class Parameters;
 
@@ -54,7 +54,7 @@ class RootCompleteReSim : public PrimaryGenerator {
    *   simParticleCollName : name of collection of SimParticles
    *   simParticlePassName : name of pass of SimParticles
    */
-  RootCompleteReSim(const std::string& name, Parameters& parameters);
+  RootCompleteReSim(const std::string& name, framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -81,14 +81,14 @@ class RootCompleteReSim : public PrimaryGenerator {
   /**
    * The input root file
    */
-  std::unique_ptr<EventFile> ifile_;
+  std::unique_ptr<framework::EventFile> ifile_;
 
   /**
    * The input ldmx event bus
    */
-  Event ievent_;
+  framework::Event ievent_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_ROOTCOMPLETERESIM_H

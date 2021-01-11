@@ -31,12 +31,10 @@
 class G4Run;
 
 // Forward declarations within the ldmx namespace
-namespace ldmx {
+namespace framework {
 class Event;
 class RunHeader;
-}  // namespace ldmx
-
-using namespace ldmx;
+} // namespace framework
 
 namespace simcore {
 namespace persist {
@@ -57,7 +55,7 @@ namespace persist {
  * output SimTrackerHit collections.
  */
 class RootPersistencyManager : public G4PersistencyManager {
- public:
+public:
   /**
    * Class constructor.
    *
@@ -65,7 +63,8 @@ class RootPersistencyManager : public G4PersistencyManager {
    * @param parameters configuration parameters from Simulator
    * @param runNumber current run identifer from Process
    */
-  RootPersistencyManager(EventFile &file, Parameters &parameters,
+  RootPersistencyManager(framework::EventFile &file,
+                         framework::config::Parameters &parameters,
                          const int &runNumber, ConditionsInterface &ci);
 
   /// Destructor
@@ -118,7 +117,7 @@ class RootPersistencyManager : public G4PersistencyManager {
    *
    * @param event Event buffer for the current event.
    */
-  void setCurrentEvent(Event *event) { event_ = event; }
+  void setCurrentEvent(framework::Event *event) { event_ = event; }
 
   /**
    * Set the number of events began and completed.
@@ -139,7 +138,7 @@ class RootPersistencyManager : public G4PersistencyManager {
     eventsCompleted_ = completed;
   }
 
- public:
+public:
   /**
    * Build an output event from the current Geant4 event.
    *
@@ -161,7 +160,8 @@ class RootPersistencyManager : public G4PersistencyManager {
    * @param anEvent The Geant4 event.
    * @param outputEvent The output event.
    */
-  void writeHitsCollections(const G4Event *anEvent, Event *outputEvent);
+  void writeHitsCollections(const G4Event *anEvent,
+                            framework::Event *outputEvent);
 
   /**
    * Write a collection of tracker hits to an output collection.
@@ -169,8 +169,9 @@ class RootPersistencyManager : public G4PersistencyManager {
    * @param hc The collection of G4TrackerHits.
    * @param outputColl The output collection of SimTrackerHits.
    */
-  void writeTrackerHitsCollection(G4TrackerHitsCollection *hc,
-                                  std::vector<SimTrackerHit> &outputColl);
+  void writeTrackerHitsCollection(
+      G4TrackerHitsCollection *hc,
+      std::vector<simcore::event::SimTrackerHit> &outputColl);
 
   /**
    * Write a collection of tracker hits to an output collection.
@@ -180,11 +181,11 @@ class RootPersistencyManager : public G4PersistencyManager {
    */
   void writeCalorimeterHitsCollection(
       G4CalorimeterHitsCollection *hc,
-      std::vector<SimCalorimeterHit> &outputColl);
+      std::vector<simcore::event::SimCalorimeterHit> &outputColl);
 
- private:
+private:
   /// Configuration parameters passed to Simulator
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /// Run Number, given to us by Simulator from Process
   int run_;
@@ -196,10 +197,10 @@ class RootPersistencyManager : public G4PersistencyManager {
   int eventsCompleted_{-1};
 
   /// The output file.
-  EventFile &file_;
+  framework::EventFile &file_;
 
   /// The event container used to manage the tree/branches/collections.
-  Event *event_{nullptr};
+  framework::Event *event_{nullptr};
 
   /// Handles ECal hit readout and IO.
   EcalHitIO ecalHitIO_;
@@ -208,7 +209,7 @@ class RootPersistencyManager : public G4PersistencyManager {
   SimParticleBuilder simParticleBuilder_;
 };
 
-}  // namespace persist
-}  // namespace simcore
+} // namespace persist
+} // namespace simcore
 
 #endif

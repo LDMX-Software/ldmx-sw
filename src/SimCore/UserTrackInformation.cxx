@@ -5,7 +5,7 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 UserTrackInformation::UserTrackInformation() {}
 
@@ -16,4 +16,4 @@ void UserTrackInformation::Print() const {
             << "Is brem candidate: " << isBremCandidate_ << "\n"
             << std::endl;
 }
-}  // namespace ldmx
+}  // namespace simcore

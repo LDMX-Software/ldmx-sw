@@ -13,7 +13,7 @@
 
 #include "SimCore/Trajectory.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class TrackMap
@@ -113,6 +113,6 @@ class TrackMap {
   Trajectory::TrajectoryMap trajectoryMap_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

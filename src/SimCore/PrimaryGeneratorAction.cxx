@@ -23,9 +23,9 @@
 /*~~~~~~~~~~*/
 #include "TRandom3.h"
 
-namespace ldmx {
+namespace simcore {
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(Parameters& parameters)
+PrimaryGeneratorAction::PrimaryGeneratorAction(framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction(),
       manager_(PrimaryGeneratorManager::getInstance()) {
   // The parameters used to configure the primary generator action
@@ -48,7 +48,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(Parameters& parameters)
   time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
 
   auto generators{
-      parameters_.getParameter<std::vector<Parameters> >("generators", {})};
+      parameters_.getParameter<std::vector<framework::config::Parameters> >("generators", {})};
   if (generators.empty()) {
     EXCEPTION_RAISE("MissingGenerator",
                     "Need to define some generator of primaries.");
@@ -140,4 +140,4 @@ void PrimaryGeneratorAction::setUserPrimaryInfo(G4Event* event) {
     }  // iparticle - loop over primary particles
   }    // iPV - loop over primary vertices
 }
-}  // namespace ldmx
+}  // namespace simcore

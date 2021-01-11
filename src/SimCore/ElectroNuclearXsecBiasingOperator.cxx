@@ -7,7 +7,7 @@
 
 #include "SimCore/ElectroNuclearXsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 const std::string ElectroNuclearXsecBiasingOperator::ELECTRONUCLEAR_PROCESS =
     "electronNuclear";
@@ -70,4 +70,4 @@ ElectroNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
   } else
     return 0;
 }
-}  // namespace ldmx
+}  // namespace simcore

@@ -10,7 +10,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/ConditionsInterface.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class AuxInfoReader
@@ -30,7 +30,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, Parameters ps, ConditionsInterface &ci);
+  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps, ConditionsInterface &ci);
 
   /**
    * Class destructor.
@@ -108,12 +108,12 @@ class AuxInfoReader {
   ldmx::DetectorHeader *detectorHeader_{nullptr};
 
   /// Configuration parameters
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /// ConditionsInterface
   ConditionsInterface &conditionsIntf_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

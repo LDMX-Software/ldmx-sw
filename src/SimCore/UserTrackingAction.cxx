@@ -15,7 +15,7 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
   int trackID = track->GetTrackID();
@@ -126,4 +126,4 @@ void UserTrackingAction::processTrack(const G4Track* track) {
   if (track->GetParentID() > 0)
     trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
 }
-}  // namespace ldmx
+}  // namespace simcore

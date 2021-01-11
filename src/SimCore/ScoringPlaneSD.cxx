@@ -16,7 +16,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace ldmx {
+namespace simcore {
 
 ScoringPlaneSD::ScoringPlaneSD(G4String name, G4String colName, int subDetID)
     : G4VSensitiveDetector(name) {
@@ -76,7 +76,7 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
    * Set the 32-bit ID on the hit.
    */
   int cpNumber = prePoint->GetTouchableHandle()->GetCopyNumber();
-  SimSpecialID id = SimSpecialID::ScoringPlaneID(cpNumber);
+  ldmx::SimSpecialID id = ldmx::SimSpecialID::ScoringPlaneID(cpNumber);
   hit->setID(id.raw());
 
   /*
@@ -115,4 +115,4 @@ void ScoringPlaneSD::EndOfEvent(G4HCofThisEvent*) {
     }
   }
 }
-}  // namespace ldmx
+}  // namespace simcore

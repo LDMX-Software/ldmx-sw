@@ -11,10 +11,10 @@
 
 #include "Framework/Exception/Exception.h"
 
-ldmx::UserActionManager ldmx::UserActionManager::instance_
+simcore::UserActionManager simcore::UserActionManager::instance_
     __attribute__((init_priority(200)));
 
-namespace ldmx {
+namespace simcore {
 
 UserActionManager::UserActionManager() {}
 
@@ -50,7 +50,7 @@ void UserActionManager::registerAction(const std::string& className,
 
 void UserActionManager::createAction(const std::string& className,
                                      const std::string& instanceName,
-                                     Parameters& parameters) {
+                                     framework::config::Parameters& parameters) {
   auto it{actionInfo_.find(className)};
   if (it == actionInfo_.end()) {
     EXCEPTION_RAISE("UserActionException", "Failed to create " + className);
@@ -77,4 +77,4 @@ void UserActionManager::createAction(const std::string& className,
   }
 }
 
-}  // namespace ldmx
+}  // namespace simcore

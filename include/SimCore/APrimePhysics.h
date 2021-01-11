@@ -15,7 +15,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/G4eDarkBremsstrahlung.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class APrimePhysics
@@ -35,7 +35,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * @param name The name of the physics.
    */
-  APrimePhysics(Parameters& params, const G4String& name = "APrime");
+  APrimePhysics(framework::config::Parameters& params, const G4String& name = "APrime");
 
   /**
    * Class destructor.
@@ -87,6 +87,6 @@ class APrimePhysics : public G4VPhysicsConstructor {
   G4ParticleDefinition* aprimeDef_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

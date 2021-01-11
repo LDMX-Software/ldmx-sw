@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class LHEParticle
@@ -137,6 +137,6 @@ class LHEParticle {
   int spinup_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

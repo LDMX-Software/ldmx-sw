@@ -17,10 +17,10 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace simcore {
 
 GeneralParticleSource::GeneralParticleSource(const std::string& name,
-                                             Parameters& parameters)
+                                             framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   auto initCommands{
       parameters_.getParameter<std::vector<std::string> >("initCommands")};
@@ -45,6 +45,6 @@ void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   return;
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, GeneralParticleSource)
+DECLARE_GENERATOR(simcore, GeneralParticleSource)

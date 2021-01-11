@@ -11,7 +11,7 @@
 // LDMX
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class ConditionsInterface
@@ -20,7 +20,7 @@ namespace ldmx {
  */
 class ConditionsInterface {
  public:
-  ConditionsInterface(EventProcessor* p) : processor_{p} {}
+  ConditionsInterface(framework::EventProcessor* p) : processor_{p} {}
 
   /**
    * Primary request action for a conditions object If the
@@ -42,9 +42,9 @@ class ConditionsInterface {
   /**
    * Pointer to the owner processor object
    */
-  EventProcessor* processor_;
+  framework::EventProcessor* processor_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_CONDITIONSINTERFACE_H_

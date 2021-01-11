@@ -4,7 +4,7 @@
 #include "G4ThreeVector.hh"
 #include "G4VUserTrackInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * Provides user defined information to associate with a Geant4 track.
@@ -112,6 +112,6 @@ class UserTrackInformation : public G4VUserTrackInformation {
   /// The initial momentum of the track.
   G4ThreeVector initialMomentum_;
 };
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

@@ -7,7 +7,7 @@
 // LDMX
 #include "SimCore/Trajectory.h"
 
-namespace ldmx {
+namespace simcore {
 
 int TrackMap::findIncident(G4int trackID) {
   int currTrackID = trackID;
@@ -37,4 +37,4 @@ void TrackMap::clear() {
   trajectoryMap_.clear();
   trackIDMap_.clear();
 }
-}  // namespace ldmx
+}  // namespace simcore

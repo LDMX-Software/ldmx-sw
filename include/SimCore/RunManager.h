@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace simcore {
 
 // Forward declare to avoid circular dependency in headers
 class DetectorConstruction;
@@ -42,7 +42,7 @@ class RunManager : public G4RunManager {
   /**
    * Class constructor.
    */
-  RunManager(Parameters& parameters, ConditionsInterface& ci);
+  RunManager(framework::config::Parameters& parameters, ConditionsInterface& ci);
 
   /**
    * Class destructor.
@@ -86,7 +86,7 @@ class RunManager : public G4RunManager {
 
  private:
   /// The set of parameters used to configure the RunManager
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /**
    * Factory class for instantiating the physics list.
@@ -112,6 +112,6 @@ class RunManager : public G4RunManager {
   ConditionsInterface& conditionsIntf_;
 
 };  // RunManager
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // _SIMCORE_RUNMANAGER_H_

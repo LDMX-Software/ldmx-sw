@@ -13,7 +13,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/PrimaryGenerator.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class PrimaryGeneratorManager
@@ -39,7 +39,7 @@ class PrimaryGeneratorManager {
    * Create a new generate and attach it to the list of generators
    */
   void createGenerator(const std::string& className,
-                       const std::string& instanceName, Parameters& parameters);
+                       const std::string& instanceName, framework::config::Parameters& parameters);
 
  private:
   /// PrimaryGeneratorManager instance
@@ -68,6 +68,6 @@ class PrimaryGeneratorManager {
 
 };  // PrimaryGeneratorManager
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_PRIMARYGENERATORMANAGER_H

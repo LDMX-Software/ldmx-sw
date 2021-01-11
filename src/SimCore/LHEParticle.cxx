@@ -10,7 +10,7 @@
 // Geant4
 #include "globals.hh"
 
-namespace ldmx {
+namespace simcore {
 
 LHEParticle::LHEParticle(std::string& line) {
   std::istringstream iss(line);
@@ -82,4 +82,4 @@ std::ostream& operator<<(std::ostream& stream, const LHEParticle& particle) {
   return stream;
 }
 
-}  // namespace ldmx
+}  // namespace simcore

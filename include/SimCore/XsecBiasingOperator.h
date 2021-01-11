@@ -24,7 +24,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-namespace ldmx {
+namespace simcore {
 
 class XsecBiasingOperator : public G4VBiasingOperator {
  public:
@@ -125,6 +125,6 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   }
 
 };  // XsecBiasingOperator
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMPLUGINS_XSECBIASINGOPERATOR_H_
