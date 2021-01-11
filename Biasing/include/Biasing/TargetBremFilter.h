@@ -22,10 +22,10 @@ namespace biasing {
  * User action that allows a user to filter out events that don't result in
  * a brem within the target.
  */
-class TargetBremFilter : public UserAction {
+class TargetBremFilter : public simcore::UserAction {
  public:
   /// Constructor
-  TargetBremFilter(const std::string& name, Parameters& parameters);
+  TargetBremFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TargetBremFilter();
@@ -54,8 +54,8 @@ class TargetBremFilter : public UserAction {
       const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::EVENT, TYPE::STACKING, TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
   }
 
  private:

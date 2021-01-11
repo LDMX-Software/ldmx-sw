@@ -26,12 +26,12 @@ namespace biasing {
  * User action plugin that filters events that don't see a hard brem from
  * the target undergo a photo-nuclear reaction in the ECal.
  */
-class EcalProcessFilter : public UserAction {
+class EcalProcessFilter : public simcore::UserAction {
  public:
   /**
    *
    */
-  EcalProcessFilter(const std::string& name, Parameters& parameters);
+  EcalProcessFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~EcalProcessFilter();
@@ -51,8 +51,8 @@ class EcalProcessFilter : public UserAction {
       const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::STACKING, TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
   }
 
  private:

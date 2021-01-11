@@ -15,8 +15,8 @@
 namespace biasing {
 
 TargetENProcessFilter::TargetENProcessFilter(const std::string& name,
-                                             Parameters& parameters)
-    : UserAction(name, parameters) {
+                                             framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   recoilEnergyThreshold_ = parameters.getParameter<double>("recoilThreshold");
 }
 
@@ -102,4 +102,4 @@ void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, TargetENProcessFilter)
+DECLARE_ACTION(biasing, TargetENProcessFilter)

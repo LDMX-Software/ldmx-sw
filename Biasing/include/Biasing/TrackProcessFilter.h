@@ -31,7 +31,7 @@ namespace biasing {
  * match the names assigned by Geant4.
  *
  */
-class TrackProcessFilter : public UserAction {
+class TrackProcessFilter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -40,7 +40,7 @@ class TrackProcessFilter : public UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TrackProcessFilter(const std::string& name, Parameters& parameters);
+  TrackProcessFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TrackProcessFilter();
@@ -53,7 +53,7 @@ class TrackProcessFilter : public UserAction {
   void PostUserTrackingAction(const G4Track* track) final override;
 
   /// Retrieve the type of actions this class defines.
-  std::vector<TYPE> getTypes() final override { return {TYPE::TRACKING}; }
+  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::TRACKING}; }
 
  private:
   /// The process to filter on.

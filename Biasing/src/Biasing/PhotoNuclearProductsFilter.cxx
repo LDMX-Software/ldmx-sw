@@ -20,8 +20,8 @@
 namespace biasing {
 
 PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(const std::string& name,
-                                                       Parameters& parameters)
-    : UserAction(name, parameters) {
+                                                       framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   productsPdgID_ = parameters.getParameter<std::vector<int> >("pdg_ids");
 }
 
@@ -37,7 +37,7 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
   // tagged by the UserAction ECalProcessFilter which needs to be run
   // before this UserAction.
   auto trackInfo{
-      static_cast<UserTrackInformation*>(track->GetUserInformation())};
+      static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
   if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
 
   // Get the PN photon daughters.
@@ -74,4 +74,4 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, PhotoNuclearProductsFilter)
+DECLARE_ACTION(biasing, PhotoNuclearProductsFilter)
