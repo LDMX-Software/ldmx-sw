@@ -25,10 +25,6 @@ namespace ldmx {
  * @see PartialEnergySorter
  * Here we assume that the partial energy sorter is being run in sequence with
  * this filter. 
- *
- * @see WeightByStep
- * Here we do not try to infer the weight. We assume that the action
- * WeightByStep is being run in sequence to calculate the event weight.
  */
 class MidShowerNuclearBkgdFilter : public UserAction {
  public:

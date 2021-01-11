@@ -50,16 +50,6 @@ class PartialEnergySorter(BiasingUtilityAction) :
 
         self.threshold = thresh
 
-class WeightByStep(BiasingUtilityAction) :
-    """Calculate the event weight by mutliplying all step weights together.
-
-    There are no parameters for this action.
-    Either you use it or you don't.
-    """
-
-    def __init__(self) :
-        super().__init__('weight_by_step','WeightByStep')
-
 class TrackProcessFilter(BiasingUtilityAction):
     """ Configuration used to tag all tracks produced via the given process to persist them to the event.
 
