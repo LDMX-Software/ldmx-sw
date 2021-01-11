@@ -1,10 +1,10 @@
 
 #include "DQM/TrigScintDQM.h"
 
-namespace ldmx {
+namespace dqm {
 
-TrigScintDQM::TrigScintDQM(const std::string &name, Process &process)
-    : Analyzer(name, process) {}
+TrigScintDQM::TrigScintDQM(const std::string &name, framework::Process &process)
+    : framework::Analyzer(name, process) {}
 
 TrigScintDQM::~TrigScintDQM() {}
 
@@ -36,7 +36,7 @@ void TrigScintDQM::onProcessStart() {
                      1600, -100, 1500);
 }
 
-void TrigScintDQM::configure(Parameters &ps) {
+void TrigScintDQM::configure(framework::config::Parameters &ps) {
   hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
   padName_ = ps.getParameter<std::string>("pad");
 
@@ -44,17 +44,17 @@ void TrigScintDQM::configure(Parameters &ps) {
             << hitCollectionName_ << " and " << padName_ << std::endl;
 }
 
-void TrigScintDQM::analyze(const Event &event) {
-  const std::vector<SimCalorimeterHit> TrigScintHits =
-      event.getCollection<SimCalorimeterHit>(hitCollectionName_);
+void TrigScintDQM::analyze(const framework::Event &event) {
+  const std::vector<simcore::event::SimCalorimeterHit> TrigScintHits =
+      event.getCollection<simcore::event::SimCalorimeterHit>(hitCollectionName_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();
   histograms_.fill("n_hits", hitCount);
 
   double totalEnergy{0};
-  for (const SimCalorimeterHit &hit : TrigScintHits) {
-    TrigScintID detID(hit.getID());
+  for (const simcore::event::SimCalorimeterHit &hit : TrigScintHits) {
+    ldmx::TrigScintID detID(hit.getID());
 
     int bar = detID.bar();
 
@@ -73,6 +73,6 @@ void TrigScintDQM::analyze(const Event &event) {
   histograms_.fill("total_energy", totalEnergy);
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, TrigScintDQM)
+DECLARE_ANALYZER_NS(dqm, TrigScintDQM)

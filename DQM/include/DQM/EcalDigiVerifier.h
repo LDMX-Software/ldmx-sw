@@ -5,31 +5,31 @@
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 
-namespace ldmx {
+namespace dqm {
 
 /**
  * @class EcalDigiVerifier
  * @brief Generate histograms to check digi pipeline performance
  */
-class EcalDigiVerifier : public ldmx::Analyzer {
+class EcalDigiVerifier : public framework::Analyzer {
  public:
   /**
    * Constructor
    *
    * Blank Analyzer constructor
    */
-  EcalDigiVerifier(const std::string& name, ldmx::Process& process)
-      : ldmx::Analyzer(name, process) {}
+  EcalDigiVerifier(const std::string& name, framework::Process& process)
+      : framework::Analyzer(name, process) {}
 
   /**
    * Input python configuration parameters
    */
-  virtual void configure(Parameters& ps);
+  virtual void configure(framework::config::Parameters& ps);
 
   /**
    * Fills histograms
    */
-  virtual void analyze(const ldmx::Event& event);
+  virtual void analyze(const framework::Event& event);
 
  private:
   /// Collection Name for SimHits
@@ -44,6 +44,6 @@ class EcalDigiVerifier : public ldmx::Analyzer {
   /// Pass Name for RecHits
   std::string ecalRecHitPass_;
 };
-}  // namespace ldmx
+}  // namespace dqm
 
 #endif /* DQM_ECALDIGIVERIFIER_H */
