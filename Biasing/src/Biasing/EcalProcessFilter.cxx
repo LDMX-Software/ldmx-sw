@@ -13,8 +13,6 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/UserEventInformation.h" 
-#include "SimCore/UserTrackInformation.h"
 
 namespace ldmx { 
 
@@ -60,18 +58,6 @@ namespace ldmx {
         auto trackInfo{static_cast< UserTrackInformation* >(track->GetUserInformation())};
         if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;  
        
-        // Get the event info to keep track of the number of brem candidates
-        auto eventInfo{
-            static_cast< UserEventInformation* >(
-                    G4EventManager::GetEventManager()->GetUserInformation())};
-        if (eventInfo == nullptr) {
-            // thrown an exception
-            EXCEPTION_RAISE(
-                    "NoEventInfo",
-                    "EcalProcessFilter found an event without UserEventInformation."
-                    );
-        }
-
         // Get the particles daughters.
         auto secondaries{step->GetSecondary()};
 
@@ -91,7 +77,7 @@ namespace ldmx {
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " secondaries outside ecal...";
                 */
-                if (eventInfo->bremCandidateCount() == 1) {
+                if (getEventInfo()->bremCandidateCount() == 1) {
                     //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
@@ -99,12 +85,12 @@ namespace ldmx {
                 } else { 
                     /*
                     std::cout << "suspending the track " << track->GetTrackID()
-                        << " , " << eventInfo->bremCandidateCount() << " brems left."
+                        << " , " << getEventInfo()->bremCandidateCount() << " brems left."
                         << std::endl;
                     */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
-                    eventInfo->decBremCandidateCount();
+                    getEventInfo()->decBremCandidateCount();
                     trackInfo->tagBremCandidate(false);   
                 }
             }
@@ -121,7 +107,7 @@ namespace ldmx {
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " no secondaries when leaving ecal...";
                 */
-                if (eventInfo->bremCandidateCount() == 1) {
+                if (getEventInfo()->bremCandidateCount() == 1) {
                     //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
@@ -129,12 +115,12 @@ namespace ldmx {
                 } else { 
                     /*
                     std::cout << "suspending the track " << track->GetTrackID()
-                        << " , " << eventInfo->bremCandidateCount() << " brems left."
+                        << " , " << getEventInfo()->bremCandidateCount() << " brems left."
                         << std::endl;
                     */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
-                    eventInfo->decBremCandidateCount();
+                    getEventInfo()->decBremCandidateCount();
                     trackInfo->tagBremCandidate(false);   
                 }
             }
@@ -153,7 +139,7 @@ namespace ldmx {
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " not PN products...";
                 */
-                if (eventInfo->bremCandidateCount() == 1) {
+                if (getEventInfo()->bremCandidateCount() == 1) {
                     //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
@@ -161,12 +147,12 @@ namespace ldmx {
                 } else { 
                     /*
                     std::cout << "suspending the track " << track->GetTrackID() 
-                        << " , " << eventInfo->bremCandidateCount() << " brems left."
+                        << " , " << getEventInfo()->bremCandidateCount() << " brems left."
                         << std::endl;
                     */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
-                    eventInfo->decBremCandidateCount();  
+                    getEventInfo()->decBremCandidateCount();  
                     trackInfo->tagBremCandidate(false);   
                 }
                 return; 
@@ -180,10 +166,8 @@ namespace ldmx {
             trackInfo->tagBremCandidate(false);   
             trackInfo->setSaveFlag(true);
             trackInfo->tagPNGamma(); 
-            eventInfo->decBremCandidateCount(); 
-            eventInfo->setWeight(track->GetWeight());  
+            getEventInfo()->decBremCandidateCount(); 
         }
-
     }
 }
 

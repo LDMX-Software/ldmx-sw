@@ -11,7 +11,6 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/UserEventInformation.h" 
 
 namespace ldmx { 
 
@@ -99,11 +98,7 @@ namespace ldmx {
                         trackInfo->tagBremCandidate(); 
                         trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName()); 
 
-                        auto event{G4EventManager::GetEventManager()}; 
-                        if (event->GetUserInformation() == nullptr) { 
-                            event->SetUserInformation(new UserEventInformation()); 
-                        }
-                        static_cast< UserEventInformation* >(event->GetUserInformation())->incBremCandidateCount(); 
+                        getEventInfo()->incBremCandidateCount();
 
                         hasBremCandidate = true;
                     } 

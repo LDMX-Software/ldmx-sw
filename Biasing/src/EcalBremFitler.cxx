@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace ldmx {
@@ -90,12 +89,7 @@ void EcalBremFilter::stepping(const G4Step* step) {
         trackInfo->tagBremCandidate();
         trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName());
 
-        auto event{G4EventManager::GetEventManager()};
-        if (event->GetUserInformation() == nullptr) {
-          event->SetUserInformation(new UserEventInformation());
-        }
-        static_cast<UserEventInformation*>(event->GetUserInformation())
-            ->incBremCandidateCount();
+        getEventInfo()->incBremCandidateCount();
 
         hasBremCandidate = true;
       }  // check for hard brem

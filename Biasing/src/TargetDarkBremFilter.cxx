@@ -10,7 +10,6 @@
 #include "Biasing/TargetDarkBremFilter.h"
 
 #include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
-#include "SimCore/UserEventInformation.h"  //set the weight for the event
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
 #include "G4Electron.hh"  //to check if track is electron
@@ -100,14 +99,6 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
               << " with energy " << secondary_track->GetTotalEnergy() << " MeV."
               << std::endl;
            */
-
-          auto event{G4EventManager::GetEventManager()};
-          if (event->GetUserInformation() == nullptr) {
-            event->SetUserInformation(new UserEventInformation());
-          }
-          // persist weight
-          dynamic_cast<UserEventInformation*>(event->GetUserInformation())
-              ->setWeight(secondary_track->GetWeight());
 
           // we found a good A', so we can leave
           return;

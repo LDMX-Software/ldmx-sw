@@ -1,6 +1,5 @@
 #include "Biasing/MidShowerNuclearBkgdFilter.h"
 
-#include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
 #include "G4EventManager.hh"
@@ -34,7 +33,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
   // skip steps that are outside the calorimeter region
   if (isOutsideCalorimeterRegion(step)) return;
 
-  if (anyCreatedViaNuclear(step->GetSecondaryInCurrentStep())) {
+  if (getEventInfo()->wasLastStepPN() or getEventInfo()->wasLastStepEN()) {
     // there are interesting secondaries in this step
     double pre_energy = step->GetPreStepPoint()->GetTotalEnergy();
     double post_energy = step->GetPostStepPoint()->GetTotalEnergy();
@@ -89,16 +88,6 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(const G4VProcess* proc) const 
         return true;
     } //loop over nuclear processes
   } //pointer exists
-  return false;
-}
-
-bool MidShowerNuclearBkgdFilter::anyCreatedViaNuclear(
-    const std::vector<const G4Track*>* list) const {
-  if (not list) return false;  // was list even created?
-  for (auto const& track : *list) {
-    if (isNuclearProcess(track->GetCreatorProcess()))
-      return true;
-  }//loop over tracks in list
   return false;
 }
 
