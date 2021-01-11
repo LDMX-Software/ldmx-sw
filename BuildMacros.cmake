@@ -254,6 +254,10 @@ function(register_event_object)
       ${event_headers} ${header}
       CACHE INTERNAL "event_headers")
 
+  set(namespaces 
+      ${namespaces} ${register_event_object_namespace} 
+      CACHE INTERNAL "namespaces")
+
   if(NOT ${PROJECT_SOURCE_DIR}/include IN_LIST include_paths)
     set(include_paths
         ${PROJECT_SOURCE_DIR}/include ${include_paths}
@@ -327,7 +331,7 @@ endmacro()
 
 macro(build_dict)
 
-  set(oneValueArgs name namespace template)
+  set(oneValueArgs name template)
   cmake_parse_arguments(build_dict "${options}" "${oneValueArgs}"
                         "${multiValueArgs}" ${ARGN})
 
@@ -344,11 +348,10 @@ macro(build_dict)
     set(file_path ${PROJECT_SOURCE_DIR}/include/${header_dir}/${build_dict_name}LinkDef.h)
     set(prefix "#pragma link C++")
 
-    if(DEFINED build_dict_namespace)
-      file(APPEND ${file_path} "${prefix} namespace ${build_dict_namespace};\n")
-      file(APPEND ${file_path}
-           "${prefix} defined_in namespace ${build_dict_namespace};\n\n")
-    endif()
+    list(REMOVE_DUPLICATES namespaces)
+    foreach(namespace ${namespaces})
+      file(APPEND ${file_path} "${prefix} namespace ${namespace};\n")
+    endforeach()
 
     foreach(entry ${dict})
       file(APPEND ${file_path} "${prefix} class ${entry}+;\n")
@@ -438,4 +441,5 @@ macro(clear_cache_variables)
   unset(test_sources CACHE)
   unset(test_dep CACHE)
   unset(test_modules CACHE)
+  unset(namespaces CACHE)
 endmacro()
