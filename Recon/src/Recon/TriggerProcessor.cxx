@@ -1,9 +1,9 @@
 
 #include "Recon/TriggerProcessor.h"
 
-namespace ldmx {
+namespace recon {
 
-void TriggerProcessor::configure(Parameters& parameters) {
+void TriggerProcessor::configure(framework::config::Parameters& parameters) {
   layerESumCut_ = parameters.getParameter<double>("threshold");
   mode_ = parameters.getParameter<int>("mode");
   startLayer_ = parameters.getParameter<int>("start_layer");
@@ -18,16 +18,16 @@ void TriggerProcessor::configure(Parameters& parameters) {
   }
 }
 
-void TriggerProcessor::produce(Event& event) {
+void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
-  const std::vector<EcalHit> ecalRecHits =
-      event.getCollection<EcalHit>(inputColl_);
+  const std::vector<ecal::event::EcalHit> ecalRecHits =
+      event.getCollection<ecal::event::EcalHit>(inputColl_);
 
   std::vector<double> layerDigiE(100, 0.0);  // big empty vector..
 
   /** Loop over all ecal hits in the given event */
-  for (const EcalHit& hit : ecalRecHits) {
-    EcalID id(hit.getID());
+  for (const ecal::event::EcalHit& hit : ecalRecHits) {
+    ldmx::EcalID id(hit.getID());
     if (id.layer() < layerDigiE.size()) {  // just to be safe...
       if (mode_ == 0) {  // Sum over all cells in a given layer
         layerDigiE[id.layer()] += hit.getEnergy();
@@ -51,7 +51,7 @@ void TriggerProcessor::produce(Event& event) {
 
   pass = (layerSum <= layerESumCut_);
 
-  TriggerResult result;
+  recon::event::TriggerResult result;
   result.set(algoName_, pass, 3);
   result.setAlgoVar(0, layerSum);
   result.setAlgoVar(1, layerESumCut_);
@@ -61,10 +61,10 @@ void TriggerProcessor::produce(Event& event) {
 
   // mark the event
   if (pass)
-    setStorageHint(hint_shouldKeep);
+    setStorageHint(framework::hint_shouldKeep);
   else
-    setStorageHint(hint_shouldDrop);
+    setStorageHint(framework::hint_shouldDrop);
 }
-}  // namespace ldmx
+}  // namespace recon
 
-DECLARE_PRODUCER_NS(ldmx, TriggerProcessor)
+DECLARE_PRODUCER_NS(recon, TriggerProcessor)

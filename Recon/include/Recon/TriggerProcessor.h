@@ -15,7 +15,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace recon {
 
 /**
  * @class TriggerProcessor
@@ -29,13 +29,13 @@ namespace ldmx {
  * variables are stored in a TriggerResult object which is added to the
  * collection.
  */
-class TriggerProcessor : public Producer {
+class TriggerProcessor : public framework::Producer {
  public:
   /**
    * Class constructor.
    */
-  TriggerProcessor(const std::string& name, Process& process)
-      : Producer(name, process) {}
+  TriggerProcessor(const std::string& name, framework::Process& process)
+      : framework::Producer(name, process) {}
 
   /**
    * Class destructor.
@@ -47,7 +47,7 @@ class TriggerProcessor : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   /**
    * Run the trigger algorithm and create a TriggerResult
@@ -56,7 +56,7 @@ class TriggerProcessor : public Producer {
    * etc.
    * param event The event to run trigger algorithm on.
    */
-  virtual void produce(Event& event);
+  virtual void produce(framework::Event& event);
 
  private:
   /** The energy sum to make cut on. */
@@ -84,6 +84,6 @@ class TriggerProcessor : public Producer {
   std::string outputColl_;
 };
 
-}  // namespace ldmx
+}  // namespace recon
 
 #endif

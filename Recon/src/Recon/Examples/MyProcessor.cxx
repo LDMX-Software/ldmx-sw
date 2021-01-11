@@ -1,14 +1,14 @@
 
 #include "Recon/Examples/MyProcessor.h"
 
-namespace ldmx {
+namespace recon {
 
-MyProcessor::MyProcessor(const std::string &name, Process &process)
-    : Producer(name, process) {}
+MyProcessor::MyProcessor(const std::string &name, framework::Process &process)
+    : framework::Producer(name, process) {}
 
 MyProcessor::~MyProcessor() {}
 
-void MyProcessor::configure(Parameters &parameters) {
+void MyProcessor::configure(framework::config::Parameters &parameters) {
   /**
    * You access configuration parameters set in the python
    * by asking for the parameter with the same name as the
@@ -20,20 +20,20 @@ void MyProcessor::configure(Parameters &parameters) {
   std::cout << "MyProcessor has my_parameter = " << my_parameter << std::endl;
 }
 
-void MyProcessor::produce(Event &event) {
+void MyProcessor::produce(framework::Event &event) {
   // Check if the collection of reconstructed ECal hits exist.  If not,
   // don't bother processing the event.
   if (!event.exists("EcalRecHits")) return;
 
   // Get the collection of digitized ECal hits from the event
-  const std::vector<EcalHit> hits = event.getCollection<EcalHit>("EcalRecHits");
+  const std::vector<ecal::event::EcalHit> hits = event.getCollection<ecal::event::EcalHit>("EcalRecHits");
 
   // Loop over the collection of hits and print the hit details
-  for (const EcalHit &hit : hits) {
+  for (const ecal::event::EcalHit &hit : hits) {
     // Print the hit
     hit.Print();
   }
 }
-}  // namespace ldmx
+}  // namespace recon
 
-DECLARE_PRODUCER_NS(ldmx, MyProcessor)
+DECLARE_PRODUCER_NS(recon, MyProcessor)

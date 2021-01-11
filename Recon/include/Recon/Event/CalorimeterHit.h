@@ -9,9 +9,10 @@
 #define RECON_EVENT_CALORIMETERHIT_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
+#include "TObject.h" //For ClassDef
 
-namespace ldmx {
+namespace recon {
+namespace event {
 
 /**
  * @class CalorimeterHit
@@ -23,7 +24,7 @@ namespace ldmx {
  * and time.
  */
 class CalorimeterHit {
- public:
+public:
   /**
    * Class constructor.
    */
@@ -153,7 +154,7 @@ class CalorimeterHit {
     return this->getTime() < rhs.getTime();
   }
 
- private:
+private:
   /** The detector ID of the hit. */
   int id_{0};
 
@@ -183,7 +184,7 @@ class CalorimeterHit {
    */
   ClassDef(CalorimeterHit, 1);
 };
-
-}  // namespace ldmx
+} // namespace event
+} // namespace recon
 
 #endif /* RECON_EVENT_CALORIMETERHIT_H_ */

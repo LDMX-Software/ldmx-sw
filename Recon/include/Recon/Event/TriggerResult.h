@@ -16,7 +16,8 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace recon {
+namespace event {
 
 /**
  * @class TriggerResult
@@ -135,6 +136,7 @@ class TriggerResult {
 
   ClassDef(TriggerResult, 1);
 };
-}  // namespace ldmx
+}
+}  // namespace recon
 
 #endif
