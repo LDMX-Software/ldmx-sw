@@ -8,18 +8,18 @@
 
 #include "TVector3.h"
 
-namespace ldmx {
+namespace dqm {
 
-RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name, Process &process)
-    : Analyzer(name, process) {}
+RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name, framework::Process &process)
+    : framework::Analyzer(name, process) {}
 
 RecoilTrackerDQM::~RecoilTrackerDQM() {}
 
 void RecoilTrackerDQM::onProcessStart() {}
 
-void RecoilTrackerDQM::configure(Parameters &parameters) {}
+void RecoilTrackerDQM::configure(framework::config::Parameters &parameters) {}
 
-void RecoilTrackerDQM::analyze(const Event &event) {
+void RecoilTrackerDQM::analyze(const framework::Event &event) {
   // If the collection of findable tracks doesn't exist, stop processing
   // the event.
   if (!event.exists("FindableTracks")) return;
@@ -36,7 +36,7 @@ void RecoilTrackerDQM::analyze(const Event &event) {
   histograms_.fill("axial_track_count",map.axial.size());
 
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
 
   // Search for the recoil electron
   auto [recoilTrackID, recoil] = Analysis::getRecoil(particleMap);
@@ -51,13 +51,13 @@ void RecoilTrackerDQM::analyze(const Event &event) {
   histograms_.fill("recoil_vz",recoilVertex[2]);  */
 
   double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999};
-  const SimTrackerHit *spHit{nullptr};
+  const simcore::event::SimTrackerHit *spHit{nullptr};
   if (event.exists("TargetScoringPlaneHits")) {
     // Get the collection of simulated particles from the event
-    const std::vector<SimTrackerHit> spHits =
-        event.getCollection<SimTrackerHit>("TargetScoringPlaneHits");
+    const std::vector<simcore::event::SimTrackerHit> spHits =
+        event.getCollection<simcore::event::SimTrackerHit>("TargetScoringPlaneHits");
 
-    for (const SimTrackerHit &hit : spHits) {
+    for (const simcore::event::SimTrackerHit &hit : spHits) {
       if ((hit.getTrackID() == recoilTrackID) /*hit caused by recoil*/ and
           (hit.getLayerID() == 2) /*hit on downstream side of target*/ and
           (hit.getMomentum()[2] > 0) /*hit momentum leaving target*/
@@ -106,6 +106,6 @@ void RecoilTrackerDQM::analyze(const Event &event) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, RecoilTrackerDQM)
+DECLARE_ANALYZER_NS(dqm, RecoilTrackerDQM)

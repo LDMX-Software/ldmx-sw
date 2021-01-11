@@ -19,10 +19,10 @@
 #include "Framework/Event.h"
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx {
+namespace dqm {
 
-PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name, Process& process)
-    : Analyzer(name, process) {}
+PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name, framework::Process& process)
+    : framework::Analyzer(name, process) {}
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
 
@@ -98,12 +98,12 @@ void PhotoNuclearDQM::onProcessStart() {
   }
 }
 
-void PhotoNuclearDQM::configure(Parameters& parameters) {}
+void PhotoNuclearDQM::configure(framework::config::Parameters& parameters) {}
 
-void PhotoNuclearDQM::analyze(const Event& event) {
+void PhotoNuclearDQM::analyze(const framework::Event& event) {
   // Get the particle map from the event.  If the particle map is empty,
   // don't process the event.
-  auto particleMap{event.getMap<int, SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
   if (particleMap.size() == 0) return;
 
   // Get the recoil electron
@@ -136,7 +136,7 @@ void PhotoNuclearDQM::analyze(const Event& event) {
   double lnke{-1}, lnt{-1};
   double lpike{-1}, lpit{-1};
 
-  std::vector<const SimParticle*> pnDaughters;
+  std::vector<const simcore::event::SimParticle*> pnDaughters;
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
@@ -269,7 +269,7 @@ void PhotoNuclearDQM::analyze(const Event& event) {
 }
 
 int PhotoNuclearDQM::classifyEvent(
-    const std::vector<const SimParticle*> daughters, double threshold) {
+    const std::vector<const simcore::event::SimParticle*> daughters, double threshold) {
   short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, lambda{0};
 
   // Loop through all of the PN daughters and extract kinematic
@@ -390,7 +390,7 @@ int PhotoNuclearDQM::classifyEvent(
 }
 
 int PhotoNuclearDQM::classifyCompactEvent(
-    const SimParticle* pnGamma, const std::vector<const SimParticle*> daughters,
+    const simcore::event::SimParticle* pnGamma, const std::vector<const simcore::event::SimParticle*> daughters,
     double threshold) {
   short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
@@ -435,7 +435,7 @@ int PhotoNuclearDQM::classifyCompactEvent(
 }
 
 void PhotoNuclearDQM::printParticleTree(
-    std::map<int, SimParticle> particleMap) {
+    std::map<int, simcore::event::SimParticle> particleMap) {
   std::vector<int> printedParticles;
 
   // Loop through the particle map
@@ -457,7 +457,7 @@ void PhotoNuclearDQM::printParticleTree(
 }
 
 std::vector<int> PhotoNuclearDQM::printDaughters(
-    std::map<int, SimParticle> particleMap, const SimParticle particle,
+    std::map<int, simcore::event::SimParticle> particleMap, const simcore::event::SimParticle particle,
     int depth) {
   std::vector<int> printedParticles;
 
@@ -483,6 +483,6 @@ std::vector<int> PhotoNuclearDQM::printDaughters(
   }
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, PhotoNuclearDQM)
+DECLARE_ANALYZER_NS(dqm, PhotoNuclearDQM)

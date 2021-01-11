@@ -1,21 +1,21 @@
 
 #include "DQM/HCalDQM.h"
 
-namespace ldmx {
+namespace dqm {
 
-HCalDQM::HCalDQM(const std::string& name, Process& process)
-    : Analyzer(name, process) {}
+HCalDQM::HCalDQM(const std::string& name, framework::Process& process)
+    : framework::Analyzer(name, process) {}
 
-void HCalDQM::configure(Parameters& parameters) {}
+void HCalDQM::configure(framework::config::Parameters& parameters) {}
 
-void HCalDQM::analyze(const Event& event) {
+void HCalDQM::analyze(const framework::Event& event) {
   // Check if the collection of digitized HCal hits exist. If it doesn't
   // don't continue processing.
   if (!event.exists("hcalDigis")) return;
 
   // Get the collection of HCalDQM digitized hits if the exists
-  const std::vector<HcalHit> hcalHits =
-      event.getCollection<HcalHit>("hcalDigis");
+  const std::vector<hcal::event::HcalHit> hcalHits =
+      event.getCollection<hcal::event::HcalHit>("hcalDigis");
 
   // Get the total hit count
   int hitCount = hcalHits.size();
@@ -25,8 +25,8 @@ void HCalDQM::analyze(const Event& event) {
 
   // Loop through all HCal hits in the event
   // Get non-noise generated hits into new vector for sorting
-  std::vector<const HcalHit*> filteredHits;
-  for (const HcalHit& hit : hcalHits) {
+  std::vector<const hcal::event::HcalHit*> filteredHits;
+  for (const hcal::event::HcalHit& hit : hcalHits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
 
@@ -64,9 +64,9 @@ void HCalDQM::analyze(const Event& event) {
   // Check if the HcalVeto result exists
   if (event.exists("HcalVeto")) {
     // Get the collection of HCalDQM digitized hits if the exists
-    const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
+    const hcal::event::HcalVetoResult hcalVeto = event.getObject<hcal::event::HcalVetoResult>("HcalVeto");
 
-    HcalHit maxPEHit = hcalVeto.getMaxPEHit();
+    hcal::event::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
 
     // Get the max PE and it's time
     maxPE = maxPEHit.getPE();
@@ -88,6 +88,6 @@ void HCalDQM::analyze(const Event& event) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, HCalDQM)
+DECLARE_ANALYZER_NS(dqm, HCalDQM)
