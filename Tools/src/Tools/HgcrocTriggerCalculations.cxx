@@ -6,7 +6,7 @@
 namespace ldmx {
 
 HgcrocTriggerConditions::HgcrocTriggerConditions(
-    const IntegerTableCondition &ict, bool validate)
+    const conditions::IntegerTableCondition &ict, bool validate)
     : ict_{ict} {
   if (!validate) return;
   if (ict_.getColumnCount() < 5) {
@@ -53,7 +53,7 @@ unsigned int HgcrocTriggerCalculations::singleChannelCharge(
 }
 
 HgcrocTriggerCalculations::HgcrocTriggerCalculations(
-    const IntegerTableCondition &ict)
+    const conditions::IntegerTableCondition &ict)
     : conditions_{ict, true} {}
 
 void HgcrocTriggerCalculations::addDigi(unsigned int id, unsigned int tid,
@@ -86,7 +86,7 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
   for (auto ilinear : linearCharge_) {
     unsigned int lcharge = ilinear.second;
     lcharge = lcharge >> shift;
-    uint8_t ccharge = HgcrocTrigDigi::linear2Compressed(lcharge);
+    uint8_t ccharge = recon::event::HgcrocTrigDigi::linear2Compressed(lcharge);
     compressedCharge_[ilinear.first] = ccharge;
   }
 }

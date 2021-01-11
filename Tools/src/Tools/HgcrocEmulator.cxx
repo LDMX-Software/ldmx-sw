@@ -3,7 +3,7 @@
 
 namespace ldmx {
 
-HgcrocEmulator::HgcrocEmulator(const Parameters &ps) {
+HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
   noiseRMS_ = ps.getParameter<double>("noiseRMS");
@@ -56,7 +56,7 @@ void HgcrocEmulator::seedGenerator(uint64_t seed) {
 bool HgcrocEmulator::digitize(
     const int &channelID, const std::vector<double> &voltages,
     const std::vector<double> &times,
-    std::vector<HgcrocDigiCollection::Sample> &digiToAdd) const {
+    std::vector<recon::event::HgcrocDigiCollection::Sample> &digiToAdd) const {
   digiToAdd.clear();  // make sure it is clean
 
   // sum all voltages and do a voltage-weighted average to get the hit time

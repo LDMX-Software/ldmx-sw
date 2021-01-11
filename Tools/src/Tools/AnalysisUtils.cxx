@@ -24,18 +24,16 @@
 //----------//
 #include "TVector3.h"
 
-namespace ldmx {
-
 namespace Analysis {
 
-std::tuple<int, const SimParticle*> getRecoil(
-    const std::map<int, SimParticle>& particleMap) {
+std::tuple<int, const simcore::event::SimParticle*> getRecoil(
+    const std::map<int, simcore::event::SimParticle>& particleMap) {
   // The recoil electron always has a track ID of 1.
   return {1, &(particleMap.at(1))};
 }
 
-const SimParticle* getPNGamma(const std::map<int, SimParticle>& particleMap,
-                              const SimParticle* recoil,
+const simcore::event::SimParticle* getPNGamma(const std::map<int, simcore::event::SimParticle>& particleMap,
+                              const simcore::event::SimParticle* recoil,
                               const float& energyThreshold) {
   // Get all of the daughter track IDs
   auto daughterTrackIDs{recoil->getDaughters()};
@@ -54,7 +52,7 @@ const SimParticle* getPNGamma(const std::map<int, SimParticle>& particleMap,
         // then tag it as the PN gamma.
         return (
             (particleMap.at(daughter.getDaughters().front()).getProcessType() ==
-             SimParticle::ProcessType::photonNuclear) &&
+             simcore::event::SimParticle::ProcessType::photonNuclear) &&
             (daughter.getEnergy() >= energyThreshold));
       });
 
@@ -86,4 +84,3 @@ track.is2s2aFindable()) { map.findable[track.getParticleTrackID()] =  &track;
 
 }  // namespace Analysis
 
-}  // namespace ldmx
