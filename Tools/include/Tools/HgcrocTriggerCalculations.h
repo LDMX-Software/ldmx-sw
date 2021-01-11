@@ -43,7 +43,7 @@ class HgcrocTriggerConditions {
    * @raises Exception if any of the column names from the passed table
    * do not match the hardcoded indices.
    */
-  HgcrocTriggerConditions(const IntegerTableCondition &, bool validate = true);
+  HgcrocTriggerConditions(const conditions::IntegerTableCondition &, bool validate = true);
 
   /**
    * get the ADC pedestal
@@ -91,7 +91,7 @@ class HgcrocTriggerConditions {
 
  private:
   /// reference to the table of conditions storing the chip conditions
-  const IntegerTableCondition &ict_;
+  const conditions::IntegerTableCondition &ict_;
 };  // HgcrocTriggerConditions
 
 /**
@@ -137,7 +137,7 @@ class HgcrocTriggerCalculations {
    *
    * @param[in] ict table of chip conditions
    */
-  HgcrocTriggerCalculations(const IntegerTableCondition &ict);
+  HgcrocTriggerCalculations(const conditions::IntegerTableCondition &ict);
 
   /**
    * Determine the linear charge for the given channel, using the calibration

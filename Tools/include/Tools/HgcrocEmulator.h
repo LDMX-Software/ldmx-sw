@@ -43,7 +43,7 @@ class HgcrocEmulator {
    *
    * Configures the chip emulator using the passed parameters.
    */
-  HgcrocEmulator(const Parameters& ps);
+  HgcrocEmulator(const framework::config::Parameters& ps);
 
   /** Destructor */
   ~HgcrocEmulator() { /* empty on purpose */
@@ -67,9 +67,9 @@ class HgcrocEmulator {
    * Passes the chips conditions to be cached here and
    * used later in digitization.
    *
-   * @param table DoubleTableConditions to be used for chip parameters
+   * @param table conditions::DoubleTableConditions to be used for chip parameters
    */
-  void condition(const DoubleTableCondition& table) {
+  void condition(const conditions::DoubleTableCondition& table) {
     // reset cache of column numbers if table changes
     if (&table != chipConditions_) conditionNamesToIndex_.clear();
     chipConditions_ = &table;
@@ -154,7 +154,7 @@ class HgcrocEmulator {
    */
   bool digitize(const int& channelID, const std::vector<double>& voltages,
                 const std::vector<double>& times,
-                std::vector<HgcrocDigiCollection::Sample>& digiToAdd) const;
+                std::vector<recon::event::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
  private:
   /**
@@ -185,7 +185,7 @@ class HgcrocEmulator {
     double condition{def};
     try {
       condition = chipConditions_->get(id, conditionNamesToIndex_.at(name));
-    } catch (Exception&) {
+    } catch (framework::exception::Exception&) {
       // ignore thrown exceptions and use default instead
       return def;
     }
@@ -252,7 +252,7 @@ class HgcrocEmulator {
    * The defaults are listed below and are separate parameters
    * passed through the python configuration.
    */
-  const DoubleTableCondition* chipConditions_{nullptr};
+  const conditions::DoubleTableCondition* chipConditions_{nullptr};
 
   /**
    * Map of condition names to column numbers
