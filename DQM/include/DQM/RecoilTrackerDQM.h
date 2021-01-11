@@ -25,12 +25,12 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace dqm {
 
-class RecoilTrackerDQM : public Analyzer {
+class RecoilTrackerDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  RecoilTrackerDQM(const std::string& name, Process& process);
+  RecoilTrackerDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
   ~RecoilTrackerDQM();
@@ -40,20 +40,20 @@ class RecoilTrackerDQM : public Analyzer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const Event& event);
+  void analyze(const framework::Event& event);
 
   /** Method executed before processing of events begins. */
   void onProcessStart();
 
 };  // RecoilTrackerDQM
 
-}  // namespace ldmx
+}  // namespace dqm
 
 #endif  // _DQM_RECOIL_TRACKER_DQM_H_

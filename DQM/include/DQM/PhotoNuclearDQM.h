@@ -7,16 +7,16 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace dqm {
 
 // Forward declarations within the ldmx workspace
 class Event;
 class SimParticle;
 
-class PhotoNuclearDQM : public Analyzer {
+class PhotoNuclearDQM : public framework::Analyzer {
  public:
   /// Constructor
-  PhotoNuclearDQM(const std::string& name, Process& process);
+  PhotoNuclearDQM(const std::string& name, framework::Process& process);
 
   /// Destructor
   ~PhotoNuclearDQM();
@@ -27,14 +27,14 @@ class PhotoNuclearDQM : public Analyzer {
    * @param parameters Set of parameters used to configure this
    *                   analyzer.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   /**
    * Process the event and create the histogram summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const Event& event) final override;
+  void analyze(const framework::Event& event) final override;
 
   /// Method executed before processing of events begins.
   void onProcessStart();
@@ -45,7 +45,7 @@ class PhotoNuclearDQM : public Analyzer {
    *
    * @param[in] particleMap The map containing the SimParticles.
    */
-  void printParticleTree(std::map<int, SimParticle> particleMap);
+  void printParticleTree(std::map<int, simcore::event::SimParticle> particleMap);
 
   /**
    * Print the daughters of a particle.
@@ -57,19 +57,19 @@ class PhotoNuclearDQM : public Analyzer {
    * @return[out] A vector with the track IDs of particles that have
    *      already been printed.
    */
-  std::vector<int> printDaughters(std::map<int, SimParticle> particleMap,
-                                  const SimParticle particle, int depth);
+  std::vector<int> printDaughters(std::map<int, simcore::event::SimParticle> particleMap,
+                                  const simcore::event::SimParticle particle, int depth);
 
   /** Method used to classify events. */
-  int classifyEvent(const std::vector<const SimParticle*> daughters,
+  int classifyEvent(const std::vector<const simcore::event::SimParticle*> daughters,
                     double threshold);
 
   /** Method used to classify events in a compact manner. */
-  int classifyCompactEvent(const SimParticle* pnGamma,
-                           const std::vector<const SimParticle*> daughters,
+  int classifyCompactEvent(const simcore::event::SimParticle* pnGamma,
+                           const std::vector<const simcore::event::SimParticle*> daughters,
                            double threshold);
 };
 
-}  // namespace ldmx
+}  // namespace dqm
 
 #endif  // _DQM_ECAL_PN_H_

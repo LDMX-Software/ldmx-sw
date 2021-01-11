@@ -26,12 +26,12 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx {
+namespace dqm {
 
-class TrigScintDQM : public Analyzer {
+class TrigScintDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  TrigScintDQM(const std::string &name, Process &process);
+  TrigScintDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
   ~TrigScintDQM();
@@ -41,14 +41,14 @@ class TrigScintDQM : public Analyzer {
    *
    * @param pSet Set of parameters used to configure this processor.
    */
-  void configure(Parameters &pSet);
+  void configure(framework::config::Parameters &pSet);
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const Event &event);
+  void analyze(const framework::Event &event);
 
   /** Method executed before processing of events begins. */
   void onProcessStart();
@@ -61,6 +61,6 @@ class TrigScintDQM : public Analyzer {
   std::string padName_{"_up"};
 };
 
-}  // namespace ldmx
+}  // namespace dqm
 
 #endif  // _DQM_TRIGSCINT_DQM_H_

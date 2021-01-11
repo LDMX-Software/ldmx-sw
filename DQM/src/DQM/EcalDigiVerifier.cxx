@@ -1,9 +1,9 @@
 
 #include "DQM/EcalDigiVerifier.h"
 
-namespace ldmx {
+namespace dqm {
 
-void EcalDigiVerifier::configure(Parameters &ps) {
+void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
   ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
   ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
   ecalRecHitColl_ = ps.getParameter<std::string>("ecalRecHitColl");
@@ -12,28 +12,28 @@ void EcalDigiVerifier::configure(Parameters &ps) {
   return;
 }
 
-void EcalDigiVerifier::analyze(const ldmx::Event &event) {
+void EcalDigiVerifier::analyze(const framework::Event &event) {
   // get truth information sorted into an ID based map
-  std::vector<SimCalorimeterHit> ecalSimHits =
-      event.getCollection<SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
+  std::vector<simcore::event::SimCalorimeterHit> ecalSimHits =
+      event.getCollection<simcore::event::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
 
   // sort sim hits by ID
   std::sort(ecalSimHits.begin(), ecalSimHits.end(),
-            [](const SimCalorimeterHit &lhs, const SimCalorimeterHit &rhs) {
+            [](const simcore::event::SimCalorimeterHit &lhs, const simcore::event::SimCalorimeterHit &rhs) {
               return lhs.getID() < rhs.getID();
             });
 
-  std::vector<EcalHit> ecalRecHits =
-      event.getCollection<EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
+  std::vector<ecal::event::EcalHit> ecalRecHits =
+      event.getCollection<ecal::event::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
 
   // sort rec hits by ID
   std::sort(ecalRecHits.begin(), ecalRecHits.end(),
-            [](const EcalHit &lhs, const EcalHit &rhs) {
+            [](const ecal::event::EcalHit &lhs, const ecal::event::EcalHit &rhs) {
               return lhs.getID() < rhs.getID();
             });
 
   double totalRecEnergy = 0.;
-  for (const EcalHit &recHit : ecalRecHits) {
+  for (const ecal::event::EcalHit &recHit : ecalRecHits) {
     // skip anything that digi flagged as noise
     if (recHit.isNoise()) continue;
 
@@ -42,7 +42,7 @@ void EcalDigiVerifier::analyze(const ldmx::Event &event) {
     // get information for this hit
     int numSimHits = 0;
     double totalSimEDep = 0.;
-    for (const SimCalorimeterHit &simHit : ecalSimHits) {
+    for (const simcore::event::SimCalorimeterHit &simHit : ecalSimHits) {
       if (rawID == simHit.getID()) {
         numSimHits += simHit.getNumberOfContribs();
         totalSimEDep += simHit.getEdep();
@@ -62,14 +62,14 @@ void EcalDigiVerifier::analyze(const ldmx::Event &event) {
   histograms_.fill("total_rec_energy", totalRecEnergy);
 
   if (totalRecEnergy > 6000.) {
-    setStorageHint(hint_shouldKeep);
+    setStorageHint(framework::hint_shouldKeep);
   } else {
-    setStorageHint(hint_shouldDrop);
+    setStorageHint(framework::hint_shouldDrop);
   }
 
   return;
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, EcalDigiVerifier);
+DECLARE_ANALYZER_NS(dqm, EcalDigiVerifier);

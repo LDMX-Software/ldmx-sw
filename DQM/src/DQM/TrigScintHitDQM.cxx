@@ -7,10 +7,10 @@
 
 #include "DQM/TrigScintHitDQM.h"
 
-namespace ldmx {
+namespace dqm {
 
-TrigScintHitDQM::TrigScintHitDQM(const std::string &name, Process &process)
-    : Analyzer(name, process) {}
+TrigScintHitDQM::TrigScintHitDQM(const std::string &name, framework::Process &process)
+    : framework::Analyzer(name, process) {}
 
 TrigScintHitDQM::~TrigScintHitDQM() {}
 
@@ -51,7 +51,7 @@ void TrigScintHitDQM::onProcessStart() {
   // through and set overflow boolean.
 }
 
-void TrigScintHitDQM::configure(Parameters &ps) {
+void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
   hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
   padName_ = ps.getParameter<std::string>("pad").c_str();
 
@@ -59,10 +59,10 @@ void TrigScintHitDQM::configure(Parameters &ps) {
             << hitCollectionName_ << " and " << padName_ << std::endl;
 }
 
-void TrigScintHitDQM::analyze(const Event &event) {
+void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
-  const std::vector<TrigScintHit> TrigScintHits =
-      event.getCollection<TrigScintHit>(hitCollectionName_);
+  const std::vector<trigscint::event::TrigScintHit> TrigScintHits =
+      event.getCollection<trigscint::event::TrigScintHit>(hitCollectionName_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();
@@ -73,7 +73,7 @@ void TrigScintHitDQM::analyze(const Event &event) {
 
   // Loop through all TrigScint hits in the event
 
-  for (const TrigScintHit &hit : TrigScintHits) {
+  for (const trigscint::event::TrigScintHit &hit : TrigScintHits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
     histograms_.fill("id", hit.getBarID());
@@ -94,6 +94,6 @@ void TrigScintHitDQM::analyze(const Event &event) {
   histograms_.fill("n_hits_noise", noiseHitCount);
 }
 
-}  // namespace ldmx
+}  // namespace dqm
 
-DECLARE_ANALYZER_NS(ldmx, TrigScintHitDQM)
+DECLARE_ANALYZER_NS(dqm, TrigScintHitDQM)

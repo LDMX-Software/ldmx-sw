@@ -20,12 +20,12 @@
 
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx {
+namespace dqm {
 
-class HCalDQM : public Analyzer {
+class HCalDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  HCalDQM(const std::string& name, Process& process);
+  HCalDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
   ~HCalDQM() {}
@@ -35,20 +35,20 @@ class HCalDQM : public Analyzer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const Event& event);
+  void analyze(const framework::Event& event);
 
  private:
   /** The maximum PE threshold used for the veto. */
   float maxPEThreshold_{5};
 };
 
-}  // namespace ldmx
+}  // namespace dqm
 
 #endif  // _DQM_HCAL_DQM_H_
