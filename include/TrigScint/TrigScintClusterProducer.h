@@ -15,25 +15,25 @@
 #include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
-namespace ldmx {
+namespace trigscint {
 
 /**
  * @class TrigScintClusterProducer
  * @brief
  */
-class TrigScintClusterProducer : public ldmx::Producer {
+class TrigScintClusterProducer : public framework::Producer {
  public:
-  TrigScintClusterProducer(const std::string& name, ldmx::Process& process)
-      : ldmx::Producer(name, process) {}
+  TrigScintClusterProducer(const std::string& name, framework::Process& process)
+      : Producer(name, process) {}
 
-  virtual void configure(ldmx::Parameters& ps);
+  virtual void configure(framework::config::Parameters& ps);
 
-  virtual void produce(ldmx::Event& event);
+  virtual void produce(framework::Event& event);
 
   /**
    * add a hit at index idx to a cluster
    */
-  virtual void addHit(uint idx, TrigScintHit hit);
+  virtual void addHit(uint idx, trigscint::event::TrigScintHit hit);
 
   virtual void onFileOpen();
 
@@ -45,7 +45,7 @@ class TrigScintClusterProducer : public ldmx::Producer {
 
  private:
   // collection of clusters produced
-  std::vector<TrigScintCluster> clusters_;
+  std::vector<trigscint::event::TrigScintCluster> clusters_;
 
   // cluster seeding threshold
   double seed_{0.};
@@ -93,6 +93,6 @@ class TrigScintClusterProducer : public ldmx::Producer {
   // empty map container
   std::map<int, int> hitChannelMap_;
 };
-}  // namespace ldmx
+}  // namespace trigscint
 
 #endif /* EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H */

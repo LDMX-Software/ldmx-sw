@@ -4,15 +4,15 @@
 
 #include <iostream>
 
-namespace ldmx {
+namespace trigscint {
 
 TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
-                                             Process &process)
+                                             framework::Process&process)
     : Producer(name, process) {}
 
 TrigScintDigiProducer::~TrigScintDigiProducer() {}
 
-void TrigScintDigiProducer::configure(Parameters &parameters) {
+void TrigScintDigiProducer::configure(framework::config::Parameters &parameters) {
   // Configure this instance of the producer
   stripsPerArray_ = parameters.getParameter<int>("number_of_strips");
   numberOfArrays_ = parameters.getParameter<int>("number_of_arrays");
@@ -27,12 +27,12 @@ void TrigScintDigiProducer::configure(Parameters &parameters) {
   random_ =
       std::make_unique<TRandom3>(parameters.getParameter<int>("randomSeed"));
 
-  noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_, false);
+  noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>(meanNoise_, false);
   noiseGenerator_->setNoiseThreshold(1);
 }
 
-TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
-  TrigScintID tempID(module, random_->Integer(stripsPerArray_));
+ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
+  ldmx::TrigScintID tempID(module, random_->Integer(stripsPerArray_));
   if (module >= TrigScintSection::NUM_SECTIONS) {
     // Throw an exception
     std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: "
@@ -43,30 +43,30 @@ TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
   return tempID;
 }
 
-void TrigScintDigiProducer::produce(Event &event) {
+void TrigScintDigiProducer::produce(framework::Event &event) {
   // Need to handle seeding on the first event
   if (!noiseGenerator_->hasSeed()) {
-    const auto &rseed = getCondition<RandomNumberSeedService>(
-        RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    const auto &rseed = getCondition<framework::RandomNumberSeedService>(
+        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     noiseGenerator_->seedGenerator(
         rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
   }
 
-  std::map<TrigScintID, int> cellPEs;
-  std::map<TrigScintID, int> cellMinPEs;
-  std::map<TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
-  std::set<TrigScintID> noiseHitIDs;
+  std::map<ldmx::TrigScintID, int> cellPEs;
+  std::map<ldmx::TrigScintID, int> cellMinPEs;
+  std::map<ldmx::TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
+  std::set<ldmx::TrigScintID> noiseHitIDs;
 
   auto numRecHits{0};
 
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{
-      event.getCollection<SimCalorimeterHit>(inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, SimParticle>("SimParticles")};
+      event.getCollection<simcore::event::SimCalorimeterHit>(inputCollection_, inputPassName_)};
+  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
 
   int module{-1};
   for (const auto &simHit : simHits) {
-    TrigScintID id(simHit.getID());
+    ldmx::TrigScintID id(simHit.getID());
 
     // Just set the module ID to use for noise hits here.  Given that
     // we are currently processing a single module at a time, setting
@@ -126,13 +126,13 @@ void TrigScintDigiProducer::produce(Event &event) {
   }
 
   // Create the container to hold the digitized trigger scintillator hits.
-  std::vector<TrigScintHit> trigScintHits;
+  std::vector<trigscint::event::TrigScintHit> trigScintHits;
 
   // loop over detIDs and simulate number of PEs
   int ihit = 0;
-  for (std::map<TrigScintID, float>::iterator it = Edep.begin();
+  for (std::map<ldmx::TrigScintID, float>::iterator it = Edep.begin();
        it != Edep.end(); ++it) {
-    TrigScintID id(it->first);
+    ldmx::TrigScintID id(it->first);
 
     double depEnergy = Edep[id];
     Time[id] = Time[id] / Edep[id];
@@ -144,7 +144,7 @@ void TrigScintDigiProducer::produce(Event &event) {
 
     // If a cell has a PE count above threshold, persit the hit.
     if (cellPEs[id] >= 1) {
-      TrigScintHit hit;
+      trigscint::event::TrigScintHit hit;
       hit.setID(id.raw());
       hit.setPE(cellPEs[id]);
       hit.setMinPE(cellMinPEs[id]);
@@ -181,17 +181,17 @@ void TrigScintDigiProducer::produce(Event &event) {
   std::vector<double> noiseHits_PE =
       noiseGenerator_->generateNoiseHits(numEmptyCells);
 
-  TrigScintID tempID;
+  ldmx::TrigScintID tempID;
 
   for (auto &noiseHitPE : noiseHits_PE) {
-    TrigScintHit hit;
+    trigscint::event::TrigScintHit hit;
     // generate random ID from remaining cells
     do {
       tempID = generateRandomID(module);
     } while (Edep.find(tempID) != Edep.end() ||
              noiseHitIDs.find(tempID) != noiseHitIDs.end());
 
-    TrigScintID noiseID = tempID;
+    ldmx::TrigScintID noiseID = tempID;
 
     noiseHitIDs.insert(noiseID);
     hit.setID(noiseID.raw());
@@ -215,6 +215,6 @@ void TrigScintDigiProducer::produce(Event &event) {
 
   event.add(outputCollection_, trigScintHits);
 }
-}  // namespace ldmx
+}  // namespace trigscint
 
-DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);
+DECLARE_PRODUCER_NS(trigscint, TrigScintDigiProducer);

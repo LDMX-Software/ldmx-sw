@@ -13,11 +13,11 @@ find_package(ROOT CONFIG REQUIRED)
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
 
-  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+  register_event_object( module_path "TrigScint/Event" namespace "trigscint::event" 
                          class "TrigScintHit" type "collection" )
-  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+  register_event_object( module_path "TrigScint/Event" namespace "trigscint::event" 
                          class "TrigScintCluster" type "collection" )
-  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+  register_event_object( module_path "TrigScint/Event" namespace "trigscint::event" 
                          class "TrigScintTrack" type "collection" )
   
   # Generate the files needed to build the event classes.
