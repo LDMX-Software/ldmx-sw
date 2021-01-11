@@ -9,7 +9,7 @@
 
 #include "Framework/ConditionsObjectProvider.h"
 
-namespace ldmx {
+namespace conditions {
 
 /**
  * @class ConditionsObjectProvider which can be configured to load conditions
@@ -37,22 +37,22 @@ namespace ldmx {
  Also, the variable ${LDMX_CONDITION_TAG} will be replaced with the
  * tagname provided in the constructor.
  */
-class SimpleCSVTableProvider : public ConditionsObjectProvider {
+class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
  public:
   SimpleCSVTableProvider(const std::string& name, const std::string& tagname,
-                         const Parameters& parameters, Process& process);
+                         const framework::config::Parameters& parameters, framework::Process& process);
 
   virtual ~SimpleCSVTableProvider();
 
-  virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const EventHeader& context);
+  virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
+      const ldmx::EventHeader& context);
 
  private:
   enum { OBJ_unknown, OBJ_int, OBJ_double } objectType_;
   std::vector<std::string> columns_;
 
   struct Entry {
-    ConditionsIOV iov_;
+    framework::ConditionsIOV iov_;
     std::string url_;
     std::vector<int> ivalues_;
     std::vector<double> dvalues_;
@@ -66,5 +66,5 @@ class SimpleCSVTableProvider : public ConditionsObjectProvider {
   std::string expandEnv(const std::string& s) const;
 };
 
-}  // namespace ldmx
+}  // namespace conditions
 #endif

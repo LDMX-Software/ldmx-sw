@@ -4,11 +4,11 @@
 #include "DetDescr/DetectorIDInterpreter.h"
 #include "boost/format.hpp"
 
-namespace ldmx {
+namespace conditions {
 namespace utility {
 
 static void storeIdFields(unsigned int id, std::ostream& s) {
-  DetectorIDInterpreter did(id);
+  ldmx::DetectorIDInterpreter did(id);
 
   for (auto field : did.getFieldList()) {
     s << ",id:\"" << field->getFieldName() << '"';
@@ -33,7 +33,7 @@ void storeT(const T& t, std::ostream& s, bool expandIds) {
     // write the id in hex
     s << boost::format("0x%08x") % row.first;
     if (expandIds) {
-      DetectorIDInterpreter did(row.first);
+      ldmx::DetectorIDInterpreter did(row.first);
 
       for (int i = 0; i < did.getFieldCount(); i++)
         s << ',' << std::setprecision(10) << did.getFieldValue(i);
@@ -46,9 +46,9 @@ void SimpleTableStreamerCSV::store(const IntegerTableCondition& t,
                                    std::ostream& s, bool expandIds) {
   storeT<IntegerTableCondition, int>(t, s, expandIds);
 }
-void SimpleTableStreamerCSV::store(const DoubleTableCondition& t,
+void SimpleTableStreamerCSV::store(const conditions::DoubleTableCondition& t,
                                    std::ostream& s, bool expandIds) {
-  storeT<DoubleTableCondition, double>(t, s, expandIds);
+  storeT<conditions::DoubleTableCondition, double>(t, s, expandIds);
 }
 
 static int convert(const std::string& s, int dummy) {
@@ -176,9 +176,9 @@ void SimpleTableStreamerCSV::load(IntegerTableCondition& table,
   loadT<IntegerTableCondition, int>(table, is);
 }
 
-void SimpleTableStreamerCSV::load(DoubleTableCondition& table,
+void SimpleTableStreamerCSV::load(conditions::DoubleTableCondition& table,
                                   std::istream& is) {
-  loadT<DoubleTableCondition, double>(table, is);
+  loadT<conditions::DoubleTableCondition, double>(table, is);
 }
 }  // namespace utility
-}  // namespace ldmx
+}  // namespace conditions
