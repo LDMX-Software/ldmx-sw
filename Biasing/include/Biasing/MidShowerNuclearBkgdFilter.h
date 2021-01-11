@@ -109,22 +109,6 @@ class MidShowerNuclearBkgdFilter : public UserAction {
   bool isNuclearProcess(const G4VProcess* proc) const;
 
   /**
-   * Checks if any of the passed tracks were created via the nuclear processes.
-   *
-   * @note Ignores tracks that don't have an assigned creator process.
-   * @note Returns false if list is nullptr
-   * @note Checks if creator process name *contains* the nuclear names.
-   * This is because sometimes the configured process will end up bing biased
-   * and the full process name will wrapped by 'biasWrapper()'.
-   *
-   * @see isNuclearProcess
-   *
-   * @param[in] list vector list of tracks to check
-   * @return true if any of the listed tracks was created via the configured process
-   */
-  bool anyCreatedViaNuclear(const std::vector<const G4Track*>* list) const;
-
-  /**
    * Helper to save the passed track
    *
    * @note Assumes user track information has already been created

@@ -11,7 +11,6 @@
 
 #include "SimCore/DarkBrem/G4APrime.h"  //checking if particles match A'
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //checking for dark brem secondaries
-#include "SimCore/UserEventInformation.h"  //set the weight for the event
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
 #include "G4LogicalVolumeStore.hh"  //for the store
@@ -108,23 +107,8 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
     userInfo->setSaveFlag(true);
     if (track->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
       // check if A' was made in the desired volume and has the minimum energy
-      auto event{G4EventManager::GetEventManager()};
       if (not inDesiredVolume(track)) {
         AbortEvent("A' wasn't produced inside of the requested volume.");
-      } else {
-        if (!event->GetUserInformation()) {
-          event->SetUserInformation(new UserEventInformation);
-        }
-        static_cast<UserEventInformation*>(event->GetUserInformation())
-            ->setWeight(track->GetWeight());
-        /* debug printout to check weighting of events
-        std::cout << "[ EcalDarkBremFilter ]: "
-            << "(" << event->GetConstCurrentEvent()->GetEventID()
-            << ") weighted "
-            << std::setprecision(std::numeric_limits<double>::digits10 + 1)
-            << track->GetWeight()
-            << std::endl;
-         */
       }  // A' was made in desired volume and has the minimum energy
     }    // track was A'
   }      // track created by dark brem process
