@@ -23,13 +23,13 @@
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/Event/SimParticle.h"
 
-namespace ldmx {
+namespace simcore {
 
 RootCompleteReSim::RootCompleteReSim(const std::string& name,
-                                     Parameters& parameters)
+                                     framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
   std::string filename = parameters_.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<EventFile>(filename);
+  ifile_ = std::make_unique<framework::EventFile>(filename);
   ifile_->setupEvent(&ievent_);
 
   simParticleCollName_ =
@@ -51,7 +51,7 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
     anEvent->SetEventAborted();
   }
 
-  auto simParticles{ievent_.getMap<int, SimParticle>(simParticleCollName_,
+  auto simParticles{ievent_.getMap<int, simcore::event::SimParticle>(simParticleCollName_,
                                                      simParticlePassName_)};
   std::vector<G4PrimaryVertex*> vertices;  // vertices already put into Geant4
   for (const auto& [trackID, sp] : simParticles) {
@@ -97,6 +97,6 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, RootCompleteReSim)
+DECLARE_GENERATOR(simcore, RootCompleteReSim)

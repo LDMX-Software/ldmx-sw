@@ -18,7 +18,7 @@ class G4Track;
 class G4BiasingProcessInterface;
 class G4VBiasingOperation;
 
-namespace ldmx {
+namespace simcore {
 
 class DarkBremXsecBiasingOperator : public XsecBiasingOperator {
  public:
@@ -64,6 +64,6 @@ class DarkBremXsecBiasingOperator : public XsecBiasingOperator {
   double dbXsecBiased_{0};
 
 };  // DarkBremXsecBiasingOperator
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_DARKBREMXSECBIASINGOPERATOR_H

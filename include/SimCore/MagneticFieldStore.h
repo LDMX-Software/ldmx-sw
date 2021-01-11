@@ -10,7 +10,7 @@
 // Geant4
 #include "G4MagneticField.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class MagneticFieldStore
@@ -68,6 +68,6 @@ class MagneticFieldStore {
   MagFieldMap magFields_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

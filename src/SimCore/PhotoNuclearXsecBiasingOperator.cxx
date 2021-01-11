@@ -8,7 +8,7 @@
 
 #include "SimCore/PhotoNuclearXsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 const std::string PhotoNuclearXsecBiasingOperator::PHOTONUCLEAR_PROCESS =
     "photonNuclear";
@@ -110,4 +110,4 @@ PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
   !XsecBiasingOperator::biasIncident_ && track->GetParentID() != 1) { return 0;
   }*/
 }
-}  // namespace ldmx
+}  // namespace simcore

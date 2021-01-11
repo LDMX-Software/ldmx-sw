@@ -14,7 +14,7 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace ldmx {
+namespace simcore {
 
 TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName,
                          int subDetID)
@@ -58,7 +58,7 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
   // Set the ID on the hit.
   auto bar{track->GetVolume()->GetCopyNo()};
-  TrigScintID id(moduleId_, bar);
+  ldmx::TrigScintID id(moduleId_, bar);
   hit->setID(id.raw());
 
   // Set the track ID on the hit.
@@ -71,4 +71,4 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
   return true;
 }
-}  // namespace ldmx
+}  // namespace simcore

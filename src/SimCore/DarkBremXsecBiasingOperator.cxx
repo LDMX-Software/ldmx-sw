@@ -16,7 +16,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-namespace ldmx {
+namespace simcore {
 
 const std::string DarkBremXsecBiasingOperator::DARKBREM_PROCESS = "eDBrem";
 
@@ -67,4 +67,4 @@ DarkBremXsecBiasingOperator::ProposeOccurenceBiasingOperation(
   } else
     return 0;
 }
-}  // namespace ldmx
+}  // namespace simcore

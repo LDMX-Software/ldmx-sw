@@ -14,9 +14,9 @@
 #include "G4Step.hh"
 #include "G4Track.hh"
 
-namespace ldmx {
+namespace simcore {
 
-UserAction::UserAction(const std::string& name, Parameters& parameters) {
+UserAction::UserAction(const std::string& name, framework::config::Parameters& parameters) {
   name_ = name;
   parameters_ = parameters;
 }
@@ -27,4 +27,4 @@ void UserAction::declare(const std::string& className,
                          UserActionBuilder* builder) {
   UserActionManager::getInstance().registerAction(className, builder);
 }
-}  // namespace ldmx
+}  // namespace simcore

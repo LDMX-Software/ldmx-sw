@@ -32,7 +32,7 @@
 
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 class Parameters;
 
@@ -57,7 +57,7 @@ class RootSimFromEcalSP : public PrimaryGenerator {
    * collection for Ecal Scoring Plane hits ecalSPHitsPassName : name of pass
    * for Ecal Scoring Plane hits
    */
-  RootSimFromEcalSP(const std::string& name, Parameters& parameters);
+  RootSimFromEcalSP(const std::string& name, framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -92,14 +92,14 @@ class RootSimFromEcalSP : public PrimaryGenerator {
   /**
    * The input root file
    */
-  std::unique_ptr<EventFile> ifile_;
+  std::unique_ptr<framework::EventFile> ifile_;
 
   /**
    * The input ldmx event bus
    */
-  Event ievent_;
+  framework::Event ievent_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_ROOTSIMFROMECALSP_H

@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class UserPrimaryParticleInformation
@@ -53,6 +53,6 @@ class UserPrimaryParticleInformation
   int hepEvtStatus_{-1};
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

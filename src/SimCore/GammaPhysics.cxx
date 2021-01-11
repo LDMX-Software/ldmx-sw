@@ -7,7 +7,7 @@
 
 #include "SimCore/GammaPhysics.h"
 
-namespace ldmx {
+namespace simcore {
 
 GammaPhysics::GammaPhysics(const G4String& name)
     : G4VPhysicsConstructor(name) {}
@@ -51,4 +51,4 @@ void GammaPhysics::ConstructProcess() {
     }
   }
 }
-}  // namespace ldmx
+}  // namespace simcore

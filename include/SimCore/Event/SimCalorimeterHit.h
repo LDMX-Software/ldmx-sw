@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_SIMCALORIMETERHIT_H_
-#define EVENT_SIMCALORIMETERHIT_H_
+#ifndef SIMCORE_EVENT_SIMCALORIMETERHIT_H_
+#define SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 
 // ROOT
 #include "TObject.h"  //For ClassDef
@@ -13,7 +13,8 @@
 // LDMX
 #include "SimCore/Event/SimParticle.h"
 
-namespace ldmx {
+namespace simcore {
+namespace event {
 
 /**
  * @class SimCalorimeterHit
@@ -250,7 +251,7 @@ class SimCalorimeterHit {
    */
   ClassDef(SimCalorimeterHit, 3)
 };
-
-}  // namespace ldmx
+} // namespace event
+}  // namespace simcore
 
 #endif

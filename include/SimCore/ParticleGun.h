@@ -21,7 +21,7 @@
 // Forward declarations
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 // Forward declarations
 class Parameters;
@@ -45,7 +45,7 @@ class ParticleGun : public PrimaryGenerator {
    *  time     : time to shoot at (ns)
    *  direction: direction to shoot in (unitless three-vector)
    */
-  ParticleGun(const std::string& name, Parameters& parameters);
+  ParticleGun(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~ParticleGun();
@@ -70,6 +70,6 @@ class ParticleGun : public PrimaryGenerator {
 
 };  // ParticleGun
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_PARTICLE_GUN_H

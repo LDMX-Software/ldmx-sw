@@ -32,7 +32,7 @@
 #include "G4UIsession.hh"
 #include "Randomize.hh"
 
-namespace ldmx {
+namespace simcore {
 
 const std::vector<std::string> Simulator::invalidCommands_ = {
     "/run/initialize",        // hard coded at the right time
@@ -43,8 +43,8 @@ const std::vector<std::string> Simulator::invalidCommands_ = {
                               // path to the detector description (required)
 };
 
-Simulator::Simulator(const std::string& name, ldmx::Process& process)
-    : Producer(name, process), conditionsIntf_(this) {
+Simulator::Simulator(const std::string& name, framework::Process& process)
+    : framework::Producer(name, process), conditionsIntf_(this) {
   // Get the ui manager from geant
   //      This pointer is handled by Geant4
   uiManager_ = G4UImanager::GetUIpointer();
@@ -52,7 +52,7 @@ Simulator::Simulator(const std::string& name, ldmx::Process& process)
 
 Simulator::~Simulator() {}
 
-void Simulator::configure(Parameters& parameters) {
+void Simulator::configure(framework::config::Parameters& parameters) {
   // parameters used to configure the simulation
   parameters_ = parameters;
 
@@ -122,7 +122,7 @@ void Simulator::configure(Parameters& parameters) {
   }
 }
 
-void Simulator::onFileOpen(EventFile& file) {
+void Simulator::onFileOpen(framework::EventFile& file) {
   // Initialize persistency manager and connect it to the current EventFile
   persistencyManager_ =
       std::make_unique<simcore::persist::RootPersistencyManager>(
@@ -130,7 +130,7 @@ void Simulator::onFileOpen(EventFile& file) {
   persistencyManager_->Initialize();
 }
 
-void Simulator::beforeNewRun(RunHeader& header) {
+void Simulator::beforeNewRun(framework::RunHeader& header) {
   // Get the detector header from the user detector construction
   DetectorConstruction* detector =
       static_cast<RunManager*>(RunManager::GetRunManager())
@@ -220,7 +220,7 @@ void Simulator::beforeNewRun(RunHeader& header) {
   }
 
   auto generators{
-      parameters_.getParameter<std::vector<Parameters>>("generators")};
+      parameters_.getParameter<std::vector<framework::config::Parameters>>("generators")};
   int counter = 0;
   for (auto const& gen : generators) {
     std::string genID = "Gen " + std::to_string(++counter);
@@ -285,16 +285,16 @@ void Simulator::beforeNewRun(RunHeader& header) {
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const RunHeader&) {
-  const RandomNumberSeedService& rseed = getCondition<RandomNumberSeedService>(
-      RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+void Simulator::onNewRun(const framework::RunHeader&) {
+  const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
   setSeeds(seeds);
 }
 
-void Simulator::produce(ldmx::Event& event) {
+void Simulator::produce(framework::Event& event) {
   // Pass the current LDMX event object to the persistency manager.  This
   // is needed by the persistency manager to fill the current event.
   persistencyManager_->setCurrentEvent(&event);
@@ -363,7 +363,7 @@ void Simulator::onProcessStart() {
   return;
 }
 
-void Simulator::onFileClose(EventFile&) {
+void Simulator::onFileClose(framework::EventFile&) {
   // End the current run and print out some basic statistics if verbose
   // level > 0.
   runManager_->TerminateEventLoop();
@@ -440,6 +440,6 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   G4Random::setTheSeeds(&seedVec[0]);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_PRODUCER_NS(ldmx, Simulator)
+DECLARE_PRODUCER_NS(simcore, Simulator)

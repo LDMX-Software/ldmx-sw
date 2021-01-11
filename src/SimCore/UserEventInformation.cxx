@@ -5,7 +5,7 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 UserEventInformation::UserEventInformation() {}
 
@@ -16,4 +16,4 @@ void UserEventInformation::Print() const {
             << "Brem candidate count: " << bremCandidateCount_ << "\n"
             << std::endl;
 }
-}  // namespace ldmx
+}  // namespace simcore

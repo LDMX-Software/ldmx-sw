@@ -10,7 +10,7 @@
 class G4Step;
 class G4TouchableHistory;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * Class defining a sensitive detector of type trigger scintillator.
@@ -41,6 +41,6 @@ class TrigScintSD : public CalorimeterSD {
   int moduleId_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

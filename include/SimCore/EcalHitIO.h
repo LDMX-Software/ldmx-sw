@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class EcalHitIO
@@ -56,7 +56,7 @@ class EcalHitIO {
   /**
    * Configure the EcalHitIO using the passed parameters
    */
-  void configure(const Parameters& ps);
+  void configure(const framework::config::Parameters& ps);
 
   /**
    * Write out a Geant4 hits collection to the provided ROOT array.
@@ -64,7 +64,7 @@ class EcalHitIO {
    * @param outputColl The output collection in ROOT.
    */
   void writeHitsCollection(G4CalorimeterHitsCollection* hc,
-                           std::vector<SimCalorimeterHit>& outputColl);
+                           std::vector<simcore::event::SimCalorimeterHit>& outputColl);
 
   /**
    * Set whether hit contributions should be enabled for the output hits.
@@ -98,6 +98,6 @@ class EcalHitIO {
   bool compressHitContribs_{true};
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

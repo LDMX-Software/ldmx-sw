@@ -20,7 +20,7 @@
 // Forward declarations
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 // Forward declarations
 class Parameters;
@@ -39,7 +39,7 @@ class GeneralParticleSource : public PrimaryGenerator {
    * Parameters:
    *  initCommands : vector of Geant4 strings to initialize the GPS
    */
-  GeneralParticleSource(const std::string& name, Parameters& parameters);
+  GeneralParticleSource(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~GeneralParticleSource();
@@ -62,6 +62,6 @@ class GeneralParticleSource : public PrimaryGenerator {
 
 };  // GeneralParticleSource
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_GENERALPARTICLESOURCE_H

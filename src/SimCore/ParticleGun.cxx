@@ -25,9 +25,9 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace simcore {
 
-ParticleGun::ParticleGun(const std::string& name, Parameters& parameters)
+ParticleGun::ParticleGun(const std::string& name, framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -84,6 +84,6 @@ void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   theGun_.GeneratePrimaryVertex(event);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, ParticleGun)
+DECLARE_GENERATOR(simcore, ParticleGun)

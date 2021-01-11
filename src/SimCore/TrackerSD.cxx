@@ -13,7 +13,7 @@
 // LDMX
 #include "DetDescr/IDField.h"
 
-namespace ldmx {
+namespace simcore {
 
 TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subDetID)
     : G4VSensitiveDetector(name), hitsCollection_(0) {
@@ -24,7 +24,7 @@ TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subDetID)
   G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
   // Set the subdet ID as it will always be the same for every hit.
-  subDetID_ = SubdetectorIDType(subDetID);
+  subDetID_ = ldmx::SubdetectorIDType(subDetID);
 }
 
 TrackerSD::~TrackerSD() {}
@@ -103,7 +103,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
   int layer = copyNum / 10;
   int module = copyNum % 10;
-  TrackerID id(subDetID_, layer, module);
+  ldmx::TrackerID id(subDetID_, layer, module);
   hit->setID(id.raw());
   hit->setLayerID(layer);
   hit->setModuleID(module);
@@ -148,4 +148,4 @@ void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace simcore

@@ -24,7 +24,7 @@
 //----------//
 #include "XsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 class ElectroNuclearXsecBiasingOperator : public XsecBiasingOperator {
  public:
@@ -53,6 +53,6 @@ class ElectroNuclearXsecBiasingOperator : public XsecBiasingOperator {
   static const std::string ELECTRONUCLEAR_PROCESS;
 
 };  // ElectroNuclearXsecBiasingOperator
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // BIASING_ELECTRONUCLEARXSECBIASINGOPERATOR_H_

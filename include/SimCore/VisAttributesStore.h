@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VisAttributes.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class VisAttributesStore
@@ -70,6 +70,6 @@ class VisAttributesStore {
   VisAttributesMap visAttributesMap_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

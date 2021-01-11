@@ -11,7 +11,7 @@
 
 #include "SimCore/PhotoNuclearXsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 class GammaToMuPairXsecBiasingOperator
     : public PhotoNuclearXsecBiasingOperator {
@@ -29,6 +29,6 @@ class GammaToMuPairXsecBiasingOperator
   /** Geant4 gamma->mu+mu- process name. */
   static const std::string GAMMATOMUPAIR_PROCESS;
 };
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // BIASING_GAMMATOMUPAIRXSECBIASINGOPERATOR_H_

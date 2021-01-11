@@ -14,9 +14,9 @@
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"
 
-namespace ldmx {
+namespace simcore {
 
-APrimePhysics::APrimePhysics(Parameters &params, const G4String &name)
+APrimePhysics::APrimePhysics(framework::config::Parameters &params, const G4String &name)
     : G4VPhysicsConstructor(name), aprimeDef_(nullptr) {
   aprimeMass_ = params.getParameter<double>("APrimeMass");
   int bremMethodInt = params.getParameter<int>("darkbrem_method");
@@ -66,4 +66,4 @@ void APrimePhysics::ConstructProcess() {
   }
 }
 
-}  // namespace ldmx
+}  // namespace simcore

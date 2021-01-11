@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace ldmx {
+namespace simcore {
 
 LHEEvent::LHEEvent(std::string& line) {
   std::istringstream iss(line);
@@ -96,4 +96,4 @@ void LHEEvent::setVertex(const std::string& line) {
   vtx_[2] = atof(tokens[3].c_str());
 }
 
-}  // namespace ldmx
+}  // namespace simcore

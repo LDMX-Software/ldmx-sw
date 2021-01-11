@@ -1,5 +1,5 @@
-#ifndef EVENT_SIMPARTICLE_H
-#define EVENT_SIMPARTICLE_H
+#ifndef SIMCORE_EVENT_SIMPARTICLE_H
+#define SIMCORE_EVENT_SIMPARTICLE_H
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -13,7 +13,8 @@
 #include <string>
 #include <vector>
 
-namespace ldmx {
+namespace simcore {
+namespace event {
 
 /**
  * Class representing a simulated particle.
@@ -385,7 +386,7 @@ class SimParticle {
   ClassDef(SimParticle, 7);
 
 };  // SimParticle
+} // namespace event
+}  // namespace simcore
 
-}  // namespace ldmx
-
-#endif  // EVENT_SIMPARTICLE_H
+#endif  // SIMCORE_EVENT_SIMPARTICLE_H

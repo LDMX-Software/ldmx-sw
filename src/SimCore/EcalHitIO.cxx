@@ -9,25 +9,25 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 
-namespace ldmx {
+namespace simcore {
 
-void EcalHitIO::configure(const Parameters& ps) {
+void EcalHitIO::configure(const framework::config::Parameters& ps) {
   enableHitContribs_ = ps.getParameter<bool>("enableHitContribs");
   compressHitContribs_ = ps.getParameter<bool>("compressHitContribs");
 }
 
 void EcalHitIO::writeHitsCollection(
     G4CalorimeterHitsCollection* hc,
-    std::vector<SimCalorimeterHit>& outputColl) {
-  const EcalHexReadout& hexReadout =
-      conditionsIntf_.getCondition<EcalHexReadout>(
-          EcalHexReadout::CONDITIONS_OBJECT_NAME);
+    std::vector<simcore::event::SimCalorimeterHit>& outputColl) {
+  const ldmx::EcalHexReadout& hexReadout =
+      conditionsIntf_.getCondition<ldmx::EcalHexReadout>(
+          ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // get ancestral mapping of tracks
   auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
   int nHits = hc->GetSize();
-  std::map<int, SimCalorimeterHit> hitMap;
+  std::map<int, simcore::event::SimCalorimeterHit> hitMap;
 
   // Loop over input hits from Geant4.
   for (int iHit = 0; iHit < nHits; iHit++) {
@@ -36,12 +36,12 @@ void EcalHitIO::writeHitsCollection(
     int hitID = g4hit->getID();
 
     // See if hit exists in map already.
-    std::map<int, SimCalorimeterHit>::iterator it = hitMap.find(hitID);
+    std::map<int, simcore::event::SimCalorimeterHit>::iterator it = hitMap.find(hitID);
 
     // Is it a new hit?
     if (it == hitMap.end()) {
       // Create sim hit and assign the ID.
-      hitMap[hitID] = SimCalorimeterHit();
+      hitMap[hitID] = simcore::event::SimCalorimeterHit();
       hitMap[hitID].setID(hitID);
 
       /**
@@ -100,4 +100,4 @@ void EcalHitIO::writeHitsCollection(
   return;
 }
 
-}  // namespace ldmx
+}  // namespace simcore

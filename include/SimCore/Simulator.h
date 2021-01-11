@@ -38,7 +38,7 @@ class RootPersistencyManager;
 }
 }  // namespace simcore
 
-namespace ldmx {
+namespace simcore {
 
 class EventFile;
 class ParameterSet;
@@ -53,7 +53,7 @@ class DetectorConstruction;
  * Sim* modules.  This producer is mainly focused on calling appropriate
  * functions at the right time in the processing chain.
  */
-class Simulator : public ldmx::Producer {
+class Simulator : public framework::Producer {
  public:
   /**
    * Constructor.
@@ -65,7 +65,7 @@ class Simulator : public ldmx::Producer {
    * @param process The Process class assocaited with EventProcessor,
    *                provided by the Framework.
    */
-  Simulator(const std::string& name, ldmx::Process& process);
+  Simulator(const std::string& name, framework::Process& process);
 
   /**
    * Destructor.
@@ -80,7 +80,7 @@ class Simulator : public ldmx::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   /**
    * Given a non-const reference to the new RunHeader,
@@ -89,7 +89,7 @@ class Simulator : public ldmx::Producer {
    *
    * @param header of new run
    */
-  void beforeNewRun(RunHeader& header) final override;
+  void beforeNewRun(framework::RunHeader& header) final override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -97,14 +97,14 @@ class Simulator : public ldmx::Producer {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const RunHeader& header) final override;
+  void onNewRun(const framework::RunHeader& header) final override;
 
   /**
    * Run simulation and export results to output event.
    *
    * @param event The event to process.
    */
-  virtual void produce(ldmx::Event& event) final override;
+  virtual void produce(framework::Event& event) final override;
 
   /**
    *  Callback for the EventProcessor to take any necessary action
@@ -112,7 +112,7 @@ class Simulator : public ldmx::Producer {
    *
    *  @param eventFile  The input/output file.
    */
-  void onFileOpen(EventFile& eventFile) final override;
+  void onFileOpen(framework::EventFile& eventFile) final override;
 
   /**
    * Callback for the EventProcessor to take any necessary action
@@ -120,7 +120,7 @@ class Simulator : public ldmx::Producer {
    *
    * @param eventFile The intput/output file.
    */
-  void onFileClose(EventFile& eventFile) final override;
+  void onFileClose(framework::EventFile& eventFile) final override;
 
   /**
    * Initialization of simulation
@@ -185,11 +185,11 @@ class Simulator : public ldmx::Producer {
    *********************************************************/
 
   /// The parameters used to configure the simulation
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /// Vebosity for the simulation
   int verbosity_{1};
 };
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif /* SIMCORE_SIMULATOR_H */

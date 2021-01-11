@@ -10,7 +10,7 @@
 class G4Step;
 class G4TouchableHistory;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * Class defining a sensitive detector of type HCal.
@@ -47,6 +47,6 @@ class HcalSD : public CalorimeterSD {
 
 };  // HcalSD
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_HCALSD_H

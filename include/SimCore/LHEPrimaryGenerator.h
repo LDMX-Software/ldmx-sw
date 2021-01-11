@@ -14,7 +14,7 @@
 
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 class Parameters;
 
@@ -28,7 +28,7 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
    * Class constructor.
    * @param reader The LHE reader with the event data.
    */
-  LHEPrimaryGenerator(const std::string& name, Parameters& parameters);
+  LHEPrimaryGenerator(const std::string& name, framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -48,6 +48,6 @@ class LHEPrimaryGenerator : public PrimaryGenerator {
   LHEReader* reader_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_LHEPRIMARYGENERATOR_H

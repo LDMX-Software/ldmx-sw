@@ -13,7 +13,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace simcore {
 
 XsecBiasingOperator::XsecBiasingOperator(std::string name)
     : G4VBiasingOperator(name) {}
@@ -60,4 +60,4 @@ bool XsecBiasingOperator::processIsBiased(std::string process) {
   }
   return false;
 }
-}  // namespace ldmx
+}  // namespace simcore

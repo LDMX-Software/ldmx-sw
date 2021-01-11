@@ -20,10 +20,10 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 
-ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_
+simcore::PrimaryGeneratorManager simcore::PrimaryGeneratorManager::instance_
     __attribute__((init_priority(300)));
 
-namespace ldmx {
+namespace simcore {
 
 PrimaryGeneratorManager& PrimaryGeneratorManager::getInstance() {
   return instance_;
@@ -40,7 +40,7 @@ void PrimaryGeneratorManager::registerGenerator(
 
 void PrimaryGeneratorManager::createGenerator(const std::string& className,
                                               const std::string& instanceName,
-                                              Parameters& parameters) {
+                                              framework::config::Parameters& parameters) {
   auto it{generatorMap_.find(className)};
   if (it == generatorMap_.end()) {
     EXCEPTION_RAISE("CreateGenerator",
@@ -53,4 +53,4 @@ void PrimaryGeneratorManager::createGenerator(const std::string& className,
   generators_.push_back(generator);
 }
 
-}  // namespace ldmx
+}  // namespace simcore

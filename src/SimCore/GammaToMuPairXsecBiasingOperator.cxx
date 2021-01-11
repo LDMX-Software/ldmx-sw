@@ -8,7 +8,7 @@
 
 #include "SimCore/GammaToMuPairXsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
 const std::string GammaToMuPairXsecBiasingOperator::GAMMATOMUPAIR_PROCESS =
     "GammaToMuPair";
@@ -18,4 +18,4 @@ GammaToMuPairXsecBiasingOperator::GammaToMuPairXsecBiasingOperator(
     : PhotoNuclearXsecBiasingOperator(name) {}
 
 GammaToMuPairXsecBiasingOperator::~GammaToMuPairXsecBiasingOperator() {}
-}  // namespace ldmx
+}  // namespace simcore

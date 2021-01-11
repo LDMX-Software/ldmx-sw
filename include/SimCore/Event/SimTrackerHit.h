@@ -6,8 +6,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_SIMTRACKERHIT_H_
-#define EVENT_SIMTRACKERHIT_H_
+#ifndef SIMCORE_EVENT_SIMTRACKERHIT_H_
+#define SIMCORE_EVENT_SIMTRACKERHIT_H_
 
 // ROOT
 #include "TObject.h"  //For ClassDef
@@ -15,7 +15,8 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
+namespace event { 
 
 /**
  * @class SimTrackerHit
@@ -189,7 +190,7 @@ class SimTrackerHit {
   /**
    * Sort by time of hit
    */
-  bool operator<(const SimTrackerHit &rhs) const {
+  bool operator<(const simcore::event::SimTrackerHit &rhs) const {
     return this->getTime() < rhs.getTime();
   }
 
@@ -273,7 +274,7 @@ class SimTrackerHit {
   ClassDef(SimTrackerHit, 3);
 
 };  // SimTrackerHit
-
-}  // namespace ldmx
+} // namespace event
+}  // namespace simcore
 
 #endif  // EVENT_SIMTRACKERHIT_H_

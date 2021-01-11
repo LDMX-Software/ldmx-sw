@@ -14,7 +14,7 @@
 // STL
 #include <vector>
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class LHEEvent
@@ -145,6 +145,6 @@ class LHEEvent {
   std::vector<LHEParticle*> particles_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif
