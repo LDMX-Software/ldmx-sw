@@ -13,8 +13,8 @@
 
 namespace biasing {
 
-DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
-    : UserAction(name, parameters) {
+DarkBremFilter::DarkBremFilter(const std::string& name, framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   volumeName_ = parameters.getParameter<std::string>("volume");
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -132,4 +132,4 @@ bool DarkBremFilter::hasAPrime(const G4TrackVector* secondaries) const {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, DarkBremFilter)
+DECLARE_ACTION(biasing, DarkBremFilter)

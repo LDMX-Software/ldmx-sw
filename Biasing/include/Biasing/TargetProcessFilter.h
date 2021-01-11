@@ -23,12 +23,12 @@ namespace biasing {
  * @brief Biases Geant4 to only process events where PN reaction occurred in the
  * target
  */
-class TargetProcessFilter : public UserAction {
+class TargetProcessFilter : public simcore::UserAction {
 public:
   /**
    * Class constructor.
    */
-  TargetProcessFilter(const std::string &name, Parameters &parameters);
+  TargetProcessFilter(const std::string &name, framework::config::Parameters &parameters);
 
   /// Destructor
   ~TargetProcessFilter();
@@ -55,8 +55,8 @@ public:
       const G4ClassificationOfNewTrack &currentTrackClass) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::EVENT, TYPE::STACKING, TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
   }
 
 private:

@@ -27,7 +27,7 @@ namespace biasing {
  * through the parameter vector<int> parameter "pdg_ids".
  *
  */
-class PhotoNuclearProductsFilter : public UserAction {
+class PhotoNuclearProductsFilter : public simcore::UserAction {
  public:
   /**
    * Constructor
@@ -35,7 +35,7 @@ class PhotoNuclearProductsFilter : public UserAction {
    * @param[in] name The name of this class instance.
    * @param[in] parameters The parameters used to configure this class.
    */
-  PhotoNuclearProductsFilter(const std::string& name, Parameters& parameters);
+  PhotoNuclearProductsFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~PhotoNuclearProductsFilter();
@@ -50,7 +50,7 @@ class PhotoNuclearProductsFilter : public UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
 
  private:
   /// Container to hold the PDG IDs of products of interest

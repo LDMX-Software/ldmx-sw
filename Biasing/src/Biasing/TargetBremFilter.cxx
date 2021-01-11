@@ -16,8 +16,8 @@
 namespace biasing {
 
 TargetBremFilter::TargetBremFilter(const std::string& name,
-                                   Parameters& parameters)
-    : UserAction(name, parameters) {
+                                   framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
   bremEnergyThreshold_ =
@@ -89,18 +89,18 @@ void TargetBremFilter::stepping(const G4Step* step) {
         if (processName.compareTo("eBrem") == 0 &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
           if (secondary_track->GetUserInformation() == nullptr) {
-            secondary_track->SetUserInformation(new UserTrackInformation());
+            secondary_track->SetUserInformation(new simcore::UserTrackInformation());
           }
-          auto trackInfo{static_cast<UserTrackInformation*>(
+          auto trackInfo{static_cast<simcore::UserTrackInformation*>(
               secondary_track->GetUserInformation())};
           trackInfo->tagBremCandidate();
           trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName());
 
           auto event{G4EventManager::GetEventManager()};
           if (event->GetUserInformation() == nullptr) {
-            event->SetUserInformation(new UserEventInformation());
+            event->SetUserInformation(new simcore::UserEventInformation());
           }
-          static_cast<UserEventInformation*>(event->GetUserInformation())
+          static_cast<simcore::UserEventInformation*>(event->GetUserInformation())
               ->incBremCandidateCount();
 
           hasBremCandidate = true;
@@ -131,4 +131,4 @@ void TargetBremFilter::stepping(const G4Step* step) {
 void TargetBremFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, TargetBremFilter)
+DECLARE_ACTION(biasing, TargetBremFilter)

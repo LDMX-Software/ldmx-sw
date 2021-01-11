@@ -32,14 +32,14 @@
 
 namespace biasing {
 
-class DarkBremFilter : public UserAction {
+class DarkBremFilter : public simcore::UserAction {
  public:
   /**
    * Class constructor.
    *
    * Links this filter to its messenger.
    */
-  DarkBremFilter(const std::string& name, Parameters& parameters);
+  DarkBremFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -49,8 +49,8 @@ class DarkBremFilter : public UserAction {
   /**
    * Get the types of actions this class can do
    */
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::STACKING, TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
   }
 
   /**

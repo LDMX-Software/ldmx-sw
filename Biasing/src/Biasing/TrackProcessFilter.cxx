@@ -14,8 +14,8 @@
 namespace biasing {
 
 TrackProcessFilter::TrackProcessFilter(const std::string& name,
-                                       Parameters& parameters)
-    : UserAction(name, parameters) {
+                                       framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
 }
 
@@ -25,7 +25,7 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
   if (const G4VProcess * process{track->GetCreatorProcess()}; process) {
     auto name{process->GetProcessName()};
     auto trackInfo{
-        dynamic_cast<UserTrackInformation*>(track->GetUserInformation())};
+        dynamic_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
     if (name.contains(process_)) {
       trackInfo->setSaveFlag(true);
     } else
@@ -34,4 +34,4 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
 }
 }  // namespace biasing
 
-DECLARE_ACTION(ldmx, TrackProcessFilter)
+DECLARE_ACTION(biasing, TrackProcessFilter)
