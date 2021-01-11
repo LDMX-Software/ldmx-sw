@@ -12,7 +12,7 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
-namespace ldmx {
+namespace trigscint {
 
 /**
  * Producer making a collection based on some truth info cuts.
@@ -20,7 +20,7 @@ namespace ldmx {
  * This producer creates a new hit collection,
  * that can then be fed to digi etc like anything else.
  */
-class TruthHitProducer : public Producer {
+class TruthHitProducer : public framework::Producer {
  public:
   /**
    * Constructor.
@@ -29,7 +29,7 @@ class TruthHitProducer : public Producer {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  TruthHitProducer(const std::string &name, Process &process);
+  TruthHitProducer(const std::string &name, framework::Process&process);
 
   /// Destructor
   ~TruthHitProducer();
@@ -43,14 +43,14 @@ class TruthHitProducer : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(Event &event);
+  void produce(framework::Event &event);
 
   /// Class to set the verbosity level.
   // TODO: Make use of the global verbose parameter.
@@ -69,6 +69,6 @@ class TruthHitProducer : public Producer {
 
 };  // TruthHitProducer
 
-}  // namespace ldmx
+}  // namespace trigscint
 
 #endif  // TRIGSCINT_TRUTHHITPRODUCER_H_

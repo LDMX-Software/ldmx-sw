@@ -10,20 +10,20 @@
 #include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintTrack.h"
 
-namespace ldmx {
+namespace trigscint {
 
 /**
  * @class TrigScintTrackProducer
  * @brief making tracks from trigger scintillator clusters
  */
-class TrigScintTrackProducer : public ldmx::Producer {
+class TrigScintTrackProducer : public framework::Producer {
  public:
-  TrigScintTrackProducer(const std::string &name, ldmx::Process &process)
-      : ldmx::Producer(name, process) {}
+  TrigScintTrackProducer(const std::string &name, framework::Process&process)
+      : Producer(name, process) {}
 
-  virtual void configure(ldmx::Parameters &ps);
+  virtual void configure(framework::config::Parameters &ps);
 
-  virtual void produce(ldmx::Event &event);
+  virtual void produce(framework::Event &event);
 
   virtual void onFileOpen();
 
@@ -35,10 +35,10 @@ class TrigScintTrackProducer : public ldmx::Producer {
 
  private:
   // collection of produced tracks
-  std::vector<TrigScintTrack> tracks_;
+  std::vector<trigscint::event::TrigScintTrack> tracks_;
 
   // add a cluster to a track
-  TrigScintTrack makeTrack(std::vector<TrigScintCluster> clusters);
+  trigscint::event::TrigScintTrack makeTrack(std::vector<trigscint::event::TrigScintCluster> clusters);
 
   // maximum difference (in channel number space) between track seed and cluster
   // in the next pad tolerated to form a track
@@ -65,6 +65,6 @@ class TrigScintTrackProducer : public ldmx::Producer {
   // track residual in units of channel nb (will not be content weighted)
   float residual_{0.};
 };
-}  // namespace ldmx
+}  // namespace trigscint
 
 #endif  // EVENTPROC_TRIGSCINTTRACKPRODUCER_H

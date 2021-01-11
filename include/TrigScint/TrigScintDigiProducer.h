@@ -25,7 +25,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace trigscint {
 
 enum TrigScintSection {
   UPSTREAM_TAGGER = 1,
@@ -38,13 +38,13 @@ enum TrigScintSection {
  * @class TrigScintDigiProducer
  * @brief Performs digitization of simulated Trigger Scintillator data
  */
-class TrigScintDigiProducer : public Producer {
+class TrigScintDigiProducer : public framework::Producer {
  public:
   typedef int layer;
 
   typedef std::pair<double, double> zboundaries;
 
-  TrigScintDigiProducer(const std::string& name, Process& process);
+  TrigScintDigiProducer(const std::string& name, framework::Process& process);
 
   ~TrigScintDigiProducer();
 
@@ -54,18 +54,18 @@ class TrigScintDigiProducer : public Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(Event& event);
+  void produce(framework::Event& event);
 
-  TrigScintID generateRandomID(int module);
+  ldmx::TrigScintID generateRandomID(int module);
 
  private:
   /// Random number generator
   std::unique_ptr<TRandom3> random_{nullptr};
 
   /// Generate noise hits given the number of channels and mean noise.
-  std::unique_ptr<NoiseGenerator> noiseGenerator_{nullptr};
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
 
   /// Class to set the verbosity level.
   // TODO: Make use of the global verbose parameter.
@@ -98,6 +98,6 @@ class TrigScintDigiProducer : public Producer {
   double pePerMip_{13.5};
 };
 
-}  // namespace ldmx
+}  // namespace trigscint
 
 #endif
