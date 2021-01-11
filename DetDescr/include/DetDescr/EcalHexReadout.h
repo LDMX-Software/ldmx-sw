@@ -25,9 +25,12 @@
 // ROOT
 #include "TH2Poly.h"
 
+namespace ecal {
+class EcalGeometryProvider;
+}
+
 namespace ldmx {
 
-class EcalGeometryProvider;
 
 /**
  * @class EcalHexReadout
@@ -62,7 +65,7 @@ class EcalGeometryProvider;
  * radii that span the module height. This count can have fractional counts to
  * account for the fractions of cell radii at the module edges.
  */
-class EcalHexReadout : public ConditionsObject {
+class EcalHexReadout : public framework::ConditionsObject {
  public:
   static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalHexReadout"};
 
@@ -393,7 +396,7 @@ class EcalHexReadout : public ConditionsObject {
    */
   TH2Poly* getCellPolyMap() const { return &ecalMap_; }
 
-  static EcalHexReadout* debugMake(const Parameters& p) {
+  static EcalHexReadout* debugMake(const framework::config::Parameters& p) {
     return new EcalHexReadout(p);
   }
 
@@ -403,8 +406,8 @@ class EcalHexReadout : public ConditionsObject {
    *
    * @param ps Parameters to configure the EcalHexReadout
    */
-  EcalHexReadout(const Parameters& ps);
-  friend class EcalGeometryProvider;
+  EcalHexReadout(const framework::config::Parameters& ps);
+  friend class ecal::EcalGeometryProvider;
 
   /**
    * Constructs the positions of the seven modules (moduleID) relative to the
