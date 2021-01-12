@@ -14,7 +14,7 @@ class HcalDigiProducer(ldmxcfg.Producer) :
     """
 
     def __init__(self,name = 'hcalDigis') :
-        super().__init__(name,'ldmx::HcalDigiProducer','Hcal')
+        super().__init__(name,'hcal::HcalDigiProducer','Hcal')
 
         self.meanNoise = 0.02
         self.readoutThreshold= 1
@@ -43,7 +43,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
     """
 
     def __init__(self,name = 'hcalVeto') :
-        super().__init__(name,'ldmx::HcalVetoProcessor','Hcal')
+        super().__init__(name,'hcal::HcalVetoProcessor','Hcal')
 
         self.pe_threshold = 5.0
         self.max_time = 50.0
