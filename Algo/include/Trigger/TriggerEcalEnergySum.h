@@ -41,7 +41,7 @@ namespace ldmx {
       
 	virtual void onProcessEnd();
       
-	typedef ap_ufixed<16,2> e_t; // [MeV] (Up to at least 8 GeV)
+	typedef ap_ufixed<16,14> e_t; // [MeV] (Up to at least 8 GeV)
 	
     private:
 
