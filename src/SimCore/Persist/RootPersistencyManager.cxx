@@ -106,7 +106,7 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
 
 void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
-  ldmx::EventHeader &eventHeader = event_->getEventHeader();
+  framework::EventHeader &eventHeader = event_->getEventHeader();
 
   // Set the event weight
   double weight{1};
