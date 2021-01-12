@@ -28,3 +28,6 @@
 [submodule "docs/doxygen.conf/doxygen-awesome-css"]
 	path = docs/doxygen.conf/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css
+[submodule "Trigger"]
+	path = Trigger
+	url = git@github.com:LDMX-Software/Trigger.git
