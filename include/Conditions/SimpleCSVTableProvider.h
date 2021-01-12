@@ -45,7 +45,7 @@ class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
   virtual ~SimpleCSVTableProvider();
 
   virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context);
+      const framework::EventHeader& context);
 
  private:
   enum { OBJ_unknown, OBJ_int, OBJ_double } objectType_;
