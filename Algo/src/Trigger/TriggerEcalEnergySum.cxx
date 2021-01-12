@@ -4,6 +4,9 @@
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "DetDescr/EcalHexReadout.h"
 
+#include "../../../Algo_HLS/Ecal/src/data.h"
+#include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
+
 namespace ldmx {
 
     void TriggerEcalEnergySum::configure(Parameters &ps) {
@@ -18,8 +21,14 @@ namespace ldmx {
 	if (!event.exists("ecalTrigDigis")) return;
         auto ecalTrigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
 
+	// floating point algorithm
 	float total_e=0;
-	e_t total_e_trunc=0;
+	//e_t total_e_trunc=0;
+ 
+	// run the firmware (hls) algorithm directly
+	EcalTP Input_TPs_hw[N_INPUT_TP];
+	e_t energy_hw;
+	int iTP=0;
 
 	for(const auto& trigDigi : ecalTrigDigis){
 	    // HgcrocTrigDigi
@@ -29,15 +38,18 @@ namespace ldmx {
 	    float sie =  8*trigDigi.linearPrimitive() * gain * mVtoMeV; // in MeV, before layer corrections
 	    float e = (sie/mipSiEnergy * layerWeights.at( tid.layer() ) + sie) * secondOrderEnergyCorrection;
 	    total_e += e;
-	    total_e_trunc = total_e_trunc + e_t(e);
- 	    // auto xy = geom.globalPosition( tid );
-	    // double _x;
-	    // double _y;
-	    // double _z;
-	    // auto center_ecalID = geom.centerInTriggerCell(tid);
-	    // hexReadout.getCellAbsolutePosition(center_ecalID,_x,_y,_z);
+	    //total_e_trunc = total_e_trunc + e_t(e);
+
+	    if (iTP<N_INPUT_TP){
+	    	Input_TPs_hw[iTP].tid = trigDigi.getId();
+	    	Input_TPs_hw[iTP].tp = e_t(e);
+	    }
+	    iTP++;
 	}
-	//std::cout << "Total ECal energy: " << total_e << " MeV (fixed-point: "<< total_e_trunc <<" MeV)" << std::endl;
+
+	TotalEnergy_hw(Input_TPs_hw, energy_hw);
+
+	std::cout << "Total ECal energy: " << total_e << " MeV (hw: "<< energy_hw <<" MeV)" << std::endl;
 
     }
 
