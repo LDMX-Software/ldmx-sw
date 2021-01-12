@@ -4,6 +4,7 @@ set_top TotalEnergy_hw
 add_files src/TotalEnergy.cpp
 add_files -tb tb/TotalEnergy_test.cpp 
 add_files -tb ref/TotalEnergy_ref.cpp
+add_files -tb data/test.dump
 
 # reset the solution
 open_solution -reset "solution1"

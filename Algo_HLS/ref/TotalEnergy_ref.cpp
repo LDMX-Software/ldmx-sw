@@ -1,4 +1,5 @@
 #include "../src/data.h"
+#include "../src/TotalEnergy.h"
 
 void TotalEnergy_ref(EcalTP Input_TPs[N_INPUT_TP], e_t energy){
 
