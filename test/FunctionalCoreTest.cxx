@@ -10,6 +10,8 @@
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
 
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/Event/HcalVetoResult.h"
 #include "Recon/Event/CalorimeterHit.h"
 
 namespace framework {
@@ -79,6 +81,12 @@ class TestProducer : public Producer {
 
     events_ = i_event;
 
+    std::vector<int> event_indices = {i_event, i_event};
+    REQUIRE_NOTHROW(event.add("EventIndex", event_indices));
+
+    float test_float = i_event * 0.1;
+    REQUIRE_NOTHROW(event.add("EventTenth", test_float));
+
     if (res.passesVeto()) setStorageHint(hint_mustKeep);
 
     return;
@@ -110,9 +118,8 @@ class TestAnalyzer : public Analyzer {
 
     REQUIRE(i_event > 0);
 
-    std::vector<ldmx::CalorimeterHit> caloHits;
-    REQUIRE_NOTHROW(
-        caloHits = event.getCollection<ldmx::CalorimeterHit>("TestCollection"));
+    const std::vector<ldmx::CalorimeterHit>& caloHits =
+        event.getCollection<ldmx::CalorimeterHit>("TestCollection");
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
@@ -120,14 +127,23 @@ class TestAnalyzer : public Analyzer {
       test_hist_->Fill(caloHits.at(i).getID());
     }
 
-    ldmx::HcalVetoResult vetoRes;
-    REQUIRE_NOTHROW(vetoRes =
-                        event.getObject<ldmx::HcalVetoResult>("TestObject"));
+    const ldmx::HcalVetoResult& vetoRes = 
+        event.getObject<ldmx::HcalVetoResult>("TestObject");
 
     auto maxPEHit{vetoRes.getMaxPEHit()};
 
     CHECK(maxPEHit.getID() == i_event);
     CHECK(vetoRes.passesVeto() == (i_event % 2 == 0));
+
+    const float& tenth_event = event.getObject<float>("EventTenth");
+    CHECK(tenth_event == Approx(i_event * 0.1));
+
+    const std::vector<int>& i_event_from_bus =
+        event.getCollection<int>("EventIndex");
+
+    CHECK(i_event_from_bus.size() == 2);
+    CHECK(i_event_from_bus.at(0) == i_event);
+    CHECK(i_event_from_bus.at(1) == i_event);
 
     return;
   }
@@ -295,7 +311,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
 
     if (existObject_) {
       // make sure object matches pattern
-      TTreeReaderValue<ldmx::HcalVetoResult> object(
+      TTreeReaderValue<hcal::event::HcalVetoResult> object(
           events, ("TestObject_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {
@@ -431,7 +447,6 @@ DECLARE_ANALYZER_NS(framework::test, TestAnalyzer)
  *  - skimming events (only keeping events meeting a certain criteria)
  */
 TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
-  using namespace framework;
 
   // these parameters aren't tested/changed, so we set them out here
   std::map<std::string, std::any> process;
@@ -487,24 +502,24 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     SECTION("only producers") {
       SECTION("no drop/keep rules") {
         // Process owns and deletes the processors
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 3, 1));
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), framework::test::isGoodEventFile("test", 3, 1));
       }
 
       SECTION("drop TestCollection") {
         std::vector<std::string> keep = {"drop .*Collection.*"};
         process["keep"] = keep;
-        REQUIRE(test::runProcess(process));
+        REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
-                   test::isGoodEventFile("test", 3, 1, false));
+                   framework::test::isGoodEventFile("test", 3, 1, false));
       }
 
       SECTION("skim for even indexed events") {
         process["skimDefaultIsKeep"] = false;
         std::vector<std::string> rules = {"TestProducer", ""};
         process["skimRules"] = rules;
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 1, 1));
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), framework::test::isGoodEventFile("test", 1, 1));
       }
     }
 
@@ -518,31 +533,31 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       process["sequence"] = sequence;
 
       SECTION("no drop/keep rules") {
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 3, 1));
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), framework::test::isGoodEventFile("test", 3, 1));
       }
 
       SECTION("drop TestCollection") {
         std::vector<std::string> keep = {"drop .*Collection.*"};
         process["keep"] = keep;
-        REQUIRE(test::runProcess(process));
+        REQUIRE(framework::test::runProcess(process));
         CHECK_THAT(outputFiles.at(0),
-                   test::isGoodEventFile("test", 3, 1, false));
+                   framework::test::isGoodEventFile("test", 3, 1, false));
       }
 
       SECTION("skim for even indexed events") {
         process["skimDefaultIsKeep"] = false;
         std::vector<std::string> rules = {"TestProducer", ""};
         process["skimRules"] = rules;
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(outputFiles.at(0), test::isGoodEventFile("test", 1, 1));
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(outputFiles.at(0), framework::test::isGoodEventFile("test", 1, 1));
       }
 
-      CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 3));
-      CHECK(test::removeFile(hist_file_path));
+      CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(1 + 2 + 3));
+      CHECK(framework::test::removeFile(hist_file_path));
     }
 
-    CHECK(test::removeFile(outputFiles.at(0)));
+    CHECK(framework::test::removeFile(outputFiles.at(0)));
   }  // Production Mode
 
   SECTION("Need Input Files") {
@@ -564,24 +579,24 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
     makeInputs["maxEvents"] = 2;
     makeInputs["run"] = 2;
 
-    REQUIRE(test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(0), test::isGoodEventFile("makeInputs", 2, 1));
+    REQUIRE(framework::test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(0), framework::test::isGoodEventFile("makeInputs", 2, 1));
 
     outputFiles = {inputFiles.at(1)};
     makeInputs["outputFiles"] = outputFiles;
     makeInputs["maxEvents"] = 3;
     makeInputs["run"] = 3;
 
-    REQUIRE(test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(1), test::isGoodEventFile("makeInputs", 3, 1));
+    REQUIRE(framework::test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(1), framework::test::isGoodEventFile("makeInputs", 3, 1));
 
     outputFiles = {inputFiles.at(2)};
     makeInputs["outputFiles"] = outputFiles;
     makeInputs["maxEvents"] = 4;
     makeInputs["run"] = 4;
 
-    REQUIRE(test::runProcess(makeInputs));
-    REQUIRE_THAT(inputFiles.at(2), test::isGoodEventFile("makeInputs", 4, 1));
+    REQUIRE(framework::test::runProcess(makeInputs));
+    REQUIRE_THAT(inputFiles.at(2), framework::test::isGoodEventFile("makeInputs", 4, 1));
 
     SECTION("Analysis Mode") {
       // no output files, only histogram output
@@ -595,17 +610,17 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
       SECTION("one input file") {
         std::vector<std::string> inputFile = {inputFiles.at(0)};
         process["inputFiles"] = inputFile;
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2));
-        CHECK(test::removeFile(hist_file_path));
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(1 + 2));
+        CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("multiple input files") {
         process["inputFiles"] = inputFiles;
-        REQUIRE(test::runProcess(process));
-        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
                                                              1 + 2 + 3 + 4));
-        CHECK(test::removeFile(hist_file_path));
+        CHECK(framework::test::removeFile(hist_file_path));
       }
 
     }  // Analysis Mode
@@ -628,22 +643,22 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         process["histogramFile"] = hist_file_path;
 
         SECTION("no drop/keep rules") {
-          REQUIRE(test::runProcess(process));
+          REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
-                     test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3));
+                     framework::test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3));
         }
 
         SECTION("drop TestCollection") {
           std::vector<std::string> keep = {"drop .*Collection.*"};
           process["keep"] = keep;
-          REQUIRE(test::runProcess(process));
+          REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
-                     test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3, false));
+                     framework::test::isGoodEventFile("makeInputs", 2 + 3 + 4, 3, false));
         }
 
-        CHECK_THAT(hist_file_path, test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
+        CHECK_THAT(hist_file_path, framework::test::isGoodHistogramFile(1 + 2 + 1 + 2 + 3 +
                                                              1 + 2 + 3 + 4));
-        CHECK(test::removeFile(hist_file_path));
+        CHECK(framework::test::removeFile(hist_file_path));
       }
 
       SECTION("with producers") {
@@ -654,22 +669,22 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         process["sequence"] = sequence;
 
         SECTION("not listening to storage hints") {
-          REQUIRE(test::runProcess(process));
+          REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
-                     test::isGoodEventFile("test", 2 + 3 + 4, 3));
+                     framework::test::isGoodEventFile("test", 2 + 3 + 4, 3));
         }
 
         SECTION("skim for even indexed events") {
           process["skimDefaultIsKeep"] = false;
           std::vector<std::string> rules = {"TestProducer", ""};
           process["skimRules"] = rules;
-          REQUIRE(test::runProcess(process));
+          REQUIRE(framework::test::runProcess(process));
           CHECK_THAT(event_file_path,
-                     test::isGoodEventFile("test", 1 + 1 + 2, 3));
+                     framework::test::isGoodEventFile("test", 1 + 1 + 2, 3));
         }
       }
 
-      CHECK(test::removeFile(event_file_path));
+      CHECK(framework::test::removeFile(event_file_path));
 
     }  // Merge Mode
 

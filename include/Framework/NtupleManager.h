@@ -5,13 +5,9 @@
 /*~~~~~~~~~~~~*/
 /*   StdLib   */
 /*~~~~~~~~~~~~*/
-#include <iostream>
-#include <limits>
 #include <map>
 #include <string>
-#include <typeinfo>
 #include <unordered_map>
-#include <variant>
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -23,6 +19,7 @@
 /*~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
+#include "Framework/Bus.h"
 
 namespace framework {
 
@@ -30,6 +27,11 @@ namespace framework {
  * @class NtupleManager
  * @brief Singleton class used to manage the creation and pooling of
  *        ntuples.
+ *
+ * @see framework::Bus
+ * Similar to the Event bus itself, we use the Bus to buffer the variable
+ * values and attach them to their output TTrees. Unlike the event bus,
+ * we don't implement retrieval mechanisms for reading these values.
  */
 class NtupleManager {
  public:
@@ -38,77 +40,74 @@ class NtupleManager {
 
   /**
    * Create a ROOT tree to hold the ntuple variables (ROOT leaves).
-   *
    * @param name Name of the tree.
    */
   void create(const std::string& tname);
 
   /**
-   *  Add a variable of type T to the ROOT tree with name 'tname'.
-   *  If the variable already exists in any tree or the requested
-   *  tree does not exists, an exception is thrown.
+   * Add a variable of type VarType to the ROOT tree with name 'tname'.
+   * If the variable already exists in any tree or the requested
+   * tree does not exists, an exception is thrown.
    *
-   *  @param tname Name of the tree to add the variable to.
-   *  @param vname Name of the variable to add to the tree
-   *  @throws exception
+   * @tparam[in] VarType type of variable to add to the tree
+   * @param[in] tname Name of the tree to add the variable to.
+   * @param[in] vname Name of the variable to add to the tree
+   * @throws Exception if tree doesn't exist or variable already does
    */
-  template <typename T>
+  template <typename VarType>
   void addVar(const std::string& tname, const std::string& vname) {
-    // Check if the variable exists in the map. If it does, throw
-    // an exception.
-    if (variables_.count(vname) != 0) {
-      EXCEPTION_RAISE("NtupleManager", "A variable with name " + vname +
-                                           " has already been defined.");
-    }
 
     // Check if a tree named 'tname' has already been created.  If
     // not, throw an exception.
     if (trees_.count(tname) == 0)
       EXCEPTION_RAISE("NtupleManager", "A tree with name " + tname +
-                                           " has already been created.");
+                                           " has not been been created.");
 
-    // Initialize the variable to the minimum limit of that type.
-    variables_[vname] = T(std::numeric_limits<T>::min());
+    // Check if the variable exists in the map. If it does, throw
+    // an exception.
+    if (bus_.isOnBoard(vname)) {
+      EXCEPTION_RAISE("NtupleManager", "A variable with name " + vname +
+                                           " has already been defined.");
+    }
 
-    // Get the type name
-    std::string typeName = typeid(std::get<T>(variables_[vname])).name();
+    // Board the bus
+    bus_.board<VarType>(vname);
 
-    //  The type name in C++ for basic types are lowercase:
-    //      s, i, f, d, l
-    //  while in ROOT it is uppercase:
-    //      S, I, F, D, L
-    //  so we need the call to toupper
-    for (char& c : typeName) c = toupper(c);
-
-    // Add the variable to the ROOT tree
-    trees_[tname]->Branch(vname.c_str(), &std::get<T>(variables_[vname]),
-                          (vname + "/" + typeName).c_str());
+    // Attach the tree to the bus
+    bus_.attach(trees_[tname], vname, true);
   }
 
   /**
-   *  Set the value of the variable named 'vname'.  If the variable
-   *  value is not set, the default value will be used when filling
-   *  the tree.  If the requested variable has not been created,
-   *  a warning will be printed.  This allows a user to choose to
-   *  make a subset of an ntuple by simply not adding the variable
-   *  to the tree.
+   * Set the value of the variable named 'vname'.  If the variable
+   * value is not set, the default value will be used when filling
+   * the tree.  If the requested variable has not been created,
+   * a warning will be printed.  This allows a user to choose to
+   * make a subset of an ntuple by simply not adding the variable
+   * to the tree.
    *
-   *  @param vname Name of the variable
-   *  @param value The value of the variable
+   * @tparam[in] T type of variable
+   * @param[in] vname Name of the variable
+   * @param[in] value The value of the variable
    */
   template <typename T>
-  void setVar(const std::string& vname, const T value) {
+  void setVar(const std::string& vname, const T& value) {
     // Check if the variable already exists in the map.  If it
     // doesn't, warn the user and don't try to set the variable
     // value.
-    if (variables_.count(vname) == 0) {
+    if (not bus_.isOnBoard(vname)) {
       ldmx_log(warn) << "The variable " << vname
-                     << " does not exist in the tree.";
+                     << " does not exist in the tree. Skipping.";
       return;
     }
 
     // Set the value of the variable
-    variables_[vname] = value;
+    try {
+      bus_.update(vname,value);
+    } catch (const std::bad_cast&) {
+      EXCEPTION_RAISE("TypeMismatch", "Ntuple variable '" + vname +
+                                          "' is being set by the wrong type '" +
+                                          typeid(value).name() + "'.");
+    }
   }
 
   // Fill all of the ROOT trees.
@@ -124,14 +123,11 @@ class NtupleManager {
   void operator=(const NtupleManager&) = delete;
 
  private:
-  /// The variables these trees can hold
-  typedef std::variant<short, int, float, double, long> variable_type;
-
-  /// Container for ROOT trees
+  /// Container for output ROOT trees
   std::unordered_map<std::string, TTree*> trees_;
 
-  /// Container for tree leaves
-  std::unordered_map<std::string, variable_type> variables_;
+  /// Container for buffering variables
+  framework::Bus bus_;
 
   /// Private constructor to prevent instantiation
   NtupleManager();

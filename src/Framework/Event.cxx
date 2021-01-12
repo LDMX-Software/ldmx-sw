@@ -1,5 +1,7 @@
 #include "Framework/Event.h"
 
+#include "TBranchElement.h"
+
 namespace framework {
 
 Event::Event(const std::string& thePassName) : passName_(thePassName) {}
@@ -10,10 +12,9 @@ Event::~Event() {
   }
 }
 
-void Event::Print(int verbosity) const {
-  for (const auto& keyVal : passengers_) {
-    if (verbosity > 1) std::cout << keyVal.first << std::endl;
-    std::visit(printPassenger(verbosity), keyVal.second);
+void Event::Print() const {
+  for (const ProductTag& tag : getProducts()) {
+    std::cout << tag << std::endl;
   }
 }
 
@@ -87,9 +88,9 @@ void Event::setInputTree(TTree* tree) {
   // in some cases, setInputTree is called more than once,
   // so reset branch listing before starting
   products_.clear();
-  branchNames_.clear();
+  knownLookups_.clear(); //reset caching of empty pass requests
   branches_.clear();
-  passengers_.clear();
+  bus_.everybodyOff();
 
   // put in EventHeader (only one without pass name)
   products_.emplace_back(ldmx::EventHeader::BRANCH, "", "ldmx::EventHeader");
@@ -100,13 +101,16 @@ void Event::setInputTree(TTree* tree) {
     std::string brname = branches->At(i)->GetName();
     if (brname != ldmx::EventHeader::BRANCH) {
       size_t j = brname.find("_");
-      std::string iname = brname.substr(0, j);
-      std::string pname = brname.substr(j + 1);
-      std::string tname =
-          dynamic_cast<TBranchElement*>(branches->At(i))->GetClassName();
-      products_.emplace_back(iname, pname, tname);
+      auto br = dynamic_cast<TBranchElement*>(branches->At(i));
+      // can't determine type if branch isn't
+      //  the higher-level TBranchElement type
+      // Only occurs if the type on the bus is one of:
+      //  bool, short, int, long, float, double (BSILFD)
+      products_.emplace_back(
+          brname.substr(0, j),   // collection name is before '_'
+          brname.substr(j + 1),  // pass name is after
+          br ? br->GetClassName() : "BSILFD");
     }
-    branchNames_.push_back(brname);
   }
 }
 
@@ -126,22 +130,20 @@ void Event::beforeFill() {
 }
 
 void Event::Clear() {
-  // clear the event objects
-  branchesFilled_.clear();
-  for (auto passenger : passengers_) {
-    std::visit(clearPassenger(), passenger.second);
-  }
+  branchesFilled_.clear(); //forget names of branches we filled
+  bus_.clear(); //clear the event objects individually but leave them on bus
 }
 
 void Event::onEndOfEvent() {}
 
 void Event::onEndOfFile() {
-  passengers_.clear();  // reset event bus
-  branches_.clear();    // reset branches
   if (outputTree_)
     outputTree_->ResetBranchAddresses();  // reset addresses for output branch
   if (inputTree_)
     inputTree_ = nullptr;  // detach old inputTree (owned by EventFile)
+  knownLookups_.clear();   // reset caching of empty pass requests
+  branches_.clear();       // reset branch listing
+  bus_.everybodyOff();     // delete buffer objects
   ientry_ = -1;            // reset current entry and total entries
   entries_ = -1;
 }
