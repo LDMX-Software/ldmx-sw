@@ -5,6 +5,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "SimCore/Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
 
 namespace dqm {

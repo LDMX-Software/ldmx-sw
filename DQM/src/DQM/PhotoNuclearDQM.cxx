@@ -17,7 +17,6 @@
 //   LDMX   //
 //----------//
 #include "Tools/AnalysisUtils.h"
-#include "SimCore/Event/SimParticle.h"
 
 namespace dqm {
 

@@ -30,7 +30,7 @@ class StepPrinter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  StepPrinter(const std::string& name, framework::config::Parameters& parameters);
+  StepPrinter(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
   ~StepPrinter();

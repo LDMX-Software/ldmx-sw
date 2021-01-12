@@ -25,7 +25,7 @@ namespace biasing {
 class TargetBremFilter : public simcore::UserAction {
  public:
   /// Constructor
-  TargetBremFilter(const std::string& name, framework::config::Parameters& parameters);
+  TargetBremFilter(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
   ~TargetBremFilter();

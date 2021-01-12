@@ -39,7 +39,7 @@ class DarkBremFilter : public simcore::UserAction {
    *
    * Links this filter to its messenger.
    */
-  DarkBremFilter(const std::string& name, framework::config::Parameters& parameters);
+  DarkBremFilter(const std::string& name, const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.

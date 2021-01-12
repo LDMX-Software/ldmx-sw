@@ -14,7 +14,7 @@
 namespace biasing {
 
 TrackProcessFilter::TrackProcessFilter(const std::string& name,
-                                       framework::config::Parameters& parameters)
+                                       const framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
 }

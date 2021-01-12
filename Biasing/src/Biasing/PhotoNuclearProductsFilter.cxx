@@ -20,7 +20,7 @@
 namespace biasing {
 
 PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(const std::string& name,
-                                                       framework::config::Parameters& parameters)
+                                                       const framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   productsPdgID_ = parameters.getParameter<std::vector<int> >("pdg_ids");
 }

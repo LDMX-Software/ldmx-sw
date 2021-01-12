@@ -16,7 +16,7 @@
 namespace biasing {
 
 TargetBremFilter::TargetBremFilter(const std::string& name,
-                                   framework::config::Parameters& parameters)
+                                   const framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");

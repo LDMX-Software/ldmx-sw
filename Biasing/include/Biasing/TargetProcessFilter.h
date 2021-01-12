@@ -28,7 +28,7 @@ public:
   /**
    * Class constructor.
    */
-  TargetProcessFilter(const std::string &name, framework::config::Parameters &parameters);
+  TargetProcessFilter(const std::string &name, const framework::config::Parameters &parameters);
 
   /// Destructor
   ~TargetProcessFilter();

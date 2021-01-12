@@ -35,7 +35,7 @@ class PhotoNuclearProductsFilter : public simcore::UserAction {
    * @param[in] name The name of this class instance.
    * @param[in] parameters The parameters used to configure this class.
    */
-  PhotoNuclearProductsFilter(const std::string& name, framework::config::Parameters& parameters);
+  PhotoNuclearProductsFilter(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
   ~PhotoNuclearProductsFilter();

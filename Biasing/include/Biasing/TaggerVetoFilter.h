@@ -35,7 +35,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TaggerVetoFilter(const std::string& name, framework::config::Parameters& parameters);
+  TaggerVetoFilter(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
   ~TaggerVetoFilter();

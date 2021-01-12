@@ -10,7 +10,7 @@
 namespace biasing {
 
 TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
-                                   framework::config::Parameters& parameters)
+                                   const framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
