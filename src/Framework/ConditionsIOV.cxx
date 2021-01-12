@@ -11,7 +11,7 @@ std::ostream& operator<<(std::ostream& s, const framework::ConditionsIOV& iov) {
 
 namespace framework {
 
-bool ConditionsIOV::validForEvent(const ldmx::EventHeader& eh) const {
+bool ConditionsIOV::validForEvent(const framework::EventHeader& eh) const {
   return (eh.getRun() >= firstRun_ || firstRun_ == -1) &&
          (eh.getRun() <= lastRun_ || lastRun_ == -1) &&
          ((eh.isRealData()) ? (validForData_) : (validForMC_));

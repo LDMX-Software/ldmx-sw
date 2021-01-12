@@ -168,7 +168,7 @@ void Process::run() {
 
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
-      ldmx::EventHeader &eh = theEvent.getEventHeader();
+      framework::EventHeader &eh = theEvent.getEventHeader();
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());

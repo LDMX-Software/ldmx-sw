@@ -54,7 +54,7 @@ ConditionsIOV Conditions::getConditionIOV(
 
 const ConditionsObject* Conditions::getConditionPtr(
     const std::string& condition_name) {
-  const ldmx::EventHeader& context = *(process_.getEventHeader());
+  const framework::EventHeader& context = *(process_.getEventHeader());
   auto cacheptr = cache_.find(condition_name);
 
   if (cacheptr == cache_.end()) {

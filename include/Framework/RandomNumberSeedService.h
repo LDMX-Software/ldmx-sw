@@ -102,7 +102,7 @@ class RandomNumberSeedService : public ConditionsObject,
    * @returns reference to ourselves and unlimited interval of validity
    */
   virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context);
+      const framework::EventHeader& context);
 
   /**
    * This object is both the provider of the seed service and the conditions

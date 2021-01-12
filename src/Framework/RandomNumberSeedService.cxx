@@ -78,7 +78,7 @@ std::vector<std::string> RandomNumberSeedService::getSeedNames() const {
 }
 
 std::pair<const ConditionsObject*, ConditionsIOV>
-RandomNumberSeedService::getCondition(const ldmx::EventHeader& context) {
+RandomNumberSeedService::getCondition(const framework::EventHeader& context) {
   if (!initialized_) {
     if (seedMode_ == SEED_RUN) {
       masterSeed_ = context.getRun();

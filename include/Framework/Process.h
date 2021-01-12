@@ -64,7 +64,7 @@ class Process {
   /**
    * Get the pointer to the current event header, if defined
    */
-  const ldmx::EventHeader *getEventHeader() const { return eventHeader_; }
+  const framework::EventHeader *getEventHeader() const { return eventHeader_; }
 
   /**
    * Get the pointer to the current run header, if defined
@@ -110,7 +110,7 @@ class Process {
   /**
    * Set the pointer to the current event header, used only for tests
    */
-  void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
+  void setEventHeader(framework::EventHeader *h) { eventHeader_ = h; }
 
   /**
    * Get a dummy process
@@ -189,7 +189,7 @@ class Process {
   std::string histoFilename_;
 
   /** Pointer to the current EventHeader, used for Conditions information */
-  const ldmx::EventHeader *eventHeader_{0};
+  const framework::EventHeader *eventHeader_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
   const RunHeader *runHeader_{0};

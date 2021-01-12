@@ -18,7 +18,7 @@ Conditions &EventProcessor::getConditions() const {
   return process_.getConditions();
 }
 
-const ldmx::EventHeader &EventProcessor::getEventHeader() const {
+const framework::EventHeader &EventProcessor::getEventHeader() const {
   return *(process_.getEventHeader());
 }
 

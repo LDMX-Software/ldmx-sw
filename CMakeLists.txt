@@ -49,7 +49,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
 # Register both the event and run headers with the event bus and ROOT dictionary
-register_event_object(module_path "Framework" namespace "ldmx" 
+register_event_object(module_path "Framework" namespace "framework" 
                       class "EventHeader")
 register_event_object(module_path "Framework" namespace "framework" class "RunHeader"
                       type "dict_only")
