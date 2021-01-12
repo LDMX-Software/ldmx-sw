@@ -10,6 +10,8 @@ project(Trigger VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
+include_directories(../submodules/HLS_arbitrary_Precision_Types/include)
+
 setup_library(module Trigger
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event Ecal::Ecal

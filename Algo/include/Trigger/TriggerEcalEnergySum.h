@@ -12,6 +12,9 @@
 #include "Framework/EventProcessor.h" //Needed to declare processor
 #include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
 
+#include "ap_int.h"
+#include "ap_fixed.h"
+
 #include "Ecal/EcalTriggerGeometry.h"
 
 namespace ldmx {
@@ -38,6 +41,8 @@ namespace ldmx {
       
 	virtual void onProcessEnd();
       
+	typedef ap_ufixed<16,2> e_t; // [MeV] (Up to at least 8 GeV)
+	
     private:
 
 	//specific verbosity of this producer
