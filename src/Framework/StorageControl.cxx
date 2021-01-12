@@ -57,7 +57,9 @@ bool StorageControl::Rule::matches(const StorageControl::Hint& h) {
   return true;
 }
 
-bool StorageControl::keepEvent() const {
+bool StorageControl::keepEvent(bool event_completed) const {
+  if (not event_completed) return false;
+
   int votesKeep(0), votesDrop(0);
   // loop over all rules and then over all hints
   for (auto rule : rules_) {
