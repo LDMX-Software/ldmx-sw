@@ -241,7 +241,7 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
-SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
+SimpleCSVTableProvider::getCondition(const framework::EventHeader& context) {
   // put the condition tag into the environment for wordexp to use
   setenv("LDMX_CONDITION_TAG", getTagName().c_str(), 1);
 
