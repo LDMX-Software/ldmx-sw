@@ -92,13 +92,13 @@ void Event::setInputTree(TTree* tree) {
   passengers_.clear();
 
   // put in EventHeader (only one without pass name)
-  products_.emplace_back(ldmx::EventHeader::BRANCH, "", "ldmx::EventHeader");
+  products_.emplace_back(framework::EventHeader::BRANCH, "", "framework::EventHeader");
 
   // find the names of all the existing branches
   TObjArray* branches = inputTree_->GetListOfBranches();
   for (int i = 0; i < branches->GetEntriesFast(); i++) {
     std::string brname = branches->At(i)->GetName();
-    if (brname != ldmx::EventHeader::BRANCH) {
+    if (brname != framework::EventHeader::BRANCH) {
       size_t j = brname.find("_");
       std::string iname = brname.substr(0, j);
       std::string pname = brname.substr(j + 1);
@@ -112,16 +112,16 @@ void Event::setInputTree(TTree* tree) {
 
 bool Event::nextEvent() {
   ientry_++;
-  eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH);
+  eventHeader_ = getObject<framework::EventHeader>(framework::EventHeader::BRANCH);
   return true;
 }
 
 void Event::beforeFill() {
   if (inputTree_ == 0 &&
-      branchesFilled_.find(ldmx::EventHeader::BRANCH) == branchesFilled_.end()) {
+      branchesFilled_.find(framework::EventHeader::BRANCH) == branchesFilled_.end()) {
     // Event Header not copied from input and hasn't been added yet, need to put
     // it in
-    add(ldmx::EventHeader::BRANCH, eventHeader_);
+    add(framework::EventHeader::BRANCH, eventHeader_);
   }
 }
 

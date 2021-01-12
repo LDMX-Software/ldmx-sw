@@ -263,8 +263,8 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
       return false;
     }
 
-    // Event tree should _always_ have the ldmx::EventHeader
-    TTreeReaderValue<ldmx::EventHeader> header(events, "EventHeader");
+    // Event tree should _always_ have the framework::EventHeader
+    TTreeReaderValue<framework::EventHeader> header(events, "EventHeader");
 
     if (existCollection_) {
       // make sure collection matches pattern

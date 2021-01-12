@@ -17,7 +17,7 @@ ConditionsObjectProvider::ConditionsObjectProvider(const std::string& objname,
 
 std::pair<const ConditionsObject*, ConditionsIOV>
 ConditionsObjectProvider::requestParentCondition(const std::string& name,
-                                                 const ldmx::EventHeader& context) {
+                                                 const framework::EventHeader& context) {
   const ConditionsObject* obj = process_.getConditions().getConditionPtr(name);
   ConditionsIOV iov = process_.getConditions().getConditionIOV(name);
   return std::make_pair(obj, iov);

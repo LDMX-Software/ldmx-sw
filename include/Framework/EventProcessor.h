@@ -228,7 +228,7 @@ private:
   /**
    * Internal getter for EventHeader without exposing all of Process
    */
-  const ldmx::EventHeader &getEventHeader() const;
+  const framework::EventHeader &getEventHeader() const;
 
   /** Handle to the Process. */
   Process &process_;
