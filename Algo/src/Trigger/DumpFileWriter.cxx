@@ -1,4 +1,4 @@
-#include "Trigger/TriggerEcalEnergySum.h"
+#include "Trigger/DumpFileWriter.h"
 
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
@@ -6,20 +6,21 @@
 
 namespace ldmx {
 
-    void TriggerEcalEnergySum::configure(Parameters &ps) {
+    void DumpFileWriter::configure(Parameters &ps) {
 	
     }
 
-    void TriggerEcalEnergySum::produce(ldmx::Event &event) {
+    void DumpFileWriter::analyze(const Event &event) {
 
 	const EcalTriggerGeometry& geom=getCondition<EcalTriggerGeometry>(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
 	
 	if (!event.exists("ecalTrigDigis")) return;
         auto ecalTrigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
-
-	float total_e=0;
-	e_t total_e_trunc=0;
+	
+	// clear event to write
+	myEvent.event = evtNo;
+	myEvent.EcalTPs.clear();
 
 	for(const auto& trigDigi : ecalTrigDigis){
 	    // HgcrocTrigDigi
@@ -28,48 +29,50 @@ namespace ldmx {
 	    // compressed ECal digis are 8xADCs (HCal will be 4x)
 	    float sie =  8*trigDigi.linearPrimitive() * gain * mVtoMeV; // in MeV, before layer corrections
 	    float e = (sie/mipSiEnergy * layerWeights.at( tid.layer() ) + sie) * secondOrderEnergyCorrection;
-	    total_e += e;
-	    total_e_trunc = total_e_trunc + e_t(e);
- 	    // auto xy = geom.globalPosition( tid );
-	    // double _x;
-	    // double _y;
-	    // double _z;
-	    // auto center_ecalID = geom.centerInTriggerCell(tid);
-	    // hexReadout.getCellAbsolutePosition(center_ecalID,_x,_y,_z);
+	    
+	    ldmx_int::EcalTP tp;
+	    //tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
+	    tp.fill( trigDigi.getId(), e ); // store linearized E
+	    myEvent.EcalTPs.push_back(tp);
 	}
-	//std::cout << "Total ECal energy: " << total_e << " MeV (fixed-point: "<< total_e_trunc <<" MeV)" << std::endl;
 
+	myEvent.writeToFile(file);
+	evtNo++;
     }
 
 
-    void TriggerEcalEnergySum::onFileOpen() {
+    void DumpFileWriter::onFileOpen() {
 
 	ldmx_log(debug) << "Opening file!";
 
 	return;
     }
 
-    void TriggerEcalEnergySum::onFileClose() {
+    void DumpFileWriter::onFileClose() {
 
 	ldmx_log(debug) << "Closing file!";
 
 	return;
     }
 
-    void TriggerEcalEnergySum::onProcessStart() {
+    void DumpFileWriter::onProcessStart() {
 
 	ldmx_log(debug) << "Process starts!";
+
+	file = fopen(dumpFileName.c_str(),"wb");
 
 	return;
     }
 
-    void TriggerEcalEnergySum::onProcessEnd() {
+    void DumpFileWriter::onProcessEnd() {
 
 	ldmx_log(debug) << "Process ends!";
+
+	fclose(file);
 
 	return;
     }
 
 }
 
-DECLARE_PRODUCER_NS(ldmx, TriggerEcalEnergySum);
+DECLARE_ANALYZER_NS(ldmx, DumpFileWriter);

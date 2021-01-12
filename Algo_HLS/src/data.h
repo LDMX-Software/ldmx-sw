@@ -27,7 +27,6 @@ struct Ecal2dCluster {
     xy_t y;
 };
 
-#define N_INPUT_TP 100
-#define N_CLUSTER 10
+
 
 #endif
