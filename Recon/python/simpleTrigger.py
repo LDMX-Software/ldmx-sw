@@ -14,7 +14,7 @@ class TriggerProcessor(ldmxcfg.Producer) :
     """Configuration for the simple trigger on the ECal"""
 
     def __init__(self,name) :
-        super().__init__(name,'ldmx::TriggerProcessor','Recon')
+        super().__init__(name,'recon::TriggerProcessor','Recon')
 
         self.threshold = 1500.0
         self.mode = 0
