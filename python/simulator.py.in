@@ -84,7 +84,7 @@ class simulator(Producer):
     """
 
     def __init__(self, instance_name ) :
-        super().__init__( instance_name , "ldmx::Simulator" , "SimCore" )
+        super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
 
         #######################################################################
         # Required Parameters
