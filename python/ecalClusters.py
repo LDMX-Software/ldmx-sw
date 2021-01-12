@@ -12,7 +12,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
     """Configure the clustering"""
 
     def __init__(self,name='ecalClusters') :
-        super().__init__(name,"ldmx::EcalClusterProducer")
+        super().__init__(name,"ecal::EcalClusterProducer")
 
         self.cutoff = 10.
         self.seedThreshold = 100.0 #MeV
