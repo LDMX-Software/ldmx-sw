@@ -111,6 +111,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # This module is focused on track reconstruction
     add_subdirectory(Tracking)
 
+    # This module contains trigger algorithms.
+    add_subdirectory(Trigger/Algo)
+
 endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)
