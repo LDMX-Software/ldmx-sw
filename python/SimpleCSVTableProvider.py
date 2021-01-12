@@ -73,7 +73,7 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
     """
 
     def __init__(self,objName,dataType, columns):
-        super().__init__(objName,"ldmx::SimpleCSVTableProvider",'Conditions')
+        super().__init__(objName,"conditions::SimpleCSVTableProvider",'Conditions')
         self.dataType=dataType
         self.columns=columns
         self.entries=[]
