@@ -167,7 +167,7 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
    * events
    */
   virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context) {
+      const framework::EventHeader& context) {
     if (ecalTriggerGeometry_ == nullptr) {
       std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> cond_ecal_geom =
           requestParentCondition(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME,

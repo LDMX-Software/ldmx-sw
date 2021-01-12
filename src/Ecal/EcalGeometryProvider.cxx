@@ -33,7 +33,7 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
    * events
    */
   virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context);
+      const framework::EventHeader& context);
 
   /**
    * Take no action on release, as the object is permanently owned by the
@@ -82,7 +82,7 @@ EcalGeometryProvider::~EcalGeometryProvider() {
 }
 
 std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
-EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
+EcalGeometryProvider::getCondition(const framework::EventHeader& context) {
   static const std::string KEYNAME("detectors_valid");
 
   if (!ecalGeometry_) {
