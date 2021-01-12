@@ -45,23 +45,5 @@ class DiscreteInputs {
     
 };
 
-//
-// CH todo... Maybe simply remove this class since it doesn't do anything?
-//
-/* class DiscreteOutputs { */
-/*  public: */
-/*  DiscreteOutputs(const char *fileName) : file_(fopen(fileName,"wb")), iregion_(0) { */
-/* 	if (!file_) { std::cout << "ERROR: cannot write '" << fileName << "'" << std::endl; } */
-/*     } */
-/*     ~DiscreteOutputs() { fclose(file_); } */
-
-/*     bool writeEvent(Event event){ */
-/* 	return event.writeToFile(file_); */
-/*     } */
-        
-/*  private:     */
-/*     FILE *file_; */
-    
-/* }; */
 
 #endif /* DISCRETEINPUTS_IO */
