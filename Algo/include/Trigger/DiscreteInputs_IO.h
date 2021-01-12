@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../../../Algo_HLS/src/data.h"
+#include "../../../Algo_HLS/Ecal/src/data.h"
 #include "DiscreteInputs.h"
 
 struct EventDump {
