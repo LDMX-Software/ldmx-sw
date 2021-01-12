@@ -1,0 +1,18 @@
+"""Import EventModel dictionary into PyROOT
+
+This needs us to import ROOT and then we can load
+the Event library which also pulls in the Event dictionary.
+
+Examples
+--------
+Use the following line in your python script to inform PyROOT of our Event Model:
+    from LDMX.Framework import dictionary
+"""
+
+import ROOT
+def root_load_ldmx_lib(name) :
+    ROOT.gSystem.Load(f'@CMAKE_INSTALL_PREFIX@/lib/lib{name}.so')
+
+for cmake_lib_name in '@registered_targets@'.split(';') :
+    cpp_lib_name = cmake_lib_name.replace('::','_')
+    root_load_ldmx_lib(cpp_lib_name)

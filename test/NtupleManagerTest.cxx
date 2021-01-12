@@ -25,7 +25,7 @@ TEST_CASE( "Ntuple Manager Functions" , "[Framework][functionality]" ) {
   const char* ntuple_file = "/tmp/test_ntuplemanager.root";
 
   TFile f(ntuple_file,"recreate");
-  ldmx::NtupleManager& n{ldmx::NtupleManager::getInstance()};
+  framework::NtupleManager& n{framework::NtupleManager::getInstance()};
   REQUIRE_NOTHROW( n.create("test") );
   CHECK_THROWS( n.create("test") );
 
