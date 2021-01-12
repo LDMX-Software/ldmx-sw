@@ -123,7 +123,7 @@ class RandomNumberSeedService : public ConditionsObject,
   /**
    * Output streaming operator
    *
-   * @see ldmx::RandomNumberSeedService::stream
+   * @see framework::RandomNumberSeedService::stream
    * @param[in] s output stream to print to
    * @param[in] o seed service to print
    * @returns modified output stream
