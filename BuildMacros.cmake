@@ -154,7 +154,7 @@ macro(setup_library)
   install(TARGETS ${library_name}
           LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
   install(DIRECTORY ${PROJECT_SOURCE_DIR}/${include_path}
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/${include_path})
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 endmacro()
 
