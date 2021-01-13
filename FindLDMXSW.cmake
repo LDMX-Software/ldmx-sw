@@ -33,9 +33,6 @@ if (NOT TARGET LDMXSW::Interface)
   set(LDMXSW_LIBRARIES ${LDMXSW_INSTALL_PREFIX}/lib)
   file(GLOB LDMXSW_LIBS ${LDMXSW_LIBRARIES}/*.so)
 
-  message(STATUS "INCLUDE: ${LDMXSW_INCLUDE_DIRS}")
-  message(STATUS "Lib: ${LDMXSW_LIBRARIES}")
-  message(STATUS "Libs: ${LDMXSW_LIBS}")
   # Create the target
   add_library(LDMXSW::Interface INTERFACE IMPORTED GLOBAL)
   set_target_properties(LDMXSW::Interface
