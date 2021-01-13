@@ -1,5 +1,7 @@
 #ifndef DISCRETEINPUTS_H
 #define DISCRETEINPUTS_H
+  
+namespace trigger {
 
 namespace ldmx_int {
 
@@ -37,6 +39,8 @@ namespace ldmx_int {
     objs.resize(number); 
     for (uint32_t i = 0; i < number; ++i) objs[i].readFromFile(file);
   }
+
+}
 
 }
 

@@ -6,6 +6,8 @@
 #include "../../../Algo_HLS/Ecal/src/data.h"
 #include "DiscreteInputs.h"
 
+namespace trigger {
+
 struct EventDump {
   uint64_t event;
   std::vector<ldmx_int::EcalTP> EcalTPs;
@@ -45,5 +47,6 @@ private:
     
 };
 
+}
 
 #endif /* DISCRETEINPUTS_IO */
