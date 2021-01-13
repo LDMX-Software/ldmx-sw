@@ -19,7 +19,7 @@
 
 #include "Ecal/EcalTriggerGeometry.h"
 
-namespace ldmx {
+namespace trigger {
 
   /**
    * @class DumpFileWriter

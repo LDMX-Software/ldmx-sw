@@ -4,7 +4,7 @@
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "DetDescr/EcalHexReadout.h"
 
-namespace ldmx {
+namespace trigger {
 
 void DumpFileWriter::configure(Parameters &ps) {
       

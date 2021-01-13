@@ -7,7 +7,7 @@
 #include "../../../Algo_HLS/Ecal/src/data.h"
 #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
 
-namespace ldmx {
+namespace trigger {
 
 void TriggerEcalEnergySum::configure(Parameters &ps) {
 	
