@@ -17,14 +17,14 @@ typedef ap_fixed<16,14> pxy_t; // [MeV/c]
 
 
 struct EcalTP {
-    tid_t tid;
-    tp_t tp;
+  tid_t tid;
+  tp_t tp;
 };
 
 struct Ecal2dCluster {
-    e_t e;
-    xy_t x;
-    xy_t y;
+  e_t e;
+  xy_t x;
+  xy_t y;
 };
 
 

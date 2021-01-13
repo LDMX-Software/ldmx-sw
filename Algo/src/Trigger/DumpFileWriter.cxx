@@ -6,72 +6,72 @@
 
 namespace ldmx {
 
-    void DumpFileWriter::configure(Parameters &ps) {
+void DumpFileWriter::configure(Parameters &ps) {
+      
+}
+
+void DumpFileWriter::analyze(const Event &event) {
+
+  const EcalTriggerGeometry& geom=getCondition<EcalTriggerGeometry>(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
+  const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
 	
-    }
-
-    void DumpFileWriter::analyze(const Event &event) {
-
-	const EcalTriggerGeometry& geom=getCondition<EcalTriggerGeometry>(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  if (!event.exists("ecalTrigDigis")) return;
+  auto ecalTrigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
 	
-	if (!event.exists("ecalTrigDigis")) return;
-        auto ecalTrigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
-	
-	// clear event to write
-	myEvent.event = evtNo;
-	myEvent.EcalTPs.clear();
+  // clear event to write
+  myEvent.event = evtNo;
+  myEvent.EcalTPs.clear();
 
-	for(const auto& trigDigi : ecalTrigDigis){
-	    // HgcrocTrigDigi
+  for(const auto& trigDigi : ecalTrigDigis){
+    // HgcrocTrigDigi
 
-	    EcalTriggerID tid( trigDigi.getId() /*raw value*/ );
-	    // compressed ECal digis are 8xADCs (HCal will be 4x)
-	    float sie =  8*trigDigi.linearPrimitive() * gain * mVtoMeV; // in MeV, before layer corrections
-	    float e = (sie/mipSiEnergy * layerWeights.at( tid.layer() ) + sie) * secondOrderEnergyCorrection;
+    EcalTriggerID tid( trigDigi.getId() /*raw value*/ );
+    // compressed ECal digis are 8xADCs (HCal will be 4x)
+    float sie =  8*trigDigi.linearPrimitive() * gain * mVtoMeV; // in MeV, before layer corrections
+    float e = (sie/mipSiEnergy * layerWeights.at( tid.layer() ) + sie) * secondOrderEnergyCorrection;
 	    
-	    ldmx_int::EcalTP tp;
-	    //tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
-	    tp.fill( trigDigi.getId(), e ); // store linearized E
-	    myEvent.EcalTPs.push_back(tp);
-	}
+    ldmx_int::EcalTP tp;
+    //tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
+    tp.fill( trigDigi.getId(), e ); // store linearized E
+    myEvent.EcalTPs.push_back(tp);
+  }
 
-	myEvent.writeToFile(file);
-	evtNo++;
-    }
+  myEvent.writeToFile(file);
+  evtNo++;
+}
 
 
-    void DumpFileWriter::onFileOpen() {
+void DumpFileWriter::onFileOpen() {
 
-	ldmx_log(debug) << "Opening file!";
+  ldmx_log(debug) << "Opening file!";
 
-	return;
-    }
+  return;
+}
 
-    void DumpFileWriter::onFileClose() {
+void DumpFileWriter::onFileClose() {
 
-	ldmx_log(debug) << "Closing file!";
+  ldmx_log(debug) << "Closing file!";
 
-	return;
-    }
+  return;
+}
 
-    void DumpFileWriter::onProcessStart() {
+void DumpFileWriter::onProcessStart() {
 
-	ldmx_log(debug) << "Process starts!";
+  ldmx_log(debug) << "Process starts!";
 
-	file = fopen(dumpFileName.c_str(),"wb");
+  file = fopen(dumpFileName.c_str(),"wb");
 
-	return;
-    }
+  return;
+}
 
-    void DumpFileWriter::onProcessEnd() {
+void DumpFileWriter::onProcessEnd() {
 
-	ldmx_log(debug) << "Process ends!";
+  ldmx_log(debug) << "Process ends!";
 
-	fclose(file);
+  fclose(file);
 
-	return;
-    }
+  return;
+}
 
 }
 
