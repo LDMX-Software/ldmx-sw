@@ -1,3 +1,6 @@
 [submodule "submodules/HLS_arbitrary_Precision_Types"]
 	path = submodules/HLS_arbitrary_Precision_Types
 	url = https://github.com/Xilinx/HLS_arbitrary_Precision_Types.git
+[submodule "submodules/ruckus"]
+	path = submodules/ruckus
+	url = https://github.com/slaclab/ruckus
