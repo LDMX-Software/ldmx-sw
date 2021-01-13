@@ -2,17 +2,18 @@
 #define RECON_EVENT_HGCROCTRIGDIGI_H_
 
 // ldmx-sw
-#include <stdint.h> //uint{32,8}_t
+#include <stdint.h>  //uint{32,8}_t
 
 // ROOT
-#include "TObject.h" //For ClassDef
+#include "TObject.h"  //For ClassDef
 
-namespace ldmx {
+namespace recon {
+namespace event {
 
 // Forward declaration needed by typedef
-class HgcrocTrigDigi; 
+class HgcrocTrigDigi;
 
-  /**
+/**
  * Define the type of collection for trig digis
  */
 typedef std::vector<HgcrocTrigDigi> HgcrocTrigDigiCollection;
@@ -22,7 +23,7 @@ typedef std::vector<HgcrocTrigDigi> HgcrocTrigDigiCollection;
  * @brief Contains the trigger output for a single trigger hgcroc channel
  */
 class HgcrocTrigDigi {
-public:
+ public:
   /**
    * Default Constructor
    *
@@ -131,7 +132,7 @@ public:
   friend std::ostream &operator<<(std::ostream &o,
                                   const HgcrocTrigDigiCollection &c);
 
-private:
+ private:
   /// the raw ID for this trigger channel
   uint32_t tid_{0};
   /// the compressed 7bit trigger primitive value for this channel
@@ -139,7 +140,7 @@ private:
   /// ROOT Dictionary class definition macro
   ClassDef(HgcrocTrigDigi, 1);
 };
+}
+}  // namespace recon
 
-} // namespace ldmx
-
-#endif // RECON_EVENT_HGCROCTRIGDIGI_H_
+#endif  // RECON_EVENT_HGCROCTRIGDIGI_H_

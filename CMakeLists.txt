@@ -85,6 +85,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     message(STATUS "Building the modules necessary for the reconstruction.")
 
+    # Conditions services
+    add_subdirectory(Conditions)
+
     # The tools module contains tools generic enough to be used by other modules.
     add_subdirectory(Tools)
 
@@ -93,9 +96,6 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     # Currently, this module contains processors from several subsystems.
     add_subdirectory(Recon)
-
-    # Conditions services
-    add_subdirectory(Conditions)
 
     # Data quality management plots.
     add_subdirectory(DQM)

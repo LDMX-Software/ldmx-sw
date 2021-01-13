@@ -52,7 +52,7 @@ class OverlayProducer(ldmxcfg.Producer) :
     """
 
     def __init__(self,fileName,name = 'OverlayProducer') :
-        super().__init__(name,'ldmx::OverlayProducer','Recon')
+        super().__init__(name,'recon::OverlayProducer','Recon')
 
 
         self.overlayFileName = fileName 

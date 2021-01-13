@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-ClassImp(ldmx::HgcrocTrigDigi)
+ClassImp(recon::event::HgcrocTrigDigi)
 
-namespace ldmx {
-
+namespace recon {
+namespace event {
 HgcrocTrigDigi::HgcrocTrigDigi(uint32_t tid, uint8_t tp) : tid_(tid), tp_{tp} {}
 
 void HgcrocTrigDigi::Print() const { std::cout << *this << std::endl; }
@@ -58,7 +58,7 @@ uint32_t HgcrocTrigDigi::compressed2Linear(uint8_t comp) {
   return (v1 + v2) / 2;
 }
 
-std::ostream &operator<<(std::ostream &s, const ldmx::HgcrocTrigDigi &digi) {
+std::ostream &operator<<(std::ostream &s, const recon::event::HgcrocTrigDigi &digi) {
   s << "HgcrocTrigDigi { "
     << "(id : 0x" << std::hex << digi.getId() << std::dec << ") ";
   s << "0x" << std::hex << int(digi.getPrimitive()) << " (" << std::dec
@@ -67,7 +67,7 @@ std::ostream &operator<<(std::ostream &s, const ldmx::HgcrocTrigDigi &digi) {
 }
 
 std::ostream &operator<<(std::ostream &s,
-                         const ldmx::HgcrocTrigDigiCollection &digis) {
+                         const recon::event::HgcrocTrigDigiCollection &digis) {
   s << "HgcrocTrigDigiCollection { " << std::endl;
   for (auto digi : digis)
     s << "  " << digi << std::endl;
@@ -75,4 +75,5 @@ std::ostream &operator<<(std::ostream &s,
   return s;
 }
 
-} // namespace ldmx
+} // namespace event
+} // namespace recon

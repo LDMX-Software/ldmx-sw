@@ -14,7 +14,7 @@ class StepPrinter(simcfg.UserAction) :
     """
 
     def __init__(self,track_id=1) :
-        super().__init__('print_steps_%s'%track_id,'ldmx::StepPrinter')
+        super().__init__('print_steps_%s'%track_id,'biasing::StepPrinter')
 
         from LDMX.Biasing import include
         include.library()
