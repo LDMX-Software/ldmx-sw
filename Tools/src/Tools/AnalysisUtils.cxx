@@ -15,7 +15,7 @@
 //----------//
 //   ldmx   //
 //----------//
-#include "Event/FindableTrackResult.h"
+//#include "Event/FindableTrackResult.h"
 #include "SimCore/Event/SimParticle.h"
 #include "Framework/Exception/Exception.h"
 
@@ -62,7 +62,8 @@ namespace ldmx {
 
             return nullptr;
         } 
-
+      
+        /*
         TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks) { 
        
             TrackMaps map; 
@@ -78,7 +79,7 @@ namespace ldmx {
             }
 
             return map;  
-        }
+        }*/
     
     } // Analysis    
 

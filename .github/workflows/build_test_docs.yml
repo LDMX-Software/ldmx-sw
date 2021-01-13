@@ -1,12 +1,13 @@
 
 name: Tests
 
-# we are going to run this action whenever we push to master or make a PR onto master
+# we are going to run this action whenever we push to trunk or make a PR onto 
+# trunk
 on:
   push:
-    branches: [ master ]
+    branches: [ trunk ]
   pull_request:
-    branches: [ master ]
+    branches: [ trunk ]
 
 jobs:
   # this action only has one job
@@ -32,23 +33,19 @@ jobs:
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake --version &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake -DBUILD_TESTS=ON ..
+          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
       run: docker run -i -v $(pwd):$(pwd) $image $(pwd)/build make install
 
-    # run test executable and test configs using the docker environment
-    #   The test executable is hard-coded here and in the cmake macro build_test
-    #   The test configs are retrieved and ran through fire, exiting if any error out
-    #       The set of test configs is any file matching 'ldmx-sw/*/test/*.py'
+    # Run the test using ctest. The --verbose parameter displays the output 
+    # you would typically see with catch.
     - name: Test the build
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for c in `ls ldmx-sw/*/test/*.py`; do if ! docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $(pwd) fire $c; then exit 1; fi; done
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
@@ -83,13 +80,13 @@ jobs:
     #   using the ldmx organization token for access and saving the changes with the
     #   commit message of the commit that activated this action
     - name: Deploy the Docs
-      if: ${{ github.event_name == 'push' }} #only deploy when the master actually changes
+      if: ${{ github.event_name == 'push' }} #only deploy when the trunk actually changes
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
         commit_message: ${{ github.event.head_commit.message }}
         external_repository: LDMX-Software/ldmx-software.github.io
-        publish_branch: master 
+        publish_branch: trunk 
         publish_dir: ./docs/html
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)

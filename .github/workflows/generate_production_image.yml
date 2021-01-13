@@ -1,11 +1,12 @@
 
 name: Docker Image
 
-# Generate a new production image when there is a release or a release is published
-#   Also generate a production image whenever there is a push to the master branch.
+# Generate a new production image when there is a release or a release is 
+# published. Also generate a production image whenever there is a push to 
+# trunk. 
 on:
   push:
-    branches: [ master ]
+    branches: [ trunk ]
   release:
     types: [ published, released ]
 

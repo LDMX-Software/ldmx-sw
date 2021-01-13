@@ -65,10 +65,12 @@ endif()
 # here.
 set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 
-add_subdirectory(Event)
+add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
 add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
+add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
+add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -90,14 +92,13 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     add_subdirectory(Ecal)
 
     # Currently, this module contains processors from several subsystems.
-    add_subdirectory(EventProc)
+    add_subdirectory(Recon)
 
     # Conditions services
     add_subdirectory(Conditions)
 
     # Data quality management plots.
     add_subdirectory(DQM)
-
 
     # This module contains HCal reconstruction code.
     add_subdirectory(Hcal)
@@ -128,17 +129,11 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-if(BUILD_EVE_ONLY)
-    
-    #message(STATUS "Building the event display.")
-    add_subdirectory(EventDisplay)
-
-endif()
+#if(BUILD_EVE_ONLY)
+#    add_subdirectory(EventDisplay)
+#endif()
 
 
-# If enabled, build all test.  The test are assumed to reside inside of the
-# directory "test" within each module.  The main
-option(BUILD_TESTS "Build and link the run-test executable." OFF)
-if(BUILD_TESTS)
-    build_test()
-endif()
+# Build all test.  The test are assumed to reside inside of the directory 
+# "test" within each module.  The main
+build_test()

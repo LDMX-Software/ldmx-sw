@@ -11,10 +11,9 @@ project(Biasing VERSION 2.1.0
 # Configure Geant4
 setup_geant4_target()
 
-setup_library(name Biasing
+setup_library(module Biasing
               dependencies Geant4::Interface 
                            Framework::Framework SimCore::SimCore
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Biasing)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Biasing)

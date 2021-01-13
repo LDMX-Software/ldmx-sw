@@ -13,9 +13,9 @@ project(Tools VERSION 2.1.0
 find_package(ONNXRuntime 1.2.0)
 
 # Setup the library
-setup_library(name Tools
-              dependencies Framework::Framework Event::Event Conditions::Conditions
+setup_library(module Tools
+              dependencies Framework::Framework Recon::Event Conditions::Conditions
                            ONNXRuntime::Interface
 )
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Tools)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)
