@@ -156,7 +156,7 @@ jobs:
             fi
           else
             #not default branch without production image defined
-            _repo=UNDEFINED
+            _repo=undefined
           fi
           _tags="$_repo:edge,$_repo:sha-${GITHUB_SHA::8}"
         else
