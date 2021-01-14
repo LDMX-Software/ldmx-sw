@@ -6,8 +6,6 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
-//#define BIASING_MIDSHOWER_DEV_DEBUG
-
 namespace ldmx {
 
 MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(const std::string& name,
@@ -18,14 +16,14 @@ MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(const std::string& name,
 }
 
 void MidShowerNuclearBkgdFilter::BeginOfEventAction(const G4Event*) {
-#ifdef BIASING_MIDSHOWER_DEV_DEBUG
+  /* debug printout
   std::cout
       << "[ MidShowerNuclearBkgdFilter ]: "
       << "("
       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
       << ") "
       << "starting new simulation event." << std::endl;
-#endif
+   */
   total_process_energy_ = 0.;
 }
 
@@ -40,7 +38,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
     total_process_energy_ += pre_energy - post_energy;
 
     const G4Track* track = step->GetTrack();
-#ifdef BIASING_MIDSHOWER_DEV_DEBUG
+    /* debug printout
     std::cout << "[ MidShowerNuclearBkgdFilter ]: "
               << "("
               << G4EventManager::GetEventManager()
@@ -50,7 +48,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
               << "Track " << track->GetParentID() << " created "
               << track->GetTrackID() << " which went from " << pre_energy
               << " MeV to " << post_energy << " via a nuclear process." << std::endl;
-#endif
+     */
     // make sure this track is saved
     save(track);
   } else if (const G4Track* track{step->GetTrack()};
@@ -59,13 +57,13 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
 }
 
 void MidShowerNuclearBkgdFilter::NewStage() {
-#ifdef BIASING_MIDSHOWER_DEV_DEBUG
+  /* debug printout
   std::cout
       << "[ MidShowerNuclearBkgdFilter ]: "
       << "("
       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
       << ") " << total_process_energy_ << " MeV went nuclear." << std::endl;
-#endif
+   */
   if (total_process_energy_ < threshold_)
     AbortEvent("Not enough energy went to the input process.");
   return;

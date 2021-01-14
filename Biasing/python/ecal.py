@@ -8,7 +8,9 @@
 
 from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
-from LDMX.Biasing import filters, util
+from LDMX.SimCore import bias_operators
+from LDMX.Biasing import filters
+from LDMX.Biasing import util
 from LDMX.Biasing import include as includeBiasing
 
 def photo_nuclear( detector, generator ) :
@@ -43,7 +45,6 @@ def photo_nuclear( detector, generator ) :
 
     # Instantiate the simulator. 
     sim = simulator.simulator("photo-nuclear")
-    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -57,7 +58,6 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append( generator )
     
     # Enable and configure the biasing
-    from LDMX.SimCore import bias_operators
     sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.) ]
 
     # the following filters are in a library that needs to be included

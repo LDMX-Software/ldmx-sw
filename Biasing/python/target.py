@@ -8,7 +8,9 @@
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
-from LDMX.Biasing import filters, util
+from LDMX.SimCore import bias_operators
+from LDMX.Biasing import filters
+from LDMX.Biasing import util
 from LDMX.Biasing import include as includeBiasing
 
 def electro_nuclear( detector, generator ) :
@@ -37,7 +39,6 @@ def electro_nuclear( detector, generator ) :
     
     # Instantiate the sim.
     sim = simulator.simulator("target_electronNuclear")
-    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -51,7 +52,6 @@ def electro_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    from LDMX.SimCore import bias_operators
     sim.biasing_operators = [
             bias_operators.ElectroNuclear('target',1e8)
             ]
@@ -97,7 +97,6 @@ def photo_nuclear( detector, generator ) :
 
     # Instantiate the sim.
     sim = simulator.simulator("target_photonNuclear")
-    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -111,10 +110,7 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [
-            bias_operators.PhotoNuclear('target',450.,2500.)
-            ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.) ]
    
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -180,7 +176,6 @@ def dark_brem( ap_mass , lhe, detector ) :
     #   need to bias up high mass A' by more than 2 so that they can actually happen
     from math import log10 
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
-    from LDMX.SimCore import bias_operators
     sim.biasing_operators = [
             bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
             ]
