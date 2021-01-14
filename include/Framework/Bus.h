@@ -138,6 +138,33 @@ class Bus {
    */
   void everybodyOff() { passengers_.clear(); }
 
+  /**
+   * Write the bus to the input ostream.
+   *
+   * Includes new-line characters to separate out the different
+   * objects carried on the bus.
+   *
+   * @param[in] s ostream to write to
+   */
+  void stream(std::ostream &s) const {
+    for (auto& [n, handle] : passengers_)
+      s << n << " : " << handle << std::endl;
+  }
+
+  /**
+   * Allow for the bus to be streamed to an ostream
+   *
+   * @see stream for the implmentation
+   *
+   * @param[in] s ostream to write to
+   * @param[in] b Bus to write out
+   * @return modified ostream
+   */
+  friend std::ostream &operator<<(std::ostream &s, const framework::Bus &b) {
+    b.stream(s);
+    return s;
+  }
+
  private:
   /**
    * The handle of a bus passenger
@@ -187,6 +214,28 @@ class Bus {
      */
     virtual void clear() = 0;
 
+    /**
+     * Define how we should stream the object to the input stream.
+     *
+     * @param[in] s ostream to write to
+     */
+    virtual void stream(std::ostream &s) const = 0;
+
+    /**
+     * Stream this object to the output stream
+     *
+     * May contain newlines if large object.
+     *
+     * @see stream for detailed implementation
+     * @param[in] s ostream to write to
+     * @param[in] seat Seat to write out
+     * @return modified ostream
+     */
+    friend std::ostream& operator<<(std::ostream& s, const framework::Bus::Seat& seat) {
+      seat.stream(s);
+      return s;
+    }
+
   };  // Seat
 
  private:
@@ -206,7 +255,7 @@ class Bus {
    *  2. "Attach" the baggage to a output or input TTree for writing or reading
    *  3. "Update" the contents of the baggage
    *  4. "Clear" the baggage to a default or empty state at the end of each event
-   *  5. (Not Implemented Yet) "Print" the baggage to a ostream
+   *  5. "Print" the baggage to a ostream (via the operator<<)
    *
    * ## Basic Structure
    *
@@ -320,6 +369,32 @@ class Bus {
      * to use depending on the type of baggage we are carrying.
      */
     virtual void clear() { clear(the_type<BaggageType>{}); }
+
+    /**
+     * Stream the passenger's object to the input ostream
+     *
+     * We call the overloaded, templated stream method that
+     * allows the compiler to deduce which implementation
+     * to use depending on the type of baggage we are carrying.
+     */
+    virtual void stream(std::ostream& s) const { 
+      stream(the_type<BaggageType>{}, s)
+    }
+
+    /**
+     * Stream this object to the output stream
+     *
+     * May contain newlines if large object.
+     *
+     * @see stream for detailed implementation
+     * @param[in] s ostream to write to
+     * @param[in] p Passenger to write out
+     * @return modified ostream
+     */
+    friend std::ostream& operator<<(std::ostream& s, const framework::Bus::Passenger<BaggageType>& p) {
+      p.stream(s);
+      return s;
+    }
 
    private:
     /**
@@ -604,10 +679,69 @@ class Bus {
       std::sort(baggage_->begin(), baggage_->end());
     }
 
+   private: //specializations of stream
+    /**
+     * Stream a basic type that has its own
+     * definition of 'operator<<'.
+     *
+     * @note Here is where we require that all event bus
+     * objects (not inside a vector or map) need the
+     * 'operatore<<' defined.
+     *
+     * @param t Unused, only helping compiler choose the correct method
+     * @param s ostream to write to
+     */
+    template <typename T>
+    void stream(the_type<T> t, std::ostream& s) const {
+      //s << *baggagage_;
+    }
+
+    /**
+     * Stream a vector of objects by looping through them.
+     *
+     * @note Here is where we require that all event
+     * objects inside a vector need the 'operator<<' defined.
+     *
+     * @param t Unused, only helping compiler choose the correct method
+     * @param s ostream to write to
+     */
+    template <typename Content>
+    void stream(the_type<std::vector<Content>> t, std::ostream& s) const {
+      s << baggage_->size();
+      /*
+      s << "[ ";
+      for (auto const& entry : *baggage_) s << entry << " ";
+      s << "]";
+      */
+    }
+
+    /**
+     * Stream a map of objects by looping through them
+     *
+     * @note Here is where we require that all event
+     * objects used as a key or value in a map
+     * need the 'operator<<' defined.
+     *
+     * @param t Unused, only helping compiler choose the correct method
+     * @param s ostream to write to
+     */
+    template <typename Key, typename Val>
+    void stream(the_type<std::map<Key,Val>> t, std::ostream& s) const {
+      s << baggage_->size();
+      /*
+      s << "{ ";
+      for (auto const& [k, v] : *baggage_) {
+        s << k << " -> " << v << " ";
+      }
+      s << "}";
+      */
+    }
+
    private:
     /// A pointer to the baggage we own and created
     BaggageType* baggage_;
   };  // Passenger
+
 
  private:
   /**
