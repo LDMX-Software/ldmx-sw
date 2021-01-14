@@ -19,7 +19,8 @@ namespace framework {
  * This is the actual bus that the passengers ride on
  * during event processing. At its core, it is simply
  * a specialization of a map between branch names and
- * handles to the bus passengers (Seats).
+ * handles to the bus passengers (Seats) with some special
+ * accessors for connecting TTrees and updating contents.
  *
  * @see Bus::Seat for how we keep a handle on the Passengers
  * @see Bus::Passenger for what actually carries the event objects
@@ -141,8 +142,12 @@ class Bus {
   /**
    * The handle of a bus passenger
    *
-   * We need this so the different types of our passengers
-   * can all be stored in one passenger map together.
+   * This is the foundation of the bus. Each bus passenger (which
+   * does know the type of object it is carrying) is given a seat
+   * on the bus that doesn't know the type of object it is carrying.
+   * This allows the bus to have one container for all the passengers
+   * carrying different types of objects and tell each of these objects
+   * to reset themselves at the end of the event.
    */
   class Seat {
    public:
@@ -193,6 +198,15 @@ class Bus {
    *
    * Here we do all the heavy lifting of carrying a certain type
    * of object with specializations for clearing, sorting, and printing.
+   * @note Printing specialization is possible if we include the requirement
+   * that all event objects must define the 'operator<<' method.
+   *
+   * ## Core Functions
+   *  1. Define the type of "baggage" that is being carried on the event bus
+   *  2. "Attach" the baggage to a output or input TTree for writing or reading
+   *  3. "Update" the contents of the baggage
+   *  4. "Clear" the baggage to a default or empty state at the end of each event
+   *  5. (Not Implemented Yet) "Print" the baggage to a ostream
    *
    * ## Basic Structure
    *
