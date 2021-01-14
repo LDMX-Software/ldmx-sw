@@ -132,6 +132,7 @@ jobs:
       id: generate_tag
       run: |
         _tags=""
+        _should_push="yes"
         if [[ $GITHUB_REF == refs/tags/* ]]; then
           # if pushing a git tag ==> get the git tag for the docker tag
           _git_tag=${GITHUB_REF#refs/tags/}
@@ -157,6 +158,7 @@ jobs:
           else
             #not default branch without production image defined
             _repo=undefined
+            _should_push="no"
           fi
           _tags="$_repo:edge,$_repo:sha-${GITHUB_SHA::8}"
         else
@@ -165,12 +167,12 @@ jobs:
         fi
         echo "Generated Tags: ${_tags}"
         echo ::set-output name=tags::${_tags}
+        echo ::set-output name=should_push::${_should_push}
     -
       name: Build the Image
-      if: contains(${{ steps.generate_tag.outputs.tags }},"/")
       id: docker_build
       uses: docker/build-push-action@v2
       with:
         tags: ${{ steps.generate_tag.outputs.tags }}
-        push: true
+        push: ${{ steps.generate_tag.outputs.should_push == 'yes' }}
 
