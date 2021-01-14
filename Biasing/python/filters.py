@@ -39,28 +39,6 @@ class TargetBremFilter(simcfg.UserAction):
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
-class EcalBremFilter(simcfg.UserAction):
-    """ Configuration for filtering events that don't see a hard brem in the target. 
-
-    The event is rejected if the primary electron brems, 
-    but the energy of at least one of the brems isn't above 
-    the brem_min_energy_threshold [MeV] or if the primary
-    doesn't brem at all.
-
-    Parameters
-    ----------
-    brem_min_e : float
-        Minimum energy the brem photon can have [MeV]
-    """
-
-    def __init__(self,brem_min_e) :
-        super().__init__("ecal_brem_filter", "ldmx::EcalBremFilter")
-
-        from LDMX.Biasing import include
-        include.library()
-
-        self.brem_min_energy_threshold = brem_min_e
-
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
@@ -94,26 +72,6 @@ class TargetENFilter(simcfg.UserAction) :
         include.library()
 
         self.recoilThreshold = recoil_thresh #MeV
-
-class EcalENFilter(simcfg.UserAction) :
-    """ Configuration for filtering electro-nuclear events in the ecal.
-
-    Designed similar to EcalBremFilter, this action looks for the primary
-    to have a minimum total energy "lost" to EN products within the ecal.
-
-    Parameters
-    ----------
-    min_en_energy : float
-        Minimum total energy of all EN products [MeV]
-    """
-
-    def __init__(self,min_en_energy) :
-        super().__init__("ecal_en_process_filter","ldmx::EcalENFilter")
-
-        from LDMX.Biasing import include
-        include.library()
-
-        self.min_total_en_energy = min_en_energy #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
