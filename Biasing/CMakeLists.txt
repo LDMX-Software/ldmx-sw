@@ -17,7 +17,7 @@ setup_library(module Biasing
                            Framework::Framework SimCore::SimCore
 )
 
-setup_library(name Biasing
+setup_library(module Biasing
               dependencies Geant4::Interface 
                            Framework::Framework SimCore::SimCore
 )
