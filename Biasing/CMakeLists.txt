@@ -24,6 +24,3 @@ setup_library(module Biasing
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Biasing)
 
-# Testing includes .py files as well as .cxx files in test directory
-setup_test(dependencies Biasing::Biasing)
-
