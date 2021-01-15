@@ -134,6 +134,7 @@ namespace ldmx {
             std::vector<float> bdtFeatures_;
             
             std::string rec_pass_name_;
+            std::string rec_coll_name_;
 
             /** Name of the collection which will containt the results. */
             std::string collectionName_{"EcalVeto"};
