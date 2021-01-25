@@ -41,6 +41,7 @@ namespace ldmx {
 
             G4PrimaryVertex* vertex = new G4PrimaryVertex();
             vertex->SetPosition(lheEvent->getVertex()[0],lheEvent->getVertex()[1],lheEvent->getVertex()[2]);
+            vertex->SetT0(lheEvent->getVertexTime());
             vertex->SetWeight(lheEvent->getXWGTUP());
 
             std::map<LHEParticle*, G4PrimaryParticle*> particleMap;
