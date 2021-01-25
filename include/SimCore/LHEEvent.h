@@ -90,6 +90,12 @@ namespace ldmx {
              * @return Array double[3] with x,y,z ordering
              */
 	    const double* getVertex() const;
+
+        /**
+         * Get the vertex time
+             * @return time of primary particle creation.
+             */
+        const double getVertexTime() const;
 	    	
             /**
              * Add a particle to the event.
@@ -140,6 +146,12 @@ namespace ldmx {
              * Vertex location
              */
 	    double vtx_[3];
+
+
+        /**
+             * Vertex time
+             */
+        double vtxt_;
 	
             /**
              * The list of particles.
