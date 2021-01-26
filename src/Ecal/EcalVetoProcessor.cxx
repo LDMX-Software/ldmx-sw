@@ -77,7 +77,7 @@ const std::vector<double> radius68_thetagt20 = {
     209.2764728201696};
 
 void EcalVetoProcessor::buildBDTFeatureVector(
-    const ecal::event::EcalVetoResult &result) {
+    const ldmx::EcalVetoResult &result) {
   bdtFeatures_.clear();
   bdtFeatures_.push_back(result.getNReadoutHits());
   bdtFeatures_.push_back(result.getSummedDet());
@@ -178,7 +178,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
   hexReadout_ = &hexReadout;
 
-  ecal::event::EcalVetoResult result;
+  ldmx::EcalVetoResult result;
 
   clearProcessor();
 
@@ -275,8 +275,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<double> photon_radii = radius68_thetalt10_plt500;
 
   // Get the collection of digitized Ecal hits from the event.
-  const std::vector<ecal::event::EcalHit> ecalRecHits =
-      event.getCollection<ecal::event::EcalHit>("EcalRecHits", rec_pass_name_);
+  const std::vector<ldmx::EcalHit> ecalRecHits =
+      event.getCollection<ldmx::EcalHit>("EcalRecHits", rec_pass_name_);
 
   ldmx::EcalID globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
   /* ~~ Fill the hit map ~~ O(n)  */
@@ -304,7 +304,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> outsideContainmentXstd(nregions, 0.0);
   std::vector<float> outsideContainmentYstd(nregions, 0.0);
 
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     // Layer-wise quantities
     ldmx::EcalID id = hitID(hit);
     ecalLayerEdepRaw_[id.layer()] =
@@ -388,7 +388,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
 
   // Loop over hits a second time to find the standard deviations.
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     ldmx::EcalID id = hitID(hit);
     if (hit.getEnergy() > 0) {
       xStd_ +=
@@ -536,13 +536,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
 /* Function to calculate the energy weighted shower centroid */
 ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
-    const std::vector<ecal::event::EcalHit> &ecalRecHits, double &showerRMS) {
+    const std::vector<ldmx::EcalHit> &ecalRecHits, double &showerRMS) {
   auto wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
   float sumEdep = 0;
   ldmx::EcalID returnCellId;
 
   // Calculate Energy Weighted Centroid
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     ldmx::EcalID id = hitID(hit);
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
     XYCoords centroidCoords = getCellCentroidXYPair(id);
@@ -559,7 +559,7 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
                                  : wgtCentroidCoords.second;
   // Find Nearest Cell to Centroid
   float maxDist = 1e6;
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     XYCoords centroidCoords = getCellCentroidXYPair(hitID(hit));
 
     float deltaR =
@@ -577,19 +577,19 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
 }
 
 /* Function to load up empty vector of hit maps */
-void EcalVetoProcessor::fillHitMap(const std::vector<ecal::event::EcalHit> &ecalRecHits,
+void EcalVetoProcessor::fillHitMap(const std::vector<ldmx::EcalHit> &ecalRecHits,
                                    std::map<ldmx::EcalID, float> &cellMap_) {
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     ldmx::EcalID id = hitID(hit);
     cellMap_.emplace(id, hit.getEnergy());
   }
 }
 
 void EcalVetoProcessor::fillIsolatedHitMap(
-    const std::vector<ecal::event::EcalHit> &ecalRecHits, ldmx::EcalID globalCentroid,
+    const std::vector<ldmx::EcalHit> &ecalRecHits, ldmx::EcalID globalCentroid,
     std::map<ldmx::EcalID, float> &cellMap_, std::map<ldmx::EcalID, float> &cellMapIso_,
     bool doTight) {
-  for (const ecal::event::EcalHit &hit : ecalRecHits) {
+  for (const ldmx::EcalHit &hit : ecalRecHits) {
     auto isolatedHit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id = hitID(hit);
     ldmx::EcalID flatid(0, id.module(), id.cell());

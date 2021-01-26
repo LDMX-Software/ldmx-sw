@@ -37,7 +37,7 @@ class DNNEcalVetoProcessor : public framework::Producer {
    * @param ecalRecHits The EcalHit collection.
    */
   void make_inputs(const ldmx::EcalHexReadout& geom,
-                   const std::vector<ecal::event::EcalHit>& ecalRecHits);
+                   const std::vector<ldmx::EcalHit>& ecalRecHits);
 
  private:
   /** Maximum number of hits allowed in ECAL. Events with more hits will be

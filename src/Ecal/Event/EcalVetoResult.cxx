@@ -1,10 +1,10 @@
 
 #include "Ecal/Event/EcalVetoResult.h"
 
-ClassImp(ecal::event::EcalVetoResult)
+ClassImp(ldmx::EcalVetoResult)
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 EcalVetoResult::EcalVetoResult() {}
 
 EcalVetoResult::~EcalVetoResult() { Clear(); }
@@ -95,5 +95,5 @@ void EcalVetoResult::Print() const {
             << "\t Passes veto : " << passesVeto_ << "\n"
             << std::endl;
 }
-} // namespace event
-} // namespace ecal
+} // namespace ldmx
+

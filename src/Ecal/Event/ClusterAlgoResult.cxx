@@ -1,9 +1,9 @@
 #include "Ecal/Event/ClusterAlgoResult.h"
 
-ClassImp(ecal::event::ClusterAlgoResult)
+ClassImp(ldmx::ClusterAlgoResult)
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 ClusterAlgoResult::ClusterAlgoResult() {}
 
 ClusterAlgoResult::~ClusterAlgoResult() { Clear(); }
@@ -56,5 +56,5 @@ void ClusterAlgoResult::setWeight(int nCluster, double weight) {
     weights_[nCluster] = weight;
   }
 }
-} // namespace event
-} // namespace ecal
+} // namespace ldmx
+

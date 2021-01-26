@@ -14,11 +14,11 @@ find_package(ROOT CONFIG REQUIRED)
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
     
-    register_event_object( module_path "Ecal/Event" namespace "ecal::event" class "ClusterAlgoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ecal::event" class "EcalVetoResult" )
-    register_event_object( module_path "Ecal/Event" namespace "ecal::event" class "EcalDigiCollection" )
-    register_event_object( module_path "Ecal/Event" namespace "ecal::event" class "EcalCluster" type "collection" )
-    register_event_object( module_path "Ecal/Event" namespace "ecal::event" class "EcalHit"     type "collection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
    
     # Generate the files needed to build the event classes.
     setup_library(module Ecal

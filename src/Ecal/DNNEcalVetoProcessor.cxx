@@ -33,17 +33,17 @@ void DNNEcalVetoProcessor::configure(framework::config::Parameters& parameters) 
 }
 
 void DNNEcalVetoProcessor::produce(framework::Event& event) {
-  ecal::event::EcalVetoResult result;
+  ldmx::EcalVetoResult result;
 
   // Get the Ecal Geometry
   const ldmx::EcalHexReadout& hexReadout =
       getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of digitized Ecal hits from the event.
-  const auto ecalRecHits = event.getCollection<ecal::event::EcalHit>("EcalRecHits");
+  const auto ecalRecHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
   auto nhits =
       std::count_if(ecalRecHits.begin(), ecalRecHits.end(),
-                    [](const ecal::event::EcalHit& hit) { return hit.getEnergy() > 0; });
+                    [](const ldmx::EcalHit& hit) { return hit.getEnergy() > 0; });
 
   if (nhits < max_num_hits_) {
     // make inputs
@@ -72,7 +72,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
 }
 
 void DNNEcalVetoProcessor::make_inputs(
-    const ldmx::EcalHexReadout& geom, const std::vector<ecal::event::EcalHit>& ecalRecHits) {
+    const ldmx::EcalHexReadout& geom, const std::vector<ldmx::EcalHit>& ecalRecHits) {
   // clear data
   for (auto& v : data_) {
     std::fill(v.begin(), v.end(), 0);

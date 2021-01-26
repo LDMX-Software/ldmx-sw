@@ -5,10 +5,10 @@
 
 #include "Ecal/Event/EcalDigiCollection.h"
 
-ClassImp(ecal::event::EcalDigiCollection)
+ClassImp(ldmx::EcalDigiCollection)
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 void EcalDigiCollection::Clear() {
   channelIDs_.clear();
   samples_.clear();
@@ -96,5 +96,5 @@ void EcalDigiCollection::addDigi(std::vector<EcalDigiSample> newSamples) {
 
   return;
 }
-} // namespace event
-} // namespace ecal
+} // namespace ldmx
+

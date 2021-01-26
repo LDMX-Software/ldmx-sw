@@ -1,9 +1,9 @@
 #include "Ecal/Event/EcalCluster.h"
 
-ClassImp(ecal::event::EcalCluster)
+ClassImp(ldmx::EcalCluster)
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 EcalCluster::EcalCluster() {}
 
 EcalCluster::~EcalCluster() { Clear(); }
@@ -14,7 +14,7 @@ void EcalCluster::Print() const {
             << "Number of hits: " << nHits_ << " }" << std::endl;
 
   // for (int iHit = 0; iHit < hits_->GetEntries(); ++iHit) {
-  //    ecal::event::EcalHit* aHit = (ecal::event::EcalHit*) hits_->At(iHit);
+  //    ldmx::EcalHit* aHit = (ldmx::EcalHit*) hits_->At(iHit);
   //    std::cout << "Hit " << iHit << " : " << "with energy " <<
   //    aHit->getEnergy() << std::endl;
   //}
@@ -45,5 +45,5 @@ void EcalCluster::addHits(const std::vector<const EcalHit *> hitsVec) {
   setIDs(vecIDs);
   // setCentroidXYZ(centroidX, centroidY, 0);
 }
-} // namespace event
-} // namespace ecal
+} // namespace ldmx
+

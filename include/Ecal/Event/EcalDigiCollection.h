@@ -17,8 +17,8 @@
 #include <iostream>  //Print method
 #include <vector>    //vector lists
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 
 /**
  * @struct EcalDigiSample
@@ -162,6 +162,6 @@ class EcalDigiCollection {
   ClassDef(EcalDigiCollection, 1);
 };
 }
-}  // namespace ecal
+
 
 #endif /* EVENT_ECALDIGI_H_ */
