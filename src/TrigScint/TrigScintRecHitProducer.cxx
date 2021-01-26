@@ -46,19 +46,19 @@ namespace ldmx {
       hit.setBeamEfrac(-1.);
       //std::cout << "Channel:" << digi.chanID << std::endl;
       //std::cout << "ADC:" << digi.adcs[1] << std::endl;
-      //std::cout << "Charge:" << qie.ADC2Q( digi.adcs[1] ) << std::endl;
-      //std::cout << "PEs:" << ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_ << std::endl;
-      //std::cout << "Energy:" << ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_ * mevPerMip_ / pePerMip_ << std::endl;
-      hit.setAmplitude( qie.ADC2Q( digi.adcs[1] ) ); // femptocoulombs
+      //std::cout << "Charge:" << qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) << std::endl;
+      //std::cout << "PEs:" << ( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) - pedestal_ ) * 1e4 / gain_ << std::endl;
+      //std::cout << "Energy:" << ( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) - pedestal_ ) * 1e4 / gain_ * mevPerMip_ / pePerMip_ << std::endl;
+      hit.setAmplitude( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) ); // femptocoulombs
       if( digi.tdcs[1] > 49 )
 	hit.setTime(-1);
       else
 	hit.setTime(digi.tdcs[1]*0.5); 
       // hit.setEnergy( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_ * mevPerMip_ / pePerMip_ ); // MeV
       // hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_ ); 
-      hit.setEnergy( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 6250 / gain_ * mevPerMip_ / pePerMip_ ); // MeV
-      hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 6250 / gain_ ); 
-      printf("\nTrigScintHit.pe_ %.3f",( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_);
+      hit.setEnergy( ( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) - pedestal_ ) * 6250. / gain_ * mevPerMip_ / pePerMip_ ); // MeV
+      hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) - pedestal_ ) * 6250. / gain_ ); 
+      printf("\nTrigScintHit.pe_ %.3f",( qie.ADC2Q( digi.adcs[1] ) + qie.ADC2Q( digi.adcs[2] ) - pedestal_ ) * 6250. / gain_);
       trigScintHits.push_back(hit);
 
     }
