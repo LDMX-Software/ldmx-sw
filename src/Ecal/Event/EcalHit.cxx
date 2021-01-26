@@ -3,10 +3,10 @@
 // STL
 #include <iostream>
 
-ClassImp(ecal::event::EcalHit)
+ClassImp(ldmx::EcalHit)
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 void EcalHit::Clear() { CalorimeterHit::Clear(); }
 
 void EcalHit::Print() const {
@@ -15,5 +15,5 @@ void EcalHit::Print() const {
             << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
             << "ns, amplitude: " << getAmplitude() << "}" << std::endl;
 }
-} // namespace event
-} // namespace ecal
+} // namespace ldmx
+

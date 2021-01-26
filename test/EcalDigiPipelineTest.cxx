@@ -211,7 +211,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
     ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
-    const auto recHits = event.getCollection<ecal::event::EcalHit>("EcalRecHits");
+    const auto recHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
     CHECK(recHits.size() == 1);
 
     auto hit = recHits.at(0);

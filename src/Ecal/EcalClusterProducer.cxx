@@ -30,8 +30,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
   TemplatedClusterFinder<MyClusterWeight> cf;
 
-  std::vector<ecal::event::EcalHit> ecalHits =
-      event.getCollection<ecal::event::EcalHit>("ecalDigis", digisPassName_);
+  std::vector<ldmx::EcalHit> ecalHits =
+      event.getCollection<ldmx::EcalHit>("ecalDigis", digisPassName_);
   int nEcalDigis = ecalHits.size();
 
   // Don't do anything if there are no ECal digis!
@@ -39,7 +39,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
     return;
   }
 
-  for (ecal::event::EcalHit& hit : ecalHits) {
+  for (ldmx::EcalHit& hit : ecalHits) {
     // Skip zero energy digis.
     if (hit.getEnergy() == 0) {
       continue;
@@ -53,7 +53,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
   std::map<int, double> cWeights = cf.getWeights();
 
-  ecal::event::ClusterAlgoResult algoResult;
+  ldmx::ClusterAlgoResult algoResult;
   algoResult.set(algoName_, 3, cWeights.rbegin()->first);
   algoResult.setAlgoVar(0, cutoff_);
   algoResult.setAlgoVar(1, seedThreshold_);
@@ -64,9 +64,9 @@ void EcalClusterProducer::produce(framework::Event& event) {
     algoResult.setWeight(it->first, it->second / 100);
   }
 
-  std::vector<ecal::event::EcalCluster> ecalClusters;
+  std::vector<ldmx::EcalCluster> ecalClusters;
   for (int aWC = 0; aWC < wcVec.size(); aWC++) {
-    ecal::event::EcalCluster cluster;
+    ldmx::EcalCluster cluster;
 
     cluster.setEnergy(wcVec[aWC].centroid().E());
     cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),

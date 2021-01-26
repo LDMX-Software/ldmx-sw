@@ -6,8 +6,8 @@
 //----------//
 #include "Recon/Event/CalorimeterHit.h"
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 
 /**
  * @class EcalHit
@@ -36,6 +36,6 @@ class EcalHit : public recon::event::CalorimeterHit {
   ClassDef(EcalHit, 3);
 };
 }
-}  // namespace ecal
+
 
 #endif /* EVENT_ECALHIT_H_ */

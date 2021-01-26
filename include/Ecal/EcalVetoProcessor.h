@@ -70,18 +70,18 @@ class EcalVetoProcessor : public framework::Producer {
 
   void clearProcessor();
 
-  ldmx::EcalID hitID(const ecal::event::EcalHit& hit) const { return ldmx::EcalID(hit.getID()); }
+  ldmx::EcalID hitID(const ldmx::EcalHit& hit) const { return ldmx::EcalID(hit.getID()); }
 
   /* Function to calculate the energy weighted shower centroid */
-  ldmx::EcalID GetShowerCentroidIDAndRMS(const std::vector<ecal::event::EcalHit>& ecalRecHits,
+  ldmx::EcalID GetShowerCentroidIDAndRMS(const std::vector<ldmx::EcalHit>& ecalRecHits,
                                    double& showerRMS);
 
   /* Function to load up empty vector of hit maps */
-  void fillHitMap(const std::vector<ecal::event::EcalHit>& ecalRecHits,
+  void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
                   std::map<ldmx::EcalID, float>& cellMap_);
 
   /* Function to take loaded hit maps and find isolated hits in them */
-  void fillIsolatedHitMap(const std::vector<ecal::event::EcalHit>& ecalRecHits,
+  void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
                           ldmx::EcalID globalCentroid,
                           std::map<ldmx::EcalID, float>& cellMap_,
                           std::map<ldmx::EcalID, float>& cellMapIso_,
@@ -90,7 +90,7 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
                                       std::vector<float> position);
 
-  void buildBDTFeatureVector(const ecal::event::EcalVetoResult& result);
+  void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
  private:
   std::map<ldmx::EcalID, float> cellMap_;

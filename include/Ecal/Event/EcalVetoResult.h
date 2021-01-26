@@ -19,8 +19,8 @@
 //----------//
 #include <TObject.h>  //For ClassDef
 
-namespace ecal {
-namespace event {
+namespace ldmx {
+
 
 class EcalVetoResult {
  public:
@@ -168,6 +168,6 @@ class EcalVetoResult {
   ClassDef(EcalVetoResult, 4);
 };
 }
-}  // namespace ecal
+
 
 #endif

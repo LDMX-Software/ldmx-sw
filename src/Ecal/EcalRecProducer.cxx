@@ -41,7 +41,7 @@ void EcalRecProducer::produce(framework::Event& event) {
   EcalReconConditions the_conditions(
       getCondition<conditions::DoubleTableCondition>(EcalReconConditions::CONDITIONS_NAME));
 
-  std::vector<ecal::event::EcalHit> ecalRecHits;
+  std::vector<ldmx::EcalHit> ecalRecHits;
   auto ecalDigis =
       event.getObject<recon::event::HgcrocDigiCollection>(digiCollName_, digiPassName_);
   int numDigiHits = ecalDigis.getNumDigis();
@@ -150,7 +150,7 @@ void EcalRecProducer::produce(framework::Event& event) {
         secondOrderEnergyCorrection_;
 
     // copy over information to rec hit structure in new collection
-    ecal::event::EcalHit recHit;
+    ldmx::EcalHit recHit;
     recHit.setID(id.raw());
     recHit.setXPos(x);
     recHit.setYPos(y);
