@@ -46,7 +46,9 @@ namespace ldmx {
   // applies a corresponding  gain to it and digitizes it.
   int SimQIE::Q2ADC(float QQ) {
     float qq = gain*QQ;		    // including QIE gain
+    printf("True Q %.3f\t",qq);
     if (isnoise) qq+=trg->Gaus(mu,sg); // Adding gaussian random noise.
+    printf("Q+noise %.3f\t",qq);
 
     if (qq<=edges[0]) return 0;
     if (qq>=edges[16]) return 255;
@@ -107,9 +109,9 @@ namespace ldmx {
   std::vector<int> SimQIE::Out_ADC(QIEInputPulse* pp) {
     std::vector<int> OP;
     
-    for(int i=0;i<maxts_;i++) {
+    for(int i=0;i<maxts_;i++) {printf("\ntime sample %d\t",i);
       float QQ = pp->Integrate(i*tau,i*tau+tau);
-      OP.push_back(Q2ADC(QQ));
+      OP.push_back(Q2ADC(QQ));printf("ADC %d\tADC2Q %f\t",OP[i],ADC2Q(OP[i]));
     }
     return OP;
   }
