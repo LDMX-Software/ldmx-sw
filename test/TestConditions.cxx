@@ -179,7 +179,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
     framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
     framework::ProcessHandle hp = cp.makeProcess();
-    framework::EventHeader cxt;
+    ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
@@ -215,7 +215,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
     framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
     framework::ProcessHandle hp = cp.makeProcess();
-    framework::EventHeader cxt;
+    ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
 
     cxt.setRun(10);
@@ -242,7 +242,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
 
       framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
       framework::ProcessHandle hp=cp.makeProcess();
-      framework::EventHeader cxt;
+      ldmx::EventHeader cxt;
       hp->setEventHeader(&cxt);
 
       const IntegerTableCondition&
