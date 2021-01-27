@@ -89,7 +89,7 @@ class Simulator : public framework::Producer {
    *
    * @param header of new run
    */
-  void beforeNewRun(framework::RunHeader& header) final override;
+  void beforeNewRun(ldmx::RunHeader& header) final override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -97,7 +97,7 @@ class Simulator : public framework::Producer {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const framework::RunHeader& header) final override;
+  void onNewRun(const ldmx::RunHeader& header) final override;
 
   /**
    * Run simulation and export results to output event.
