@@ -25,15 +25,16 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <map>
+
 namespace ldmx {
 class EventHeader;
+class RunHeader;
 }
 
 namespace framework {
 
 class Process;
 class ConditionsObjectProvider;
-class RunHeader;
 
 /** Typedef for PluginFactory use. */
 typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(
@@ -77,7 +78,7 @@ class ConditionsObjectProvider {
    * Must be implemented by any Conditions providers.
    */
   virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const framework::EventHeader& context) = 0;
+      const ldmx::EventHeader& context) = 0;
 
   /**
    * Called by conditions system when done with a conditions object, appropriate
@@ -105,7 +106,7 @@ class ConditionsObjectProvider {
    * Callback for the ConditionsObjectProvider to take any necessary
    * action when the processing of events starts for a given run.
    */
-  virtual void onNewRun(RunHeader&) {}
+  virtual void onNewRun(ldmx::RunHeader&) {}
 
   /**
    * Get the list of conditions objects available from this provider.
@@ -127,7 +128,7 @@ class ConditionsObjectProvider {
  protected:
   /** Request another condition needed to construct this condition */
   std::pair<const ConditionsObject*, ConditionsIOV> requestParentCondition(
-      const std::string& name, const framework::EventHeader& context);
+      const std::string& name, const ldmx::EventHeader& context);
 
   /// The logger for this ConditionsObjectProvider
   logging::logger theLog_;

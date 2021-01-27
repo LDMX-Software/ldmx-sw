@@ -54,13 +54,13 @@ class Event {
    * Get the event header.
    * @return A reference to the event header.
    */
-  framework::EventHeader &getEventHeader() { return eventHeader_; }
+  ldmx::EventHeader &getEventHeader() { return eventHeader_; }
 
   /**
    * Get the event header as a pointer
    * @return A const pointer to the event header.
    */
-  const framework::EventHeader *getEventHeaderPtr() { return &eventHeader_; }
+  const ldmx::EventHeader *getEventHeaderPtr() { return &eventHeader_; }
 
   /**
    * Get the event number.
@@ -132,7 +132,7 @@ class Event {
     }
 
     std::string branchName;
-    if (collectionName == framework::EventHeader::BRANCH)
+    if (collectionName == ldmx::EventHeader::BRANCH)
       branchName = collectionName;
     else
       branchName = makeBranchName(collectionName);
@@ -267,13 +267,13 @@ class Event {
             const std::string &passName) const {
     // get branch name
     std::string branchName;
-    if (collectionName == framework::EventHeader::BRANCH)
+    if (collectionName == ldmx::EventHeader::BRANCH)
       branchName = collectionName;
     else
       branchName = makeBranchName(collectionName, passName);
 
     // if no passName, then find branchName by looking over known branches
-    if (passName.empty() && collectionName != framework::EventHeader::BRANCH) {
+    if (passName.empty() && collectionName != ldmx::EventHeader::BRANCH) {
       auto itKL = knownLookups_.find(collectionName);
       if (itKL != knownLookups_.end())
         branchName = itKL->second;
@@ -600,7 +600,7 @@ class Event {
   /**
    * The event header object.
    */
-  framework::EventHeader eventHeader_;
+  ldmx::EventHeader eventHeader_;
 
   /**
    * Number of entries in the tree.

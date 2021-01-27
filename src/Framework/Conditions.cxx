@@ -39,7 +39,7 @@ void Conditions::onProcessEnd() {
   for (auto ptr : providerMap_) ptr.second->onProcessEnd();
 }
 
-void Conditions::onNewRun(RunHeader& rh) {
+void Conditions::onNewRun(ldmx::RunHeader& rh) {
   for (auto ptr : providerMap_) ptr.second->onNewRun(rh);
 }
 
@@ -54,7 +54,7 @@ ConditionsIOV Conditions::getConditionIOV(
 
 const ConditionsObject* Conditions::getConditionPtr(
     const std::string& condition_name) {
-  const framework::EventHeader& context = *(process_.getEventHeader());
+  const ldmx::EventHeader& context = *(process_.getEventHeader());
   auto cacheptr = cache_.find(condition_name);
 
   if (cacheptr == cache_.end()) {

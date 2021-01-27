@@ -102,7 +102,7 @@ public:
    * action when the run being processed changes.
    * @param runHeader The RunHeader containing run information.
    */
-  virtual void onNewRun(const RunHeader &runHeader) {}
+  virtual void onNewRun(const ldmx::RunHeader &runHeader) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -228,7 +228,7 @@ private:
   /**
    * Internal getter for EventHeader without exposing all of Process
    */
-  const framework::EventHeader &getEventHeader() const;
+  const ldmx::EventHeader &getEventHeader() const;
 
   /** Handle to the Process. */
   Process &process_;
@@ -278,7 +278,7 @@ public:
    * Handle allowing producers to modify run headers before the run begins
    * @param header RunHeader for Producer to add parameters to
    */
-  virtual void beforeNewRun(RunHeader &header) {}
+  virtual void beforeNewRun(ldmx::RunHeader &header) {}
 };
 
 /**

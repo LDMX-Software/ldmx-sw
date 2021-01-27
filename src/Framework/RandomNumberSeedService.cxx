@@ -45,7 +45,7 @@ RandomNumberSeedService::RandomNumberSeedService(const std::string& name,
   }
 }
 
-void RandomNumberSeedService::onNewRun(RunHeader& rh) {
+void RandomNumberSeedService::onNewRun(ldmx::RunHeader& rh) {
   if (seedMode_ == SEED_RUN) {
     masterSeed_ = rh.getRunNumber();
     initialized_ = true;
@@ -78,7 +78,7 @@ std::vector<std::string> RandomNumberSeedService::getSeedNames() const {
 }
 
 std::pair<const ConditionsObject*, ConditionsIOV>
-RandomNumberSeedService::getCondition(const framework::EventHeader& context) {
+RandomNumberSeedService::getCondition(const ldmx::EventHeader& context) {
   if (!initialized_) {
     if (seedMode_ == SEED_RUN) {
       masterSeed_ = context.getRun();

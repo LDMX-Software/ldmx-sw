@@ -285,7 +285,7 @@ void EventFile::close() {
     runTree = new TTree("LDMX_Run", "LDMX run header");
 
     // create the branch on this tree
-    RunHeader *theHandle = nullptr;
+    ldmx::RunHeader *theHandle = nullptr;
     runTree->Branch("RunHeader", recon::event::EventConstants::RUN_HEADER.c_str(), &theHandle,
                     32000, 3);
 
@@ -303,7 +303,7 @@ void EventFile::close() {
   file_->Close();
 }
 
-void EventFile::writeRunHeader(RunHeader &runHeader) {
+void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {
   int runNumber = runHeader.getRunNumber();
 
   if (runMap_.find(runNumber) != runMap_.end()) {
@@ -316,7 +316,7 @@ void EventFile::writeRunHeader(RunHeader &runHeader) {
   return;
 }
 
-RunHeader &EventFile::getRunHeader(int runNumber) {
+ldmx::RunHeader &EventFile::getRunHeader(int runNumber) {
   if (runMap_.find(runNumber) != runMap_.end()) {
     return *(runMap_.at(runNumber).second);
   } else {
@@ -338,12 +338,12 @@ void EventFile::importRunHeaders() {
   if (theImportFile) {
     // the file exist
     TTreeReader oldRunTree("LDMX_Run", theImportFile);
-    TTreeReaderValue<RunHeader> oldRunHeader(oldRunTree, "RunHeader");
+    TTreeReaderValue<ldmx::RunHeader> oldRunHeader(oldRunTree, "RunHeader");
     // TODO check that setup went correctly
     while (oldRunTree.Next()) {
       // copy input run tree into run map
       runMap_[oldRunHeader->getRunNumber()] =
-          std::make_pair(true, new RunHeader(*oldRunHeader));
+          std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
     }
   }
 

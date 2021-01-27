@@ -19,7 +19,7 @@ class ConditionsIOV;
 
 std::ostream& operator<<(std::ostream&, const framework::ConditionsIOV& iov);
 
-namespace framework {
+namespace ldmx {
 class EventHeader;
 }
 namespace framework {
@@ -62,7 +62,7 @@ class ConditionsIOV {
 
   /** Checks to see if this condition is valid for the given event using
    * information from the header */
-  bool validForEvent(const framework::EventHeader& eh) const;
+  bool validForEvent(const ldmx::EventHeader& eh) const;
 
   /** Checks to see if this IOV overlaps with the given IOV */
   bool overlaps(const ConditionsIOV& iov) const;

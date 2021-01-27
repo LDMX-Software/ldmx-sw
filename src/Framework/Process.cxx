@@ -152,7 +152,7 @@ void Process::run() {
 
     for (auto rule : dropKeepRules_) outFile.addDrop(rule);
 
-    RunHeader runHeader(runForGeneration_);
+    ldmx::RunHeader runHeader(runForGeneration_);
     runHeader.setRunStart(std::time(nullptr));  // set run starting
     runHeader_ = &runHeader;            // give handle to run header to process
     outFile.writeRunHeader(runHeader);  // add run header to file
@@ -168,7 +168,7 @@ void Process::run() {
 
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
-      framework::EventHeader &eh = theEvent.getEventHeader();
+      ldmx::EventHeader &eh = theEvent.getEventHeader();
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
