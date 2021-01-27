@@ -126,7 +126,7 @@ class EcalFakeSimHits : public framework::Producer {
       : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
-  void beforeNewRun(framework::RunHeader &header) {
+  void beforeNewRun(ldmx::RunHeader &header) {
     header.setDetectorName("ldmx-det-v12");
   }
 
