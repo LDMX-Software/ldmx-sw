@@ -1,6 +1,6 @@
 
 #include "Framework/EventHeader.h"
 
-namespace framework {
+namespace ldmx {
 const std::string EventHeader::BRANCH = "EventHeader";
 }

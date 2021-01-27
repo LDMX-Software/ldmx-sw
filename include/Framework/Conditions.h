@@ -26,12 +26,15 @@
 #include <any>
 #include <map>
 
+namespace ldmx {
+class RunHeader;
+}
+
 namespace framework {
 
 class Process;
 class ConditionsObjectProvider;
 class ConditionsObject;
-class RunHeader;
 
 /**
  * @class Conditions
@@ -102,7 +105,7 @@ class Conditions {
   /**
    * Calls onNewRun for all ConditionsObjectProviders
    */
-  void onNewRun(RunHeader&);
+  void onNewRun(ldmx::RunHeader&);
 
   /**
    * Create a ConditionsObjectProvider given the information

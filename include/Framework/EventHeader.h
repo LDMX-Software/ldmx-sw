@@ -17,7 +17,7 @@
 #include <map>
 #include <string>
 
-namespace framework {
+namespace ldmx {
 
 /**
  * @class EventHeader
@@ -227,6 +227,6 @@ class EventHeader {
   ClassDef(EventHeader, 1);
 };
 
-}  // namespace framework
+}  // namespace ldmx
 
 #endif /* EVENT_EVENTHEADER_H_ */

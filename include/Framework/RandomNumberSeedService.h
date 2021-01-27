@@ -62,7 +62,7 @@ class RandomNumberSeedService : public ConditionsObject,
    *
    * @param[in,out] header RunHeader for the new run that is starting
    */
-  virtual void onNewRun(RunHeader& header);
+  virtual void onNewRun(ldmx::RunHeader& header);
 
   /**
    * Access a given seed by name
@@ -102,7 +102,7 @@ class RandomNumberSeedService : public ConditionsObject,
    * @returns reference to ourselves and unlimited interval of validity
    */
   virtual std::pair<const ConditionsObject*, ConditionsIOV> getCondition(
-      const framework::EventHeader& context);
+      const ldmx::EventHeader& context);
 
   /**
    * This object is both the provider of the seed service and the conditions

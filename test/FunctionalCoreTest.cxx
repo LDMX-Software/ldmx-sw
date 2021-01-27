@@ -49,7 +49,7 @@ class TestProducer : public Producer {
     createRunHeader_ = p.getParameter<bool>("createRunHeader");
   }
 
-  void beforeNewRun(framework::RunHeader& header) final override {
+  void beforeNewRun(ldmx::RunHeader& header) final override {
     if (not createRunHeader_) return;
     header.setIntParameter("Should Be Run Number", header.getRunNumber());
     return;
@@ -263,8 +263,8 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
       return false;
     }
 
-    // Event tree should _always_ have the framework::EventHeader
-    TTreeReaderValue<framework::EventHeader> header(events, "EventHeader");
+    // Event tree should _always_ have the ldmx::EventHeader
+    TTreeReaderValue<ldmx::EventHeader> header(events, "EventHeader");
 
     if (existCollection_) {
       // make sure collection matches pattern
@@ -318,7 +318,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
       return false;
     }
 
-    TTreeReaderValue<framework::RunHeader> runHeader(runs, "RunHeader");
+    TTreeReaderValue<ldmx::RunHeader> runHeader(runs, "RunHeader");
 
     while (runs.Next()) {
       if (runHeader->getRunNumber() !=

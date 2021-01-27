@@ -64,12 +64,12 @@ class Process {
   /**
    * Get the pointer to the current event header, if defined
    */
-  const framework::EventHeader *getEventHeader() const { return eventHeader_; }
+  const ldmx::EventHeader *getEventHeader() const { return eventHeader_; }
 
   /**
    * Get the pointer to the current run header, if defined
    */
-  const RunHeader *getRunHeader() const { return runHeader_; }
+  const ldmx::RunHeader *getRunHeader() const { return runHeader_; }
 
   /**
    * Get a reference to the conditions system
@@ -110,7 +110,7 @@ class Process {
   /**
    * Set the pointer to the current event header, used only for tests
    */
-  void setEventHeader(framework::EventHeader *h) { eventHeader_ = h; }
+  void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
 
   /**
    * Get a dummy process
@@ -189,10 +189,10 @@ class Process {
   std::string histoFilename_;
 
   /** Pointer to the current EventHeader, used for Conditions information */
-  const framework::EventHeader *eventHeader_{0};
+  const ldmx::EventHeader *eventHeader_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
-  const RunHeader *runHeader_{0};
+  const ldmx::RunHeader *runHeader_{0};
 
   /** TFile for histograms and other user products */
   TFile *histoTFile_{0};

@@ -6,9 +6,9 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(framework::RunHeader);
+ClassImp(ldmx::RunHeader);
 
-namespace framework {
+namespace ldmx {
 
 RunHeader::RunHeader(int runNumber) : runNumber_(runNumber) {}
 
@@ -33,4 +33,4 @@ void RunHeader::stream(std::ostream &s) const {
 
 void RunHeader::Print() const { stream(std::cout); }
 
-}  // namespace framework
+}  // namespace ldmx

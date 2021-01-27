@@ -17,7 +17,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Version.h"
 
-namespace framework {
+namespace ldmx {
 
 class RunHeader {
  public:
@@ -181,12 +181,12 @@ class RunHeader {
    * Needs to be here and labeled as friend for
    * it to be compatible with Boost logging.
    *
-   * @see framework::RunHeader::stream
+   * @see ldmx::RunHeader::stream
    * @param[in] s ostream to write to
    * @param[in] h RunHeader to write out
    * @return modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &s, const framework::RunHeader &h) {
+  friend std::ostream &operator<<(std::ostream &s, const ldmx::RunHeader &h) {
     h.stream(s);
     return s;
   }
@@ -226,6 +226,6 @@ class RunHeader {
 
 };  // RunHeader
 
-}  // namespace framework
+}  // namespace ldmx
 
 #endif  // _FRAMEWORK_EVENT_RUN_HEADER_H_
