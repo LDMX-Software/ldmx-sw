@@ -130,7 +130,7 @@ void Simulator::onFileOpen(framework::EventFile& file) {
   persistencyManager_->Initialize();
 }
 
-void Simulator::beforeNewRun(framework::RunHeader& header) {
+void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   // Get the detector header from the user detector construction
   DetectorConstruction* detector =
       static_cast<RunManager*>(RunManager::GetRunManager())
@@ -285,7 +285,7 @@ void Simulator::beforeNewRun(framework::RunHeader& header) {
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const framework::RunHeader&) {
+void Simulator::onNewRun(const ldmx::RunHeader&) {
   const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
