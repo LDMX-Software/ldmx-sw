@@ -171,7 +171,7 @@ public:
    */
   void writeTrackerHitsCollection(
       G4TrackerHitsCollection *hc,
-      std::vector<simcore::event::SimTrackerHit> &outputColl);
+      std::vector<ldmx::SimTrackerHit> &outputColl);
 
   /**
    * Write a collection of tracker hits to an output collection.
@@ -181,7 +181,7 @@ public:
    */
   void writeCalorimeterHitsCollection(
       G4CalorimeterHitsCollection *hc,
-      std::vector<simcore::event::SimCalorimeterHit> &outputColl);
+      std::vector<ldmx::SimCalorimeterHit> &outputColl);
 
 private:
   /// Configuration parameters passed to Simulator

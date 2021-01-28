@@ -13,8 +13,7 @@
 // LDMX
 #include "SimCore/Event/SimParticle.h"
 
-namespace simcore {
-namespace event {
+namespace ldmx { 
 
 /**
  * @class SimCalorimeterHit
@@ -251,7 +250,6 @@ class SimCalorimeterHit {
    */
   ClassDef(SimCalorimeterHit, 3)
 };
-} // namespace event
-}  // namespace simcore
+}  // namespace ldmx
 
 #endif

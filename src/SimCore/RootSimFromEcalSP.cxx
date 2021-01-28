@@ -63,12 +63,12 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   // and find the subset of unique hits created by particles exiting
   // the ECal.  These particles will be stored in a container and
   // re-fired into the HCal.
-  std::unordered_map<int, const simcore::event::SimTrackerHit*> spHits;
+  std::unordered_map<int, const ldmx::SimTrackerHit*> spHits;
 
-  auto ecalSPParticles{ievent_.getCollection<simcore::event::SimTrackerHit>(
+  auto ecalSPParticles{ievent_.getCollection<ldmx::SimTrackerHit>(
       ecalSPHitsCollName_, ecalSPHitsPassName_)};
   // Loop through all of the ECal scoring plane hits.
-  for (const simcore::event::SimTrackerHit& spHit : ecalSPParticles) {
+  for (const ldmx::SimTrackerHit& spHit : ecalSPParticles) {
     // First, start by skipping all hits that were created by
     // particles entering the ECal volume.
     if (spHit.getLayerID() == 1 and spHit.getMomentum()[2] > 0) continue;

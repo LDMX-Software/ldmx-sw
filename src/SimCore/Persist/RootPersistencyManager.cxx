@@ -148,7 +148,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
       // Write G4TrackerHit collection to output SimTrackerHit collection.
       G4TrackerHitsCollection *trackerHitsColl =
           dynamic_cast<G4TrackerHitsCollection *>(hc);
-      std::vector<simcore::event::SimTrackerHit> outputColl;
+      std::vector<ldmx::SimTrackerHit> outputColl;
       writeTrackerHitsCollection(trackerHitsColl, outputColl);
 
       // Add hits collection to output event.
@@ -157,7 +157,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
     } else if (dynamic_cast<G4CalorimeterHitsCollection *>(hc) != nullptr) {
       G4CalorimeterHitsCollection *calHitsColl =
           dynamic_cast<G4CalorimeterHitsCollection *>(hc);
-      std::vector<simcore::event::SimCalorimeterHit> outputColl;
+      std::vector<ldmx::SimCalorimeterHit> outputColl;
       if (collName == recon::event::EventConstants::ECAL_SIM_HITS) {
         // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit
         // collection using helper class.
@@ -178,7 +178,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
 }
 
 void RootPersistencyManager::writeTrackerHitsCollection(
-    G4TrackerHitsCollection *hc, std::vector<simcore::event::SimTrackerHit> &outputColl) {
+    G4TrackerHitsCollection *hc, std::vector<ldmx::SimTrackerHit> &outputColl) {
   outputColl.clear();
   int nHits = hc->GetSize();
   for (int iHit = 0; iHit < nHits; iHit++) {
@@ -186,7 +186,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
     const G4ThreeVector &momentum = g4hit->getMomentum();
     const G4ThreeVector &position = g4hit->getPosition();
 
-    simcore::event::SimTrackerHit simTrackerHit;
+    ldmx::SimTrackerHit simTrackerHit;
     simTrackerHit.setID(g4hit->getID());
     simTrackerHit.setTime(g4hit->getTime());
     simTrackerHit.setLayerID(g4hit->getLayerID());
@@ -207,7 +207,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
 
 void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHitsCollection *hc,
-    std::vector<simcore::event::SimCalorimeterHit> &outputColl) {
+    std::vector<ldmx::SimCalorimeterHit> &outputColl) {
   // get ancestral tracking information
   auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
@@ -216,7 +216,7 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHit *g4hit = (G4CalorimeterHit *)hc->GetHit(iHit);
     const G4ThreeVector &pos = g4hit->getPosition();
 
-    simcore::event::SimCalorimeterHit simHit;
+    ldmx::SimCalorimeterHit simHit;
     simHit.setID(g4hit->getID());
     simHit.addContrib(trackMap->findIncident(g4hit->getTrackID()),
                       g4hit->getTrackID(), g4hit->getPdgCode(),

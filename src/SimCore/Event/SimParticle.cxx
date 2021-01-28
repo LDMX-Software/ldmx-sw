@@ -5,10 +5,9 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(simcore::event::SimParticle)
+ClassImp(ldmx::SimParticle)
 
-namespace simcore {
-namespace event {
+namespace ldmx {
 SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
   ProcessTypeMap procMap;
   /// e Z --> e Z gamma
@@ -100,5 +99,4 @@ SimParticle::ProcessType SimParticle::findProcessType(std::string processName) {
     return ProcessType::unknown;
   }
 }
-} // namespace event
-} // namespace simcore
+} // namespace ldmx
