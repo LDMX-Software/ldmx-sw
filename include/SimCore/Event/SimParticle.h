@@ -13,8 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace simcore {
-namespace event {
+namespace ldmx {
 
 /**
  * Class representing a simulated particle.
@@ -386,7 +385,6 @@ class SimParticle {
   ClassDef(SimParticle, 7);
 
 };  // SimParticle
-} // namespace event
-}  // namespace simcore
+}  // namespace ldmx
 
 #endif  // SIMCORE_EVENT_SIMPARTICLE_H

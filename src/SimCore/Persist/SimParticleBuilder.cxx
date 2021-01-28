@@ -35,16 +35,16 @@ void SimParticleBuilder::buildSimParticles(framework::Event *outputEvent) {
 
   // Create empty SimParticle objects and create the map of track ID to
   // particles.
-  std::map<int, simcore::event::SimParticle> outputParticleMap;
+  std::map<int, ldmx::SimParticle> outputParticleMap;
   for (auto trajectory : *trajectories->GetVector()) {
-    outputParticleMap[trajectory->GetTrackID()] = simcore::event::SimParticle();
+    outputParticleMap[trajectory->GetTrackID()] = ldmx::SimParticle();
   }
 
   // Fill information into the particles.
   for (auto trajectory : *trajectories->GetVector()) {
     Trajectory *traj = static_cast<Trajectory *>(trajectory);
 
-    simcore::event::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
+    ldmx::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
 
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());

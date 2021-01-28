@@ -1,9 +1,8 @@
 #include "SimCore/Event/SimTrackerHit.h"
 
-ClassImp(simcore::event::SimTrackerHit)
+ClassImp(ldmx::SimTrackerHit)
 
-namespace simcore {
-namespace event {
+namespace ldmx {
 SimTrackerHit::SimTrackerHit() {}
 
 SimTrackerHit::~SimTrackerHit() { Clear(); }
@@ -50,5 +49,4 @@ void SimTrackerHit::setMomentum(const float px, const float py,
   this->py_ = py;
   this->pz_ = pz;
 }
-} // namespace event
-} // namespace simcore
+} // namespace ldmx

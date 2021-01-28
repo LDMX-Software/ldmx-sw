@@ -3,10 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(simcore::event::SimCalorimeterHit)
+ClassImp(ldmx::SimCalorimeterHit)
 
-namespace simcore {
-namespace event {
+namespace ldmx {
 SimCalorimeterHit::SimCalorimeterHit() {}
 
 SimCalorimeterHit::~SimCalorimeterHit() {}
@@ -79,5 +78,4 @@ void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
   }
   edep_ += edep;
 }
-} // namespace event
-} // namespace simcore
+} // namespace ldmx

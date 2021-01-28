@@ -15,8 +15,7 @@
 // STL
 #include <iostream>
 
-namespace simcore {
-namespace event { 
+namespace ldmx {
 
 /**
  * @class SimTrackerHit
@@ -190,7 +189,7 @@ class SimTrackerHit {
   /**
    * Sort by time of hit
    */
-  bool operator<(const simcore::event::SimTrackerHit &rhs) const {
+  bool operator<(const ldmx::SimTrackerHit &rhs) const {
     return this->getTime() < rhs.getTime();
   }
 
@@ -274,7 +273,6 @@ class SimTrackerHit {
   ClassDef(SimTrackerHit, 3);
 
 };  // SimTrackerHit
-} // namespace event
-}  // namespace simcore
+}  // namespace ldmx
 
 #endif  // EVENT_SIMTRACKERHIT_H_

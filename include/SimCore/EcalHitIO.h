@@ -64,7 +64,7 @@ class EcalHitIO {
    * @param outputColl The output collection in ROOT.
    */
   void writeHitsCollection(G4CalorimeterHitsCollection* hc,
-                           std::vector<simcore::event::SimCalorimeterHit>& outputColl);
+                           std::vector<ldmx::SimCalorimeterHit>& outputColl);
 
   /**
    * Set whether hit contributions should be enabled for the output hits.

@@ -26,14 +26,14 @@ Trajectory::Trajectory(const G4Track* aTrack) : genStatus_(0) {
   const G4VProcess* process = aTrack->GetCreatorProcess();
   if (process) {
     const G4String& processName = process->GetProcessName();
-    simcore::event::SimParticle::ProcessType processType =
-        simcore::event::SimParticle::findProcessType(processName);
+    ldmx::SimParticle::ProcessType processType =
+        ldmx::SimParticle::findProcessType(processName);
     processType_ = processType;
     // Uncomment this to see what process types are being saved.  --JM
     // std::cout << "Trajectory - set process type " << processType
     //        << " from <" << processName << ">" << std::endl;
   } else {
-    processType_ = simcore::event::SimParticle::ProcessType::unknown;
+    processType_ = ldmx::SimParticle::ProcessType::unknown;
   }
 
   // Get the track information. This is used to set the track vertex
