@@ -17,7 +17,7 @@ namespace ldmx {
  * from the ECAL, providing particular information for the ECAL,
  * above and beyond what is available in the CalorimeterHit.
  */
-class EcalHit : public recon::event::CalorimeterHit {
+class EcalHit : public ldmx::CalorimeterHit {
  public:
   /** Constructor. */
   EcalHit() {}

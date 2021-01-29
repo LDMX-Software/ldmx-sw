@@ -132,7 +132,7 @@ class EcalFakeSimHits : public framework::Producer {
 
   void produce(framework::Event &event) final override {
     // put in a single sim hit
-    std::vector<simcore::event::SimCalorimeterHit> pretendSimHits(1);
+    std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
 
     ldmx::EcalID id(0, 0, 0);
     pretendSimHits[0].setID(id.raw());
@@ -193,7 +193,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
 
   void analyze(const framework::Event &event) final override {
     const auto simHits =
-        event.getCollection<simcore::event::SimCalorimeterHit>("EcalSimHits");
+        event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
 
     REQUIRE(simHits.size() == 1);
 
@@ -201,7 +201,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.setVar<float>("SimEnergy", truth_energy);
 
     const auto daqDigis{
-        event.getObject<recon::event::HgcrocDigiCollection>("EcalDigis")};
+        event.getObject<ldmx::HgcrocDigiCollection>("EcalDigis")};
 
     CHECK(daqDigis.getNumDigis() == 1);
     auto daqDigi = daqDigis.getDigi(0);
@@ -231,7 +231,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
     const auto trigDigis{
-        event.getObject<recon::event::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+        event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
     CHECK(trigDigis.size() == 1);
 
     auto trigDigi = trigDigis.at(0);
