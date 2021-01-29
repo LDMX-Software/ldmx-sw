@@ -3,12 +3,11 @@
 // STL
 #include <iostream>
 
-ClassImp(hcal::event::HcalHit)
+ClassImp(ldmx::HcalHit)
 
-namespace hcal {
-namespace event {
+namespace ldmx {
 void HcalHit::Clear() {
-  recon::event::CalorimeterHit::Clear();
+  ldmx::CalorimeterHit::Clear();
   pe_ = 0;
   minpe_ = -99;
 }
@@ -20,5 +19,4 @@ void HcalHit::Print() const {
             << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}"
             << std::endl;
 }
-} // namespace event
-} // namespace hcal
+} // namespace ldmx

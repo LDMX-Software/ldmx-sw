@@ -41,7 +41,7 @@ class HcalDigiProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
   ldmx::HcalID generateRandomID(ldmx::HcalID::HcalSection sec);
-  void constructNoiseHit(std::vector<hcal::event::HcalHit>&, ldmx::HcalID::HcalSection, double,
+  void constructNoiseHit(std::vector<ldmx::HcalHit>&, ldmx::HcalID::HcalSection, double,
                          double, const std::map<unsigned int, float>&,
                          std::unordered_set<unsigned int>&);
 

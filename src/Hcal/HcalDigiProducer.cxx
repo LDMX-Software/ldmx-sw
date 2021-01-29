@@ -65,11 +65,11 @@ ldmx::HcalID HcalDigiProducer::generateRandomID(ldmx::HcalID::HcalSection sec) {
 }
 
 void HcalDigiProducer::constructNoiseHit(
-    std::vector<hcal::event::HcalHit>& hcalRecHits, ldmx::HcalID::HcalSection section,
+    std::vector<ldmx::HcalHit>& hcalRecHits, ldmx::HcalID::HcalSection section,
     double total_noise, double min_noise,
     const std::map<unsigned int, float>& hcaldetIDEdep,
     std::unordered_set<unsigned int>& noiseHitIDs) {
-  hcal::event::HcalHit noiseHit;
+  ldmx::HcalHit noiseHit;
   noiseHit.setPE(total_noise);
   noiseHit.setMinPE(min_noise);
   noiseHit.setAmplitude(total_noise);
@@ -132,10 +132,10 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }
 
   // looper over sim hits and aggregate energy depositions for each detID
-  auto hcalHits{event.getCollection<simcore::event::SimCalorimeterHit>(
-      recon::event::EventConstants::HCAL_SIM_HITS, sim_hit_pass_name_)};
+  auto hcalHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      ldmx::EventConstants::HCAL_SIM_HITS, sim_hit_pass_name_)};
 
-  for (const simcore::event::SimCalorimeterHit& simHit : hcalHits) {
+  for (const ldmx::SimCalorimeterHit& simHit : hcalHits) {
     int detIDraw = simHit.getID();
     ldmx::HcalID detID(detIDraw);
     int layer = detID.layer();
@@ -176,7 +176,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }
 
   // loop over detIDs and simulate number of PEs
-  std::vector<hcal::event::HcalHit> hcalRecHits;
+  std::vector<ldmx::HcalHit> hcalRecHits;
   for (std::map<unsigned int, float>::iterator it = hcaldetIDEdep.begin();
        it != hcaldetIDEdep.end(); ++it) {
     int detIDraw = it->first;
@@ -295,7 +295,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
 
     if (hcalLayerPEs[detIDraw] >= readoutThreshold_) {
-      hcal::event::HcalHit hit;
+      ldmx::HcalHit hit;
       hit.setID(detIDraw);
       hit.setPE(hcalLayerPEs[detIDraw]);
       hit.setMinPE(hcalLayerMinPEs[detIDraw]);
