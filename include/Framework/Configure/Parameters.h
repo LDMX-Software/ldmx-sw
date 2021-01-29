@@ -138,7 +138,7 @@ class Parameters {
   std::map<std::string, std::any> parameters_;
 
 };  // Parameters
-} // namespace config
+}  // namespace config
 }  // namespace framework
 
 #endif  // FRAMEWORK_PARAMETERS_H

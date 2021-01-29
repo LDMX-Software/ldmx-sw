@@ -24,10 +24,9 @@ void RandomNumberSeedService::stream(std::ostream& s) const {
   }
 }
 
-RandomNumberSeedService::RandomNumberSeedService(const std::string& name,
-                                                 const std::string& tagname,
-                                                 const framework::config::Parameters& parameters,
-                                                 Process& process)
+RandomNumberSeedService::RandomNumberSeedService(
+    const std::string& name, const std::string& tagname,
+    const framework::config::Parameters& parameters, Process& process)
     : ConditionsObject(CONDITIONS_OBJECT_NAME),
       ConditionsObjectProvider(CONDITIONS_OBJECT_NAME, tagname, parameters,
                                process) {

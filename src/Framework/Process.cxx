@@ -18,7 +18,8 @@
 
 namespace framework {
 
-Process::Process(const framework::config::Parameters &configuration) : conditions_{*this} {
+Process::Process(const framework::config::Parameters &configuration)
+    : conditions_{*this} {
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
   logFileName_ = configuration.getParameter<std::string>("logFileName", "");
@@ -58,7 +59,8 @@ Process::Process(const framework::config::Parameters &configuration) : condition
   }
 
   auto sequence{
-      configuration.getParameter<std::vector<framework::config::Parameters>>("sequence", {})};
+      configuration.getParameter<std::vector<framework::config::Parameters>>(
+          "sequence", {})};
   if (sequence.empty() &&
       configuration.getParameter<bool>("testingMode", false)) {
     EXCEPTION_RAISE(
@@ -79,7 +81,8 @@ Process::Process(const framework::config::Parameters &configuration) : condition
               "'. Did you load the library that this class is apart of?");
     }
     auto histograms{
-        proc.getParameter<std::vector<framework::config::Parameters>>("histograms", {})};
+        proc.getParameter<std::vector<framework::config::Parameters>>(
+            "histograms", {})};
     if (!histograms.empty()) {
       ep->getHistoDirectory();
       ep->createHistograms(histograms);

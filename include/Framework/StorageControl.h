@@ -49,7 +49,8 @@ class StorageControl {
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
-  void addHint(const std::string& processor_name, framework::StorageControlHint hint,
+  void addHint(const std::string& processor_name,
+               framework::StorageControlHint hint,
                const std::string& purposeString);
 
   /**

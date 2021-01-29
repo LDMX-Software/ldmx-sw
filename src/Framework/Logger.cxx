@@ -92,16 +92,16 @@ void open(const level termLevel, const level fileLevel,
   // TODO change format to something helpful
   // Currently:
   //  [ Channel ](int severity) : message
-  termSink->set_formatter(
-      [](const log::record_view &view, log::formatting_ostream &os) {
-        os
-            //                        <<
-            //                        log::extract<boost::date_time::int_adapter>(
-            //                        "TimeStamp" , view )
-            << " [ " << log::extract<std::string>("Channel", view) << " ] "
-            << /*humanReadableLevel.at*/ (log::extract<level>("Severity", view))
-            << " : " << view[log::expressions::smessage];
-      });
+  termSink->set_formatter([](const log::record_view &view,
+                             log::formatting_ostream &os) {
+    os
+        //                        <<
+        //                        log::extract<boost::date_time::int_adapter>(
+        //                        "TimeStamp" , view )
+        << " [ " << log::extract<std::string>("Channel", view) << " ] "
+        << /*humanReadableLevel.at*/ (log::extract<level>("Severity", view))
+        << " : " << view[log::expressions::smessage];
+  });
 
   core->add_sink(termSink);
 

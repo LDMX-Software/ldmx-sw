@@ -7,10 +7,9 @@ namespace framework {
 
 Conditions::Conditions(Process& p) : process_{p} {}
 
-void Conditions::createConditionsObjectProvider(const std::string& classname,
-                                                const std::string& objname,
-                                                const std::string& tagname,
-                                                const framework::config::Parameters& params) {
+void Conditions::createConditionsObjectProvider(
+    const std::string& classname, const std::string& objname,
+    const std::string& tagname, const framework::config::Parameters& params) {
   ConditionsObjectProvider* cop =
       PluginFactory::getInstance().createConditionsObjectProvider(
           classname, objname, tagname, params, process_);

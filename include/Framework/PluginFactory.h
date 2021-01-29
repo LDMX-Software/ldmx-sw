@@ -83,7 +83,8 @@ class PluginFactory {
    */
   ConditionsObjectProvider* createConditionsObjectProvider(
       const std::string& classname, const std::string& objName,
-      const std::string& tagname, const framework::config::Parameters& params, Process& process);
+      const std::string& tagname, const framework::config::Parameters& params,
+      Process& process);
 
   /**
    * Load a library.

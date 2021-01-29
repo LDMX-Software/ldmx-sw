@@ -110,10 +110,9 @@ class Conditions {
   /**
    * Create a ConditionsObjectProvider given the information
    */
-  void createConditionsObjectProvider(const std::string& classname,
-                                      const std::string& instancename,
-                                      const std::string& tagname,
-                                      const framework::config::Parameters& params);
+  void createConditionsObjectProvider(
+      const std::string& classname, const std::string& instancename,
+      const std::string& tagname, const framework::config::Parameters& params);
 
  private:
   /** Handle to the Process. */
