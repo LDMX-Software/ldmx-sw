@@ -158,7 +158,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
       G4CalorimeterHitsCollection *calHitsColl =
           dynamic_cast<G4CalorimeterHitsCollection *>(hc);
       std::vector<ldmx::SimCalorimeterHit> outputColl;
-      if (collName == recon::event::EventConstants::ECAL_SIM_HITS) {
+      if (collName == ldmx::EventConstants::ECAL_SIM_HITS) {
         // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit
         // collection using helper class.
         ecalHitIO_.writeHitsCollection(calHitsColl, outputColl);
