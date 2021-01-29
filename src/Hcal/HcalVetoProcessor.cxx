@@ -13,7 +13,8 @@
 
 namespace hcal {
 
-HcalVetoProcessor::HcalVetoProcessor(const std::string &name, framework::Process &process)
+HcalVetoProcessor::HcalVetoProcessor(const std::string &name,
+                                     framework::Process &process)
     : Producer(name, process) {}
 
 HcalVetoProcessor::~HcalVetoProcessor() {}

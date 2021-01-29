@@ -11,7 +11,8 @@
 
 namespace hcal {
 
-HcalDigiProducer::HcalDigiProducer(const std::string& name, framework::Process& process)
+HcalDigiProducer::HcalDigiProducer(const std::string& name,
+                                   framework::Process& process)
     : Producer(name, process) {}
 
 void HcalDigiProducer::configure(framework::config::Parameters& parameters) {
@@ -271,12 +272,13 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // This is the quantized position along the length of the bar - LEFT/RIGHT
       // is for fixed HCAL geometry
       // float ecal_width_(525);
-      // if (cur_subsection == ldmx::HcalID::TOP)    cur_xpos =  half_total_width/2.0
-      // - ecal_width/4.0; if (cur_subsection == ldmx::HcalID::BOTTOM) cur_xpos =
-      // -half_total_width/2.0 + ecal_width/4.0; if (cur_subsection ==
-      // ldmx::HcalID::LEFT)   cur_ypos =  half_total_width/2.0 - ecal_width/4.0; if
-      // (cur_subsection == ldmx::HcalID::RIGHT)  cur_ypos = -half_total_width/2.0 +
-      // ecal_width/4.0;
+      // if (cur_subsection == ldmx::HcalID::TOP)    cur_xpos =
+      // half_total_width/2.0
+      // - ecal_width/4.0; if (cur_subsection == ldmx::HcalID::BOTTOM) cur_xpos
+      // = -half_total_width/2.0 + ecal_width/4.0; if (cur_subsection ==
+      // ldmx::HcalID::LEFT)   cur_ypos =  half_total_width/2.0 -
+      // ecal_width/4.0; if (cur_subsection == ldmx::HcalID::RIGHT)  cur_ypos =
+      // -half_total_width/2.0 + ecal_width/4.0;
 
       // This would be the quantized z position. The side_hcal_z0 value must be
       // derived fromn the geometry! float side_hcal_z0(215.5); cur_zpos =
@@ -284,9 +286,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
       // This is the quantized position along the thickness of the bar - check
       // RIGHT / LEFT float back_hcal_layer_thickness(39); float
-      // side_hcal_xy_offset(294); if (cur_subsection == ldmx::HcalID::TOP)    cur_ypos
-      // =  side_hcal_xy_offset+(cur_layer-1)*back_hcal_layer_thickness; if
-      // (cur_subsection == ldmx::HcalID::BOTTOM) cur_ypos =
+      // side_hcal_xy_offset(294); if (cur_subsection == ldmx::HcalID::TOP)
+      // cur_ypos = side_hcal_xy_offset+(cur_layer-1)*back_hcal_layer_thickness;
+      // if (cur_subsection == ldmx::HcalID::BOTTOM) cur_ypos =
       // -side_hcal_xy_offset-(cur_layer-1)*back_hcal_layer_thickness; if
       // (cur_subsection == ldmx::HcalID::LEFT)   cur_xpos =
       // -side_hcal_xy_offset-(cur_layer-1)*back_hcal_layer_thickness; if
@@ -366,10 +368,10 @@ void HcalDigiProducer::produce(framework::Event& event) {
       (STRIPS_SIDE_TB_PER_LAYER_ * NUM_SIDE_TB_HCAL_LAYERS_) * 2 -
       numSigHits_side_tb);
   for (auto noise : noiseHits_PE) {
-    constructNoiseHit(hcalRecHits, ldmx::HcalID::TOP, noise, noise, hcaldetIDEdep,
-                      noiseHitIDs);
-    constructNoiseHit(hcalRecHits, ldmx::HcalID::BOTTOM, noise, noise, hcaldetIDEdep,
-                      noiseHitIDs);
+    constructNoiseHit(hcalRecHits, ldmx::HcalID::TOP, noise, noise,
+                      hcaldetIDEdep, noiseHitIDs);
+    constructNoiseHit(hcalRecHits, ldmx::HcalID::BOTTOM, noise, noise,
+                      hcaldetIDEdep, noiseHitIDs);
   }
 
   // simulate noise hits in side, left / right hcal
@@ -377,10 +379,10 @@ void HcalDigiProducer::produce(framework::Event& event) {
       (STRIPS_SIDE_LR_PER_LAYER_ * NUM_SIDE_LR_HCAL_LAYERS_) * 2 -
       numSigHits_side_lr);
   for (auto noise : noiseHits_PE) {
-    constructNoiseHit(hcalRecHits, ldmx::HcalID::LEFT, noise, noise, hcaldetIDEdep,
-                      noiseHitIDs);
-    constructNoiseHit(hcalRecHits, ldmx::HcalID::RIGHT, noise, noise, hcaldetIDEdep,
-                      noiseHitIDs);
+    constructNoiseHit(hcalRecHits, ldmx::HcalID::LEFT, noise, noise,
+                      hcaldetIDEdep, noiseHitIDs);
+    constructNoiseHit(hcalRecHits, ldmx::HcalID::RIGHT, noise, noise,
+                      hcaldetIDEdep, noiseHitIDs);
   }
 
   event.add("HcalRecHits", hcalRecHits);
