@@ -22,7 +22,9 @@ class BaseTableCondition : public framework::ConditionsObject {
   /** Create table with given set of columns */
   BaseTableCondition(const std::string& name,
                      const std::vector<std::string>& columns)
-      : framework::ConditionsObject{name}, columns_{columns}, idMask_{0xFFFFFFFFu} {
+      : framework::ConditionsObject{name},
+        columns_{columns},
+        idMask_{0xFFFFFFFFu} {
     columnCount_ = (unsigned int)(columns.size());
   }
 
