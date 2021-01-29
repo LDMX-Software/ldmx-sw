@@ -86,7 +86,7 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
   for (auto ilinear : linearCharge_) {
     unsigned int lcharge = ilinear.second;
     lcharge = lcharge >> shift;
-    uint8_t ccharge = recon::event::HgcrocTrigDigi::linear2Compressed(lcharge);
+    uint8_t ccharge = ldmx::HgcrocTrigDigi::linear2Compressed(lcharge);
     compressedCharge_[ilinear.first] = ccharge;
   }
 }

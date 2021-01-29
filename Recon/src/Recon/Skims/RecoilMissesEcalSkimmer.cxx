@@ -17,27 +17,27 @@ RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
 void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
   // Search for the recoil electron
   auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
   // Get the collection of simulated Ecal hits from the event.
-  const std::vector<simcore::event::SimCalorimeterHit> ecalSimHits =
-      event.getCollection<simcore::event::SimCalorimeterHit>("EcalSimHits");
+  const std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
+      event.getCollection<ldmx::SimCalorimeterHit>("EcalSimHits");
 
   // Loop through the Ecal hits and check if the recoil electron is
   // associated with any of them.  If there are any recoil electron hits
   // in the Ecal, drop the event.
   bool hasRecoilElectronHits = false;
-  for (const simcore::event::SimCalorimeterHit &simHit : ecalSimHits) {
+  for (const ldmx::SimCalorimeterHit &simHit : ecalSimHits) {
     /*std::cout << "[ RecoilMissesEcalSkimmer ]: "
               << "Number of hit contributions: "
               << simHit->getNumberOfContribs() << std::endl;*/
 
     for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
          ++iContrib) {
-      simcore::event::SimCalorimeterHit::Contrib contrib = simHit.getContrib(iContrib);
+      ldmx::SimCalorimeterHit::Contrib contrib = simHit.getContrib(iContrib);
 
       if (contrib.trackID == recoilTrackID) {
         /*std::cout << "[ RecoilMissesEcalSkimmer ]: "

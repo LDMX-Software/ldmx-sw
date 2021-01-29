@@ -7,8 +7,7 @@
 // ROOT
 #include "TObject.h"  //For ClassDef
 
-namespace recon {
-namespace event {
+namespace ldmx {
 
 // Forward declaration needed by typedef
 class HgcrocTrigDigi;
@@ -140,7 +139,6 @@ class HgcrocTrigDigi {
   /// ROOT Dictionary class definition macro
   ClassDef(HgcrocTrigDigi, 1);
 };
-}
-}  // namespace recon
+}  // namespace ldmx
 
 #endif  // RECON_EVENT_HGCROCTRIGDIGI_H_
