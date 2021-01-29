@@ -19,7 +19,6 @@
 
 namespace ldmx {
 
-
 /**
  * @struct EcalDigiSample
  * @brief One sample of an Ecal digi channel
@@ -161,7 +160,6 @@ class EcalDigiCollection {
    */
   ClassDef(EcalDigiCollection, 1);
 };
-}
-
+}  // namespace ldmx
 
 #endif /* EVENT_ECALDIGI_H_ */

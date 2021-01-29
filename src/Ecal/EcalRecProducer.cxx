@@ -10,7 +10,8 @@
 
 namespace ecal {
 
-EcalRecProducer::EcalRecProducer(const std::string& name, framework::Process& process)
+EcalRecProducer::EcalRecProducer(const std::string& name,
+                                 framework::Process& process)
     : Producer(name, process) {}
 
 EcalRecProducer::~EcalRecProducer() {}
@@ -34,12 +35,13 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
 
 void EcalRecProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout& hexReadout =
-      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
+      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Get the reconstruction parameters
   EcalReconConditions the_conditions(
-      getCondition<conditions::DoubleTableCondition>(EcalReconConditions::CONDITIONS_NAME));
+      getCondition<conditions::DoubleTableCondition>(
+          EcalReconConditions::CONDITIONS_NAME));
 
   std::vector<ldmx::EcalHit> ecalRecHits;
   auto ecalDigis =
@@ -165,8 +167,8 @@ void EcalRecProducer::produce(framework::Event& event) {
   if (event.exists(simHitCollName_, simHitPassName_)) {
     // ecal sim hits exist ==> label which hits are real and which are pure
     // noise
-    auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(simHitCollName_,
-                                                            simHitPassName_)};
+    auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+        simHitCollName_, simHitPassName_)};
     std::set<int> real_hits;
     for (auto const& sim_hit : ecalSimHits) real_hits.insert(sim_hit.getID());
     for (auto& hit : ecalRecHits)

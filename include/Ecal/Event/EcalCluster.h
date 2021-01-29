@@ -20,7 +20,6 @@
 
 namespace ldmx {
 
-
 /**
  * @class EcalCluster
  * @brief Stores cluster information from the ECal
@@ -111,7 +110,6 @@ class EcalCluster {
 
   ClassDef(EcalCluster, 1);
 };
-}
-
+}  // namespace ldmx
 
 #endif

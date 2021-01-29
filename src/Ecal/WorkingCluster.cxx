@@ -7,11 +7,13 @@
 
 namespace ecal {
 
-WorkingCluster::WorkingCluster(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
+WorkingCluster::WorkingCluster(const ldmx::EcalHit* eh,
+                               const ldmx::EcalHexReadout& hex) {
   add(eh, hex);
 }
 
-void WorkingCluster::add(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
+void WorkingCluster::add(const ldmx::EcalHit* eh,
+                         const ldmx::EcalHexReadout& hex) {
   double hitE = eh->getEnergy();
 
   double hitX, hitY, hitZ;

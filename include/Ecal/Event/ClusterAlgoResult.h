@@ -16,7 +16,7 @@
 // STL
 #include <iostream>
 
-namespace ldmx { 
+namespace ldmx {
 
 /**
  * @class ClusterAlgoResult

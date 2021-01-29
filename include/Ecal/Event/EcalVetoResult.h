@@ -21,7 +21,6 @@
 
 namespace ldmx {
 
-
 class EcalVetoResult {
  public:
   /** Constructor */
@@ -167,7 +166,6 @@ class EcalVetoResult {
 
   ClassDef(EcalVetoResult, 4);
 };
-}
-
+}  // namespace ldmx
 
 #endif

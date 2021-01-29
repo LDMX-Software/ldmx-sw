@@ -26,7 +26,8 @@ class EcalTrigPrimDigiProducer : public framework::Producer {
   /**
    * Constructor
    */
-  EcalTrigPrimDigiProducer(const std::string& name, framework::Process& process);
+  EcalTrigPrimDigiProducer(const std::string& name,
+                           framework::Process& process);
 
   /**
    * Grabs configure parameters from the python config file.
