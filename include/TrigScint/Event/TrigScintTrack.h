@@ -12,8 +12,7 @@
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 
 /**
  * @class TrigScintTrack
@@ -100,7 +99,7 @@ class TrigScintTrack {
    * the track took place [MeV].
    * @return The momentum of the particle.
    */
-  std::vector<trigscint::event::TrigScintCluster> getConstituents() const {
+  std::vector<ldmx::TrigScintCluster> getConstituents() const {
     return constituents_;
   };
 
@@ -242,7 +241,7 @@ class TrigScintTrack {
   /**
    * The list of clusters constituting the track.
    */
-  std::vector<trigscint::event::TrigScintCluster> constituents_{0};
+  std::vector<ldmx::TrigScintCluster> constituents_{0};
 
   float beamEfrac_{0.};
 
@@ -285,7 +284,6 @@ class TrigScintTrack {
 
 };  // TrigScintTrack
 
-}   }
-// namespace trigscint
+} // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTTRACK_H_

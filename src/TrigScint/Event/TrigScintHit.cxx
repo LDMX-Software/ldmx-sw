@@ -11,12 +11,11 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(trigscint::event::TrigScintHit)
+ClassImp(ldmx::TrigScintHit)
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 void TrigScintHit::Clear(Option_t *option) {
-  hcal::event::HcalHit::Clear();
+  ldmx::HcalHit::Clear();
   barID_ = -1;
   moduleID_ = -1;
   beamEfrac_ = 0;
@@ -29,5 +28,4 @@ void TrigScintHit::Print(Option_t *option) const {
             << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}"
             << std::endl;
 }
-} // namespace event
-} // namespace trigscint
+} // namespace ldmx

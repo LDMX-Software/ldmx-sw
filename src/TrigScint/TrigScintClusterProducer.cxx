@@ -124,7 +124,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
   // looper over digi hits and aggregate energy depositions for each detID
 
   const auto digis{
-      event.getCollection<trigscint::event::TrigScintHit>(input_collection_, passName_)};
+      event.getCollection<ldmx::TrigScintHit>(input_collection_, passName_)};
 
   if (verbose_) {
     ldmx_log(debug) << "Got digi collection " << input_collection_ << "_"
@@ -186,7 +186,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
   std::map<int, int>::iterator itr;
 
   // Create the container to hold the digitized trigger scintillator hits.
-  std::vector<trigscint::event::TrigScintCluster> trigScintClusters;
+  std::vector<ldmx::TrigScintCluster> trigScintClusters;
 
   // loop over channels
   for (itr = hitChannelMap_.begin(); itr != hitChannelMap_.end(); ++itr) {
@@ -228,7 +228,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       break;
     }
 
-    trigscint::event::TrigScintHit digi = (trigscint::event::TrigScintHit)digis.at(itr->second);
+    ldmx::TrigScintHit digi = (ldmx::TrigScintHit)digis.at(itr->second);
 
     // skip all until hit a seed
     if (digi.getPE() >= seed_) {
@@ -239,7 +239,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
       // 1.  add seeding hit to cluster
 
-      addHit(itr->first, (trigscint::event::TrigScintHit)digi);
+      addHit(itr->first, (ldmx::TrigScintHit)digi);
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "\t itr is pointing at hit with channel nb "
@@ -273,7 +273,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           }
         }
         if (!hasUsed) {
-          digi = (trigscint::event::TrigScintHit)digis.at(itrBack->second);
+          digi = (ldmx::TrigScintHit)digis.at(itrBack->second);
 
           // 2. add seed-1 to cluster
           addHit(itrBack->first, digi);
@@ -315,7 +315,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
                                // least seed+1, and for seed+2 only if there is
                                // no seed+3
               // 3b
-              digi = (trigscint::event::TrigScintHit)digis.at(itrNeighb->second);
+              digi = (ldmx::TrigScintHit)digis.at(itrNeighb->second);
               addHit(itrNeighb->first, digi);
 
               if (verbose_ > 1) {
@@ -332,7 +332,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
                         .end()) {  // no seed+3. also no seed-1. so add seed+2
                   // 3d.  add seed+2 to the cluster
                   itrNeighb = hitChannelMap_.find(itr->first + 2);
-                  digi = (trigscint::event::TrigScintHit)digis.at(itrNeighb->second);
+                  digi = (ldmx::TrigScintHit)digis.at(itrNeighb->second);
                   addHit(itrNeighb->first, digi);
                   if (verbose_ > 1) {
                     ldmx_log(debug)
@@ -348,7 +348,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
             }     // if seed-1 wasn't added
           }       // if seed+2 exists. then already added seed+1.
           else {  // so: if not, then we need to add seed+1 here. (step 4)
-            digi = (trigscint::event::TrigScintHit)digis.at(
+            digi = (ldmx::TrigScintHit)digis.at(
                 itrNeighb->second);  // itrNeighb hasn't moved since there was
                                      // no seed+2
             addHit(itrNeighb->first, digi);
@@ -371,7 +371,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
                          .end()) {  // seed-1 has been added, but not seed+1,
                                     // and there is a hit in seed-2
           itrBack = hitChannelMap_.find(itr->first - 2);
-          digi = (trigscint::event::TrigScintHit)digis.at(itrBack->second);
+          digi = (ldmx::TrigScintHit)digis.at(itrBack->second);
           addHit(itrBack->first, digi);
 
           if (verbose_ > 1) {
@@ -391,7 +391,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       centroid_ /= val_;  // final weighting step: divide by total
       centroid_ -= 1;     // shift back to actual channel center
 
-      trigscint::event::TrigScintCluster cluster;
+      ldmx::TrigScintCluster cluster;
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "Now have " << v_addedIndices_.size()
@@ -444,7 +444,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
   return;
 }
 
-void TrigScintClusterProducer::addHit(uint idx, trigscint::event::TrigScintHit hit) {
+void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
   val_ += ampl;
   float energy = hit.getEnergy();

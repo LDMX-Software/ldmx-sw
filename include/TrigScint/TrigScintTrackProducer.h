@@ -35,10 +35,10 @@ class TrigScintTrackProducer : public framework::Producer {
 
  private:
   // collection of produced tracks
-  std::vector<trigscint::event::TrigScintTrack> tracks_;
+  std::vector<ldmx::TrigScintTrack> tracks_;
 
   // add a cluster to a track
-  trigscint::event::TrigScintTrack makeTrack(std::vector<trigscint::event::TrigScintCluster> clusters);
+  ldmx::TrigScintTrack makeTrack(std::vector<ldmx::TrigScintCluster> clusters);
 
   // maximum difference (in channel number space) between track seed and cluster
   // in the next pad tolerated to form a track

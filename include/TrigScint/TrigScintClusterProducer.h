@@ -33,7 +33,7 @@ class TrigScintClusterProducer : public framework::Producer {
   /**
    * add a hit at index idx to a cluster
    */
-  virtual void addHit(uint idx, trigscint::event::TrigScintHit hit);
+  virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
   virtual void onFileOpen();
 
@@ -45,7 +45,7 @@ class TrigScintClusterProducer : public framework::Producer {
 
  private:
   // collection of clusters produced
-  std::vector<trigscint::event::TrigScintCluster> clusters_;
+  std::vector<ldmx::TrigScintCluster> clusters_;
 
   // cluster seeding threshold
   double seed_{0.};

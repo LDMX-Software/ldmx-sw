@@ -1,9 +1,8 @@
 #include "TrigScint/Event/TrigScintCluster.h"
 
-ClassImp(trigscint::event::TrigScintCluster)
+ClassImp(ldmx::TrigScintCluster)
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 TrigScintCluster::~TrigScintCluster() { Clear(); }
 
 void TrigScintCluster::Print(Option_t *option) const {
@@ -29,5 +28,4 @@ void TrigScintCluster::Clear(Option_t *) {
   setCentroid(0);
   setSeed(-1);
 }
-} // namespace event
-} // namespace trigscint
+} // namespace ldmx

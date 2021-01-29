@@ -10,8 +10,7 @@
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 
 /**
  * @class TrigScintCluster
@@ -47,7 +46,7 @@ class TrigScintCluster {
    * @param hit The digi hit
    */
 
-  void addHit(uint idx, const trigscint::event::TrigScintHit *hit);
+  void addHit(uint idx, const ldmx::TrigScintHit *hit);
 
   /**
    * @param idx The digi collection index of the hit seeding the cluster
@@ -180,7 +179,6 @@ class TrigScintCluster {
    */
   ClassDef(TrigScintCluster, 1);
 };
-}   }
-// namespace trigscint
+} // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTCLUSTER_H_

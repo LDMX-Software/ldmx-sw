@@ -61,8 +61,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{
-      event.getCollection<simcore::event::SimCalorimeterHit>(inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+      event.getCollection<ldmx::SimCalorimeterHit>(inputCollection_, inputPassName_)};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
   int module{-1};
   for (const auto &simHit : simHits) {
@@ -126,7 +126,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   }
 
   // Create the container to hold the digitized trigger scintillator hits.
-  std::vector<trigscint::event::TrigScintHit> trigScintHits;
+  std::vector<ldmx::TrigScintHit> trigScintHits;
 
   // loop over detIDs and simulate number of PEs
   int ihit = 0;
@@ -144,7 +144,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
     // If a cell has a PE count above threshold, persit the hit.
     if (cellPEs[id] >= 1) {
-      trigscint::event::TrigScintHit hit;
+      ldmx::TrigScintHit hit;
       hit.setID(id.raw());
       hit.setPE(cellPEs[id]);
       hit.setMinPE(cellMinPEs[id]);
@@ -184,7 +184,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   ldmx::TrigScintID tempID;
 
   for (auto &noiseHitPE : noiseHits_PE) {
-    trigscint::event::TrigScintHit hit;
+    ldmx::TrigScintHit hit;
     // generate random ID from remaining cells
     do {
       tempID = generateRandomID(module);
