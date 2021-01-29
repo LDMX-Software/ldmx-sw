@@ -57,11 +57,11 @@ EventFile::EventFile(const std::string &filename, EventFile *parent,
                                        "' is not readable or does not exist.");
     }
 
-    tree_ = (TTree *)(file_->Get(recon::event::EventConstants::EVENT_TREE_NAME.c_str()));
+    tree_ = (TTree *)(file_->Get(ldmx::EventConstants::EVENT_TREE_NAME.c_str()));
     if (!tree_) {
       EXCEPTION_RAISE("FileError",
                       "File '" + fileName_ + "' does not have a TTree named '" +
-                          recon::event::EventConstants::EVENT_TREE_NAME + "' in it.");
+                          ldmx::EventConstants::EVENT_TREE_NAME + "' in it.");
     }
     entries_ = tree_->GetEntriesFast();
   }
@@ -286,7 +286,7 @@ void EventFile::close() {
 
     // create the branch on this tree
     ldmx::RunHeader *theHandle = nullptr;
-    runTree->Branch("RunHeader", recon::event::EventConstants::RUN_HEADER.c_str(), &theHandle,
+    runTree->Branch("RunHeader", ldmx::EventConstants::RUN_HEADER.c_str(), &theHandle,
                     32000, 3);
 
     // copy over the run headers into the tree
