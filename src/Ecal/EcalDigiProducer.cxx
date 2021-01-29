@@ -79,7 +79,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
   }
 
   // Empty collection to be filled
-  recon::event::HgcrocDigiCollection ecalDigis;
+  ldmx::HgcrocDigiCollection ecalDigis;
   ecalDigis.setNumSamplesPerDigi(nADCs_);
   ecalDigis.setSampleOfInterestIndex(iSOI_);
 
@@ -96,7 +96,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
   //  one SimCalorimeterHit is generated per cell, but multiple "contributions"
   //  are still handled within SimCalorimeterHit
   auto ecalSimHits{
-      event.getCollection<simcore::event::SimCalorimeterHit>(inputCollName_, inputPassName_)};
+      event.getCollection<ldmx::SimCalorimeterHit>(inputCollName_, inputPassName_)};
 
   /* debug printout
   std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" <<
@@ -133,7 +133,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
      */
     // container emulator uses to write out samples and
     // transfer samples into the digi collection
-    std::vector<recon::event::HgcrocDigiCollection::Sample> digiToAdd;
+    std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
     if (hgcroc_->digitize(hitID, voltages, times, digiToAdd)) {
       ecalDigis.addDigi(hitID, digiToAdd);
     }
@@ -183,7 +183,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
       //  we need to convert it to the amplitdue above the pedestal
       voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
 
-      std::vector<recon::event::HgcrocDigiCollection::Sample> digiToAdd;
+      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
         ecalDigis.addDigi(noiseID, digiToAdd);
       }

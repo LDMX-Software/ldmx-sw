@@ -196,15 +196,15 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     //
 
     // Get the collection of simulated particles from the event
-    auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+    auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
     // Search for the recoil electron
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find ECAL SP hit for recoil electron
-    auto ecalSpHits{event.getCollection<simcore::event::SimTrackerHit>("EcalScoringPlaneHits")};
+    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
     float pmax = 0;
-    for (simcore::event::SimTrackerHit &spHit : ecalSpHits) {
+    for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
       if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
@@ -222,10 +222,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     // Find target SP hit for recoil electron
     if (event.exists("TargetScoringPlaneHits")) {
-      std::vector<simcore::event::SimTrackerHit> targetSpHits =
-          event.getCollection<simcore::event::SimTrackerHit>("TargetScoringPlaneHits");
+      std::vector<ldmx::SimTrackerHit> targetSpHits =
+          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
       pmax = 0;
-      for (simcore::event::SimTrackerHit &spHit : targetSpHits) {
+      for (ldmx::SimTrackerHit &spHit : targetSpHits) {
         ldmx::SimSpecialID hit_id(spHit.getID());
         if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 

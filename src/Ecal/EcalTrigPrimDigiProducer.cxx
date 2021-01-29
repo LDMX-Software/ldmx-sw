@@ -20,8 +20,8 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   const EcalTriggerGeometry& geom = getCondition<EcalTriggerGeometry>(
       EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  const recon::event::HgcrocDigiCollection& ecalDigis =
-      event.getObject<recon::event::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+  const ldmx::HgcrocDigiCollection& ecalDigis =
+      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
 
   // get the calibration object
   const conditions::IntegerTableCondition& conditions =
@@ -32,7 +32,7 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
 
   // Loop over the digis
   for (unsigned int ix = 0; ix < ecalDigis.getNumDigis(); ix++) {
-    const recon::event::HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
+    const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = ecalDigis.getDigi(ix);
     // std::cout << EcalID(pdigi.id()) << pdigi << std::endl;
 
     ldmx::EcalTriggerID tid = geom.belongsTo(ldmx::EcalID(pdigi.id()));
@@ -48,11 +48,11 @@ void EcalTrigPrimDigiProducer::produce(framework::Event& event) {
   calc.compressDigis(9);  // 9 is the number for Ecal...
 
   const std::map<unsigned int, uint8_t>& results = calc.compressedEnergies();
-  recon::event::HgcrocTrigDigiCollection tdigis;
+  ldmx::HgcrocTrigDigiCollection tdigis;
 
   for (auto result : results) {
     if (result.second > 0) {
-      tdigis.push_back(recon::event::HgcrocTrigDigi(result.first, result.second));
+      tdigis.push_back(ldmx::HgcrocTrigDigi(result.first, result.second));
       // std::cout << EcalTriggerID(result.first) << "  " << tdigis.back() <<
       // std::endl;
     }

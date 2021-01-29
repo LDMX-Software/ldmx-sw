@@ -43,7 +43,7 @@ void EcalRecProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::EcalHit> ecalRecHits;
   auto ecalDigis =
-      event.getObject<recon::event::HgcrocDigiCollection>(digiCollName_, digiPassName_);
+      event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
   int numDigiHits = ecalDigis.getNumDigis();
   // loop through digis
   for (unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++) {
@@ -165,7 +165,7 @@ void EcalRecProducer::produce(framework::Event& event) {
   if (event.exists(simHitCollName_, simHitPassName_)) {
     // ecal sim hits exist ==> label which hits are real and which are pure
     // noise
-    auto ecalSimHits{event.getCollection<simcore::event::SimCalorimeterHit>(simHitCollName_,
+    auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(simHitCollName_,
                                                             simHitPassName_)};
     std::set<int> real_hits;
     for (auto const& sim_hit : ecalSimHits) real_hits.insert(sim_hit.getID());
