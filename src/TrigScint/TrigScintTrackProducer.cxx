@@ -47,7 +47,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
   }
 
   const auto seeds{
-      event.getCollection<trigscint::event::TrigScintCluster>(seeding_collection_, passName_)};
+      event.getCollection<ldmx::TrigScintCluster>(seeding_collection_, passName_)};
   uint numSeeds = seeds.size();
 
   if (verbose_) {
@@ -60,7 +60,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
     ldmx_log(info) << "No collection called " << input_collections_.at(0)
                    << "; still, not skipping event";
   }
-  const auto clusters_pad1{event.getCollection<trigscint::event::TrigScintCluster>(
+  const auto clusters_pad1{event.getCollection<ldmx::TrigScintCluster>(
       input_collections_.at(0), passName_)};
 
   if (!event.exists(input_collections_.at(1))) {
@@ -68,7 +68,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                    << "; still, not skipping event";
   }
 
-  const auto clusters_pad2{event.getCollection<trigscint::event::TrigScintCluster>(
+  const auto clusters_pad2{event.getCollection<ldmx::TrigScintCluster>(
       input_collections_.at(1), passName_)};
 
   if (verbose_) {
@@ -79,7 +79,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                     << clusters_pad2.size() << " entries.";
   }
 
-  std::vector<trigscint::event::TrigScintTrack> cleanedTracks;
+  std::vector<ldmx::TrigScintTrack> cleanedTracks;
 
   // loop over the clusters in the seeding pad collection, if there are clusters
   // in all pads
@@ -89,7 +89,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
       // with centroids within tolerance to tracks
       float centroid = seed.getCentroid();
 
-      std::vector<trigscint::event::TrigScintTrack> trackCandidates;
+      std::vector<ldmx::TrigScintTrack> trackCandidates;
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "Got seed with centroid " << centroid;
@@ -125,11 +125,11 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
               // only make this vector now! this ensures against hanging
               // clusters with indices from earlier in the loop
-              std::vector<trigscint::event::TrigScintCluster> clusterVec = {seed, cluster1,
+              std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1,
                                                           cluster2};
 
               // make a track
-              trigscint::event::TrigScintTrack track = makeTrack(clusterVec);
+              ldmx::TrigScintTrack track = makeTrack(clusterVec);
               trackCandidates.push_back(track);
 
               /*
@@ -214,20 +214,20 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
     for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
       // since we start in one end, we only have to check matches in one
       // direction
-      trigscint::event::TrigScintTrack track = tracks_.at(idx);
+      ldmx::TrigScintTrack track = tracks_.at(idx);
       for (int idxComp = idx - 1; idxComp >= 0; idxComp--) {
         if (verbose_ > 1)
           ldmx_log(debug) << "In track disambiguation loop, idx points at "
                           << idx << " and prev idx points at " << idxComp;
 
-        trigscint::event::TrigScintTrack nextTrack = tracks_.at(idxComp);
+        ldmx::TrigScintTrack nextTrack = tracks_.at(idxComp);
 
         // no need to start pulling constituents from tracks that are
         // ridiculously far apart
         if (fabs(track.getCentroid() - nextTrack.getCentroid() <
                  3 * maxDelta_)) {
-          std::vector<trigscint::event::TrigScintCluster> consts_1 = track.getConstituents();
-          std::vector<trigscint::event::TrigScintCluster> consts_2 = nextTrack.getConstituents();
+          std::vector<ldmx::TrigScintCluster> consts_1 = track.getConstituents();
+          std::vector<ldmx::TrigScintCluster> consts_2 = nextTrack.getConstituents();
           if (verbose_ > 1)
             ldmx_log(debug)
                 << "In track disambiguation loop, got the two tracks, "
@@ -316,13 +316,13 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
   return;
 }
 
-trigscint::event::TrigScintTrack TrigScintTrackProducer::makeTrack(
-    std::vector<trigscint::event::TrigScintCluster> clusters) {
+ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
+    std::vector<ldmx::TrigScintCluster> clusters) {
   // for now let's keep a straight, unweighted centroid
   // consider the possibility that at least one cluster has a centroid
   // identically == 0. then we need to shift them by 1 if we want to do energy
   // weighted track centroid later. but no need now
-  trigscint::event::TrigScintTrack tr;
+  ldmx::TrigScintTrack tr;
   float centroid = 0;
   float beamEfrac = 0;
   for (uint i = 0; i < clusters.size(); i++) {

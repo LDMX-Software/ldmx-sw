@@ -5,10 +5,9 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-ClassImp(trigscint::event::TrigScintTrack)
+ClassImp(ldmx::TrigScintTrack)
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 void TrigScintTrack::Clear() {
   centroid_ = 0;
   residual_ = 0;
@@ -19,5 +18,4 @@ void TrigScintTrack::Print() const {
             << " channel centroid: " << getCentroid()
             << ",  residual: " << getResidual() << " }" << std::endl;
 }
-} // namespace event
-} // namespace trigscint
+} // namespace ldmx

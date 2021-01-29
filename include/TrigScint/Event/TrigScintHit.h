@@ -12,8 +12,7 @@
 /*~~~~~~~~~~~*/
 #include "Hcal/Event/HcalHit.h"
 
-namespace trigscint {
-namespace event {
+namespace ldmx {
 
 /**
  * @class Trigscinthit
@@ -22,7 +21,7 @@ namespace event {
  * @note This class represents the reconstructed hit information
  * from the trigger scintillator.
  */
-class TrigScintHit : public hcal::event::HcalHit {
+class TrigScintHit : public ldmx::HcalHit {
  public:
   /**
    * Class constructor.
@@ -87,7 +86,6 @@ class TrigScintHit : public hcal::event::HcalHit {
 
 };  // TrigScintHit
 
-}   }
-// namespace trigscint
+} // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTHIT_H

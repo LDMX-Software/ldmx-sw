@@ -33,10 +33,10 @@ void TruthHitProducer::produce(framework::Event &event) {
   }
   // looper over sim hits and aggregate energy depositions for each detID
   const auto simHits{
-      event.getCollection<simcore::event::SimCalorimeterHit>(inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+      event.getCollection<ldmx::SimCalorimeterHit>(inputCollection_, inputPassName_)};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
-  std::vector<simcore::event::SimCalorimeterHit> truthBeamElectrons;
+  std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
 
   // TODO: Convert this to using a for_each and lambda
   for (const auto &simHit : simHits) {
