@@ -60,7 +60,7 @@ class TestProducer : public Producer {
 
     REQUIRE(i_event > 0);
 
-    std::vector<recon::event::CalorimeterHit> caloHits;
+    std::vector<ldmx::CalorimeterHit> caloHits;
     for (int i = 0; i < i_event; i++) {
       caloHits.emplace_back();
       caloHits.back().setID(i_event * 10 + i);
@@ -68,10 +68,10 @@ class TestProducer : public Producer {
 
     REQUIRE_NOTHROW(event.add("TestCollection", caloHits));
 
-    hcal::event::HcalHit maxPEHit;
+    ldmx::HcalHit maxPEHit;
     maxPEHit.setID(i_event);
 
-    hcal::event::HcalVetoResult res;
+    ldmx::HcalVetoResult res;
     res.setMaxPEHit(maxPEHit);
     res.setVetoResult(i_event % 2 == 0);
 
@@ -110,9 +110,9 @@ class TestAnalyzer : public Analyzer {
 
     REQUIRE(i_event > 0);
 
-    std::vector<recon::event::CalorimeterHit> caloHits;
+    std::vector<ldmx::CalorimeterHit> caloHits;
     REQUIRE_NOTHROW(caloHits =
-                        event.getCollection<recon::event::CalorimeterHit>("TestCollection"));
+                        event.getCollection<ldmx::CalorimeterHit>("TestCollection"));
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
@@ -120,8 +120,8 @@ class TestAnalyzer : public Analyzer {
       test_hist_->Fill(caloHits.at(i).getID());
     }
 
-    hcal::event::HcalVetoResult vetoRes;
-    REQUIRE_NOTHROW(vetoRes = event.getObject<hcal::event::HcalVetoResult>("TestObject"));
+    ldmx::HcalVetoResult vetoRes;
+    REQUIRE_NOTHROW(vetoRes = event.getObject<ldmx::HcalVetoResult>("TestObject"));
 
     auto maxPEHit{vetoRes.getMaxPEHit()};
 
@@ -268,7 +268,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
 
     if (existCollection_) {
       // make sure collection matches pattern
-      TTreeReaderValue<std::vector<recon::event::CalorimeterHit>> collection(
+      TTreeReaderValue<std::vector<ldmx::CalorimeterHit>> collection(
           events, ("TestCollection_" + pass_).c_str());
       while (events.Next()) {
         if (collection->size() != header->getEventNumber()) {
@@ -294,7 +294,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
 
     if (existObject_) {
       // make sure object matches pattern
-      TTreeReaderValue<hcal::event::HcalVetoResult> object(events,
+      TTreeReaderValue<ldmx::HcalVetoResult> object(events,
                                               ("TestObject_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {
@@ -411,7 +411,7 @@ DECLARE_ANALYZER_NS(framework::test, TestAnalyzer)
  * Assumptions:
  *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed
  * from core
- *  - Any object behaves like a hcal::event::HcalVetoResult when viewed from core
+ *  - Any object behaves like a ldmx::HcalVetoResult when viewed from core
  *
  * What does this even test?
  *  - Event::add an object and a vector of objects (changing size and content)
