@@ -54,7 +54,9 @@ class HcalVetoResult {
    *
    * @param maxPEHit The maximum PE HcalHit
    */
-  inline void setMaxPEHit(const ldmx::HcalHit maxPEHit) { maxPEHit_ = maxPEHit; }
+  inline void setMaxPEHit(const ldmx::HcalHit maxPEHit) {
+    maxPEHit_ = maxPEHit;
+  }
 
  private:
   /** Reference to max PE hit. */
