@@ -8,7 +8,6 @@
 
 namespace ldmx {
 
-
 /**
  * @class EcalHit
  * @brief Stores reconstructed hit information from the ECAL
@@ -35,7 +34,6 @@ class EcalHit : public ldmx::CalorimeterHit {
   /** The ROOT class definition. */
   ClassDef(EcalHit, 3);
 };
-}
-
+}  // namespace ldmx
 
 #endif /* EVENT_ECALHIT_H_ */

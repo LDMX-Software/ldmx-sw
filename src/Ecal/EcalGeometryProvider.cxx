@@ -21,7 +21,8 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
    * EcalHexReadout
    */
   EcalGeometryProvider(const std::string& name, const std::string& tagname,
-                       const framework::config::Parameters& parameters, framework::Process& process);
+                       const framework::config::Parameters& parameters,
+                       framework::Process& process);
 
   /** Destructor */
   virtual ~EcalGeometryProvider();
@@ -32,8 +33,9 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
    * behavior could be changed.  Users should not cache the pointer between
    * events
    */
-  virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context);
+  virtual std::pair<const framework::ConditionsObject*,
+                    framework::ConditionsIOV>
+  getCondition(const ldmx::EventHeader& context);
 
   /**
    * Take no action on release, as the object is permanently owned by the
@@ -66,12 +68,13 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   ldmx::EcalHexReadout* ecalGeometry_;
 };
 
-EcalGeometryProvider::EcalGeometryProvider(const std::string& name,
-                                           const std::string& tagname,
-                                           const framework::config::Parameters& parameters,
-                                           framework::Process& process)
-    : framework::ConditionsObjectProvider{ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME, tagname,
-                               parameters, process},
+EcalGeometryProvider::EcalGeometryProvider(
+    const std::string& name, const std::string& tagname,
+    const framework::config::Parameters& parameters,
+    framework::Process& process)
+    : framework::
+          ConditionsObjectProvider{ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME,
+                                   tagname, parameters, process},
       params_{parameters} {
   ecalGeometry_ = 0;
 }
@@ -86,13 +89,16 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
   static const std::string KEYNAME("detectors_valid");
 
   if (!ecalGeometry_) {
-    framework::config::Parameters phex = (params_.exists("EcalHexReadout"))
-                          ? (params_.getParameter<framework::config::Parameters>("EcalHexReadout"))
-                          : (params_);
+    framework::config::Parameters phex =
+        (params_.exists("EcalHexReadout"))
+            ? (params_.getParameter<framework::config::Parameters>(
+                  "EcalHexReadout"))
+            : (params_);
 
     // search through the subtrees
     for (auto key : phex.keys()) {
-      framework::config::Parameters pver = phex.getParameter<framework::config::Parameters>(key);
+      framework::config::Parameters pver =
+          phex.getParameter<framework::config::Parameters>(key);
 
       if (!pver.exists(KEYNAME)) {
         ldmx_log(warn) << "No parameter " << KEYNAME << " found in " << key;

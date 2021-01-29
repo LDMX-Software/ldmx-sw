@@ -10,7 +10,8 @@
 
 namespace ecal {
 
-EcalDigiProducer::EcalDigiProducer(const std::string& name, framework::Process& process)
+EcalDigiProducer::EcalDigiProducer(const std::string& name,
+                                   framework::Process& process)
     : Producer(name, process) {
   // noise generator by default uses a Gausian model for noise
   //  i.e. It assumes the noise is distributed around a mean (setPedestal)
@@ -95,8 +96,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
   //  from G4CalorimeterHits to SimCalorimeterHits this class ensures that only
   //  one SimCalorimeterHit is generated per cell, but multiple "contributions"
   //  are still handled within SimCalorimeterHit
-  auto ecalSimHits{
-      event.getCollection<ldmx::SimCalorimeterHit>(inputCollName_, inputPassName_)};
+  auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputCollName_, inputPassName_)};
 
   /* debug printout
   std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" <<
@@ -149,8 +150,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
     // geometry constants
     //  These are used in the noise generation so that we can randomly
     //  distribute the noise uniformly throughout the ECal channels.
-    const auto& hexGeom =
-        getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+    const auto& hexGeom = getCondition<ldmx::EcalHexReadout>(
+        ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
     int nEcalLayers = hexGeom.getNumLayers();
     int nModulesPerLayer = hexGeom.getNumModulesPerLayer();
     int nCellsPerModule = hexGeom.getNumCellsPerModule();

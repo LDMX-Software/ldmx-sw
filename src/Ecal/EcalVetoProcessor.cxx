@@ -174,8 +174,8 @@ void EcalVetoProcessor::clearProcessor() {
 
 void EcalVetoProcessor::produce(framework::Event &event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout &hexReadout =
-      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout &hexReadout = getCondition<ldmx::EcalHexReadout>(
+      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
   hexReadout_ = &hexReadout;
 
   ldmx::EcalVetoResult result;
@@ -202,7 +202,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
     // Find ECAL SP hit for recoil electron
-    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    auto ecalSpHits{
+        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
     float pmax = 0;
     for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
       ldmx::SimSpecialID hit_id(spHit.getID());
@@ -278,7 +279,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   const std::vector<ldmx::EcalHit> ecalRecHits =
       event.getCollection<ldmx::EcalHit>("EcalRecHits", rec_pass_name_);
 
-  ldmx::EcalID globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
+  ldmx::EcalID globalCentroid =
+      GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
   /* ~~ Fill the hit map ~~ O(n)  */
   fillHitMap(ecalRecHits, cellMap_);
   bool doTight = true;
@@ -573,12 +575,14 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     }
   }
   if (sumEdep > 0) showerRMS = showerRMS / sumEdep;
-  return ldmx::EcalID(0, returnCellId.module(), returnCellId.cell());  // flatten
+  return ldmx::EcalID(0, returnCellId.module(),
+                      returnCellId.cell());  // flatten
 }
 
 /* Function to load up empty vector of hit maps */
-void EcalVetoProcessor::fillHitMap(const std::vector<ldmx::EcalHit> &ecalRecHits,
-                                   std::map<ldmx::EcalID, float> &cellMap_) {
+void EcalVetoProcessor::fillHitMap(
+    const std::vector<ldmx::EcalHit> &ecalRecHits,
+    std::map<ldmx::EcalID, float> &cellMap_) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     ldmx::EcalID id = hitID(hit);
     cellMap_.emplace(id, hit.getEnergy());
@@ -587,8 +591,8 @@ void EcalVetoProcessor::fillHitMap(const std::vector<ldmx::EcalHit> &ecalRecHits
 
 void EcalVetoProcessor::fillIsolatedHitMap(
     const std::vector<ldmx::EcalHit> &ecalRecHits, ldmx::EcalID globalCentroid,
-    std::map<ldmx::EcalID, float> &cellMap_, std::map<ldmx::EcalID, float> &cellMapIso_,
-    bool doTight) {
+    std::map<ldmx::EcalID, float> &cellMap_,
+    std::map<ldmx::EcalID, float> &cellMapIso_, bool doTight) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     auto isolatedHit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id = hitID(hit);
@@ -611,8 +615,8 @@ void EcalVetoProcessor::fillIsolatedHitMap(
 
     for (int k = 0; k < 6; k++) {
       // update neighbor ID to the current layer
-      cellNbrIds[k] =
-          ldmx::EcalID(id.layer(), cellNbrIds[k].module(), cellNbrIds[k].cell());
+      cellNbrIds[k] = ldmx::EcalID(id.layer(), cellNbrIds[k].module(),
+                                   cellNbrIds[k].cell());
       // look in cell hit map to see if it is there
       if (cellMap_.find(cellNbrIds[k]) != cellMap_.end()) {
         isolatedHit = std::make_pair(false, cellNbrIds[k]);

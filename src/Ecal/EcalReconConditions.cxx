@@ -11,8 +11,8 @@ const std::string EcalReconConditions::CONDITIONS_NAME = "EcalReconConditions";
 const std::vector<std::string> EcalReconConditions::EXPECTED_COLUMNS = {
     "ADC_PEDESTAL", "ADC_GAIN", "TOT_PEDESTAL", "TOT_GAIN"};
 
-EcalReconConditions::EcalReconConditions(const conditions::DoubleTableCondition& table,
-                                         bool validate)
+EcalReconConditions::EcalReconConditions(
+    const conditions::DoubleTableCondition& table, bool validate)
     : the_table_{table} {
   // leave early if we don't want to validate
   if (!validate) return;

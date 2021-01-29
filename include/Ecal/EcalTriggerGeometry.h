@@ -23,7 +23,6 @@ class EcalHexReadout;
 
 namespace ecal {
 
-
 /**
  * @class EcalTriggerGeometry
  * @brief defines the relationship between precision cells and trigger cells and
@@ -39,7 +38,8 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
    * Returns the set of precision (full-granularity/DAQ) cells which are
    * associated with the given trigger cell.
    */
-  std::vector<ldmx::EcalID> contentsOfTriggerCell(ldmx::EcalTriggerID triggerCell) const;
+  std::vector<ldmx::EcalID> contentsOfTriggerCell(
+      ldmx::EcalTriggerID triggerCell) const;
 
   /**
    * Returns the set of precision (full-granularity/DAQ) cell which is the
@@ -55,11 +55,13 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
 
   /** Returns the center of the given trigger cell, depends on Ecal Geometry
    * (ldmx::EcalHexReadout) */
-  std::pair<double, double> globalPosition(ldmx::EcalTriggerID triggerCell) const;
+  std::pair<double, double> globalPosition(
+      ldmx::EcalTriggerID triggerCell) const;
 
   /** Returns the local (within module) center of the given trigger cell,
    * depends on Ecal Geometry (ldmx::EcalHexReadout) */
-  std::pair<double, double> localPosition(ldmx::EcalTriggerID triggerCell) const;
+  std::pair<double, double> localPosition(
+      ldmx::EcalTriggerID triggerCell) const;
 
  private:
   /** Identifies what symmetries apply in this case, such as all layers being

@@ -44,7 +44,8 @@ class EcalReconConditions {
    * @param[in] table double table of reconstruction conditions
    * @param[in] validate true if you want to check the columns
    */
-  EcalReconConditions(const conditions::DoubleTableCondition& table, bool validate = true);
+  EcalReconConditions(const conditions::DoubleTableCondition& table,
+                      bool validate = true);
 
   /**
    * get the ADC pedestal

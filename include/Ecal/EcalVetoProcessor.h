@@ -70,11 +70,13 @@ class EcalVetoProcessor : public framework::Producer {
 
   void clearProcessor();
 
-  ldmx::EcalID hitID(const ldmx::EcalHit& hit) const { return ldmx::EcalID(hit.getID()); }
+  ldmx::EcalID hitID(const ldmx::EcalHit& hit) const {
+    return ldmx::EcalID(hit.getID());
+  }
 
   /* Function to calculate the energy weighted shower centroid */
-  ldmx::EcalID GetShowerCentroidIDAndRMS(const std::vector<ldmx::EcalHit>& ecalRecHits,
-                                   double& showerRMS);
+  ldmx::EcalID GetShowerCentroidIDAndRMS(
+      const std::vector<ldmx::EcalHit>& ecalRecHits, double& showerRMS);
 
   /* Function to load up empty vector of hit maps */
   void fillHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,

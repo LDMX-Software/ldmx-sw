@@ -25,8 +25,8 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 
 void EcalClusterProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout& hexReadout =
-      getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
+      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   TemplatedClusterFinder<MyClusterWeight> cf;
 
