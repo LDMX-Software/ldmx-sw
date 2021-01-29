@@ -18,8 +18,7 @@
 //----------//
 #include "Hcal/Event/HcalHit.h"
 
-namespace hcal {
-namespace event {
+namespace ldmx {
 
 class HcalVetoResult {
  public:
@@ -39,7 +38,7 @@ class HcalVetoResult {
   bool passesVeto() const { return passesVeto_; };
 
   /** @return The maximum PE HcalHit. */
-  inline hcal::event::HcalHit getMaxPEHit() const { return maxPEHit_; }
+  inline ldmx::HcalHit getMaxPEHit() const { return maxPEHit_; }
 
   /**
    * Sets whether the Hcal veto was passed or not.
@@ -55,11 +54,11 @@ class HcalVetoResult {
    *
    * @param maxPEHit The maximum PE HcalHit
    */
-  inline void setMaxPEHit(const hcal::event::HcalHit maxPEHit) { maxPEHit_ = maxPEHit; }
+  inline void setMaxPEHit(const ldmx::HcalHit maxPEHit) { maxPEHit_ = maxPEHit; }
 
  private:
   /** Reference to max PE hit. */
-  hcal::event::HcalHit maxPEHit_;
+  ldmx::HcalHit maxPEHit_;
 
   /** Flag indicating whether the event passes the Hcal veto. */
   bool passesVeto_{false};
@@ -67,7 +66,6 @@ class HcalVetoResult {
   ClassDef(HcalVetoResult, 2);
 
 };  // HcalVetoResult
-}
-}  // namespace hcal
+}  // namespace ldmx
 
 #endif  // HCAL_EVENT_HCALVETORESULT_H_

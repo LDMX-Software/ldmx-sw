@@ -10,10 +10,9 @@
 //-------------//
 #include "Hcal/Event/HcalHit.h"
 
-ClassImp(hcal::event::HcalVetoResult)
+ClassImp(ldmx::HcalVetoResult)
 
-namespace hcal {
-namespace event {
+namespace ldmx {
 HcalVetoResult::HcalVetoResult() {}
 
 HcalVetoResult::~HcalVetoResult() {}
@@ -25,5 +24,4 @@ void HcalVetoResult::Print() const {
             << " Passes veto: " << passesVeto_ << std::endl;
   maxPEHit_.Print();
 }
-} // namespace event
-} // namespace hcal
+} // namespace ldmx

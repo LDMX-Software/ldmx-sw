@@ -27,15 +27,15 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
 
 void HcalVetoProcessor::produce(framework::Event &event) {
   // Get the collection of sim particles from the event
-  const std::vector<hcal::event::HcalHit> hcalRecHits =
-      event.getCollection<hcal::event::HcalHit>("HcalRecHits");
+  const std::vector<ldmx::HcalHit> hcalRecHits =
+      event.getCollection<ldmx::HcalHit>("HcalRecHits");
 
   // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.
   float totalPe{0};
   float maxPE{-1000};
-  const hcal::event::HcalHit *maxPEHit;
-  for (const hcal::event::HcalHit &hcalHit : hcalRecHits) {
+  const ldmx::HcalHit *maxPEHit;
+  for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
     // If the hit time is outside the readout window, don't consider it.
     if (hcalHit.getTime() >= maxTime_) continue;
 
@@ -66,7 +66,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   // If the maximum PE found is below threshold, it passes the veto.
   bool passesVeto = (maxPE < totalPEThreshold_);
 
-  hcal::event::HcalVetoResult result;
+  ldmx::HcalVetoResult result;
   result.setVetoResult(passesVeto);
   result.setMaxPEHit(*maxPEHit);
 

@@ -10,8 +10,7 @@
 // LDMX
 #include "Recon/Event/CalorimeterHit.h"
 
-namespace hcal {
-namespace event {
+namespace ldmx {
 
 /**
  * @class HcalHit
@@ -21,7 +20,7 @@ namespace event {
  * from the HCAL, providing particular information for the HCAL,
  * above and beyond what is available in the CalorimeterHit.
  */
-class HcalHit : public recon::event::CalorimeterHit {
+class HcalHit : public ldmx::CalorimeterHit {
  public:
   /**
    * Class constructor.
@@ -85,7 +84,6 @@ class HcalHit : public recon::event::CalorimeterHit {
    */
   ClassDef(HcalHit, 2);
 };
-}
-}  // namespace hcal
+}  // namespace ldmx
 
 #endif /* HCAL_EVENT_HCALHIT_H_ */
