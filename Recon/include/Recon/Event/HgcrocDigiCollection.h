@@ -17,8 +17,7 @@
 #include <iostream>  //Print method
 #include <vector>    //vector lists
 
-namespace recon {
-namespace event {
+namespace ldmx {
 
 /**
  * @class HgcrocDigiCollection
@@ -427,8 +426,7 @@ class HgcrocDigiCollection {
    */
   ClassDef(HgcrocDigiCollection, 2);
 };
-}
-}  // namespace recon
+}  // namespace ldmx
 
 /**
  * Streamer for the HgcrocDigiCollection::Sample
@@ -440,7 +438,7 @@ class HgcrocDigiCollection {
  * @return modified ostream
  */
 std::ostream& operator<<(std::ostream& s,
-                         const recon::event::HgcrocDigiCollection::Sample& sample);
+                         const ldmx::HgcrocDigiCollection::Sample& sample);
 
 /**
  * Streamer for HgcrocDigiCollection::HgcrocDigi
@@ -452,7 +450,7 @@ std::ostream& operator<<(std::ostream& s,
  * @return modified ostream
  */
 std::ostream& operator<<(std::ostream& s,
-                         const recon::event::HgcrocDigiCollection::HgcrocDigi& digi);
+                         const ldmx::HgcrocDigiCollection::HgcrocDigi& digi);
 
 /**
  * Streamer for HgcrocDigiCollection
@@ -464,6 +462,6 @@ std::ostream& operator<<(std::ostream& s,
  * @return modified ostream
  */
 std::ostream& operator<<(std::ostream& s,
-                         const recon::event::HgcrocDigiCollection& col);
+                         const ldmx::HgcrocDigiCollection& col);
 
 #endif /* RECON_EVENT_ECALDIGI_H_ */

@@ -3,10 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(recon::event::CalorimeterHit)
+ClassImp(ldmx::CalorimeterHit)
 
-namespace recon {
-namespace event {
+namespace ldmx {
 void CalorimeterHit::Clear() {
   id_ = 0;
   amplitude_ = 0;
@@ -24,5 +23,4 @@ void CalorimeterHit::Print() const {
             << "MeV, time: " << time_ << "ns, amplitude: " << amplitude_ << "}"
             << std::endl;
 }
-} // namespace event
-} // namespace recon
+} // namespace ldmx

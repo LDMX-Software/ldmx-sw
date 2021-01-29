@@ -1,10 +1,9 @@
 
 #include "Recon/Event/HgcrocDigiCollection.h"
 
-ClassImp(recon::event::HgcrocDigiCollection)
+ClassImp(ldmx::HgcrocDigiCollection)
 
-namespace recon {
-namespace event {
+namespace ldmx {
 HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
                                      int firstMeas, int seconMeas, int toa) {
   if (not tot_progress and tot_complete) {
@@ -67,11 +66,10 @@ void HgcrocDigiCollection::addDigi(
   return;
 }
 
-} // namespace event
-} // namespace recon
+} // namespace ldmx
 
 std::ostream &operator<<(std::ostream &s,
-                         const recon::event::HgcrocDigiCollection::Sample &sample) {
+                         const ldmx::HgcrocDigiCollection::Sample &sample) {
   s << "Sample { "
     << "tot prog: " << sample.isTOTinProgress() << ", "
     << "tot comp: " << sample.isTOTComplete() << ", ";
@@ -90,7 +88,7 @@ std::ostream &operator<<(std::ostream &s,
 }
 
 std::ostream &operator<<(std::ostream &s,
-                         const recon::event::HgcrocDigiCollection::HgcrocDigi &digi) {
+                         const ldmx::HgcrocDigiCollection::HgcrocDigi &digi) {
   s << "HgcrocDigi { ";
 
   s << " Id: 0x" << std::hex << digi.id() << std::dec << " ";
@@ -104,7 +102,7 @@ std::ostream &operator<<(std::ostream &s,
 }
 
 std::ostream &operator<<(std::ostream &s,
-                         const recon::event::HgcrocDigiCollection &col) {
+                         const ldmx::HgcrocDigiCollection &col) {
   s << "HgcrocDigiCollection { " << std::endl;
   for (unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++)
     s << "  " << col.getDigi(iDigi) << std::endl;

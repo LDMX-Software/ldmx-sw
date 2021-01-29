@@ -26,14 +26,14 @@
 
 namespace Analysis {
 
-std::tuple<int, const simcore::event::SimParticle*> getRecoil(
-    const std::map<int, simcore::event::SimParticle>& particleMap) {
+std::tuple<int, const ldmx::SimParticle*> getRecoil(
+    const std::map<int, ldmx::SimParticle>& particleMap) {
   // The recoil electron always has a track ID of 1.
   return {1, &(particleMap.at(1))};
 }
 
-const simcore::event::SimParticle* getPNGamma(const std::map<int, simcore::event::SimParticle>& particleMap,
-                              const simcore::event::SimParticle* recoil,
+const ldmx::SimParticle* getPNGamma(const std::map<int, ldmx::SimParticle>& particleMap,
+                              const ldmx::SimParticle* recoil,
                               const float& energyThreshold) {
   // Get all of the daughter track IDs
   auto daughterTrackIDs{recoil->getDaughters()};
@@ -52,7 +52,7 @@ const simcore::event::SimParticle* getPNGamma(const std::map<int, simcore::event
         // then tag it as the PN gamma.
         return (
             (particleMap.at(daughter.getDaughters().front()).getProcessType() ==
-             simcore::event::SimParticle::ProcessType::photonNuclear) &&
+             ldmx::SimParticle::ProcessType::photonNuclear) &&
             (daughter.getEnergy() >= energyThreshold));
       });
 
