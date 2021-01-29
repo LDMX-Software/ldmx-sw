@@ -49,7 +49,8 @@ class TestConfig : public framework::Producer {
     CHECK(parameters.getParameter<std::string>("test_string") == "Yay!");
 
     // Check dictionary
-    auto test_dict{parameters.getParameter<framework::config::Parameters>("test_dict")};
+    auto test_dict{
+        parameters.getParameter<framework::config::Parameters>("test_dict")};
     CHECK(test_dict.getParameter<int>("one") == 1);
     CHECK(test_dict.getParameter<double>("two") == 2.0);
 

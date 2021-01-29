@@ -18,7 +18,7 @@ namespace exception {
  * exceptions.
  */
 class Exception : public std::exception {
-public:
+ public:
   /**
    * Empty constructor.
    *
@@ -36,7 +36,10 @@ public:
    */
   Exception(const std::string &name, const std::string &message,
             const std::string &module, int line, const std::string &function)
-      : name_{name}, message_{message}, module_{module}, function_{function},
+      : name_{name},
+        message_{message},
+        module_{module},
+        function_{function},
         line_{line} {
     buildStackTrace();
   }
@@ -87,7 +90,7 @@ public:
    */
   const std::string &stackTrace() const throw() { return stackTrace_; }
 
-private:
+ private:
   void buildStackTrace() throw();
 
   /** Exception name. */
@@ -108,8 +111,8 @@ private:
   /** The stack trace */
   std::string stackTrace_;
 };
-} // namespace exception
-} // namespace framework
+}  // namespace exception
+}  // namespace framework
 
 /**
  * @def EXCEPTION_RAISE(EXCEPTION, MSG)
@@ -120,7 +123,7 @@ private:
  * necessary file, line, and function information.  The user need only
  * supply the exception name and error message
  */
-#define EXCEPTION_RAISE(EXCEPTION, MSG)                                        \
-  throw framework::exception::Exception(EXCEPTION, MSG, __FILE__, __LINE__,    \
+#define EXCEPTION_RAISE(EXCEPTION, MSG)                                     \
+  throw framework::exception::Exception(EXCEPTION, MSG, __FILE__, __LINE__, \
                                         __FUNCTION__)
 #endif

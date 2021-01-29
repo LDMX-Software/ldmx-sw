@@ -117,8 +117,8 @@ bool Event::nextEvent() {
 }
 
 void Event::beforeFill() {
-  if (inputTree_ == 0 &&
-      branchesFilled_.find(ldmx::EventHeader::BRANCH) == branchesFilled_.end()) {
+  if (inputTree_ == 0 && branchesFilled_.find(ldmx::EventHeader::BRANCH) ==
+                             branchesFilled_.end()) {
     // Event Header not copied from input and hasn't been added yet, need to put
     // it in
     add(ldmx::EventHeader::BRANCH, eventHeader_);

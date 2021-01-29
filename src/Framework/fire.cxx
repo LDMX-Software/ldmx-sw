@@ -18,7 +18,7 @@
  * @namespace framework
  * @brief All classes in the ldmx-sw project use this namespace.
  */
-//using namespace framework;
+// using namespace framework;
 
 // This code allows ldmx-app to exit gracefully when Ctrl-c is used. It is
 // currently causing segfaults when certain processors are used.  The code
@@ -75,7 +75,8 @@ int main(int argc, char* argv[]) {
 
   framework::ProcessHandle p;
   try {
-    framework::ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy - 1);
+    framework::ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1,
+                                   argc - ptrpy - 1);
     p = cfg.makeProcess();
   } catch (framework::exception::Exception& e) {
     std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()

@@ -19,8 +19,8 @@
 #include <string>
 #include <vector>
 
-namespace ldmx { 
-  class RunHeader;
+namespace ldmx {
+class RunHeader;
 }
 
 namespace framework {

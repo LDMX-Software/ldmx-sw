@@ -24,7 +24,6 @@ class EventHeader;
 }
 namespace framework {
 
-
 /**
  * @class ConditionsIOV
  *

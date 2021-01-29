@@ -111,8 +111,8 @@ class TestAnalyzer : public Analyzer {
     REQUIRE(i_event > 0);
 
     std::vector<ldmx::CalorimeterHit> caloHits;
-    REQUIRE_NOTHROW(caloHits =
-                        event.getCollection<ldmx::CalorimeterHit>("TestCollection"));
+    REQUIRE_NOTHROW(
+        caloHits = event.getCollection<ldmx::CalorimeterHit>("TestCollection"));
 
     CHECK(caloHits.size() == i_event);
     for (unsigned int i = 0; i < caloHits.size(); i++) {
@@ -121,7 +121,8 @@ class TestAnalyzer : public Analyzer {
     }
 
     ldmx::HcalVetoResult vetoRes;
-    REQUIRE_NOTHROW(vetoRes = event.getObject<ldmx::HcalVetoResult>("TestObject"));
+    REQUIRE_NOTHROW(vetoRes =
+                        event.getObject<ldmx::HcalVetoResult>("TestObject"));
 
     auto maxPEHit{vetoRes.getMaxPEHit()};
 
@@ -294,8 +295,8 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
 
     if (existObject_) {
       // make sure object matches pattern
-      TTreeReaderValue<ldmx::HcalVetoResult> object(events,
-                                              ("TestObject_" + pass_).c_str());
+      TTreeReaderValue<ldmx::HcalVetoResult> object(
+          events, ("TestObject_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {
           f->Close();
@@ -449,12 +450,14 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   process["run"] = -1;                  // will be changed in some branches
 
   std::map<std::string, std::any> producerParameters;
-  producerParameters["className"] = std::string("framework::test::TestProducer");
+  producerParameters["className"] =
+      std::string("framework::test::TestProducer");
   producerParameters["instanceName"] = std::string("TestProducer");
   producerParameters["createRunHeader"] = false;
 
   std::map<std::string, std::any> analyzerParameters;
-  analyzerParameters["className"] = std::string("framework::test::TestAnalyzer");
+  analyzerParameters["className"] =
+      std::string("framework::test::TestAnalyzer");
   analyzerParameters["instanceName"] = std::string("TestAnalyzer");
 
   // parameters classes to wrap parameters in

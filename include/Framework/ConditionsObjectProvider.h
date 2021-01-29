@@ -29,7 +29,7 @@
 namespace ldmx {
 class EventHeader;
 class RunHeader;
-}
+}  // namespace ldmx
 
 namespace framework {
 
@@ -66,7 +66,8 @@ class ConditionsObjectProvider {
    */
   ConditionsObjectProvider(const std::string& objname,
                            const std::string& tagname,
-                           const framework::config::Parameters& parameters, Process& process);
+                           const framework::config::Parameters& parameters,
+                           Process& process);
 
   /**
    * Class destructor.
@@ -160,14 +161,15 @@ class ConditionsObjectProvider {
  * DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx)
  * file.
  */
-#define DECLARE_CONDITIONS_PROVIDER(CLASS)                                \
-  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                      \
-      const std::string& name, const std::string& tagname,                \
-      const framework::config::Parameters& params, framework::Process& process) {           \
-    return new CLASS(name, tagname, params, process);                     \
-  }                                                                       \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() { \
-    framework::ConditionsObjectProvider::declare(#CLASS, &CLASS##_ldmx_make);  \
+#define DECLARE_CONDITIONS_PROVIDER(CLASS)                                    \
+  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                     \
+      const std::string& name, const std::string& tagname,                    \
+      const framework::config::Parameters& params,                            \
+      framework::Process& process) {                                          \
+    return new CLASS(name, tagname, params, process);                         \
+  }                                                                           \
+  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
+    framework::ConditionsObjectProvider::declare(#CLASS, &CLASS##_ldmx_make); \
   }
 
 /**
@@ -180,13 +182,14 @@ class ConditionsObjectProvider {
  * DECLARE_CONDITIONS_PROVIDER() in the associated implementation (.cxx) file.
  */
 #define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS)                           \
-  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                        \
+  framework::ConditionsObjectProvider* CLASS##_ldmx_make(                   \
       const std::string& name, const std::string& tagname,                  \
-      const framework::config::Parameters& params, framework::Process& process) {             \
+      const framework::config::Parameters& params,                          \
+      framework::Process& process) {                                        \
     return new NS::CLASS(name, tagname, params, process);                   \
   }                                                                         \
   __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {   \
-    framework::ConditionsObjectProvider::declare(                                \
+    framework::ConditionsObjectProvider::declare(                           \
         std::string(#NS) + "::" + std::string(#CLASS), &CLASS##_ldmx_make); \
   }
 

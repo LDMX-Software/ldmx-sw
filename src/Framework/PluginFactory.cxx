@@ -73,7 +73,8 @@ EventProcessor* PluginFactory::createEventProcessor(
 
 ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(
     const std::string& classname, const std::string& objName,
-    const std::string& tagname, const framework::config::Parameters& params, Process& process) {
+    const std::string& tagname, const framework::config::Parameters& params,
+    Process& process) {
   auto ptr = moduleInfo_.find(classname);
   if (ptr == moduleInfo_.end() || ptr->second.cop_maker == 0) {
     return 0;

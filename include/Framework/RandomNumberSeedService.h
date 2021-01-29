@@ -49,7 +49,8 @@ class RandomNumberSeedService : public ConditionsObject,
    * @param[in] process reference to the running process object
    */
   RandomNumberSeedService(const std::string& name, const std::string& tagname,
-                          const framework::config::Parameters& parameters, Process& process);
+                          const framework::config::Parameters& parameters,
+                          Process& process);
 
   /**
    * Configure the seed service when a new run starts
