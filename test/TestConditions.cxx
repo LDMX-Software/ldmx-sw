@@ -32,7 +32,7 @@ void matchesAll(const conditions::DoubleTableCondition& a,
     REQUIRE(ar.first == br.first);
     for (unsigned int ic = 0; ic < a.getColumnCount(); ic++) {
       //	  std::cout << i << ',' << ic << "=>" << ar.second[ic] << " " <<
-      //br.second[ic] << std::endl;
+      // br.second[ic] << std::endl;
       REQUIRE(fabs(ar.second[ic] - br.second[ic]) /
                   std::max(1e-5, (ar.second[ic] + br.second[ic]) / 2) <
               1e-5);  // limited precision of course
@@ -58,7 +58,6 @@ using Catch::Matchers::Contains;
  */
 
 TEST_CASE("Conditions", "[Framework][Conditions]") {
-
   // create a simple table
 
   std::vector<std::string> columns({"A", "Q", "V"});

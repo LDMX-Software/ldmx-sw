@@ -40,12 +40,14 @@ namespace conditions {
 class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
  public:
   SimpleCSVTableProvider(const std::string& name, const std::string& tagname,
-                         const framework::config::Parameters& parameters, framework::Process& process);
+                         const framework::config::Parameters& parameters,
+                         framework::Process& process);
 
   virtual ~SimpleCSVTableProvider();
 
-  virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> getCondition(
-      const ldmx::EventHeader& context);
+  virtual std::pair<const framework::ConditionsObject*,
+                    framework::ConditionsIOV>
+  getCondition(const ldmx::EventHeader& context);
 
  private:
   enum { OBJ_unknown, OBJ_int, OBJ_double } objectType_;
