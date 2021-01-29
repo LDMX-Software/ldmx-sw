@@ -20,13 +20,13 @@ void TriggerProcessor::configure(framework::config::Parameters& parameters) {
 
 void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
-  const std::vector<ecal::event::EcalHit> ecalRecHits =
-      event.getCollection<ecal::event::EcalHit>(inputColl_);
+  const std::vector<ldmx::EcalHit> ecalRecHits =
+      event.getCollection<ldmx::EcalHit>(inputColl_);
 
   std::vector<double> layerDigiE(100, 0.0);  // big empty vector..
 
   /** Loop over all ecal hits in the given event */
-  for (const ecal::event::EcalHit& hit : ecalRecHits) {
+  for (const ldmx::EcalHit& hit : ecalRecHits) {
     ldmx::EcalID id(hit.getID());
     if (id.layer() < layerDigiE.size()) {  // just to be safe...
       if (mode_ == 0) {  // Sum over all cells in a given layer
@@ -51,7 +51,7 @@ void TriggerProcessor::produce(framework::Event& event) {
 
   pass = (layerSum <= layerESumCut_);
 
-  recon::event::TriggerResult result;
+  ldmx::TriggerResult result;
   result.set(algoName_, pass, 3);
   result.setAlgoVar(0, layerSum);
   result.setAlgoVar(1, layerESumCut_);

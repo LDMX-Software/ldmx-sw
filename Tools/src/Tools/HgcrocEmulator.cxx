@@ -56,7 +56,7 @@ void HgcrocEmulator::seedGenerator(uint64_t seed) {
 bool HgcrocEmulator::digitize(
     const int &channelID, const std::vector<double> &voltages,
     const std::vector<double> &times,
-    std::vector<recon::event::HgcrocDigiCollection::Sample> &digiToAdd) const {
+    std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
   digiToAdd.clear();  // make sure it is clean
 
   // sum all voltages and do a voltage-weighted average to get the hit time

@@ -1,9 +1,8 @@
 #include "Recon/Event/TriggerResult.h"
 
-ClassImp(recon::event::TriggerResult)
+ClassImp(ldmx::TriggerResult)
 
-namespace recon {
-namespace event {
+namespace ldmx {
 TriggerResult::TriggerResult() {}
 
 TriggerResult::~TriggerResult() { Clear(); }
@@ -41,5 +40,4 @@ void TriggerResult::setAlgoVar(int element, double value) {
     variables_[element] = value;
   }
 }
-} // namespace event
-} // namespace recon
+} // namespace ldmx

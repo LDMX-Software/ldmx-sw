@@ -11,8 +11,7 @@
 // ROOT
 #include "TObject.h" //For ClassDef
 
-namespace recon {
-namespace event {
+namespace ldmx {
 
 /**
  * @class CalorimeterHit
@@ -184,7 +183,6 @@ private:
    */
   ClassDef(CalorimeterHit, 1);
 };
-} // namespace event
-} // namespace recon
+} // namespace ldmx
 
 #endif /* RECON_EVENT_CALORIMETERHIT_H_ */

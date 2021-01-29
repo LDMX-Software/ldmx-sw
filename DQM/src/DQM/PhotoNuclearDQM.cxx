@@ -103,7 +103,7 @@ void PhotoNuclearDQM::configure(framework::config::Parameters& parameters) {}
 void PhotoNuclearDQM::analyze(const framework::Event& event) {
   // Get the particle map from the event.  If the particle map is empty,
   // don't process the event.
-  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
   if (particleMap.size() == 0) return;
 
   // Get the recoil electron
@@ -136,7 +136,7 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
   double lnke{-1}, lnt{-1};
   double lpike{-1}, lpit{-1};
 
-  std::vector<const simcore::event::SimParticle*> pnDaughters;
+  std::vector<const ldmx::SimParticle*> pnDaughters;
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
@@ -269,7 +269,7 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
 }
 
 int PhotoNuclearDQM::classifyEvent(
-    const std::vector<const simcore::event::SimParticle*> daughters, double threshold) {
+    const std::vector<const ldmx::SimParticle*> daughters, double threshold) {
   short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, lambda{0};
 
   // Loop through all of the PN daughters and extract kinematic
@@ -390,7 +390,7 @@ int PhotoNuclearDQM::classifyEvent(
 }
 
 int PhotoNuclearDQM::classifyCompactEvent(
-    const simcore::event::SimParticle* pnGamma, const std::vector<const simcore::event::SimParticle*> daughters,
+    const ldmx::SimParticle* pnGamma, const std::vector<const ldmx::SimParticle*> daughters,
     double threshold) {
   short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
@@ -435,7 +435,7 @@ int PhotoNuclearDQM::classifyCompactEvent(
 }
 
 void PhotoNuclearDQM::printParticleTree(
-    std::map<int, simcore::event::SimParticle> particleMap) {
+    std::map<int, ldmx::SimParticle> particleMap) {
   std::vector<int> printedParticles;
 
   // Loop through the particle map
@@ -457,7 +457,7 @@ void PhotoNuclearDQM::printParticleTree(
 }
 
 std::vector<int> PhotoNuclearDQM::printDaughters(
-    std::map<int, simcore::event::SimParticle> particleMap, const simcore::event::SimParticle particle,
+    std::map<int, ldmx::SimParticle> particleMap, const ldmx::SimParticle particle,
     int depth) {
   std::vector<int> printedParticles;
 
