@@ -31,7 +31,6 @@ class EcalGeometryProvider;
 
 namespace ldmx {
 
-
 /**
  * @class EcalHexReadout
  * @brief Implementation of ECal hexagonal cell readout

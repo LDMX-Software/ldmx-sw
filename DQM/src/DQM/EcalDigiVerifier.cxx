@@ -15,11 +15,13 @@ void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
 void EcalDigiVerifier::analyze(const framework::Event &event) {
   // get truth information sorted into an ID based map
   std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
-      event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
+      event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_,
+                                                   ecalSimHitPass_);
 
   // sort sim hits by ID
   std::sort(ecalSimHits.begin(), ecalSimHits.end(),
-            [](const ldmx::SimCalorimeterHit &lhs, const ldmx::SimCalorimeterHit &rhs) {
+            [](const ldmx::SimCalorimeterHit &lhs,
+               const ldmx::SimCalorimeterHit &rhs) {
               return lhs.getID() < rhs.getID();
             });
 

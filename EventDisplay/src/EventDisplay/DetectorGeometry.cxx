@@ -272,7 +272,7 @@ BoundingBox DetectorGeometry::getBoundingBox(const HcalHit &hit) const {
 
     // only horizontal layers implemented currently
     if (false) {  //( (layer ^ hcalParityVertical_) & 1) == 0 ) { //checks for
-                  //same parity
+                  // same parity
       // Vertical Layers
 
       x = -hcalZeroStrip_.at(section) + stripcenter;

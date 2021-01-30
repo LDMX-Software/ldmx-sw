@@ -35,7 +35,8 @@ class PhotoNuclearProductsFilter : public simcore::UserAction {
    * @param[in] name The name of this class instance.
    * @param[in] parameters The parameters used to configure this class.
    */
-  PhotoNuclearProductsFilter(const std::string& name, framework::config::Parameters& parameters);
+  PhotoNuclearProductsFilter(const std::string& name,
+                             framework::config::Parameters& parameters);
 
   /// Destructor
   ~PhotoNuclearProductsFilter();
@@ -50,7 +51,9 @@ class PhotoNuclearProductsFilter : public simcore::UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STEPPING};
+  }
 
  private:
   /// Container to hold the PDG IDs of products of interest

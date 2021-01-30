@@ -25,7 +25,8 @@ namespace biasing {
 class TargetBremFilter : public simcore::UserAction {
  public:
   /// Constructor
-  TargetBremFilter(const std::string& name, framework::config::Parameters& parameters);
+  TargetBremFilter(const std::string& name,
+                   framework::config::Parameters& parameters);
 
   /// Destructor
   ~TargetBremFilter();
@@ -55,7 +56,8 @@ class TargetBremFilter : public simcore::UserAction {
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
-    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
+    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
+            simcore::TYPE::STEPPING};
   }
 
  private:

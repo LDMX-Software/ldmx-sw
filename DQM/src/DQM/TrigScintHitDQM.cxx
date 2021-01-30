@@ -9,7 +9,8 @@
 
 namespace dqm {
 
-TrigScintHitDQM::TrigScintHitDQM(const std::string &name, framework::Process &process)
+TrigScintHitDQM::TrigScintHitDQM(const std::string &name,
+                                 framework::Process &process)
     : framework::Analyzer(name, process) {}
 
 TrigScintHitDQM::~TrigScintHitDQM() {}

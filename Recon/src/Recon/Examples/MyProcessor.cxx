@@ -26,7 +26,8 @@ void MyProcessor::produce(framework::Event &event) {
   if (!event.exists("EcalRecHits")) return;
 
   // Get the collection of digitized ECal hits from the event
-  const std::vector<ldmx::EcalHit> hits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
+  const std::vector<ldmx::EcalHit> hits =
+      event.getCollection<ldmx::EcalHit>("EcalRecHits");
 
   // Loop over the collection of hits and print the hit details
   for (const ldmx::EcalHit &hit : hits) {

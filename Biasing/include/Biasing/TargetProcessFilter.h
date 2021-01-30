@@ -24,11 +24,12 @@ namespace biasing {
  * target
  */
 class TargetProcessFilter : public simcore::UserAction {
-public:
+ public:
   /**
    * Class constructor.
    */
-  TargetProcessFilter(const std::string &name, framework::config::Parameters &parameters);
+  TargetProcessFilter(const std::string &name,
+                      framework::config::Parameters &parameters);
 
   /// Destructor
   ~TargetProcessFilter();
@@ -56,10 +57,11 @@ public:
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
-    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
+    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
+            simcore::TYPE::STEPPING};
   }
 
-private:
+ private:
   /** Pointer to the current track being processed. */
   G4Track *currentTrack_{nullptr};
 
@@ -69,8 +71,8 @@ private:
   /// The process to bias
   std::string process_{""};
 
-}; // namespace biasing 
+};  // namespace biasing
 
-} // namespace biasing
+}  // namespace biasing
 
-#endif // BIASING_TARGETPROCESSFILTER_H
+#endif  // BIASING_TARGETPROCESSFILTER_H

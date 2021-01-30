@@ -31,7 +31,8 @@ class EcalProcessFilter : public simcore::UserAction {
   /**
    *
    */
-  EcalProcessFilter(const std::string& name, framework::config::Parameters& parameters);
+  EcalProcessFilter(const std::string& name,
+                    framework::config::Parameters& parameters);
 
   /// Destructor
   ~EcalProcessFilter();

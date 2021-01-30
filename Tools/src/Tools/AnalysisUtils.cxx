@@ -32,9 +32,9 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
   return {1, &(particleMap.at(1))};
 }
 
-const ldmx::SimParticle* getPNGamma(const std::map<int, ldmx::SimParticle>& particleMap,
-                              const ldmx::SimParticle* recoil,
-                              const float& energyThreshold) {
+const ldmx::SimParticle* getPNGamma(
+    const std::map<int, ldmx::SimParticle>& particleMap,
+    const ldmx::SimParticle* recoil, const float& energyThreshold) {
   // Get all of the daughter track IDs
   auto daughterTrackIDs{recoil->getDaughters()};
 
@@ -83,4 +83,3 @@ track.is2s2aFindable()) { map.findable[track.getParticleTrackID()] =  &track;
 }*/
 
 }  // namespace Analysis
-

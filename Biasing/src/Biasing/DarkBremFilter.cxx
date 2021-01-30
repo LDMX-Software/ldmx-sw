@@ -13,7 +13,8 @@
 
 namespace biasing {
 
-DarkBremFilter::DarkBremFilter(const std::string& name, framework::config::Parameters& parameters)
+DarkBremFilter::DarkBremFilter(const std::string& name,
+                               framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   volumeName_ = parameters.getParameter<std::string>("volume");
   verbosity_ = parameters.getParameter<int>("verbosity");

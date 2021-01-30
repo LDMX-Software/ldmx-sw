@@ -40,7 +40,8 @@ class TrackProcessFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TrackProcessFilter(const std::string& name, framework::config::Parameters& parameters);
+  TrackProcessFilter(const std::string& name,
+                     framework::config::Parameters& parameters);
 
   /// Destructor
   ~TrackProcessFilter();
@@ -53,7 +54,9 @@ class TrackProcessFilter : public simcore::UserAction {
   void PostUserTrackingAction(const G4Track* track) final override;
 
   /// Retrieve the type of actions this class defines.
-  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::TRACKING}; }
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::TRACKING};
+  }
 
  private:
   /// The process to filter on.

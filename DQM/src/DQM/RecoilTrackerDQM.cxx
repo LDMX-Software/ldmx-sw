@@ -10,7 +10,8 @@
 
 namespace dqm {
 
-RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name, framework::Process &process)
+RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name,
+                                   framework::Process &process)
     : framework::Analyzer(name, process) {}
 
 RecoilTrackerDQM::~RecoilTrackerDQM() {}

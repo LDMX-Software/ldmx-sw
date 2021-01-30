@@ -214,7 +214,7 @@ class EventDisplay : public TGMainFrame {
       "RecoilSimHits_sim";  //* name of recoil hitss collection in event tree
   TString ecalSimParticlesCollName_ =
       "EcalScoringPlaneHits_sim";  //* name of ecal sim particles collection in
-                                   //event tree
+                                   // event tree
   TString eventTreeName_ = "LDMX_Events";  //* name of event tree
 
   EveDetectorGeometry* theDetector_{nullptr};  //* detector geometry instance
