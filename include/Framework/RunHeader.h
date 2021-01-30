@@ -1,5 +1,5 @@
-#ifndef EVENT_RUN_HEADER_H_
-#define EVENT_RUN_HEADER_H_
+#ifndef FRAMEWORK_EVENT_RUNHEADER_H_
+#define FRAMEWORK_EVENT_RUNHEADER_H_
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -20,8 +20,7 @@
 namespace ldmx {
 
 class RunHeader {
-
-public:
+ public:
   /**
    * Constructor.
    *
@@ -192,7 +191,7 @@ public:
     return s;
   }
 
-private:
+ private:
   /** Run number. */
   int runNumber_{0};
 
@@ -225,8 +224,8 @@ private:
 
   ClassDef(RunHeader, 3);
 
-}; // RunHeader
+};  // RunHeader
 
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // _EVENT_RUN_HEADER_H_
+#endif  // _FRAMEWORK_EVENT_RUN_HEADER_H_

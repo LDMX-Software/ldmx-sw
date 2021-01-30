@@ -6,7 +6,7 @@ Basic python configuration for ldmx-sw application
 class EventProcessor:
     """An EventProcessor object
 
-    This object contains the parameters that are necessary for a ldmx::EventProcessor to be configured.
+    This object contains the parameters that are necessary for a framework::EventProcessor to be configured.
 
     You should NOT use this class directly. Use one of the derived classes Producer or Analyzer for clarity.
 
@@ -134,7 +134,7 @@ class EventProcessor:
 class Producer(EventProcessor):
     """A producer object.
 
-    This object contains the parameters that are necessary for a ldmx::Producer to be configured.
+    This object contains the parameters that are necessary for a framework::Producer to be configured.
 
     See Also
     --------
@@ -164,7 +164,7 @@ class Producer(EventProcessor):
 class Analyzer(EventProcessor):
     """A analyzer object.
 
-    This object contains the parameters that are necessary for a ldmx::Analyzer to be configured.
+    This object contains the parameters that are necessary for a framework::Analyzer to be configured.
 
     See Also
     --------
@@ -194,7 +194,7 @@ class Analyzer(EventProcessor):
 class ConditionsObjectProvider:
     """A ConditionsObjectProvider
 
-    This object contains the parameters that are necessary for a ldmx::ConditionsObjectProvider to be configured.
+    This object contains the parameters that are necessary for a framework::ConditionsObjectProvider to be configured.
 
     In this constructor we also do two helpful processes.
     1. We append the module that this provider is in to the list of libraries to load
@@ -283,7 +283,7 @@ class RandomNumberSeedService(ConditionsObjectProvider):
     """
 
     def __init__(self) :
-        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService','Framework')
+        super().__init__('RandomNumberSeedService','framework::RandomNumberSeedService','Framework')
         self.seedMode = ''
         self.seed=-1 #only used in external mode
 
