@@ -20,7 +20,7 @@ namespace ldmx {
  * from the HCAL, providing particular information for the HCAL,
  * above and beyond what is available in the CalorimeterHit.
  */
-class HcalHit : public CalorimeterHit {
+class HcalHit : public ldmx::CalorimeterHit {
  public:
   /**
    * Class constructor.
@@ -84,7 +84,6 @@ class HcalHit : public CalorimeterHit {
    */
   ClassDef(HcalHit, 2);
 };
-
 }  // namespace ldmx
 
 #endif /* HCAL_EVENT_HCALHIT_H_ */

@@ -7,7 +7,7 @@ ClassImp(ldmx::HcalHit)
 
     namespace ldmx {
   void HcalHit::Clear() {
-    CalorimeterHit::Clear();
+    ldmx::CalorimeterHit::Clear();
     pe_ = 0;
     minpe_ = -99;
   }
@@ -19,4 +19,4 @@ ClassImp(ldmx::HcalHit)
               << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
               << "}" << std::endl;
   }
-}
+}  // namespace ldmx
