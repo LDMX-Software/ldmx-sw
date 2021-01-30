@@ -1,6 +1,6 @@
 /**
  * @file EcalCluster.h
- * @brief Class that stores cluster information from the ECal 
+ * @brief Class that stores cluster information from the ECal
  * @author Josh Hiltbrand, University of Minnesota
  */
 
@@ -8,7 +8,7 @@
 #define EVENT_ECALCLUSTER_H_
 
 // ROOT
-#include "TObject.h" //For ClassDef
+#include "TObject.h"  //For ClassDef
 #include "TString.h"
 
 // STL
@@ -20,117 +20,96 @@
 
 namespace ldmx {
 
-    /**
-     * @class EcalCluster 
-     * @brief Stores cluster information from the ECal 
-     */
-    class EcalCluster {
+/**
+ * @class EcalCluster
+ * @brief Stores cluster information from the ECal
+ */
+class EcalCluster {
+ public:
+  /**
+   * Class constructor.
+   */
+  EcalCluster();
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~EcalCluster();
 
-            /**
-             * Class constructor.
-             */
-            EcalCluster();
+  /**
+   * Print a description of this object.
+   */
+  void Print() const;
 
-            /**
-             * Class destructor.
-             */
-            virtual ~EcalCluster();
+  /**
+   * Reset the EcalCluster object.
+   */
+  void Clear();
 
-            /**
-             * Print a description of this object.
-             */
-            void Print() const;
+  /**
+   * Take in the hits that make up the cluster.
+   * @param hit The digi hit's entry number in the events digi
+   * collection.
+   */
+  void addHits(const std::vector<const ldmx::EcalHit*> hitsVec);
 
-            /**
-             * Reset the EcalCluster object.
-             */
-            void Clear();
+  /**
+   * Sets total energy for the cluster.
+   * @param energy The total energy of the cluster.
+   */
+  void setEnergy(double energy) { energy_ = energy; }
 
-            /**
-             * Take in the hits that make up the cluster.
-             * @param hit The digi hit's entry number in the events digi 
-             * collection.
-             */
-            void addHits(const std::vector<const EcalHit*> hitsVec);
+  /**
+   * Sets total number of hits in the cluster.
+   * @param nHits The total number of hits.
+   */
+  void setNHits(int nHits) { nHits_ = nHits; }
 
-            /**
-             * Sets total energy for the cluster.
-             * @param energy The total energy of the cluster.
-             */
-            void setEnergy(double energy) {
-                energy_ = energy;
-            }
+  /**
+   * Sets a sorted vector for the IDs of the hits
+   * that make up the cluster.
+   * @param IDs Sorted vector of hit IDs.
+   */
+  void setIDs(std::vector<unsigned int>& hitIDs) { hitIDs_ = hitIDs; }
 
-            /**
-             * Sets total number of hits in the cluster.
-             * @param nHits The total number of hits.
-             */
-            void setNHits(int nHits) {
-                nHits_ = nHits;
-            }
+  /**
+   * Sets the three coordinates of the cluster centroid
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param z The z coordinate.
+   */
+  void setCentroidXYZ(double x, double y, double z) {
+    centroidX_ = x;
+    centroidY_ = y;
+    centroidZ_ = z;
+  }
 
-            /**
-             * Sets a sorted vector for the IDs of the hits
-             * that make up the cluster.
-             * @param IDs Sorted vector of hit IDs.
-             */
-            void setIDs(std::vector<unsigned int>& hitIDs) {
-                hitIDs_ = hitIDs;
-            }
+  double getEnergy() const { return energy_; }
 
-            /**
-             * Sets the three coordinates of the cluster centroid 
-             * @param x The x coordinate.
-             * @param y The y coordinate.
-             * @param z The z coordinate.
-             */
-            void setCentroidXYZ(double x, double y, double z) {
-                centroidX_ = x;
-                centroidY_ = y;
-                centroidZ_ = z;
-            }
+  int getNHits() const { return nHits_; }
 
-            double getEnergy() const {
-                return energy_;
-            }
+  double getCentroidX() const { return centroidX_; }
 
-            int getNHits() const {
-                return nHits_;
-            }
+  double getCentroidY() const { return centroidY_; }
 
-            double getCentroidX() const {
-                return centroidX_;
-            }
+  double getCentroidZ() const { return centroidZ_; }
 
-            double getCentroidY() const {
-                return centroidY_;
-            }
-            
-            double getCentroidZ() const {
-                return centroidZ_;
-            }
+  const std::vector<unsigned int>& getHitIDs() const { return hitIDs_; }
 
-            const std::vector<unsigned int>& getHitIDs() const {
-                return hitIDs_;
-            }
+  bool operator<(const EcalCluster& rhs) const {
+    return this->getEnergy() < rhs.getEnergy();
+  }
 
-            bool operator < ( const EcalCluster &rhs ) const {
-                return this->getEnergy() < rhs.getEnergy();
-            }
+ private:
+  std::vector<unsigned int> hitIDs_;
+  double energy_{0};
+  int nHits_{0};
+  double centroidX_{0};
+  double centroidY_{0};
+  double centroidZ_{0};
 
-        private:
-
-            std::vector<unsigned int> hitIDs_;
-            double energy_{0};
-            int nHits_{0};
-            double centroidX_{0};
-            double centroidY_{0};
-            double centroidZ_{0};
-
-            ClassDef(EcalCluster, 1);
-    };
-}
+  ClassDef(EcalCluster, 1);
+};
+}  // namespace ldmx
 
 #endif

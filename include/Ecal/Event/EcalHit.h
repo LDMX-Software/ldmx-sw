@@ -1,11 +1,5 @@
-/**
- * @file EcalHit.h
- * @brief Class that stores reconstructed hit information from the ECAL
- * @author Jeremy Mans, University of Minnesota
- */
-
-#ifndef EVENT_ECALHIT_H_
-#define EVENT_ECALHIT_H_
+#ifndef ECAL_EVENT_ECALHIT_H_
+#define ECAL_EVENT_ECALHIT_H_
 
 //----------//
 //   LDMX   //
@@ -14,35 +8,32 @@
 
 namespace ldmx {
 
-    /**
-     * @class EcalHit
-     * @brief Stores reconstructed hit information from the ECAL
-     *
-     * @note This class represents the reconstructed hit information
-     * from the ECAL, providing particular information for the ECAL,
-     * above and beyond what is available in the CalorimeterHit.
-     */
-    class EcalHit : public CalorimeterHit {
+/**
+ * @class EcalHit
+ * @brief Stores reconstructed hit information from the ECAL
+ *
+ * @note This class represents the reconstructed hit information
+ * from the ECAL, providing particular information for the ECAL,
+ * above and beyond what is available in the CalorimeterHit.
+ */
+class EcalHit : public ldmx::CalorimeterHit {
+ public:
+  /** Constructor. */
+  EcalHit() {}
 
-        public:
+  /** Destructor. */
+  virtual ~EcalHit() {}
 
-            /** Constructor. */
-            EcalHit() {}
+  /** Clear the data in the object. */
+  void Clear();
 
-            /** Destructor. */
-            virtual ~EcalHit() {}
-            
-            /** Clear the data in the object. */
-            void Clear();
+  /** Print a text representation of this object. */
+  void Print() const;
 
-            /** Print a text representation of this object. */
-            void Print() const;
-
-        private:
-
-            /** The ROOT class definition. */
-            ClassDef(EcalHit, 3);
-    };
-}
+ private:
+  /** The ROOT class definition. */
+  ClassDef(EcalHit, 3);
+};
+}  // namespace ldmx
 
 #endif /* EVENT_ECALHIT_H_ */
