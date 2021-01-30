@@ -64,7 +64,8 @@ void HCalDQM::analyze(const framework::Event& event) {
   // Check if the HcalVeto result exists
   if (event.exists("HcalVeto")) {
     // Get the collection of HCalDQM digitized hits if the exists
-    const ldmx::HcalVetoResult hcalVeto = event.getObject<ldmx::HcalVetoResult>("HcalVeto");
+    const ldmx::HcalVetoResult hcalVeto =
+        event.getObject<ldmx::HcalVetoResult>("HcalVeto");
 
     ldmx::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
 

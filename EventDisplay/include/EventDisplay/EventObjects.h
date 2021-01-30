@@ -131,7 +131,7 @@ class EventObjects {
                                   kMagenta, kBlack, kOrange, kPink};
 
   TRandom r_;  //* random number generator for colors if we go over the ones in
-               //colors_
+               // colors_
 };
 }  // namespace ldmx
 

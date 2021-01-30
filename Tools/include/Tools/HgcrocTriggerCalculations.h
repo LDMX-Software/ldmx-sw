@@ -43,7 +43,8 @@ class HgcrocTriggerConditions {
    * @raises Exception if any of the column names from the passed table
    * do not match the hardcoded indices.
    */
-  HgcrocTriggerConditions(const conditions::IntegerTableCondition &, bool validate = true);
+  HgcrocTriggerConditions(const conditions::IntegerTableCondition &,
+                          bool validate = true);
 
   /**
    * get the ADC pedestal
