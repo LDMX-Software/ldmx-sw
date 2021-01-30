@@ -63,7 +63,7 @@ class EcalDigiProducer(Producer) :
     """
 
     def __init__(self, instance_name = 'ecalDigis') :
-        super().__init__(instance_name , 'ldmx::EcalDigiProducer','Ecal')
+        super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
 
         self.hgcroc = EcalHgcrocEmulator()
 
@@ -105,7 +105,7 @@ class EcalRecProducer(Producer) :
     """
 
     def __init__(self, instance_name = 'ecalRecon') : 
-        super().__init__(instance_name , 'ldmx::EcalRecProducer','Ecal')
+        super().__init__(instance_name , 'ecal::EcalRecProducer','Ecal')
 
         self.mip_si_energy = mipSiEnergy #MeV / MIP
         self.charge_per_mip = nElectronsPerMIP * 0.162/1000 #fC / MIP

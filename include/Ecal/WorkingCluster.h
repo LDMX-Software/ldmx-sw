@@ -4,44 +4,36 @@
 #ifndef ECAL_WORKINGCLUSTER_H_
 #define ECAL_WORKINGCLUSTER_H_
 
-#include "Ecal/Event/EcalHit.h"
-#include <vector>
 #include <iostream>
-#include "TLorentzVector.h"
+#include <vector>
 #include "DetDescr/EcalHexReadout.h"
+#include "Ecal/Event/EcalHit.h"
+#include "TLorentzVector.h"
 
-namespace ldmx {
+namespace ecal {
 
-    class WorkingCluster {
+class WorkingCluster {
+ public:
+  WorkingCluster(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& geom);
 
-        public:
+  ~WorkingCluster(){};
 
-            WorkingCluster(const EcalHit* eh, const EcalHexReadout& geom);
+  void add(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& geom);
 
-            ~WorkingCluster() {};
+  void add(const WorkingCluster& wc);
 
-            void add(const EcalHit* eh, const EcalHexReadout& geom);
-    
-            void add(const WorkingCluster& wc);
+  const TLorentzVector& centroid() const { return centroid_; }
 
-            const TLorentzVector& centroid() const { 
-                return centroid_; 
-            } 
+  std::vector<const ldmx::EcalHit*> getHits() const { return hits_; }
 
-            std::vector<const EcalHit*> getHits() const {
-                return hits_;
-            }
+  bool empty() const { return hits_.empty(); }
 
-            bool empty() const { return hits_.empty(); }
+  void clear() { hits_.clear(); }
 
-            void clear() { hits_.clear(); }
-
-        private:
-
-
-            std::vector<const EcalHit*> hits_;
-            TLorentzVector centroid_;
-    };
-}
+ private:
+  std::vector<const ldmx::EcalHit*> hits_;
+  TLorentzVector centroid_;
+};
+}  // namespace ecal
 
 #endif
