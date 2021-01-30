@@ -10,69 +10,66 @@
 // Geant4
 #include "G4VisAttributes.hh"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class VisAttributesStore
-     * @brief Global store of <i>G4VisAttributes</i> created from GDML data
-     */
-    class VisAttributesStore {
+/**
+ * @class VisAttributesStore
+ * @brief Global store of <i>G4VisAttributes</i> created from GDML data
+ */
+class VisAttributesStore {
+ public:
+  /**
+   * Map of name to vis attributes.
+   */
+  typedef std::map<std::string, G4VisAttributes*> VisAttributesMap;
 
-        public:
+  /**
+   * Get the global instance of the store.
+   * @return The vis attributes store.
+   */
+  static VisAttributesStore* getInstance() {
+    static VisAttributesStore INSTANCE;
+    return &INSTANCE;
+  }
 
-            /**
-             * Map of name to vis attributes.
-             */
-            typedef std::map<std::string, G4VisAttributes*> VisAttributesMap;
+  /**
+   * Destructor
+   *
+   * Cleans up G4VisAttributes
+   */
+  ~VisAttributesStore() {
+    for (auto& nameAtt : visAttributesMap_) {
+      delete nameAtt.second;
+    }
+    visAttributesMap_.clear();
+  }
 
-            /**
-             * Get the global instance of the store.
-             * @return The vis attributes store.
-             */
-            static VisAttributesStore* getInstance() {
-                static VisAttributesStore INSTANCE;
-                return &INSTANCE;
-            }
+  /**
+   * Get vis attributes by name.
+   * @param name The name of the vis attributes.
+   * @return The vis attributes or <i>nullptr</i> if does not exist.
+   */
+  G4VisAttributes* getVisAttributes(const std::string& name) {
+    return visAttributesMap_.at(name);
+  }
 
-            
-            /**
-             * Destructor
-             *
-             * Cleans up G4VisAttributes
-             */
-            ~VisAttributesStore() {
-                for ( auto &nameAtt : visAttributesMap_ ) {
-                    delete nameAtt.second;
-                }
-                visAttributesMap_.clear();
-            }
+  /**
+   * Register a vis attributes by name.
+   * @param name The name of the vis attributes.
+   * @param visAttributes The vis attributes to register.
+   */
+  void addVisAttributes(const std::string& name,
+                        G4VisAttributes* visAttributes) {
+    visAttributesMap_[name] = visAttributes;
+  }
 
-            /**
-             * Get vis attributes by name.
-             * @param name The name of the vis attributes.
-             * @return The vis attributes or <i>nullptr</i> if does not exist.
-             */
-            G4VisAttributes* getVisAttributes(const std::string& name) {
-                return visAttributesMap_.at(name);
-            }
+ private:
+  /**
+   * The map of names to vis attributes.
+   */
+  VisAttributesMap visAttributesMap_;
+};
 
-            /**
-             * Register a vis attributes by name.
-             * @param name The name of the vis attributes.
-             * @param visAttributes The vis attributes to register.
-             */
-            void addVisAttributes(const std::string& name, G4VisAttributes* visAttributes) {
-                visAttributesMap_[name] = visAttributes;
-            }
-
-        private:
-
-            /**
-             * The map of names to vis attributes.
-             */
-            VisAttributesMap visAttributesMap_;
-    };
-
-}
+}  // namespace simcore
 
 #endif

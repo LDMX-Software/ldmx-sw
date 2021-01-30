@@ -8,92 +8,85 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <memory> 
-#include <string> 
+#include <memory>
+#include <string>
 #include <variant>
-#include <vector> 
+#include <vector>
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+#include "Framework/Configure/Parameters.h"
 
-#include "SimCore/UserRunAction.h" 
-#include "SimCore/UserEventAction.h" 
-#include "SimCore/UserTrackingAction.h" 
-#include "SimCore/USteppingAction.h" 
-#include "SimCore/UserStackingAction.h" 
+#include "SimCore/USteppingAction.h"
+#include "SimCore/UserEventAction.h"
+#include "SimCore/UserRunAction.h"
+#include "SimCore/UserStackingAction.h"
+#include "SimCore/UserTrackingAction.h"
 
-#include "SimCore/UserAction.h" 
+#include "SimCore/UserAction.h"
 
-namespace ldmx { 
+namespace simcore {
 
+typedef std::variant<UserRunAction*, UserEventAction*, UserTrackingAction*,
+                     USteppingAction*, UserStackingAction*>
+    action;
 
-    typedef std::variant < UserRunAction*, 
-                           UserEventAction*, 
-                           UserTrackingAction*, 
-                           USteppingAction*, 
-                           UserStackingAction* >   action; 
+typedef std::map<TYPE, action> actionMap;
 
-    typedef std::map < TYPE, action > actionMap;  
+/**
+ * @class UserActionManager
+ * @brief
+ */
+class UserActionManager {
+ public:
+  /// @return the UserActionManager instance
+  static UserActionManager& getInstance();
 
+  /**
+   *
+   */
+  actionMap getActions();
 
-    /**
-     * @class UserActionManager 
-     * @brief 
-     */
-    class UserActionManager { 
-    
-        public:
+  /**
+   *
+   */
+  void registerAction(const std::string& className, UserActionBuilder* builder);
 
-            /// @return the UserActionManager instance 
-            static UserActionManager& getInstance(); 
+  /**
+   *
+   */
+  void createAction(const std::string& className,
+                    const std::string& instanceName,
+                    framework::config::Parameters& parameters);
 
-           /**
-            *
-            */ 
-            actionMap getActions(); 
+ private:
+  /// UserActionManager instance
+  static UserActionManager instance_;
 
-            /**
-             *
-             */
-            void registerAction(const std::string& className, UserActionBuilder* builder);
+  /// Container for all Geant4 actions
+  actionMap actions_;
 
-           /**
-            *
-            */
-            void createAction(const std::string& className, const std::string& instanceName, Parameters& parameters); 
+  /**
+   * @struct ActionInfo
+   * @brief Encapsulates the information required to create a UserAction
+   */
+  struct ActionInfo {
+    /// Name of the class
+    std::string className_;
 
-        private:
+    /// Class builder
+    UserActionBuilder* builder_;
+  };
 
-            /// UserActionManager instance 
-            static UserActionManager instance_; 
+  /// A map of all registered user actions to their corresponding info.
+  std::map<std::string, ActionInfo> actionInfo_;
 
-            /// Container for all Geant4 actions
-            actionMap actions_; 
+  /// Private constructor to prevent instatiation
+  UserActionManager();
 
+};  // UserActionManager
 
-            /**
-              * @struct ActionInfo
-              * @brief Encapsulates the information required to create a UserAction
-              */
-            struct ActionInfo { 
+}  // namespace simcore
 
-                /// Name of the class
-                std::string className_; 
-
-                /// Class builder
-                UserActionBuilder* builder_; 
-            };
-
-            /// A map of all registered user actions to their corresponding info.
-            std::map < std::string, ActionInfo > actionInfo_; 
-            
-            /// Private constructor to prevent instatiation 
-            UserActionManager(); 
-
-    };  // UserActionManager 
-
-} // ldmx 
-
-#endif // SIMCORE_USERACTIONMANAGER_H
+#endif  // SIMCORE_USERACTIONMANAGER_H

@@ -20,58 +20,55 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h" 
+#include "SimCore/UserAction.h"
 
 // Forward declarations
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class UserEventAction
-     * @brief Implementation of user event action hook
-     */
-    class UserEventAction : public G4UserEventAction {
+/**
+ * @class UserEventAction
+ * @brief Implementation of user event action hook
+ */
+class UserEventAction : public G4UserEventAction {
+ public:
+  /**
+   * Class constructor.
+   */
+  UserEventAction() {}
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~UserEventAction() {}
 
-            /**
-             * Class constructor.
-             */
-            UserEventAction() {
-            }
+  /**
+   * Implementation of begin of event hook.
+   * @param event The Geant4 event.
+   */
+  void BeginOfEventAction(const G4Event* event);
 
-            /**
-             * Class destructor.
-             */
-            virtual ~UserEventAction() {
-            }
+  /**
+   * Implementation of end of event hook.
+   * @param event The Geant4 event.
+   */
+  void EndOfEventAction(const G4Event* event);
 
-            /**
-             * Implementation of begin of event hook.
-             * @param event The Geant4 event.
-             */
-            void BeginOfEventAction(const G4Event* event);
+  /**
+   * Register a user action of type EventAction with this class.
+   *
+   * @param action  User action of type EventAction
+   */
+  void registerAction(UserAction* eventAction) {
+    eventActions_.push_back(eventAction);
+  }
 
-            /**
-             * Implementation of end of event hook.
-             * @param event The Geant4 event.
-             */
-            void EndOfEventAction(const G4Event* event);
+ private:
+  std::vector<UserAction*> eventActions_;
 
-            /**
-             * Register a user action of type EventAction with this class. 
-             *
-             * @param action  User action of type EventAction
-             */
-            void registerAction(UserAction* eventAction) { eventActions_.push_back(eventAction); }
-        
-        private:
+};  // UserEventAction
 
-            std::vector<UserAction*> eventActions_; 
-    
-    };  // UserEventAction
+}  // namespace simcore
 
-}  // ldmx
-
-#endif // SIMCORE_USEREVENTACTION_H
+#endif  // SIMCORE_USEREVENTACTION_H
