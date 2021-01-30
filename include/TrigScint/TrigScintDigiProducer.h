@@ -15,19 +15,19 @@
 // LDMX
 #include "DetDescr/TrigScintID.h"
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/TrigScintHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h" 
 
-namespace ldmx {
+namespace trigscint {
 
-enum TrigScintSection{
+enum TrigScintSection {
   UPSTREAM_TAGGER = 1,
   UPSTREAM_TARGET,
   DOWNSTREAM_TARGET,
@@ -38,46 +38,44 @@ enum TrigScintSection{
  * @class TrigScintDigiProducer
  * @brief Performs digitization of simulated Trigger Scintillator data
  */
-class TrigScintDigiProducer : public Producer {
-
+class TrigScintDigiProducer : public framework::Producer {
  public:
-
   typedef int layer;
 
   typedef std::pair<double, double> zboundaries;
 
-  TrigScintDigiProducer(const std::string& name, Process& process);
+  TrigScintDigiProducer(const std::string& name, framework::Process& process);
 
-  ~TrigScintDigiProducer(); 
+  ~TrigScintDigiProducer();
 
   /**
    * Callback for the processor to configure itself from the given set
    * of parameters.
-   * 
+   *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(Event& event);
+  void produce(framework::Event& event);
 
-  TrigScintID generateRandomID(int module);
+  ldmx::TrigScintID generateRandomID(int module);
 
  private:
+  /// Random number generator
+  std::unique_ptr<TRandom3> random_{nullptr};
 
-  /// Random number generator 
-  std::unique_ptr<TRandom3> random_{nullptr}; 
-            
   /// Generate noise hits given the number of channels and mean noise.
-  std::unique_ptr<NoiseGenerator> noiseGenerator_{nullptr};
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
 
-  /// Class to set the verbosity level.  
-  // TODO: Make use of the global verbose parameter. 
+  /// Class to set the verbosity level.
+  // TODO: Make use of the global verbose parameter.
   bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;
 
-  /// Name of the pass that the input collection is on (empty string means take any pass)
+  /// Name of the pass that the input collection is on (empty string means take
+  /// any pass)
   std::string inputPassName_;
 
   /// Name of the output collection that will be used to stored the
@@ -98,9 +96,8 @@ class TrigScintDigiProducer : public Producer {
 
   /// Total number of photoelectrons per MIP
   double pePerMip_{13.5};
-
 };
 
-}
+}  // namespace trigscint
 
 #endif
