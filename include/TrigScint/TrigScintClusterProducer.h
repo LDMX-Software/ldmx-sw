@@ -1,101 +1,98 @@
 /**
  * @file TrigScintClusterProducer.h
- * @brief Clustering of trigger scintillator hits 
- * @author Lene Kristian Bryngemark, Stanford University 
+ * @brief Clustering of trigger scintillator hits
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
 #define EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
 
-//LDMX Framework
+// LDMX Framework
+#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
-#include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
-#include "TrigScint/Event/TrigScintCluster.h"
+#include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "Recon/Event/EventConstants.h"
+#include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintHit.h"
 
+namespace trigscint {
 
-namespace ldmx {
+/**
+ * @class TrigScintClusterProducer
+ * @brief
+ */
+class TrigScintClusterProducer : public framework::Producer {
+ public:
+  TrigScintClusterProducer(const std::string& name, framework::Process& process)
+      : Producer(name, process) {}
+
+  virtual void configure(framework::config::Parameters& ps);
+
+  virtual void produce(framework::Event& event);
 
   /**
-   * @class TrigScintClusterProducer
-   * @brief 
+   * add a hit at index idx to a cluster
    */
-  class TrigScintClusterProducer : public ldmx::Producer {
+  virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
-  public:
+  virtual void onFileOpen();
 
-  TrigScintClusterProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {}
-    
-    virtual void configure(ldmx::Parameters& ps);
-    
-    virtual void produce(ldmx::Event& event);
+  virtual void onFileClose();
 
-    /**
-     * add a hit at index idx to a cluster 
-     */
-    virtual void addHit( uint idx, TrigScintHit hit ); 
-      
-    virtual void onFileOpen();
-      
-    virtual void onFileClose();
-      
-    virtual void onProcessStart(); 
-      
-    virtual void onProcessEnd();
-      
-  private:
+  virtual void onProcessStart();
 
-    //collection of clusters produced 
-    std::vector< TrigScintCluster > clusters_;
+  virtual void onProcessEnd();
 
-    //cluster seeding threshold
-    double seed_{0.};
+ private:
+  // collection of clusters produced
+  std::vector<ldmx::TrigScintCluster> clusters_;
 
-    //min threshold for adding a hit to a cluster
-    double minThr_{0.};
+  // cluster seeding threshold
+  double seed_{0.};
 
-    //max number of neighboring hits to combine when forming a cluster
-    int maxWidth_{2};
+  // min threshold for adding a hit to a cluster
+  double minThr_{0.};
 
-    //specific verbosity of this producer
-    int verbose_{0}; 
+  // max number of neighboring hits to combine when forming a cluster
+  int maxWidth_{2};
 
-    //input collection (hits)
-    std::string input_collection_;
+  // specific verbosity of this producer
+  int verbose_{0};
 
-    //output collection (clusters)
-    std::string output_collection_;
+  // input collection (hits)
+  std::string input_collection_;
 
-    //specific pass name to use for track making 
-    std::string passName_{""};
+  // output collection (clusters)
+  std::string output_collection_;
 
-    //cluster channel nb centroid (will be content weighted)
-    float centroid_{0.};
-	  
-    // energy (edep), PE, or sth
-    float val_{0.};
+  // specific pass name to use for track making
+  std::string passName_{""};
 
-    // edep content, only; leave val_ for PE
-    float valE_{0.};
+  // cluster channel nb centroid (will be content weighted)
+  float centroid_{0.};
 
-    // book keep which channels have already been added to the cluster at hand
-    std::vector <unsigned int> v_addedIndices_;
+  // energy (edep), PE, or sth
+  float val_{0.};
 
-    // book keep which channels have already been added to any cluster
-    std::vector <unsigned int> v_usedIndices_;  
+  // edep content, only; leave val_ for PE
+  float valE_{0.};
 
-    // fraction of cluster energy deposition associated with beam electron sim hits
-    float beamE_{0.};     
+  // book keep which channels have already been added to the cluster at hand
+  std::vector<unsigned int> v_addedIndices_;
 
-    //cluster time (energy weighted based on hit time)
-    float time_{0.};
+  // book keep which channels have already been added to any cluster
+  std::vector<unsigned int> v_usedIndices_;
 
-    // empty map container 
-    std::map<int, int> hitChannelMap_; 
+  // fraction of cluster energy deposition associated with beam electron sim
+  // hits
+  float beamE_{0.};
 
-  };
-}
+  // cluster time (energy weighted based on hit time)
+  float time_{0.};
+
+  // empty map container
+  std::map<int, int> hitChannelMap_;
+};
+}  // namespace trigscint
 
 #endif /* EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H */
