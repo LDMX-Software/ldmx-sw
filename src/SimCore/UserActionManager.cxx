@@ -48,9 +48,9 @@ void UserActionManager::registerAction(const std::string& className,
   actionInfo_[className] = info;
 }
 
-void UserActionManager::createAction(const std::string& className,
-                                     const std::string& instanceName,
-                                     framework::config::Parameters& parameters) {
+void UserActionManager::createAction(
+    const std::string& className, const std::string& instanceName,
+    framework::config::Parameters& parameters) {
   auto it{actionInfo_.find(className)};
   if (it == actionInfo_.end()) {
     EXCEPTION_RAISE("UserActionException", "Failed to create " + className);

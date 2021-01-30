@@ -7,8 +7,10 @@ namespace simcore {
 
 ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName,
                              ConditionsInterface &ci)
-    : G4VUserParallelWorld(worldName), parser_(parser),
-      auxInfoReader_(new AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
+    : G4VUserParallelWorld(worldName),
+      parser_(parser),
+      auxInfoReader_(
+          new AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
 
 ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
 
@@ -31,4 +33,4 @@ void ParallelWorld::ConstructSD() {
 
   auxInfoReader_->assignAuxInfoToVolumes();
 }
-} // namespace simcore
+}  // namespace simcore

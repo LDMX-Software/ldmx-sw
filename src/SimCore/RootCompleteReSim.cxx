@@ -51,8 +51,8 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
     anEvent->SetEventAborted();
   }
 
-  auto simParticles{ievent_.getMap<int, ldmx::SimParticle>(simParticleCollName_,
-                                                     simParticlePassName_)};
+  auto simParticles{ievent_.getMap<int, ldmx::SimParticle>(
+      simParticleCollName_, simParticlePassName_)};
   std::vector<G4PrimaryVertex*> vertices;  // vertices already put into Geant4
   for (const auto& [trackID, sp] : simParticles) {
     // check if particle has status 1

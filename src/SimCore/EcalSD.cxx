@@ -22,8 +22,9 @@ EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID,
 EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  const ldmx::EcalHexReadout& hitMap = conditionsIntf_.getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hitMap =
+      conditionsIntf_.getCondition<ldmx::EcalHexReadout>(
+          ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Determine if current particle of this step is a Geantino.
   G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
@@ -68,7 +69,8 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
 
-  ldmx::EcalID partialId = hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
+  ldmx::EcalID partialId =
+      hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
   ldmx::EcalID id(layerNumber, module_position, partialId.cell());
   hit->setID(id.raw());
 

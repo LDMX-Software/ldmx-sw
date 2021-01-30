@@ -27,7 +27,8 @@
 
 namespace simcore {
 
-ParticleGun::ParticleGun(const std::string& name, framework::config::Parameters& parameters)
+ParticleGun::ParticleGun(const std::string& name,
+                         framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   verbosity_ = parameters.getParameter<int>("verbosity");
 

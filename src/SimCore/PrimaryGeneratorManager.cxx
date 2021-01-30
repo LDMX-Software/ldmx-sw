@@ -38,9 +38,9 @@ void PrimaryGeneratorManager::registerGenerator(
   generatorMap_[className] = info;
 }
 
-void PrimaryGeneratorManager::createGenerator(const std::string& className,
-                                              const std::string& instanceName,
-                                              framework::config::Parameters& parameters) {
+void PrimaryGeneratorManager::createGenerator(
+    const std::string& className, const std::string& instanceName,
+    framework::config::Parameters& parameters) {
   auto it{generatorMap_.find(className)};
   if (it == generatorMap_.end()) {
     EXCEPTION_RAISE("CreateGenerator",

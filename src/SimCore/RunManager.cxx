@@ -33,7 +33,8 @@
 
 namespace simcore {
 
-RunManager::RunManager(framework::config::Parameters& parameters, ConditionsInterface& ci)
+RunManager::RunManager(framework::config::Parameters& parameters,
+                       ConditionsInterface& ci)
     : conditionsIntf_(ci) {
   parameters_ = parameters;
 
@@ -113,7 +114,8 @@ void RunManager::Initialize() {
 
   // Create all user actions
   auto userActions{
-      parameters_.getParameter<std::vector<framework::config::Parameters> >("actions", {})};
+      parameters_.getParameter<std::vector<framework::config::Parameters> >(
+          "actions", {})};
   for (auto& userAction : userActions) {
     actionManager.createAction(
         userAction.getParameter<std::string>("class_name"),

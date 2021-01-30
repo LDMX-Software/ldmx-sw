@@ -30,7 +30,8 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps, ConditionsInterface &ci);
+  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps,
+                ConditionsInterface &ci);
 
   /**
    * Class destructor.

@@ -39,7 +39,8 @@ class GeneralParticleSource : public PrimaryGenerator {
    * Parameters:
    *  initCommands : vector of Geant4 strings to initialize the GPS
    */
-  GeneralParticleSource(const std::string& name, framework::config::Parameters& parameters);
+  GeneralParticleSource(const std::string& name,
+                        framework::config::Parameters& parameters);
 
   /// Destructor
   ~GeneralParticleSource();

@@ -54,7 +54,8 @@ class RootCompleteReSim : public PrimaryGenerator {
    *   simParticleCollName : name of collection of SimParticles
    *   simParticlePassName : name of pass of SimParticles
    */
-  RootCompleteReSim(const std::string& name, framework::config::Parameters& parameters);
+  RootCompleteReSim(const std::string& name,
+                    framework::config::Parameters& parameters);
 
   /**
    * Class destructor.

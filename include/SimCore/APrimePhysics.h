@@ -35,7 +35,8 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * @param name The name of the physics.
    */
-  APrimePhysics(framework::config::Parameters& params, const G4String& name = "APrime");
+  APrimePhysics(framework::config::Parameters& params,
+                const G4String& name = "APrime");
 
   /**
    * Class destructor.

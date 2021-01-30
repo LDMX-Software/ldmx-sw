@@ -16,7 +16,8 @@
 
 namespace simcore {
 
-UserAction::UserAction(const std::string& name, framework::config::Parameters& parameters) {
+UserAction::UserAction(const std::string& name,
+                       framework::config::Parameters& parameters) {
   name_ = name;
   parameters_ = parameters;
 }

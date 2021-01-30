@@ -41,7 +41,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * Class constructor.
    * @param theParser GDML parser defining the geometry.
    */
-  DetectorConstruction(G4GDMLParser *theParser, framework::config::Parameters &parameters,
+  DetectorConstruction(G4GDMLParser *theParser,
+                       framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
   /**
