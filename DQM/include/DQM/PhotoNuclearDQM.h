@@ -65,9 +65,9 @@ class PhotoNuclearDQM : public framework::Analyzer {
                     double threshold);
 
   /** Method used to classify events in a compact manner. */
-  int classifyCompactEvent(const ldmx::SimParticle* pnGamma,
-                           const std::vector<const ldmx::SimParticle*> daughters,
-                           double threshold);
+  int classifyCompactEvent(
+      const ldmx::SimParticle* pnGamma,
+      const std::vector<const ldmx::SimParticle*> daughters, double threshold);
 };
 
 }  // namespace dqm

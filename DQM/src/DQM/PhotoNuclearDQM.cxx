@@ -21,7 +21,8 @@
 
 namespace dqm {
 
-PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name, framework::Process& process)
+PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name,
+                                 framework::Process& process)
     : framework::Analyzer(name, process) {}
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
@@ -390,8 +391,8 @@ int PhotoNuclearDQM::classifyEvent(
 }
 
 int PhotoNuclearDQM::classifyCompactEvent(
-    const ldmx::SimParticle* pnGamma, const std::vector<const ldmx::SimParticle*> daughters,
-    double threshold) {
+    const ldmx::SimParticle* pnGamma,
+    const std::vector<const ldmx::SimParticle*> daughters, double threshold) {
   short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
   // Loop through all of the PN daughters and extract kinematic
@@ -457,8 +458,8 @@ void PhotoNuclearDQM::printParticleTree(
 }
 
 std::vector<int> PhotoNuclearDQM::printDaughters(
-    std::map<int, ldmx::SimParticle> particleMap, const ldmx::SimParticle particle,
-    int depth) {
+    std::map<int, ldmx::SimParticle> particleMap,
+    const ldmx::SimParticle particle, int depth) {
   std::vector<int> printedParticles;
 
   // Don't print anything if a particle doesn't have any daughters

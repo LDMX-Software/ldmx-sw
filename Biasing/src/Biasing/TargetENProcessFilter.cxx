@@ -14,8 +14,8 @@
 
 namespace biasing {
 
-TargetENProcessFilter::TargetENProcessFilter(const std::string& name,
-                                             framework::config::Parameters& parameters)
+TargetENProcessFilter::TargetENProcessFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   recoilEnergyThreshold_ = parameters.getParameter<double>("recoilThreshold");
 }

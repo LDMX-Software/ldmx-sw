@@ -24,7 +24,8 @@ class TargetENProcessFilter : public simcore::UserAction {
   /**
    * Class constructor.
    */
-  TargetENProcessFilter(const std::string& name, framework::config::Parameters& parameters);
+  TargetENProcessFilter(const std::string& name,
+                        framework::config::Parameters& parameters);
 
   /// Destructor
   ~TargetENProcessFilter();

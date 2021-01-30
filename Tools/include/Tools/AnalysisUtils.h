@@ -16,7 +16,7 @@
 #include <vector>
 
 // Forward declaration for classes inside ldmx namespace
-//class FindableTrackResult;
+// class FindableTrackResult;
 namespace ldmx {
 class SimParticle;
 }
@@ -57,14 +57,15 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
  * @return[out] Pointer to sim particle labeled as PN Gamma photon (nullptr if
  * not found)
  */
-const ldmx::SimParticle *getPNGamma(const std::map<int, ldmx::SimParticle> &particleMap,
-                              const ldmx::SimParticle *recoil,
-                              const float &energyThreshold);
+const ldmx::SimParticle *getPNGamma(
+    const std::map<int, ldmx::SimParticle> &particleMap,
+    const ldmx::SimParticle *recoil, const float &energyThreshold);
 
 /**
  * Sort tracks depending on how finable they are.
  */
-//TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks);
+// TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult>
+// &tracks);
 
 }  // namespace Analysis
 

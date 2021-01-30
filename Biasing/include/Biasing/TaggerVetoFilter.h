@@ -35,7 +35,8 @@ class TaggerVetoFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TaggerVetoFilter(const std::string& name, framework::config::Parameters& parameters);
+  TaggerVetoFilter(const std::string& name,
+                   framework::config::Parameters& parameters);
 
   /// Destructor
   ~TaggerVetoFilter();
@@ -49,7 +50,9 @@ class TaggerVetoFilter : public simcore::UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STEPPING};
+  }
 
  private:
   /// Energy below which an incident electron should be vetoed.

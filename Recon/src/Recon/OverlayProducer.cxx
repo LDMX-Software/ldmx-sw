@@ -233,8 +233,8 @@ void OverlayProducer::produce(framework::Event &event) {
     // over the list of collections passed to the producer : trackerCollections_
     for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
       std::vector<ldmx::SimTrackerHit> overlayTrackerHits =
-          overlayEvent_.getCollection<ldmx::SimTrackerHit>(trackerCollections_[iColl],
-                                                     overlayPassName_);
+          overlayEvent_.getCollection<ldmx::SimTrackerHit>(
+              trackerCollections_[iColl], overlayPassName_);
       std::string outCollName = trackerCollections_[iColl] + "Overlay";
 
       // if we alredy added at least one overlay event, this collection already
@@ -358,7 +358,8 @@ void OverlayProducer::onProcessStart() {
   }
 
   // replace by this line once the corresponding tweak to EventFile is ready:
-  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_, true );
+  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,
+  //true );
   overlayFile_ = std::make_unique<framework::EventFile>(overlayFileName_);
   overlayFile_->setupEvent(&overlayEvent_);
 
