@@ -132,13 +132,13 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> bdtFeatures_;
 
   std::string rec_pass_name_;
+  std::string rec_coll_name_;
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 };
-
 }  // namespace ecal
 
 #endif
