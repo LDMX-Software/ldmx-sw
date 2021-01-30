@@ -21,6 +21,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.cellxy_file = makeCellXYPath()
         self.disc_cut = 0.99
         self.collection_name = "EcalVeto"
+        self.rec_coll_name = 'EcalRecHits'
         self.rec_pass_name = ''
 
 
