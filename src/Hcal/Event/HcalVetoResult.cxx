@@ -1,10 +1,3 @@
-/**
- * @file HcalVetoResult.h
- * @brief Class used to encapsulate the results obtained from
- *        HcalVetoProcessor.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "Hcal/Event/HcalVetoResult.h"
 
 //----------------//
@@ -31,4 +24,4 @@ ClassImp(ldmx::HcalVetoResult)
               << " Passes veto: " << passesVeto_ << std::endl;
     maxPEHit_.Print();
   }
-}
+}  // namespace ldmx
