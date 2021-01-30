@@ -20,16 +20,17 @@
 #include <vector>
 
 namespace ldmx {
-
 class RunHeader;
+}
+
+namespace framework {
 
 /**
  * @class EventFile
  * @brief Manages a file of events
  */
 class EventFile {
-
-public:
+ public:
   /**
    * Constructor to make a general file.
    *
@@ -175,7 +176,7 @@ public:
    * @param runHeader The run header to write into the map
    * @throw Exception if run number is already in run map
    */
-  void writeRunHeader(RunHeader &runHeader);
+  void writeRunHeader(ldmx::RunHeader &runHeader);
 
   /**
    * Get the RunHeader for a given run, if it exists in the input file.
@@ -184,11 +185,11 @@ public:
    * @throw Exception if there is no RunHeader in the map with the given run
    * number.
    */
-  RunHeader &getRunHeader(int runNumber);
+  ldmx::RunHeader &getRunHeader(int runNumber);
 
   const std::string &getFileName() { return fileName_; }
 
-private:
+ private:
   /**
    * Fill the internal map of run numbers to RunHeader objects from the input
    * file.
@@ -207,7 +208,7 @@ private:
    */
   void importRunHeaders();
 
-private:
+ private:
   /** The number of entries in the tree. */
   Long64_t entries_{-1};
 
@@ -262,8 +263,8 @@ private:
    *     - This happens when the RunHeader is created by Process::run during
    * production
    */
-  std::map<int, std::pair<bool, RunHeader *>> runMap_;
+  std::map<int, std::pair<bool, ldmx::RunHeader *>> runMap_;
 };
-} // namespace ldmx
+}  // namespace framework
 
 #endif

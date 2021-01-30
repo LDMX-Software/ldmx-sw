@@ -22,7 +22,7 @@
 class TFile;
 class TDirectory;
 
-namespace ldmx {
+namespace framework {
 
 class EventProcessor;
 class EventFile;
@@ -33,13 +33,12 @@ class Event;
  * @brief Class which represents the process under execution.
  */
 class Process {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param configuration Parameters to configure process with
    */
-  Process(const Parameters &configuration);
+  Process(const framework::config::Parameters &configuration);
 
   /**
    * Class Destructor
@@ -65,12 +64,12 @@ public:
   /**
    * Get the pointer to the current event header, if defined
    */
-  const EventHeader *getEventHeader() const { return eventHeader_; }
+  const ldmx::EventHeader *getEventHeader() const { return eventHeader_; }
 
   /**
    * Get the pointer to the current run header, if defined
    */
-  const RunHeader *getRunHeader() const { return runHeader_; }
+  const ldmx::RunHeader *getRunHeader() const { return runHeader_; }
 
   /**
    * Get a reference to the conditions system
@@ -111,7 +110,7 @@ public:
   /**
    * Set the pointer to the current event header, used only for tests
    */
-  void setEventHeader(EventHeader *h) { eventHeader_ = h; }
+  void setEventHeader(ldmx::EventHeader *h) { eventHeader_ = h; }
 
   /**
    * Get a dummy process
@@ -125,7 +124,7 @@ public:
    */
   static Process getDummy() { return std::move(Process()); }
 
-private:
+ private:
   /**
    * Private dummy constructor
    * We hide it here because it shouldn't be used anywhere else.
@@ -133,7 +132,7 @@ private:
   Process() : conditions_{*this} { /** nothing on purpose */
   }
 
-private:
+ private:
   /** Processing pass name. */
   std::string passname_;
 
@@ -190,10 +189,10 @@ private:
   std::string histoFilename_;
 
   /** Pointer to the current EventHeader, used for Conditions information */
-  const EventHeader *eventHeader_{0};
+  const ldmx::EventHeader *eventHeader_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
-  const RunHeader *runHeader_{0};
+  const ldmx::RunHeader *runHeader_{0};
 
   /** TFile for histograms and other user products */
   TFile *histoTFile_{0};
@@ -205,6 +204,6 @@ private:
  * to ldmx-app.
  */
 typedef std::unique_ptr<Process> ProcessHandle;
-} // namespace ldmx
+}  // namespace framework
 
 #endif

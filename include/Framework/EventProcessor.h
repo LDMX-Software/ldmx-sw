@@ -28,7 +28,7 @@
 
 class TDirectory;
 
-namespace ldmx {
+namespace framework {
 
 class Process;
 class EventProcessor;
@@ -43,15 +43,14 @@ typedef EventProcessor *EventProcessorMaker(const std::string &name,
  *
  * @brief Specific exception used to abort an event.
  */
-class AbortEventException : public Exception {
-
-public:
+class AbortEventException : public framework::exception::Exception {
+ public:
   /**
    * Constructor
    *
    * Use empty Exception constructor so stack trace isn't built.
    */
-  AbortEventException() throw() : Exception() {}
+  AbortEventException() throw() : framework::exception::Exception() {}
 
   /**
    * Destructor
@@ -64,8 +63,7 @@ public:
  * @brief Base class for all event processing components
  */
 class EventProcessor {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param name Name for this instance of the class.
@@ -97,14 +95,14 @@ public:
    *
    * @param parameters Parameters for configuration.
    */
-  virtual void configure(Parameters &parameters) {}
+  virtual void configure(framework::config::Parameters &parameters) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
    * action when the run being processed changes.
    * @param runHeader The RunHeader containing run information.
    */
-  virtual void onNewRun(const RunHeader &runHeader) {}
+  virtual void onNewRun(const ldmx::RunHeader &runHeader) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -139,7 +137,8 @@ public:
   /**
    * Access a conditions object for the current event
    */
-  template <class T> const T &getCondition(const std::string &condition_name) {
+  template <class T>
+  const T &getCondition(const std::string &condition_name) {
     return getConditions().getCondition<T>(condition_name);
   }
 
@@ -158,7 +157,7 @@ public:
    * module
    * @param controlhint The storage control hint to apply for the given event
    */
-  void setStorageHint(ldmx::StorageControlHint hint) {
+  void setStorageHint(framework::StorageControlHint hint) {
     setStorageHint(hint, "");
   }
 
@@ -168,7 +167,7 @@ public:
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
-  void setStorageHint(ldmx::StorageControlHint hint,
+  void setStorageHint(framework::StorageControlHint hint,
                       const std::string &purposeString);
 
   /**
@@ -202,9 +201,10 @@ public:
    * configuration
    * @parma histos vector of Parameters that configure histograms to create
    */
-  void createHistograms(const std::vector<Parameters> &histos);
+  void createHistograms(
+      const std::vector<framework::config::Parameters> &histos);
 
-protected:
+ protected:
   /**
    * Abort the event immediately.
    *
@@ -221,7 +221,7 @@ protected:
   /// The logger for this EventProcessor
   logging::logger theLog_;
 
-private:
+ private:
   /**
    * Internal getter for conditions without exposing all of Process
    */
@@ -230,7 +230,7 @@ private:
   /**
    * Internal getter for EventHeader without exposing all of Process
    */
-  const EventHeader &getEventHeader() const;
+  const ldmx::EventHeader &getEventHeader() const;
 
   /** Handle to the Process. */
   Process &process_;
@@ -250,8 +250,7 @@ private:
  * data to it.
  */
 class Producer : public EventProcessor {
-
-public:
+ public:
   /** Constant used to track EventProcessor types by the PluginFactory */
   static const int CLASSTYPE{1};
 
@@ -281,7 +280,7 @@ public:
    * Handle allowing producers to modify run headers before the run begins
    * @param header RunHeader for Producer to add parameters to
    */
-  virtual void beforeNewRun(RunHeader &header) {}
+  virtual void beforeNewRun(ldmx::RunHeader &header) {}
 };
 
 /**
@@ -292,8 +291,7 @@ public:
  * updated.
  */
 class Analyzer : public EventProcessor {
-
-public:
+ public:
   /** Constant used to track EventProcessor types by the PluginFactory */
   static const int CLASSTYPE{2};
 
@@ -321,7 +319,7 @@ public:
   virtual void analyze(const Event &event) = 0;
 };
 
-} // namespace ldmx
+}  // namespace framework
 
 /**
  * @def DECLARE_PRODUCER(CLASS)
@@ -332,14 +330,14 @@ public:
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER(CLASS)                                                \
-  ldmx::EventProcessor *CLASS##_ldmx_make(const std::string &name,             \
-                                          ldmx::Process &process) {            \
-    return new CLASS(name, process);                                           \
-  }                                                                            \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {      \
-    ldmx::EventProcessor::declare(#CLASS, ::ldmx::Producer::CLASSTYPE,         \
-                                  &CLASS##_ldmx_make);                         \
+#define DECLARE_PRODUCER(CLASS)                                               \
+  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
+                                               framework::Process &process) { \
+    return new CLASS(name, process);                                          \
+  }                                                                           \
+  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
+    framework::EventProcessor::declare(                                       \
+        #CLASS, ::framework::Producer::CLASSTYPE, &CLASS##_ldmx_make);        \
   }
 
 /**
@@ -351,14 +349,14 @@ public:
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS()
  * in the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER(CLASS)                                                \
-  ldmx::EventProcessor *CLASS##_ldmx_make(const std::string &name,             \
-                                          ldmx::Process &process) {            \
-    return new CLASS(name, process);                                           \
-  }                                                                            \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {      \
-    ldmx::EventProcessor::declare(#CLASS, ::ldmx::Analyzer::CLASSTYPE,         \
-                                  &CLASS##_ldmx_make);                         \
+#define DECLARE_ANALYZER(CLASS)                                               \
+  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
+                                               framework::Process &process) { \
+    return new CLASS(name, process);                                          \
+  }                                                                           \
+  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
+    framework::EventProcessor::declare(                                       \
+        #CLASS, ::framework::Analyzer::CLASSTYPE, &CLASS##_ldmx_make);        \
   }
 
 /**
@@ -370,15 +368,15 @@ public:
  * @attention Every Producer class must call this macro or DECLARE_PRODUCER() in
  * the associated implementation (.cxx) file.
  */
-#define DECLARE_PRODUCER_NS(NS, CLASS)                                         \
-  ldmx::EventProcessor *CLASS##_ldmx_make(const std::string &name,             \
-                                          ldmx::Process &process) {            \
-    return new NS::CLASS(name, process);                                       \
-  }                                                                            \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {      \
-    ldmx::EventProcessor::declare(                                             \
-        std::string(#NS) + "::" + std::string(#CLASS),                         \
-        ::ldmx::Producer::CLASSTYPE, &CLASS##_ldmx_make);                      \
+#define DECLARE_PRODUCER_NS(NS, CLASS)                                        \
+  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
+                                               framework::Process &process) { \
+    return new NS::CLASS(name, process);                                      \
+  }                                                                           \
+  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
+    framework::EventProcessor::declare(                                       \
+        std::string(#NS) + "::" + std::string(#CLASS),                        \
+        ::framework::Producer::CLASSTYPE, &CLASS##_ldmx_make);                \
   }
 
 /**
@@ -390,15 +388,15 @@ public:
  * @attention Every Analyzer class must call this macro or DECLARE_ANALYZER() in
  * the associated implementation (.cxx) file.
  */
-#define DECLARE_ANALYZER_NS(NS, CLASS)                                         \
-  ldmx::EventProcessor *CLASS##_ldmx_make(const std::string &name,             \
-                                          ldmx::Process &process) {            \
-    return new NS::CLASS(name, process);                                       \
-  }                                                                            \
-  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {      \
-    ldmx::EventProcessor::declare(                                             \
-        std::string(#NS) + "::" + std::string(#CLASS),                         \
-        ::ldmx::Analyzer::CLASSTYPE, &CLASS##_ldmx_make);                      \
+#define DECLARE_ANALYZER_NS(NS, CLASS)                                        \
+  framework::EventProcessor *CLASS##_ldmx_make(const std::string &name,       \
+                                               framework::Process &process) { \
+    return new NS::CLASS(name, process);                                      \
+  }                                                                           \
+  __attribute__((constructor(1000))) static void CLASS##_ldmx_declare() {     \
+    framework::EventProcessor::declare(                                       \
+        std::string(#NS) + "::" + std::string(#CLASS),                        \
+        ::framework::Analyzer::CLASSTYPE, &CLASS##_ldmx_make);                \
   }
 
 #endif

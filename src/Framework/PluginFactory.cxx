@@ -1,18 +1,22 @@
-#include "Framework/EventProcessor.h"
 #include "Framework/PluginFactory.h"
 #include <dlfcn.h>
+#include "Framework/EventProcessor.h"
 
-ldmx::PluginFactory ldmx::PluginFactory::theFactory_ __attribute((init_priority(500)));
+framework::PluginFactory framework::PluginFactory::theFactory_
+    __attribute((init_priority(500)));
 
-namespace ldmx {
+namespace framework {
 
-PluginFactory::PluginFactory() {
-}
-    
-void PluginFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
+PluginFactory::PluginFactory() {}
+
+void PluginFactory::registerEventProcessor(const std::string& classname,
+                                           int classtype,
+                                           EventProcessorMaker* maker) {
   auto ptr = moduleInfo_.find(classname);
   if (ptr != moduleInfo_.end()) {
-    EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
+    EXCEPTION_RAISE("ExistingEventProcessorDefinition",
+                    "Already have a module registered with the classname '" +
+                        classname + "'");
   }
   PluginInfo mi;
   mi.classname = classname;
@@ -21,11 +25,15 @@ void PluginFactory::registerEventProcessor(const std::string& classname, int cla
   mi.cop_maker = 0;
   moduleInfo_[classname] = mi;
 }
-    
-void PluginFactory::registerConditionsObjectProvider(const std::string& classname, int classtype, ConditionsObjectProviderMaker* maker) {
+
+void PluginFactory::registerConditionsObjectProvider(
+    const std::string& classname, int classtype,
+    ConditionsObjectProviderMaker* maker) {
   auto ptr = moduleInfo_.find(classname);
   if (ptr != moduleInfo_.end()) {
-    EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
+    EXCEPTION_RAISE("ExistingEventProcessorDefinition",
+                    "Already have a module registered with the classname '" +
+                        classname + "'");
   }
   PluginInfo mi;
   mi.classname = classname;
@@ -38,15 +46,14 @@ void PluginFactory::registerConditionsObjectProvider(const std::string& classnam
 std::vector<std::string> PluginFactory::getEventProcessorClasses() const {
   std::vector<std::string> classes;
   for (auto ptr : moduleInfo_) {
-    if (ptr.second.ep_maker!=0)
-      classes.push_back(ptr.first);
+    if (ptr.second.ep_maker != 0) classes.push_back(ptr.first);
   }
   return classes;
 }
 
 int PluginFactory::getEventProcessorClasstype(const std::string& ct) const {
   auto ptr = moduleInfo_.find(ct);
-  if (ptr == moduleInfo_.end() || ptr->second.ep_maker==0) {
+  if (ptr == moduleInfo_.end() || ptr->second.ep_maker == 0) {
     return 0;
 
   } else {
@@ -54,17 +61,22 @@ int PluginFactory::getEventProcessorClasstype(const std::string& ct) const {
   }
 }
 
-EventProcessor* PluginFactory::createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process) {
+EventProcessor* PluginFactory::createEventProcessor(
+    const std::string& classname, const std::string& moduleInstanceName,
+    Process& process) {
   auto ptr = moduleInfo_.find(classname);
-  if (ptr == moduleInfo_.end() || ptr->second.ep_maker==0) {
+  if (ptr == moduleInfo_.end() || ptr->second.ep_maker == 0) {
     return 0;
   }
   return ptr->second.ep_maker(moduleInstanceName, process);
 }
 
-ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(const std::string& classname, const std::string& objName, const std::string& tagname, const Parameters& params, Process& process) {
+ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(
+    const std::string& classname, const std::string& objName,
+    const std::string& tagname, const framework::config::Parameters& params,
+    Process& process) {
   auto ptr = moduleInfo_.find(classname);
-  if (ptr == moduleInfo_.end() || ptr->second.cop_maker==0) {
+  if (ptr == moduleInfo_.end() || ptr->second.cop_maker == 0) {
     return 0;
   }
   return ptr->second.cop_maker(objName, tagname, params, process);
@@ -72,15 +84,16 @@ ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(const st
 
 void PluginFactory::loadLibrary(const std::string& libname) {
   if (librariesLoaded_.find(libname) != librariesLoaded_.end()) {
-    return; // already loaded
+    return;  // already loaded
   }
 
   void* handle = dlopen(libname.c_str(), RTLD_NOW);
   if (handle == nullptr) {
-    EXCEPTION_RAISE("LibraryLoadFailure", "Error loading library '" + libname + "':" + dlerror());
+    EXCEPTION_RAISE("LibraryLoadFailure",
+                    "Error loading library '" + libname + "':" + dlerror());
   }
 
   librariesLoaded_.insert(libname);
 }
 
-}
+}  // namespace framework
