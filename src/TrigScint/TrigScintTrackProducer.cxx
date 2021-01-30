@@ -46,8 +46,8 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         << event.getEventHeader().getEventNumber();
   }
 
-  const auto seeds{
-      event.getCollection<ldmx::TrigScintCluster>(seeding_collection_, passName_)};
+  const auto seeds{event.getCollection<ldmx::TrigScintCluster>(
+      seeding_collection_, passName_)};
   uint numSeeds = seeds.size();
 
   if (verbose_) {
@@ -126,7 +126,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
               // only make this vector now! this ensures against hanging
               // clusters with indices from earlier in the loop
               std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1,
-                                                          cluster2};
+                                                                cluster2};
 
               // make a track
               ldmx::TrigScintTrack track = makeTrack(clusterVec);
@@ -226,8 +226,10 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         // ridiculously far apart
         if (fabs(track.getCentroid() - nextTrack.getCentroid() <
                  3 * maxDelta_)) {
-          std::vector<ldmx::TrigScintCluster> consts_1 = track.getConstituents();
-          std::vector<ldmx::TrigScintCluster> consts_2 = nextTrack.getConstituents();
+          std::vector<ldmx::TrigScintCluster> consts_1 =
+              track.getConstituents();
+          std::vector<ldmx::TrigScintCluster> consts_2 =
+              nextTrack.getConstituents();
           if (verbose_ > 1)
             ldmx_log(debug)
                 << "In track disambiguation loop, got the two tracks, "

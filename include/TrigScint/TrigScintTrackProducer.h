@@ -18,7 +18,7 @@ namespace trigscint {
  */
 class TrigScintTrackProducer : public framework::Producer {
  public:
-  TrigScintTrackProducer(const std::string &name, framework::Process&process)
+  TrigScintTrackProducer(const std::string &name, framework::Process &process)
       : Producer(name, process) {}
 
   virtual void configure(framework::config::Parameters &ps);

@@ -86,6 +86,6 @@ class TrigScintHit : public ldmx::HcalHit {
 
 };  // TrigScintHit
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTHIT_H

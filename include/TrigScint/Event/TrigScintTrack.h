@@ -284,6 +284,6 @@ class TrigScintTrack {
 
 };  // TrigScintTrack
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTTRACK_H_

@@ -179,6 +179,6 @@ class TrigScintCluster {
    */
   ClassDef(TrigScintCluster, 1);
 };
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif  // TRIGSCINT_EVENT_TRIGSCINTCLUSTER_H_
