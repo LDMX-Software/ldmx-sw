@@ -148,6 +148,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
+  rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
 }
 
 void EcalVetoProcessor::clearProcessor() {
@@ -206,6 +207,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
     float pmax = 0;
     for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
+      
       ldmx::SimSpecialID hit_id(spHit.getID());
       if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
