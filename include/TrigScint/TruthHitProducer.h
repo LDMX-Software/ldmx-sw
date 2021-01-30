@@ -29,7 +29,7 @@ class TruthHitProducer : public framework::Producer {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  TruthHitProducer(const std::string &name, framework::Process&process);
+  TruthHitProducer(const std::string &name, framework::Process &process);
 
   /// Destructor
   ~TruthHitProducer();

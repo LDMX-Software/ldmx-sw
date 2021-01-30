@@ -7,12 +7,13 @@
 namespace trigscint {
 
 TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
-                                             framework::Process&process)
+                                             framework::Process &process)
     : Producer(name, process) {}
 
 TrigScintDigiProducer::~TrigScintDigiProducer() {}
 
-void TrigScintDigiProducer::configure(framework::config::Parameters &parameters) {
+void TrigScintDigiProducer::configure(
+    framework::config::Parameters &parameters) {
   // Configure this instance of the producer
   stripsPerArray_ = parameters.getParameter<int>("number_of_strips");
   numberOfArrays_ = parameters.getParameter<int>("number_of_arrays");
@@ -60,8 +61,8 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   auto numRecHits{0};
 
   // looper over sim hits and aggregate energy depositions for each detID
-  const auto simHits{
-      event.getCollection<ldmx::SimCalorimeterHit>(inputCollection_, inputPassName_)};
+  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputCollection_, inputPassName_)};
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
   int module{-1};

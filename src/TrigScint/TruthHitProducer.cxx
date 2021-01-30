@@ -3,7 +3,8 @@
 
 namespace trigscint {
 
-TruthHitProducer::TruthHitProducer(const std::string &name, framework::Process&process)
+TruthHitProducer::TruthHitProducer(const std::string &name,
+                                   framework::Process &process)
     : Producer(name, process) {}
 
 TruthHitProducer::~TruthHitProducer() {}
@@ -32,8 +33,8 @@ void TruthHitProducer::produce(framework::Event &event) {
     return;
   }
   // looper over sim hits and aggregate energy depositions for each detID
-  const auto simHits{
-      event.getCollection<ldmx::SimCalorimeterHit>(inputCollection_, inputPassName_)};
+  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputCollection_, inputPassName_)};
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
   std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
