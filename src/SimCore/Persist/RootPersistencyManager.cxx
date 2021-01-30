@@ -38,10 +38,9 @@
 namespace simcore {
 namespace persist {
 
-RootPersistencyManager::RootPersistencyManager(framework::EventFile &file,
-                                               framework::config::Parameters &parameters,
-                                               const int &runNumber,
-                                               ConditionsInterface &ci)
+RootPersistencyManager::RootPersistencyManager(
+    framework::EventFile &file, framework::config::Parameters &parameters,
+    const int &runNumber, ConditionsInterface &ci)
     : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(),
                            "RootPersistencyManager"),
       file_(file),
@@ -126,8 +125,8 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   eventHeader.setStringParameter("eventSeed", stream.str());
 }
 
-void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
-                                                  framework::Event *outputEvent) {
+void RootPersistencyManager::writeHitsCollections(
+    const G4Event *anEvent, framework::Event *outputEvent) {
   // Get the HC of this event.
   G4HCofThisEvent *hce = anEvent->GetHCofThisEvent();
   int nColl = hce->GetNumberOfCollections();

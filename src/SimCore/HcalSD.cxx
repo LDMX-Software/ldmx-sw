@@ -168,8 +168,9 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
   // if (section==ldmx::HcalID::BACK) hit->setPosition(position[0], position[1],
   // volumePosition.z()); elseif (section==ldmx::HcalID::TOP ||
-  // section==ldmx::HcalID::BOTTOM) hit->setPosition(position[0], volumePosition.y(),
-  // position[2]); elseif (section==ldmx::HcalID::LEFT || section==ldmx::HcalID::RIGHT)
+  // section==ldmx::HcalID::BOTTOM) hit->setPosition(position[0],
+  // volumePosition.y(), position[2]); elseif (section==ldmx::HcalID::LEFT ||
+  // section==ldmx::HcalID::RIGHT)
   // hit->setPosition(volumePosition.x(),position[1] , position[2]);
 
   if (this->verboseLevel > 2) {

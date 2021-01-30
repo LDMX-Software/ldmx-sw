@@ -39,7 +39,8 @@ class PrimaryGeneratorManager {
    * Create a new generate and attach it to the list of generators
    */
   void createGenerator(const std::string& className,
-                       const std::string& instanceName, framework::config::Parameters& parameters);
+                       const std::string& instanceName,
+                       framework::config::Parameters& parameters);
 
  private:
   /// PrimaryGeneratorManager instance

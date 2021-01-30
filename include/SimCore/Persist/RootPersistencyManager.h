@@ -34,7 +34,7 @@ class G4Run;
 namespace framework {
 class Event;
 class RunHeader;
-} // namespace framework
+}  // namespace framework
 
 namespace simcore {
 namespace persist {
@@ -55,7 +55,7 @@ namespace persist {
  * output SimTrackerHit collections.
  */
 class RootPersistencyManager : public G4PersistencyManager {
-public:
+ public:
   /**
    * Class constructor.
    *
@@ -138,7 +138,7 @@ public:
     eventsCompleted_ = completed;
   }
 
-public:
+ public:
   /**
    * Build an output event from the current Geant4 event.
    *
@@ -169,9 +169,8 @@ public:
    * @param hc The collection of G4TrackerHits.
    * @param outputColl The output collection of SimTrackerHits.
    */
-  void writeTrackerHitsCollection(
-      G4TrackerHitsCollection *hc,
-      std::vector<ldmx::SimTrackerHit> &outputColl);
+  void writeTrackerHitsCollection(G4TrackerHitsCollection *hc,
+                                  std::vector<ldmx::SimTrackerHit> &outputColl);
 
   /**
    * Write a collection of tracker hits to an output collection.
@@ -183,7 +182,7 @@ public:
       G4CalorimeterHitsCollection *hc,
       std::vector<ldmx::SimCalorimeterHit> &outputColl);
 
-private:
+ private:
   /// Configuration parameters passed to Simulator
   framework::config::Parameters parameters_;
 
@@ -209,7 +208,7 @@ private:
   SimParticleBuilder simParticleBuilder_;
 };
 
-} // namespace persist
-} // namespace simcore
+}  // namespace persist
+}  // namespace simcore
 
 #endif

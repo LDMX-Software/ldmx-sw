@@ -220,7 +220,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   }
 
   auto generators{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>("generators")};
+      parameters_.getParameter<std::vector<framework::config::Parameters>>(
+          "generators")};
   int counter = 0;
   for (auto const& gen : generators) {
     std::string genID = "Gen " + std::to_string(++counter);
@@ -286,8 +287,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 }
 
 void Simulator::onNewRun(const ldmx::RunHeader&) {
-  const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
-      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  const framework::RandomNumberSeedService& rseed =
+      getCondition<framework::RandomNumberSeedService>(
+          framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));

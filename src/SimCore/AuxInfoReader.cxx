@@ -31,7 +31,8 @@ using std::string;
 
 namespace simcore {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, framework::config::Parameters ps,
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
+                             framework::config::Parameters ps,
                              ConditionsInterface& ci)
     : parser_(theParser),
       eval_(new G4GDMLEvaluator),
@@ -448,8 +449,8 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
     }
   }
 
-  detectorHeader_ =
-      new ldmx::DetectorHeader(detectorName, detectorVersion, description, author);
+  detectorHeader_ = new ldmx::DetectorHeader(detectorName, detectorVersion,
+                                             description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;

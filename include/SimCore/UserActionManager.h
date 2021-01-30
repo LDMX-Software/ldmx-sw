@@ -57,7 +57,8 @@ class UserActionManager {
    *
    */
   void createAction(const std::string& className,
-                    const std::string& instanceName, framework::config::Parameters& parameters);
+                    const std::string& instanceName,
+                    framework::config::Parameters& parameters);
 
  private:
   /// UserActionManager instance

@@ -19,8 +19,8 @@
 
 namespace simcore {
 
-GeneralParticleSource::GeneralParticleSource(const std::string& name,
-                                             framework::config::Parameters& parameters)
+GeneralParticleSource::GeneralParticleSource(
+    const std::string& name, framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   auto initCommands{
       parameters_.getParameter<std::vector<std::string> >("initCommands")};
