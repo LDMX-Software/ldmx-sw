@@ -1,6 +1,6 @@
 /**
  * @file ElectroNulcearXsecBiasingOperator.h
- * @brief Geant4 Biasing Operator used to bias the occurrence of electronuclear 
+ * @brief Geant4 Biasing Operator used to bias the occurrence of electronuclear
  *        events by modifying the cross-section.
  * @author Omar Moreno
  *         SLAC National Accelerator Laboratory
@@ -24,40 +24,35 @@
 //----------//
 #include "XsecBiasingOperator.h"
 
-namespace ldmx { 
+namespace simcore {
 
-    class ElectroNuclearXsecBiasingOperator : public XsecBiasingOperator { 
-    
-        public: 
-        
-            /** Constructor */
-            ElectroNuclearXsecBiasingOperator(std::string name); 
+class ElectroNuclearXsecBiasingOperator : public XsecBiasingOperator {
+ public:
+  /** Constructor */
+  ElectroNuclearXsecBiasingOperator(std::string name);
 
-            /** Destructor */
-            ~ElectroNuclearXsecBiasingOperator(); 
+  /** Destructor */
+  ~ElectroNuclearXsecBiasingOperator();
 
-            /** Method called at the beginning of a run. */
-            void StartRun();
+  /** Method called at the beginning of a run. */
+  void StartRun();
 
-            /** 
-             * @return Method that returns the biasing operation that will be used
-             *         to bias the occurence of photonuclear events.
-             */
-            G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
-                    const G4BiasingProcessInterface* callingProcess);
+  /**
+   * @return Method that returns the biasing operation that will be used
+   *         to bias the occurence of photonuclear events.
+   */
+  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
+      const G4Track* track, const G4BiasingProcessInterface* callingProcess);
 
-        
-        protected: 
+ protected:
+  /** Return the process to bias. */
+  virtual std::string getProcessToBias() { return ELECTRONUCLEAR_PROCESS; }
 
-            /** Return the process to bias. */
-            virtual std::string getProcessToBias() { return ELECTRONUCLEAR_PROCESS; }
+ private:
+  /** Geant4 electronuclear process name. */
+  static const std::string ELECTRONUCLEAR_PROCESS;
 
-        private: 
+};  // ElectroNuclearXsecBiasingOperator
+}  // namespace simcore
 
-            /** Geant4 electronuclear process name. */
-            static const std::string ELECTRONUCLEAR_PROCESS; 
-
-    }; // ElectroNuclearXsecBiasingOperator
-}
-
-#endif // BIASING_ELECTRONUCLEARXSECBIASINGOPERATOR_H_
+#endif  // BIASING_ELECTRONUCLEARXSECBIASINGOPERATOR_H_

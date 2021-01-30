@@ -10,56 +10,49 @@
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class UserPrimaryParticleInformation
-     * @brief Defines extra information attached to a Geant4 primary particle
-     */
-    class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
+/**
+ * @class UserPrimaryParticleInformation
+ * @brief Defines extra information attached to a Geant4 primary particle
+ */
+class UserPrimaryParticleInformation
+    : public G4VUserPrimaryParticleInformation {
+ public:
+  /**
+   * Class Constructor.
+   */
+  UserPrimaryParticleInformation() { ; }
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~UserPrimaryParticleInformation() { ; }
 
-            /**
-             * Class Constructor.
-             */
-            UserPrimaryParticleInformation() {;}
+  /**
+   * Set the HEP event status (generator status) e.g. from an LHE particle.
+   * @param hepEvtStatus The HEP event status.
+   */
+  void setHepEvtStatus(int hepEvtStatus) { hepEvtStatus_ = hepEvtStatus; }
 
-            /**
-             * Class destructor.
-             */
-            virtual ~UserPrimaryParticleInformation() {;}
+  /**
+   * Get the HEP event status.
+   * @return The HEP event status.
+   */
+  int getHepEvtStatus() { return hepEvtStatus_; }
 
-            /**
-             * Set the HEP event status (generator status) e.g. from an LHE particle.
-             * @param hepEvtStatus The HEP event status.
-             */
-            void setHepEvtStatus(int hepEvtStatus) {
-                hepEvtStatus_ = hepEvtStatus;
-            }
+  /**
+   * Implement virtual method (no-op).
+   */
+  void Print() const {}
 
-            /**
-             * Get the HEP event status.
-             * @return The HEP event status.
-             */
-            int getHepEvtStatus() {
-                return hepEvtStatus_;
-            }
+ private:
+  /**
+   * The HEP event status.
+   */
+  int hepEvtStatus_{-1};
+};
 
-            /**
-             * Implement virtual method (no-op).
-             */
-            void Print() const {
-            }
-
-        private:
-
-            /**
-             * The HEP event status.
-             */
-            int hepEvtStatus_ {-1};
-    };
-
-}
+}  // namespace simcore
 
 #endif

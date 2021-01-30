@@ -1,6 +1,6 @@
 /**
  * @file XsecBiasingPlugin.h
- * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear 
+ * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear
  *        events by modifying the cross-section.
  * @author Omar Moreno
  *         SLAC National Accelerator Laboratory
@@ -17,9 +17,9 @@
 //------------//
 //   Geant4   //
 //------------//
+#include "G4BOptnChangeCrossSection.hh"
 #include "G4BiasingProcessInterface.hh"
 #include "G4BiasingProcessSharedData.hh"
-#include "G4BOptnChangeCrossSection.hh"
 #include "G4Electron.hh"
 #include "G4Gamma.hh"
 #include "G4ParticleDefinition.hh"
@@ -34,51 +34,46 @@
 //----------//
 #include "XsecBiasingOperator.h"
 
-namespace ldmx { 
+namespace simcore {
 
-    class PhotoNuclearXsecBiasingOperator : public XsecBiasingOperator { 
+class PhotoNuclearXsecBiasingOperator : public XsecBiasingOperator {
+ public:
+  /** Constructor */
+  PhotoNuclearXsecBiasingOperator(std::string name);
 
-        public: 
+  /** Destructor */
+  ~PhotoNuclearXsecBiasingOperator();
 
-            /** Constructor */
-            PhotoNuclearXsecBiasingOperator(std::string name);
+  /** Method called at the beginning of a run. */
+  void StartRun();
 
-            /** Destructor */
-            ~PhotoNuclearXsecBiasingOperator();
+  /**
+   * @return Method that returns the biasing operation that will be used
+   *         to bias the occurence of photonuclear events.
+   */
+  G4VBiasingOperation* ProposeOccurenceBiasingOperation(
+      const G4Track* track, const G4BiasingProcessInterface* callingProcess);
 
-            /** Method called at the beginning of a run. */
-            void StartRun();
+ protected:
+  virtual std::string getProcessToBias() { return PHOTONUCLEAR_PROCESS; }
 
-            /** 
-             * @return Method that returns the biasing operation that will be used
-             *         to bias the occurence of photonuclear events.
-             */
-            G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
-                    const G4BiasingProcessInterface* callingProcess);
+ private:
+  /** Geant4 photonuclear process name. */
+  static const std::string PHOTONUCLEAR_PROCESS;
 
-        
-        protected:
+  /** Geant4 gamma conversion process name. */
+  static const std::string CONVERSION_PROCESS;
 
-            virtual std::string getProcessToBias() { return PHOTONUCLEAR_PROCESS; }
+  /** Cross-section biasing operation */
+  G4BOptnChangeCrossSection* emXsecOperation{nullptr};
 
-        private: 
+  /** Unbiased photonuclear xsec. */
+  double pnXsecUnbiased_{0};
 
-            /** Geant4 photonuclear process name. */
-            static const std::string PHOTONUCLEAR_PROCESS;
+  /** Biased photonuclear xsec. */
+  double pnXsecBiased_{0};
 
-            /** Geant4 gamma conversion process name. */
-            static const std::string CONVERSION_PROCESS;
+};  // PhotoNuclearXsecBiasingOperator
+}  // namespace simcore
 
-            /** Cross-section biasing operation */
-            G4BOptnChangeCrossSection* emXsecOperation{nullptr};
-
-            /** Unbiased photonuclear xsec. */
-            double pnXsecUnbiased_{0};
-
-            /** Biased photonuclear xsec. */
-            double pnXsecBiased_{0};  
-
-    };  // PhotoNuclearXsecBiasingOperator
-}
-
-#endif // SIMPLUGINS_PHOTONUCLEARXSECBIASINGOPERATOR_H_ 
+#endif  // SIMPLUGINS_PHOTONUCLEARXSECBIASINGOPERATOR_H_

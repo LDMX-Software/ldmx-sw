@@ -18,52 +18,51 @@
 #include "SimCore/PrimaryGenerator.h"
 
 // Forward declarations
-class G4Event; 
+class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
-    // Forward declarations
-    class Parameters;  
+// Forward declarations
+class Parameters;
 
-    /**
-     * @class GeneralParticleSource
-     * @brief Class that extends the functionality of G4GeneralParticleSource.
-     */
-    class GeneralParticleSource : public PrimaryGenerator { 
-    
-        public: 
+/**
+ * @class GeneralParticleSource
+ * @brief Class that extends the functionality of G4GeneralParticleSource.
+ */
+class GeneralParticleSource : public PrimaryGenerator {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param parameters Parameters used to configure the particle gun.
+   *
+   * Parameters:
+   *  initCommands : vector of Geant4 strings to initialize the GPS
+   */
+  GeneralParticleSource(const std::string& name,
+                        framework::config::Parameters& parameters);
 
-            /** 
-             * Constructor. 
-             *
-             * @param parameters Parameters used to configure the particle gun. 
-             *
-             * Parameters:
-             *  initCommands : vector of Geant4 strings to initialize the GPS
-             */
-            GeneralParticleSource(const std::string& name, Parameters& parameters); 
+  /// Destructor
+  ~GeneralParticleSource();
 
-            /// Destructor
-            ~GeneralParticleSource();
+  /**
+   * Generate the primary vertices in the Geant4 event.
+   *
+   * @param event The Geant4 event.
+   */
+  void GeneratePrimaryVertex(G4Event* event) final override;
 
-            /** 
-             * Generate the primary vertices in the Geant4 event. 
-             * 
-             * @param event The Geant4 event.
-             */
-            void GeneratePrimaryVertex(G4Event* event) final override; 
+ private:
+  /**
+   * The underlying Geant4 GPS implementation.
+   *
+   * The creation of this class creates a new messenger that we can pass
+   * commands to.
+   */
+  G4GeneralParticleSource theG4Source_;
 
-        private:
+};  // GeneralParticleSource
 
-            /**
-             * The underlying Geant4 GPS implementation.
-             *
-             * The creation of this class creates a new messenger that we can pass commands to.
-             */
-            G4GeneralParticleSource theG4Source_;
+}  // namespace simcore
 
-    }; // GeneralParticleSource 
-
-} // ldmx
-
-#endif // SIMCORE_GENERALPARTICLESOURCE_H
+#endif  // SIMCORE_GENERALPARTICLESOURCE_H

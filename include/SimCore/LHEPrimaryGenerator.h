@@ -9,48 +9,46 @@
 #define SIMCORE_LHEPRIMARYGENERATOR_H
 
 // LDMX
-#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/LHEReader.h"
+#include "SimCore/PrimaryGenerator.h"
 
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
-    class Parameters;
+class Parameters;
 
-    /**
-     * @class LHEPrimaryGenerator
-     * @brief Generates a Geant4 event from an LHEEvent
-     */
-    class LHEPrimaryGenerator : public PrimaryGenerator {
+/**
+ * @class LHEPrimaryGenerator
+ * @brief Generates a Geant4 event from an LHEEvent
+ */
+class LHEPrimaryGenerator : public PrimaryGenerator {
+ public:
+  /**
+   * Class constructor.
+   * @param reader The LHE reader with the event data.
+   */
+  LHEPrimaryGenerator(const std::string& name,
+                      framework::config::Parameters& parameters);
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~LHEPrimaryGenerator();
 
-            /**
-             * Class constructor.
-             * @param reader The LHE reader with the event data.
-             */
-            LHEPrimaryGenerator(const std::string& name, Parameters& parameters);
+  /**
+   * Generate vertices in the Geant4 event.
+   * @param anEvent The Geant4 event.
+   */
+  void GeneratePrimaryVertex(G4Event* anEvent);
 
-            /**
-             * Class destructor.
-             */
-            virtual ~LHEPrimaryGenerator();
+ private:
+  /**
+   * The LHE reader with the event data.
+   */
+  LHEReader* reader_;
+};
 
-            /**
-             * Generate vertices in the Geant4 event.
-             * @param anEvent The Geant4 event.
-             */
-            void GeneratePrimaryVertex(G4Event* anEvent);
+}  // namespace simcore
 
-        private:
-
-            /**
-             * The LHE reader with the event data.
-             */
-            LHEReader* reader_;
-    };
-
-}
-
-#endif // SIMCORE_LHEPRIMARYGENERATOR_H
+#endif  // SIMCORE_LHEPRIMARYGENERATOR_H
