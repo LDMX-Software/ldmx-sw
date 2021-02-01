@@ -14,6 +14,7 @@
 // STL
 #include <vector>
 
+<<<<<<< HEAD
 namespace simcore {
 
 /**
