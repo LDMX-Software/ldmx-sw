@@ -151,7 +151,7 @@ namespace ldmx {
         /**
              * Vertex time
              */
-        double vtxt_;
+        double vtxt_{0.};
 	
             /**
              * The list of particles.
