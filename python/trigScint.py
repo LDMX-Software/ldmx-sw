@@ -131,7 +131,7 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         """Get the rechit producer for downstream pad"""
         rechit = TrigScintRecHitProducer( 'trigScintRecHitsDown' )
         rechit.input_collection  = 'trigScintQIEDigisDn'
-        rechit.output_collection = 'trigScintRecHitsDown'
+        rechit.output_collection = 'trigScintRecHitsDn'
         return rechit
 
     def tagger() : 

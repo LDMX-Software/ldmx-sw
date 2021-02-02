@@ -161,7 +161,7 @@ namespace ldmx {
       if(smq->PulseCut(ex[bar_id])) {
 	TrigScintQIEDigis QIEInfo;
 	QIEInfo.chanID = bar_id;
-	printf("\nTrue energy %.3f",TrueEdep[bar_id] / mevPerMip_ * pePerMip_);
+	// printf("\nTrue energy %.3f",TrueEdep[bar_id] / mevPerMip_ * pePerMip_);
 
 	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));
 	QIEInfo.SetTDC(smq->Out_TDC(ex[bar_id]));
