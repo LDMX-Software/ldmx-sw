@@ -58,7 +58,7 @@ namespace ldmx {
       // hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_ ); 
       hit.setEnergy( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 6250 / gain_ * mevPerMip_ / pePerMip_ ); // MeV
       hit.setPE( ( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 6250 / gain_ ); 
-      printf("\nTrigScintHit.pe_ %.3f",( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_);
+      // printf("\nTrigScintHit.pe_ %.3f",( qie.ADC2Q( digi.adcs[1] ) - pedestal_ ) * 1e4 / gain_);
       trigScintHits.push_back(hit);
 
     }
