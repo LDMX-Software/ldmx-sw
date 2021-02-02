@@ -9,7 +9,8 @@
 
 namespace dqm {
 
-TrigScintHitDQM::TrigScintHitDQM(const std::string &name, framework::Process &process)
+TrigScintHitDQM::TrigScintHitDQM(const std::string &name,
+                                 framework::Process &process)
     : framework::Analyzer(name, process) {}
 
 TrigScintHitDQM::~TrigScintHitDQM() {}
@@ -61,8 +62,8 @@ void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
 
 void TrigScintHitDQM::analyze(const framework::Event &event) {
   // Get the collection of TrigScintHit digitized hits if the exists
-  const std::vector<trigscint::event::TrigScintHit> TrigScintHits =
-      event.getCollection<trigscint::event::TrigScintHit>(hitCollectionName_);
+  const std::vector<ldmx::TrigScintHit> TrigScintHits =
+      event.getCollection<ldmx::TrigScintHit>(hitCollectionName_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();
@@ -73,7 +74,7 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
 
   // Loop through all TrigScint hits in the event
 
-  for (const trigscint::event::TrigScintHit &hit : TrigScintHits) {
+  for (const ldmx::TrigScintHit &hit : TrigScintHits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
     histograms_.fill("id", hit.getBarID());

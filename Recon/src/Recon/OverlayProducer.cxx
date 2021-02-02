@@ -98,11 +98,11 @@ void OverlayProducer::produce(framework::Event &event) {
   // inner loop, loop over collections, and store them. after all pileup events
   // have been added, the vector of collections is iterated over and added to
   // the event bus.
-  std::map<std::string, std::vector<simcore::event::SimCalorimeterHit>> caloCollectionMap;
-  std::map<std::string, std::vector<simcore::event::SimTrackerHit>> trackerCollectionMap;
-  std::vector<simcore::event::SimCalorimeterHit> simHitsCalo;
-  std::vector<simcore::event::SimTrackerHit> simHitsTracker;
-  std::map<int, simcore::event::SimCalorimeterHit> hitMap;
+  std::map<std::string, std::vector<ldmx::SimCalorimeterHit>> caloCollectionMap;
+  std::map<std::string, std::vector<ldmx::SimTrackerHit>> trackerCollectionMap;
+  std::vector<ldmx::SimCalorimeterHit> simHitsCalo;
+  std::vector<ldmx::SimTrackerHit> simHitsTracker;
+  std::map<int, ldmx::SimCalorimeterHit> hitMap;
 
   for (int iEv = 0; iEv < nEvsOverlay; iEv++) {
     if (verbosity_ > 2) {
@@ -141,8 +141,8 @@ void OverlayProducer::produce(framework::Event &event) {
       if (strstr(caloCollections_[iColl].c_str(), "Ecal"))
         needsContribsAdded = true;
 
-      std::vector<simcore::event::SimCalorimeterHit> overlayHits =
-          overlayEvent_.getCollection<simcore::event::SimCalorimeterHit>(
+      std::vector<ldmx::SimCalorimeterHit> overlayHits =
+          overlayEvent_.getCollection<ldmx::SimCalorimeterHit>(
               caloCollections_[iColl], overlayPassName_);
       std::string outCollName = caloCollections_[iColl] + "Overlay";
 
@@ -150,7 +150,7 @@ void OverlayProducer::produce(framework::Event &event) {
       // exists in the output collection map otherwise, start out by just
       // copying the sim hits, unaltered.
       if (caloCollectionMap.find(outCollName) == caloCollectionMap.end()) {
-        simHitsCalo = event.getCollection<simcore::event::SimCalorimeterHit>(
+        simHitsCalo = event.getCollection<ldmx::SimCalorimeterHit>(
             caloCollections_[iColl], simPassName_);
         // but don't copy ecal hits immediately: for them, wait until overlay
         // contribs have been added. then add everything through the hitmap
@@ -170,7 +170,7 @@ void OverlayProducer::produce(framework::Event &event) {
         // we don't need to touch the hard process sim hits, really... but we
         // might need the simhits in the hit map.
         if (needsContribsAdded || verbosity_ > 2) {
-          for (const simcore::event::SimCalorimeterHit &simHit : simHitsCalo) {
+          for (const ldmx::SimCalorimeterHit &simHit : simHitsCalo) {
             if (verbosity_ > 2) simHit.Print();
 
             if (needsContribsAdded) {
@@ -191,7 +191,7 @@ void OverlayProducer::produce(framework::Event &event) {
       ldmx_log(debug) << "in loop: size of overlay hits vector is "
                       << overlayHits.size();
 
-      for (simcore::event::SimCalorimeterHit &overlayHit : overlayHits) {
+      for (ldmx::SimCalorimeterHit &overlayHit : overlayHits) {
         if (verbosity_ > 2) overlayHit.Print();
 
         const float overlayTime = overlayHit.getTime() + timeOffset;
@@ -201,7 +201,7 @@ void OverlayProducer::produce(framework::Event &event) {
           int overlayHitID = overlayHit.getID();
           if (hitMap.find(overlayHitID) ==
               hitMap.end()) {  // there wasn't already a simhit in this id
-            hitMap[overlayHitID] = simcore::event::SimCalorimeterHit();
+            hitMap[overlayHitID] = ldmx::SimCalorimeterHit();
             hitMap[overlayHitID].setID(overlayHitID);
             std::vector<float> hitPos = overlayHit.getPosition();
             hitMap[overlayHitID].setPosition(hitPos[0], hitPos[1], hitPos[2]);
@@ -232,9 +232,9 @@ void OverlayProducer::produce(framework::Event &event) {
     // get the SimTrackerHit collections that we want to overlay, by looping
     // over the list of collections passed to the producer : trackerCollections_
     for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
-      std::vector<simcore::event::SimTrackerHit> overlayTrackerHits =
-          overlayEvent_.getCollection<simcore::event::SimTrackerHit>(trackerCollections_[iColl],
-                                                     overlayPassName_);
+      std::vector<ldmx::SimTrackerHit> overlayTrackerHits =
+          overlayEvent_.getCollection<ldmx::SimTrackerHit>(
+              trackerCollections_[iColl], overlayPassName_);
       std::string outCollName = trackerCollections_[iColl] + "Overlay";
 
       // if we alredy added at least one overlay event, this collection already
@@ -242,7 +242,7 @@ void OverlayProducer::produce(framework::Event &event) {
       // copying the sim hits, unaltered.
       if (trackerCollectionMap.find(outCollName) ==
           trackerCollectionMap.end()) {
-        simHitsTracker = event.getCollection<simcore::event::SimTrackerHit>(
+        simHitsTracker = event.getCollection<ldmx::SimTrackerHit>(
             trackerCollections_[iColl], simPassName_);
         trackerCollectionMap[outCollName] = simHitsTracker;
 
@@ -256,7 +256,7 @@ void OverlayProducer::produce(framework::Event &event) {
                           << trackerCollections_[iColl];
           ldmx_log(debug) << "in loop: printing current sim event: ";
 
-          for (const simcore::event::SimTrackerHit &simHit : simHitsTracker) {
+          for (const ldmx::SimTrackerHit &simHit : simHitsTracker) {
             if (verbosity_ > 2) simHit.Print();
           }  // over tracker simhit collection
         }    // if high verbosity
@@ -271,7 +271,7 @@ void OverlayProducer::produce(framework::Event &event) {
       ldmx_log(debug) << "in loop: size of overlay hits vector is "
                       << overlayTrackerHits.size();
 
-      for (simcore::event::SimTrackerHit &overlayHit : overlayTrackerHits) {
+      for (ldmx::SimTrackerHit &overlayHit : overlayTrackerHits) {
         const float overlayTime = overlayHit.getTime() + timeOffset;
         overlayHit.setTime(overlayTime);
         trackerCollectionMap[outCollName].push_back(overlayHit);
@@ -358,7 +358,8 @@ void OverlayProducer::onProcessStart() {
   }
 
   // replace by this line once the corresponding tweak to EventFile is ready:
-  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_, true );
+  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,
+  //true );
   overlayFile_ = std::make_unique<framework::EventFile>(overlayFileName_);
   overlayFile_->setupEvent(&overlayEvent_);
 

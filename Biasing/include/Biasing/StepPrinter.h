@@ -30,7 +30,8 @@ class StepPrinter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  StepPrinter(const std::string& name, framework::config::Parameters& parameters);
+  StepPrinter(const std::string& name,
+              framework::config::Parameters& parameters);
 
   /// Destructor
   ~StepPrinter();
@@ -44,7 +45,9 @@ class StepPrinter : public simcore::UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STEPPING};
+  }
 
  private:
   /// The track ID to filter on

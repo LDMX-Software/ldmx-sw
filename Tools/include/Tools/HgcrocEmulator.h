@@ -67,7 +67,8 @@ class HgcrocEmulator {
    * Passes the chips conditions to be cached here and
    * used later in digitization.
    *
-   * @param table conditions::DoubleTableConditions to be used for chip parameters
+   * @param table conditions::DoubleTableConditions to be used for chip
+   * parameters
    */
   void condition(const conditions::DoubleTableCondition& table) {
     // reset cache of column numbers if table changes
@@ -152,9 +153,10 @@ class HgcrocEmulator {
    * chip
    * @return true if digis were constructed (false if hit was below readout)
    */
-  bool digitize(const int& channelID, const std::vector<double>& voltages,
-                const std::vector<double>& times,
-                std::vector<recon::event::HgcrocDigiCollection::Sample>& digiToAdd) const;
+  bool digitize(
+      const int& channelID, const std::vector<double>& voltages,
+      const std::vector<double>& times,
+      std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
  private:
   /**

@@ -14,8 +14,8 @@ void HCalDQM::analyze(const framework::Event& event) {
   if (!event.exists("hcalDigis")) return;
 
   // Get the collection of HCalDQM digitized hits if the exists
-  const std::vector<hcal::event::HcalHit> hcalHits =
-      event.getCollection<hcal::event::HcalHit>("hcalDigis");
+  const std::vector<ldmx::HcalHit> hcalHits =
+      event.getCollection<ldmx::HcalHit>("hcalDigis");
 
   // Get the total hit count
   int hitCount = hcalHits.size();
@@ -25,8 +25,8 @@ void HCalDQM::analyze(const framework::Event& event) {
 
   // Loop through all HCal hits in the event
   // Get non-noise generated hits into new vector for sorting
-  std::vector<const hcal::event::HcalHit*> filteredHits;
-  for (const hcal::event::HcalHit& hit : hcalHits) {
+  std::vector<const ldmx::HcalHit*> filteredHits;
+  for (const ldmx::HcalHit& hit : hcalHits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
 
@@ -64,9 +64,10 @@ void HCalDQM::analyze(const framework::Event& event) {
   // Check if the HcalVeto result exists
   if (event.exists("HcalVeto")) {
     // Get the collection of HCalDQM digitized hits if the exists
-    const hcal::event::HcalVetoResult hcalVeto = event.getObject<hcal::event::HcalVetoResult>("HcalVeto");
+    const ldmx::HcalVetoResult hcalVeto =
+        event.getObject<ldmx::HcalVetoResult>("HcalVeto");
 
-    hcal::event::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
+    ldmx::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
 
     // Get the max PE and it's time
     maxPE = maxPEHit.getPE();

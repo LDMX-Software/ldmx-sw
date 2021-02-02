@@ -10,7 +10,8 @@
 
 namespace dqm {
 
-RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name, framework::Process &process)
+RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name,
+                                   framework::Process &process)
     : framework::Analyzer(name, process) {}
 
 RecoilTrackerDQM::~RecoilTrackerDQM() {}
@@ -36,7 +37,7 @@ void RecoilTrackerDQM::analyze(const framework::Event &event) {
   histograms_.fill("axial_track_count",map.axial.size());
 
   // Get the collection of simulated particles from the event
-  auto particleMap{event.getMap<int, simcore::event::SimParticle>("SimParticles")};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
   // Search for the recoil electron
   auto [recoilTrackID, recoil] = Analysis::getRecoil(particleMap);
@@ -51,13 +52,13 @@ void RecoilTrackerDQM::analyze(const framework::Event &event) {
   histograms_.fill("recoil_vz",recoilVertex[2]);  */
 
   double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999};
-  const simcore::event::SimTrackerHit *spHit{nullptr};
+  const ldmx::SimTrackerHit *spHit{nullptr};
   if (event.exists("TargetScoringPlaneHits")) {
     // Get the collection of simulated particles from the event
-    const std::vector<simcore::event::SimTrackerHit> spHits =
-        event.getCollection<simcore::event::SimTrackerHit>("TargetScoringPlaneHits");
+    const std::vector<ldmx::SimTrackerHit> spHits =
+        event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
 
-    for (const simcore::event::SimTrackerHit &hit : spHits) {
+    for (const ldmx::SimTrackerHit &hit : spHits) {
       if ((hit.getTrackID() == recoilTrackID) /*hit caused by recoil*/ and
           (hit.getLayerID() == 2) /*hit on downstream side of target*/ and
           (hit.getMomentum()[2] > 0) /*hit momentum leaving target*/

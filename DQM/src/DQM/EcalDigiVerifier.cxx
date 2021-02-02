@@ -14,26 +14,28 @@ void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
 
 void EcalDigiVerifier::analyze(const framework::Event &event) {
   // get truth information sorted into an ID based map
-  std::vector<simcore::event::SimCalorimeterHit> ecalSimHits =
-      event.getCollection<simcore::event::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
+  std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
+      event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_,
+                                                   ecalSimHitPass_);
 
   // sort sim hits by ID
   std::sort(ecalSimHits.begin(), ecalSimHits.end(),
-            [](const simcore::event::SimCalorimeterHit &lhs, const simcore::event::SimCalorimeterHit &rhs) {
+            [](const ldmx::SimCalorimeterHit &lhs,
+               const ldmx::SimCalorimeterHit &rhs) {
               return lhs.getID() < rhs.getID();
             });
 
-  std::vector<ecal::event::EcalHit> ecalRecHits =
-      event.getCollection<ecal::event::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
+  std::vector<ldmx::EcalHit> ecalRecHits =
+      event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
 
   // sort rec hits by ID
   std::sort(ecalRecHits.begin(), ecalRecHits.end(),
-            [](const ecal::event::EcalHit &lhs, const ecal::event::EcalHit &rhs) {
+            [](const ldmx::EcalHit &lhs, const ldmx::EcalHit &rhs) {
               return lhs.getID() < rhs.getID();
             });
 
   double totalRecEnergy = 0.;
-  for (const ecal::event::EcalHit &recHit : ecalRecHits) {
+  for (const ldmx::EcalHit &recHit : ecalRecHits) {
     // skip anything that digi flagged as noise
     if (recHit.isNoise()) continue;
 
@@ -42,7 +44,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     // get information for this hit
     int numSimHits = 0;
     double totalSimEDep = 0.;
-    for (const simcore::event::SimCalorimeterHit &simHit : ecalSimHits) {
+    for (const ldmx::SimCalorimeterHit &simHit : ecalSimHits) {
       if (rawID == simHit.getID()) {
         numSimHits += simHit.getNumberOfContribs();
         totalSimEDep += simHit.getEdep();

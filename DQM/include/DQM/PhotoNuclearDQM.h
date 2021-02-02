@@ -45,7 +45,7 @@ class PhotoNuclearDQM : public framework::Analyzer {
    *
    * @param[in] particleMap The map containing the SimParticles.
    */
-  void printParticleTree(std::map<int, simcore::event::SimParticle> particleMap);
+  void printParticleTree(std::map<int, ldmx::SimParticle> particleMap);
 
   /**
    * Print the daughters of a particle.
@@ -57,17 +57,17 @@ class PhotoNuclearDQM : public framework::Analyzer {
    * @return[out] A vector with the track IDs of particles that have
    *      already been printed.
    */
-  std::vector<int> printDaughters(std::map<int, simcore::event::SimParticle> particleMap,
-                                  const simcore::event::SimParticle particle, int depth);
+  std::vector<int> printDaughters(std::map<int, ldmx::SimParticle> particleMap,
+                                  const ldmx::SimParticle particle, int depth);
 
   /** Method used to classify events. */
-  int classifyEvent(const std::vector<const simcore::event::SimParticle*> daughters,
+  int classifyEvent(const std::vector<const ldmx::SimParticle*> daughters,
                     double threshold);
 
   /** Method used to classify events in a compact manner. */
-  int classifyCompactEvent(const simcore::event::SimParticle* pnGamma,
-                           const std::vector<const simcore::event::SimParticle*> daughters,
-                           double threshold);
+  int classifyCompactEvent(
+      const ldmx::SimParticle* pnGamma,
+      const std::vector<const ldmx::SimParticle*> daughters, double threshold);
 };
 
 }  // namespace dqm

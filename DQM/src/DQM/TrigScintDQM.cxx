@@ -45,15 +45,15 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
 }
 
 void TrigScintDQM::analyze(const framework::Event &event) {
-  const std::vector<simcore::event::SimCalorimeterHit> TrigScintHits =
-      event.getCollection<simcore::event::SimCalorimeterHit>(hitCollectionName_);
+  const std::vector<ldmx::SimCalorimeterHit> TrigScintHits =
+      event.getCollection<ldmx::SimCalorimeterHit>(hitCollectionName_);
 
   // Get the total hit count
   int hitCount = TrigScintHits.size();
   histograms_.fill("n_hits", hitCount);
 
   double totalEnergy{0};
-  for (const simcore::event::SimCalorimeterHit &hit : TrigScintHits) {
+  for (const ldmx::SimCalorimeterHit &hit : TrigScintHits) {
     ldmx::TrigScintID detID(hit.getID());
 
     int bar = detID.bar();

@@ -16,11 +16,9 @@
 #include <vector>
 
 // Forward declaration for classes inside ldmx namespace
-//class FindableTrackResult;
-namespace simcore {
-namespace event {
+// class FindableTrackResult;
+namespace ldmx {
 class SimParticle;
-}
 }
 
 /*
@@ -40,8 +38,8 @@ namespace Analysis {
  * @return[out] Pointer to sim particle labeled as recoil electron (nullptr if
  * not found)
  */
-std::tuple<int, const simcore::event::SimParticle *> getRecoil(
-    const std::map<int, simcore::event::SimParticle> &particleMap);
+std::tuple<int, const ldmx::SimParticle *> getRecoil(
+    const std::map<int, ldmx::SimParticle> &particleMap);
 
 /**
  * Get a pointer to the sim particle associated with the photon that
@@ -59,14 +57,15 @@ std::tuple<int, const simcore::event::SimParticle *> getRecoil(
  * @return[out] Pointer to sim particle labeled as PN Gamma photon (nullptr if
  * not found)
  */
-const simcore::event::SimParticle *getPNGamma(const std::map<int, simcore::event::SimParticle> &particleMap,
-                              const simcore::event::SimParticle *recoil,
-                              const float &energyThreshold);
+const ldmx::SimParticle *getPNGamma(
+    const std::map<int, ldmx::SimParticle> &particleMap,
+    const ldmx::SimParticle *recoil, const float &energyThreshold);
 
 /**
  * Sort tracks depending on how finable they are.
  */
-//TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks);
+// TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult>
+// &tracks);
 
 }  // namespace Analysis
 

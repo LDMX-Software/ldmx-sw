@@ -1,7 +1,6 @@
 #include "Recon/Event/EventConstants.h"
 
-namespace recon {
-namespace event {
+namespace ldmx {
 
 /*
  * Default name of event tree.
@@ -25,15 +24,14 @@ const std::string EventConstants::CLUSTER_ALGO_RESULT = "ClusterAlgoResult";
 /*
  * Type names.
  */
-const std::string EventConstants::ECAL_HIT = "ecal::event::EcalHit";
-const std::string EventConstants::ECAL_CLUSTER = "ecal::event::EcalCluster";
-const std::string EventConstants::HCAL_HIT = "hcal::event::HcalHit";
-const std::string EventConstants::SIM_PARTICLE = "simcore::event::SimParticle";
+const std::string EventConstants::ECAL_HIT = "ldmx::EcalHit";
+const std::string EventConstants::ECAL_CLUSTER = "ldmx::EcalCluster";
+const std::string EventConstants::HCAL_HIT = "ldmx::HcalHit";
+const std::string EventConstants::SIM_PARTICLE = "ldmx::SimParticle";
 const std::string EventConstants::SIM_CALORIMETER_HIT =
-    "simcore::event::SimCalorimeterHit";
-const std::string EventConstants::SIM_TRACKER_HIT = "simcore::event::SimTrackerHit";
-const std::string EventConstants::RUN_HEADER = "framework::RunHeader";
+    "ldmx::SimCalorimeterHit";
+const std::string EventConstants::SIM_TRACKER_HIT = "ldmx::SimTrackerHit";
+const std::string EventConstants::RUN_HEADER = "ldmx::RunHeader";
 const std::string EventConstants::PN_WEIGHT = "simcore::pnWeight";
 
-} // namespace event
-} // namespace recon
+}  // namespace ldmx
