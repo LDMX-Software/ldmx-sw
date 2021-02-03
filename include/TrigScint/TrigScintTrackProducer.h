@@ -3,27 +3,27 @@
 #define EVENTPROC_TRIGSCINTTRACKPRODUCER_H
 
 // LDMX Framework
+#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TrigScintTrack.h"
-#include "Framework/Event.h"
-#include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
 
-namespace ldmx {
+namespace trigscint {
 
 /**
  * @class TrigScintTrackProducer
  * @brief making tracks from trigger scintillator clusters
  */
-class TrigScintTrackProducer : public ldmx::Producer {
-public:
-  TrigScintTrackProducer(const std::string &name, ldmx::Process &process)
-      : ldmx::Producer(name, process) {}
+class TrigScintTrackProducer : public framework::Producer {
+ public:
+  TrigScintTrackProducer(const std::string &name, framework::Process &process)
+      : Producer(name, process) {}
 
-  virtual void configure(ldmx::Parameters &ps);
+  virtual void configure(framework::config::Parameters &ps);
 
-  virtual void produce(ldmx::Event &event);
+  virtual void produce(framework::Event &event);
 
   virtual void onFileOpen();
 
@@ -33,12 +33,12 @@ public:
 
   virtual void onProcessEnd();
 
-private:
+ private:
   // collection of produced tracks
-  std::vector<TrigScintTrack> tracks_;
+  std::vector<ldmx::TrigScintTrack> tracks_;
 
   // add a cluster to a track
-  TrigScintTrack makeTrack(std::vector<TrigScintCluster> clusters);
+  ldmx::TrigScintTrack makeTrack(std::vector<ldmx::TrigScintCluster> clusters);
 
   // maximum difference (in channel number space) between track seed and cluster
   // in the next pad tolerated to form a track
@@ -65,6 +65,6 @@ private:
   // track residual in units of channel nb (will not be content weighted)
   float residual_{0.};
 };
-} // namespace ldmx
+}  // namespace trigscint
 
-#endif // EVENTPROC_TRIGSCINTTRACKPRODUCER_H 
+#endif  // EVENTPROC_TRIGSCINTTRACKPRODUCER_H

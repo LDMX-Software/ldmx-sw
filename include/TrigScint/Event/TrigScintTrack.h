@@ -3,7 +3,7 @@
 #define TRIGSCINT_EVENT_TRIGSCINTTRACK_H_
 
 // ROOT
-#include "TObject.h" //For ClassDef
+#include "TObject.h"  //For ClassDef
 
 // STL
 #include <iostream>
@@ -19,8 +19,7 @@ namespace ldmx {
  * @brief Represents a track of trigger scintillator clusters
  */
 class TrigScintTrack {
-
-public:
+ public:
   /**
    * Class constructor.
    */
@@ -34,12 +33,12 @@ public:
   /**
    * Print a description of this object.
    */
-  void Print() const; // Option_t *option) const;
+  void Print() const;  // Option_t *option) const;
 
   /**
    * Reset the TrigScintTrack object.
    */
-  void Clear(); // Option_t *option);
+  void Clear();  // Option_t *option);
 
   /**
    * Get the detector ID centroid of the track.
@@ -100,7 +99,7 @@ public:
    * the track took place [MeV].
    * @return The momentum of the particle.
    */
-  std::vector<TrigScintCluster> getConstituents() const {
+  std::vector<ldmx::TrigScintCluster> getConstituents() const {
     return constituents_;
   };
 
@@ -193,7 +192,7 @@ public:
     return this->getResidual() < rhs.getResidual();
   }
 
-private:
+ private:
   /**
    * The detector centroid.
    */
@@ -242,7 +241,7 @@ private:
   /**
    * The list of clusters constituting the track.
    */
-  std::vector<TrigScintCluster> constituents_{0};
+  std::vector<ldmx::TrigScintCluster> constituents_{0};
 
   float beamEfrac_{0.};
 
@@ -283,8 +282,8 @@ private:
    */
   ClassDef(TrigScintTrack, 1);
 
-}; // TrigScintTrack
+};  // TrigScintTrack
 
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // TRIGSCINT_EVENT_TRIGSCINTTRACK_H_
+#endif  // TRIGSCINT_EVENT_TRIGSCINTTRACK_H_

@@ -1,15 +1,15 @@
 
 #include "TrigScint/TruthHitProducer.h"
 
-namespace ldmx {
+namespace trigscint {
 
-TruthHitProducer::TruthHitProducer(const std::string &name, Process &process)
+TruthHitProducer::TruthHitProducer(const std::string &name,
+                                   framework::Process &process)
     : Producer(name, process) {}
 
 TruthHitProducer::~TruthHitProducer() {}
 
-void TruthHitProducer::configure(Parameters &parameters) {
-
+void TruthHitProducer::configure(framework::config::Parameters &parameters) {
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
@@ -25,8 +25,7 @@ void TruthHitProducer::configure(Parameters &parameters) {
   }
 }
 
-void TruthHitProducer::produce(Event &event) {
-
+void TruthHitProducer::produce(framework::Event &event) {
   // Check if the collection exists.  If not, don't bother processing the event.
   if (!event.exists(inputCollection_)) {
     ldmx_log(error) << "No input collection called " << inputCollection_
@@ -34,18 +33,17 @@ void TruthHitProducer::produce(Event &event) {
     return;
   }
   // looper over sim hits and aggregate energy depositions for each detID
-  const auto simHits{
-      event.getCollection<SimCalorimeterHit>(inputCollection_, inputPassName_)};
-  auto particleMap{event.getMap<int, SimParticle>("SimParticles")};
+  const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputCollection_, inputPassName_)};
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
 
-  std::vector<SimCalorimeterHit> truthBeamElectrons;
+  std::vector<ldmx::SimCalorimeterHit> truthBeamElectrons;
 
   // TODO: Convert this to using a for_each and lambda
   for (const auto &simHit : simHits) {
     bool keep{false};
     // check if hit is from beam electron and, if so, add to output collection
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
-
       auto contrib = simHit.getContrib(i);
       if (verbose_) {
         ldmx_log(debug) << "contrib " << i << " trackID: " << contrib.trackID
@@ -64,12 +62,11 @@ void TruthHitProducer::produce(Event &event) {
           keep = true;
         }
       }
-      if (keep)
-        truthBeamElectrons.push_back(simHit);
+      if (keep) truthBeamElectrons.push_back(simHit);
     }
   }
   event.add(outputCollection_, truthBeamElectrons);
 }
-} // namespace ldmx
+}  // namespace trigscint
 
-DECLARE_PRODUCER_NS(ldmx, TruthHitProducer)
+DECLARE_PRODUCER_NS(trigscint, TruthHitProducer)

@@ -1,19 +1,18 @@
 #include "TrigScint/TrigScintTrackProducer.h"
 
-#include <iterator> // std::next
+#include <iterator>  // std::next
 #include <map>
 
-namespace ldmx {
+namespace trigscint {
 
-void TrigScintTrackProducer::configure(Parameters &ps) {
-
+void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
   maxDelta_ = ps.getParameter<double>(
-      "delta_max"); // max distance to consider adding in a cluster to track
+      "delta_max");  // max distance to consider adding in a cluster to track
   seeding_collection_ = ps.getParameter<std::string>(
-      "seeding_collection"); // probably tagger pad, "TriggerPadTagClusters"
+      "seeding_collection");  // probably tagger pad, "TriggerPadTagClusters"
   input_collections_ = ps.getParameter<std::vector<std::string>>(
-      "further_input_collections"); // {"TriggerPadUpClusters" ,
-                                    // "TriggerPadDnClusters" }
+      "further_input_collections");  // {"TriggerPadUpClusters" ,
+                                     // "TriggerPadDnClusters" }
   output_collection_ = ps.getParameter<std::string>("output_collection");
   passName_ = ps.getParameter<std::string>("input_pass_name");
   verbose_ = ps.getParameter<int>("verbosity");
@@ -34,8 +33,7 @@ void TrigScintTrackProducer::configure(Parameters &ps) {
   return;
 }
 
-void TrigScintTrackProducer::produce(ldmx::Event &event) {
-
+void TrigScintTrackProducer::produce(framework::Event &event) {
   // parameters.
   // one pad cluster collection to use as seed
   // a vector with the other two
@@ -48,8 +46,8 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
         << event.getEventHeader().getEventNumber();
   }
 
-  const auto seeds{
-      event.getCollection<TrigScintCluster>(seeding_collection_, passName_)};
+  const auto seeds{event.getCollection<ldmx::TrigScintCluster>(
+      seeding_collection_, passName_)};
   uint numSeeds = seeds.size();
 
   if (verbose_) {
@@ -62,7 +60,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
     ldmx_log(info) << "No collection called " << input_collections_.at(0)
                    << "; still, not skipping event";
   }
-  const auto clusters_pad1{event.getCollection<TrigScintCluster>(
+  const auto clusters_pad1{event.getCollection<ldmx::TrigScintCluster>(
       input_collections_.at(0), passName_)};
 
   if (!event.exists(input_collections_.at(1))) {
@@ -70,7 +68,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
                    << "; still, not skipping event";
   }
 
-  const auto clusters_pad2{event.getCollection<TrigScintCluster>(
+  const auto clusters_pad2{event.getCollection<ldmx::TrigScintCluster>(
       input_collections_.at(1), passName_)};
 
   if (verbose_) {
@@ -81,18 +79,17 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
                     << clusters_pad2.size() << " entries.";
   }
 
-  std::vector<TrigScintTrack> cleanedTracks;
+  std::vector<ldmx::TrigScintTrack> cleanedTracks;
 
   // loop over the clusters in the seeding pad collection, if there are clusters
   // in all pads
   if (numSeeds && clusters_pad1.size() && clusters_pad2.size()) {
-
     for (const auto &seed : seeds) {
       // for each seed, search through the other two pads to match all clusters
       // with centroids within tolerance to tracks
       float centroid = seed.getCentroid();
 
-      std::vector<TrigScintTrack> trackCandidates;
+      std::vector<ldmx::TrigScintTrack> trackCandidates;
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "Got seed with centroid " << centroid;
@@ -102,13 +99,12 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
       bool madeTrack = false;
 
       for (const auto &cluster1 : clusters_pad1) {
-
         if (verbose_ > 1) {
           ldmx_log(debug) << "\tGot pad1 cluster with centroid "
                           << cluster1.getCentroid();
         }
         if (fabs(cluster1.getCentroid() - centroid) <
-            maxDelta_) { // first match! loop through next pad too
+            maxDelta_) {  // first match! loop through next pad too
 
           if (verbose_ > 1) {
             ldmx_log(debug) << "\t\tIt is close enough!. Check pad2";
@@ -121,7 +117,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
             }
 
             if (fabs(cluster2.getCentroid() - centroid) <
-                maxDelta_) { // first match! loop through next pad too
+                maxDelta_) {  // first match! loop through next pad too
 
               if (verbose_ > 1) {
                 ldmx_log(debug) << "\t\tIt is close enough!. Make a track";
@@ -129,11 +125,11 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
 
               // only make this vector now! this ensures against hanging
               // clusters with indices from earlier in the loop
-              std::vector<TrigScintCluster> clusterVec = {seed, cluster1,
-                                                          cluster2};
+              std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1,
+                                                                cluster2};
 
               // make a track
-              TrigScintTrack track = makeTrack(clusterVec);
+              ldmx::TrigScintTrack track = makeTrack(clusterVec);
               trackCandidates.push_back(track);
 
               /*
@@ -142,23 +138,22 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
               iteration once there's a track made
               */
 
-            } // if match in pad2
-          }   // over clusters in pad2
-        }     // if match in pad1
+            }  // if match in pad2
+          }    // over clusters in pad2
+        }      // if match in pad1
         /*
         //same here
         if (madeTrack)
         break;
         */
 
-      } // over clusters in pad1
+      }  // over clusters in pad1
 
       // continue to next seed if 0 track candidates
-      if (trackCandidates.size() == 0)
-        continue;
+      if (trackCandidates.size() == 0) continue;
 
       int keepIdx = 0;
-      float minResidual = 1000; // some large number
+      float minResidual = 1000;  // some large number
 
       // no need to choose between only one candidate track
       if (trackCandidates.size() > 1) {
@@ -173,7 +168,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
           if ((trackCandidates.at(idx)).getResidual() < minResidual) {
             keepIdx = (int)idx;
             minResidual =
-                (trackCandidates.at(idx)).getResidual(); // update minimum
+                (trackCandidates.at(idx)).getResidual();  // update minimum
 
             if (verbose_ > 1) {
               ldmx_log(debug)
@@ -181,9 +176,9 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
                   << " has smallest residual so far: " << minResidual;
             }
 
-          } // finding min residual
-        }   // over track candidates
-      }     // if more than 1 to choose from
+          }  // finding min residual
+        }    // over track candidates
+      }      // if more than 1 to choose from
 
       // store the track at keepIdx, if there was one we made it this far and
       // keepIdx is 0 or has been updated to the smallest residual track idx
@@ -194,7 +189,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
         (trackCandidates.at(keepIdx)).Print();
       }
       //}
-    } // over seeds
+    }  // over seeds
 
     // done here if there were no tracks found
     if (tracks_.size() == 0) {
@@ -216,70 +211,79 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
       ldmx_log(debug) << "vector of indices to keep has size "
                       << keepIndices.size();
 
-	for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
-	  //since we start in one end, we only have to check matches in one direction
-      TrigScintTrack track = tracks_.at(idx);
-	  for (int idxComp = idx - 1; idxComp >= 0; idxComp--) {
-		if (verbose_ > 1)
-		  ldmx_log(debug) << "In track disambiguation loop, idx points at " << idx
-						  << " and prev idx points at " << idxComp;
+    for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
+      // since we start in one end, we only have to check matches in one
+      // direction
+      ldmx::TrigScintTrack track = tracks_.at(idx);
+      for (int idxComp = idx - 1; idxComp >= 0; idxComp--) {
+        if (verbose_ > 1)
+          ldmx_log(debug) << "In track disambiguation loop, idx points at "
+                          << idx << " and prev idx points at " << idxComp;
 
-		TrigScintTrack nextTrack = tracks_.at(idxComp);
+        ldmx::TrigScintTrack nextTrack = tracks_.at(idxComp);
 
-		//no need to start pulling constituents from tracks that are ridiculously far apart
-		if ( fabs(track.getCentroid() - nextTrack.getCentroid() < 3 *  maxDelta_ )) {
-			std::vector<TrigScintCluster> consts_1 = track.getConstituents();
-			std::vector<TrigScintCluster> consts_2 = nextTrack.getConstituents();
-			if (verbose_ > 1)
-			  ldmx_log(debug) << "In track disambiguation loop, got the two tracks, "
-				"with nConstituents "
-							  << consts_1.size() << " and " << consts_2.size()
-							  << ", respectively. ";
-			// let's do "if either cluster is shared" right now... but could also have
-			// it settable to use a stricter cut: an AND
-			if (consts_1[1].getCentroid() == consts_2[1].getCentroid() ||
-				consts_1[2].getCentroid() ==
-				consts_2[2].getCentroid()) { // we have overlap downstream of the
-			  // seeding pad. probably, one cluster
-			  // in seeding pad is noise
+        // no need to start pulling constituents from tracks that are
+        // ridiculously far apart
+        if (fabs(track.getCentroid() - nextTrack.getCentroid() <
+                 3 * maxDelta_)) {
+          std::vector<ldmx::TrigScintCluster> consts_1 =
+              track.getConstituents();
+          std::vector<ldmx::TrigScintCluster> consts_2 =
+              nextTrack.getConstituents();
+          if (verbose_ > 1)
+            ldmx_log(debug)
+                << "In track disambiguation loop, got the two tracks, "
+                   "with nConstituents "
+                << consts_1.size() << " and " << consts_2.size()
+                << ", respectively. ";
+          // let's do "if either cluster is shared" right now... but could also
+          // have it settable to use a stricter cut: an AND
+          if (consts_1[1].getCentroid() == consts_2[1].getCentroid() ||
+              consts_1[2].getCentroid() ==
+                  consts_2[2]
+                      .getCentroid()) {  // we have overlap downstream of the
+            // seeding pad. probably, one cluster
+            // in seeding pad is noise
 
-			  if (verbose_ > 1) {
-				ldmx_log(debug) << "Found overlap! Tracks at index " << idx << " and "
-								<< idxComp ;
-				(tracks_.at(idx)).Print();
-				(tracks_.at(idxComp)).Print();
-			  }
+            if (verbose_ > 1) {
+              ldmx_log(debug) << "Found overlap! Tracks at index " << idx
+                              << " and " << idxComp;
+              (tracks_.at(idx)).Print();
+              (tracks_.at(idxComp)).Print();
+            }
 
-			  if ((tracks_.at(idx)).getResidual() <
-				  (tracks_.at(idxComp)).getResidual()) {
-				// next track (lower index) is a worse choice, remove its flag for
-				// keeping
-				keepIndices.at(idxComp) = 0;
-			  } else // prefer next track over current. remove current track's keep
-				// flag
-				keepIndices.at(idx) = 0;
-			  /*}
-				else {
-				tracks_.erase(itNext);
-				//        removeIdx.push_back(idx+1);
-				// we might see the same index two times in the loop in this case, if
-				there are three seeds sharing the same clusters downstream.
-				// then the third only gets removed if it's even worse than the
-				second.
-				// one could deal with this with an extra overlap check. not sure we
-				will be in this situation any time soon though.
-				}*/
-			} // over matching/overlapping tracks
-		} //over tracks close enough to share constituents
-	  } // over constructed tracks at other indices, to match
-	} // over constructed tracks
-		
+            if ((tracks_.at(idx)).getResidual() <
+                (tracks_.at(idxComp)).getResidual()) {
+              // next track (lower index) is a worse choice, remove its flag for
+              // keeping
+              keepIndices.at(idxComp) = 0;
+            } else  // prefer next track over current. remove current track's
+                    // keep
+              // flag
+              keepIndices.at(idx) = 0;
+            /*}
+                  else {
+                  tracks_.erase(itNext);
+                  //        removeIdx.push_back(idx+1);
+                  // we might see the same index two times in the loop in this
+               case, if there are three seeds sharing the same clusters
+               downstream.
+                  // then the third only gets removed if it's even worse than
+               the second.
+                  // one could deal with this with an extra overlap check. not
+               sure we will be in this situation any time soon though.
+                  }*/
+          }  // over matching/overlapping tracks
+        }    // over tracks close enough to share constituents
+      }      // over constructed tracks at other indices, to match
+    }        // over constructed tracks
+
     for (uint idx = 0; idx < tracks_.size(); idx++) {
       if (verbose_ > 1) {
         ldmx_log(debug) << "keep flag for idx " << idx << " is "
                         << keepIndices.at(idx);
       }
-      if (keepIndices.at(idx)) { // this hasn't been flagged for removal
+      if (keepIndices.at(idx)) {  // this hasn't been flagged for removal
 
         cleanedTracks.push_back(tracks_.at(idx));
 
@@ -288,8 +292,8 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
                           << ":";
           (tracks_.at(idx)).Print();
         }
-      } // if index flagged for keeping
-    }   // over all (uniquely seeded) tracks in the event
+      }  // if index flagged for keeping
+    }    // over all (uniquely seeded) tracks in the event
     /*
       if (verbose_ ) {
       for (uint idx=0; idx < tracks_.size(); idx++){
@@ -299,7 +303,7 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
       }
     */
 
-  } // if there are clusters in all pads
+  }  // if there are clusters in all pads
   else if (verbose_) {
     ldmx_log(info) << "Not all pads had clusters; skipping tracking attempt";
   }
@@ -314,13 +318,13 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
   return;
 }
 
-TrigScintTrack
-TrigScintTrackProducer::makeTrack(std::vector<TrigScintCluster> clusters) {
+ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
+    std::vector<ldmx::TrigScintCluster> clusters) {
   // for now let's keep a straight, unweighted centroid
   // consider the possibility that at least one cluster has a centroid
   // identically == 0. then we need to shift them by 1 if we want to do energy
   // weighted track centroid later. but no need now
-  TrigScintTrack tr;
+  ldmx::TrigScintTrack tr;
   float centroid = 0;
   float beamEfrac = 0;
   for (uint i = 0; i < clusters.size(); i++) {
@@ -355,33 +359,29 @@ TrigScintTrackProducer::makeTrack(std::vector<TrigScintCluster> clusters) {
 }
 
 void TrigScintTrackProducer::onFileOpen() {
-
   ldmx_log(debug) << "Opening file!";
 
   return;
 }
 
 void TrigScintTrackProducer::onFileClose() {
-
   ldmx_log(debug) << "Closing file!";
 
   return;
 }
 
 void TrigScintTrackProducer::onProcessStart() {
-
   ldmx_log(debug) << "Process starts!";
 
   return;
 }
 
 void TrigScintTrackProducer::onProcessEnd() {
-
   ldmx_log(debug) << "Process ends!";
 
   return;
 }
 
-} // namespace ldmx
+}  // namespace trigscint
 
-DECLARE_PRODUCER_NS(ldmx, TrigScintTrackProducer);
+DECLARE_PRODUCER_NS(trigscint, TrigScintTrackProducer);
