@@ -89,7 +89,8 @@ namespace ldmx {
       random_ =
 	std::make_unique<TRandom3>(rseed.getSeed(outputCollection_));
 
-      // Initialize SimQIE instance with pedestal, electronic noise and the random seed
+      // Initialize SimQIE instance with
+      // pedestal, electronic noise and the random seed
       smq = new SimQIE
 	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
 
@@ -161,7 +162,6 @@ namespace ldmx {
       if(smq->PulseCut(ex[bar_id])) {
 	TrigScintQIEDigis QIEInfo;
 	QIEInfo.chanID = bar_id;
-	// printf("\nTrue energy %.3f",TrueEdep[bar_id] / mevPerMip_ * pePerMip_);
 
 	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));
 	QIEInfo.SetTDC(smq->Out_TDC(ex[bar_id]));
@@ -171,7 +171,6 @@ namespace ldmx {
 	// true -> there is atleast some true energy deposited in the bar
 	// false-> All the pulses recorded are from dark noise
 	QIEInfo.IsNoisy= (TrueEdep[bar_id]==0);
-	// QIEInfo.IsNoisy= (ex[bar_id]->npulses==n_noise_pulses);
 	QDigis.push_back(QIEInfo);
       }
     }
