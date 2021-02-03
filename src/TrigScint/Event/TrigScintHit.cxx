@@ -13,19 +13,19 @@
 
 ClassImp(ldmx::TrigScintHit)
 
-namespace ldmx {
+    namespace ldmx {
+  void TrigScintHit::Clear(Option_t * option) {
+    ldmx::HcalHit::Clear();
+    barID_ = -1;
+    moduleID_ = -1;
+    beamEfrac_ = 0;
+  }
 
-    void TrigScintHit::Clear(Option_t *option) {
-        HcalHit::Clear();
-        barID_ = -1;
-        moduleID_ = -1;
-        beamEfrac_ = 0;
-    }
-
-    void TrigScintHit::Print(Option_t *option) const {
-        std::cout << "TrigScintHit { " << "id: " << std::hex << getID() << std::dec
-                  << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-                  << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}" << std::endl;
-    }
-
-}
+  void TrigScintHit::Print(Option_t * option) const {
+    std::cout << "TrigScintHit { "
+              << "id: " << std::hex << getID() << std::dec
+              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
+              << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
+              << "}" << std::endl;
+  }
+}  // namespace ldmx
