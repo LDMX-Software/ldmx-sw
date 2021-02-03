@@ -5,17 +5,18 @@
 
 #include <iostream>
 
-namespace ldmx {
+namespace trigscint {
 
   TrigScintQIEDigiProducer::TrigScintQIEDigiProducer
-  (const std::string& name, Process& process) :
+  (const std::string& name, framework::Process& process) :
     Producer(name, process) {    
   }
 
   TrigScintQIEDigiProducer::~TrigScintQIEDigiProducer() {
   }
 
-  void TrigScintQIEDigiProducer::configure(Parameters& parameters) {
+  void TrigScintQIEDigiProducer::configure
+  (framework::config::Parameters& parameters) {
 
     // Configure this instance of the producer
     stripsPerArray_   =
@@ -77,14 +78,14 @@ namespace ldmx {
     ldmx_log(debug) <<"s_freq ="<<		s_freq;
   }
 
-  void TrigScintQIEDigiProducer::produce(Event& event) {
+  void TrigScintQIEDigiProducer::produce(framework::Event& event) {
 
     // Need to handle seeding on the first event
     if (random_.get()==nullptr) {
-      const auto& rseed = getCondition<RandomNumberSeedService>
-	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-      const auto& rseed2 =getCondition<RandomNumberSeedService>
-	(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+      const auto& rseed = getCondition<framework::RandomNumberSeedService>
+	(framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+      const auto& rseed2 =getCondition<framework::RandomNumberSeedService>
+	(framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
         
       random_ =
 	std::make_unique<TRandom3>(rseed.getSeed(outputCollection_));
@@ -112,12 +113,12 @@ namespace ldmx {
     }
 
     // loop over sim hits and aggregate energy depositions for each detID
-    const auto simHits{event.getCollection< SimCalorimeterHit >
+    const auto simHits{event.getCollection< ldmx::SimCalorimeterHit >
 	(inputCollection_,inputPassName_)};
 
     for (const auto& simHit : simHits) {
 
-      TrigScintID id(simHit.getID());
+      ldmx::TrigScintID id(simHit.getID());
 
       ldmx_log(info) << "Processing sim hit with bar ID: "
 		      << id.bar() ;
