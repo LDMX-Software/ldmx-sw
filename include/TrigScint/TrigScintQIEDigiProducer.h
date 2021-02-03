@@ -32,7 +32,7 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/SimQIE.h"
 
-namespace ldmx {
+namespace trigscint {
 
   enum TrigScintSection{
     UPSTREAM_TAGGER = 1,
@@ -45,10 +45,10 @@ namespace ldmx {
    * @class TrigScintQIEDigiProducer
    * @brief Class that simulates QIE chip of the trigger scintillator
    */
-  class TrigScintQIEDigiProducer : public Producer {
+  class TrigScintQIEDigiProducer : public framework::Producer {
 
  public:
-    TrigScintQIEDigiProducer(const std::string& name, Process& process);
+    TrigScintQIEDigiProducer(const std::string& name, framework::Process& process);
     ~TrigScintQIEDigiProducer(); 
 
     /**
@@ -57,8 +57,8 @@ namespace ldmx {
      * 
      * @param parameters ParameterSet for configuration.
      */
-    void configure(Parameters& parameters) final override;
-    void produce(Event& event);
+    void configure(framework::config::Parameters& parameters) final override;
+    void produce(framework::Event& event);
 
  private:
     /// Random number generator 
