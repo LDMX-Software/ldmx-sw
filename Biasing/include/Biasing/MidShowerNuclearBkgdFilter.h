@@ -9,7 +9,7 @@
 /// Forward declaration of virtual process class
 class G4VProcess;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * @class MidShowerNuclearBkgdFilter
@@ -26,14 +26,15 @@ namespace ldmx {
  * Here we assume that the partial energy sorter is being run in sequence with
  * this filter.
  */
-class MidShowerNuclearBkgdFilter : public UserAction {
+class MidShowerNuclearBkgdFilter : public simcore::UserAction {
  public:
   /**
    * Class constructor.
    *
    * Retrieve the necessary configuration parameters
    */
-  MidShowerNuclearBkgdFilter(const std::string& name, Parameters& parameters);
+  MidShowerNuclearBkgdFilter(const std::string& name,
+                             framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -45,8 +46,9 @@ class MidShowerNuclearBkgdFilter : public UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::STACKING, TYPE::STEPPING, TYPE::EVENT};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING,
+            simcore::TYPE::EVENT};
   }
 
   /**
@@ -152,6 +154,6 @@ class MidShowerNuclearBkgdFilter : public UserAction {
   double total_process_energy_{0.};
 
 };  // MidShowerNuclearBkgdFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_MIDSHOWERBKGDFILTER_H__

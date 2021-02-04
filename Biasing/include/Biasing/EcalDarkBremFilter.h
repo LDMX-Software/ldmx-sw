@@ -1,8 +1,8 @@
 /**
  * @file EcalDarkBremFilter.h
  * @class EcalDarkBremFilter
- * @brief Class defining a UserActionPlugin that allows a user to filter out
- *        events that don't result in a dark brem inside a given volume
+ * @brief Class defining a simcore::UserActionPlugin that allows a user to
+ * filter out events that don't result in a dark brem inside a given volume
  * @author Michael Revering, University of Minnesota
  * @author Tom Eichlersmith, University of Minnesota
  */
@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * @class EcalDarkBremFilter
@@ -43,14 +43,15 @@ namespace ldmx {
  * an A' of the required input energy and generated inside of the required input
  * volume.
  */
-class EcalDarkBremFilter : public UserAction {
+class EcalDarkBremFilter : public simcore::UserAction {
  public:
   /**
    * Class constructor.
    *
    * Retrieve the necessary configuration parameters
    */
-  EcalDarkBremFilter(const std::string& name, Parameters& parameters);
+  EcalDarkBremFilter(const std::string& name,
+                     framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -62,8 +63,9 @@ class EcalDarkBremFilter : public UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<TYPE> getTypes() final override {
-    return {TYPE::STACKING, TYPE::EVENT, TYPE::TRACKING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STACKING, simcore::TYPE::EVENT,
+            simcore::TYPE::TRACKING};
   }
 
   /**
@@ -157,6 +159,6 @@ class EcalDarkBremFilter : public UserAction {
   bool foundAp_;
 
 };  // EcalDarkBremFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_ECALDARKBREMFILTER_H__

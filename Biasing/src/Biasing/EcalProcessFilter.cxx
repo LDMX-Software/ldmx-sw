@@ -14,11 +14,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 EcalProcessFilter::EcalProcessFilter(const std::string& name,
-                                     Parameters& parameters)
-    : UserAction(name, parameters) {
+                                     framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
 }
 
@@ -55,7 +55,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{
-      static_cast<UserTrackInformation*>(track->GetUserInformation())};
+      static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
 
   // Get the particles daughters.
@@ -171,6 +171,6 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     getEventInfo()->decBremCandidateCount();
   }
 }
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, EcalProcessFilter)
+DECLARE_ACTION(biasing, EcalProcessFilter)

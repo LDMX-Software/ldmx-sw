@@ -7,7 +7,7 @@ class MyProcessor(ldmxcfg.Producer) :
     """The name is purely conventional to match the C++ class name for clarity
 
     The line
-        super().__init__( name , "ldmx::MyProcessor" , "Recon" )
+        super().__init__( name , "recon::MyProcessor" , "Recon" )
 
     Calls the constructor for ldmxcfg.Producer, which is how we have handles
     on this processor. You need to give the actual C++ class name with 
@@ -37,6 +37,6 @@ class MyProcessor(ldmxcfg.Producer) :
     """
 
     def __init__(self, name ):
-        super().__init__( name , "ldmx::MyProcessor" , 'Recon' )
+        super().__init__( name , "recon::MyProcessor" , 'Recon' )
 
         self.my_parameter = 20

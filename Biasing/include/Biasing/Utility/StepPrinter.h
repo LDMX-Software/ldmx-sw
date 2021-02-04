@@ -12,7 +12,7 @@ namespace utility {
 /**
  * User stepping action used to print the details of a step.
  */
-class StepPrinter : public ldmx::UserAction {
+class StepPrinter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -21,7 +21,7 @@ class StepPrinter : public ldmx::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  StepPrinter(const std::string& name, ldmx::Parameters& parameters);
+  StepPrinter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~StepPrinter();
@@ -35,8 +35,8 @@ class StepPrinter : public ldmx::UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<ldmx::TYPE> getTypes() final override {
-    return {ldmx::TYPE::STEPPING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STEPPING};
   }
 
  private:

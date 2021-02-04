@@ -20,11 +20,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
-TargetProcessFilter::TargetProcessFilter(const std::string& name,
-                                         Parameters& parameters)
-    : UserAction(name, parameters) {
+TargetProcessFilter::TargetProcessFilter(
+    const std::string& name, framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
 }
 
@@ -52,7 +52,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{
-      static_cast<UserTrackInformation*>(track->GetUserInformation())};
+      static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
 
   // Get the region the particle is currently in.  Continue processing
@@ -113,6 +113,6 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 }
 
 void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, TargetProcessFilter)
+DECLARE_ACTION(biasing, TargetProcessFilter)

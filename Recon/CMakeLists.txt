@@ -22,8 +22,9 @@ if(BUILD_EVENT_ONLY)
                          class "TriggerResult" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "HgcrocDigiCollection" )
-                       register_event_object( module_path "Recon/Event" namespace
-                         "ldmx" class "HgcrocTrigDigi" type "collection" )
+                       register_event_object( module_path "Recon/Event" 
+                         namespace "ldmx" class "HgcrocTrigDigi" 
+                         type "collection" )
    setup_library(module Recon name Event
                  dependencies ROOT::Core
                  register_target)

@@ -8,11 +8,11 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
-namespace ldmx {
+namespace biasing {
 
 PrimaryToEcalFilter::PrimaryToEcalFilter(const std::string& name,
-                                         Parameters& parameters)
-    : UserAction(name, parameters) {
+                                         framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
 
@@ -49,6 +49,6 @@ void PrimaryToEcalFilter::stepping(const G4Step* step) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, PrimaryToEcalFilter)
+DECLARE_ACTION(biasing, PrimaryToEcalFilter)
