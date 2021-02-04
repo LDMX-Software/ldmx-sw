@@ -97,7 +97,7 @@ namespace trigscint {
     std::string input_pulse_shape_;
 
     /// QIE Input pulse parameters
-    std::vector<float> pulse_params;
+    std::vector<float> pulse_params_;
 
     /// Overall input pulse time offset
     float toff_overall_;
@@ -106,22 +106,22 @@ namespace trigscint {
     int maxts_;
     
     /// QIE TDC Current threshold
-    float tdc_thr;
+    float tdc_thr_;
     
     /// QIE pedestal
-    float pedestal;
+    float pedestal_;
     
     /// QIE electronic noise
-    float elec_noise;
+    float elec_noise_;
 
     /// SiPM Gain
-    float sipm_gain;
+    float sipm_gain_;
 
     /// QIE sampling frequency [in MHz]
-    float s_freq;
+    float s_freq_;
 
     /// SimQIE pointer
-    SimQIE* smq{nullptr};
+    SimQIE* smq_{nullptr};
 
   };
 

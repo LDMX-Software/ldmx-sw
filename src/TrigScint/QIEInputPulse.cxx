@@ -30,17 +30,17 @@ namespace trigscint {
   // rise = rise time
   // fall = fall time
   Bimoid::Bimoid(float rise,float fall){
-    rt = rise;
-    ft = fall;
+    rt_ = rise;
+    ft_ = fall;
   }
 
   float Bimoid::EvalSingle(float T, int id){
     if (T<toff_[id]) return 0;
     // Normalization constant
-    float nc = (ft-rt)*log(2)/ampl_[id];
+    float nc = (ft_-rt_)*log(2)/ampl_[id];
     
-    float y1 = 1/(1+exp((toff_[id]-T)/rt));
-    float y2 = 1/(1+exp((toff_[id]-T)/ft));
+    float y1 = 1/(1+exp((toff_[id]-T)/rt_));
+    float y2 = 1/(1+exp((toff_[id]-T)/ft_));
     return((y1-y2)/nc);
   }
 
@@ -57,13 +57,13 @@ namespace trigscint {
   float Bimoid::I_Int(float T, int id){
     if (T<=toff_[id]) return 0;
     // Normalization constant
-    float nc = (ft-rt)*log(2)/ampl_[id];
+    float nc = (ft_-rt_)*log(2)/ampl_[id];
 
     float t=T-toff_[id];	// time relative to offset
 
     float II =			// Integral
-      rt*log(1+exp((t-toff_[id])/rt)) -
-      ft*log(1+exp((t-toff_[id])/ft));
+      rt_*log(1+exp((t-toff_[id])/rt_)) -
+      ft_*log(1+exp((t-toff_[id])/ft_));
 
     return II/nc;
   }
@@ -86,14 +86,14 @@ namespace trigscint {
 
   float Bimoid::Derivative(float T, int id){
     // Normalization constant
-    float nc = (ft-rt)*log(2)/ampl_[id];
+    float nc = (ft_-rt_)*log(2)/ampl_[id];
 
     float T_ = T-toff_[id];
-    float E1 = exp(-T_/rt);
-    float E2 = exp(-T_/ft);
+    float E1 = exp(-T_/rt_);
+    float E2 = exp(-T_/ft_);
 
-    float v1 = E1/(rt*pow(1+E1,2));
-    float v2 = E2/(ft*pow(1+E2,2));
+    float v1 = E1/(rt_*pow(1+E1,2));
+    float v2 = E2/(ft_*pow(1+E2,2));
 
     return((v1-v2)/nc);		// Actual derivative
   }
@@ -105,21 +105,21 @@ namespace trigscint {
   // Parameters:
   // k_ = 1/(RC time constant of the capacitor)
   // tmax_ = The charging time of the capacitor
-  Expo::Expo(float k_,float tmax_){
-    k=k_;
-    tmax=tmax_;
+  Expo::Expo(float k,float tmax){
+    k_=k;
+    tmax_=tmax;
 
-    rt = (log(9+exp(-k*tmax))-log(1+9*exp(-k*tmax)))/k;
-    ft = log(9)/k;
+    rt_ = (log(9+exp(-k_*tmax_))-log(1+9*exp(-k_*tmax_)))/k_;
+    ft_ = log(9)/k_;
   }
 
   // Manually set the rise time and fall time of the pulse
   void Expo::SetRiseFall(float rr, float ff){
-    rt=rr;
-    ft=ff;
+    rt_=rr;
+    ft_=ff;
   
-    k = log(9)/ft;
-    tmax = (log(9-exp(-k*rt))-log(9*exp(-k*rt)-1))/k;
+    k_ = log(9)/ft_;
+    tmax_ = (log(9-exp(-k_*rt_))-log(9*exp(-k_*rt_)-1))/k_;
   }
 
   float Expo::EvalSingle(float t_,int id){
@@ -128,22 +128,22 @@ namespace trigscint {
     if (ampl_[id]==0) return 0;
 
     //Normalization constant
-    float nc = ampl_[id]/tmax;
+    float nc = ampl_[id]/tmax_;
     // time relative to the offset
     float T = t_-toff_[id];
-    if (T<tmax) {
-      return(nc*(1-exp(-k*T)));
+    if (T<tmax_) {
+      return(nc*(1-exp(-k_*T)));
     }
     else {
-      return(nc*(1-exp(-k*tmax))*exp(k*(tmax-T)));
+      return(nc*(1-exp(-k_*tmax_))*exp(k_*(tmax_-T)));
     }
     return -1;
   }
 
   float Expo::Max(int id){
     //Normalization constant
-    float nc = ampl_[id]/tmax;
-    return nc*(1-exp(-k*tmax));
+    float nc = ampl_[id]/tmax_;
+    return nc*(1-exp(-k_*tmax_));
   }
 
   float Expo::Integrate(float T1, float T2){
@@ -162,21 +162,21 @@ float Expo::Derivative(float T, int id){
 
     float t=T-toff_[id];
     //Normalization constant
-    float nc = ampl_[id]/tmax;
+    float nc = ampl_[id]/tmax_;
 
-    if (t<=tmax) return(nc*k*exp(-k*t));
-    return(-nc*k*(1-exp(-k*tmax))*exp(k*(tmax-t)));
+    if (t<=tmax_) return(nc*k_*exp(-k_*t));
+    return(-nc*k_*(1-exp(-k_*tmax_))*exp(k_*(tmax_-t)));
   }
 
 float Expo::I_Int(float T, int id){
     if (T<=toff_[id]) return 0;
     float t=T-toff_[id];
     //Normalization constant
-    float nc = ampl_[id]/tmax;
-    if (t<tmax) return(nc*(k*t+exp(-k*t)-1)/k);
+    float nc = ampl_[id]/tmax_;
+    if (t<tmax_) return(nc*(k_*t+exp(-k_*t)-1)/k_);
 
-    float c1 = (1-exp(-k*tmax))/k;
-    float c2 = tmax-c1*exp(k*(tmax-t));
+    float c1 = (1-exp(-k_*tmax_))/k_;
+    float c2 = tmax_-c1*exp(k_*(tmax_-t));
     return nc*c2;
   }
 

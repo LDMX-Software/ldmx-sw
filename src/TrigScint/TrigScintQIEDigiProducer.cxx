@@ -45,37 +45,37 @@ namespace trigscint {
       parameters.getParameter< double >("toff_overall");
     input_pulse_shape_ 	=
       parameters.getParameter< std::string >("input_pulse_shape");
-    tdc_thr 		=
+    tdc_thr_ 		=
       parameters.getParameter< double >("tdc_thr");
-    pedestal 		=
+    pedestal_ 		=
       parameters.getParameter< double >("pedestal");
-    elec_noise 		=
+    elec_noise_ 		=
       parameters.getParameter< double >("elec_noise");
-    sipm_gain 		=
+    sipm_gain_ 		=
       parameters.getParameter< double >("sipm_gain");
-    s_freq 		=
+    s_freq_ 		=
       parameters.getParameter< double >("qie_sf");
       
     if ( input_pulse_shape_ == "Expo") {
-      pulse_params.clear();
-      pulse_params.push_back
+      pulse_params_.clear();
+      pulse_params_.push_back
 	(parameters.getParameter< double >("expo_k"));
-      pulse_params.push_back
+      pulse_params_.push_back
 	(parameters.getParameter< double >("expo_tmax"));
 
-      ldmx_log(debug) <<"expo_k ="<<	pulse_params[0];
-      ldmx_log(debug) <<"expo_tmax ="<<	pulse_params[1];
+      ldmx_log(debug) <<"expo_k ="<<	pulse_params_[0];
+      ldmx_log(debug) <<"expo_tmax ="<<	pulse_params_[1];
     }
 
     // Debug mode: print parameter values.
     ldmx_log(debug) <<"maxts_ ="<<		maxts_;
     ldmx_log(debug) <<"toff_overall_ ="<<	toff_overall_;
     ldmx_log(debug) <<"input_pulse_shape_ ="<<input_pulse_shape_;
-    ldmx_log(debug) <<"tdc_thr ="<<		tdc_thr;
-    ldmx_log(debug) <<"pedestal ="<<		pedestal;
-    ldmx_log(debug) <<"elec_noise ="<<	elec_noise;
-    ldmx_log(debug) <<"sipm_gain ="<<		sipm_gain;
-    ldmx_log(debug) <<"s_freq ="<<		s_freq;
+    ldmx_log(debug) <<"tdc_thr ="<<		tdc_thr_;
+    ldmx_log(debug) <<"pedestal ="<<		pedestal_;
+    ldmx_log(debug) <<"elec_noise ="<<	elec_noise_;
+    ldmx_log(debug) <<"sipm_gain ="<<		sipm_gain_;
+    ldmx_log(debug) <<"s_freq ="<<		s_freq_;
   }
 
   void TrigScintQIEDigiProducer::produce(framework::Event& event) {
@@ -92,13 +92,13 @@ namespace trigscint {
 
       // Initialize SimQIE instance with
       // pedestal, electronic noise and the random seed
-      smq = new SimQIE
-	(pedestal,elec_noise,rseed2.getSeed(outputCollection_+"SimQIE"));
+      smq_ = new SimQIE
+	(pedestal_,elec_noise_,rseed2.getSeed(outputCollection_+"SimQIE"));
 
-      smq->SetGain(sipm_gain);
-      smq->SetFreq(s_freq);
-      smq->SetNTimeSamples(maxts_);
-      smq->SetTDCThreshold(tdc_thr);
+      smq_->SetGain(sipm_gain_);
+      smq_->SetFreq(s_freq_);
+      smq_->SetNTimeSamples(maxts_);
+      smq_->SetTDCThreshold(tdc_thr_);
 
     }
 
@@ -108,7 +108,7 @@ namespace trigscint {
     for(int i=0;i<stripsPerArray_;i++){
       
       // Set the pulse shape with fixed parameters given by config. file
-      ex[i] = new Expo(pulse_params[0],pulse_params[1]);
+      ex[i] = new Expo(pulse_params_[0],pulse_params_[1]);
       TrueEdep[i]=0;
     }
 
@@ -143,7 +143,7 @@ namespace trigscint {
     double TotalNoise = meanNoise_*maxts_;
 
     // time period[ns] = 1000/sampling freq.[MHz]
-    double SamplingTime = 1000/s_freq;
+    double SamplingTime = 1000/s_freq_;
 
     // Loop over all the bars available.
     for(int bar_id=0;bar_id<stripsPerArray_;bar_id++) {
@@ -160,13 +160,13 @@ namespace trigscint {
       }
 
       // Storing the "good" digis
-      if(smq->PulseCut(ex[bar_id])) {
+      if(smq_->PulseCut(ex[bar_id])) {
 	ldmx::TrigScintQIEDigis QIEInfo;
 	QIEInfo.chanID = bar_id;
 
-	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));
-	QIEInfo.SetTDC(smq->Out_TDC(ex[bar_id]));
-	QIEInfo.SetCID(smq->CapID(ex[bar_id]));
+	QIEInfo.SetADC(smq_->Out_ADC(ex[bar_id]));
+	QIEInfo.SetTDC(smq_->Out_TDC(ex[bar_id]));
+	QIEInfo.SetCID(smq_->CapID(ex[bar_id]));
 	QIEInfo.truePE = TrueEdep[bar_id] / mevPerMip_ * pePerMip_;
 
 	// true -> there is atleast some true energy deposited in the bar
