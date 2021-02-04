@@ -46,54 +46,50 @@ namespace ldmx {
      * @note required for declaring std::vector<> in EventDef.h
      */  
     bool operator < ( const TrigScintQIEDigis &rhs ) const
-    { return this->chanID < rhs.chanID;}
+    { return this->chanID_ < rhs.chanID_;}
 
     /**
      * Get ADCs of all time samples
      */
-    std::vector<int> GetADC(){return(adcs);}
+    std::vector<int> GetADC(){return(adcs_);}
 
     /**
      * Get tdcs of all time samples
      */
-    std::vector<int> GetTDC(){return(tdcs);}
+    std::vector<int> GetTDC(){return(tdcs_);}
 
     /**
      * Get Cap IDs of all time samples
      */
-    std::vector<int> GetCID(){return(cids);}
+    std::vector<int> GetCID(){return(cids_);}
 
     /**
      * Store adcs of all time samples
      * @param adc_ array of adcs
      */
-    void SetADC(std::vector<int> adc_) {adcs = adc_;}
+    void SetADC(std::vector<int> adc) {adcs_ = adc;}
 
     /**
      * Store tdcs of all time samples
      * @param tdc_ array of tdcs
      */
-    void SetTDC(std::vector<int> tdc_) {tdcs = tdc_;}
+    void SetTDC(std::vector<int> tdc) {tdcs_ = tdc;}
 
     /**
      * Store cids of all time samples
      * @param cid_ array of cids
      */
-    void SetCID(std::vector<int> cid_) {cids = cid_;}
+    void SetCID(std::vector<int> cid) {cids_ = cid;}
 
     /// channel ID
-    int chanID;
-    /// Net input no. of PEs
-    int truePE;
-    /// Whether or not there is noise
-    bool IsNoisy; 
+    int chanID_;
 
     /// analog to digital counts
-    std::vector<int> adcs;
+    std::vector<int> adcs_;
     /// Time to Digital counts
-    std::vector<int> tdcs;
+    std::vector<int> tdcs_;
     /// capacitor IDs
-    std::vector<int> cids;
+    std::vector<int> cids_;
 
     ClassDef(TrigScintQIEDigis,1);
   };
