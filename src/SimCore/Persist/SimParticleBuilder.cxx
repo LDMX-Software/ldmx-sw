@@ -3,9 +3,9 @@
 #include <string>
 
 // LDMX
-#include "Recon/Event/EventConstants.h"
 #include "Framework/Event.h"
 #include "Framework/Exception/Exception.h"
+#include "Recon/Event/EventConstants.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/G4TrackerHit.h"
 #include "SimCore/UserTrackingAction.h"
@@ -20,40 +20,38 @@
 namespace simcore {
 namespace persist {
 
-SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
-}
+SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {}
 
 SimParticleBuilder::~SimParticleBuilder() {}
 
 void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
-
   // Get the trajectory container for the event.
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
 
-  if (!trajectories or !(trajectories->GetVector())) { 
-    EXCEPTION_RAISE(
-        "PersistFault",
-        "Event's trajectory container does not exist."
-        );
+  if (!trajectories or !(trajectories->GetVector())) {
+    EXCEPTION_RAISE("PersistFault",
+                    "Event's trajectory container does not exist.");
   }
 
-  const std::vector<G4VTrajectory*>& trajectory_list=*(trajectories->GetVector());
+  const std::vector<G4VTrajectory *> &trajectory_list =
+      *(trajectories->GetVector());
 
   // Create empty SimParticle objects and create the map of track ID to
   // particles.
   std::map<int, ldmx::SimParticle> outputParticleMap;
-  for (G4VTrajectory* trajectory : trajectory_list) {
-    if (!trajectory) 
-      EXCEPTION_RAISE("PersistFault","NULL G4VTrajectory ended up in storage.");
+  for (G4VTrajectory *trajectory : trajectory_list) {
+    if (!trajectory)
+      EXCEPTION_RAISE("PersistFault",
+                      "NULL G4VTrajectory ended up in storage.");
     outputParticleMap[trajectory->GetTrackID()];
   }
-  
-  // Fill information into the particles.
-  for (G4VTrajectory* trajectory : trajectory_list) {
 
+  // Fill information into the particles.
+  for (G4VTrajectory *trajectory : trajectory_list) {
     ldmx::Trajectory *traj = dynamic_cast<ldmx::Trajectory *>(trajectory);
-    if (!traj) EXCEPTION_RAISE("PersistFault","NULL Trajectory ended up in storage.");
+    if (!traj)
+      EXCEPTION_RAISE("PersistFault", "NULL Trajectory ended up in storage.");
 
     ldmx::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
 
@@ -87,14 +85,13 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
         // this parent has been found in the particle map
         outputParticleMap[traj->GetParentID()].addDaughter(
             trajectory->GetTrackID());
-      } // check if parent exists in output map
-    }   // check if particle has a parent
+      }  // check if parent exists in output map
+    }    // check if particle has a parent
   }
 
   // Add the collection data to the output event.
   outputEvent->add("SimParticles", outputParticleMap);
-
 }
 
-} // namespace persist
-} // namespace simcore
+}  // namespace persist
+}  // namespace simcore

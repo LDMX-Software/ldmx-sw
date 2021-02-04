@@ -6,16 +6,15 @@
  */
 
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
-#include "SimCore/DarkBrem/DarkBremVertexLibraryModel.h"
-#include "SimCore/DarkBrem/G4APrime.h"
 
 #include "Framework/RunHeader.h"
-
 #include "G4Electron.hh"      //for electron definition
 #include "G4EventManager.hh"  //for EventID number
 #include "G4ProcessTable.hh"  //for deactivating dark brem process
 #include "G4ProcessType.hh"   //for type of process
 #include "G4RunManager.hh"    //for VerboseLevel
+#include "SimCore/DarkBrem/DarkBremVertexLibraryModel.h"
+#include "SimCore/DarkBrem/G4APrime.h"
 
 namespace ldmx {
 namespace darkbrem {
@@ -121,8 +120,8 @@ G4VParticleChange* G4eDarkBremsstrahlung::PostStepDoIt(const G4Track& track,
     // Deactivate the process after one dark brem if we restrict ourselves to
     // only one per event. If this is in the stepping action instead, more than
     // one brem can occur within each step. Reactivated in
-    // RunManager::TerminateOneEvent Both biased and unbiased process could be in
-    // the run (but not at the same time),
+    // RunManager::TerminateOneEvent Both biased and unbiased process could be
+    // in the run (but not at the same time),
     //  so we turn off both while silencing the warnings from the process table.
     std::vector<G4String> db_process_name_options = {
         "biasWrapper(" + PROCESS_NAME + ")", PROCESS_NAME};

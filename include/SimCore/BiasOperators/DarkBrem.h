@@ -33,7 +33,7 @@ class DarkBrem : public XsecBiasingOperator {
   /**
    * Calculate the biased cross section given the
    * input process and track. This allows for us
-   * to have access to the current information about the 
+   * to have access to the current information about the
    * track while calculating the biased cross section.
    *
    * @see XsecBiasingOperator::BiasedXsec
@@ -44,7 +44,8 @@ class DarkBrem : public XsecBiasingOperator {
    *         to bias the occurence of events.
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track, const G4BiasingProcessInterface* callingProcess) final override;
+      const G4Track* track,
+      const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the name of the process this operator biases
   virtual std::string getProcessToBias() const {

@@ -6,7 +6,7 @@ namespace biasoperators {
 const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 
 PhotoNuclear::PhotoNuclear(std::string name, const ldmx::Parameters& p)
-    : XsecBiasingOperator(name,p) {
+    : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   threshold_ = p.getParameter<double>("threshold");
   factor_ = p.getParameter<double>("factor");
@@ -21,13 +21,11 @@ void PhotoNuclear::StartRun() {
   } else if (down_bias_conv_) {
     EXCEPTION_RAISE(
         "PhotoNuclearBiasing",
-        "Gamma Conversion process '"+CONVERSION_PROCESS+"' is not biased!"
-        );
+        "Gamma Conversion process '" + CONVERSION_PROCESS + "' is not biased!");
   }
 }
 
-G4VBiasingOperation*
-PhotoNuclear::ProposeOccurenceBiasingOperation(
+G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Kinetic energy: " << track->GetKineticEnergy()
@@ -92,4 +90,4 @@ PhotoNuclear::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators,PhotoNuclear)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, PhotoNuclear)

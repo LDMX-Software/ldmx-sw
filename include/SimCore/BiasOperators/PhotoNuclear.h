@@ -13,7 +13,7 @@ namespace biasoperators {
 class PhotoNuclear : public XsecBiasingOperator {
  public:
   /** Constructor */
-  PhotoNuclear(std::string name,const ldmx::Parameters& p);
+  PhotoNuclear(std::string name, const ldmx::Parameters& p);
 
   /** Method called at the beginning of a run. */
   void StartRun();
@@ -23,7 +23,8 @@ class PhotoNuclear : public XsecBiasingOperator {
    *         to bias the occurence of photonuclear events.
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track, const G4BiasingProcessInterface* callingProcess) final override;
+      const G4Track* track,
+      const G4BiasingProcessInterface* callingProcess) final override;
 
   /// return the process we want to bias
   virtual std::string getProcessToBias() const { return "photonNuclear"; }

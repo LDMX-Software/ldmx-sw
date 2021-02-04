@@ -19,65 +19,64 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+#include "Framework/Configure/Parameters.h"
 
 // Forward Declarations
-class G4Event; 
+class G4Event;
 
-namespace ldmx { 
+namespace ldmx {
 
-    // Forward declarations
-    class PrimaryGenerator; 
-    
-    typedef PrimaryGenerator* PrimaryGeneratorBuilder(const std::string& name, Parameters& parameters); 
+// Forward declarations
+class PrimaryGenerator;
 
-    /**
-     * @class PrimaryGenerator
-     * @brief Interface that defines a simulation primary generator.
-     *
-     * This class inherits from the Geant4 Primary Genertor template,
-     * and is used as a common reference for all of the other PrimaryGenerators.
-     */
-    class PrimaryGenerator : public G4VPrimaryGenerator { 
+typedef PrimaryGenerator* PrimaryGeneratorBuilder(const std::string& name,
+                                                  Parameters& parameters);
 
-        public: 
+/**
+ * @class PrimaryGenerator
+ * @brief Interface that defines a simulation primary generator.
+ *
+ * This class inherits from the Geant4 Primary Genertor template,
+ * and is used as a common reference for all of the other PrimaryGenerators.
+ */
+class PrimaryGenerator : public G4VPrimaryGenerator {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param name Name given the to class instance.
+   */
+  PrimaryGenerator(const std::string& name, Parameters& parameters);
 
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            PrimaryGenerator(const std::string& name, Parameters& parameters); 
+  /// Destructor
+  virtual ~PrimaryGenerator();
 
-            /// Destructor
-            virtual ~PrimaryGenerator();
+  /**
+   * Method used to register a user action with the manager.
+   *
+   * @param className Name of the class instance
+   * @param builder The builder used to create and instance of this class.
+   */
+  static void declare(const std::string& className,
+                      PrimaryGeneratorBuilder* builder);
 
-            /**
-             * Method used to register a user action with the manager.
-             *
-             * @param className Name of the class instance
-             * @param builder The builder used to create and instance of this class. 
-             */
-            static void declare(const std::string& className, PrimaryGeneratorBuilder* builder); 
+  /**
+   * Generate a Primary Vertex
+   *
+   * This function must be defined by any other LDMX generators.
+   */
+  virtual void GeneratePrimaryVertex(G4Event*) = 0;
 
-            /**
-             * Generate a Primary Vertex
-             *
-             * This function must be defined by any other LDMX generators.
-             */
-            virtual void GeneratePrimaryVertex(G4Event*) = 0;
+ protected:
+  /// Name of the PrimaryGenerator
+  std::string name_{""};
 
-        protected:
+  /// The set of parameters used to configure this class
+  Parameters parameters_;
 
-            /// Name of the PrimaryGenerator
-            std::string name_{""};
+};  // PrimaryGenerator
 
-            /// The set of parameters used to configure this class
-            Parameters parameters_; 
-
-    }; // PrimaryGenerator
-
-} // ldmx
+}  // namespace ldmx
 
 /**
  * @macro DECLARE_GENERATOR
@@ -86,13 +85,14 @@ namespace ldmx {
  * and then registers the class as a generator
  * with the PluginFactory
  */
-#define DECLARE_GENERATOR(NS, CLASS)                                                                        \
-    ldmx::PrimaryGenerator* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) {      \
-        return new NS::CLASS(name, parameters);                                                             \
-    }                                                                                                       \
-    __attribute((constructor(205)))                                                                         \
-    static void CLASS ## Declare() {                                                                        \
-        ldmx::PrimaryGenerator::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); \
-    } 
+#define DECLARE_GENERATOR(NS, CLASS)                                     \
+  ldmx::PrimaryGenerator* CLASS##Builder(const std::string& name,        \
+                                         ldmx::Parameters& parameters) { \
+    return new NS::CLASS(name, parameters);                              \
+  }                                                                      \
+  __attribute((constructor(205))) static void CLASS##Declare() {         \
+    ldmx::PrimaryGenerator::declare(                                     \
+        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder); \
+  }
 
-#endif // SIMCORE_PRIMARYGENERATOR_H
+#endif  // SIMCORE_PRIMARYGENERATOR_H
