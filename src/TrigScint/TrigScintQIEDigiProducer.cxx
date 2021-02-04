@@ -162,16 +162,12 @@ namespace trigscint {
       // Storing the "good" digis
       if(smq_->PulseCut(ex[bar_id])) {
 	ldmx::TrigScintQIEDigis QIEInfo;
-	QIEInfo.chanID = bar_id;
+	QIEInfo.chanID_ = bar_id;
 
 	QIEInfo.SetADC(smq_->Out_ADC(ex[bar_id]));
 	QIEInfo.SetTDC(smq_->Out_TDC(ex[bar_id]));
 	QIEInfo.SetCID(smq_->CapID(ex[bar_id]));
-	QIEInfo.truePE = TrueEdep[bar_id] / mevPerMip_ * pePerMip_;
 
-	// true -> there is atleast some true energy deposited in the bar
-	// false-> All the pulses recorded are from dark noise
-	QIEInfo.IsNoisy= (TrueEdep[bar_id]==0);
 	QDigis.push_back(QIEInfo);
       }
     }

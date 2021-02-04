@@ -25,10 +25,10 @@ namespace ldmx {
   
   void TrigScintQIEDigis::Print(Option_t* option) const {
     std::cout<<"TrigScintQIEDigis { "
-	     <<"chanID= "<<chanID<<", "
-	     <<"ADC[0]= "<<adcs[0]<<", "
-	     <<"TDC[0]= "<<tdcs[0]<<", "
-	     <<"CID[0]= "<<tdcs[0]<<", "
+	     <<"chanID= "<<chanID_<<", "
+	     <<"ADC[0]= "<<adcs_[0]<<", "
+	     <<"TDC[0]= "<<tdcs_[0]<<", "
+	     <<"CID[0]= "<<tdcs_[0]<<", "
 	     <<"}\n";
   }
 
