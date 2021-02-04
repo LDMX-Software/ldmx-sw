@@ -63,4 +63,3 @@ class TrackProcessFilter : public ldmx::UserAction {
 }  // namespace biasing
 
 #endif  // BIASING_UTILITY_TRACKPROCESSFILTER_H
-

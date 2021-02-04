@@ -94,7 +94,8 @@ class TargetDarkBremFilter : public UserAction {
    * @note will return true if vol is nullptr.
    *
    * @param[in] vol G4LogicalVolume to check region
-   * @returns true if vol is outside target region or nullptr or doesn't have a region
+   * @returns true if vol is outside target region or nullptr or doesn't have a
+   * region
    */
   inline bool isOutsideTargetRegion(const G4LogicalVolume* vol) const {
     if (!vol) return true;

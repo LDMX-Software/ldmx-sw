@@ -9,11 +9,10 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
+#include "G4LogicalVolumeStore.hh"      //for the store
 #include "SimCore/DarkBrem/G4APrime.h"  //checking if particles match A'
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //checking for dark brem secondaries
-#include "SimCore/UserTrackInformation.h"  //make sure A' is saved
-
-#include "G4LogicalVolumeStore.hh"  //for the store
+#include "SimCore/UserTrackInformation.h"            //make sure A' is saved
 
 namespace ldmx {
 
