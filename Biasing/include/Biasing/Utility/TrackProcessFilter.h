@@ -27,7 +27,7 @@ namespace utility {
  * process will *not* be saved.
  *
  */
-class TrackProcessFilter : public ldmx::UserAction {
+class TrackProcessFilter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -36,7 +36,7 @@ class TrackProcessFilter : public ldmx::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TrackProcessFilter(const std::string& name, ldmx::Parameters& parameters);
+  TrackProcessFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TrackProcessFilter();
@@ -49,8 +49,8 @@ class TrackProcessFilter : public ldmx::UserAction {
   void PostUserTrackingAction(const G4Track* track) final override;
 
   /// Retrieve the type of actions this class defines.
-  std::vector<ldmx::TYPE> getTypes() final override {
-    return {ldmx::TYPE::TRACKING};
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::TRACKING};
   }
 
  private:

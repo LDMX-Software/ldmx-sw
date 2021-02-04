@@ -9,8 +9,8 @@
 namespace biasing {
 namespace utility {
 
-StepPrinter::StepPrinter(const std::string& name, ldmx::Parameters& parameters)
-    : ldmx::UserAction(name, parameters) {
+StepPrinter::StepPrinter(const std::string& name, framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   trackID_ = parameters.getParameter<int>("track_id");
 }
 

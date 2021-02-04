@@ -11,19 +11,19 @@
 #include <vector>
 
 // LDMX Framework
+#include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace recon {
 
 /**
  * Class to overlay in-time pile-up events from an overlay file
  */
-class OverlayProducer : public Producer {
-public:
-  OverlayProducer(const std::string &name, Process &process)
-      : Producer(name, process), overlayEvent_{"overlay"} {}
+class OverlayProducer : public framework::Producer {
+ public:
+  OverlayProducer(const std::string &name, framework::Process &process)
+      : framework::Producer(name, process), overlayEvent_{"overlay"} {}
 
   // Destructor
   ~OverlayProducer() = default;
@@ -31,7 +31,7 @@ public:
   /**
    * Configure the processor with input parameters from the python cofig
    */
-  void configure(Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Based on the list of collections to overlay, and the desired number of
@@ -50,7 +50,7 @@ public:
    * The resulting collections inherit the input collection name, with an
    * appended string "Overlay". This name is also currently hardwired.
    */
-  void produce(Event &event) final override;
+  void produce(framework::Event &event) final override;
 
   /**
    * At the start of processing, the pileup overlay file is set up, and the
@@ -60,7 +60,7 @@ public:
    */
   void onProcessStart() final override;
 
-private:
+ private:
   /**
    * Pileup overlay events input file name
    */
@@ -69,12 +69,12 @@ private:
   /**
    * Pileup overlay events input file
    */
-  std::unique_ptr<EventFile> overlayFile_;
+  std::unique_ptr<framework::EventFile> overlayFile_;
 
   /**
    * The overlay ldmx event bus
    */
-  Event overlayEvent_;
+  framework::Event overlayEvent_;
 
   /**
    * List of SimCalorimeterHit collection(s) to loop over and add hits from,
@@ -163,6 +163,6 @@ private:
   int overlayTrackID_{-1000};
   int overlayPdgCode_{0};
 };
-} // namespace ldmx
+}  // namespace recon
 
 #endif /* RECON_OVERLAY_OVERLAYPRODUCER_H */

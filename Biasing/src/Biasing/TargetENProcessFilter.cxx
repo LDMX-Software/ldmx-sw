@@ -12,11 +12,11 @@
 /*~~~~~~~~~~~~*/
 #include "G4RunManager.hh"
 
-namespace ldmx {
+namespace biasing {
 
-TargetENProcessFilter::TargetENProcessFilter(const std::string& name,
-                                             Parameters& parameters)
-    : UserAction(name, parameters) {
+TargetENProcessFilter::TargetENProcessFilter(
+    const std::string& name, framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   recoilEnergyThreshold_ = parameters.getParameter<double>("recoilThreshold");
 }
 
@@ -100,6 +100,6 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
 void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
   reactionOccurred_ = false;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, TargetENProcessFilter)
+DECLARE_ACTION(biasing, TargetENProcessFilter)

@@ -14,11 +14,11 @@
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //checking for dark brem secondaries
 #include "SimCore/UserTrackInformation.h"            //make sure A' is saved
 
-namespace ldmx {
+namespace biasing {
 
 EcalDarkBremFilter::EcalDarkBremFilter(const std::string& name,
-                                       Parameters& parameters)
-    : UserAction(name, parameters) {
+                                       framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 
   /*
@@ -60,7 +60,7 @@ void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
 
 G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
     const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
-  if (aTrack->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
+  if (aTrack->GetParticleDefinition() == simcore::darkbrem::G4APrime::APrime()) {
     // there is an A'! Yay!
     /* Debug message
     std::cout << "[ EcalDarkBremFilter ]: "
@@ -98,13 +98,13 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
 
   const G4VProcess* creator = track->GetCreatorProcess();
   if (creator and creator->GetProcessName().contains(
-                      darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
+                      simcore::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
-    UserTrackInformation* userInfo =
-        dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+    simcore::UserTrackInformation* userInfo =
+        dynamic_cast<simcore::UserTrackInformation*>(track->GetUserInformation());
     // make sure A' is persisted into output file
     userInfo->setSaveFlag(true);
-    if (track->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
+    if (track->GetParticleDefinition() == simcore::darkbrem::G4APrime::APrime()) {
       // check if A' was made in the desired volume and has the minimum energy
       if (not inDesiredVolume(track)) {
         AbortEvent("A' wasn't produced inside of the requested volume.");
@@ -141,6 +141,6 @@ void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
   G4RunManager::GetRunManager()->AbortEvent();
   return;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, EcalDarkBremFilter)
+DECLARE_ACTION(biasing, EcalDarkBremFilter)

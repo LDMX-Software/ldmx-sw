@@ -14,7 +14,7 @@
 // Forward declarations
 class G4Step;
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * User stepping action used to filter events where the primary
@@ -22,7 +22,7 @@ namespace ldmx {
  *
  * This is a simplistic filter designed similar to the TaggerVetoFilter.
  */
-class PrimaryToEcalFilter : public UserAction {
+class PrimaryToEcalFilter : public simcore::UserAction {
  public:
   /**
    * Constructor.
@@ -31,7 +31,7 @@ class PrimaryToEcalFilter : public UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  PrimaryToEcalFilter(const std::string& name, Parameters& parameters);
+  PrimaryToEcalFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~PrimaryToEcalFilter() {}
@@ -49,7 +49,7 @@ class PrimaryToEcalFilter : public UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override { return {simcore::TYPE::STEPPING}; }
 
  private:
   /// Energy [MeV] below which a primary should be vetoed.
@@ -57,6 +57,6 @@ class PrimaryToEcalFilter : public UserAction {
 
 };  // PrimaryToEcalFilter
 
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_PRIMARYTOECALFILTER_H

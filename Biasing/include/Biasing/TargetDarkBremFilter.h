@@ -26,7 +26,7 @@
 //------------//
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace biasing {
 
 /**
  * @class TargetDarkBremFilter
@@ -41,14 +41,15 @@ namespace ldmx {
  * secondaries of the primary electron if it is stopping within the target or
  * if it is leaving the target region.
  */
-class TargetDarkBremFilter : public UserAction {
+class TargetDarkBremFilter : public simcore::UserAction {
  public:
   /**
    * Class constructor.
    *
    * Retrieve the necessary configuration parameters
    */
-  TargetDarkBremFilter(const std::string& name, Parameters& parameters);
+  TargetDarkBremFilter(const std::string& name,
+                       framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -60,7 +61,9 @@ class TargetDarkBremFilter : public UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::STEPPING};
+  }
 
   /**
    * Looking for A' while primary is stepping.
@@ -125,6 +128,6 @@ class TargetDarkBremFilter : public UserAction {
   double threshold_;
 
 };  // TargetDarkBremFilter
-}  // namespace ldmx
+}  // namespace biasing
 
 #endif  // BIASING_TARGETDARKBREMFILTER_H__

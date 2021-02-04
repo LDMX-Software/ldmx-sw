@@ -5,11 +5,11 @@
 #include "G4Step.hh"
 #include "SimCore/UserTrackInformation.h"
 
-namespace ldmx {
+namespace biasing {
 
 MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(const std::string& name,
-                                                       Parameters& parameters)
-    : UserAction(name, parameters) {
+                                                       framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
   nuclear_processes_ = {"photonNuclear", "electronNuclear"};
 }
@@ -94,7 +94,7 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(
 
 void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
   auto track_info =
-      dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+      dynamic_cast<simcore::UserTrackInformation*>(track->GetUserInformation());
   track_info->setSaveFlag(true);
   return;
 }
@@ -111,6 +111,6 @@ void MidShowerNuclearBkgdFilter::AbortEvent(const std::string& reason) const {
   G4RunManager::GetRunManager()->AbortEvent();
   return;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, MidShowerNuclearBkgdFilter)
+DECLARE_ACTION(biasing, MidShowerNuclearBkgdFilter)

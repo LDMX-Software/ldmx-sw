@@ -13,11 +13,11 @@
 #include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
-namespace ldmx {
+namespace biasing {
 
 TargetDarkBremFilter::TargetDarkBremFilter(const std::string& name,
-                                           Parameters& parameters)
-    : UserAction(name, parameters) {
+                                           framework::config::Parameters& parameters)
+    : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
 
@@ -32,7 +32,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   // Leave if track is not an electron
   auto particle_def{track->GetParticleDefinition()};
   if (particle_def != G4Electron::Electron()) {
-    if (particle_def == darkbrem::G4APrime::APrime() and
+    if (particle_def == simcore::darkbrem::G4APrime::APrime() and
         track->GetCurrentStepNumber() == 1) {
       /** check on first step of A' to see if it originated in correct volume
        * this needs to be here because sometimes the
@@ -72,7 +72,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
       // check secondaries to see if we made a dark brem
       for (auto& secondary_track : *secondaries) {
         if (secondary_track->GetParticleDefinition() ==
-            darkbrem::G4APrime::APrime()) {
+            simcore::darkbrem::G4APrime::APrime()) {
           // we found an A', woo-hoo!
 
           if (secondary_track->GetTotalEnergy() < threshold_) {
@@ -126,6 +126,6 @@ void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
   G4RunManager::GetRunManager()->AbortEvent();
   return;
 }
-}  // namespace ldmx
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, TargetDarkBremFilter)
+DECLARE_ACTION(biasing, TargetDarkBremFilter)

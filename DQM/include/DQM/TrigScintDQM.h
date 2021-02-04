@@ -1,8 +1,8 @@
 /**
  * @file TrigScintDQM.h
- * @brief Analyzer used for TrigScint DQM. 
+ * @brief Analyzer used for TrigScint DQM.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Lene Kristian Bryngemark, Stanford University 
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef _DQM_TRIGSCINT_DQM_H_
@@ -21,49 +21,46 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "DetDescr/TrigScintID.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "DetDescr/TrigScintID.h"
 #include "Tools/AnalysisUtils.h"
 
-namespace ldmx { 
+namespace dqm {
 
-    class TrigScintDQM : public Analyzer { 
-    
-        public: 
+class TrigScintDQM : public framework::Analyzer {
+ public:
+  /** Constructor */
+  TrigScintDQM(const std::string &name, framework::Process &process);
 
-            /** Constructor */
-            TrigScintDQM(const std::string &name, Process &process);
+  /** Destructor */
+  ~TrigScintDQM();
 
-            /** Destructor */
-            ~TrigScintDQM();
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * @param pSet Set of parameters used to configure this processor.
+   */
+  void configure(framework::config::Parameters &pSet);
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param pSet Set of parameters used to configure this processor.
-             */
-            void configure(Parameters &pSet);
- 
-            /**
-             * Process the event and make histograms ro summaries.
-             *
-             * @param event The event to analyze.
-             */
-            void analyze(const Event& event);
+  /**
+   * Process the event and make histograms ro summaries.
+   *
+   * @param event The event to analyze.
+   */
+  void analyze(const framework::Event &event);
 
-            /** Method executed before processing of events begins. */
-            void onProcessStart();
+  /** Method executed before processing of events begins. */
+  void onProcessStart();
 
-        private:
+ private:
+  /// Name of trigger pad hit  collection.
+  std::string hitCollectionName_{"TriggerPadUpSimHits"};
 
-            /// Name of trigger pad hit  collection.
-            std::string hitCollectionName_{"TriggerPadUpSimHits"}; 
+  /// Name of Pad
+  std::string padName_{"_up"};
+};
 
-            /// Name of Pad
-	        std::string padName_{"_up"}; 
-    };    
-    
-} // ldmx
+}  // namespace dqm
 
-#endif // _DQM_TRIGSCINT_DQM_H_
+#endif  // _DQM_TRIGSCINT_DQM_H_

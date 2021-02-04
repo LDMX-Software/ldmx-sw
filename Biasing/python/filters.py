@@ -30,7 +30,7 @@ class TargetBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
-        super().__init__("target_brem_filter", "ldmx::TargetBremFilter")
+        super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -49,7 +49,7 @@ class EcalProcessFilter(simcfg.UserAction):
     """
 
     def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'ldmx::EcalProcessFilter')
+        super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -66,7 +66,7 @@ class TargetENFilter(simcfg.UserAction) :
     """
 
     def __init__(self,recoil_thresh = 2500.) :
-        super().__init__("target_en_process_filter","ldmx::TargetENProcessFilter")
+        super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -77,7 +77,7 @@ class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
     def __init__(self) :
-        super().__init__("target_process_filter", "ldmx::TargetProcessFilter")
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -94,7 +94,7 @@ class EcalDarkBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,minApEnergy):
-        super().__init__('ecal_db_filter','ldmx::EcalDarkBremFilter')
+        super().__init__('ecal_db_filter','biasing::EcalDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -111,7 +111,7 @@ class TargetDarkBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,minApEnergy):
-        super().__init__('target_db_filter','ldmx::TargetDarkBremFilter')
+        super().__init__('target_db_filter','biasing::TargetDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -128,7 +128,7 @@ class TaggerVetoFilter(simcfg.UserAction):
     """
     
     def __init__(self,thresh=3800.) :
-        super().__init__('tagger_veto_filter','ldmx::TaggerVetoFilter')
+        super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -145,7 +145,7 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('primary_to_ecal_with_%d'%thresh,'ldmx::PrimaryToEcalFilter')
+        super().__init__('primary_to_ecal_with_%d'%thresh,'biasing::PrimaryToEcalFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -162,7 +162,7 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
     """
 
     def __init__(self,thresh) :
-        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'ldmx::MidShowerNuclearBkgdFilter')
+        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'biasing::MidShowerNuclearBkgdFilter')
 
         from LDMX.Biasing import include
         include.library()
