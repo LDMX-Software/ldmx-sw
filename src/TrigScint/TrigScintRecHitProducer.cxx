@@ -44,20 +44,20 @@ namespace trigscint {
     
       ldmx::TrigScintHit hit;
       hit.setModuleID(0);
-      hit.setBarID(digi.chanID);
+      hit.setBarID(digi.chanID_);
       hit.setBeamEfrac(-1.);
-      hit.setAmplitude(qie.ADC2Q( digi.adcs[1] )
-		       + qie.ADC2Q( digi.adcs[2] ) ); // femptocoulombs
-      if( digi.tdcs[1] > 49 )
+      hit.setAmplitude(qie.ADC2Q( digi.adcs_[1] )
+		       + qie.ADC2Q( digi.adcs_[2] ) ); // femptocoulombs
+      if( digi.tdcs_[1] > 49 )
 	hit.setTime(-1);
       else
-	hit.setTime(digi.tdcs[1]*0.5);
-      hit.setEnergy((qie.ADC2Q( digi.adcs[1] )
-		     + qie.ADC2Q( digi.adcs[2] )
+	hit.setTime(digi.tdcs_[1]*0.5);
+      hit.setEnergy((qie.ADC2Q( digi.adcs_[1] )
+		     + qie.ADC2Q( digi.adcs_[2] )
 		     - pedestal_ )
 		    * 6250. / gain_ * mevPerMip_ / pePerMip_ ); // MeV
-      hit.setPE((qie.ADC2Q( digi.adcs[1] )
-		 + qie.ADC2Q( digi.adcs[2] )
+      hit.setPE((qie.ADC2Q( digi.adcs_[1] )
+		 + qie.ADC2Q( digi.adcs_[2] )
 		 - pedestal_ )
 		* 6250. / gain_ ); 
       trigScintHits.push_back(hit);
