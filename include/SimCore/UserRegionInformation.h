@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserRegionInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class UserRegionInformation
@@ -36,6 +36,6 @@ class UserRegionInformation : public G4VUserRegionInformation {
   bool storeSecondaries_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

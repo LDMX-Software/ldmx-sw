@@ -43,7 +43,7 @@
 #include "SimCore/PrimaryGenerator.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class MultiParticleGunPrimaryGenerator
@@ -66,7 +66,7 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
    *  enablePoisson : whether to poisson distribute the number of particles
    */
   MultiParticleGunPrimaryGenerator(const std::string& name,
-                                   Parameters& parameters);
+                                   framework::config::Parameters& parameters);
 
   /** Destructor */
   virtual ~MultiParticleGunPrimaryGenerator();
@@ -102,6 +102,6 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
 
 };  // MultiParticleGunPrimaryGenerator
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_

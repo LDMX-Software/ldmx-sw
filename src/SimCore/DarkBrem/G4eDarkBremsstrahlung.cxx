@@ -16,7 +16,7 @@
 #include "SimCore/DarkBrem/DarkBremVertexLibraryModel.h"
 #include "SimCore/DarkBrem/G4APrime.h"
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 G4double ElementXsecCache::get(G4double energy, G4double A, G4double Z) {
@@ -56,7 +56,7 @@ ElementXsecCache::key_t ElementXsecCache::computeKey(G4double energy,
 
 const std::string G4eDarkBremsstrahlung::PROCESS_NAME = "eDarkBrem";
 
-G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(const Parameters& params)
+G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(const framework::config::Parameters& params)
     : G4VDiscreteProcess(G4eDarkBremsstrahlung::PROCESS_NAME,
                          fElectromagnetic) {
   // we need to pretend to be an EM process so the biasing framework recognizes
@@ -67,7 +67,7 @@ G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(const Parameters& params)
   cache_xsec_ = params.getParameter<bool>("cache_xsec");
   ap_mass_ = params.getParameter<double>("ap_mass");
 
-  auto model{params.getParameter<Parameters>("model")};
+  auto model{params.getParameter<framework::config::Parameters>("model")};
   auto model_name{model.getParameter<std::string>("name")};
   if (model_name == "vertex_library") {
     model_ = std::make_shared<DarkBremVertexLibraryModel>(model);
@@ -96,7 +96,7 @@ void G4eDarkBremsstrahlung::PrintInfo() {
   model_->PrintInfo();
 }
 
-void G4eDarkBremsstrahlung::RecordConfig(RunHeader& h) const {
+void G4eDarkBremsstrahlung::RecordConfig(ldmx::RunHeader& h) const {
   h.setIntParameter("Only One DB Per Event", only_one_per_event_);
   h.setFloatParameter("A' Mass [MeV]", ap_mass_);
   model_->RecordConfig(h);
@@ -192,4 +192,4 @@ G4double G4eDarkBremsstrahlung::GetMeanFreePath(const G4Track& track, G4double,
   return SIGMA > DBL_MIN ? 1. / SIGMA : DBL_MAX;
 }
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore

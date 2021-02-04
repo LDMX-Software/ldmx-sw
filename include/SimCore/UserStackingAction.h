@@ -22,7 +22,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class UserStackingAction
@@ -68,6 +68,6 @@ class UserStackingAction : public G4UserStackingAction {
 
 };  // UserStackingAction
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_USERSTACKINGACTION_H

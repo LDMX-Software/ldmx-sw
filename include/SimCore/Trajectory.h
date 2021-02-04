@@ -19,7 +19,7 @@
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class Trajectory
@@ -258,6 +258,6 @@ inline void Trajectory::operator delete(void* aTrajectory) {
   TrajectoryAllocator.FreeSingle((Trajectory*)aTrajectory);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

@@ -28,7 +28,7 @@ class G4Run;
 class G4Step;
 class G4Track;
 
-namespace ldmx {
+namespace simcore {
 
 /// Enum for each of the user action types.
 enum TYPE { RUN = 1, EVENT, TRACKING, STEPPING, STACKING, NONE };
@@ -36,8 +36,8 @@ enum TYPE { RUN = 1, EVENT, TRACKING, STEPPING, STACKING, NONE };
 // Forward declarations
 class UserAction;
 
-typedef UserAction* UserActionBuilder(const std::string& name,
-                                      Parameters& parameters);
+typedef UserAction* UserActionBuilder(
+    const std::string& name, framework::config::Parameters& parameters);
 
 /**
  * @class UserAction
@@ -50,7 +50,8 @@ class UserAction {
    *
    * @param name Name given the to class instance.
    */
-  UserAction(const std::string& name, Parameters& parameters);
+  UserAction(const std::string& name,
+             framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~UserAction();
@@ -181,20 +182,20 @@ class UserAction {
   std::string name_{""};
 
   /// The set of parameters used to configure this class
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
 };  // UserAction
 
-}  // namespace ldmx
+}  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS)                                            \
-  ldmx::UserAction* CLASS##Builder(const std::string& name,                  \
-                                   ldmx::Parameters& parameters) {           \
-    return new NS::CLASS(name, parameters);                                  \
-  }                                                                          \
-  __attribute((constructor(205))) static void CLASS##Declare() {             \
-    ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), \
-                              &CLASS##Builder);                              \
+#define DECLARE_ACTION(NS, CLASS)                                           \
+  simcore::UserAction* CLASS##Builder(                                      \
+      const std::string& name, framework::config::Parameters& parameters) { \
+    return new NS::CLASS(name, parameters);                                 \
+  }                                                                         \
+  __attribute((constructor(205))) static void CLASS##Declare() {            \
+    simcore::UserAction::declare(                                           \
+        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
 
 #endif  // SIMCORE_USERACTION_H

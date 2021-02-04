@@ -25,14 +25,14 @@
 
 // STL
 #include <stdlib.h>
-
 #include <string>
 
 using std::string;
 
-namespace ldmx {
+namespace simcore {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, Parameters ps,
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
+                             framework::config::Parameters ps,
                              ConditionsInterface& ci)
     : parser_(theParser),
       eval_(new G4GDMLEvaluator),
@@ -449,8 +449,8 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
     }
   }
 
-  detectorHeader_ =
-      new DetectorHeader(detectorName, detectorVersion, description, author);
+  detectorHeader_ = new ldmx::DetectorHeader(detectorName, detectorVersion,
+                                             description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;
@@ -461,4 +461,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace ldmx
+}  // namespace simcore

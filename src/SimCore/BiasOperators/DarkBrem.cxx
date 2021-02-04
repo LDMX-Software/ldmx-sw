@@ -9,7 +9,7 @@
 namespace simcore {
 namespace biasoperators {
 
-DarkBrem::DarkBrem(std::string name, const ldmx::Parameters& p)
+DarkBrem::DarkBrem(std::string name, const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   factor_ = p.getParameter<double>("factor");

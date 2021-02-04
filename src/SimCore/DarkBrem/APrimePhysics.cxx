@@ -15,12 +15,12 @@
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 const std::string APrimePhysics::NAME = "APrime";
 
-APrimePhysics::APrimePhysics(Parameters params)
+APrimePhysics::APrimePhysics(framework::config::Parameters params)
     : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_(params) {}
 
 void APrimePhysics::ConstructParticle() {
@@ -58,4 +58,4 @@ void APrimePhysics::ConstructProcess() {
 }
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore

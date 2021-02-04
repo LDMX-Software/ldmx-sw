@@ -21,7 +21,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class USteppingAction
@@ -54,6 +54,6 @@ class USteppingAction : public G4UserSteppingAction {
 
 };  // USteppingAction
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_USTEPPINGACTION_H

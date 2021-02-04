@@ -13,7 +13,7 @@
 /*~~~~~~~~~~~~~~*/
 #include "DetDescr/EcalID.h"
 
-namespace ldmx {
+namespace simcore {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID,
                ConditionsInterface& ci)
@@ -22,8 +22,9 @@ EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID,
 EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  const EcalHexReadout& hitMap = conditionsIntf_.getCondition<EcalHexReadout>(
-      EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hitMap =
+      conditionsIntf_.getCondition<ldmx::EcalHexReadout>(
+          ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Determine if current particle of this step is a Geantino.
   G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
@@ -68,8 +69,9 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
 
-  EcalID partialId = hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
-  EcalID id(layerNumber, module_position, partialId.cell());
+  ldmx::EcalID partialId =
+      hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
+  ldmx::EcalID id(layerNumber, module_position, partialId.cell());
   hit->setID(id.raw());
 
   // Set the track ID on the hit.
@@ -139,4 +141,4 @@ G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
   return position;
 }
 
-}  // namespace ldmx
+}  // namespace simcore

@@ -19,10 +19,10 @@
 #include "Framework/Exception/Exception.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
-namespace ldmx {
+namespace simcore {
 
-LHEPrimaryGenerator::LHEPrimaryGenerator(const std::string& name,
-                                         Parameters& parameters)
+LHEPrimaryGenerator::LHEPrimaryGenerator(
+    const std::string& name, framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   std::string filePath = parameters_.getParameter<std::string>("filePath");
   reader_ = new LHEReader(filePath);
@@ -105,6 +105,6 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   delete lheEvent;
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, LHEPrimaryGenerator)
+DECLARE_GENERATOR(simcore, LHEPrimaryGenerator)

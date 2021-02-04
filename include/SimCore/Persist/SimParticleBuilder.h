@@ -14,7 +14,7 @@
 // STL
 #include <map>
 
-using namespace ldmx;
+using namespace simcore;
 
 namespace simcore {
 namespace persist {
@@ -47,9 +47,12 @@ class SimParticleBuilder {
    * Build SimParticle collection into an output event.
    * @param outputEvent The output event.
    */
-  void buildSimParticles(Event *outputEvent);
+  void buildSimParticles(framework::Event *outputEvent);
 
  private:
+  /** The map of tracks to their parent IDs and Trajectory objects. */
+  TrackMap *trackMap_;
+
   /** The current Geant4 event. */
   G4Event *currentEvent_;
 };

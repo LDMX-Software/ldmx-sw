@@ -7,7 +7,7 @@
 // ROOT
 #include "TLorentzVector.h"
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 /**
@@ -48,7 +48,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
    *
    * The library path is immediately passed to SetMadGraphDataLibrary.
    */
-  DarkBremVertexLibraryModel(Parameters& params);
+  DarkBremVertexLibraryModel(framework::config::Parameters& params);
 
   /**
    * Destructor
@@ -63,7 +63,7 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
   /**
    * Record the configuration of this model into the RunHeader
    */
-  virtual void RecordConfig(RunHeader& h) const;
+  virtual void RecordConfig(ldmx::RunHeader& h) const;
 
   /**
    * Calculates the cross section per atom in GEANT4 internal units.
@@ -345,6 +345,6 @@ class DarkBremVertexLibraryModel : public G4eDarkBremsstrahlungModel {
 };
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_

@@ -49,4 +49,4 @@ ClassImp(ldmx::SimTrackerHit)
     this->py_ = py;
     this->pz_ = pz;
   }
-}
+}  // namespace ldmx

@@ -25,7 +25,7 @@
 // Forward declarations
 class G4Run;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class UserRunAction
@@ -69,6 +69,6 @@ class UserRunAction : public G4UserRunAction {
 
 };  // UserRunAction
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_USERRUNACTION_H

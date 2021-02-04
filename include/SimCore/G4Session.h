@@ -13,7 +13,7 @@
 // Geant4
 #include "G4UIsession.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class LoggedSession
@@ -99,6 +99,6 @@ class BatchSession : public G4UIsession {
   G4int ReceiveG4cerr(const G4String&) { return 0; }
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

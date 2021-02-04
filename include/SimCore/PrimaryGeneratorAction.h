@@ -32,7 +32,7 @@
 class G4Event;
 class TRandom3;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class PrimaryGeneratorAction
@@ -46,7 +46,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    * @param parameters The parameters used to configure the primary
    *                   generator action.
    */
-  PrimaryGeneratorAction(Parameters& parameters);
+  PrimaryGeneratorAction(framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -88,13 +88,13 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
  private:
   /// Manager of all generators used by the event
-  simcore::PluginFactory& manager_;
+  PluginFactory& manager_;
 
   /// Random number generator
   std::unique_ptr<TRandom3> random_;
 
   /// The parameters used to configure the primary generator of choice
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /**
    * Flag denoting whether the vertex position of a particle
@@ -121,6 +121,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 };  // PrimaryGeneratorAction
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_PRIMARYGENERATORACTION_H

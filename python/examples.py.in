@@ -121,7 +121,7 @@ def multiExample( ) :
         mpg_sim = examples.multiExample()
     """
 
-    sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
+    sim = ldmxcfg.Producer( "mpgExample" , "simcore::Simulator" )
     sim.setDetector( "ldmx-det-v12" )
     sim.runNumber = 1
     sim.description = "Example of how to use MPG generator"

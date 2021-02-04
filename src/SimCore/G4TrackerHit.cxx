@@ -6,7 +6,7 @@
 #include "G4VVisManager.hh"
 #include "G4VisAttributes.hh"
 
-namespace ldmx {
+namespace simcore {
 
 G4Allocator<G4TrackerHit> G4TrackerHitAllocator;
 
@@ -44,4 +44,4 @@ std::ostream& G4TrackerHit::print(std::ostream& os) {
   return os;
 }
 
-}  // namespace ldmx
+}  // namespace simcore

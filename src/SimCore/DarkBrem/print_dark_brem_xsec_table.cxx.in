@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     return 2;
   }
 
-  ldmx::Parameters model;
+  framework::config::Parameters model;
   model.addParameter("name", std::string("vertex_library"));
   model.addParameter("library_path",
                      std::string("${DB_VERTEX_LIB_INSTALL}/mA.0.01"));
@@ -43,14 +43,14 @@ int main(int argc, char* argv[]) {
   model.addParameter("threshold", 2.0);
   model.addParameter("epsilon", 0.01);
 
-  ldmx::Parameters process;
+  framework::config::Parameters process;
   process.addParameter("model", model);
   process.addParameter("ap_mass", 10.);
   process.addParameter("enable", true);
   process.addParameter("only_one_per_event", false);
   process.addParameter("cache_xsec", true);
 
-  ldmx::darkbrem::G4eDarkBremsstrahlung db_process(process);
+  simcore::darkbrem::G4eDarkBremsstrahlung db_process(process);
 
   table_file << db_process.getCache();
 

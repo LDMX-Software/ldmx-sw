@@ -29,13 +29,13 @@
 #include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
-namespace ldmx {
+namespace simcore {
 
 RootSimFromEcalSP::RootSimFromEcalSP(const std::string& name,
-                                     Parameters& parameters)
+                                     framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
   std::string filename = parameters_.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<EventFile>(filename);
+  ifile_ = std::make_unique<framework::EventFile>(filename);
   ifile_->setupEvent(&ievent_);
 
   timeCutoff_ = parameters_.getParameter<double>("time_cutoff");
@@ -63,12 +63,12 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   // and find the subset of unique hits created by particles exiting
   // the ECal.  These particles will be stored in a container and
   // re-fired into the HCal.
-  std::unordered_map<int, const SimTrackerHit*> spHits;
+  std::unordered_map<int, const ldmx::SimTrackerHit*> spHits;
 
-  auto ecalSPParticles{ievent_.getCollection<SimTrackerHit>(
+  auto ecalSPParticles{ievent_.getCollection<ldmx::SimTrackerHit>(
       ecalSPHitsCollName_, ecalSPHitsPassName_)};
   // Loop through all of the ECal scoring plane hits.
-  for (const SimTrackerHit& spHit : ecalSPParticles) {
+  for (const ldmx::SimTrackerHit& spHit : ecalSPParticles) {
     // First, start by skipping all hits that were created by
     // particles entering the ECal volume.
     if (spHit.getLayerID() == 1 and spHit.getMomentum()[2] > 0) continue;
@@ -121,6 +121,6 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, RootSimFromEcalSP)
+DECLARE_GENERATOR(simcore, RootSimFromEcalSP)

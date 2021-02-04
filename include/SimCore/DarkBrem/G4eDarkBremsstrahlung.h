@@ -18,7 +18,7 @@
 class G4String;
 class G4ParticleDefinition;
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 /**
@@ -41,8 +41,9 @@ class G4eDarkBremsstrahlungModel {
    *
    * Names the logger after the name for this model.
    */
-  G4eDarkBremsstrahlungModel(const Parameters& p) {
-    theLog_ = logging::makeLogger(p.getParameter<std::string>("name"));
+  G4eDarkBremsstrahlungModel(const framework::config::Parameters& p) {
+    theLog_ =
+        framework::logging::makeLogger(p.getParameter<std::string>("name"));
   }
 
   /// Destructor, nothing on purpose
@@ -61,7 +62,7 @@ class G4eDarkBremsstrahlungModel {
    *
    * Helpful for persisting run data for later viewing.
    */
-  virtual void RecordConfig(RunHeader& h) const = 0;
+  virtual void RecordConfig(ldmx::RunHeader& h) const = 0;
 
   /**
    * Calculate the cross section given the input parameters
@@ -93,7 +94,7 @@ class G4eDarkBremsstrahlungModel {
 
  protected:
   /// The logging apparatus for this model
-  logging::logger theLog_;
+  framework::logging::logger theLog_;
 
 };  // G4eDarkBremsstrahlungModel
 
@@ -227,7 +228,7 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
    * it takes to simulate events.
    * @see CalculateCommonXsec
    */
-  G4eDarkBremsstrahlung(const Parameters& params);
+  G4eDarkBremsstrahlung(const framework::config::Parameters& params);
 
   /**
    * Destructor
@@ -255,7 +256,7 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
    * @see G4eDarkBremsstrahlungModel::RecordConfig
    * @param[in,out] h RunHeader to write to
    */
-  void RecordConfig(RunHeader& h) const;
+  void RecordConfig(ldmx::RunHeader& h) const;
 
   /**
    * This is the function actually called by Geant4 that does the dark brem
@@ -358,11 +359,12 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
   ElementXsecCache element_xsec_cache_;
 
   /// Enable logging for this process
-  enableLogging("DarkBremProcess")
+  framework::logging::logger theLog_ =
+      framework::logging::makeLogger("DarkBremProcess");
 
 };  // G4eDarkBremsstrahlung
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_DARKBREM_G4EDARKBREMSSTRAHLUNG_H_

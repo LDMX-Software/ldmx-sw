@@ -21,7 +21,7 @@ class DarkBrem : public XsecBiasingOperator {
    * Calls base class constructor and allows
    * access to configuration parameters.
    */
-  DarkBrem(std::string name, const ldmx::Parameters& p);
+  DarkBrem(std::string name, const framework::config::Parameters& p);
 
   /**
    * Destructor
@@ -49,7 +49,7 @@ class DarkBrem : public XsecBiasingOperator {
 
   /// Return the name of the process this operator biases
   virtual std::string getProcessToBias() const {
-    return ldmx::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME;
+    return simcore::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME;
   }
 
   /// Return the name of the particle this operator biases

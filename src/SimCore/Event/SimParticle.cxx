@@ -100,4 +100,4 @@ ClassImp(ldmx::SimParticle)
       return ProcessType::unknown;
     }
   }
-}
+}  // namespace ldmx

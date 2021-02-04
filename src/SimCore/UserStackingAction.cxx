@@ -1,6 +1,6 @@
 #include "SimCore/UserStackingAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 UserStackingAction::UserStackingAction() {}
 
@@ -33,4 +33,4 @@ void UserStackingAction::PrepareNewEvent() {
   for (auto& stackingAction : stackingActions_)
     stackingAction->PrepareNewEvent();
 }
-}  // namespace ldmx
+}  // namespace simcore

@@ -37,7 +37,6 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
-
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/[a-zA-Z]*.cxx
@@ -85,7 +84,7 @@ setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
 
 # Add compiled tests
 configure_file(${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx.in 
-               ${CMAKE_CURRENT_BINARY_DIR}/test/DarkBremProcessTest.cxx)
+               ${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx)
 setup_test(dependencies SimCore::SimCore Geant4::Interface)
 
 # Configure the executable so it knows the installation path of the db vertex libraries

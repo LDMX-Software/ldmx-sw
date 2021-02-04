@@ -10,9 +10,10 @@
 // Geant4
 #include "G4Event.hh"
 #include "G4VTrajectory.hh"
+
 #include "SimCore/Trajectory.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class TrackMap
@@ -112,6 +113,6 @@ class TrackMap {
   Trajectory::TrajectoryMap trajectoryMap_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif
