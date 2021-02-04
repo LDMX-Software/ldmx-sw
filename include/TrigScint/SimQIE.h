@@ -110,36 +110,36 @@ namespace trigscint {
  private:
 
     /// Indices of first bin of each subrange
-    int nbins[5] = {0,16,36,57,64};
+    int nbins_[5] = {0,16,36,57,64};
     /// Charge lower limit of all the 16 subranges
-    float edges[17]={-16, 34, 158, 419, 517, 915, 1910, 3990,
+    float edges_[17]={-16, 34, 158, 419, 517, 915, 1910, 3990,
 		     4780, 7960, 15900, 32600, 38900, 64300,
 		     128000, 261000, 350000};
     /// sensitivity of the subranges (Total charge/no. of bins)
-    float sense[16]={3.1, 6.2, 12.4, 24.8, 24.8, 49.6, 99.2,
+    float sense_[16]={3.1, 6.2, 12.4, 24.8, 24.8, 49.6, 99.2,
 		     198.4, 198.4, 396.8, 793.6, 1587, 1587,
 		     3174, 6349, 12700};
 
     /// QIE gain -> to convert from no. of e- to charge in fC
-    float gain = 1;
+    float gain_ = 1;
     /// time period of one time sample [in ns]
-    float tau = 25;
+    float tau_ = 25;
     /// No. of time samples to analyze
     int maxts_{0};
     
     /// TDC threshold (default 3.74 microAmpere)
-    float tdc_thr = 3.74;
+    float tdc_thr_ = 3.74;
 
     /// Random number generator (required for noise simulation)
     std::unique_ptr<TRandom3> rand_ptr{nullptr};
-    TRandom3* trg;
+    TRandom3* trg_;
 
     /// mean of gaussian noise (Pedestal)
-    float mu=0;
+    float mu_=0;
     /// std. dev. of gaussian noise (Actual noise level)
-    float sg=0;
+    float sg_=0;
     /// Whether noise is added to the system
-    bool isnoise=false;
+    bool isnoise_=false;
 
   };
 }

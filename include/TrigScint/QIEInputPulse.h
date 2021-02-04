@@ -110,9 +110,9 @@ namespace trigscint {
     float Derivative(float T, int id) final;
  private:
     /// rise time
-    float rt;
+    float rt_;
     /// fall time
-    float ft;
+    float ft_;
   };
 
   /**
@@ -134,20 +134,20 @@ namespace trigscint {
 
     /**
      * Main constructor
-     * @param k_ = 1/(RC time const)
-     * @param tmax_ = relative time of the pulse maximum (in ns)
+     * @param k = 1/(RC time const)
+     * @param tmax = relative time of the pulse maximum (in ns)
      */
-    Expo(float k_,float tmax_); /// main constructor
+    Expo(float k,float tmax); /// main constructor
 
     /**
      * Get Rise time of the pulse
      */
-    float GetRise(){return(rt);}
+    float GetRise(){return(rt_);}
 
     /**
      * Get Fall time of the pulse
      */
-    float GetFall(){return(ft);}
+    float GetFall(){return(ft_);}
 
     /**
      * Set Rise and Fall time of the pulse
@@ -177,13 +177,13 @@ namespace trigscint {
     float Derivative(float T, int id) final;
  private:
     /// 1/RC time constant (for the capacitor)
-    float k;
+    float k_;
     /// time when pulse attains maximum
-    float tmax;
+    float tmax_;
     /// Rise Time
-    float rt=-1;
+    float rt_=-1;
     /// Fall Time
-    float ft=-1;
+    float ft_=-1;
 
     /**
      * Indefinite integral at time T
