@@ -49,7 +49,7 @@ namespace trigscint {
       hit.setAmplitude(qie.ADC2Q( digi.adcs_[1] )
 		       + qie.ADC2Q( digi.adcs_[2] ) ); // femptocoulombs
       if( digi.tdcs_[1] > 49 )
-	hit.setTime(-1);
+	hit.setTime(-999.);
       else
 	hit.setTime(digi.tdcs_[1]*0.5);
       hit.setEnergy((qie.ADC2Q( digi.adcs_[1] )
