@@ -9,10 +9,9 @@
 
 #include "Biasing/TargetDarkBremFilter.h"
 
+#include "G4Electron.hh"                   //to check if track is electron
 #include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
-
-#include "G4Electron.hh"  //to check if track is electron
 
 namespace ldmx {
 
@@ -62,8 +61,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   if (isOutsideTargetRegion(track->GetNextVolume())  // leaving target region
       or
       track->GetTrackStatus() == fStopAndKill  // stopping within target region
-      or 
-      track->GetKineticEnergy() == 0.       // stopping within target region
+      or track->GetKineticEnergy() == 0.       // stopping within target region
   ) {
     // Get the electron secondries
     const std::vector<G4Track*>* secondaries{step->GetSecondary()};

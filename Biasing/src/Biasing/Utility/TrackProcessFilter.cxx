@@ -29,13 +29,12 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
         dynamic_cast<ldmx::UserTrackInformation*>(track->GetUserInformation())};
     if (name.contains(process_))
       trackInfo->setSaveFlag(true);
-    else 
+    else
       trackInfo->setSaveFlag(false);
-  } // does this track have a creator process
+  }  // does this track have a creator process
 }
 
 }  // namespace utility
 }  // namespace biasing
 
 DECLARE_ACTION(biasing::utility, TrackProcessFilter)
-

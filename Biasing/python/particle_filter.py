@@ -43,4 +43,3 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
                 321  # K^+
         ]
         return particle_filter
-

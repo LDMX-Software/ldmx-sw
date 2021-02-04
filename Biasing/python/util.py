@@ -92,4 +92,3 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('eDarkBrem')
-

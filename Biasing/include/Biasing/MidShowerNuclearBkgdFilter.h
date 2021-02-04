@@ -14,7 +14,7 @@ namespace ldmx {
 /**
  * @class MidShowerNuclearBkgdFilter
  *
- * The basic premis of this filter is to add up all of the 
+ * The basic premis of this filter is to add up all of the
  * energy "lost" to the configured process. Whenever a particle
  * makes a step and has secondaries within that step going to
  * the input process, we add its change in energy to the running
@@ -24,7 +24,7 @@ namespace ldmx {
  *
  * @see PartialEnergySorter
  * Here we assume that the partial energy sorter is being run in sequence with
- * this filter. 
+ * this filter.
  */
 class MidShowerNuclearBkgdFilter : public UserAction {
  public:
@@ -46,7 +46,7 @@ class MidShowerNuclearBkgdFilter : public UserAction {
    * @return list of action types this class does
    */
   std::vector<TYPE> getTypes() final override {
-    return {TYPE::STACKING,TYPE::STEPPING,TYPE::EVENT};
+    return {TYPE::STACKING, TYPE::STEPPING, TYPE::EVENT};
   }
 
   /**
@@ -89,7 +89,6 @@ class MidShowerNuclearBkgdFilter : public UserAction {
   void NewStage() final override;
 
  private:
-
   /**
    * Checks if the passed step is outside of the CalorimeterRegion.
    *

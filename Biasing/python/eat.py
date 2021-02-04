@@ -48,35 +48,35 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
 
     """
 
-    # Instantiate the simulator. 
+#Instantiate the simulator. 
     sim = simulator.simulator("eat-midshower-nuclear")
     from LDMX.Ecal import EcalGeometry
-    
-    # Set the path to the detector to use.
-    #   the second parameter says we want to include scoring planes
+
+#Set the path to the detector to use.
+#the second parameter says we want to include scoring planes
     sim.setDetector( detector , True )
-    
-    # Set run parameters
+
+#Set run parameters
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     from LDMX.SimCore import generators
     sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
-    
-    # Enable and configure the biasing
+
+#Enable and configure the biasing
     from LDMX.SimCore import bias_operators
     sim.biasing_operators = [ 
             bias_operators.PhotoNuclear('ecal',bias_factor,bias_threshold),
             bias_operators.ElectroNuclear('ecal',bias_factor,bias_threshold)
             ]
 
-    # Configure the sequence in which user actions should be called.
+#Configure the sequence in which user actions should be called.
     sim.actions = [
-            # get electron to ECal with 3500MeV
+#get electron to ECal with 3500MeV
             filters.PrimaryToEcalFilter(3500.),
-            # Make sure all particles above 1500MeV are processed first
+#Make sure all particles above 1500MeV are processed first
             util.PartialEnergySorter(bias_threshold),
-            # Make sure a total of 1700MeV energy went PN in ECal
+#Make sure a total of 1700MeV energy went PN in ECal
             filters.MidShowerNuclearBkgdFilter(min_nuclear_energy),
     ]
 
@@ -120,17 +120,17 @@ def dark_brem( ap_mass , lhe, detector ) :
     sim.setDetector( detector , True )
     sim.generators.append( generators.single_4gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
-    
-    # Activiate dark bremming with a certain A' mass and LHE library
+
+#Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
     db_model = dark_brem.VertexLibraryModel( lhe )
     db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
-    # Biasing dark brem up inside of the ecal volumes
+#Biasing dark brem up inside of the ecal volumes
     from math import log10
-    # need a higher power for the higher mass A'
+#need a higher power for the higher mass A'
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
 
     from LDMX.SimCore import bias_operators
@@ -138,12 +138,12 @@ def dark_brem( ap_mass , lhe, detector ) :
             bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
             ]
     
-    sim.actions = [ 
-            # Make sure all particles above 2GeV are processed first
+    sim.actions = [
+#Make sure all particles above 2GeV are processed first
             util.PartialEnergySorter(2000.),
-            # Abort events if the electron doesn't get to the ECal with 3.5GeV
+#Abort events if the electron doesn't get to the ECal with 3.5GeV
             filters.PrimaryToEcalFilter(3500.),
-            # Only keep events when a dark brem happens in the Ecal
+#Only keep events when a dark brem happens in the Ecal
             filters.EcalDarkBremFilter(2000.)
     ]
     

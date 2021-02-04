@@ -1,18 +1,17 @@
 #include "Biasing/MidShowerNuclearBkgdFilter.h"
 
-#include "SimCore/UserTrackInformation.h"
-
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
+#include "SimCore/UserTrackInformation.h"
 
 namespace ldmx {
 
 MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(const std::string& name,
-                                         Parameters& parameters)
+                                                       Parameters& parameters)
     : UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
-  nuclear_processes_ = { "photonNuclear" , "electronNuclear" };
+  nuclear_processes_ = {"photonNuclear", "electronNuclear"};
 }
 
 void MidShowerNuclearBkgdFilter::BeginOfEventAction(const G4Event*) {
@@ -47,13 +46,16 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
               << ") "
               << "Track " << track->GetParentID() << " created "
               << track->GetTrackID() << " which went from " << pre_energy
-              << " MeV to " << post_energy << " via a nuclear process." << std::endl;
+              << " MeV to " << post_energy << " via a nuclear process." <<
+    std::endl;
      */
     // make sure this track is saved
     save(track);
-  } else if (const G4Track* track{step->GetTrack()};
-      track->GetCurrentStepNumber() == 1 and
-      isNuclearProcess(track->GetCreatorProcess())) { save(track); }
+  } else if (const G4Track * track{step->GetTrack()};
+             track->GetCurrentStepNumber() == 1 and
+             isNuclearProcess(track->GetCreatorProcess())) {
+    save(track);
+  }
 }
 
 void MidShowerNuclearBkgdFilter::NewStage() {
@@ -69,7 +71,8 @@ void MidShowerNuclearBkgdFilter::NewStage() {
   return;
 }
 
-bool MidShowerNuclearBkgdFilter::isOutsideCalorimeterRegion(const G4Step* step) const {
+bool MidShowerNuclearBkgdFilter::isOutsideCalorimeterRegion(
+    const G4Step* step) const {
   // the pointers in this chain are assumed to be always valid
   auto reg{step->GetTrack()->GetVolume()->GetLogicalVolume()->GetRegion()};
   if (reg) return (reg->GetName() != "CalorimeterRegion");
@@ -78,20 +81,20 @@ bool MidShowerNuclearBkgdFilter::isOutsideCalorimeterRegion(const G4Step* step) 
   return true;
 }
 
-bool MidShowerNuclearBkgdFilter::isNuclearProcess(const G4VProcess* proc) const {
+bool MidShowerNuclearBkgdFilter::isNuclearProcess(
+    const G4VProcess* proc) const {
   if (proc) {
     const G4String& proc_name{proc->GetProcessName()};
     for (auto const& option : nuclear_processes_) {
-      if (proc_name.contains(option))
-        return true;
-    } //loop over nuclear processes
-  } //pointer exists
+      if (proc_name.contains(option)) return true;
+    }  // loop over nuclear processes
+  }    // pointer exists
   return false;
 }
 
 void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
-  auto track_info = 
-    dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+  auto track_info =
+      dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
   track_info->setSaveFlag(true);
   return;
 }

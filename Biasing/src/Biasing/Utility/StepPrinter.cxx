@@ -53,4 +53,4 @@ void StepPrinter::stepping(const G4Step* step) {
 }  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing::utility,StepPrinter)
+DECLARE_ACTION(biasing::utility, StepPrinter)
