@@ -8,7 +8,8 @@
 #include"TMath.h"
 #include"TrigScint/SimQIE.h"
 #include "Framework/Exception/Exception.h"
-namespace ldmx {
+
+namespace trigscint {
 
   SimQIE::SimQIE() {}
 

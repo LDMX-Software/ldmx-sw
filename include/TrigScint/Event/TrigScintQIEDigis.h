@@ -4,8 +4,8 @@
  * @author Niramay Gogate, Texas Tech University
  */
 
-#ifndef EVENT_TRIGSCINTQIEDIGIS_H
-#define EVENT_TRIGSCINTQIEDIGIS_H
+#ifndef TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
+#define TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
 
 #include "TObject.h" //For ClassDef
 

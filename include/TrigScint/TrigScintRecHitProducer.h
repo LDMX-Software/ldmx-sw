@@ -4,8 +4,8 @@
  * @author Andrew Whitbeck, TTU
  */
 
-#ifndef EVENTPROC_TRIGSCINTDIGIPRODUCER_H
-#define EVENTPROC_TRIGSCINTDIGIPRODUCER_H
+#ifndef TRIGSCINT_TRIGSCINTDIGIPRODUCER_H
+#define TRIGSCINT_TRIGSCINTDIGIPRODUCER_H
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -30,7 +30,7 @@
 /*~~~~~~~~~~~*/
 #include "TrigScint/SimQIE.h"
 
-namespace ldmx {
+namespace trigscint {
 
 /**
  * @class TrigScintRecHitProducer
@@ -38,11 +38,11 @@ namespace ldmx {
  * and ADC info, and converts amplitudes to PEs
  
  */
-class TrigScintRecHitProducer : public Producer {
+  class TrigScintRecHitProducer : public framework::Producer {
 
  public:
 
-  TrigScintRecHitProducer(const std::string& name, Process& process);
+    TrigScintRecHitProducer(const std::string& name, framework::Process& process);
 
   ~TrigScintRecHitProducer(); 
 
@@ -52,9 +52,9 @@ class TrigScintRecHitProducer : public Producer {
    * 
    * @param parameters ParameterSet for configuration.
    */
-  void configure(Parameters& parameters) final override;
+    void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(Event& event);
+  void produce(framework::Event& event);
 
  private:
 

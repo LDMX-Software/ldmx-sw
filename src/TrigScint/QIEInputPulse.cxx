@@ -6,7 +6,8 @@
 #include<iostream>
 #include "TrigScint/QIEInputPulse.h"
 #include<cmath>
-namespace ldmx {
+
+namespace trigscint {
 
   void QIEInputPulse::AddPulse(float toff, float ampl){
     toff_.push_back(toff);
@@ -178,6 +179,5 @@ float Expo::I_Int(float T, int id){
     float c2 = tmax-c1*exp(k*(tmax-t));
     return nc*c2;
   }
-
 
 }

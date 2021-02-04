@@ -6,10 +6,10 @@
 
 #include<vector>
 
-#ifndef EVENT_PULSE_H
-#define EVENT_PULSE_H
+#ifndef TRIGSCINT_QIEINPUTPULSE_H
+#define TRIGSCINT_QIEINPUTPULSE_H
 
-namespace ldmx {
+namespace trigscint {
 
   /**
    * @class QIEInputPulse

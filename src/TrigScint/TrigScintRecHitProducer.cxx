@@ -4,15 +4,15 @@
 
 #include <iostream>
 
-namespace ldmx {
+namespace trigscint {
 
   TrigScintRecHitProducer::TrigScintRecHitProducer
-  (const std::string &name, Process &process) :
+  (const std::string &name, framework::Process &process) :
     Producer(name, process) {}
 
   TrigScintRecHitProducer::~TrigScintRecHitProducer() {}
 
-  void TrigScintRecHitProducer::configure(Parameters &parameters) {
+  void TrigScintRecHitProducer::configure(framework::config::Parameters &parameters) {
 
     // Configure this instance of the producer
     pedestal_ = parameters.getParameter<double>("pedestal");
@@ -28,7 +28,7 @@ namespace ldmx {
     verbose_ = parameters.getParameter<bool>("verbose");
   }
 
-  void TrigScintRecHitProducer::produce(Event &event) {
+  void TrigScintRecHitProducer::produce(framework::Event &event) {
 
     // initialize QIE object for linearizing ADCs
     SimQIE qie;
@@ -36,13 +36,13 @@ namespace ldmx {
     // looper over sim hits and aggregate energy depositions
     // for each detID
     const auto digis{
-      event.getCollection<TrigScintQIEDigis>
+      event.getCollection<ldmx::TrigScintQIEDigis>
 	(inputCollection_, inputPassName_)};
 
-    std::vector<TrigScintHit> trigScintHits;
+    std::vector<ldmx::TrigScintHit> trigScintHits;
     for (const auto &digi : digis) {
     
-      TrigScintHit hit;
+      ldmx::TrigScintHit hit;
       hit.setModuleID(0);
       hit.setBarID(digi.chanID);
       hit.setBeamEfrac(-1.);
@@ -70,4 +70,4 @@ namespace ldmx {
   }
 } // namespace ldmx
 
-DECLARE_PRODUCER_NS(ldmx, TrigScintRecHitProducer);
+DECLARE_PRODUCER_NS(trigscint, TrigScintRecHitProducer);

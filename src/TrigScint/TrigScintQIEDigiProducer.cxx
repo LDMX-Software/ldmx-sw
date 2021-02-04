@@ -138,7 +138,7 @@ namespace trigscint {
     }
 
     // A container to hold the digitized trigger scintillator hits.
-    std::vector<TrigScintQIEDigis> QDigis;
+    std::vector<ldmx::TrigScintQIEDigis> QDigis;
 
     double TotalNoise = meanNoise_*maxts_;
 
@@ -161,7 +161,7 @@ namespace trigscint {
 
       // Storing the "good" digis
       if(smq->PulseCut(ex[bar_id])) {
-	TrigScintQIEDigis QIEInfo;
+	ldmx::TrigScintQIEDigis QIEInfo;
 	QIEInfo.chanID = bar_id;
 
 	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));
@@ -180,4 +180,4 @@ namespace trigscint {
 
 }
 
-DECLARE_PRODUCER_NS(ldmx, TrigScintQIEDigiProducer);
+DECLARE_PRODUCER_NS(trigscint, TrigScintQIEDigiProducer);
