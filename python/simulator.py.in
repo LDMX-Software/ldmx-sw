@@ -65,13 +65,13 @@ class simulator(Producer):
         super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
 
         #######################################################################
-#Required Parameters
+        #Required Parameters
         self.generators = [ ]
         self.detector = ''
         self.description = ''
 
         #######################################################################
-#Optional Parameters(with helpful defaults)
+        #Optional Parameters(with helpful defaults)
         self.scoringPlanes = ''
         self.beamSpotSmear = [ ]
         self.time_shift_primaries = True
@@ -86,20 +86,9 @@ class simulator(Producer):
         self.validate_detector = False
         self.verbosity = 0
 
-#Dark Brem stuff
+        #Dark Brem stuff
         from LDMX.SimCore import dark_brem
         self.dark_brem = dark_brem.DarkBrem()
-
-    def declareGeoProvide(self):
-      """
-        TODO: Move this to the ECal module.
-      """
-        
-      #######################################################################
-#Declare the Ecal Geometry Provider that the simulation requires
-      from LDMX.Ecal import EcalGeometry
-      EcalGeometry.EcalGeometryProvider.getInstance()
-
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
