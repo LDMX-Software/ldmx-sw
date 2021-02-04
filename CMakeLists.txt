@@ -37,9 +37,17 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+# Custom A' Physics module (add-on to Geant4)
+setup_library(module SimCore
+              name DarkBrem
+              dependencies Geant4::Interface
+                           ROOT::Physics
+                           Framework::Configure
+                           Framework::Framework
+                           Boost::log)
+
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
 
 # Setup the library
@@ -48,6 +56,7 @@ setup_library(module SimCore
                            ROOT::Physics
                            Framework::Configure
                            Framework::Framework
+                           SimCore::DarkBrem
                            DetDescr::DetDescr
                            Boost::log
                            "${registered_targets}"
