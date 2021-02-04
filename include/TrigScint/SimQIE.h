@@ -4,15 +4,15 @@
  * @author Niramay Gogate, Texas Tech University
  */
 
-#ifndef EVENT_SIMQIE_H
-#define EVENT_SIMQIE_H
+#ifndef TRIGSCINT_SIMQIE_H
+#define TRIGSCINT_SIMQIE_H
 
 #include<iostream>
 #include"TMath.h"
 #include"TrigScint/QIEInputPulse.h"
 #include"TRandom3.h"
 
-namespace ldmx {
+namespace trigscint {
 
   /**
    * @class SimQIE

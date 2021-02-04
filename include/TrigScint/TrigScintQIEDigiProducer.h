@@ -4,8 +4,8 @@
  * @author Niramay Gogate, Texas Tech University
  */
 
-#ifndef EVENTPROC_TRIGSCINTQIEDIGIPRODUCER_H
-#define EVENTPROC_TRIGSCINTQIEDIGIPRODUCER_H
+#ifndef TRIGSCINT_TRIGSCINTQIEDIGIPRODUCER_H
+#define TRIGSCINT_TRIGSCINTQIEDIGIPRODUCER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
