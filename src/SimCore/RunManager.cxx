@@ -32,9 +32,10 @@
 #include "G4ProcessTable.hh"
 #include "G4VModularPhysicsList.hh"
 
-namespace ldmx {
+namespace simcore {
 
-RunManager::RunManager(Parameters& parameters, ConditionsInterface& ci)
+RunManager::RunManager(framework::config::Parameters& parameters,
+                       ConditionsInterface& ci)
     : conditionsIntf_(ci) {
   parameters_ = parameters;
 
@@ -62,16 +63,16 @@ void RunManager::setupPhysics() {
 
   pList->RegisterPhysics(new GammaPhysics);
   pList->RegisterPhysics(new darkbrem::APrimePhysics(
-      parameters_.getParameter<Parameters>("dark_brem")));
+      parameters_.getParameter<framework::config::Parameters>("dark_brem")));
 
-  auto biasing_operators{parameters_.getParameter<std::vector<Parameters>>(
+  auto biasing_operators{parameters_.getParameter<std::vector<framework::config::Parameters>>(
       "biasing_operators", {})};
   if (!biasing_operators.empty()) {
     std::cout << "[ RunManager ]: Biasing enabled with "
               << biasing_operators.size() << " operator(s)." << std::endl;
 
     // create all the biasing operators that will be used
-    for (Parameters& bop : biasing_operators) {
+    for (framework::config::Parameters& bop : biasing_operators) {
       simcore::PluginFactory::getInstance().createBiasingOperator(
           bop.getParameter<std::string>("class_name"),
           bop.getParameter<std::string>("instance_name"), bop);
@@ -125,13 +126,13 @@ void RunManager::Initialize() {
 
   // Get instances of all G4 actions
   //      also create them in the factory
-  auto actions{simcore::PluginFactory::getInstance().getActions()};
+  auto actions{PluginFactory::getInstance().getActions()};
 
   // Create all user actions
   auto userActions{
-      parameters_.getParameter<std::vector<Parameters>>("actions", {})};
+      parameters_.getParameter<std::vector<framework::config::Parameters>>("actions", {})};
   for (auto& userAction : userActions) {
-    simcore::PluginFactory::getInstance().createAction(
+    PluginFactory::getInstance().createAction(
         userAction.getParameter<std::string>("class_name"),
         userAction.getParameter<std::string>("instance_name"), userAction);
   }
@@ -172,10 +173,11 @@ void RunManager::TerminateOneEvent() {
               << "Reset the dark brem process (if it was activated)."
               << std::endl;
   }
+  ptable->SetVerboseLevel(verbosity);
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {
   return static_cast<DetectorConstruction*>(this->userDetector);
 }
 
-}  // namespace ldmx
+}  // namespace simcore

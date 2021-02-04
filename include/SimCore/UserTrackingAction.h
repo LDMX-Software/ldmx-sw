@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class UserTrackingAction
@@ -152,6 +152,6 @@ class UserTrackingAction : public G4UserTrackingAction {
   /** Stores parentage information for all tracks in the event. */
   TrackMap trackMap_;
 };  // UserTrackingAction
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

@@ -5,7 +5,7 @@ namespace biasoperators {
 
 const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 
-PhotoNuclear::PhotoNuclear(std::string name, const ldmx::Parameters& p)
+PhotoNuclear::PhotoNuclear(std::string name, const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   threshold_ = p.getParameter<double>("threshold");

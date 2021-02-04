@@ -21,10 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
-DarkBremVertexLibraryModel::DarkBremVertexLibraryModel(Parameters &params)
+DarkBremVertexLibraryModel::DarkBremVertexLibraryModel(framework::config::Parameters &params)
     : G4eDarkBremsstrahlungModel(params), method_(DarkBremMethod::Undefined) {
   method_name_ = params.getParameter<std::string>("method");
   if (method_name_ == "forward_only") {
@@ -57,7 +57,7 @@ void DarkBremVertexLibraryModel::PrintInfo() const {
   G4cout << "   Vertex Library:  " << library_path_ << G4endl;
 }
 
-void DarkBremVertexLibraryModel::RecordConfig(RunHeader &h) const {
+void DarkBremVertexLibraryModel::RecordConfig(ldmx::RunHeader &h) const {
   h.setFloatParameter("Minimum Threshold to DB [GeV]", threshold_);
   h.setFloatParameter("DB Xsec Epsilon", epsilon_);
   h.setStringParameter("Vertex Scaling Method", method_name_);
@@ -447,4 +447,4 @@ DarkBremVertexLibraryModel::GetMadgraphData(double E0) {
 }
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore

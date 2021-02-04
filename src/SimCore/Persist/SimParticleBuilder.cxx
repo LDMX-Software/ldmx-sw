@@ -24,7 +24,7 @@ SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {}
 
 SimParticleBuilder::~SimParticleBuilder() {}
 
-void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
+void SimParticleBuilder::buildSimParticles(framework::Event *outputEvent) {
   // Get the trajectory container for the event.
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
@@ -49,7 +49,7 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
 
   // Fill information into the particles.
   for (G4VTrajectory *trajectory : trajectory_list) {
-    ldmx::Trajectory *traj = dynamic_cast<ldmx::Trajectory *>(trajectory);
+    Trajectory *traj = dynamic_cast<Trajectory *>(trajectory);
     if (!traj)
       EXCEPTION_RAISE("PersistFault", "NULL Trajectory ended up in storage.");
 

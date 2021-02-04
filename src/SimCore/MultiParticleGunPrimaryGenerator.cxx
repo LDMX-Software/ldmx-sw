@@ -7,10 +7,10 @@
 
 #include "SimCore/MultiParticleGunPrimaryGenerator.h"
 
-namespace ldmx {
+namespace simcore {
 
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
-    const std::string& name, Parameters& parameters)
+    const std::string& name, framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), random_(new TRandom) {
   auto stlVertex{parameters_.getParameter<std::vector<double> >("vertex")};
   auto stlMomentum{parameters_.getParameter<std::vector<double> >("momentum")};
@@ -72,6 +72,6 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
-DECLARE_GENERATOR(ldmx, MultiParticleGunPrimaryGenerator)
+DECLARE_GENERATOR(simcore, MultiParticleGunPrimaryGenerator)

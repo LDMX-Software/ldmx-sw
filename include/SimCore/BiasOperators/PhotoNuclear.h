@@ -13,7 +13,7 @@ namespace biasoperators {
 class PhotoNuclear : public XsecBiasingOperator {
  public:
   /** Constructor */
-  PhotoNuclear(std::string name, const ldmx::Parameters& p);
+  PhotoNuclear(std::string name, const framework::config::Parameters& p);
 
   /** Method called at the beginning of a run. */
   void StartRun();

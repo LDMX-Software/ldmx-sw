@@ -24,13 +24,13 @@
 // Forward Declarations
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
 // Forward declarations
 class PrimaryGenerator;
 
-typedef PrimaryGenerator* PrimaryGeneratorBuilder(const std::string& name,
-                                                  Parameters& parameters);
+typedef PrimaryGenerator* PrimaryGeneratorBuilder(
+    const std::string& name, framework::config::Parameters& parameters);
 
 /**
  * @class PrimaryGenerator
@@ -46,7 +46,8 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    *
    * @param name Name given the to class instance.
    */
-  PrimaryGenerator(const std::string& name, Parameters& parameters);
+  PrimaryGenerator(const std::string& name,
+                   framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~PrimaryGenerator();
@@ -72,27 +73,27 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   std::string name_{""};
 
   /// The set of parameters used to configure this class
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
 };  // PrimaryGenerator
 
-}  // namespace ldmx
+}  // namespace simcore
 
 /**
  * @macro DECLARE_GENERATOR
  *
  * Defines a builder for the declared class
  * and then registers the class as a generator
- * with the PluginFactory
+ * with the PrimaryGeneratorManager
  */
-#define DECLARE_GENERATOR(NS, CLASS)                                     \
-  ldmx::PrimaryGenerator* CLASS##Builder(const std::string& name,        \
-                                         ldmx::Parameters& parameters) { \
-    return new NS::CLASS(name, parameters);                              \
-  }                                                                      \
-  __attribute((constructor(205))) static void CLASS##Declare() {         \
-    ldmx::PrimaryGenerator::declare(                                     \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder); \
+#define DECLARE_GENERATOR(NS, CLASS)                                        \
+  simcore::PrimaryGenerator* CLASS##Builder(                                \
+      const std::string& name, framework::config::Parameters& parameters) { \
+    return new NS::CLASS(name, parameters);                                 \
+  }                                                                         \
+  __attribute((constructor(305))) static void CLASS##Declare() {            \
+    simcore::PrimaryGenerator::declare(                                     \
+        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
   }
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

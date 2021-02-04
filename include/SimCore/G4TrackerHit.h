@@ -23,7 +23,7 @@
 
 using std::vector;
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class G4TrackerHit
@@ -300,6 +300,6 @@ inline void G4TrackerHit::operator delete(void* aHit) {
   G4TrackerHitAllocator.FreeSingle((G4TrackerHit*)aHit);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

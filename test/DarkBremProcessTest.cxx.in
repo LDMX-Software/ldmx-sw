@@ -9,7 +9,7 @@
 #include "SimCore/DarkBrem/G4APrime.h"
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
-namespace ldmx {
+namespace simcore {
 namespace test {
 namespace SimCore {
 
@@ -25,7 +25,7 @@ namespace SimCore {
  * @param[in] element atomic mass [amu]
  * @param[in] element atomic number
  */
-void xsec_calculation(ldmx::darkbrem::ElementXsecCache& the_cache,
+void xsec_calculation(simcore::darkbrem::ElementXsecCache& the_cache,
                       std::map<double, double> energy_to_xsec, double A,
                       double Z) {
   for (auto const& [energy, xsec] : energy_to_xsec) {
@@ -48,7 +48,7 @@ void xsec_calculation(ldmx::darkbrem::ElementXsecCache& the_cache,
  * @param[in] incident_momentum 3-momentum of incident electron to generate
  * secondaries
  */
-void secondary_generation(ldmx::darkbrem::G4eDarkBremsstrahlung& process,
+void secondary_generation(simcore::darkbrem::G4eDarkBremsstrahlung& process,
                           const G4ThreeVector& incident_momentum) {
   // maximum momentum allowed to be leftover in units of MeV
   static const double max_leftover_momentum{1e-6};
@@ -95,7 +95,7 @@ void secondary_generation(ldmx::darkbrem::G4eDarkBremsstrahlung& process,
 
 }  // namespace SimCore
 }  // namespace test
-}  // namespace ldmx
+}  // namespace simcore
 
 /**
  * Test that the dark brem process is functioning properly.
@@ -108,20 +108,20 @@ void secondary_generation(ldmx::darkbrem::G4eDarkBremsstrahlung& process,
 TEST_CASE("Custom Geant4 Dark Brem Process",
           "[SimCore][signal][functionality]") {
   // open logging but turn everything off
-  ldmx::logging::open(ldmx::logging::level::fatal, ldmx::logging::level::fatal,
+  framework::logging::open(framework::logging::level::fatal, framework::logging::level::fatal,
                       "");
 
   double ap_mass = 10.;  // MeV - A' mass to use for functionality testing
-  auto ap = ldmx::darkbrem::G4APrime::APrime(ap_mass);
+  auto ap = simcore::darkbrem::G4APrime::APrime(ap_mass);
 
-  ldmx::Parameters process;
+  framework::config::Parameters process;
   process.addParameter("ap_mass", ap_mass);
   process.addParameter("enable", true);
   process.addParameter("only_one_per_event", false);
   process.addParameter("cache_xsec", true);
 
   SECTION("Vertex Library Model") {
-    ldmx::Parameters model;
+    framework::config::Parameters model;
     model.addParameter("name", std::string("vertex_library"));
     model.addParameter(
         "library_path",
@@ -133,12 +133,12 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
 
     process.addParameter("model", model);
 
-    ldmx::darkbrem::G4eDarkBremsstrahlung db_process(process);
+    simcore::darkbrem::G4eDarkBremsstrahlung db_process(process);
 
     SECTION("Xsec Calculation") {
       // for this model, we calculated common cross sections in the constructor
       //  and cached them for later use, so we just get the cache here
-      ldmx::darkbrem::ElementXsecCache& the_cache = db_process.getCache();
+      simcore::darkbrem::ElementXsecCache& the_cache = db_process.getCache();
 
       /**
        * map of correct cross sections
@@ -158,7 +158,7 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
           {1000., 0.}  // below threshold should be zero
       };
 
-      ldmx::test::SimCore::xsec_calculation(
+      simcore::test::SimCore::xsec_calculation(
           the_cache, correct_xsec_10MeVap_silicon, 28.085, 14.);
 
       std::map<double, double> correct_xsec_10MeVap_tungsten = {
@@ -169,7 +169,7 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
           {1000., 0.}  // below threshold should be zero
       };
 
-      ldmx::test::SimCore::xsec_calculation(
+      simcore::test::SimCore::xsec_calculation(
           the_cache, correct_xsec_10MeVap_tungsten, 183.84, 74.);
     }
 
@@ -204,10 +204,10 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
 
       for (auto const& incident_total_momentum : incident_total_momenta) {
         G4ThreeVector three_momentum(0., 0., incident_total_momentum * MeV);
-        ldmx::test::SimCore::secondary_generation(db_process, three_momentum);
+        simcore::test::SimCore::secondary_generation(db_process, three_momentum);
         for (auto const& [phi, theta] : angles) {
           three_momentum.setRThetaPhi(three_momentum.mag(), theta, phi);
-          ldmx::test::SimCore::secondary_generation(db_process, three_momentum);
+          simcore::test::SimCore::secondary_generation(db_process, three_momentum);
         }  // loop over angles
       }    // loop over momentum mags
 
@@ -215,5 +215,5 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
 
   }  // specific dark brem vertex library model test
 
-  ldmx::logging::close();
+  framework::logging::close();
 }  // dark brem process test

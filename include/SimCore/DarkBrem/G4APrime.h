@@ -14,7 +14,7 @@
 class G4String;
 class G4DecayTable;
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 class G4APrime : public G4ParticleDefinition {
@@ -60,6 +60,6 @@ class G4APrime : public G4ParticleDefinition {
 };
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_DARKBREM_G4APRIME_H_

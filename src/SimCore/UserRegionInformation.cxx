@@ -1,6 +1,6 @@
 #include "SimCore/UserRegionInformation.h"
 
-namespace ldmx {
+namespace simcore {
 
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
     : storeSecondaries_(aStoreSecondaries) {}
@@ -13,4 +13,4 @@ bool UserRegionInformation::getStoreSecondaries() const {
 
 void UserRegionInformation::Print() const {}
 
-}  // namespace ldmx
+}  // namespace simcore

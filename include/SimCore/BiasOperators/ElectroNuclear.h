@@ -17,7 +17,7 @@ class ElectroNuclear : public XsecBiasingOperator {
    * Calls parent constructor and allows
    * accesss to configuration parameters.
    */
-  ElectroNuclear(std::string name, const ldmx::Parameters& p);
+  ElectroNuclear(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
   ~ElectroNuclear() {}

@@ -4,13 +4,10 @@
 #include "G4ThreeVector.hh"
 #include "G4VUserTrackInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * Provides user defined information to associate with a Geant4 track.
- *
- * This allows us to have knowledge of special track-level
- * details that may not be persisted after the simulation.
  */
 class UserTrackInformation : public G4VUserTrackInformation {
  public:
@@ -90,19 +87,10 @@ class UserTrackInformation : public G4VUserTrackInformation {
     initialMomentum_.set(p.x(), p.y(), p.z());
   }
 
-  /**
-   * Set the name of the volume that the track was generated in
-   *
-   * @param[in] vertexVolume name of volume
-   */
   void setVertexVolume(const std::string vertexVolume) {
     vertexVolume_ = vertexVolume;
   }
 
-  /**
-   * Get the vertex volume
-   * @returns name of volume track was generated in
-   */
   std::string getVertexVolume() const { return vertexVolume_; }
 
  private:
@@ -124,6 +112,6 @@ class UserTrackInformation : public G4VUserTrackInformation {
   /// The initial momentum of the track.
   G4ThreeVector initialMomentum_;
 };
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

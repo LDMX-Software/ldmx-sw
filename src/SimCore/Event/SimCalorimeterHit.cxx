@@ -78,4 +78,4 @@ ClassImp(ldmx::SimCalorimeterHit)
     }
     edep_ += edep;
   }
-}
+}  // namespace ldmx

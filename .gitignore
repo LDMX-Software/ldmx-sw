@@ -17,3 +17,6 @@ __pycache__/
 /data
 /build*
 /install*
+
+# auto-generated test file
+test/DarkBremProcessTest.cxx

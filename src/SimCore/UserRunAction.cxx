@@ -11,7 +11,7 @@
 /*~~~~~~~~~~~~*/
 #include "G4Run.hh"
 
-namespace ldmx {
+namespace simcore {
 
 UserRunAction::UserRunAction() {}
 
@@ -27,4 +27,4 @@ void UserRunAction::EndOfRunAction(const G4Run* run) {
   for (auto& runAction : runActions_) runAction->EndOfRunAction(run);
 }
 
-}  // namespace ldmx
+}  // namespace simcore

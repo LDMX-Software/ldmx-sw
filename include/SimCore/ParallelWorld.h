@@ -22,7 +22,7 @@
 //-------------//
 #include "SimCore/AuxInfoReader.h"
 
-namespace ldmx {
+namespace simcore {
 
 class ParallelWorld : public G4VUserParallelWorld {
  public:
@@ -47,6 +47,6 @@ class ParallelWorld : public G4VUserParallelWorld {
   AuxInfoReader* auxInfoReader_{nullptr};
 
 };  // ParallelWorld
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif  // SIMCORE_PARALLELWORLD_H_

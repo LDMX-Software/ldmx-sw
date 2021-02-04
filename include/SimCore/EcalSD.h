@@ -19,7 +19,7 @@
 // Geant4
 #include "G4Polyhedra.hh"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class EcalSD
@@ -63,7 +63,7 @@ class EcalSD : public CalorimeterSD {
   /**
    * The hex readout defining the cell grid.
    */
-  std::unique_ptr<EcalHexReadout> hitMap_;
+  std::unique_ptr<ldmx::EcalHexReadout> hitMap_;
 
   /**
    * Map of polygonal layers for getting Z positions.
@@ -74,6 +74,6 @@ class EcalSD : public CalorimeterSD {
   ConditionsInterface& conditionsIntf_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

@@ -4,11 +4,11 @@
 #include "SimCore/PluginFactory.h"
 #include "SimCore/XsecBiasingOperator.h"
 
-namespace ldmx {
+namespace simcore {
 
-DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser,
-                                           Parameters& parameters,
-                                           ConditionsInterface& ci)
+DetectorConstruction::DetectorConstruction(
+    G4GDMLParser* theParser, framework::config::Parameters& parameters,
+    ConditionsInterface& ci)
     : parser_(theParser),
       auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)) {
   parameters_ = parameters;
@@ -56,4 +56,4 @@ void DetectorConstruction::ConstructSDandField() {
     }      // loop over volumes
   }        // loop over biasing operators
 }
-}  // namespace ldmx
+}  // namespace simcore

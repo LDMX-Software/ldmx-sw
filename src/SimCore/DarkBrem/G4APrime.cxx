@@ -11,7 +11,7 @@
 #include "G4PhysicalConstants.hh"
 #include "globals.hh"
 
-namespace ldmx {
+namespace simcore {
 namespace darkbrem {
 
 G4APrime* G4APrime::theAPrime = 0;
@@ -49,4 +49,4 @@ G4APrime* G4APrime::APrime(G4double theMass) {
 }
 
 }  // namespace darkbrem
-}  // namespace ldmx
+}  // namespace simcore

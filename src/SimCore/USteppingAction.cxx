@@ -5,7 +5,7 @@
 
 #include "SimCore/USteppingAction.h"
 
-namespace ldmx {
+namespace simcore {
 
 void USteppingAction::UserSteppingAction(const G4Step* step) {
   auto event_info{static_cast<UserEventInformation*>(
@@ -60,4 +60,4 @@ void USteppingAction::UserSteppingAction(const G4Step* step) {
   for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
 }
 
-}  // namespace ldmx
+}  // namespace simcore

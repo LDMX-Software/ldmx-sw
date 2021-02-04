@@ -38,10 +38,9 @@
 namespace simcore {
 namespace persist {
 
-RootPersistencyManager::RootPersistencyManager(EventFile &file,
-                                               Parameters &parameters,
-                                               const int &runNumber,
-                                               ConditionsInterface &ci)
+RootPersistencyManager::RootPersistencyManager(
+    framework::EventFile &file, framework::config::Parameters &parameters,
+    const int &runNumber, ConditionsInterface &ci)
     : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(),
                            "RootPersistencyManager"),
       file_(file),
@@ -76,12 +75,14 @@ G4bool RootPersistencyManager::Store(const G4Run *) {
   // the run manager.
 
   // throws an exception if not correct run number
-  //    needs to be by reference so we can modify it
-  RunHeader &runHeader = file_.getRunHeader(run_);
+  auto runHeader = file_.getRunHeader(run_);
 
   // Set parameter value with number of events processed.
   runHeader.setIntParameter("Event Count", eventsCompleted_);
   runHeader.setIntParameter("Events Began", eventsBegan_);
+
+  // debug printout TODO add to logging
+  file_.getRunHeader(run_).Print();
 
   return true;
 }
@@ -104,17 +105,17 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
 
 void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
-  EventHeader &eventHeader = event_->getEventHeader();
+  ldmx::EventHeader &eventHeader = event_->getEventHeader();
 
   // Set the event weight
-  auto event_info{
-      static_cast<UserEventInformation *>(anEvent->GetUserInformation())};
-
-  eventHeader.setWeight(event_info->getWeight());
-  eventHeader.setFloatParameter("total_photonuclear_energy",
-                                event_info->getPNEnergy());
-  eventHeader.setFloatParameter("total_electronuclear_energy",
-                                event_info->getENEnergy());
+  double weight{1};
+  if (anEvent->GetUserInformation() != nullptr) {
+    weight = static_cast<UserEventInformation *>(anEvent->GetUserInformation())
+                 ->getWeight();
+  } else if (anEvent->GetPrimaryVertex(0)) {
+    weight = anEvent->GetPrimaryVertex(0)->GetWeight();
+  }
+  eventHeader.setWeight(weight);
 
   // Save the state of the random engine to an output stream. A string
   // is then extracted and saved to the event header.
@@ -124,8 +125,8 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   eventHeader.setStringParameter("eventSeed", stream.str());
 }
 
-void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
-                                                  Event *outputEvent) {
+void RootPersistencyManager::writeHitsCollections(
+    const G4Event *anEvent, framework::Event *outputEvent) {
   // Get the HC of this event.
   G4HCofThisEvent *hce = anEvent->GetHCofThisEvent();
   int nColl = hce->GetNumberOfCollections();
@@ -146,7 +147,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
       // Write G4TrackerHit collection to output SimTrackerHit collection.
       G4TrackerHitsCollection *trackerHitsColl =
           dynamic_cast<G4TrackerHitsCollection *>(hc);
-      std::vector<SimTrackerHit> outputColl;
+      std::vector<ldmx::SimTrackerHit> outputColl;
       writeTrackerHitsCollection(trackerHitsColl, outputColl);
 
       // Add hits collection to output event.
@@ -155,8 +156,8 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
     } else if (dynamic_cast<G4CalorimeterHitsCollection *>(hc) != nullptr) {
       G4CalorimeterHitsCollection *calHitsColl =
           dynamic_cast<G4CalorimeterHitsCollection *>(hc);
-      std::vector<SimCalorimeterHit> outputColl;
-      if (collName == EventConstants::ECAL_SIM_HITS) {
+      std::vector<ldmx::SimCalorimeterHit> outputColl;
+      if (collName == ldmx::EventConstants::ECAL_SIM_HITS) {
         // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit
         // collection using helper class.
         ecalHitIO_.writeHitsCollection(calHitsColl, outputColl);
@@ -176,7 +177,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event *anEvent,
 }
 
 void RootPersistencyManager::writeTrackerHitsCollection(
-    G4TrackerHitsCollection *hc, std::vector<SimTrackerHit> &outputColl) {
+    G4TrackerHitsCollection *hc, std::vector<ldmx::SimTrackerHit> &outputColl) {
   outputColl.clear();
   int nHits = hc->GetSize();
   for (int iHit = 0; iHit < nHits; iHit++) {
@@ -184,7 +185,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
     const G4ThreeVector &momentum = g4hit->getMomentum();
     const G4ThreeVector &position = g4hit->getPosition();
 
-    SimTrackerHit simTrackerHit;
+    ldmx::SimTrackerHit simTrackerHit;
     simTrackerHit.setID(g4hit->getID());
     simTrackerHit.setTime(g4hit->getTime());
     simTrackerHit.setLayerID(g4hit->getLayerID());
@@ -205,7 +206,7 @@ void RootPersistencyManager::writeTrackerHitsCollection(
 
 void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHitsCollection *hc,
-    std::vector<SimCalorimeterHit> &outputColl) {
+    std::vector<ldmx::SimCalorimeterHit> &outputColl) {
   // get ancestral tracking information
   auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
@@ -214,7 +215,7 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(
     G4CalorimeterHit *g4hit = (G4CalorimeterHit *)hc->GetHit(iHit);
     const G4ThreeVector &pos = g4hit->getPosition();
 
-    SimCalorimeterHit simHit;
+    ldmx::SimCalorimeterHit simHit;
     simHit.setID(g4hit->getID());
     simHit.addContrib(trackMap->findIncident(g4hit->getTrackID()),
                       g4hit->getTrackID(), g4hit->getPdgCode(),

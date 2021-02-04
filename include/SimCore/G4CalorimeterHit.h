@@ -17,7 +17,7 @@
 // LDMX
 #include "SimCore/Event/SimCalorimeterHit.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class G4CalorimeterHit
@@ -204,6 +204,6 @@ inline void G4CalorimeterHit::operator delete(void* aHit) {
   G4CalorimeterHitAllocator.FreeSingle((G4CalorimeterHit*)aHit);
 }
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

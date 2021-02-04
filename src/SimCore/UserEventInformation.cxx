@@ -5,7 +5,7 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 UserEventInformation::UserEventInformation() {}
 
@@ -18,4 +18,4 @@ void UserEventInformation::Print() const {
             << "E_{EN} = " << total_electronuclear_energy_ << " MeV"
             << std::endl;
 }
-}  // namespace ldmx
+}  // namespace simcore

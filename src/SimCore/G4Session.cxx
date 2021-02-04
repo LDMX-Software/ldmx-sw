@@ -8,7 +8,7 @@
 
 #include "Framework/Exception/Exception.h"
 
-namespace ldmx {
+namespace simcore {
 
 LoggedSession::LoggedSession(const std::string& coutFileName,
                              const std::string& cerrFileName) {
@@ -41,4 +41,4 @@ G4int LoggedSession::ReceiveG4cerr(const G4String& message) {
   cerrFile_.flush();
   return 0;  // 0 return value == sucess
 }
-}  // namespace ldmx
+}  // namespace simcore

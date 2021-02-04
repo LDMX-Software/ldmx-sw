@@ -13,7 +13,7 @@
 // STL
 #include <fstream>
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class LHEReader
@@ -45,6 +45,6 @@ class LHEReader {
   std::ifstream ifs_;
 };
 
-}  // namespace ldmx
+}  // namespace simcore
 
 #endif

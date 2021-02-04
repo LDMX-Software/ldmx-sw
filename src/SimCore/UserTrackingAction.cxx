@@ -15,7 +15,7 @@
 // STL
 #include <iostream>
 
-namespace ldmx {
+namespace simcore {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
   int trackID = track->GetTrackID();
@@ -124,4 +124,4 @@ void UserTrackingAction::storeTrajectory(const G4Track* track) {
   // Map track ID to trajectory.
   trackMap_.addTrajectory(traj);
 }
-}  // namespace ldmx
+}  // namespace simcore
