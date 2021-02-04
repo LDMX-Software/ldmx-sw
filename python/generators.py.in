@@ -73,7 +73,7 @@ class multi(simcfg.PrimaryGenerator) :
     def __init__(self,name) :
         super().__init__(name,'ldmx::MultiParticleGunPrimaryGenerator')
 
-        #turn off Poisson by default
+#turn off Poisson by default
         self.enablePoisson = False
         self.vertex = [ ]
         self.momentum = [ ]

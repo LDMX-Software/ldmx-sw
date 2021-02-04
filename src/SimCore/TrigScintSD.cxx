@@ -1,4 +1,4 @@
-#include "SimCore/TrigScintSD.h" 
+#include "SimCore/TrigScintSD.h"
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
@@ -9,62 +9,66 @@
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
 #include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh" 
+#include "G4Geantino.hh"
 #include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-namespace ldmx { 
+namespace ldmx {
 
-    TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName, int subDetID) 
-      : CalorimeterSD(name, theCollectionName), moduleId_{subDetID} {
-    }
+TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName,
+                         int subDetID)
+    : CalorimeterSD(name, theCollectionName), moduleId_{subDetID} {}
 
-    TrigScintSD::~TrigScintSD() {
-    }
+TrigScintSD::~TrigScintSD() {}
 
-    G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
-       
-        // Get the energy deposited by the particle during the step
-        auto energy{step->GetTotalEnergyDeposit()}; 
+G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
+  // Get the energy deposited by the particle during the step
+  auto energy{step->GetTotalEnergyDeposit()};
 
-        // If a non-Geantino particle doesn't deposit energy during the step, 
-        // skip processing it.
-        if (auto particleDef{step->GetTrack()->GetDefinition()}; 
-                (energy == 0) 
-                && ((particleDef != G4Geantino::Definition()) 
-                        || (particleDef != G4ChargedGeantino::Definition()))) return false;
+  // If a non-Geantino particle doesn't deposit energy during the step,
+  // skip processing it.
+  if (auto particleDef{step->GetTrack()->GetDefinition()};
+      (energy == 0) && ((particleDef != G4Geantino::Definition()) ||
+                        (particleDef != G4ChargedGeantino::Definition())))
+    return false;
 
-        // Create a new instance of a calorimeter hit
-        auto hit{new G4CalorimeterHit()};
+  // Create a new instance of a calorimeter hit
+  auto hit{new G4CalorimeterHit()};
 
-        // Set the energy deposition
-        hit->setEdep(energy); 
+  // Set the energy deposition
+  hit->setEdep(energy);
 
-        // Set the hit position
-        auto position{0.5 * (step->GetPreStepPoint()->GetPosition() + step->GetPostStepPoint()->GetPosition())};
-        auto volumePosition{step->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector())};
-        hit->setPosition(position[0], position[1], volumePosition.z());
+  // Set the hit position
+  auto position{0.5 * (step->GetPreStepPoint()->GetPosition() +
+                       step->GetPostStepPoint()->GetPosition())};
+  auto volumePosition{step->GetPreStepPoint()
+                          ->GetTouchableHandle()
+                          ->GetHistory()
+                          ->GetTopTransform()
+                          .Inverse()
+                          .TransformPoint(G4ThreeVector())};
+  hit->setPosition(position[0], position[1], volumePosition.z());
 
-        // Get the track associated with this step
-        auto track{step->GetTrack()}; 
+  // Get the track associated with this step
+  auto track{step->GetTrack()};
 
-        // Set the global time.
-        hit->setTime(track->GetGlobalTime());
+  // Set the global time.
+  hit->setTime(track->GetGlobalTime());
 
-        // Set the ID on the hit.
-        auto bar{track->GetVolume()->GetCopyNo()};
-	TrigScintID id(moduleId_,bar);
-        hit->setID(id.raw());
+  // Set the ID on the hit.
+  auto bar{track->GetVolume()->GetCopyNo()};
+  TrigScintID id(moduleId_, bar);
+  hit->setID(id.raw());
 
-        // Set the track ID on the hit.
-        hit->setTrackID(track->GetTrackID());
+  // Set the track ID on the hit.
+  hit->setTrackID(track->GetTrackID());
 
-        // Set the PDG code from the track.
-        hit->setPdgCode(track->GetParticleDefinition()->GetPDGEncoding());
+  // Set the PDG code from the track.
+  hit->setPdgCode(track->GetParticleDefinition()->GetPDGEncoding());
 
-        hitsCollection_->insert(hit);
+  hitsCollection_->insert(hit);
 
-        return true;
-    }
+  return true;
 }
+}  // namespace ldmx

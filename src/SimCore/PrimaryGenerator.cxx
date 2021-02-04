@@ -9,16 +9,18 @@
 
 #include "SimCore/PluginFactory.h"
 
-namespace ldmx { 
+namespace ldmx {
 
-    PrimaryGenerator::PrimaryGenerator(const std::string& name, Parameters& parameters) { 
-        name_ = name; 
-        parameters_ = parameters; 
-    }
-
-    PrimaryGenerator::~PrimaryGenerator() {} 
-
-    void PrimaryGenerator::declare(const std::string& className, PrimaryGeneratorBuilder* builder) {
-      simcore::PluginFactory::getInstance().registerGenerator(className, builder);      
-    }
+PrimaryGenerator::PrimaryGenerator(const std::string& name,
+                                   Parameters& parameters) {
+  name_ = name;
+  parameters_ = parameters;
 }
+
+PrimaryGenerator::~PrimaryGenerator() {}
+
+void PrimaryGenerator::declare(const std::string& className,
+                               PrimaryGeneratorBuilder* builder) {
+  simcore::PluginFactory::getInstance().registerGenerator(className, builder);
+}
+}  // namespace ldmx

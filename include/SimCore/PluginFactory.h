@@ -4,15 +4,13 @@
 #include <variant>
 
 #include "Framework/Configure/Parameters.h"
-
+#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/USteppingAction.h"
+#include "SimCore/UserAction.h"
 #include "SimCore/UserEventAction.h"
 #include "SimCore/UserRunAction.h"
 #include "SimCore/UserStackingAction.h"
 #include "SimCore/UserTrackingAction.h"
-
-#include "SimCore/PrimaryGenerator.h"
-#include "SimCore/UserAction.h"
 #include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
@@ -32,7 +30,7 @@ typedef std::map<ldmx::TYPE,
  * @brief Class that manages the generators used to fire particles.
  *
  * Follows the template for a modern C++ singleton explained
- * <a href="https://stackoverflow.com/a/1008289">on stackoverflow</a> 
+ * <a href="https://stackoverflow.com/a/1008289">on stackoverflow</a>
  */
 class PluginFactory {
  public:
@@ -50,7 +48,9 @@ class PluginFactory {
    *
    * @return vector of pointers to constructed primary generators
    */
-  std::vector<ldmx::PrimaryGenerator*> getGenerators() const { return generators_; };
+  std::vector<ldmx::PrimaryGenerator*> getGenerators() const {
+    return generators_;
+  };
 
   /**
    * Put the primary generator into the list of possible generators
@@ -73,18 +73,20 @@ class PluginFactory {
    * registered and throw and exception.
    *
    * Otherwise, we use the registered builder to create a generator and give
-   * it the passed instanceName and paramters. We insert the created generator 
+   * it the passed instanceName and paramters. We insert the created generator
    * into the list of generators.
    *
-   * @param[in] className Full name of class (including namespaces) of the generator
+   * @param[in] className Full name of class (including namespaces) of the
+   * generator
    * @param[in] instanceName unique run-time instance name for the generator
    * @param[in] parameters Parameters to pass to the generator for configuration
    */
   void createGenerator(const std::string& className,
-                    const std::string& instanceName, ldmx::Parameters& parameters);
+                       const std::string& instanceName,
+                       ldmx::Parameters& parameters);
 
   /**
-   * Get the map of all types of user actions to 
+   * Get the map of all types of user actions to
    * a pointer to the user action we have created.
    *
    * @note The createAction method assumes that the internal
@@ -105,10 +107,12 @@ class PluginFactory {
    * @param[in] className full name of class (including namespaces) of action
    * @param[in] builder pointer to function to use to create the action
    */
-  void registerAction(const std::string& className, ldmx::UserActionBuilder* builder);
+  void registerAction(const std::string& className,
+                      ldmx::UserActionBuilder* builder);
 
   /**
-   * Construct a new action and attach it to the types of actions it will be a part of.
+   * Construct a new action and attach it to the types of actions it will be a
+   * part of.
    *
    * This checks the list of registered actions for the input className.
    * If the className is not found, then we assume that the action is not
@@ -119,12 +123,14 @@ class PluginFactory {
    * UserAction::getTypes() to determine which types of actions we should
    * attach this specific action to.
    *
-   * @param[in] className Full name of class (including namespaces) of the action
+   * @param[in] className Full name of class (including namespaces) of the
+   * action
    * @param[in] instanceName unique run-time instance name for the action
    * @param[in] parameters Parameters to pass to the action for configuration
    */
   void createAction(const std::string& className,
-                    const std::string& instanceName, ldmx::Parameters& parameters);
+                    const std::string& instanceName,
+                    ldmx::Parameters& parameters);
 
   /**
    * Retrieve the current list of biasing operators.
@@ -133,36 +139,44 @@ class PluginFactory {
    *
    * @return vector of pointers to biasing operators
    */
-  std::vector<XsecBiasingOperator*> getBiasingOperators() const { return biasing_operators_; }
+  std::vector<XsecBiasingOperator*> getBiasingOperators() const {
+    return biasing_operators_;
+  }
 
   /**
    * Put the biasing operator into the list of possible biasing operators.
    *
    * @see simcore::XsecBiasingOperator::declare for where this method is called.
-   * The declare method is then called using the DECLARE_XSECBIASINGOPERATOR macro.
+   * The declare method is then called using the DECLARE_XSECBIASINGOPERATOR
+   * macro.
    *
-   * @param[in] className Full name of class (including namespaces) of the operator
-   * @param[in] builder a pointer to the function that should be used to create the operator
+   * @param[in] className Full name of class (including namespaces) of the
+   * operator
+   * @param[in] builder a pointer to the function that should be used to create
+   * the operator
    */
-  void registerBiasingOperator(const std::string& className, XsecBiasingOperatorBuilder* builder);
+  void registerBiasingOperator(const std::string& className,
+                               XsecBiasingOperatorBuilder* builder);
 
   /**
    * Create a biasing operator from the input parameters.
    *
-   * This checks the list of registered biasing operators for the input className.
-   * If the className is not found, then we assume that the biasing operator is not
-   * registered and throw and exception.
+   * This checks the list of registered biasing operators for the input
+   * className. If the className is not found, then we assume that the biasing
+   * operator is not registered and throw and exception.
    *
    * Otherwise, we use the registered builder to create an operator and give
    * it the passed instanceName and paramters. We insert the created operator
    * into the list of biasing operators.
    *
-   * @param[in] classNmae Full name of class (including namespaces) of the operator
+   * @param[in] classNmae Full name of class (including namespaces) of the
+   * operator
    * @param[in] instanceName unique run-time instance name for the operator
    * @param[in] parameters Parameters to pass to the operator for configuration
    */
   void createBiasingOperator(const std::string& className,
-                    const std::string& instanceName, ldmx::Parameters& parameters);
+                             const std::string& instanceName,
+                             ldmx::Parameters& parameters);
 
  private:
   /// Constructor - private to prevent initialization
@@ -206,7 +220,8 @@ class PluginFactory {
 
   /**
    * @struct BiasingOperatorInfo
-   * @brief Encapsulates the information required to create a XsecBiasingOperator
+   * @brief Encapsulates the information required to create a
+   * XsecBiasingOperator
    */
   struct BiasingOperatorInfo {
     /// Name of the class
@@ -227,4 +242,3 @@ class PluginFactory {
 }  // namespace simcore
 
 #endif  // SIMCORE_PLUGINFACTORY_H
-

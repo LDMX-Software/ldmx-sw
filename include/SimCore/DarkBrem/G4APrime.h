@@ -63,4 +63,3 @@ class G4APrime : public G4ParticleDefinition {
 }  // namespace ldmx
 
 #endif  // SIMCORE_DARKBREM_G4APRIME_H_
-

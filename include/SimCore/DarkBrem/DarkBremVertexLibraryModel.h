@@ -2,7 +2,6 @@
 #define SIMCORE_DARKBREM_DARKBREMVERTEXLIBRARYMODLE_H_
 
 #include "Framework/Configure/Parameters.h"
-
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 // ROOT

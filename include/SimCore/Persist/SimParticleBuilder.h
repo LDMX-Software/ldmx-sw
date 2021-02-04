@@ -24,8 +24,7 @@ namespace persist {
  * @brief Builds output SimParticle collection from Trajectory container
  */
 class SimParticleBuilder {
-
-public:
+ public:
   /**
    * Class constructor.
    */
@@ -50,12 +49,12 @@ public:
    */
   void buildSimParticles(Event *outputEvent);
 
-private:
+ private:
   /** The current Geant4 event. */
   G4Event *currentEvent_;
 };
 
-} // namespace persist
-} // namespace simcore
+}  // namespace persist
+}  // namespace simcore
 
 #endif

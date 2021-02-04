@@ -47,7 +47,7 @@ void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
   h.setStringParameter("BiasOperator::DarkBrem::Volume", volume_);
 }
 
-}  // namespace biasoperator
+}  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators,DarkBrem)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, DarkBrem)

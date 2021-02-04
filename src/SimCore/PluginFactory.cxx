@@ -5,6 +5,7 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <dlfcn.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -16,16 +17,15 @@
 
 namespace simcore {
 
-PluginFactory& PluginFactory::getInstance() { 
-  //the_factory is created on first call to getInstance
+PluginFactory& PluginFactory::getInstance() {
+  // the_factory is created on first call to getInstance
   //  and is guaranteed to be destroyed
   static PluginFactory the_factory;
-  return the_factory; 
+  return the_factory;
 }
 
 void PluginFactory::registerGenerator(const std::string& className,
                                       ldmx::PrimaryGeneratorBuilder* builder) {
-
   auto it{registeredGenerators_.find(className)};
   if (it != registeredGenerators_.end()) {
     EXCEPTION_RAISE(
@@ -96,14 +96,17 @@ void PluginFactory::createAction(const std::string& className,
   std::vector<ldmx::TYPE> types = act->getTypes();
   for (auto& type : types) {
     if (type == ldmx::TYPE::RUN)
-      std::get<ldmx::UserRunAction*>(actions_[ldmx::TYPE::RUN])->registerAction(act);
+      std::get<ldmx::UserRunAction*>(actions_[ldmx::TYPE::RUN])
+          ->registerAction(act);
     else if (type == ldmx::TYPE::EVENT)
-      std::get<ldmx::UserEventAction*>(actions_[ldmx::TYPE::EVENT])->registerAction(act);
+      std::get<ldmx::UserEventAction*>(actions_[ldmx::TYPE::EVENT])
+          ->registerAction(act);
     else if (type == ldmx::TYPE::TRACKING)
       std::get<ldmx::UserTrackingAction*>(actions_[ldmx::TYPE::TRACKING])
           ->registerAction(act);
     else if (type == ldmx::TYPE::STEPPING)
-      std::get<ldmx::USteppingAction*>(actions_[ldmx::TYPE::STEPPING])->registerAction(act);
+      std::get<ldmx::USteppingAction*>(actions_[ldmx::TYPE::STEPPING])
+          ->registerAction(act);
     else if (type == ldmx::TYPE::STACKING)
       std::get<ldmx::UserStackingAction*>(actions_[ldmx::TYPE::STACKING])
           ->registerAction(act);
@@ -114,7 +117,6 @@ void PluginFactory::createAction(const std::string& className,
 
 void PluginFactory::registerBiasingOperator(
     const std::string& className, XsecBiasingOperatorBuilder* builder) {
-
   auto it{registeredOperators_.find(className)};
   if (it != registeredOperators_.end()) {
     EXCEPTION_RAISE(
@@ -141,9 +143,9 @@ void PluginFactory::createBiasingOperator(const std::string& className,
   auto bop{it->second.builder_(instanceName, parameters)};
 
   // now that the biasing is built --> put it on active list
-  std::cout << "[ PluginFactory ]: Biasing operator '"
-    << instanceName << "' of class '"
-    << className << "' has been created." << std::endl;
+  std::cout << "[ PluginFactory ]: Biasing operator '" << instanceName
+            << "' of class '" << className << "' has been created."
+            << std::endl;
   biasing_operators_.push_back(bop);
 }
 

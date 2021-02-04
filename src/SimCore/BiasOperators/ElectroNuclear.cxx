@@ -5,7 +5,7 @@ namespace simcore {
 namespace biasoperators {
 
 ElectroNuclear::ElectroNuclear(std::string name, const ldmx::Parameters& p)
-    : XsecBiasingOperator(name,p) {
+    : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   factor_ = p.getParameter<double>("factor");
   threshold_ = p.getParameter<double>("threshold");

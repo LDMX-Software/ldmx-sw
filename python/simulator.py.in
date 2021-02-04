@@ -65,13 +65,13 @@ class simulator(Producer):
         super().__init__( instance_name , "ldmx::Simulator" , "SimCore" )
 
         #######################################################################
-        # Required Parameters
+#Required Parameters
         self.generators = [ ]
         self.detector = ''
         self.description = ''
 
         #######################################################################
-        # Optional Parameters (with helpful defaults)
+#Optional Parameters(with helpful defaults)
         self.scoringPlanes = ''
         self.beamSpotSmear = [ ]
         self.time_shift_primaries = True
@@ -86,7 +86,7 @@ class simulator(Producer):
         self.validate_detector = False
         self.verbosity = 0
 
-        # Dark Brem stuff
+#Dark Brem stuff
         from LDMX.SimCore import dark_brem
         self.dark_brem = dark_brem.DarkBrem()
 
@@ -96,7 +96,7 @@ class simulator(Producer):
       """
         
       #######################################################################
-      # Declare the Ecal Geometry Provider that the simulation requires
+#Declare the Ecal Geometry Provider that the simulation requires
       from LDMX.Ecal import EcalGeometry
       EcalGeometry.EcalGeometryProvider.getInstance()
 
