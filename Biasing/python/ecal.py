@@ -42,34 +42,34 @@ def photo_nuclear( detector, generator ) :
 
     """
 
-#Instantiate the simulator. 
+    #Instantiate the simulator. 
     sim = simulator.simulator("photo-nuclear")
 
-#Set the path to the detector to use.
-#the second parameter says we want to include scoring planes
+    #Set the path to the detector to use.
+    #the second parameter says we want to include scoring planes
     sim.setDetector( detector , True )
 
-#Set run parameters
+    #Set run parameters
     sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append( generator )
 
-#Enable and configure the biasing
+    #Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.) ]
 
-#the following filters are in a library that needs to be included
+    #the following filters are in a library that needs to be included
     includeBiasing.library()
 
-#Configure the sequence in which user actions should be called.
+    #Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
-#Only consider events where a hard brem occurs
+            #Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
-#Only consider events where a PN reaction happnes in the ECal
+            #Only consider events where a PN reaction happnes in the ECal
             filters.EcalProcessFilter(),
-#Tag all photo - nuclear tracks to persist them to the event.
+            #Tag all photo - nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
     ])
 
