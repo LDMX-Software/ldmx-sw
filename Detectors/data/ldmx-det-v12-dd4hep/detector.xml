@@ -29,6 +29,7 @@
     </display>
 
     <include ref="tagger.xml" />
+    <include ref="recoil.xml" />
 
     <readouts>
         <readout name="TrackerHits">
