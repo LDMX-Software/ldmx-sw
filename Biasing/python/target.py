@@ -36,30 +36,28 @@ def electro_nuclear( detector, generator ) :
         target_en_sim = target.electro_nuclear('ldmx-det-v12')
 
     """
-
-    #Instantiate the sim.
+    
+    # Instantiate the sim.
     sim = simulator.simulator("target_electronNuclear")
-
-    #Set the path to the detector to use.
-    #Also tell the simulator to include scoring planes
+    
+    # Set the path to the detector to use.
+    #   Also tell the simulator to include scoring planes
     sim.setDetector( detector , True )
-
-    #Set run parameters
+    
+    # Set run parameters
     sim.runNumber = 0
     sim.description = "Target electron-nuclear, xsec bias 1e8"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append(generator)
+    
+    # Enable and configure the biasing
+    sim.biasing_operators = [ bias_operators.ElectroNuclear('target',1e8) ]
 
-    #Enable and configure the biasing
-    sim.biasing_operators = [
-            bias_operators.ElectroNuclear('target',1e8)
-            ]
-
-    #the following filters are in a library that needs to be included
+    # the following filters are in a library that needs to be included
     includeBiasing.library()
 
-    #Configure the sequence in which user actions should be called.
+    # Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
             filters.TargetENFilter(2500.),
@@ -94,33 +92,34 @@ def photo_nuclear( detector, generator ) :
 
     """
 
-    #Instantiate the sim.
+
+    # Instantiate the sim.
     sim = simulator.simulator("target_photonNuclear")
-
-    #Set the path to the detector to use.
-    #Also tell the simulator to include scoring planes
+    
+    # Set the path to the detector to use.
+    #   Also tell the simulator to include scoring planes
     sim.setDetector( detector , True )
-
-    #Set run parameters
+    
+    # Set run parameters
     sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.]
     
     sim.generators.append(generator)
-
-    #Enable and configure the biasing
+    
+    # Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.) ]
-
-    #the following filters are in a library that needs to be included
+   
+    # the following filters are in a library that needs to be included
     includeBiasing.library()
 
-    #Configure the sequence in which user actions should be called.
+    # Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
-            #Only consider events where a hard brem occurs
+            # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
-            filters.TargetPNFilter(),
-            #Tag all photo - nuclear tracks to persist them to the event.
+            filters.TargetPNFilter(),   
+            # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
     ])
 
@@ -139,7 +138,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the directory containing LHE files to use as vertices of the dark brem. 
+        The path to the directory containing LHE files to use as events of the dark brem. 
     detector : str
         Name of detector to simulate in
 
@@ -155,9 +154,11 @@ def dark_brem( ap_mass , lhe, detector ) :
         from LDMX.SimCore import makePath
         target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
 
-    """
+    In general, the second argument should be the full path to the LHE event library.
 
-    sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
+        target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
+    """
+    sim = simulator.simulator( "target_dark_brem_" + str(massAPrime) + "_MeV" )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
@@ -187,5 +188,5 @@ def dark_brem( ap_mass , lhe, detector ) :
         #keep all prodcuts of dark brem(A' and recoil electron)
         util.TrackProcessFilter.dark_brem()
         ])
-
+    
     return sim
