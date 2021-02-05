@@ -37,29 +37,29 @@ def electro_nuclear( detector, generator ) :
 
     """
 
-#Instantiate the sim.
+    #Instantiate the sim.
     sim = simulator.simulator("target_electronNuclear")
 
-#Set the path to the detector to use.
-#Also tell the simulator to include scoring planes
+    #Set the path to the detector to use.
+    #Also tell the simulator to include scoring planes
     sim.setDetector( detector , True )
 
-#Set run parameters
+    #Set run parameters
     sim.runNumber = 0
     sim.description = "Target electron-nuclear, xsec bias 1e8"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append(generator)
 
-#Enable and configure the biasing
+    #Enable and configure the biasing
     sim.biasing_operators = [
             bias_operators.ElectroNuclear('target',1e8)
             ]
 
-#the following filters are in a library that needs to be included
+    #the following filters are in a library that needs to be included
     includeBiasing.library()
 
-#Configure the sequence in which user actions should be called.
+    #Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
             filters.TargetENFilter(2500.),
@@ -94,33 +94,33 @@ def photo_nuclear( detector, generator ) :
 
     """
 
-#Instantiate the sim.
+    #Instantiate the sim.
     sim = simulator.simulator("target_photonNuclear")
 
-#Set the path to the detector to use.
-#Also tell the simulator to include scoring planes
+    #Set the path to the detector to use.
+    #Also tell the simulator to include scoring planes
     sim.setDetector( detector , True )
 
-#Set run parameters
+    #Set run parameters
     sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.]
     
     sim.generators.append(generator)
 
-#Enable and configure the biasing
+    #Enable and configure the biasing
     sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.) ]
 
-#the following filters are in a library that needs to be included
+    #the following filters are in a library that needs to be included
     includeBiasing.library()
 
-#Configure the sequence in which user actions should be called.
+    #Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
-#Only consider events where a hard brem occurs
+            #Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
             filters.TargetPNFilter(),
-#Tag all photo - nuclear tracks to persist them to the event.
+            #Tag all photo - nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()
     ])
 
@@ -164,15 +164,15 @@ def dark_brem( ap_mass , lhe, detector ) :
     sim.generators.append( generators.single_4gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 
-#Activiate dark bremming with a certain A' mass and LHE library
+    #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
     db_model = dark_brem.VertexLibraryModel( lhe )
     db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
-#Biasing dark brem up inside of the target
-#need to bias up high mass A' by more than 2 so that they can actually happen
+    #Biasing dark brem up inside of the target
+    #need to bias up high mass A' by more than 2 so that they can actually happen
     from math import log10 
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
     sim.biasing_operators = [
@@ -180,11 +180,11 @@ def dark_brem( ap_mass , lhe, detector ) :
             ]
 
     sim.actions.extend([
-#make sure electron reaches target with 3.5GeV
+        #make sure electron reaches target with 3.5GeV
         filters.TaggerVetoFilter(3500.),
-#make sure dark brem occurs in the target where A' has at least 2GeV
+        #make sure dark brem occurs in the target where A' has at least 2GeV
         filters.TargetDarkBremFilter(2000.),
-#keep all prodcuts of dark brem(A' and recoil electron)
+        #keep all prodcuts of dark brem(A' and recoil electron)
         util.TrackProcessFilter.dark_brem()
         ])
 
