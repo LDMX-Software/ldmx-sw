@@ -25,7 +25,7 @@ PluginFactory& PluginFactory::getInstance() {
 }
 
 void PluginFactory::registerGenerator(const std::string& className,
-                                      simcore::PrimaryGeneratorBuilder* builder) {
+                                      PrimaryGeneratorBuilder* builder) {
   auto it{registeredGenerators_.find(className)};
   if (it != registeredGenerators_.end()) {
     EXCEPTION_RAISE(
@@ -33,11 +33,7 @@ void PluginFactory::registerGenerator(const std::string& className,
         "The primary generator " + className + " has already been registered.");
   }
 
-  GeneratorInfo info;
-  info.className_ = className;
-  info.builder_ = builder;
-
-  registeredGenerators_[className] = info;
+  registeredGenerators_[className] = builder;
 }
 
 void PluginFactory::createGenerator(const std::string& className,
@@ -49,26 +45,29 @@ void PluginFactory::createGenerator(const std::string& className,
                     "Failed to create generator '" + className + "'.");
   }
 
-  auto generator{it->second.builder_(instanceName, parameters)};
+  auto generator{it->second(instanceName, parameters)};
 
   // now that the generator is built --> put it on active list
   generators_.push_back(generator);
+
+  ldmx_log(info) << "Primary Generator '" << instanceName << "' of class '"
+                 << className << "' has been created.";
 }
 
 actionMap PluginFactory::getActions() {
   if (actions_.empty()) {
-    actions_[simcore::TYPE::RUN] = new simcore::UserRunAction();
-    actions_[simcore::TYPE::EVENT] = new simcore::UserEventAction();
-    actions_[simcore::TYPE::TRACKING] = new simcore::UserTrackingAction();
-    actions_[simcore::TYPE::STEPPING] = new simcore::USteppingAction();
-    actions_[simcore::TYPE::STACKING] = new simcore::UserStackingAction();
+    actions_[TYPE::RUN] = new UserRunAction();
+    actions_[TYPE::EVENT] = new UserEventAction();
+    actions_[TYPE::TRACKING] = new UserTrackingAction();
+    actions_[TYPE::STEPPING] = new USteppingAction();
+    actions_[TYPE::STACKING] = new UserStackingAction();
   }
 
   return actions_;
 }
 
 void PluginFactory::registerAction(const std::string& className,
-                                   simcore::UserActionBuilder* builder) {
+                                   UserActionBuilder* builder) {
   auto it{registeredActions_.find(className)};
   if (it != registeredActions_.end()) {
     EXCEPTION_RAISE(
@@ -76,11 +75,7 @@ void PluginFactory::registerAction(const std::string& className,
         "The user action " + className + " has already been registered.");
   }
 
-  ActionInfo info;
-  info.className_ = className;
-  info.builder_ = builder;
-
-  registeredActions_[className] = info;
+  registeredActions_[className] = builder;
 }
 
 void PluginFactory::createAction(const std::string& className,
@@ -91,28 +86,29 @@ void PluginFactory::createAction(const std::string& className,
     EXCEPTION_RAISE("PluginFactory", "Failed to create " + className);
   }
 
-  auto act{it->second.builder_(instanceName, parameters)};
+  auto act{it->second(instanceName, parameters)};
 
-  std::vector<simcore::TYPE> types = act->getTypes();
+  std::vector<TYPE> types = act->getTypes();
   for (auto& type : types) {
-    if (type == simcore::TYPE::RUN)
-      std::get<simcore::UserRunAction*>(actions_[simcore::TYPE::RUN])
+    if (type == TYPE::RUN)
+      std::get<UserRunAction*>(actions_[TYPE::RUN])->registerAction(act);
+    else if (type == TYPE::EVENT)
+      std::get<UserEventAction*>(actions_[TYPE::EVENT])->registerAction(act);
+    else if (type == TYPE::TRACKING)
+      std::get<UserTrackingAction*>(actions_[TYPE::TRACKING])
           ->registerAction(act);
-    else if (type == simcore::TYPE::EVENT)
-      std::get<simcore::UserEventAction*>(actions_[simcore::TYPE::EVENT])
-          ->registerAction(act);
-    else if (type == simcore::TYPE::TRACKING)
-      std::get<simcore::UserTrackingAction*>(actions_[simcore::TYPE::TRACKING])
-          ->registerAction(act);
-    else if (type == simcore::TYPE::STEPPING)
-      std::get<simcore::USteppingAction*>(actions_[simcore::TYPE::STEPPING])
-          ->registerAction(act);
-    else if (type == simcore::TYPE::STACKING)
-      std::get<simcore::UserStackingAction*>(actions_[simcore::TYPE::STACKING])
+    else if (type == TYPE::STEPPING)
+      std::get<USteppingAction*>(actions_[TYPE::STEPPING])->registerAction(act);
+    else if (type == TYPE::STACKING)
+      std::get<UserStackingAction*>(actions_[TYPE::STACKING])
           ->registerAction(act);
     else
       EXCEPTION_RAISE("PluginFactory", "User action type doesn't exist.");
   }
+
+  // now that the biasing is built --> put it on active list
+  ldmx_log(info) << "User Action '" << instanceName << "' of class '"
+                 << className << "' has been created.";
 }
 
 void PluginFactory::registerBiasingOperator(
@@ -124,29 +120,24 @@ void PluginFactory::registerBiasingOperator(
         "The biasing operator " + className + " has already been registered.");
   }
 
-  BiasingOperatorInfo info;
-  info.className_ = className;
-  info.builder_ = builder;
-
-  registeredOperators_[className] = info;
+  registeredOperators_[className] = builder;
 }
 
-void PluginFactory::createBiasingOperator(const std::string& className,
-                                          const std::string& instanceName,
-                                          framework::config::Parameters& parameters) {
+void PluginFactory::createBiasingOperator(
+    const std::string& className, const std::string& instanceName,
+    framework::config::Parameters& parameters) {
   auto it{registeredOperators_.find(className)};
   if (it == registeredOperators_.end()) {
     EXCEPTION_RAISE("CreateBiasingOperator",
                     "Failed to create biasing '" + className + "'.");
   }
 
-  auto bop{it->second.builder_(instanceName, parameters)};
+  auto bop{it->second(instanceName, parameters)};
 
   // now that the biasing is built --> put it on active list
-  std::cout << "[ PluginFactory ]: Biasing operator '" << instanceName
-            << "' of class '" << className << "' has been created."
-            << std::endl;
   biasing_operators_.push_back(bop);
+  ldmx_log(info) << "Biasing operator '" << instanceName << "' of class '"
+                 << className << "' has been created.";
 }
 
 }  // namespace simcore
