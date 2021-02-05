@@ -10,8 +10,8 @@
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace simcore {
+namespace darkbrem {
 namespace test {
-namespace SimCore {
 
 /**
  * @func Test Xsec Calculation
@@ -93,8 +93,8 @@ void secondary_generation(simcore::darkbrem::G4eDarkBremsstrahlung& process,
   CHECK(total_momentum.mag() <= 1e-6);
 }
 
-}  // namespace SimCore
 }  // namespace test
+}  // namespace darkbrem
 }  // namespace simcore
 
 /**
@@ -158,7 +158,7 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
           {1000., 0.}  // below threshold should be zero
       };
 
-      simcore::test::SimCore::xsec_calculation(
+      simcore::darkbrem::test::xsec_calculation(
           the_cache, correct_xsec_10MeVap_silicon, 28.085, 14.);
 
       std::map<double, double> correct_xsec_10MeVap_tungsten = {
@@ -169,7 +169,7 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
           {1000., 0.}  // below threshold should be zero
       };
 
-      simcore::test::SimCore::xsec_calculation(
+      simcore::darkbrem::test::xsec_calculation(
           the_cache, correct_xsec_10MeVap_tungsten, 183.84, 74.);
     }
 
@@ -204,10 +204,10 @@ TEST_CASE("Custom Geant4 Dark Brem Process",
 
       for (auto const& incident_total_momentum : incident_total_momenta) {
         G4ThreeVector three_momentum(0., 0., incident_total_momentum * MeV);
-        simcore::test::SimCore::secondary_generation(db_process, three_momentum);
+        simcore::darkbrem::test::secondary_generation(db_process, three_momentum);
         for (auto const& [phi, theta] : angles) {
           three_momentum.setRThetaPhi(three_momentum.mag(), theta, phi);
-          simcore::test::SimCore::secondary_generation(db_process, three_momentum);
+          simcore::darkbrem::test::secondary_generation(db_process, three_momentum);
         }  // loop over angles
       }    // loop over momentum mags
 
