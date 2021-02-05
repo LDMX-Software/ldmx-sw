@@ -4,6 +4,7 @@
 #include <variant>
 
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
 #include "SimCore/PrimaryGenerator.h"
 #include "SimCore/USteppingAction.h"
 #include "SimCore/UserAction.h"
@@ -19,10 +20,10 @@ namespace simcore {
  * @typedef actionMap
  * A map of the different types of actions to their reference.
  */
-typedef std::map<simcore::TYPE,
-                 std::variant<simcore::UserRunAction*, simcore::UserEventAction*,
-                              simcore::UserTrackingAction*, simcore::USteppingAction*,
-                              simcore::UserStackingAction*>>
+typedef std::map<TYPE,
+                 std::variant<UserRunAction*, UserEventAction*,
+                              UserTrackingAction*, USteppingAction*,
+                              UserStackingAction*>>
     actionMap;
 
 /**
@@ -48,14 +49,14 @@ class PluginFactory {
    *
    * @return vector of pointers to constructed primary generators
    */
-  std::vector<simcore::PrimaryGenerator*> getGenerators() const {
+  std::vector<PrimaryGenerator*> getGenerators() const {
     return generators_;
   };
 
   /**
    * Put the primary generator into the list of possible generators
    *
-   * @see simcore::PrimaryGenerator::declare for where this method is called.
+   * @see PrimaryGenerator::declare for where this method is called.
    * This method is used to construct a list of all possible generators that
    * the user could use.
    *
@@ -63,7 +64,7 @@ class PluginFactory {
    * @param[in] builder pointer to function to use to create the generator
    */
   void registerGenerator(const std::string& className,
-                         simcore::PrimaryGeneratorBuilder* builder);
+                         PrimaryGeneratorBuilder* builder);
 
   /**
    * Create a new generate and attach it to the list of generators
@@ -100,7 +101,7 @@ class PluginFactory {
   /**
    * Put the user action into the list of possible actions.
    *
-   * @see simcore::UserAction::declare for where this method is called.
+   * @see UserAction::declare for where this method is called.
    * This method is used to construct a list of all possible actions that
    * the user could use.
    *
@@ -108,7 +109,7 @@ class PluginFactory {
    * @param[in] builder pointer to function to use to create the action
    */
   void registerAction(const std::string& className,
-                      simcore::UserActionBuilder* builder);
+                      UserActionBuilder* builder);
 
   /**
    * Construct a new action and attach it to the types of actions it will be a
@@ -146,7 +147,7 @@ class PluginFactory {
   /**
    * Put the biasing operator into the list of possible biasing operators.
    *
-   * @see simcore::XsecBiasingOperator::declare for where this method is called.
+   * @see XsecBiasingOperator::declare for where this method is called.
    * The declare method is then called using the DECLARE_XSECBIASINGOPERATOR
    * macro.
    *
@@ -182,60 +183,26 @@ class PluginFactory {
   /// Constructor - private to prevent initialization
   PluginFactory() {}
 
-  /**
-   * @struct GeneratorInfo
-   * @brief Holds necessary information to create a generator
-   */
-  struct GeneratorInfo {
-    /// Name of the Class
-    std::string className_;
-
-    /// Class builder
-    simcore::PrimaryGeneratorBuilder* builder_;
-  };
-
   /// A map of all register generators
-  std::map<std::string, GeneratorInfo> registeredGenerators_;
+  std::map<std::string, PrimaryGeneratorBuilder*> registeredGenerators_;
 
   /// Cointainer for all generators to be used by the simulation
-  std::vector<simcore::PrimaryGenerator*> generators_;
-
-  /**
-   * @struct ActionInfo
-   * @brief Encapsulates the information required to create a UserAction
-   */
-  struct ActionInfo {
-    /// Name of the class
-    std::string className_;
-
-    /// Class builder
-    simcore::UserActionBuilder* builder_;
-  };
+  std::vector<PrimaryGenerator*> generators_;
 
   /// A map of all registered user actions to their corresponding info.
-  std::map<std::string, ActionInfo> registeredActions_;
+  std::map<std::string, UserActionBuilder*> registeredActions_;
 
   /// Container for all Geant4 actions
   actionMap actions_;
 
-  /**
-   * @struct BiasingOperatorInfo
-   * @brief Encapsulates the information required to create a
-   * XsecBiasingOperator
-   */
-  struct BiasingOperatorInfo {
-    /// Name of the class
-    std::string className_;
-
-    /// Class builder
-    XsecBiasingOperatorBuilder* builder_;
-  };
-
   /// A map of all registered user actions to their corresponding info.
-  std::map<std::string, BiasingOperatorInfo> registeredOperators_;
+  std::map<std::string, XsecBiasingOperatorBuilder*> registeredOperators_;
 
   /// Container for all biasing operators
   std::vector<XsecBiasingOperator*> biasing_operators_;
+
+  /// Allow for us to log here
+  framework::logging::logger theLog_{framework::logging::makeLogger("SimPluginFactory")};
 
 };  // PluginFactory
 
