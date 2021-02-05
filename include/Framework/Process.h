@@ -150,7 +150,7 @@ class Process {
    *
    * @param[in] header RunHeader for the new run
    */
-  void newRun(RunHeader& header);
+  void newRun(ldmx::RunHeader& header);
 
  private:
   /// The parameters used to configure this class.

@@ -224,6 +224,9 @@ class Bus {
     /**
      * Stream this object to the output stream
      *
+     * Notice that the input Seat is a uniqe_ptr.
+     * This is because that is what is stored in the Bus.
+     *
      * May contain newlines if large object.
      *
      * @see stream for detailed implementation
@@ -231,8 +234,8 @@ class Bus {
      * @param[in] seat Seat to write out
      * @return modified ostream
      */
-    friend std::ostream& operator<<(std::ostream& s, const framework::Bus::Seat& seat) {
-      seat.stream(s);
+    friend std::ostream& operator<<(std::ostream& s, const std::unique_ptr<framework::Bus::Seat>& seat) {
+      seat->stream(s);
       return s;
     }
 
@@ -378,7 +381,7 @@ class Bus {
      * to use depending on the type of baggage we are carrying.
      */
     virtual void stream(std::ostream& s) const { 
-      stream(the_type<BaggageType>{}, s)
+      stream(the_type<BaggageType>{}, s);
     }
 
     /**
