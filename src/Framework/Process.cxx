@@ -370,7 +370,7 @@ TDirectory *Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(RunHeader& header) {
+void Process::newRun(ldmx::RunHeader& header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
   for (auto module : sequence_)
