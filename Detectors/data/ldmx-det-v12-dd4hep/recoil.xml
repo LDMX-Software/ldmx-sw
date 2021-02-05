@@ -113,7 +113,52 @@
         type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="-96.*mm" y="-40.*mm" z="recoil_layer_l56_offset" />
       </layer>
+    </module>
+
+    <module id="6">
+      <position x="0*mm" y="0*mm" z="recoil_l6_env_mid_z" />
+      <layer id="19" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="96*mm" y="40*mm" z="recoil_layer_l56_offset" />
+      </layer>
+      <layer id="20" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="48.*mm" y="40.*mm" z="-recoil_layer_l56_offset" />
+      </layer>
+      <layer id="21" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="0.*mm" y="40.*mm" z="recoil_layer_l56_offset" />
+      </layer>
+      <layer id="22" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="-48.*mm" y="40.*mm" z="-recoil_layer_l56_offset" />
+      </layer>
+      <layer id="23" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="-96.*mm" y="40.*mm" z="recoil_layer_l56_offset" />
+      </layer>
+      <layer id="24" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="96*mm" y="-40*mm" z="recoil_layer_l56_offset" />
+      </layer>
+      <layer id="25" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="48.*mm" y="-40.*mm" z="-recoil_layer_l56_offset" />
+      </layer>
+      <layer id="26" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="0.*mm" y="-40.*mm" z="recoil_layer_l56_offset" />
+      </layer>
+      <layer id="27" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="-48.*mm" y="-40.*mm" z="-recoil_layer_l56_offset" />
+      </layer>
+      <layer id="28" 
+        type="Box" dx="recoil_l56_sensor_x/2" dy="recoil_l56_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
+        <position x="-96.*mm" y="-40.*mm" z="recoil_layer_l56_offset" />
+      </layer>
     </module>  
+
 
   </detector>
 </detectors>
