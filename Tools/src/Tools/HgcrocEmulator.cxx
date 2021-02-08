@@ -184,7 +184,6 @@ bool HgcrocEmulator::digitize(
      * Determine whether to readout this hit depending on the readout
      * threshold
      */
-    std::cout << " ADC " << digiToAdd.at(iSOI_).adc_t() << " thres " << readoutThreshold << std::endl;
     return (digiToAdd.at(iSOI_).adc_t() >= readoutThreshold);
 
   } else {
