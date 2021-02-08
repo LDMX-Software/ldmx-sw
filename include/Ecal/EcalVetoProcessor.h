@@ -21,6 +21,9 @@
 #include <map>
 #include <memory>
 
+// MIP tracking
+#include "TVector3.h"
+
 namespace ecal {
 
 /**
@@ -94,6 +97,11 @@ class EcalVetoProcessor : public framework::Producer {
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
+  /* Function to find distance between two lines (line 1 passing through v1 and v2, etc.) */
+  float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
+  /* Function to find the minimum point-line distance */
+  float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
+
  private:
   std::map<ldmx::EcalID, float> cellMap_;
   std::map<ldmx::EcalID, float> cellMapTightIso_;
@@ -119,6 +127,12 @@ class EcalVetoProcessor : public framework::Producer {
   double avgLayerHit_{0};
   double stdLayerHit_{0};
   double ecalBackEnergy_{0};
+  // MIP tracking
+  int nStraightTracks_{0};
+  int nLinregTracks_{0};
+  int firstNearPhLayer_{0};
+  float epAng_{0};
+  float epSep_{0};
 
   double bdtCutVal_{0};
 
@@ -139,6 +153,13 @@ class EcalVetoProcessor : public framework::Producer {
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
 };
+
+// MIP tracking
+struct HitData {
+    int layer;
+    TVector3 pos;
+};
+
 }  // namespace ecal
 
 #endif
