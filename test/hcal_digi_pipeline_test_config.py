@@ -24,7 +24,7 @@ geom = HcalGeometry.HcalGeometryProvider.getInstance()
 # HCal digi
 hcalDigis = digi.HcalDigiProducer()
 
-# Turn of noise hits
+# Turn off noise hits
 hcalDigis.hgcroc.noise = False
 
 p.sequence = [
