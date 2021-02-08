@@ -15,7 +15,7 @@ if(BUILD_EVENT_ONLY)
 
   register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
                          class "TrigScintHit" type "collection" )
-  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+  register_event_object( module_path "TrigScint/Event" namespace "trigscint" 
                          class "TrigScintQIEDigis" type "collection" )
   register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
                          class "TrigScintCluster" type "collection" )

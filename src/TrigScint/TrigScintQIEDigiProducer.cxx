@@ -138,7 +138,7 @@ namespace trigscint {
     }
 
     // A container to hold the digitized trigger scintillator hits.
-    std::vector<ldmx::TrigScintQIEDigis> QDigis;
+    std::vector<trigscint::TrigScintQIEDigis> QDigis;
 
     double TotalNoise = meanNoise_*maxts_;
 

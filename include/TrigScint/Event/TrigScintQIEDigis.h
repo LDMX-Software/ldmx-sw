@@ -9,7 +9,7 @@
 
 #include "TObject.h" //For ClassDef
 
-namespace ldmx {
+namespace trigscint {
 
   /**
    * @class TrigScintQIEDigis

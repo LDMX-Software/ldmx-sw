@@ -7,9 +7,9 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 #include <iostream>
 #include <exception>
-ClassImp(ldmx::TrigScintQIEDigis);
+ClassImp(trigscint::TrigScintQIEDigis);
 
-namespace ldmx {
+namespace trigscint {
   
   void TrigScintQIEDigis::Print(Option_t* option) const {
     std::cout<<"TrigScintQIEDigis { "
