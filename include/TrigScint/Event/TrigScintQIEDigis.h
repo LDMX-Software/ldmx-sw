@@ -22,12 +22,13 @@ namespace ldmx {
     /**
      * Default constructor
      */
-    TrigScintQIEDigis(){};
+    // TrigScintQIEDigis(){};
+    TrigScintQIEDigis() = default;
   
     /**
      * Default destructor
      */
-    ~TrigScintQIEDigis(){};
+    ~TrigScintQIEDigis() = default;
   
     /**
      * Print ifo about the class
