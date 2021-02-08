@@ -120,4 +120,4 @@ class DarkBrem(XsecBiasingOperator) :
 
     def target(factor) :
         """Bias dark brem inside of the target by the input factor"""
-        return DarkBrem('target',False,factor)
+        return DarkBrem('target_region',False,factor)
