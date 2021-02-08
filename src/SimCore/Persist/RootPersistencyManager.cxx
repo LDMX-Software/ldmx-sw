@@ -75,14 +75,11 @@ G4bool RootPersistencyManager::Store(const G4Run *) {
   // the run manager.
 
   // throws an exception if not correct run number
-  auto runHeader = file_.getRunHeader(run_);
+  ldmx::RunHeader& runHeader = file_.getRunHeader(run_);
 
   // Set parameter value with number of events processed.
   runHeader.setIntParameter("Event Count", eventsCompleted_);
   runHeader.setIntParameter("Events Began", eventsBegan_);
-
-  // debug printout TODO add to logging
-  file_.getRunHeader(run_).Print();
 
   return true;
 }
