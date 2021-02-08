@@ -107,7 +107,7 @@ void RootPersistencyManager::writeHeader(const G4Event *anEvent) {
   // Retrieve a mutable version of the event header
   ldmx::EventHeader &eventHeader = event_->getEventHeader();
 
-  auto event_info{static_cast<UserEventInformation*>(anEvent->GetUserInformation)};
+  auto event_info{static_cast<UserEventInformation*>(anEvent->GetUserInformation())};
 
   eventHeader.setWeight(event_info->getWeight());
   eventHeader.setFloatParameter("total_photonuclear_energy"  , event_info->getPNEnergy());
