@@ -18,7 +18,9 @@ from LDMX.Framework.ldmxcfg import Producer
 nPEPerMIP = 68. #PEs created per MIP 
 mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6      
 
-gain = 0.5
+#gain = 0.5
+gain = 1.2
+pedestal = 1.
 
 def HcalHgcrocEmulator() :
     """Get an HGCROC emulator and configure for the HCal specifically
@@ -33,10 +35,22 @@ def HcalHgcrocEmulator() :
     hgcroc = HgcrocEmulator.HgcrocEmulator()
 
     # readout capacitance of chip is ~20pF
+    # does this vary for Hcal?
     hgcroc.readoutPadCapacitance = 20. #pF
 
-    # set defaults (should swith to maxADCrange)
-    hgcroc.setThresholdDefaultsHcal( gain)
+    # pedestal
+    hgcroc.pedestal = pedestal
+
+    # readout threshold
+    hgcroc.readoutThreshold = hgcroc.pedestal#+1
+
+    # gain
+    # gain = maxADCRange/readoutPadCapacitance/1024
+    # assuming same readoutPadCap then maxADCRange = 10240
+    hgcroc.gain = gain
+
+    # set defaults
+    hgcroc.setThresholdDefaultsHcal( nPEPerMIP)
 
     # set pulse shape parameters
     hgcroc.rateUpSlope = -0.1141
@@ -71,7 +85,7 @@ class HcalDigiProducer(Producer) :
 
         #Energy -> Volts converstion
         # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
-        # assuming 1 PEs ~ 5mV ->  self.MeV = 72.961 mV/MeV (current)
+        # assuming 1 PEs ~ 5mV ->  self.MeV = 72.961 mV/MeV
         self.MeV = (1./mipEnergy)*self.hgcroc.calculateVoltageHcal( nPEPerMIP )
 
         # attenuation length
@@ -115,7 +129,7 @@ class HcalRecProducer(Producer) :
         
         # TODO: do these need to be different for TOT/ADC modes?
         self.gain = gain
-        self.pedestal = 1.
+        self.pedestal = pedestal
 
 	# attenuation length
         self.attenuationLength = 5.; # in m  
