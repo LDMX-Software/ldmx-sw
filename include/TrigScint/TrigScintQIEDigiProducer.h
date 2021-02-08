@@ -58,6 +58,12 @@ namespace trigscint {
      * @param parameters ParameterSet for configuration.
      */
     void configure(framework::config::Parameters& parameters) final override;
+
+    /**
+     * Method to produce a collection of QIE digis.
+     * @brief For each event, the SimHit information is converted to an
+     * output format analogous to real QIE output.
+     */
     void produce(framework::Event& event);
 
  private:
