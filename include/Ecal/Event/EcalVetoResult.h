@@ -37,6 +37,13 @@ class EcalVetoResult {
                     float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy,
 
+                    // MIP tracking
+                    int nStraightTracks,
+                    int nLinregTracks,
+                    int firstNearPhLayer,
+                    float epAng,
+                    float epSep,
+
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
                     std::vector<float> outsideContainmentEnergy,
@@ -78,6 +85,18 @@ class EcalVetoResult {
   float getStdLayerHit() const { return stdLayerHit_; }
 
   float getEcalBackEnergy() const { return ecalBackEnergy_; }
+
+  // MIP tracking
+
+  int getNStraightTracks() const { return nStraightTracks_; }
+
+  int getNLinregTracks() const { return nLinregTracks_; }
+
+  int getFirstNearPhLayer() const{ return firstNearPhLayer_; }
+
+  float getEpAng() const { return epAng_; }
+
+  float getEpSep() const { return epSep_; }
 
   const std::vector<float>& getElectronContainmentEnergy() const {
     return electronContainmentEnergy_;
@@ -137,6 +156,12 @@ class EcalVetoResult {
   float avgLayerHit_{0};
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
+  // MIP tracking
+  int nStraightTracks_{0};
+  int nLinregTracks_{0};
+  int firstNearPhLayer_{0};
+  float epAng_{0};
+  float epSep_{0};
 
   std::vector<float> electronContainmentEnergy_;
   std::vector<float> photonContainmentEnergy_;

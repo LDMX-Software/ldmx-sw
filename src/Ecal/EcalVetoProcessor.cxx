@@ -16,6 +16,11 @@
 #include <cmath>
 #include <fstream>
 
+// ROOT (MIP tracking)
+#include "TMatrixD.h"
+#include "TDecompSVD.h"
+#include "TVector3.h"
+
 namespace ecal {
 
 // arrays holding 68% containment radius per layer for different bins in
@@ -76,6 +81,21 @@ const std::vector<double> radius68_thetagt20 = {
     177.45988386054293, 187.18163602489574, 199.55472065581682,
     209.2764728201696};
 
+// MIP tracking:  List of all layer z positions
+const std::vector<double> LAYER_Z_POSITIONS = {
+    223.8000030517578,  226.6999969482422,  233.0500030517578,
+    237.4499969482422,  245.3000030517578,  251.1999969482422,
+    260.29998779296875, 266.70001220703125, 275.79998779296875,
+    282.20001220703125, 291.29998779296875, 297.70001220703125,
+    306.79998779296875, 313.20001220703125, 322.29998779296875,
+    328.70001220703125, 337.79998779296875, 344.20001220703125,
+    353.29998779296875, 359.70001220703125, 368.79998779296875,
+    375.20001220703125, 384.29998779296875, 390.70001220703125,
+    403.29998779296875, 413.20001220703125, 425.79998779296875,
+    435.70001220703125, 448.29998779296875, 458.20001220703125,
+    470.79998779296875, 480.70001220703125, 493.29998779296875,
+    503.20001220703125};
+
 void EcalVetoProcessor::buildBDTFeatureVector(
     const ldmx::EcalVetoResult &result) {
   bdtFeatures_.clear();
@@ -89,6 +109,13 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getAvgLayerHit());
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getStdLayerHit());
+  // MIP tracking (unused but could be uncommented)
+  //bdtFeatures_.push_back(result.getNStraightTracks());
+  //bdtFeatures_.push_back(result.getNLinregTracks());
+  //bdtFeatures_.push_back(result.getFirstNearPhLayer());
+  //bdtFeatures_.push_back(result.getEpAng());
+  //bdtFeatures_.push_back(result.getEpSep());
+
   for (int ireg = 0; ireg < result.getElectronContainmentEnergy().size();
        ++ireg) {
     bdtFeatures_.push_back(result.getElectronContainmentEnergy()[ireg]);
@@ -167,6 +194,12 @@ void EcalVetoProcessor::clearProcessor() {
   stdLayerHit_ = 0;
   deepestLayerHit_ = 0;
   ecalBackEnergy_ = 0;
+  // MIP tracking
+  nStraightTracks_ = 0;
+  nLinregTracks_ = 0;
+  firstNearPhLayer_ = 0;
+  epAng_ = 0;
+  epSep_ = 0;
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
   std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -308,6 +341,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> outsideContainmentXstd(nregions, 0.0);
   std::vector<float> outsideContainmentYstd(nregions, 0.0);
 
+  // MIP tracking::  Store all hit info used for tracking
+  std::vector<HitData> trackingHitList;
+
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     // Layer-wise quantities
     ldmx::EcalID id = hitID(hit);
@@ -359,6 +395,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           outsideContainmentYmean[ireg] += xy_pair.second * hit.getEnergy();
         }
       }
+
+      // MIP tracking:  Decide whether hit should be added to trackingHitList
+      // If inside e- RoC or if etraj is missing, add:
+      if(distance_ele_trajectory >= ele_radii[id.layer()] || distance_ele_trajectory == -1.0) {
+        HitData hd;
+        hd.pos = TVector3(xy_pair.first, xy_pair.second, LAYER_Z_POSITIONS[id.layer()]);
+        hd.layer = id.layer();
+        trackingHitList.push_back(hd);
+      }
+
     }
   }
 
@@ -505,9 +551,204 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
+
+  // Begin MIP tracking changes
+
+  // Find epAng and epSep, and prepare EP trajectory vectors:
+  TVector3 e_traj_start;
+  TVector3 e_traj_end;
+  TVector3 p_traj_start;
+  TVector3 p_traj_end;
+  if(ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
+    e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
+    e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second,    LAYER_Z_POSITIONS.back());
+    p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
+    p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, LAYER_Z_POSITIONS.back());
+
+    TVector3 evec   = e_traj_end - e_traj_start;
+    TVector3 e_norm = evec.Unit();
+    TVector3 pvec   = p_traj_end - p_traj_start;
+    TVector3 p_norm = pvec.Unit();
+    float epDot = e_norm.Dot(p_norm);
+    epAng_ = acos(epDot) * 180.0 / M_PI;
+    epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) +
+                   pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
+  } else {
+    /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
+    e_traj_start = TVector3(999,999,0);
+    e_traj_end = TVector3(999,999,999);
+    p_traj_start = TVector3(1000,1000,0);
+    p_traj_end = TVector3(1000,1000,1000);
+    epAng_ = 3.0 + 1.0;  /*ensures event will not be vetoed by angle/separation cut  */
+    epSep_ = 10.0 + 1.0;
+  }
+
+  /* Compute firstNearPhLayer */
+  firstNearPhLayer_ = LAYER_Z_POSITIONS.size();
+
+  if(photon_trajectory.size() != 0) {  //if ptraj doesn't exist, leave phlayer at the default value
+    for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
+      float ehDist = sqrt( pow((*it).pos.X() - photon_trajectory[(*it).layer].first,  2)
+                         + pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
+      if(ehDist < 8.7 && (*it).layer < firstNearPhLayer_) {
+        firstNearPhLayer_ = (*it).layer;
+      }
+    }
+  }
+
+
+  // Find straight MIP tracks:
+
+  std::sort(trackingHitList.begin(), trackingHitList.end(), [](HitData ha, HitData hb) {return ha.layer > hb.layer;});
+
+  int track[34];  //list of hit numbers in track; 34=maximum theoretical length
+  int currenthit;
+  int trackLen;
+  float cellWidth = 8.7;
+
+  for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+    track[0] = iHit;
+    currenthit = iHit;
+    trackLen = 1;
+
+    for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+      if (trackingHitList[jHit].layer == trackingHitList[currenthit].layer ||
+          trackingHitList[jHit].layer > trackingHitList[currenthit].layer + 3) {
+        continue;  //if hit is not in the next two layers, continue
+      }
+      //if it is:  add to track if the (x,y) coordinates are identical to current hit.
+      if (trackingHitList[jHit].pos.X() == trackingHitList[currenthit].pos.X() &&
+          trackingHitList[jHit].pos.Y() == trackingHitList[currenthit].pos.Y()) {
+        track[trackLen] = jHit;
+        trackLen++;
+      }
+    }
+    //confirm valid track
+    if (trackLen < 2) continue;
+      float closest_e = distTwoLines(trackingHitList[track[0]].pos, trackingHitList[track[trackLen-1]].pos,
+                                     e_traj_start, e_traj_end);
+      float closest_p = distTwoLines(trackingHitList[track[0]].pos, trackingHitList[track[trackLen-1]].pos,
+                                     p_traj_start, p_traj_end);
+      if (closest_p > cellWidth and closest_e < 2*cellWidth) continue;
+      if (trackLen < 4 and closest_e > closest_p) continue;
+
+      //if track found, increment nStraightTracks and remove hits from future consideration
+      if (trackLen >= 2) {
+        for (int kHit = 0; kHit < trackLen; kHit++) {
+          trackingHitList.erase(trackingHitList.begin() + track[kHit]);
+        }
+        //The *current* hit will have been removed, so iHit is currently pointing to the next hit.
+        iHit--;  //Decrement iHit so no hits will get skipped by iHit++
+        nStraightTracks_++;
+      }
+      //Optional addition:  Merge nearby straight tracks.  Not necessary for veto.
+  }
+
+
+  // Linreg tracking:
+
+  int hitsInRegion[50];
+  int nHitsInRegion;
+
+  TMatrixD svdMatrix(3,3);
+  TMatrixD Vm(3,3);
+  TMatrixD hdt(3,3);
+  TVector3 slopeVec;
+  TVector3 hmean;
+  TVector3 hpoint;
+  TVector3 mean_best;
+  TVector3 point_best;
+  float r_corr_best;
+  int hitNums_best[3];
+  int hitNums[3];
+
+  for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+    trackLen = 0;
+    nHitsInRegion = 1;
+    currenthit = iHit;
+    hitsInRegion[0] = iHit;
+
+    for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+      float dstToHit = (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
+      if (dstToHit <= 2*cellWidth) { //consider only hits within 2 cells of the primary hit
+        hitsInRegion[nHitsInRegion] = jHit;
+        nHitsInRegion++;
+      }
+    }
+
+    hitNums[0] = iHit;
+    for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
+      hitNums[1] = jHit;
+      for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
+        hitNums[2] = kHit;
+        for (int hInd = 0; hInd < 3; hInd++) {
+          hmean(hInd) = (trackingHitList[hitNums[0]].pos(hInd) +
+                         trackingHitList[hitNums[1]].pos(hInd) +
+                         trackingHitList[hitNums[2]].pos(hInd))/3.0;
+        }
+        for (int hInd = 0; hInd < 3; hInd++) {
+          for (int lInd = 0; lInd < 3; lInd++) {
+            hdt(hInd,lInd) = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
+          }
+        }
+
+        // Check for singular matrix; .Determinant() doesn't work on singular matrices
+        float det = hdt[0][0]*(hdt[1][1]*hdt[2][2] - hdt[2][1]*hdt[1][2])
+                  + hdt[1][0]*(hdt[2][1]*hdt[0][2] - hdt[0][1]*hdt[2][2])
+                  + hdt[2][0]*(hdt[0][1]*hdt[1][2] - hdt[1][1]*hdt[0][2]);
+        if(std::abs(det) < 0.001) {  //to avoid rounding errors
+          continue;
+        }
+
+        TDecompSVD svdObj = TDecompSVD(hdt);
+        bool decomposed = svdObj.Decompose();
+        Vm = svdObj.GetV();
+        for (int hInd = 0; hInd < 3; hInd++) {
+          slopeVec(hInd) = Vm[0][hInd]; //NOTE:  Make sure it's not [hInd][0]
+        }
+        hpoint = slopeVec + hmean;
+        //linreg complete:  Now have best-fit for 3 hits under consideration
+        //find closest_e and closest_p...can get a second point w/ slopeVec+regmean
+        float closest_e = distTwoLines(hmean, hpoint, e_traj_start, e_traj_end);
+        float closest_p = distTwoLines(hmean, hpoint, p_traj_start, p_traj_end);
+        if (closest_p > cellWidth or closest_e < 1.5*cellWidth) continue;
+        //find r^2
+        float vrnc = (trackingHitList[hitNums[0]].pos - hmean).Mag() +
+                     (trackingHitList[hitNums[1]].pos - hmean).Mag() +
+                     (trackingHitList[hitNums[2]].pos - hmean).Mag();
+        float sumerr = distPtToLine(trackingHitList[hitNums[0]].pos, hmean, hpoint) +
+                       distPtToLine(trackingHitList[hitNums[1]].pos, hmean, hpoint) +
+                       distPtToLine(trackingHitList[hitNums[2]].pos, hmean, hpoint);
+        float r_corr = 1 - sumerr/vrnc;
+        if (r_corr > r_corr_best and r_corr > .6) {
+          r_corr_best = r_corr;
+          mean_best = hmean; //these two aren't necessary unless additional hits are added
+          point_best = hpoint;
+          trackLen = 0;
+          for (int k=0; k<3; k++) { // Only looking for 3-hit tracks currently
+            track[k] = hitNums[k];
+            trackLen++;
+          }
+        }
+      }
+    }
+    //Ordinarily, additional hits in line w/ track would be added here.  However, this doesn't affect the results of the simple veto.
+    //remove hits from further consideration:
+    if (trackLen >= 2) {
+      nLinregTracks_++;
+      for (int kHit = 0; kHit < trackLen; kHit++) {
+        trackingHitList.erase(trackingHitList.begin() + track[kHit]);
+      }
+      iHit--;
+    }
+  }
+
+
+
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
+      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, epAng_, epSep_,  // MIP tracking
       electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
@@ -516,7 +757,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     buildBDTFeatureVector(result);
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
     float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
-    result.setVetoResult(pred > bdtCutVal_);
+    bool passesTrackingVeto = (nStraightTracks_ == 0) && (nLinregTracks_ == 0) &&
+                              (firstNearPhLayer_ >= 6) && (epAng_ > 3.0 || epSep_ > 10.0);
+    result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
     result.setDiscValue(pred);
     // std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
 
@@ -648,6 +891,25 @@ std::vector<std::pair<float, float> > EcalVetoProcessor::getTrajectory(
     positions.push_back(std::make_pair(posX, posY));
   }
   return positions;
+}
+
+// MIP tracking functions:
+
+// Return the minimum distance between the lines passing through points (v1,v2) and (w1,w2).
+float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2) {
+  TVector3 e1 = v1 - v2;
+  TVector3 e2 = w1 - w2;
+  TVector3 crs = e1.Cross(e2);
+  if (crs.Mag() == 0) {
+    return 100.0;  // arbitrary large number; edge case that shouldn't cause problems.
+  } else {
+    return std::abs(crs.Dot(v1 - w1) / crs.Mag());
+  }
+}
+
+// Return the minimum distance between the point h1 and the line passing through p1 and p2.
+float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
+  return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
 
 }  // namespace ecal
