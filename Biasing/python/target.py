@@ -108,7 +108,7 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.,only_children_of_primary=True) ]
    
     # the following filters are in a library that needs to be included
     includeBiasing.library()

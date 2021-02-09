@@ -61,7 +61,7 @@ def photo_nuclear( detector, generator ) :
     #   In order to conform to older samples,
     #   we can only attach to some of the volumes in the ecal
     #   so we ask for this operator to be attached to the 'old_ecal'
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('old_ecal',450.,2500.) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('old_ecal',450.,2500.,only_children_of_primary = True) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
