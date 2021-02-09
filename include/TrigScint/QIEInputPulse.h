@@ -59,9 +59,6 @@ namespace trigscint {
 
     /// collection of pulse amplitudes
     std::vector<float> ampl_;
-
-    /// no. of pulses in the collection
-    int npulses{0};
   };
 
 
