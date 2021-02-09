@@ -36,7 +36,7 @@ namespace trigscint {
     // looper over sim hits and aggregate energy depositions
     // for each detID
     const auto digis{
-      event.getCollection<ldmx::TrigScintQIEDigis>
+      event.getCollection<trigscint::TrigScintQIEDigis>
 	(inputCollection_, inputPassName_)};
 
     std::vector<ldmx::TrigScintHit> trigScintHits;

@@ -150,7 +150,7 @@ namespace trigscint {
   }
   
   bool SimQIE::PulseCut(QIEInputPulse* pulse) {
-    if(pulse->npulses==0) return false;
+    if(pulse->ampl_.size()==0) return false;
 
     // Only keep the pulse if it produces 1 PE
     // in atleast one of the time samples
