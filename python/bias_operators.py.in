@@ -64,15 +64,18 @@ class PhotoNuclear(XsecBiasingOperator) :
         minimum kinetic energy [MeV] to bias tracks
     down_bias_conv : bool, optional
         Should we down bias the gamma conversion process?
+    only_children_of_primary : bool, optional
+        Should we only bias photons that are children of the primary particle?
     """
 
-    def __init__(self,vol,factor,thresh=0.,down_bias_conv=True) :
+    def __init__(self,vol,factor,thresh=0.,down_bias_conv=True,only_children_of_primary=False) :
         super().__init__('%s_bias_pn'%vol,'simcore::biasoperators::PhotoNuclear')
 
         self.volume = vol
         self.factor = factor
         self.threshold = thresh
         self.down_bias_conv = down_bias_conv
+        self.only_children_of_primary = only_children_of_primary
 
 class ElectroNuclear(XsecBiasingOperator) :
     """Bias electro nuclear process

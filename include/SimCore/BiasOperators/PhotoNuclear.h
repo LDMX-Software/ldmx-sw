@@ -42,6 +42,8 @@ class PhotoNuclear : public XsecBiasingOperator {
     h.setFloatParameter("BiasOperators::PhotoNuclear::Factor", factor_);
     h.setIntParameter("BiasOperators::PhotoNuclear::Bias Conv Down",
                       down_bias_conv_);
+    h.setIntParameter("BiasOperators::PhotoNuclear::Only Children Of Primary",
+                      only_children_of_primary_);
   }
 
  private:
@@ -68,6 +70,9 @@ class PhotoNuclear : public XsecBiasingOperator {
 
   /// Should we down-bias the gamma conversion process?
   bool down_bias_conv_;
+
+  /// Should we restrict biasing to only children of primary?
+  bool only_children_of_primary_;
 
 };  // PhotoNuclear
 }  // namespace biasoperators
