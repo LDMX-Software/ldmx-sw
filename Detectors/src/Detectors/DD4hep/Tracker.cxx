@@ -1,19 +1,18 @@
 
+#include "Detectors/Tracking/SiSensor.h"
 #include "XML/Helper.h"
-#include "Acts/Plugins/DD4hep/ActsExtension.hpp"
 
 using namespace dd4hep;
 
 static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
                             SensitiveDetector sens_det) {
-    
 
   // Set the sensitive detector type
-  sens_det.setType("tracker"); 
+  sens_det.setType("tracker");
 
   // Detector xml handle
   xml::DetElement det_handle = xml_handle;
-  
+
   // Create the tracker detector element
   DetElement tracker(det_handle.nameStr(), det_handle.id());
 
@@ -22,7 +21,7 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
   auto env_dims(det_handle.dimensions());
   Box env_box(env_dims.dx(), env_dims.dy(), env_dims.dz());
   Volume env_vol(det_handle.nameStr() + "_envelope", env_box, lcdd.air());
-  // Set the attributes of the envelope
+  // Set the attributes (region, visualization) of the envelope
   env_vol.setAttributes(lcdd, det_handle.regionStr(), det_handle.limitsStr(),
                         det_handle.visStr());
 
@@ -40,12 +39,13 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
 
     // Build up the layers inside of the assembly
     for (xml::Collection_t ilayer(xml_module, _U(layer)); ilayer; ++ilayer) {
-
       xml::Component xml_layer(ilayer);
 
       // Create the detector element for the sensor
-      DetElement layer(tracker, _toString(xml_layer.id()), xml_layer.id()); 
-      layer.setType("si_sensor");  
+      detectors::tracker::SiSensor layer(tracker, _toString(xml_layer.id()),
+                                         xml_layer.id());
+      // DetElement layer(tracker, _toString(xml_layer.id()), xml_layer.id());
+      // layer.setType("si_sensor");
 
       // Create the box shape representing the sensor.  If a box can't be
       // created, throw an exception.
@@ -75,9 +75,8 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
       pv = module_assembly.placeVolume(
           layer_vol, Transform3D(rotation, Position(position.x(), position.y(),
                                                     position.z())));
-      pv.addPhysVolID("layer", xml_module.id()); 
+      pv.addPhysVolID("layer", xml_module.id());
       layer.setPlacement(pv);
-       
     }
 
     // Get the position of the module and place it inside of the tracker

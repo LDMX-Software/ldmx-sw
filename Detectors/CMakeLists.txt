@@ -11,17 +11,20 @@ project(Detector VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT 6.16 CONFIG REQUIRED)
 
-find_package(Acts CONFIG REQUIRED)
-
 setup_dd4hep_target()
-include_directories(${include_paths})
 
-dd4hep_add_plugin(Tracker SOURCES ${PROJECT_SOURCE_DIR}/src/Detectors/*.cxx
-    USES DD4hep::DDCore ROOT::Core ActsCore ActsPluginDD4hep ROOT::Geom ROOT::GenVector ${OPT_XERCESC})
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/src/Detectors/Tracking/[a-zA-z]*.cxx
+)
 
+setup_library(module Detectors
+              dependencies DD4hep::DDCore
+              sources ${SRC_FILES})
+
+dd4hep_add_plugin(Tracker SOURCES ${PROJECT_SOURCE_DIR}/src/Detectors/DD4hep/*.cxx
+                  USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector 
+                  Detectors::Detectors ${OPT_XERCESC})
+  
 install(TARGETS Tracker LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_PREFIX}/data/compact)
-
-setup_test(dependencies DD4hep::DDCore)
-
 
