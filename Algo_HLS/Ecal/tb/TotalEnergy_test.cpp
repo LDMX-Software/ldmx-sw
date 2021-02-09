@@ -1,11 +1,11 @@
 #include "../src/TotalEnergy.h"
-#include "../../Algo/include/Trigger/DiscreteInputs_IO.h"
+#include "../../../Algo/include/Trigger/DiscreteInputs_IO.h"
 
 #define NTEST 5
 
 int main(){
 
-  DiscreteInputs inputs("test.dump");
+    trigger::DiscreteInputs inputs("test.dump");
   //DiscreteInputs inputs("../../../../data/test.dump");
     
   for (int test = 0; test < NTEST; test++) {
