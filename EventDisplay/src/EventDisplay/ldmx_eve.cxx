@@ -5,12 +5,10 @@
  */
 
 // LDMX
-#include "EventDisplay/EventDisplay.h"
+#include "EventDisplay/Display.h"
 
 #include <memory>
 #include <string>
-
-using ldmx::EventDisplay;
 
 /**
  * Print Help Message for ldmx-eve
@@ -63,7 +61,7 @@ int main(int argc, char** argv) {
               << std::endl;
   }
 
-  EventDisplay display(manager, verbose);
+  eventdisplay::Display display(manager, verbose);
 
   if (verbose) {
     std::cout << "[ ldmx-eve ] : Opening file " << file << std::endl;

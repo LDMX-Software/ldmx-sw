@@ -18,7 +18,7 @@
 #include <iostream>
 #include "TVector3.h"
 
-namespace ldmx {
+namespace eventdisplay {
 
 /**
  * @class EveShapeDrawer
@@ -151,6 +151,6 @@ class EveShapeDrawer {
   UInt_t uid_ = 0;  //* Unique ID counter for the drawings
 };
 
-}  // namespace ldmx
+}  // namespace eventdisplay
 
 #endif

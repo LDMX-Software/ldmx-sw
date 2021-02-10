@@ -1,6 +1,6 @@
 #include "EventDisplay/EventObjects.h"
 
-namespace ldmx {
+namespace eventdisplay {
 
 EventObjects::EventObjects() { Initialize(); }
 
@@ -17,20 +17,20 @@ void EventObjects::Initialize() {
   recoObjs_ = new TEveElementList("Reco Objects");
 }
 
-static bool compEcalHits(const EcalHit& a, const EcalHit& b) {
+static bool compEcalHits(const ldmx::EcalHit& a, const ldmx::EcalHit& b) {
   return a.getEnergy() > b.getEnergy();
 }
 
-static bool compHcalHits(const HcalHit& a, const HcalHit& b) {
+static bool compHcalHits(const ldmx::HcalHit& a, const ldmx::HcalHit& b) {
   return a.getPE() > b.getPE();
 }
 
-static bool compScorePlaneHits(const SimTrackerHit& a, const SimTrackerHit& b) {
+static bool compScorePlaneHits(const ldmx::SimTrackerHit& a, const ldmx::SimTrackerHit& b) {
   return (a.getTrackID() < b.getTrackID());
 }
 
-static bool areScorePlaneHitsEqual(const SimTrackerHit& a,
-                                   const SimTrackerHit& b) {
+static bool areScorePlaneHitsEqual(const ldmx::SimTrackerHit& a,
+                                   const ldmx::SimTrackerHit& b) {
   return (a.getTrackID() == b.getTrackID());
 }
 
@@ -42,7 +42,7 @@ void EventObjects::SetSimThresh(double simThresh) {
 
   for (sim = spHits->BeginChildren(); sim != spHits->EndChildren(); sim++) {
     TEveElement* el = *sim;
-    SimTrackerHit* sp = (ldmx::SimTrackerHit*)el->GetSourceObject();
+    ldmx::SimTrackerHit* sp = (ldmx::SimTrackerHit*)el->GetSourceObject();
     std::vector<double> pVec = sp->getMomentum();
     double p = pow(pow(pVec[0], 2) + pow(pVec[1], 2) + pow(pVec[2], 2), 0.5);
     if (p < simThresh_) {
@@ -87,12 +87,12 @@ void EventObjects::ColorClusters() {
   }
 }
 
-void EventObjects::drawECALHits(std::vector<EcalHit> hits) {
+void EventObjects::drawECALHits(std::vector<ldmx::EcalHit> hits) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 500.0);
 
   std::sort(hits.begin(), hits.end(), compEcalHits);
 
-  for (const EcalHit& hit : hits) {
+  for (const ldmx::EcalHit& hit : hits) {
     double energy = hit.getEnergy();
 
     if (energy == 0) {
@@ -107,7 +107,7 @@ void EventObjects::drawECALHits(std::vector<EcalHit> hits) {
     Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
     TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
-        DetectorGeometry::getInstance().getHexPrism(EcalID(hit.getID())), 0, 0,
+        DetectorGeometry::getInstance().getHexPrism(ldmx::EcalID(hit.getID())), 0, 0,
         0, color, 0, digiName);
 
     ecalHits_->AddElement(ecalDigiHit);
@@ -118,18 +118,18 @@ void EventObjects::drawECALHits(std::vector<EcalHit> hits) {
   hits_->AddElement(ecalHits_);
 }
 
-void EventObjects::drawHCALHits(std::vector<HcalHit> hits) {
+void EventObjects::drawHCALHits(std::vector<ldmx::HcalHit> hits) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 100.0);
 
   std::sort(hits.begin(), hits.end(), compHcalHits);
 
-  for (const HcalHit& hit : hits) {
+  for (const ldmx::HcalHit& hit : hits) {
     int pe = hit.getPE();
     if (pe == 0) {
       continue;
     }
 
-    HcalID id(hit.getID());
+    ldmx::HcalID id(hit.getID());
 
     const UChar_t* rgb = palette->ColorFromValue(pe);
     TColor* aColor = new TColor();
@@ -157,9 +157,9 @@ void EventObjects::drawHCALHits(std::vector<HcalHit> hits) {
   hits_->AddElement(hcalHits_);
 }
 
-void EventObjects::drawRecoilHits(std::vector<SimTrackerHit> hits) {
+void EventObjects::drawRecoilHits(std::vector<ldmx::SimTrackerHit> hits) {
   int iter = 0;
-  for (const SimTrackerHit& hit : hits) {
+  for (const ldmx::SimTrackerHit& hit : hits) {
     std::vector<float> xyzPos = hit.getPosition();
     double energy = hit.getEdep();
 
@@ -180,11 +180,11 @@ void EventObjects::drawRecoilHits(std::vector<SimTrackerHit> hits) {
   hits_->AddElement(recoilTrackerHits_);
 }
 
-void EventObjects::drawECALClusters(std::vector<EcalCluster> clusters) {
+void EventObjects::drawECALClusters(std::vector<ldmx::EcalCluster> clusters) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 4000.0);
 
   int iC = 0;
-  for (const EcalCluster& cluster : clusters) {
+  for (const ldmx::EcalCluster& cluster : clusters) {
     TString clusterName;
     clusterName.Form("ECAL Cluster %d", iC);
 
@@ -196,7 +196,7 @@ void EventObjects::drawECALClusters(std::vector<EcalCluster> clusters) {
     int numHits = clusterHitIDs.size();
 
     for (int iHit = 0; iHit < numHits; iHit++) {
-      EcalID id(clusterHitIDs.at(iHit));
+      ldmx::EcalID id(clusterHitIDs.at(iHit));
 
       const UChar_t* rgb = palette->ColorFromValue(energy);
       TColor* aColor = new TColor();
@@ -223,7 +223,7 @@ void EventObjects::drawECALClusters(std::vector<EcalCluster> clusters) {
 }
 
 void EventObjects::drawECALSimParticles(
-    std::vector<SimTrackerHit> ecalSimParticles) {
+    std::vector<ldmx::SimTrackerHit> ecalSimParticles) {
   std::sort(ecalSimParticles.begin(), ecalSimParticles.end(),
             compScorePlaneHits);
 
@@ -232,7 +232,7 @@ void EventObjects::drawECALSimParticles(
 
   ecalSimParticles.erase(lastUniqueEntry, ecalSimParticles.end());
 
-  for (const SimTrackerHit& spHit : ecalSimParticles) {
+  for (const ldmx::SimTrackerHit& spHit : ecalSimParticles) {
     std::vector<double> pVec = spHit.getMomentum();
     double p = pow(pow(pVec[0], 2) + pow(pVec[1], 2) + pow(pVec[2], 2), 0.5);
 
@@ -283,4 +283,4 @@ void EventObjects::drawECALSimParticles(
 
   hits_->AddElement(ecalSimParticles_);
 }
-}  // namespace ldmx
+}  // namespace eventdisplay
