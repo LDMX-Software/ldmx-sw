@@ -47,7 +47,7 @@ class G4eDarkBremsstrahlungModel {
   }
 
   /// Destructor, nothing on purpose
-  virtual ~G4eDarkBremsstrahlungModel() {}
+  virtual ~G4eDarkBremsstrahlungModel() = default;
 
   /**
    * Print the configuration of this model
@@ -233,8 +233,7 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
   /**
    * Destructor
    */
-  virtual ~G4eDarkBremsstrahlung() { /*Nothing on purpose*/
-  }
+  virtual ~G4eDarkBremsstrahlung() = default;
 
   /**
    * Checks if the passed particle should be able to do this process

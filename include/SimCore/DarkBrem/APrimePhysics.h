@@ -13,6 +13,7 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace simcore {
 namespace darkbrem {
@@ -48,7 +49,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    *
    * @param params Parameters to configure the dark brem process
    */
-  APrimePhysics(framework::config::Parameters params);
+  APrimePhysics(const framework::config::Parameters &params);
 
   /**
    * Class destructor.
@@ -85,8 +86,14 @@ class APrimePhysics : public G4VPhysicsConstructor {
   void ConstructProcess();
 
  private:
-  /// dark brem process parameters
-  framework::config::Parameters parameters_;
+  /// the mass of the A' for this run
+  G4double ap_mass_;
+
+  /// is dark brem enabled for this run?
+  bool enable_;
+
+  /// the dark brem process itself
+  G4eDarkBremsstrahlung db_process_;
 };
 
 }  // namespace darkbrem
