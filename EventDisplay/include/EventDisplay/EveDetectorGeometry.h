@@ -13,7 +13,7 @@
 #include "EventDisplay/EveShapeDrawer.h"
 #include "TEveElement.h"
 
-namespace ldmx {
+namespace eventdisplay {
 
 /**
  * @class EveDetectorGeometry
@@ -81,6 +81,6 @@ class EveDetectorGeometry {
   TEveElement* recoilTracker_;  //* Recoil Tracker Eve Element
   TEveElement* detector_;       //* Entire Detector Eve Element
 };
-}  // namespace ldmx
+}  // namespace eventdisplay
 
 #endif

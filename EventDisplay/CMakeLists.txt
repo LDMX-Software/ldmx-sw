@@ -22,14 +22,13 @@ clear_cache_variables()
 include("${ROOT_DIR}/RootMacros.cmake")
 
 # Register the EventDisplay class with the ROOT dictionary
-register_event_object(module_path "EventDisplay" namespace "ldmx"
-                      class "EventDisplay" type "dict_only")
+register_event_object(module_path "EventDisplay" namespace "eventdisplay"
+                      class "Display" type "dict_only")
 
 build_event_bus(path ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h)
 
 build_dict(name "EventDisplay" namespace ldmx 
   template ${LDMX_SW_SOURCE_DIR}/Framework/include/Framework/EventLinkDef.h.in)
-
 
 # Unfortunately, the Event headers need to be included globably for the 
 # dictionary to be generated correctly.

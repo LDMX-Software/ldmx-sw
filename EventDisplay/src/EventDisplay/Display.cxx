@@ -1,16 +1,16 @@
 /**
- * @file EventDisplay.cxx
+ * @file Display.cxx
  * @author Josh Hiltbrand, University of Minnesota
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "EventDisplay/EventDisplay.h"
+#include "EventDisplay/Display.h"
 
-ClassImp(ldmx::EventDisplay);
+ClassImp(eventdisplay::Display);
 
-namespace ldmx {
+namespace eventdisplay {
 
-EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
+Display::Display(TEveManager* manager, bool verbose)
     : TGMainFrame(gClient->GetRoot(), 320, 320), verbose_(verbose) {
 
   /****************************************************************************
@@ -24,7 +24,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   viewer->UseLightColorSet();
 
   if (verbose_) {
-    std::cout << "[ EventDisplay ] : Drawing detector geometry... "
+    std::cout << "[ Display ] : Drawing detector geometry... "
               << std::flush;
   }
 
@@ -43,7 +43,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
 
   if (verbose_) {
     std::cout << "done" << std::endl;
-    std::cout << "[ EventDisplay ] : Constructing and linking buttons... "
+    std::cout << "[ Display ] : Constructing and linking buttons... "
               << std::flush;
   }
 
@@ -69,14 +69,14 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameColorClusters, "Color Clusters");
   commandFrameColorClusters->AddFrame(buttonColor,
                                       new TGLayoutHints(kLHintsExpandX));
-  buttonColor->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonColor->Connect("Pressed()", "eventdisplay::Display", this,
                        "ColorClusters()");
 
   TGButton* buttonNext =
       new TGTextButton(commandFrameNextEvent, "Next Event >>>");
   commandFrameNextEvent->AddFrame(buttonNext,
                                   new TGLayoutHints(kLHintsExpandX));
-  buttonNext->Connect("Pressed()", "ldmx::EventDisplay", this, "NextEvent()");
+  buttonNext->Connect("Pressed()", "eventdisplay::Display", this, "NextEvent()");
 
   textBoxClustersCollName_ =
       new TGTextEntry(commandFrameEcalClusterBranch, new TGTextBuffer(100));
@@ -87,7 +87,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameEcalClusterBranch, "Set Clusters Branch");
   commandFrameEcalClusterBranch->AddFrame(buttonClusterName,
                                           new TGLayoutHints(kLHintsExpandX));
-  buttonClusterName->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonClusterName->Connect("Pressed()", "eventdisplay::Display", this,
                              "GetClustersCollInput()");
 
   textBoxSimThresh_ =
@@ -99,7 +99,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameSimThresh, "Sim P [MeV] Threshold");
   commandFrameSimThresh->AddFrame(buttonDrawThresh,
                                   new TGLayoutHints(kLHintsExpandX));
-  buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonDrawThresh->Connect("Pressed()", "eventdisplay::Display", this,
                             "SetSimThresh()");
 
   textBoxEcalRecHitsCollName_ =
@@ -111,7 +111,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameEcalHitBranch, "Set ECAL RecHits Branch");
   commandFrameEcalHitBranch->AddFrame(buttonSetECALBranch,
                                       new TGLayoutHints(kLHintsExpandX));
-  buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonSetECALBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                "GetECALRecHitsCollInput()");
 
   textBoxHcalRecHitsCollName_ =
@@ -123,7 +123,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameHcalHitBranch, "Set HCAL RecHits Branch");
   commandFrameHcalHitBranch->AddFrame(buttonSetHCALBranch,
                                       new TGLayoutHints(kLHintsExpandX));
-  buttonSetHCALBranch->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonSetHCALBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                "GetHCALRecHitsCollInput()");
 
   textBoxTrackerHitsCollName_ =
@@ -135,7 +135,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameTrackerHitsBranch, "Set Recoil Sims Branch");
   commandFrameTrackerHitsBranch->AddFrame(buttonSetRecoilBranch,
                                           new TGLayoutHints(kLHintsExpandX));
-  buttonSetRecoilBranch->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonSetRecoilBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                  "GetTrackerHitsCollInput()");
 
   textBoxEcalScorePlaneBranch_ =
@@ -147,7 +147,7 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
       commandFrameEcalScorePlaneBranch, "Set Ecal SP Branch");
   commandFrameEcalScorePlaneBranch->AddFrame(buttonSetSimParticlesBranch,
                                              new TGLayoutHints(kLHintsExpandX));
-  buttonSetSimParticlesBranch->Connect("Pressed()", "ldmx::EventDisplay", this,
+  buttonSetSimParticlesBranch->Connect("Pressed()", "eventdisplay::Display", this,
                                        "GetEcalSimParticlesCollInput()");
 
   // Order from top to bottom here
@@ -181,17 +181,17 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   }
 }
 
-bool EventDisplay::SetFile(const TString file) {
+bool Display::SetFile(const TString file) {
 
   try {
     the_file_ = std::make_unique<framework::EventFile>(file.Data());
     the_file_->setupEvent(&the_event_);
     if (verbose_) {
-      std::cout << "[ EventDisplay ] : Input root file opened successfully."
+      std::cout << "[ Display ] : Input root file opened successfully."
                 << std::endl;
     }
   } catch (const framework::exception::Exception& e) {
-    std::cerr << "[ EventDisplay ] : Input root file cannot be opened." << std::endl;
+    std::cerr << "[ Display ] : Input root file cannot be opened." << std::endl;
     std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
       << "  at " << e.module() << ":" << e.line() << " in "
       << e.function() << "\nStack trace: " << std::endl
@@ -202,24 +202,24 @@ bool EventDisplay::SetFile(const TString file) {
   return true;
 }
 
-void EventDisplay::NextEvent() {
+void Display::NextEvent() {
   if (the_file_->nextEvent(false)) {
     manager_->GetCurrentEvent()->DestroyElements();
     eventObjects_->Initialize();
   
     if (verbose_) {
-      std::cout << "[ EventDisplay ] : Loading new event " << "... " << std::endl;
+      std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
     }
 
     try {
-      auto ecal_rec_hits{the_event_.getCollection<EcalHit>(ecalRecHitsCollName_)};
+      auto ecal_rec_hits{the_event_.getCollection<ldmx::EcalHit>(ecalRecHitsCollName_)};
       eventObjects_->drawECALHits(ecal_rec_hits);
       if (verbose_) {
-        std::cout << "[ EventDisplay ] : Loaded '" << ecalRecHitsCollName_
+        std::cout << "[ Display ] : Loaded '" << ecalRecHitsCollName_
           << "' into memory as a EVE object." << std::endl;
       }
     } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
         << e.function() << "\nStack trace: " << std::endl
@@ -227,14 +227,14 @@ void EventDisplay::NextEvent() {
     }
 
     try {
-      auto hcal_rec_hits{the_event_.getCollection<HcalHit>(hcalRecHitsCollName_)};
+      auto hcal_rec_hits{the_event_.getCollection<ldmx::HcalHit>(hcalRecHitsCollName_)};
       eventObjects_->drawHCALHits(hcal_rec_hits);
       if (verbose_) {
-        std::cout << "[ EventDisplay ] : Loaded '" << hcalRecHitsCollName_
+        std::cout << "[ Display ] : Loaded '" << hcalRecHitsCollName_
           << "' into memory as a EVE object." << std::endl;
       }
     } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
         << e.function() << "\nStack trace: " << std::endl
@@ -242,14 +242,14 @@ void EventDisplay::NextEvent() {
     }
 
     try {
-      auto ecal_clusters{the_event_.getCollection<EcalCluster>(clustersCollName_)};
+      auto ecal_clusters{the_event_.getCollection<ldmx::EcalCluster>(clustersCollName_)};
       eventObjects_->drawECALClusters(ecal_clusters);
       if (verbose_) {
-        std::cout << "[ EventDisplay ] : Loaded '" << clustersCollName_
+        std::cout << "[ Display ] : Loaded '" << clustersCollName_
           << "' into memory as a EVE object." << std::endl;
       }
     } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
         << e.function() << "\nStack trace: " << std::endl
@@ -257,14 +257,14 @@ void EventDisplay::NextEvent() {
     }
   
     try {
-      auto recoil_hits{the_event_.getCollection<SimTrackerHit>(trackerHitsCollName_)};
+      auto recoil_hits{the_event_.getCollection<ldmx::SimTrackerHit>(trackerHitsCollName_)};
       eventObjects_->drawRecoilHits(recoil_hits);
       if (verbose_) {
-        std::cout << "[ EventDisplay ] : Loaded '" << trackerHitsCollName_
+        std::cout << "[ Display ] : Loaded '" << trackerHitsCollName_
           << "' into memory as a EVE object." << std::endl;
       }
     } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
         << e.function() << "\nStack trace: " << std::endl
@@ -272,63 +272,63 @@ void EventDisplay::NextEvent() {
     }
   
     try {
-      auto ecal_sp{the_event_.getCollection<SimTrackerHit>(ecalSimParticlesCollName_)};
+      auto ecal_sp{the_event_.getCollection<ldmx::SimTrackerHit>(ecalSimParticlesCollName_)};
       eventObjects_->drawECALSimParticles(ecal_sp);
       if (verbose_) {
-        std::cout << "[ EventDisplay ] : Loaded '" << clustersCollName_
+        std::cout << "[ Display ] : Loaded '" << clustersCollName_
           << "' into memory as a EVE object." << std::endl;
       }
     } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
         << e.function() << "\nStack trace: " << std::endl
         << e.stackTrace();
     }
 
-    if (verbose_) std::cout << "[ EventDisplay ] : Done loading event objects into EVE objects." << std::endl;
+    if (verbose_) std::cout << "[ Display ] : Done loading event objects into EVE objects." << std::endl;
   
     manager_->AddElement(eventObjects_->getHitCollections());
     manager_->AddElement(eventObjects_->getRecoObjects());
     manager_->Redraw3D(kFALSE);
   
-    if (verbose_) std::cout << "[ EventDisplay ] : Done redrawing." << std::endl;
+    if (verbose_) std::cout << "[ Display ] : Done redrawing." << std::endl;
 
   } else {
-    std::cout << "[ EventDisplay ] : Already at last event in file."
+    std::cout << "[ Display ] : Already at last event in file."
               << std::endl;
     return;
   }
 }
 
-void EventDisplay::GetECALRecHitsCollInput() {
+void Display::GetECALRecHitsCollInput() {
   ecalRecHitsCollName_ = getText(textBoxEcalRecHitsCollName_);
 }
 
-void EventDisplay::GetHCALRecHitsCollInput() {
+void Display::GetHCALRecHitsCollInput() {
   hcalRecHitsCollName_ = getText(textBoxHcalRecHitsCollName_);
 }
 
-void EventDisplay::GetTrackerHitsCollInput() {
+void Display::GetTrackerHitsCollInput() {
   trackerHitsCollName_ = getText(textBoxTrackerHitsCollName_);
 }
 
-void EventDisplay::GetClustersCollInput() {
+void Display::GetClustersCollInput() {
   clustersCollName_ = getText(textBoxClustersCollName_);
 }
 
-void EventDisplay::GetEcalSimParticlesCollInput() {
+void Display::GetEcalSimParticlesCollInput() {
   ecalSimParticlesCollName_ = getText(textBoxEcalScorePlaneBranch_);
 }
 
-bool EventDisplay::SetSimThresh() {
+bool Display::SetSimThresh() {
   double thresh = atof(textBoxSimThresh_->GetText());
   if (thresh == 0 && std::string(textBoxSimThresh_->GetText()) != "0") {
-    std::cout << "[ EventDisplay ] : Invalid sim energy threshold entered: \""
+    std::cout << "[ Display ] : Invalid sim energy threshold entered: \""
               << textBoxSimThresh_->GetText() << "\"" << std::endl;
     return false;
   } else if (verbose_) {
-    std::cout << "[ EventDisplay ] : Setting SimParticle energy threshold to "
+    std::cout << "[ Display ] : Setting SimParticle energy threshold to "
               << thresh << std::endl;
   }
 
@@ -340,11 +340,11 @@ bool EventDisplay::SetSimThresh() {
   return true;
 }
 
-void EventDisplay::ColorClusters() {
+void Display::ColorClusters() {
   eventObjects_->ColorClusters();
 
   manager_->RegisterRedraw3D();
   manager_->FullRedraw3D(kFALSE, kTRUE);
 }
 
-}  // namespace ldmx
+}  // namespace eventdisplay

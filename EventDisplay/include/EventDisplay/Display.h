@@ -1,5 +1,5 @@
 /**
- * @file EventDisplay.h
+ * @file Display.h
  * @author Josh Hiltbrand, University of Minnesota
  */
 
@@ -31,22 +31,22 @@
 
 #include <iostream>
 
-namespace ldmx {
+namespace eventdisplay {
 
-class EventDisplay : public TGMainFrame {
+class Display : public TGMainFrame {
  public:
   /**
    * Constructor
    * Builds window frame and and control panel.
    * Imports geometry from EveDetectorGeometry.
    */
-  EventDisplay(TEveManager* manager, bool verbose);
+  Display(TEveManager* manager, bool verbose);
 
   /**
    * Destructor
    * Deletes hanging pointers from constructor and closes the TFile.
    */
-  ~EventDisplay() {
+  virtual ~Display() {
     the_file_.reset(nullptr);
     delete theDetector_;
     delete eventObjects_;
@@ -157,8 +157,8 @@ class EventDisplay : public TGMainFrame {
 
   TEveManager* manager_{nullptr};  //* event display manager
 
-  ClassDef(EventDisplay, 2);
+  ClassDef(Display, 2);
 };
-}  // namespace ldmx
+}  // namespace eventdisplay
 
 #endif
