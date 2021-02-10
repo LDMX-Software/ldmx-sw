@@ -9,7 +9,6 @@
 
 // LDMX
 #include "SimCore/DarkBrem/G4APrime.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 // Geant4
 #include "G4Electron.hh"
@@ -20,8 +19,11 @@ namespace darkbrem {
 
 const std::string APrimePhysics::NAME = "APrime";
 
-APrimePhysics::APrimePhysics(framework::config::Parameters params)
-    : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_(params) {}
+APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
+    : G4VPhysicsConstructor(APrimePhysics::NAME), db_process_(params) {
+      ap_mass_ = params.getParameter<double>("ap_mass")*MeV;
+      enable_ = params.getParameter<bool>("enable");
+}
 
 void APrimePhysics::ConstructParticle() {
   /**
@@ -31,12 +33,12 @@ void APrimePhysics::ConstructParticle() {
    * Geant4 registers all instances derived from G4ParticleDefinition and
    * deletes them at the end of the run.
    */
-  G4APrime::APrime(parameters_.getParameter<double>("ap_mass") * MeV);
+  G4APrime::APrime(ap_mass_);
 }
 
 void APrimePhysics::ConstructProcess() {
   // add process to electron if LHE file has been provided
-  if (parameters_.getParameter<bool>("enable")) {
+  if (enable_) {
     /*
      * In G4 speak, a "discrete" process is one that only happens at the end of
      * steps. we want the DB to be discrete because it is not a "slow braking"
@@ -52,8 +54,8 @@ void APrimePhysics::ConstructProcess() {
      * second argument means that the ordering index is given a default value of
      * 1000 which seems to be safely above all the internal/default processes.
      */
-    G4Electron::ElectronDefinition()->GetProcessManager()->AddDiscreteProcess(
-        new G4eDarkBremsstrahlung(parameters_));
+    G4Electron::ElectronDefinition()->GetProcessManager()
+      ->AddDiscreteProcess(&db_process_);
   }
 }
 
