@@ -12,6 +12,11 @@ namespace ldmx {
 
 EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
     : TGMainFrame(gClient->GetRoot(), 320, 320), verbose_(verbose) {
+
+  /****************************************************************************
+   * GUI Set Up
+   ***************************************************************************/
+
   SetWindowName("LDMX Event Display");
 
   manager_ = manager;
@@ -43,8 +48,6 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   }
 
   TGVerticalFrame* contents = new TGVerticalFrame(this, 1000, 1200);
-  TGHorizontalFrame* commandFrameGotoEvent =
-      new TGHorizontalFrame(contents, 100, 0);
   TGHorizontalFrame* commandFrameNextEvent =
       new TGHorizontalFrame(contents, 100, 0);
   TGHorizontalFrame* commandFrameColorClusters =
@@ -52,8 +55,6 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   TGHorizontalFrame* commandFrameEcalClusterBranch =
       new TGHorizontalFrame(contents, 100, 0);
   TGHorizontalFrame* commandFrameSimThresh =
-      new TGHorizontalFrame(contents, 100, 0);
-  TGHorizontalFrame* commandFrameEventTree =
       new TGHorizontalFrame(contents, 100, 0);
   TGHorizontalFrame* commandFrameEcalHitBranch =
       new TGHorizontalFrame(contents, 100, 0);
@@ -71,28 +72,11 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   buttonColor->Connect("Pressed()", "ldmx::EventDisplay", this,
                        "ColorClusters()");
 
-  TGButton* buttonPrevious =
-      new TGTextButton(commandFrameNextEvent, "<<< Previous Event");
-  commandFrameNextEvent->AddFrame(buttonPrevious,
-                                  new TGLayoutHints(kLHintsExpandX));
-  buttonPrevious->Connect("Pressed()", "ldmx::EventDisplay", this,
-                          "PreviousEvent()");
-
   TGButton* buttonNext =
       new TGTextButton(commandFrameNextEvent, "Next Event >>>");
   commandFrameNextEvent->AddFrame(buttonNext,
                                   new TGLayoutHints(kLHintsExpandX));
   buttonNext->Connect("Pressed()", "ldmx::EventDisplay", this, "NextEvent()");
-
-  textBoxGotoEvent_ =
-      new TGTextEntry(commandFrameGotoEvent, new TGTextBuffer(100));
-  commandFrameGotoEvent->AddFrame(textBoxGotoEvent_,
-                                  new TGLayoutHints(kLHintsExpandX));
-
-  TGButton* buttonGoTo = new TGTextButton(commandFrameGotoEvent, "Go to Event");
-  commandFrameGotoEvent->AddFrame(buttonGoTo,
-                                  new TGLayoutHints(kLHintsExpandX));
-  buttonGoTo->Connect("Pressed()", "ldmx::EventDisplay", this, "GotoEvent()");
 
   textBoxClustersCollName_ =
       new TGTextEntry(commandFrameEcalClusterBranch, new TGTextBuffer(100));
@@ -117,18 +101,6 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
                                   new TGLayoutHints(kLHintsExpandX));
   buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this,
                             "SetSimThresh()");
-
-  textBoxEventTreeName_ =
-      new TGTextEntry(commandFrameEventTree, new TGTextBuffer(100));
-  commandFrameEventTree->AddFrame(textBoxEventTreeName_,
-                                  new TGLayoutHints(kLHintsExpandX));
-
-  TGButton* buttonSetTree =
-      new TGTextButton(commandFrameEventTree, "Set Event TTree");
-  commandFrameEventTree->AddFrame(buttonSetTree,
-                                  new TGLayoutHints(kLHintsExpandX));
-  buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this,
-                         "SetEventTree()");
 
   textBoxEcalRecHitsCollName_ =
       new TGTextEntry(commandFrameEcalHitBranch, new TGTextBuffer(100));
@@ -172,15 +144,13 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
                                              new TGLayoutHints(kLHintsExpandX));
 
   TGButton* buttonSetSimParticlesBranch = new TGTextButton(
-      commandFrameEcalScorePlaneBranch, "Set Sim Particles Branch");
+      commandFrameEcalScorePlaneBranch, "Set Ecal SP Branch");
   commandFrameEcalScorePlaneBranch->AddFrame(buttonSetSimParticlesBranch,
                                              new TGLayoutHints(kLHintsExpandX));
   buttonSetSimParticlesBranch->Connect("Pressed()", "ldmx::EventDisplay", this,
                                        "GetEcalSimParticlesCollInput()");
 
   // Order from top to bottom here
-  contents->AddFrame(commandFrameEventTree,
-                     new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
   contents->AddFrame(commandFrameEcalHitBranch,
                      new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
   contents->AddFrame(commandFrameHcalHitBranch,
@@ -190,8 +160,6 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
   contents->AddFrame(commandFrameEcalScorePlaneBranch,
                      new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
   contents->AddFrame(commandFrameEcalClusterBranch,
-                     new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-  contents->AddFrame(commandFrameGotoEvent,
                      new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
   contents->AddFrame(commandFrameNextEvent,
                      new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
@@ -214,203 +182,143 @@ EventDisplay::EventDisplay(TEveManager* manager, bool verbose)
 }
 
 bool EventDisplay::SetFile(const TString file) {
-  file_ = TFile::Open(file);
 
-  if (!file_) {
-    std::cout << "[ EventDisplay ] : Input root file cannot be opened."
-              << std::endl;
+  try {
+    the_file_ = std::make_unique<framework::EventFile>(file.Data());
+    the_file_->setupEvent(&the_event_);
+    if (verbose_) {
+      std::cout << "[ EventDisplay ] : Input root file opened successfully."
+                << std::endl;
+    }
+  } catch (const framework::exception::Exception& e) {
+    std::cerr << "[ EventDisplay ] : Input root file cannot be opened." << std::endl;
+    std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+      << "  at " << e.module() << ":" << e.line() << " in "
+      << e.function() << "\nStack trace: " << std::endl
+      << e.stackTrace();
     return false;
-  } else if (verbose_) {
-    std::cout << "[ EventDisplay ] : Input root file opened successfully."
-              << std::endl;
   }
-
-  tree_ = (TTree*)file_->Get(eventTreeName_);
-
-  if (!tree_) {
-    std::cout << "[ EventDisplay ] : Input file contains no tree \""
-              << eventTreeName_ << "\"" << std::endl;
-    return false;
-  } else if (verbose_) {
-    std::cout << "[ EventDisplay ] : Event tree retrieved from input file."
-              << std::endl;
-  }
-
-  eventNumMax_ = tree_->GetEntriesFast() - 1;
-
-  foundECALRecHits_ = GetCollection(ecalRecHitsCollName_, ecalRecHits_);
-  foundHCALRecHits_ = GetCollection(hcalRecHitsCollName_, hcalRecHits_);
-  foundClusters_ = GetCollection(clustersCollName_, ecalClusters_);
-  foundTrackerHits_ = GetCollection(trackerHitsCollName_, recoilHits_);
-  foundEcalSPHits_ =
-      GetCollection(ecalSimParticlesCollName_, ecalSimParticles_);
-
+  
   return true;
 }
 
-void EventDisplay::PreviousEvent() {
-  if (eventNum_ <= 0) {
-    std::cout << "[ EventDisplay ] : Already at first event in file."
-              << std::endl;
-    return;
-  }
-
-  GotoEvent(eventNum_ - 1);
-}
-
 void EventDisplay::NextEvent() {
-  if (eventNumMax_ == eventNum_) {
+  if (the_file_->nextEvent(false)) {
+    manager_->GetCurrentEvent()->DestroyElements();
+    eventObjects_->Initialize();
+  
+    if (verbose_) {
+      std::cout << "[ EventDisplay ] : Loading new event " << "... " << std::endl;
+    }
+
+    try {
+      auto ecal_rec_hits{the_event_.getCollection<EcalHit>(ecalRecHitsCollName_)};
+      eventObjects_->drawECALHits(ecal_rec_hits);
+      if (verbose_) {
+        std::cout << "[ EventDisplay ] : Loaded '" << ecalRecHitsCollName_
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << "\nStack trace: " << std::endl
+        << e.stackTrace();
+    }
+
+    try {
+      auto hcal_rec_hits{the_event_.getCollection<HcalHit>(hcalRecHitsCollName_)};
+      eventObjects_->drawHCALHits(hcal_rec_hits);
+      if (verbose_) {
+        std::cout << "[ EventDisplay ] : Loaded '" << hcalRecHitsCollName_
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << "\nStack trace: " << std::endl
+        << e.stackTrace();
+    }
+
+    try {
+      auto ecal_clusters{the_event_.getCollection<EcalCluster>(clustersCollName_)};
+      eventObjects_->drawECALClusters(ecal_clusters);
+      if (verbose_) {
+        std::cout << "[ EventDisplay ] : Loaded '" << clustersCollName_
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << "\nStack trace: " << std::endl
+        << e.stackTrace();
+    }
+  
+    try {
+      auto recoil_hits{the_event_.getCollection<SimTrackerHit>(trackerHitsCollName_)};
+      eventObjects_->drawRecoilHits(recoil_hits);
+      if (verbose_) {
+        std::cout << "[ EventDisplay ] : Loaded '" << trackerHitsCollName_
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << "\nStack trace: " << std::endl
+        << e.stackTrace();
+    }
+  
+    try {
+      auto ecal_sp{the_event_.getCollection<SimTrackerHit>(ecalSimParticlesCollName_)};
+      eventObjects_->drawECALSimParticles(ecal_sp);
+      if (verbose_) {
+        std::cout << "[ EventDisplay ] : Loaded '" << clustersCollName_
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ EventDisplay ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << "\nStack trace: " << std::endl
+        << e.stackTrace();
+    }
+
+    if (verbose_) std::cout << "[ EventDisplay ] : Done loading event objects into EVE objects." << std::endl;
+  
+    manager_->AddElement(eventObjects_->getHitCollections());
+    manager_->AddElement(eventObjects_->getRecoObjects());
+    manager_->Redraw3D(kFALSE);
+  
+    if (verbose_) std::cout << "[ EventDisplay ] : Done redrawing." << std::endl;
+
+  } else {
     std::cout << "[ EventDisplay ] : Already at last event in file."
               << std::endl;
     return;
   }
-
-  GotoEvent(eventNum_ + 1);
 }
 
 void EventDisplay::GetECALRecHitsCollInput() {
-  const TString ecalRecHitsCollName = textBoxEcalRecHitsCollName_->GetText();
-  foundECALRecHits_ = GetCollection(ecalRecHitsCollName, ecalRecHits_);
-
-  if (foundECALRecHits_) {
-    ecalRecHitsCollName_ = ecalRecHitsCollName;
-    if (eventNum_ != -1) {
-      GotoEvent(eventNum_);
-    }
-  }
+  ecalRecHitsCollName_ = getText(textBoxEcalRecHitsCollName_);
 }
 
 void EventDisplay::GetHCALRecHitsCollInput() {
-  const TString hcalRecHitsCollName = textBoxHcalRecHitsCollName_->GetText();
-  foundHCALRecHits_ = GetCollection(hcalRecHitsCollName, hcalRecHits_);
-
-  if (foundHCALRecHits_) {
-    hcalRecHitsCollName_ = hcalRecHitsCollName;
-    if (eventNum_ != -1) {
-      GotoEvent(eventNum_);
-    }
-  }
+  hcalRecHitsCollName_ = getText(textBoxHcalRecHitsCollName_);
 }
 
 void EventDisplay::GetTrackerHitsCollInput() {
-  const TString trackerHitsCollName = textBoxTrackerHitsCollName_->GetText();
-  foundTrackerHits_ = GetCollection(trackerHitsCollName, recoilHits_);
-
-  if (foundTrackerHits_) {
-    trackerHitsCollName_ = trackerHitsCollName;
-    if (eventNum_ != -1) {
-      GotoEvent(eventNum_);
-    }
-  }
+  trackerHitsCollName_ = getText(textBoxTrackerHitsCollName_);
 }
 
 void EventDisplay::GetClustersCollInput() {
-  const TString clustersCollName = textBoxClustersCollName_->GetText();
-  foundClusters_ = GetCollection(clustersCollName, ecalClusters_);
-
-  if (foundClusters_) {
-    clustersCollName_ = clustersCollName;
-    if (eventNum_ != -1) {
-      GotoEvent(eventNum_);
-    }
-  }
+  clustersCollName_ = getText(textBoxClustersCollName_);
 }
 
 void EventDisplay::GetEcalSimParticlesCollInput() {
-  const TString ecalSimParticlesCollName =
-      textBoxEcalScorePlaneBranch_->GetText();
-  foundEcalSPHits_ = GetCollection(ecalSimParticlesCollName, ecalSimParticles_);
-
-  if (foundEcalSPHits_) {
-    ecalSimParticlesCollName_ = ecalSimParticlesCollName;
-    if (eventNum_ != -1) {
-      GotoEvent(eventNum_);
-    }
-  }
-}
-
-bool EventDisplay::GotoEvent(int event) {
-  manager_->GetCurrentEvent()->DestroyElements();
-  eventObjects_->Initialize();
-
-  if (event > eventNumMax_ || event < 0) {
-    std::cout << "[ EventDisplay ] : Event number out of range." << std::endl;
-    return false;
-  }
-  eventNum_ = event;
-
-  if (verbose_) {
-    std::cout << "[ EventDisplay ] : Loading event " << event << "... "
-              << std::flush;
-  }
-
-  tree_->GetEntry(eventNum_);
-
-  if (foundECALRecHits_) {
-    eventObjects_->drawECALHits(ecalRecHits_);
-  }
-
-  if (foundHCALRecHits_) {
-    eventObjects_->drawHCALHits(hcalRecHits_);
-  }
-
-  if (foundClusters_) {
-    eventObjects_->drawECALClusters(ecalClusters_);
-  }
-
-  if (foundTrackerHits_) {
-    eventObjects_->drawRecoilHits(recoilHits_);
-  }
-
-  if (foundEcalSPHits_) {
-    eventObjects_->drawECALSimParticles(ecalSimParticles_);
-  }
-
-  manager_->AddElement(eventObjects_->getHitCollections());
-  manager_->AddElement(eventObjects_->getRecoObjects());
-  manager_->Redraw3D(kFALSE);
-
-  if (verbose_) {
-    std::cout << "done" << std::endl;
-  }
-
-  return true;
-}
-
-bool EventDisplay::GotoEvent() {
-  int event = atoi(textBoxGotoEvent_->GetText());
-  if (event == 0 && std::string(textBoxGotoEvent_->GetText()) != "0") {
-    std::cout << "[ EventDisplay ] : Invalid event number entered: \""
-              << textBoxGotoEvent_->GetText() << "\"" << std::endl;
-    return false;
-  }
-
-  return GotoEvent(event);
-}
-
-bool EventDisplay::SetEventTree() {
-  const TString treeName = textBoxEventTreeName_->GetText();
-  TTree* tree = (TTree*)file_->Get(treeName);
-  if (!tree) {
-    std::cout << "[ EventDisplay ] : Input file contains no tree \"" << treeName
-              << "\"" << std::endl;
-    return false;
-  } else if (verbose_) {
-    std::cout << "[ EventDisplay ] : Event tree set to \"" << treeName << "\""
-              << std::endl;
-  }
-
-  tree_ = tree;
-  eventTreeName_ = treeName;
-
-  foundECALRecHits_ = GetCollection(ecalRecHitsCollName_, ecalRecHits_);
-  foundHCALRecHits_ = GetCollection(hcalRecHitsCollName_, hcalRecHits_);
-  foundClusters_ = GetCollection(clustersCollName_, ecalClusters_);
-  foundTrackerHits_ = GetCollection(trackerHitsCollName_, recoilHits_);
-  foundEcalSPHits_ =
-      GetCollection(ecalSimParticlesCollName_, ecalSimParticles_);
-
-  return GotoEvent(eventNum_);
+  ecalSimParticlesCollName_ = getText(textBoxEcalScorePlaneBranch_);
 }
 
 bool EventDisplay::SetSimThresh() {
