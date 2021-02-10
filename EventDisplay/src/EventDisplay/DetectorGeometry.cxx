@@ -95,9 +95,9 @@ DetectorGeometry::DetectorGeometry() {
   hexReadoutParams["nCellRHeight"] = 35.3;
   hexReadoutParams["verbose"] = 0;
 
-  Parameters hexReadout;
+  framework::config::Parameters hexReadout;
   hexReadout.setParameters(hexReadoutParams);
-  ecalHexReader_ = std::make_unique<EcalHexReadout>(hexReadout);
+  ecalHexReader_ = std::unique_ptr<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::debugMake(hexReadout));
 
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER

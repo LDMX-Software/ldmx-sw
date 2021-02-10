@@ -71,6 +71,9 @@ setup_library(module EventDisplay
     ROOT::Eve
     DetDescr::DetDescr
     Framework::Framework
+    SimCore::Event
+    Hcal::Event
+    Ecal::Event
     sources EventDisplayDic.cxx
     ${SRC_FILES}
 )
