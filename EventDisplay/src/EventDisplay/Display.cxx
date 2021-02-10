@@ -33,7 +33,6 @@ Display::Display(TEveManager* manager, bool verbose)
   // prints an Info statement to std-out. Currently, I can't figure out how to
   // turn this behavior off.
   theDetector_ = new EveDetectorGeometry();
-  eventObjects_ = new EventObjects();
 
   manager_->AddEvent(new TEveEventManager("LDMX Detector", ""));
   manager_->AddElement(theDetector_->getECAL());
@@ -205,91 +204,25 @@ bool Display::SetFile(const TString file) {
 void Display::NextEvent() {
   if (the_file_->nextEvent(false)) {
     manager_->GetCurrentEvent()->DestroyElements();
-    eventObjects_->Initialize();
+    objects_.Initialize();
   
     if (verbose_) {
       std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
     }
 
-    try {
-      auto ecal_rec_hits{the_event_.getCollection<ldmx::EcalHit>(ecalRecHitsCollName_)};
-      eventObjects_->drawECALHits(ecal_rec_hits);
-      if (verbose_) {
-        std::cout << "[ Display ] : Loaded '" << ecalRecHitsCollName_
-          << "' into memory as a EVE object." << std::endl;
-      }
-    } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
-      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << "\nStack trace: " << std::endl
-        << e.stackTrace();
-    }
-
-    try {
-      auto hcal_rec_hits{the_event_.getCollection<ldmx::HcalHit>(hcalRecHitsCollName_)};
-      eventObjects_->drawHCALHits(hcal_rec_hits);
-      if (verbose_) {
-        std::cout << "[ Display ] : Loaded '" << hcalRecHitsCollName_
-          << "' into memory as a EVE object." << std::endl;
-      }
-    } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
-      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << "\nStack trace: " << std::endl
-        << e.stackTrace();
-    }
-
-    try {
-      auto ecal_clusters{the_event_.getCollection<ldmx::EcalCluster>(clustersCollName_)};
-      eventObjects_->drawECALClusters(ecal_clusters);
-      if (verbose_) {
-        std::cout << "[ Display ] : Loaded '" << clustersCollName_
-          << "' into memory as a EVE object." << std::endl;
-      }
-    } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
-      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << "\nStack trace: " << std::endl
-        << e.stackTrace();
-    }
-  
-    try {
-      auto recoil_hits{the_event_.getCollection<ldmx::SimTrackerHit>(trackerHitsCollName_)};
-      eventObjects_->drawRecoilHits(recoil_hits);
-      if (verbose_) {
-        std::cout << "[ Display ] : Loaded '" << trackerHitsCollName_
-          << "' into memory as a EVE object." << std::endl;
-      }
-    } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
-      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << "\nStack trace: " << std::endl
-        << e.stackTrace();
-    }
-  
-    try {
-      auto ecal_sp{the_event_.getCollection<ldmx::SimTrackerHit>(ecalSimParticlesCollName_)};
-      eventObjects_->drawECALSimParticles(ecal_sp);
-      if (verbose_) {
-        std::cout << "[ Display ] : Loaded '" << clustersCollName_
-          << "' into memory as a EVE object." << std::endl;
-      }
-    } catch(const framework::exception::Exception& e) {
-      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
-      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << "\nStack trace: " << std::endl
-        << e.stackTrace();
-    }
+    draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
+    draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
+    //draw<std::vector<ldmx::EcalCluster>>(clustersCollName_);
+    draw<std::vector<ldmx::SimTrackerHit>>(trackerHitsCollName_);
+    draw<std::vector<ldmx::SimTrackerHit>>(ecalSimParticlesCollName_);
+    draw<std::vector<ldmx::SimCalorimeterHit>>("EcalSimHits");
+    draw<std::vector<ldmx::SimCalorimeterHit>>("HcalSimHits");
+    draw<std::map<int,ldmx::SimParticle>>("SimParticles");
 
     if (verbose_) std::cout << "[ Display ] : Done loading event objects into EVE objects." << std::endl;
   
-    manager_->AddElement(eventObjects_->getHitCollections());
-    manager_->AddElement(eventObjects_->getRecoObjects());
+    manager_->AddElement(objects_.getSimObjects());
+    manager_->AddElement(objects_.getRecObjects());
     manager_->Redraw3D(kFALSE);
   
     if (verbose_) std::cout << "[ Display ] : Done redrawing." << std::endl;
@@ -332,7 +265,7 @@ bool Display::SetSimThresh() {
               << thresh << std::endl;
   }
 
-  eventObjects_->SetSimThresh(thresh);
+  objects_.SetSimThresh(thresh);
 
   manager_->RegisterRedraw3D();
   manager_->FullRedraw3D(kFALSE, kTRUE);
@@ -341,7 +274,7 @@ bool Display::SetSimThresh() {
 }
 
 void Display::ColorClusters() {
-  eventObjects_->ColorClusters();
+  objects_.ColorClusters();
 
   manager_->RegisterRedraw3D();
   manager_->FullRedraw3D(kFALSE, kTRUE);

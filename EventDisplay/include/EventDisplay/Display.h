@@ -24,7 +24,7 @@
 #include "TBranchElement.h"
 
 #include "EventDisplay/EveDetectorGeometry.h"
-#include "EventDisplay/EventObjects.h"
+#include "EventDisplay/Objects.h"
 
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
@@ -47,9 +47,10 @@ class Display : public TGMainFrame {
    * Deletes hanging pointers from constructor and closes the TFile.
    */
   virtual ~Display() {
+    // need to delete EventFile so that it is deleted before Event
     the_file_.reset(nullptr);
+
     delete theDetector_;
-    delete eventObjects_;
 
     delete textBoxClustersCollName_;
     delete textBoxSimThresh_;
@@ -125,6 +126,28 @@ class Display : public TGMainFrame {
     return box->GetText();
   }
 
+  /**
+   * Templated draw method
+   */
+  template <typename EventObjectType>
+  void draw(const std::string& name) {
+    try {
+      auto event_object{the_event_.getObject<EventObjectType>(name)};
+      objects_.draw(event_object);
+      if (verbose_) {
+        std::cout << "[ Display ] : Loaded '" << name
+          << "' into memory as a EVE object." << std::endl;
+      }
+    } catch(const framework::exception::Exception& e) {
+      std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
+      std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
+        << "  at " << e.module() << ":" << e.line() << " in "
+        << e.function() << std::endl
+    }
+  }
+
+
+
  private:
   bool verbose_;  //* verbosity flag
 
@@ -145,8 +168,11 @@ class Display : public TGMainFrame {
   /// name of ecal sim particles collection in
   std::string ecalSimParticlesCollName_ = "EcalScoringPlaneHits";
 
-  EveDetectorGeometry* theDetector_{nullptr};  //* detector geometry instance
-  EventObjects* eventObjects_{nullptr};  //* drawing methods for event objects
+  /// drawing methods for the detector geometry
+  EveDetectorGeometry* theDetector_{nullptr};
+
+  /// drawing methods for event objects
+  Objects objects_;
 
   TGTextEntry* textBoxClustersCollName_;
   TGTextEntry* textBoxSimThresh_;
@@ -155,7 +181,8 @@ class Display : public TGMainFrame {
   TGTextEntry* textBoxTrackerHitsCollName_;
   TGTextEntry* textBoxEcalScorePlaneBranch_;
 
-  TEveManager* manager_{nullptr};  //* event display manager
+  /// event display manager
+  TEveManager* manager_{nullptr};
 
   ClassDef(Display, 2);
 };

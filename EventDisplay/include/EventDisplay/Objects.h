@@ -1,5 +1,5 @@
 /**
- * @file EventObjects.h
+ * @file Objects.h
  * @author Josh Hiltbrand, University of Minnesota
  * @author Tom Eichlersmith, University of Minnesota
  */
@@ -27,33 +27,27 @@
 namespace eventdisplay {
 
 /**
- * @class EventObjects
+ * @class Objects
  * @brief Drawing methods for event objects.
  *
  * Both ECAL and HCAL hits are colored by their relative energy/pe deposits.
  */
-class EventObjects {
+class Objects {
  public:
   /**
    * Constructor
    * Defines new necessary objects.
    * @sa Initialize
    */
-  EventObjects();
+  Objects();
 
   /**
    * Destructor
    * Deletes objects that have been constructed.
    */
-  ~EventObjects() {
-    delete ecalHits_;
-    delete hcalHits_;
-    delete recoilTrackerHits_;
-    delete ecalClusters_;
-    delete ecalSimParticles_;
-
-    delete hits_;
-    delete recoObjs_;
+  ~Objects() {
+    delete sim_objects_;
+    delete rec_objects_;
   }
 
   /**
@@ -62,31 +56,31 @@ class EventObjects {
   void Initialize();
 
   /**
+   * Not implemented
+   */
+  template <typename T>
+  void draw(T o) { EXCEPTION_RAISE("NotImp","Drawing not implemented for the input type."); }
+
+  /**
    * Draws the hits in the input collection assuming that they are EcalHits
    */
-  void drawECALHits(std::vector<ldmx::EcalHit> hits);
+  void draw(std::vector<ldmx::EcalHit> hits);
 
   /**
    * Draws the hits in the input collection assuming that they are HcalHits
    */
-  void drawHCALHits(std::vector<ldmx::HcalHit> hits);
+  void draw(std::vector<ldmx::HcalHit> hits);
 
   /**
    * Draws the hits in the input collection assuming that they are
    * SimTrackerHits that hit the recoil tracker.
    */
-  void drawRecoilHits(std::vector<ldmx::SimTrackerHit> hits);
+  void draw(std::vector<ldmx::SimTrackerHit> hits);
 
   /**
    * Draws the hits in the input collection assuming that they are EcalClusters
    */
-  void drawECALClusters(std::vector<ldmx::EcalCluster> clusters);
-
-  /**
-   * Draws the hits in the input collection assuming that they are
-   * SimTrackerHits that hit the Ecal Scoring Planes
-   */
-  void drawECALSimParticles(std::vector<ldmx::SimTrackerHit> ecalSimParticles);
+  void draw(std::vector<ldmx::EcalCluster> clusters);
 
   /**
    * Sets the energy threshold for a sim particle to be drawn.
@@ -101,33 +95,22 @@ class EventObjects {
   void ColorClusters();
 
   /**
-   * Get the hits Eve Element
+   * Get the objects from the sim level Eve Element
    * Used to attach these Eve Elements to the Eve Manager.
    */
-  TEveElement* getHitCollections() { return hits_; }
+  TEveElement* getSimObjects() { return sim_objects_; }
 
   /**
-   * Get the recoObjs Eve Element
+   * Get the objects from the reconstruction level Eve Element
    * Used to attach these Eve Elements to the Eve Manager.
    */
-  TEveElement* getRecoObjects() { return recoObjs_; }
+  TEveElement* getRecObjects() { return rec_objects_; }
 
  private:
-  /// Eve Element containing ecal hits 
-  TEveElement* ecalHits_;  
-  /// Eve Element containing hcal hits
-  TEveElement* hcalHits_;
-  /// Eve Element containing recoil tracker hits
-  TEveElement* recoilTrackerHits_;
-  /// Eve Element containing ecal clusters
-  TEveElement* ecalClusters_;
-  /// Eve Element containing ecal sim particles
-  TEveElement* ecalSimParticles_;
-
   /// Eve Element containing all hits
-  TEveElement* hits_;
+  TEveElement* sim_objects_;
   /// Eve Element containing reco objects that aren't hits
-  TEveElement* recoObjs_;
+  TEveElement* rec_objects_;
 
   /// threshold for sim particles to be drawn
   double simThresh_ = 0;
