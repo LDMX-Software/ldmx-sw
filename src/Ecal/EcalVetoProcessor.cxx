@@ -662,6 +662,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   int hitNums_best[3];
   int hitNums[3];
 
+  //std::cout << "Linreg tracking:  Processing new event" << std::endl;
+
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     trackLen = 0;
     nHitsInRegion = 1;
@@ -692,16 +694,23 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
 
-        // Check for singular matrix; .Determinant() doesn't work on singular matrices
-        float det = hdt[0][0]*(hdt[1][1]*hdt[2][2] - hdt[2][1]*hdt[1][2])
-                  + hdt[1][0]*(hdt[2][1]*hdt[0][2] - hdt[0][1]*hdt[2][2])
-                  + hdt[2][0]*(hdt[0][1]*hdt[1][2] - hdt[1][1]*hdt[0][2]);
-        if(std::abs(det) < 0.001) {  //to avoid rounding errors
-          continue;
-        }
+        // Check for singular matrix:
+        // ADDENDUM:  singular matrices should be decomposable; ROOT's algorithm isn't working correctly for all matrices.  Ignoring this and tolerating the errors for now.
+        //float det = hdt[0][0]*(hdt[1][1]*hdt[2][2] - hdt[2][1]*hdt[1][2])
+        //          + hdt[1][0]*(hdt[2][1]*hdt[0][2] - hdt[0][1]*hdt[2][2])
+        //          + hdt[2][0]*(hdt[0][1]*hdt[1][2] - hdt[1][1]*hdt[0][2]);
+        //std::cout << std::endl;
+        //std::cout << "sample hdt: " << hdt[0][0]*(hdt[1][1]*hdt[2][2] - hdt[2][1]*hdt[1][2]) << ", " << hdt[1][0]*(hdt[2][1]*hdt[0][2] - hdt[0][1]*hdt[2][2]) << ", " << hdt[2][0]*(hdt[0][1]*hdt[1][2] - hdt[1][1]*hdt[0][2]) << ".  ";
+        //std::cout << "check 1, det=" << det << ".  ";
+        //if(std::abs(det) < 0.001) {  //to avoid rounding errors
+        //  continue;
+        //}
 
         TDecompSVD svdObj = TDecompSVD(hdt);
         bool decomposed = svdObj.Decompose();
+        // THIS IS TEMPORARY
+        if (!decomposed) continue;
+
         Vm = svdObj.GetV();
         for (int hInd = 0; hInd < 3; hInd++) {
           slopeVec(hInd) = Vm[0][hInd]; //NOTE:  Make sure it's not [hInd][0]
@@ -757,8 +766,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     buildBDTFeatureVector(result);
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
     float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
-    bool passesTrackingVeto = (nStraightTracks_ == 0) && (nLinregTracks_ == 0) &&
-                              (firstNearPhLayer_ >= 6) && (epAng_ > 3.0 || epSep_ > 10.0);
+    // Temporarily removing epAng, etc due to pT bias concerns
+    bool passesTrackingVeto = (nStraightTracks_ < 2) && (nLinregTracks_ == 0);
+                              //&&  //Commenting the remainder for now
+                              //(firstNearPhLayer_ >= 6); //&& (epAng_ > 3.0 || epSep_ > 10.0);
     result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
     result.setDiscValue(pred);
     // std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
