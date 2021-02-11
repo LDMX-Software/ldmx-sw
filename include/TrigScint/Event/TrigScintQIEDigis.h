@@ -50,19 +50,29 @@ namespace trigscint {
     { return this->chanID_ < rhs.chanID_;}
 
     /**
+     * Get channel ID
+     */
+    int GetChanID() const{return(chanID_);}
+
+    /**
      * Get ADCs of all time samples
      */
-    std::vector<int> GetADC(){return(adcs_);}
+    std::vector<int> GetADC() const{return(adcs_);}
 
     /**
      * Get tdcs of all time samples
      */
-    std::vector<int> GetTDC(){return(tdcs_);}
+    std::vector<int> GetTDC() const{return(tdcs_);}
 
     /**
      * Get Cap IDs of all time samples
      */
-    std::vector<int> GetCID(){return(cids_);}
+    std::vector<int> GetCID() const{return(cids_);}
+
+    /**
+     * Store the channel ID
+     */
+    void SetChanID(int chanid) {chanID_ = chanid;}
 
     /**
      * Store adcs of all time samples
@@ -82,6 +92,7 @@ namespace trigscint {
      */
     void SetCID(std::vector<int> cid) {cids_ = cid;}
 
+  private:
     /// channel ID
     int chanID_;
 
