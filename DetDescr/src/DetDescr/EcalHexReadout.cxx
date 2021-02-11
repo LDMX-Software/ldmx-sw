@@ -172,7 +172,7 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
        }
 
        //Section 3: Bottom diamond grid
-       xloop = xCenter - 1.5*a; yloop = yCenter + a*TMath::Sqrt(3)/2.0;
+       xloop = xCenter - 1.5*a; yloop = yCenter - a*TMath::Sqrt(3)/2.0;
        for (int xCounter = 0; xCounter < numberOfCellsFlatSide; xCounter ++){
            ytemp = yloop; //resets the temporary variable
            xtemp = xloop;
