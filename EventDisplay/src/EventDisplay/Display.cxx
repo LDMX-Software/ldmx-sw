@@ -210,8 +210,8 @@ void Display::NextEvent() {
       std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
     }
 
-    draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
-    draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
+    //draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
+    //draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
     //draw<std::vector<ldmx::EcalCluster>>(clustersCollName_);
     draw<std::vector<ldmx::SimTrackerHit>>(trackerHitsCollName_);
     draw<std::vector<ldmx::SimTrackerHit>>(ecalSimParticlesCollName_);

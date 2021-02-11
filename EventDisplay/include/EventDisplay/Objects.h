@@ -14,6 +14,7 @@
 #include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 #include "EventDisplay/EveDetectorGeometry.h"
 #include "EventDisplay/EveShapeDrawer.h"
@@ -62,25 +63,35 @@ class Objects {
   void draw(T o) { EXCEPTION_RAISE("NotImp","Drawing not implemented for the input type."); }
 
   /**
-   * Draws the hits in the input collection assuming that they are EcalHits
+   * Drawing EcalHit
    */
   void draw(std::vector<ldmx::EcalHit> hits);
 
   /**
-   * Draws the hits in the input collection assuming that they are HcalHits
+   * Drawing HcalHit
    */
   void draw(std::vector<ldmx::HcalHit> hits);
+
+  /**
+   * Drawing EcalCluster
+   */
+  void draw(std::vector<ldmx::EcalCluster> clusters);
+
+  /**
+   * Drawing SimTrackerHit
+   */
+  void draw(std::vector<ldmx::SimTrackerHit> hits);
 
   /**
    * Draws the hits in the input collection assuming that they are
    * SimTrackerHits that hit the recoil tracker.
    */
-  void draw(std::vector<ldmx::SimTrackerHit> hits);
+  void draw(std::vector<ldmx::SimCalorimeterHit> hits);
 
   /**
-   * Draws the hits in the input collection assuming that they are EcalClusters
+   * Draws the sim particles
    */
-  void draw(std::vector<ldmx::EcalCluster> clusters);
+  void draw(std::map<int,ldmx::SimParticle> particles);
 
   /**
    * Sets the energy threshold for a sim particle to be drawn.
