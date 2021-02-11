@@ -132,10 +132,16 @@ class EcalHexReadout : public framework::ConditionsObject {
             * @return layer ID that coordinate z is in
             */
             int getLayerID(double z) const{
+                int bestID = -1;
+                double bestDist = 1E6;
                 for(auto const& layer : modulePositionMap_) {
-                    int layerID = layer.first.layer();
-                    return layerID;
+                    int mID = layer.first.layer();
+                    double mZ = std::get<2>(layer.second);
+                    double dist = sqrt((z-mZ)*(z-mZ));
+                    if(dist < moduler_) return mID;
+                    if(dist < bestDist) { bestID = mID; bestDist = dist; }
                 }
+                return bestID;
             }
  
             /**
