@@ -54,6 +54,12 @@ namespace trigscint {
      */
     void AddPulse(float toff, float ampl);
 
+    /**
+     * Get the number of pulses in the collection
+     */
+    int GetNPulses() {return ampl_.size();}
+    
+  protected:
     /// collection of pulse time offsets
     std::vector<float> toff_;
 
