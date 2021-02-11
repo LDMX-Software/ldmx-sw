@@ -45,8 +45,8 @@ namespace trigscint {
   // Function to convert charge to ADC count
   // Working: The method checks in which QIE subrange does the charge lie,
   // applies a corresponding  gain to it and digitizes it.
-  int SimQIE::Q2ADC(float QQ) {
-    float qq = gain_*QQ;		    // including QIE gain
+  int SimQIE::Q2ADC(float Charge) {
+    float qq = gain_*Charge;		    // including QIE gain
     if (isnoise_) qq+=trg_->Gaus(mu_,sg_); // Adding gaussian random noise.
 
     if (qq<=edges_[0]) return 0;
@@ -69,12 +69,12 @@ namespace trigscint {
   // Function to convert ADCs back to charge
   // The method checks to which QIE subrange does the ADC correspnd to
   // and returns the mean charge of the correspnding bin in the subrange
-  float SimQIE::ADC2Q(int adc) {
-    if (adc<= 0) return -16;
-    if (adc>= 255) return 350000;
+  float SimQIE::ADC2Q(int ADC) {
+    if (ADC<= 0) return -16;
+    if (ADC>= 255) return 350000;
 
-    int rr = adc/64;		// range
-    int v1 = adc%64;		// temp. var
+    int rr = ADC/64;		// range
+    int v1 = ADC%64;		// temp. var
     int ss = 0;			// sub range
   
     for(int i=1;i<4;i++) {		// to get the subrange
