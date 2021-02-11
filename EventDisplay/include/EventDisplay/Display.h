@@ -142,7 +142,7 @@ class Display : public TGMainFrame {
       std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
         << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << std::endl
+        << e.function() << std::endl;
     }
   }
 
