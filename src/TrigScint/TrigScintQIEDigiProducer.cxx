@@ -162,8 +162,8 @@ namespace trigscint {
       // Storing the "good" digis
       if(smq_->PulseCut(ex[bar_id])) {
 	trigscint::TrigScintQIEDigis QIEInfo;
-	QIEInfo.chanID_ = bar_id;
 
+	QIEInfo.SetChanID(bar_id);
 	QIEInfo.SetADC(smq_->Out_ADC(ex[bar_id]));
 	QIEInfo.SetTDC(smq_->Out_TDC(ex[bar_id]));
 	QIEInfo.SetCID(smq_->CapID(ex[bar_id]));
