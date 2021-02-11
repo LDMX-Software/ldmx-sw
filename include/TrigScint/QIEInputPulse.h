@@ -90,7 +90,7 @@ namespace trigscint {
     /**
      * Evaluate the pulse at time T
      */
-    float EvalSingle(float T, int id) final;
+    float EvalSingle(float T, int id) final override;
 
     /**
      * Indefinite integral at time T
@@ -162,7 +162,7 @@ namespace trigscint {
     /**
      * Evaluate the pulse at time T
      */
-    float EvalSingle(float T, int id) final;
+    float EvalSingle(float T, int id) final override;
 
     /**
      * Integrate the pulse from T1 to T2
