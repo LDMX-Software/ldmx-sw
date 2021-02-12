@@ -2,25 +2,39 @@
 #include "Detectors/Tracking/SiSensor.h"
 #include "XML/Helper.h"
 
+#include "DetDescr/DetectorID.h"
+#include "DetDescr/TrackerID.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Exception/Exception.h" 
+
+
 using namespace dd4hep;
 
 static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
                             SensitiveDetector sens_det) {
 
-  // Set the sensitive detector type
-  sens_det.setType("tracker");
-
   // Detector xml handle
   xml::DetElement det_handle = xml_handle;
 
+  // Store the name and ID of the subdetector
+  auto name{det_handle.nameStr()};
+  auto subdet_id{det_handle.id()};
+
+  // Set the sensitive detector type. This will match the subdetector ID type 
+  // within Detectors/DD4hep/DetectorID.h.
+  sens_det.setType(name);
+
   // Create the tracker detector element
-  DetElement tracker(det_handle.nameStr(), det_handle.id());
+  DetElement tracker(name, subdet_id);
 
   // Get the dimensions of the tracker envelope and construct a box shape made
   // out of air.  This volume will be used to contain the tracker.
   auto env_dims(det_handle.dimensions());
   Box env_box(env_dims.dx(), env_dims.dy(), env_dims.dz());
-  Volume env_vol(det_handle.nameStr() + "_envelope", env_box, lcdd.air());
+  Volume env_vol(name + "_envelope", env_box, lcdd.air());
   // Set the attributes (region, visualization) of the envelope
   env_vol.setAttributes(lcdd, det_handle.regionStr(), det_handle.limitsStr(),
                         det_handle.visStr());
@@ -32,27 +46,31 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
   for (xml::Collection_t imodule(det_handle, _U(module)); imodule; ++imodule) {
     xml::Component xml_module(imodule);
 
-    // Start by creating an assembly for the layers. An assembly will act as
+    // Start by creating an assembly for the modules. An assembly will act as
     // bounding box for the two silicon layers it encloses.
-    Assembly module_assembly("module_" + std::to_string(xml_module.id()) +
-                             "_assembly");
+    Assembly module_assembly(name + "_module_" +
+                             std::to_string(xml_module.id()) + "_assembly");
 
     // Build up the layers inside of the assembly
     for (xml::Collection_t ilayer(xml_module, _U(layer)); ilayer; ++ilayer) {
       xml::Component xml_layer(ilayer);
 
+      // Create the ID associated with this sensor
+      ldmx::TrackerID sensor_id(
+          static_cast<ldmx::SubdetectorIDTypeEnum>(subdet_id),
+          xml_layer.id(), xml_module.id());
+
       // Create the detector element for the sensor
-      detectors::tracker::SiSensor layer(tracker, _toString(xml_layer.id()),
-                                         xml_layer.id());
-      // DetElement layer(tracker, _toString(xml_layer.id()), xml_layer.id());
-      // layer.setType("si_sensor");
+      detectors::tracker::SiSensor layer(
+          tracker, name + "_layer_" + std::to_string(xml_layer.id()),
+          sensor_id.raw());
 
       // Create the box shape representing the sensor.  If a box can't be
       // created, throw an exception.
       Box sensor_box{xml_layer.createShape()};
       if (!sensor_box.isValid()) {
-        // throw an exception
-        std::cout << "Cannot crate box volume." << std::endl;
+        EXCEPTION_RAISE("FailedToCreate", 
+            "Failed to create a box volume."); 
       }
 
       // Create a volume out of the box and set the material it's made from.
@@ -97,4 +115,4 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
   return tracker;
 }
 
-DECLARE_DETELEMENT(Tracker, create_tracker)
+DECLARE_DETELEMENT(tracker, create_tracker)
