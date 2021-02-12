@@ -2,7 +2,7 @@
 
   <comment>Recoil tracker</comment>
 
-  <detector id="2" name="RecoilTracker" type="Tracker" readout="TrackerHits" vis="DetEnvelopeVis">
+  <detector id="recoil_tracker_id" name="recoil_tracker" type="tracker" readout="TrackerHits" vis="DetEnvelopeVis">
     <comment>
       The dimensions are used to instantiate the tagger tracker envelope volume 
       as a "Box" object. The Box object in dd4hep represents TGeoBBox which
