@@ -6,8 +6,10 @@ but we have configured it to be able to be built separately from everything else
 ### Pre-Requisites
 The event display depends on ROOT, so you will need an installation of ROOT outside of the container installed on your system.
 The following procedure was developed on Ubuntu 18.04 using ROOT 6.20.00.
+You will also need Python3 and Boost installed on your system to compile Framework.
 
 ### Build and Install
+0. Setup the ROOT installation outside of the container: `source <my-root-install>/bin/thisroot.sh`
 1. Remove any old build of ldmx-sw: `cd ldmx-sw; rm -rf build;`
 2. Make a build directory: `mkdir build; cd build`
 3. Configure the build: `cmake -DBUILD_EVE_ONLY=ON -DCMAKE_INSTALL_PREFIX=../../ldmx-eve ..`
@@ -15,11 +17,9 @@ The following procedure was developed on Ubuntu 18.04 using ROOT 6.20.00.
 
 ### Environment Setup
 You need to point your computer to the library and executable that the event display uses.
-This entails setting two environment variables: `LD_LIBRARY_PATH` and `PATH`. In bash,
 ```bash
 cd ldmx-eve
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/lib
-export PATH=$PATH:$(pwd)/bin
+source bin/setup-ldmx-eve.sh
 ```
 This setup will need to be done each time you open a new terminal to run the event display (even if you aren't re-compiling it).
 You can see run-time helpful commands by passing the help flag.

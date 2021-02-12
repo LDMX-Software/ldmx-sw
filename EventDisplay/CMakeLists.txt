@@ -12,7 +12,7 @@ project(EventDisplay VERSION 2.1.0
 find_package (Python3 COMPONENTS Interpreter Development)
 
 # Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
+find_package(ROOT 6.20 CONFIG REQUIRED)
 
 # Clear any variables cached during previous configuration cycles. 
 clear_cache_variables()
@@ -85,3 +85,11 @@ target_link_libraries(ldmx-eve PRIVATE EventDisplay::EventDisplay)
 
 # Install the fire executable
 install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+message(STATUS ${ROOTSYS})
+# Configure the setup script
+configure_file(${PROJECT_SOURCE_DIR}/scripts/setup-ldmx-eve.sh.in
+               ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh)
+
+# Install setup script
+install(FILES ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh TYPE BIN)
