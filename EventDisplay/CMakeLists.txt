@@ -86,7 +86,6 @@ target_link_libraries(ldmx-eve PRIVATE EventDisplay::EventDisplay)
 # Install the fire executable
 install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-message(STATUS ${ROOTSYS})
 # Configure the setup script
 configure_file(${PROJECT_SOURCE_DIR}/scripts/setup-ldmx-eve.sh.in
                ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh)
