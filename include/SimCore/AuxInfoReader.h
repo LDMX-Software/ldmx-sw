@@ -10,7 +10,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/ConditionsInterface.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class AuxInfoReader
@@ -24,14 +24,14 @@ namespace ldmx {
  * tags that reference these objects by name.
  */
 class AuxInfoReader {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, Parameters ps, ConditionsInterface &ci);
+  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps,
+                ConditionsInterface &ci);
 
   /**
    * Class destructor.
@@ -54,7 +54,7 @@ public:
    */
   ldmx::DetectorHeader *getDetectorHeader() { return detectorHeader_; }
 
-private:
+ private:
   /**
    * Create a sensitive detector from GDML data.
    * @param sdType The type of the sensitive detector.
@@ -92,7 +92,7 @@ private:
   void createDetectorHeader(G4String detectorVersion,
                             const G4GDMLAuxListType *auxInfoList);
 
-private:
+ private:
   /**
    * The GDML parser.
    */
@@ -109,12 +109,12 @@ private:
   ldmx::DetectorHeader *detectorHeader_{nullptr};
 
   /// Configuration parameters
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 
   /// ConditionsInterface
   ConditionsInterface &conditionsIntf_;
 };
 
-} // namespace ldmx
+}  // namespace simcore
 
 #endif

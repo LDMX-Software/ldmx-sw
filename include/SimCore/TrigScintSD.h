@@ -8,42 +8,39 @@
 
 // Forward declarations
 class G4Step;
-class G4TouchableHistory; 
+class G4TouchableHistory;
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * Class defining a sensitive detector of type trigger scintillator.
-     */
-    class TrigScintSD : public CalorimeterSD {
+/**
+ * Class defining a sensitive detector of type trigger scintillator.
+ */
+class TrigScintSD : public CalorimeterSD {
+ public:
+  /**
+   * Class constructor.
+   *
+   * @param[in] name The name of the sensitive detector.
+   * @param[in] theCollectionName The name of the hits collection.
+   * @param[in] subdet The subdetector ID.
+   */
+  TrigScintSD(G4String name, G4String collectionName, int subDetID);
 
-        public:
+  /// Destructor
+  ~TrigScintSD();
 
-            /**
-             * Class constructor.
-             *
-             * @param[in] name The name of the sensitive detector.
-             * @param[in] theCollectionName The name of the hits collection.
-             * @param[in] subdet The subdetector ID.
-             */
-            TrigScintSD(G4String name, G4String collectionName, int subDetID); 
+  /**
+   * Process steps to create hits.
+   *
+   * @param[in] step The step information.
+   * @param[in] history The readout history.
+   */
+  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
 
-            /// Destructor
-            ~TrigScintSD();
+ private:
+  int moduleId_;
+};
 
-            /**
-             * Process steps to create hits.
-             *
-             * @param[in] step The step information.
-             * @param[in] history The readout history.
-             */
-            G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
-
-    private:
-      int moduleId_;
-      
-    };
-
-}
+}  // namespace simcore
 
 #endif

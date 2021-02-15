@@ -15,39 +15,22 @@ class G4String;
 class G4DecayTable;
 
 class G4APrime : public G4ParticleDefinition {
-    private:
+ private:
+  /** Reference to single particle definition of A' */
+  static G4APrime* theAPrime;
 
-        /** Reference to single particle definition of A' */
-        static G4APrime* theAPrime;
+  G4APrime(const G4String& Name, G4double mass, G4double width, G4double charge,
+           G4int iSpin, G4int iParity, G4int iConjugation, G4int iIsospin,
+           G4int iIsospin3, G4int gParity, const G4String& pType, G4int lepton,
+           G4int baryon, G4int encoding, G4bool stable, G4double lifetime,
+           G4DecayTable* decaytable);
 
-        G4APrime(
-            const G4String&      Name,
-            G4double             mass,
-            G4double             width,
-            G4double             charge,
-            G4int                iSpin,
-            G4int                iParity,
-            G4int                iConjugation,
-            G4int                iIsospin,
-            G4int                iIsospin3,
-            G4int                gParity,
-            const G4String&      pType,
-            G4int                lepton,
-            G4int                baryon,
-            G4int                encoding,
-            G4bool               stable,
-            G4double             lifetime,
-            G4DecayTable         *decaytable
-          );
+  virtual ~G4APrime() { /* Nothing on purpose */
+  }
 
-        virtual ~G4APrime() { /* Nothing on purpose */ }
-
-    public:
-
-        /** Accessor for APrime definition */
-        static G4APrime* APrime(G4double theMass = 10.0*MeV);
+ public:
+  /** Accessor for APrime definition */
+  static G4APrime* APrime(G4double theMass = 10.0 * MeV);
 };
 
-#endif //SIMCORE_G4APRIME_H_
-
-
+#endif  // SIMCORE_G4APRIME_H_

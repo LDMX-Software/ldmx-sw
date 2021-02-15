@@ -10,35 +10,32 @@
 // Geant4
 #include "G4VUserRegionInformation.hh"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class UserRegionInformation
-     * @brief Defines extra information for a detector region
-     *
-     * @note
-     * This extension to the user region information has a flag indicating
-     * whether secondary particles should be stored.  This flag is used
-     * in the UserTrackingAction to determine whether or not a trajectory
-     * is created for a track created in the region.
-     */
-    class UserRegionInformation : public G4VUserRegionInformation {
+/**
+ * @class UserRegionInformation
+ * @brief Defines extra information for a detector region
+ *
+ * @note
+ * This extension to the user region information has a flag indicating
+ * whether secondary particles should be stored.  This flag is used
+ * in the UserTrackingAction to determine whether or not a trajectory
+ * is created for a track created in the region.
+ */
+class UserRegionInformation : public G4VUserRegionInformation {
+ public:
+  UserRegionInformation(bool storeSecondaries);
 
-        public:
+  virtual ~UserRegionInformation();
 
-            UserRegionInformation(bool storeSecondaries);
+  void Print() const;
 
-            virtual ~UserRegionInformation();
+  bool getStoreSecondaries() const;
 
-            void Print() const;
+ private:
+  bool storeSecondaries_;
+};
 
-            bool getStoreSecondaries() const;
-
-        private:
-
-            bool storeSecondaries_;
-    };
-
-}
+}  // namespace simcore
 
 #endif

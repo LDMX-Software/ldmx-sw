@@ -20,55 +20,54 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h" 
+#include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class UserStackingAction
-     * @brief Class implementing a user stacking action.
-     */
-    class UserStackingAction : public G4UserStackingAction {
+/**
+ * @class UserStackingAction
+ * @brief Class implementing a user stacking action.
+ */
+class UserStackingAction : public G4UserStackingAction {
+ public:
+  /// Constructor
+  UserStackingAction();
 
-        public:
+  /// Destructor
+  virtual ~UserStackingAction() final override;
 
-            /// Constructor
-            UserStackingAction(); 
+  /**
+   * Classify a new track.
+   * @param aTrack The track to classify.
+   * @return The track classification.
+   */
+  G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track);
 
-            /// Destructor
-            virtual ~UserStackingAction() final override; 
+  /**
+   * Invoked when there is a new stacking stage.
+   */
+  void NewStage();
 
-            /**
-             * Classify a new track.
-             * @param aTrack The track to classify.
-             * @return The track classification.
-             */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *track);
+  /**
+   * Invoked for a new event.
+   */
+  void PrepareNewEvent();
 
-            /**
-             * Invoked when there is a new stacking stage.
-             */
-            void NewStage();
+  /**
+   * Register a user action of type stacking action with this class.
+   *
+   * @param action  User action of type StackingAction
+   */
+  void registerAction(UserAction* stackingAction) {
+    stackingActions_.push_back(stackingAction);
+  }
 
-            /**
-             * Invoked for a new event.
-             */
-            void PrepareNewEvent();
+ private:
+  /// Collection of user stacking actions
+  std::vector<UserAction*> stackingActions_;
 
-            /**
-             * Register a user action of type stacking action with this class. 
-             *
-             * @param action  User action of type StackingAction
-             */
-            void registerAction(UserAction* stackingAction) { stackingActions_.push_back(stackingAction); }
+};  // UserStackingAction
 
-        private: 
+}  // namespace simcore
 
-            /// Collection of user stacking actions
-            std::vector<UserAction*> stackingActions_; 
-    
-    }; // UserStackingAction
-
-} // ldmx
-
-#endif // SIMCORE_USERSTACKINGACTION_H
+#endif  // SIMCORE_USERSTACKINGACTION_H

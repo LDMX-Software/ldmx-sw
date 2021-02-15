@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 #ifndef SIMCORE_PARALLELWORLD_H_
@@ -22,34 +22,31 @@
 //-------------//
 #include "SimCore/AuxInfoReader.h"
 
-namespace ldmx { 
+namespace simcore {
 
-    class ParallelWorld : public G4VUserParallelWorld { 
+class ParallelWorld : public G4VUserParallelWorld {
+ public:
+  /** Constructor */
+  ParallelWorld(G4GDMLParser* parser, G4String worldName,
+                ConditionsInterface& ci);
 
-        public: 
+  /** Destructor */
+  ~ParallelWorld();
 
-            /** Constructor */
-            ParallelWorld(G4GDMLParser* parser, G4String worldName, ConditionsInterface& ci);
+  /** */
+  void Construct();
 
-            /** Destructor */
-            ~ParallelWorld();
+  /** */
+  void ConstructSD();
 
-            /** */
-            void Construct();
+ private:
+  /** GDML parser */
+  G4GDMLParser* parser_{nullptr};
 
-            /** */
-            void ConstructSD();
+  /** The auxiliary GDML info reader. */
+  AuxInfoReader* auxInfoReader_{nullptr};
 
-        private:
+};  // ParallelWorld
+}  // namespace simcore
 
-            /** GDML parser */
-            G4GDMLParser* parser_{nullptr};
-            
-            /** The auxiliary GDML info reader. */
-            AuxInfoReader* auxInfoReader_{nullptr};
-
-    }; // ParallelWorld
-}
-
-#endif // SIMCORE_PARALLELWORLD_H_
-
+#endif  // SIMCORE_PARALLELWORLD_H_
