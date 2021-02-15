@@ -13,41 +13,38 @@
 // STL
 #include <fstream>
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class LHEReader
-     * @brief Reads LHE event data into an LHEEvent object
-     */
-    class LHEReader {
+/**
+ * @class LHEReader
+ * @brief Reads LHE event data into an LHEEvent object
+ */
+class LHEReader {
+ public:
+  /**
+   * Class constructor.
+   * @param fileName The input file name.
+   */
+  LHEReader(std::string& fileName);
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~LHEReader();
 
-            /**
-             * Class constructor.
-             * @param fileName The input file name.
-             */
-            LHEReader(std::string& fileName);
+  /**
+   * Read the next event.
+   * @return The next LHE event.
+   */
+  LHEEvent* readNextEvent();
 
-            /**
-             * Class destructor.
-             */
-            virtual ~LHEReader();
+ private:
+  /**
+   * The input file stream.
+   */
+  std::ifstream ifs_;
+};
 
-            /**
-             * Read the next event.
-             * @return The next LHE event.
-             */
-            LHEEvent* readNextEvent();
-
-        private:
-
-            /**
-             * The input file stream.
-             */
-            std::ifstream ifs_;
-    };
-
-}
+}  // namespace simcore
 
 #endif

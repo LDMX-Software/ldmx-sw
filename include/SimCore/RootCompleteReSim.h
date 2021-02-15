@@ -1,6 +1,6 @@
 /**
  * @file RootCompleteReSim.h
- * @brief Primary generator used to generate primaries from SimParticles. 
+ * @brief Primary generator used to generate primaries from SimParticles.
  * @author Nhan Tran, Fermilab
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
@@ -26,73 +26,70 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Framework/EventFile.h"
 #include "Framework/Event.h"
+#include "Framework/EventFile.h"
 #include "SimCore/PrimaryGenerator.h"
 
 class G4Event;
 
-namespace ldmx {
+namespace simcore {
 
-    class Parameters;
+class Parameters;
 
-    /**
-     * @class RootCompleteReSim
-     * 
-     * PrimaryGenerator that gets primaries and event seeds and
-     * inputs them into current event as primaries with the exact same kinematics.
-     */
-    class RootCompleteReSim : public PrimaryGenerator {
+/**
+ * @class RootCompleteReSim
+ *
+ * PrimaryGenerator that gets primaries and event seeds and
+ * inputs them into current event as primaries with the exact same kinematics.
+ */
+class RootCompleteReSim : public PrimaryGenerator {
+ public:
+  /**
+   * Class constructor.
+   * @param name the name of the generator
+   * @param parameters configuration parameters
+   *
+   * Parameters:
+   *   filePath : path to root file to re-sim
+   *   simParticleCollName : name of collection of SimParticles
+   *   simParticlePassName : name of pass of SimParticles
+   */
+  RootCompleteReSim(const std::string& name,
+                    framework::config::Parameters& parameters);
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~RootCompleteReSim();
 
-            /**
-             * Class constructor.
-             * @param name the name of the generator
-             * @param parameters configuration parameters
-             *
-             * Parameters:
-             *   filePath : path to root file to re-sim
-             *   simParticleCollName : name of collection of SimParticles
-             *   simParticlePassName : name of pass of SimParticles
-             */
-            RootCompleteReSim(const std::string& name, Parameters& parameters);
+  /**
+   * Generate vertices in the Geant4 event.
+   * @param anEvent The Geant4 event.
+   */
+  void GeneratePrimaryVertex(G4Event* anEvent);
 
-            /**
-             * Class destructor.
-             */
-            virtual ~RootCompleteReSim();
+ private:
+  /**
+   * Name of SimParticles collection
+   */
+  std::string simParticleCollName_;
 
-            /**
-             * Generate vertices in the Geant4 event.
-             * @param anEvent The Geant4 event.
-             */
-            void GeneratePrimaryVertex(G4Event* anEvent);
+  /**
+   * Name of SimParticles pass
+   */
+  std::string simParticlePassName_;
 
-        private:
+  /**
+   * The input root file
+   */
+  std::unique_ptr<framework::EventFile> ifile_;
 
-            /**
-             * Name of SimParticles collection
-             */
-            std::string simParticleCollName_;
+  /**
+   * The input ldmx event bus
+   */
+  framework::Event ievent_;
+};
 
-            /**
-             * Name of SimParticles pass
-             */
-            std::string simParticlePassName_;
+}  // namespace simcore
 
-            /**
-             * The input root file
-             */
-            std::unique_ptr<EventFile> ifile_;
-
-            /**
-             * The input ldmx event bus
-             */
-            Event ievent_;
-
-    };
-
-}
-
-#endif //SIMCORE_ROOTCOMPLETERESIM_H
+#endif  // SIMCORE_ROOTCOMPLETERESIM_H

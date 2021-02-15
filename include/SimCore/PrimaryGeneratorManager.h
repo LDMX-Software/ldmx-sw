@@ -1,6 +1,6 @@
 /**
- * @file PrimaryGeneratorManager.h 
- * @brief Class that manages the generators used to fire particles. 
+ * @file PrimaryGeneratorManager.h
+ * @brief Class that manages the generators used to fire particles.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -10,67 +10,65 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+#include "Framework/Configure/Parameters.h"
 #include "SimCore/PrimaryGenerator.h"
 
-namespace ldmx { 
+namespace simcore {
 
-    /**
-     * @class PrimaryGeneratorManager
-     * @brief Class that manages the generators used to fire particles. 
-     */
-    class PrimaryGeneratorManager {
+/**
+ * @class PrimaryGeneratorManager
+ * @brief Class that manages the generators used to fire particles.
+ */
+class PrimaryGeneratorManager {
+ public:
+  /// @return the global PrimaryGeneratorManager instance
+  static PrimaryGeneratorManager& getInstance();
 
-        public: 
+  /**
+   * Get the collection of all enabled generators
+   */
+  std::vector<PrimaryGenerator*> getGenerators() const { return generators_; };
 
-            /// @return the global PrimaryGeneratorManager instance
-            static PrimaryGeneratorManager& getInstance();
+  /**
+   * Attach a new generator to the list of generators
+   */
+  void registerGenerator(const std::string& className,
+                         PrimaryGeneratorBuilder* builder);
 
-            /**
-             * Get the collection of all enabled generators
-             */
-            std::vector< PrimaryGenerator* > getGenerators() const { return generators_; }; 
+  /**
+   * Create a new generate and attach it to the list of generators
+   */
+  void createGenerator(const std::string& className,
+                       const std::string& instanceName,
+                       framework::config::Parameters& parameters);
 
-            /**
-             * Attach a new generator to the list of generators
-             */
-            void registerGenerator(const std::string& className, PrimaryGeneratorBuilder* builder);
+ private:
+  /// PrimaryGeneratorManager instance
+  static PrimaryGeneratorManager instance_;
 
-            /**
-             * Create a new generate and attach it to the list of generators
-             */
-            void createGenerator(const std::string& className, const std::string& instanceName, Parameters& parameters);
+  /// Constructor - private to prevent initialization
+  PrimaryGeneratorManager() {}
 
-        private:
+  /**
+   * @struct GeneratorInfo
+   * @brief Holds necessary information to create a generator
+   */
+  struct GeneratorInfo {
+    /// Name of the Class
+    std::string className_;
 
-            /// PrimaryGeneratorManager instance
-            static PrimaryGeneratorManager instance_;
+    /// Class builder
+    PrimaryGeneratorBuilder* builder_;
+  };
 
-            /// Constructor - private to prevent initialization
-            PrimaryGeneratorManager() { }
+  /// A map of all register generators
+  std::map<std::string, GeneratorInfo> generatorMap_;
 
-            /**
-             * @struct GeneratorInfo
-             * @brief Holds necessary information to create a generator
-             */
-            struct GeneratorInfo {
+  /// Cointainer for all generators to be used by the simulation
+  std::vector<PrimaryGenerator*> generators_;
 
-                /// Name of the Class
-                std::string className_;
+};  // PrimaryGeneratorManager
 
-                /// Class builder
-                PrimaryGeneratorBuilder* builder_;
-            };
+}  // namespace simcore
 
-            /// A map of all register generators
-            std::map< std::string , GeneratorInfo > generatorMap_;
-
-            /// Cointainer for all generators to be used by the simulation
-            std::vector< PrimaryGenerator* > generators_;
-
-    }; // PrimaryGeneratorManager
-
-} // ldmx
-
-#endif // SIMCORE_PRIMARYGENERATORMANAGER_H
-
+#endif  // SIMCORE_PRIMARYGENERATORMANAGER_H

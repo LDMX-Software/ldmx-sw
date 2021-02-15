@@ -22,7 +22,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace simcore {
 
 /**
  * @class DetectorConstruction
@@ -36,13 +36,13 @@ namespace ldmx {
  * @see AuxInfoReader
  */
 class DetectorConstruction : public G4VUserDetectorConstruction {
-
-public:
+ public:
   /**
    * Class constructor.
    * @param theParser GDML parser defining the geometry.
    */
-  DetectorConstruction(G4GDMLParser *theParser, Parameters &parameters,
+  DetectorConstruction(G4GDMLParser *theParser,
+                       framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
   /**
@@ -68,7 +68,7 @@ public:
     return auxInfoReader_->getDetectorHeader();
   }
 
-private:
+ private:
   /**
    * The GDML parser defining the detector.
    */
@@ -80,9 +80,9 @@ private:
   AuxInfoReader *auxInfoReader_;
 
   /// The set of parameters used to configure this class
-  Parameters parameters_;
+  framework::config::Parameters parameters_;
 };
 
-} // namespace ldmx
+}  // namespace simcore
 
 #endif

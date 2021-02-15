@@ -17,104 +17,102 @@
 //------------//
 //   Geant4   //
 //------------//
-#include "G4RunManager.hh"
 #include "G4PhysListFactory.hh"
+#include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+#include "Framework/Configure/Parameters.h"
 
-namespace ldmx {
+namespace simcore {
 
-    // Forward declare to avoid circular dependency in headers
-    class DetectorConstruction;
-    class UserActionManager; 
-    class APrimeMessenger;
-    class ConditionsInterface;
+// Forward declare to avoid circular dependency in headers
+class DetectorConstruction;
+class UserActionManager;
+class APrimeMessenger;
+class ConditionsInterface;
 
-    /**
-     * @class RunManager
-     * @brief Extension of Geant4 run manager
-     */
-    class RunManager : public G4RunManager {
+/**
+ * @class RunManager
+ * @brief Extension of Geant4 run manager
+ */
+class RunManager : public G4RunManager {
+ public:
+  /**
+   * Class constructor.
+   */
+  RunManager(framework::config::Parameters& parameters,
+             ConditionsInterface& ci);
 
-        public:
+  /**
+   * Class destructor.
+   */
+  virtual ~RunManager();
 
-            /**
-             * Class constructor.
-             */
-            RunManager(Parameters& parameters, ConditionsInterface& ci); 
+  /**
+   * Initialize physics.
+   */
+  void setupPhysics();
 
-            /**
-             * Class destructor.
-             */
-            virtual ~RunManager();
+  /**
+   * Perform application initialization.
+   */
+  void Initialize();
 
-            /**
-             * Initialize physics.
-             */
-            void setupPhysics();
+  /**
+   * Called at the end of each event.
+   *
+   * Runs parent process G4RunManager::TerminateOneEvent() and
+   * resets the activation for the G4eDarkBremsstrahlung process
+   * (if dark brem is possible)
+   */
+  void TerminateOneEvent();
 
-            /**
-             * Perform application initialization.
-             */
-            void Initialize();
+  /**
+   * Get the user detector construction cast to a specific type.
+   * @return The user detector construction.
+   */
+  DetectorConstruction* getDetectorConstruction();
 
-            /**
-             * Called at the end of each event.
-             *
-             * Runs parent process G4RunManager::TerminateOneEvent() and
-             * resets the activation for the G4eDarkBremsstrahlung process
-             * (if dark brem is possible)
-             */
-            void TerminateOneEvent();
+  /**
+   * Tell RunManager to use the seed from the root file.
+   */
+  void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
 
-            /**
-             * Get the user detector construction cast to a specific type.
-             * @return The user detector construction.
-             */
-            DetectorConstruction* getDetectorConstruction(); 
+  /**
+   * Should we use the seed from the root file?
+   */
+  bool useRootSeed() { return useRootSeed_; }
 
-            /**
-             * Tell RunManager to use the seed from the root file.
-             */
-            void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
+ private:
+  /// The set of parameters used to configure the RunManager
+  framework::config::Parameters parameters_;
 
-            /**
-             * Should we use the seed from the root file?
-             */
-            bool useRootSeed() { return useRootSeed_; }
- 
-        private:
+  /**
+   * Factory class for instantiating the physics list.
+   */
+  G4PhysListFactory physicsListFactory_;
 
-            /// The set of parameters used to configure the RunManager
-            Parameters parameters_; 
+  /**
+   * Flag indicating whether a parallel world should be
+   * registered
+   */
+  bool isPWEnabled_{false};
 
-            /**
-             * Factory class for instantiating the physics list.
-             */
-            G4PhysListFactory physicsListFactory_;
+  /** Path to GDML description of parallel world. */
+  std::string parallelWorldPath_{""};
 
-            /** 
-             * Flag indicating whether a parallel world should be 
-             * registered 
-             */
-            bool isPWEnabled_{false};
+  /**
+   * Should we use random seed from root file?
+   */
+  bool useRootSeed_{false};
 
-            /** Path to GDML description of parallel world. */
-            std::string parallelWorldPath_{""};
+  /** ConditionsInterface
+   */
+  ConditionsInterface& conditionsIntf_;
 
-            /**
-             * Should we use random seed from root file?
-             */
-            bool useRootSeed_{false};
+};  // RunManager
+}  // namespace simcore
 
-            /** ConditionsInterface
-             */
-            ConditionsInterface& conditionsIntf_;
-      
-    }; // RunManager
-} // ldmx
-
-#endif // _SIMCORE_RUNMANAGER_H_
+#endif  // _SIMCORE_RUNMANAGER_H_

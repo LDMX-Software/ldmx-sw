@@ -19,42 +19,41 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h" 
+#include "SimCore/UserAction.h"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class USteppingAction
-     * @brief Implements the Geant4 user stepping action.
-     */
-    class USteppingAction : public G4UserSteppingAction {
+/**
+ * @class USteppingAction
+ * @brief Implements the Geant4 user stepping action.
+ */
+class USteppingAction : public G4UserSteppingAction {
+ public:
+  /// Destructor
+  ~USteppingAction() final override { ; }
 
-        public:
+  /**
+   * Callback used to process a step.
+   *
+   * @param step The Geant4 step.
+   */
+  void UserSteppingAction(const G4Step* step) final override;
 
-            /// Destructor
-            ~USteppingAction() final override {;}
+  /**
+   * Register a user action of type SteppingAction with this class.
+   *
+   * @param action  User action of type SteppingAction
+   */
+  void registerAction(UserAction* steppingAction) {
+    steppingActions_.push_back(steppingAction);
+  }
 
-            /**
-             * Callback used to process a step.
-             *
-             * @param step The Geant4 step. 
-             */
-            void UserSteppingAction(const G4Step* step) final override;
+ private:
+  /// Collection of user stepping actions
+  std::vector<UserAction*> steppingActions_;
 
-            /**
-             * Register a user action of type SteppingAction with this class. 
-             *
-             * @param action  User action of type SteppingAction
-             */
-            void registerAction(UserAction* steppingAction) { steppingActions_.push_back(steppingAction); }
-        
-        private:
+};  // USteppingAction
 
-            /// Collection of user stepping actions
-            std::vector<UserAction*> steppingActions_; 
-    
-    }; // USteppingAction
+}  // namespace simcore
 
-} // ldmx 
-
-#endif // SIMCORE_USTEPPINGACTION_H
+#endif  // SIMCORE_USTEPPINGACTION_H

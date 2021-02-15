@@ -14,7 +14,7 @@
 // STL
 #include <map>
 
-using namespace ldmx;
+using namespace simcore;
 
 namespace simcore {
 namespace persist {
@@ -24,8 +24,7 @@ namespace persist {
  * @brief Builds output SimParticle collection from Trajectory container
  */
 class SimParticleBuilder {
-
-public:
+ public:
   /**
    * Class constructor.
    */
@@ -48,9 +47,9 @@ public:
    * Build SimParticle collection into an output event.
    * @param outputEvent The output event.
    */
-  void buildSimParticles(Event *outputEvent);
+  void buildSimParticles(framework::Event *outputEvent);
 
-private:
+ private:
   /** The map of tracks to their parent IDs and Trajectory objects. */
   TrackMap *trackMap_;
 
@@ -58,7 +57,7 @@ private:
   G4Event *currentEvent_;
 };
 
-} // namespace persist
-} // namespace simcore
+}  // namespace persist
+}  // namespace simcore
 
 #endif

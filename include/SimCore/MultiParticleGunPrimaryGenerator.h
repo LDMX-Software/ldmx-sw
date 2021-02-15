@@ -21,9 +21,9 @@
 #include "G4Event.hh"
 #include "G4IonTable.hh"
 #include "G4PhysicalConstants.hh"
-#include "G4VPrimaryGenerator.hh"
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4VPrimaryGenerator.hh"
 
 //----------//
 //   ROOT   //
@@ -37,72 +37,71 @@
 //-------------//
 //   LDMX-SW   //
 //-------------//
-#include "Recon/Event/EventConstants.h"
-#include "Framework/EventHeader.h"
-#include "SimCore/UserPrimaryParticleInformation.h"
-#include "SimCore/PrimaryGenerator.h"
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventHeader.h"
+#include "Recon/Event/EventConstants.h"
+#include "SimCore/PrimaryGenerator.h"
+#include "SimCore/UserPrimaryParticleInformation.h"
 
-namespace ldmx {
+namespace simcore {
 
-    /**
-     * @class MultiParticleGunPrimaryGenerator
-     * @brief Generates a Geant4 event from particle gun, but can have many particles
-     */
-    class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
+/**
+ * @class MultiParticleGunPrimaryGenerator
+ * @brief Generates a Geant4 event from particle gun, but can have many
+ * particles
+ */
+class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
+ public:
+  /**
+   * Constructor
+   *
+   * @param name the name of this generator
+   * @param parameters the configuration parameters
+   *
+   * Parameters:
+   *  vertex        : Position to shoot from (mm)
+   *  momentum      : 3-vector mometum of particles (MeV)
+   *  nParticles    : number of particles to shoot (mean if Poisson enabled)
+   *  pdgID         : pdgID of particle to shoot
+   *  enablePoisson : whether to poisson distribute the number of particles
+   */
+  MultiParticleGunPrimaryGenerator(const std::string& name,
+                                   framework::config::Parameters& parameters);
 
-        public:
+  /** Destructor */
+  virtual ~MultiParticleGunPrimaryGenerator();
 
-            /** 
-             * Constructor 
-             *
-             * @param name the name of this generator
-             * @param parameters the configuration parameters
-             *
-             * Parameters:
-             *  vertex        : Position to shoot from (mm)
-             *  momentum      : 3-vector mometum of particles (MeV)
-             *  nParticles    : number of particles to shoot (mean if Poisson enabled)
-             *  pdgID         : pdgID of particle to shoot
-             *  enablePoisson : whether to poisson distribute the number of particles
-             */
-            MultiParticleGunPrimaryGenerator(const std::string& name, Parameters& parameters);
+  /**
+   * Generate vertices in the Geant4 event.
+   *
+   * @param anEvent The Geant4 event.
+   */
+  void GeneratePrimaryVertex(G4Event* anEvent);
 
-            /** Destructor */
-            virtual ~MultiParticleGunPrimaryGenerator();
+ private:
+  /** Random number generator. */
+  TRandom* random_;
 
-            /**
-             * Generate vertices in the Geant4 event.
-             *
-             * @param anEvent The Geant4 event.
-             */
-            void GeneratePrimaryVertex(G4Event* anEvent);
+  /** The vertex position from which to fire the particles. */
+  G4ThreeVector mpgVertex_;
 
-        private:        
-            
-            /** Random number generator. */
-            TRandom* random_;
+  /** The initial momentum of the particles. */
+  G4ThreeVector mpgMomentum_;
 
-            /** The vertex position from which to fire the particles. */
-            G4ThreeVector mpgVertex_;
+  /** Number of particles that will be fired by the gun per event. */
+  double mpgNParticles_{1.};
 
-            /** The initial momentum of the particles. */
-            G4ThreeVector mpgMomentum_;
-            
-            /** Number of particles that will be fired by the gun per event. */
-            double mpgNParticles_{1.};
-            
-            /** PDG ID of the particle used by the gun. */
-            int mpgPdgID_{99999};
+  /** PDG ID of the particle used by the gun. */
+  int mpgPdgID_{99999};
 
-            /** 
-             * Flag denoting whether the number of incident particles should
-             * be Poisson distributed. 
-             */
-            bool mpgEnablePoisson_{false};
+  /**
+   * Flag denoting whether the number of incident particles should
+   * be Poisson distributed.
+   */
+  bool mpgEnablePoisson_{false};
 
-    }; // MultiParticleGunPrimaryGenerator
+};  // MultiParticleGunPrimaryGenerator
 
-} // ldmx 
+}  // namespace simcore
 
-#endif // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_
+#endif  // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_
