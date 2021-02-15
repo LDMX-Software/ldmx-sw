@@ -3,7 +3,6 @@ from LDMX.Framework import ldmxcfg
 
 # Create a process
 p = ldmxcfg.Process( 'test_hcal_digis' )
-p.libraries.append("libHcal.so")
 
 # Set the maximum number of events
 p.maxEvents = 10 # should be the same as NUM_TEST_SIM_HITS
