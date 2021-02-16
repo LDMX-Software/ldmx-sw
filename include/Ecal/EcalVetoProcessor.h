@@ -17,6 +17,9 @@
 
 #include "Tools/ONNXRuntime.h"
 
+// ROOT (MIP tracking)
+#include "TVector3.h"
+
 // C++
 #include <map>
 #include <memory>
@@ -103,6 +106,7 @@ class EcalVetoProcessor : public framework::Producer {
 
   void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
+  // MIP tracking
   /* Function to find distance between two lines (line 1 passing through v1 and v2, etc.) */
   float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
   /* Function to find the minimum point-line distance */

@@ -36,6 +36,8 @@ class EcalVetoResult {
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy,
+                    int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
+                    float epAng, float epSep,
 
                     // MIP tracking
                     int nStraightTracks,
@@ -140,6 +142,16 @@ class EcalVetoResult {
   /** Return the y position of the recoil at the Ecal face. */
   double getRecoilY() const { return recoilY_; };
 
+  /// Number of straight tracks found
+  int getNStraightTracks() const { return nStraightTracks_; }
+
+  /// Number of linear-regression tracks found
+  int getNLinRegTracks() const { return nLinregTracks_; }
+
+  int getFirstNearPhLayer() const { return firstNearPhLayer_; }
+  float getEPAng() const { return epAng_; }
+  float getEPSep() const { return epSep_; }
+
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
   bool passesVeto_{false};
@@ -189,7 +201,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 4);
+  ClassDef(EcalVetoResult, 5);
 };
 }  // namespace ldmx
 
