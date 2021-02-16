@@ -13,7 +13,7 @@ class EcalTrigPrimDigiProducer(Producer) :
     """
 
     def __init__(self, instance_name = 'ecalTrigDigis') :
-        super().__init__(instance_name , 'ldmx::EcalTrigPrimDigiProducer','Ecal')
+        super().__init__(instance_name , 'ecal::EcalTrigPrimDigiProducer','Ecal')
         self.digiCollName = "EcalDigis"
         self.digiPassName = ""
 
