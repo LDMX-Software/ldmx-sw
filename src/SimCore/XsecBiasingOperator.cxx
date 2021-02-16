@@ -1,42 +1,36 @@
-/**
- * @file XsecBiasingPlugin.cxx
- * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear
- *        events by modifying the cross-section.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
- */
-
 #include "SimCore/XsecBiasingOperator.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
+#include "SimCore/PluginFactory.h"
 
 namespace simcore {
 
-XsecBiasingOperator::XsecBiasingOperator(std::string name)
+XsecBiasingOperator::XsecBiasingOperator(std::string name,
+                                         const framework::config::Parameters& parameters)
     : G4VBiasingOperator(name) {}
 
 XsecBiasingOperator::~XsecBiasingOperator() {}
 
 void XsecBiasingOperator::StartRun() {
-  if (particleType_.compare("gamma") == 0) {
+  if (this->getParticleToBias().compare("gamma") == 0) {
     processManager_ = G4Gamma::GammaDefinition()->GetProcessManager();
-  } else if (particleType_.compare("e-") == 0) {
+  } else if (this->getParticleToBias().compare("e-") == 0) {
     processManager_ = G4Electron::ElectronDefinition()->GetProcessManager();
   } else {
-    EXCEPTION_RAISE("BiasingException", "Invalid particle type");
+    EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
+                                     this->getParticleToBias() + "'.");
   }
 
   std::cout << "[ XsecBiasingOperator ]: Biasing particles of type "
-            << particleType_ << std::endl;
+            << this->getParticleToBias() << std::endl;
 
   if (processIsBiased(this->getProcessToBias())) {
-    xsecOperation =
+    xsecOperation_ =
         new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
   } else {
-    // Throw an exception
+    EXCEPTION_RAISE("BiasSetup",
+                    this->getProcessToBias() +
+                        " is not found in list of biased processes!");
   }
 }
 
@@ -60,4 +54,10 @@ bool XsecBiasingOperator::processIsBiased(std::string process) {
   }
   return false;
 }
+
+void XsecBiasingOperator::declare(const std::string& className,
+                                  XsecBiasingOperatorBuilder* builder) {
+  PluginFactory::getInstance().registerBiasingOperator(className, builder);
+}
+
 }  // namespace simcore

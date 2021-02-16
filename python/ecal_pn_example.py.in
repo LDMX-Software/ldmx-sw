@@ -9,11 +9,6 @@ from @PYTHON_PACKAGE_NAME@.SimCore import generators
 #   the input name is a shortcode to distinguish this run
 p=ldmxcfg.Process("ecalpn")
 
-# We need to tell the process what libraries are required
-#   Here we are using a biased simulation, so we need both of those libraries
-p.libraries.append("libSimCore.so")
-p.libraries.append("libBiasing.so")
-
 # We import the Ecal PN template, the two arguments allow you to specify the geometry
 #   and the generator you wish to use
 ecal_pn = ecal.photo_nuclear('ldmx-det-v12', generators.single_4gev_e_upstream_tagger())

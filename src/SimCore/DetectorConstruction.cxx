@@ -1,11 +1,101 @@
 #include "SimCore/DetectorConstruction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
 #include "Framework/Exception/Exception.h"
+#include "SimCore/PluginFactory.h"
+#include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
+
+namespace logical_volume_tests {
+
+/**
+ * isInEcal
+ *
+ * Check that the passed volume is inside the ECal
+ *
+ * @TODO this is _horrible_
+ * can we get an 'ecal' and 'hcal' region instead
+ * of just a 'CalorimeterRegion' region?
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  G4String volumeName = vol->GetName();
+  return ((volumeName.contains("Si") || volumeName.contains("W") ||
+           volumeName.contains("PCB") || volumeName.contains("CFMix") ||
+           volumeName.contains("Al")) &&
+          volumeName.contains("volume"));
+}
+
+/**
+ * isInEcalOld
+ *
+ * This is the old method for checking if the passed volume was inside the ECal
+ * and only looks for tungsten or silicon layers.
+ *
+ * @note Deprecating soon (hopefully).
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  G4String volumeName = vol->GetName();
+  return ((volumeName.contains("Si") || volumeName.contains("W")) &&
+          volumeName.contains("volume"));
+}
+
+/**
+ * isInTargetRegion
+ *
+ * Check if the passed volume is inside the target region.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+static bool isInTargetRegion(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  auto region = vol->GetRegion();
+  return (region and region->GetName().contains("target"));
+}
+
+/**
+ * isInTargetRegion
+ *
+ * Check if the passed volume is inside the target volume.
+ *
+ * @note This leaves out the trig scint modules inside the target region.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+static bool isInTargetOnly(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  return vol->GetName().contains("target");
+}
+
+/**
+ * nameContains
+ *
+ * Check if the passed volume has a name containing the
+ * name of the volume to bias.
+ *
+ * @note This is the default if we don't recognize
+ * the volume to bias that is requested.
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias name of volume to bias
+ */
+static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  return vol->GetName().contains(vol_to_bias);
+}
+
+/**
+ * Define the type of all these functional tests.
+ *
+ * Used below when determining which test to use.
+ */
+typedef bool (*Test)(G4LogicalVolume*,const std::string&);
+
+}  // namespace logical_volume_testers
 
 DetectorConstruction::DetectorConstruction(
     G4GDMLParser* theParser, framework::config::Parameters& parameters,
@@ -24,72 +114,38 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 }
 
 void DetectorConstruction::ConstructSDandField() {
-  auto biasingEnabled{parameters_.getParameter<bool>("biasing_enabled")};
-  if (biasingEnabled) {
-    auto biasingProcess{
-        parameters_.getParameter<std::string>("biasing_process")};
-    auto biasingVolume{parameters_.getParameter<std::string>("biasing_volume")};
-    auto biasingParticle{
-        parameters_.getParameter<std::string>("biasing_particle")};
-    auto biasAll{parameters_.getParameter<bool>("biasing_all")};
-    auto biasIncident{parameters_.getParameter<bool>("biasing_incident")};
-    auto disableEMBiasing{
-        parameters_.getParameter<bool>("biasing_disableEMBiasing")};
-    auto biasThreshold{parameters_.getParameter<double>("biasing_threshold")};
-    auto biasFactor{parameters_.getParameter<int>("biasing_factor")};
+  // Biasing operators were created in RunManager::setupPhysics
+  //  which is called before G4RunManager::Initialize
+  //  which is where this method ends up being called.
 
-    // Instantiate the biasing operator
-    // TODO: At some point, this should be more generic i.e. operators should be
-    //       similar to plugins.
-    XsecBiasingOperator* xsecBiasing{nullptr};
-    if (biasingProcess.compare("photonNuclear") == 0) {
-      xsecBiasing = new PhotoNuclearXsecBiasingOperator(
-          "PhotoNuclearXsecBiasingOperator");
-    } else if (biasingProcess.compare("GammaToMuPair") == 0) {
-      xsecBiasing = new GammaToMuPairXsecBiasingOperator(
-          "GammaToMuPairXsecBiasingOperator");
-    } else if (biasingProcess.compare("electronNuclear") == 0) {
-      xsecBiasing = new ElectroNuclearXsecBiasingOperator(
-          "ElectroNuclearXsecBiasingOperator");
-    } else if (biasingProcess.compare("eDBrem") == 0) {
-      xsecBiasing =
-          new DarkBremXsecBiasingOperator("DarkBremXsecBiasingOperator");
+  auto bops{simcore::PluginFactory::getInstance().getBiasingOperators()};
+  for (simcore::XsecBiasingOperator* bop : bops) {
+    logical_volume_tests::Test includeVolumeTest{nullptr};
+    if (bop->getVolumeToBias().compare("ecal") == 0) {
+      includeVolumeTest = &logical_volume_tests::isInEcal;
+    } else if (bop->getVolumeToBias().compare("old_ecal") == 0) {
+      includeVolumeTest = &logical_volume_tests::isInEcalOld;
+    } else if (bop->getVolumeToBias().compare("target") == 0) {
+      includeVolumeTest = &logical_volume_tests::isInTargetOnly;
+    } else if (bop->getVolumeToBias().compare("target_region") == 0) {
+      includeVolumeTest = &logical_volume_tests::isInTargetRegion;
     } else {
-      EXCEPTION_RAISE("BiasingException",
-                      "Invalid process name '" + biasingProcess + "'.");
+      std::cerr << "[ DetectorConstruction ] : "
+                << "WARN - Requested volume to bias '" << bop->getVolumeToBias()
+                << "' is not recognized. Will attach volumes based on if their"
+                << " name contains the volume to bias." << std::endl;
+      includeVolumeTest = &logical_volume_tests::nameContains;
     }
-
-    // Configure the operator
-    xsecBiasing->setParticleType(biasingParticle);
-    xsecBiasing->setThreshold(biasThreshold);
-    xsecBiasing->setBiasFactor(biasFactor);
-
-    if (biasAll)
-      xsecBiasing->biasAll();
-    else if (biasIncident)
-      xsecBiasing->biasIncident();
-
-    if (disableEMBiasing) xsecBiasing->disableBiasDownEM();
 
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
-      G4String volumeName = volume->GetName();
-      // std::cout << "[ DetectorConstruction ]: " << "Volume: " <<
-      // volume->GetName() << std::endl;
-      if ((biasingVolume.compare("ecal") == 0) &&
-          (volumeName.contains("Wthick") || volumeName.contains("Si") ||
-           volumeName.contains("W")) &&
-          volumeName.contains("volume")) {
-        xsecBiasing->AttachTo(volume);
-        std::cout << "[ DetectorConstruction ]: "
-                  << "Attaching biasing operator " << xsecBiasing->GetName()
-                  << " to volume " << volume->GetName() << std::endl;
-      } else if (volumeName.contains(biasingVolume)) {
-        xsecBiasing->AttachTo(volume);
-        std::cout << "[ DetectorConstruction ]: "
-                  << "Attaching biasing operator " << xsecBiasing->GetName()
-                  << " to volume " << volume->GetName() << std::endl;
-      }
-    }
-  }
+        auto volume_name = volume->GetName();
+        if (includeVolumeTest(volume, bop->getVolumeToBias())) {
+          bop->AttachTo(volume);
+          std::cout << "[ DetectorConstruction ]: "
+                    << "Attaching biasing operator " << bop->GetName()
+                    << " to volume " << volume->GetName() << std::endl;
+      } // BOP attached to target or ecal
+    }   // loop over volumes
+  }     // loop over biasing operators
 }
 }  // namespace simcore

@@ -17,14 +17,10 @@
 #include "G4SystemOfUnits.hh"
 #include "G4VTrajectoryPoint.hh"
 
-using namespace simcore;
-
 namespace simcore {
 namespace persist {
 
-SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
-  trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
-}
+SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {}
 
 SimParticleBuilder::~SimParticleBuilder() {}
 
@@ -33,16 +29,29 @@ void SimParticleBuilder::buildSimParticles(framework::Event *outputEvent) {
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
 
+  if (!trajectories or !(trajectories->GetVector())) {
+    EXCEPTION_RAISE("PersistFault",
+                    "Event's trajectory container does not exist.");
+  }
+
+  const std::vector<G4VTrajectory *> &trajectory_list =
+      *(trajectories->GetVector());
+
   // Create empty SimParticle objects and create the map of track ID to
   // particles.
   std::map<int, ldmx::SimParticle> outputParticleMap;
-  for (auto trajectory : *trajectories->GetVector()) {
-    outputParticleMap[trajectory->GetTrackID()] = ldmx::SimParticle();
+  for (G4VTrajectory *trajectory : trajectory_list) {
+    if (!trajectory)
+      EXCEPTION_RAISE("PersistFault",
+                      "NULL G4VTrajectory ended up in storage.");
+    outputParticleMap[trajectory->GetTrackID()];
   }
 
   // Fill information into the particles.
-  for (auto trajectory : *trajectories->GetVector()) {
-    Trajectory *traj = static_cast<Trajectory *>(trajectory);
+  for (G4VTrajectory *trajectory : trajectory_list) {
+    Trajectory *traj = dynamic_cast<Trajectory *>(trajectory);
+    if (!traj)
+      EXCEPTION_RAISE("PersistFault", "NULL Trajectory ended up in storage.");
 
     ldmx::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
 
