@@ -8,7 +8,9 @@
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
+from LDMX.SimCore import bias_operators
 from LDMX.Biasing import filters
+from LDMX.Biasing import util
 from LDMX.Biasing import include as includeBiasing
 
 def electro_nuclear( detector, generator ) :
@@ -50,8 +52,7 @@ def electro_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , int(1e8) )
+    sim.biasing_operators = [ bias_operators.ElectroNuclear('target',1e8) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -60,7 +61,7 @@ def electro_nuclear( detector, generator ) :
     sim.actions.extend([
             filters.TaggerVetoFilter(),
             filters.TargetENFilter(2500.),
-            filters.TrackProcessFilter.electro_nuclear()      
+            util.TrackProcessFilter.electro_nuclear()      
     ])
 
     return sim
@@ -107,13 +108,7 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure(
-            'photonNuclear' #process
-            , 'target' #volume
-            , 2500. #threshold in MeV
-            , 450 #factor
-            )
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('target',450.,2500.,only_children_of_primary=True) ]
    
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -125,7 +120,7 @@ def photo_nuclear( detector, generator ) :
             filters.TargetBremFilter(),
             filters.TargetPNFilter(),   
             # Tag all photo-nuclear tracks to persist them to the event.
-            filters.TrackProcessFilter.photo_nuclear()
+            util.TrackProcessFilter.photo_nuclear()
     ])
 
     return sim
@@ -143,7 +138,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the LHE file to use as vertices of the dark brem. 
+        The path to the directory containing LHE files to use as events of the dark brem. 
     detector : str
         Name of detector to simulate in
 
@@ -153,41 +148,45 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     Example
     -------
+    Here we use the example vertex library. This should not be used
+    for large (>50k) event samples.
+
+        from LDMX.SimCore import makePath
+        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
+
+    In general, the second argument should be the full path to the LHE event library.
 
         target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
-
-
     """
-    sim = simulator.simulator( "darkBrem_" + str(massAPrime) + "_MeV" )
+    sim = simulator.simulator( "target_dark_brem_" + str(massAPrime) + "_MeV" )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
     sim.generators.append( generators.single_4gev_e_upstream_tagger() )
-    
-    # Bias the electron dark brem process inside of the target
-    # These commands allow us to restrict the dark brem process to a given 
-    # volume.
-    sim.biasingOn()
-    sim.biasingConfigure(
-            'eDBrem' #process
-            , 'target' #volume
-            , 0. #threshold
-            , 1000000 #factor
-            )
-    
-    sim.darkBremOn(
-            massAPrime #MeV
-            , lheFile
-            , 1 #Forward Only
-            )
-    
-    # the following filters are in a library that needs to be included
-    includeBiasing.library()
+    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 
-    # Then give the UserAction to the simulation so that it knows to use it
-    sim.actions.extend([ 
-            filters.DarkBremFilter(), 
-            filters.TrackProcessFilter.dark_brem()     
-    ])
+    #Activiate dark bremming with a certain A' mass and LHE library
+    from LDMX.SimCore import dark_brem
+    db_model = dark_brem.VertexLibraryModel( lhe )
+    db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    sim.dark_brem.activate( ap_mass , db_model )
+
+    #Biasing dark brem up inside of the target
+    #need to bias up high mass A' by more than 2 so that they can actually happen
+    from math import log10 
+    mass_power = max(log10(sim.dark_brem.ap_mass),2.)
+    sim.biasing_operators = [
+            bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
+            ]
+
+    sim.actions.extend([
+        #make sure electron reaches target with 3.5GeV
+        filters.TaggerVetoFilter(3500.),
+        #make sure dark brem occurs in the target where A' has at least 2GeV
+        filters.TargetDarkBremFilter(2000.),
+        #keep all prodcuts of dark brem(A' and recoil electron)
+        util.TrackProcessFilter.dark_brem()
+        ])
     
     return sim

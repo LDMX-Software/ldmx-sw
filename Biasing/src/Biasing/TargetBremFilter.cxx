@@ -97,13 +97,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
           trackInfo->tagBremCandidate();
           trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName());
 
-          auto event{G4EventManager::GetEventManager()};
-          if (event->GetUserInformation() == nullptr) {
-            event->SetUserInformation(new simcore::UserEventInformation());
-          }
-          static_cast<simcore::UserEventInformation*>(
-              event->GetUserInformation())
-              ->incBremCandidateCount();
+          getEventInfo()->incBremCandidateCount();
 
           hasBremCandidate = true;
         }
