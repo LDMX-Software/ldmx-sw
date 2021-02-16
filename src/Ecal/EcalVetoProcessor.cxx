@@ -770,9 +770,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     result.setDiscValue(pred);
     // std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
 
-    bool passesTrackingVeto =
-        (nStraightTracks_ == 0) && (nLinregTracks_ == 0) &&
-        (firstNearPhLayer_ >= 6) && (epAng_ > 3.0 || epSep_ > 10.0);
     // If the event passes the veto, keep it. Otherwise,
     // drop the event.
     if (result.passesVeto() && inside) {

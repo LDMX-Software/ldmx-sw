@@ -54,13 +54,6 @@ ClassImp(ldmx::EcalVetoResult)
       int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
       float epAng, float epSep,
 
-      // MIP tracking
-      int nStraightTracks,
-      int nLinregTracks,
-      int firstNearPhLayer,
-      float epAng,
-      float epSep,
-
       std::vector<float> electronContainmentEnergy,
       std::vector<float> photonContainmentEnergy,
       std::vector<float> outsideContainmentEnergy,
