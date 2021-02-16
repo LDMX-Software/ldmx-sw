@@ -24,9 +24,6 @@
 #include <map>
 #include <memory>
 
-// MIP tracking
-#include "TVector3.h"
-
 namespace ecal {
 
 /**

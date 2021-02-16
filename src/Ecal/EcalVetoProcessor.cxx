@@ -95,16 +95,9 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getStdLayerHit());
   // MIP tracking (unused but could be uncommented)
-  //bdtFeatures_.push_back(result.getNStraightTracks());
-  //bdtFeatures_.push_back(result.getNLinregTracks());
-  //bdtFeatures_.push_back(result.getFirstNearPhLayer());
-  //bdtFeatures_.push_back(result.getEpAng());
-  //bdtFeatures_.push_back(result.getEpSep());
   // bdtFeatures.push_back(result.getNStraightTracks());
   // bdtFeatures.push_back(result.getNLinregTracks());
   // bdtFeatures.push_back(result.getFirstNearPhLayer());
-  // bdtFeatures.push_back(result.getEpAng());
-  // bdtFeatures.push_back(result.getEpSep());
 
   for (int ireg = 0; ireg < result.getElectronContainmentEnergy().size();
        ++ireg) {
