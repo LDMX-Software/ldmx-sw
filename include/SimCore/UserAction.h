@@ -13,12 +13,14 @@
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
+#include "G4EventManager.hh"
 #include "G4UserStackingAction.hh"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "SimCore/UserEventInformation.h"
 
 // Forward Declarations
 class G4Event;
@@ -158,6 +160,22 @@ class UserAction {
    * Must be defined by any UserActions so that we know what functions to call.
    */
   virtual std::vector<TYPE> getTypes() = 0;
+
+ protected:
+  /**
+   * Get a handle to the event information
+   *
+   * This is static just to point out that it doesn't
+   * depend on any of the member variables of this class.
+   * It is just a helper function for shortening any
+   * code that interacts with our event information.
+   *
+   * @returns pointer to the current event information
+   */
+  static UserEventInformation* getEventInfo() {
+    return static_cast<UserEventInformation*>(
+        G4EventManager::GetEventManager()->GetUserInformation());
+  }
 
  protected:
   /// Name of the UserAction

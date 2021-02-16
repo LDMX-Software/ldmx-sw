@@ -5,12 +5,6 @@
 // LDMX
 #include "AuxInfoReader.h"
 
-// Biasing
-#include "SimCore/DarkBremXsecBiasingOperator.h"
-#include "SimCore/ElectroNuclearXsecBiasingOperator.h"
-#include "SimCore/GammaToMuPairXsecBiasingOperator.h"
-#include "SimCore/PhotoNuclearXsecBiasingOperator.h"
-
 // Geant4
 #include "G4GDMLParser.hh"
 #include "G4LogicalVolume.hh"

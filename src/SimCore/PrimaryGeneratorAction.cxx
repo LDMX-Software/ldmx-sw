@@ -15,7 +15,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGeneratorManager.h"
+#include "SimCore/PluginFactory.h"
+#include "SimCore/UserEventInformation.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 /*~~~~~~~~~~*/
@@ -28,7 +29,8 @@ namespace simcore {
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     framework::config::Parameters& parameters)
     : G4VUserPrimaryGeneratorAction(),
-      manager_(PrimaryGeneratorManager::getInstance()) {
+      manager_(PluginFactory::getInstance()) {
+
   // The parameters used to configure the primary generator action
   parameters_ = parameters;
 
@@ -66,80 +68,93 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
 PrimaryGeneratorAction::~PrimaryGeneratorAction() {}
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
+  /*
+   * Create our Event information first so that it
+   * can be accessed by everyone from now on.
+   */
+  // Make sure we aren't overwriting a different information container
+  if (event->GetUserInformation()) {
+    EXCEPTION_RAISE(
+        "Misconfig",
+        "There was a UserEventInformation attached before beginning event."
+        "\nI don't know how this happend!!");
+  }
+
+  // Make our information container and give it to geant4
+  //    G4Event owns the event information and will delete it
+  auto event_info = new UserEventInformation;
+  event->SetUserInformation(event_info);
+
   /// Get the list of generators that will be used for this event
   auto generators{manager_.getGenerators()};
 
-  // Generator the primary vertex
+  // Generate the primary vertices using the generators
   std::for_each(generators.begin(), generators.end(),
                 [event](const auto& generator) {
                   generator->GeneratePrimaryVertex(event);
                 });
 
   // smear all primary vertices (if activated)
-  if (event->GetNumberOfPrimaryVertex() > 0) {
-    setUserPrimaryInfo(event);
-    if (useBeamspot_) smearingBeamspot(event);
-    if (time_shift_primaries_) {
-      // shift the time so that a light-speed particle
-      // arrives at the target at 0ns
-      int nPV = event->GetNumberOfPrimaryVertex();
-      for (int iPV = 0; iPV < nPV; ++iPV) {
-        G4PrimaryVertex* pv = event->GetPrimaryVertex(iPV);
-        pv->SetT0(pv->GetT0() + pv->GetZ0() / 299.702547);
+  int nPV = event->GetNumberOfPrimaryVertex();
+  if (nPV > 0) {
+    // if we are smearing the beamspot,
+    //  these variables are helpful
+    double IPWidthX(beamspotXSize_ / 2.), IPWidthY(beamspotYSize_ / 2.),
+        IPWidthZ(beamspotZSize_ / 2.);
+
+    // loop over all vertices generated
+    for (int iPV = 0; iPV < nPV; ++iPV) {
+      G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
+
+      // Loop over all particle associated with the primary vertex and
+      // set the generator status to 1.
+      for (int iparticle = 0; iparticle < primary_vertex->GetNumberOfParticle();
+           ++iparticle) {
+        G4PrimaryParticle* primary = primary_vertex->GetPrimary(iparticle);
+
+        auto primary_info{dynamic_cast<UserPrimaryParticleInformation*>(
+            primary->GetUserInformation())};
+        if (not primary_info) {
+          // no user info defined
+          //  ==> make a new one
+          primary_info = new UserPrimaryParticleInformation;
+          primary->SetUserInformation(primary_info);
+        }  // check if primaryinfo is defined
+
+        int hepStatus = primary_info->getHepEvtStatus();
+        if (hepStatus <= 0) {
+          // undefined hepStatus ==> set to 1
+          primary_info->setHepEvtStatus(1);
+        }  // check if hepStatus defined
+
+      }  // iparticle - loop over primary particles from this vertex
+
+      // include the weight of this primary vertex in the event weight
+      event_info->incWeight(primary_vertex->GetWeight());
+
+      // smear beamspot if it is turned on
+      if (useBeamspot_) {
+        double x0_i = primary_vertex->GetX0();
+        double y0_i = primary_vertex->GetY0();
+        double z0_i = primary_vertex->GetZ0();
+        double x0_f = random_->Uniform(x0_i - IPWidthX, x0_i + IPWidthX);
+        double y0_f = random_->Uniform(y0_i - IPWidthY, y0_i + IPWidthY);
+        double z0_f = random_->Uniform(z0_i - IPWidthZ, z0_i + IPWidthZ);
+        primary_vertex->SetPosition(x0_f, y0_f, z0_f);
       }
-    }
+
+      // shift so that t=0 coincides with primaries arriving at (or coming from)
+      // the target
+      if (time_shift_primaries_) {
+        primary_vertex->SetT0(primary_vertex->GetT0() +
+                              primary_vertex->GetZ0() / 299.702547);
+      }
+
+    }  // iPV - loop over primary vertices
   } else {
     EXCEPTION_RAISE(
         "NoPrimaries",
         "No primary vertices were produced by any of the generators.");
   }
-}
-
-void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
-  double IPWidthX = beamspotXSize_ / 2.;
-  double IPWidthY = beamspotYSize_ / 2.;
-  double IPWidthZ = beamspotZSize_ / 2.;
-
-  int nPV = event->GetNumberOfPrimaryVertex();
-  for (int iPV = 0; iPV < nPV; ++iPV) {
-    G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
-    double x0_i = curPV->GetX0();
-    double y0_i = curPV->GetY0();
-    double z0_i = curPV->GetZ0();
-    double x0_f = random_->Uniform(x0_i - IPWidthX, x0_i + IPWidthX);
-    double y0_f = random_->Uniform(y0_i - IPWidthY, y0_i + IPWidthY);
-    double z0_f = random_->Uniform(z0_i - IPWidthZ, z0_i + IPWidthZ);
-    curPV->SetPosition(x0_f, y0_f, z0_f);
-  }
-}
-
-void PrimaryGeneratorAction::setUserPrimaryInfo(G4Event* event) {
-  int nPV = event->GetNumberOfPrimaryVertex();
-  for (int iPV = 0; iPV < nPV; ++iPV) {
-    G4PrimaryVertex* vertex = event->GetPrimaryVertex(iPV);
-
-    // Loop over all particle associated with the primary vertex and
-    // set the generator status to 1.
-    for (int iparticle = 0; iparticle < vertex->GetNumberOfParticle();
-         ++iparticle) {
-      G4PrimaryParticle* primary = vertex->GetPrimary(iparticle);
-
-      auto primaryInfo{dynamic_cast<UserPrimaryParticleInformation*>(
-          primary->GetUserInformation())};
-      if (not primaryInfo) {
-        // no user info defined
-        //  ==> make a new one
-        primaryInfo = new UserPrimaryParticleInformation;
-        primary->SetUserInformation(primaryInfo);
-      }  // check if primaryinfo is defined
-
-      int hepStatus = primaryInfo->getHepEvtStatus();
-      if (hepStatus <= 0) {
-        // undefined hepStatus ==> set to 1
-        primaryInfo->setHepEvtStatus(1);
-      }  // check if hepStatus defined
-
-    }  // iparticle - loop over primary particles
-  }    // iPV - loop over primary vertices
 }
 }  // namespace simcore
