@@ -50,6 +50,12 @@ class EcalVetoProcessor : public framework::Producer {
 
   void produce(framework::Event& event);
 
+  // MIP tracking:  Class for storing hit information for tracking in a convenient way
+  struct HitData {
+    int layer;
+    TVector3 pos;
+  };
+
  private:
   /** Wrappers for ecalHexReadout functions. See hitToPair().
    *  Necessary to easily combine cellID with moduleID to get unique ID of
@@ -152,12 +158,6 @@ class EcalVetoProcessor : public framework::Producer {
   std::string collectionName_{"EcalVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
-};
-
-// MIP tracking
-struct HitData {
-    int layer;
-    TVector3 pos;
 };
 
 }  // namespace ecal
