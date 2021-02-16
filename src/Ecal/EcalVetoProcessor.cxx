@@ -81,22 +81,6 @@ const std::vector<double> radius68_thetagt20 = {
     177.45988386054293, 187.18163602489574, 199.55472065581682,
     209.2764728201696};
 
-// MIP tracking:  List of all layer z positions
-/*const std::vector<double> LAYER_Z_POSITIONS = {
-    223.8000030517578,  226.6999969482422,  233.0500030517578,
-    237.4499969482422,  245.3000030517578,  251.1999969482422,
-    260.29998779296875, 266.70001220703125, 275.79998779296875,
-    282.20001220703125, 291.29998779296875, 297.70001220703125,
-    306.79998779296875, 313.20001220703125, 322.29998779296875,
-    328.70001220703125, 337.79998779296875, 344.20001220703125,
-    353.29998779296875, 359.70001220703125, 368.79998779296875,
-    375.20001220703125, 384.29998779296875, 390.70001220703125,
-    403.29998779296875, 413.20001220703125, 425.79998779296875,
-    435.70001220703125, 448.29998779296875, 458.20001220703125,
-    470.79998779296875, 480.70001220703125, 493.29998779296875,
-    503.20001220703125};
-*/
-
 void EcalVetoProcessor::buildBDTFeatureVector(
     const ldmx::EcalVetoResult &result) {
   bdtFeatures_.clear();
@@ -116,6 +100,11 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   //bdtFeatures_.push_back(result.getFirstNearPhLayer());
   //bdtFeatures_.push_back(result.getEpAng());
   //bdtFeatures_.push_back(result.getEpSep());
+  // bdtFeatures.push_back(result.getNStraightTracks());
+  // bdtFeatures.push_back(result.getNLinregTracks());
+  // bdtFeatures.push_back(result.getFirstNearPhLayer());
+  // bdtFeatures.push_back(result.getEpAng());
+  // bdtFeatures.push_back(result.getEpSep());
 
   for (int ireg = 0; ireg < result.getElectronContainmentEnergy().size();
        ++ireg) {
@@ -553,8 +542,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
+  // MIP tracking starts here
 
-  // Begin MIP tracking changes
+  /* Goal:  Calculate 
+   *  nStraightTracks (self-explanatory), 
+   *  nLinregTracks (tracks found by linreg algorithm),
+   */
 
   // Find epAng and epSep, and prepare EP trajectory vectors:
   TVector3 e_traj_start;
@@ -757,11 +750,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
 
 
-
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
-      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, epAng_, epSep_,  // MIP tracking
+      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, epAng_, epSep_, 
       electronContainmentEnergy, photonContainmentEnergy,
       outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
       outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
@@ -778,6 +770,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     result.setDiscValue(pred);
     // std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
 
+    bool passesTrackingVeto =
+        (nStraightTracks_ == 0) && (nLinregTracks_ == 0) &&
+        (firstNearPhLayer_ >= 6) && (epAng_ > 3.0 || epSep_ > 10.0);
     // If the event passes the veto, keep it. Otherwise,
     // drop the event.
     if (result.passesVeto() && inside) {
@@ -916,13 +911,15 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVe
   TVector3 e2 = w1 - w2;
   TVector3 crs = e1.Cross(e2);
   if (crs.Mag() == 0) {
-    return 100.0;  // arbitrary large number; edge case that shouldn't cause problems.
+    return 100.0;  // arbitrary large number; edge case that shouldn't cause
+                   // problems.
   } else {
     return std::abs(crs.Dot(v1 - w1) / crs.Mag());
   }
 }
 
-// Return the minimum distance between the point h1 and the line passing through p1 and p2.
+// Return the minimum distance between the point h1 and the line passing through
+// p1 and p2.
 float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
