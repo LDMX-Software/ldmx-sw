@@ -753,7 +753,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
     float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
     // Temporarily removing epAng, etc due to pT bias concerns
-    bool passesTrackingVeto = (nStraightTracks_ < 2) && (nLinregTracks_ == 0);
+    bool passesTrackingVeto = (nStraightTracks_ < 3) && (nLinregTracks_ == 0);
                               //&&  //Commenting the remainder for now
                               //(firstNearPhLayer_ >= 6); //&& (epAng_ > 3.0 || epSep_ > 10.0);
     result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
