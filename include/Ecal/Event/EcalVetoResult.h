@@ -150,10 +150,15 @@ class EcalVetoResult {
   float stdLayerHit_{0};
   float ecalBackEnergy_{0};
   // MIP tracking
+  /// Number of "straight" tracks found in the event
   int nStraightTracks_{0};
+  /// Number of "linreg" tracks found in the event
   int nLinregTracks_{0};
+  /// Earliest ECal layer in which a hit is found near the projected photon trajectory (currently unused)
   int firstNearPhLayer_{0};
+  /// Angular separation between the projected photon and electron trajectories (currently unused)
   float epAng_{0};
+  /// Distance between the projected photon and electron trajectories at the ECal face (currently unused)
   float epSep_{0};
 
   std::vector<float> electronContainmentEnergy_;
