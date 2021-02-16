@@ -12,7 +12,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
@@ -31,6 +30,11 @@ G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
   G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
   if (track == currentTrack_) {
+    /*
+    std::cout << "[ EcalProcessFilter ]: "
+        << "Putting track " << track->GetTrackID()
+        << " onto waiting stack." << std::endl;
+    */
     currentTrack_ = nullptr;
     return fWaiting;
   }
@@ -46,17 +50,13 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
+  if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
+    return;
+
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{
       static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
-
-  // Get the event info to keep track of the number of brem candidates
-  auto eventInfo{static_cast<simcore::UserEventInformation*>(
-      G4EventManager::GetEventManager()->GetUserInformation())};
-  if (eventInfo == nullptr) {
-    // thrown an exception
-  }
 
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
@@ -71,14 +71,26 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     // event.  Otherwise, suspend the track and move on to the next
     // brem.
     if (secondaries->size() != 0) {
-      if (eventInfo->bremCandidateCount() == 1) {
+      /*
+      std::cout << "[ EcalProcessFilter ]: "
+            <<
+      G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+            << " secondaries outside ecal...";
+      */
+      if (getEventInfo()->bremCandidateCount() == 1) {
+        // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
       } else {
+        /*
+        std::cout << "suspending the track " << track->GetTrackID()
+            << " , " << getEventInfo()->bremCandidateCount() << " brems left."
+            << std::endl;
+        */
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
-        eventInfo->decBremCandidateCount();
+        getEventInfo()->decBremCandidateCount();
         trackInfo->tagBremCandidate(false);
       }
     }
@@ -87,17 +99,29 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // If the particle doesn't interact, then move on to the next step.
   if (secondaries->size() == 0) {
-    // Check if the electron will be exiting the target
+    // Check if the photon will be exiting the ecal
     if (auto volume{track->GetNextVolume()->GetName()};
         volume.compareTo("hcal_PV") == 0) {
-      if (eventInfo->bremCandidateCount() == 1) {
+      /*
+      std::cout << "[ EcalProcessFilter ]: "
+            <<
+      G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+            << " no secondaries when leaving ecal...";
+      */
+      if (getEventInfo()->bremCandidateCount() == 1) {
+        // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
       } else {
+        /*
+        std::cout << "suspending the track " << track->GetTrackID()
+            << " , " << getEventInfo()->bremCandidateCount() << " brems left."
+            << std::endl;
+        */
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
-        eventInfo->decBremCandidateCount();
+        getEventInfo()->decBremCandidateCount();
         trackInfo->tagBremCandidate(false);
       }
     }
@@ -110,26 +134,41 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
     // Only record the process that is being biased
     if (!processName.contains(process_)) {
-      if (eventInfo->bremCandidateCount() == 1) {
+      /*
+      std::cout << "[ EcalProcessFilter ]: "
+            <<
+      G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+            << " not PN products...";
+      */
+      if (getEventInfo()->bremCandidateCount() == 1) {
+        // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
       } else {
+        /*
+        std::cout << "suspending the track " << track->GetTrackID()
+            << " , " << getEventInfo()->bremCandidateCount() << " brems left."
+            << std::endl;
+        */
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
-        eventInfo->decBremCandidateCount();
+        getEventInfo()->decBremCandidateCount();
         trackInfo->tagBremCandidate(false);
       }
       return;
     }
 
     std::cout << "[ EcalProcessFilter ]: "
-              << "Brem photon produced " << secondaries->size()
+              << G4EventManager::GetEventManager()
+                     ->GetConstCurrentEvent()
+                     ->GetEventID()
+              << " Brem photon produced " << secondaries->size()
               << " particle via " << processName << " process." << std::endl;
     trackInfo->tagBremCandidate(false);
+    trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();
-    eventInfo->decBremCandidateCount();
-    eventInfo->setWeight(track->GetWeight());
+    getEventInfo()->decBremCandidateCount();
   }
 }
 }  // namespace biasing

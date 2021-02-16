@@ -53,7 +53,6 @@ class TaggerVetoFilter : public simcore::UserAction {
   std::vector<simcore::TYPE> getTypes() final override {
     return {simcore::TYPE::STEPPING};
   }
-
  private:
   /// Energy below which an incident electron should be vetoed.
   double threshold_{0};

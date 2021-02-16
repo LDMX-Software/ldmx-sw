@@ -18,7 +18,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
@@ -56,13 +55,6 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
 
-  // Get the event info to keep track of the number of brem candidates
-  auto eventInfo{static_cast<simcore::UserEventInformation*>(
-      G4EventManager::GetEventManager()->GetUserInformation())};
-  if (eventInfo == nullptr) {
-    // thrown an exception
-  }
-
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the calorimeter region.
   if (auto region{
@@ -81,14 +73,14 @@ void TargetProcessFilter::stepping(const G4Step* step) {
     if (auto volume{track->GetNextVolume()->GetName()};
         volume.compareTo("recoil_PV") == 0) {
       if (secondaries->size() != 0) {
-        if (eventInfo->bremCandidateCount() == 1) {
+        if (getEventInfo()->bremCandidateCount() == 1) {
           track->SetTrackStatus(fKillTrackAndSecondaries);
           G4RunManager::GetRunManager()->AbortEvent();
           currentTrack_ = nullptr;
         } else {
           currentTrack_ = track;
           track->SetTrackStatus(fSuspend);
-          eventInfo->decBremCandidateCount();
+          getEventInfo()->decBremCandidateCount();
           trackInfo->tagBremCandidate(false);
         }
       }
@@ -100,14 +92,14 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
     // Only record the process that is being biased
     if (!processName.contains(process_)) {
-      if (eventInfo->bremCandidateCount() == 1) {
+      if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
       } else {
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
-        eventInfo->decBremCandidateCount();
+        getEventInfo()->decBremCandidateCount();
         trackInfo->tagBremCandidate(false);
       }
     }
@@ -116,8 +108,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
               << "Brem photon produced " << secondaries->size()
               << " particle via " << processName << " process." << std::endl;
     trackInfo->tagBremCandidate(false);
-    eventInfo->decBremCandidateCount();
-    eventInfo->setWeight(track->GetWeight());
+    getEventInfo()->decBremCandidateCount();
   }
 }
 

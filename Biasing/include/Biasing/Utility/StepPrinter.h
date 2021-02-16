@@ -1,22 +1,13 @@
-#ifndef SIMCORE_STEPPRINTER_H
-#define SIMCORE_STEPPRINTER_H
-
-#include "SimCore/UserAction.h"
+#ifndef BIASING_UTILITY_STEPPRINTER_H
+#define BIASING_UTILITY_STEPPRINTER_H
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
-
-// Forward declarations
-class G4Step;
-
 namespace biasing {
+namespace utility {
 
 /**
  * User stepping action used to print the details of a step.
@@ -30,8 +21,7 @@ class StepPrinter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  StepPrinter(const std::string& name,
-              framework::config::Parameters& parameters);
+  StepPrinter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~StepPrinter();
@@ -55,6 +45,7 @@ class StepPrinter : public simcore::UserAction {
 
 };  // StepPrinter
 
+}  // namespace utility
 }  // namespace biasing
 
-#endif  // SIMCORE_STEPPRINTER_H
+#endif  // BIASING_UTILITY_STEPPRINTER_H
