@@ -5,7 +5,7 @@
 
 #include "EventDisplay/DetectorGeometry.h"
 
-namespace ldmx {
+namespace eventdisplay {
 
 DetectorGeometry::DetectorGeometry() {
   ///////////////////////////////////////////////////////////////////////////////////
@@ -19,56 +19,56 @@ DetectorGeometry::DetectorGeometry() {
 
   hcalWidthScint_ = 50.0;
 
-  hcalNLayers_[HcalID::HcalSection::BACK] = 100;
-  hcalNLayers_[HcalID::HcalSection::TOP] = 28;
-  hcalNLayers_[HcalID::HcalSection::BOTTOM] = 28;
-  hcalNLayers_[HcalID::HcalSection::LEFT] = 26;
-  hcalNLayers_[HcalID::HcalSection::RIGHT] = 26;
+  hcalNLayers_[ldmx::HcalID::HcalSection::BACK] = 100;
+  hcalNLayers_[ldmx::HcalID::HcalSection::TOP] = 28;
+  hcalNLayers_[ldmx::HcalID::HcalSection::BOTTOM] = 28;
+  hcalNLayers_[ldmx::HcalID::HcalSection::LEFT] = 26;
+  hcalNLayers_[ldmx::HcalID::HcalSection::RIGHT] = 26;
 
-  hcalNStrips_[HcalID::HcalSection::BACK] = 62;
-  hcalNStrips_[HcalID::HcalSection::TOP] = 12;
-  hcalNStrips_[HcalID::HcalSection::BOTTOM] = 12;
-  hcalNStrips_[HcalID::HcalSection::LEFT] = 12;
-  hcalNStrips_[HcalID::HcalSection::RIGHT] = 12;
+  hcalNStrips_[ldmx::HcalID::HcalSection::BACK] = 62;
+  hcalNStrips_[ldmx::HcalID::HcalSection::TOP] = 12;
+  hcalNStrips_[ldmx::HcalID::HcalSection::BOTTOM] = 12;
+  hcalNStrips_[ldmx::HcalID::HcalSection::LEFT] = 12;
+  hcalNStrips_[ldmx::HcalID::HcalSection::RIGHT] = 12;
 
   double ecal_z = 440.;
   double ecal_xy = 600.;
   double back_transverse_width = 3100.;
   double ecal_front_z = 220.;
 
-  hcalLengthScint_[HcalID::HcalSection::BACK] = back_transverse_width;
-  hcalLengthScint_[HcalID::HcalSection::TOP] =
+  hcalLengthScint_[ldmx::HcalID::HcalSection::BACK] = back_transverse_width;
+  hcalLengthScint_[ldmx::HcalID::HcalSection::TOP] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[HcalID::HcalSection::BOTTOM] =
+  hcalLengthScint_[ldmx::HcalID::HcalSection::BOTTOM] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[HcalID::HcalSection::LEFT] =
+  hcalLengthScint_[ldmx::HcalID::HcalSection::LEFT] =
       (back_transverse_width + ecal_xy) / 2.;
-  hcalLengthScint_[HcalID::HcalSection::RIGHT] =
+  hcalLengthScint_[ldmx::HcalID::HcalSection::RIGHT] =
       (back_transverse_width + ecal_xy) / 2.;
 
-  hcalZeroLayer_[HcalID::HcalSection::BACK] =
+  hcalZeroLayer_[ldmx::HcalID::HcalSection::BACK] =
       ecal_front_z + 600.;  // leaving 60cm cube for ecal
-  hcalZeroLayer_[HcalID::HcalSection::TOP] = ecal_xy / 2.;
-  hcalZeroLayer_[HcalID::HcalSection::BOTTOM] = ecal_xy / 2.;
-  hcalZeroLayer_[HcalID::HcalSection::LEFT] = ecal_xy / 2.;
-  hcalZeroLayer_[HcalID::HcalSection::RIGHT] = ecal_xy / 2.;
+  hcalZeroLayer_[ldmx::HcalID::HcalSection::TOP] = ecal_xy / 2.;
+  hcalZeroLayer_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_xy / 2.;
+  hcalZeroLayer_[ldmx::HcalID::HcalSection::LEFT] = ecal_xy / 2.;
+  hcalZeroLayer_[ldmx::HcalID::HcalSection::RIGHT] = ecal_xy / 2.;
 
-  hcalZeroStrip_[HcalID::HcalSection::BACK] = back_transverse_width / 2.;
-  hcalZeroStrip_[HcalID::HcalSection::TOP] = ecal_front_z;
-  hcalZeroStrip_[HcalID::HcalSection::BOTTOM] = ecal_front_z;
-  hcalZeroStrip_[HcalID::HcalSection::LEFT] = ecal_front_z;
-  hcalZeroStrip_[HcalID::HcalSection::RIGHT] = ecal_front_z;
+  hcalZeroStrip_[ldmx::HcalID::HcalSection::BACK] = back_transverse_width / 2.;
+  hcalZeroStrip_[ldmx::HcalID::HcalSection::TOP] = ecal_front_z;
+  hcalZeroStrip_[ldmx::HcalID::HcalSection::BOTTOM] = ecal_front_z;
+  hcalZeroStrip_[ldmx::HcalID::HcalSection::LEFT] = ecal_front_z;
+  hcalZeroStrip_[ldmx::HcalID::HcalSection::RIGHT] = ecal_front_z;
 
   // absorber + scintillator + 2*air
-  hcalLayerThickness_[HcalID::HcalSection::BACK] =
+  hcalLayerThickness_[ldmx::HcalID::HcalSection::BACK] =
       25. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[HcalID::HcalSection::TOP] =
+  hcalLayerThickness_[ldmx::HcalID::HcalSection::TOP] =
       20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[HcalID::HcalSection::BOTTOM] =
+  hcalLayerThickness_[ldmx::HcalID::HcalSection::BOTTOM] =
       20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[HcalID::HcalSection::LEFT] =
+  hcalLayerThickness_[ldmx::HcalID::HcalSection::LEFT] =
       20. + hcalThicknessScint_ + 2 * 2.;
-  hcalLayerThickness_[HcalID::HcalSection::RIGHT] =
+  hcalLayerThickness_[ldmx::HcalID::HcalSection::RIGHT] =
       20. + hcalThicknessScint_ + 2 * 2.;
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -95,9 +95,9 @@ DetectorGeometry::DetectorGeometry() {
   hexReadoutParams["nCellRHeight"] = 35.3;
   hexReadoutParams["verbose"] = 0;
 
-  Parameters hexReadout;
+  framework::config::Parameters hexReadout;
   hexReadout.setParameters(hexReadoutParams);
-  ecalHexReader_ = std::make_unique<EcalHexReadout>(hexReadout);
+  ecalHexReader_ = std::unique_ptr<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::debugMake(hexReadout));
 
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER
@@ -246,12 +246,12 @@ DetectorGeometry::DetectorGeometry() {
   // TODO Trigger Pad
 }
 
-BoundingBox DetectorGeometry::getBoundingBox(const HcalHit &hit) const {
+BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
   // pairs that will go into BoundingBox
   std::pair<double, double> X(0, 0), Y(0, 0), Z(0, 0);
 
-  HcalID id(hit.getID());
-  HcalID::HcalSection section = (HcalID::HcalSection)id.section();
+  ldmx::HcalID id(hit.getID());
+  ldmx::HcalID::HcalSection section = (ldmx::HcalID::HcalSection)id.section();
   int layer = id.layer();
   int strip = id.strip();
 
@@ -265,7 +265,7 @@ BoundingBox DetectorGeometry::getBoundingBox(const HcalHit &hit) const {
   double estrip = 0.5 * hcalWidthScint_;
 
   double x, y, z;
-  if (section == HcalID::HcalSection::BACK) {
+  if (section == ldmx::HcalID::HcalSection::BACK) {
     z = hcalZeroLayer_.at(section) + layercenter;
     Z.first = z - elayer;
     Z.second = z + elayer;
@@ -301,28 +301,28 @@ BoundingBox DetectorGeometry::getBoundingBox(const HcalHit &hit) const {
     Z.first = z - estrip;
     Z.second = z + estrip;
 
-    if (section == HcalID::HcalSection::TOP or
-        section == HcalID::HcalSection::BOTTOM) {
+    if (section == ldmx::HcalID::HcalSection::TOP or
+        section == ldmx::HcalID::HcalSection::BOTTOM) {
       x = hit.getXPos();
       X.first = x - hcalUncertaintyTimingPos_;
       X.second = x + hcalUncertaintyTimingPos_;
 
       y = hcalZeroLayer_.at(section) + layercenter;
-      if (section == HcalID::HcalSection::BOTTOM) {
+      if (section == ldmx::HcalID::HcalSection::BOTTOM) {
         y *= -1;
       }
 
       Y.first = y - elayer;
       Y.second = y + elayer;
 
-    } else if (section == HcalID::HcalSection::LEFT or
-               section == HcalID::HcalSection::RIGHT) {
+    } else if (section == ldmx::HcalID::HcalSection::LEFT or
+               section == ldmx::HcalID::HcalSection::RIGHT) {
       y = hit.getYPos();
       Y.first = y - hcalUncertaintyTimingPos_;
       Y.second = y + hcalUncertaintyTimingPos_;
 
       x = hcalZeroLayer_.at(section) + layercenter;
-      if (section == HcalID::HcalSection::RIGHT) {
+      if (section == ldmx::HcalID::HcalSection::RIGHT) {
         x *= -1;
       }
 
@@ -348,12 +348,12 @@ BoundingBox DetectorGeometry::getBoundingBox(const HcalHit &hit) const {
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(
-    const std::vector<HcalHit> &hitVec) const {
+    const std::vector<ldmx::HcalHit> &hitVec) const {
   std::vector<double> pointSum(3, 0.0);   // sums of weighted coordinates
   std::vector<double> weightSum(3, 0.0);  // sums of weights for each coordinate
 
   // calculate real space point for each hit
-  for (const HcalHit &hit : hitVec) {
+  for (const ldmx::HcalHit &hit : hitVec) {
     BoundingBox box = getBoundingBox(hit);
 
     // Add weighted values to sums
@@ -379,56 +379,56 @@ BoundingBox DetectorGeometry::getBoundingBox(
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(
-    HcalID::HcalSection section) const {
+    ldmx::HcalID::HcalSection section) const {
   std::pair<double, double> X(0, 0), Y(0, 0), Z(0, 0);
 
   double total_strip_width = hcalNStrips_.at(section) * hcalWidthScint_;
   double total_thickness =
       hcalNLayers_.at(section) * hcalLayerThickness_.at(section);
-  if (section == HcalID::HcalSection::BACK) {
-    X.first = -hcalZeroStrip_.at(HcalID::HcalSection::BACK);
+  if (section == ldmx::HcalID::HcalSection::BACK) {
+    X.first = -hcalZeroStrip_.at(ldmx::HcalID::HcalSection::BACK);
     X.second = X.first + total_strip_width;
 
-    Y.first = -hcalLengthScint_.at(HcalID::HcalSection::BACK) / 2.0;
-    Y.second = hcalLengthScint_.at(HcalID::HcalSection::BACK) / 2.0;
+    Y.first = -hcalLengthScint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
+    Y.second = hcalLengthScint_.at(ldmx::HcalID::HcalSection::BACK) / 2.0;
 
-    Z.first = hcalZeroLayer_.at(HcalID::HcalSection::BACK);
+    Z.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BACK);
     Z.second = Z.first + total_thickness;
 
   } else {
     Z.first = hcalZeroStrip_.at(section);
     Z.second = Z.first + total_strip_width;
 
-    if (section == HcalID::HcalSection::LEFT) {
-      X.first = hcalZeroLayer_.at(HcalID::HcalSection::LEFT);
+    if (section == ldmx::HcalID::HcalSection::LEFT) {
+      X.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::LEFT);
       X.second = X.first + total_thickness;
 
-      Y.second = hcalZeroLayer_.at(HcalID::HcalSection::TOP);
-      Y.first = Y.second - hcalLengthScint_.at(HcalID::HcalSection::LEFT);
+      Y.second = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::TOP);
+      Y.first = Y.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::LEFT);
 
-    } else if (section == HcalID::HcalSection::RIGHT) {
-      X.second = -hcalZeroLayer_.at(HcalID::HcalSection::RIGHT);
+    } else if (section == ldmx::HcalID::HcalSection::RIGHT) {
+      X.second = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::RIGHT);
       X.first = X.second - total_thickness;
 
-      Y.first = -hcalZeroLayer_.at(HcalID::HcalSection::BOTTOM);
-      Y.second = Y.first + hcalLengthScint_.at(HcalID::HcalSection::RIGHT);
+      Y.first = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BOTTOM);
+      Y.second = Y.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::RIGHT);
 
-    } else if (section == HcalID::HcalSection::TOP) {
-      Y.first = hcalZeroLayer_.at(HcalID::HcalSection::TOP);
+    } else if (section == ldmx::HcalID::HcalSection::TOP) {
+      Y.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::TOP);
       Y.second = Y.first + total_thickness;
 
-      X.first = -hcalZeroLayer_.at(HcalID::HcalSection::RIGHT);
-      X.second = X.first + hcalLengthScint_.at(HcalID::HcalSection::TOP);
+      X.first = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::RIGHT);
+      X.second = X.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::TOP);
 
-    } else if (section == HcalID::HcalSection::BOTTOM) {
-      Y.second = -hcalZeroLayer_.at(HcalID::HcalSection::BOTTOM);
+    } else if (section == ldmx::HcalID::HcalSection::BOTTOM) {
+      Y.second = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BOTTOM);
       Y.first = Y.second - total_thickness;
 
-      X.second = hcalZeroLayer_.at(HcalID::HcalSection::LEFT);
-      X.first = X.second - hcalLengthScint_.at(HcalID::HcalSection::BOTTOM);
+      X.second = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::LEFT);
+      X.first = X.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::BOTTOM);
 
     } else {
-      std::cerr << "[ Warning ] : Unrecognized HcalID::HcalSection in "
+      std::cerr << "[ Warning ] : Unrecognized ldmx::HcalID::HcalSection in "
                    "DetectorGeometry::getBoundingBox."
                 << std::endl;
       std::cerr << "    Will return an incorrect geometry description!"
@@ -444,7 +444,7 @@ BoundingBox DetectorGeometry::getBoundingBox(
   return boundingbox;
 }
 
-HexPrism DetectorGeometry::getHexPrism(const EcalID &id) const {
+HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID &id) const {
   HexPrism hexpris;
   ecalHexReader_->getCellAbsolutePosition(id, hexpris.x, hexpris.y, hexpris.z);
   hexpris.height = ecalSiThickness_;
@@ -516,7 +516,7 @@ BoundingBox DetectorGeometry::getBoundingBox(int layerID, int moduleID) const {
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(
-    const SimTrackerHit &recoilHit) const {
+    const ldmx::SimTrackerHit &recoilHit) const {
   int layerID = recoilHit.getLayerID();
   int moduleID = recoilHit.getModuleID();
   int combined = layerID * 10 + moduleID;
@@ -552,4 +552,4 @@ BoundingBox DetectorGeometry::getBoundingBox(
 
   return bbox;
 }
-}  // namespace ldmx
+}  // namespace eventdisplay
