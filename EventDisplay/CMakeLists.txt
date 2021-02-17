@@ -12,7 +12,7 @@ project(EventDisplay VERSION 2.1.0
 find_package (Python3 COMPONENTS Interpreter Development)
 
 # Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
+find_package(ROOT 6.20 CONFIG REQUIRED)
 
 # Clear any variables cached during previous configuration cycles. 
 clear_cache_variables()
@@ -22,14 +22,13 @@ clear_cache_variables()
 include("${ROOT_DIR}/RootMacros.cmake")
 
 # Register the EventDisplay class with the ROOT dictionary
-register_event_object(module_path "EventDisplay" namespace "ldmx"
-                      class "EventDisplay" type "dict_only")
+register_event_object(module_path "EventDisplay" namespace "eventdisplay"
+                      class "Display" type "dict_only")
 
 build_event_bus(path ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h)
 
 build_dict(name "EventDisplay" namespace ldmx 
   template ${LDMX_SW_SOURCE_DIR}/Framework/include/Framework/EventLinkDef.h.in)
-
 
 # Unfortunately, the Event headers need to be included globably for the 
 # dictionary to be generated correctly.
@@ -71,6 +70,9 @@ setup_library(module EventDisplay
     ROOT::Eve
     DetDescr::DetDescr
     Framework::Framework
+    SimCore::Event
+    Hcal::Event
+    Ecal::Event
     sources EventDisplayDic.cxx
     ${SRC_FILES}
 )
@@ -83,3 +85,10 @@ target_link_libraries(ldmx-eve PRIVATE EventDisplay::EventDisplay)
 
 # Install the fire executable
 install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+# Configure the setup script
+configure_file(${PROJECT_SOURCE_DIR}/scripts/setup-ldmx-eve.sh.in
+               ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh)
+
+# Install setup script
+install(FILES ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh TYPE BIN)

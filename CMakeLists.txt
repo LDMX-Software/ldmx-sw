@@ -125,11 +125,10 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-#if(BUILD_EVE_ONLY)
-#    add_subdirectory(EventDisplay)
-#endif()
-
-
-# Build all test.  The test are assumed to reside inside of the directory 
-# "test" within each module.  The main
-build_test()
+if(BUILD_EVE_ONLY)
+    add_subdirectory(EventDisplay)
+else()
+    # Build all test.  The test are assumed to reside inside of the directory 
+    # "test" within each module.  The main
+    build_test()
+endif()
