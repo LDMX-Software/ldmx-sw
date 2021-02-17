@@ -36,30 +36,36 @@ namespace trigscint {
     // looper over sim hits and aggregate energy depositions
     // for each detID
     const auto digis{
-      event.getCollection<ldmx::TrigScintQIEDigis>
+      event.getCollection<trigscint::TrigScintQIEDigis>
 	(inputCollection_, inputPassName_)};
 
     std::vector<ldmx::TrigScintHit> trigScintHits;
     for (const auto &digi : digis) {
     
       ldmx::TrigScintHit hit;
+      auto adc = (std::vector<int>)digi.GetADC();
+      auto tdc = (std::vector<int>)digi.GetTDC();
+      
       hit.setModuleID(0);
-      hit.setBarID(digi.chanID_);
+      hit.setBarID(digi.GetChanID());
       hit.setBeamEfrac(-1.);
+
       hit.setAmplitude(qie.ADC2Q( digi.adcs_[1] )
 		       + qie.ADC2Q( digi.adcs_[2] ) ); // femptocoulombs
+
       if( digi.tdcs_[1] > 49 )
 	hit.setTime(-999.);
       else
-	hit.setTime(digi.tdcs_[1]*0.5);
-      hit.setEnergy((qie.ADC2Q( digi.adcs_[1] )
-		     + qie.ADC2Q( digi.adcs_[2] )
-		     - pedestal_ )
-		    * 6250. / gain_ * mevPerMip_ / pePerMip_ ); // MeV
-      hit.setPE((qie.ADC2Q( digi.adcs_[1] )
-		 + qie.ADC2Q( digi.adcs_[2] )
-		 - pedestal_ )
-		* 6250. / gain_ ); 
+      	hit.setTime(tdc[1]*0.5);
+
+      hit.setEnergy((qie.ADC2Q( adc[1] )
+      		     + qie.ADC2Q( adc[2] )
+      		     - pedestal_ )
+      		    * 6250. / gain_ * mevPerMip_ / pePerMip_ ); // MeV
+      hit.setPE((qie.ADC2Q( adc[1] )
+      		 + qie.ADC2Q( adc[2] )
+      		 - pedestal_ )
+      		* 6250. / gain_ ); 
       trigScintHits.push_back(hit);
 
     }

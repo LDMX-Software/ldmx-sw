@@ -12,13 +12,12 @@ namespace trigscint {
   void QIEInputPulse::AddPulse(float toff, float ampl){
     toff_.push_back(toff);
     ampl_.push_back(ampl);
-    npulses++;
   }
 
   float QIEInputPulse::Eval(float T){
-    if(npulses==0) return 0;
+    if(ampl_.size()==0) return 0;
     float val=0;
-    for(int i=0;i<npulses;i++){
+    for(int i=0;i<ampl_.size();i++){
       val+=EvalSingle(T,i);
     }
     return val;
@@ -46,7 +45,7 @@ namespace trigscint {
 
   float Bimoid::Integrate(float T1, float T2){
     float val=0;
-    for(int id=0;id<npulses;id++){
+    for(int id=0;id<ampl_.size();id++){
       if (ampl_[id]>0 && T2>toff_[id]){
 	val += I_Int(T2,id)-I_Int(T1,id);
       }
@@ -123,7 +122,7 @@ namespace trigscint {
   }
 
   float Expo::EvalSingle(float t_,int id){
-    if (id>=npulses) return 0;
+    if (id>=ampl_.size()) return 0;
     if (t_<=toff_[id]) return 0;
     if (ampl_[id]==0) return 0;
 
@@ -148,7 +147,7 @@ namespace trigscint {
 
   float Expo::Integrate(float T1, float T2){
     float val=0;
-    for(int id=0;id<npulses;id++){
+    for(int id=0;id<ampl_.size();id++){
       if (ampl_[id]>0 && T2>toff_[id]){
 	val += I_Int(T2,id)-I_Int(T1,id);
       }
@@ -157,7 +156,7 @@ namespace trigscint {
   }
 
 float Expo::Derivative(float T, int id){
-    if (id>=npulses) return 0;
+    if (id>=ampl_.size()) return 0;
     if (T<=toff_[id]) return 0;
 
     float t=T-toff_[id];
