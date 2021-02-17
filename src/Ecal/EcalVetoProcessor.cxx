@@ -897,16 +897,6 @@ std::vector<std::pair<float, float> > EcalVetoProcessor::getTrajectory(
 
 // MIP tracking functions:
 
-/**
- * Returns the distance between the lines v and w, with v defined to pass through
- * the points (v1,v2) (and similarly for w).
- * 
- * @param[in] v1 An arbitrary point on line v
- * @param[in] v2 A second, distinct point on line v
- * @param[in] w1 An arbitrary point on line w
- * @param[in] w2 A second, distinct point on line w
- * @returns Closest distance of approach of lines u and v
-*/
 float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2) {
   TVector3 e1 = v1 - v2;
   TVector3 e2 = w1 - w2;
@@ -919,14 +909,6 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVe
   }
 }
 
-/**
- * Return the minimum distance between the point h1 and the line passing through points p1 and p2.
- *
- * @param[in] h1 Point to find the distance to
- * @param[in] p1 An arbitrary point on the line
- * @param[in] p2 A second, distinct point on the line
- * @returns Minimum distance between h1 and the line
- */
 float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
