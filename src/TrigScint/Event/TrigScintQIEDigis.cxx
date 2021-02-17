@@ -7,21 +7,9 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 #include <iostream>
 #include <exception>
-ClassImp(ldmx::TrigScintQIEDigis);
+ClassImp(trigscint::TrigScintQIEDigis);
 
-namespace ldmx {
-
-  // void TrigScintQIEDigis::SetADC(std::vector<int> adc_) {
-  //   adcs = adc_;
-  // }
-  
-  // void TrigScintQIEDigis::SetTDC(std::vector<int> tdc_) {
-  //   tdcs = tdc_;
-  // }
-  
-  // void TrigScintQIEDigis::SetCID(std::vector<int> cid_) {
-  //   cids = cid_;
-  // }
+namespace trigscint {
   
   void TrigScintQIEDigis::Print(Option_t* option) const {
     std::cout<<"TrigScintQIEDigis { "

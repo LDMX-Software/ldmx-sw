@@ -65,14 +65,16 @@ namespace trigscint {
 
     /**
      * Digitizing input charge
+     * @param Charge = The charge to be digitized
      * @note default charge unit = femto C = 1e-15 C
      */
-    int Q2ADC(float);
+    int Q2ADC(float Charge);
 
     /**
      * Converting ADC back to charge
+     * @param ADC = ADC count
      */
-    float ADC2Q(int);
+    float ADC2Q(int ADC);
 
 
     /**
@@ -121,23 +123,23 @@ namespace trigscint {
 		     3174, 6349, 12700};
 
     /// QIE gain -> to convert from no. of e- to charge in fC
-    float gain_ = 1;
+    float gain_{1};
     /// time period of one time sample [in ns]
-    float tau_ = 25;
+    float tau_{25};
     /// No. of time samples to analyze
     int maxts_{0};
     
     /// TDC threshold (default 3.74 microAmpere)
-    float tdc_thr_ = 3.74;
+    float tdc_thr_{3.74};
 
     /// Random number generator (required for noise simulation)
     std::unique_ptr<TRandom3> rand_ptr{nullptr};
     TRandom3* trg_;
 
     /// mean of gaussian noise (Pedestal)
-    float mu_=0;
+    float mu_{0};
     /// std. dev. of gaussian noise (Actual noise level)
-    float sg_=0;
+    float sg_{0};
     /// Whether noise is added to the system
     bool isnoise_=false;
 

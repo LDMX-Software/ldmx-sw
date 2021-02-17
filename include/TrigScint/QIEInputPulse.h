@@ -54,14 +54,17 @@ namespace trigscint {
      */
     void AddPulse(float toff, float ampl);
 
+    /**
+     * Get the number of pulses in the collection
+     */
+    int GetNPulses() {return ampl_.size();}
+    
+  protected:
     /// collection of pulse time offsets
     std::vector<float> toff_;
 
     /// collection of pulse amplitudes
     std::vector<float> ampl_;
-
-    /// no. of pulses in the collection
-    int npulses{0};
   };
 
 
@@ -87,7 +90,7 @@ namespace trigscint {
     /**
      * Evaluate the pulse at time T
      */
-    float EvalSingle(float T, int id) final;
+    float EvalSingle(float T, int id) final override;
 
     /**
      * Indefinite integral at time T
@@ -159,7 +162,7 @@ namespace trigscint {
     /**
      * Evaluate the pulse at time T
      */
-    float EvalSingle(float T, int id) final;
+    float EvalSingle(float T, int id) final override;
 
     /**
      * Integrate the pulse from T1 to T2
