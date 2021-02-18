@@ -456,7 +456,7 @@ void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   v_addedIndices_.push_back(idx);
 
   beamE_ += hit.getBeamEfrac() * energy;
-  if(hit.getTime() > -990.){
+  if (hit.getTime() > -990.) {
     time_ += hit.getTime() * ampl;
   }
 
