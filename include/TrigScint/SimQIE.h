@@ -1,9 +1,3 @@
-/**
- * @file SimQIE.h
- * @brief class for simulating QIE chip output
- * @author Niramay Gogate, Texas Tech University
- */
-
 #ifndef TRIGSCINT_SIMQIE_H
 #define TRIGSCINT_SIMQIE_H
 
@@ -37,24 +31,32 @@ class SimQIE {
 
   /**
    * Set current threshold for TDC latch
+   *
    * @param gg = gain
    */
-  void SetTDCThreshold(float thr);
+  void setTDCThreshold(const float thr) { tdc_thr_ = thr; }
 
   /**
    * Set gain of SiPM
+   *
    * @param gg = gain
+   * @note The multiplicated factor 16e-5 is used to convert from 1.6e-19 to fC
    */
-  void SetGain(float gg = 1e+6);
+  void setGain(const float gg = 1e+6) { gain_ = gg * 16e-5; }
 
   /**
    * Set sampling frequency of QIE
+   *
    * @param sf = sampling frequency in MHz
    */
-  void SetFreq(float sf = 40);
+  void setFreq(const float sf = 40) { tau_ = 1000 / sf; } 
 
-  /// No. of time samples to analyze
-  void SetNTimeSamples(int maxts = 5);
+  /**
+   * Set the number of time samples to analyze. 
+   *
+   * @param maxts No. of time samples to analyze
+   */
+  void setNTimeSamples(const int maxts = 5) { maxts_ = maxts; }
 
   /**
    * Quantization error
