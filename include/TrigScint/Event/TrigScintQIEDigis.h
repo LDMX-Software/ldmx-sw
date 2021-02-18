@@ -1,13 +1,8 @@
-/**
- * @file TrigScintQIEDigis.h
- * @brief class for storing QIE output
- * @author Niramay Gogate, Texas Tech University
- */
-
 #ifndef TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
 #define TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
 
-#include "TObject.h"  //For ClassDef
+//---< ROOT >---//
+#include "TObject.h" 
 
 namespace trigscint {
 
@@ -17,15 +12,11 @@ namespace trigscint {
  */
 class TrigScintQIEDigis {
  public:
-  /**
-   * Default constructor
-   */
-  // TrigScintQIEDigis(){};
+  
+   /// Default constructor
   TrigScintQIEDigis() = default;
 
-  /**
-   * Default destructor
-   */
+  /// Default destructor
   ~TrigScintQIEDigis() = default;
 
   /**
@@ -51,45 +42,45 @@ class TrigScintQIEDigis {
   /**
    * Get channel ID
    */
-  int GetChanID() const { return (chanID_); }
+  int getChanID() const { return chanID_; }
 
   /**
    * Get ADCs of all time samples
    */
-  std::vector<int> GetADC() const { return (adcs_); }
+  std::vector<int> getADC() const { return adcs_; }
 
   /**
    * Get tdcs of all time samples
    */
-  std::vector<int> GetTDC() const { return (tdcs_); }
+  std::vector<int> getTDC() const { return tdcs_; }
 
   /**
    * Get Cap IDs of all time samples
    */
-  std::vector<int> GetCID() const { return (cids_); }
+  std::vector<int> getCID() const { return cids_; }
 
   /**
    * Store the channel ID
    */
-  void SetChanID(int chanid) { chanID_ = chanid; }
+  void setChanID(const int chanid) { chanID_ = chanid; }
 
   /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
    */
-  void SetADC(std::vector<int> adc) { adcs_ = adc; }
+  void setADC(const std::vector<int> adc) { adcs_ = adc; }
 
   /**
    * Store tdcs of all time samples
    * @param tdc_ array of tdcs
    */
-  void SetTDC(std::vector<int> tdc) { tdcs_ = tdc; }
+  void setTDC(const std::vector<int> tdc) { tdcs_ = tdc; }
 
   /**
    * Store cids of all time samples
    * @param cid_ array of cids
    */
-  void SetCID(std::vector<int> cid) { cids_ = cid; }
+  void setCID(const std::vector<int> cid) { cids_ = cid; }
 
  private:
   /// channel ID
@@ -97,8 +88,10 @@ class TrigScintQIEDigis {
 
   /// analog to digital counts
   std::vector<int> adcs_;
+  
   /// Time to Digital counts
   std::vector<int> tdcs_;
+  
   /// capacitor IDs
   std::vector<int> cids_;
 

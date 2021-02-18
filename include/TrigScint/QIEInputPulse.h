@@ -1,13 +1,9 @@
-/**
- * @file QIEInputPulse.h
- * @brief Class for the input pulses to QIE
- * @author Niramay Gogate, Texas Tech University
- */
-
-#include <vector>
 
 #ifndef TRIGSCINT_QIEINPUTPULSE_H
 #define TRIGSCINT_QIEINPUTPULSE_H
+
+//---< C++ >---//
+#include <vector>
 
 namespace trigscint {
 
@@ -73,15 +69,11 @@ class QIEInputPulse {
  */
 class Bimoid : public QIEInputPulse {
  public:
-  /**
-   * Class constructors.
-   */
+  /// Constructor 
   Bimoid(float start, float qq);
 
-  /**
-   * Default class destructor
-   */
-  ~Bimoid(){};
+  /// Default Destructor
+  ~Bimoid() = default;
 
   /**
    * Evaluate the pulse at time T
@@ -96,17 +88,17 @@ class Bimoid : public QIEInputPulse {
   /**
    * Integrate the pulse from T1 to T2
    */
-  float Integrate(float T1, float T2) final;
+  float Integrate(float T1, float T2) final override;
 
   /**
    *  maximum of the pulse
    */
-  float Max(int id) final;
+  float Max(int id) final override;
 
   /**
    * Differentiate pulse at time T
    */
-  float Derivative(float T, int id) final;
+  float Derivative(float T, int id) final override;
 
  private:
   /// rise time
@@ -140,12 +132,12 @@ class Expo : public QIEInputPulse {
   /**
    * Get Rise time of the pulse
    */
-  float GetRise() { return (rt_); }
+  float GetRise() { return rt_; }
 
   /**
    * Get Fall time of the pulse
    */
-  float GetFall() { return (ft_); }
+  float GetFall() { return ft_; }
 
   /**
    * Set Rise and Fall time of the pulse
@@ -162,17 +154,17 @@ class Expo : public QIEInputPulse {
   /**
    * Integrate the pulse from T1 to T2
    */
-  float Integrate(float T1, float T2) final;
+  float Integrate(float T1, float T2) final override;
 
   /**
    *  maximum of the pulse
    */
-  float Max(int id) final;
+  float Max(int id) final override;
 
   /**
    * Differentiate pulse at time T
    */
-  float Derivative(float T, int id) final;
+  float Derivative(float T, int id) final override;
 
  private:
   /// 1/RC time constant (for the capacitor)
@@ -180,9 +172,9 @@ class Expo : public QIEInputPulse {
   /// time when pulse attains maximum
   float tmax_;
   /// Rise Time
-  float rt_ = -1;
+  float rt_{-1};
   /// Fall Time
-  float ft_ = -1;
+  float ft_{-1};
 
   /**
    * Indefinite integral at time T

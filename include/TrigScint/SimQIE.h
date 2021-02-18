@@ -138,7 +138,7 @@ class SimQIE {
   /// std. dev. of gaussian noise (Actual noise level)
   float sg_{0};
   /// Whether noise is added to the system
-  bool isnoise_ = false;
+  bool isnoise_{false};
 };
 }  // namespace trigscint
 #endif
