@@ -1,8 +1,3 @@
-/**
- * @file SimQIE.cxx
- * @author Niramay Gogate, Texas Tech University
- */
-
 #include "TrigScint/SimQIE.h"
 #include <exception>
 #include <iostream>
@@ -26,17 +21,6 @@ SimQIE::SimQIE(float PD, float SG, uint64_t seed = 0) {
   sg_ = SG;
 }
 
-void SimQIE::SetTDCThreshold(float thr) { tdc_thr_ = thr; }
-
-void SimQIE::SetGain(float gg) {
-  gain_ = gg * 16e-5;  // to convert from 1.6e-19 to fC
-}
-
-void SimQIE::SetFreq(float sf) {
-  tau_ = 1000 / sf;  // 1/sf -> MHz to ns
-}
-
-void SimQIE::SetNTimeSamples(int maxts) { maxts_ = maxts; }
 // Function to convert charge to ADC count
 // Working: The method checks in which QIE subrange does the charge lie,
 // applies a corresponding  gain to it and digitizes it.
