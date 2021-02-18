@@ -15,15 +15,15 @@
 // LDMX
 #include "DetDescr/TrigScintID.h"
 #include "Recon/Event/EventConstants.h"
+#include "Tools/NoiseGenerator.h"
 #include "TrigScint/Event/TrigScintHit.h"
 #include "TrigScint/Event/TrigScintQIEDigis.h"
-#include "Tools/NoiseGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Configure/Parameters.h" 
 
 /*~~~~~~~~~~~*/
 /* TrigScint */
@@ -34,38 +34,36 @@ namespace trigscint {
 
 /**
  * @class TrigScintRecHitProducer
- * @brief Organizes digis into TrigScintHits, linearizes TDC 
+ * @brief Organizes digis into TrigScintHits, linearizes TDC
  * and ADC info, and converts amplitudes to PEs
- 
+
  */
-  class TrigScintRecHitProducer : public framework::Producer {
-
+class TrigScintRecHitProducer : public framework::Producer {
  public:
+  TrigScintRecHitProducer(const std::string& name, framework::Process& process);
 
-    TrigScintRecHitProducer(const std::string& name, framework::Process& process);
-
-  ~TrigScintRecHitProducer(); 
+  ~TrigScintRecHitProducer();
 
   /**
    * Callback for the processor to configure itself from the given set
    * of parameters.
-   * 
+   *
    * @param parameters ParameterSet for configuration.
    */
-    void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) final override;
 
   void produce(framework::Event& event);
 
  private:
-
-  /// Class to set the verbosity level.  
-  // TODO: Make use of the global verbose parameter. 
+  /// Class to set the verbosity level.
+  // TODO: Make use of the global verbose parameter.
   bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;
 
-  /// Name of the pass that the input collection is on (empty string means take any pass)
+  /// Name of the pass that the input collection is on (empty string means take
+  /// any pass)
   std::string inputPassName_;
 
   /// Name of the output collection that will be used to stored the
@@ -83,11 +81,8 @@ namespace trigscint {
 
   /// Total number of photoelectrons per MIP
   double pePerMip_{13.5};
-
-  
-
 };
 
-}
+}  // namespace trigscint
 
 #endif
