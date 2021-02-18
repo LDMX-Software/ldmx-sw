@@ -72,10 +72,10 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     smq_ = new SimQIE(pedestal_, elec_noise_,
                       rseed2.getSeed(outputCollection_ + "SimQIE"));
 
-    smq_->SetGain(sipm_gain_);
-    smq_->SetFreq(s_freq_);
-    smq_->SetNTimeSamples(maxts_);
-    smq_->SetTDCThreshold(tdc_thr_);
+    smq_->setGain(sipm_gain_);
+    smq_->setFreq(s_freq_);
+    smq_->setNTimeSamples(maxts_);
+    smq_->setTDCThreshold(tdc_thr_);
   }
 
   // To simulate multiple pulses coming at different times, SiPMS
@@ -134,10 +134,10 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     if (smq_->PulseCut(ex[bar_id])) {
       trigscint::TrigScintQIEDigis QIEInfo;
 
-      QIEInfo.SetChanID(bar_id);
-      QIEInfo.SetADC(smq_->Out_ADC(ex[bar_id]));
-      QIEInfo.SetTDC(smq_->Out_TDC(ex[bar_id]));
-      QIEInfo.SetCID(smq_->CapID(ex[bar_id]));
+      QIEInfo.setChanID(bar_id);
+      QIEInfo.setADC(smq_->Out_ADC(ex[bar_id]));
+      QIEInfo.setTDC(smq_->Out_TDC(ex[bar_id]));
+      QIEInfo.setCID(smq_->CapID(ex[bar_id]));
 
       QDigis.push_back(QIEInfo);
     }

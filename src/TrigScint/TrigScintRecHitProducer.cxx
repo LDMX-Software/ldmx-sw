@@ -37,17 +37,17 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   std::vector<ldmx::TrigScintHit> trigScintHits;
   for (const auto &digi : digis) {
     ldmx::TrigScintHit hit;
-    auto adc = (std::vector<int>)digi.GetADC();
-    auto tdc = (std::vector<int>)digi.GetTDC();
+    auto adc{digi.getADC()};
+    auto tdc{digi.getTDC()};
 
     hit.setModuleID(0);
-    hit.setBarID(digi.GetChanID());
+    hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
-    hit.setAmplitude(qie.ADC2Q(digi.adcs_[1]) +
-                     qie.ADC2Q(digi.adcs_[2]));  // femptocoulombs
+    hit.setAmplitude(qie.ADC2Q(adc[1]) +
+                     qie.ADC2Q(adc[2]));  // femptocoulombs
 
-    if (digi.tdcs_[1] > 49)
+    if (tdc[1] > 49)
       hit.setTime(-999.);
     else
       hit.setTime(tdc[1] * 0.5);
