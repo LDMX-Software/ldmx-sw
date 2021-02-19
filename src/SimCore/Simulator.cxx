@@ -21,10 +21,13 @@
 #include "SimCore/G4Session.h"
 #include "SimCore/Persist/RootPersistencyManager.h"
 #include "SimCore/RunManager.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "SimCore/PluginFactory.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
+#include "G4Electron.hh"
 #include "G4CascadeParameters.hh"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
@@ -182,42 +185,33 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                    parameters_.getParameter<std::vector<std::string>>(
                        "postInitCommands", {}));
 
-  if (parameters_.getParameter<bool>("biasing_enabled")) {
-    header.setStringParameter(
-        "Biasing Process",
-        parameters_.getParameter<std::string>("biasing_process"));
-    header.setStringParameter(
-        "Biasing Volume",
-        parameters_.getParameter<std::string>("biasing_volume"));
-    header.setStringParameter(
-        "Biasing Particle",
-        parameters_.getParameter<std::string>("biasing_particle"));
-    header.setIntParameter("Biasing All",
-                           parameters_.getParameter<bool>("biasing_all"));
-    header.setIntParameter("Biasing Incident",
-                           parameters_.getParameter<bool>("biasing_incident"));
-    header.setIntParameter(
-        "Biasing Disable EM",
-        parameters_.getParameter<bool>("biasing_disableEMBiasing"));
-    header.setIntParameter("Biasing Factor",
-                           parameters_.getParameter<int>("biasing_factor"));
-    header.setFloatParameter(
-        "Biasing Threshold",
-        parameters_.getParameter<double>("biasing_threshold"));
+  auto bops{PluginFactory::getInstance().getBiasingOperators()};
+  for (const XsecBiasingOperator* bop : bops) {
+    bop->RecordConfig(header);
   }
 
-  auto apMass{parameters_.getParameter<double>("APrimeMass")};
-  if (apMass > 0) {
-    header.setFloatParameter("A' Mass [MeV]", apMass);
-    header.setFloatParameter(
-        "Dark Brem Global Bias",
-        parameters_.getParameter<double>("darkbrem_globalxsecfactor"));
-    header.setStringParameter(
-        "Dark Brem Vertex Library Path",
-        parameters_.getParameter<std::string>("darkbrem_madgraphfilepath"));
-    header.setIntParameter("Dark Brem Interpretation Method",
-                           parameters_.getParameter<int>("darkbrem_method"));
-  }
+  auto dark_brem{parameters_.getParameter<framework::config::Parameters>("dark_brem")};
+  if (dark_brem.getParameter<bool>("enable")) {
+    // the dark brem process is enabled, find it and then record its
+    // configuration
+    G4ProcessVector* electron_processes =
+        G4Electron::Electron()->GetProcessManager()->GetProcessList();
+    int n_electron_processes = electron_processes->size();
+    for (int i_process = 0; i_process < n_electron_processes; i_process++) {
+      G4VProcess* process = (*electron_processes)[i_process];
+      if (process->GetProcessName().contains(
+              darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
+        // reset process to wrapped process if it is biased
+        if (dynamic_cast<G4BiasingProcessInterface*>(process))
+          process = dynamic_cast<G4BiasingProcessInterface*>(process)
+                        ->GetWrappedProcess();
+        // record the process configuration to the run header
+        dynamic_cast<darkbrem::G4eDarkBremsstrahlung*>(process)->RecordConfig(
+            header);
+        break;
+      }  // this process is the dark brem process
+    }    // loop through electron processes
+  }      // dark brem has been enabled
 
   auto generators{
       parameters_.getParameter<std::vector<framework::config::Parameters>>(
@@ -228,7 +222,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     auto className{gen.getParameter<std::string>("class_name")};
     header.setStringParameter(genID + " Class", className);
 
-    if (className.find("ldmx::ParticleGun") != std::string::npos) {
+    if (className.find("simcore::ParticleGun") != std::string::npos) {
       header.setFloatParameter(genID + " Time [ns]",
                                gen.getParameter<double>("time"));
       header.setFloatParameter(genID + " Energy [MeV]",
@@ -239,7 +233,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("position"));
       threeVectorDump(genID + " Direction",
                       gen.getParameter<std::vector<double>>("direction"));
-    } else if (className.find("ldmx::MultiParticleGunPrimaryGenerator") !=
+    } else if (className.find("simcore::MultiParticleGunPrimaryGenerator") !=
                std::string::npos) {
       header.setIntParameter(genID + " Poisson Enabled",
                              gen.getParameter<bool>("enablePoisson"));
@@ -250,19 +244,19 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("vertex"));
       threeVectorDump(genID + " Momentum [MeV]",
                       gen.getParameter<std::vector<double>>("momentum"));
-    } else if (className.find("ldmx::LHEPrimaryGenerator") !=
+    } else if (className.find("simcore::LHEPrimaryGenerator") !=
                std::string::npos) {
       header.setStringParameter(genID + " LHE File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("ldmx::RootCompleteReSim") != std::string::npos) {
+    } else if (className.find("simcore::RootCompleteReSim") != std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("ldmx::RootSimFromEcalSP") != std::string::npos) {
+    } else if (className.find("simcore::RootSimFromEcalSP") != std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
       header.setFloatParameter(genID + " Time Cutoff [ns]",
                                gen.getParameter<double>("time_cutoff"));
-    } else if (className.find("ldmx::GeneralParticleSource") !=
+    } else if (className.find("simcore::GeneralParticleSource") !=
                std::string::npos) {
       stringVectorDump(
           genID + " Init Cmd",

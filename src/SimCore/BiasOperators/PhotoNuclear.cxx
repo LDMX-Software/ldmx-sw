@@ -1,52 +1,42 @@
-/**
- * @file XsecBiasingPlugin.cxx
- * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear
- *        events by modifying the cross-section.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
- */
-
-#include "SimCore/PhotoNuclearXsecBiasingOperator.h"
+#include "SimCore/BiasOperators/PhotoNuclear.h"
 
 namespace simcore {
+namespace biasoperators {
 
-const std::string PhotoNuclearXsecBiasingOperator::PHOTONUCLEAR_PROCESS =
-    "photonNuclear";
+const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 
-const std::string PhotoNuclearXsecBiasingOperator::CONVERSION_PROCESS = "conv";
+PhotoNuclear::PhotoNuclear(std::string name, const framework::config::Parameters& p)
+    : XsecBiasingOperator(name, p) {
+  volume_ = p.getParameter<std::string>("volume");
+  threshold_ = p.getParameter<double>("threshold");
+  factor_ = p.getParameter<double>("factor");
+  down_bias_conv_ = p.getParameter<bool>("down_bias_conv");
+  only_children_of_primary_ = p.getParameter<bool>("only_children_of_primary");
+}
 
-PhotoNuclearXsecBiasingOperator::PhotoNuclearXsecBiasingOperator(
-    std::string name)
-    : XsecBiasingOperator(name) {}
-
-PhotoNuclearXsecBiasingOperator::~PhotoNuclearXsecBiasingOperator() {}
-
-void PhotoNuclearXsecBiasingOperator::StartRun() {
+void PhotoNuclear::StartRun() {
   XsecBiasingOperator::StartRun();
 
   if (processIsBiased(CONVERSION_PROCESS)) {
     emXsecOperation = new G4BOptnChangeCrossSection("changeXsec-conv");
-  } else {
-    // Throw an exception
+  } else if (down_bias_conv_) {
+    EXCEPTION_RAISE(
+        "PhotoNuclearBiasing",
+        "Gamma Conversion process '" + CONVERSION_PROCESS + "' is not biased!");
   }
 }
 
-G4VBiasingOperation*
-PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
+G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-  /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
-            << "Parent ID: " << track->GetParentID()
-            << " Created within " <<
-     track->GetLogicalVolumeAtVertex()->GetName()
-            << std::endl;*/
-
-  if (track->GetParentID() != 1) return 0;
-
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Kinetic energy: " << track->GetKineticEnergy()
             << " MeV" << std::endl;*/
 
-  if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0;
+  // if we want to only bias children of primary, leave if this track is NOT a child of the primary
+  if (only_children_of_primary_ and track->GetParentID() != 1) return 0;
+
+  // is this track too low energy to be biased?
+  if (track->GetKineticEnergy() < threshold_) return 0;
 
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -66,16 +56,14 @@ PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
     /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased PN xsec: "
               << pnXsecUnbiased_ << std::endl;*/
 
-    pnXsecBiased_ = pnXsecUnbiased_ * xsecFactor_;
+    pnXsecBiased_ = pnXsecUnbiased_ * factor_;
     /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased PN xsec: "
               << pnXsecBiased_ << std::endl;*/
 
-    xsecOperation->SetBiasedCrossSection(pnXsecBiased_);
-    xsecOperation->Sample();
+    return BiasedXsec(pnXsecBiased_);
 
-    return xsecOperation;
-
-  } else if ((currentProcess.compare(CONVERSION_PROCESS) == 0) && biasDownEM_) {
+  } else if ((currentProcess.compare(CONVERSION_PROCESS) == 0) and
+             down_bias_conv_) {
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
     /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
@@ -102,12 +90,9 @@ PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
 
   } else
     return 0;
-
-  // TODO: These should be pulled out to their own operator ...
-  /*if (XsecBiasingOperator::biasIncident_ && (track->GetParentID() != 0)) {
-      return 0;
-  } else if (!XsecBiasingOperator::biasAll_ &&
-  !XsecBiasingOperator::biasIncident_ && track->GetParentID() != 1) { return 0;
-  }*/
 }
+
+}  // namespace biasoperators
 }  // namespace simcore
+
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, PhotoNuclear)

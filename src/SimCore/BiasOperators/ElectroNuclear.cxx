@@ -1,29 +1,17 @@
-/**
- * @file ElectroNuclearXsecBiasingOperator.cxx
- * @brief Geant4 Biasing Operator used to bias the occurrence of electronuclear
- *        events by modifying the cross-section.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
-#include "SimCore/ElectroNuclearXsecBiasingOperator.h"
+#include "SimCore/BiasOperators/ElectroNuclear.h"
 
 namespace simcore {
+namespace biasoperators {
 
-const std::string ElectroNuclearXsecBiasingOperator::ELECTRONUCLEAR_PROCESS =
-    "electronNuclear";
-
-ElectroNuclearXsecBiasingOperator::ElectroNuclearXsecBiasingOperator(
-    std::string name)
-    : XsecBiasingOperator(name) {}
-
-ElectroNuclearXsecBiasingOperator::~ElectroNuclearXsecBiasingOperator() {}
-
-void ElectroNuclearXsecBiasingOperator::StartRun() {
-  XsecBiasingOperator::StartRun();
+ElectroNuclear::ElectroNuclear(std::string name, const framework::config::Parameters& p)
+    : XsecBiasingOperator(name, p) {
+  volume_ = p.getParameter<std::string>("volume");
+  factor_ = p.getParameter<double>("factor");
+  threshold_ = p.getParameter<double>("threshold");
 }
 
-G4VBiasingOperation*
-ElectroNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
+G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
   /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
             << "Track ID: " << track->GetTrackID() << ", "
@@ -33,12 +21,7 @@ ElectroNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             << "Currently in volume " << track->GetVolume()->GetName()
             << std::endl;*/
 
-  if (track->GetParentID() != 0) return 0;
-
-  // Only bias the first step taken within the volume.
-  const G4Step* step = track->GetStep();
-  G4StepPoint* preStepPoint = step->GetPreStepPoint();
-  if (preStepPoint->GetStepStatus() != fGeomBoundary) return 0;
+  if (track->GetKineticEnergy() < threshold_) return 0;
 
   /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -58,16 +41,16 @@ ElectroNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
     /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: Unbiased EN xsec: "
               << enXsecUnbiased << std::endl;*/
 
-    double enXsecBiased = enXsecUnbiased * xsecFactor_;
+    double enXsecBiased = enXsecUnbiased * factor_;
     /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: Biased EN xsec: "
               << enXsecBiased << std::endl;*/
 
-    xsecOperation->SetBiasedCrossSection(enXsecBiased);
-    xsecOperation->Sample();
-
-    return xsecOperation;
-
+    return BiasedXsec(enXsecBiased);
   } else
     return 0;
 }
+
+}  // namespace biasoperators
 }  // namespace simcore
+
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, ElectroNuclear)

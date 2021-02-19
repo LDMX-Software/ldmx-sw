@@ -4,28 +4,23 @@
  * @author Michael Revering, University of Minnesota
  */
 
-#include "SimCore/G4APrime.h"
+#include "SimCore/DarkBrem/G4APrime.h"
 
+#include "Framework/Exception/Exception.h"
 #include "G4ParticleTable.hh"
 #include "G4PhysicalConstants.hh"
 #include "globals.hh"
 
-G4APrime* G4APrime::theAPrime = 0;
+namespace simcore {
+namespace darkbrem {
 
-G4APrime::G4APrime(const G4String& aName, G4double mass, G4double width,
-                   G4double charge, G4int iSpin, G4int iParity,
-                   G4int iConjugation, G4int iIsospin, G4int iIsospin3,
-                   G4int gParity, const G4String& pType, G4int lepton,
-                   G4int baryon, G4int encoding, G4bool stable,
-                   G4double lifetime, G4DecayTable* decaytable)
-    : G4ParticleDefinition(aName, mass, width, charge, iSpin, iParity,
-                           iConjugation, iIsospin, iIsospin3, gParity, pType,
-                           lepton, baryon, encoding, stable, lifetime,
-                           decaytable) { /* Nothing on purpose */
-}
+G4APrime* G4APrime::theAPrime = 0;
 
 G4APrime* G4APrime::APrime(G4double theMass) {
   if (!theAPrime) {
+    if (theMass < 0)
+      EXCEPTION_RAISE("APMass", "APrime doesn't have a mass set!");
+
     const G4String& name = "A^1";
     G4double mass = theMass;
     G4double width = 0.;
@@ -52,3 +47,6 @@ G4APrime* G4APrime::APrime(G4double theMass) {
 
   return theAPrime;
 }
+
+}  // namespace darkbrem
+}  // namespace simcore
