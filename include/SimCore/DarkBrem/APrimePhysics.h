@@ -20,6 +20,8 @@ namespace simcore {
 /**
  * @namespace darkbrem
  *
+ * Extending Geant4 to dark bremsstrahlung
+ *
  * In here we contain all of our framework for simulating
  * the dark bremsstrahlung process in Geant4.
  */
