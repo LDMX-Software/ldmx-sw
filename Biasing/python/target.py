@@ -158,7 +158,7 @@ def dark_brem( ap_mass , lhe, detector ) :
 
         target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
     """
-    sim = simulator.simulator( "target_dark_brem_" + str(massAPrime) + "_MeV" )
+    sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
