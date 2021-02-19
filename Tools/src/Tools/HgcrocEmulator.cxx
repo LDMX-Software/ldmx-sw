@@ -56,9 +56,7 @@ void HgcrocEmulator::seedGenerator(uint64_t seed) {
 bool HgcrocEmulator::digitize(
     const int &channelID, const std::vector<double> &voltages,
     const std::vector<double> &times,
-    std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd,
-    const double &attenuation,                                                                                                                                                                      
-    const double &shift) const {
+    std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
   digiToAdd.clear();  // make sure it is clean
 
   // sum all voltages and do a voltage-weighted average to get the hit time
@@ -85,19 +83,6 @@ bool HgcrocEmulator::digitize(
   // TODO better (more physical) method for handling this case?
   if (timeInWindow < 0.) timeInWindow = 0.;
 
-  // for attenuated pulses
-  // attenuate amplitude
-  if( attenuation> 0. ){                                                                                                                                                                              
-    signalAmplitude *= attenuation;                                                                                                                                                                   
-  }                                                                                                                                                                                                   
-  // shift time =  distance_traveled/speed of light in scintillator bar
-  if( shift > 0.){                                                                                                                                                                                    
-    // FIXME: arbitrary fixed time shift so that pulses start at t > 0 for 0.5 MIP
-    // (intercept is 8ns) and (toa is > 0) for 6800 PEs  (100 MIPs)
-    double timeShift = 50;                                                                                                                                                                            
-    timeInWindow += shift + timeShift;                                                                                                                                                                
-  }   
-  
   // setup up pulse by changing the amplitude and timing parameters
   configurePulse(signalAmplitude, timeInWindow);
 

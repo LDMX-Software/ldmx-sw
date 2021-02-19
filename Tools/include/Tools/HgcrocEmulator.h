@@ -156,9 +156,7 @@ class HgcrocEmulator {
   bool digitize(
       const int& channelID, const std::vector<double>& voltages,
       const std::vector<double>& times,
-      std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd,
-      const double &attenuation=0.,                                                                                                                                                           
-      const double &shift=0.) const;
+      std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
  private:
   /**
