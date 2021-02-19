@@ -103,20 +103,24 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
        Double_t numberOfCellsFlatSide = 12;
        Double_t x[6], y[6];
        
-       //(xloop,yloop)-coordinate of the first starting vertex in the "for" loops
-       //(xtemp,ytemp)-the changing starting vertex as loops through columns/rows
-       Double_t xloop, yloop, xtemp, ytemp;
+       //(xLoop,yLoop)-coordinate of the first starting vertex in the "for" loops
+       //(xTemp,yTemp)-the changing starting vertex as loops through columns/rows
+       Double_t xLoop, yLoop, xTemp, yTemp;
+       int yColNum;
        int ecalMapID = 0;
 
-       //The hexagon grid divides into three sections: each section a 12cell*12cell diamond
-       //Section 1: Right diamond grid
-       xloop = xCenter ; yloop = yCenter;
-       for (int xCounter = 0; xCounter < numberOfCellsFlatSide; xCounter ++){
-           ytemp = yloop; //resets the temporary variable
-           for (int yCounter = 0; yCounter <  numberOfCellsFlatSide; yCounter++) {
+       //The hexagon grid divides into three sections: two trapezoids
+       //Cell map starts from top left
+
+       //Section 1: Left trapezoid (13cell short base, 24cell long base, 12cell lateral side
+       xLoop = xCenter - a*18.0; yLoop = yCenter + a*18.0/TMath::Sqrt(3);
+       for (int xCounter = 0; xCounter < numberOfCellsFlatSide; xCounter ++){ //lateral side->12cells
+           yTemp = yLoop; //resets the temporary variable
+           yColNum= numberOfCellsFlatSide + xCounter + 1; //number of cells in each column
+           for (int yCounter = 0; yCounter < yColNum; yCounter++) {
                // Create a cell: go clockwise around the hexagon vertices starting from the left-most one
-               x[0]= xloop;
-               y[0]= ytemp;
+               x[0]= xLoop;
+               y[0]= yTemp;
                x[1]= x[0] + a/2.0;
                y[1]= y[0] + a*TMath::Sqrt(3)/2.0;
                x[2]= x[1] + a;
@@ -132,54 +136,23 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
                double celly = (y[1] + y[4])/2;
                cellPositionMap_[ecalMapID] = std::pair<double,double>(cellx,celly);
                ecalMapID++;
-               // Go up
-               ytemp += a*TMath::Sqrt(3);
+               // Go down
+               yTemp -= a*TMath::Sqrt(3);
            }
            // Increment the starting position from column to column
-           yloop -= a*TMath::Sqrt(3)/2.0;
-           xloop += 1.5*a;
-       }
-       
-       //Section 2: Left diamond grid
-       xloop = xCenter - 1.5*a; yloop = yCenter + a*TMath::Sqrt(3)/2.0;
-       for (int xCounter = 0; xCounter < numberOfCellsFlatSide; xCounter ++){
-           ytemp = yloop; //resets the temporary variable
-           for (int yCounter = 0; yCounter <  numberOfCellsFlatSide; yCounter++) {
-               // Create a cell: go clockwise around the hexagon vertices starting from the left-most one
-               x[0]= xloop;
-               y[0]= ytemp;
-               x[1]= x[0] + a/2.0;
-               y[1]= y[0] + a*TMath::Sqrt(3)/2.0;
-               x[2]= x[1] + a;
-               y[2]= y[1];
-               x[3]= x[2] + a/2.0;
-               y[3]= y[0];
-               x[4]= x[2];
-               y[4]= y[3] - a*TMath::Sqrt(3)/2.0;
-               x[5]= x[1];
-               y[5]= y[4];
-               ecalMap_.AddBin(6, x, y);
-               double cellx = (x[0] + x[3])/2;
-               double celly = (y[1] + y[4])/2;
-               cellPositionMap_[ecalMapID] = std::pair<double,double>(cellx,celly);
-               ecalMapID++;
-               // Go up
-               ytemp += a*TMath::Sqrt(3);
-           }
-           // Increment the starting position from column to column
-           yloop -= a*TMath::Sqrt(3)/2.0;
-           xloop -= 1.5*a;
+           yLoop += a*TMath::Sqrt(3)/2.0;
+           xLoop += 1.5*a;
        }
 
-       //Section 3: Bottom diamond grid
-       xloop = xCenter - 1.5*a; yloop = yCenter - a*TMath::Sqrt(3)/2.0;
+       //Section 2: Right trapezoid (12cell short base, 23cell long base, 12cell lateral side
+       xLoop = xCenter; yLoop = yCenter + a*11.0*TMath::Sqrt(3);
        for (int xCounter = 0; xCounter < numberOfCellsFlatSide; xCounter ++){
-           ytemp = yloop; //resets the temporary variable
-           xtemp = xloop;
-           for (int yCounter = 0; yCounter <  numberOfCellsFlatSide; yCounter++) {
+           yTemp = yLoop;
+           yColNum= 2*numberOfCellsFlatSide - xCounter - 1; //number of cells in each column
+           for (int yCounter = 0; yCounter < yColNum; yCounter++) {
                // Create a cell: go clockwise around the hexagon vertices starting from the left-most one
-               x[0]= xtemp;
-               y[0]= ytemp;
+               x[0]= xLoop;
+               y[0]= yTemp;
                x[1]= x[0] + a/2.0;
                y[1]= y[0] + a*TMath::Sqrt(3)/2.0;
                x[2]= x[1] + a;
@@ -195,14 +168,14 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
                double celly = (y[1] + y[4])/2;
                cellPositionMap_[ecalMapID] = std::pair<double,double>(cellx,celly);
                ecalMapID++;
-               // Go Left-Down
-               xtemp -= 1.5*a;
-               ytemp -= a*TMath::Sqrt(3)/2.0;
+               // Go down
+               yTemp -= a*TMath::Sqrt(3);
            }
            // Increment the starting position from column to column
-           yloop -= a*TMath::Sqrt(3)/2.0;
-           xloop += 1.5*a;
+           yLoop -= a*TMath::Sqrt(3)/2.0;
+           xLoop += 1.5*a;
        }
+
 
        if(verbose_>0) std::cout << std::endl;
        return;
