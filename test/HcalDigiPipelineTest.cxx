@@ -29,6 +29,8 @@ static const double MeV_per_mV = MIP_ENERGY/(5*68); // 0.013 MeV/mV
  * Comparing energy deposited in Silicon that was
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
+ * 
+ * NOTE: Currently not implemented for TOT mode so this will not be tested.
  */
 static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE = 2.;
 
@@ -56,7 +58,7 @@ static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = MIP_ENERGY / 2;
 static const int NUM_TEST_SIM_HITS = 10;
 
 /**
- * Should the sim/rec/tp energies be ntuplized
+ * Should the sim/rec energies be ntuplized
  * for your viewing?
  */
 static const bool NTUPLIZE_ENERGIES = true;
@@ -106,22 +108,10 @@ public:
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
 
-    // back hcal, layer 8, strip 32 
+    // We hard-code one hit on the back hcal, layer 8, strip 32
+    // position is obtained by looking at SimHits of a 4 GeV muon shoot through Hcal
     ldmx::HcalID id(0,8,32);
-    pretendSimHits[0].setPosition( 84.7448, -208.116, 1223.11);
-    
-    // back hcal, layer 4, strip 30
-    //ldmx::HcalID id(0,4,30);
-    //pretendSimHits[0].setPosition( -9.90934, 14.4659, 1023.04); 
-
-    // back hcal, layer 5, strip 31
-    //ldmx::HcalID id(0,5,31);
-    //pretendSimHits[0].setPosition( -16.7397, 42.0896, 1079.69);
-
-    // back hcal, layer 9, strip 33
-    //ldmx::HcalID id(0,9,33);                                                                                                                                                                          
-    //pretendSimHits[0].setPosition( 0.160346,144.505, 1279.18);
-    
+    pretendSimHits[0].setPosition( 84.7448, -208.116, 1223.11); 
     pretendSimHits[0].setID(id.raw());
     pretendSimHits[0].addContrib(-1, //incidentID  
 				 -1, // trackID
@@ -130,13 +120,8 @@ public:
 				 1. // time - 299mm is about 1ns from target and in middle of HCal
     );
 
-    std::cout << "Testing Simhit: x " << pretendSimHits[0].getPosition()[0] << " y " << pretendSimHits[0].getPosition()[1] << " z " << pretendSimHits[0].getPosition()[2];
-    std::cout << " with id: section " << id.section() << " layer " << id.layer() << " strip " << id.strip();
-    std::cout << " and energy " << currEnergy_ << std::endl;
-    
     // needs to be correct collection name
     REQUIRE_NOTHROW(event.add("HcalSimHits", pretendSimHits));
-    std::cout << "here "<< std::endl;
     currEnergy_ += energyStep_;
 
     return;
@@ -148,7 +133,6 @@ public:
  *
  * Checks
  * - Energy of HcalRecHit matches SimCalorimeterHit EDep with the same ID
- * - Estimated energy at TP level matches sim energy
  *
  * Assumptions
  * - Only one sim hit per event
@@ -217,21 +201,52 @@ public:
     auto target_daq_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE/100);
     if (is_in_adc_mode) target_daq_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_DAQ_ADC_MODE);
 
-    std::cout << "get ampl " << hit.getEnergy() << " taget daq " << truth_energy << " + " << MAX_ENERGY_ERROR_DAQ_ADC_MODE << std::endl;
     CHECK(hit.getEnergy() == target_daq_energy);
     ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
-    
-    std::cout << "get x " << hit.getXPos() << " y " << hit.getYPos() << " z " << hit.getZPos() << std::endl;
-    
+        
     return;
   }
 }; // HcalCheckEnergyReconstruction
 
+/**
+ * @class HcalCheckPositionReconstruction
+ * Checks:
+ * - Position of HcalRecHit matches SimCalorimeterHit with the same ID 
+ * The SimHits are all generated at the same energy (1 MIP) for consistency.
+ */
+class HcalCheckPositionReconstruction : public framework::Analyzer {
+
+public:
+  HcalCheckPositionReconstruction(const std::string &name, framework::Process &p)
+      : framework::Analyzer(name, p) {}
+  ~HcalCheckPositionReconstruction() {}
+
+  void onProcessStart() final override {
+  }
+
+  void analyze(const framework::Event &event) final override {
+    const auto simHits = event.getCollection<ldmx::SimCalorimeterHit>("HcalSimHits");
+
+    CHECK(simHits.size() > 0);
+
+    std::cout << " simhits size" << simHits.size() << std::endl;
+    for(int ihit=0; ihit<simHits.size(); ihit++) {
+      auto hit = simHits.at(ihit);
+      double x = hit.getPosition()[0];
+      double y = hit.getPosition()[1];
+      double z = hit.getPosition()[2];
+    }
+
+    return;
+  }
+}; // HcalCheckPositionReconstruction 
+  
 } // namespace test
 } // namespace hcal
 
 DECLARE_PRODUCER_NS(hcal::test, HcalFakeSimHits)
 DECLARE_ANALYZER_NS(hcal::test, HcalCheckEnergyReconstruction)
+DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionReconstruction)
 
 /**
  * Test for the Hcal Digi Pipeline
@@ -240,11 +255,11 @@ DECLARE_ANALYZER_NS(hcal::test, HcalCheckEnergyReconstruction)
  * end up being "close" to output rec energies.
  *
  * Checks
- *  - Keep reconstructed energy depositied close to simulated value
- *  - Keep estimated energy at TP level close to simulated value
+ *  - Keep reconstructed energy deposited close to simulated value (with ADC readout mode)
+ *  - Keep reconstructed positions close to simulated or expected value
  *
  * @TODO still need to expand to multiple contribs in a single sim hit
- * @TODO check layer weights are being calculated correctly somehow
+ * @TODO check with TOT mode when implemented
  */
 TEST_CASE("Hcal Digi Pipeline test", "[Hcal][functionality]") {
 
@@ -256,4 +271,15 @@ TEST_CASE("Hcal Digi Pipeline test", "[Hcal][functionality]") {
   framework::ConfigurePython cfg(config_file, args, 0);
   REQUIRE_NOTHROW(p = cfg.makeProcess());
   p->run();
+}
+TEST_CASE("Hcal Geometry test", "[Hcal][functionality]") {
+
+  const std::string config_file{"hcal_geometry_test_config.py"};
+
+  char **args;
+  framework::ProcessHandle p;
+
+  framework::ConfigurePython cfg(config_file, args, 0);
+  REQUIRE_NOTHROW(p = cfg.makeProcess());
+  //p->run();
 }
