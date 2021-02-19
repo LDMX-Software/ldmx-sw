@@ -19,8 +19,8 @@ namespace ldmx {
     fields.push_back(new IDField("end",4,END_SHIFT,END_SHIFT+IDField::countOnes(END_MASK)-1));
 
     DetectorIDInterpreter::registerInterpreter(SD_HCAL,
-                                               HcalAbstractID::END_TYPE_MASK<<HcalAbstractID::END_TYPE_SHIFT,
-                                               HcalAbstractID::Digi<<HcalAbstractID::END_TYPE_SHIFT,
+                                               HcalAbstractID::BAR_TYPE_MASK<<HcalAbstractID::BAR_TYPE_SHIFT,
+                                               HcalAbstractID::Digi<<HcalAbstractID::BAR_TYPE_SHIFT,
                                                fields);
 
   }
