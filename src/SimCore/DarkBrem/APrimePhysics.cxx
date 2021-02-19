@@ -22,8 +22,8 @@ const std::string APrimePhysics::NAME = "APrime";
 APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
     : G4VPhysicsConstructor(APrimePhysics::NAME),
       parameters_{params} {
-      ap_mass_ = parameters_.getParameter<double>("ap_mass")*MeV;
-      enable_ = parameters_.getParameter<bool>("enable");
+      ap_mass_ = parameters_.getParameter<double>("ap_mass",0.)*MeV;
+      enable_ = parameters_.getParameter<bool>("enable",false);
 }
 
 void APrimePhysics::ConstructParticle() {
