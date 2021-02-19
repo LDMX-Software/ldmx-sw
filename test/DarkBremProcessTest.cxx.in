@@ -1,0 +1,219 @@
+#include "G4Electron.hh"
+#include "catch.hpp"
+
+//----------//
+//   LDMX   //
+//----------//
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Logger.h"
+#include "SimCore/DarkBrem/G4APrime.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+
+namespace simcore {
+namespace darkbrem {
+namespace test {
+
+/**
+ * @func Test Xsec Calculation
+ * How we test the cross sections
+ * loop through the map of correct cross sections and make sure they are
+ * calculated correctly.
+ *
+ * @param[in] the_cache Cache to test
+ * @param[in] energy_to_xsec map from energy [MeV] to correct xsec for the given
+ * element
+ * @param[in] element atomic mass [amu]
+ * @param[in] element atomic number
+ */
+void xsec_calculation(simcore::darkbrem::ElementXsecCache& the_cache,
+                      std::map<double, double> energy_to_xsec, double A,
+                      double Z) {
+  for (auto const& [energy, xsec] : energy_to_xsec) {
+    G4double actual_xsec;
+    REQUIRE_NOTHROW(actual_xsec = the_cache.get(energy * MeV, A, Z));
+    CHECK(actual_xsec / CLHEP::picobarn == Approx(xsec));
+  }
+}
+
+/**
+ * @func Test Momentum Conservation of Secondary Generation
+ *
+ * Takes the input incident electron 3-momentum,
+ * sets up the generation,
+ * and gets secondaries from the process.
+ *
+ * Then tests that these secondaries conserve momentum.
+ *
+ * @param[in] process dark brem process to generate secondaries
+ * @param[in] incident_momentum 3-momentum of incident electron to generate
+ * secondaries
+ */
+void secondary_generation(simcore::darkbrem::G4eDarkBremsstrahlung& process,
+                          const G4ThreeVector& incident_momentum) {
+  // maximum momentum allowed to be leftover in units of MeV
+  static const double max_leftover_momentum{1e-6};
+
+  static const G4ThreeVector origin(0., 0., 0.);
+  static const G4double Mel{G4Electron::Electron()->GetPDGMass()};
+
+  // owned and cleaned by track
+  G4DynamicParticle* incident_electron =
+      new G4DynamicParticle(G4Electron::Electron(), incident_momentum);
+
+  G4Track incident_track(incident_electron, 0., origin);
+
+  G4StepPoint* post_step_point = new G4StepPoint;  // owned and clenaed by step
+  post_step_point->SetPosition(origin);
+  post_step_point->SetMomentumDirection(incident_momentum.unit());
+  post_step_point->SetMass(Mel);
+  post_step_point->SetKineticEnergy(sqrt(incident_momentum.mag2() + Mel * Mel) -
+                                    Mel);
+
+  G4StepPoint* pre_step_point = new G4StepPoint;  // owned and cleaned by step
+
+  G4Step incident_step;
+  incident_step.SetTrack(&incident_track);
+  incident_track.SetStep(&incident_step);
+  incident_step.SetPostStepPoint(post_step_point);
+  incident_step.SetPreStepPoint(pre_step_point);
+
+  G4VParticleChange* particle_change =
+      process.PostStepDoIt(incident_track, incident_step);
+
+  G4ThreeVector total_momentum = incident_momentum;
+  for (unsigned int iSecondary{0};
+       iSecondary < particle_change->GetNumberOfSecondaries(); iSecondary++) {
+    G4ThreeVector secondary_momentum =
+        particle_change->GetSecondary(iSecondary)->GetMomentum();
+    total_momentum -= secondary_momentum;
+  }
+  particle_change->Clear();  // reset particle change for next time
+
+  // consider the total momentum 0 if it is less than an eV
+  CHECK(total_momentum.mag() <= 1e-6);
+}
+
+}  // namespace test
+}  // namespace darkbrem
+}  // namespace simcore
+
+/**
+ * Test that the dark brem process is functioning properly.
+ * Does _not_ check physical realness.
+ *
+ * Checks:
+ *  - Xsec calculation correct for a few energy points and elements
+ *  - Secondaries are produced and conserve momentum
+ */
+TEST_CASE("Custom Geant4 Dark Brem Process",
+          "[SimCore][signal][functionality]") {
+  // open logging but turn everything off
+  framework::logging::open(framework::logging::level::fatal, framework::logging::level::fatal,
+                      "");
+
+  double ap_mass = 10.;  // MeV - A' mass to use for functionality testing
+  auto ap = simcore::darkbrem::G4APrime::APrime(ap_mass);
+
+  framework::config::Parameters process;
+  process.addParameter("ap_mass", ap_mass);
+  process.addParameter("enable", true);
+  process.addParameter("only_one_per_event", false);
+  process.addParameter("cache_xsec", true);
+
+  SECTION("Vertex Library Model") {
+    framework::config::Parameters model;
+    model.addParameter("name", std::string("vertex_library"));
+    model.addParameter(
+        "library_path",
+        std::string(
+            "${DB_VERTEX_LIB_INSTALL}/mA.0.01"));  // need to align with ap_mass
+    model.addParameter("method", std::string("forward_only"));
+    model.addParameter("threshold", 2.0);
+    model.addParameter("epsilon", 0.01);
+
+    process.addParameter("model", model);
+
+    simcore::darkbrem::G4eDarkBremsstrahlung db_process(process);
+
+    SECTION("Xsec Calculation") {
+      // for this model, we calculated common cross sections in the constructor
+      //  and cached them for later use, so we just get the cache here
+      simcore::darkbrem::ElementXsecCache& the_cache = db_process.getCache();
+
+      /**
+       * map of correct cross sections
+       *
+       * These are calculated manually following
+       * what we think the cross section calculation in the model
+       * is doing.
+       *
+       * Key: incident electron energy in MeV
+       * Val: cross section output in pb
+       */
+      std::map<double, double> correct_xsec_10MeVap_silicon = {
+          {4000., 2488070.647587474},
+          {3800., 2462515.906436039},
+          {3500., 2420086.00481791},
+          {3000., 2336055.85759004},
+          {1000., 0.}  // below threshold should be zero
+      };
+
+      simcore::darkbrem::test::xsec_calculation(
+          the_cache, correct_xsec_10MeVap_silicon, 28.085, 14.);
+
+      std::map<double, double> correct_xsec_10MeVap_tungsten = {
+          {4000., 61899940.025823},
+          {3800., 61406859.20150866},
+          {3500., 60576693.40954262},
+          {3000., 58887928.38813038},
+          {1000., 0.}  // below threshold should be zero
+      };
+
+      simcore::darkbrem::test::xsec_calculation(
+          the_cache, correct_xsec_10MeVap_tungsten, 183.84, 74.);
+    }
+
+    SECTION("Creating Secondaries") {
+      /**
+       * List of incident electron momentum magnitudes [MeV]
+       * that we want to check, toss in a few odd
+       * values to make sure they are different from
+       * the values in the library
+       */
+      std::vector<double> incident_total_momenta = {
+          4000., 3947., 3800., 3777., 3681., 3500., 3001., 3000., 2500., 2100.};
+
+      /**
+       * List of angles we want to test as well.
+       *
+       * The pair is
+       *  1. azimuthal angle phi
+       *  2. polar angle theta
+       * Both in radians.
+       */
+      std::vector<std::pair<double, double>> angles = {
+          std::make_pair(M_PI / 4, M_PI / 4),
+          std::make_pair(M_PI / 4, M_PI / 8),
+          std::make_pair(M_PI / 4, M_PI / 12),
+          std::make_pair(M_PI / 8, M_PI / 4),
+          std::make_pair(M_PI / 8, M_PI / 8),
+          std::make_pair(M_PI / 8, M_PI / 12),
+          std::make_pair(M_PI / 12, M_PI / 4),
+          std::make_pair(M_PI / 12, M_PI / 8),
+          std::make_pair(M_PI / 12, M_PI / 12)};
+
+      for (auto const& incident_total_momentum : incident_total_momenta) {
+        G4ThreeVector three_momentum(0., 0., incident_total_momentum * MeV);
+        simcore::darkbrem::test::secondary_generation(db_process, three_momentum);
+        for (auto const& [phi, theta] : angles) {
+          three_momentum.setRThetaPhi(three_momentum.mag(), theta, phi);
+          simcore::darkbrem::test::secondary_generation(db_process, three_momentum);
+        }  // loop over angles
+      }    // loop over momentum mags
+
+    }  // secondary creation test
+
+  }  // specific dark brem vertex library model test
+
+  framework::logging::close();
+}  // dark brem process test
