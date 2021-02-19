@@ -22,8 +22,8 @@ void HcalID::createInterpreters() {
                   STRIP_SHIFT + IDField::countOnes(STRIP_MASK) - 1));
 
   DetectorIDInterpreter::registerInterpreter(SD_HCAL,
-					     HcalAbstractID::END_TYPE_MASK<<HcalAbstractID::END_TYPE_SHIFT,
-					     HcalAbstractID::Global<<HcalAbstractID::END_TYPE_SHIFT,
+					     HcalAbstractID::BAR_TYPE_MASK<<HcalAbstractID::BAR_TYPE_SHIFT,
+					     HcalAbstractID::Global<<HcalAbstractID::BAR_TYPE_SHIFT,
 					     fields);
 }
 

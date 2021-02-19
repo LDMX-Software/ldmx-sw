@@ -38,8 +38,8 @@ namespace ldmx {
 	 * Create from raw number
 	 */
 	HcalDigiID(RawValue rawid) : HcalAbstractID(rawid) {
-	    if (!null() && end_type()!=Digi) {
-              EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal end_type "+std::to_string(end_type()));
+	    if (!null() && bar_type()!=Digi) {
+              EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal bar_type "+std::to_string(bar_type()));
             }
 	}
 
@@ -47,8 +47,8 @@ namespace ldmx {
 	 * Create from a DetectorID, but check
 	 */
 	HcalDigiID(const DetectorID id) : HcalAbstractID(id) {
-	    if (!null() && end_type()!=Digi) {
-              EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal end_type "+std::to_string(end_type()));
+	    if (!null() && bar_type()!=Digi) {
+              EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal bar_type "+std::to_string(bar_type()));
             }
 	}
 
@@ -113,12 +113,14 @@ namespace ldmx {
 	}
 
 	/**
-         * Get the value of the 'end' field from the ID.
-         * @return The value of the 'end' field.
+         * Get whether the 'end' field from the ID is negative.
+         * @return True if the end of the strip is negative
          */
-        int getEnd() const {
-	  return (id_>>END_SHIFT)&END_MASK;
-        }
+        bool isNegativeEnd() const {
+	    int end = (id_>>END_SHIFT)&END_MASK;
+	    if(end == 1) return true;
+	    else return false;
+	}
 
         /**                                                                                                                                                                      
 	 * Get the value of the 'end' field from the ID.
