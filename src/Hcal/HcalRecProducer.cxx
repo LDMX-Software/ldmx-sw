@@ -50,9 +50,8 @@ namespace hcal {
 	  ldmx::HcalDigiID digiId(digi.id());
 	  ldmx::HcalID id(digiId.section(),digiId.layer(),digiId.strip());
 	  
-	  // Position from ID (returns -99999 for unknown x or y coordinate)
-	  double x,y,z;
-	  hcalGeometry.getStripAbsolutePosition( id , x , y , z );
+	  // Position from ID
+	  auto position = hcalGeometry.getStripCenterPosition(id);
 
 	  // TOA is the time of arrival with respect to the 25ns clock window
 	  // TODO what to do if hit NOT in first clock cycle?
@@ -80,9 +79,9 @@ namespace hcal {
 	    double timeRelClock25_close = digi_close.begin()->toa()*(clock_cycle_/1024); //ns
 	    double timeRelClock25_far   = digi_far.begin()->toa()*(clock_cycle_/1024); //ns    
             double pos =  (timeRelClock25_far-timeRelClock25_close)*v/2;
-            if(id_close.end()==1) pos = pos*-1;
-            if(x==-99999) x = pos;
-            if(y==-99999) y = pos;
+            if(id_close.isNegativeEnd()) pos = pos*-1;
+            //if(x==-99999) x = pos;
+            //if(y==-99999) y = pos;
 
 	    // time
 	    hitTime = fabs(timeRelClock25_close+timeRelClock25_far)/2;
@@ -161,9 +160,9 @@ namespace hcal {
 	  // copy over information to rec hit structure in new collection
 	  ldmx::HcalHit recHit;
 	  recHit.setID( id.raw() );
-	  recHit.setXPos( x );
-	  recHit.setYPos( y );
-	  recHit.setZPos( z );
+	  recHit.setXPos( position.X() );
+	  recHit.setYPos( position.Y() );
+	  recHit.setZPos( position.Z() );
 	  recHit.setPE( PEs );
 	  recHit.setMinPE( minPEs );
 	  recHit.setAmplitude( PEs );
