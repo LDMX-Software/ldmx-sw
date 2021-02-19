@@ -16,6 +16,13 @@
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 namespace simcore {
+
+/**
+ * @namespace darkbrem
+ *
+ * In here we contain all of our framework for simulating
+ * the dark bremsstrahlung process in Geant4.
+ */
 namespace darkbrem {
 
 /**
@@ -92,8 +99,14 @@ class APrimePhysics : public G4VPhysicsConstructor {
   /// is dark brem enabled for this run?
   bool enable_;
 
-  /// the dark brem process itself
-  G4eDarkBremsstrahlung db_process_;
+  /**
+   * Dark brem parameters to pass to the process (if enabled)
+   *
+   * @note This can't be a reference because we pass it to
+   * the process _after_ the configuration step from our POV
+   * is done. Thus we need our own copy that won't be destroyed.
+   */
+  framework::config::Parameters parameters_;
 };
 
 }  // namespace darkbrem
