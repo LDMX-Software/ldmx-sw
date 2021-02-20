@@ -33,31 +33,37 @@ class HcalID : public HcalAbstractID {
   /**
    * Empty HCAL id (but not null!)
    */
-  HcalID() : HcalAbstractID() { }                                                                                                                                                                     
+  HcalID() : HcalAbstractID() {}
 
   /**
    * Create from raw number
    */
   HcalID(RawValue rawid) : HcalAbstractID(rawid) {
-    if (!null() && bar_type()!=Global) {                                                                                                                                                            
-      EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal bar_type "+std::to_string(bar_type()));                                                                 
-    } 
+    if (!null() && bar_type() != Global) {
+      EXCEPTION_RAISE(
+          "DetectorIDMismatch",
+          "Attempted to create HcalID from mismatched Hcal bar_type " +
+              std::to_string(bar_type()));
+    }
   }
 
   /**
    * Create from a DetectorID, but check
    */
   HcalID(const HcalAbstractID id) : HcalAbstractID(id) {
-    if (!null() && bar_type()!=Global) {                                                                                                                                                            
-      EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create HcalID from mismatched Hcal bar_type "+std::to_string(bar_type()));                                                                 
-    } 
+    if (!null() && bar_type() != Global) {
+      EXCEPTION_RAISE(
+          "DetectorIDMismatch",
+          "Attempted to create HcalID from mismatched Hcal bar_type " +
+              std::to_string(bar_type()));
+    }
   }
 
   /**
    * Create from pieces
    */
   HcalID(unsigned int section, unsigned int layer, unsigned int strip)
-    : HcalAbstractID(Global,0) {
+      : HcalAbstractID(Global, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
     id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
     id_ |= (strip & STRIP_MASK) << STRIP_SHIFT;
