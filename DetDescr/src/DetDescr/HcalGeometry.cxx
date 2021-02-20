@@ -8,14 +8,15 @@ namespace ldmx {
 
     HcalGeometry::HcalGeometry(const framework::config::Parameters& ps) : framework::ConditionsObject(HcalGeometry::CONDITIONS_OBJECT_NAME) {
 
-        hcalThicknessScint_ = ps.getParameter<double>("hcalThicknessScint");
-	hcalWidthScint_     = ps.getParameter<double>("hcalWidthScint");
-        hcalZeroLayer_      = ps.getParameter<std::vector< double >>("hcalZeroLayer");
-        hcalZeroStrip_      = ps.getParameter<std::vector< double >>("hcalZeroStrip");
-        hcalLayerThickness_ = ps.getParameter<std::vector< double >>("hcalLayerThickness");
-        hcalNLayers_        = ps.getParameter<std::vector< int >>("hcalNLayers");
-        hcalNStrips_        = ps.getParameter<std::vector< int >>("hcalNStrips");
-        hcalHalfTotalWidthBack_ = ps.getParameter<double>("hcalHalfTotalWidthBack");
+        ThicknessScint_     = ps.getParameter<double>("ThicknessScint");
+	WidthScint_         = ps.getParameter<double>("WidthScint");
+        ZeroLayer_          = ps.getParameter<std::vector< double >>("ZeroLayer");
+        ZeroStrip_          = ps.getParameter<std::vector< double >>("ZeroStrip");
+        LayerThickness_     = ps.getParameter<std::vector< double >>("LayerThickness");
+        NumLayers_          = ps.getParameter<std::vector< int >>("NumLayers");
+        NumStrips_          = ps.getParameter<std::vector< int >>("NumStrips");
+	NumSections_        = ps.getParameter<int>("NumSections");
+        HalfTotalWidth_     = ps.getParameter<std::vector< double >>("HalfTotalWidth");
         verbose_            = ps.getParameter<int>("verbose");
 
 	buildStripPositionMap();
@@ -24,41 +25,70 @@ namespace ldmx {
     void HcalGeometry::buildStripPositionMap() {
 
       // We hard-code the number of sections as seen in HcalID
-      for(int section=0; section<=4; section++) {
-	ldmx::HcalID::HcalSection hcalsection = (ldmx::HcalID::HcalSection) section;
-	for(int layer=1; layer<=hcalNLayers_[section]; layer++) { 
-	  double layercenter = layer*hcalLayerThickness_.at( section ) + 0.5*hcalThicknessScint_;
-	  for(int strip=0; strip<hcalNStrips_[section]; strip++) {
-	    double stripcenter = (strip + 0.5)*hcalWidthScint_;
+      for(int section=0; section<NumSections_; section++) {
+	for(int layer=1; layer<=NumLayers_[section]; layer++) {
+	  for(int strip=0; strip<NumStrips_[section]; strip++) {
+	    // initialize values
 	    double x{-99999},y{-99999},z{-99999};
+	    
+	    // get hcal section
+	    ldmx::HcalID::HcalSection hcalsection = (ldmx::HcalID::HcalSection) section;
+	    
+	    // the center of a layer: layer * (layer_dz) + (layer_dz)/2  
+	    double layercenter = layer*LayerThickness_.at( section ) + 0.5*ThicknessScint_;
 
+	    // the center of a strip: (strip + 0.5) * (strip_dx)
+	    double stripcenter = (strip + 0.5)*WidthScint_;
+
+	    /*
+	      For back Hcal:
+	      - layers in z
+	      - strips occupy thickness of scintillator in z (e.g. 20mm)
+	      - strips orientation is in x(y) for odd(even) layers
+	      For side Hcal:
+	      - layers in x(y)
+	      - strips occupy width of scintillator in z (e.g. 50mm)
+	      - strips orientation is in x(y) for top-bottom(left-right) sections
+	    */
 	    if(hcalsection == ldmx::HcalID::HcalSection::BACK ) {
-	      z = hcalZeroLayer_.at( section ) + layercenter;
-	      if(layer % 2 == 1){ 
-		y = -1*hcalZeroStrip_.at( section ) + stripcenter;
-		x = stripcenter;
-	      }
-	      else{ 
-		x = -1*hcalZeroStrip_.at( section ) + stripcenter;
-		y = stripcenter;
-	      }
-	    }
-	    else{ 
-	      z = hcalZeroStrip_.at( section ) + stripcenter;
-	      if ( hcalsection == ldmx::HcalID::HcalSection::TOP or hcalsection == ldmx::HcalID::HcalSection::BOTTOM ) {
-                y = hcalZeroLayer_.at( section ) + layercenter;
-		if ( hcalsection == ldmx::HcalID::HcalSection::BOTTOM ) {
-		  y *= -1;
-                }
+	      // z position: zero-layer(z) + layer_z + thickness_scint
+	      z = ZeroLayer_.at( section ) + layercenter;
+
+	      /*
+		Now compute, y(x) position for even(odd) layers, relative to the center of detector.
+		Strips enumeration starts from -y(-x)
+		stripcenter will be large for +y(+x) and the halfwidth of the strip needs to be subtracted
+		The halfwidth of the scintillator is given by ZeroStrip_.
+		The x(y) position is set to the center of the strip (0).
+	      */
+	      if(layer % 2 == 1){
+		y = stripcenter - ZeroStrip_.at( section );
+		x = 0;
 	      }
 	      else{
-                x = hcalZeroLayer_.at( section ) + layercenter;
-		if ( hcalsection == ldmx::HcalID::HcalSection::RIGHT ) {
-		  x *= -1;
-		}
+		x = stripcenter - ZeroStrip_.at( section );
+		y = 0;
 	      }
 	    }
-	    //std::cout << "Map section " << section << " layer " << layer << " strip " << strip << std::endl;
+	    else{
+	      // z position: zero-strip(z) + strip_center(z)
+	      z = ZeroStrip_.at( section ) + stripcenter;
+
+	      /*
+		Top and Bottom sections have strips orientated in x
+		The y coordinate will be given by layercenter + ZeroLayer_(y)
+	      */
+	      if ( hcalsection == ldmx::HcalID::HcalSection::TOP or hcalsection == ldmx::HcalID::HcalSection::BOTTOM ) {
+                y = ZeroLayer_.at( section ) + layercenter;
+		if ( hcalsection == ldmx::HcalID::HcalSection::BOTTOM ) y *= -1;
+		x = HalfTotalWidth_.at(section);
+	      }
+	      else{
+                x = ZeroLayer_.at( section ) + layercenter;
+		if ( hcalsection == ldmx::HcalID::HcalSection::RIGHT ) x *= -1;
+                y = HalfTotalWidth_.at(section);
+	      }
+	    }
 	    TVector3 pos; pos.SetXYZ(x,y,z);
 	    stripPositionMap_[ldmx::HcalID(section,layer,strip)] = pos;
 	  } // loop over strips
