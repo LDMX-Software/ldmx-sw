@@ -24,8 +24,6 @@ namespace hcal {
         noiseGenerator_ = std::make_unique<ldmx::NoiseGenerator>();
     }
 
-    HcalDigiProducer::~HcalDigiProducer() { }
-
     void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 
         //settings of readout chip
@@ -105,10 +103,7 @@ namespace hcal {
 
 	    // get position
 	    std::vector<float> position = simHit.getPosition();
-	    std::cout << "id " << hitID << " pos x " << position[0] << " y " << position[1] << " z " << position[2] << std::endl;
-	    std::cout << "section " << section << " layer " << layer << " strip " << strip << std::endl;
-	    
-	    float distance_along_bar = (layer % 2) ? position[0] : position[1];
+	    auto positionMap = hcalGeometry.getStripCenterPosition(detID);
 
 	    // get voltages and times
 	    std::vector<double> voltages, times;
@@ -126,7 +121,8 @@ namespace hcal {
 	       *  a negative end (bottom, right) will have end = 1.
 	       */
 	      if( section==ldmx::HcalID::HcalSection::BACK ){
-		double half_total_width = hcalGeometry.halfTotalWidth();
+		double half_total_width = hcalGeometry.getHalfTotalWidth(section);
+		float distance_along_bar = (layer % 2) ? position[0] : position[1];
 		double attenuation_close = exp( -1. * ((half_total_width - fabs(distance_along_bar)) / 1000.) / attlength_);
 		double attenuation_far   = exp( -1. * ((half_total_width + fabs(distance_along_bar)) / 1000.) / attlength_);
 
@@ -146,18 +142,22 @@ namespace hcal {
             }
 
 	    // digitize
-	    std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddClose;
-	    std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddFar;
-	    if ( hgcroc_->digitize( hitID , voltages , times , digiToAddClose)  &&
-		 hgcroc_->digitize( hitID , voltages_far , times_far , digiToAddFar)){
+	    if( section==ldmx::HcalID::HcalSection::BACK ){
+	      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddClose;
+	      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddFar;
+	      if ( hgcroc_->digitize( hitID , voltages , times , digiToAddClose)  &&
+		   hgcroc_->digitize( hitID , voltages_far , times_far , digiToAddFar)){
+		float distance_along_bar = (layer % 2) ? position[0] : position[1];
 	        int end_close = (distance_along_bar > 0) ? 0 : 1;
-	        ldmx::HcalDigiID closeID(section,layer,strip,end_close);
-		hcalDigis.addDigi( closeID.raw() , digiToAddClose);
-
 		int end_far = (distance_along_bar < 0) ? 0 : 1;
+		
+	        ldmx::HcalDigiID closeID(section,layer,strip,end_close);
 		ldmx::HcalDigiID farID(section,layer,strip,end_far);
+		
+		hcalDigis.addDigi( closeID.raw() , digiToAddClose);
 		hcalDigis.addDigi( farID.raw() , digiToAddFar);
-	    } // need to digitize both or none 
+	      } // need to digitize both or none
+	    } 
 	    else{
 	      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
 	      if ( hgcroc_->digitize( hitID , voltages , times , digiToAdd ) ) {
@@ -165,14 +165,52 @@ namespace hcal {
                 hcalDigis.addDigi( digiID.raw() , digiToAdd );
 	      }
 	    }
-        }
+	}
 	
         /******************************************************************************************
          * Noise Simulation on Empty Channels
-	 * TOADD
          *****************************************************************************************/
+	if (noise_) {
+	  int numChannels = 0;
+	  for(int l=0; l<hcalGeometry.getNumSections(); l++){
+	    std::cout << "numSections " << hcalGeometry.getNumSections() << std::endl;
+	    int nChannels = hcalGeometry.getNumLayers(l) *  hcalGeometry.getNumStrips(l);
+	    if(l==0) nChannels *= 2;
+	    numChannels += nChannels;
+	  }
+	  int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
+	  // noise generator gives us a list of noise amplitudes [mV] that randomly
+	  // populate the empty channels and are above the readout threshold
+	  auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
+	  std::vector<double> voltages(1, 0.), times(1, 0.);
+	  for (double noiseHit : noiseHitAmplitudes) {
+	    // generate detector ID for noise hit
+	    // making sure that it is in an empty channel
+	    unsigned int noiseID;
+	    do {
+	      int sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
+	      int layerID = noiseInjector_->Integer(hcalGeometry.getNumLayers(0));
+	      int stripID = noiseInjector_->Integer(hcalGeometry.getNumStrips(0));
+	      auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, 0);
+	      noiseID = detID.raw();
+	    } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
+	    filledDetIDs.insert(noiseID);
+	    
+	    // get a time for this noise hit
+	    times[0] = noiseInjector_->Uniform(clockCycle_);
 
-        event.add( digiCollName_, hcalDigis );
+	    // noise generator gives the amplitude above the readout threshold
+	    // we need to convert it to the amplitdue above the pedestal
+	    voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
+	    
+	    std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
+	    if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
+	      hcalDigis.addDigi(noiseID, digiToAdd);
+	    }
+	  } // loop over noise amplitudes
+	} // if we should add noise
+	
+	event.add( digiCollName_, hcalDigis );
 
         return;
     } //produce
