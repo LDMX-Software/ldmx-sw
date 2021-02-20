@@ -72,16 +72,16 @@ namespace hcal {
 	    ldmx::HcalDigiID id_close(digi.id());
 
 	    // get x(y) coordinate from TOA
-            float v = 299.792/1.6; //velocity of light in polystyrene, n = 1.6 = c/v (here, Ralf's simulation should be included)
-	    double half_total_width = hcalGeometry.halfTotalWidth();
+            double v = 299.792/1.6; //velocity of light in polystyrene, n = 1.6 = c/v (here, Ralf's simulation should be included)
+	    double half_total_width = hcalGeometry.getHalfTotalWidth(digiId.section());
 
 	    // position in bar = (diff_time*v)/2;
 	    double timeRelClock25_close = digi_close.begin()->toa()*(clock_cycle_/1024); //ns
 	    double timeRelClock25_far   = digi_far.begin()->toa()*(clock_cycle_/1024); //ns    
             double pos =  (timeRelClock25_far-timeRelClock25_close)*v/2;
             if(id_close.isNegativeEnd()) pos = pos*-1;
-            //if(x==-99999) x = pos;
-            //if(y==-99999) y = pos;
+	    if((digiId.layer() %2) == 1) position.SetX(pos);
+	    else position.SetY(pos);
 
 	    // time
 	    hitTime = fabs(timeRelClock25_close+timeRelClock25_far)/2;
