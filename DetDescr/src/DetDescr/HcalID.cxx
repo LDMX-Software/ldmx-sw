@@ -1,4 +1,5 @@
 #include "DetDescr/HcalID.h"
+
 #include "DetDescr/DetectorIDInterpreter.h"
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalID& id) {
@@ -21,10 +22,9 @@ void HcalID::createInterpreters() {
       new IDField("strip", 3, STRIP_SHIFT,
                   STRIP_SHIFT + IDField::countOnes(STRIP_MASK) - 1));
 
-  DetectorIDInterpreter::registerInterpreter(SD_HCAL,
-					     HcalAbstractID::BAR_TYPE_MASK<<HcalAbstractID::BAR_TYPE_SHIFT,
-					     HcalAbstractID::Global<<HcalAbstractID::BAR_TYPE_SHIFT,
-					     fields);
+  DetectorIDInterpreter::registerInterpreter(
+      SD_HCAL, HcalAbstractID::BAR_TYPE_MASK << HcalAbstractID::BAR_TYPE_SHIFT,
+      HcalAbstractID::Global << HcalAbstractID::BAR_TYPE_SHIFT, fields);
 }
 
 }  // namespace ldmx
