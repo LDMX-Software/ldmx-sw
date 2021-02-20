@@ -45,28 +45,30 @@ class HcalGeometry() :
     def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
-        Only sets parameters that must align with the gdml constants given in ``.
+        Only sets parameters that must align with the Hcal gdml constants.
 
         - ThicknessScint: Scintillator thickness (in z).
-          In gdml see: `scint_thick`.
+          @param gdml see: `scint_thick`.
         
         - WidthScint: Scintillator width (in x).
           Can be obtained by: hcal_length/n_strips.
 
         - ZeroLayer: Position of the first layer 
+          Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
+          Side Hcal first layer (in x or y) starts after Ecal_x/y / 2
           For back Hcal: ecal_front_z + hcal_side_dz (in z)
           For side Hcal: hcal_side_dz/2 (in x/y)
-          In gdml see: `ecal_front_z` and `hcal_side_dz`
+          @param gdml see: `ecal_front_z` and `hcal_side_dz`
 
         - ZeroStrip: Position of the first strip.
           For back Hcal: back_transverse_width/2 (in x)
-          For side Hcal: ecal_front_z (in z)  
-          n gdml see: `hcal_back_dx` and `ecal_front_z`
+          For side Hcal: ecal_front_z (in z)
+          @param gdml see: `hcal_back_dx` and `ecal_front_z`
 
         - LayerThickness: 
           Layer thickness (in z) 
           Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
-          In gdml see: `side_abso_thick` and `back_abso2_thick` and `air_thick`  
+          @param gdml see: `side_abso_thick` and `back_abso2_thick` and `air_thick`
 
         - NumLayers:
           Number of layers per section.
@@ -81,8 +83,8 @@ class HcalGeometry() :
 
         - HalfTotalWidth: 
           For back Hcal: nstrips * scint_width / 2 (in x/y)
-          For side Hcal: (nlayers * layer_thick + Ecal_dx(y)/2
-          In gdml see: sideTB_dx, sideTB_dy
+          For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y)/2)/2
+          @param gdml see: sideTB_dx, sideTB_dy
         """
         self.v12=HcalReadoutGeometry()
 
@@ -97,6 +99,8 @@ class HcalGeometry() :
         self.v12.NumLayers = [100,28,28,26,26]
         self.v12.NumStrips = [62,12,12,12,12]
         self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
-                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+800)/2, (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+800)/2,
-                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+800)/2, (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+800)/2]
+                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+800/2)/2,
+                                   (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+800/2)/2,
+                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+800/2)/2,
+                                   (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+800/2)/2,]
         self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
