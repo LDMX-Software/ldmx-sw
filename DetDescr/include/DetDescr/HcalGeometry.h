@@ -12,6 +12,9 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/ConditionsObject.h"
 
+// ROOT
+#include "TVector3.h"
+
 // STL
 #include <map>
 
@@ -25,12 +28,17 @@ namespace ldmx {
   
     /**
      * @class HcalGeometry
-     * @brief Implementation of HCal bar readout
+     * @brief Implementation of HCal strip readout
      *
      */
     class HcalGeometry : public framework::ConditionsObject {
 
         public:
+            /**
+	     * Conditions object: 
+	     *  The name of the python configuration calling this class (Hcal/python/HcalGeometry.py)
+	     *  needs to match the CONDITIONS_OBJECT_NAME exactly.
+	     */
             static constexpr const char* CONDITIONS_OBJECT_NAME{"HcalGeometry"};
 
             /**
@@ -41,41 +49,43 @@ namespace ldmx {
             virtual ~HcalGeometry() { }
 
             /**
-             * Get entire real space position for the strip with the input raw ID
-             *
-             * Inputs x,y,z will be set to the calculated position
-             *
-             * @sa getStripCenterAbsolute and getZPosition
-             *
-             * @param[in] id HcalID for the strip we want the position of
-             * @param[out] xy set to x/y-coordinate of strip center
-             * @param[out] z set to z-coordinate of strip center
-             */
-            void getStripAbsolutePosition( ldmx::HcalID id, double &x, double &y, double &z ) const {
-	        std::tuple<double,double,double> xyz = this->getStripCenterAbsolute( id );
-	        x = std::get<0>(xyz);
-		y = std::get<1>(xyz);
-                z = std::get<2>(xyz);
-                return;
-            }
-
-            /**
-             * Get a strip center X, Y and Z position relative to hcal center from a combined hcal ID
+             * Get a strip center position from a combined hcal ID.
              *
              * @throw std::out_of_range if HcalID isn't created with valid bar or bar IDs.
              *
              * @param HcalID 
-             * @return The X, Y and Z position of the center of the bar.
+             * @return A TVector3 with the X, Y and Z position of the center of the bar.
              */
-            std::tuple<double,double,double> getStripCenterAbsolute(ldmx::HcalID id) const {
+            TVector3 getStripCenterPosition(ldmx::HcalID id) const {
 	      return stripPositionMap_.at(id);
             }
 
             /**
-	     * Get half total width for back Hcal
+	     * Get the half total width for the back Hcal.
 	     */
-            double halfTotalWidth() const {
-	      return hcalHalfTotalWidthBack_;
+            double getHalfTotalWidth() const {
+	      return HalfTotalWidth_.at(0);
+	    }
+
+            /**
+	     * Get the number of sections
+	     */
+            int getNumSections() const {
+	      return NumSections_;
+	    }
+
+            /**
+	     * Get the number of layers for that section
+	     */
+            int getNumLayers(int isection) const {
+	      return NumLayers_.at(isection);
+	    }
+
+            /**
+	     * Get the number of strips per layer for that section
+	     */
+            int getNumStrips(int isection) const {
+	      return NumStrips_.at(isection);
 	    }
 
       static HcalGeometry* debugMake(const framework::config::Parameters& p) { return new HcalGeometry(p); }
@@ -90,39 +100,56 @@ namespace ldmx {
             HcalGeometry(const framework::config::Parameters &ps);
             friend class hcal::HcalGeometryProvider;
 
+            /**
+	     * Map builder of HcalID and position.
+	     * To build the map we loop over the number of Hcal sections, layers and strips.
+	     * The Hcal sections range from 0 to 4. (We hard-code the number of sections as seen in HcalID)
+	     * The Hcal layers range from 1 to NumLayers_[section].
+	     * The Hcal strips range from 0 to NumStrips_[section].
+	     *
+	     * Odd layers have horizontal strips.
+	     * Even layers have vertical strips.
+	     */
             void buildStripPositionMap();
 
         private:
 
-            /// verbosity, not configurable but helpful if developing
-            int verbose_{2};
+            /// Verbosity, not configurable but helpful if developing
+            int verbose_{0};
 
-	    /// thickness of scintillator 
-	    double hcalThicknessScint_{0.};
+	    /// Thickness of scintillator 
+	    double ThicknessScint_;
 
 	    /// Width of Scintillator Strip [mm]
-            double hcalWidthScint_{0.};
+            double WidthScint_;
 
+            /// Half Total Width for bars at back Hcal [mm]
+            std::vector<double> HalfTotalWidth_;
+      
             /// Front of HCal relative to world geometry for each section [mm]
-	    std::vector<double> hcalZeroLayer_;
+	    std::vector<double> ZeroLayer_;
 
             /// The plane of the zero'th strip of each section [mm] 
-	    std::vector<double> hcalZeroStrip_;
+	    std::vector<double> ZeroStrip_;
 
 	    /// Thickness of the layers in each section [mm] 
-	    std::vector<double> hcalLayerThickness_;
+	    std::vector<double> LayerThickness_;
 
 	    /// Number of layers in each section 
-	    std::vector<int> hcalNLayers_;
+	    std::vector<int> NumLayers_;
 
             /// Number of strips per layer in each section
-	    std::vector<int> hcalNStrips_;
+	    std::vector<int> NumStrips_;
 
-            /// Position of bar centers relative to world geometry (uses ID with real bar and section and layer as zero for key)
-            std::map<ldmx::HcalID, std::tuple<double,double,double>> stripPositionMap_;
+            /// Number of sections
+            int NumSections_;
+      
+            /* 
+             Map of the HcalID position of strip centers relative to world geometry.
+	     The map is not configurable and is calculated by buildStripPositionMap().
+	     */ 
+            std::map<ldmx::HcalID, TVector3> stripPositionMap_;
 
-            /// Half Total Width for bars at back Hcal
-            double hcalHalfTotalWidthBack_{0.};
     };
     
 }
