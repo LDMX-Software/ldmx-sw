@@ -1,6 +1,6 @@
 /**
  * @file HcalGeometry.h
- * @brief Class that translates HCal ID into positions of bar hits
+ * @brief Class that translates HCal ID into positions of strip hits
  */
 
 #ifndef DETDESCR_HCALGEOMETRY_H_
@@ -51,7 +51,7 @@ namespace ldmx {
             /**
              * Get a strip center position from a combined hcal ID.
              *
-             * @throw std::out_of_range if HcalID isn't created with valid bar or bar IDs.
+             * @throw std::out_of_range if HcalID is not on map.
              *
              * @param HcalID 
              * @return A TVector3 with the X, Y and Z position of the center of the bar.
@@ -61,28 +61,30 @@ namespace ldmx {
             }
 
             /**
-	     * Get the half total width for the back Hcal.
+	     * Get the half total width for a given section(strip) for back(side) Hcal.
+	     * @param section
+	     * @return half total width [mm]
 	     */
-            double getHalfTotalWidth() const {
-	      return HalfTotalWidth_.at(0);
+            double getHalfTotalWidth(int isection) const {
+	      return HalfTotalWidth_.at(isection);
 	    }
 
             /**
-	     * Get the number of sections
+	     * Get the number of sections.
 	     */
             int getNumSections() const {
 	      return NumSections_;
 	    }
 
             /**
-	     * Get the number of layers for that section
+	     * Get the number of layers for that section.
 	     */
             int getNumLayers(int isection) const {
 	      return NumLayers_.at(isection);
 	    }
 
             /**
-	     * Get the number of strips per layer for that section
+	     * Get the number of strips per layer for that section.
 	     */
             int getNumStrips(int isection) const {
 	      return NumStrips_.at(isection);
@@ -123,7 +125,7 @@ namespace ldmx {
 	    /// Width of Scintillator Strip [mm]
             double WidthScint_;
 
-            /// Half Total Width for bars at back Hcal [mm]
+            /// Half Total Width of Strips [mm]
             std::vector<double> HalfTotalWidth_;
       
             /// Front of HCal relative to world geometry for each section [mm]
@@ -149,7 +151,6 @@ namespace ldmx {
 	     The map is not configurable and is calculated by buildStripPositionMap().
 	     */ 
             std::map<ldmx::HcalID, TVector3> stripPositionMap_;
-
     };
     
 }
