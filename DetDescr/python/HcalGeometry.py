@@ -88,15 +88,15 @@ class HcalGeometry() :
 
         self.v12.ThicknessScint = 20.0
         self.v12.WidthScint = 50.0
-        self.v12.ZeroLayer = [240.+600.,600./2,600./2,600./2,600./2]
-        self.v12.ZeroStrip = [3100./2,240.,240.,240.,240.]
+        self.v12.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
+        self.v12.ZeroStrip = [3100./2,220.,220.,220.,220.]
         self.v12.LayerThickness = [25. + self.v12.ThicknessScint + 2*2.,
                                    20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.,
                                    20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.]
-        self.v12.NumLayers = [100,28,28,26,26]
-        self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2
-                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+800)/2, (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+800)/2,
-                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[2]+800)/2, (self.v12.NumLayers[3]*self.v12.LayerThickness[2]+800)/2]
-        self.v12.NumStrips = [62,12,12,12,12]
         self.v12.NumSections = 5
+        self.v12.NumLayers = [100,28,28,26,26]
+        self.v12.NumStrips = [62,12,12,12,12]
+        self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
+                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+800)/2, (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+800)/2,
+                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+800)/2, (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+800)/2]
         self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
