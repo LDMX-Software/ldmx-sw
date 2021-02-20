@@ -81,12 +81,18 @@ void HcalGeometry::buildStripPositionMap() {
           if (hcalsection == ldmx::HcalID::HcalSection::TOP or
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
             y = ZeroLayer_.at(section) + layercenter;
-            if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) y *= -1;
             x = HalfTotalWidth_.at(section);
+            if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
+              y *= -1;
+              x *= -1;
+            }
           } else {
             x = ZeroLayer_.at(section) + layercenter;
-            if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) x *= -1;
             y = HalfTotalWidth_.at(section);
+            if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
+              x *= -1;
+              y *= -1;
+            }
           }
         }
         TVector3 pos;
