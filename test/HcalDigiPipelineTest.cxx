@@ -10,16 +10,19 @@ namespace hcal {
 namespace test {
 
 /**
- * Energy deposited by one MIP on average
+ * Energy deposited by one photo-electron(PE) on average
  * [MeV]
+ * 1 MIP deposits ~ 4.66 MeV
+ * 1 MIP ~ 68 PEs
  */
-static const double MIP_ENERGY = 4.66;
+static const double PE_ENERGY = 4.66/68; // 0.069 MeV
 
 /**
  * Conversion between voltage and deposited energy
  * [MeV/mV]
+ * 1 PE ~ 5 mV
  */
-static const double MeV_per_mV = MIP_ENERGY/(5*68); // 0.013 MeV/mV
+static const double MeV_per_mV = PE_ENERGY/5; // 0.013 MeV/mV
 
 /**
  * Maximum percent error that a single hit
@@ -43,7 +46,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE = 2.;
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = MIP_ENERGY / 2;
+static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = 4.66 / 2; // MIP_ENERGY/2
 
 /**
  * Number of sim hits to create.
@@ -55,7 +58,7 @@ static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = MIP_ENERGY / 2;
  * the parameters of HcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
-static const int NUM_TEST_SIM_HITS = 10;
+static const int NUM_TEST_SIM_HITS = 100;
 
 /**
  * Should the sim/rec energies be ntuplized
@@ -76,15 +79,13 @@ class HcalFakeSimHits : public framework::Producer {
   /**
    * Maximum energy to make a simulated hit for [MeV]
    */
-  const double maxEnergy_  = 3.*MIP_ENERGY; //100
+  const double maxEnergy_  = 300*PE_ENERGY;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
    * Needs to be above readout threshold (after internal HcalDigi's calculation)
    */
-  //const double minEnergy_ = 1*MIP_ENERGY;
-  //const double minEnergy_ = 0.0685*MIP_ENERGY;
-  const double minEnergy_ = 0.24*MIP_ENERGY;
+  const double minEnergy_ = 20*PE_ENERGY;
   /**
    * The step between energies is calculated depending on the min, max energy
    * and the total number of sim hits you desire.
@@ -108,8 +109,9 @@ public:
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretendSimHits(1);
 
-    // We hard-code one hit on the back hcal, layer 8, strip 32
-    // position is obtained by looking at SimHits of a 4 GeV muon shoot through Hcal
+    // We hard-code the position of one hit: back hcal, layer 8, strip 32
+    // This real simHit position is obtained by looking at calorimeter
+    // SimHits of a 4 GeV muon shoot through the Hcal
     ldmx::HcalID id(0,8,32);
     pretendSimHits[0].setPosition( 84.7448, -208.116, 1223.11); 
     pretendSimHits[0].setID(id.raw());
@@ -229,7 +231,6 @@ public:
 
     CHECK(simHits.size() > 0);
 
-    std::cout << " simhits size" << simHits.size() << std::endl;
     for(int ihit=0; ihit<simHits.size(); ihit++) {
       auto hit = simHits.at(ihit);
       double x = hit.getPosition()[0];

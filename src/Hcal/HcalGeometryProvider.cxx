@@ -28,7 +28,7 @@ class HcalGeometryProvider : public framework::ConditionsObjectProvider {
 
   /** Destructor */
   virtual ~HcalGeometryProvider();
-	
+  
   /**
    * Provides access to the HcalGeometry
    * @note Currently, these are assumed to be valid for all time, but this behavior could be changed.  Users should not cache the pointer
