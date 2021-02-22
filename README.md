@@ -43,7 +43,7 @@ Here is a quick reference table for moving the camerage around.
 Command | Description
 --------|------------
 `/vis/viewer/pan x y units` | Move camera a certain amount left/right (x) and up/down (y) a given amount of units
-`/vis/viewer/set/viewpointThetaPhi theta phi deg|rad` | Rotate the camerage to the input direction vector in degrees or radians
+`/vis/viewer/set/viewpointThetaPhi theta phi units` | Rotate the camerage to the input direction vector in degrees or radians
 `/vis/viewer/zoom scale` | Zoom towards the center of the image by the input factor
 
 #### Limitations
