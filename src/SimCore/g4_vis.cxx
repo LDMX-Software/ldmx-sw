@@ -9,7 +9,18 @@
 #include "Framework/EventProcessor.h"
 #include "SimCore/DetectorConstruction.h"
 
+static void printUsage() {
+  std::cout << "usage: g4-vis {detector.gdml}" << std::endl;
+  std::cout << "  {detector.gdml} is the geometry description "
+               "that you wish to visualize." << std::endl;
+}
+
 int main(int argc, char* argv[]) {
+
+  if (argc != 2) {
+    printUsage();
+    std::cerr << "** Need to be given the detector description. **" << std::endl;
+  }
 
   framework::EventProcessor* null_processor{nullptr};
   framework::config::Parameters empty_parameters;
@@ -24,13 +35,12 @@ int main(int argc, char* argv[]) {
       new simcore::DetectorConstruction(parser, empty_parameters, empty_interface)
       );
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->Read("detector.gdml",false);
+  parser->Read(argv[1],false);
   runManager->DefineWorldVolume(parser->GetWorldVolume());
 
   // required to define a physics list to complete initialization
   G4PhysListFactory lists;
   runManager->SetUserInitialization(lists.GetReferencePhysList("FTFP_BERT"));
-
 
   runManager->Initialize();
 
@@ -38,15 +48,6 @@ int main(int argc, char* argv[]) {
   G4UIExecutive* ui = new G4UIExecutive(argc, argv);
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
-
-  /*
-  G4VVisManager* cli{G4VVisManager::GetConcreteInstance()};
-  if (cli) {
-    cli->ApplyCommand("/vis/open OGL");
-    cli->ApplyCommand("/vis/drawVolume");
-    cli->ApplyCommand("/vis/viewer/flush");
-  }
-  */
 
   ui->SessionStart();
 
