@@ -78,17 +78,7 @@ setup_library(module EventDisplay
 )
   
 # Add the event display executable
-add_executable(ldmx-eve ${PROJECT_SOURCE_DIR}/src/EventDisplay/ldmx_eve.cxx)
+add_executable(eve ${PROJECT_SOURCE_DIR}/src/EventDisplay/ldmx_eve.cxx)
+target_link_libraries(eve PRIVATE EventDisplay::EventDisplay)
+install(TARGETS eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-# Link to the Framework library
-target_link_libraries(ldmx-eve PRIVATE EventDisplay::EventDisplay)
-
-# Install the fire executable
-install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-# Configure the setup script
-configure_file(${PROJECT_SOURCE_DIR}/scripts/setup-ldmx-eve.sh.in
-               ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh)
-
-# Install setup script
-install(FILES ${CMAKE_BINARY_DIR}/scripts/setup-ldmx-eve.sh TYPE BIN)
