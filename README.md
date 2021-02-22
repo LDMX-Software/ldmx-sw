@@ -14,8 +14,11 @@ is not well designed for running a visualization. For this reason,
 a small program has been written that loads the input detector
 description GDML file and launches an interactive Geant4 terminal.
 
-The simulation is not well configured, so this interactive terminal
-**should only be used for visualization**.
+The simulation is not well configured in this mode, so this 
+interactive terminal **should only be used for visualization**.
+
+This command is built automatically and is installed as `g4-vis`.
+Run `g4-vis --help` for an explanation on how to use this executable.
 
 #### Common Geant4 Vis Commands
 More detailed documentation for these commands are given in the 
@@ -34,5 +37,4 @@ is launched.
 You will likely want to change the point of view from which you are looking at the
 detector. The [camera working commands](https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Visualization/commandcontrol.html#basic-camera-workings-vis-viewer-commands)
 is what Geant4 calls these.
-
 
