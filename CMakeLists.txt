@@ -53,9 +53,8 @@ clear_cache_variables()
 # By default, all modules are built.
 option(BUILD_RECON_ONLY     "Build the modules necessary to run the reconstruction." OFF)
 option(BUILD_SIM_ONLY       "Build the modules necessary to run the simulation."     OFF)
-option(BUILD_EVE_ONLY       "Build the event display only."                          OFF)
 
-if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY AND NOT BUILD_EVE_ONLY) 
+if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY) 
     set(BUILD_ALL ON)
     message(STATUS "Building all modules.")
 endif()
@@ -125,10 +124,11 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-if(BUILD_EVE_ONLY)
+option(BUILD_EVE "Build the event display as well as other parts." OFF)
+if(BUILD_EVE)
     add_subdirectory(EventDisplay)
-else()
-    # Build all test.  The test are assumed to reside inside of the directory 
-    # "test" within each module.  The main
-    build_test()
 endif()
+
+# Build all test.  The test are assumed to reside inside of the directory 
+# "test" within each module.  The main
+build_test()
