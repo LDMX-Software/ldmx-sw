@@ -66,8 +66,6 @@ void LHEEvent::addParticle(LHEParticle* particle) {
   particles_.push_back(particle);
 }
 
-const double LHEEvent::getVertexTime() const { return vtxt_; }
-
 const std::vector<LHEParticle*>& LHEEvent::getParticles() { return particles_; }
 
 void LHEEvent::setVertex(double x, double y, double z) {
