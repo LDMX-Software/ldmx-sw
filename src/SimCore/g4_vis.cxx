@@ -19,7 +19,15 @@ int main(int argc, char* argv[]) {
 
   if (argc != 2) {
     printUsage();
-    std::cerr << "** Need to be given the detector description. **" << std::endl;
+    std::cerr << "** Need to be given a single detector description. **" << std::endl;
+    return 1;
+  }
+
+  std::string the_arg{argv[1]};
+  if (the_arg == "-h" or the_arg == "--help") {
+    // ask for help, let's give it to them.
+    printUsage();
+    return 0;
   }
 
   framework::EventProcessor* null_processor{nullptr};
@@ -35,7 +43,7 @@ int main(int argc, char* argv[]) {
       new simcore::DetectorConstruction(parser, empty_parameters, empty_interface)
       );
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->Read(argv[1],false);
+  parser->Read(the_arg,false);
   runManager->DefineWorldVolume(parser->GetWorldVolume());
 
   // required to define a physics list to complete initialization

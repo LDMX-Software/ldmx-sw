@@ -52,3 +52,13 @@ makes a large number of assumptions about how the GDML is structured.
 With this in mind, it is best to use the central `detector.gdml` file as 
 the "entrypoint" and comment out the different parts of the detector
 you don't want to see.
+
+#### Tips and Tricks
+- The central `detector.gdml` file asks for other GDML files,
+  so it is best to run this executable _in the same directory_ as the detector
+  description you want to visualize.
+
+- You can make multi-line comments in GDML by using `<!-- ... -->`.
+  For example, the magnetic field is not part of the visualization, but
+  is loaded when constructing the detector. You can ignore this by
+  commenting out the magnetic field part of `detector.gdml`.
