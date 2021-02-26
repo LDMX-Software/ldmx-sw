@@ -248,7 +248,7 @@ function ldmx() {
 
 export _default_ldmx_env_ldmx_base="$( dirname ${BASH_SOURCE[0]} )/../../" #default backs out of ldmx-sw/scripts
 export _default_ldmx_env_repo_name="dev" #default repository is development container with just the dependencies in it
-export _default_ldmx_env_image_tag="v1.0" #default tag is the most recent major release of the dev container
+export _default_ldmx_env_image_tag="latest" #default tag is the most recent major release of the dev container
 export _default_ldmx_env_force_update="OFF" #default is to NOT force updates of the container
 
 function ldmx-env-help() {
