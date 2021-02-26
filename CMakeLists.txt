@@ -124,11 +124,13 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
+# Build all test.  The test are assumed to reside inside of the directory 
+# "test" within each module.  The main
+build_test()
+
+# The EventDisplay is stand-a-lone and _needs_ to be after everything else
+# so that it can clear the cache variables and construct its own dictionary.
 option(BUILD_EVE "Build the event display as well as other parts." OFF)
 if(BUILD_EVE)
     add_subdirectory(EventDisplay)
 endif()
-
-# Build all test.  The test are assumed to reside inside of the directory 
-# "test" within each module.  The main
-build_test()
