@@ -84,10 +84,6 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   int getNumStrips(int isection) const { return NumStrips_.at(isection); }
 
-  static HcalGeometry* debugMake(const framework::config::Parameters& p) {
-    return new HcalGeometry(p);
-  }
-
  private:
   /**
    * Class constructor, for use only by the provider
@@ -140,7 +136,7 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Number of sections
   int NumSections_;
 
-  /*
+  /**
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().
    */
