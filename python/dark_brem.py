@@ -72,16 +72,23 @@ class DarkBrem:
         self.cache_xsec         = True
         self.model              = DarkBremModel('UNDEFINED')
 
-    def activate(self, ap_mass, model) :
-        """Activate the dark brem process with the input A' mass [MeV] and dark brem model"""
+    def activate(self, ap_mass, model = None) :
+        """Activate the dark brem process with the input A' mass [MeV] and dark brem model
 
-        self.enable  = True
+        If no dark brem model is given, we do not activate the process
+        and only define the A' mass. This allows for some backwards
+        compatibility by allowing users to use the LHEPrimaryGenerator
+        with A' particles.
+        """
+
         self.ap_mass = ap_mass
 
-        if not isinstance(model,DarkBremModel) :
-            raise Exception('Dark brem process needs to be configured with an associated model.')
-
-        self.model = model
+        if model is not None :
+            if not isinstance(model,DarkBremModel) :
+                raise Exception('Dark brem process needs to be configured with an associated DarkBremModel.')
+    
+            self.enable = True
+            self.model  = model
 
     def __str__(self): 
         """Stringify the DarkBrem configuration
