@@ -105,22 +105,21 @@ class HcalDigiID : public HcalAbstractID {
   int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
 
   /**
-   * Get whether the 'end' field from the ID is negative.
-   * @return True if the end of the strip is negative
-   */
-  bool isNegativeEnd() const {
-    int end = (id_ >> END_SHIFT) & END_MASK;
-    if (end == 1)
-      return true;
-    else
-      return false;
-  }
-
-  /**
    * Get the value of the 'end' field from the ID.
    * @return The value of the 'end' field.
    */
   int end() const { return (id_ >> END_SHIFT) & END_MASK; }
+
+  /**
+   * Get whether the 'end' field from the ID is negative.
+   * @return True if the end of the strip is negative
+   */
+  bool isNegativeEnd() const {
+    if (end() == 1)
+      return true;
+    else
+      return false;
+  }
 
   static void createInterpreters();
 };
