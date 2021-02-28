@@ -16,3 +16,5 @@ __pycache__/
 /build*
 /install*
 Version.h
+EventDisplay/include/EventDisplay/EventDisplayDef.h
+EventDisplay/include/EventDisplay/EventDisplayLinkDef.h

@@ -71,7 +71,7 @@ class TargetProcessFilter : public simcore::UserAction {
   /// The process to bias
   std::string process_{""};
 
-};  // namespace biasing
+};  
 
 }  // namespace biasing
 
