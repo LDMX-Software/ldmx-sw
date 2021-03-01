@@ -52,7 +52,7 @@ function ldmx-which-os() {
 if ! ldmx-which-os
 then
     echo "[ldmx-env.sh][WARN] : Unable to detect OS Type from '${OSTYPE}'"
-    exit 1
+    echo "  You will *not* be able to run display-connected programs."
 fi
 
 ###############################################################################
