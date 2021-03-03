@@ -109,10 +109,14 @@ if hash docker &> /dev/null; then
 
   # Run the container
   _ldmx_run() {
+    local _mounts=""
+    for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
+      _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
+    done
     docker run --rm -it -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
-      -v $LDMX_BASE:$LDMX_BASE \
+      $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
       $LDMX_DOCKER_TAG "$@"
   }
@@ -170,8 +174,13 @@ elif hash singularity &> /dev/null; then
 
   # Run the container
   _ldmx_run() {
+    local csv_list=""
+    for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
+      csv_list="$dir_to_mount,$csv_list"
+    done
+    csv_list="${csv_list%,}"
     singularity run --no-home --cleanenv --env LDMX_BASE=${LDMX_BASE} \
-      --bind ${LDMX_BASE} ${LDMX_SINGULARITY_IMG} "$@"
+      --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
   }
 fi
 
@@ -230,6 +239,25 @@ _ldmx_run_here() {
 }
 
 ###############################################################################
+# _ldmx_mount
+#   Tell us to mount all of the passed directories to the container
+#   By default, we already mount the LDMX_BASE directory, so none of
+#   its subdirectories need to (or should be) specified.
+###############################################################################
+_ldmx_mount() {
+  for d in "$@"; do
+    if [[ ! -d $d ]]; then
+      echo "'${d}' is not a directory!"
+      return 1
+    fi
+    # check if sub-directory of LDMX_BASE?
+    LDMX_CONTAINER_MOUNTS+=("$d")
+  done
+  export LDMX_CONTAINER_MOUNTS
+}
+
+
+###############################################################################
 # ldmx
 #   Launch the user into the ldmx docker container environment, passing
 #   any argument along as a command to be executed.
@@ -262,6 +290,9 @@ function ldmx() {
     "pull")
       _ldmx_use $_sub_command_args "YES_PULL"
       ;;
+    "mount")
+      _ldmx_mount $_sub_command_args
+      ;;
     "use")
       _ldmx_use $_sub_command_args
       ;;
@@ -285,9 +316,9 @@ _ldmx_completions() {
     return
   fi
 
-  local _options="list clean config pull use run cmake make python3 python"
+  local _options="list clean config pull use run mount cmake make python3 python"
   for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
-    _options=" $ldmx_executable"
+    _options="$_options $(basename $ldmx_executable)"
   done
   COMPREPLY=($(compgen -W $_options "${COMP_WORDS[1]}"))
 }
@@ -389,5 +420,8 @@ export LDMX_BASE=$(pwd -P)
 cd - &> /dev/null
 export OLDPWD=$_old_pwd #resume history
 
+# LDMX_BASE is definitely going to be mounted
+export LDMX_CONTAINER_MOUNTS=("$LDMX_BASE")
+
 # pull down the container if it doesn't exist on this computer yet
-_ldmx_pull ${_repo_name} ${_image_tag} ${_pull_if_nonempty}
+_ldmx_use ${_repo_name} ${_image_tag} ${_pull_if_nonempty}
