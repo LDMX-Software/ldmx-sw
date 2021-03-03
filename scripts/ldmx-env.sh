@@ -193,8 +193,7 @@ fi
 ###############################################################################
 function _ldmx_list() {
   _repo_name="$1"
-  if [ "${_repo_name}" == "local" ] 
-  then
+  if [ "${_repo_name}" == "local" ]; then
     _ldmx_list_local
   else
     #line-by-line description
@@ -256,6 +255,23 @@ _ldmx_mount() {
   export LDMX_CONTAINER_MOUNTS
 }
 
+###############################################################################
+# _ldmx_help
+#   Print some helpful message to the terminal
+###############################################################################
+_ldmx_help() {
+  echo "ldmx - entrypoint for ldmx-sw building and running environment."
+  echo "    Subcommand Summary"
+  echo " help    :  print this help message and exit"
+  echo " list    : List the tag options for the input container repository."
+  echo " clean   : Remove current copies of the container from the system."
+  echo " config  : Print the current configuration of the container."
+  echo " use     : Use the input repo and tag of the container for running."
+  echo " pull    : Pull down the input repo and tag of the container."
+  echo " run     : Run a command at an input location in the container."
+  echo " <other> : Run the input command in your current directory in the container."
+}
+
 
 ###############################################################################
 # ldmx
@@ -278,6 +294,9 @@ function ldmx() {
   _sub_command="$1"
   _sub_command_args="${@:2}"
   case $_sub_command in
+    "help")
+      _ldmx_help
+      ;;
     "list")
       _ldmx_list $_sub_command_args
       ;;
@@ -309,18 +328,51 @@ function ldmx() {
 # Modify the list of completion options on the command line
 #   Helpful discussion of this procedure from a blog post
 #   https://iridakos.com/programming/2018/03/01/bash-programmable-completion-tutorial
+#
+#   COMP_WORDS - bash array of space-separated command line inputs including base command
+#   COMPREPLY  - options available to user, if only one, auto completed
+#
+#   Commands that should have a repo after it
+#       list, pull, use
+#   Commands that could have a file after it
+#       ldmx
+#   Commands that should have a directory after it
+#       run, mount
 ###############################################################################
 _ldmx_completions() {
-  # leave if we dont have exactly one input
-  if [ "${#COMP_WORDS[@]}" != "2" ]; then
-    return
-  fi
-
+  # generate up-to-date list of options
   local _options="list clean config pull use run mount cmake make python3 python"
   for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
     _options="$_options $(basename $ldmx_executable)"
   done
-  COMPREPLY=($(compgen -W $_options "${COMP_WORDS[1]}"))
+
+  # tab completions separated based on what inputs they want
+  #   container repo
+  #   directory
+  #   file
+  case "${COMP_WORDS[1]}" in
+    list|pull|use)
+      # stopping condition, no tab complete after 3 total words
+      #     ldmx <sub-command> <repo> <pull-use-will-also-have-tag>
+      if [[ "${#COMP_WORDS[@]}" = "4" ]]; then return; fi
+      COMPREPLY=($(compgen -W "dev pro local" "${COMP_WORDS[2]}"))
+      ;;
+    run|mount)
+      # stopping condition, no tab complete after 3 total words
+      #     ldmx <sub-command> <directory> <run-will-also-have-stuff>
+      if [[ "${#COMP_WORDS[@]}" = "4" ]]; then return; fi
+      COMPREPLY=($(compgen -A directory "${COMP_WORDS[2]}"))
+      ;;
+    fire|eve|g4-vis)
+      # stopping condition, no tab complete after 3 total words
+      #     ldmx <sub-command> <file> <fire-will-have-other-crap>
+      if [[ "${#COMP_WORDS[@]}" = "4" ]]; then return; fi
+      COMPREPLY=($(compgen -A file "${COMP_WORDS[2]}"))
+      ;;
+     *)
+      COMPREPLY=($(compgen -W "$_options" "${COMP_WORDS[1]}"))
+      ;;
+  esac
 }
 
 # Tell bash the tab-complete options for our main function ldmx
