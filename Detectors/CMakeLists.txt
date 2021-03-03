@@ -23,7 +23,8 @@ setup_library(module Detectors
 
 dd4hep_add_plugin(Tracker SOURCES ${PROJECT_SOURCE_DIR}/src/Detectors/DD4hep/*.cxx
                   USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector 
-                  Detectors::Detectors ${OPT_XERCESC})
+                  Detectors::Detectors DetDescr::DetDescr 
+                  Framework::Framework ${OPT_XERCESC})
   
 install(TARGETS Tracker LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_PREFIX}/data/compact)
