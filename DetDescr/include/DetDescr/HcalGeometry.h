@@ -84,6 +84,16 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   int getNumStrips(int isection) const { return NumStrips_.at(isection); }
 
+  /**
+   * Get the length of the Ecal in (x) for the side Hcal.
+   */
+  double getEcalDx() const { return EcalDx_; }
+
+  /**
+   * Get the length of the Ecal in (y) for the side Hcal
+   */
+  double getEcalDy() const { return EcalDy_; }
+
  private:
   /**
    * Class constructor, for use only by the provider
@@ -135,6 +145,10 @@ class HcalGeometry : public framework::ConditionsObject {
 
   /// Number of sections
   int NumSections_;
+
+  /// Lenght of the Ecal (in x and y)
+  double EcalDx_;
+  double EcalDy_;
 
   /**
    Map of the HcalID position of strip centers relative to world geometry.

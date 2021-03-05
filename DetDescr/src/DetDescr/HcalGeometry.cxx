@@ -18,6 +18,8 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   NumStrips_ = ps.getParameter<std::vector<int>>("NumStrips");
   NumSections_ = ps.getParameter<int>("NumSections");
   HalfTotalWidth_ = ps.getParameter<std::vector<double>>("HalfTotalWidth");
+  EcalDx_ = ps.getParameter<double>("EcalDx");
+  EcalDy_ = ps.getParameter<double>("EcalDy");
   verbose_ = ps.getParameter<int>("verbose");
 
   buildStripPositionMap();
