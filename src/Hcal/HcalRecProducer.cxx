@@ -53,6 +53,7 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // Position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
+    double half_total_width = hcalGeometry.getHalfTotalWidth(digiId.section());
 
     // TOA is the time of arrival with respect to the 25ns clock window
     // TODO what to do if hit NOT in first clock cycle?
@@ -75,8 +76,6 @@ void HcalRecProducer::produce(framework::Event& event) {
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
                           // (here, Ralf's simulation should be included)
-      double half_total_width =
-          hcalGeometry.getHalfTotalWidth(digiId.section());
 
       // position in bar = (diff_time*v)/2;
       double timeRelClock25_close =
@@ -93,11 +92,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       // time
       hitTime = fabs(timeRelClock25_close + timeRelClock25_far) / 2;
 
-      // attenuation
+      // reverse attenuation
       double att_close =
-          exp(-1 * ((half_total_width - fabs(pos)) / 1000.) / attlength_);
+          exp(-1. * ((half_total_width - fabs(pos)) / 1000.) / attlength_);
       double att_far =
-          exp(-1 * ((half_total_width + fabs(pos)) / 1000.) / attlength_);
+          exp(-1. * ((half_total_width + fabs(pos)) / 1000.) / attlength_);
 
       if (digi_close.isTOT()) {
         double voltage_close = (digi_close.tot() - pedestal_) * gain_;
