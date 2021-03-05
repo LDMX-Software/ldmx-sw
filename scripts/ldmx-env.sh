@@ -61,10 +61,10 @@ fi
 #   All container-runners need to implement the following commands
 #     - _ldmx_list_local : list images available locally
 #     - _ldmx_use : setup the environment to use the specified container
-#         - Three arguments: <repo> <tag> <pull_down_if_given>
+#         - Three arguments: <repo> <tag> <pull_no_matter_what>
 #     - _ldmx_run : give all arguments to container's entrypoint script
 #         - mounts all directories in bash array LDMX_CONTAINER_MOUNTS
-#     - _ldmx_clean : remove all containers and images on the local machine
+#     - _ldmx_container_clean : remove all containers and images on this machine
 #     - _ldmx_container_config : print configuration of container
 ###############################################################################
 
@@ -112,7 +112,7 @@ if hash docker &> /dev/null; then
   }
 
   # Clean up local machine
-  _ldmx_clean() {
+  _ldmx_container_clean() {
     docker container prune -f
     docker image prune -a -f
   }
@@ -183,7 +183,7 @@ elif hash singularity &> /dev/null; then
   }
 
   # Clean up local machine
-  _ldmx_clean() {
+  _ldmx_container_clean() {
     rm $LDMX_BASE/*.sif
     rm -r $SINGULARITY_CACHEDIR
   }
@@ -252,7 +252,6 @@ _ldmx_is_mounted() {
   return 1
 }
 
-
 ###############################################################################
 # _ldmx_run_here
 #   Call the run method with some fancy directory movement around it
@@ -320,6 +319,24 @@ _ldmx_base() {
 }
 
 ###############################################################################
+# _ldmx_clean
+#   Clean up the computing environment for ldmx
+#   The input argument defines what should be cleaned
+###############################################################################
+_ldmx_clean() {
+  _what="$1"
+
+  if [[ "$_what" = "container" ]] || [[ "$_what" = "all" ]]; then
+    _ldmx_container_clean
+  fi
+
+  if [[ "$_what" = "env" ]] || [[ "$_what" = "all" ]]; then
+    unset LDMX_BASE
+    unset LDMX_CONTAINER_MOUNTS
+    unset LDMX_CONTAINER_DISPLAY
+  fi
+
+###############################################################################
 # _ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
@@ -333,8 +350,8 @@ _ldmx_help() {
       ldmx help
     list    : List the tag options for the input container repository
       ldmx list <repo>
-    clean   : Remove current copies of the container from the system
-      ldmx clean
+    clean   : Reset ldmx computing environment
+      ldmx clean [all | container]
     config  : Print the current configuration of the container
       ldmx config
     use     : Use the input repo and tag of the container for running
@@ -346,6 +363,15 @@ _ldmx_help() {
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
 HELP
+}
+
+###############################################################################
+# _ldmx_error
+#   Print help and short description of what went wrong.
+###############################################################################
+_ldmx_error() {
+  _ldmx_help
+  echo "ERROR: $@"
 }
 
 ###############################################################################
@@ -367,35 +393,40 @@ function ldmx() {
       ;;
     "list")
       if [[ "$#" != "2" ]]; then
-        echo "'ldmx list' only takes one argument."
+        _ldmx_help
+        echo "ERROR: 'ldmx list' takes one argument."
         return 1
       fi
       _ldmx_list $_sub_command_args
       ;;
     "base")
       if [[ "$#" != "2" ]]; then
-        echo "'ldmx base' only takes one argument."
+        _ldmx_help
+        echo "ERROR: 'ldmx base' takes one argument."
         return 1
       fi
       _ldmx_base $_sub_command_args
       ;;
     "clean")
-      if [[ ! -z "$_sub_command_args" ]]; then
-        echo "'ldmx clean' takes no arguments."
+      if [[ "$#" != "2" ]]; then
+        _ldmx_help
+        echo "ERROR: 'ldmx clean' takes one argument."
         return 1
       fi
       _ldmx_clean 
       ;;
     "config")
       if [[ ! -z "$_sub_command_args" ]]; then
-        echo "'ldmx config' takes no arguments."
+        _ldmx_help
+        echo "ERROR: 'ldmx config' takes no arguments."
         return 1
       fi
       _ldmx_config 
       ;;
     "pull")
       if [[ "$#" != "3" ]]; then
-        echo "'ldmx pull' takes two arguments: <repo> <tag>."
+        _ldmx_help
+        echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
         return 1
       fi
       _ldmx_use $_sub_command_args "YES_PULL"
@@ -405,7 +436,8 @@ function ldmx() {
       ;;
     "use")
       if [[ "$#" != "3" ]]; then
-        echo "'ldmx use' takes two arguments: <repo> <tag>."
+        _ldmx_help
+        echo "ERROR: 'ldmx use' takes two arguments: <repo> <tag>."
         return 1
       fi
       _ldmx_use $_sub_command_args
@@ -437,15 +469,6 @@ _ldmx_complete_directory() {
   COMP_WORDS=(${COMP_WORDS[@]:_num_words})
   COMP_CWORD=$((COMP_CWORD - _num_words))
   _cd
-}
-
-###############################################################################
-# _ldmx_complete_container_repo
-#   Give the container repositories as options for the tab complete
-###############################################################################
-_ldmx_complete_container_repo() {
-  local _curr_word="$1"
-  COMPREPLY=($(compgen -W "dev pro local" "$_curr_word"))
 }
 
 ###############################################################################
@@ -499,12 +522,17 @@ _ldmx_complete() {
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
-      clean|config)
+      config)
+        # no more arguments
         _ldmx_dont_complete
+        ;;
+      clean)
+        # arguments from special set
+        COMPREPLY=($(compgen -W "all container env" "$curr_word"))
         ;;
       list|pull|use)
         # container repositories after these commands
-        _ldmx_complete_container_repo "$curr_word"
+        COMPREPLY=($(compgen -W "dev pro local" "$_curr_word"))
         ;;
       run|mount|base)
         #directories only after these commands
@@ -520,9 +548,12 @@ _ldmx_complete() {
     #   check base argument to see if we should continue
     case "${COMP_WORDS[1]}" in
       list|base|clean|config|pull|use|mount)
+        # these commands shouldn't have tab complete for the third argument 
+        #   (or shouldn't have the third argument at all)
         _ldmx_dont_complete
         ;;
       *)
+        # everything else has bash default (filenames)
         _ldmx_complete_bash_default
         ;;
     esac
