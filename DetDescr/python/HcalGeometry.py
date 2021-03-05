@@ -21,6 +21,8 @@ class HcalReadoutGeometry() :
         self.NumLayers = []
         self.NumStrips = []
         self.HalfTotalWidth = []
+        self.EcalDx = 0.
+        self.EcalDy = 0.
         self.NumSections = 0
         self.verbose = 0
 
@@ -31,6 +33,7 @@ class HcalReadoutGeometry() :
                 self.ThicknessScint , self.WidthScint , self.HalfTotalWidthBack )
         s += 'Z positions of zero-th layer %s mm, Z positions of zero-th strip %s mm \n'%(','.join(str(x) for x in self.ZeroLayer),','.join(str(x) for x in self.ZeroStrip))
         s += 'layer thickness %s mm \n'%(','.join(str(x) for x in self.LayerThickness))
+        s += 'ecal dx %s dy % mm \n'%(str(self.EcalDx), str(self.EcalDy))
         s += 'nlayers %s, nstrips %s }'%(' '.join(str(x) for x in self.NumLayers), ' '.join(str(x) for x in self.NumStrips))
         return s
 
@@ -81,9 +84,13 @@ class HcalGeometry() :
           Encoded in HcalID.
           Back, Top, Left, Right, Bottom.
 
+        - EcalDx/EcalDy:
+          Length of Ecal needed for side Hcal dimensions.
+
         - HalfTotalWidth: 
+          Half length of a bar
           For back Hcal: nstrips * scint_width / 2 (in x/y)
-          For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y)/2)/2
+          For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y))/2
           @param gdml see: sideTB_dx, sideTB_dy
         """
         self.v12=HcalReadoutGeometry()
@@ -98,9 +105,11 @@ class HcalGeometry() :
         self.v12.NumSections = 5
         self.v12.NumLayers = [100,28,28,26,26]
         self.v12.NumStrips = [62,12,12,12,12]
+        self.v12.EcalDx = 800
+        self.v12.EcalDy = 600
         self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
-                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+800/2)/2,
-                                   (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+800/2)/2,
-                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+800/2)/2,
-                                   (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+800/2)/2,]
+                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+self.v12.EcalDx)/2,
+                                   (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+self.v12.EcalDx)/2,
+                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+self.v12.EcalDy)/2,
+                                   (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+self.v12.EcalDy)/2,]
         self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
