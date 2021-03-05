@@ -6,6 +6,12 @@
 #   to develop for ldmx-sw. These commands assume that the user
 #     1. Has docker engine installed OR has singularity installed
 #     2. Can run docker as a non-root user OR can run singularity build/run
+#
+#   SUGGESTION: Put something similar to the following in your '.bashrc',
+#     '~/.bash_aliases', or '~/.bash_profile' so that you just have to 
+#     run 'ldmx-env' to set-up this environment.
+#
+#   alias ldmx-env='source <full-path>/ldmx-env.sh; unalias ldmx-env'
 ###############################################################################
 
 ###############################################################################
@@ -91,13 +97,13 @@ if hash docker &> /dev/null; then
       else
         echo "Downloading..."
         docker pull ${LDMX_DOCKER_TAG}
-        return 0
+        return $?
       fi
       return 1
     elif [ ! -z ${_pull_down} ]; then
       echo "Downloading..."
       docker pull ${LDMX_DOCKER_TAG}
-      return 0
+      return $?
     fi
 
     return 0
@@ -109,12 +115,13 @@ if hash docker &> /dev/null; then
     echo "Docker Version: $(docker --version)"
     echo "Docker Tag: ${LDMX_DOCKER_TAG}"
     echo "  SHA: $(docker inspect --format='{{index .RepoDigests 0}}' ${LDMX_DOCKER_TAG})"
+    return 0
   }
 
   # Clean up local machine
   _ldmx_container_clean() {
-    docker container prune -f
-    docker image prune -a -f
+    docker container prune -f || return $?
+    docker image prune -a -f  || return $?
   }
 
   # Run the container
@@ -129,11 +136,13 @@ if hash docker &> /dev/null; then
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
       $LDMX_DOCKER_TAG "$@"
+    return $?
   }
 elif hash singularity &> /dev/null; then
   # List all '.sif' files in LDMX_BASE directory
   _ldmx_list_local() {
     ls -Alh ${LDMX_BASE} | grep ".*local.*sif"
+    return 0
   }
 
   # Use the input container in your workflow
@@ -163,7 +172,7 @@ elif hash singularity &> /dev/null; then
           --force \
           ${LDMX_BASE}/${LDMX_SINGULARITY_IMG} \
           docker://ldmx/${_repo_name}:${_image_tag}
-        return 0
+        return $?
       fi
       return 1
     elif [ ! -z $_pull_down ]; then
@@ -171,7 +180,7 @@ elif hash singularity &> /dev/null; then
         --force \
         ${LDMX_BASE}/${LDMX_SINGULARITY_IMG} \
         docker://ldmx/${_repo_name}:${_image_tag}
-      return 0
+      return $?
     fi
     return 0
   }
@@ -180,12 +189,13 @@ elif hash singularity &> /dev/null; then
   _ldmx_container_config() {
     echo "Singularity Version: $(singularity --version)"
     echo "Singularity File: ${LDMX_BASE}/${LDMX_SINGULARITY_IMG}"
+    return 0
   }
 
   # Clean up local machine
   _ldmx_container_clean() {
-    rm $LDMX_BASE/*.sif
-    rm -r $SINGULARITY_CACHEDIR
+    rm $LDMX_BASE/*.sif || return $?
+    rm -r $SINGULARITY_CACHEDIR || return $?
   }
 
   # Run the container
@@ -197,6 +207,7 @@ elif hash singularity &> /dev/null; then
     csv_list="${csv_list%,}"
     singularity run --no-home --cleanenv --env LDMX_BASE=${LDMX_BASE} \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
+    return $?
   }
 fi
 
@@ -211,6 +222,7 @@ function _ldmx_list() {
   _repo_name="$1"
   if [ "${_repo_name}" == "local" ]; then
     _ldmx_list_local
+    return $?
   else
     #line-by-line description
     # download tag json
@@ -223,7 +235,9 @@ function _ldmx_list() {
         tr '}' '\n'  |\
         awk -F: '{print $3}' |\
         tr '\n' ' '
+    local rc=${PIPESTATUS[0]}
     echo "" #new line
+    return ${rc}
   fi
 }
 
@@ -236,6 +250,7 @@ function _ldmx_config() {
   echo "Display Port (empty on Linux): ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
   _ldmx_container_config
+  return $?
 }
 
 ###############################################################################
@@ -270,10 +285,11 @@ _ldmx_run_here() {
 
   cd ${LDMX_BASE} # go to ldmx base directory outside container
   # go to working directory inside container
-  _current_working_dir=${_pwd##"${LDMX_BASE}/"} 
-  _ldmx_run $_current_working_dir "$@"
+  _ldmx_run $_pwd "$@"
+  local rc=$?
   cd - &> /dev/null
   export OLDPWD=$_old_pwd
+  return ${rc}
 }
 
 ###############################################################################
@@ -284,20 +300,20 @@ _ldmx_run_here() {
 ###############################################################################
 export LDMX_CONTAINER_MOUNTS=()
 _ldmx_mount() {
-  for d in "$@"; do
-    if [[ ! -d $d ]]; then
-      echo "'${d}' is not a directory!"
-      continue
-    fi
+  local _dir_to_mount="$1"
+  
+  if [[ ! -d $_dir_to_mount ]]; then
+    echo "$_dir_to_mount is not a directory!"
+    return 1
+  fi
 
-    if _ldmx_is_mounted $d; then
-      echo "'$d' is already mounted"
-      continue
-    fi
+  if _ldmx_is_mounted $_dir_to_mount; then
+    echo "$_dir_to_mount is already mounted"
+    return 0
+  fi
 
-    LDMX_CONTAINER_MOUNTS+=($(realpath "$d"))
-  done
-  export LDMX_CONTAINER_MOUNTS
+  export LDMX_CONTAINER_MOUNTS+=($(realpath "$_dir_to_mount"))
+  return 0
 }
 
 ###############################################################################
@@ -312,10 +328,9 @@ _ldmx_base() {
     return 1
   fi
 
-  _new_base=$(realpath $_new_base)
-
-  export LDMX_BASE=$_new_base
+  export LDMX_BASE=$(cd $_new_base; pwd -P)
   _ldmx_mount $LDMX_BASE
+  return $?
 }
 
 ###############################################################################
@@ -326,8 +341,10 @@ _ldmx_base() {
 _ldmx_clean() {
   _what="$1"
 
+  local rc=0
   if [[ "$_what" = "container" ]] || [[ "$_what" = "all" ]]; then
     _ldmx_container_clean
+    rc=$?
   fi
 
   if [[ "$_what" = "env" ]] || [[ "$_what" = "all" ]]; then
@@ -335,6 +352,9 @@ _ldmx_clean() {
     unset LDMX_CONTAINER_MOUNTS
     unset LDMX_CONTAINER_DISPLAY
   fi
+
+  return ${rc}
+}
 
 ###############################################################################
 # _ldmx_help
@@ -363,6 +383,7 @@ _ldmx_help() {
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
 HELP
+  return 0
 }
 
 ###############################################################################
@@ -372,6 +393,7 @@ HELP
 _ldmx_error() {
   _ldmx_help
   echo "ERROR: $@"
+  return 0
 }
 
 ###############################################################################
@@ -387,66 +409,55 @@ function ldmx() {
   _sub_command="$1"
   _sub_command_args="${@:2}"
 
+  # divide commands by number of arguments
   case $_sub_command in
-    "help")
+    help)
       _ldmx_help
+      return $?
       ;;
-    "list")
-      if [[ "$#" != "2" ]]; then
-        _ldmx_help
-        echo "ERROR: 'ldmx list' takes one argument."
-        return 1
-      fi
-      _ldmx_list $_sub_command_args
-      ;;
-    "base")
-      if [[ "$#" != "2" ]]; then
-        _ldmx_help
-        echo "ERROR: 'ldmx base' takes one argument."
-        return 1
-      fi
-      _ldmx_base $_sub_command_args
-      ;;
-    "clean")
-      if [[ "$#" != "2" ]]; then
-        _ldmx_help
-        echo "ERROR: 'ldmx clean' takes one argument."
-        return 1
-      fi
-      _ldmx_clean 
-      ;;
-    "config")
+    config)
       if [[ ! -z "$_sub_command_args" ]]; then
         _ldmx_help
         echo "ERROR: 'ldmx config' takes no arguments."
         return 1
       fi
       _ldmx_config 
+      return $?
       ;;
-    "pull")
-      if [[ "$#" != "3" ]]; then
+    list|base|clean|mount)
+      if [[ "$#" != "2" ]]; then
         _ldmx_help
-        echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
+        echo "ERROR: ldmx ${_sub_command} takes one argument."
         return 1
       fi
-      _ldmx_use $_sub_command_args "YES_PULL"
+      _ldmx_${_sub_command} $_sub_command_args
+      return $?
       ;;
-    "mount")
-      _ldmx_mount $_sub_command_args
+    pull)
+      if [[ "$#" != "3" ]]; then
+        _ldmx_help
+        echo "ERROR: ldmx ${_sub_command} takes two arguments: <repo> <tag>."
+        return 1
+      fi
+      _ldmx_${_sub_command} $_sub_command_args "YES_PULL"
+      return $?
       ;;
-    "use")
+    use)
       if [[ "$#" != "3" ]]; then
         _ldmx_help
         echo "ERROR: 'ldmx use' takes two arguments: <repo> <tag>."
         return 1
       fi
       _ldmx_use $_sub_command_args
+      return $?
       ;;
-    "run")
+    run)
       _ldmx_run $_sub_command_args
+      return $?
       ;;
     *)
       _ldmx_run_here $_sub_command $_sub_command_args
+      return $?
       ;;
   esac
 }
