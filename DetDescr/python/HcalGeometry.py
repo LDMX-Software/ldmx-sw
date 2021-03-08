@@ -33,7 +33,7 @@ class HcalReadoutGeometry() :
                 self.ThicknessScint , self.WidthScint , self.HalfTotalWidthBack )
         s += 'Z positions of zero-th layer %s mm, Z positions of zero-th strip %s mm \n'%(','.join(str(x) for x in self.ZeroLayer),','.join(str(x) for x in self.ZeroStrip))
         s += 'layer thickness %s mm \n'%(','.join(str(x) for x in self.LayerThickness))
-        s += 'ecal dx %s dy % mm \n'%(str(self.EcalDx), str(self.EcalDy))
+        s += 'ecal dx %.1f dy %.1f mm \n'%(self.EcalDx, self.EcalDy)
         s += 'nlayers %s, nstrips %s }'%(' '.join(str(x) for x in self.NumLayers), ' '.join(str(x) for x in self.NumStrips))
         return s
 
@@ -105,8 +105,8 @@ class HcalGeometry() :
         self.v12.NumSections = 5
         self.v12.NumLayers = [100,28,28,26,26]
         self.v12.NumStrips = [62,12,12,12,12]
-        self.v12.EcalDx = 800
-        self.v12.EcalDy = 600
+        self.v12.EcalDx = 800.0
+        self.v12.EcalDy = 600.0
         self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
                                    (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+self.v12.EcalDx)/2,
                                    (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+self.v12.EcalDx)/2,
