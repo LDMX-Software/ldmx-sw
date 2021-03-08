@@ -111,6 +111,32 @@ void HcalDigiProducer::produce(framework::Event& event) {
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
+    // find position along the bar
+    float distance_along_bar, distance_ecal;
+    if (section == ldmx::HcalID::HcalSection::BACK)
+      distance_along_bar = (layer % 2) ? position[0] : position[1];
+    if ((section == ldmx::HcalID::HcalSection::TOP) ||
+        ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
+      distance_along_bar = position[0];
+      distance_ecal = ecal_dx;
+    } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
+               (section == ldmx::HcalID::HcalSection::RIGHT)) {
+      distance_along_bar = position[1];
+      distance_ecal = ecal_dy;
+    }
+
+    /**
+       Define end of the bar for the HcalDigiID, based on its distance (x,y)
+       along the bar. A positive end corresponds to top,left, will have an
+       endID=0. A negative end corresponds to bottom,right, will have an
+       endID=1.
+
+       - if the position along the bar > 0, the close end is 0, else 1.
+       - if the position along the bar > 0, the far end is 1, else 0.
+    */
+    int end_close = (distance_along_bar > 0) ? 0 : 1;
+    int end_far = (distance_along_bar < 0) ? 0 : 1;
+
     /**
        Calculate voltage attenuation and time shift for the close and far pulse.
        For the back Hcal, the half point of the bar coincides with the
@@ -120,33 +146,27 @@ void HcalDigiProducer::produce(framework::Event& event) {
      */
     float v =
         299.792 / 1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
-    float distance_along_bar, distance_close, distance_far;
+    float distance_close, distance_far;
     if (section == ldmx::HcalID::HcalSection::BACK) {
-      distance_along_bar = (layer % 2) ? position[0] : position[1];
       distance_close = half_total_width;
       distance_far = half_total_width;
     } else if ((section == ldmx::HcalID::HcalSection::TOP) ||
-               ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
-      distance_along_bar = position[0];
-      if (distance_along_bar > 0) {
-        distance_close = 2 * half_total_width - ecal_dx / 2;
-        distance_far = ecal_dx / 2;
+               (section == ldmx::HcalID::HcalSection::LEFT)) {
+      if (end_close == 0) {
+        distance_close = 2 * half_total_width - distance_ecal / 2;
+        distance_far = distance_ecal / 2;
       } else {
-        distance_close = ecal_dx / 2;
-        distance_far = 2 * half_total_width - ecal_dx / 2;
+        distance_close = distance_ecal / 2;
+        distance_far = 2 * half_total_width - distance_ecal / 2;
       }
-      std::cout << " top or bottom pos x " << distance_along_bar << " ecal dx "
-                << ecal_dx << " dclose " << distance_close << " dfar "
-                << distance_far << std::endl;
-    } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
+    } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
                ((section == ldmx::HcalID::HcalSection::RIGHT))) {
-      distance_along_bar = position[1];
-      if (distance_along_bar > 0) {
-        distance_close = 2 * half_total_width - ecal_dy / 2;
-        distance_far = ecal_dy / 2;
+      if (end_close == 0) {
+        distance_close = distance_ecal / 2;
+        distance_far = 2 * half_total_width - distance_ecal / 2;
       } else {
-        distance_close = ecal_dy / 2;
-        distance_far = 2 * half_total_width - ecal_dy / 2;
+        distance_far = distance_ecal / 2;
+        distance_close = 2 * half_total_width - distance_ecal / 2;
       }
     }
     double attenuation_close =
@@ -178,16 +198,12 @@ void HcalDigiProducer::produce(framework::Event& event) {
      * Digitize:
      * For back Hcal return two digis: close and far.
      * For bide Hcal we choose which pulse (close or far) to readout based on
-     *the position of the hit. For Top (Left)
+     * the position of the hit. For Top (Left)
      *  - x(y) > 0: read close pulse
      *  - x(y) < 0: read far pulse
      * For bottom (right)
      *  - x(y) > 0: read far pulse
      *  - x(y) < 0: read close pulse
-     *
-     * An HcalDigiID has an end, determined by its distance (x,y) along the bar.
-     *  - a positive end (Top, Left) will have end = 0.
-     *  - a negative end (Bottom, Right) will have end = 1.
      **/
     if (section == ldmx::HcalID::HcalSection::BACK) {
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddClose;
@@ -195,9 +211,6 @@ void HcalDigiProducer::produce(framework::Event& event) {
       if (hgcroc_->digitize(hitID, voltages_close, times_close,
                             digiToAddClose) &&
           hgcroc_->digitize(hitID, voltages_far, times_far, digiToAddFar)) {
-        int end_close = (distance_along_bar > 0) ? 0 : 1;
-        int end_far = (distance_along_bar < 0) ? 0 : 1;
-
         ldmx::HcalDigiID closeID(section, layer, strip, end_close);
         ldmx::HcalDigiID farID(section, layer, strip, end_far);
 
@@ -205,33 +218,23 @@ void HcalDigiProducer::produce(framework::Event& event) {
         hcalDigis.addDigi(farID.raw(), digiToAddFar);
       }  // Back Hcal needs to digitize both pulses or none
     } else {
-      int end;
       bool is_close = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if ((section == ldmx::HcalID::HcalSection::TOP) ||
           (section == ldmx::HcalID::HcalSection::LEFT)) {
-        end = 0;
         if (distance_along_bar > 0) is_close = true;
       } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
                  (section == ldmx::HcalID::HcalSection::RIGHT)) {
-        end = 1;
         if (distance_along_bar < 0) is_close = true;
       }
-      std::cout << "side section: " << section << " layer " << layer
-                << " distance along bar " << distance_along_bar << " half "
-                << half_total_width << std::endl;
-      std::cout << " pos x " << position[0] << " y " << position[1] << " z "
-                << position[2] << std::endl;
-      std::cout << " end " << end << std::endl;
       if (is_close) {
-        std::cout << "digitize close " << std::endl;
         if (hgcroc_->digitize(hitID, voltages_close, times_close, digiToAdd)) {
-          ldmx::HcalDigiID digiID(section, layer, strip, end);
+          ldmx::HcalDigiID digiID(section, layer, strip, end_close);
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       } else {
         if (hgcroc_->digitize(hitID, voltages_far, times_far, digiToAdd)) {
-          ldmx::HcalDigiID digiID(section, layer, strip, end);
+          ldmx::HcalDigiID digiID(section, layer, strip, end_far);
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       }
