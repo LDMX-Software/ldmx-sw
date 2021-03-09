@@ -44,7 +44,7 @@ void HcalGeometry::buildStripPositionMap() {
         // the center of a strip: (strip + 0.5) * (strip_dx)
         double stripcenter = (strip + 0.5) * WidthScint_;
 
-        /*
+        /**
           For back Hcal:
           - layers in z
           - strips occupy thickness of scintillator in z (e.g. 20mm)
@@ -58,7 +58,7 @@ void HcalGeometry::buildStripPositionMap() {
           // z position: zero-layer(z) + layer_z + thickness_scint
           z = ZeroLayer_.at(section) + layercenter;
 
-          /*
+          /**
             Now compute, y(x) position for even(odd) layers, relative to the
             center of detector. Strips enumeration starts from -y(-x)
             stripcenter will be large for +y(+x) and the halfwidth of the strip
@@ -76,7 +76,7 @@ void HcalGeometry::buildStripPositionMap() {
           // z position: zero-strip(z) + strip_center(z)
           z = ZeroStrip_.at(section) + stripcenter;
 
-          /*
+          /**
             Top and Bottom sections have strips orientated in x
             The y coordinate will be given by layercenter + ZeroLayer_(y)
           */
