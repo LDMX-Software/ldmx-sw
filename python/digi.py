@@ -20,7 +20,7 @@ from LDMX.Tools.HgcrocEmulator import HgcrocEmulator
 nPEPerMIP = 68. #PEs created per MIP 
 mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6      
 
-gain = 1.2 # very large gain for now
+gain = 5. # very large gain for now
 pedestal = 1.
 
 class HcalHgcrocEmulator(HgcrocEmulator) :
