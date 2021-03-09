@@ -106,7 +106,6 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
     // get position
     std::vector<float> position = simHit.getPosition();
-    auto positionMap = hcalGeometry.getStripCenterPosition(detID);
     double half_total_width = hcalGeometry.getHalfTotalWidth(section);
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
