@@ -21,9 +21,12 @@ import LDMX.Hcal.HcalGeometry
 
 # HCal digi
 hcalDigis = digi.HcalDigiProducer()
-
+hcalDigis.inputCollName = 'HcalFakeSimHits'
 # Turn off noise hits
 hcalDigis.hgcroc.noise = False
+
+hcalRec = digi.HcalRecProducer()
+hcalRec.simHitCollName = 'HcalFakeSimHits'
 
 p.sequence = [
     ldmxcfg.Producer('fakeSimHits','hcal::test::HcalFakeSimHits','Hcal'),
