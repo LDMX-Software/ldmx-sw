@@ -86,7 +86,7 @@ void EcalHexReadout::buildModuleMap() {
   }
 
   // Rotated second layer of each bilayer
-  for (unsigned layer = 5; layer < 34; layer = layer + 4) {
+  for (unsigned layer = 1; layer < 34; layer = layer + 2) {
     double z = ecalFrontZ_ + layerZPositions_.at(layer);
     modulePositionMap_[EcalID(layer, 0, 0)] =
         std::tuple<double, double, double>(layerShiftX_, layerShiftY_, z);
