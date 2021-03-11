@@ -111,7 +111,7 @@ class GammaToMuPair(XsecBiasingOperator) :
     """
 
     def __init__(self,vol,factor,thresh=0.) :
-        super().__init__('%s_bias_en'%vol,'simcore::biasoperators::GammaToMuPair')
+        super().__init__('%s_bias_mumu'%vol,'simcore::biasoperators::GammaToMuPair')
 
         self.volume = vol
         self.factor = factor
