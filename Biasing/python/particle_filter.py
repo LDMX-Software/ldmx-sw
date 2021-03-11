@@ -19,7 +19,7 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
     """
 
     def __init__(self,name) :
-        super().__init__(name,'ldmx::PhotoNuclearProductsFilter')
+        super().__init__(name,'biasing::PhotoNuclearProductsFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -43,4 +43,3 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
                 321  # K^+
         ]
         return particle_filter
-
