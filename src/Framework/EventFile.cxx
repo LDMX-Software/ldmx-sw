@@ -13,11 +13,12 @@ namespace framework {
 
 EventFile::EventFile(const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput,
-                     int compressionSetting)
+                     int compressionSetting, bool isOverlayFile)
     : fileName_(filename),
       parent_(parent),
       isOutputFile_(isOutputFile),
-      isSingleOutput_(isSingleOutput) {
+      isSingleOutput_(isSingleOutput),
+      isOverlayFile_(isOverlayFile) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");
@@ -71,14 +72,17 @@ EventFile::EventFile(const std::string &filename, EventFile *parent,
 }
 
 EventFile::EventFile(const std::string &filename)
-    : EventFile(filename, nullptr, false, false, -1) {}
+  : EventFile(filename, nullptr, false, false, -1, false) {}
 
 EventFile::EventFile(const std::string &filename, int compressionSetting)
-    : EventFile(filename, nullptr, true, true, compressionSetting) {}
-
+  : EventFile(filename, nullptr, true, true, compressionSetting, false) {}
+  
+EventFile::EventFile(const std::string& filename, bool isOverlayFile)
+    : EventFile(filename, nullptr, false, false, -1, isOverlayFile) { }
+  
 EventFile::EventFile(const std::string &filename, EventFile *parent,
                      bool isSingleOutput, int compressionSetting)
-    : EventFile(filename, parent, true, isSingleOutput, compressionSetting) {}
+  : EventFile(filename, parent, true, isSingleOutput, compressionSetting, false) {}
 
 void EventFile::addDrop(const std::string &rule) {
   int offset;
@@ -194,7 +198,18 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     // if we are reading, move the pointer
     if (!isOutputFile_) {
       if (ientry_ + 1 >= entries_) {
-        return false;
+		if ( isOverlayFile_ ) {
+		  // reset the event counter: reuse events from start of pileup tree
+		  /* Here I would have liked to inform the user that a reset happens
+			 but it seems like only Exceptions are foreseen from this class? 
+  		  ldmx_log(info) */
+std::cout  << "Reached end of pileup tree at entry " <<
+			ientry_ << "; resetting event counter!" << std::endl;
+
+		  ientry_ = -1;
+		}
+		else
+		  return false;
       }
 
       ientry_++;
