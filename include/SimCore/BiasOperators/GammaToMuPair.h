@@ -7,7 +7,7 @@ namespace simcore {
 namespace biasoperators {
 
 /**
- * Bias the Electron-Nuclear process
+ * Bias the Gamma to Mu Pair process
  */
 class GammaToMuPair : public XsecBiasingOperator {
  public:
@@ -66,4 +66,4 @@ class GammaToMuPair : public XsecBiasingOperator {
 }  // namespace biasoperators
 }  // namespace simcore
 
-#endif  // SIMCORE_BIASOPERATORS_ELECTRONUCLEAR_H_
+#endif  // SIMCORE_BIASOPERATORS_GAMMATOMUPAIR_H_
