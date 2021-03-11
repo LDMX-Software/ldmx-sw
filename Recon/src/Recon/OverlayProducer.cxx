@@ -358,9 +358,7 @@ void OverlayProducer::onProcessStart() {
   }
 
   // replace by this line once the corresponding tweak to EventFile is ready:
-  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,
-  //true );
-  overlayFile_ = std::make_unique<framework::EventFile>(overlayFileName_);
+  overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,true );
   overlayFile_->setupEvent(&overlayEvent_);
 
   // we update the iterator at the end of each event. so do this once here to
