@@ -8,8 +8,8 @@
 #ifndef TOOLS_HGCROCTRIGGERCALCULATIONS_H_
 #define TOOLS_HGCROCTRIGGERCALCULATIONS_H_
 
-#include "Conditions/SimpleTableCondition.h"
 #include <map>
+#include "Conditions/SimpleTableCondition.h"
 
 namespace ldmx {
 
@@ -21,7 +21,6 @@ namespace ldmx {
  * during construction.
  */
 class HgcrocTriggerConditions {
-
  public:
   /// column index for ADC pedestal
   static const unsigned int IADC_PEDESTAL = 0;
@@ -44,7 +43,8 @@ class HgcrocTriggerConditions {
    * @raises Exception if any of the column names from the passed table
    * do not match the hardcoded indices.
    */
-  HgcrocTriggerConditions(const IntegerTableCondition &, bool validate = true);
+  HgcrocTriggerConditions(const conditions::IntegerTableCondition &,
+                          bool validate = true);
 
   /**
    * get the ADC pedestal
@@ -52,9 +52,7 @@ class HgcrocTriggerConditions {
    * @param[in] id raw ID for specific chip
    * @returns the ADC pedestal for that chip
    */
-  int adcPedestal(unsigned int id) const {
-    return ict_.get(id, IADC_PEDESTAL);
-  }
+  int adcPedestal(unsigned int id) const { return ict_.get(id, IADC_PEDESTAL); }
 
   /**
    * get the ADC threshold
@@ -72,9 +70,7 @@ class HgcrocTriggerConditions {
    * @param[in] id raw ID for specific chip
    * @returns the TOT pedestal for that chip
    */
-  int totPedestal(unsigned int id) const {
-    return ict_.get(id, ITOT_PEDESTAL);
-  }
+  int totPedestal(unsigned int id) const { return ict_.get(id, ITOT_PEDESTAL); }
 
   /**
    * get the TOT threshold
@@ -96,8 +92,8 @@ class HgcrocTriggerConditions {
 
  private:
   /// reference to the table of conditions storing the chip conditions
-  const IntegerTableCondition &ict_;
-}; // HgcrocTriggerConditions
+  const conditions::IntegerTableCondition &ict_;
+};  // HgcrocTriggerConditions
 
 /**
  * @class HgcrocTriggerCalculations
@@ -142,7 +138,7 @@ class HgcrocTriggerCalculations {
    *
    * @param[in] ict table of chip conditions
    */
-  HgcrocTriggerCalculations(const IntegerTableCondition &ict);
+  HgcrocTriggerCalculations(const conditions::IntegerTableCondition &ict);
 
   /**
    * Determine the linear charge for the given channel, using the calibration
@@ -193,8 +189,8 @@ class HgcrocTriggerCalculations {
   std::map<unsigned int, unsigned int> linearCharge_;
   /** A map of trigger channel id to compressed charge */
   std::map<unsigned int, uint8_t> compressedCharge_;
-}; // HgcrocTriggerCalculations
+};  // HgcrocTriggerCalculations
 
-} // namespace ldmx
+}  // namespace ldmx
 
-#endif // TOOLS_HGCROCTRIGGERCALCULATIONS_H_
+#endif  // TOOLS_HGCROCTRIGGERCALCULATIONS_H_

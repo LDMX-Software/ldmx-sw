@@ -8,84 +8,79 @@
 #ifndef EVENTDISPLAY_EVEDETECTORGEOMETRY_H_
 #define EVENTDISPLAY_EVEDETECTORGEOMETRY_H_
 
-#include "TEveElement.h"
-#include "EventDisplay/EveShapeDrawer.h"
+#include "DetDescr/HcalID.h"  //for HcalSection enum
 #include "EventDisplay/DetectorGeometry.h"
-#include "DetDescr/HcalID.h" //for HcalSection enum
+#include "EventDisplay/EveShapeDrawer.h"
+#include "TEveElement.h"
 
-namespace ldmx {
+namespace eventdisplay {
 
-    /**
-     * @class EveDetectorGeometry
-     * @brief Class that constructs the detector components for the event display
-     */
-    class EveDetectorGeometry {
+/**
+ * @class EveDetectorGeometry
+ * @brief Class that constructs the detector components for the event display
+ */
+class EveDetectorGeometry {
+ public:
+  /**
+   * Constructor
+   * Builds and draws all of the detector elements.
+   */
+  EveDetectorGeometry();
 
-        public:
+  /**
+   * Destructor
+   * Cleanup leftover pointers.
+   */
+  ~EveDetectorGeometry() {
+    delete hcal_;
+    delete sidehcal_;
+    delete ecal_;
+    delete recoilTracker_;
+    delete detector_;
+  }
 
-            /**
-             * Constructor
-             * Builds and draws all of the detector elements.
-             */
-            EveDetectorGeometry();
+  /**
+   * Draw the elements of the ECAL
+   */
+  void drawECAL();
 
-            /**
-             * Destructor
-             * Cleanup leftover pointers.
-             */
-            ~EveDetectorGeometry() {
+  /**
+   * Draw the elements of the HCAL
+   */
+  void drawHCAL();
 
-                delete hcal_;
-                delete sidehcal_;
-                delete ecal_;
-                delete recoilTracker_;
-                delete detector_;
-            }
+  /**
+   * Draw the elements of the Recoil Tracker
+   */
+  void drawRecoilTracker();
 
-            /**
-             * Draw the elements of the ECAL
-             */
-            void drawECAL();
+  /**
+   * Access ECAL Eve Element
+   */
+  TEveElement* getECAL() { return ecal_; }
 
-            /**
-             * Draw the elements of the HCAL
-             */
-            void drawHCAL();
+  /**
+   * Access HCAL Eve Element
+   */
+  TEveElement* getHCAL() { return hcal_; }
 
-            /**
-             * Draw the elements of the Recoil Tracker
-             */
-            void drawRecoilTracker();
+  /**
+   * Access Recoil Tracker Eve Element
+   */
+  TEveElement* getRecoilTracker() { return recoilTracker_; }
 
-            /**
-             * Access ECAL Eve Element
-             */
-            TEveElement* getECAL() { return ecal_; }
+  /**
+   * Access Entire Detector Eve Element
+   */
+  TEveElement* getDetector() { return detector_; }
 
-            /**
-             * Access HCAL Eve Element
-             */
-            TEveElement* getHCAL() { return hcal_; }
-
-            /**
-             * Access Recoil Tracker Eve Element
-             */
-            TEveElement* getRecoilTracker() { return recoilTracker_; }
-
-            /**
-             * Access Entire Detector Eve Element
-             */
-            TEveElement* getDetector() { return detector_; }
-
-        private:
-
-            TEveElement* hcal_; //* HCAL Eve Element
-            TEveElement* sidehcal_; //* Side HCAL Eve Element
-            TEveElement* ecal_; //* ECAL Eve Element
-            TEveElement* recoilTracker_; //* Recoil Tracker Eve Element
-            TEveElement* detector_; //* Entire Detector Eve Element
-
-    };
-}
+ private:
+  TEveElement* hcal_;           //* HCAL Eve Element
+  TEveElement* sidehcal_;       //* Side HCAL Eve Element
+  TEveElement* ecal_;           //* ECAL Eve Element
+  TEveElement* recoilTracker_;  //* Recoil Tracker Eve Element
+  TEveElement* detector_;       //* Entire Detector Eve Element
+};
+}  // namespace eventdisplay
 
 #endif

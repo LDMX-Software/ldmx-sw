@@ -10,12 +10,12 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
 #include <time.h>
+#include <iostream>
 #include <vector>
 
 //--------------//
-//  boost::math // 
+//  boost::math //
 //--------------//
 #include <boost/math/distributions/poisson.hpp>
 
@@ -25,63 +25,62 @@
 #include "Math/DistFunc.h"
 #include "TRandom3.h"
 
-namespace ldmx { 
+namespace ldmx {
 
-class NoiseGenerator { 
-
- public: 
-
+class NoiseGenerator {
+ public:
   /** Constructor */
-  NoiseGenerator(double noiseValue=0.0001, bool gauss=true);
+  NoiseGenerator(double noiseValue = 0.0001, bool gauss = true);
 
   /** Destructor */
-  ~NoiseGenerator(); 
+  ~NoiseGenerator();
 
   /** Seed the generator */
   void seedGenerator(uint64_t seed);
 
   /** Has been seeded? */
-  bool hasSeed() const { return random_.get()!=nullptr; }
-      
+  bool hasSeed() const { return random_.get() != nullptr; }
+
   /**
    * Generate noise hits.
    *
-   * @param emptyChannels The total number of channels without a hit 
+   * @param emptyChannels The total number of channels without a hit
    *                      on them.
    * @return A vector containing the amplitude of the noise hits.
    */
-  std::vector<double> generateNoiseHits(int emptyChannels); 
+  std::vector<double> generateNoiseHits(int emptyChannels);
 
   /** Set the noise threshold. */
-  void setNoiseThreshold(double noiseThreshold) { noiseThreshold_ = noiseThreshold; }
+  void setNoiseThreshold(double noiseThreshold) {
+    noiseThreshold_ = noiseThreshold;
+  }
 
   /** Set the mean noise. */
   void setNoise(double noise) { noise_ = noise; };
 
   /** Set the pedestal. */
-  void setPedestal(double pedestal) { pedestal_ = pedestal; }; 
-        
- private:
+  void setPedestal(double pedestal) { pedestal_ = pedestal; };
 
+ private:
   /** Random number generator. */
   std::unique_ptr<TRandom3> random_{nullptr};
 
   /** The noise threshold. */
-  double noiseThreshold_{4}; 
+  double noiseThreshold_{4};
 
   /** Mean noise. */
   double noise_{1};
-            
+
   /** Pedestal or baseline. */
-  double pedestal_{0};  
+  double pedestal_{0};
 
   /** Gaussian flag */
   bool useGaussianModel_{true};
 
   /** pdf for poisson errors */
-  std::unique_ptr< boost::math::poisson_distribution<> > poisson_dist_;
-}; // NoiseGenerator
+  std::unique_ptr<boost::math::poisson_distribution<> > poisson_dist_;
+};  // NoiseGenerator
 
-} // ldmx
+}  // namespace ldmx
 
-#endif // TOOLS_NOISEGENERATOR_H
+#endif  // TOOLS_NOISEGENERATOR_H

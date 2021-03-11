@@ -7,13 +7,15 @@ project(DetDescr VERSION 2.1.0
                  LANGUAGES CXX
 )
 
-# Find all of the source files we want to add to the SimCore library
-file(GLOB DETDESCR_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+# Search and configure ROOT
+find_package(ROOT 6.16 CONFIG REQUIRED)
 
-setup_library(name DetDescr
-              dependencies DARK::Framework
-              python_install_path ${PYTHON_INSTALL_PREFIX}
+setup_library(module DetDescr
+              dependencies  ROOT::Core ROOT::Hist
+                            Framework::Exception Framework::Configure 
 )
 
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
+
 # Setup the test
-setup_test(dependencies DARK::DetDescr)
+setup_test(dependencies DetDescr::DetDescr)
