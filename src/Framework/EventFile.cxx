@@ -202,10 +202,10 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 		  // reset the event counter: reuse events from start of pileup tree
 		  /* Here I would have liked to inform the user that a reset happens
 			 but it seems like only Exceptions are foreseen from this class? 
-  		  ldmx_log(info) */
+  		  ldmx_log(info) 
 std::cout  << "Reached end of pileup tree at entry " <<
 			ientry_ << "; resetting event counter!" << std::endl;
-
+*/
 		  ientry_ = -1;
 		}
 		else
