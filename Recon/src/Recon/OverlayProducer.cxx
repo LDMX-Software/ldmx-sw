@@ -20,7 +20,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   doPoisson_ = parameters.getParameter<bool>("doPoisson");
   timeSigma_ = parameters.getParameter<double>("timeSpread");
   timeMean_ = parameters.getParameter<double>("timeMean");
-  nBunchesToSample_ = parameters.getParameter<int>("nBunchesToSample");
+  nEarlierBunchesToSample_ = parameters.getParameter<int>("nEarlierBunchesToSample");
+  nLaterBunchesToSample_ = parameters.getParameter<int>("nLaterBunchesToSample");
   bunchSpacing_ = parameters.getParameter<double>("bunchSpacing");
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -116,8 +117,8 @@ void OverlayProducer::produce(framework::Event &event) {
     // of pulse behaviour)
     float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
     int bunchOffset = (int)rndmTime_->Uniform(
-        -(nBunchesToSample_ + 1),
-        nBunchesToSample_ + 1);  // +1 to get inclusive interval
+        -(nEarlierBunchesToSample_ + 1),
+        nLaterBunchesToSample_ + 1);  // +1 to get inclusive interval
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
     timeOffset += bunchTimeOffset;
 

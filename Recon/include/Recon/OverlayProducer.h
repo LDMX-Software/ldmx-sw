@@ -142,11 +142,18 @@ class OverlayProducer : public framework::Producer {
   double bunchSpacing_{0.};
 
   /**
-   * Number of bunches before and after the sim event to pull pileup events
+   * Number of bunches before the sim event to pull pileup events
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nBunchesToSample_{0};
+  int nEarlierBunchesToSample_{0};
+
+  /**
+   * Number of bunches after the sim event to pull pileup events
+   * from. Defaults to 0 --> all events occur in the same bunch as the sim
+   * event.
+   */
+  int nLaterBunchesToSample_{0};
 
   /**
    * Local control of processor verbosity
