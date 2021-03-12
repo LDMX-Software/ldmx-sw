@@ -40,6 +40,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
       ldmx_log(info) << coll << "; ";
 
     ldmx_log(info) << "\n\t numberOverlaidInteractions = " << poissonMu_
+                   << "\n\t nEarlierBunchesToSample = " << nEarlier_
+                   << "\n\t nLaterBunchesToSample = " << nLater_
                    << "\n\t doPoisson = " << doPoisson_
                    << "\n\t timeSpread = " << timeSigma_
                    << "\n\t timeMean = " << timeMean_
@@ -117,7 +119,7 @@ void OverlayProducer::produce(framework::Event &event) {
     // of pulse behaviour)
     float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
     int bunchOffset = (int)rndmTime_->Uniform(
-        -nEarlier_ , nLater_ + 1);  // +1 to get inclusive interval
+	   	  -(nEarlier_+1) , nLater_+1);  // +1 to get inclusive interval
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
     timeOffset += bunchTimeOffset;
 
@@ -367,8 +369,7 @@ void OverlayProducer::onProcessStart() {
   // shift away a bit from the first event to avoid some weak correlations
   // seen during initial valiadations
   // TODO use the actual number of events in the file as upper limit
-  // int startEvent = rd->Uniform(20., 500.); //assume we have at least 500 events
- int startEvent = rd->Uniform(1001., 1002.); //assume we have at least 500 events
+  int startEvent = rd->Uniform(20., 500.); //assume we have at least 500 events
   // and if not, event number wrapping will take care of it
   for (int iShift = 0; iShift < startEvent; iShift++) {
     if (!overlayFile_->nextEvent()) {
