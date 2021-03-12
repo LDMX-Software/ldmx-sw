@@ -110,14 +110,14 @@ class OverlayProducer : public framework::Producer {
   double poissonMu_{0.};
 
   /**
-   * Random number generator for number of events.
+   * Random number generator for number of overlaid events.
    * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input
    * files will have way shorter period anyway.
    */
   std::unique_ptr<TRandom2> rndm_;
 
   /**
-   * Random number generator for peileup event time offset.
+   * Random number generator for pileup event time offset.
    * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input
    * files will have way shorter period anyway.
    */
@@ -146,14 +146,14 @@ class OverlayProducer : public framework::Producer {
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nEarlierBunchesToSample_{0};
+  int nEarlier_{0};
 
   /**
    * Number of bunches after the sim event to pull pileup events
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nLaterBunchesToSample_{0};
+  int nLater_{0};
 
   /**
    * Local control of processor verbosity

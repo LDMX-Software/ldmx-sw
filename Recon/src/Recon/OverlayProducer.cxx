@@ -20,8 +20,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   doPoisson_ = parameters.getParameter<bool>("doPoisson");
   timeSigma_ = parameters.getParameter<double>("timeSpread");
   timeMean_ = parameters.getParameter<double>("timeMean");
-  nEarlierBunchesToSample_ = parameters.getParameter<int>("nEarlierBunchesToSample");
-  nLaterBunchesToSample_ = parameters.getParameter<int>("nLaterBunchesToSample");
+  nEarlier_ = parameters.getParameter<int>("nEarlierBunchesToSample");
+  nLater_ = parameters.getParameter<int>("nLaterBunchesToSample");
   bunchSpacing_ = parameters.getParameter<double>("bunchSpacing");
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -117,8 +117,7 @@ void OverlayProducer::produce(framework::Event &event) {
     // of pulse behaviour)
     float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
     int bunchOffset = (int)rndmTime_->Uniform(
-        -(nEarlierBunchesToSample_ + 1),
-        nLaterBunchesToSample_ + 1);  // +1 to get inclusive interval
+        -nEarlier_ , nLater_ + 1);  // +1 to get inclusive interval
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
     timeOffset += bunchTimeOffset;
 
@@ -361,22 +360,25 @@ void OverlayProducer::onProcessStart() {
   // replace by this line once the corresponding tweak to EventFile is ready:
   overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,true );
   overlayFile_->setupEvent(&overlayEvent_);
-
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
-  // TODO this could also be done N random times to get a randomness in which
-  // events get matched to what sim event. noticed that shifting by a fair chunk
-  // helps remove some weak but suspicious correlations between sim and overlay
-  // particle positions. leave it hardwired until we can reset the overlay event
-  // counter in nextEvent() (implemented with the EventFile definition above)
-  int nEventsShift_ = 23;
-  for (int iShift = 0; iShift < nEventsShift_; iShift++) {
+
+  TRandom2 * rd = new TRandom2( 0.); //RNSS undefined before produce()
+  // shift away a bit from the first event to avoid some weak correlations
+  // seen during initial valiadations
+  // TODO use the actual number of events in the file as upper limit
+  // int startEvent = rd->Uniform(20., 500.); //assume we have at least 500 events
+ int startEvent = rd->Uniform(1001., 1002.); //assume we have at least 500 events
+  // and if not, event number wrapping will take care of it
+  for (int iShift = 0; iShift < startEvent; iShift++) {
     if (!overlayFile_->nextEvent()) {
       std::cerr << "Couldn't read next event!";
       return;
     }
   }
 
+  ldmx_log(info) << "Starting overlay process with pileup event number " <<  overlayEvent_.getEventHeader().getEventNumber() << " (random event number picked was " << startEvent << ")." ;
+  
   if (verbosity_ > 2) {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
                     << overlayFile_->getFileName();
