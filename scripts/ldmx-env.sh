@@ -294,7 +294,7 @@ _ldmx_run_here() {
 
 ###############################################################################
 # _ldmx_mount
-#   Tell us to mount all of the passed directories to the container
+#   Tell us to mount the passed directory to the container when we run
 #   By default, we already mount the LDMX_BASE directory, so none of
 #   its subdirectories need to (or should be) specified.
 ###############################################################################
@@ -341,9 +341,11 @@ _ldmx_base() {
 _ldmx_clean() {
   _what="$1"
 
+  local cleaned_something=false
   local rc=0
   if [[ "$_what" = "container" ]] || [[ "$_what" = "all" ]]; then
     _ldmx_container_clean
+    cleaned_something=true
     rc=$?
   fi
 
@@ -351,6 +353,12 @@ _ldmx_clean() {
     unset LDMX_BASE
     unset LDMX_CONTAINER_MOUNTS
     unset LDMX_CONTAINER_DISPLAY
+    cleaned_something=true
+  fi
+
+  if ! $cleaned_something; then
+    echo "ERROR: $_what is not one of the clean options."
+    rc=1
   fi
 
   return ${rc}
@@ -369,15 +377,15 @@ _ldmx_help() {
     help    : print this help message and exit
       ldmx help
     list    : List the tag options for the input container repository
-      ldmx list <repo>
+      ldmx list (dev | pro | local)
     clean   : Reset ldmx computing environment
-      ldmx clean [all | container]
+      ldmx clean (all | container | env)
     config  : Print the current configuration of the container
       ldmx config
     use     : Use the input repo and tag of the container for running
-      ldmx use <repo> <tag>
+      ldmx use (dev | pro | local) <tag>
     pull    : Pull down the input repo and tag of the container
-      ldmx pull <repo> <tag>
+      ldmx pull (dev | pro | local) <tag>
     run     : Run a command at an input location in the container
       ldmx run <directory> <sub-command> [<argument> ...]
     <other> : Run the input command in your current directory in the container
@@ -483,6 +491,28 @@ _ldmx_complete_directory() {
 }
 
 ###############################################################################
+# _ldmx_complete_command
+#   Tab-complete with a command used commonly inside the container
+#
+#   Search the install location of ldmx-sw for ldmx-sw executables
+#   and include hard-coded common commands. Any strings passed are
+#   also included.
+#
+#   Assumes current argument being tab completed is stored in
+#   bash variable 'curr_word'.
+###############################################################################
+_ldmx_complete_command() {
+  # generate up-to-date list of options
+  local _options="$@ cmake make python3 python"
+  for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
+    _options="$_options $(basename $ldmx_executable)"
+  done
+
+  # match current word (perhaps empty) to the list of options
+  COMPREPLY=($(compgen -W "$_options" "$curr_word"))
+}
+
+###############################################################################
 # _ldmx_complete_bash_default
 #   Restore the default tab-completion in bash that uses the readline function
 #   Bash default tab completion just looks for filenames
@@ -521,14 +551,7 @@ _ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    # generate up-to-date list of options
-    local _options="list clean config pull use run mount base cmake make python3 python"
-    for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
-      _options="$_options $(basename $ldmx_executable)"
-    done
-
-    # match current word (perhaps empty) to the list of options
-    COMPREPLY=($(compgen -W "$_options" "$curr_word"))
+    _ldmx_complete_command "list clean config pull use run mount base"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
@@ -563,6 +586,15 @@ _ldmx_complete() {
         #   (or shouldn't have the third argument at all)
         _ldmx_dont_complete
         ;;
+      run)
+        if [[ "$COMP_CWORD" = "3" ]]; then
+          # third argument to run should be an inside-container command
+          _ldmx_complete_command
+        else
+          # later arguments to run should be bash default
+          _ldmx_complete_bash_default
+        fi
+        ;;
       *)
         # everything else has bash default (filenames)
         _ldmx_complete_bash_default
@@ -588,17 +620,8 @@ complete -F _ldmx_complete ldmx
 #   would have to run the following
 #     source ldmx-sw/scripts/ldmx-env.sh
 #     ldmx base .
-#     ldmx pull dev latest
+#     ldmx use dev latest
 ###############################################################################
-
-#default backs out of ldmx-sw/scripts
-export _default_ldmx_env_ldmx_base="$( dirname ${BASH_SOURCE[0]} )/../../" 
-#default repository is development container with just the dependencies in it
-export _default_ldmx_env_repo_name="dev" 
-#default tag is the most recent major release of the dev container
-export _default_ldmx_env_image_tag="latest"
-#default is to NOT force updates of the container (empty == don't pull)
-export _default_ldmx_env_force_update=""
 
 function _ldmx_env_help() {
   cat <<\HELP
@@ -607,11 +630,11 @@ function _ldmx_env_help() {
   USAGE: 
     source ldmx-sw/scripts/ldmx-env.sh [-h,--help] [-f,--force] 
                   [-b,--base ldmx_base] [-r,--repo repo_name] 
-                  [-t,--tag image_tag]
+                  [-t,--tag image_tag] [--no-init]
 
   OPTIONS:
     -f,--force : Force download of container even if it already exists
-    -h,--help  : Print this help message
+    -h,--help  : Print this help message and exit
     -b,--base  : ldmx_base is path to directory containing ldmx-sw
     -r,--repo  : name of repo  (ldmx/[repo_name]) to pull container from
                  There are three options: 'dev', 'pro', and 'local'
@@ -619,14 +642,20 @@ function _ldmx_env_help() {
     -t,--tag   : name of tag of ldmx image to pull down and use 
                  The options you can input depend on the repo. 
                  Use 'ldmx list <repo>' to list the options.
+    --no-init  : Define container-interacting bash functions, but do not
+                 initialize container environment.
 HELP
   return 0
 }
 
-_the_base=$_default_ldmx_env_ldmx_base
-_repo_name=$_default_ldmx_env_repo_name
-_image_tag=$_default_ldmx_env_image_tag
-_force_update=$_default_ldmx_env_force_update
+#default backs out of ldmx-sw/scripts
+_the_base="$( dirname ${BASH_SOURCE[0]} )/../../" 
+#default repository is development container with just the dependencies in it
+_repo_name="dev"
+#default tag is the most recent major release of the dev container
+_image_tag="latest"
+#default is to NOT force updates of the container (empty == don't pull)
+_force_update=""
 
 function _ldmx_env_fatal_error() {
   _ldmx_env_help
@@ -676,6 +705,11 @@ while [[ $# -gt 0 ]]; do
     -f|--force)
       _force_update="ON"
       shift #move past flag
+      ;;
+    --no-init)
+      # we've already defined the necessary bash functions above,
+      #   so we can just leave now to not initialize the container
+      return 0
       ;;
     *)
       _ldmx_env_fatal_error "'$option' is not a valid option!"
