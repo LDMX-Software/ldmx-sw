@@ -115,3 +115,8 @@ if(INSTALL_EXAMPLE_DB_LIBRARIES)
 endif()
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
+
+# add visualization executable
+add_executable(g4-vis ${PROJECT_SOURCE_DIR}/src/SimCore/g4_vis.cxx)
+target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
+install(TARGETS g4-vis DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
