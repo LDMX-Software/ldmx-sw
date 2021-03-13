@@ -34,6 +34,13 @@ class OverlayProducer : public framework::Producer {
   void configure(framework::config::Parameters &parameters) final override;
 
   /**
+   * At the start of the run, the pileup overlay file is set up, and the
+   * starting event number is chosen, using the RNSS. 
+   */
+  void onNewRun(const ldmx::RunHeader&); // );    //
+
+  
+  /**
    * Based on the list of collections to overlay, and the desired number of
    * events, loop through all relevant collections and copy the sim event
    * (once), and then add the corresponding collection from the pileup overlay
@@ -53,10 +60,7 @@ class OverlayProducer : public framework::Producer {
   void produce(framework::Event &event) final override;
 
   /**
-   * At the start of processing, the pileup overlay file is set up, and the
-   * starting event number is chosen. Currently, this uses a fixed offset but it
-   * can (will) be randomized once we can reset the pileup event counter using
-   * nextEvent().
+   * At the start of processing, the pileup overlay file is set up.
    */
   void onProcessStart() final override;
 

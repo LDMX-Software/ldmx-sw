@@ -50,13 +50,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   return;
 }
 
-void OverlayProducer::produce(framework::Event &event) {
-  // event is the incoming, simulated event/"hard" process
-  // overlayEvent_ is the overlay producer's own event.
-  if (verbosity_ > 1) {
-    ldmx_log(info) << "produce() starts on simulation event "
-                   << event.getEventHeader().getEventNumber();
-  }
+  void OverlayProducer::onNewRun(const ldmx::RunHeader&) { // ) { //
 
   /// set up random seeds
   if (rndm_.get() == nullptr) {
@@ -65,6 +59,29 @@ void OverlayProducer::produce(framework::Event &event) {
         framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
   }
+
+   int start_event = rndm_->Uniform(20.,1e4);
+   // EventFile::skipToEvent handles actual number of events in file
+   int evNb = overlayFile_->skipToEvent(start_event) ;
+   if ( evNb < 0 ){
+	 EXCEPTION_RAISE("BadRead",
+					 "Couldn't read to starting offset.");
+   }
+   overlayEvent_.getEventHeader().setEventNumber(evNb); 
+   ldmx_log(info) << "Starting overlay process with pileup event number " <<
+	 evNb << " (random event number picked was " << start_event << ")." ;
+   
+  }
+
+  
+void OverlayProducer::produce(framework::Event &event) {
+  // event is the incoming, simulated event/"hard" process
+  // overlayEvent_ is the overlay producer's own event.
+  if (verbosity_ > 1) {
+    ldmx_log(info) << "produce() starts on simulation event "
+                   << event.getEventHeader().getEventNumber();
+  }
+
   if (rndmTime_.get() == nullptr) {
     // not been seeded yet, get it from RNSS
     const auto &rnss = getCondition<framework::RandomNumberSeedService>(
@@ -359,26 +376,30 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart() ";
   }
 
-  // replace by this line once the corresponding tweak to EventFile is ready:
+    // replace by this line once the corresponding tweak to EventFile is ready:
   overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,true );
   overlayFile_->setupEvent(&overlayEvent_);
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
 
-  TRandom2 * rd = new TRandom2( 0.); //RNSS undefined before produce()
-  // shift away a bit from the first event to avoid some weak correlations
-  // seen during initial valiadations
-  // TODO use the actual number of events in the file as upper limit
-  int startEvent = rd->Uniform(20., 500.); //assume we have at least 500 events
-  // and if not, event number wrapping will take care of it
+  /*
+ int start_event = rd->Uniform(20.,1e4); // EventFile::skip handles number of events in file
+ if (!overlayFile_->skipToEvent(start_event)) {
+  EXCEPTION_RAISE("BadRead",
+    "Couldn't read to starting offset.");
+}
+*/
+ /*
   for (int iShift = 0; iShift < startEvent; iShift++) {
     if (!overlayFile_->nextEvent()) {
       std::cerr << "Couldn't read next event!";
       return;
     }
   }
-
-  ldmx_log(info) << "Starting overlay process with pileup event number " <<  overlayEvent_.getEventHeader().getEventNumber() << " (random event number picked was " << startEvent << ")." ;
+ */
+ 
+  /*
+  ldmx_log(info) << "Starting overlay process with pileup event number " <<  overlayEvent_.getEventHeader().getEventNumber() << " (random event number picked was " << start_event << ")." ;
   
   if (verbosity_ > 2) {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
@@ -386,7 +407,7 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart () successful. Got event info: ";
     overlayFile_->getEvent()->Print(verbosity_);
   }
-
+  */
   return;
 }
 
