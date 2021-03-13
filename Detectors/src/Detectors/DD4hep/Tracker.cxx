@@ -2,6 +2,9 @@
 //---< DD4hep >---//
 #include "XML/Helper.h"
 
+//---< Detectors >---//
+#include "Detectors/Geo/Box.h"
+
 //---< DetDesc >---//
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/TrackerID.h"
@@ -66,7 +69,11 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
 
       // Create the box shape representing the sensor.  If a box can't be
       // created, throw an exception.
-      Box sensor_box{xml_layer.createShape()};
+      // Box sensor_box{xml_layer.createShape()};
+      auto sensor_dims(xml_layer.dimensions());
+      detectors::geo::Box sensor_box(
+          name + "_layer_" + std::to_string(xml_layer.id()) + "_solid",
+          sensor_dims.dx(), sensor_dims.dy(), sensor_dims.dz());
       if (!sensor_box.isValid()) {
         EXCEPTION_RAISE("FailedToCreate", "Failed to create a box volume.");
       }
