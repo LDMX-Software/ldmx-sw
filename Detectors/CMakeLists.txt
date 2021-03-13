@@ -13,8 +13,12 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 
 setup_dd4hep_target()
 
+# Find the eigen library
+find_package(Eigen3 REQUIRED)
+
 file(GLOB SRC_FILES CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/src/Detectors/Tracking/[a-zA-z]*.cxx
+     ${PROJECT_SOURCE_DIR}/src/Detectors/Geo/[a-zA-z]*.cxx
 )
 
 setup_library(module Detectors
