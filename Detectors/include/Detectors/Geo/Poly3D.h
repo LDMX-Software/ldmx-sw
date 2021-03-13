@@ -15,6 +15,9 @@ namespace geo {
  */
 class Poly3D {
 public:
+  /// Default constructor
+  Poly3D() = default;
+
   /**
    * Constructor. Takes a set of vertices (Vector3D objects) and constructs a
    *  polygon. This requires at least 4 vertices to be specified.
@@ -37,6 +40,13 @@ public:
 
   /// @return The distance from the origin
   double distance() const { return distance_; }
+
+  /**
+   * Apply the given transform to this polygon.
+   *
+   * @param transform The transform (translation, rotation) to apply.
+   */
+  Poly3D transformed(eigen::Transform3D transform);
 
   friend std::ostream &operator<<(std::ostream &output, const Poly3D &poly) {
     output << "[ detectors::geo::Poly3D ]:\n Normal = "

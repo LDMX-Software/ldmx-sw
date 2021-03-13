@@ -20,18 +20,25 @@ Poly3D::Poly3D(std::vector<Vector3D> vertices) {
   auto v2{vertices[2] - vertices[1]};
   normal_ = v1.cross(v2).normalized();
   distance_ = normal_.dot(vertices[0]);
-  // std::cout << "[ Poly3D ]: Normal: " << normal_ << std::endl;
-  // std::cout << "[ Poly3D ]: Distance: " << distance_ << std::endl;
 }
 
 void Poly3D::faceOutward() {
   if (distance_ < 0) {
     normal_ *= -1;
     distance_ *= -1;
-    //std::cout << "[ Poly3D::faceOutward ]: Normal: " << normal_ << std::endl;
-    //std::cout << "[ Poly3D::faceOutward ]: Distance: " << distance_
-    //          << std::endl;
   }
+}
+
+Poly3D Poly3D::transformed(eigen::Transform3D transform) {
+
+  std::vector<Vector3D> transformed_points;
+  for (auto &vertex : vertices_) {
+    transformed_points.push_back(transform * vertex);
+  }
+
+  // TODO: Check the normal
+
+  return Poly3D(transformed_points);
 }
 
 } // namespace geo
