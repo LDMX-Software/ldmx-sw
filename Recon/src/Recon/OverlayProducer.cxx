@@ -381,25 +381,6 @@ void OverlayProducer::onProcessStart() {
   overlayFile_->setupEvent(&overlayEvent_);
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
-
-  /*
- int start_event = rd->Uniform(20.,1e4); // EventFile::skip handles number of events in file
- if (!overlayFile_->skipToEvent(start_event)) {
-  EXCEPTION_RAISE("BadRead",
-    "Couldn't read to starting offset.");
-}
-*/
- /*
-  for (int iShift = 0; iShift < startEvent; iShift++) {
-    if (!overlayFile_->nextEvent()) {
-      std::cerr << "Couldn't read next event!";
-      return;
-    }
-  }
- */
- 
-  /*
-  ldmx_log(info) << "Starting overlay process with pileup event number " <<  overlayEvent_.getEventHeader().getEventNumber() << " (random event number picked was " << start_event << ")." ;
   
   if (verbosity_ > 2) {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
@@ -407,7 +388,7 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart () successful. Got event info: ";
     overlayFile_->getEvent()->Print(verbosity_);
   }
-  */
+
   return;
 }
 
