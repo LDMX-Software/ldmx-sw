@@ -200,12 +200,13 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       if (ientry_ + 1 >= entries_) {
 		if ( isOverlayFile_ ) {
 		  // reset the event counter: reuse events from start of pileup tree
+
 		  /* Here I would have liked to inform the user that a reset happens
 			 but it seems like only Exceptions are foreseen from this class? 
-  		  ldmx_log(info) 
-std::cout  << "Reached end of pileup tree at entry " <<
+			 ldmx_log(info)
+		  std::cout  << "Reached end of pileup tree at entry " <<
 			ientry_ << "; resetting event counter!" << std::endl;
-*/
+		  */
 		  ientry_ = -1;
 		}
 		else
@@ -246,6 +247,12 @@ void EventFile::setupEvent(Event *evt) {
   }
 }
 
+int EventFile::skipToEvent(int offset) {
+  ientry_ = offset % entries_;    // make sure the event number exists
+  if (!this->nextEvent()) return -1;
+  return ientry_;
+}
+  
 void EventFile::updateParent(EventFile *parent) {
   parent_ = parent;
 

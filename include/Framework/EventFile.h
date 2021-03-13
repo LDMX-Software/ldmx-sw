@@ -173,6 +173,13 @@ class EventFile {
   bool nextEvent(bool storeCurrentEvent = true);
 
   /**
+   * Skip events using an offset. Used in pileup overlay.
+   * @return New event number if read successfully, else -1.
+   */
+  int skipToEvent(int offset);
+
+  
+  /**
    * Close the file, writing the tree to disk if creating an output file.
    *
    * Deletes any RunHeaders that this instance of EventFile owns.
