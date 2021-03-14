@@ -242,7 +242,7 @@ function _ldmx_list() {
 }
 
 ###############################################################################
-# ldmx-container-config
+# _ldmx_config
 #   Print the configuration of the current setup
 ###############################################################################
 function _ldmx_config() {
@@ -255,7 +255,7 @@ function _ldmx_config() {
 
 ###############################################################################
 # _ldmx_is_mounted
-#   Check if the input directory is mounted to the container
+#   Check if the input directory will be accessible by the container
 ###############################################################################
 _ldmx_is_mounted() {
   local full=$(realpath "$1")
@@ -395,16 +395,6 @@ HELP
 }
 
 ###############################################################################
-# _ldmx_error
-#   Print help and short description of what went wrong.
-###############################################################################
-_ldmx_error() {
-  _ldmx_help
-  echo "ERROR: $@"
-  return 0
-}
-
-###############################################################################
 # ldmx
 #   The root command for users interacting with the ldmx container environment.
 #   This function is really just focused on parsing CLI and going to the
@@ -444,10 +434,10 @@ function ldmx() {
     pull)
       if [[ "$#" != "3" ]]; then
         _ldmx_help
-        echo "ERROR: ldmx ${_sub_command} takes two arguments: <repo> <tag>."
+        echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
         return 1
       fi
-      _ldmx_${_sub_command} $_sub_command_args "YES_PULL"
+      _ldmx_use $_sub_command_args "PULL_NO_MATTER_WHAT"
       return $?
       ;;
     use)
@@ -469,6 +459,17 @@ function ldmx() {
       ;;
   esac
 }
+
+###############################################################################
+# DONE WITH NECESSARY PARTS
+#   Everything below here is icing on the usability cake.
+###############################################################################
+
+###############################################################################
+# Bash Tab Completion
+#   This next section is focused on setting up the infrastucture for smart
+#   tab completion with the ldmx command and its sub-commands.
+###############################################################################
 
 ###############################################################################
 # _ldmx_complete_directory
@@ -541,7 +542,6 @@ _ldmx_dont_complete() {
 #   COMP_WORDS - bash array of space-separated command line inputs including base command
 #   COMP_CWORD - index of current word in argument list
 #   COMPREPLY  - options available to user, if only one, auto completed
-#
 ###############################################################################
 _ldmx_complete() {
   # disable readline filename completion
