@@ -15,11 +15,15 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   output_collection_ = ps.getParameter<std::string>("output_collection");
   verbose_ = ps.getParameter<int>("verbosity");
 
+  timeTolerance_ = ps.getParameter<double>("time_tolerance");
+  padTime_ = ps.getParameter<double>("pad_time");
   if (verbose_) {
     ldmx_log(info) << "In TrigScintClusterProducer: configure done!";
     ldmx_log(info) << "Got parameters: \nSeed threshold:   " << seed_
                    << "\nClustering threshold: " << minThr_
                    << "\nMax cluster width: " << maxWidth_
+                   << "\nExpected pad hit time: " << padTime_
+                   << "\nMax hit time delay: " << timeTolerance_
                    << "\nInput collection:     " << input_collection_
                    << "\nInput pass name:     " << passName_
                    << "\nOutput collection:    " << output_collection_
@@ -60,19 +64,19 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     with hits in channels after digi looking something like this
 
 
-    ampl:  _                 _                   _
-          | |_              | |                 | |
-      ----| | |-------------| |-----------------| |------- cluster seed
-    threshold | | |_            | |_                | |_
-         _| | | |          _| | |_             _| | |  _
-        | | | | |    vs   | | | | |    vs     | | | | | |
+    ampl:    _                   _                   _
+            | |_                | |                 | |
+        ----| | |---------------| |-----------------| |------- cluster seed threshold 
+	    | | |_              | |_ _              | |_
+           _| | | |            _| | | |            _| | |  _
+          | | | | |     vs    | | | | |    vs     | | | | | |
 
 
-          |                   |                   |
-    split | seeds        keep | disregard   keep! | just move on
-          | next cl.          | (later seed       | (no explicit splitting)
-                                 might pick
-                                 it up)
+              |                   |                   |
+        split | seeds        keep | disregard   keep! | just move on
+              | next cl.          | (later seed       | (no explicit splitting)
+                                  might pick
+                                  it up)
 
 
     The idea being that while there could be good reasons for an electron to
@@ -167,6 +171,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           }
         }
       }
+
+      // don't add in late hits 
+      if (digi.getTime() > padTime_ + timeTolerance_ )
+	continue;
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value
