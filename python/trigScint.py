@@ -150,6 +150,8 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.max_cluster_width = 2
         self.clustering_threshold = 0.  #to add in neighboring channels
         self.seed_threshold = 30.
+        self.pad_time = 0.
+        self.time_tolerance = 0.5
         self.input_collection="trigScintDigisTag"
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTaggerClusters"
@@ -160,6 +162,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster = TrigScintClusterProducer( 'trigScintClustersUp' )
         cluster.input_collection = 'trigScintDigisUp'
         cluster.output_collection= 'TriggerPadUpClusters'
+        cluster.pad_time= 0.
         return cluster
 
     def down() :
@@ -167,6 +170,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster = TrigScintClusterProducer( 'trigScintClustersDown' )
         cluster.input_collection = 'trigScintDigisDn'
         cluster.output_collection= 'TriggerPadDownClusters'
+        cluster.pad_time= 0.
         return cluster
 
     def tagger() :
@@ -174,6 +178,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster = TrigScintClusterProducer( 'trigScintClustersTag' )
         cluster.input_collection = 'trigScintDigisTag'
         cluster.output_collection= 'TriggerPadTaggerClusters'
+        cluster.pad_time= -2.
         return cluster
 
 
