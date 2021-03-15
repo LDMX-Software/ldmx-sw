@@ -4,8 +4,8 @@
  * @author Lene Kristian Bryngemark, Stanford University 
  */
 
-#ifndef EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
-#define EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
+#ifndef TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H
+#define TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H
 
 //LDMX Framework
 #include "Framework/Event.h"
@@ -62,6 +62,12 @@ namespace ldmx {
     //specific verbosity of this producer
     int verbose_{0}; 
 
+    //expected arrival time of hits in the pad [ns]
+    double padTime_{0.};
+
+    //maximum allowed delay for hits to be considered for clustering
+    double timeTolerance_{0.};
+
     //input collection (hits)
     std::string input_collection_;
 
@@ -98,4 +104,4 @@ namespace ldmx {
   };
 }
 
-#endif /* EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H */
+#endif /* TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H */
