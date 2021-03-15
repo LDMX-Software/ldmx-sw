@@ -15,6 +15,15 @@
 ###############################################################################
 
 ###############################################################################
+# All of this setup requires us to be in a bash shell.
+#   We add this check to make sure the user is in a bash shell.
+###############################################################################
+if [[ "$0" != "bash" ]]; then
+  echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell."
+  return 1
+fi
+
+###############################################################################
 # _ldmx_has_required_engine
 #   Checks if user has any of the supported engines for running containers
 ###############################################################################
@@ -30,7 +39,7 @@ _ldmx_has_required_engine() {
 
 # check if user has a required engine
 if ! _ldmx_has_required_engine; then
-  echo "You do not have docker or singularity installed!"
+  echo "[ldmx-env.sh] [ERROR] You do not have docker or singularity installed!"
   return 1
 fi
 
@@ -54,7 +63,7 @@ _ldmx_which_os() {
 }
 
 if ! _ldmx_which_os; then
-  echo "[ldmx-env.sh][WARN] : Unable to detect OS Type from '${OSTYPE}'"
+  echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}'"
   echo "    You will *not* be able to run display-connected programs."
 fi
 
