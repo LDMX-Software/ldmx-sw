@@ -64,7 +64,7 @@ class TrigScintClusterProducer : public framework::Producer {
   
   //maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
-  
+
   //input collection (hits)
   std::string input_collection_;
 
