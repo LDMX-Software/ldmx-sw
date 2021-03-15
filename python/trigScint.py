@@ -190,7 +190,7 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TrigScintTrackProducer','TrigScint')
 
-        self.delta_max = 1.0
+        self.delta_max = 0.75
         self.tracking_threshold = 0.  #to add in neighboring channels
         self.seeding_collection = "TriggerPadTaggerClusters"
         self.further_input_collections = ["TriggerPadUpClusters","TriggerPadDownClusters"]
