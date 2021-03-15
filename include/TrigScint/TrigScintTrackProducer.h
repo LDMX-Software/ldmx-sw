@@ -65,7 +65,7 @@ class TrigScintTrackProducer : public framework::Producer {
   // track residual in units of channel nb (will not be content weighted)
   float residual_{0.};
 };
+
 }  // namespace trigscint
 
 #endif // TRIGSCINT_TRIGSCINTTRACKPRODUCER_H 
-

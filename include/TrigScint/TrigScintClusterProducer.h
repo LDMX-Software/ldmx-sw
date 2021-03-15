@@ -99,6 +99,7 @@ class TrigScintClusterProducer : public framework::Producer {
   // empty map container
   std::map<int, int> hitChannelMap_;
 };
+
 }  // namespace trigscint
 
 #endif /* TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H */
