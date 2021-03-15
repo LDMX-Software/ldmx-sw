@@ -66,6 +66,7 @@ class TrigScintTrackProducer : public framework::Producer {
   float residual_{0.};
 };
 
+
 }  // namespace trigscint
 
 #endif // TRIGSCINT_TRIGSCINTTRACKPRODUCER_H 
