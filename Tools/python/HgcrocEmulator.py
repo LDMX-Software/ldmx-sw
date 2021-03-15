@@ -67,7 +67,7 @@ class HgcrocEmulator() :
         self.noiseRMS         = 0. #mV - useless default
         self.setNoise( 700. , 25. ) #depends on readoutPadCapacitance
 
-        self.readoutThreshold = self.pedestal + 2. #ADC Counts
+        self.readoutThreshold = self.pedestal + 3. #ADC Counts
 
         self.toaThreshold     = 0. #mV - useless default
         self.totThreshold     = 0. #mV - useless default
