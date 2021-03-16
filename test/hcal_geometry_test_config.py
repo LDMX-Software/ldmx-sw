@@ -12,7 +12,7 @@ from LDMX.Hcal import digi
 # Set the output file name
 p.outputFiles = ['hcal_geometry_test.root']
 
-# The the histogram file name
+# The histogram file name
 p.histogramFile = 'hcal_geometry_test_histo.root'
 
 # Geometry provider
@@ -56,6 +56,5 @@ sim.generators.append(myGPS)
 p.sequence = [
     sim,
     hcalDigis,
-    # digi.HcalRecProducer(),
-    ldmxcfg.Analyzer('hcalpos','hcal::test::HcalCheckPositionReconstruction','Hcal'),
+    ldmxcfg.Analyzer('hcalpos','hcal::test::HcalCheckPositionMap','Hcal'),
 ]
