@@ -117,68 +117,77 @@ void HcalDigiProducer::produce(framework::Event& event) {
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
-    // find position along the bar
+    /**
+     * Define two pulses: close and far.
+     * For this we need to:
+     * (1) Find the position along the bar:
+     *     For back Hcal: x (y) for even (odd) layers.
+     *     For side Hcal: x (top,bottom) and y (left,right).
+     *
+     * (2) Define the end of the bar:
+     *     The end of an HcalDigiID is based on its distance (x,y) along the
+     *     bar.
+     *     - A positive end (endID=0), corresponds to top,left.
+     *     - A negative end (endID=1), corresponds to bottom,right.
+     *     For back Hcal:
+     *     - if the position along the bar > 0, the close pulse's end is 0,
+     *     else 1.
+     *     For side Hcal:
+     *     - if the position along the bar > half_width point of the bar, the
+     *     close pulse's end is 0, else 1.
+     *     The far pulse's end will be opposite to the close pulse's end.
+     *
+     * (3) Find the distance to each end (positive and negative) from the
+     *     origin.
+     *     For the back Hcal, the half point of the bar coincides with the
+     *     coordinates of the origin.
+     *     For the side Hcal, the length of the bar is:
+     *     - 2 *(half_width) - Ecal_dx(y) away from the positive end, and,
+     *     - Ecal_dx(y) away from the negative end.
+     */
     float distance_along_bar, distance_ecal;
-    if (section == ldmx::HcalID::HcalSection::BACK)
+    float distance_close, distance_far;
+    int end_close;
+    if (section == ldmx::HcalID::HcalSection::BACK) {
       distance_along_bar = (layer % 2) ? position[0] : position[1];
+      end_close = (distance_along_bar > 0) ? 0 : 1;
+      distance_close = half_total_width;
+      distance_far = half_total_width;
+    }
     if ((section == ldmx::HcalID::HcalSection::TOP) ||
         ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
       distance_along_bar = position[0];
       distance_ecal = ecal_dx;
+      end_close = (distance_along_bar > half_total_width) ? 0 : 1;
+      if (end_close == 0) {
+        distance_close = 2 * half_total_width - distance_ecal / 2;
+        distance_far = distance_ecal / 2;
+      } else {
+        distance_close = distance_ecal / 2;
+        distance_far = 2 * half_total_width - distance_ecal / 2;
+      }
     } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
                (section == ldmx::HcalID::HcalSection::RIGHT)) {
       distance_along_bar = position[1];
       distance_ecal = ecal_dy;
+      end_close = (distance_along_bar > half_total_width) ? 0 : 1;
+      if (end_close == 0) {
+        distance_close = distance_ecal / 2;
+        distance_far = 2 * half_total_width - distance_ecal / 2;
+      } else {
+        distance_far = distance_ecal / 2;
+        distance_close = 2 * half_total_width - distance_ecal / 2;
+      }
     }
+    int end_far = (end_close == 0) ? 1 : 0;
 
-    /**
-       Define end of the bar for the HcalDigiID, based on its distance (x,y)
-       along the bar. A positive end corresponds to top,left, will have an
-       endID=0. A negative end corresponds to bottom,right, will have an
-       endID=1.
-
-       - if the position along the bar > 0, the close end is 0, else 1.
-       - if the position along the bar > 0, the far end is 1, else 0.
-    */
-    int end_close = (distance_along_bar > 0) ? 0 : 1;
-    int end_far = (distance_along_bar < 0) ? 0 : 1;
-
-    /**
-       Calculate voltage attenuation and time shift for the close and far pulse.
-       For the back Hcal, the half point of the bar coincides with the
-       coordinates of the origin. For the side Hcal, the length of the bar is:
-       - 2 *(half_width) - Ecal_dx(y) away from one end and,
-       - Ecal_dx(y) away from the other.
-     */
+    // Calculate voltage attenuation and time shift for the close and far pulse.
     float v =
         299.792 / 1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
-    float distance_close, distance_far;
-    if (section == ldmx::HcalID::HcalSection::BACK) {
-      distance_close = half_total_width;
-      distance_far = half_total_width;
-    } else if ((section == ldmx::HcalID::HcalSection::TOP) ||
-               (section == ldmx::HcalID::HcalSection::LEFT)) {
-      if (end_close == 0) {
-        distance_close = 2 * half_total_width - distance_ecal / 2;
-        distance_far = distance_ecal / 2;
-      } else {
-        distance_close = distance_ecal / 2;
-        distance_far = 2 * half_total_width - distance_ecal / 2;
-      }
-    } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
-               ((section == ldmx::HcalID::HcalSection::RIGHT))) {
-      if (end_close == 0) {
-        distance_close = distance_ecal / 2;
-        distance_far = 2 * half_total_width - distance_ecal / 2;
-      } else {
-        distance_far = distance_ecal / 2;
-        distance_close = 2 * half_total_width - distance_ecal / 2;
-      }
-    }
-    double attenuation_close =
+    double att_close =
         exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
             attlength_);
-    double attenuation_far = exp(
+    double att_far = exp(
         -1. * ((distance_far + fabs(distance_along_bar)) / 1000.) / attlength_);
     double shift_close = fabs((distance_close - fabs(distance_along_bar)) / v);
     double shift_far = fabs((distance_far + fabs(distance_along_bar)) / v);
@@ -194,9 +203,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // time += position.at(2) / 299.702547; // shift light-speed particle
       // traveling along z
 
-      voltages_close.push_back(voltage * attenuation_close);
+      voltages_close.push_back(voltage * att_close);
       times_close.push_back(time + shift_close + 50.);
-      voltages_far.push_back(voltage * attenuation_far);
+      voltages_far.push_back(voltage * att_far);
       times_far.push_back(time + shift_far + 50.);
     }
 
@@ -224,14 +233,17 @@ void HcalDigiProducer::produce(framework::Event& event) {
         hcalDigis.addDigi(farID.raw(), digiToAddFar);
       }  // Back Hcal needs to digitize both pulses or none
     } else {
+      // Determine which pulse to digitize
+      // For top,left we digitize the positive end (0)
+      // For bottom,right we digitize the negative end (1)
       bool is_close = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if ((section == ldmx::HcalID::HcalSection::TOP) ||
           (section == ldmx::HcalID::HcalSection::LEFT)) {
-        if (distance_along_bar > 0) is_close = true;
+        if (end_close == 0) is_close = true;
       } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
                  (section == ldmx::HcalID::HcalSection::RIGHT)) {
-        if (distance_along_bar < 0) is_close = true;
+        if (end_close == 1) is_close = true;
       }
       if (is_close) {
         if (hgcroc_->digitize(hitID, voltages_close, times_close, digiToAdd)) {
@@ -257,7 +269,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
           hcalGeometry.getNumLayers(l) * hcalGeometry.getNumStrips(l);
       // for back Hcal we have double readout, therefore we multiply the number
       // of channels by 2.
-      // if (l == 0) nChannels *= 2;
+      if (l == 0) nChannels *= 2;
       numChannels += nChannels;
     }
     int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
