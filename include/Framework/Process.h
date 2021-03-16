@@ -133,6 +133,9 @@ class Process {
   }
 
  private:
+  /// The parameters used to configure this class.
+  framework::config::Parameters config_; 
+
   /** Processing pass name. */
   std::string passname_;
 
