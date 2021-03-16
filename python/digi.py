@@ -20,7 +20,8 @@ from LDMX.Tools.HgcrocEmulator import HgcrocEmulator
 nPEPerMIP = 68. #PEs created per MIP 
 mipEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6      
 
-gain = 5. # very large gain for now
+# large gain for now
+gain = 1.2 # ~ 4 ADCs per PE
 pedestal = 1.
 
 class HcalHgcrocEmulator(HgcrocEmulator) :
@@ -59,8 +60,8 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.timeDnSlope = 45.037
         self.timePeak    = 9.747
 
-        # noise (0.5PE?)
-        self.noiseRMS = self.calculateVoltageHcal(0.5)
+        # noise (0.02PE)
+        self.noiseRMS = self.calculateVoltageHcal(0.02)
 
     def calculateVoltageHcal(self, PE) :
         """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)

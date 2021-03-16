@@ -54,6 +54,24 @@ void HcalRecProducer::produce(framework::Event& event) {
     // Position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
     double half_total_width = hcalGeometry.getHalfTotalWidth(digiId.section());
+    double ecal_dx = hcalGeometry.getEcalDx();
+    double ecal_dy = hcalGeometry.getEcalDy();
+
+    // Compute distance to the end of the bar
+    // For back Hcal, we take the half of the bar
+    // For side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
+    // an approximation
+    float distance_end, distance_ecal;
+    if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
+      distance_end = half_total_width;
+    } else {
+      if ((digiId.section() == ldmx::HcalID::HcalSection::TOP) ||
+          (digiId.section() == ldmx::HcalID::HcalSection::BOTTOM))
+        distance_ecal = ecal_dx;
+      else
+        distance_ecal = ecal_dy;
+      distance_end = 2 * half_total_width - distance_ecal / 2;
+    }
 
     // TOA is the time of arrival with respect to the 25ns clock window
     // TODO what to do if hit NOT in first clock cycle?
@@ -73,30 +91,31 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalDigiID id_close(digi.id());
 
       // get x(y) coordinate from TOA
+      // position in bar = (diff_time*v)/2;
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
                           // (here, Ralf's simulation should be included)
-
-      // position in bar = (diff_time*v)/2;
       double timeRelClock25_close =
           digi_close.begin()->toa() * (clock_cycle_ / 1024);  // ns
       double timeRelClock25_far =
           digi_far.begin()->toa() * (clock_cycle_ / 1024);  // ns
       double pos = (timeRelClock25_far - timeRelClock25_close) * v / 2;
       if (id_close.isNegativeEnd()) pos = pos * -1;
-      if ((digiId.layer() % 2) == 1)
+      if ((digiId.layer() % 2) == 1) {
         position.SetX(pos);
-      else
+      } else {
         position.SetY(pos);
+      }
 
       // time
+      // TODO: shift in time not reversed here.
       hitTime = fabs(timeRelClock25_close + timeRelClock25_far) / 2;
 
       // reverse attenuation
       double att_close =
-          exp(-1. * ((half_total_width - fabs(pos)) / 1000.) / attlength_);
+          exp(-1. * ((distance_end - fabs(pos)) / 1000.) / attlength_);
       double att_far =
-          exp(-1. * ((half_total_width + fabs(pos)) / 1000.) / attlength_);
+          exp(-1. * ((distance_end + fabs(pos)) / 1000.) / attlength_);
 
       if (digi_close.isTOT()) {
         double voltage_close = (digi_close.tot() - pedestal_) * gain_;
@@ -130,6 +149,11 @@ void HcalRecProducer::produce(framework::Event& event) {
     }       // end double readout loop
     else {  // single readout
 
+      // reverse attenuation
+      // for now, assume fabs(pos) = half_total_width as an approximation
+      double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
+                       attlength_);
+
       if (digi.isTOT()) {
         // TOT - number of clock ticks that pulse was over threshold
         // this is related to the amplitude of the pulse approximately through a
@@ -154,7 +178,7 @@ void HcalRecProducer::produce(framework::Event& event) {
           if (amplitude_fC > maxMeas) maxMeas = amplitude_fC;
         }
         // just use the maximum measured voltage
-        voltage = maxMeas;
+        voltage = maxMeas / att;  // mV
       }
       voltage_min = voltage;
 
@@ -181,7 +205,6 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude(PEs);
     recHit.setEnergy(energy_deposited);
     recHit.setTime(hitTime);
-    recHit.setNoise(false);
     hcalRecHits.push_back(recHit);
   }
 
