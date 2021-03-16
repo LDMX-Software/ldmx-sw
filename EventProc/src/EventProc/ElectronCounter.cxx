@@ -1,4 +1,3 @@
-
 #include "EventProc/ElectronCounter.h" 
 
 namespace ldmx { 
@@ -18,14 +17,13 @@ namespace ldmx {
         nElectronsSim_ = parameters.getParameter< int >("simulated_electron_number");
         useSimElectronCount_ = parameters.getParameter< bool >("use_simulated_electron_number");
 
-		/*  // can rehash this for cluster vs track counting
-		if (mode_ == 0) {
-		  algoName_ = "LayerSumTrig";
+        /*  // can rehash this for cluster vs track counting
+        if (mode_ == 0) {
+          algoName_ = "LayerSumTrig";
         } else if (mode_ == 1) {
-		  algoName_ = "CenterTower";
+          algoName_ = "CenterTower";
         }
-		*/
-		
+        */
         ldmx_log(debug) << "ElectronCounter is using parameters: "
 						<< " \n\tinput_collection = "  << inputColl_ 
 						<< " \n\tinput_pass_name = "  << inputPassName_ 
@@ -39,16 +37,13 @@ namespace ldmx {
 	  int nElectrons = -1;
 
 	  if (useSimElectronCount_ ) {
-
 		if ( nElectronsSim_ < 0 ) {
 		  ldmx_log(fatal) << "Can't use unset number of simulated electrons as electron count! Set with 'simulated_electron_number' ";
 		  return;
 		}
-
 		//then we just set it equal to simulated number and we're done
 		nElectrons =  nElectronsSim_;
 	  }
-		
 	  // Check if the collection of trig scint tracks exist.  If not, 
 	  // don't bother processing the event. 
 	  else { 
@@ -58,7 +53,6 @@ namespace ldmx {
 						  << " to count electrons! Exiting." ;
 		  return;
 		}
-		
 		//TODO, if cluster counting is needed: have two functions, one with tracks,
 		//one with clusters, and just call one or the other.
 		
@@ -70,14 +64,9 @@ namespace ldmx {
 		ldmx_log(debug) << "Found " << tracks.size()
 						<< " electrons (tracks) using input collection "
 						<< inputColl_ << "_" << inputPassName_ ;
-
 	  }
-	  
 	  //add number of electrons to event header. allow for it to be unset (-1)
-
 	  event.getEventHeader().setIntParameter( "nElectrons", nElectrons );
-
-	  
 	}
 } // ldmx
 
