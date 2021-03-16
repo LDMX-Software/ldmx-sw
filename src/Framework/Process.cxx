@@ -124,6 +124,9 @@ void Process::run() {
   // procesed
   auto n_events_processed{0};
 
+  // make sure the ntuple manager is in a blank state
+  NtupleManager::getInstance().reset();
+
   // event bus for this process
   Event theEvent(passname_);
 

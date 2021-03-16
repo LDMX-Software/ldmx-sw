@@ -116,6 +116,14 @@ class NtupleManager {
   /// Reset all of the variables to their limits.
   void clear();
 
+  /**
+   * Reset NtupleManager to blank state
+   *
+   * We assume that ROOT handles cleanup of TTrees
+   * when writing them to a blank state.
+   */
+  void reset();
+
   /// Hide Copy Constructor
   NtupleManager(const NtupleManager&) = delete;
 
