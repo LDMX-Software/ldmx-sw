@@ -64,16 +64,16 @@ namespace ldmx {
         private:
 
             /** The energy sum to make cut on. */
-	  std::vector< double > layerESumCuts_;
+       	    std::vector< double > layerESumCuts_;
 
             /** The beam energy. */
-             double beamEnergy_{0.};
+            double beamEnergy_{0.};
 
             /** The trigger mode to run in. Mode zero sums over
              * all cells in layer, while in mode 1 only cells in
              * center module are summed over. (TODO)
              */
-             int mode_{0};
+            int mode_{0};
 
             /** The first layer of layer sum. */
             int startLayer_{0};

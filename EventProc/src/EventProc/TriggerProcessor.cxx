@@ -24,15 +24,14 @@ namespace ldmx {
 
         /** Grab the Ecal hit collection for the given event */
         const std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>(inputColl_);
-        const int nElectrons =  event.getElectronCount();
+        const int nElectrons =  event.getEventHeader().getIntParameter( "nElectrons" ) ; //lectronCount();
 
-		/// unless we have more electrons than expected, pull threshold from the list. otherwise, set as (threshold_for_1e + nExtraElectrons*beamE) 
-		/// note that the "overflow" formula here is too naive.
-		/// it should be a fct( nElectrons, 1e_thr, beamE), taking how sigma evolves with multiplicity into account. a simple scaling might suffice there too
-		/// assume energy cuts are listed as [ Ecut_1e, Ecut_2e, ... ]		  
-		double layerESumCut = nElectrons <= layerESumCuts_.size()  ? layerESumCuts_[ nElectrons - 1 ] : layerESumCuts_[ 0 ] + (nElectrons-1)*beamEnergy_ ;
-		ldmx_log(debug) <<"Got trigger energy cut " << layerESumCut << " for " << nElectrons << " electrons counted in the event." ;
-		
+	/// unless we have more electrons than expected, pull threshold from the list. otherwise, set as (threshold_for_1e + nExtraElectrons*beamE) 
+	/// note that the "overflow" formula here is too naive.
+	/// it should be a fct( nElectrons, 1e_thr, beamE), taking how sigma evolves with multiplicity into account. a simple scaling might suffice there too
+	/// assume energy cuts are listed as [ Ecut_1e, Ecut_2e, ... ]		  
+	double layerESumCut = nElectrons <= layerESumCuts_.size()  ? layerESumCuts_[ nElectrons - 1 ] : layerESumCuts_[ 0 ] + (nElectrons-1)*beamEnergy_ ;
+	ldmx_log(debug) <<"Got trigger energy cut " << layerESumCut << " for " << nElectrons << " electrons counted in the event." ;
 		  
         std::vector<double> layerDigiE(100, 0.0); // big empty vector..
 
