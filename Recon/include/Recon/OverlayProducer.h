@@ -61,6 +61,9 @@ class OverlayProducer : public framework::Producer {
   void onProcessStart() final override;
 
  private:
+  /// The parameters used to configure this producer
+  framework::config::Parameters params_;
+
   /**
    * Pileup overlay events input file name
    */
@@ -163,6 +166,6 @@ class OverlayProducer : public framework::Producer {
   int overlayTrackID_{-1000};
   int overlayPdgCode_{0};
 };
-}  // namespace recon
+} // namespace recon
 
 #endif /* RECON_OVERLAY_OVERLAYPRODUCER_H */
