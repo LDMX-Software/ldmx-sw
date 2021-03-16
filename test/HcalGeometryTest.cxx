@@ -19,17 +19,17 @@ static const double MAX_ENERGY_PERCENT_ERROR_XPOSITION = 20;
 static const double MAX_ENERGY_PERCENT_ERROR_YPOSITION = 20;
 
 /**
- * @class HcalCheckPositionReconstruction
+ * @class HcalCheckPositionMap
  * Checks:
- * - Position of HcalRecHit matches SimCalorimeterHit with the same ID
- * The SimHits are all generated at the same energy (1 MIP) for consistency.
+ * - Position of HcalHit from the HcalGeometry map matches SimCalorimeterHit
+ * with the same ID The SimHits are all generated at the same energy (1 MIP) for
+ * consistency.
  */
-class HcalCheckPositionReconstruction : public framework::Analyzer {
+class HcalCheckPositionMap : public framework::Analyzer {
  public:
-  HcalCheckPositionReconstruction(const std::string &name,
-                                  framework::Process &p)
+  HcalCheckPositionMap(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
-  ~HcalCheckPositionReconstruction() {}
+  ~HcalCheckPositionMap() {}
 
   void onProcessStart() final override {}
 
@@ -51,7 +51,7 @@ class HcalCheckPositionReconstruction : public framework::Analyzer {
       int layer = detID.layer();
       int strip = detID.strip();
 
-      // get the cal geometry
+      // get the Hcal geometry
       const auto &hcalGeometry = getCondition<ldmx::HcalGeometry>(
           ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -85,17 +85,14 @@ class HcalCheckPositionReconstruction : public framework::Analyzer {
         }
       }
     }
-
-    // const auto recHits = event.getCollection<ldmx::HcalHit>("HcalRecHits");
-
     return;
   }
-};  // HcalCheckPositionReconstruction
+};  // HcalCheckPositionMap
 
 }  // namespace test
 }  // namespace hcal
 
-DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionReconstruction)
+DECLARE_ANALYZER_NS(hcal::test, HcalCheckPositionMap)
 
 /**
  * Test for the Hcal Geometry ID map
@@ -108,5 +105,5 @@ TEST_CASE("Hcal Geometry test", "[Hcal][functionality]") {
 
   framework::ConfigurePython cfg(config_file, args, 0);
   REQUIRE_NOTHROW(p = cfg.makeProcess());
-  // p->run();
+  p->run();
 }
