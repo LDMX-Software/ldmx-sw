@@ -29,4 +29,11 @@ void NtupleManager::fill() {
 
 void NtupleManager::clear() { bus_.clear(); }
 
+void NtupleManager::reset() { 
+  // we assume that ROOT handles clean-up
+  //  of the TTrees when they are written to the output histogram file
+  trees_.clear();
+  bus_.everybodyOff();
+}
+
 }  // namespace framework
