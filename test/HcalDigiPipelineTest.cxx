@@ -60,12 +60,6 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ_ADC_MODE = 10.;
 static const int NUM_TEST_SIM_HITS = 1000;
 
 /**
- * Should the sim/rec energies be ntuplized
- * for your viewing?
- */
-static const bool NTUPLIZE_ENERGIES = true;
-
-/**
  * @class FakeSimHits
  *
  * Fills the event bus with an HcalSimHits collection with
@@ -77,7 +71,7 @@ class HcalFakeSimHits : public framework::Producer {
   /**
    * Maximum energy to make a simulated hit for [MeV]
    */
-  const double maxEnergy_ = 1000 * PE_ENERGY;
+  const double maxEnergy_ = 500 * PE_ENERGY;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
@@ -146,6 +140,8 @@ class HcalCheckEnergyReconstruction : public framework::Analyzer {
       : framework::Analyzer(name, p) {}
   ~HcalCheckEnergyReconstruction() {}
 
+  void onProcessStart() final override {}
+  /*
   void onProcessStart() final override {
     getHistoDirectory();
     ntuple_.create("HcalDigiTest");
@@ -163,6 +159,7 @@ class HcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.addVar<int>("HcalDigiTest", "DaqDigiADC");
     ntuple_.addVar<int>("HcalDigiTest", "DaqDigiTOT");
   }
+  */
 
   void analyze(const framework::Event &event) final override {
     const auto simHits =
@@ -171,19 +168,20 @@ class HcalCheckEnergyReconstruction : public framework::Analyzer {
     REQUIRE(simHits.size() == 1);
 
     float truth_energy = simHits.at(0).getEdep();
+    /*
     ntuple_.setVar<float>("SimEnergy", truth_energy);
     ntuple_.setVar<float>("SimX", simHits.at(0).getPosition()[0]);
     ntuple_.setVar<float>("SimY", simHits.at(0).getPosition()[1]);
     ntuple_.setVar<float>("SimZ", simHits.at(0).getPosition()[2]);
-
+    */
     const auto daqDigis{
         event.getObject<ldmx::HgcrocDigiCollection>("HcalDigis")};
     auto daqDigi = daqDigis.getDigi(0);
-    ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
+    // ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
     bool is_in_adc_mode = daqDigi.isADC();
-    ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
-    ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
-    ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
+    // ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
+    // ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
+    // ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
 
     const auto recHits = event.getCollection<ldmx::HcalHit>("HcalRecHits");
     CHECK(recHits.size() == 1);
@@ -193,9 +191,9 @@ class HcalCheckEnergyReconstruction : public framework::Analyzer {
     CHECK_FALSE(hit.isNoise());
     CHECK(id.raw() == simHits.at(0).getID());
 
-    ntuple_.setVar<float>("RecX", hit.getXPos());
-    ntuple_.setVar<float>("RecY", hit.getYPos());
-    ntuple_.setVar<float>("RecZ", hit.getZPos());
+    // ntuple_.setVar<float>("RecX", hit.getXPos());
+    // ntuple_.setVar<float>("RecY", hit.getYPos());
+    // ntuple_.setVar<float>("RecZ", hit.getZPos());
 
     // define target energy by using the settings at the top
     auto target_daq_energy =
@@ -210,7 +208,7 @@ class HcalCheckEnergyReconstruction : public framework::Analyzer {
     // truth_energy << std::endl;
 
     CHECK(hit.getEnergy() == target_daq_energy);
-    ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
+    // ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
 
     return;
   }
