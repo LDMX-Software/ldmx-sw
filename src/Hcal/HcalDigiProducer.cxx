@@ -255,8 +255,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
     for (int l = 0; l < hcalGeometry.getNumSections(); l++) {
       int nChannels =
           hcalGeometry.getNumLayers(l) * hcalGeometry.getNumStrips(l);
-      // for back Hcal we have double readout, therefore we multiply the number of channels by 2.
-      if (l == 0) nChannels *= 2;
+      // for back Hcal we have double readout, therefore we multiply the number
+      // of channels by 2.
+      // if (l == 0) nChannels *= 2;
       numChannels += nChannels;
     }
     int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
@@ -269,13 +270,15 @@ void HcalDigiProducer::produce(framework::Event& event) {
       // generate detector ID for noise hit
       // making sure that it is in an empty channel
       unsigned int noiseID;
+      int sectionID, layerID, stripID, endID;
       do {
-        int sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
-        int layerID =
-            noiseInjector_->Integer(hcalGeometry.getNumLayers(sectionID));
-        int stripID =
-            noiseInjector_->Integer(hcalGeometry.getNumStrips(sectionID));
-        int endID = noiseInjector_->Integer(2);
+        sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
+        layerID = noiseInjector_->Integer(hcalGeometry.getNumLayers(sectionID));
+        // set layer to 1 if the generator says it is 0 (geometry map starts
+        // from 1)
+        if (layerID == 0) layerID = 1;
+        stripID = noiseInjector_->Integer(hcalGeometry.getNumStrips(sectionID));
+        endID = noiseInjector_->Integer(2);
         if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
             (sectionID == ldmx::HcalID::HcalSection::LEFT)) {
           endID = 0;
@@ -292,12 +295,26 @@ void HcalDigiProducer::produce(framework::Event& event) {
       times[0] = noiseInjector_->Uniform(clockCycle_);
 
       // noise generator gives the amplitude above the readout threshold
-      // we need to convert it to the amplitdue above the pedestal
+      // we need to convert it to the amplitude above the pedestal
       voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
 
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-      if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
-        hcalDigis.addDigi(noiseID, digiToAdd);
+      if (sectionID == ldmx::HcalID::HcalSection::BACK) {
+        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd_close,
+            digiToAdd_far;
+        int endID_opp = (endID == 0) ? 1 : 0;
+        auto detID_opp =
+            ldmx::HcalDigiID(sectionID, layerID, stripID, endID_opp);
+        if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd_close) &&
+            hgcroc_->digitize(detID_opp.raw(), voltages, times,
+                              digiToAdd_far)) {
+          hcalDigis.addDigi(noiseID, digiToAdd_close);
+          hcalDigis.addDigi(detID_opp.raw(), digiToAdd_far);
+        }
+      } else {
+        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
+        if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
+          hcalDigis.addDigi(noiseID, digiToAdd);
+        }
       }
     }  // loop over noise amplitudes
   }    // if we should add noise
