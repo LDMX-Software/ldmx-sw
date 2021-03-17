@@ -44,9 +44,10 @@ class EventFile {
    * @param[in] isSingleOutput true if only one output file is being written to
    * @param[in] compressionSetting the compression setting for the TFile
    * (100*algo+level)
+   * @param[in] isLoopable true for an input file where events can be reused
    */
   EventFile(const std::string &filename, EventFile *parent, bool isOutputFile,
-            bool isSingleOutput, int compressionSetting);
+            bool isSingleOutput, int compressionSetting, bool isLoopable);
 
   /**
    * Class constructor to make a file to read in an event root file.
@@ -72,6 +73,20 @@ class EventFile {
    */
   EventFile(const std::string &fileName, int compressionSetting);
 
+ /**                                                                                                                                                                                          
+   * Constructor to make a pileup overlay file. 
+   *
+   * This is an additional input file from which collections are pulled 
+   * to be overlaid with simulated hit collections.
+   *
+   * @param fileName The file name.
+   * @param isLoopable true if we want to reset the event counter and keep 
+   * processing from the start when we hit the end of the event tree in
+   * this input file (set in the call in the producer) 
+   */
+  
+  EventFile(const std::string& fileName, bool isLoopable);
+  
   /**
    * Class constructor for cloning data from a "parent" file.
    *
@@ -159,6 +174,13 @@ class EventFile {
   bool nextEvent(bool storeCurrentEvent = true);
 
   /**
+   * Skip events using an offset. Used in pileup overlay.
+   * @return New event number if read successfully, else -1.
+   */
+  int skipToEvent(int offset);
+
+  
+  /**
    * Close the file, writing the tree to disk if creating an output file.
    *
    * Deletes any RunHeaders that this instance of EventFile owns.
@@ -224,6 +246,9 @@ class EventFile {
   /** True if there is only one output file */
   bool isSingleOutput_;
 
+  /** True if this is an input file with pileup overlay events */
+  bool isLoopable_{false};
+  
   /** The backing TFile for this EventFile. */
   TFile *file_{nullptr};
 

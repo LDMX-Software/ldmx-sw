@@ -13,11 +13,12 @@ namespace framework {
 
 EventFile::EventFile(const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput,
-                     int compressionSetting)
+                     int compressionSetting, bool isLoopable)
     : fileName_(filename),
       parent_(parent),
       isOutputFile_(isOutputFile),
-      isSingleOutput_(isSingleOutput) {
+      isSingleOutput_(isSingleOutput),
+      isLoopable_(isLoopable) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");
@@ -71,14 +72,17 @@ EventFile::EventFile(const std::string &filename, EventFile *parent,
 }
 
 EventFile::EventFile(const std::string &filename)
-    : EventFile(filename, nullptr, false, false, -1) {}
+  : EventFile(filename, nullptr, false, false, -1, false) {}
 
 EventFile::EventFile(const std::string &filename, int compressionSetting)
-    : EventFile(filename, nullptr, true, true, compressionSetting) {}
-
+  : EventFile(filename, nullptr, true, true, compressionSetting, false) {}
+  
+EventFile::EventFile(const std::string& filename, bool isLoopable)
+    : EventFile(filename, nullptr, false, false, -1, isLoopable) { }
+  
 EventFile::EventFile(const std::string &filename, EventFile *parent,
                      bool isSingleOutput, int compressionSetting)
-    : EventFile(filename, parent, true, isSingleOutput, compressionSetting) {}
+  : EventFile(filename, parent, true, isSingleOutput, compressionSetting, false) {}
 
 void EventFile::addDrop(const std::string &rule) {
   int offset;
@@ -194,7 +198,12 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     // if we are reading, move the pointer
     if (!isOutputFile_) {
       if (ientry_ + 1 >= entries_) {
-        return false;
+		if ( isLoopable_ ) {
+		  // reset the event counter: reuse events from start of pileup tree
+		  ientry_ = -1;
+		}
+		else
+		  return false;
       }
 
       ientry_++;
@@ -231,6 +240,14 @@ void EventFile::setupEvent(Event *evt) {
   }
 }
 
+int EventFile::skipToEvent(int offset) {
+  // make sure the event number exists,
+  // -1 to account for stepping in nextEvent()
+  ientry_ = offset % entries_ -1;
+  if (!this->nextEvent()) return -1;
+  return ientry_;
+}
+  
 void EventFile::updateParent(EventFile *parent) {
   parent_ = parent;
 
