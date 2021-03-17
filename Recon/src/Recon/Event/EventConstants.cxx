@@ -3,11 +3,6 @@
 namespace ldmx {
 
 /*
- * Default name of event tree.
- */
-const std::string EventConstants::EVENT_TREE_NAME = "LDMX_Events";
-
-/*
  * Default Collection and object names in the event tree.
  */
 const std::string EventConstants::ECAL_SIM_HITS = "EcalSimHits";
@@ -31,7 +26,6 @@ const std::string EventConstants::SIM_PARTICLE = "ldmx::SimParticle";
 const std::string EventConstants::SIM_CALORIMETER_HIT =
     "ldmx::SimCalorimeterHit";
 const std::string EventConstants::SIM_TRACKER_HIT = "ldmx::SimTrackerHit";
-const std::string EventConstants::RUN_HEADER = "ldmx::RunHeader";
 const std::string EventConstants::PN_WEIGHT = "simcore::pnWeight";
 
 }  // namespace ldmx
