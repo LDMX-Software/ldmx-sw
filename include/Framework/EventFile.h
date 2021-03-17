@@ -44,10 +44,10 @@ class EventFile {
    * @param[in] isSingleOutput true if only one output file is being written to
    * @param[in] compressionSetting the compression setting for the TFile
    * (100*algo+level)
-   * @param[in] isOverlayFile true for a pileup input file for event overlay
+   * @param[in] isLoopable true for an input file where events can be reused
    */
   EventFile(const std::string &filename, EventFile *parent, bool isOutputFile,
-            bool isSingleOutput, int compressionSetting, bool isOverlayFile);
+            bool isSingleOutput, int compressionSetting, bool isLoopable);
 
   /**
    * Class constructor to make a file to read in an event root file.
@@ -80,11 +80,12 @@ class EventFile {
    * to be overlaid with simulated hit collections.
    *
    * @param fileName The file name.
-   * @param isOverlayFile true if this is a pileup input file (set in the call 
-   * in OverlayProducer) 
+   * @param isLoopable true if we want to reset the event counter and keep 
+   * processing from the start when we hit the end of the event tree in
+   * this input file (set in the call in the producer) 
    */
   
-  EventFile(const std::string& fileName, bool isOverlayFile);
+  EventFile(const std::string& fileName, bool isLoopable);
   
   /**
    * Class constructor for cloning data from a "parent" file.
@@ -246,7 +247,7 @@ class EventFile {
   bool isSingleOutput_;
 
   /** True if this is an input file with pileup overlay events */
-  bool isOverlayFile_{false};
+  bool isLoopable_{false};
   
   /** The backing TFile for this EventFile. */
   TFile *file_{nullptr};
