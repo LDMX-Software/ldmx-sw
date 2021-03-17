@@ -7,7 +7,6 @@
 #include "Framework/EventFile.h"
 #include "Framework/Exception/Exception.h"
 #include "Framework/RunHeader.h"
-#include "Recon/Event/EventConstants.h"
 
 namespace framework {
 
@@ -290,8 +289,7 @@ void EventFile::close() {
 
     // create the branch on this tree
     ldmx::RunHeader *theHandle = nullptr;
-    runTree->Branch("RunHeader", ldmx::EventConstants::RUN_HEADER.c_str(),
-                    &theHandle, 32000, 3);
+    runTree->Branch("RunHeader", "ldmx::RunHeader", &theHandle, 32000, 3);
 
     // copy over the run headers into the tree
     for (auto &[num, header_pair] : runMap_) {
