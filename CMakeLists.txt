@@ -33,3 +33,5 @@ setup_library(module Hcal
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Hcal)
+
+setup_test(dependencies Hcal::Hcal)
