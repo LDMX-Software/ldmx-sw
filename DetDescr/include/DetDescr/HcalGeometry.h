@@ -46,7 +46,7 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    * Does nothing because the stl containers clean up automatically.
    */
-  virtual ~HcalGeometry() {}
+  ~HcalGeometry() = default; 
 
   /**
    * Get a strip center position from a combined hcal ID.
