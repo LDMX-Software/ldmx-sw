@@ -1,6 +1,6 @@
 
-#ifndef EVENTPROC_TRIGSCINTTRACKPRODUCER_H
-#define EVENTPROC_TRIGSCINTTRACKPRODUCER_H
+#ifndef TRIGSCINT_TRIGSCINTTRACKPRODUCER_H
+#define TRIGSCINT_TRIGSCINTTRACKPRODUCER_H
 
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
@@ -65,6 +65,8 @@ class TrigScintTrackProducer : public framework::Producer {
   // track residual in units of channel nb (will not be content weighted)
   float residual_{0.};
 };
+
+
 }  // namespace trigscint
 
-#endif  // EVENTPROC_TRIGSCINTTRACKPRODUCER_H
+#endif // TRIGSCINT_TRIGSCINTTRACKPRODUCER_H 
