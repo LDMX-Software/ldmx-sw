@@ -149,23 +149,19 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : trackerCollections_
-  for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
+  //for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
+  for (const auto &collName : trackerCollections_) {
 
-    std::string outCollName = trackerCollections_[iColl] + "Overlay";
-
-    simHitsTracker = event.getCollection<ldmx::SimTrackerHit>(
-        trackerCollections_[iColl], simPassName_);
-    trackerCollectionMap[outCollName] = simHitsTracker;
+    simHitsTracker = event.getCollection<ldmx::SimTrackerHit>(collName, simPassName_);
+    trackerCollectionMap[collName + "Overlay"] = simHitsTracker;
 
     // the rest is printouts for debugging
-    ldmx_log(debug) << "in loop: size of sim hits vector "
-                    << trackerCollections_[iColl] << " is "
+    ldmx_log(debug) << "in loop: size of sim hits vector " << collName << " is "
                     << simHitsTracker.size();
 
     if (verbosity_ > 2) {
-      ldmx_log(debug) << "in loop: start of collection "
-                      << trackerCollections_[iColl];
-      ldmx_log(debug) << "in loop: printing current sim event: ";
+      ldmx_log(debug) << "in loop: start of collection " << collName
+                      << "in loop: printing current sim event: ";
 
       for (const ldmx::SimTrackerHit &simHit : simHitsTracker) {
         if (verbosity_ > 2)
