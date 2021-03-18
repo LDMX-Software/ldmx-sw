@@ -103,10 +103,16 @@ class OverlayProducer : public framework::Producer {
   std::string simPassName_;
 
   /**
-   * Let the total number of events be poisson distributed, or fix at the chosen
-   * value, poissonMu_
+   * Let the total number of in-time events be poisson distributed, or fix at 
+   * the chosen value, poissonMu_
    */
-  bool doPoisson_{false};
+  bool doPoissonIT_{false};
+
+  /**
+   * Let the total number of out-of-time events be poisson distributed, or fix
+   *  at the chosen value, poissonMu_
+   */
+  bool doPoissonOOT_{false};
 
   /**
    * (average) total number of events
