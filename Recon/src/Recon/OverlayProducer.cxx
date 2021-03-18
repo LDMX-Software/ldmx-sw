@@ -20,7 +20,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   doPoisson_ = parameters.getParameter<bool>("doPoisson");
   timeSigma_ = parameters.getParameter<double>("timeSpread");
   timeMean_ = parameters.getParameter<double>("timeMean");
-  nBunchesToSample_ = parameters.getParameter<int>("nBunchesToSample");
+  nEarlier_ = parameters.getParameter<int>("nEarlierBunchesToSample");
+  nLater_ = parameters.getParameter<int>("nLaterBunchesToSample");
   bunchSpacing_ = parameters.getParameter<double>("bunchSpacing");
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -39,6 +40,8 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
       ldmx_log(info) << coll << "; ";
 
     ldmx_log(info) << "\n\t numberOverlaidInteractions = " << poissonMu_
+                   << "\n\t nEarlierBunchesToSample = " << nEarlier_
+                   << "\n\t nLaterBunchesToSample = " << nLater_
                    << "\n\t doPoisson = " << doPoisson_
                    << "\n\t timeSpread = " << timeSigma_
                    << "\n\t timeMean = " << timeMean_
@@ -47,13 +50,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   return;
 }
 
-void OverlayProducer::produce(framework::Event &event) {
-  // event is the incoming, simulated event/"hard" process
-  // overlayEvent_ is the overlay producer's own event.
-  if (verbosity_ > 1) {
-    ldmx_log(info) << "produce() starts on simulation event "
-                   << event.getEventHeader().getEventNumber();
-  }
+  void OverlayProducer::onNewRun(const ldmx::RunHeader&) { // ) { //
 
   /// set up random seeds
   if (rndm_.get() == nullptr) {
@@ -62,6 +59,29 @@ void OverlayProducer::produce(framework::Event &event) {
         framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
   }
+
+   int start_event = rndm_->Uniform(20.,1e4);
+   // EventFile::skipToEvent handles actual number of events in file
+   int evNb = overlayFile_->skipToEvent(start_event) ;
+   if ( evNb < 0 ){
+	 EXCEPTION_RAISE("BadRead",
+					 "Couldn't read to starting offset.");
+   }
+   overlayEvent_.getEventHeader().setEventNumber(evNb); 
+   ldmx_log(info) << "Starting overlay process with pileup event number " <<
+	 evNb << " (random event number picked was " << start_event << ")." ;
+   
+  }
+
+  
+void OverlayProducer::produce(framework::Event &event) {
+  // event is the incoming, simulated event/"hard" process
+  // overlayEvent_ is the overlay producer's own event.
+  if (verbosity_ > 1) {
+    ldmx_log(info) << "produce() starts on simulation event "
+                   << event.getEventHeader().getEventNumber();
+  }
+
   if (rndmTime_.get() == nullptr) {
     // not been seeded yet, get it from RNSS
     const auto &rnss = getCondition<framework::RandomNumberSeedService>(
@@ -116,8 +136,7 @@ void OverlayProducer::produce(framework::Event &event) {
     // of pulse behaviour)
     float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
     int bunchOffset = (int)rndmTime_->Uniform(
-        -(nBunchesToSample_ + 1),
-        nBunchesToSample_ + 1);  // +1 to get inclusive interval
+	   	  -(nEarlier_+1) , nLater_+1);  // +1 to get inclusive interval
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
     timeOffset += bunchTimeOffset;
 
@@ -357,27 +376,12 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart() ";
   }
 
-  // replace by this line once the corresponding tweak to EventFile is ready:
-  //	overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,
-  //true );
-  overlayFile_ = std::make_unique<framework::EventFile>(overlayFileName_);
+    // replace by this line once the corresponding tweak to EventFile is ready:
+  overlayFile_ = std::make_unique<framework::EventFile>( overlayFileName_,true );
   overlayFile_->setupEvent(&overlayEvent_);
-
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
-  // TODO this could also be done N random times to get a randomness in which
-  // events get matched to what sim event. noticed that shifting by a fair chunk
-  // helps remove some weak but suspicious correlations between sim and overlay
-  // particle positions. leave it hardwired until we can reset the overlay event
-  // counter in nextEvent() (implemented with the EventFile definition above)
-  int nEventsShift_ = 23;
-  for (int iShift = 0; iShift < nEventsShift_; iShift++) {
-    if (!overlayFile_->nextEvent()) {
-      std::cerr << "Couldn't read next event!";
-      return;
-    }
-  }
-
+  
   if (verbosity_ > 2) {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
                     << overlayFile_->getFileName();

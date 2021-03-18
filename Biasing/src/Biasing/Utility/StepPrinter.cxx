@@ -1,5 +1,5 @@
 
-#include "Biasing/StepPrinter.h"
+#include "Biasing/Utility/StepPrinter.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -7,9 +7,9 @@
 #include "G4Step.hh"
 
 namespace biasing {
+namespace utility {
 
-StepPrinter::StepPrinter(const std::string& name,
-                         framework::config::Parameters& parameters)
+StepPrinter::StepPrinter(const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   trackID_ = parameters.getParameter<int>("track_id");
 }
@@ -39,19 +39,18 @@ void StepPrinter::stepping(const G4Step* step) {
   // Get the region
   auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
 
-  std::cout << "*******************************\n"
-            << "*   Step " << track->GetCurrentStepNumber() << "\n"
-            << "********************************\n"
-            << "\tEnergy of " << particleName << " : " << energy << "\n"
-            << "\tTrack ID: " << track->GetTrackID() << "\n"
-            << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-            << "\tParticle currently in " << volume << "\n"
-            << "\tRegion: " << region << "\n"
-            << "\tNext volume: " << nextVolume << "\n"
-            << "********************************\n"
-            << std::endl;
+  std::cout << " Step " << track->GetCurrentStepNumber() << " {"
+            << " Energy: " << energy << " Track ID: " << track->GetTrackID()
+            << " Particle currently in: " << volume << " Region: " << region
+            << " Next volume: " << nextVolume
+            << " Weight: " << track->GetWeight() << " Children:";
+  for (auto const& track : *(step->GetSecondaryInCurrentStep()))
+    std::cout << " " << track->GetParticleDefinition()->GetPDGEncoding();
+
+  std::cout << " }" << std::endl;
 }
 
+}  // namespace utility
 }  // namespace biasing
 
-DECLARE_ACTION(biasing, StepPrinter)
+DECLARE_ACTION(biasing::utility, StepPrinter)

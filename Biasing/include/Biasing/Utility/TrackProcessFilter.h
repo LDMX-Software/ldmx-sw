@@ -1,5 +1,5 @@
-#ifndef BIASING_TRACKPROCESSFILTER_H
-#define BIASING_TRACKPROCESSFILTER_H
+#ifndef BIASING_UTILITY_TRACKPROCESSFILTER_H
+#define BIASING_UTILITY_TRACKPROCESSFILTER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -11,15 +11,8 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
-
-// Forward declarations
-class G4Track;
-
 namespace biasing {
+namespace utility {
 
 /**
  * Filter used to tag tracks for persistence based on the process they were
@@ -29,6 +22,9 @@ namespace biasing {
  * are tagged to be persisted if the process used to create them match the
  * user specified process. The process name specified by the user needs to
  * match the names assigned by Geant4.
+ *
+ * @note Any track created through a process *not* the same as the configured
+ * process will *not* be saved.
  *
  */
 class TrackProcessFilter : public simcore::UserAction {
@@ -40,14 +36,13 @@ class TrackProcessFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TrackProcessFilter(const std::string& name,
-                     framework::config::Parameters& parameters);
+  TrackProcessFilter(const std::string& name, framework::config::Parameters& parameters);
 
   /// Destructor
   ~TrackProcessFilter();
 
   /**
-   * Method called after a step has been taken.
+   * Method called when a track is done being processed.
    *
    * @param[in] track Geant4 track associated with a particle.
    */
@@ -64,6 +59,7 @@ class TrackProcessFilter : public simcore::UserAction {
 
 };  // TrackProcessFilter
 
+}  // namespace utility
 }  // namespace biasing
 
-#endif  // BIASING_TRACKPROCESSFILTER_H
+#endif  // BIASING_UTILITY_TRACKPROCESSFILTER_H

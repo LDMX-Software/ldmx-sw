@@ -34,6 +34,13 @@ class OverlayProducer : public framework::Producer {
   void configure(framework::config::Parameters &parameters) final override;
 
   /**
+   * At the start of the run, the pileup overlay file is set up, and the
+   * starting event number is chosen, using the RNSS. 
+   */
+  void onNewRun(const ldmx::RunHeader&); // );    //
+
+  
+  /**
    * Based on the list of collections to overlay, and the desired number of
    * events, loop through all relevant collections and copy the sim event
    * (once), and then add the corresponding collection from the pileup overlay
@@ -53,10 +60,7 @@ class OverlayProducer : public framework::Producer {
   void produce(framework::Event &event) final override;
 
   /**
-   * At the start of processing, the pileup overlay file is set up, and the
-   * starting event number is chosen. Currently, this uses a fixed offset but it
-   * can (will) be randomized once we can reset the pileup event counter using
-   * nextEvent().
+   * At the start of processing, the pileup overlay file is set up.
    */
   void onProcessStart() final override;
 
@@ -110,14 +114,14 @@ class OverlayProducer : public framework::Producer {
   double poissonMu_{0.};
 
   /**
-   * Random number generator for number of events.
+   * Random number generator for number of overlaid events.
    * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input
    * files will have way shorter period anyway.
    */
   std::unique_ptr<TRandom2> rndm_;
 
   /**
-   * Random number generator for peileup event time offset.
+   * Random number generator for pileup event time offset.
    * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input
    * files will have way shorter period anyway.
    */
@@ -142,11 +146,18 @@ class OverlayProducer : public framework::Producer {
   double bunchSpacing_{0.};
 
   /**
-   * Number of bunches before and after the sim event to pull pileup events
+   * Number of bunches before the sim event to pull pileup events
    * from. Defaults to 0 --> all events occur in the same bunch as the sim
    * event.
    */
-  int nBunchesToSample_{0};
+  int nEarlier_{0};
+
+  /**
+   * Number of bunches after the sim event to pull pileup events
+   * from. Defaults to 0 --> all events occur in the same bunch as the sim
+   * event.
+   */
+  int nLater_{0};
 
   /**
    * Local control of processor verbosity
