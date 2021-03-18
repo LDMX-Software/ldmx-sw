@@ -53,7 +53,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   return;
 }
 
-  void OverlayProducer::onNewRun(const ldmx::RunHeader&) { // ) { //
+  void OverlayProducer::onNewRun(const ldmx::RunHeader&) { 
 
   /// set up random seeds
   if (rndm_.get() == nullptr) {
@@ -68,7 +68,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
    int evNb = overlayFile_->skipToEvent(start_event) ;
    if ( evNb < 0 ){
 	 EXCEPTION_RAISE("BadRead",
-					 "Couldn't read to starting offset.");
+                     "Couldn't read to starting offset.");
    }
    overlayEvent_.getEventHeader().setEventNumber(evNb); 
    ldmx_log(info) << "Starting overlay process with pileup event number " <<
@@ -123,7 +123,7 @@ void OverlayProducer::produce(framework::Event &event) {
 	
 	// start out by just copying the sim hits, unaltered.
 	simHitsCalo = event.getCollection<ldmx::SimCalorimeterHit>(
-															   caloCollections_[iColl], simPassName_);
+						     caloCollections_[iColl], simPassName_);
 	// but don't copy ecal hits immediately: for them, wait until overlay
 	// contribs have been added. then add everything through the hitmap
 	if (!needsContribsAdded) {
@@ -165,7 +165,7 @@ void OverlayProducer::produce(framework::Event &event) {
 	std::string outCollName = trackerCollections_[iColl] + "Overlay";
 
 	simHitsTracker = event.getCollection<ldmx::SimTrackerHit>(
-															  trackerCollections_[iColl], simPassName_);
+						        trackerCollections_[iColl], simPassName_);
 	trackerCollectionMap[outCollName] = simHitsTracker;
 	
 	// the rest is printouts for debugging
@@ -190,8 +190,8 @@ void OverlayProducer::produce(framework::Event &event) {
   // we could shift these by a random number, effectively placing the
   // sim event at random positions in the interval, preserving the
   // overall interval length 
-  	//= (int)rndmTime_->Uniform(
-	//   	  -(nEarlier_+1) , nLater_+1);  // +1 to get inclusive interval
+  // int simBunch= (int)rndmTime_->Uniform(
+  //				   -(nEarlier_+1) , nLater_+1);  // +1 to get inclusive interval
   int startBunch = - nEarlier_;
   int endBunch = nLater_;
   
@@ -263,7 +263,8 @@ void OverlayProducer::produce(framework::Event &event) {
 
 		std::vector<ldmx::SimCalorimeterHit> overlayHits =
           overlayEvent_.getCollection<ldmx::SimCalorimeterHit>(
-															   caloCollections_[iColl], overlayPassName_);
+                              caloCollections_[iColl], overlayPassName_);
+
 		ldmx_log(debug) << "in loop: size of overlay hits vector is "
 						<< overlayHits.size();
 
@@ -292,20 +293,20 @@ void OverlayProducer::produce(framework::Event &event) {
 			// incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are set
 			// in the header for now but could be parameters
 			hitMap[overlayHitID].addContrib(overlayIncidentID_, overlayTrackID_,
-											overlayPdgCode_, overlayHit.getEdep(),
-											overlayTime);
+                                            overlayPdgCode_, overlayHit.getEdep(),
+                                            overlayTime);											
 		  }  // if add overlay as contribs
 		  else {
 			caloCollectionMap[outCollName].push_back(overlayHit);
 			if (verbosity_ > 2)
 			  ldmx_log(debug) << "Adding non-Ecal overlay hit to outhit vector "
-							  << outCollName;
+                              << outCollName;
 		  }
 		}  // over overlay calo simhit collection
 
 		if (!needsContribsAdded)
 		  ldmx_log(debug) << "Nhits in overlay collection " << outCollName << ": "
-						  << caloCollectionMap[outCollName].size();
+                          << caloCollectionMap[outCollName].size();
 
 	  }  // over caloCollections
 
@@ -317,7 +318,8 @@ void OverlayProducer::produce(framework::Event &event) {
 	  for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
 		std::vector<ldmx::SimTrackerHit> overlayTrackerHits =
           overlayEvent_.getCollection<ldmx::SimTrackerHit>(
-														   trackerCollections_[iColl], overlayPassName_);
+                              trackerCollections_[iColl], overlayPassName_);
+
 		ldmx_log(debug) << "in loop: size of overlay hits vector is "
 						<< overlayTrackerHits.size();
 
@@ -335,12 +337,12 @@ void OverlayProducer::produce(framework::Event &event) {
 		  if (verbosity_ > 2) {
 			overlayHit.Print();
 			ldmx_log(debug) << "Adding tracker overlay hit to outhit vector "
-							<< outCollName;
+                            << outCollName;
 		  }
 		}  // over overlay tracker simhit collection
 
 		ldmx_log(debug) << "Nhits in overlay collection " << outCollName << ": "
-						<< trackerCollectionMap[outCollName].size();
+                        << trackerCollectionMap[outCollName].size();
 
 	  }  // over trackerCollections
 
@@ -348,8 +350,8 @@ void OverlayProducer::produce(framework::Event &event) {
 	  // 0, if we hit the end of the pileup event tree.
 	  if (!overlayFile_->nextEvent()) {
 		ldmx_log(error) << "At sim event "
-						<< event.getEventHeader().getEventNumber()
-						<< ": couldn't read next overlay event!";
+                        << event.getEventHeader().getEventNumber()
+                        << ": couldn't read next overlay event!";
 		return;
 	  }
 	}  // over overlay events
