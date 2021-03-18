@@ -17,9 +17,14 @@ overlayTrackerHitCollections : string
     List of SimTrackerHit collections to pull from the sim and pileup events and combine
 totalNumberOfInteractions : int 
     The total number of interactions combined (including the sim event)
-doPoisson : int
-    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to combine (doPoisson != 0), 
-    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoisson = 0)
+doPoissonIntime : bool
+    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to combine in-time 
+    with the sim event (doPoissonIntime=true), 
+    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoissonIntime = false)
+doPoissonOutoftime : bool
+    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to put in 
+    bunches that are out-of-time with the sim event (doPoissonOutoftime=true), 
+    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoissonOutoftime = false)
 timeSpread : float
     The width of a single bunch in time (expressed in sigma) [ns]
 timeMean : float
@@ -64,7 +69,8 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.overlayCaloHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
         self.overlayTrackerHitCollections=[ "TaggerSimHits"]
         self.totalNumberOfInteractions = 2.
-        self.doPoisson = False
+        self.doPoissonIntime = False
+        self.doPoissonOutoftime = False
         self.timeSpread = 0.        # [ns]
         self.timeMean = 0.          # [ns]
         self.nEarlierBunchesToSample = 0
