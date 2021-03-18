@@ -1,13 +1,7 @@
-/**
- * @file HcalDigiID.h
- * @brief Class that defines an HCal digi detector ID
- * @author Cristina Suarez, Fermi National Accelerator Laboratory
- */
-
 #ifndef DETDESCR_HCALDIGIID_H_
 #define DETDESCR_HCALDIGIID_H_
 
-// LDMX
+//---< DetDescr >---//
 #include "DetDescr/HcalAbstractID.h"
 
 namespace ldmx {
@@ -18,13 +12,13 @@ namespace ldmx {
  */
 class HcalDigiID : public HcalAbstractID {
  public:
-  static const RawValue END_MASK{0x1};  // space for up to 2 ends of a strip
+  static const RawValue END_MASK{0x1}; // space for up to 2 ends of a strip
   static const RawValue END_SHIFT{19};
-  static const RawValue SECTION_MASK{0x7};  // space for up to 7 sections
+  static const RawValue SECTION_MASK{0x7}; // space for up to 7 sections
   static const RawValue SECTION_SHIFT{16};
-  static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
+  static const RawValue LAYER_MASK{0xFF}; // space for up to 255 layers
   static const RawValue LAYER_SHIFT{8};
-  static const RawValue STRIP_MASK{0xFF};  // space for 255 strips/layer
+  static const RawValue STRIP_MASK{0xFF}; // space for 255 strips/layer
   static const RawValue STRIP_SHIFT{0};
 
   /**
@@ -122,9 +116,20 @@ class HcalDigiID : public HcalAbstractID {
   }
 
   static void createInterpreters();
-};
-}  // namespace ldmx
 
-std::ostream& operator<<(std::ostream&, const ldmx::HcalDigiID&);
+  /**
+   * Overload the stream insertion operator to output a string representation
+   * of this HcalDigiID.
+   *
+   * @param[in] output The output stream where the string representation will
+   *    be inserted.
+   * @param[in] id The HcalDigiID object.
+   *
+   * @return[out] An ostream object with the string representation of
+   *    HcalDigiID inserted.
+   */
+  friend std::ostream &operator<<(std::ostream &, const ldmx::HcalDigiID &id);
+};
+} // namespace ldmx
 
 #endif
