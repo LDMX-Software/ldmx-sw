@@ -13,8 +13,6 @@ HcalRecProducer::HcalRecProducer(const std::string& name,
                                  framework::Process& process)
     : Producer(name, process) {}
 
-HcalRecProducer::~HcalRecProducer() {}
-
 void HcalRecProducer::configure(framework::config::Parameters& ps) {
   // collection names
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
