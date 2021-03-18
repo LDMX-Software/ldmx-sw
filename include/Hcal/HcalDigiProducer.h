@@ -1,72 +1,110 @@
-/**
- * @file HcalDigiProducer.h
- * @brief Class that performs digitization of simulated HCal data
- * @author Andrew Whitbeck, FNAL
- */
-
 #ifndef HCAL_HCALDIGIPRODUCER_H_
 #define HCAL_HCALDIGIPRODUCER_H_
 
-// ROOT
-#include "TRandom3.h"
-#include "TString.h"
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <memory>  //for smart pointers
+#include <set>     //for tracking used detector IDs
 
-// LDMX
-#include "DetDescr/DetectorID.h"
+//----------//
+//   LDMX   //
+//----------//
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/Event/EventConstants.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
 
 namespace hcal {
 
 /**
  * @class HcalDigiProducer
- * @brief Performs digitization of simulated HCal data
+ * @brief Performs basic HCal digitization
  */
 class HcalDigiProducer : public framework::Producer {
  public:
+  /**
+   * Constructor
+   * Makes unique noise generator and injector for this class
+   */
   HcalDigiProducer(const std::string& name, framework::Process& process);
 
-  virtual ~HcalDigiProducer() { ; }
+  /// Default destructor
+  ~HcalDigiProducer() = default;
 
   /**
-   * Configure the processor using the given user specified parameters.
-   *
-   * @param parameters Set of parameters used to configure this processor.
+   * Configure this producer from the python configuration.
+   * Sets event constants and configures the noise generator, noise injector,
+   * and pulse function. Creates digi collection
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters&) final override;
 
-  virtual void produce(framework::Event& event);
-
-  ldmx::HcalID generateRandomID(ldmx::HcalID::HcalSection sec);
-  void constructNoiseHit(std::vector<ldmx::HcalHit>&, ldmx::HcalID::HcalSection,
-                         double, double, const std::map<unsigned int, float>&,
-                         std::unordered_set<unsigned int>&);
+  /**
+   * Simulates measurement of pulse and creates digi collection for input event.
+   */
+  void produce(framework::Event& event) final override;
 
  private:
-  bool verbose_{false};
-  std::unique_ptr<TRandom3> random_{nullptr};
-  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_{nullptr};
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Python Configuration Parameters
 
-  double meanNoise_{0};
-  int nProcessed_{0};
-  double mev_per_mip_{1.40};
-  double pe_per_mip_{13.5};
-  double strip_attenuation_length_{100.};
-  double strip_position_resolution_{150.};
-  std::string sim_hit_pass_name_;
-  int readoutThreshold_{2};
-  int STRIPS_BACK_PER_LAYER_{60};
-  int NUM_BACK_HCAL_LAYERS_{150};
-  int STRIPS_SIDE_TB_PER_LAYER_{6};
-  int NUM_SIDE_TB_HCAL_LAYERS_{31};
-  int STRIPS_SIDE_LR_PER_LAYER_{31};
-  int NUM_SIDE_LR_HCAL_LAYERS_{63};
-  int SUPER_STRIP_SIZE_{1};
+  /// input hit collection name
+  std::string inputCollName_;
+
+  /// input pass name
+  std::string inputPassName_;
+
+  /// output hit collection name
+  std::string digiCollName_;
+
+  /// Time interval for chip clock in ns
+  double clockCycle_;
+
+  /// The gain in ADC units per MeV.
+  double gain_;
+
+  /// The pedestal in ADC units
+  double pedestal_;
+
+  /// Depth of ADC buffer.
+  int nADCs_;
+
+  /// Index for the Sample Of Interest in the list of digi samples
+  int iSOI_;
+
+  /// Readout threshold [ADCs]
+  double readoutThreshold_;
+
+  /// Conversion from energy in MeV to voltage in mV
+  double MeV_;
+
+  /// Strip attenuation length [m]
+  double attlength_;
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Other member variables
+
+  /// Put noise into empty channels, not configurable, only helpful in
+  /// development
+  bool noise_{true};
+
+  /// Hgcroc Emulator to digitize analog voltage signals
+  std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
+
+  /// Conversion from time in ns to ticks of the internal clock
+  double ns_;
+
+  /// Generates noise hits based off of number of cells that are not hit
+  std::unique_ptr<ldmx::NoiseGenerator> noiseGenerator_;
+
+  /// Generates Gaussian noise on top of real hits
+  std::unique_ptr<TRandom3> noiseInjector_;
 };
-
 }  // namespace hcal
 
 #endif
