@@ -149,10 +149,11 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : trackerCollections_
-  //for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
+  // for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
   for (const auto &collName : trackerCollections_) {
 
-    simHitsTracker = event.getCollection<ldmx::SimTrackerHit>(collName, simPassName_);
+    simHitsTracker =
+        event.getCollection<ldmx::SimTrackerHit>(collName, simPassName_);
     trackerCollectionMap[collName + "Overlay"] = simHitsTracker;
 
     // the rest is printouts for debugging
@@ -299,22 +300,22 @@ void OverlayProducer::produce(framework::Event &event) {
       // get the SimTrackerHit collections that we want to overlay, by looping
       // over the list of collections passed to the producer :
       // trackerCollections_
-      for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
-        std::vector<ldmx::SimTrackerHit> overlayTrackerHits =
-            overlayEvent_.getCollection<ldmx::SimTrackerHit>(
-                trackerCollections_[iColl], overlayPassName_);
+      for (const auto &coll : trackerCollections_) {
+        auto overlayTrackerHits{
+            overlayEvent_.getCollection<ldmx::SimTrackerHit>(coll,
+                                                             overlayPassName_)};
 
         ldmx_log(debug) << "in loop: size of overlay hits vector is "
                         << overlayTrackerHits.size();
 
-        std::string outCollName = trackerCollections_[iColl] + "Overlay";
+        auto outCollName{coll + "Overlay"};
 
         if (verbosity_ > 2) {
           ldmx_log(debug) << "in loop: printing overlay event: ";
         }
 
-        for (ldmx::SimTrackerHit &overlayHit : overlayTrackerHits) {
-          const float overlayTime = overlayHit.getTime() + timeOffset;
+        for (auto &overlayHit : overlayTrackerHits) {
+          auto overlayTime{overlayHit.getTime() + timeOffset};
           overlayHit.setTime(overlayTime);
           trackerCollectionMap[outCollName].push_back(overlayHit);
 
