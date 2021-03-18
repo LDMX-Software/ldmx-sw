@@ -45,7 +45,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE = 2.;
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_DAQ_ADC_MODE = 10.;
+static const double MAX_ENERGY_PERCENT_ERROR_DAQ_ADC_MODE = 12.;
 
 /**
  * Number of sim hits to create.
@@ -71,13 +71,13 @@ class HcalFakeSimHits : public framework::Producer {
   /**
    * Maximum energy to make a simulated hit for [MeV]
    */
-  const double maxEnergy_ = 500 * PE_ENERGY;
+  const double maxEnergy_ = 200 * PE_ENERGY;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
    * Needs to be above readout threshold (after internal HcalDigi's calculation)
    */
-  const double minEnergy_ = 1 * PE_ENERGY;
+  const double minEnergy_ = 4 * PE_ENERGY;
   /**
    * The step between energies is calculated depending on the min, max energy
    * and the total number of sim hits you desire.
