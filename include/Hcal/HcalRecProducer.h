@@ -44,12 +44,12 @@ class HcalRecProducer : public framework::Producer {
   /**
    * Destructor
    */
-  virtual ~HcalRecProducer();
+  ~HcalRecProducer() = default;
 
   /**
    * Grabs configure parameters from the python config file.
    */
-  virtual void configure(framework::config::Parameters&);
+  void configure(framework::config::Parameters&) final override;
 
   /**
    * Produce HcalHits and put them into the event bus using the
@@ -59,13 +59,13 @@ class HcalRecProducer : public framework::Producer {
    * and reconstructs their energy using knowledge of how
    * the chip operates and the position using HcalGeometry.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
  private:
-  /** Digi Collection Name to use as input */
+  /// Digi Collection Name to use as input
   std::string digiCollName_;
 
-  /** Digi Pass Name to use as input */
+  /// Digi Pass Name to use as input
   std::string digiPassName_;
 
   /// simhit collection name
