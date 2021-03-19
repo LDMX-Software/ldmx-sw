@@ -96,8 +96,6 @@ void OverlayProducer::produce(framework::Event &event) {
   // the event bus.
   std::map<std::string, std::vector<ldmx::SimCalorimeterHit>> caloCollectionMap;
   std::map<std::string, std::vector<ldmx::SimTrackerHit>> trackerCollectionMap;
-  std::vector<ldmx::SimCalorimeterHit> simHitsCalo;
-  std::vector<ldmx::SimTrackerHit> simHitsTracker;
   std::map<int, ldmx::SimCalorimeterHit> hitMap;
 
   // start by copying over all the collections from the sim event
@@ -113,7 +111,7 @@ void OverlayProducer::produce(framework::Event &event) {
                                                                        : false};
 
     // start out by just copying the sim hits, unaltered.
-    simHitsCalo =
+	auto simHitsCalo =
         event.getCollection<ldmx::SimCalorimeterHit>(collName, simPassName_);
     // but don't copy ecal hits immediately: for them, wait until overlay
     // contribs have been added. then add everything through the hitmap
@@ -149,10 +147,9 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : trackerCollections_
-  // for (uint iColl = 0; iColl < trackerCollections_.size(); iColl++) {
   for (const auto &collName : trackerCollections_) {
 
-    simHitsTracker =
+	auto simHitsTracker=
         event.getCollection<ldmx::SimTrackerHit>(collName, simPassName_);
     trackerCollectionMap[collName + "Overlay"] = simHitsTracker;
 
@@ -164,10 +161,8 @@ void OverlayProducer::produce(framework::Event &event) {
       ldmx_log(debug) << "in loop: start of collection " << collName
                       << "in loop: printing current sim event: ";
 
-      for (const ldmx::SimTrackerHit &simHit : simHitsTracker) {
-        if (verbosity_ > 2)
+	  for (const ldmx::SimTrackerHit &simHit : simHitsTracker) 
           simHit.Print();
-      } // over tracker simhit collection
     }   // if high verbosity
   }     // over tracker collections for sim event
 
@@ -236,11 +231,9 @@ void OverlayProducer::produce(framework::Event &event) {
 
       /* ----------- first do the SimCalorimeterHits overlay ----------- */
 
-      // get the calo hits collections that we want to overlay, by looping over
-      // the list of collections passed to the producer : caloCollections_
+      // again get the calo hits collections that we want to overlay
       for (uint iColl = 0; iColl < caloCollections_.size(); iColl++) {
-        // for now, Ecal and only Ecal uses contribs instead of multiple
-        // SimHitsCalo per channel, meaning, it requires special treatment
+        // for now, Ecal and only Ecal uses contribs
         bool needsContribsAdded = false;
         if (strstr(caloCollections_[iColl].c_str(), "Ecal"))
           needsContribsAdded = true;
@@ -297,9 +290,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
       /* ----------- now do simtracker hits overlay ----------- */
 
-      // get the SimTrackerHit collections that we want to overlay, by looping
-      // over the list of collections passed to the producer :
-      // trackerCollections_
+      // get the SimTrackerHit collections that we want to overlay
       for (const auto &coll : trackerCollections_) {
         auto overlayTrackerHits{
             overlayEvent_.getCollection<ldmx::SimTrackerHit>(coll,
@@ -323,7 +314,7 @@ void OverlayProducer::produce(framework::Event &event) {
             overlayHit.Print();
             ldmx_log(debug) << "Adding tracker overlay hit to outhit vector "
                             << outCollName;
-          }
+          } //verbose
         } // over overlay tracker simhit collection
 
         ldmx_log(debug) << "Nhits in overlay collection " << outCollName << ": "
@@ -342,6 +333,7 @@ void OverlayProducer::produce(framework::Event &event) {
     } // over overlay events
   }   // over bunches
 
+  
   // after all events are done, the ecal hitmap is final and can be written to
   // the event output
   for (uint iColl = 0; iColl < caloCollections_.size(); iColl++) {
