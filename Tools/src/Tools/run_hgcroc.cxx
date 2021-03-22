@@ -39,25 +39,10 @@ int main() {
   double readout_threshold = gain*parameters.getParameter<double>("readoutThreshold");
   double tot_threshold = 15.76225;
   
-  // single hits at various amplitudes and times
-  std::vector<float> voltage_tests = {
-      0.5, // below readout threshold
-      0.8, // just below readout threshold
-      0.9, // just above readout threshold
-      1.0,
-      2.0,
-      2.2, // just below TOA
-      2.3, // just above TOA
-      2.5,
-      3.0,
-      4.0,
-      8.0,
-      10.0,
-      15., //just below TOT
-      16,  //just above TOT
-      17,
-      20 
-  };
+  float min_voltage_test{0.5};
+  float max_voltage_test{20.};
+  float voltage_step{0.1};
+  int num_voltages{int((max_voltage_test-min_voltage_test)/voltage_step)};
 
   std::vector<float> time_tests {
     0., // nominal in-time with light speed particle
@@ -93,9 +78,9 @@ int main() {
   all_digis.setSampleOfInterestIndex(0);
 
   unsigned int last_digi=0;
-  for (const float v : voltage_tests) {
-    for (const float ti : time_tests) {
-      voltage = v;
+  for (const float ti : time_tests) {
+    for (int iv{0}; iv < num_voltages; iv++) {
+      voltage = min_voltage_test + iv*voltage_step;
       time = ti;
       readout = (voltage > readout_threshold);
       sim_totmode = (voltage > tot_threshold);
