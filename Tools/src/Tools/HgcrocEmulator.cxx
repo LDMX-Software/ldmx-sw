@@ -79,9 +79,7 @@ bool HgcrocEmulator::digitize(
   // TODO more physical way of simulating the timing jitter
   if (noise_) timeInWindow += noiseInjector_->Gaus(0., timingJitter_);
 
-  // set time in the window to zero if noise pushed it below zero
-  // TODO better (more physical) method for handling this case?
-  //if (timeInWindow < 0.) timeInWindow = 0.;
+  timeInWindow += 13.;
 
   // setup up pulse by changing the amplitude and timing parameters
   configurePulse(signalAmplitude, timeInWindow);
@@ -141,9 +139,10 @@ bool HgcrocEmulator::digitize(
     if (verbose_) std::cout << "ADC Mode { ";
 
     // measure time of arrival (TOA) using TOA threshold
+    //  0 == no TOA was measured
     double toa(0.);
     // make sure pulse crosses TOA threshold
-    if (measurePulse(0., false) < toaThreshold and pulsePeak > toaThreshold) {
+    if (pulsePeak > toaThreshold) {
       toa = pulseFunc_.GetX(toaThreshold - gain * pedestal,
                             -nADCs_ * clockCycle_, timeInWindow);
     }
@@ -158,7 +157,7 @@ bool HgcrocEmulator::digitize(
                    : pedestal,  // ADC t-1 is first measurement
           measurePulse(fullMeasTime, noise_) /
               gain,  // ADC t is second measurement
-          toa * ns_  // TOA is third measurement
+          iADC==iSOI_ ? toa * ns_ + 1 : 0 // TOA is third measurement in SOI
       );
       if (verbose_)
         std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t() << ", ";
@@ -186,9 +185,8 @@ bool HgcrocEmulator::digitize(
     double charge_deposited = signalAmplitude * readoutPadCapacitance_;
 
     // Measure Time Over Threshold (TOT) by using the drain rate.
-    //      1. Use drain rate to see how long it takes for the charge to drain
-    //      off
-    //      2. Translate this into DIGI samples
+    //   1. Use drain rate to see how long it takes for the charge to drain off
+    //   2. Translate this into DIGI samples
 
     // Assume linear drain with slope drain rate:
     //      y-intercept = pulse amplitude
@@ -197,10 +195,10 @@ bool HgcrocEmulator::digitize(
     // actual time over threshold using the real signal voltage amplitude
     double tot = charge_deposited / drainRate;
 
-    double toa(0.);  // default is earliest possible time
-    // check if first half is just always above readout
-    if (measurePulse(0., false) < totThreshold)
-      toa = pulseFunc_.GetX(totThreshold - gain * pedestal, 0., timeInWindow);
+    // TODO how to do this?
+    //  Right now, this is likely to yield a negative value
+    double toa{pulseFunc_.GetX(toaThreshold - gain * pedestal, 
+        -999., timeInWindow)};
 
     // calculate the index that tot will complete on
     int num_whole_clocks = int(tot / clockCycle_);
@@ -240,7 +238,7 @@ bool HgcrocEmulator::digitize(
           iADC > 0 ? digiToAdd.at(iADC - 1).adc_t()
                    : pedestal,  // first measurement is ADC t-1
           secon_measurement,
-          toa * ns_  // last measurement is TOA
+          iADC==iSOI_ ? toa * ns_ + 1 : 0 // TOA is third measurement in SOI
       );
     }
 
