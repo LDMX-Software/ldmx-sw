@@ -53,7 +53,7 @@ namespace hcal {
         std::vector<WorkingCluster> wcVec = finder.getClusters();
         //std::cout<<"[HcalClusterProducer::produce ending...]"<<std::endl;
         for (unsigned int c = 0; c < wcVec.size(); c++) {
-    
+            if (wcVec[c].empty()) continue;
             ldmx::HcalCluster cluster;
     
             cluster.setEnergy(wcVec[c].centroid().E());
