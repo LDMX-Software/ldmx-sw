@@ -91,125 +91,149 @@ void HcalDigiProducer::produce(framework::Event& event) {
   hcalDigis.setNumSamplesPerDigi(nADCs_);
   hcalDigis.setSampleOfInterestIndex(iSOI_);
 
-  std::set<unsigned int>
-      filledDetIDs;  // detector IDs that already have a hit in them
+  std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>>
+      hitsByID;
+
 
   /******************************************************************************************
    * HGCROC Emulation on Simulated Hits
    *****************************************************************************************/
-  // get simulated hcal hits from Geant4
+  // get simulated hcal hits from Geant4 and group them by id
   auto hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollName_, inputPassName_)};
 
   for (auto const& simHit : hcalSimHits) {
     // get ID
     unsigned int hitID = simHit.getID();
-    filledDetIDs.insert(hitID);
 
-    ldmx::HcalID detID(hitID);
+    auto idh = hitsByID.find(hitID);
+    if (idh==hitsByID.end()) {
+      hitsByID[hitID]=std::vector<const ldmx::SimCalorimeterHit*>(1,&simHit);
+    } else {
+      idh->second.push_back(&simHit);
+    }
+  }
+  
+  for (auto const& simBar : hitsByID) {         
+
+    ldmx::HcalID detID(simBar.first);
     int section = detID.section();
     int layer = detID.layer();
     int strip = detID.strip();
 
     // get position
-    std::vector<float> position = simHit.getPosition();
     double half_total_width = hcalGeometry.getHalfTotalWidth(section);
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
-    /**
-     * Define two pulses: close and far.
-     * For this we need to:
-     * (1) Find the position along the bar:
-     *     For back Hcal: x (y) for even (odd) layers.
-     *     For side Hcal: x (top,bottom) and y (left,right).
-     *
-     * (2) Define the end of the bar:
-     *     The end of an HcalDigiID is based on its distance (x,y) along the
-     *     bar.
-     *     - A positive end (endID=0), corresponds to top,left.
-     *     - A negative end (endID=1), corresponds to bottom,right.
-     *     For back Hcal:
-     *     - if the position along the bar > 0, the close pulse's end is 0,
-     *     else 1.
-     *     For side Hcal:
-     *     - if the position along the bar > half_width point of the bar, the
-     *     close pulse's end is 0, else 1.
-     *     The far pulse's end will be opposite to the close pulse's end.
-     *
-     * (3) Find the distance to each end (positive and negative) from the
-     *     origin.
-     *     For the back Hcal, the half point of the bar coincides with the
-     *     coordinates of the origin.
-     *     For the side Hcal, the length of the bar is:
-     *     - 2 *(half_width) - Ecal_dx(y) away from the positive end, and,
-     *     - Ecal_dx(y) away from the negative end.
-     */
-    float distance_along_bar, distance_ecal;
-    float distance_close, distance_far;
-    int end_close;
-    if (section == ldmx::HcalID::HcalSection::BACK) {
-      distance_along_bar = (layer % 2) ? position[0] : position[1];
-      end_close = (distance_along_bar > 0) ? 0 : 1;
-      distance_close = half_total_width;
-      distance_far = half_total_width;
-    }
-    if ((section == ldmx::HcalID::HcalSection::TOP) ||
-        ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
-      distance_along_bar = position[0];
-      distance_ecal = ecal_dx;
-      end_close = (distance_along_bar > half_total_width) ? 0 : 1;
-      if (end_close == 0) {
-        distance_close = 2 * half_total_width - distance_ecal / 2;
-        distance_far = distance_ecal / 2;
-      } else {
-        distance_close = distance_ecal / 2;
-        distance_far = 2 * half_total_width - distance_ecal / 2;
+    // contributions
+    std::vector<double> voltages_posend, times_posend;
+    std::vector<double> voltages_negend, times_negend;
+    
+    for (auto psimHit : simBar.second) {
+      const ldmx::SimCalorimeterHit& simHit=*psimHit;
+      
+      std::vector<float> position = simHit.getPosition();
+
+      /**
+       * Define two pulses: close and far.
+       * For this we need to:
+       * (1) Find the position along the bar:
+       *     For back Hcal: x (y) for even (odd) layers.
+       *     For side Hcal: x (top,bottom) and y (left,right).
+       *
+       * (2) Define the end of the bar:
+       *     The end of an HcalDigiID is based on its distance (x,y) along the
+       *     bar.
+       *     - A positive end (endID=0), corresponds to top,left.
+       *     - A negative end (endID=1), corresponds to bottom,right.
+       *     For back Hcal:
+       *     - if the position along the bar > 0, the close pulse's end is 0,
+       *     else 1.
+       *     For side Hcal:
+       *     - if the position along the bar > half_width point of the bar, the
+       *     close pulse's end is 0, else 1.
+       *     The far pulse's end will be opposite to the close pulse's end.
+       *
+       * (3) Find the distance to each end (positive and negative) from the
+       *     origin.
+       *     For the back Hcal, the half point of the bar coincides with the
+       *     coordinates of the origin.
+       *     For the side Hcal, the length of the bar is:
+       *     - 2 *(half_width) - Ecal_dx(y) away from the positive end, and,
+       *     - Ecal_dx(y) away from the negative end.
+       */
+      float distance_along_bar, distance_ecal;
+      float distance_close, distance_far;
+      int end_close;
+      if (section == ldmx::HcalID::HcalSection::BACK) {
+        distance_along_bar = (layer % 2) ? position[0] : position[1];
+        end_close = (distance_along_bar > 0) ? 0 : 1;
+        distance_close = half_total_width;
+        distance_far = half_total_width;
       }
-    } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
-               (section == ldmx::HcalID::HcalSection::RIGHT)) {
-      distance_along_bar = position[1];
-      distance_ecal = ecal_dy;
-      end_close = (distance_along_bar > half_total_width) ? 0 : 1;
-      if (end_close == 0) {
-        distance_close = distance_ecal / 2;
-        distance_far = 2 * half_total_width - distance_ecal / 2;
-      } else {
-        distance_far = distance_ecal / 2;
-        distance_close = 2 * half_total_width - distance_ecal / 2;
+      if ((section == ldmx::HcalID::HcalSection::TOP) ||
+          ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
+        distance_along_bar = position[0];
+        distance_ecal = ecal_dx;
+        end_close = (distance_along_bar > half_total_width) ? 0 : 1;
+        if (end_close == 0) {
+          distance_close = 2 * half_total_width - distance_ecal / 2;
+          distance_far = distance_ecal / 2;
+        } else {
+          distance_close = distance_ecal / 2;
+          distance_far = 2 * half_total_width - distance_ecal / 2;
+        }
+      } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
+                 (section == ldmx::HcalID::HcalSection::RIGHT)) {
+        distance_along_bar = position[1];
+        distance_ecal = ecal_dy;
+        end_close = (distance_along_bar > half_total_width) ? 0 : 1;
+        if (end_close == 0) {
+          distance_close = distance_ecal / 2;
+          distance_far = 2 * half_total_width - distance_ecal / 2;
+        } else {
+          distance_far = distance_ecal / 2;
+          distance_close = 2 * half_total_width - distance_ecal / 2;
+        }
       }
-    }
-    int end_far = (end_close == 0) ? 1 : 0;
+      
+      // Calculate voltage attenuation and time shift for the close and far pulse.
+      float v =
+          299.792 / 1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
+      double att_close =
+          exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
+              attlength_);
+      double att_far = exp(
+          -1. * ((distance_far + fabs(distance_along_bar)) / 1000.) / attlength_);
+      double shift_close = fabs((distance_close - fabs(distance_along_bar)) / v);
+      double shift_far = fabs((distance_far + fabs(distance_along_bar)) / v);
+      
+      // Get voltages and times.
+      for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
+           iContrib++) {
+        double voltage = simHit.getContrib(iContrib).edep * MeV_;
+        double time =
+            simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
+        // time += position.at(2) / 299.702547; // shift light-speed particle
+        // traveling along z
 
-    // Calculate voltage attenuation and time shift for the close and far pulse.
-    float v =
-        299.792 / 1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
-    double att_close =
-        exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
-            attlength_);
-    double att_far = exp(
-        -1. * ((distance_far + fabs(distance_along_bar)) / 1000.) / attlength_);
-    double shift_close = fabs((distance_close - fabs(distance_along_bar)) / v);
-    double shift_far = fabs((distance_far + fabs(distance_along_bar)) / v);
-
-    // Get voltages and times.
-    std::vector<double> voltages_close, times_close;
-    std::vector<double> voltages_far, times_far;
-    for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
-         iContrib++) {
-      double voltage = simHit.getContrib(iContrib).edep * MeV_;
-      double time =
-          simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
-      // time += position.at(2) / 299.702547; // shift light-speed particle
-      // traveling along z
-
-      voltages_close.push_back(voltage * att_close);
-      times_close.push_back(time + shift_close + 50.);
-      voltages_far.push_back(voltage * att_far);
-      times_far.push_back(time + shift_far + 50.);
+        if (end_close==0) {
+          voltages_posend.push_back(voltage * att_close);
+          times_posend.push_back(time + shift_close + 50.);
+          voltages_negend.push_back(voltage * att_far);
+          times_negend.push_back(time + shift_far + 50.);
+        } else {
+          voltages_negend.push_back(voltage * att_close);
+          times_negend.push_back(time + shift_close + 50.);
+          voltages_posend.push_back(voltage * att_far);
+          times_posend.push_back(time + shift_far + 50.);
+        }
+      }
     }
 
     /**
+     * Now we have all the sub-hits from all the simhits
      * Digitize:
      * For back Hcal return two digis: close and far.
      * For bide Hcal we choose which pulse (close or far) to readout based on
@@ -221,38 +245,38 @@ void HcalDigiProducer::produce(framework::Event& event) {
      *  - x(y) < 0: read close pulse
      **/
     if (section == ldmx::HcalID::HcalSection::BACK) {
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddClose;
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddFar;
-      if (hgcroc_->digitize(hitID, voltages_close, times_close,
-                            digiToAddClose) &&
-          hgcroc_->digitize(hitID, voltages_far, times_far, digiToAddFar)) {
-        ldmx::HcalDigiID closeID(section, layer, strip, end_close);
-        ldmx::HcalDigiID farID(section, layer, strip, end_far);
+      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend;
+      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddNegend;
+      ldmx::HcalDigiID posendID(section, layer, strip, 0);
+      ldmx::HcalDigiID negendID(section, layer, strip, 1);
+      if (hgcroc_->digitize(posendID.raw(), voltages_posend, times_posend,
+                            digiToAddPosend) &&
+          hgcroc_->digitize(negendID.raw(), voltages_negend, times_negend, digiToAddNegend)) {
 
-        hcalDigis.addDigi(closeID.raw(), digiToAddClose);
-        hcalDigis.addDigi(farID.raw(), digiToAddFar);
+        hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+        hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
       }  // Back Hcal needs to digitize both pulses or none
     } else {
       // Determine which pulse to digitize
       // For top,left we digitize the positive end (0)
       // For bottom,right we digitize the negative end (1)
-      bool is_close = false;
+      bool is_posend = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if ((section == ldmx::HcalID::HcalSection::TOP) ||
           (section == ldmx::HcalID::HcalSection::LEFT)) {
-        if (end_close == 0) is_close = true;
+        is_posend = true;
       } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
                  (section == ldmx::HcalID::HcalSection::RIGHT)) {
-        if (end_close == 1) is_close = true;
+        is_posend = false;
       }
-      if (is_close) {
-        if (hgcroc_->digitize(hitID, voltages_close, times_close, digiToAdd)) {
-          ldmx::HcalDigiID digiID(section, layer, strip, end_close);
+      if (is_posend) {
+        ldmx::HcalDigiID digiID(section, layer, strip, 0);
+        if (hgcroc_->digitize(digiID.raw(), voltages_posend, times_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       } else {
-        if (hgcroc_->digitize(hitID, voltages_far, times_far, digiToAdd)) {
-          ldmx::HcalDigiID digiID(section, layer, strip, end_far);
+        ldmx::HcalDigiID digiID(section, layer, strip, 1);
+        if (hgcroc_->digitize(digiID.raw(), voltages_negend, times_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       }
@@ -300,8 +324,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
         }
         auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, endID);
         noiseID = detID.raw();
-      } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
-      filledDetIDs.insert(noiseID);
+      } while (hitsByID.find(noiseID) != hitsByID.end());
+      hitsByID[noiseID]=std::vector<const ldmx::SimCalorimeterHit*>(); // mark this as used
 
       // get a time for this noise hit
       times[0] = noiseInjector_->Uniform(clockCycle_);
