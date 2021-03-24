@@ -220,14 +220,14 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
         if (end_close == 0) {
           voltages_posend.push_back(voltage * att_close);
-          times_posend.push_back(time + shift_close + 50.);
+          times_posend.push_back(time + shift_close);
           voltages_negend.push_back(voltage * att_far);
-          times_negend.push_back(time + shift_far + 50.);
+          times_negend.push_back(time + shift_far);
         } else {
           voltages_negend.push_back(voltage * att_close);
-          times_negend.push_back(time + shift_close + 50.);
+          times_negend.push_back(time + shift_close);
           voltages_posend.push_back(voltage * att_far);
-          times_posend.push_back(time + shift_far + 50.);
+          times_posend.push_back(time + shift_far);
         }
       }
     }
