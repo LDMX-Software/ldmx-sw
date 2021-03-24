@@ -91,9 +91,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
   hcalDigis.setNumSamplesPerDigi(nADCs_);
   hcalDigis.setSampleOfInterestIndex(iSOI_);
 
-  std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>>
-      hitsByID;
-
+  std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>> hitsByID;
 
   /******************************************************************************************
    * HGCROC Emulation on Simulated Hits
@@ -107,15 +105,14 @@ void HcalDigiProducer::produce(framework::Event& event) {
     unsigned int hitID = simHit.getID();
 
     auto idh = hitsByID.find(hitID);
-    if (idh==hitsByID.end()) {
-      hitsByID[hitID]=std::vector<const ldmx::SimCalorimeterHit*>(1,&simHit);
+    if (idh == hitsByID.end()) {
+      hitsByID[hitID] = std::vector<const ldmx::SimCalorimeterHit*>(1, &simHit);
     } else {
       idh->second.push_back(&simHit);
     }
   }
-  
-  for (auto const& simBar : hitsByID) {         
 
+  for (auto const& simBar : hitsByID) {
     ldmx::HcalID detID(simBar.first);
     int section = detID.section();
     int layer = detID.layer();
@@ -129,10 +126,10 @@ void HcalDigiProducer::produce(framework::Event& event) {
     // contributions
     std::vector<double> voltages_posend, times_posend;
     std::vector<double> voltages_negend, times_negend;
-    
+
     for (auto psimHit : simBar.second) {
-      const ldmx::SimCalorimeterHit& simHit=*psimHit;
-      
+      const ldmx::SimCalorimeterHit& simHit = *psimHit;
+
       std::vector<float> position = simHit.getPosition();
 
       /**
@@ -197,28 +194,31 @@ void HcalDigiProducer::produce(framework::Event& event) {
           distance_close = 2 * half_total_width - distance_ecal / 2;
         }
       }
-      
-      // Calculate voltage attenuation and time shift for the close and far pulse.
-      float v =
-          299.792 / 1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
+
+      // Calculate voltage attenuation and time shift for the close and far
+      // pulse.
+      float v = 299.792 /
+                1.6;  // velocity of light in Polystyrene, n = 1.6 = c/v mm/ns
       double att_close =
           exp(-1. * ((distance_close - fabs(distance_along_bar)) / 1000.) /
               attlength_);
-      double att_far = exp(
-          -1. * ((distance_far + fabs(distance_along_bar)) / 1000.) / attlength_);
-      double shift_close = fabs((distance_close - fabs(distance_along_bar)) / v);
+      double att_far =
+          exp(-1. * ((distance_far + fabs(distance_along_bar)) / 1000.) /
+              attlength_);
+      double shift_close =
+          fabs((distance_close - fabs(distance_along_bar)) / v);
       double shift_far = fabs((distance_far + fabs(distance_along_bar)) / v);
-      
+
       // Get voltages and times.
       for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
            iContrib++) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         double time =
             simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
-        // time += position.at(2) / 299.702547; // shift light-speed particle
-        // traveling along z
+        time += position.at(2) /
+                299.702547;  // shift light-speed particle traveling along z
 
-        if (end_close==0) {
+        if (end_close == 0) {
           voltages_posend.push_back(voltage * att_close);
           times_posend.push_back(time + shift_close + 50.);
           voltages_negend.push_back(voltage * att_far);
@@ -251,8 +251,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
       ldmx::HcalDigiID negendID(section, layer, strip, 1);
       if (hgcroc_->digitize(posendID.raw(), voltages_posend, times_posend,
                             digiToAddPosend) &&
-          hgcroc_->digitize(negendID.raw(), voltages_negend, times_negend, digiToAddNegend)) {
-
+          hgcroc_->digitize(negendID.raw(), voltages_negend, times_negend,
+                            digiToAddNegend)) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
       }  // Back Hcal needs to digitize both pulses or none
@@ -271,12 +271,14 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
       if (is_posend) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
-        if (hgcroc_->digitize(digiID.raw(), voltages_posend, times_posend, digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), voltages_posend, times_posend,
+                              digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       } else {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
-        if (hgcroc_->digitize(digiID.raw(), voltages_negend, times_negend, digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), voltages_negend, times_negend,
+                              digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       }
@@ -325,7 +327,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
         auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, endID);
         noiseID = detID.raw();
       } while (hitsByID.find(noiseID) != hitsByID.end());
-      hitsByID[noiseID]=std::vector<const ldmx::SimCalorimeterHit*>(); // mark this as used
+      hitsByID[noiseID] =
+          std::vector<const ldmx::SimCalorimeterHit*>();  // mark this as used
 
       // get a time for this noise hit
       times[0] = noiseInjector_->Uniform(clockCycle_);
