@@ -15,10 +15,10 @@ namespace hcal {
         Producer(name, process){}
 
     void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
-         EminSeed_ = parameters.getParameter< double >("EminSeed");
+         //EminSeed_ = parameters.getParameter< double >("EminSeed");
          EnoiseCut_ = parameters.getParameter< double >("EnoiseCut");
-       //  deltaTime_ = parameters.getParameter< double >("deltaTime");
-
+         deltaTime_ = parameters.getParameter< double >("deltaTime");
+         deltaR_ = parameters.getParameter< double >("deltaR");
          EminCluster_ = parameters.getParameter< double >("EminCluster");
          cutOff_ = parameters.getParameter< double >("cutOff");
         
@@ -34,41 +34,21 @@ namespace hcal {
         
         std::vector<ldmx::HcalCluster> hcalClusters;
         std::list<const ldmx::HcalHit*> seedList;
-        std::vector< ldmx::HcalHit > hcalHits = event.getCollection< ldmx::HcalHit >("HcalOldRecHits");
+        std::vector< ldmx::HcalHit > hcalHits = event.getCollection< ldmx::HcalHit >("HcalRecHits");
         
   
         if (hcalHits.empty()) { return; }
 
         for (ldmx::HcalHit& hit : hcalHits) {
             if (hit.getEnergy() <  EnoiseCut_) continue;
-            if (abs(hit.getYPos())<1e-5) continue;
             if (hit.getEnergy() == 0) continue;
-
             finder.add(&hit, hcalGeom);
         }
+        
+  
+        //seedList.sort([](const ldmx::HcalHit* a, const ldmx::HcalHit* b) {return a->getEnergy() > b->getEnergy();});
 
-
-       
-        
-        /*for (auto const hit : hcalHits ) {
-            if (hit.getEnergy() <  EnoiseCut_) continue;
-            if (abs(hit.getYPos())<1e-5) continue;
-            std::cout<<"adding hit with "<<hit.getXPos()<<" "<<hit.getYPos()<<" "<<hit.getZPos()<<std::endl;
-            seedList.push_back(&hit);
-        }
-        
-        seedList.sort([](const ldmx::HcalHit* a, const ldmx::HcalHit* b) {return a->getEnergy() > b->getEnergy();});
-        
-        
-        for (const ldmx::HcalHit* Seed : seedList ) {
-            if (Seed->getEnergy() < EminSeed_) break;
-            std::cout<<"adding hit with "<<Seed->getXPos()<<" "<<Seed->getYPos()<<" "<<Seed->getZPos()<<std::endl;
-            std::cout<<"[HcalClusterProducer::pentering add...]"<<std::endl;
-            finder.add( Seed , hcalGeom);
-            
-
-        }*/
-        finder.cluster(EminCluster_,cutOff_);
+        finder.cluster(EminCluster_,cutOff_,deltaTime_);
         //std::cout<<"[HcalClusterProducer::produce cluster made...]"<<std::endl;
         std::vector<WorkingCluster> wcVec = finder.getClusters();
         //std::cout<<"[HcalClusterProducer::produce ending...]"<<std::endl;
@@ -80,6 +60,7 @@ namespace hcal {
             cluster.setCentroidXYZ(wcVec[c].centroid().Px(), wcVec[c].centroid().Py(), wcVec[c].centroid().Pz());
             cluster.setNHits(wcVec[c].getHits().size());
             cluster.addHits(wcVec[c].getHits());
+            cluster.setTime(wcVec[c].GetTime());
             //std::cout<<"[HcalClusterProducer::setting the cluster parameters...]"<<std::endl;
             hcalClusters.push_back( cluster );
         }

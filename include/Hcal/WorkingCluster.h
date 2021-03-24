@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "TLorentzVector.h"
+#include "TVector3.h"
 #include "DetDescr/HcalGeometry.h"
 
 namespace hcal {
@@ -22,12 +23,20 @@ namespace hcal {
                 
             void add(const WorkingCluster& wc);
 
+            double GetTime(){
+                return time_;
+            }
+            
             const TLorentzVector& centroid() const { 
                 return centroid_; 
             } 
             
             void SetCentroidPxPyPzE(double newCentroidX, double newCentroidY, double newCentroidZ, double newE){
                 centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+            }
+            
+            void SetTime(double t){
+                time_ = t;
             }
 
             std::vector<const ldmx::HcalHit*> getHits() const {
@@ -43,10 +52,9 @@ namespace hcal {
             void clear() { hits_.clear(); }
 
         private:
-
-
             std::vector<const ldmx::HcalHit*> hits_;
             TLorentzVector centroid_;
+            double time_=0;
     };
 }
 
