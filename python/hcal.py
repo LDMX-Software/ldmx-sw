@@ -61,7 +61,10 @@ class HcalClusterProducer(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalClusters') :
         super().__init__(name,'hcal::HcalClusterProducer','Hcal')
 
-        self.EminSeed = 0.
-        self.EnoiseCut = 0.
-        self.EminCluster = 100.0 #MeV
+        #self.EminSeed = 0.1 # Not used
+        self.EnoiseCut = 0.01
+        self.deltaTime = 10.
+        self.deltaR = 0.
+        self.EminCluster = 0.5 # Minimum Energy to be classes as a cluster 
         self.cutOff = 10.
+        
