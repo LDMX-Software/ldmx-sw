@@ -61,7 +61,7 @@ class GammaToMuPair : public XsecBiasingOperator {
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
 
-};  // ElectroNuclear
+};
 
 }  // namespace biasoperators
 }  // namespace simcore
