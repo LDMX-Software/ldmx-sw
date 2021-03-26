@@ -24,7 +24,7 @@ class GammaToMuPair : public XsecBiasingOperator {
 
   /**
    * @return Method that returns the biasing operation that will be used
-   *         to bias the occurence of photonuclear events.
+   *         to bias the conversion of gammas to muon pairs.
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
       const G4Track* track,
