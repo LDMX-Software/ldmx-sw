@@ -159,16 +159,6 @@ class HgcrocEmulator {
       std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
  private:
-  /**
-   * Configure the pulse to match the input voltage peak and time.
-   *
-   * @param[in] amplitude voltage amplitude of pulse [mV]
-   * @param[in] time time of peak [ns]
-   */
-  void configurePulse(double amplitude, double time) const {
-    pulseFunc_.SetParameter(0, amplitude);
-    pulseFunc_.SetParameter(4, time);
-  }
 
   /**
    * Get condition for input chip ID, condition name, and default value
@@ -243,6 +233,9 @@ class HgcrocEmulator {
 
   /// The capacitance of the readout pads in the chips [pF]
   double readoutPadCapacitance_;
+
+  /// Hit merging time [ns]
+  double hit_merge_ns_;
 
   /**************************************************************************************
    * Chip-Dependent Parameters (Conditions)
