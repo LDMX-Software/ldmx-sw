@@ -93,9 +93,6 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
   std::map<unsigned int, std::vector<const ldmx::SimCalorimeterHit*>> hitsByID;
 
-  /******************************************************************************************
-   * HGCROC Emulation on Simulated Hits
-   *****************************************************************************************/
   // get simulated hcal hits from Geant4 and group them by id
   auto hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
       inputCollName_, inputPassName_)};
@@ -112,6 +109,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
     }
   }
 
+  /******************************************************************************************
+   * HGCROC Emulation on Simulated Hits (grouped by HcalID)
+   ******************************************************************************************/
   for (auto const& simBar : hitsByID) {
     ldmx::HcalID detID(simBar.first);
     int section = detID.section();
@@ -215,7 +215,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         double time =
             simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
-        time += position.at(2) /
+        time -= position.at(2) /
                 299.702547;  // shift light-speed particle traveling along z
 
         if (end_close == 0) {
