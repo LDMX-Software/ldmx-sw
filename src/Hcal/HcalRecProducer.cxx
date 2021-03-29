@@ -44,8 +44,7 @@ double HcalRecProducer::correctTOA(
   double TOA = (maxSample - TOASample) * 25 - timeRelClock25;
 
   // now correct for difference between peak bunch sample and sample of interest
-  // NOTE: leave this commented until TOA meaasurement is fixed.
-  // TOA += (maxSample - (int)iSOI) * 25.;
+  TOA += (maxSample - (int)iSOI) * 25.;
   return TOA;
 }
 
@@ -115,12 +114,10 @@ void HcalRecProducer::produce(framework::Event& event) {
 
         for (auto it = digi_close.begin(); it < digi_close.end(); it++) {
           double amplitude = (it->adc_t() - pedestal_) * gain_;
-	  std::cout << "amplitude " << amplitude << std::endl;
           if (amplitude > maxMeas_close) {
             maxMeas_close = amplitude;
             maxSample_close = iSample;
           }
-	  std::cout << "maxSample " << maxSample_close << " isample " << iSample << std::endl;
           iSample += 1;
         }
 
