@@ -30,6 +30,25 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   attlength_ = ps.getParameter<double>("attenuationLength");
 }
 
+double HcalRecProducer::correctTOA(
+    const ldmx::HgcrocDigiCollection::HgcrocDigi digi, int maxSample,
+    unsigned int iSOI) {
+  // get TOA in ns
+  double timeRelClock25 = digi.begin()->toa() * (clock_cycle_ / 1024);  // ns
+
+  // find in which ADC sample the TOA was taken
+  int TOASample = (int)timeRelClock25 / 25.;  // divide by 25 ns
+
+  // subtract from however many samples you had to go backward
+  // this gives you the TOA relative to the peak bunch
+  double TOA = (maxSample - TOASample) * 25 - timeRelClock25;
+
+  // now correct for difference between peak bunch sample and sample of interest
+  // NOTE: leave this commented until TOA meaasurement is fixed.
+  // TOA += (maxSample - (int)iSOI) * 25.;
+  return TOA;
+}
+
 void HcalRecProducer::produce(framework::Event& event) {
   // Get the Hcal Geometry
   const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
@@ -39,6 +58,9 @@ void HcalRecProducer::produce(framework::Event& event) {
   auto hcalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
   int numDigiHits = hcalDigis.getNumDigis();
+
+  // get sample of interest index
+  unsigned int iSOI = hcalDigis.getSampleOfInterestIndex();
 
   // Loop through digis
   int iDigi = 0;
@@ -71,87 +93,91 @@ void HcalRecProducer::produce(framework::Event& event) {
       distance_end = 2 * half_total_width - distance_ecal / 2;
     }
 
-    // TOA is the time of arrival with respect to the 25ns clock window
-    // TODO what to do if hit NOT in first clock cycle?
-    double timeRelClock25 = digi.begin()->toa() * (clock_cycle_ / 1024);  // ns
-    double hitTime = timeRelClock25;
-
-    // get the estimated voltage from digi samples
+    // Get the estimated voltage and time from digi samples
     double voltage(0.);
     double voltage_min(0.);
+    double hitTime(0.);
 
-    // double readout
+    // Double readout
     if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
       auto digi_close = hcalDigis.getDigi(iDigi);
       auto digi_far = hcalDigis.getDigi(iDigi + 1);
 
-      // DigiID (only the close one for now)
-      ldmx::HcalDigiID id_close(digi.id());
+      double voltage_close, voltage_far;
+      int maxSample_close, maxSample_far;
 
-      // get x(y) coordinate from TOA
-      // position in bar = (diff_time*v)/2;
+      if (digi_close.isTOT()) {
+        voltage_close = (digi_close.tot() - pedestal_) * gain_;
+        voltage_far = (digi_far.tot() - pedestal_) * gain_;
+      } else {
+        int iSample{0};
+        double maxMeas_close{0.}, maxMeas_far{0.};
+
+        for (auto it = digi_close.begin(); it < digi_close.end(); it++) {
+          double amplitude = (it->adc_t() - pedestal_) * gain_;
+	  std::cout << "amplitude " << amplitude << std::endl;
+          if (amplitude > maxMeas_close) {
+            maxMeas_close = amplitude;
+            maxSample_close = iSample;
+          }
+	  std::cout << "maxSample " << maxSample_close << " isample " << iSample << std::endl;
+          iSample += 1;
+        }
+
+        iSample = 0;
+        for (auto it = digi_far.begin(); it < digi_far.end(); it++) {
+          double amplitude = (it->adc_t() - pedestal_) * gain_;
+          if (amplitude > maxMeas_far) {
+            maxMeas_far = amplitude;
+            maxSample_far = iSample;
+          }
+          iSample += 1;
+        }
+        voltage_close = maxMeas_close;
+        voltage_far = maxMeas_far;
+      }
+
+      // correct TOA
+      double TOA_close = correctTOA(digi_close, maxSample_close, iSOI);
+      double TOA_far = correctTOA(digi_far, maxSample_far, iSOI);
+
+      // get x(y) coordinate from TOA measurement
+      // position in bar = (diff_time*v)/2
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
-                          // (here, Ralf's simulation should be included)
-      double timeRelClock25_close =
-          digi_close.begin()->toa() * (clock_cycle_ / 1024);  // ns
-      double timeRelClock25_far =
-          digi_far.begin()->toa() * (clock_cycle_ / 1024);  // ns
-      double pos = (timeRelClock25_far - timeRelClock25_close) * v / 2;
-      if (id_close.isNegativeEnd()) pos = pos * -1;
+      double pos = (TOA_far - TOA_close) * v / 2;
+      // If the close pulse has a negative end (digiId should correspond to this
+      // pulse), multiply the position by -1.
+      if (digiId.isNegativeEnd()) pos = pos * -1;
+
+      // reverse voltage attenuation
+      double att_close =
+          exp(-1. * ((distance_end - fabs(pos)) / 1000.) / attlength_);
+      double att_far =
+          exp(-1. * ((distance_end + fabs(pos)) / 1000.) / attlength_);
+
+      // set voltage
+      voltage = (voltage_close / att_close + voltage_far / att_far) / 2;  // mV
+      voltage_min = std::min(voltage_close / att_close, voltage_far / att_far);
+
+      // set position
       if ((digiId.layer() % 2) == 1) {
         position.SetX(pos);
       } else {
         position.SetY(pos);
       }
 
-      // time
-      // TODO: shift in time not reversed here.
-      hitTime = fabs(timeRelClock25_close + timeRelClock25_far) / 2;
-
-      // reverse attenuation
-      double att_close =
-          exp(-1. * ((distance_end - fabs(pos)) / 1000.) / attlength_);
-      double att_far =
-          exp(-1. * ((distance_end + fabs(pos)) / 1000.) / attlength_);
-
-      if (digi_close.isTOT()) {
-        double voltage_close = (digi_close.tot() - pedestal_) * gain_;
-        double voltage_far = (digi_far.tot() - pedestal_) * gain_;
-        voltage =
-            (voltage_close / att_close + voltage_far / att_far) / 2;  // mV
-        voltage_min =
-            std::min(voltage_close / att_close, voltage_far / att_far);
-      } else {
-        double maxMeas_close{0.};
-        int numWholeClocks{0};
-        for (auto it = digi_close.begin(); it < digi_close.end(); it++) {
-          double amplitude = (it->adc_t() - pedestal_) * gain_;
-          double time = numWholeClocks * clock_cycle_;  // ns
-          if (amplitude > maxMeas_close) maxMeas_close = amplitude;
-        }
-        double maxMeas_far{0.};
-        numWholeClocks = 0;
-        for (auto it = digi_far.begin(); it < digi_far.end(); it++) {
-          double amplitude = (it->adc_t() - pedestal_) * gain_;
-          double time = numWholeClocks * clock_cycle_;  // ns
-          if (amplitude > maxMeas_far) maxMeas_far = amplitude;
-        }
-        voltage =
-            (maxMeas_close / att_close + maxMeas_far / att_far) / 2;  // mV
-        voltage_min =
-            std::min(maxMeas_close / att_close, maxMeas_far / att_far);
-      }
+      // set hit time
+      // TODO: does this need to revert shift because of propagation of light in
+      // polysterene?
+      hitTime = fabs(TOA_close + TOA_far) / 2;  // ns
 
       iDigi += 2;
     }       // end double readout loop
     else {  // single readout
 
-      // reverse attenuation
-      // for now, assume fabs(pos) = half_total_width as an approximation
-      double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
-                       attlength_);
-
+      double voltage_i;
+      int maxSample_i;
       if (digi.isTOT()) {
         // TOT - number of clock ticks that pulse was over threshold
         // this is related to the amplitude of the pulse approximately through a
@@ -160,25 +186,40 @@ void HcalRecProducer::produce(framework::Event& event) {
 
         // convert the time over threshold into a total energy deposited in the
         // bar (time over threshold [ns] - pedestal) * gain
-        voltage = (digi.tot() - pedestal_) * gain_;
+        voltage_i = (digi.tot() - pedestal_) * gain_;
       } else {
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
-        TH1F measurements("measurements", "measurements", 10. * clock_cycle_,
-                          0., 10. * clock_cycle_);
         double maxMeas{0.};
-        int numWholeClocks{0};
+        int iSample{0};
         for (auto it = digi.begin(); it < digi.end(); it++) {
-          double amplitude_fC = (it->adc_t() - pedestal_) * gain_;
-          double time =
-              numWholeClocks * clock_cycle_;  //+ offestWithinClock; //ns
-          measurements.Fill(time, amplitude_fC);
-          if (amplitude_fC > maxMeas) maxMeas = amplitude_fC;
+          double amplitude = (it->adc_t() - pedestal_) * gain_;
+          if (amplitude > maxMeas) {
+            maxMeas = amplitude;
+            maxSample_i = iSample;
+          }
+          iSample += 1;
         }
         // just use the maximum measured voltage
-        voltage = maxMeas / att;  // mV
+        voltage_i = maxMeas;  // mV
       }
-      voltage_min = voltage;
+
+      // reverse voltage attenuation
+      // for now, assume fabs(pos) = half_total_width as an approximation
+      double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
+                       attlength_);
+
+      // set voltage
+      voltage = voltage_i / att;
+      voltage_min = voltage_i / att;
+
+      // correct TOA
+      double TOA = correctTOA(digi, maxSample_i, iSOI);
+
+      // set hit time
+      // TODO: does this need to revert shift because of propagation of light in
+      // polysterene?
+      hitTime = TOA;  // ns
 
       iDigi++;
     }  // end single readout loop

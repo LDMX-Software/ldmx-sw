@@ -52,6 +52,12 @@ class HcalRecProducer : public framework::Producer {
   void configure(framework::config::Parameters&) final override;
 
   /**
+   * Corrects Time of Arrival.
+   */
+  double correctTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
+                    int maxSample, unsigned int iSOI);
+
+  /**
    * Produce HcalHits and put them into the event bus using the
    * HcalDigis as input.
    *
