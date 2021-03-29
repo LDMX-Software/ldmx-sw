@@ -46,6 +46,10 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         # setting this to the pedestal for now
         self.readoutThreshold = self.pedestal#+1
 
+        # SOI
+        # Set sample of interest to 3 (will have double (6) samples later)
+        self.iSOI = 3
+
         # gain
         # gain = maxADCRange/readoutPadCapacitance/1024
         self.gain = gain
@@ -58,7 +62,7 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.timeUpSlope = -9.897
         self.rateDnSlope = 0.0279
         self.timeDnSlope = 45.037
-        self.timePeak    = 9.747
+        self.timePeak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
 
         # noise (0.02PE)
         self.noiseRMS = self.calculateVoltageHcal(0.02)
