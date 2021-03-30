@@ -44,7 +44,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.025;
  * "simulated" (input into digitizer) and the
  * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_TP = 0.10;
+static const double MAX_ENERGY_PERCENT_ERROR_TP = 0.15;
 
 /**
  * Maximum absolute error that a single hit
