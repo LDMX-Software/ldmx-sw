@@ -389,6 +389,34 @@ class HgcrocDigiCollection {
    */
   void addDigi(unsigned int id, const std::vector<Sample>& digi);
 
+ public:
+  /**
+   * iterator class so we can do range-based loops over digi collecitons
+   */
+  class iterator : public std::iterator<std::input_iterator_tag, HgcrocDigi, long> {
+   public:
+    explicit iterator(HgcrocDigiCollection& c, long index = 0) : coll_{c}, digi_index_{index} {}
+    iterator& operator++() { digi_index_++; return *this; }
+    iterator operator++(int) { iterator retval = *this; ++(*this); return retval; }
+    bool operator==(iterator other) const {return digi_index_ == other.digi_index_; }
+    bool operator!=(iterator other) const {return !(*this == other); }
+    const HgcrocDigi operator*() const { return coll_.getDigi(digi_index_); }
+   private:
+    long digi_index_{0};
+    HgcrocDigiCollection& coll_;
+  };
+
+ public:
+  /**
+   * The beginning of this colleciton.
+   */
+  iterator begin() {return iterator(*this,0);}
+
+  /**
+   * The end of this collection
+   */
+  iterator end() {return iterator(*this,getNumDigis()); }
+
  private:
   /** Mask for lowest order bit in an int */
   static const int ONE_BIT_MASK = 1;
