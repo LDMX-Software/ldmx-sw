@@ -78,6 +78,7 @@ int main() {
   all_digis.setSampleOfInterestIndex(0);
 
   unsigned int last_digi=0;
+  std::vector<std::pair<double,double>> the_pulse(1,{0.,0.});
   for (const float ti : time_tests) {
     for (int iv{0}; iv < num_voltages; iv++) {
       voltage = min_voltage_test + iv*voltage_step;
@@ -85,8 +86,11 @@ int main() {
       readout = (voltage > readout_threshold);
       sim_totmode = (voltage > tot_threshold);
 
+      the_pulse[0].first  = voltage;
+      the_pulse[0].second = time;
+
       std::vector<ldmx::HgcrocDigiCollection::Sample> digi_to_add;
-      digitized = hgcroc.digitize(cell_id,{voltage},{time},digi_to_add);
+      digitized = hgcroc.digitize(cell_id,the_pulse,digi_to_add);
       if (digitized) {
         all_digis.addDigi(cell_id, digi_to_add);
 
