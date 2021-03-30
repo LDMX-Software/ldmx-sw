@@ -46,10 +46,8 @@ void EcalRecProducer::produce(framework::Event& event) {
   std::vector<ldmx::EcalHit> ecalRecHits;
   auto ecalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
-  int numDigiHits = ecalDigis.getNumDigis();
   // loop through digis
-  for (unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++) {
-    auto digi = ecalDigis.getDigi(iDigi);
+  for (auto digi : ecalDigis) {
 
     // ID from first digi sample
     //  assuming rest of samples have same ID
