@@ -8,7 +8,7 @@
 #define DETDESCR_HCALID_H_
 
 // LDMX
-#include "DetDescr/DetectorID.h"
+#include "DetDescr/HcalAbstractID.h"
 
 namespace ldmx {
 
@@ -16,7 +16,7 @@ namespace ldmx {
  * @class HcalID
  * @brief Implements detector ids for HCal subdetector
  */
-class HcalID : public DetectorID {
+class HcalID : public HcalAbstractID {
  public:
   /**
    * Encodes the section of the HCal based on the 'section' field value.
@@ -33,27 +33,37 @@ class HcalID : public DetectorID {
   /**
    * Empty HCAL id (but not null!)
    */
-  HcalID() : DetectorID(SD_HCAL, 0) {}
+  HcalID() : HcalAbstractID() {}
 
   /**
    * Create from raw number
    */
-  HcalID(RawValue rawid) : DetectorID(rawid) {
-    SUBDETECTORID_TEST("HcalID", SD_HCAL);
+  HcalID(RawValue rawid) : HcalAbstractID(rawid) {
+    if (!null() && bar_type() != Global) {
+      EXCEPTION_RAISE(
+          "DetectorIDMismatch",
+          "Attempted to create HcalID from mismatched Hcal bar_type " +
+              std::to_string(bar_type()));
+    }
   }
 
   /**
    * Create from a DetectorID, but check
    */
-  HcalID(const DetectorID id) : DetectorID(id) {
-    SUBDETECTORID_TEST("HcalID", SD_HCAL);
+  HcalID(const HcalAbstractID id) : HcalAbstractID(id) {
+    if (!null() && bar_type() != Global) {
+      EXCEPTION_RAISE(
+          "DetectorIDMismatch",
+          "Attempted to create HcalID from mismatched Hcal bar_type " +
+              std::to_string(bar_type()));
+    }
   }
 
   /**
    * Create from pieces
    */
   HcalID(unsigned int section, unsigned int layer, unsigned int strip)
-      : DetectorID(SD_HCAL, 0) {
+      : HcalAbstractID(Global, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
     id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
     id_ |= (strip & STRIP_MASK) << STRIP_SHIFT;
