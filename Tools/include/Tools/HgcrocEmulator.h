@@ -46,8 +46,7 @@ class HgcrocEmulator {
   HgcrocEmulator(const framework::config::Parameters& ps);
 
   /** Destructor */
-  ~HgcrocEmulator() { /* empty on purpose */
-  }
+  ~HgcrocEmulator() {}
 
   /**
    * Check if emulator has been seeded
@@ -147,15 +146,14 @@ class HgcrocEmulator {
    * before digitizing.
    *
    * @param[in] channelID raw integer ID for this readout channel
-   * @param[in] voltages list of voltage amplitudes going into the chip
-   * @param[in] times list of times corresponding to those voltage amplitudes
+   * @param[in] arriving_pulses pairs of (voltage,time) of hits arriving at the chip
    * @param[out] digiToAdd digi that will be filled with the samples from the
    * chip
    * @return true if digis were constructed (false if hit was below readout)
    */
   bool digitize(
-      const int& channelID, const std::vector<double>& voltages,
-      const std::vector<double>& times,
+      const int& channelID, 
+      std::vector<std::pair<double,double>>& arriving_pulses,
       std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
  private:

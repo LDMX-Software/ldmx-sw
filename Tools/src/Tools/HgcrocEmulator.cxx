@@ -119,17 +119,15 @@ class CompositePulse {
 };
 
 bool HgcrocEmulator::digitize(
-    const int &channelID, const std::vector<double> &voltages,
-    const std::vector<double> &times,
+    const int &channelID,
+    std::vector<std::pair<double,double>> &arriving_pulses,
     std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
+
   digiToAdd.clear();  // make sure it is clean
 
-  std::vector<std::pair<double, double> > voltage_time, merged_voltage_time;
-  // step 0: sort by subhit amplitude
-  for (size_t i=0; i< voltages.size(); i++)
-    voltage_time.push_back(std::pair<double,double>(voltages[i],times[i]));
-
-  std::sort(voltage_time.begin(), voltage_time.end(),
+  // sort by amplitude
+  //  ==> makes sure that puleses are merged towards higher ones
+  std::sort(arriving_pulses.begin(), arriving_pulses.end(),
             [](const std::pair<double,double>& a, const std::pair<double,double>&b) {
               return a.first>b.first;
             }
@@ -138,7 +136,7 @@ bool HgcrocEmulator::digitize(
   // step 1: gather voltages into groups separated by (programmable) ns, single pass
   CompositePulse pulse(pulseFunc_);
 
-  for (auto hit : voltage_time)
+  for (auto hit : arriving_pulses)
     pulse.addOrMerge(hit, hit_merge_ns_);  
 
   // TODO step 2: add timing jitter
