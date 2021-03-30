@@ -104,6 +104,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
   std::endl;
    */
 
+  std::vector<std::pair<double,double>> pulses_at_chip;
   for (auto const& simHit : ecalSimHits) {
     std::vector<double> voltages, times;
     for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
@@ -117,9 +118,9 @@ void EcalDigiProducer::produce(framework::Event& event) {
        * In reality, each chip has a set time phase that it samples at (relative
        * to target), so the time shifting should be at the emulator level.
        */
-      voltages.push_back(simHit.getContrib(iContrib).edep * MeV_);
-      times.push_back(
-          simHit.getContrib(iContrib).time  // global time (t=0ns at target)
+      pulses_at_chip.emplace_back(
+        simHit.getContrib(iContrib).edep * MeV_,
+        simHit.getContrib(iContrib).time  // global time (t=0ns at target)
           - simHit.getPosition().at(2) /
                 299.702547  // shift light-speed particle traveling along z
       );
@@ -135,7 +136,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
     // container emulator uses to write out samples and
     // transfer samples into the digi collection
     std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-    if (hgcroc_->digitize(hitID, voltages, times, digiToAdd)) {
+    if (hgcroc_->digitize(hitID, pulses_at_chip, digiToAdd)) {
       ecalDigis.addDigi(hitID, digiToAdd);
     }
   }
@@ -161,7 +162,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
     // populate the empty channels and are above the readout threshold
     auto noiseHitAmplitudes{
         noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-    std::vector<double> voltages(1, 0.), times(1, 0.);
+    std::vector<std::pair<double,double>> fake_pulse(1,{0.,0.});
     for (double noiseHit : noiseHitAmplitudes) {
       // generate detector ID for noise hit
       // making sure that it is in an empty channel
@@ -178,14 +179,14 @@ void EcalDigiProducer::produce(framework::Event& event) {
       // gain_*pedestal_ << std::endl;
 
       // get a time for this noise hit
-      times[0] = noiseInjector_->Uniform(clockCycle_);
+      fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
 
       // noise generator gives the amplitude above the readout threshold
       //  we need to convert it to the amplitdue above the pedestal
-      voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
+      fake_pulse[0].first = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
 
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-      if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
+      if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
         ecalDigis.addDigi(noiseID, digiToAdd);
       }
     }  // loop over noise amplitudes
