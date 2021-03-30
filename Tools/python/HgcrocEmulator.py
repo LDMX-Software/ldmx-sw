@@ -41,7 +41,7 @@ class HgcrocEmulator() :
         # Settings of the chip
         self.pedestal = 50. #ADC counts - baseline factor to subtract off of readout
         self.clockCycle = 25.0 #ns
-        self.measTime = 0. #ns
+        self.measTime = 13. #ns
         self.timingJitter = self.clockCycle / 100. #ns - pretty arbitrarily chosen
         self.readoutPadCapacitance = 20. #pF <- derived from hardware of HGCROC
         self.maxADCRange = 320. #fC <- setting of HGCROC
