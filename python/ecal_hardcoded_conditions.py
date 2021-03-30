@@ -24,6 +24,6 @@ EcalReconConditionsHardcode=SimpleCSVDoubleTableProvider("EcalReconConditions",[
 EcalReconConditionsHardcode.validForAllRows([
     50. , #ADC_PEDESTAL - should match HgcrocEmulator
     0.3125, #ADC_GAIN - 320. fC / 1024. counts - conversion to estimated charge deposited in ADC mode
-    53. , #TOT_PEDESTAL - tweaked so that we pass the reconstruction tests
+    54.5 , #TOT_PEDESTAL - tweaked so that we pass the reconstruction tests
     2.5, #TOT_GAIN - 10240 fC / 4096 counts - conversion to estimated charge deposited in TOT mode
     ])

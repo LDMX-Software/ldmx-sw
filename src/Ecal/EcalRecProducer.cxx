@@ -61,7 +61,7 @@ void EcalRecProducer::produce(framework::Event& event) {
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?
-    double timeRelClock25 = digi.begin()->toa() * (clock_cycle_ / 1024);  // ns
+    double timeRelClock25 = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
     double hitTime = timeRelClock25;
 
     // get the estimated charge deposited from digi samples
