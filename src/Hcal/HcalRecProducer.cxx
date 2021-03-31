@@ -33,19 +33,32 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
 double HcalRecProducer::correctTOA(
     const ldmx::HgcrocDigiCollection::HgcrocDigi digi, int maxSample,
     unsigned int iSOI) {
-  // get TOA in ns
-  double timeRelClock25 = digi.begin()->toa() * (clock_cycle_ / 1024);  // ns
+  // get toa relative to the startBX
+  double toaRelStartBX(0.);
+  int toaSample(0), iADC(0);
+  for (auto it = digi.begin(); it < digi.end(); it++) {
+    if (it->toa() > 0) {
+      toaRelStartBX = it->toa() * (clock_cycle_ / 1024);  // ns
+      // find in which ADC sample the TOA was taken
+      toaSample = iADC;
+    }
+    iADC++;
+  }
 
-  // find in which ADC sample the TOA was taken
-  int TOASample = (int)timeRelClock25 / 25.;  // divide by 25 ns
+  // time w.r.t to the peak bunch
+  // difference between time @ max. amplitude and time @ threshold (TOA)
+  // double corr = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
 
-  // subtract from however many samples you had to go backward
-  // this gives you the TOA relative to the peak bunch
-  double TOA = (maxSample - TOASample) * 25 - timeRelClock25;
+  // plus check if the max. amplitude sample is different from the SOI
+  // corr += (maxSample - (int)iSOI) * 25.;
 
-  // now correct for difference between peak bunch sample and sample of interest
-  TOA += (maxSample - (int)iSOI) * 25.;
-  return TOA;
+  // std::cout << "toa rel to the startBX " << toaRelClock25 << " which ADC
+  // sample "
+  //<< toaSample << std::endl;
+  // std::cout << "max sampel " << maxSample << " toaSample " << toaSample <<
+  // std::endl; std::cout << "timeWalk corr " << corr << std::endl;
+
+  return toaRelStartBX;
 }
 
 void HcalRecProducer::produce(framework::Event& event) {
@@ -80,16 +93,18 @@ void HcalRecProducer::produce(framework::Event& event) {
     // For back Hcal, we take the half of the bar
     // For side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
     // an approximation
-    float distance_end, distance_ecal;
+    float distance_posend, distance_negend, distance_ecal;
     if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
-      distance_end = half_total_width;
+      distance_posend = half_total_width;
+      distance_negend = half_total_width;
     } else {
       if ((digiId.section() == ldmx::HcalID::HcalSection::TOP) ||
           (digiId.section() == ldmx::HcalID::HcalSection::BOTTOM))
         distance_ecal = ecal_dx;
       else
         distance_ecal = ecal_dy;
-      distance_end = 2 * half_total_width - distance_ecal / 2;
+      distance_posend = 2 * half_total_width - distance_ecal / 2.;
+      distance_negend = distance_ecal / 2.;
     }
 
     // Get the estimated voltage and time from digi samples
@@ -99,63 +114,67 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // Double readout
     if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
-      auto digi_close = hcalDigis.getDigi(iDigi);
-      auto digi_far = hcalDigis.getDigi(iDigi + 1);
+      auto digi_posend = hcalDigis.getDigi(iDigi);
+      auto digi_negend = hcalDigis.getDigi(iDigi + 1);
 
-      double voltage_close, voltage_far;
-      int maxSample_close, maxSample_far;
+      double voltage_posend, voltage_negend;
+      int maxSample_posend, maxSample_negend;
 
-      if (digi_close.isTOT()) {
-        voltage_close = (digi_close.tot() - pedestal_) * gain_;
-        voltage_far = (digi_far.tot() - pedestal_) * gain_;
+      if (digi_posend.isTOT()) {
+        voltage_posend = (digi_posend.tot() - pedestal_) * gain_;
+        voltage_negend = (digi_negend.tot() - pedestal_) * gain_;
       } else {
-        int iSample{0};
-        double maxMeas_close{0.}, maxMeas_far{0.};
+        int iADC{0};
+        double maxMeas_posend{0.}, maxMeas_negend{0.};
 
-        for (auto it = digi_close.begin(); it < digi_close.end(); it++) {
+        for (auto it = digi_posend.begin(); it < digi_posend.end(); it++) {
           double amplitude = (it->adc_t() - pedestal_) * gain_;
-          if (amplitude > maxMeas_close) {
-            maxMeas_close = amplitude;
-            maxSample_close = iSample;
+          if (amplitude > maxMeas_posend) {
+            maxMeas_posend = amplitude;
+            maxSample_posend = iADC;
           }
-          iSample += 1;
+          iADC += 1;
         }
 
-        iSample = 0;
-        for (auto it = digi_far.begin(); it < digi_far.end(); it++) {
+        iADC = 0;
+        for (auto it = digi_negend.begin(); it < digi_negend.end(); it++) {
           double amplitude = (it->adc_t() - pedestal_) * gain_;
-          if (amplitude > maxMeas_far) {
-            maxMeas_far = amplitude;
-            maxSample_far = iSample;
+          if (amplitude > maxMeas_negend) {
+            maxMeas_negend = amplitude;
+            maxSample_negend = iADC;
           }
-          iSample += 1;
+          iADC += 1;
         }
-        voltage_close = maxMeas_close;
-        voltage_far = maxMeas_far;
+        voltage_posend = maxMeas_posend;
+        voltage_negend = maxMeas_negend;
       }
 
       // correct TOA
-      double TOA_close = correctTOA(digi_close, maxSample_close, iSOI);
-      double TOA_far = correctTOA(digi_far, maxSample_far, iSOI);
+      double TOA_posend = correctTOA(digi_posend, maxSample_posend, iSOI);
+      double TOA_negend = correctTOA(digi_negend, maxSample_negend, iSOI);
+      // std::cout << "TOA posend " << TOA_posend << " negend " << TOA_negend
+      //           << std::endl;
 
       // get x(y) coordinate from TOA measurement
       // position in bar = (diff_time*v)/2
+      // if time_posend < time_negend: position is positive
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
-      double pos = (TOA_far - TOA_close) * v / 2;
-      // If the close pulse has a negative end (digiId should correspond to this
-      // pulse), multiply the position by -1.
-      if (digiId.isNegativeEnd()) pos = pos * -1;
+      double pos = (TOA_negend - TOA_posend) * v / 2;
 
       // reverse voltage attenuation
-      double att_close =
-          exp(-1. * ((distance_end - fabs(pos)) / 1000.) / attlength_);
-      double att_far =
-          exp(-1. * ((distance_end + fabs(pos)) / 1000.) / attlength_);
+      // if pos is positive, then the positive end will have less attenuation
+      // than the negative end
+      double att_posend =
+          exp(-1. * ((distance_posend - pos) / 1000.) / attlength_);
+      double att_negend =
+          exp(-1. * ((distance_negend + pos) / 1000.) / attlength_);
 
       // set voltage
-      voltage = (voltage_close / att_close + voltage_far / att_far) / 2;  // mV
-      voltage_min = std::min(voltage_close / att_close, voltage_far / att_far);
+      voltage = (voltage_posend / att_posend + voltage_negend / att_negend) /
+                2;  // mV
+      voltage_min =
+          std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
       // set position
       if ((digiId.layer() % 2) == 1) {
@@ -167,7 +186,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set hit time
       // TODO: does this need to revert shift because of propagation of light in
       // polysterene?
-      hitTime = fabs(TOA_close + TOA_far) / 2;  // ns
+      hitTime = fabs(TOA_posend + TOA_negend) / 2;  // ns
 
       iDigi += 2;
     }       // end double readout loop
@@ -188,21 +207,23 @@ void HcalRecProducer::produce(framework::Event& event) {
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
         double maxMeas{0.};
-        int iSample{0};
+        int iADC{0};
         for (auto it = digi.begin(); it < digi.end(); it++) {
           double amplitude = (it->adc_t() - pedestal_) * gain_;
           if (amplitude > maxMeas) {
             maxMeas = amplitude;
-            maxSample_i = iSample;
+            maxSample_i = iADC;
           }
-          iSample += 1;
+          iADC += 1;
         }
         // just use the maximum measured voltage
         voltage_i = maxMeas;  // mV
       }
 
       // reverse voltage attenuation
-      // for now, assume fabs(pos) = half_total_width as an approximation
+      // for now, assume that position along the bar is the half_total_width
+      double distance_end =
+          digiId.isNegativeEnd() ? distance_negend : distance_posend;
       double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
                        attlength_);
 
