@@ -124,8 +124,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
     double ecal_dy = hcalGeometry.getEcalDy();
 
     // contributions
-    std::vector<double> voltages_posend, times_posend;
-    std::vector<double> voltages_negend, times_negend;
+    std::vector<std::pair<double, double>> pulses_posend;
+    std::vector<std::pair<double, double>> pulses_negend;
 
     for (auto psimHit : simBar.second) {
       const ldmx::SimCalorimeterHit& simHit = *psimHit;
@@ -133,7 +133,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       std::vector<float> position = simHit.getPosition();
 
       /**
-       * Define two pulses: close and far.
+       * Define two pulses: with positive and negative ends.
        * For this we need to:
        * (1) Find the position along the bar:
        *     For back Hcal: x (y) for even (odd) layers.
@@ -156,8 +156,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
        *     origin.
        *     For the back Hcal, the half point of the bar coincides with the
        *     coordinates of the origin.
-       *     For the side Hcal, the length of the bar is:
-       *     - 2 *(half_width) - Ecal_dx(y) away from the positive end, and,
+       *     For the side Hcal, the length of the bar from the origin is:
+       *     - 2 *(half_width) - Ecal_dx(y)/2 away from the positive end, and,
        *     - Ecal_dx(y) away from the negative end.
        */
       float distance_along_bar, distance_ecal;
@@ -168,31 +168,23 @@ void HcalDigiProducer::produce(framework::Event& event) {
         end_close = (distance_along_bar > 0) ? 0 : 1;
         distance_close = half_total_width;
         distance_far = half_total_width;
-      }
-      if ((section == ldmx::HcalID::HcalSection::TOP) ||
-          ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
-        distance_along_bar = position[0];
-        distance_ecal = ecal_dx;
-        end_close = (distance_along_bar > half_total_width) ? 0 : 1;
-        if (end_close == 0) {
-          distance_close = 2 * half_total_width - distance_ecal / 2;
-          distance_far = distance_ecal / 2;
-        } else {
-          distance_close = distance_ecal / 2;
-          distance_far = 2 * half_total_width - distance_ecal / 2;
+      } else {
+        if ((section == ldmx::HcalID::HcalSection::TOP) ||
+            ((section == ldmx::HcalID::HcalSection::BOTTOM))) {
+          distance_along_bar = position[0];
+          distance_ecal = ecal_dx;
+        } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
+                   (section == ldmx::HcalID::HcalSection::RIGHT)) {
+          distance_along_bar = position[1];
+          distance_ecal = ecal_dy;
         }
-      } else if ((section == ldmx::HcalID::HcalSection::LEFT) ||
-                 (section == ldmx::HcalID::HcalSection::RIGHT)) {
-        distance_along_bar = position[1];
-        distance_ecal = ecal_dy;
         end_close = (distance_along_bar > half_total_width) ? 0 : 1;
-        if (end_close == 0) {
-          distance_close = distance_ecal / 2;
-          distance_far = 2 * half_total_width - distance_ecal / 2;
-        } else {
-          distance_far = distance_ecal / 2;
-          distance_close = 2 * half_total_width - distance_ecal / 2;
-        }
+        distance_close = (end_close == 0)
+                             ? 2 * half_total_width - distance_ecal / 2
+                             : distance_ecal / 2;
+        distance_far = (end_close == 0)
+                           ? distance_ecal / 2
+                           : 2 * half_total_width - distance_ecal / 2;
       }
 
       // Calculate voltage attenuation and time shift for the close and far
@@ -215,19 +207,20 @@ void HcalDigiProducer::produce(framework::Event& event) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         double time =
             simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
+        // std::cout << " hit time " << time << std::endl;
         time -= position.at(2) /
                 299.702547;  // shift light-speed particle traveling along z
 
+        // std::cout << " time after z shift " << time << std::endl;
+        // std::cout << " time after shift close " << time + shift_close
+        //          << " and far " << time + shift_far << std::endl;
+
         if (end_close == 0) {
-          voltages_posend.push_back(voltage * att_close);
-          times_posend.push_back(time + shift_close);
-          voltages_negend.push_back(voltage * att_far);
-          times_negend.push_back(time + shift_far);
+          pulses_posend.emplace_back(voltage * att_close, time + shift_close);
+          pulses_negend.emplace_back(voltage * att_far, time + shift_far);
         } else {
-          voltages_negend.push_back(voltage * att_close);
-          times_negend.push_back(time + shift_close);
-          voltages_posend.push_back(voltage * att_far);
-          times_posend.push_back(time + shift_far);
+          pulses_posend.emplace_back(voltage * att_far, time + shift_far);
+          pulses_negend.emplace_back(voltage * att_close, time + shift_close);
         }
       }
     }
@@ -235,31 +228,23 @@ void HcalDigiProducer::produce(framework::Event& event) {
     /**
      * Now we have all the sub-hits from all the simhits
      * Digitize:
-     * For back Hcal return two digis: close and far.
-     * For bide Hcal we choose which pulse (close or far) to readout based on
-     * the position of the hit. For Top (Left)
-     *  - x(y) > 0: read close pulse
-     *  - x(y) < 0: read far pulse
-     * For bottom (right)
-     *  - x(y) > 0: read far pulse
-     *  - x(y) < 0: read close pulse
+     * For back Hcal return two digis.
+     * For side Hcal we choose which pulse to readout based on
+     * the position of the hit and the sub-section.
+     * For Top and Left we read the positive end digi.
+     * For Bottom and Right we read the negative end digi.
      **/
     if (section == ldmx::HcalID::HcalSection::BACK) {
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend;
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddNegend;
+      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend,
+          digiToAddNegend;
       ldmx::HcalDigiID posendID(section, layer, strip, 0);
       ldmx::HcalDigiID negendID(section, layer, strip, 1);
-      if (hgcroc_->digitize(posendID.raw(), voltages_posend, times_posend,
-                            digiToAddPosend) &&
-          hgcroc_->digitize(negendID.raw(), voltages_negend, times_negend,
-                            digiToAddNegend)) {
+      if (hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend) &&
+          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
       }  // Back Hcal needs to digitize both pulses or none
     } else {
-      // Determine which pulse to digitize
-      // For top,left we digitize the positive end (0)
-      // For bottom,right we digitize the negative end (1)
       bool is_posend = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if ((section == ldmx::HcalID::HcalSection::TOP) ||
@@ -271,14 +256,12 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
       if (is_posend) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
-        if (hgcroc_->digitize(digiID.raw(), voltages_posend, times_posend,
-                              digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       } else {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
-        if (hgcroc_->digitize(digiID.raw(), voltages_negend, times_negend,
-                              digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       }
@@ -303,7 +286,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     // populate the empty channels and are above the readout threshold
     auto noiseHitAmplitudes{
         noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-    std::vector<double> voltages(1, 0.), times(1, 0.);
+    std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
     for (double noiseHit : noiseHitAmplitudes) {
       // generate detector ID for noise hit
       // making sure that it is in an empty channel
@@ -331,27 +314,26 @@ void HcalDigiProducer::produce(framework::Event& event) {
           std::vector<const ldmx::SimCalorimeterHit*>();  // mark this as used
 
       // get a time for this noise hit
-      times[0] = noiseInjector_->Uniform(clockCycle_);
+      fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
 
       // noise generator gives the amplitude above the readout threshold
       // we need to convert it to the amplitude above the pedestal
-      voltages[0] = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
+      fake_pulse[0].first =
+          noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
 
       if (sectionID == ldmx::HcalID::HcalSection::BACK) {
-        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd_close,
-            digiToAdd_far;
-        int endID_opp = (endID == 0) ? 1 : 0;
-        auto detID_opp =
-            ldmx::HcalDigiID(sectionID, layerID, stripID, endID_opp);
-        if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd_close) &&
-            hgcroc_->digitize(detID_opp.raw(), voltages, times,
-                              digiToAdd_far)) {
-          hcalDigis.addDigi(noiseID, digiToAdd_close);
-          hcalDigis.addDigi(detID_opp.raw(), digiToAdd_far);
+        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend,
+            digiToAddNegend;
+        ldmx::HcalDigiID posendID(sectionID, layerID, stripID, 0);
+        ldmx::HcalDigiID negendID(sectionID, layerID, stripID, 1);
+        if (hgcroc_->digitize(posendID.raw(), fake_pulse, digiToAddPosend) &&
+            hgcroc_->digitize(negendID.raw(), fake_pulse, digiToAddNegend)) {
+          hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+          hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
         }
       } else {
         std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-        if (hgcroc_->digitize(noiseID, voltages, times, digiToAdd)) {
+        if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
           hcalDigis.addDigi(noiseID, digiToAdd);
         }
       }
