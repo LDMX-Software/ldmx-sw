@@ -32,6 +32,6 @@ p.sequence = [
     ldmxcfg.Producer('fakeSimHits','hcal::test::HcalFakeSimHits','Hcal'),
     hcalDigis,
     digi.HcalRecProducer(),
-    ldmxcfg.Analyzer('checkHcalHits','hcal::test::HcalCheckEnergyReconstruction','Hcal'),
+    ldmxcfg.Analyzer('checkHcalHits','hcal::test::HcalCheckReconstruction','Hcal'),
 ]
 
