@@ -47,18 +47,19 @@ double HcalRecProducer::correctTOA(
 
   // time w.r.t to the peak bunch
   // difference between time @ max. amplitude and time @ threshold (TOA)
-  // double corr = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
+  double corr = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
 
   // plus check if the max. amplitude sample is different from the SOI
-  // corr += (maxSample - (int)iSOI) * 25.;
+  corr += (maxSample - (int)iSOI) * 25.;
 
-  // std::cout << "toa rel to the startBX " << toaRelClock25 << " which ADC
-  // sample "
-  //<< toaSample << std::endl;
-  // std::cout << "max sampel " << maxSample << " toaSample " << toaSample <<
-  // std::endl; std::cout << "timeWalk corr " << corr << std::endl;
+  std::cout << "toa rel to the startBX " << toaRelStartBX << " which ADC sample "
+	    << toaSample << std::endl;
+  std::cout << "max sample " << maxSample << " toaSample " << toaSample <<
+    std::endl;
+  std::cout << "corrected time " << corr << std::endl;
 
-  return toaRelStartBX;
+  //return toaRelStartBX;
+  return corr;
 }
 
 void HcalRecProducer::produce(framework::Event& event) {
@@ -152,8 +153,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       // correct TOA
       double TOA_posend = correctTOA(digi_posend, maxSample_posend, iSOI);
       double TOA_negend = correctTOA(digi_negend, maxSample_negend, iSOI);
-      // std::cout << "TOA posend " << TOA_posend << " negend " << TOA_negend
-      //           << std::endl;
+      std::cout << "TOA posend " << TOA_posend << " negend " << TOA_negend
+		<< std::endl;
 
       // get x(y) coordinate from TOA measurement
       // position in bar = (diff_time*v)/2
@@ -161,7 +162,9 @@ void HcalRecProducer::produce(framework::Event& event) {
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
       double pos = (TOA_negend - TOA_posend) * v / 2;
-
+      // if correction applied: TOA_negend and TOA_posend differences reverse:
+      pos *= -1;
+      
       // reverse voltage attenuation
       // if pos is positive, then the positive end will have less attenuation
       // than the negative end
