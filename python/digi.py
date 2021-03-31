@@ -163,9 +163,11 @@ class HcalRecProducer(Producer) :
         self.clock_cycle = 25. #ns - needs to match the setting on the chip   
         self.pe_per_mip = nPEPerMIP
         
-        # TODO: do these need to be different for TOT/ADC modes?
+        # TODO: these need to be different for TOT/ADC modes and should be taken from conditions
         self.gain = gain
         self.pedestal = pedestal
+        # should we define measTime for the RecProducer?
+        # self.measTime = self.clock_cycle/2
 
 	# attenuation length
         self.attenuationLength = 5.; # in m  
