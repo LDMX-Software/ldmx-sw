@@ -12,6 +12,9 @@
 #     run 'ldmx-env' to set-up this environment.
 #
 #   alias ldmx-env='source <full-path>/ldmx-env.sh; unalias ldmx-env'
+#
+#   The file 'ldmx-sw/.ldmxrc' handles the default environment setup for the
+#   container. Look there for persisting your custom settings.
 ###############################################################################
 
 ###############################################################################
@@ -375,6 +378,26 @@ _ldmx_clean() {
 }
 
 ###############################################################################
+# _ldmx_source
+#   Run all the sub-commands in the provided file from the directory it is in.
+#   Ignore empty lines or lines starting with '#'
+###############################################################################
+_ldmx_source() {
+  local _file_listing_commands="$1"
+  local _old_pwd=$OLDPWD
+  cd $(dirname $_file_listing_commands)
+  while read _subcmd; do
+    if [[ -z "$_subcmd" ]] || [[ "$_subcmd" = \#* ]]; then
+      continue
+    fi
+    ldmx $_subcmd
+  done < $(basename $_file_listing_commands)
+  cd - &> /dev/null
+  export OLDPWD=$_old_pwd
+}
+
+
+###############################################################################
 # _ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
@@ -398,6 +421,8 @@ _ldmx_help() {
       ldmx pull (dev | pro | local) <tag>
     run     : Run a command at an input location in the container
       ldmx run <directory> <sub-command> [<argument> ...]
+    source  : Run the commands in the provided file through ldmx
+      ldmx source .ldmxrc
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
 HELP
@@ -432,7 +457,7 @@ function ldmx() {
       _ldmx_config 
       return $?
       ;;
-    list|base|clean|mount)
+    list|base|clean|mount|source)
       if [[ "$#" != "2" ]]; then
         _ldmx_help
         echo "ERROR: ldmx ${_sub_command} takes one argument."
@@ -561,7 +586,7 @@ _ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    _ldmx_complete_command "list clean config pull use run mount base"
+    _ldmx_complete_command "list clean config pull use run mount base source"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
@@ -591,7 +616,7 @@ _ldmx_complete() {
     # three or more arguments
     #   check base argument to see if we should continue
     case "${COMP_WORDS[1]}" in
-      list|base|clean|config|pull|use|mount)
+      list|base|clean|config|pull|use|mount|source)
         # these commands shouldn't have tab complete for the third argument 
         #   (or shouldn't have the third argument at all)
         _ldmx_dont_complete
@@ -617,118 +642,13 @@ _ldmx_complete() {
 complete -F _ldmx_complete ldmx
 
 ###############################################################################
-# Parse CLI Arguments
-#
-#   Now that we have defined all the necessary bash functions,
-#   we can move on to parsing the command line inputs for this script
-#   in particular, setting up the environment in a default configuration.
-#
-# NOTE: We could remove all the nonsense below this point, but then
-#   users would have to do multiple commands to get set up.
-#
-#   For example, to use dev latest, *without what is below*, the user
-#   would have to run the following
-#     source ldmx-sw/scripts/ldmx-env.sh
-#     ldmx base .
-#     ldmx use dev latest
+# If the default environment file exists, source it.
+# Otherwise, trust that the user knows what they are doing.
 ###############################################################################
 
-function _ldmx_env_help() {
-  cat <<\HELP
-    Environment setup script for ldmx
+#default backs out of scripts
+_default_location_ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
 
-  USAGE: 
-    source ldmx-sw/scripts/ldmx-env.sh [-h,--help] [-f,--force] 
-                  [-b,--base ldmx_base] [-r,--repo repo_name] 
-                  [-t,--tag image_tag] [--no-init]
-
-  OPTIONS:
-    -f,--force : Force download of container even if it already exists
-    -h,--help  : Print this help message and exit
-    -b,--base  : ldmx_base is path to directory containing ldmx-sw
-    -r,--repo  : name of repo  (ldmx/[repo_name]) to pull container from
-                 There are three options: 'dev', 'pro', and 'local'
-                 Pass 'local' to use existing, locally built container 
-    -t,--tag   : name of tag of ldmx image to pull down and use 
-                 The options you can input depend on the repo. 
-                 Use 'ldmx list <repo>' to list the options.
-    --no-init  : Define container-interacting bash functions, but do not
-                 initialize container environment.
-HELP
-  return 0
-}
-
-#default backs out of ldmx-sw/scripts
-_the_base="$( dirname ${BASH_SOURCE[0]} )/../../" 
-#default repository is development container with just the dependencies in it
-_repo_name="dev"
-#default tag is the most recent major release of the dev container
-_image_tag="latest"
-#default is to NOT force updates of the container (empty == don't pull)
-_force_update=""
-
-function _ldmx_env_fatal_error() {
-  _ldmx_env_help
-  echo "ERROR: $@"
-  return 1
-}
-
-# loop through all the options
-while [[ $# -gt 0 ]]; do
-  option="$1"
-  case "$option" in
-    -h|--help)
-      _ldmx_env_help
-      return 0
-      ;;
-    -b|--base)
-      if [[ -z "$2" || "$2" =~ "-".* ]]
-      then
-        _ldmx_env_fatal_error "The '-b','--base' flag requires an argument after it!"
-        return 1
-      fi
-      _the_base="$2"
-      shift #move past flag
-      shift #move past argument
-      ;;
-    -r|--repo)
-      if [[ "$2" == "dev" || "$2" == "pro" || "$2" == "local" ]]
-      then
-        _repo_name="$2"
-      else
-        _ldmx_env_fatal_error "Unsupported repo name: '$2'"
-        return 2
-      fi
-      shift #move past flag
-      shift #move past argument
-      ;;
-    -t|--tag)
-      if [[ -z "$2" || "$2" =~ "-".* ]]
-      then
-        _ldmx_env_fatal_error "The '-t','--tag' flag requires an argument after it!"
-        return 3
-      fi
-      _image_tag="$2"
-      shift #move past flag
-      shift #move past argument
-      ;;
-    -f|--force)
-      _force_update="ON"
-      shift #move past flag
-      ;;
-    --no-init)
-      # we've already defined the necessary bash functions above,
-      #   so we can just leave now to not initialize the container
-      return 0
-      ;;
-    *)
-      _ldmx_env_fatal_error "'$option' is not a valid option!"
-      return 5
-      ;;
-  esac
-done
-
-# pull down the container if it doesn't exist on this computer yet
-_ldmx_use ${_repo_name} ${_image_tag} ${_force_update}
-# mount the base directory to the container so we can see the code
-_ldmx_base ${_the_base}
+if [ -f $_default_location_ldmxrc ]; then
+  ldmx source $_default_location_ldmxrc
+fi
