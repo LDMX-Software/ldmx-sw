@@ -57,92 +57,15 @@ void HgcrocEmulator::seedGenerator(uint64_t seed) {
   noiseInjector_ = std::make_unique<TRandom3>(seed);
 }
 
-class CompositePulse {
- public:
-  typedef std::pair<double,double> ETPair;
-  
-  CompositePulse(TF1& func) : pulseFunc_{func} { }
-
-  void addOrMerge(const ETPair& hit, double hit_merge_ns) {
-    std::vector<ETPair>::iterator imerge;
-    for (imerge = energy_time_.begin(); imerge!=energy_time_.end(); imerge++) 
-      if (fabs(imerge->second-hit.second)<hit_merge_ns) break;
-    if (imerge == energy_time_.end()) { // didn't find a match, add to the list
-      energy_time_.push_back(hit);
-    } else { // merge hits, shifting time to average
-      imerge->second=(imerge->second*imerge->first+hit.first*hit.second);
-      imerge->first+=hit.first;
-      imerge->second/=imerge->first;
-    }
-  }
-
-  double findCrossing(double low, double high, double level, double prec=0.01) {
-    // use midpoint algorithm, assumes low is below and high is above
-    double step=high-low;
-    double pt=(high+low)/2;
-    while (step>prec) {
-      double vmid=at(pt);
-      if (vmid<level) {
-        low=pt;
-      } else {
-        high=pt;
-      }
-      step=high-low;
-      pt=(high+low)/2;
-    }
-    return pt;
-  }
-
-  void setGainPedestal(double gain, double pedestal) {
-    gain_=gain;
-    pedestal_=pedestal;
-  }
-
-  double operator()(double time) const {
-    return at(time);
-  }
-
-  double at(double time) const {
-    double signal = gain_ * pedestal_;
-    for (auto hit : energy_time_)
-      signal += hit.first * pulseFunc_.Eval(time-hit.second);
-    return signal;
-  };
-
-  const std::vector< ETPair >& hits() const { return energy_time_; }
-  
- private:
-  std::vector< ETPair > energy_time_;
-  double gain_, pedestal_;
-  TF1& pulseFunc_;
-  
-};
-
 bool HgcrocEmulator::digitize(
     const int &channelID,
     std::vector<std::pair<double,double>> &arriving_pulses,
     std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
 
+  // step 0: prepare ourselves for emulation
+  
   digiToAdd.clear();  // make sure it is clean
 
-  // sort by amplitude
-  //  ==> makes sure that puleses are merged towards higher ones
-  std::sort(arriving_pulses.begin(), arriving_pulses.end(),
-            [](const std::pair<double,double>& a, const std::pair<double,double>&b) {
-              return a.first>b.first;
-            }
-            );
-  
-  // step 1: gather voltages into groups separated by (programmable) ns, single pass
-  CompositePulse pulse(pulseFunc_);
-
-  for (auto hit : arriving_pulses)
-    pulse.addOrMerge(hit, hit_merge_ns_);  
-
-  // TODO step 2: add timing jitter
-
-  bool doReadout=false;
-  
   // Configure chip settings based off of table (that may have been passed)
   double gain = getCondition(channelID, "gain", gain_);
   double pedestal = getCondition(channelID, "pedestal", pedestal_);
@@ -152,13 +75,10 @@ bool HgcrocEmulator::digitize(
   double measTime = getCondition(channelID, "measTime", measTime_); 
   double drainRate = getCondition(channelID, "drainRate", drainRate_);
 
-  pulse.setGainPedestal(gain, pedestal);
-  
   double readoutThresholdFloat =
       getCondition(channelID, "readoutThreshold", readoutThreshold_);
   int readoutThreshold = int(readoutThresholdFloat);
-  /* debug printout */
-  /*
+  /* debug printout
   std::cout << "Configuration: {"
             << "gain: " << gain << " mV/ADC, "
             << "pedestal: " << pedestal << ", "
@@ -172,14 +92,30 @@ bool HgcrocEmulator::digitize(
             << std::endl;
   */
 
+  // sort by amplitude
+  //  ==> makes sure that puleses are merged towards higher ones
+  std::sort(arriving_pulses.begin(), arriving_pulses.end(),
+            [](const std::pair<double,double>& a, const std::pair<double,double>&b) {
+              return a.first>b.first;
+            }
+            );
+  
+  // step 1: gather voltages into groups separated by (programmable) ns, single pass
+  CompositePulse pulse(pulseFunc_,gain,pedestal);
+
+  for (auto hit : arriving_pulses)
+    pulse.addOrMerge(hit, hit_merge_ns_);  
+
+  // TODO step 2: add timing jitter
+
   /// the time here is nominal (zero gives peak if hit.second is zero)
   
   // step 3: go through each BX sample one by one
+  bool doReadout=false;
   bool wasTOA=false;  
   for (int iADC = 0; iADC < nADCs_; iADC++) {
    
     double startBX=(iADC-iSOI_)*clockCycle_ - measTime_;
-    //    std::cout << iADC << " " <<startBX << std::endl;
     
     // step 3b: check each merged hit to see if it peaks in this BX.  If so, check its peak time to see if it's over TOT or TOA.
     bool startTOT=false;
@@ -196,36 +132,34 @@ bool HgcrocEmulator::digitize(
         if (toverTOT<hit.second) toverTOT=hit.second; // use the latest time in the window
       }
 
-      //      std::cout << "I peak here! " << hit.second << "/" << hit.second+measTime_ << " " << iADC << " " << hit.first << " " << vpeak << " ";
-
       if (vpeak>toaThreshold) {
         if (!overTOA || hit.second<toverTOA) toverTOA=hit.second;        
         overTOA=true;
-        //        std::cout << "TOA";
       }
       
-      //      std::cout << std::endl;
-    }
+    } // loop over sim hits
+
     // check for the case of a TOA even though the peak is in the next BX
     if (!overTOA && pulse(startBX+clockCycle_)>toaThreshold) {
-      if (pulse(startBX)<toaThreshold) { // need to be under threshold to start with for a TOA
-
-        //        std::cout << "TOA pre-peak " << iADC << std::endl;
+      if (pulse(startBX)<toaThreshold) { 
+        // pulse crossed TOA threshold somewhere between the start of this
+        // basket and the end
         overTOA=true;
         toverTOA=startBX+clockCycle_;
       }
     }
     
     if (startTOT) {
-
       // above TOT threshold -> do TOT readout mode
 
-      double charge_deposited = pulse(toverTOT) * readoutPadCapacitance_;
+      // @TODO NO NOISE
+      //  CompositePulse includes pedestal, we need to remove it
+      //  when calculating the charge deposited.
+      double charge_deposited = (pulse(toverTOT) - gain*pedestal) * readoutPadCapacitance_;
 
       // Measure Time Over Threshold (TOT) by using the drain rate.
-      //      1. Use drain rate to see how long it takes for the charge to drain
-      //      off
-      //      2. Translate this into DIGI samples
+      //  1. Use drain rate to see how long it takes for the charge to drain off
+      //  2. Translate this into DIGI samples
 
       // Assume linear drain with slope drain rate:
       //      y-intercept = pulse amplitude
@@ -287,10 +221,8 @@ bool HgcrocEmulator::digitize(
       // check for TOA
       int toa(0);
       if (pulse(startBX)<toaThreshold && overTOA) {
-        //        std::cout << "TOA is here...";
         double timecross=pulse.findCrossing(startBX,toverTOA,toaThreshold);
         toa=int((timecross-startBX)*ns_);
-        //  std::cout << timecross << " " << timecross-startBX << " " <<toa << std::endl;
         // keep inside valid limits
         if (toa==0) toa=1;
         if (toa>1023) toa=1023;
@@ -304,12 +236,13 @@ bool HgcrocEmulator::digitize(
           (iADC > 0) ? digiToAdd.at(iADC - 1).adc_t() : pedestal, // ADC t-1 is first measurement
           adc, // ADC[t] is the second field
           toa // TOA is third measurement
-                             );
-      
-      if (iADC==iSOI_ && adc>=readoutThreshold_) doReadout=true;      
-    }
-  }
-      return doReadout;
+          );
+    }  // TOT or ADC Mode
+  }    // sampling baskets
+
+  // we only get here if we never went into TOT mode
+  // check the SOI to see if we should read out
+  return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold_;
 }  // HgcrocEmulator::digitize
 
 }  // namespace ldmx
