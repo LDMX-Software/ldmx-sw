@@ -30,9 +30,9 @@ void TrigScintHitDQM::onProcessStart() {
   histograms_.create("z", "Hit z position", 1000, -900, 100);
 
   histograms_.create("pe", "Pe deposition in a TrigScint bar", 1500, 0, 1500);
-  histograms_.create("hit_time", "TrigScint hit time (ns)", 1600, -100, 1500);
+  histograms_.create("hit_time", "TrigScint hit time (ns)", 600, -150, 150);
 
-  histograms_.create("id_noise", "Channel ID of noise hit", 100, 0, 100);
+  histograms_.create("id_noise", "Channel ID of noise hit", 101, -1, 100);
   histograms_.create("pe_noise", "Pe deposition in a TrigScint bar noise hit",
                      1500, 0, 1500);
   histograms_.create("n_hits_noise",
