@@ -24,16 +24,12 @@ namespace ldmx {
  * into DIGI samples. With that in mind, the digitize method
  * converts a set of voltages and times into the DIGI.
  *
- * This object _does not_ do anything related to subsystem information.
- * It does _not_ set the detector ID for the DIGI it constructs,
- * it does _not_ simulate noise within the empty channels,
+ * This object _does not_ do everything related to subsystem information.
+ * It does _not_ simulate noise within the empty channels,
  * and it does _not_ convert simulated energy depositions into
  * voltages. These tasks depend on the detector construction,
  * so they are left to the individual subsystem producers.
  *
- * @TODO Shift the pulse SOI arbitrarily (needed for realism stuff below)
- * @TODO more realistic TOT emulation with focus on OOT signals
- * @TODO more realistic ADC emulation with focus on OOT signals
  * @TODO time phase setting relative to target t=0ns
  */
 class HgcrocEmulator {
@@ -79,6 +75,24 @@ class HgcrocEmulator {
    * Digitize the signals from the simulated hits
    *
    * This is where the hefty amount of work is done.
+   *
+   * 0. Prepare for Emulation
+   *    - Clear input list of digi samples
+   *    - Get conditions for the current chip
+   *    - Sort the input sim voltage hits by amplitude
+   *
+   * 1. Combine input simulated hits into one CompositePulse to digitize.
+   *    - This composite pulse decides whether to merge two simulated hits
+   *      into one larger pulse depending on how close they are in time.
+   *
+   * 2. Add a timing jitter TODO
+   *
+   * 3. Go through sampling baskets one-by-one
+   *    - If enter pulse goes above tot threshold, then enter TOT
+   *      readout mode, digitize, and return true.
+   *    - If pulse never goes above tot threshold, then only return
+   *      true if the voltage sample taken in the SOI is above
+   *      the readout threshold.
    *
    * - Sum the voltages and voltage-weight average the times
    * - Put noise on the time of the hit using timingJitter_
@@ -181,6 +195,132 @@ class HgcrocEmulator {
     }
     return condition;
   }
+
+ private:
+  /**
+   * CompositePulse
+   *
+   * An emulator for a pulse that the chip needs to read.
+   * This handles merging two hits that are "close-enough"
+   * to one another.
+   */
+  class CompositePulse {
+   public:
+    /**
+     * Constructore
+     *
+     * Connect this pulse emulator with the pulse
+     * shape function already configured by the chip
+     * emulator.
+     */
+    CompositePulse(TF1& func, const double& g, const double& p) 
+      : pulseFunc_{func}, gain_{g}, pedestal_{p} { }
+  
+    /**
+     * Put another hit into this composite pulse.
+     *
+     * If the hit is within the merge input of a hit already
+     * included, then it is merged with that hit. Otherwise,
+     * it is included as its own hit.
+     *
+     * @param[in] hit voltage,time pair representing a sime hit
+     * @param[in] hit_merge_ns maximum time separation [ns] to merge two hits
+     */
+    void addOrMerge(const std::pair<double,double>& hit, double hit_merge_ns) {
+      auto imerge{hits_.begin()};
+      for (; imerge!=hits_.end(); imerge++) 
+        if (fabs(imerge->second-hit.second)<hit_merge_ns) break;
+      if (imerge == hits_.end()) { // didn't find a match, add to the list
+        hits_.push_back(hit);
+      } else { // merge hits, shifting time to average
+        imerge->second=(imerge->second*imerge->first+hit.first*hit.second);
+        imerge->first+=hit.first;
+        imerge->second/=imerge->first;
+      }
+    }
+  
+    /**
+     * Find the time at which we cross the input level.
+     *
+     * We use the midpoint algorithm, assuming the input low
+     * is below the threshold and hight is above.
+     *
+     * @param[in] low minimum value (below threshold) to start search at [mV]
+     * @param[in] high maximum value (above threshold) to start search at [mV]
+     * @param[in] level threshold to look for time [mV]
+     * @param[in] prec precision with which to look [mV]
+     * @returns time [ns] at which the pulse cross level
+     */
+    double findCrossing(double low, double high, double level, double prec=0.01) {
+      // use midpoint algorithm, assumes low is below and high is above
+      double step=high-low;
+      double pt=(high+low)/2;
+      while (step>prec) {
+        double vmid=at(pt);
+        if (vmid<level) {
+          low=pt;
+        } else {
+          high=pt;
+        }
+        step=high-low;
+        pt=(high+low)/2;
+      }
+      return pt;
+    }
+  
+    /// Configure the pulses for the current chip
+    void setGainPedestal(double gain, double pedestal) {
+      gain_=gain;
+      pedestal_=pedestal;
+    }
+  
+    /**
+     * Evaluating this object as a function
+     * gives the same result as at.
+     *
+     * @see at
+     */
+    double operator()(double time) const {
+      return at(time);
+    }
+  
+    /**
+     * Measure the voltage at the input time
+     *
+     * Includes the effects from all pulses but
+     * does not put any noise into the measurement.
+     *
+     * @param[in] time time to measure [ns]
+     * @return voltage at that time [mV]
+     */
+    double at(double time) const {
+      double signal = gain_ * pedestal_;
+      for (auto hit : hits_)
+        signal += hit.first * pulseFunc_.Eval(time-hit.second);
+      return signal;
+    };
+  
+    /// Get list of individual pulses that are entering the chip
+    const std::vector<std::pair<double,double>>& hits() const { return hits_; }
+    
+   private:
+    /**
+     * pulses entering the chip
+     *
+     * The pair is {voltage amplitude [mV], time of peak [ns]}
+     */
+    std::vector<std::pair<double,double>> hits_;
+
+    /// gain for current chip we are emulating
+    double gain_;
+
+    /// pedestal for current chip we are emulating
+    double pedestal_;
+
+    /// reference to pulse shape function shared by all pulses
+    TF1& pulseFunc_;
+    
+  };  // CompositePulse
 
  private:
   /// Verbosity, not configurable, only helpful in development
