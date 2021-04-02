@@ -25,6 +25,12 @@
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
+//---------//
+//  ROOT   //
+//---------//
+#include "TF1.h"
+#include "TGraph.h"
+
 namespace hcal {
 
 /**
@@ -55,7 +61,7 @@ class HcalRecProducer : public framework::Producer {
    * Corrects Time of Arrival.
    */
   double correctTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
-                    int maxSample, unsigned int iSOI);
+                    double amplPeak, unsigned int iSOI);
 
   /**
    * Produce HcalHits and put them into the event bus using the
@@ -103,6 +109,32 @@ class HcalRecProducer : public framework::Producer {
 
   /// Strip attenuation length [m]
   double attlength_;
+
+  /// Pulse function and correction graph
+  mutable TF1 pulseFunc_;
+  mutable TGraph correctionAmpl_;
+  mutable TGraph correctionTOA_;
+
+  /// Depth of ADC buffer.
+  int nADCs_;
+
+  /// Rate of Up Slope in Pulse Shape [1/ns]
+  double rateUpSlope_;
+
+  /// Time of Up Slope relative to Pulse Shape Fit [ns]
+  double timeUpSlope_;
+
+  /// Rate of Down Slope in Pulse Shape [1/ns]
+  double rateDnSlope_;
+
+  /// Time of Down Slope relative to Pulse Shape Fit [ns]
+  double timeDnSlope_;
+
+  /// Time of Peak relative to pulse shape fit [ns]
+  double timePeak_;
+
+  /// Min threshold for measuring TOA [mV]
+  double toaThreshold_;
 };
 }  // namespace hcal
 

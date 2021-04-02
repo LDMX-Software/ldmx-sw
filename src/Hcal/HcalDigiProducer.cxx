@@ -207,13 +207,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
         double time =
             simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
-        std::cout << " hit time " << time << std::endl;
         time -= position.at(2) /
                 299.702547;  // shift light-speed particle traveling along z
-
-	std::cout << " time after z shift " << time << std::endl;
-	std::cout << " time after shift close " << time + shift_close
-                  << " and far " << time + shift_far << std::endl;
 
         if (end_close == 0) {
           pulses_posend.emplace_back(voltage * att_close, time + shift_close);
