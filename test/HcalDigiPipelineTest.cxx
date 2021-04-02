@@ -67,10 +67,10 @@ static const int NUM_TEST_SIM_HITS = 1000;
  */
 class isCloseEnough : public Catch::MatcherBase<double> {
  private:
-  /// correct (sim-level) 
+  /// correct (sim-level)
   double truth_;
 
-  /// maximum absolute difference 
+  /// maximum absolute difference
   const double max_absolute_diff_;
 
   /// maximum relative difference
@@ -80,7 +80,7 @@ class isCloseEnough : public Catch::MatcherBase<double> {
   /**
    * Constructor
    *
-   * Sets the truth level 
+   * Sets the truth level
    */
   isCloseEnough(double const &truth, double const &abs_diff,
                 double const &rel_diff)
@@ -107,7 +107,7 @@ class isCloseEnough : public Catch::MatcherBase<double> {
     std::ostringstream ss;
     ss << "is within an absolute difference of " << max_absolute_diff_
        << " OR a relative difference of " << max_relative_diff_ << " with "
-       << truth_ ;
+       << truth_;
     return ss.str();
   }
 };
@@ -126,8 +126,8 @@ class HcalFakeSimHits : public framework::Producer {
    */
   // Based on the current gain settings for the ADC readout mode
   // we will reach saturation ~ 20 MeV ~ 290 PEs
-  const double maxEnergy_ = 200 * PE_ENERGY; // ~ 13 MeV
-  
+  const double maxEnergy_ = 200 * PE_ENERGY;  // ~ 13 MeV
+
   /**
    * Minimum energy to make a sim hit for [MeV]
    * Needs to be above readout threshold (after internal HcalDigi's calculation)
@@ -193,14 +193,14 @@ class HcalFakeSimHits : public framework::Producer {
  */
 class HcalCheckReconstruction : public framework::Analyzer {
   const bool save_ = true;
-  
+
  public:
   HcalCheckReconstruction(const std::string &name, framework::Process &p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckReconstruction() {}
 
   void onProcessStart() final override {
-    if(save_){
+    if (save_) {
       getHistoDirectory();
       ntuple_.create("HcalDigiTest");
       ntuple_.addVar<float>("HcalDigiTest", "SimEnergy");
@@ -213,14 +213,12 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.addVar<float>("HcalDigiTest", "RecY");
       ntuple_.addVar<float>("HcalDigiTest", "RecZ");
       ntuple_.addVar<float>("HcalDigiTest", "RecTime");
-      
       ntuple_.addVar<int>("HcalDigiTest", "DaqDigi");
       ntuple_.addVar<int>("HcalDigiTest", "DaqDigiIsADC");
       ntuple_.addVar<int>("HcalDigiTest", "DaqDigiADC");
       ntuple_.addVar<int>("HcalDigiTest", "DaqDigiTOT");
     }
   }
-
 
   void analyze(const framework::Event &event) final override {
     const auto simHits =
@@ -230,26 +228,26 @@ class HcalCheckReconstruction : public framework::Analyzer {
 
     float truth_energy = simHits.at(0).getEdep();
 
-    if(save_){
+    if (save_) {
       ntuple_.setVar<float>("SimEnergy", truth_energy);
       ntuple_.setVar<float>("SimX", simHits.at(0).getPosition()[0]);
       ntuple_.setVar<float>("SimY", simHits.at(0).getPosition()[1]);
       ntuple_.setVar<float>("SimZ", simHits.at(0).getPosition()[2]);
       ntuple_.setVar<float>("SimTime", simHits.at(0).getContrib(0).time);
     }
-    
+
     const auto daqDigis{
         event.getObject<ldmx::HgcrocDigiCollection>("HcalDigis")};
     auto daqDigi = daqDigis.getDigi(0);
     bool is_in_adc_mode = daqDigi.isADC();
 
-    if(save_){
+    if (save_) {
       ntuple_.setVar<int>("DaqDigi", daqDigi.soi().raw());
       ntuple_.setVar<int>("DaqDigiIsADC", is_in_adc_mode);
       ntuple_.setVar<int>("DaqDigiADC", daqDigi.soi().adc_t());
       ntuple_.setVar<int>("DaqDigiTOT", daqDigi.tot());
     }
-    
+
     const auto recHits = event.getCollection<ldmx::HcalHit>("HcalRecHits");
     CHECK(recHits.size() == 1);
 
@@ -258,21 +256,21 @@ class HcalCheckReconstruction : public framework::Analyzer {
     CHECK_FALSE(hit.isNoise());
     CHECK(id.raw() == simHits.at(0).getID());
 
-    if(save_){
+    if (save_) {
       ntuple_.setVar<float>("RecX", hit.getXPos());
       ntuple_.setVar<float>("RecY", hit.getYPos());
       ntuple_.setVar<float>("RecZ", hit.getZPos());
       ntuple_.setVar<float>("RecTime", hit.getTime());
       ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
     }
-    
+
     // define target energy by using the settings at the top
     double daq_energy{hit.getEnergy()};
     CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
                                          MAX_ENERGY_PERCENT_ERROR_DAQ));
 
-    std::cout << "rec energy " << hit.getEnergy() << " truth " <<
-      truth_energy << std::endl;
+    std::cout << "rec energy " << hit.getEnergy() << " truth " << truth_energy
+              << std::endl;
 
     // ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
 
