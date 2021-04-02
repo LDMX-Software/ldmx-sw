@@ -255,6 +255,50 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
         self.hit_collection = hit_coll
         self.pad = pad
 
+
+class TrigScintClusterDQM(ldmxcfg.Analyzer) :
+    """Configured TrigScintClusterDQM python object
+    
+    Contains an instance of TrigScintClusterDQM that
+    has already been configured.
+    
+    Builds the necessary histograms as well.
+    
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.TrigScintClusterDQM() )
+    """
+
+    def __init__(self,name='TrigScintClusterUp',coll='TriggerPadUpClusters',pad='up') :
+        super().__init__(name,'dqm::TrigScintClusterDQM','DQM')
+
+        self.cluster_collection = coll
+        self.pad = pad
+        self.passName = ''
+
+        
+class TrigScintTrackDQM(ldmxcfg.Analyzer) :
+    """Configured TrigScintTrackDQM python object
+    
+    Contains an instance of TrigScintTrackDQM that
+    has already been configured.
+    
+    Builds the necessary histograms as well.
+    
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.TrigScintTrackDQM() )
+    """
+
+    def __init__(self,name='TrigScintTrack',coll='TriggerPadTracks') :
+        super().__init__(name,'dqm::TrigScintTrackDQM','DQM')
+
+        self.track_collection = coll
+        self.passName = ''
+
+        
 ecal_dqm = [
         PhotoNuclearDQM(),
         EcalDigiVerify()
@@ -269,12 +313,16 @@ recoil_dqm = [
         ]
 
 trigScint_dqm = [
+    TrigScintSimDQM('TrigScintSimTag','TriggerPadTaggerSimHits','tag'),
     TrigScintSimDQM('TrigScintSimUp','TriggerPadUpSimHits','up'),
     TrigScintSimDQM('TrigScintSimDn','TriggerPadDownSimHits','dn'),
-    TrigScintSimDQM('TrigScintSimTag','TriggerPadTaggerSimHits','tag'),
+    TrigScintDigiDQM('TrigScintDigiTag','trigScintDigisTag','tag'),
     TrigScintDigiDQM('TrigScintDigiUp','trigScintDigisUp','up'),
     TrigScintDigiDQM('TrigScintDigiDn','trigScintDigisDn','dn'),
-    TrigScintDigiDQM('TrigScintDigiTag','trigScintDigisTag','tag')
+    TrigScintClusterDQM('TrigScintClusterTag','TriggerPadTaggerClusters','tag'),
+    TrigScintClusterDQM('TrigScintClusterUp','TriggerPadUpClusters','up'),
+    TrigScintClusterDQM('TrigScintClusterDn','TriggerPadDownClusters','dn'),
+    TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
 all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm
