@@ -72,6 +72,8 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
   double totalPE{0};
   int noiseHitCount = 0;
 
+  ldmx_log(debug) << "Looping over hits in " << hitCollectionName_;
+  
   // Loop through all TrigScint hits in the event
 
   for (const ldmx::TrigScintHit &hit : TrigScintHits) {
