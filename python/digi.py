@@ -76,9 +76,11 @@ class EcalDigiProducer(Producer) :
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = charge_per_mip/20./mip_si_energy
 
-        self.avgReadoutThreshold = 53. #noise config only
-        self.avgGain = 0.3125 #noise config only
-        self.avgPedestal = 50. #noise config only
+        # these averages are for configuring the noise generator
+        #   _only_ and are not meant to be propated to a chip-by-chip basis
+        avgGain = 0.3125/20.
+        self.avgReadoutThreshold = 53.*avgGain
+        self.avgPedestal = 50.*avgGain
 
         # input and output collection name parameters
         self.inputCollName = 'EcalSimHits'
