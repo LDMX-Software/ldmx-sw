@@ -48,15 +48,13 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
 
   // Configure generator that will produce noise hits in empty channels
   double readoutThreshold = ps.getParameter<double>("avgReadoutThreshold");
-  double gain = ps.getParameter<double>("avgGain");
   double pedestal = ps.getParameter<double>("avgPedestal");
   // rms noise in mV
-  noiseGenerator_->setNoise(
-      hgcrocParams.getParameter<double>("noiseRMS"));
+  noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS"));
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(gain*pedestal);  
+  noiseGenerator_->setPedestal(pedestal);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(gain*readoutThreshold);
+  noiseGenerator_->setNoiseThreshold(readoutThreshold);
 }
 
 void EcalDigiProducer::produce(framework::Event& event) {
