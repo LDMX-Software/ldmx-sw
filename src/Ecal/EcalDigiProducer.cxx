@@ -28,8 +28,6 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   //  used  in actual digitization
   auto hgcrocParams = ps.getParameter<framework::config::Parameters>("hgcroc");
   hgcroc_ = std::make_unique<ldmx::HgcrocEmulator>(hgcrocParams);
-  gain_ = hgcrocParams.getParameter<double>("gain");
-  pedestal_ = hgcrocParams.getParameter<double>("pedestal");
   clockCycle_ = hgcrocParams.getParameter<double>("clockCycle");
   nADCs_ = hgcrocParams.getParameter<int>("nADCs");
   iSOI_ = hgcrocParams.getParameter<int>("iSOI");
@@ -49,14 +47,16 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   ns_ = 1024. / clockCycle_;
 
   // Configure generator that will produce noise hits in empty channels
-  readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
+  double readoutThreshold = ps.getParameter<double>("avgReadoutThreshold");
+  double gain = ps.getParameter<double>("avgGain");
+  double pedestal = ps.getParameter<double>("avgPedestal");
+  // rms noise in mV
   noiseGenerator_->setNoise(
-      hgcrocParams.getParameter<double>("noiseRMS"));  // rms noise in mV
-  noiseGenerator_->setPedestal(
-      gain_ * pedestal_);  // mean noise amplitude (if using Gaussian Model for
-                           // the noise) in mV
-  noiseGenerator_->setNoiseThreshold(
-      gain_ * readoutThreshold_);  // threshold for readout in mV
+      hgcrocParams.getParameter<double>("noiseRMS"));
+  // mean noise amplitude (if using Gaussian Model for the noise) in mV
+  noiseGenerator_->setPedestal(gain*pedestal);  
+  // threshold for readout in mV
+  noiseGenerator_->setNoiseThreshold(gain*readoutThreshold);
 }
 
 void EcalDigiProducer::produce(framework::Event& event) {
@@ -78,6 +78,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
         framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
     hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
   }
+
+  hgcroc_->condition(getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
 
   // Empty collection to be filled
   ldmx::HgcrocDigiCollection ecalDigis;
@@ -175,15 +177,16 @@ void EcalDigiProducer::produce(framework::Event& event) {
         noiseID = detID.raw();
       } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
       filledDetIDs.insert(noiseID);
-      // std::cout << noiseID << " -> " << noiseHit + readoutThreshold_ -
-      // gain_*pedestal_ << std::endl;
 
       // get a time for this noise hit
       fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
 
       // noise generator gives the amplitude above the readout threshold
-      //  we need to convert it to the amplitdue above the pedestal
-      fake_pulse[0].first = noiseHit + gain_ * readoutThreshold_ - gain_ * pedestal_;
+      //  we need to convert it to the amplitude above the pedestal
+      double gain = hgcroc_->gain(noiseID);
+      fake_pulse[0].first = noiseHit +
+                            gain * hgcroc_->readoutThreshold(noiseID) -
+                            gain * hgcroc_->pedestal(noiseID);
 
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
       if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
