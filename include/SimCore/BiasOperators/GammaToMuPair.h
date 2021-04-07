@@ -20,7 +20,7 @@ class GammaToMuPair : public XsecBiasingOperator {
   GammaToMuPair(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
-  ~GammaToMuPair() {}
+  ~GammaToMuPair() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
