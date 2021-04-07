@@ -3,6 +3,7 @@
 #include "TTree.h"
 
 #include "Framework/Configure/Parameters.h"
+#include "Conditions/SimpleTableCondition.h"
 #include "Tools/HgcrocEmulator.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 
@@ -11,32 +12,47 @@ int main() {
   double gain = 320./20./1024;
 
   framework::config::Parameters parameters;
-  parameters.addParameter("pedestal", 50.);
   parameters.addParameter("clockCycle", 25.);
-  parameters.addParameter("measTime", 0.);
   parameters.addParameter("timingJitter",0.25);
-  parameters.addParameter("readoutPadCapacitance", 20.);
-  parameters.addParameter("maxADCRange", 320.);
   parameters.addParameter("nADCs", 10 );
   parameters.addParameter("iSOI", 0 );
-  parameters.addParameter("totMax", 200.);
-  parameters.addParameter("drainRate", 10240. / 200. );
   parameters.addParameter("rateUpSlope",  -0.345);
   parameters.addParameter("timeUpSlope", 70.6547);
   parameters.addParameter("rateDnSlope", 0.140068);
   parameters.addParameter("timeDnSlope", 87.7649);
   parameters.addParameter("timePeak", 77.732);
-  parameters.addParameter("gain", gain);
   parameters.addParameter("noiseRMS", (700.+25.*20.)*(0.162/1000.)/20.);
-  parameters.addParameter("readoutThreshold", 53.);
-  parameters.addParameter("toaThreshold", 2.27975);
-  parameters.addParameter("totThreshold", 15.76225);
   parameters.addParameter("noise",true);
+
+  conditions::DoubleTableCondition chip_conditions("RUN_HGCROC_TABLE", {
+    "PEDESTAL",
+    "MEAS_TIME",
+    "PAD_CAPACITANCE",
+    "TOT_MAX",
+    "DRAIN_RATE",
+    "GAIN",
+    "READOUT_THRESHOLD",
+    "TOA_THRESHOLD",
+    "TOT_THRESHOLD"
+  });
+  chip_conditions.setIdMask(0); // all ids are the same
+  chip_conditions.add(0, {
+    50. , //PEDESTAL 
+    0.0, //MEAS_TIME - ns
+    20., //PAD_CAPACITANCE - pF
+    200., //TOT_MAX - ns - maximum time chip would be in TOT mode
+    10240. / 200., //DRAIN_RATE - fC/ns
+    gain, //GAIN - 320. fC / 1024. counts / 20 pF - conversion from ADC to mV
+    50. + 3., //READOUT_THRESHOLD - 3 ADC counts above pedestal
+    50.*gain + 5 *37*0.162/20., //TOA_THRESHOLD - mV - ~5  MIPs above pedestal
+    50.*gain + 50*37*0.162/20., //TOT_THRESHOLD - mV - ~50 MIPs above pedestal
+  });
 
   ldmx::HgcrocEmulator hgcroc(parameters);
   hgcroc.seedGenerator(420);
+  hgcroc.condition(chip_conditions);
 
-  double readout_threshold = gain*parameters.getParameter<double>("readoutThreshold");
+  double readout_threshold = gain*53.;
   double tot_threshold = 15.76225;
   
   float min_voltage_test{0.5};
