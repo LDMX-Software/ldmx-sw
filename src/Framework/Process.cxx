@@ -152,7 +152,7 @@ void Process::run() {
 
     // Configure the event file to create an output file with no parent. This
     // requires setting the parameters isOutputFile and isSingleOutput to true.
-    EventFile outFile(config_, outputFileName, nullptr, true, true); 
+    EventFile outFile(config_, outputFileName, nullptr, true, true, false); 
 
     for (auto module : sequence_) module->onFileOpen(outFile);
 
