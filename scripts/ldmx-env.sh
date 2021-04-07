@@ -419,6 +419,8 @@ _ldmx_help() {
       ldmx use (dev | pro | local) <tag>
     pull    : Pull down the input repo and tag of the container
       ldmx pull (dev | pro | local) <tag>
+    mount   : Attach the input directory to the container when running
+      ldmx mount <dir>
     run     : Run a command at an input location in the container
       ldmx run <directory> <sub-command> [<argument> ...]
     source  : Run the commands in the provided file through ldmx
