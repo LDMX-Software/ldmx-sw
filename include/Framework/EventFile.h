@@ -7,8 +7,8 @@
 #include <vector>
 
 //---< Framework >---//
+#include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
-#include "Framework/Configure/Parameters.h" 
 
 //---< ROOT >---//
 #include "TFile.h"
@@ -24,7 +24,7 @@ namespace framework {
  * This class manages all ROOT file input/output operations.
  */
 class EventFile {
-public:
+ public:
   /**
    * Constructor to make a general file.
    *
@@ -37,10 +37,26 @@ public:
    * @param[in] parent a pointer to the parent file to copy
    * @param[in] isOutputFile true if this file is written out
    * @param[in] isSingleOutput true if only one output file is being written to
+   * @param[in] isLoopable true for an input file where events can be reused
    */
   EventFile(const framework::config::Parameters &params,
             const std::string &filename, EventFile *parent, bool isOutputFile,
-            bool isSingleOutput);
+            bool isSingleOutput, bool isLoopable);
+
+  /**
+   * Constructor to make a pileup overlay file.
+   *
+   * This is an additional input file from which collections are pulled
+   * to be overlaid with simulated hit collections.
+   *
+   * @param[in] params The parameters used to configure this EventFile.
+   * @param fileName The file name.
+   * @param isLoopable true if we want to reset the event counter and keep
+   * processing from the start when we hit the end of the event tree in
+   * this input file (set in the call in the producer)
+   */
+  EventFile(const framework::config::Parameters &param,
+            const std::string &fileName, bool isLoopable);
 
   /**
    * Class constructor for cloning data from a "parent" file.
@@ -141,6 +157,12 @@ public:
   bool nextEvent(bool storeCurrentEvent = true);
 
   /**
+   * Skip events using an offset. Used in pileup overlay.
+   * @return New event number if read successfully, else -1.
+   */
+  int skipToEvent(int offset);
+
+  /**
    * Close the file, writing the tree to disk if creating an output file.
    *
    * Deletes any RunHeaders that this instance of EventFile owns.
@@ -206,6 +228,9 @@ private:
 
   /// True if there is only one output file
   bool isSingleOutput_;
+
+  /// True if this is an input file with pileup overlay events */
+  bool isLoopable_{false};
 
   /// The backing TFile for this EventFile.
   TFile *file_{nullptr};
