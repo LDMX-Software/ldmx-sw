@@ -25,5 +25,5 @@ setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)
 
 # Add the hgcroc running executable
 add_executable(run-hgcroc ${PROJECT_SOURCE_DIR}/src/Tools/run_hgcroc.cxx)
-target_link_libraries(run-hgcroc PRIVATE Framework Tools)
+target_link_libraries(run-hgcroc PRIVATE Framework Tools Conditions)
 install(TARGETS run-hgcroc DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
