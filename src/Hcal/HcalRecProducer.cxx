@@ -55,8 +55,8 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   for (double t = -clock_cycle_; t < clock_cycle_; t += 0.01) {
     double ampl_t = pulseFunc_.Eval(t);
     double ampl_tm1 = pulseFunc_.Eval(t - clock_cycle_);
-    if (erm1 > er) continue;
-    correctionAmpl_.SetPoint(n, erm1 / er, er);
+    if (ampl_tm1 > ampl_t) continue;
+    correctionAmpl_.SetPoint(n, ampl_tm1 / ampl_t, ampl_t);
     n++;
   }
 
@@ -67,11 +67,11 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   n = 0;
   for (double ampl = toaThreshold + 0.1; ampl < 10000; ampl += 0.01) {
     pulseFunc_.FixParameter(0, ampl);
-    double ampl_eval = gain * pedestal + pulseFunc_.Eval(0);
+    double ampl_t = gain * pedestal + pulseFunc_.Eval(0);
     double toa =
         fabs(pulseFunc_.GetX(toaThreshold, (double)nADCs_ * clock_cycle_ * -1,
                              (double)nADCs_ * clock_cycle_));
-    correctionTOA_.SetPoint(n, ampl_eval, toa);
+    correctionTOA_.SetPoint(n, ampl_t, toa);
     n++;
   }
 }
@@ -267,7 +267,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min = voltage_i / att;
 
       // correct TOA
-      double TOA = correctTOA(digi_posend, amplT_posend, iSOI);
+      double TOA = correctTOA(digi_posend, amplT_posend, the_conditions.adcPedestal(id_posend), iSOI);
 
       // set hit time
       hitTime = TOA;  // ns
