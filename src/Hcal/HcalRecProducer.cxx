@@ -6,6 +6,7 @@
  */
 
 #include "Hcal/HcalRecProducer.h"
+#include "Hcal/HcalReconConditions.h"
 
 namespace hcal {
 
@@ -26,8 +27,6 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   pe_per_mip_ = ps.getParameter<double>("pe_per_mip");
   clock_cycle_ = ps.getParameter<double>("clock_cycle");
   voltage_per_mip_ = ps.getParameter<double>("voltage_per_mip");
-  pedestal_ = ps.getParameter<double>("pedestal");
-  gain_ = ps.getParameter<double>("gain");
   attlength_ = ps.getParameter<double>("attenuationLength");
   nADCs_ = ps.getParameter<int>("nADCs");
 
@@ -51,25 +50,26 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   pulseFunc_.FixParameter(4, 0);
   pulseFunc_.FixParameter(0, 1);
 
-  // correcting amplitude with Ampl[t-1]/Ampl[t]
+  // build amplitude correction (Ampl[t-1]/Ampl[t]) with pulse-shape
   int n = 0;
-  for (double t = -25; t < 25; t += 0.01) {
-    double er = pulseFunc_.Eval(t);
-    double erm1 = pulseFunc_.Eval(t - 25.0);
-    double erp1 = pulseFunc_.Eval(t + 25.0);
-    if (erp1 > er || erm1 > er) continue;
+  for (double t = -clock_cycle_; t < clock_cycle_; t += 0.01) {
+    double ampl_t = pulseFunc_.Eval(t);
+    double ampl_tm1 = pulseFunc_.Eval(t - clock_cycle_);
+    if (erm1 > er) continue;
     correctionAmpl_.SetPoint(n, erm1 / er, er);
     n++;
   }
 
-  // correcting TOA timewalk
-  toaThreshold_ = ps.getParameter<double>("toaThreshold");
+  // build TOA timewalk correction with pulse-shape
+  double toaThreshold = ps.getParameter<double>("avgToaThreshold");
+  double gain = ps.getParameter<double>("avgGain");
+  double pedestal = ps.getParameter<double>("avgPedestal");
   n = 0;
-  for (double ampl = toaThreshold_ + 0.1; ampl < 10000; ampl += 0.01) {
+  for (double ampl = toaThreshold + 0.1; ampl < 10000; ampl += 0.01) {
     pulseFunc_.FixParameter(0, ampl);
-    double ampl_eval = gain_ * pedestal_ + pulseFunc_.Eval(0);
+    double ampl_eval = gain * pedestal + pulseFunc_.Eval(0);
     double toa =
-        fabs(pulseFunc_.GetX(toaThreshold_, (double)nADCs_ * clock_cycle_ * -1,
+        fabs(pulseFunc_.GetX(toaThreshold, (double)nADCs_ * clock_cycle_ * -1,
                              (double)nADCs_ * clock_cycle_));
     correctionTOA_.SetPoint(n, ampl_eval, toa);
     n++;
@@ -77,7 +77,8 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
 }
 
 double HcalRecProducer::correctTOA(
-    const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double amplPeak,
+    const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
+    double amplPeak, double pedestal,
     unsigned int iSOI) {
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
@@ -88,8 +89,8 @@ double HcalRecProducer::correctTOA(
       // find in which ADC sample the TOA was taken
       toaSample = iADC;
     }
-    if ((it->adc_t() - pedestal_) > maxMeas) {
-      maxMeas = (it->adc_t() - pedestal_);
+    if ((it->adc_t() - pedestal) > maxMeas) {
+      maxMeas = (it->adc_t() - pedestal);
       maxSample = iADC;
     }
     iADC++;
@@ -112,6 +113,11 @@ void HcalRecProducer::produce(framework::Event& event) {
   const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
+  // Get the reconstruction parameters
+  HcalReconConditions the_conditions(
+      getCondition<conditions::DoubleTableCondition>(
+          HcalReconConditions::CONDITIONS_NAME));
+  
   std::vector<ldmx::HcalHit> hcalRecHits;
   auto hcalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
@@ -123,15 +129,15 @@ void HcalRecProducer::produce(framework::Event& event) {
   // Loop through digis
   int iDigi = 0;
   while (iDigi < numDigiHits) {
-    auto digi = hcalDigis.getDigi(iDigi);
+    auto digi_posend = hcalDigis.getDigi(iDigi);
 
-    // ID from first digi sample
-    ldmx::HcalDigiID digiId(digi.id());
-    ldmx::HcalID id(digiId.section(), digiId.layer(), digiId.strip());
+    // ID from first digi sample (which should be in positive end)
+    ldmx::HcalDigiID id_posend(digi_posend.id());
+    ldmx::HcalID id(id_posend.section(), id_posend.layer(), id_posend.strip());
 
     // Position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
-    double half_total_width = hcalGeometry.getHalfTotalWidth(digiId.section());
+    double half_total_width = hcalGeometry.getHalfTotalWidth(id.section());
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
@@ -140,12 +146,12 @@ void HcalRecProducer::produce(framework::Event& event) {
     // For side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
     // an approximation
     float distance_posend, distance_negend, distance_ecal;
-    if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
+    if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       distance_posend = half_total_width;
       distance_negend = half_total_width;
     } else {
-      if ((digiId.section() == ldmx::HcalID::HcalSection::TOP) ||
-          (digiId.section() == ldmx::HcalID::HcalSection::BOTTOM))
+      if ((id.section() == ldmx::HcalID::HcalSection::TOP) ||
+          (id.section() == ldmx::HcalID::HcalSection::BOTTOM))
         distance_ecal = ecal_dx;
       else
         distance_ecal = ecal_dy;
@@ -162,33 +168,33 @@ void HcalRecProducer::produce(framework::Event& event) {
     double amplT_negend(0.), amplTm1_negend(0.);
 
     // Double readout
-    if (digiId.section() == ldmx::HcalID::HcalSection::BACK) {
-      auto digi_posend = hcalDigis.getDigi(iDigi);
+    if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       auto digi_negend = hcalDigis.getDigi(iDigi + 1);
-
+      ldmx::HcalDigiID id_negend(digi_negend.id());
+      
       double voltage_posend, voltage_negend;
 
       if (digi_posend.isTOT()) {
-        voltage_posend = (digi_posend.tot() - pedestal_) * gain_;
-        voltage_negend = (digi_negend.tot() - pedestal_) * gain_;
+	voltage_posend = (digi_posend.tot() - the_conditions.totPedestal(id_posend)) * the_conditions.totGain(id_posend);
+	voltage_negend = (digi_negend.tot() - the_conditions.totPedestal(id_negend)) * the_conditions.totGain(id_negend);
       } else {
-        amplT_posend = (digi_posend.soi().adc_t() - pedestal_);
-        amplTm1_posend = (digi_posend.soi().adc_tm1() - pedestal_);
-        amplT_negend = (digi_negend.soi().adc_t() - pedestal_);
-        amplTm1_negend = (digi_negend.soi().adc_tm1() - pedestal_);
+	amplT_posend   = digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
+	amplTm1_posend = digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
+        amplT_negend   = digi_negend.soi().adc_t() - the_conditions.adcPedestal(id_negend);
+        amplTm1_negend = digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
 
         // Correct amplitude
         amplT_posend *= correctionAmpl_.Eval(amplTm1_posend / amplT_posend);
         amplT_negend *= correctionAmpl_.Eval(amplTm1_negend / amplT_negend);
 
         // Set voltage
-        voltage_posend = amplT_posend * gain_;
-        voltage_negend = amplT_negend * gain_;
+        voltage_posend = amplT_posend * the_conditions.adcGain(id_posend);
+        voltage_negend = amplT_negend * the_conditions.adcGain(id_negend);
       }
 
       // Correct TOA
-      double TOA_posend = correctTOA(digi_posend, amplT_posend, iSOI);
-      double TOA_negend = correctTOA(digi_negend, amplT_negend, iSOI);
+      double TOA_posend = correctTOA(digi_posend, amplT_posend, the_conditions.adcPedestal(id_posend), iSOI);
+      double TOA_negend = correctTOA(digi_negend, amplT_negend, the_conditions.adcPedestal(id_negend), iSOI);
       std::cout << " TOA pos end " << TOA_posend << " neg end " << TOA_negend << std::endl;
       
       // Get x(y) coordinate from TOA measurement = (dt*v/2)
@@ -214,7 +220,7 @@ void HcalRecProducer::produce(framework::Event& event) {
           std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
       // set position
-      if ((digiId.layer() % 2) == 1) {
+      if ((id_posend.layer() % 2) == 1) {
         position.SetX(pos);
       } else {
         position.SetY(pos);
@@ -230,7 +236,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     else {  // single readout
 
       double voltage_i;
-      if (digi.isTOT()) {
+      if (digi_posend.isTOT()) {
         // TOT - number of clock ticks that pulse was over threshold
         // this is related to the amplitude of the pulse approximately through a
         // linear drain rate the amplitude of the pulse is related to the energy
@@ -238,19 +244,21 @@ void HcalRecProducer::produce(framework::Event& event) {
 
         // convert the time over threshold into a total energy deposited in the
         // bar (time over threshold [ns] - pedestal) * gain
-        voltage_i = (digi.tot() - pedestal_) * gain_;
+	
+	voltage_i = (digi_posend.tot() - the_conditions.totPedestal(id_posend)) * the_conditions.totGain(id_posend);
+
       } else {
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
-        amplT_posend = (digi.soi().adc_t() - pedestal_);
-        amplTm1_posend = (digi.soi().adc_tm1() - pedestal_);
-        voltage_i = amplT_posend * gain_;
+        amplT_posend   = digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
+        amplTm1_posend = digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
+        voltage_i = amplT_posend * the_conditions.adcGain(id_posend);
       }
 
       // reverse voltage attenuation
       // for now, assume that position along the bar is the half_total_width
       double distance_end =
-          digiId.isNegativeEnd() ? distance_negend : distance_posend;
+          id_posend.isNegativeEnd() ? distance_negend : distance_posend;
       double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
                        attlength_);
 
@@ -259,7 +267,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min = voltage_i / att;
 
       // correct TOA
-      double TOA = correctTOA(digi, amplT_posend, iSOI);
+      double TOA = correctTOA(digi_posend, amplT_posend, iSOI);
 
       // set hit time
       hitTime = TOA;  // ns

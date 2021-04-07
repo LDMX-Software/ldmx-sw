@@ -61,7 +61,7 @@ class HcalRecProducer : public framework::Producer {
    * Corrects Time of Arrival.
    */
   double correctTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
-                    double amplPeak, unsigned int iSOI);
+                    double amplPeak, double pedestal, unsigned int iSOI);
 
   /**
    * Produce HcalHits and put them into the event bus using the
@@ -101,16 +101,10 @@ class HcalRecProducer : public framework::Producer {
   /// Voltage by average MIP
   double voltage_per_mip_;
 
-  /// Gain [mv/ADC]
-  double gain_;
-
-  /// Pedestal [ADC units]
-  double pedestal_;
-
   /// Strip attenuation length [m]
   double attlength_;
 
-  /// Pulse function and correction graph
+  /// Pulse function and correction graphs
   mutable TF1 pulseFunc_;
   mutable TGraph correctionAmpl_;
   mutable TGraph correctionTOA_;
@@ -133,8 +127,6 @@ class HcalRecProducer : public framework::Producer {
   /// Time of Peak relative to pulse shape fit [ns]
   double timePeak_;
 
-  /// Min threshold for measuring TOA [mV]
-  double toaThreshold_;
 };
 }  // namespace hcal
 
