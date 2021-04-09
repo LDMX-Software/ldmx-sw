@@ -363,6 +363,21 @@ _ldmx_clean() {
     rc=$?
   fi
 
+  if [[ "$_what" = "src" ]] || [[ "$_what" = "all" ]]; then
+    local _old_pwd=$OLDPWD
+    cd ${LDMX_BASE}/ldmx-sw
+    git clean -xi
+    rc=$?
+    git submodule foreach git clean -xi
+    rc=$?
+    [[ -d build ]] && rm -r build
+    [[ -d install ]] && rm -r install
+    cleaned_something=true
+    cd - &>/dev/null
+    export OLDPWD=$_old_pwd
+  fi
+
+  # must be last so cleaning of source can look in ldmx base
   if [[ "$_what" = "env" ]] || [[ "$_what" = "all" ]]; then
     unset LDMX_BASE
     unset LDMX_CONTAINER_MOUNTS
@@ -397,6 +412,59 @@ _ldmx_source() {
   export OLDPWD=$_old_pwd
 }
 
+###############################################################################
+# _ldmx_checkout
+#   Wrapper around git to help with common workflow
+#   We assume we are running this from the source code directory
+#   User provides branch configuration they want the source code to reflect
+###############################################################################
+_ldmx_checkout() {
+  local _ldmxsw=""
+  local _submodules=()
+  for _ldmx_br in $@; do
+    if [[ "$_ldmx_br" == *":"* ]]; then
+      # submodule specified
+      _submodules+=("$_ldmx_br")
+    elif [[ ! -z "$_ldmxsw" ]]; then
+      echo "Can't provide more than one branch for ldmx-sw."
+      return 1
+    else
+      _ldmxsw="$_ldmx_br"
+    fi
+  done
+
+  # do ldmx-sw first so we can submodule update
+  # and then change submodule branches later if necessary
+  if [[ ! -z $_ldmxsw ]]; then
+    if ! git checkout $_ldmxsw && git submodule update; then
+      return $?
+    fi
+  fi
+
+  # now do submodules
+  for _sub_br in ${_submodules[@]}; do
+    IFS=: read -r _submodule _branch <<< "$_sub_br"
+    if [[ -z $_submodule ]] || [[ -z $_branch ]]; then
+      echo "Unrecognized ldmx-sw branch format: '$_sub_br'."
+      echo "  Should be of the form <submodule>:<branch>."
+      return 1
+    fi
+    echo "Checking out $_branch in $_submodule..."
+    local _old_pwd=$OLDPWD
+    if ! cd $_submodule; then
+      echo "'$_submodule' does not exist."
+      return 1
+    fi
+    local rc=0
+    git checkout $_branch
+    rc=$?
+    cd - &> /dev/null
+    export OLDPWD=$_old_pwd
+    [[ "$rc" != "0" ]] && return ${rc}
+  done
+
+  return 0
+}
 
 ###############################################################################
 # _ldmx_help
@@ -413,9 +481,15 @@ _ldmx_help() {
     list    : List the tag options for the input container repository
       ldmx list (dev | pro | local)
     clean   : Reset ldmx computing environment
-      ldmx clean (all | container | env)
+              container - remove containers and images on computer
+              env - reset environment variables
+              src - remove build/install directory and auto-generated files
+      ldmx clean (all | container | env | src)
     config  : Print the current configuration of the container
       ldmx config
+    checkout: Checkout a specific source-code configuration for ldmx-sw
+      ldmx checkout <ldmx-sw-branch> [<submodule>:<branch> ...]
+      ldmx checkout <submodule>:<branch> [<submodule2>:<branch2> ...]
     use     : Use the input repo and tag of the container for running
       ldmx use (dev | pro | local) <tag>
     pull    : Pull down the input repo and tag of the container
@@ -489,6 +563,10 @@ function ldmx() {
       ;;
     run)
       _ldmx_run $_sub_command_args
+      return $?
+      ;;
+    checkout)
+      _ldmx_checkout $_sub_command_args
       return $?
       ;;
     *)
@@ -570,6 +648,48 @@ _ldmx_dont_complete() {
 }
 
 ###############################################################################
+# _ldmx_complete_branch
+#   Tab complete the _ldmx_checkout command.
+#   Tries to make current word match an ldmx-sw branch name or the
+#   <submodule>:<branch> format
+###############################################################################
+_ldmx_complete_branch() {
+  local _curr_word="$1"
+
+  alias _get_git_branch_list='git branch | sed "s/\*//"'
+
+  local _submodules=($(git config --file .gitmodules --get-regexp path | awk '{print $2}'))
+  for _submod in ${_submodules[@]}; do
+    if [[ "$_curr_word" == "$_submod:"* ]]; then
+      local _old_pwd=$OLDPWD
+      cd $_submod
+      _sub_mod_branches=($(compgen -W "$(_get_git_branch_list)" "${_curr_word#*:}"))
+      cd - &> /dev/null
+      export OLDPWD=$_old_pwd
+      if (( ${#_sub_mod_branches[@]} == 1 )); then
+        COMPREPLY=("${_submod}:${_sub_mod_branches[0]}")
+      else
+        COMPREPLY=(${_sub_mod_branches[@]})
+      fi
+      return
+    fi
+  done
+
+  _options="$(_get_git_branch_list) ${_submodules[@]}"
+  COMPREPLY=($(compgen -W "${_options}" "$_curr_word"))
+
+  if (( ${#COMPREPLY[@]} == 1 )); then
+    local _match=${COMPREPLY[0]}  
+    for _submod in ${_submodules[@]}; do
+      if [[ $_match == $_submod ]]; then
+        COMPREPLY=("${_match}:")
+        return
+      fi
+    done
+  fi
+}
+
+###############################################################################
 # Modify the list of completion options on the command line
 #   Helpful discussion of this procedure from a blog post
 #   https://iridakos.com/programming/2018/03/01/bash-programmable-completion-tutorial
@@ -589,7 +709,7 @@ _ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    _ldmx_complete_command "list clean config pull use run mount base source"
+    _ldmx_complete_command "list clean config checkout pull use run mount base source"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
@@ -598,9 +718,12 @@ _ldmx_complete() {
         # no more arguments
         _ldmx_dont_complete
         ;;
+      checkout)
+        _ldmx_complete_branch "$curr_word"
+        ;;
       clean)
         # arguments from special set
-        COMPREPLY=($(compgen -W "all container env" "$curr_word"))
+        COMPREPLY=($(compgen -W "all container env src" "$curr_word"))
         ;;
       list|pull|use)
         # container repositories after these commands
@@ -623,6 +746,9 @@ _ldmx_complete() {
         # these commands shouldn't have tab complete for the third argument 
         #   (or shouldn't have the third argument at all)
         _ldmx_dont_complete
+        ;;
+      checkout)
+        _ldmx_complete_branch "$curr_word"
         ;;
       run)
         if [[ "$COMP_CWORD" = "3" ]]; then
@@ -652,6 +778,6 @@ complete -F _ldmx_complete ldmx
 #default backs out of scripts
 _default_location_ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
 
-if [ -f $_default_location_ldmxrc ]; then
+if [[ -f $_default_location_ldmxrc ]]; then
   ldmx source $_default_location_ldmxrc
 fi
