@@ -271,7 +271,7 @@ function _ldmx_config() {
 #   Check if the input directory will be accessible by the container
 ###############################################################################
 _ldmx_is_mounted() {
-  local full=$(realpath "$1")
+  local full=$(cd "$1" && pwd -P)
   for _already_mounted in ${LDMX_CONTAINER_MOUNTS[@]}; do
     if [[ $full/ = $_already_mounted/* ]]; then
       return 0
@@ -325,7 +325,7 @@ _ldmx_mount() {
     return 0
   fi
 
-  LDMX_CONTAINER_MOUNTS+=($(realpath "$_dir_to_mount"))
+  LDMX_CONTAINER_MOUNTS+=($(cd "$_dir_to_mount" && pwd -P))
   export LDMX_CONTAINER_MOUNTS
   return 0
 }
@@ -661,17 +661,13 @@ _ldmx_complete_branch() {
   local _submodules=($(git config --file .gitmodules --get-regexp path | awk '{print $2}'))
   for _submod in ${_submodules[@]}; do
     if [[ "$_curr_word" == "$_submod:"* ]]; then
-      local _old_pwd=$OLDPWD
-      cd $_submod
-      _sub_mod_branches=($(compgen -W "$(_get_git_branch_list)" "${_curr_word#*:}"))
-      cd - &> /dev/null
-      export OLDPWD=$_old_pwd
+      _sub_mod_branches=($(cd $_submod && compgen -W "$(_get_git_branch_list)" "${_curr_word#*:}"))
       if (( ${#_sub_mod_branches[@]} == 1 )); then
         COMPREPLY=("${_submod}:${_sub_mod_branches[0]}")
       else
         COMPREPLY=(${_sub_mod_branches[@]})
       fi
-      return
+      break
     fi
   done
 
@@ -683,7 +679,7 @@ _ldmx_complete_branch() {
     for _submod in ${_submodules[@]}; do
       if [[ $_match == $_submod ]]; then
         COMPREPLY=("${_match}:")
-        return
+        break
       fi
     done
   fi
