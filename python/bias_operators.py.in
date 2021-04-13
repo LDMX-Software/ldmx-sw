@@ -4,7 +4,7 @@ Mainly focused on reducing the number of places that certain parameter and class
 are hardcoded into the python configuration.
 """
 
-class XsecBiasingOperator: 
+class XsecBiasingOperator:
     """Object that stores parameters for a XsecBiasingOperator
 
     Parameters
@@ -24,7 +24,7 @@ class XsecBiasingOperator:
         from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Process
         Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%module_name )
 
-    def __str__(self): 
+    def __str__(self):
         """Stringify this XsecBiasingOperator
 
         Returns
@@ -34,7 +34,7 @@ class XsecBiasingOperator:
         """
 
         string = "XsecBiasingOperator (" + self.__repr__() + ") {"
-        for k, v in self.__dict__.items(): 
+        for k, v in self.__dict__.items():
             string += " %s : %s" % (k, v)
         string += " }"
 
@@ -92,6 +92,26 @@ class ElectroNuclear(XsecBiasingOperator) :
 
     def __init__(self,vol,factor,thresh=0.) :
         super().__init__('%s_bias_en'%vol,'simcore::biasoperators::ElectroNuclear')
+
+        self.volume = vol
+        self.factor = factor
+        self.threshold = thresh
+
+class GammaToMuPair(XsecBiasingOperator) :
+    """Bias gamma -> mu+ mu- process
+
+    Parameters
+    ----------
+    vol : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    def __init__(self,vol,factor,thresh=0.) :
+        super().__init__('%s_bias_mumu'%vol,'simcore::biasoperators::GammaToMuPair')
 
         self.volume = vol
         self.factor = factor
