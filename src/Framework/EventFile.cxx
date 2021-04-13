@@ -58,7 +58,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
 
     // Get the tree name from the configuration
     auto tree_name{params.getParameter<std::string>("tree_name")};
-    auto tree_{static_cast<TTree *>(file_->Get(tree_name.c_str()))};
+    tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
     if (!tree_) {
       EXCEPTION_RAISE("FileError", "File '" + fileName_ +
                                        "' does not have a TTree named '" +
