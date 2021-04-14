@@ -29,7 +29,7 @@ RootCompleteReSim::RootCompleteReSim(const std::string& name,
                                      framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
   std::string filename = parameters_.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<framework::EventFile>(filename);
+  ifile_ = std::make_unique<framework::EventFile>(parameters, filename);
   ifile_->setupEvent(&ievent_);
 
   simParticleCollName_ =
