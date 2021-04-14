@@ -20,6 +20,9 @@ namespace framework {
 
 Process::Process(const framework::config::Parameters &configuration)
     : conditions_{*this} {
+
+  config_ = configuration; 
+
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
   logFileName_ = configuration.getParameter<std::string>("logFileName", "");
@@ -147,7 +150,9 @@ void Process::run() {
     }
     std::string outputFileName = outputFiles_.at(0);
 
-    EventFile outFile(outputFileName, compressionSetting_);
+    // Configure the event file to create an output file with no parent. This
+    // requires setting the parameters isOutputFile and isSingleOutput to true.
+    EventFile outFile(config_, outputFileName, nullptr, true, true, false); 
 
     for (auto module : sequence_) module->onFileOpen(outFile);
 
@@ -248,7 +253,7 @@ void Process::run() {
     int ifile = 0;
     int wasRun = -1;
     for (auto infilename : inputFiles_) {
-      EventFile inFile(infilename);
+      EventFile inFile(config_, infilename);
 
       ldmx_log(info) << "Opening file " << infilename;
 
@@ -262,8 +267,7 @@ void Process::run() {
         // 2) this is the first input file
         if (!singleOutput or ifile == 0) {
           // setup new output file
-          outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput,
-                                  compressionSetting_);
+          outFile = new EventFile(config_, outputFiles_[ifile], &inFile, singleOutput);
           ifile++;
 
           // setup theEvent we will iterate over
