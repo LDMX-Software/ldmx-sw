@@ -1,23 +1,18 @@
-/**
- * @file EventFile.h
- * @brief Class for managing a file of events
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef FRAMEWORK_EVENT_EVENTFILE_H_
+#define FRAMEWORK_EVENT_EVENTFILE_H_
 
-#ifndef EVENT_EVENTFILE_H_
-#define EVENT_EVENTFILE_H_
-
-// LDMX
-#include "Framework/Event.h"
-
-// ROOT
-#include "TFile.h"
-#include "TTree.h"
-
-// STL
+//---< C++ >---//
 #include <map>
 #include <string>
 #include <vector>
+
+//---< Framework >---//
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
+
+//---< ROOT >---//
+#include "TFile.h"
+#include "TTree.h"
 
 namespace ldmx {
 class RunHeader;
@@ -26,8 +21,7 @@ class RunHeader;
 namespace framework {
 
 /**
- * @class EventFile
- * @brief Manages a file of events
+ * This class manages all ROOT file input/output operations.
  */
 class EventFile {
  public:
@@ -38,74 +32,63 @@ class EventFile {
    * specialised constructors. This method is mainly focused on
    * reducing code copying.
    *
+   * @param[in] params The parameters used to configure this EventFile.
    * @param[in] filename the name of the file to read/write
    * @param[in] parent a pointer to the parent file to copy
    * @param[in] isOutputFile true if this file is written out
    * @param[in] isSingleOutput true if only one output file is being written to
-   * @param[in] compressionSetting the compression setting for the TFile
-   * (100*algo+level)
    * @param[in] isLoopable true for an input file where events can be reused
    */
-  EventFile(const std::string &filename, EventFile *parent, bool isOutputFile,
-            bool isSingleOutput, int compressionSetting, bool isLoopable);
+  EventFile(const framework::config::Parameters &params,
+            const std::string &filename, EventFile *parent, bool isOutputFile,
+            bool isSingleOutput, bool isLoopable);
 
   /**
-   * Class constructor to make a file to read in an event root file.
+   * Constructor to make a pileup overlay file.
    *
-   * This is used for all input files.
-   *
-   * @param fileName The file name.
-   */
-  EventFile(const std::string &fileName);
-
-  /**
-   * Constructor to make an output file that has no parent input file.
-   *
-   * This is for an output file in Production Mode.
-   *
-   * isSingleOutput is set to true.
-   * This may or may not be necessary, but it is the single output in Production
-   * Mode, so it is a good default.
-   *
-   * @param fileName The file name.
-   * @param compressionSetting the compression setting for the TFile
-   * (100*algo+level)
-   */
-  EventFile(const std::string &fileName, int compressionSetting);
-
- /**                                                                                                                                                                                          
-   * Constructor to make a pileup overlay file. 
-   *
-   * This is an additional input file from which collections are pulled 
+   * This is an additional input file from which collections are pulled
    * to be overlaid with simulated hit collections.
    *
+   * @param[in] params The parameters used to configure this EventFile.
    * @param fileName The file name.
-   * @param isLoopable true if we want to reset the event counter and keep 
+   * @param isLoopable true if we want to reset the event counter and keep
    * processing from the start when we hit the end of the event tree in
-   * this input file (set in the call in the producer) 
+   * this input file (set in the call in the producer)
    */
-  
-  EventFile(const std::string& fileName, bool isLoopable);
-  
+  EventFile(const framework::config::Parameters &param,
+            const std::string &fileName, bool isLoopable);
+
   /**
    * Class constructor for cloning data from a "parent" file.
    *
    * This is used for output files when there is an input file.
    * (OR for files with a parent EventFile to clone)
    *
-   * @param fileName The file name.
-   * @param parent Parent file for cloning data tree.
-   * @param isSingleOutput boolean check if only one output file is being
+   * @param[in] params The parameters used to configure this EventFile.
+   * @param[in] fileName The file name.
+   * @param[in] parent Parent file for cloning data tree.
+   * @param[in] isSingleOutput boolean check if only one output file is being
    * written to
-   * @param compressionSetting the compression setting for the TFile
-   * (100*algo+level)
    */
-  EventFile(const std::string &fileName, EventFile *parent,
-            bool isSingleOutput = false, int compressionSetting = 9);
+  EventFile(const framework::config::Parameters &param,
+            const std::string &fileName, EventFile *parent,
+            bool isSingleOutput = false);
 
   /**
-   * Class destructor.
+   * Class constructor to make a file to read in an event root file.
+   *
+   * This constructor just wraps the constructor above and sets the parent to
+   * null and the parameters isOutputFile/isSingleOutput to false.
+   *
+   * This is used for all input files.
+   *
+   * @param[in] params The parameters used to configure this EventFile.
+   * @param[in] fileName The file name.
    */
+  EventFile(const framework::config::Parameters &params,
+            const std::string &fileName);
+
+  /// Defult destructor
   ~EventFile() = default;
 
   /**
@@ -179,7 +162,6 @@ class EventFile {
    */
   int skipToEvent(int offset);
 
-  
   /**
    * Close the file, writing the tree to disk if creating an output file.
    *
@@ -209,9 +191,10 @@ class EventFile {
    */
   ldmx::RunHeader &getRunHeader(int runNumber);
 
+  /// @return the name of the ROOT file being managed.
   const std::string &getFileName() { return fileName_; }
 
- private:
+private:
   /**
    * Fill the internal map of run numbers to RunHeader objects from the input
    * file.
@@ -230,35 +213,35 @@ class EventFile {
    */
   void importRunHeaders();
 
- private:
-  /** The number of entries in the tree. */
+private:
+  /// The number of entries in the tree.
   Long64_t entries_{-1};
 
-  /** The current entry in the tree. */
+  /// The current entry in the tree.
   Long64_t ientry_{-1};
 
-  /** The file name. */
+  /// The file name.
   std::string fileName_;
 
-  /** True if file is an output file being written to disk. */
+  /// True if file is an output file being written to disk.
   bool isOutputFile_;
 
-  /** True if there is only one output file */
+  /// True if there is only one output file
   bool isSingleOutput_;
 
-  /** True if this is an input file with pileup overlay events */
+  /// True if this is an input file with pileup overlay events */
   bool isLoopable_{false};
-  
-  /** The backing TFile for this EventFile. */
+
+  /// The backing TFile for this EventFile.
   TFile *file_{nullptr};
 
-  /** The tree with event data. */
+  /// The tree with event data.
   TTree *tree_{nullptr};
 
-  /** A parent file containing event data. */
+  /// A parent file containing event data.
   EventFile *parent_{nullptr};
 
-  /** The object containing the actual event data (trees and branches). */
+  /// The object containing the actual event data (trees and branches).
   Event *event_{nullptr};
 
   /**
@@ -290,6 +273,6 @@ class EventFile {
    */
   std::map<int, std::pair<bool, ldmx::RunHeader *>> runMap_;
 };
-}  // namespace framework
+} // namespace framework
 
-#endif
+#endif // FRAMEWORK_EVENT_EVENTFILE_H

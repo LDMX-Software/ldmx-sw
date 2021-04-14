@@ -395,6 +395,7 @@ class Process:
         self.histogramFile=''
         self.conditionsGlobalTag='Default'
         self.conditionsObjectProviders=[]
+        self.tree_name = 'LDMX_Events'
         Process.lastProcess=self
 
         # needs lastProcess defined to self-register

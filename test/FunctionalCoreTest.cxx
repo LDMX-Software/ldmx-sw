@@ -442,6 +442,7 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   process["termLogLevel"] = 4;
   process["fileLogLevel"] = 4;
   process["logFileName"] = std::string();
+  process["tree_name"] = std::string("LDMX_Events"); 
 
   process["histogramFile"] =
       std::string("");                  // will be changed in some branches
