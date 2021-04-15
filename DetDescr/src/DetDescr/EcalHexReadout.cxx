@@ -113,7 +113,7 @@ void EcalHexReadout::buildCellMap() {
    * use native ROOT HoneyComb method to build large hexagonal grid.
    * then copy from it the polygons which cover a module.
    */
-  Double_t a = moduleR_;  // hexagon long radius (or hexagon flat side length)
+  Double_t a = cellR_;  // hexagon long radius (or hexagon flat side length)
   Double_t xCenter = 0.;
   Double_t yCenter = 0.;
   Double_t numberOfCellsFlatSide = 12;
