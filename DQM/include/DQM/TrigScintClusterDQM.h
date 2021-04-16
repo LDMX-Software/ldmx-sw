@@ -1,10 +1,3 @@
-/**
- * @file TrigScintClusterDQM.h
- * @brief Analyzer used for TrigScint ClusterDQM.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Lene Kristian Bryngemark, Stanford University
- */
-
 #ifndef _DQM_TRIGSCINTCLUSTER_DQM_H_
 #define _DQM_TRIGSCINTCLUSTER_DQM_H_
 
