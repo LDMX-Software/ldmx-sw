@@ -7,16 +7,17 @@ Two module-wide parameters are defined.
 
 Attributes
 ----------
-nElectronsPerMIP : float
-    Number of e-h pairs created for each MIP in 0.5mm thick Si
-mipSiEnergy : float
+n_kelectrons_per_mip : float
+    Number of thousand e-h pairs created for each MIP in 0.5mm thick Si
+mip_si_energy : float
     Energy [MeV] of a single MIP on average in 0.5mm thick Si
 """
 
 from LDMX.Framework.ldmxcfg import Producer
 
-nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
-mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+n_kelectrons_per_mip = 37.0 #thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
+charge_per_mip = n_kelectrons_per_mip*0.162 #fC
+mip_si_energy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
 
 def EcalHgcrocEmulator() :
     """Get an HGCROC emulator and configure for the ECal specifically
@@ -25,16 +26,14 @@ def EcalHgcrocEmulator() :
     to a test readout of an ECal module and then thresholds to the
     default construction using 37k electrons as the number of
     electrons per MIP.
+
+    Noise RMS is calculated using the average readout pad capacitance (20pF),
+    noise at zero capacitance (700 electrons), and noise increase
+    per capacitance increase (25 electrons per pF).
     """
 
     from LDMX.Tools import HgcrocEmulator
     hgcroc = HgcrocEmulator.HgcrocEmulator()
-
-    # readout capacitance of chip is ~20pF
-    hgcroc.readoutPadCapacitance = 20. #pF
-
-    # set defaults with 37k electrons per MIP
-    hgcroc.setThresholdDefaults( nElectronsPerMIP )
 
     # set pulse shape parameters
     hgcroc.rateUpSlope =  -0.345
@@ -42,6 +41,10 @@ def EcalHgcrocEmulator() :
     hgcroc.rateDnSlope = 0.140068
     hgcroc.timeDnSlope = 87.7649
     hgcroc.timePeak    = 77.732
+
+    hgcroc.noiseRMS     = (700. + 25.*20.)*(0.162/1000.)*(1./20.) #mV
+    hgcroc.nADCs        = 10 
+    hgcroc.iSOI         = 2
 
     return hgcroc
 
@@ -54,12 +57,12 @@ class EcalDigiProducer(Producer) :
         Configuration for the chip emulator
     MeV : float
         Conversion between energy [MeV] and voltage [mV]
-    nEcalLayers : int
-        Number of Si layer in ECal, needed to generate noise ID
-    nModulesPerLayer : int
-        Number of modules in each layer, needed to generate noise ID
-    nCellsPerModule : int
-        Number of cells in each module, needed to generate noise ID
+    inputCollName : str
+        Name of simulated ecal hits to digitize
+    inputPassName : str
+        Name of pass to digitize
+    digiCollName : str
+        Output name of digis put into event bus
     """
 
     def __init__(self, instance_name = 'ecalDigis') :
@@ -68,9 +71,16 @@ class EcalDigiProducer(Producer) :
         self.hgcroc = EcalHgcrocEmulator()
 
         #Energy -> Volts converstion
-        #   energy [MeV] ( 1 MIP / energy [MeV] ) ( voltage [mV] / 1 MIP ) = voltage [mV]
+        #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC) 
+        #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
+        self.MeV = charge_per_mip/20./mip_si_energy
+
+        # these averages are for configuring the noise generator
+        #   _only_ and are not meant to be propated to a chip-by-chip basis
+        avgGain = 0.3125/20.
+        self.avgReadoutThreshold = 53.*avgGain
+        self.avgPedestal = 50.*avgGain
 
         # input and output collection name parameters
         self.inputCollName = 'EcalSimHits'
@@ -91,13 +101,19 @@ class EcalRecProducer(Producer) :
     MeV_per_mV : float
         Conversion from voltage [mV] to energy [MeV]
     mip_si_energy : float
-        Copied from module-wide mipSiEnergy [MeV]
+        Copied from module-wide mip_si_energy [MeV]
     clock_cycle : float
         Time for one DAQ clock cycle to pass [ns]
     digiCollName : str
         Name of digi collection
     digiPassName : str
         Name of digi pass
+    simHitCollName : str
+        Name of sim collection to check for pure noise hits
+    simHitPassName : str
+        Name of sim pass
+    recHitCollName : str
+        Name of output collection 
     secondOrderEnergyCorrection : float
         Correction to weighted energy
     layerWeights : list of floats
@@ -107,8 +123,8 @@ class EcalRecProducer(Producer) :
     def __init__(self, instance_name = 'ecalRecon') : 
         super().__init__(instance_name , 'ecal::EcalRecProducer','Ecal')
 
-        self.mip_si_energy = mipSiEnergy #MeV / MIP
-        self.charge_per_mip = nElectronsPerMIP * 0.162/1000 #fC / MIP
+        self.mip_si_energy = mip_si_energy #MeV / MIP
+        self.charge_per_mip = charge_per_mip #fC / MIP
         self.clock_cycle = 25. #ns - needs to match the setting on the chip
 
         self.digiCollName = 'EcalDigis'

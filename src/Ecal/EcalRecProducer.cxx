@@ -46,10 +46,8 @@ void EcalRecProducer::produce(framework::Event& event) {
   std::vector<ldmx::EcalHit> ecalRecHits;
   auto ecalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
-  int numDigiHits = ecalDigis.getNumDigis();
   // loop through digis
-  for (unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++) {
-    auto digi = ecalDigis.getDigi(iDigi);
+  for (auto digi : ecalDigis) {
 
     // ID from first digi sample
     //  assuming rest of samples have same ID
@@ -61,7 +59,7 @@ void EcalRecProducer::produce(framework::Event& event) {
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?
-    double timeRelClock25 = digi.begin()->toa() * (clock_cycle_ / 1024);  // ns
+    double timeRelClock25 = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
     double hitTime = timeRelClock25;
 
     // get the estimated charge deposited from digi samples
@@ -101,32 +99,11 @@ void EcalRecProducer::produce(framework::Event& event) {
       //  p[6] = 87.7649 shape paramter - time of down slope relative to shape
       //  fit
       // These measurements can be used to fit the pulse shape if TOT is not
-      // available
+      // available. For now, we simply take the measurement of the SOI as the
+      // peak amplitude.
 
-      TH1F measurements("measurements", "measurements", 10. * clock_cycle_, 0.,
-                        10. * clock_cycle_);
-
-      double maxMeas{0.};
-      int numWholeClocks{0};
-      for (auto it = digi.begin(); it < digi.end(); it++) {
-        double amplitude_fC = (it->adc_t() - the_conditions.adcPedestal(id)) *
-                              the_conditions.adcGain(id);
-        double time =
-            numWholeClocks * clock_cycle_;  //+ offestWithinClock; //ns
-        measurements.Fill(time, amplitude_fC);
-        if (amplitude_fC > maxMeas) maxMeas = amplitude_fC;
-      }
-
-      if (false) {
-        // fit the voltage measurements with the pulse function
-        //  would need to access the pulse function in HGCROC somehow
-        // voltageMeasurements.Fit( &pulseFunc_ , "QW" );
-        // get the silicon energy from the fitted voltage amplitude in mV
-        // siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
-      } else {
-        // just use the maximum measured voltage
-        charge = maxMeas;
-      }
+      charge = (digi.soi().adc_t() - the_conditions.adcPedestal(id)) *
+               the_conditions.adcGain(id);
 
       /* debug printout
       std::cout << "ADC Mode -> " << charge << " fC";
