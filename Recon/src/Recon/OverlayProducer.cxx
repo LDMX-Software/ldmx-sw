@@ -4,6 +4,9 @@
 namespace recon {
 
 void OverlayProducer::configure(framework::config::Parameters &parameters) {
+
+  params_ = parameters;  
+
   ldmx_log(debug) << "Running configure() ";
 
   // name of file containing events to be overlaid, and a list of collections to
@@ -395,7 +398,7 @@ void OverlayProducer::onProcessStart() {
   }
 
   // replace by this line once the corresponding tweak to EventFile is ready:
-  overlayFile_ = std::make_unique<framework::EventFile>(overlayFileName_, true);
+  overlayFile_ = std::make_unique<framework::EventFile>(params_, overlayFileName_, true);
   overlayFile_->setupEvent(&overlayEvent_);
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
