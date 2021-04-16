@@ -2,6 +2,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('target_en')
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
+import LDMX.Ecal.EcalGeometry
 p.sequence = [
     target.electro_nuclear( 
         'ldmx-det-v12' , 

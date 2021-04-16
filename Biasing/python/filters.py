@@ -30,7 +30,7 @@ class TargetBremFilter(simcfg.UserAction):
     """
 
     def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
-        super().__init__("target_brem_filter", "ldmx::TargetBremFilter")
+        super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -49,7 +49,7 @@ class EcalProcessFilter(simcfg.UserAction):
     """
 
     def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'ldmx::EcalProcessFilter')
+        super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
 
         from LDMX.Biasing import include
         include.library()
@@ -66,7 +66,7 @@ class TargetENFilter(simcfg.UserAction) :
     """
 
     def __init__(self,recoil_thresh = 2500.) :
-        super().__init__("target_en_process_filter","ldmx::TargetENProcessFilter")
+        super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
@@ -77,30 +77,46 @@ class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
     def __init__(self) :
-        super().__init__("target_process_filter", "ldmx::TargetProcessFilter")
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
 
         self.process = 'photonNuclear'
 
-class DarkBremFilter(simcfg.UserAction):
+class EcalDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 
     Parameters
     ----------
-    vol : str
-        Geant4 name of volume to filter for
+    minApEnergy : float
+        Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,vol='target'):
-        super().__init__('%s_ap_filter'%vol,'ldmx::DarkBremFilter')
+    def __init__(self,minApEnergy):
+        super().__init__('ecal_db_filter','biasing::EcalDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.volume = vol
-        self.verbosity = 0
+        self.threshold = minApEnergy
+
+class TargetDarkBremFilter(simcfg.UserAction):
+    """ Configuration for filtering A' events
+
+    Parameters
+    ----------
+    minApEnergy : float
+        Minimum A' energy to keep the event [MeV]
+    """
+
+    def __init__(self,minApEnergy):
+        super().__init__('target_db_filter','biasing::TargetDarkBremFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = minApEnergy
 
 class TaggerVetoFilter(simcfg.UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
@@ -112,56 +128,43 @@ class TaggerVetoFilter(simcfg.UserAction):
     """
     
     def __init__(self,thresh=3800.) :
-        super().__init__('tagger_veto_filter','ldmx::TaggerVetoFilter')
+        super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
 
-class TrackProcessFilter(simcfg.UserAction):
-    """ Configuration used to tag all tracks produced via the given process to persist them to the event.
+class PrimaryToEcalFilter(simcfg.UserAction) :
+    """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
 
     Parameters
     ----------
-    process_name : str
-        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced. 
+    thresh : float
+        Minimum energy [MeV] that primary electron should have when hitting ecal
     """
 
-    def __init__(self,process_name) :
-        super().__init__('%s_track_filter'%process_name, 'ldmx::TrackProcessFilter' )
+    def __init__(self,thresh) :
+        super().__init__('primary_to_ecal_with_%d'%thresh,'biasing::PrimaryToEcalFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.process = process_name
+        self.threshold = thresh
 
-    def photo_nuclear() :
-        """ Configuration used to tag all photo-nuclear tracks to persist them to the event. 
-    
-        Return
-        ------
-        Instance of TrackProcessFilter configured to tag photo-nuclear tracks.
-        """
-        return TrackProcessFilter('photonNuclear')
+class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
+    """ Configuration used to reject events that don't have enough energy given to the input process.
 
-    def electro_nuclear() :
-        """ Configuration used to tag all electro-nuclear tracks to persist them to the event. 
-    
-        Return
-        ------
-        Instance of TrackProcessFilter configured to tag electro-nuclear tracks.
-    
-        """
-        return TrackProcessFilter('electronNuclear')
+    Parameters
+    ----------
+    thresh : float
+        Minimum energy [MeV] that the kinetic energy of the products needs to sum to
+    """
 
-    def dark_brem() :
-        """ Configuration used to tag all dark brem tracks to persist them to the event. 
-    
-        Return
-        ------
-        Instance of TrackProcessFilter configured to tag dark brem tracks.
-    
-        """
-        return TrackProcessFilter('eDBrem')
+    def __init__(self,thresh) :
+        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'biasing::MidShowerNuclearBkgdFilter')
 
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = thresh

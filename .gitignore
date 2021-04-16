@@ -1,3 +1,7 @@
+
+# Byte-compiled files
+__pycache__/
+
 .cproject
 .project
 .settings
@@ -12,3 +16,5 @@
 /build*
 /install*
 Version.h
+EventDisplay/include/EventDisplay/EventDisplayDef.h
+EventDisplay/include/EventDisplay/EventDisplayLinkDef.h

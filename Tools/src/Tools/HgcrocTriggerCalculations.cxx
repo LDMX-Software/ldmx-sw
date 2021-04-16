@@ -1,19 +1,18 @@
 #include "Tools/HgcrocTriggerCalculations.h"
 
-#include "Event/HgcrocTrigDigi.h"
 #include <iostream>
+#include "Recon/Event/HgcrocTrigDigi.h"
 
 namespace ldmx {
 
 HgcrocTriggerConditions::HgcrocTriggerConditions(
-    const IntegerTableCondition &ict, bool validate)
+    const conditions::IntegerTableCondition &ict, bool validate)
     : ict_{ict} {
-  if (!validate)
-    return;
+  if (!validate) return;
   if (ict_.getColumnCount() < 5) {
-    EXCEPTION_RAISE("ConditionsException",
-                    "Inconsistent condition for HgcrocTriggerConditions :" +
-                        ict.getName());
+    EXCEPTION_RAISE(
+        "ConditionsException",
+        "Inconsistent condition for HgcrocTriggerConditions :" + ict.getName());
   }
   std::vector<std::string> expected_colnames;
   expected_colnames.push_back("ADC_PEDESTAL");
@@ -31,15 +30,13 @@ HgcrocTriggerConditions::HgcrocTriggerConditions(
   }
 }
 
-unsigned int
-HgcrocTriggerCalculations::singleChannelCharge(int adc, int tot, int adc_ped,
-                                               int adc_thresh, int tot_ped,
-                                               int tot_thresh, int tot_gain) {
-
+unsigned int HgcrocTriggerCalculations::singleChannelCharge(
+    int adc, int tot, int adc_ped, int adc_thresh, int tot_ped, int tot_thresh,
+    int tot_gain) {
   unsigned int charge_adc = 0;
 
   if (adc > (adc_ped + adc_thresh))
-    charge_adc = adc - adc_ped; // otherwise zero
+    charge_adc = adc - adc_ped;  // otherwise zero
 
   unsigned int eff_tot{0};
   if (tot > tot_thresh && tot > tot_ped)
@@ -56,7 +53,7 @@ HgcrocTriggerCalculations::singleChannelCharge(int adc, int tot, int adc_ped,
 }
 
 HgcrocTriggerCalculations::HgcrocTriggerCalculations(
-    const IntegerTableCondition &ict)
+    const conditions::IntegerTableCondition &ict)
     : conditions_{ict, true} {}
 
 void HgcrocTriggerCalculations::addDigi(unsigned int id, unsigned int tid,
@@ -89,9 +86,9 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
   for (auto ilinear : linearCharge_) {
     unsigned int lcharge = ilinear.second;
     lcharge = lcharge >> shift;
-    uint8_t ccharge = HgcrocTrigDigi::linear2Compressed(lcharge);
+    uint8_t ccharge = ldmx::HgcrocTrigDigi::linear2Compressed(lcharge);
     compressedCharge_[ilinear.first] = ccharge;
   }
 }
 
-} // namespace ldmx
+}  // namespace ldmx

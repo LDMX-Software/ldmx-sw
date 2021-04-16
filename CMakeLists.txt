@@ -53,9 +53,8 @@ clear_cache_variables()
 # By default, all modules are built.
 option(BUILD_RECON_ONLY     "Build the modules necessary to run the reconstruction." OFF)
 option(BUILD_SIM_ONLY       "Build the modules necessary to run the simulation."     OFF)
-option(BUILD_EVE_ONLY       "Build the event display only."                          OFF)
 
-if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY AND NOT BUILD_EVE_ONLY) 
+if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY) 
     set(BUILD_ALL ON)
     message(STATUS "Building all modules.")
 endif()
@@ -65,9 +64,11 @@ endif()
 # here.
 set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 
-add_subdirectory(Event)
+add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
+add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
+add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -82,6 +83,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     message(STATUS "Building the modules necessary for the reconstruction.")
 
+    # Conditions services
+    add_subdirectory(Conditions)
+
     # The tools module contains tools generic enough to be used by other modules.
     add_subdirectory(Tools)
 
@@ -89,14 +93,10 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     add_subdirectory(Ecal)
 
     # Currently, this module contains processors from several subsystems.
-    add_subdirectory(EventProc)
-
-    # Conditions services
-    add_subdirectory(Conditions)
+    add_subdirectory(Recon)
 
     # Data quality management plots.
     add_subdirectory(DQM)
-
 
     # This module contains HCal reconstruction code.
     add_subdirectory(Hcal)
@@ -124,17 +124,13 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-if(BUILD_EVE_ONLY)
-    
-    #message(STATUS "Building the event display.")
+# Build all test.  The test are assumed to reside inside of the directory 
+# "test" within each module.  The main
+build_test()
+
+# The EventDisplay is stand-a-lone and _needs_ to be after everything else
+# so that it can clear the cache variables and construct its own dictionary.
+option(BUILD_EVE "Build the event display as well as other parts." OFF)
+if(BUILD_EVE)
     add_subdirectory(EventDisplay)
-
-endif()
-
-
-# If enabled, build all test.  The test are assumed to reside inside of the
-# directory "test" within each module.  The main
-option(BUILD_TESTS "Build and link the run-test executable." OFF)
-if(BUILD_TESTS)
-    build_test()
 endif()
