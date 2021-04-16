@@ -1,10 +1,3 @@
-/**
- * @file TrigScintHitDQM.cxx
- * @brief Analyzer used for TrigScint Digi DQM.
- * @author Omar Moreno, SLAC National Accelerator
- * @author Lene Kristian Bryngemark, Stanford University
- */
-
 #include "DQM/TrigScintHitDQM.h"
 
 namespace dqm {
@@ -73,7 +66,7 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
   int noiseHitCount = 0;
 
   ldmx_log(debug) << "Looping over hits in " << hitCollectionName_;
-  
+
   // Loop through all TrigScint hits in the event
 
   for (const ldmx::TrigScintHit &hit : TrigScintHits) {

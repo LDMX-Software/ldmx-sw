@@ -1,10 +1,3 @@
-/**
- * @file TrigScintTrackDQM.h
- * @brief Analyzer used for TrigScint TrackDQM.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Lene Kristian Bryngemark, Stanford University
- */
-
 #ifndef _DQM_TRIGSCINTTRACK_DQM_H_
 #define _DQM_TRIGSCINTTRACK_DQM_H_
 
