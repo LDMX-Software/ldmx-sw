@@ -30,7 +30,6 @@
 
 // Forward declarations
 class G4Event;
-class TRandom3;
 
 namespace simcore {
 
@@ -89,9 +88,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
  private:
   /// Manager of all generators used by the event
   PluginFactory& manager_;
-
-  /// Random number generator
-  std::unique_ptr<TRandom3> random_;
 
   /// The parameters used to configure the primary generator of choice
   framework::config::Parameters parameters_;
