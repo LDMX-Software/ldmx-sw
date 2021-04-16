@@ -109,6 +109,12 @@ class HcalRecProducer : public framework::Producer {
   mutable TGraph correctionAmpl_;
   mutable TGraph correctionTOA_;
 
+  /// Minimum amplitude fraction to apply amplitude correction
+  double minAmplFraction_;
+
+  /// Minimum amplitude to apply TOA correction
+  double minAmpl_;
+
   /// Depth of ADC buffer.
   int nADCs_;
 
