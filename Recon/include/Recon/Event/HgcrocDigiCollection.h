@@ -30,6 +30,14 @@ namespace ldmx {
  * be the same for all channels.
  *
  * Each digi corresponds to one channel ID and numSamplesPerDigi_ samples.
+ *
+ * A custom iterator class and begin() and end() methods are also implemented
+ * so that a user can loop through this collection similar to any other 
+ * container in C++.
+ *
+ *  for (auto digi : digi_collection) {
+ *    // digi is of type HgcrocDigi
+ *  }
  */
 class HgcrocDigiCollection {
  public:
@@ -388,6 +396,69 @@ class HgcrocDigiCollection {
    * @param[in] digi list of new samples to add
    */
   void addDigi(unsigned int id, const std::vector<Sample>& digi);
+
+ public:
+  /**
+   * iterator class so we can do range-based loops over digi collections
+   *
+   * We inherit from the standard iterator class and tag this iterator
+   * as one that de-references to an HgcrocDigi.
+   *
+   * Internally, we are merely keeping track of the index of the digi
+   * in the collection and only getting the digi when the iterator is
+   * asked to de-reference.
+   */
+  class iterator
+      : public std::iterator<std::input_iterator_tag, HgcrocDigi, long> {
+   public:
+    /// Connect the parent collection with an index to this iterator
+    explicit iterator(HgcrocDigiCollection& c, long index = 0)
+        : coll_{c}, digi_index_{index} {}
+    /// Increment the digi index and return the iterator afterwards
+    iterator& operator++() {
+      digi_index_++;
+      return *this;
+    }
+    /// Increment the digi index and return the iterator before
+    iterator operator++(int) {
+      iterator retval = *this;
+      ++(*this);
+      return retval;
+    }
+    /// Check if two iterators are on the same index
+    bool operator==(iterator other) const {
+      return digi_index_ == other.digi_index_;
+    }
+    /// Check if two iterators are not on the same index
+    bool operator!=(iterator other) const { return !(*this == other); }
+    /**
+     * De-reference this iterator by using the parent collection to get the 
+     * actual digi at the index
+     */
+    const HgcrocDigi operator*() const { return coll_.getDigi(digi_index_); }
+
+   private:
+    /// the index of the digi this iterator represents
+    long digi_index_{0};
+    /// the parent collection this iterator is looping over
+    HgcrocDigiCollection& coll_;
+  };  // iterator
+
+ public:
+  /**
+   * The beginning of this collection.
+   *
+   * We just point the user to the zero'th entry.
+   */
+  iterator begin() {return iterator(*this,0);}
+
+  /**
+   * The end of this collection
+   *
+   * The end of the collection is the number
+   * of digis stored in it.
+   */
+  iterator end() {return iterator(*this,getNumDigis()); }
 
  private:
   /** Mask for lowest order bit in an int */
