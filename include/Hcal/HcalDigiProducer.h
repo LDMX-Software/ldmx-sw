@@ -65,20 +65,11 @@ class HcalDigiProducer : public framework::Producer {
   /// Time interval for chip clock in ns
   double clockCycle_;
 
-  /// The gain in ADC units per MeV.
-  double gain_;
-
-  /// The pedestal in ADC units
-  double pedestal_;
-
   /// Depth of ADC buffer.
   int nADCs_;
 
   /// Index for the Sample Of Interest in the list of digi samples
   int iSOI_;
-
-  /// Readout threshold [ADCs]
-  double readoutThreshold_;
 
   /// Conversion from energy in MeV to voltage in mV
   double MeV_;
