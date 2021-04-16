@@ -33,7 +33,7 @@ static const double MeV_per_fC = MIP_SI_ENERGY / (37 * 0.162);
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE = 2.;
+static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.025;
 
 /**
  * Maximum percent error that a single hit can be
@@ -44,7 +44,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE = 2.;
  * "simulated" (input into digitizer) and the
  * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE = 10.;
+static const double MAX_ENERGY_PERCENT_ERROR_TP = 0.15;
 
 /**
  * Maximum absolute error that a single hit
@@ -55,7 +55,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE = 10.;
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = MIP_SI_ENERGY / 2;
+static const double MAX_ENERGY_ERROR_DAQ = MIP_SI_ENERGY / 2;
 
 /**
  * Maximum absolute error that a single hit
@@ -66,7 +66,7 @@ static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE = MIP_SI_ENERGY / 2;
  * "simulated" (input into digitizer) and the
  * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_ERROR_TP_ADC_MODE = 2 * MIP_SI_ENERGY;
+static const double MAX_ENERGY_ERROR_TP = 2 * MIP_SI_ENERGY;
 
 /**
  * Number of sim hits to create.
@@ -85,6 +85,61 @@ static const int NUM_TEST_SIM_HITS = 2000;
  * for your viewing?
  */
 static const bool NTUPLIZE_ENERGIES = true;
+
+/**
+ * Our custom energy checker which makes sure that
+ * the input energy is "close enough" to the truth
+ * energy.
+ */
+class isCloseEnough : public Catch::MatcherBase<double> {
+ private:
+  /// correct (sim-level) energy [MeV]
+  double truth_;
+
+  /// maximum absolute energy difference [MeV]
+  const double max_absolute_diff_;
+
+  /// maximum relative energy difference
+  const double max_relative_diff_;
+
+ public:
+  /**
+   * Constructor
+   *
+   * Sets the truth level energy
+   */
+  isCloseEnough(double const &truth, double const &abs_diff,
+                double const &rel_diff)
+      : truth_{truth},
+        max_absolute_diff_{abs_diff},
+        max_relative_diff_{rel_diff} {}
+
+  /**
+   * Performs the test for this matcher
+   * 
+   * We check that the input energy is **either**
+   * within the absolute difference or the relative
+   * difference.
+   */
+  bool match(const double& daq_energy) const override {
+    return (
+        daq_energy == Approx(truth_).epsilon(max_relative_diff_)
+        or
+        daq_energy == Approx(truth_).margin(max_absolute_diff_)
+        );
+  }
+
+  /**
+   * Describes matcher for printing to terminal.
+   */
+  virtual std::string describe() const override {
+    std::ostringstream ss;
+    ss << "is within an absolute difference of "
+      << max_absolute_diff_ << "MeV OR a relative difference of "
+      << max_relative_diff_ << " with " << truth_ << " MeV.";
+    return ss.str();
+  }
+};
 
 /**
  * @class FakeSimHits
@@ -219,15 +274,9 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     CHECK_FALSE(hit.isNoise());
     CHECK(id.raw() == simHits.at(0).getID());
 
-    // define target energy by using the settings at the top
-    auto target_daq_energy =
-        Approx(truth_energy)
-            .epsilon(MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE / 100);
-    if (is_in_adc_mode)
-      target_daq_energy =
-          Approx(truth_energy).margin(MAX_ENERGY_ERROR_DAQ_ADC_MODE);
-
-    CHECK(hit.getAmplitude() == target_daq_energy);
+    double daq_energy{hit.getAmplitude()};
+    CHECK_THAT(daq_energy,
+        isCloseEnough(truth_energy,MAX_ENERGY_ERROR_DAQ,MAX_ENERGY_PERCENT_ERROR_DAQ));
     ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
     const auto trigDigis{
@@ -237,14 +286,8 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     auto trigDigi = trigDigis.at(0);
     float tp_energy = 8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
 
-    auto target_tp_energy =
-        Approx(truth_energy)
-            .epsilon(MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE / 100);
-    if (is_in_adc_mode)
-      target_tp_energy =
-          Approx(truth_energy).margin(MAX_ENERGY_ERROR_TP_ADC_MODE);
-
-    CHECK(tp_energy == target_tp_energy);
+    CHECK_THAT(tp_energy ,
+        isCloseEnough(truth_energy,MAX_ENERGY_ERROR_TP,MAX_ENERGY_PERCENT_ERROR_TP));
     ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
     ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
     ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());
