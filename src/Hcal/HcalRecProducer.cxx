@@ -6,6 +6,7 @@
  */
 
 #include "Hcal/HcalRecProducer.h"
+
 #include "Hcal/HcalReconConditions.h"
 
 namespace hcal {
@@ -57,6 +58,7 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
     double ampl_tm1 = pulseFunc_.Eval(t - clock_cycle_);
     if (ampl_tm1 > ampl_t) continue;
     correctionAmpl_.SetPoint(n, ampl_tm1 / ampl_t, ampl_t);
+    if (n == 0) minAmplFraction_ = ampl_tm1 / ampl_t;
     n++;
   }
 
@@ -72,13 +74,14 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
         fabs(pulseFunc_.GetX(toaThreshold, (double)nADCs_ * clock_cycle_ * -1,
                              (double)nADCs_ * clock_cycle_));
     correctionTOA_.SetPoint(n, ampl_t, toa);
+    if (n == 0) minAmpl_ = ampl_t;
     n++;
   }
+
 }
 
-double HcalRecProducer::correctTOA(
-    const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
-    double amplPeak, double pedestal,
+double HcalRecProducer::getTOA(
+    const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double pedestal,
     unsigned int iSOI) {
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
@@ -96,28 +99,25 @@ double HcalRecProducer::correctTOA(
     iADC++;
   }
 
+  // time w.r.t to the peak
+  double toa = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
+
   // time w.r.t to the SOI
-  double toaRelSOI =
-      (2 * maxSample - toaSample - (int)iSOI) * clock_cycle_ - toaRelStartBX;
+  toa += ((int)iSOI - maxSample) * clock_cycle_;
 
-  // now correct TOA using the corrected amplitude in the peak
-  double toaCorr = correctionTOA_.Eval(amplPeak) - toaRelSOI;
-
-  std::cout << "toa peak " << toaRelStartBX << " relSOI " << toaRelSOI << " corr " << toaCorr << std::endl;
-
-  return toaCorr;
+  return toa;
 }
 
 void HcalRecProducer::produce(framework::Event& event) {
-  // Get the Hcal Geometry
+  // get the Hcal Geometry
   const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
-  // Get the reconstruction parameters
+  // get the reconstruction parameters
   HcalReconConditions the_conditions(
       getCondition<conditions::DoubleTableCondition>(
           HcalReconConditions::CONDITIONS_NAME));
-  
+
   std::vector<ldmx::HcalHit> hcalRecHits;
   auto hcalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
@@ -126,7 +126,7 @@ void HcalRecProducer::produce(framework::Event& event) {
   // get sample of interest index
   unsigned int iSOI = hcalDigis.getSampleOfInterestIndex();
 
-  // Loop through digis
+  // loop through digis
   int iDigi = 0;
   while (iDigi < numDigiHits) {
     auto digi_posend = hcalDigis.getDigi(iDigi);
@@ -135,15 +135,15 @@ void HcalRecProducer::produce(framework::Event& event) {
     ldmx::HcalDigiID id_posend(digi_posend.id());
     ldmx::HcalID id(id_posend.section(), id_posend.layer(), id_posend.strip());
 
-    // Position from ID
+    // position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
     double half_total_width = hcalGeometry.getHalfTotalWidth(id.section());
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
-    // Compute distance to the end of the bar
-    // For back Hcal, we take the half of the bar
-    // For side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
+    // compute distance to the end of the bar
+    // for back Hcal, we take the half of the bar
+    // for side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
     // an approximation
     float distance_posend, distance_negend, distance_ecal;
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
@@ -159,7 +159,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       distance_negend = distance_ecal / 2.;
     }
 
-    // Get the estimated voltage and time from digi samples
+    // get the estimated voltage and time from digi samples
     double voltage(0.);
     double voltage_min(0.);
     double hitTime(0.);
@@ -167,51 +167,81 @@ void HcalRecProducer::produce(framework::Event& event) {
     double amplT_posend(0.), amplTm1_posend(0.);
     double amplT_negend(0.), amplTm1_negend(0.);
 
-    // Double readout
+    // double readout
     if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       auto digi_negend = hcalDigis.getDigi(iDigi + 1);
       ldmx::HcalDigiID id_negend(digi_negend.id());
-      
+
       double voltage_posend, voltage_negend;
-
+      double amplT_posend_copy, amplT_negend_copy;
       if (digi_posend.isTOT()) {
-	voltage_posend = (digi_posend.tot() - the_conditions.totPedestal(id_posend)) * the_conditions.totGain(id_posend);
-	voltage_negend = (digi_negend.tot() - the_conditions.totPedestal(id_negend)) * the_conditions.totGain(id_negend);
+        voltage_posend =
+            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
+            the_conditions.totGain(id_posend);
+        voltage_negend =
+            (digi_negend.tot() - the_conditions.totPedestal(id_negend)) *
+            the_conditions.totGain(id_negend);
       } else {
-	amplT_posend   = digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
-	amplTm1_posend = digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
-        amplT_negend   = digi_negend.soi().adc_t() - the_conditions.adcPedestal(id_negend);
-        amplTm1_negend = digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
+        amplT_posend =
+            digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
+        amplTm1_posend =
+            digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
+        amplT_negend =
+            digi_negend.soi().adc_t() - the_conditions.adcPedestal(id_negend);
+        amplTm1_negend =
+            digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
 
-        // Correct amplitude
-        amplT_posend *= correctionAmpl_.Eval(amplTm1_posend / amplT_posend);
-        amplT_negend *= correctionAmpl_.Eval(amplTm1_negend / amplT_negend);
+        amplT_posend_copy = amplT_posend;
+        amplT_negend_copy = amplT_negend;
 
-        // Set voltage
+        // correct amplitude (amplitude fractions from both ends need to be
+        // above the boundary of the correction)
+        if (amplTm1_posend / amplT_posend > minAmplFraction_ &&
+            amplTm1_negend / amplT_negend > minAmplFraction_) {
+          amplT_posend *= correctionAmpl_.Eval(amplTm1_posend / amplT_posend);
+          amplT_negend *= correctionAmpl_.Eval(amplTm1_negend / amplT_negend);
+        }
+
+        // set voltage
         voltage_posend = amplT_posend * the_conditions.adcGain(id_posend);
         voltage_negend = amplT_negend * the_conditions.adcGain(id_negend);
       }
 
-      // Correct TOA
-      double TOA_posend = correctTOA(digi_posend, amplT_posend, the_conditions.adcPedestal(id_posend), iSOI);
-      double TOA_negend = correctTOA(digi_negend, amplT_negend, the_conditions.adcPedestal(id_negend), iSOI);
-      std::cout << " TOA pos end " << TOA_posend << " neg end " << TOA_negend << std::endl;
-      
-      // Get x(y) coordinate from TOA measurement = (dt*v/2)
+      // get TOA
+      double TOA_posend =
+          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
+      double TOA_negend =
+          getTOA(digi_negend, the_conditions.adcPedestal(id_negend), iSOI);
+
+      // get sign of position along the bar
+      int position_bar_sign = (TOA_posend - TOA_negend) > 0 ? 1 : -1;
+
+      double TOA_posend_copy = TOA_posend;
+      double TOA_negend_copy = TOA_negend;
+
+      // correct TOA
+      // amplitudes from both ends need to be above the boundary of the
+      // correction otherwise, one TOA gets corrected and the other does not,
+      // which results in a large TOA difference and an out-of-bounds position
+      if (amplT_posend > minAmpl_ && amplT_negend > minAmpl_) {
+        TOA_posend = correctionTOA_.Eval(amplT_posend) - TOA_posend;
+        TOA_negend = correctionTOA_.Eval(amplT_negend) - TOA_negend;
+      }
+
+      // get x(y) coordinate from TOA measurement = (dt*v/2)
       // if time_posend < time_negend: position is positive
       double v =
           299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
-      double pos = (TOA_posend - TOA_negend) * v / 2;
-      // correction inverts signs:
-      pos *= -1;
+      double position_bar =
+          position_bar_sign * fabs(TOA_posend - TOA_negend) * v / 2;
 
-      // Reverse voltage attenuation
-      // if position is positive, then the positive end will have less
-      // attenuation than the negative end
+      // reverse voltage attenuation
+      // if position along the bar is positive, then the positive end will have
+      // less attenuation than the negative end
       double att_posend =
-          exp(-1. * ((distance_posend - pos) / 1000.) / attlength_);
+          exp(-1. * ((distance_posend - position_bar) / 1000.) / attlength_);
       double att_negend =
-          exp(-1. * ((distance_negend + pos) / 1000.) / attlength_);
+          exp(-1. * ((distance_negend + position_bar) / 1000.) / attlength_);
 
       // set voltage
       voltage = (voltage_posend / att_posend + voltage_negend / att_negend) /
@@ -219,11 +249,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min =
           std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
-      // set position
+      // set position along the bar
       if ((id_posend.layer() % 2) == 1) {
-        position.SetX(pos);
+        position.SetX(position_bar);
       } else {
-        position.SetY(pos);
+        position.SetY(position_bar);
       }
 
       // set hit time
@@ -244,14 +274,18 @@ void HcalRecProducer::produce(framework::Event& event) {
 
         // convert the time over threshold into a total energy deposited in the
         // bar (time over threshold [ns] - pedestal) * gain
-	
-	voltage_i = (digi_posend.tot() - the_conditions.totPedestal(id_posend)) * the_conditions.totGain(id_posend);
+
+        voltage_i =
+            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
+            the_conditions.totGain(id_posend);
 
       } else {
         // ADC mode of readout
         // ADC - voltage measurement at a specific time of the pulse
-        amplT_posend   = digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
-        amplTm1_posend = digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
+        amplT_posend =
+            digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
+        amplTm1_posend =
+            digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
         voltage_i = amplT_posend * the_conditions.adcGain(id_posend);
       }
 
@@ -266,8 +300,12 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage = voltage_i / att;
       voltage_min = voltage_i / att;
 
+      // get TOA
+      double TOA =
+          getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
+
       // correct TOA
-      double TOA = correctTOA(digi_posend, amplT_posend, the_conditions.adcPedestal(id_posend), iSOI);
+      TOA = correctionTOA_.Eval(amplT_posend) - TOA;
 
       // set hit time
       hitTime = TOA;  // ns

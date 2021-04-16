@@ -57,9 +57,9 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   noiseGenerator_->setNoise(
       hgcrocParams.getParameter<double>("noiseRMS"));  // rms noise in mV
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
-  noiseGenerator_->setPedestal(gain*pedestal);  
+  noiseGenerator_->setPedestal(gain * pedestal);
   // threshold for readout in mV
-  noiseGenerator_->setNoiseThreshold(gain*readoutThreshold);
+  noiseGenerator_->setNoiseThreshold(gain * readoutThreshold);
 }
 
 void HcalDigiProducer::produce(framework::Event& event) {
@@ -83,7 +83,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
   }
 
   // Get the Hgcroc Conditions
-  hgcroc_->condition(getCondition<conditions::DoubleTableCondition>("HcalHgcrocConditions"));
+  hgcroc_->condition(
+      getCondition<conditions::DoubleTableCondition>("HcalHgcrocConditions"));
 
   // Get the Hcal Geometry
   const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
