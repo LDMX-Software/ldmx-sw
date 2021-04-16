@@ -1,5 +1,5 @@
-#ifndef _DQM_TRIGSCINTHIT_DQM_H_
-#define _DQM_TRIGSCINTHIT_DQM_H_
+#ifndef _DQM_TRIGSCINTCLUSTER_DQM_H_
+#define _DQM_TRIGSCINTCLUSTER_DQM_H_
 
 //----------//
 //   STL    //
@@ -12,17 +12,17 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/AnalysisUtils.h"
-#include "TrigScint/Event/TrigScintHit.h"
+#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace dqm {
 
-class TrigScintHitDQM : public framework::Analyzer {
+class TrigScintClusterDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  TrigScintHitDQM(const std::string &name, framework::Process &process);
+  TrigScintClusterDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~TrigScintHitDQM();
+  ~TrigScintClusterDQM();
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -42,11 +42,12 @@ class TrigScintHitDQM : public framework::Analyzer {
   void onProcessStart();
 
  private:
-  /** Name of trigger pad hit  collection. */
-  std::string hitCollectionName_{"TriggerPadUpDigiHits"};
+  /** Name of trigger pad cluster  collection. */
+  std::string clusterCollectionName_{"TriggerPadUpClusters"};
   std::string padName_{"_up"};
+  std::string passName_{""};
 };
 
 }  // namespace dqm
 
-#endif  // _DQM_TRIGSCINTHIT_DQM_H_
+#endif  // _DQM_TRIGSCINTCLUSTER_DQM_H_
