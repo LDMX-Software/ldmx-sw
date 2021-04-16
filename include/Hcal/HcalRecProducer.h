@@ -104,9 +104,26 @@ class HcalRecProducer : public framework::Producer {
   /// Strip attenuation length [m]
   double attlength_;
 
-  /// Pulse function and correction graphs
+  /// Pulse function
   mutable TF1 pulseFunc_;
+
+  /**
+   * Correction to the pulse's measured amplitude at the peak.
+   * The correction is calculated by comparing the amplitude at the sample time
+   *(T) over its correct value (1.0) with the ratio between sample T and sample
+   *T+25ns.
+   **/
   mutable TGraph correctionAmpl_;
+
+  /**
+   * Correction to the measured TOA relative to the peak.
+   * This corrects for the time-walk effect where the time that the front edge
+   * of the pulse crosses the TOA threshold walks higher in time as the pulse's
+   * amplitude gets smaller. The correction is calculated by comparing the TOA
+   * measured relative to the peak (i.e. the time at which the pulse crosses the
+   * TOA threshold) with the amplitude at the sample time (T) over its correct
+   * value (1.0).
+   */
   mutable TGraph correctionTOA_;
 
   /// Minimum amplitude fraction to apply amplitude correction
