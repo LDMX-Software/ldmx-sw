@@ -25,6 +25,12 @@
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
+//---------//
+//  ROOT   //
+//---------//
+#include "TF1.h"
+#include "TGraph.h"
+
 namespace hcal {
 
 /**
@@ -50,6 +56,12 @@ class HcalRecProducer : public framework::Producer {
    * Grabs configure parameters from the python config file.
    */
   void configure(framework::config::Parameters&) final override;
+
+  /**
+   * Gets Time of Arrival with respect to the SOI.
+   */
+  double getTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
+                double pedestal, unsigned int iSOI);
 
   /**
    * Produce HcalHits and put them into the event bus using the
@@ -89,14 +101,54 @@ class HcalRecProducer : public framework::Producer {
   /// Voltage by average MIP
   double voltage_per_mip_;
 
-  /// Gain [mv/ADC]
-  double gain_;
-
-  /// Pedestal [ADC units]
-  double pedestal_;
-
   /// Strip attenuation length [m]
   double attlength_;
+
+  /// Pulse function
+  mutable TF1 pulseFunc_;
+
+  /**
+   * Correction to the pulse's measured amplitude at the peak.
+   * The correction is calculated by comparing the amplitude at the sample time
+   *(T) over its correct value (1.0) with the ratio between sample T and sample
+   *T+25ns.
+   **/
+  mutable TGraph correctionAmpl_;
+
+  /**
+   * Correction to the measured TOA relative to the peak.
+   * This corrects for the time-walk effect where the time that the front edge
+   * of the pulse crosses the TOA threshold walks higher in time as the pulse's
+   * amplitude gets smaller. The correction is calculated by comparing the TOA
+   * measured relative to the peak (i.e. the time at which the pulse crosses the
+   * TOA threshold) with the amplitude at the sample time (T) over its correct
+   * value (1.0).
+   */
+  mutable TGraph correctionTOA_;
+
+  /// Minimum amplitude fraction to apply amplitude correction
+  double minAmplFraction_;
+
+  /// Minimum amplitude to apply TOA correction
+  double minAmpl_;
+
+  /// Depth of ADC buffer.
+  int nADCs_;
+
+  /// Rate of Up Slope in Pulse Shape [1/ns]
+  double rateUpSlope_;
+
+  /// Time of Up Slope relative to Pulse Shape Fit [ns]
+  double timeUpSlope_;
+
+  /// Rate of Down Slope in Pulse Shape [1/ns]
+  double rateDnSlope_;
+
+  /// Time of Down Slope relative to Pulse Shape Fit [ns]
+  double timeDnSlope_;
+
+  /// Time of Peak relative to pulse shape fit [ns]
+  double timePeak_;
 };
 }  // namespace hcal
 
