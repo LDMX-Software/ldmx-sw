@@ -18,6 +18,7 @@ p.histogramFile = 'hcal_geometry_test_histo.root'
 # Geometry provider
 import LDMX.Hcal.HcalGeometry
 import LDMX.Ecal.EcalGeometry
+from LDMX.Hcal import hcal_hardcoded_conditions
 
 # HCal digi
 hcalDigis = digi.HcalDigiProducer()
