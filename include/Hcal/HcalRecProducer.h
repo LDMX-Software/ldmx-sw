@@ -58,10 +58,10 @@ class HcalRecProducer : public framework::Producer {
   void configure(framework::config::Parameters&) final override;
 
   /**
-   * Corrects Time of Arrival.
+   * Gets Time of Arrival with respect to the SOI.
    */
-  double correctTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
-                    double amplPeak, double pedestal, unsigned int iSOI);
+  double getTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
+                double pedestal, unsigned int iSOI);
 
   /**
    * Produce HcalHits and put them into the event bus using the
@@ -126,7 +126,6 @@ class HcalRecProducer : public framework::Producer {
 
   /// Time of Peak relative to pulse shape fit [ns]
   double timePeak_;
-
 };
 }  // namespace hcal
 
