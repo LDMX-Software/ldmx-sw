@@ -12,37 +12,57 @@ project(EventDisplay VERSION 2.1.0
 find_package (Python3 COMPONENTS Interpreter Development)
 
 # Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
+find_package(ROOT 6.20 CONFIG REQUIRED)
+
+# Clear any variables cached during previous configuration cycles. 
+clear_cache_variables()
 
 # Generate the ROOT dictionary.  The following allows the use of the macro 
 # used to generate the dictionary. 
 include("${ROOT_DIR}/RootMacros.cmake")
 
+# Register the EventDisplay class with the ROOT dictionary
+register_event_object(module_path "EventDisplay" namespace "eventdisplay"
+                      class "Display" type "dict_only")
+
+build_event_bus(path ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h)
+
+build_dict(name "EventDisplay" namespace ldmx 
+  template ${LDMX_SW_SOURCE_DIR}/Framework/include/Framework/EventLinkDef.h.in)
+
 # Unfortunately, the Event headers need to be included globably for the 
 # dictionary to be generated correctly.
-include_directories(${PROJECT_SOURCE_DIR}/include)
+#include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${LDMX_SW_SOURCE_DIR}/DetDescr/include)
 include_directories(${include_paths})
+
+# Copy the files needed to generate the dictionary over to the installation
+# directory.  This is needed so the dictionary can be built even when the source
+# code is deleted.
+file(COPY ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h
+          ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayLinkDef.h
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/include/EventDisplay/)
 
 # Generate the ROOT dictionary
 root_generate_dictionary(EventDisplayDic ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h 
     LINKDEF ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayLinkDef.h)
 
+# When issues the make clean command, remove both the EventDef and EventLinkDef
+# files.
+set_directory_properties(
+  PROPERTIES
+    ADDITIONAL_MAKE_CLEAN_FILES
+    "${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h;${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayLinkDef.h"
+)
+
 # Install ROOT pcm file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDisplayDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Find all of the source files we want to add to the Event library
-file(GLOB EVENT_DISPLAY_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/EventDisplay/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/EventDisplay/[a-zA-Z]*.cxx)
 
-# Create the Event target
-add_library(EventDisplay SHARED EventDisplayDic.cxx ${EVENT_DISPLAY_SRC_FILES})
-
-# Setup the include directories 
-target_include_directories(EventDisplay PUBLIC ${PROJECT_SOURCE_DIR}/include/)
-
-# Setup the libraries to link against 
-target_link_libraries(EventDisplay PUBLIC
-    Python3::Python
+setup_library(module EventDisplay
+  dependencies Python3::Python
     ROOT::Core
     ROOT::Rint
     ROOT::Geom
@@ -50,24 +70,15 @@ target_link_libraries(EventDisplay PUBLIC
     ROOT::Eve
     DetDescr::DetDescr
     Framework::Framework
+    SimCore::Event
+    Hcal::Event
+    Ecal::Event
+    sources EventDisplayDic.cxx
+    ${SRC_FILES}
 )
-
-# Define an alias 
-add_library(DARK::EventDisplay ALIAS EventDisplay)
-
-# Install the libraries and headers
-install(TARGETS EventDisplay
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/EventDisplay 
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-
+  
 # Add the event display executable
-add_executable(ldmx-eve ${PROJECT_SOURCE_DIR}/src/EventDisplay/ldmx_eve.cxx)
+add_executable(eve ${PROJECT_SOURCE_DIR}/src/EventDisplay/ldmx_eve.cxx)
+target_link_libraries(eve PRIVATE EventDisplay::EventDisplay)
+install(TARGETS eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-# Link to the Framework library
-target_link_libraries(ldmx-eve PRIVATE EventDisplay)
-
-# Install the fire executable
-install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

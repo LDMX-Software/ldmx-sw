@@ -9,69 +9,70 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+#include "Framework/Configure/Parameters.h"
 
 // Forward declaration
-class G4Event; 
-class G4Step; 
-class G4Track; 
+class G4Event;
+class G4Step;
+class G4Track;
 
-namespace ldmx {
+namespace biasing {
 
-    /**
-     * @class TargetProcessFilter
-     * @brief Biases Geant4 to only process events where PN reaction occurred in the target
-     */
-    class TargetProcessFilter : public UserAction {
+/**
+ * @class TargetProcessFilter
+ * @brief Biases Geant4 to only process events where PN reaction occurred in the
+ * target
+ */
+class TargetProcessFilter : public simcore::UserAction {
+ public:
+  /**
+   * Class constructor.
+   */
+  TargetProcessFilter(const std::string &name,
+                      framework::config::Parameters &parameters);
 
-        public:
+  /// Destructor
+  ~TargetProcessFilter();
 
-            /**
-             * Class constructor.
-             */
-            TargetProcessFilter(const std::string& name, Parameters& parameters);
+  /**
+   * Implementmthe stepping action which performs the target volume biasing.
+   * @param step The Geant4 step.
+   */
+  void stepping(const G4Step *step) final override;
 
-            /// Destructor
-            ~TargetProcessFilter();
+  /**
+   * End of event action.
+   */
+  void EndOfEventAction(const G4Event *) final override;
 
-            /**
-             * Implementmthe stepping action which performs the target volume biasing.
-             * @param step The Geant4 step.
-             */
-            void stepping(const G4Step* step) final override;
+  /**
+   * Classify a new track which postpones track processing.
+   * Track processing resumes normally if a target PN interaction occurred.
+   * @param aTrack The Geant4 track.
+   * @param currentTrackClass The current track classification.
+   */
+  G4ClassificationOfNewTrack ClassifyNewTrack(
+      const G4Track *aTrack,
+      const G4ClassificationOfNewTrack &currentTrackClass) final override;
 
-            /**
-             * End of event action.
-             */
-            void EndOfEventAction(const G4Event*) final override;
+  /// Retrieve the type of actions this class defines
+  std::vector<simcore::TYPE> getTypes() final override {
+    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
+            simcore::TYPE::STEPPING};
+  }
 
-            /**
-             * Classify a new track which postpones track processing.
-             * Track processing resumes normally if a target PN interaction occurred.
-             * @param aTrack The Geant4 track.
-             * @param currentTrackClass The current track classification.
-             */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
-                    const G4ClassificationOfNewTrack& currentTrackClass) final override;
+ private:
+  /** Pointer to the current track being processed. */
+  G4Track *currentTrack_{nullptr};
 
-            /// Retrieve the type of actions this class defines
-            std::vector< TYPE > getTypes() final override { 
-                return { TYPE::EVENT, TYPE::STACKING, TYPE::STEPPING }; 
-            } 
+  /** Flag indicating if the reaction of intereset occurred. */
+  bool reactionOccurred_{false};
 
-        private:
+  /// The process to bias
+  std::string process_{""};
 
-            /** Pointer to the current track being processed. */
-            G4Track* currentTrack_{nullptr};
+};  
 
-            /** Flag indicating if the reaction of intereset occurred. */
-            bool reactionOccurred_{false};
+}  // namespace biasing
 
-            /// The process to bias
-            std::string process_{""}; 
-
-    }; // ldmx
-
-} // TargetProcessFilter
-
-#endif // BIASING_TARGETPROCESSFILTER_H
+#endif  // BIASING_TARGETPROCESSFILTER_H

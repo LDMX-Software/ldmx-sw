@@ -11,9 +11,9 @@ project(DQM VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
-setup_library(name DQM
+setup_library(module DQM
               dependencies ROOT::Physics 
-                           Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr
+                           Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/DQM)
