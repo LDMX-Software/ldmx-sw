@@ -7,7 +7,8 @@ p = ldmxcfg.Process( 'test_hcal_digis' )
 # Set the maximum number of events
 p.maxEvents = 1000 # should be the same as NUM_TEST_SIM_HITS
 
-# Import the Hcal conditions 
+# Import the Hcal conditions
+from LDMX.Hcal import hcal_hardcoded_conditions
 from LDMX.Hcal import digi
 
 # Set the output file name
