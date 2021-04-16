@@ -447,6 +447,18 @@ class Event {
    */
   std::string getPassName() { return passName_; }
 
+  /** @return The beam electron count. */
+  int getElectronCount() const { return electronCount_; }
+
+  /** 
+   * Set the beam electron count.
+   * 
+   * @param electronCount The beam electron count.
+   */
+  void setElectronCount(const int &electronCount) { 
+    electronCount_ = electronCount; 
+  }
+
  private:
   /**
    * Check if collection should be dropped.
@@ -626,6 +638,9 @@ class Event {
    * The input tree for reading existing data.
    */
   TTree *inputTree_{nullptr};
+
+  /// The total number of electrons in the event
+  int electronCount_{-1}; 
 
   /**
    * Map of names to branches.
