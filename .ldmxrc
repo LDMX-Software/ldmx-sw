@@ -1,0 +1,20 @@
+###############################################################################
+# Default Configuration File for ldmx-sw Container Environment
+#   This file is "sourced" everytime the environment script is sourced.
+#   i.e. 'source scripts/ldmx-env.sh --> ldmx source .ldmxrc'
+#
+#   Think of this file like a '.bashrc'. You can put your custom container
+#   configuration directly in this file. 
+#
+#   Each line starting with '#' is ignored. 
+#   White space is ignored.
+#   All other lines are given to the 'ldmx' command.
+#   This file is sourced in the directory that it is in.
+###############################################################################
+
+# LDMX_BASE should be parent directory of our current directory by default
+base ..
+
+# Use dev/latest container by default
+use dev latest
+
