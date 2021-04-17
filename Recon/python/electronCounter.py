@@ -4,7 +4,7 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
-    from LDMX.EventProc.electronCounter import electronCounter
+    from LDMX.Recon.electronCounter import electronCounter
     p.sequence.append( electronCounter )
 """
 
@@ -14,7 +14,7 @@ class ElectronCounter(ldmxcfg.Producer) :
     """Configuration for the event beam electron counter"""
 
     def __init__(self,nSimBeamElectrons,name="ElectronCounter") :
-        super().__init__(name,'recon::ElectronCounter','EventProc')
+        super().__init__(name,'recon::ElectronCounter','Recon')
 
         self.input_collection = "TriggerPadTracks"
         self.input_pass_name = "truth"
