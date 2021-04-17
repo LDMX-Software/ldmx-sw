@@ -2,12 +2,12 @@
 
 namespace recon {
 
-ElectronCounter::ElectronCounter(const std::string& name, Process& process)
-    : Producer(name, process) {}
+ElectronCounter::ElectronCounter(const std::string& name, framework::Process& process)
+    : framework::Producer(name, process) {}
 
 ElectronCounter::~ElectronCounter() {}
 
-void ElectronCounter::configure(Parameters& parameters) {
+void ElectronCounter::configure(framework::config::Parameters &parameters) {
   inputColl_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputColl_ = parameters.getParameter<std::string>("output_collection");
@@ -31,7 +31,7 @@ void ElectronCounter::configure(Parameters& parameters) {
                   << useSimElectronCount_;
 }
 
-void ElectronCounter::produce(Event& event) {
+void ElectronCounter::produce(framework::Event &event) {
   int nElectrons = -1;
 
   if (useSimElectronCount_) {
@@ -57,8 +57,8 @@ void ElectronCounter::produce(Event& event) {
     // one with clusters, and just call one or the other.
 
     // Get the collection of TS tracks
-    const std::vector<TrigScintTrack> tracks =
-        event.getCollection<TrigScintTrack>(inputColl_, inputPassName_);
+    const std::vector<ldmx::TrigScintTrack> tracks =
+        event.getCollection<ldmx::TrigScintTrack>(inputColl_, inputPassName_);
 
     nElectrons = tracks.size();
     ldmx_log(debug) << "Found " << tracks.size()
