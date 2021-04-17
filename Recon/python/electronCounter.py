@@ -14,7 +14,7 @@ class ElectronCounter(ldmxcfg.Producer) :
     """Configuration for the event beam electron counter"""
 
     def __init__(self,nSimBeamElectrons,name="ElectronCounter") :
-        super().__init__(name,'ldmx::ElectronCounter','EventProc')
+        super().__init__(name,'recon::ElectronCounter','EventProc')
 
         self.input_collection = "TriggerPadTracks"
         self.input_pass_name = "truth"
