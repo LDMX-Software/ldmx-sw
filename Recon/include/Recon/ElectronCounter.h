@@ -7,8 +7,8 @@
 #include "Framework/EventProcessor.h"
 
 //---< TrigScint >---//
-#include "TrigScint/TrigScintCluster.h"
-#include "TrigScint/TrigScintTrack.h"
+#include "TrigScint/Event/TrigScintCluster.h"
+#include "TrigScint/Event/TrigScintTrack.h"
 
 namespace recon {
 
@@ -19,7 +19,7 @@ namespace recon {
  * or truth info on the number of electrons, and set the electron count in the
  * event.
  */
-class ElectronCounter : public Producer {
+class ElectronCounter : public framework::Producer {
  public:
   /**
    * Constructor.
@@ -28,7 +28,7 @@ class ElectronCounter : public Producer {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  ElectronCounter(const std::string &name, Process &process);
+  ElectronCounter(const std::string &name, framework::Process &process);
 
   /// Destructor
   ~ElectronCounter();
@@ -42,14 +42,14 @@ class ElectronCounter : public Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(Event &event);
+  void produce(framework::Event &event) final override;
 
  private:
   /**
