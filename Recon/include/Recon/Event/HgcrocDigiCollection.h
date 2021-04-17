@@ -32,7 +32,7 @@ namespace ldmx {
  * Each digi corresponds to one channel ID and numSamplesPerDigi_ samples.
  *
  * A custom iterator class and begin() and end() methods are also implemented
- * so that a user can loop through this collection similar to any other 
+ * so that a user can loop through this collection similar to any other
  * container in C++.
  *
  *  for (auto digi : digi_collection) {
@@ -432,7 +432,7 @@ class HgcrocDigiCollection {
     /// Check if two iterators are not on the same index
     bool operator!=(iterator other) const { return !(*this == other); }
     /**
-     * De-reference this iterator by using the parent collection to get the 
+     * De-reference this iterator by using the parent collection to get the
      * actual digi at the index
      */
     const HgcrocDigi operator*() const { return coll_.getDigi(digi_index_); }
@@ -450,7 +450,7 @@ class HgcrocDigiCollection {
    *
    * We just point the user to the zero'th entry.
    */
-  iterator begin() {return iterator(*this,0);}
+  iterator begin() { return iterator(*this, 0); }
 
   /**
    * The end of this collection
@@ -458,7 +458,7 @@ class HgcrocDigiCollection {
    * The end of the collection is the number
    * of digis stored in it.
    */
-  iterator end() {return iterator(*this,getNumDigis()); }
+  iterator end() { return iterator(*this, getNumDigis()); }
 
  private:
   /** Mask for lowest order bit in an int */

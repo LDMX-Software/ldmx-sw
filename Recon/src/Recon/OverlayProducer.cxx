@@ -4,8 +4,7 @@
 namespace recon {
 
 void OverlayProducer::configure(framework::config::Parameters &parameters) {
-
-  params_ = parameters;  
+  params_ = parameters;
 
   ldmx_log(debug) << "Running configure() ";
 
@@ -36,8 +35,7 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
                    << "\n\t sim pass name = " << simPassName_
                    << "\n\t overlay pass name = " << overlayPassName_
                    << "\n\t overlayCaloHitCollections = ";
-    for (const auto &coll : caloCollections_)
-      ldmx_log(info) << coll << "; ";
+    for (const auto &coll : caloCollections_) ldmx_log(info) << coll << "; ";
 
     ldmx_log(info) << "\n\t overlayTrackerHitCollections = ";
     for (const std::string &coll : trackerCollections_)
@@ -57,7 +55,6 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
 }
 
 void OverlayProducer::onNewRun(const ldmx::RunHeader &) {
-
   /// set up random seeds
   if (rndm_.get() == nullptr) {
     // not been seeded yet, get it from RNSS
@@ -114,7 +111,7 @@ void OverlayProducer::produce(framework::Event &event) {
                                                                        : false};
 
     // start out by just copying the sim hits, unaltered.
-	auto simHitsCalo =
+    auto simHitsCalo =
         event.getCollection<ldmx::SimCalorimeterHit>(collName, simPassName_);
     // but don't copy ecal hits immediately: for them, wait until overlay
     // contribs have been added. then add everything through the hitmap
@@ -133,26 +130,24 @@ void OverlayProducer::produce(framework::Event &event) {
     // might need the simhits in the hit map.
     if (needsContribsAdded || verbosity_ > 2) {
       for (const ldmx::SimCalorimeterHit &simHit : simHitsCalo) {
-        if (verbosity_ > 2)
-          simHit.Print();
+        if (verbosity_ > 2) simHit.Print();
 
         if (needsContribsAdded) {
           // this copies the hit, its ID and its coordinates directly
           hitMap[simHit.getID()] = simHit;
         }
 
-      } // over calo simhit collection
-    }   // if needContribs or very verbose
+      }  // over calo simhit collection
+    }    // if needContribs or very verbose
 
-  } // over calo collections for sim event
+  }  // over calo collections for sim event
 
   /* ----------- now do the same with SimTrackerHits! ----------- */
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : trackerCollections_
   for (const auto &collName : trackerCollections_) {
-
-	auto simHitsTracker=
+    auto simHitsTracker =
         event.getCollection<ldmx::SimTrackerHit>(collName, simPassName_);
     trackerCollectionMap[collName + "Overlay"] = simHitsTracker;
 
@@ -164,10 +159,9 @@ void OverlayProducer::produce(framework::Event &event) {
       ldmx_log(debug) << "in loop: start of collection " << collName
                       << "in loop: printing current sim event: ";
 
-	  for (const ldmx::SimTrackerHit &simHit : simHitsTracker) 
-          simHit.Print();
-    }   // if high verbosity
-  }     // over tracker collections for sim event
+      for (const ldmx::SimTrackerHit &simHit : simHitsTracker) simHit.Print();
+    }  // if high verbosity
+  }    // over tracker collections for sim event
 
   /* ----------- now do the pileup overlay ----------- */
 
@@ -184,7 +178,6 @@ void OverlayProducer::produce(framework::Event &event) {
   // event (likely only needed if time bias gets picked up by BDT or ML by way
   // of pulse behaviour)
   for (int bunchOffset{startBunch}; bunchOffset <= endBunch; bunchOffset++) {
-
     // sample a poisson distribution, or use mu as fixed number of overlay
     // events
     int nEvsOverlay =
@@ -193,15 +186,15 @@ void OverlayProducer::produce(framework::Event &event) {
     // special case: in-time pileup at bunch 0
     if (bunchOffset == 0) {
       if (!doPoissonIT_)
-        nEvsOverlay = (int)poissonMu_;         // fix it to the average
-      else if (doPoissonIT_ && !doPoissonOOT_) // then we haven't set this yet
+        nEvsOverlay = (int)poissonMu_;          // fix it to the average
+      else if (doPoissonIT_ && !doPoissonOOT_)  // then we haven't set this yet
         nEvsOverlay = (int)rndm_->Poisson(poissonMu_);
 
       // paticularly useful in the poisson fluctuated case
       event.getEventHeader().setIntParameter("inTimePU", nEvsOverlay);
 
       // the total number of events is nPU + 1 (it includes the sim event)
-      nEvsOverlay -= 1; // in any case, subtract the sim event from nOverlay
+      nEvsOverlay -= 1;  // in any case, subtract the sim event from nOverlay
       if (verbosity_ > 2) {
         ldmx_log(debug) << "will overlay " << nEvsOverlay
                         << " events on the simulated one";
@@ -217,7 +210,6 @@ void OverlayProducer::produce(framework::Event &event) {
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
 
     for (int iEv = 0; iEv < nEvsOverlay; iEv++) {
-
       // a pileup event wide time offset to be applied to all its hits.
       float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
       timeOffset += bunchTimeOffset;
@@ -255,16 +247,16 @@ void OverlayProducer::produce(framework::Event &event) {
         }
 
         for (ldmx::SimCalorimeterHit &overlayHit : overlayHits) {
-          if (verbosity_ > 2)
-            overlayHit.Print();
+          if (verbosity_ > 2) overlayHit.Print();
 
           const float overlayTime = overlayHit.getTime() + timeOffset;
           overlayHit.setTime(overlayTime);
 
-          if (needsContribsAdded) { // special treatment for (for now only) ecal
+          if (needsContribsAdded) {  // special treatment for (for now only)
+                                     // ecal
             int overlayHitID = overlayHit.getID();
             if (hitMap.find(overlayHitID) ==
-                hitMap.end()) { // there wasn't already a simhit in this id
+                hitMap.end()) {  // there wasn't already a simhit in this id
               hitMap[overlayHitID] = ldmx::SimCalorimeterHit();
               hitMap[overlayHitID].setID(overlayHitID);
               std::vector<float> hitPos = overlayHit.getPosition();
@@ -276,20 +268,20 @@ void OverlayProducer::produce(framework::Event &event) {
             hitMap[overlayHitID].addContrib(overlayIncidentID_, overlayTrackID_,
                                             overlayPdgCode_,
                                             overlayHit.getEdep(), overlayTime);
-          } // if add overlay as contribs
+          }  // if add overlay as contribs
           else {
             caloCollectionMap[outCollName].push_back(overlayHit);
             if (verbosity_ > 2)
               ldmx_log(debug) << "Adding non-Ecal overlay hit to outhit vector "
                               << outCollName;
           }
-        } // over overlay calo simhit collection
+        }  // over overlay calo simhit collection
 
         if (!needsContribsAdded)
           ldmx_log(debug) << "Nhits in overlay collection " << outCollName
                           << ": " << caloCollectionMap[outCollName].size();
 
-      } // over caloCollections
+      }  // over caloCollections
 
       /* ----------- now do simtracker hits overlay ----------- */
 
@@ -317,13 +309,13 @@ void OverlayProducer::produce(framework::Event &event) {
             overlayHit.Print();
             ldmx_log(debug) << "Adding tracker overlay hit to outhit vector "
                             << outCollName;
-          } //verbose
-        } // over overlay tracker simhit collection
+          }  // verbose
+        }    // over overlay tracker simhit collection
 
         ldmx_log(debug) << "Nhits in overlay collection " << outCollName << ": "
                         << trackerCollectionMap[outCollName].size();
 
-      } // over trackerCollections
+      }  // over trackerCollections
 
       // update the event number. here, possibly the event counter gets reset to
       // 0, if we hit the end of the pileup event tree.
@@ -333,10 +325,9 @@ void OverlayProducer::produce(framework::Event &event) {
                         << ": couldn't read next overlay event!";
         return;
       }
-    } // over overlay events
-  }   // over bunches
+    }  // over overlay events
+  }    // over bunches
 
-  
   // after all events are done, the ecal hitmap is final and can be written to
   // the event output
   for (uint iColl = 0; iColl < caloCollections_.size(); iColl++) {
@@ -349,8 +340,7 @@ void OverlayProducer::produce(framework::Event &event) {
                         << caloCollections_[iColl] << "Overlay :";
 
       for (auto &mapHit : hitMap) {
-        if (verbosity_ > 2)
-          mapHit.second.Print();
+        if (verbosity_ > 2) mapHit.second.Print();
 
         if (caloCollectionMap.find(caloCollections_[iColl] + "Overlay") ==
             caloCollectionMap.end()) {
@@ -362,10 +352,10 @@ void OverlayProducer::produce(framework::Event &event) {
           caloCollectionMap[caloCollections_[iColl] + "Overlay"].push_back(
               mapHit.second);
       }
-      break; // for now we only have one hitMap: for Ecal. so no need looking
-             // further after we got a match
-    }        // isEcal
-  }          // second loop over collections, to collect hits from hitmap
+      break;  // for now we only have one hitMap: for Ecal. so no need looking
+              // further after we got a match
+    }         // isEcal
+  }           // second loop over collections, to collect hits from hitmap
 
   // done collecting hits.
 
@@ -375,8 +365,7 @@ void OverlayProducer::produce(framework::Event &event) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
     if (verbosity_ > 2) {
       ldmx_log(debug) << "List of hits added: ";
-      for (auto &hit : coll)
-        hit.Print();
+      for (auto &hit : coll) hit.Print();
     }
     event.add(name, coll);
   }
@@ -384,8 +373,7 @@ void OverlayProducer::produce(framework::Event &event) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
     if (verbosity_ > 2) {
       ldmx_log(debug) << "List of hits added: ";
-      for (auto &hit : coll)
-        hit.Print();
+      for (auto &hit : coll) hit.Print();
     }
     event.add(name, coll);
   }
@@ -398,7 +386,8 @@ void OverlayProducer::onProcessStart() {
   }
 
   // replace by this line once the corresponding tweak to EventFile is ready:
-  overlayFile_ = std::make_unique<framework::EventFile>(params_, overlayFileName_, true);
+  overlayFile_ =
+      std::make_unique<framework::EventFile>(params_, overlayFileName_, true);
   overlayFile_->setupEvent(&overlayEvent_);
   // we update the iterator at the end of each event. so do this once here to
   // grab the first event in the processor
@@ -413,6 +402,6 @@ void OverlayProducer::onProcessStart() {
   return;
 }
 
-} // namespace recon
+}  // namespace recon
 
 DECLARE_PRODUCER_NS(recon, OverlayProducer)
