@@ -311,7 +311,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
 
     if (existObject_) {
       // make sure object matches pattern
-      TTreeReaderValue<hcal::event::HcalVetoResult> object(
+      TTreeReaderValue<ldmx::HcalVetoResult> object(
           events, ("TestObject_" + pass_).c_str());
       while (events.Next()) {
         if (object->getMaxPEHit().getID() != header->getEventNumber()) {

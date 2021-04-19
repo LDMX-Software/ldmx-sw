@@ -109,7 +109,7 @@ DECLARE_PRODUCER_NS(framework::test, TestConfig)
  * - TODO pass class objects to EventProcessors
  */
 TEST_CASE("Configure Python Test", "[Framework][functionality]") {
-  const std::string config_file_name{"test/config_python_test_config.py"};
+  const std::string config_file_name{"config_python_test_config.py"};
 
   // Arguments to pass to ConfigurePython constructor
   char *args[1];
