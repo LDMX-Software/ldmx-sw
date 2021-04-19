@@ -7,6 +7,8 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
+#include "SimCore/Event/SimParticle.h"
+
 namespace dqm {
 
 // Forward declarations within the ldmx workspace
