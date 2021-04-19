@@ -1,6 +1,9 @@
 
 #include "DQM/HCalDQM.h"
 
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/Event/HcalVetoResult.h"
+
 namespace dqm {
 
 HCalDQM::HCalDQM(const std::string& name, framework::Process& process)
