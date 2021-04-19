@@ -1,6 +1,9 @@
 #include "Recon/OverlayProducer.h"
 #include "Framework/RandomNumberSeedService.h"
 
+#include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace recon {
 
 void OverlayProducer::configure(framework::config::Parameters &parameters) {
@@ -396,7 +399,7 @@ void OverlayProducer::onProcessStart() {
     ldmx_log(debug) << "onProcessStart () successful. Used input file: "
                     << overlayFile_->getFileName();
     ldmx_log(debug) << "onProcessStart () successful. Got event info: ";
-    overlayFile_->getEvent()->Print(verbosity_);
+    overlayFile_->getEvent()->Print();
   }
 
   return;
