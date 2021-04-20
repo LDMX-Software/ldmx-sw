@@ -245,9 +245,10 @@ void EventFile::setupEvent(Event *evt) {
 int EventFile::skipToEvent(int offset) {
   // make sure the event number exists,
   // -1 to account for stepping in nextEvent()
-  ientry_ = offset % entries_ - 1;
-  if (!this->nextEvent())
-    return -1;
+  offset = offset % entries_ - 1;
+  for (int i_shift{0}; i_shift < offset; i_shift++) {
+    if (!this->nextEvent()) return -1;
+  }
   return ientry_;
 }
 
