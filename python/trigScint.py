@@ -71,7 +71,7 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.expo_k=0.1          # Inverse of decay time of piece-wise exponential 
         self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
         self.maxts=5             # No. of time samples to analyze
-        self.toff_overall = 30.0 # Global time offset
+        self.toff_overall = 55.0 # Global time offset
         self.tdc_thr = 3.4       # Threshold current in uA for TDC latch
         self.pedestal= 6.0       # QIE pedestal value (in fC)
         self.elec_noise = 1.5    # Electronic noise (in fC)

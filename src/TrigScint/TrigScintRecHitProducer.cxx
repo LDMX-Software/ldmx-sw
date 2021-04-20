@@ -44,17 +44,17 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
-    hit.setAmplitude(qie.ADC2Q(adc[1]) +
-                     qie.ADC2Q(adc[2]));  // femptocoulombs
+    hit.setAmplitude(qie.ADC2Q(adc[2]) +
+                     qie.ADC2Q(adc[3]));  // femptocoulombs
 
-    if (tdc[1] > 49)
+    if (tdc[2] > 49)
       hit.setTime(-999.);
     else
-      hit.setTime(tdc[1] * 0.5);
+      hit.setTime(tdc[2] * 0.5);
 
-    hit.setEnergy((qie.ADC2Q(adc[1]) + qie.ADC2Q(adc[2]) - pedestal_) * 6250. /
+    hit.setEnergy((qie.ADC2Q(adc[2]) + qie.ADC2Q(adc[3]) - pedestal_) * 6250. /
                   gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE((qie.ADC2Q(adc[1]) + qie.ADC2Q(adc[2]) - pedestal_) * 6250. /
+    hit.setPE((qie.ADC2Q(adc[2]) + qie.ADC2Q(adc[3]) - pedestal_) * 6250. /
               gain_);
     trigScintHits.push_back(hit);
   }
