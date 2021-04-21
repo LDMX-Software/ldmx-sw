@@ -284,7 +284,7 @@
 
 <!-- ECal width and height -->
 <variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
-<variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap""/>
+<variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
 
 <!-- 
     Distance from target to the ECal parent volume.  The calorimeter 
