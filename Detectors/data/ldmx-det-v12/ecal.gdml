@@ -264,7 +264,7 @@
         </polyhedra>
 
         <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="C_hexagon" numsides="6" startphi="90">
-            <zplane rmax="Hex_radius" rmin="0" z="90"/>
+            <zplane rmax="Hex_radius" rmin="0" z="0"/>
             <zplane rmax="Hex_radius" rmin="0" z="C_dz"/>
         </polyhedra>
 
