@@ -58,7 +58,7 @@ namespace hcal {
             if(hits.size() > 0){
                 std::sort(hits.begin(), hits.end(), compHitTimes);
                 cluster.setTime(hits[0]->getTime());
-                std::cout<<"saved time "<< hits[0]->getTime()<<std::endl;
+               
             }
             hcalClusters.push_back( cluster );
         }
