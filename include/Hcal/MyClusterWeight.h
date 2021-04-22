@@ -37,10 +37,10 @@ namespace hcal {
                 }
 
                 double dijT = pow(pow(aX-bX,2) + pow(aY-bY,2),0.5); //Transverse Difference
-                //std::cout<<"Energy fraction "<<eFrac<<" distance "<<dijz<<std::endl;
+
                 double weightT = exp(pow(dijT/rmol,2))-1; //Trans --> massive
                 double weightZ = (exp(abs(dijz)/dzchar)-1); //Long
-                //std::cout<<"Weight module returning "<<weightT<<" "<<weightZ<<std::endl;
+
                 //Return the highest of the two weights
                 if (weightT <= weightZ) {
                     return weightZ;
