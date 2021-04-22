@@ -118,7 +118,8 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         self.input_collection="trigScintQIEDigisUp"
         self.input_pass_name=""   #take any pass
         self.output_collection="trigScintRecHitsUp"
-        self.verbose = False        
+        self.verbose = False
+        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
 
     def up() : 
         """Get the rechit producer for upstream pad"""
