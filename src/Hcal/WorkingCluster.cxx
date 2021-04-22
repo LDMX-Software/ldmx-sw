@@ -22,7 +22,7 @@ namespace hcal {
         double newCentroidX = (centroid_.Px()*centroid_.E() + hitE*hitX) / newE;
         double newCentroidY = (centroid_.Py()*centroid_.E() + hitE*hitY) / newE;
         double newCentroidZ = (centroid_.Pz()*centroid_.E() + hitE*hitZ) / newE;
-        std::cout<<"Time "<<hitT<<" "<<time_<<std::endl;
+        
         if(time_ < hitT){
             time_ = hitT;
         }
