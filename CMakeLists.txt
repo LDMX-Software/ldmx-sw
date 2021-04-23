@@ -48,7 +48,8 @@ setup_library(module SimCore
 
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx)
 
 # Setup the library
 setup_library(module SimCore
