@@ -60,6 +60,8 @@ double LHEEvent::getAQCDUP() const { return aqcdup_; }
 
 const double* LHEEvent::getVertex() const { return vtx_; }
 
+const double LHEEvent::getVertexTime() const { return vtxt_; }
+
 void LHEEvent::addParticle(LHEParticle* particle) {
   particles_.push_back(particle);
 }
@@ -73,7 +75,8 @@ void LHEEvent::setVertex(double x, double y, double z) {
 }
 
 /**
- * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
+ * Parse the vertex from a line of the form "#vertex [x] [y] [z] [t]"
+ * Where [t] is assumed zero if not specified
  */
 void LHEEvent::setVertex(const std::string& line) {
   std::istringstream iss(line);
@@ -86,7 +89,7 @@ void LHEEvent::setVertex(const std::string& line) {
     }
   } while (iss);
 
-  if (tokens.size() != 4 || tokens[0] != "#vertex") {
+  if (tokens.size() != 4 && tokens.size() !=5) {
     EXCEPTION_RAISE("TokenNum",
                     "Wrong number of tokens or format in LHE event vertex "
                     "information record.");
@@ -94,6 +97,9 @@ void LHEEvent::setVertex(const std::string& line) {
   vtx_[0] = atof(tokens[1].c_str());
   vtx_[1] = atof(tokens[2].c_str());
   vtx_[2] = atof(tokens[3].c_str());
+  if (tokens.size()>4){
+        vtxt_=atof(tokens[4].c_str());  
+    }
 }
 
 }  // namespace simcore
