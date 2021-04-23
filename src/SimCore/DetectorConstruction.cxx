@@ -97,19 +97,14 @@ typedef bool (*Test)(G4LogicalVolume*,const std::string&);
 
 }  // namespace logical_volume_testers
 
-DetectorConstruction::DetectorConstruction(
-    G4GDMLParser* theParser, framework::config::Parameters& parameters,
+DetectorConstruction::DetectorConstruction(simcore::geo::Parser *parser
+    framework::config::Parameters& parameters,
     ConditionsInterface& ci)
-    : parser_(theParser),
-      auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)) {
+    : parser_(parser),
   parameters_ = parameters;
 }
 
-DetectorConstruction::~DetectorConstruction() { delete auxInfoReader_; }
-
 G4VPhysicalVolume* DetectorConstruction::Construct() {
-  auxInfoReader_->readGlobalAuxInfo();
-  auxInfoReader_->assignAuxInfoToVolumes();
   return parser_->GetWorldVolume();
 }
 
