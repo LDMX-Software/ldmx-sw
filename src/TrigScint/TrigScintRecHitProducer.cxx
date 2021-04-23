@@ -23,11 +23,20 @@ void TrigScintRecHitProducer::configure(
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   verbose_ = parameters.getParameter<bool>("verbose");
+  sample_of_interest_ = parameters.getParameter<int>("sample_of_interest");
 }
 
 void TrigScintRecHitProducer::produce(framework::Event &event) {
   // initialize QIE object for linearizing ADCs
   SimQIE qie;
+
+  // Ensure the sample of interest <4
+  if(sample_of_interest_>3) {
+    ldmx_log(error)<<"sample_of_interest_ should be one of 0,1,2,3\n"
+		   <<"Currently, sample_of_interest = "<<sample_of_interest_
+		   <<"\n";
+    return;
+  }
 
   // looper over sim hits and aggregate energy depositions
   // for each detID
@@ -44,18 +53,20 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
-    hit.setAmplitude(qie.ADC2Q(adc[1]) +
-                     qie.ADC2Q(adc[2]));  // femptocoulombs
+    hit.setAmplitude(qie.ADC2Q(adc[sample_of_interest_]) +
+                     qie.ADC2Q(adc[sample_of_interest_+1]));  // femptocoulombs
 
-    if (tdc[1] > 49)
+    if (tdc[sample_of_interest_] > 49)
       hit.setTime(-999.);
     else
-      hit.setTime(tdc[1] * 0.5);
+      hit.setTime(tdc[sample_of_interest_] * 0.5);
 
-    hit.setEnergy((qie.ADC2Q(adc[1]) + qie.ADC2Q(adc[2]) - pedestal_) * 6250. /
-                  gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE((qie.ADC2Q(adc[1]) + qie.ADC2Q(adc[2]) - pedestal_) * 6250. /
-              gain_);
+    hit.setEnergy((qie.ADC2Q(adc[sample_of_interest_])+
+		   qie.ADC2Q(adc[sample_of_interest_+1])-pedestal_)
+		  *6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
+    hit.setPE((qie.ADC2Q(adc[sample_of_interest_])+
+	       qie.ADC2Q(adc[sample_of_interest_+1]) - pedestal_)
+	      *6250. / gain_);
     trigScintHits.push_back(hit);
   }
   // Create the container to hold the

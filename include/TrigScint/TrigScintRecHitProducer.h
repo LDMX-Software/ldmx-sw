@@ -81,6 +81,9 @@ class TrigScintRecHitProducer : public framework::Producer {
 
   /// Total number of photoelectrons per MIP
   double pePerMip_{13.5};
+
+  /// Total number of photoelectrons per MIP
+  int sample_of_interest_{2};
 };
 
 }  // namespace trigscint
