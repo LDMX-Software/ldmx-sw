@@ -1,10 +1,3 @@
-/**
- * @file Simulator.cxx
- * @brief Producer that runs Geant4 simulation inside of ldmx-app
- * @author Tom Eichlersmith, University of Minnesota
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "SimCore/Simulator.h"
 
 /*~~~~~~~~~~~~~~~*/
@@ -82,9 +75,9 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   // Instantiate the run manager.
   runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
 
-  // Instantiate the GDML parser and corresponding messenger owned and
-  // managed by DetectorConstruction
-  G4GDMLParser* parser = new G4GDMLParser;
+  // Instantiate the GDML parser
+  auto parser_factory{simcore::geo::ParserFactory::getInstance()}; 
+  auto parser{parser_factory->createParser("gdml", parameters)}; 
 
   // Instantiate the class so cascade parameters can be set.
   G4CascadeParameters::Instance();
@@ -94,15 +87,8 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   runManager_->SetUserInitialization(
       new DetectorConstruction(parser, parameters, conditionsIntf_));
 
-  // Parse the detector geometry and validate if specified.
-  auto detectorPath{parameters_.getParameter<std::string>("detector")};
-  auto validateGeometry{parameters_.getParameter<bool>("validate_detector")};
-  if (verbosity_ > 0) {
-    std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
-              << "'... " << std::flush;
-  }
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->Read(detectorPath, validateGeometry);
+  parser->read(); 
   runManager_->DefineWorldVolume(parser->GetWorldVolume());
 
   auto preInitCommands =
