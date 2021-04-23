@@ -92,6 +92,12 @@ class LHEEvent {
   const double* getVertex() const;
 
   /**
+   * Get the vertex time
+   * @return time of primary particle creation.
+   */
+  const double getVertexTime() const;
+
+  /**
    * Add a particle to the event.
    * @particle The particle to add.
    */
@@ -138,6 +144,11 @@ class LHEEvent {
    * Vertex location
    */
   double vtx_[3];
+
+  /**
+   * Vertex time
+   */
+  double vtxt_{0.};
 
   /**
    * The list of particles.

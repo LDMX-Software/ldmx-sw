@@ -121,6 +121,8 @@ class completeReSim(simcfg.PrimaryGenerator) :
         self.filePath = file_path
         self.collection_name = 'SimParticles'
         self.pass_name = ''
+        self.tree_name = 'LDMX_Events'
+        self.compressionSetting = 9
 
 class ecalSP(simcfg.PrimaryGenerator) :
     """New ecal scoring planes primary generator

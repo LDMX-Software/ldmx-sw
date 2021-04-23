@@ -34,10 +34,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   // The parameters used to configure the primary generator action
   parameters_ = parameters;
 
-  // Instantiate the random number generator and set the seed.
-  random_ = std::make_unique<TRandom3>();
-  random_->SetSeed(CLHEP::HepRandom::getTheSeed());
-
   // Check whether a beamspot should be used or not.
   auto beamSpot{
       parameters.getParameter<std::vector<double> >("beamSpotSmear", {})};
@@ -97,11 +93,6 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   // smear all primary vertices (if activated)
   int nPV = event->GetNumberOfPrimaryVertex();
   if (nPV > 0) {
-    // if we are smearing the beamspot,
-    //  these variables are helpful
-    double IPWidthX(beamspotXSize_ / 2.), IPWidthY(beamspotYSize_ / 2.),
-        IPWidthZ(beamspotZSize_ / 2.);
-
     // loop over all vertices generated
     for (int iPV = 0; iPV < nPV; ++iPV) {
       G4PrimaryVertex* primary_vertex = event->GetPrimaryVertex(iPV);
@@ -137,9 +128,16 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         double x0_i = primary_vertex->GetX0();
         double y0_i = primary_vertex->GetY0();
         double z0_i = primary_vertex->GetZ0();
-        double x0_f = random_->Uniform(x0_i - IPWidthX, x0_i + IPWidthX);
-        double y0_f = random_->Uniform(y0_i - IPWidthY, y0_i + IPWidthY);
-        double z0_f = random_->Uniform(z0_i - IPWidthZ, z0_i + IPWidthZ);
+        /*
+         * G4UniformRand returns a number in [0,1]
+         *  - we shift this range so that it is [-0.5,0.5]
+         *  - multiply by the width to get [-0.5*size,0.5*size]
+         *  - add the initial point (in case its off center) to get
+         *    [init-0.5*size, init+0.5*size]
+         */
+        double x0_f = beamspotXSize_*(G4UniformRand()-0.5) + x0_i;
+        double y0_f = beamspotYSize_*(G4UniformRand()-0.5) + y0_i;
+        double z0_f = beamspotZSize_*(G4UniformRand()-0.5) + z0_i;
         primary_vertex->SetPosition(x0_f, y0_f, z0_f);
       }
 
