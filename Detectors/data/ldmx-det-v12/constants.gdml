@@ -292,8 +292,8 @@
 -->
 <constant name="ecal_front_z" value="24.0*cm"/>
 
-<variable name="side_Ecal_dx" value="600."/>
-<variable name="side_Ecal_dy" value="800."/>
+<variable name="side_Ecal_dx" value="800."/>
+<variable name="side_Ecal_dy" value="600."/>
 
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
