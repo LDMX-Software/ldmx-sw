@@ -203,7 +203,12 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
       if (ientry_ + 1 >= entries_) {
         if (isLoopable_) {
           // reset the event counter: reuse events from start of pileup tree
-          ientry_ = -1;
+          ientry_ = -1; //happens in onEndOfFile() too, but, still needed here
+          if (event_) {
+            event_->onEndOfFile();
+            this->setupEvent(event_);
+          }
+
         } else
           return false;
       }
