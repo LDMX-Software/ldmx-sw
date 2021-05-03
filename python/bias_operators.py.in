@@ -117,6 +117,47 @@ class GammaToMuPair(XsecBiasingOperator) :
         self.factor = factor
         self.threshold = thresh
 
+
+class NeutronInelastic(XsecBiasingOperator) :
+    """Bias neutron inelastic collisions
+
+    Parameters
+    ----------
+    vol : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    def __init__(self,vol,factor,thresh=0.) :
+        super().__init__('%s_bias_neutroninelastic'%vol,'simcore::biasoperators::NeutronInelastic')
+
+        self.volume = vol
+        self.factor = factor
+        self.threshold = thresh
+
+class K0LongInelastic(XsecBiasingOperator) :
+    """Bias K0 Long inelastic collisions
+
+    Parameters
+            ----------
+    vol : str
+        name of volume to bias within
+    factor : float
+        biasing factor to multiply by
+    threshold : float, optional
+        minimum kinetic energy [MeV] to bias tracks
+    """
+
+    def __init__(self,vol,factor,thresh=0.) :
+        super().__init__('%s_bias_k0longinelastic'%vol,'simcore::biasoperators::K0LongInelastic')
+
+        self.volume = vol
+        self.factor = factor
+        self.threshold = thresh
+
 class DarkBrem(XsecBiasingOperator) :
     """Bias dark brem process
 
