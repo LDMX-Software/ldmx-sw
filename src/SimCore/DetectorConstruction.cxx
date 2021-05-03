@@ -29,6 +29,21 @@ static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
 }
 
 /**
+ * isInHcal
+ *
+ * Check that the passed volume is inside the HCal
+ *
+ * @param[in] vol G4LogicalVolume to check
+ * @param[in] vol_to_bias UNUSED name of volume to bias
+ */
+static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+  G4String volumeName = vol->GetName();
+  return ((volumeName.contains("abso2") || volumeName.contains("abso3") ||
+           volumeName.contains("ScintBox") || volumeName.contains("absoBox")) &&
+          volumeName.contains("volume"));
+}
+
+/**
  * isInEcalOld
  *
  * This is the old method for checking if the passed volume was inside the ECal
@@ -126,6 +141,8 @@ void DetectorConstruction::ConstructSDandField() {
       includeVolumeTest = &logical_volume_tests::isInTargetOnly;
     } else if (bop->getVolumeToBias().compare("target_region") == 0) {
       includeVolumeTest = &logical_volume_tests::isInTargetRegion;
+    } else if (bop->getVolumeToBias().compare("hcal") == 0) {
+      includeVolumeTest = &logical_volume_tests::isInHcal;
     } else {
       std::cerr << "[ DetectorConstruction ] : "
                 << "WARN - Requested volume to bias '" << bop->getVolumeToBias()
