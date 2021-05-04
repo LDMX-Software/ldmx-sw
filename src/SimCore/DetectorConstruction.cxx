@@ -97,10 +97,10 @@ typedef bool (*Test)(G4LogicalVolume*,const std::string&);
 
 }  // namespace logical_volume_testers
 
-DetectorConstruction::DetectorConstruction(simcore::geo::Parser *parser
+DetectorConstruction::DetectorConstruction(simcore::geo::Parser *parser,
     framework::config::Parameters& parameters,
     ConditionsInterface& ci)
-    : parser_(parser),
+    : parser_(parser) {
   parameters_ = parameters;
 }
 
