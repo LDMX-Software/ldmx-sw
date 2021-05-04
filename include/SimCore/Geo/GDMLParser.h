@@ -1,19 +1,13 @@
-#ifndef SIMCORE_GEO_GDMLPARSER_H_
-#define SIMCORE_GEO_GDMLPARSER_H_
+#ifndef SIMCORE_GEO_GDMLPARSER_H
+#define SIMCORE_GEO_GDMLPARSER_H
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
+//---< Geant4 >---//
 #include "G4GDMLParser.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
+//---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
+//---< SimCore >---//
 #include "SimCore/AuxInfoReader.h"
 #include "SimCore/Geo/Parser.h"
 
@@ -24,15 +18,25 @@ namespace simcore {
 namespace geo {
 
 /**
+ * Parse GDML files, build the geometry in memory and load it into Geant4.
+ *
+ * This class extends the interface Parser which allows creation of the 
+ * parser at runtime via a factory.
  */
 class GDMLParser : public Parser {
 
 public:
-  /// Default constructor
-  GDMLParser(ldmx::Parameters &parameters);
+  /**
+   * Default constructor.
+   *
+   * @param parameters The parameters used to configure this parser.
+   * @param ci Interface that allows access to the conditions.
+   */
+  GDMLParser(framework::config::Parameters &parameters, 
+             simcore::ConditionsInterface &ci);
 
   /// Default destructor
-  ~GDMLParser();
+  ~GDMLParser() = default;
 
   /**
    * Retrieve the G4VPhysicalVolume associated with the most top-level
@@ -50,7 +54,7 @@ public:
    *
    * @return The name of the detector.
    */
-  std::string getDetectorName() final override;
+  std::string getDetectorName() final override { return detector_name_; }
 
   /**
    * Parse the detector geometry and read it into memory.
@@ -60,8 +64,9 @@ public:
   /**
    * Create an instance of this parser.
    */
-  static Parser *create(ldmx::Parameters &parameters) {
-    return new GDMLParser(parameters);
+  static Parser *create(framework::config::Parameters &parameters, 
+		        simcore::ConditionsInterface &ci) {
+    return new GDMLParser(parameters, ci);
   }
 
 private:
@@ -69,13 +74,16 @@ private:
   std::unique_ptr<G4GDMLParser> parser_;
 
   /// The auxiliary info reader
-  std::unique_ptr<ldmx::AuxInfoReader> info_;
+  std::unique_ptr<simcore::AuxInfoReader> info_;
 
   /// The parameters used to configure this parser
-  ldmx::Parameters parameters_;
+  framework::config::Parameters parameters_;
+
+  /// The name of the parsed detector
+  std::string detector_name_{""};
 
 }; // GDMLParser
 } // namespace geo
 } // namespace simcore
 
-#endif // SIMCORE_GEO_GDMLPARSER_H_
+#endif // SIMCORE_GEO_GDMLPARSER_H
