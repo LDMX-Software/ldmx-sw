@@ -1,18 +1,19 @@
 
 #include "SimCore/Geo/ParserFactory.h"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
+//---< SimCore >---//
+#include "SimCore/Geo/Parser.h"
 #include "SimCore/Geo/GDMLParser.h"
 
 namespace simcore {
 namespace geo {
 
+ParserFactory *ParserFactory::instance_ = nullptr;
+
 ParserFactory *ParserFactory::getInstance() {
-  if (!instance)
-    instance = new ParserFactory;
-  return instance;
+  if (!instance_)
+    instance_ = new ParserFactory;
+  return instance_;
 }
 
 ParserFactory::ParserFactory() { registerParser("gdml", &GDMLParser::create); }
@@ -22,10 +23,11 @@ void ParserFactory::registerParser(const std::string &name, createFunc create) {
 }
 
 Parser *ParserFactory::createParser(const std::string &name,
-                                    ldmx::Parameters &parameters) {
+                                    framework::config::Parameters &parameters, 
+				    simcore::ConditionsInterface &ci) {
   auto it{parser_map.find(name)};
   if (it != parser_map.end())
-    return it->second(parameters);
+    return it->second(parameters, ci);
   return nullptr;
 }
 

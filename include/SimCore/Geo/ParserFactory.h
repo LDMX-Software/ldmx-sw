@@ -23,18 +23,20 @@ public:
   static ParserFactory *getInstance();
 
   /// Default constructor
-  ~ParserFactory();
+  ~ParserFactory() = default;
 
   /**
    * Create an instance of the parser of the given type.
    *
-   * @parser[in] type String type of the perser that needs to be created.
+   * @param[in] type String type of the perser that needs to be created.
+   * @param[in] ci Interface to conditions system.
    */
-  Parser *createParser(const std::string &name, ldmx::Parameters &parameters);
+  Parser *createParser(const std::string &name, framework::config::Parameters &parameters, 
+		       simcore::ConditionsInterface &ci);
 
 private:
   /// Static instance of this class
-  static ParserFactory *instance;
+  static ParserFactory *instance_;
 
   /// Default constructor
   ParserFactory();
