@@ -16,6 +16,7 @@
 #include "SimCore/RunManager.h"
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/PluginFactory.h"
+#include "SimCore/Geo/ParserFactory.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -77,7 +78,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
 
   // Instantiate the GDML parser
   auto parser_factory{simcore::geo::ParserFactory::getInstance()}; 
-  auto parser{parser_factory->createParser("gdml", parameters)}; 
+  auto parser{parser_factory->createParser("gdml", parameters, conditionsIntf_)}; 
 
   // Instantiate the class so cascade parameters can be set.
   G4CascadeParameters::Instance();
@@ -125,10 +126,10 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
       static_cast<RunManager*>(RunManager::GetRunManager())
           ->getDetectorConstruction();
 
-  if (!detector or !detector->getDetectorHeader())
+  if (!detector)
     EXCEPTION_RAISE("SimSetup", "Detector not constructed before run start.");
 
-  header.setDetectorName(detector->getDetectorHeader()->getName());
+  header.setDetectorName(detector->getDetectorName());
   header.setDescription(parameters_.getParameter<std::string>("description"));
 
   header.setIntParameter("Save ECal Hit Contribs",
