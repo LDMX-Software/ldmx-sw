@@ -53,7 +53,8 @@ static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-static bool isInTargetRegion(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+static bool isInTargetRegion(G4LogicalVolume* vol,
+                             const std::string& vol_to_bias) {
   auto region = vol->GetRegion();
   return (region and region->GetName().contains("target"));
 }
@@ -68,7 +69,8 @@ static bool isInTargetRegion(G4LogicalVolume* vol, const std::string& vol_to_bia
  * @param[in] vol G4LogicalVolume to check
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
-static bool isInTargetOnly(G4LogicalVolume* vol, const std::string& vol_to_bias) {
+static bool isInTargetOnly(G4LogicalVolume* vol,
+                           const std::string& vol_to_bias) {
   return vol->GetName().contains("target");
 }
 
@@ -93,12 +95,12 @@ static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  *
  * Used below when determining which test to use.
  */
-typedef bool (*Test)(G4LogicalVolume*,const std::string&);
+typedef bool (*Test)(G4LogicalVolume*, const std::string&);
 
-}  // namespace logical_volume_testers
+}  // namespace logical_volume_tests
 
-DetectorConstruction::DetectorConstruction(simcore::geo::Parser *parser,
-    framework::config::Parameters& parameters,
+DetectorConstruction::DetectorConstruction(
+    simcore::geo::Parser* parser, framework::config::Parameters& parameters,
     ConditionsInterface& ci)
     : parser_(parser) {
   parameters_ = parameters;
@@ -133,14 +135,14 @@ void DetectorConstruction::ConstructSDandField() {
     }
 
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
-        auto volume_name = volume->GetName();
-        if (includeVolumeTest(volume, bop->getVolumeToBias())) {
-          bop->AttachTo(volume);
-          std::cout << "[ DetectorConstruction ]: "
-                    << "Attaching biasing operator " << bop->GetName()
-                    << " to volume " << volume->GetName() << std::endl;
-      } // BOP attached to target or ecal
-    }   // loop over volumes
-  }     // loop over biasing operators
+      auto volume_name = volume->GetName();
+      if (includeVolumeTest(volume, bop->getVolumeToBias())) {
+        bop->AttachTo(volume);
+        std::cout << "[ DetectorConstruction ]: "
+                  << "Attaching biasing operator " << bop->GetName()
+                  << " to volume " << volume->GetName() << std::endl;
+      }  // BOP attached to target or ecal
+    }    // loop over volumes
+  }      // loop over biasing operators
 }
 }  // namespace simcore

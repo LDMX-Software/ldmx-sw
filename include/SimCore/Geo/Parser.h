@@ -23,7 +23,6 @@ namespace geo {
  * desired parser.
  */
 class Parser {
-
  public:
   /**
    * Pure virtual method used to retrieve the G4VPhysicalVolume associated with
@@ -48,12 +47,13 @@ class Parser {
    */
   virtual void read() = 0;
 
-}; // Parser
+};  // Parser
 
-using createFunc = std::function<Parser *(framework::config::Parameters &parameters,
-                                          simcore::ConditionsInterface &ci)>;
+using createFunc =
+    std::function<Parser *(framework::config::Parameters &parameters,
+                           simcore::ConditionsInterface &ci)>;
 
-} // namespace geo
-} // namespace simcore
+}  // namespace geo
+}  // namespace simcore
 
-#endif // SIMCORE_GEO_GEOPARSER_H_
+#endif  // SIMCORE_GEO_GEOPARSER_H_

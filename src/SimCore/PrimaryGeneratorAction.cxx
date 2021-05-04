@@ -28,9 +28,7 @@ namespace simcore {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     framework::config::Parameters& parameters)
-    : G4VUserPrimaryGeneratorAction(),
-      manager_(PluginFactory::getInstance()) {
-
+    : G4VUserPrimaryGeneratorAction(), manager_(PluginFactory::getInstance()) {
   // The parameters used to configure the primary generator action
   parameters_ = parameters;
 
@@ -135,9 +133,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
          *  - add the initial point (in case its off center) to get
          *    [init-0.5*size, init+0.5*size]
          */
-        double x0_f = beamspotXSize_*(G4UniformRand()-0.5) + x0_i;
-        double y0_f = beamspotYSize_*(G4UniformRand()-0.5) + y0_i;
-        double z0_f = beamspotZSize_*(G4UniformRand()-0.5) + z0_i;
+        double x0_f = beamspotXSize_ * (G4UniformRand() - 0.5) + x0_i;
+        double y0_f = beamspotYSize_ * (G4UniformRand() - 0.5) + y0_i;
+        double z0_f = beamspotZSize_ * (G4UniformRand() - 0.5) + z0_i;
         primary_vertex->SetPosition(x0_f, y0_f, z0_f);
       }
 
