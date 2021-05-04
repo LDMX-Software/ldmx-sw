@@ -8,6 +8,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/Geo/ParserFactory.h"
 
 static void printUsage() {
   std::cout << "usage: g4-vis {detector.gdml}" << std::endl;
@@ -38,12 +39,13 @@ int main(int argc, char* argv[]) {
   G4RunManager *runManager = new G4RunManager;
 
   // Detector components
-  auto parser = new G4GDMLParser;
+  auto parser_factory{simcore::geo::ParserFactory::getInstance()}; 
+  auto parser{parser_factory->createParser("gdml", empty_parameters, empty_interface)}; 
   runManager->SetUserInitialization(
       new simcore::DetectorConstruction(parser, empty_parameters, empty_interface)
       );
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->Read(the_arg,false);
+  parser->read();
   runManager->DefineWorldVolume(parser->GetWorldVolume());
 
   // required to define a physics list to complete initialization
