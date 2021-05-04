@@ -50,8 +50,8 @@ class Parser {
 
 }; // Parser
 
-using createFunc = std::function<Parser *(ldmx::Parameters &parameters,
-                                          ldmx::ConditionsInterface &ci)>;
+using createFunc = std::function<Parser *(framework::config::Parameters &parameters,
+                                          simcore::ConditionsInterface &ci)>;
 
 } // namespace geo
 } // namespace simcore
