@@ -3,10 +3,11 @@
 namespace simcore {
 namespace geo {
 
-GDMLParser::GDMLParser(framework::config::Parameters &parameters, 
-		simcore::ConditionsInterface &ci) {
+GDMLParser::GDMLParser(framework::config::Parameters &parameters,
+                       simcore::ConditionsInterface &ci) {
   parser_ = std::make_unique<G4GDMLParser>();
-  info_ = std::make_unique<simcore::AuxInfoReader>(parser_.get(), parameters, ci);
+  info_ =
+      std::make_unique<simcore::AuxInfoReader>(parser_.get(), parameters, ci);
   parameters_ = parameters;
 }
 
@@ -22,5 +23,5 @@ void GDMLParser::read() {
   detector_name_ = info_->getDetectorHeader()->getName();
 }
 
-} // namespace geo
-} // namespace simcore
+}  // namespace geo
+}  // namespace simcore

@@ -20,10 +20,9 @@ namespace simcore {
  * @typedef actionMap
  * A map of the different types of actions to their reference.
  */
-typedef std::map<TYPE,
-                 std::variant<UserRunAction*, UserEventAction*,
-                              UserTrackingAction*, USteppingAction*,
-                              UserStackingAction*>>
+typedef std::map<
+    TYPE, std::variant<UserRunAction*, UserEventAction*, UserTrackingAction*,
+                       USteppingAction*, UserStackingAction*>>
     actionMap;
 
 /**
@@ -49,9 +48,7 @@ class PluginFactory {
    *
    * @return vector of pointers to constructed primary generators
    */
-  std::vector<PrimaryGenerator*> getGenerators() const {
-    return generators_;
-  };
+  std::vector<PrimaryGenerator*> getGenerators() const { return generators_; };
 
   /**
    * Put the primary generator into the list of possible generators
@@ -108,8 +105,7 @@ class PluginFactory {
    * @param[in] className full name of class (including namespaces) of action
    * @param[in] builder pointer to function to use to create the action
    */
-  void registerAction(const std::string& className,
-                      UserActionBuilder* builder);
+  void registerAction(const std::string& className, UserActionBuilder* builder);
 
   /**
    * Construct a new action and attach it to the types of actions it will be a
@@ -202,7 +198,8 @@ class PluginFactory {
   std::vector<XsecBiasingOperator*> biasing_operators_;
 
   /// Allow for us to log here
-  framework::logging::logger theLog_{framework::logging::makeLogger("SimPluginFactory")};
+  framework::logging::logger theLog_{
+      framework::logging::makeLogger("SimPluginFactory")};
 
 };  // PluginFactory
 

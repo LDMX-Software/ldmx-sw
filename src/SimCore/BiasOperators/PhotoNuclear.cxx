@@ -5,7 +5,8 @@ namespace biasoperators {
 
 const std::string PhotoNuclear::CONVERSION_PROCESS = "conv";
 
-PhotoNuclear::PhotoNuclear(std::string name, const framework::config::Parameters& p)
+PhotoNuclear::PhotoNuclear(std::string name,
+                           const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   threshold_ = p.getParameter<double>("threshold");
@@ -32,7 +33,8 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
             << "Kinetic energy: " << track->GetKineticEnergy()
             << " MeV" << std::endl;*/
 
-  // if we want to only bias children of primary, leave if this track is NOT a child of the primary
+  // if we want to only bias children of primary, leave if this track is NOT a
+  // child of the primary
   if (only_children_of_primary_ and track->GetParentID() != 1) return 0;
 
   // is this track too low energy to be biased?

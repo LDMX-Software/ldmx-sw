@@ -65,8 +65,9 @@ void RunManager::setupPhysics() {
   pList->RegisterPhysics(new darkbrem::APrimePhysics(
       parameters_.getParameter<framework::config::Parameters>("dark_brem")));
 
-  auto biasing_operators{parameters_.getParameter<std::vector<framework::config::Parameters>>(
-      "biasing_operators", {})};
+  auto biasing_operators{
+      parameters_.getParameter<std::vector<framework::config::Parameters>>(
+          "biasing_operators", {})};
   if (!biasing_operators.empty()) {
     std::cout << "[ RunManager ]: Biasing enabled with "
               << biasing_operators.size() << " operator(s)." << std::endl;
@@ -130,7 +131,8 @@ void RunManager::Initialize() {
 
   // Create all user actions
   auto userActions{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>("actions", {})};
+      parameters_.getParameter<std::vector<framework::config::Parameters>>(
+          "actions", {})};
   for (auto& userAction : userActions) {
     PluginFactory::getInstance().createAction(
         userAction.getParameter<std::string>("class_name"),

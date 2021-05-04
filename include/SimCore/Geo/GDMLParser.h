@@ -20,19 +20,18 @@ namespace geo {
 /**
  * Parse GDML files, build the geometry in memory and load it into Geant4.
  *
- * This class extends the interface Parser which allows creation of the 
+ * This class extends the interface Parser which allows creation of the
  * parser at runtime via a factory.
  */
 class GDMLParser : public Parser {
-
-public:
+ public:
   /**
    * Default constructor.
    *
    * @param parameters The parameters used to configure this parser.
    * @param ci Interface that allows access to the conditions.
    */
-  GDMLParser(framework::config::Parameters &parameters, 
+  GDMLParser(framework::config::Parameters &parameters,
              simcore::ConditionsInterface &ci);
 
   /// Default destructor
@@ -64,12 +63,12 @@ public:
   /**
    * Create an instance of this parser.
    */
-  static Parser *create(framework::config::Parameters &parameters, 
-		        simcore::ConditionsInterface &ci) {
+  static Parser *create(framework::config::Parameters &parameters,
+                        simcore::ConditionsInterface &ci) {
     return new GDMLParser(parameters, ci);
   }
 
-private:
+ private:
   /// The GDML parser.
   std::unique_ptr<G4GDMLParser> parser_;
 
@@ -82,8 +81,8 @@ private:
   /// The name of the parsed detector
   std::string detector_name_{""};
 
-}; // GDMLParser
-} // namespace geo
-} // namespace simcore
+};  // GDMLParser
+}  // namespace geo
+}  // namespace simcore
 
-#endif // SIMCORE_GEO_GDMLPARSER_H
+#endif  // SIMCORE_GEO_GDMLPARSER_H

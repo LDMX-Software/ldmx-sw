@@ -20,10 +20,9 @@ namespace darkbrem {
 const std::string APrimePhysics::NAME = "APrime";
 
 APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
-    : G4VPhysicsConstructor(APrimePhysics::NAME),
-      parameters_{params} {
-      ap_mass_ = parameters_.getParameter<double>("ap_mass",0.)*MeV;
-      enable_ = parameters_.getParameter<bool>("enable",false);
+    : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_{params} {
+  ap_mass_ = parameters_.getParameter<double>("ap_mass", 0.) * MeV;
+  enable_ = parameters_.getParameter<bool>("enable", false);
 }
 
 void APrimePhysics::ConstructParticle() {
@@ -55,8 +54,8 @@ void APrimePhysics::ConstructProcess() {
      * second argument means that the ordering index is given a default value of
      * 1000 which seems to be safely above all the internal/default processes.
      */
-    G4Electron::ElectronDefinition()->GetProcessManager()
-      ->AddDiscreteProcess(new G4eDarkBremsstrahlung(parameters_));
+    G4Electron::ElectronDefinition()->GetProcessManager()->AddDiscreteProcess(
+        new G4eDarkBremsstrahlung(parameters_));
   }
 }
 

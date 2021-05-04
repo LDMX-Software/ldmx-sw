@@ -10,19 +10,19 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
-#include "SimCore/Persist/RootPersistencyManager.h"
-#include "SimCore/RunManager.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
-#include "SimCore/PluginFactory.h"
 #include "SimCore/Geo/ParserFactory.h"
+#include "SimCore/Persist/RootPersistencyManager.h"
+#include "SimCore/PluginFactory.h"
+#include "SimCore/RunManager.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
-#include "G4Electron.hh"
 #include "G4CascadeParameters.hh"
+#include "G4Electron.hh"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4UImanager.hh"
@@ -77,8 +77,8 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
 
   // Instantiate the GDML parser
-  auto parser_factory{simcore::geo::ParserFactory::getInstance()}; 
-  auto parser{parser_factory->createParser("gdml", parameters, conditionsIntf_)}; 
+  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
+      "gdml", parameters, conditionsIntf_)};
 
   // Instantiate the class so cascade parameters can be set.
   G4CascadeParameters::Instance();
@@ -89,7 +89,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
       new DetectorConstruction(parser, parameters, conditionsIntf_));
 
   G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->read(); 
+  parser->read();
   runManager_->DefineWorldVolume(parser->GetWorldVolume());
 
   auto preInitCommands =
@@ -177,7 +177,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     bop->RecordConfig(header);
   }
 
-  auto dark_brem{parameters_.getParameter<framework::config::Parameters>("dark_brem")};
+  auto dark_brem{
+      parameters_.getParameter<framework::config::Parameters>("dark_brem")};
   if (dark_brem.getParameter<bool>("enable")) {
     // the dark brem process is enabled, find it and then record its
     // configuration
@@ -235,10 +236,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                std::string::npos) {
       header.setStringParameter(genID + " LHE File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootCompleteReSim") != std::string::npos) {
+    } else if (className.find("simcore::RootCompleteReSim") !=
+               std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootSimFromEcalSP") != std::string::npos) {
+    } else if (className.find("simcore::RootSimFromEcalSP") !=
+               std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
       header.setFloatParameter(genID + " Time Cutoff [ns]",

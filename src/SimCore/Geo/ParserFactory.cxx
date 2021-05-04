@@ -5,14 +5,14 @@
 #include "Framework/Exception/Exception.h"
 
 //---< SimCore >---//
-#include "SimCore/Geo/Parser.h"
 #include "SimCore/Geo/GDMLParser.h"
+#include "SimCore/Geo/Parser.h"
 
 namespace simcore {
 namespace geo {
 
-ParserFactory& ParserFactory::getInstance() {
-  static ParserFactory instance;  
+ParserFactory &ParserFactory::getInstance() {
+  static ParserFactory instance;
   return instance;
 }
 
@@ -23,15 +23,14 @@ void ParserFactory::registerParser(const std::string &name, createFunc create) {
 }
 
 Parser *ParserFactory::createParser(const std::string &name,
-                                    framework::config::Parameters &parameters, 
-				    simcore::ConditionsInterface &ci) {
+                                    framework::config::Parameters &parameters,
+                                    simcore::ConditionsInterface &ci) {
   auto it{parser_map.find(name)};
   if (it == parser_map.end())
-	  EXCEPTION_RAISE("ParserNotFound", 
-			  "The parser " + name + " was not found."); 
-    
+    EXCEPTION_RAISE("ParserNotFound", "The parser " + name + " was not found.");
+
   return it->second(parameters, ci);
 }
 
-} // namespace geo
-} // namespace simcore
+}  // namespace geo
+}  // namespace simcore
