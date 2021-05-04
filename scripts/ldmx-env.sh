@@ -366,9 +366,9 @@ _ldmx_clean() {
   if [[ "$_what" = "src" ]] || [[ "$_what" = "all" ]]; then
     local _old_pwd=$OLDPWD
     cd ${LDMX_BASE}/ldmx-sw
-    git clean -xi
+    git clean -xf
     rc=$?
-    git submodule foreach git clean -xi
+    git submodule foreach git clean -xf
     rc=$?
     [[ -d build ]] && rm -r build
     [[ -d install ]] && rm -r install
