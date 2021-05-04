@@ -1,6 +1,9 @@
 
 #include "SimCore/Geo/ParserFactory.h"
 
+//---< Framework >---//
+#include "Framework/Exception/Exception.h"
+
 //---< SimCore >---//
 #include "SimCore/Geo/Parser.h"
 #include "SimCore/Geo/GDMLParser.h"
@@ -8,12 +11,9 @@
 namespace simcore {
 namespace geo {
 
-ParserFactory *ParserFactory::instance_ = nullptr;
-
-ParserFactory *ParserFactory::getInstance() {
-  if (!instance_)
-    instance_ = new ParserFactory;
-  return instance_;
+ParserFactory& ParserFactory::getInstance() {
+  static ParserFactory instance;  
+  return instance;
 }
 
 ParserFactory::ParserFactory() { registerParser("gdml", &GDMLParser::create); }
@@ -26,9 +26,11 @@ Parser *ParserFactory::createParser(const std::string &name,
                                     framework::config::Parameters &parameters, 
 				    simcore::ConditionsInterface &ci) {
   auto it{parser_map.find(name)};
-  if (it != parser_map.end())
-    return it->second(parameters, ci);
-  return nullptr;
+  if (it == parser_map.end())
+	  EXCEPTION_RAISE("ParserNotFound", 
+			  "The parser " + name + " was not found."); 
+    
+  return it->second(parameters, ci);
 }
 
 } // namespace geo
