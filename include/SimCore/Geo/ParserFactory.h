@@ -17,10 +17,9 @@ namespace simcore {
 namespace geo {
 
 class ParserFactory {
-
-public:
+ public:
   /// Get the instance to this factory
-  static ParserFactory *getInstance();
+  static ParserFactory &getInstance();
 
   /// Default constructor
   ~ParserFactory() = default;
@@ -31,13 +30,15 @@ public:
    * @param[in] type String type of the perser that needs to be created.
    * @param[in] ci Interface to conditions system.
    */
-  Parser *createParser(const std::string &name, framework::config::Parameters &parameters, 
-		       simcore::ConditionsInterface &ci);
+  Parser *createParser(const std::string &name,
+                       framework::config::Parameters &parameters,
+                       simcore::ConditionsInterface &ci);
 
-private:
-  /// Static instance of this class
-  static ParserFactory *instance_;
+  // Delete the following methods to make sure they are inaccesible.
+  ParserFactory(ParserFactory const &) = delete;
+  void operator=(ParserFactory const &) = delete;
 
+ private:
   /// Default constructor
   ParserFactory();
 
@@ -55,7 +56,7 @@ private:
   // Mapping between a parser type and its create function
   std::map<std::string, createFunc> parser_map;
 };
-} // namespace geo
-} // namespace simcore
+}  // namespace geo
+}  // namespace simcore
 
-#endif // SIMCORE_GEO_PARSERFACTORY_H_
+#endif  // SIMCORE_GEO_PARSERFACTORY_H_
