@@ -20,7 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimCore/AuxInfoReader.h"
+#include "SimCore/Geo/AuxInfoReader.h"
 
 namespace simcore {
 
@@ -44,7 +44,7 @@ class ParallelWorld : public G4VUserParallelWorld {
   G4GDMLParser* parser_{nullptr};
 
   /** The auxiliary GDML info reader. */
-  AuxInfoReader* auxInfoReader_{nullptr};
+  simcore::geo::AuxInfoReader* auxInfoReader_{nullptr};
 
 };  // ParallelWorld
 }  // namespace simcore

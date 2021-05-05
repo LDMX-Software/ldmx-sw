@@ -10,7 +10,7 @@ ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName,
     : G4VUserParallelWorld(worldName),
       parser_(parser),
       auxInfoReader_(
-          new AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
+          new simcore::geo::AuxInfoReader(parser, framework::config::Parameters(), ci)) {}
 
 ParallelWorld::~ParallelWorld() { delete auxInfoReader_; }
 

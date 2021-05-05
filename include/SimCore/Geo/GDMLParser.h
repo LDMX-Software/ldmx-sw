@@ -8,7 +8,7 @@
 #include "Framework/Configure/Parameters.h"
 
 //---< SimCore >---//
-#include "SimCore/AuxInfoReader.h"
+#include "SimCore/Geo/AuxInfoReader.h"
 #include "SimCore/Geo/Parser.h"
 
 // Forward Declarations
@@ -73,7 +73,7 @@ class GDMLParser : public Parser {
   std::unique_ptr<G4GDMLParser> parser_;
 
   /// The auxiliary info reader
-  std::unique_ptr<simcore::AuxInfoReader> info_;
+  std::unique_ptr<simcore::geo::AuxInfoReader> info_;
 
   /// The parameters used to configure this parser
   framework::config::Parameters parameters_;
