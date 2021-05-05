@@ -48,6 +48,6 @@ EcalHgcrocConditionsHardcode.validForAllRows([
     10240. / 200., #DRAIN_RATE - fC/ns
     320./1024/20., #GAIN - 320. fC / 1024. counts / 20 pF - conversion from ADC to mV
     50. + 3., #READOUT_THRESHOLD - 3 ADC counts above pedestal
-    50.*320./1024/20. + 5 *37*0.162/20., #TOA_THRESHOLD - mV - ~5  MIPs above pedestal
-    50.*320./1024/20. + 50*37*0.162/20., #TOT_THRESHOLD - mV - ~50 MIPs above pedestal
+    50.*320./1024/20. + 5 *37*0.1602/20., #TOA_THRESHOLD - mV - ~5  MIPs above pedestal
+    50.*320./1024/20. + 50*37*0.1602/20., #TOT_THRESHOLD - mV - ~50 MIPs above pedestal
     ])
