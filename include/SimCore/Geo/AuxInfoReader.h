@@ -1,16 +1,20 @@
 
-#ifndef SIMCORE_AUXINFOREADER_H_
-#define SIMCORE_AUXINFOREADER_H_
+#ifndef SIMCORE_GEO_AUXINFOREADER_H
+#define SIMCORE_GEO_AUXINFOREADER_H
 
-// Geant4
+//---< Geant4 >---//
 #include "G4GDMLParser.hh"
 
-// LDMX
+//---< DetDescr >---//
 #include "DetDescr/DetectorHeader.h"
+
+//---< Framework >---//
 #include "Framework/Configure/Parameters.h"
+
+//---< SimCore >---//
 #include "SimCore/ConditionsInterface.h"
 
-namespace simcore {
+namespace simcore::geo {
 
 /**
  * @class AuxInfoReader
@@ -115,6 +119,6 @@ class AuxInfoReader {
   ConditionsInterface &conditionsIntf_;
 };
 
-}  // namespace simcore
+}  // namespace simcore::geo
 
 #endif

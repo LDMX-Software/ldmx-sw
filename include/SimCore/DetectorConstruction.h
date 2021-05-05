@@ -1,20 +1,21 @@
+#ifndef SIMCORE_DETECTORCONSTRUCTION_H
+#define SIMCORE_DETECTORCONSTRUCTION_H
 
-#ifndef SIMCORE_DETECTORCONSTRUCTION_H_
-#define SIMCORE_DETECTORCONSTRUCTION_H_
-
-// LDMX
-#include "AuxInfoReader.h"
-
-// Geant4
-#include "G4GDMLParser.hh"
+//---< Geant4 >---//
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4VUserDetectorConstruction.hh"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
+//---< Framework >---//
 #include "Framework/Configure/Parameters.h"
+
+//---< SimCore >---//
+#include "SimCore/Geo/Parser.h"
+
+// Forward declaration
+namespace simcore::geo {
+class Parser;
+}
 
 namespace simcore {
 
@@ -32,17 +33,20 @@ namespace simcore {
 class DetectorConstruction : public G4VUserDetectorConstruction {
  public:
   /**
-   * Class constructor.
-   * @param theParser GDML parser defining the geometry.
+   * Constructor.
+   *
+   * @param parser Parser used to parse the geometry into memory.
+   * @param parameters The parameters used to configure this class.
+   * @param ci The conditions needed to build the detector.
    */
-  DetectorConstruction(G4GDMLParser *theParser,
+  DetectorConstruction(simcore::geo::Parser *parser,
                        framework::config::Parameters &parameters,
                        ConditionsInterface &ci);
 
   /**
    * Class destructor.
    */
-  virtual ~DetectorConstruction();
+  ~DetectorConstruction() = default;
 
   /**
    * Construct the detector.
@@ -55,28 +59,18 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   void ConstructSDandField();
 
   /**
-   * Get the detector header.
-   * @return The detector header.
+   * @return The name of this detector. This is extracted from the
+   *	description file used to build this detector.
    */
-  ldmx::DetectorHeader *getDetectorHeader() {
-    return auxInfoReader_->getDetectorHeader();
-  }
+  std::string getDetectorName() { return parser_->getDetectorName(); }
 
  private:
-  /**
-   * The GDML parser defining the detector.
-   */
-  G4GDMLParser *parser_;
-
-  /**
-   * The auxiliary GDML info reader.
-   */
-  AuxInfoReader *auxInfoReader_;
+  /// The parser used to load the detector into memory.
+  simcore::geo::Parser *parser_;
 
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;
-};
-
+};  // DetectorConstruction
 }  // namespace simcore
 
-#endif
+#endif  // SIMCORE_DETECTORCONSTRUCTION_H

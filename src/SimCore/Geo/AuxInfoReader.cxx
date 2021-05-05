@@ -1,7 +1,23 @@
-#include "SimCore/AuxInfoReader.h"
+#include "SimCore/Geo/AuxInfoReader.h"
 
-// LDMX
+//---< C++ >---//
+#include <stdlib.h>
+#include <string>
+
+//---< Geant4 >---//
+#include "G4FieldManager.hh"
+#include "G4GDMLEvaluator.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4Region.hh"
+#include "G4RegionStore.hh"
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4UniformMagField.hh"
+
+//---< Framework >---//
 #include "Framework/Exception/Exception.h"
+
+//---< SimCore >---//
 #include "SimCore/CalorimeterSD.h"
 #include "SimCore/EcalSD.h"
 #include "SimCore/HcalSD.h"
@@ -13,23 +29,7 @@
 #include "SimCore/UserRegionInformation.h"
 #include "SimCore/VisAttributesStore.h"
 
-// Geant4
-#include "G4FieldManager.hh"
-#include "G4GDMLEvaluator.hh"
-#include "G4LogicalVolumeStore.hh"
-#include "G4Region.hh"
-#include "G4RegionStore.hh"
-#include "G4SDManager.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4UniformMagField.hh"
-
-// STL
-#include <stdlib.h>
-#include <string>
-
-using std::string;
-
-namespace simcore {
+namespace simcore::geo {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
                              framework::config::Parameters ps,
@@ -250,7 +250,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
 
   // Create a uniform mag field using the built-in Geant4 type.
   if (magFieldType == "G4UniformMagField") {
-    string::size_type sz;
+	  std::string::size_type sz;
     double bx, by, bz;
     bx = by = bz = 0.;
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
@@ -277,7 +277,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
 
     // Create a global 3D field map by reading from a data file.
   } else if (magFieldType == "MagneticFieldMap3D") {
-    string fileName;
+	  std::string fileName;
     double offsetX, offsetY, offsetZ;
 
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
@@ -461,4 +461,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace simcore
+}  // namespace simcore::geo

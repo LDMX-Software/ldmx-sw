@@ -5,8 +5,8 @@
 
 namespace simcore {
 
-XsecBiasingOperator::XsecBiasingOperator(std::string name,
-                                         const framework::config::Parameters& parameters)
+XsecBiasingOperator::XsecBiasingOperator(
+    std::string name, const framework::config::Parameters& parameters)
     : G4VBiasingOperator(name) {}
 
 XsecBiasingOperator::~XsecBiasingOperator() {}

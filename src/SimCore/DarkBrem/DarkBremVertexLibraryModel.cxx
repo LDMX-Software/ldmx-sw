@@ -24,7 +24,8 @@
 namespace simcore {
 namespace darkbrem {
 
-DarkBremVertexLibraryModel::DarkBremVertexLibraryModel(framework::config::Parameters &params)
+DarkBremVertexLibraryModel::DarkBremVertexLibraryModel(
+    framework::config::Parameters &params)
     : G4eDarkBremsstrahlungModel(params), method_(DarkBremMethod::Undefined) {
   method_name_ = params.getParameter<std::string>("method");
   if (method_name_ == "forward_only") {
