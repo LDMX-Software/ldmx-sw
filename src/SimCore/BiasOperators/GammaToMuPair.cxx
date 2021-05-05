@@ -4,7 +4,8 @@
 namespace simcore {
 namespace biasoperators {
 
-GammaToMuPair::GammaToMuPair(std::string name, const framework::config::Parameters& p)
+GammaToMuPair::GammaToMuPair(std::string name,
+                             const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   factor_ = p.getParameter<double>("factor");
@@ -13,7 +14,6 @@ GammaToMuPair::GammaToMuPair(std::string name, const framework::config::Paramete
 
 G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-
   if (track->GetKineticEnergy() < threshold_) return 0;
 
   std::string currentProcess =
