@@ -19,11 +19,14 @@ sim.generators[0].position  = [ 0. , 0. , 235. ] #right in front of ecal
 sim.beamSpotSmear = [80., 80., 0]
 from LDMX.Ecal import digi
 from LDMX.Ecal import ecal_trig_digi
+from LDMX.DQM import dqm
 p.sequence=[ sim, 
         digi.EcalDigiProducer(),
         ecal_trig_digi.EcalTrigPrimDigiProducer(),
         digi.EcalRecProducer(), 
+        dqm.EcalDigiVerify()
         ]
-p.outputFiles=["/tmp/ecal_digi_pipeline.root"]
-p.maxEvents = 100
+p.outputFiles=['ecal_digi_pipeline.root']
+p.histogramFile = 'ecal_digi_verify_hists.root'
+p.maxEvents = 1000
 
