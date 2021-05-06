@@ -88,14 +88,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
         if (processName.compareTo("eBrem") == 0 &&
             secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-          if (secondary_track->GetUserInformation() == nullptr) {
-            secondary_track->SetUserInformation(
-                new simcore::UserTrackInformation());
-          }
-          auto trackInfo{static_cast<simcore::UserTrackInformation*>(
-              secondary_track->GetUserInformation())};
+          auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
-          trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName());
+          trackInfo->tagPNGamma();
+          //trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName());
 
           getEventInfo()->incBremCandidateCount();
 

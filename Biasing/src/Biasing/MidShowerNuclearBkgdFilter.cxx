@@ -93,8 +93,7 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(
 }
 
 void MidShowerNuclearBkgdFilter::save(const G4Track* track) const {
-  auto track_info =
-      dynamic_cast<simcore::UserTrackInformation*>(track->GetUserInformation());
+  auto track_info{simcore::UserTrackInformation::get(track)};
   track_info->setSaveFlag(true);
   return;
 }

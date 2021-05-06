@@ -100,8 +100,7 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
   if (creator and creator->GetProcessName().contains(
                       simcore::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
-    simcore::UserTrackInformation* userInfo =
-        dynamic_cast<simcore::UserTrackInformation*>(track->GetUserInformation());
+    simcore::UserTrackInformation* userInfo = simcore::UserTrackInformation::get(track);
     // make sure A' is persisted into output file
     userInfo->setSaveFlag(true);
     if (track->GetParticleDefinition() == simcore::darkbrem::G4APrime::APrime()) {
