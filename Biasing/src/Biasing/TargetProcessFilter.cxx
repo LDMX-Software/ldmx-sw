@@ -51,8 +51,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   auto track{step->GetTrack()};
 
   // Get the track info and check if this track is a brem candidate
-  auto trackInfo{
-      static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
+  auto trackInfo{simcore::UserTrackInformation::get(track)};
   if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
 
   // Get the region the particle is currently in.  Continue processing
