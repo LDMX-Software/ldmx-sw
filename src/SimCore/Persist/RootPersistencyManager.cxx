@@ -90,11 +90,10 @@ void RootPersistencyManager::buildEvent(const G4Event *anEvent) {
   // Set basic event information.
   writeHeader(anEvent);
 
-  // Set pointer to current G4Event.
-  simParticleBuilder_.setCurrentEvent(anEvent);
+  TrackMap* tracks{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
-  // Build the SimParticle list for the output ROOT event.
-  simParticleBuilder_.buildSimParticles(event_);
+  tracks->traceAncestry();
+  event_->add("SimParticles", tracks->getParticleMap());
 
   // Copy hit objects from SD hit collections into the output event.
   writeHitsCollections(anEvent, event_);

@@ -3,19 +3,43 @@
 
 #include "G4ThreeVector.hh"
 #include "G4VUserTrackInformation.hh"
+#include "G4Track.hh"
 
 namespace simcore {
 
 /**
  * Provides user defined information to associate with a Geant4 track.
+ *
+ * This is helpful for keeping track of information we care about
+ * that Geant4 doesn't persist by default.
  */
 class UserTrackInformation : public G4VUserTrackInformation {
  public:
-  /// Constructor
-  UserTrackInformation();
+  /**
+   * Constructor
+   *
+   * We assume the passed track is newly created
+   * so we can copy its "current" kinematics and define
+   * those kinematics to be the "vertex" kinematics.
+   *
+   * @param[in] track G4Track to associate this information with.
+   */
+  UserTrackInformation(G4Track* track);
 
-  /// Destructor
-  ~UserTrackInformation();
+  /**
+   * Get the track information for the passed track.
+   *
+   * This creates a new information and initializes
+   * it for the passed track if one is not already 
+   * attached.
+   */
+  static UserTrackInformation* getInfo(const G4Track* track) {
+    if (!track->GetUserInformation()) {
+      G4Track* t{const_cast<G4Track*>(track)};
+      t->SetUserInformation(new UserTrackInformation(t));
+    }
+    return dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+  }
 
   /// Print the information associated with the track.
   void Print() const final override;
@@ -79,22 +103,23 @@ class UserTrackInformation : public G4VUserTrackInformation {
   const G4ThreeVector& getInitialMomentum() { return initialMomentum_; }
 
   /**
-   * Set the initial momentum of the associated track.
-   *
-   * @param[in] p The initial momentum of the track.
+   * Get the name of the volume that this track was created in.
    */
-  void setInitialMomentum(const G4ThreeVector& p) {
-    initialMomentum_.set(p.x(), p.y(), p.z());
-  }
-
-  void setVertexVolume(const std::string vertexVolume) {
-    vertexVolume_ = vertexVolume;
-  }
-
   std::string getVertexVolume() const { return vertexVolume_; }
 
+  /**
+   * Get the global time at which this track was created.
+   */
+  double getVertexTime() const { return vertex_time_; }
+
  private:
-  /// Flag for saving the track as a Trajectory.
+  /**
+   * Flag for saving the track as a Trajectory.
+   *
+   * Default value is false because we want to save space
+   * in the output file. We assume everywhere else that
+   * the save flag is false unless some other part changes it.
+   */
   bool saveFlag_{false};
 
   /// Flag indicating whether this track is a brem candidate
@@ -108,6 +133,9 @@ class UserTrackInformation : public G4VUserTrackInformation {
 
   /// Volume the track was created in.
   std::string vertexVolume_{""};
+
+  /// Global Time of Creation
+  double vertex_time_{0.};
 
   /// The initial momentum of the track.
   G4ThreeVector initialMomentum_;
