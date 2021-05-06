@@ -55,7 +55,7 @@ void TrackMap::save(const G4Track* track) {
   particle.setMass(track->GetDynamicParticle()->GetMass());
   particle.setEnergy(track->GetVertexKineticEnergy()+track->GetDynamicParticle()->GetMass());
 
-  auto track_info{UserTrackInformation::getInfo(track)};
+  auto track_info{UserTrackInformation::get(track)};
   particle.setVertexVolume(track_info->getVertexVolume());
 
   auto vert{track->GetVertexPosition()};

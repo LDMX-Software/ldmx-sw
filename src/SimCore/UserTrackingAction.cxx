@@ -20,10 +20,11 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
 
   if (not trackMap_.contains(trackID)) {
     // New Track
-
-    // if the track information is not created yet,
-    // we make one here in UserTrackInformatin::getInfo
-    UserTrackInformation *track_info{UserTrackInformation::getInfo(track)};
+    
+    // get track information and initialize our new track
+    //  this will create a new track info object if it doesn't exist
+    auto track_info{UserTrackInformation::get(track)};
+    track_info->initialize(track);
 
     // Check if trajectory storage should be turned on or off from the region
     // info.
@@ -71,8 +72,7 @@ void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
    * If its save flag is true **for any reason** at this
    * point, then it will be in the output map.
    */
-  auto track_info{
-      dynamic_cast<UserTrackInformation*>(track->GetUserInformation())};
+  auto track_info{UserTrackInformation::get(track)};
   if (track_info->getSaveFlag() and
       track->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
     trackMap_.save(track);
