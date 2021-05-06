@@ -24,7 +24,7 @@ class NeutronInelastic : public XsecBiasingOperator {
 
   /**
    * @return Method that returns the biasing operation that will be used
-   *         to bias the conversion of gammas to muon pairs.
+   *         to bias the neutron inelactic hadronic interactions.
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
       const G4Track* track,
