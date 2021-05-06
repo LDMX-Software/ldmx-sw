@@ -15,31 +15,28 @@ namespace simcore {
  */
 class UserTrackInformation : public G4VUserTrackInformation {
  public:
+  /// Constructor
+  UserTrackInformation() = default;
+
   /**
-   * Constructor
+   * get
+   *
+   * A static helper function for getting the track information
+   * from the passed G4Track. If the track doesn't have an 
+   * information attached, a new one is created.
+   *
+   * @param[in] track G4Track to get information from
+   */
+  static UserTrackInformation* get(const G4Track* track);
+
+  /**
+   * Initialize the track information with the passed track.
    *
    * We assume the passed track is newly created
    * so we can copy its "current" kinematics and define
    * those kinematics to be the "vertex" kinematics.
-   *
-   * @param[in] track G4Track to associate this information with.
    */
-  UserTrackInformation(G4Track* track);
-
-  /**
-   * Get the track information for the passed track.
-   *
-   * This creates a new information and initializes
-   * it for the passed track if one is not already 
-   * attached.
-   */
-  static UserTrackInformation* getInfo(const G4Track* track) {
-    if (!track->GetUserInformation()) {
-      G4Track* t{const_cast<G4Track*>(track)};
-      t->SetUserInformation(new UserTrackInformation(t));
-    }
-    return dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-  }
+  void initialize(const G4Track* track);
 
   /// Print the information associated with the track.
   void Print() const final override;
