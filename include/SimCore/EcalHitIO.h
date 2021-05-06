@@ -7,7 +7,6 @@
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/Persist/SimParticleBuilder.h"
 
 // STL
 #include <utility>

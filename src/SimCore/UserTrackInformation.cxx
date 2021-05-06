@@ -7,9 +7,11 @@
 
 namespace simcore {
 
-UserTrackInformation::UserTrackInformation() {}
-
-UserTrackInformation::~UserTrackInformation() {}
+UserTrackInformation::UserTrackInformation(G4Track* track) {
+  initialMomentum_ = track->GetMomentum(); 
+  vertexVolume_ = track->GetLogicalVolumeAtVertex()->GetName();
+  vertex_time_ = track->GetGlobalTime();
+}
 
 void UserTrackInformation::Print() const {
   std::cout << "Saving track: " << saveFlag_ << "\n"
