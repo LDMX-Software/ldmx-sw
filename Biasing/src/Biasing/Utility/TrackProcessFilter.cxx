@@ -28,8 +28,6 @@ void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
     auto trackInfo{simcore::UserTrackInformation::get(track)};
     if (name.contains(process_))
       trackInfo->setSaveFlag(true);
-    else
-      trackInfo->setSaveFlag(false);
   }  // does this track have a creator process
 }
 

@@ -92,3 +92,17 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('eDarkBrem')
+
+class DecayChildrenKeeper(BiasingUtilityAction):
+    """ Configuration used to store children of specific particle decays
+
+    Parameters
+    ----------
+    parents : list[int]
+        list of PDG ID of particles whose decay products we want to keep
+    """
+
+    def __init__(self,parents) :
+        super().__init__('keep_decay_children', 'DecayChildrenKeeper' )
+
+        self.parents = parents
