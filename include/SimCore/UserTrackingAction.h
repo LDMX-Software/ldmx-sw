@@ -75,8 +75,7 @@ class UserTrackingAction : public G4UserTrackingAction {
    * - it was created in a region where the 'StoreSecondaries' flag
    *   was set to true.
    *
-   * No matter what, if the track has parents, we insert the track
-   * into the track map's ancestry tree as a new secondary.
+   * No matter what, we insert the track into the track map for book-keeping.
    *
    * Finally, before we wrap up, we call any other tracking actions'
    * 'PreUserTrackingAction' methods.
@@ -91,9 +90,11 @@ class UserTrackingAction : public G4UserTrackingAction {
    * We start by calling any other tracking actions'
    * PostUserTrackingAction methods.
    *
-   * If the track should be saved (it's save flag is
-   * set to true) and it is being stopped, then we
-   * save it in the track map.
+   * If the track should be saved (it's save flag is set to true) 
+   * and it is being stopped, then we save it in the track map.
+   *
+   * @note This is where we make the final decision on if a
+   * particle should be saved into the output file.
    *
    * @see TrackMap::save for how a G4Track is translated
    * into our output SimParticle object.

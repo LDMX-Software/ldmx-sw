@@ -16,9 +16,7 @@
 namespace simcore {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
-  int trackID = track->GetTrackID();
-
-  if (not trackMap_.contains(trackID)) {
+  if (not trackMap_.contains(track)) {
     // New Track
     
     // get track information and initialize our new track
@@ -57,13 +55,8 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
       track_info->setSaveFlag(true); 
     }
 
-    /**
-     * Save the association between track ID 
-     * and its parent ID for all tracks in the event.
-     *  This also marks the track as part of the TrackMap
-     */
-    if (track->GetParentID() > 0)
-      trackMap_.insert(track->GetTrackID(), track->GetParentID());
+    // insert this track into the event's track map
+    trackMap_.insert(track);
   }
 
   // Activate user tracking actions
