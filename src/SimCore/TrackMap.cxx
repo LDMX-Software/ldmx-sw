@@ -6,26 +6,24 @@
 
 namespace simcore {
 
+void TrackMap::insert(const G4Track* track) {
+  ancestry_[track->GetTrackID()] = std::make_pair(track->GetParentID(),isInCalorimeterRegion(track));
+  descendents_[track->GetParentID()].push_back(track->GetTrackID());
+}
+
 int TrackMap::findIncident(G4int trackID) const {
   int currTrackID = trackID;
-  bool foundIncident = false;
+  bool foundIncident{false};
   while (not foundIncident) {
-    if (contains(currTrackID)) {
-      // currTrackID is not a primary and has parent stored
-      currTrackID = ancestry_.at(currTrackID);
-      if (this->isSaved(currTrackID)) {
-        // curr track ID is being stored
-        auto region{particle_map_.at(currTrackID).getVertexVolume()};
-        // TODO: this probably doesn't work anymore
-        if (region.find("Calorimeter") == std::string::npos) {
-          // curr track originated outside cal region
-          foundIncident = true;
-        }
-      }
-    } else {
-      // curr Track ID is a primary and has already been
-      // checked above, give up
+    auto &[parentID, inCalRegion] = ancestry_.at(currTrackID);
+    if (not inCalRegion or parentID == 0) {
+      // current track ID is nearest ancestor
+      // originating outside cal region
+      // or is a primary particle
       foundIncident = true;
+    } else {
+      // still in cal region, keep going
+      currTrackID = parentID;
     }
   }
   return currTrackID;
@@ -85,9 +83,7 @@ void TrackMap::save(const G4Track* track) {
 
 void TrackMap::traceAncestry() {
   for (auto & [id, particle] : particle_map_) {
-    if (ancestry_.find(id) != ancestry_.end()) {
-      particle.addParent(ancestry_.at(id));
-    }
+    particle.addParent(ancestry_.at(id).first);
     
     /**
      * Use [] instead of at() for descendents_
@@ -105,6 +101,11 @@ void TrackMap::clear() {
   ancestry_.clear();
   descendents_.clear();
   particle_map_.clear();
+}
+
+bool TrackMap::isInCalorimeterRegion(const G4Track* track) const {
+  auto region{track->GetLogicalVolumeAtVertex()->GetRegion()->GetName()};
+  return region.contains("Calorimeter");
 }
 
 }  // namespace simcore
