@@ -23,12 +23,13 @@ namespace simcore {
 
 /**
  * @class TrackMap
- * @brief Defines a map of track ID to parent ID and Trajectory
+ * @brief Defines a map of particle ancestry and particles to be saved
  *
- * @note
- * This class provides a record of track ancestry which is used
- * to connect track IDs to their parents.  It also maps track IDs
- * to Trajectory objects.
+ * This class keeps track of the ancestry (child -> parent)
+ * and descendents (parent -> children) of ALL particles generated
+ * in an event. This allows the particles that are chosen to
+ * be saved (via the TrackMap::save method) to have their
+ * parent and children faithfully recorded in the output file.
  */
 class TrackMap {
  public:
@@ -37,7 +38,7 @@ class TrackMap {
    * @param trackID The track ID.
    * @param parentID The parent track ID.
    */
-  inline void addSecondary(G4int trackID, G4int parentID) {
+  inline void insert(int trackID, int parentID) {
     ancestry_[trackID] = parentID;
     descendents_[parentID].push_back(trackID);
   }
@@ -46,7 +47,7 @@ class TrackMap {
    * Check if the passed track ID has already been inserted
    * into the track map.
    */
-  inline bool contains(G4int trackID) const {
+  inline bool contains(int trackID) const {
     ancestry_.find(trackID) == ancestry_.end();
   }
 
@@ -94,6 +95,10 @@ class TrackMap {
 
   /**
    * Clear the internal maps.
+   *
+   * This should be called at the **beginning** of an event.
+   * The maps need to persist through the end of the event so
+   * that they are available to be written to the output file.
    */
   void clear();
 

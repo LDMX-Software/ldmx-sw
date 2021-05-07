@@ -32,8 +32,11 @@ int TrackMap::findIncident(G4int trackID) const {
 }
 
 void TrackMap::save(const G4Track* track) {
-  // create sim particle in map
+  // create sim particle in map, keep reference to the newly created particle
   ldmx::SimParticle& particle{particle_map_[track->GetTrackID()]};
+
+  // TODO: default gen status?
+  particle.setGenStatus(0);
 
   // Update the gen status from the primary particle.
   if (track->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
@@ -43,9 +46,6 @@ void TrackMap::save(const G4Track* track) {
       particle.setGenStatus(
           ((UserPrimaryParticleInformation*)primaryInfo)->getHepEvtStatus());
     }
-  } else {
-    // TODO: default gen status?
-    particle.setGenStatus(0);
   }
 
   auto particle_def{track->GetDefinition()};

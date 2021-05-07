@@ -25,6 +25,8 @@ class UserTrackInformation : public G4VUserTrackInformation {
    * from the passed G4Track. If the track doesn't have an 
    * information attached, a new one is created.
    *
+   * @note The return value of this pointer is never NULL.
+   *
    * @param[in] track G4Track to get information from
    */
   static UserTrackInformation* get(const G4Track* track);
@@ -35,6 +37,12 @@ class UserTrackInformation : public G4VUserTrackInformation {
    * We assume the passed track is newly created
    * so we can copy its "current" kinematics and define
    * those kinematics to be the "vertex" kinematics.
+   *
+   * Even though we are "initializing" the track,
+   * we only change the kinematic values. The boolean
+   * flags may have been edited prior to the track reaching
+   * its own processing phase (where it is initialized),
+   * so those flags should (and are) not changed here.
    */
   void initialize(const G4Track* track);
 
@@ -47,7 +55,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
    *
    * @return The save flag.
    */
-  bool getSaveFlag() { return saveFlag_; }
+  bool getSaveFlag() const { return saveFlag_; }
 
   /**
    * Set the save flag so the associated track will be persisted
@@ -62,7 +70,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
    *
    * @return True if this track is a brem candidate, false otherwise.
    */
-  bool isBremCandidate() { return isBremCandidate_; }
+  bool isBremCandidate() const { return isBremCandidate_; }
 
   /**
    * Tag this track as a brem candidate by the biasing filters.
@@ -81,7 +89,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
    * @return True if this track is a photon that has undergone a
    * photo-nuclear reaction, false otherwise.
    */
-  bool isPNGamma() { return isPNGamma_; }
+  bool isPNGamma() const { return isPNGamma_; }
 
   /**
    * Tag this track as a photon that has undergone a photo-nuclear
@@ -97,7 +105,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
    *
    * @return The initial momentum of the track.
    */
-  const G4ThreeVector& getInitialMomentum() { return initialMomentum_; }
+  const G4ThreeVector& getInitialMomentum() const { return initialMomentum_; }
 
   /**
    * Get the name of the volume that this track was created in.
