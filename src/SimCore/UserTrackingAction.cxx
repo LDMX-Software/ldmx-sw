@@ -26,14 +26,12 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
     auto track_info{UserTrackInformation::get(track)};
     track_info->initialize(track);
 
-    // Check if trajectory storage should be turned on or off from the region
-    // info.
+    // Get the region info for where the track was created (could be NULL)
     auto regionInfo = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
                           ->GetRegion()
                           ->GetUserInformation();
 
-    // Check if trajectory storage should be turned on or off from the gen
-    // status info
+    // Get the gen status if track was primary
     int curGenStatus = -1;
     if (track->GetDynamicParticle()->GetPrimaryParticle()) {
       auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation*>(
@@ -43,16 +41,29 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
       curGenStatus = primaryInfo->getHepEvtStatus();
     }
 
-    // Always save a particle if it has gen status == 1
-    // or if it is in a region that should store secondaries
+    /**
+     * Always save a particle if any of the following are true
+     *    it has gen status == 1 (primary)
+     *    it is in a region without region info
+     *    it is in a region that is marked to store secondaries
+     * DON'T change the save-status even if these are false
+     *  The track's save-status is false by default when the track-info
+     *  is constructed and the track's save-status could have been modified by a
+     *  user action **prior** to the track being processed for the first time. 
+     *  For example, this happens if the user wants to save the
+     *  secondaries of a particular track.
+     */
     if (curGenStatus == 1 or !regionInfo or regionInfo->getStoreSecondaries()) {
       track_info->setSaveFlag(true); 
     }
 
-    // Save the association between track ID and its parent ID for all tracks in
-    // the event.
+    /**
+     * Save the association between track ID 
+     * and its parent ID for all tracks in the event.
+     *  This also marks the track as part of the TrackMap
+     */
     if (track->GetParentID() > 0)
-      trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
+      trackMap_.insert(track->GetTrackID(), track->GetParentID());
   }
 
   // Activate user tracking actions
