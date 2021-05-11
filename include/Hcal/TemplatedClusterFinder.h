@@ -64,8 +64,8 @@ namespace hcal {
                             
                         }
                     }
-                    std::cout<<clusters_[mi].GetTime() << " "<< clusters_[mj].GetTime()<<std::endl;
-                    if(abs(clusters_[mi].GetTime() - clusters_[mj].GetTime()) > deltaTime) continue;
+                    
+                    //if(abs(clusters_[mi].GetTime() - clusters_[mj].GetTime()) > deltaTime) continue;
                    
                     nseeds_ = nseeds;
                     transitionWeights_.insert(std::pair<int, double>(ncluster, minwgt));
