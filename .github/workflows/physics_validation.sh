@@ -47,13 +47,13 @@ __compare() {
 }
 
 # Full Main
-#   0. Get CLI parameters (none at the moment)
+#   0. Get CLI parameters 
 #   1. Go to the directory this script is in
 #   2. Make sure we have both containers we need
 #   3. Run through different sample IDs and compare them
 __main() {
   local _dev="$(__deduce_label)"
-  local _trunk=ldmx/pro:v2.3.0
+  local _trunk="$1"
 
   local _old_pwd=$OLDPWD
   cd $(dirname ${BASH_SOURCE[0]})
