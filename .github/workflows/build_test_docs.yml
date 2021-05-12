@@ -42,16 +42,6 @@ jobs:
           export LDMX_BASE=$(pwd) &&
           docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
-    # Run more full validation tests 
-    - name: Physics Validation
-      run: bash .github/workflows/physics_validation.sh 
-
-    # Persist output of more full validation tests
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Physics Validation
-        path: .github/workflows/plots/**
-
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
     #   the docs are only updated if the build passes
