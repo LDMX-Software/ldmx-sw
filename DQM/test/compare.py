@@ -46,7 +46,6 @@ class ParallelTrees() :
 
         # Determine lowest-level branches
         self.__branches = retrieve_branches(self.__trunk_tree.GetListOfBranches())
-        print(self.__branches)
 
         self.__dev_file = ROOT.TFile.Open(f'{translate_name(dev_image)}_{sample_id}.root')
         self.__dev_tree = self.__dev_file.Get('LDMX_Events')
@@ -61,7 +60,7 @@ class ParallelTrees() :
 
         c = ROOT.TCanvas()
         c.SetLogy()
-        os.system(f'mkdir -p {self.__sample_id}')
+        os.system(f'mkdir -p plots/{self.__sample_id}')
         
         for br in self.__branches :
             h_trunk, h_dev = self.get_hist(br)
@@ -76,7 +75,7 @@ class ParallelTrees() :
             h_dev.Draw('same')
         
             c.BuildLegend()
-            c.SaveAs(f'{self.__sample_id}/{br}.pdf')
+            c.SaveAs(f'plots/{self.__sample_id}/{br}.pdf')
 
 
 if __name__ == '__main__' :

@@ -42,10 +42,15 @@ jobs:
           export LDMX_BASE=$(pwd) &&
           docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
-    # Run more full validation tests if this is a tag
+    # Run more full validation tests 
     - name: Validation Tests
-      if: <is tag>
-      run: bash DQM/test/comp.sh ${GITHUB_REF#refs/tags/}
+      run: bash ldmx-sw/DQM/test/comp.sh 
+
+    # Persist output of more full validation tests
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Physics Validation
+        path: ldmx-sw/DQM/test/plots/**
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
