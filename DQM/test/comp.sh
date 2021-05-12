@@ -6,7 +6,7 @@
 #   Action, so only tamper with it if you know what you are doing!
 ###############################################################################
 
-export LDMX_BASE=$(pwd)
+export LDMX_BASE=$(cd .. && pwd)
 
 # Deduce label for these developments
 #  GitHub actions define the GITHUB_REF to be the branch/tag being pushed to 
