@@ -48,7 +48,7 @@ jobs:
 
     # Actually run validation script
     - name: Physics Validation
-      run: bash .github/workflows/physics_validation.sh
+      run: bash .github/workflows/physics_validation.sh ${{ github.event.inputs.base }}
 
     # Persist output of more full validation tests
     - uses: actions/upload-artifact@v2
