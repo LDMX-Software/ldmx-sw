@@ -590,10 +590,13 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
-
   // Find straight MIP tracks:
 
   std::sort(trackingHitList.begin(), trackingHitList.end(), [](HitData ha, HitData hb) {return ha.layer > hb.layer;});
+  // For merging tracks:  Need to keep track of existing tracks
+  // Candidate tracks to merge in will always be in front of the current track (lower z), so only store the last hit
+  // 3-layer vector:  each track = vector of 3-tuples (xy+layer).
+  std::vector<std::vector<HitData>> track_list;
   
   float cellWidth = 8.7;
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
@@ -632,22 +635,58 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
       //if track found, increment nStraightTracks and remove all hits in track from future consideration
       if (trackLen >= 2) {
+        std::vector<HitData> temp_track_list;
         for (int kHit = 0; kHit < trackLen; kHit++) {
+          temp_track_list.push_back(trackingHitList[track[kHit]]);
           trackingHitList.erase(trackingHitList.begin() + track[kHit]);
         }
+        track_list.push_back(temp_track_list);
         //The *current* hit will have been removed, so iHit is currently pointing to the next hit.
         iHit--;  //Decrement iHit so no hits will get skipped by iHit++
-        nStraightTracks_++;
+        //nStraightTracks_++; // moved to post-merging
       }
-      //Optional addition:  Merge nearby straight tracks.  Not necessary for veto.
   }
+
+  //Optional addition:  Merge nearby straight tracks.  Not necessary for veto.
+  // Criteria:  consider tail of track.  Merge if head of next track is 1/2 layers behind, within 1 cell of xy position.
+  //std::cout << "BEGINNING TRACK MERGING" << std::endl;
+
+  for (int track_i = 0; track_i < track_list.size(); track_i++) {
+    // for each track, check the remainder of the track list for compatible tracks
+    std::vector<HitData> base_track = track_list[track_i];
+    HitData tail_hitdata = base_track.back(); // xylayer of last hit in track
+    //std::cout << "  Considering track " << track_i << std::endl;
+    for (int track_j = track_i+1; track_j < track_list.size(); track_j++) {
+      //std::cout << "    Checking for compatibility: " << track_j << std::endl;
+      std::vector<HitData> checking_track = track_list[track_j];
+      HitData head_hitdata = checking_track.front();
+      // if 1-2 layers behind, and xy within one cell...
+      if ((head_hitdata.layer == tail_hitdata.layer+1 || head_hitdata.layer == tail_hitdata.layer+2)
+          && pow(pow(head_hitdata.pos.X()-tail_hitdata.pos.X(),2)
+               + pow(head_hitdata.pos.Y()-tail_hitdata.pos.Y(),2), 0.5) <= cellWidth) {
+        // ...then append the second track to the first one and delete it
+        // NOTE:  TO ADD:  (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag()
+        std::cout << "     **Compatible track found!  Adding track, deleting stuff..." << std::endl;
+        std::cout << "     Tail xylayer: " << head_hitdata.pos.X() << "," << head_hitdata.pos.Y() << "," << head_hitdata.layer << std::endl;
+        std::cout << "     Head xylayer: " << tail_hitdata.pos.X() << "," << tail_hitdata.pos.Y() << "," << tail_hitdata.layer << std::endl;
+        for (int hit_k = 0; hit_k < checking_track.size(); hit_k++) {
+          base_track.push_back(track_list[track_j][hit_k]);
+        }
+        track_list.erase(track_list.begin() + track_j);
+        break;
+      }
+    }
+  }
+  nStraightTracks_ = track_list.size();
+
 
 
   // Linreg tracking:
 
-
+  //std::cout << "Finding linreg tracks..." << std::endl;
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+    //std::cout << "hit " << iHit << std::endl;
     int track[34];
     int trackLen;
     int currenthit;
@@ -667,23 +706,29 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     nHitsInRegion = 1;
     currenthit = iHit;
     hitsInRegion[0] = iHit;
-
+    //std::cout << "filling hitsInRegion, tracking list size=" << trackingHitList.size() << std::endl;
     // Find all hits within 2 cells of the primary hit:
     for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+      //std::cout << "iHit, jHit:  " << iHit << ", " << jHit << std::endl;
       float dstToHit = (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
+      //std::cout << "  Filling hitsInRegion, tracking list len=" << trackingHitList.size() << std::endl;
       if (dstToHit <= 2*cellWidth) {
         hitsInRegion[nHitsInRegion] = jHit;
         nHitsInRegion++;
       }
     }
 
+    //std::cout << "...ready" << std::endl;
+
     // Look at combinations of hits within the region (do not consider the same combination twice):
     hitNums[0] = iHit;
     for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
+      if (trackingHitList.size() < 3) break;
       hitNums[1] = jHit;
       for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
         hitNums[2] = kHit;
         for (int hInd = 0; hInd < 3; hInd++) {
+          //std::cout << "    inner loop" << std::endl;
           // hmean = geometric mean, subtract off from hits to improve SVD performance
           hmean(hInd) = (trackingHitList[hitNums[0]].pos(hInd) +
                          trackingHitList[hitNums[1]].pos(hInd) +
@@ -698,6 +743,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         // Perform "linreg" on selected points:
         TDecompSVD svdObj = TDecompSVD(hdt);
         bool decomposed = svdObj.Decompose();
+        //std::cout << "    Decomposed" << std::endl;
         if (!decomposed) continue;
 
         Vm = svdObj.GetV();  // First col of V matrix is the slope of the best-fit line
@@ -729,18 +775,23 @@ void EcalVetoProcessor::produce(framework::Event &event) {
             trackLen++;
           }
         }
+        //std::cout << "    inner loop done!" << std::endl;
       }
     }
     // Ordinarily, additional hits in line w/ track would be added here.  However, this doesn't affect the results of the simple veto.
     // Exclude all hits in a found track from further consideration:
     if (trackLen >= 2) {
       nLinregTracks_++;
+      //std::cout << "  Hitlist size = " << trackingHitList.size() << std::endl;
       for (int kHit = 0; kHit < trackLen; kHit++) {
         trackingHitList.erase(trackingHitList.begin() + track[kHit]);
+        //std::cout << "  Hitlist size = " << trackingHitList.size() << std::endl;
       }
       iHit--;
     }
   }
+
+  //std::cout << "  MIP tracking completed" << std::endl;
 
 
   result.setVariables(
