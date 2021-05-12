@@ -44,13 +44,13 @@ jobs:
 
     # Run more full validation tests 
     - name: Physics Validation
-      run: bash DQM/test/comp.sh 
+      run: bash .github/workflows/physics_validation.sh 
 
     # Persist output of more full validation tests
     - uses: actions/upload-artifact@v2
       with:
         name: Physics Validation
-        path: DQM/test/plots/**
+        path: .github/workflows/plots/**
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
