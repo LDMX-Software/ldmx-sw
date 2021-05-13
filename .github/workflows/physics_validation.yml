@@ -1,0 +1,24 @@
+
+name: Physics Validation
+
+# Manually launch this action via GitHub
+on: 
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'Production Image to Compare Against'
+        required: true
+        default: 'ldmx/pro:v2.3.0'
+
+jobs:
+  physics-validation:
+    runs-on: ubuntu-latest
+    env:
+      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # check out ldmx-sw in the workspace
+    - run: echo "Not Implemented on trunk yet"
