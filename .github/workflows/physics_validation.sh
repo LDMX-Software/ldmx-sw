@@ -22,9 +22,8 @@ __deduce_label() {
 }
 
 # Our custom docker run command **specificially for this script**
-#   We mount the current directory and run inside of it
-#   The container tag is also given as an argument to the script
-#   to label the output file.
+#   We mount only the LDMX_BASE directory and run inside the current directory
+#   i.e. We assume we are running inside LDMX_BASE.
 __docker_run() {
   local _container="$1"
   local _args="${@:2}"
@@ -43,6 +42,9 @@ __compare() {
   __docker_run ${_trunk} fire "${_sample_id}.py" ${_trunk} || return $?
   __docker_run ldmx/dev:latest fire "${_sample_id}.py" ${_dev} || return $?
   __docker_run ldmx/dev:latest python3 compare.py ${_trunk} ${_dev} ${_sample_id} || return $?
+  if pdfunite plots/${_sample_id}/* plots/${_sample_id}.pdf; then
+    rm -r plots/${_sample_id}/*
+  fi
   return $?
 }
 
