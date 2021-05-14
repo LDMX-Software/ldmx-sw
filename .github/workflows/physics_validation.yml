@@ -9,12 +9,18 @@ on:
         description: 'Production Image to Compare Against'
         required: true
         default: 'ldmx/pro:v2.3.0'
+      dev:
+        description: 'ldmx-sw Branch with Developments to Compare'
+        required: true
+        default: 'trunk'
+      image:
+        description: 'Development Image to use with Dev Branch'
+        required: true
+        default: 'ldmx/dev:latest'
 
 jobs:
   physics-validation:
     runs-on: ubuntu-latest
-    env:
-      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
     defaults:
       run:
         shell: bash
@@ -22,21 +28,23 @@ jobs:
     steps:
     # check out ldmx-sw in the workspace
     - uses: actions/checkout@v2
-    - uses: textbook/git-checkout-submodule-action@master
+      with:
+        ref: ${{ github.event.input.dev }}
+        submodules: 'recursive'
 
     # Setup our ldmx development environment
     - name: Setup ldmx environment
-      run: docker pull $image
+      run: docker pull ${{ github.event.inputs.image }}
     
     # configure ldmx-sw using the docker environment
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake ..
+          docker run -i -v $(pwd):$(pwd) ${{ github.event.inputs.image }} $(pwd)/build cmake ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) $image $(pwd)/build make install
+      run: docker run -i -v $(pwd):$(pwd) ${{ github.event.inputs.image }} $(pwd)/build make install
 
     # Run the test using ctest. The --verbose parameter displays the output 
     # you would typically see with catch.
@@ -44,7 +52,7 @@ jobs:
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ${{ github.event.inputs.image }} $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
     # Actually run validation script
     - name: Physics Validation
