@@ -282,15 +282,8 @@ class Event {
     // now we have determined the unique branch name to look for
     //  so we can start looking on the bus and the input tree
     //  (if it exists) for it
-    if (bus_.isOnBoard(branchName)) {
-        // this branch is already on the bus,
-        //  so we will just return the value of that passenger
-        if (branches_.find(branchName) != branches_.end()) {
-            // make sure branch is on correct entry
-            //  this updates passenger if we are reading from an input file
-            branches_[branchName]->GetEntry(ientry_);
-        }
-    } else if (inputTree_) {
+    bool already_on_board{bus_.isOnBoard(branchName)};
+    if (not already_on_board and inputTree_) {
       // branch is not on the bus but there is an input tree
       //  -> let's look for a new branch to load
 
@@ -311,10 +304,10 @@ class Event {
       // ooh, new branch!
       branch->SetStatus(1); //overrides any 'ignore' rules
       // load in the current entry
+      //  this is necessary because getObject is called _after_ nextEvent 
+      //  (I think)
       branch->GetEntry((ientry_<0)?(0):(ientry_));
-      //insert into map of loaded branches
-      branches_[branchName] = branch;
-    } else {
+    } else if (not already_on_board) {
       // not found in loaded branches and there is no inputTree,
       // so no hope of finding an unloaded object
       EXCEPTION_RAISE("ProductNotFound", "No product found for name '" +
@@ -504,11 +497,6 @@ class Event {
 
   /// The total number of electrons in the event
   int electronCount_{-1}; 
-
-  /**
-   * Map of names to branches.
-   */
-  mutable std::map<std::string, TBranch*> branches_;
 
   /**
    * The Bus
