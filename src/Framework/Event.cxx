@@ -89,7 +89,6 @@ void Event::setInputTree(TTree* tree) {
   // so reset branch listing before starting
   products_.clear();
   knownLookups_.clear(); //reset caching of empty pass requests
-  branches_.clear();
   bus_.everybodyOff();
 
   // put in EventHeader (only one without pass name)
@@ -142,7 +141,6 @@ void Event::onEndOfFile() {
   if (inputTree_)
     inputTree_ = nullptr;  // detach old inputTree (owned by EventFile)
   knownLookups_.clear();   // reset caching of empty pass requests
-  branches_.clear();       // reset branch listing
   bus_.everybodyOff();     // delete buffer objects
   ientry_ = -1;            // reset current entry and total entries
   entries_ = -1;
