@@ -199,7 +199,6 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     if (!parent_->nextEvent()) {
       return false;
     }
-    parent_->tree_->GetEntry(parent_->ientry_);
     ientry_ = parent_->ientry_;
     entries_++;
   } else if (isOutputFile_) {
@@ -225,7 +224,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
           return false;
     }
     ientry_++;
-    tree_->LoadTree(ientry_);
+    tree_->GetEntry(ientry_);
   }
 
   // if we have an event_
