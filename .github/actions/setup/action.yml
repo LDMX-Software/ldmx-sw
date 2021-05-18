@@ -16,6 +16,7 @@ runs:
       run: |
         docker pull ${{ inputs.image }}
         mkdir build
+      shell: bash
 
     - name: Configure the Build
       uses: actions/run_ldmx
