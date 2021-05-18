@@ -183,7 +183,9 @@ Display::Display(TEveManager* manager, bool verbose)
 bool Display::SetFile(const TString file) {
 
   try {
-    the_file_ = std::make_unique<framework::EventFile>(file.Data());
+    framework::config::Parameters file_config;
+    file_config.addParameter("tree_name",std::string("LDMX_Events"));
+    the_file_ = std::make_unique<framework::EventFile>(file_config,file.Data());
     the_file_->setupEvent(&the_event_);
     if (verbose_) {
       std::cout << "[ Display ] : Input root file opened successfully."
