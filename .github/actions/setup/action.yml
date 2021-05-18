@@ -18,6 +18,7 @@ runs:
       shell: bash
 
     - run: |
+        set -x
         export LDMX_BASE=${GITHUB_WORKSPACE%ldmx-sw/*}
         docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ${{ inputs.image }} ldmx-sw/build 'cmake .. && make install && ctest --verbose'
       shell: bash 
