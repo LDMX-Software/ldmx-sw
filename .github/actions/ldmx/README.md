@@ -1,8 +1,9 @@
 # ldmx Action
 
 Run the input command string in the ldmx container with the `LDMX_BASE` environment variable properly configured.
+
 We deduce the `LDMX_BASE` environment variable by assuming that `ldmx-sw` has been checked out using `actions/checkout`
-which puts the copy of the repository in the `GITHUB_WORKSPACE` directory.
+which puts the user in the root directory of the repository being checked out.
 
 ## Inputs
 
