@@ -6,11 +6,17 @@
 #   the GitHub Action, so only tamper with it if you know what you are doing!
 ###############################################################################
 
-export LDMX_BASE=$(cd .. && pwd)
+# Deduce where LDMX_BASE is
+#   This is only here to aid in users wanting to run physics_validation locally
+__deduce_ldmx_base() {
+  _pwd="$(pwd)"
+  export LDMX_BASE=${_pwd%%ldmx-sw/*}
+  echo $LDMX_BASE
+}
 
 # Deduce label for these developments
 #  GitHub actions define the GITHUB_REF to be the branch/tag being pushed to 
-__deduce_label() {
+__deduce_test_label() {
   if [[ -z "${GITHUB_REF}" ]]; then
     echo "$(git rev-parse --abbrev-ref HEAD)"
   else
@@ -18,6 +24,16 @@ __deduce_label() {
     local _branch=${GITHUB_REF#refs/heads/}
     _branch=${_branch#refs/tags/}
     echo ${_branch}
+  fi
+}
+
+# Deduce the label for the golden files
+__deduce_gold_label() {
+  local __gold_label_file="gold/label"
+  if [[ -f ${__gold_label_file} ]]; then
+    cat ${__gold_label_file}
+  else
+    echo "gold"
   fi
 }
 
@@ -33,36 +49,18 @@ __docker_run() {
   return $?
 }
 
-# Compare the event trees of the two input container tags
-#   and the input event file post-fix (defined in configs).
-__compare() {
-  local _base="$1"
-  local _dev="$2"
-  local _sample_id="$3"
-  __docker_run ${_base} fire "${_sample_id}.py" ${_base} || return $?
-  __docker_run ldmx/dev:latest fire "${_sample_id}.py" ${_dev} || return $?
-  __docker_run ldmx/dev:latest python3 compare.py ${_base} ${_dev} ${_sample_id} || return $?
-  return $?
-}
-
 # Full Main
-#   0. Get CLI parameters 
+#   0. Get CLI parameters (none atm)
 #   1. Go to the directory this script is in
 #   2. Make sure we have the containers we need
 #   3. Run through different sample IDs and compare them
 __main() {
-  local _dev="$(__deduce_label)"
-  local _base="$1"
-
   local _old_pwd=$OLDPWD
   cd $(dirname ${BASH_SOURCE[0]})
 
-  # Make sure we have both containers locally
-  docker pull ${_base} || return $?
-  
-  for sample_id in inclusive; do
-    __compare ${_base} ${_dev} ${sample_id} || return $?
-  done
+  __deduce_ldmx_base
+  __docker_run ldmx/dev:latest python3 physics.py val \
+    -t $(__deduce_test_label) -g $(__deduce_gold_label) || return $?
 
   cd - &> /dev/null
   export OLDPWD=${_old_pwd}
