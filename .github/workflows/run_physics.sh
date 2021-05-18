@@ -55,12 +55,48 @@ __docker_run() {
 #   2. Make sure we have the containers we need
 #   3. Run through different sample IDs and compare them
 __main() {
+  _action=""
+  _label="" #only used in gen action
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      val)
+        _action="val"
+        shift
+        ;;
+      gen)
+        _action="gen"
+        _label="$2"
+        shift
+        shift
+        ;;
+      *)
+        echo "Unknown option '$1'."
+        return 1
+        ;;
+    esac
+  done
+
+  # CLI are parsed
+  __deduce_ldmx_base
   local _old_pwd=$OLDPWD
   cd $(dirname ${BASH_SOURCE[0]})
 
-  __deduce_ldmx_base
-  __docker_run ldmx/dev:latest python3 physics.py val \
-    -t $(__deduce_test_label) -g $(__deduce_gold_label) || return $?
+  if [[ -z ${_action} ]]; then
+    echo "Must define an action to do."
+    return 2
+  elif [[ ${_action} = "val" ]]; then
+    __docker_run ldmx/dev:latest python3 physics.py val \
+      -t $(__deduce_test_label) -g $(__deduce_gold_label) || return $?
+  elif [[ ${_action} = "gen" ]]; then
+    if [[ -z ${_label} ]]; then
+      echo "Must define a label for a new golden histogram set."
+      return 3
+    fi 
+    __docker_run ldmx/dev:latest python3 physics.py gen || return $?
+    echo "${_label}" >> gold/label
+    git add gold/*
+    git commit -m "new golden histograms : ${_label}"
+  fi
 
   cd - &> /dev/null
   export OLDPWD=${_old_pwd}

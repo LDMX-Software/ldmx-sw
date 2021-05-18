@@ -1,17 +1,15 @@
 
-name: Physics Validation
+name: Generate Golden Histograms
 
 # Manually launch this action via GitHub
 on: 
   workflow_dispatch:
     inputs:
-      golden:
-        description: 'Git Reference to Retrieve Golden Files From'
+      label:
+        description: 'Human-Readable Short Label for this Set of Histograms'
         required: true
-        default: 'trunk'
-  pull_request: 
-    branches: [trunk]
-    types: [opened, ready_for_review]
+        default: 'golden'
+  release:
 
 jobs:
   physics-validation:
@@ -30,7 +28,7 @@ jobs:
 
     # Setup our ldmx development environment
     - name: Setup ldmx environment
-      run: docker pull ${image}
+      run: docker pull ldmx/dev:latest
     
     # configure ldmx-sw using the docker environment
     - name: Configure the build
@@ -42,16 +40,6 @@ jobs:
     - name: Build and Install
       run: docker run -i -v $(pwd):$(pwd) ${image} $(pwd)/build make install
 
-    # Checkout the branch that has the "golden files" if they are different
-    # than the ones stored on our branch. By default, we get the files from
-    # 'trunk', but this action can be re-run where the branch/tag/sha is manually
-    # input.
-    - name: Git Golden Files
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.input.golden }}
-        submodules: 'recursive'
-
     # Run the test using ctest. The --verbose parameter displays the output 
     # you would typically see with catch.
     - name: Test the build
@@ -60,13 +48,26 @@ jobs:
           export LDMX_BASE=$(pwd) &&
           docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ${image} $LDMX_BASE/ldmx-sw/build ctest --verbose 
 
-    # Actually run validation script
-    - name: Physics Validation
-      run: bash .github/workflows/run_physics.sh val
+    # Deduce label for this set of golden histograms
+    - name: Deduce Gold Label
+      id: deduce_label
+      run: |
+        _label=${{ github.event.inputs.label }}
+        if [[ -z ${_label} ]]; then
+          _label=${GITHUB_REF#refs/tags/}
+        fi
+        echo "Deduced label: ${_label}"
+        echo ::set-output name=label::${_label}
 
-    # Persist output of more full validation tests
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Physics Validation
-        path: .github/workflows/plots/**
+    # Actually run generation script
+    - name: Generate Golden Histograms
+      run: bash .github/workflows/run_physics.sh gen ${{ steps.deduce_label.outputs.label }}
 
+    # Push newly generated files
+    - name: Push Histograms
+      run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .github/workflows/gold/*
+          git commit -m "New set of golden histograms labled ${{ steps.deduce_label.outputs.label }}"
+          git push
