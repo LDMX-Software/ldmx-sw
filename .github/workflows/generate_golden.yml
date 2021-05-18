@@ -9,10 +9,11 @@ on:
         description: 'Human-Readable Short Label for this Set of Histograms'
         required: true
         default: 'golden'
-  release:
+  push:
+    tags: 'v*.*.*' #all version tags
 
 jobs:
-  physics-validation:
+  generate-golden:
     runs-on: ubuntu-latest
     env:
       image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
@@ -26,27 +27,10 @@ jobs:
       with:
         submodules: 'recursive'
 
-    # Setup our ldmx development environment
-    - name: Setup ldmx environment
-      run: docker pull ldmx/dev:latest
-    
-    # configure ldmx-sw using the docker environment
-    - name: Configure the build
-      run: |
-          mkdir build &&
-          docker run -i -v $(pwd):$(pwd) ${image} $(pwd)/build cmake ..
-
-    # build ldmx-sw using the docker environment
-    - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) ${image} $(pwd)/build make install
-
-    # Run the test using ctest. The --verbose parameter displays the output 
-    # you would typically see with catch.
-    - name: Test the build
-      run: |
-          cd ../ &&
-          export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ${image} $LDMX_BASE/ldmx-sw/build ctest --verbose 
+    # Compile and do (simple) tests of ldmx-sw
+    - uses: ./.github/actions/setup
+      with:
+        image: ldmx/dev:latest
 
     # Deduce label for this set of golden histograms
     - name: Deduce Gold Label
@@ -61,7 +45,10 @@ jobs:
 
     # Actually run generation script
     - name: Generate Golden Histograms
-      run: bash .github/workflows/run_physics.sh gen ${{ steps.deduce_label.outputs.label }}
+      uses: ./.github/actions/ldmx
+      with:
+        working_dir: '.github/workflows'
+        run: 'python3 physics.py gen ${{ steps.deduce_label.outputs.label }}'
 
     # Push newly generated files
     - name: Push Histograms
