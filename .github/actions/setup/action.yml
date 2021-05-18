@@ -12,30 +12,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setup Environment
-      run: |
+    - run: |
         docker pull ${{ inputs.image }}
         mkdir build
       shell: bash
 
-    - name: Configure the Build
-      uses: actions/run_ldmx
-      with:
-        image: ${{ inputs.image }}
-        run: 'cmake ..'
-        working_dir: 'ldmx-sw/build'
-
-    - name: Build and Install
-      uses: actions/run_ldmx
-      with:
-        image: ${{ inputs.image }}
-        run: 'make install'
-        working_dir: 'ldmx-sw/build'
-
-    - name: Test the Build
-      uses: actions/run_ldmx
-      with:
-        image: ${{ inputs.image }}
-        run: 'ctest --verbose'
-        working_dir: 'ldmx-sw/build'
-
+    - run: |
+        export LDMX_BASE=${GITHUB_WORKSPACE%ldmx-sw/*}
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ${{ inputs.image }} ldmx-sw/build 'cmake .. && make install && ctest --verbose'
+      shell: bash 
