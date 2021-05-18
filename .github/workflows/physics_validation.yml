@@ -28,19 +28,10 @@ jobs:
       with:
         submodules: 'recursive'
 
-    # Setup our ldmx development environment
-    - name: Setup ldmx environment
-      run: docker pull ${image}
-    
-    # configure ldmx-sw using the docker environment
-    - name: Configure the build
-      run: |
-          mkdir build &&
-          docker run -i -v $(pwd):$(pwd) ${image} $(pwd)/build cmake ..
-
-    # build ldmx-sw using the docker environment
-    - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) ${image} $(pwd)/build make install
+    # Compile and do (simple) tests of ldmx-sw
+    - uses: ./.github/actions/setup
+      with:
+        image: ldmx/dev:latest
 
     # Checkout the branch that has the "golden files" if they are different
     # than the ones stored on our branch. By default, we get the files from
@@ -52,17 +43,25 @@ jobs:
         ref: ${{ github.event.input.golden }}
         submodules: 'recursive'
 
-    # Run the test using ctest. The --verbose parameter displays the output 
-    # you would typically see with catch.
-    - name: Test the build
+    - name: Deduce Labels for Plots
+      id: deduce_labels
       run: |
-          cd ../ &&
-          export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ${image} $LDMX_BASE/ldmx-sw/build ctest --verbose 
+        _test_label=${GITHUB_REF#refs/}
+        _test_label=${_test_label#tags/}
+        _test_label=${_test_label#heads/}
+        _gold_label=$(cat .github/workflows/gold/label)
+        echo "Test Label: ${_test_label}"
+        echo "Gold Label: ${_gold_label}"
+        echo ::set-output name=test::${_test_label}
+        echo ::set-output name=gold::${_gold_label}
 
     # Actually run validation script
     - name: Physics Validation
-      run: bash .github/workflows/run_physics.sh val
+      uses: ./.github/actions/ldmx
+      with:
+        image: ldmx/dev:latest
+        working_dir: '.github/workflows'
+        run: 'python3 physics.py val -t ${{ steps.deduces_labels.outputs.test }} -g ${{ steps.deduce_labels.outputs.gold }}'
 
     # Persist output of more full validation tests
     - uses: actions/upload-artifact@v2
