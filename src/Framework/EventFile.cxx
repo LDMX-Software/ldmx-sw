@@ -187,7 +187,6 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     // the event bus may not be defined
     //  for this file if we are input file and
     //  there is an output file during this run
->>>>>>> 7a0f6da... manually copy over changes from iss9-formatless
     if (event_) {
       event_->Clear();
       event_->onEndOfEvent();
