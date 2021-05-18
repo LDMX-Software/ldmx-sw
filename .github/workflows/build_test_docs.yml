@@ -9,8 +9,6 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    env:
-      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
     defaults:
       run:
         shell: bash
@@ -18,29 +16,13 @@ jobs:
     steps:
     # check out ldmx-sw in the workspace
     - uses: actions/checkout@v2
-    - uses: textbook/git-checkout-submodule-action@master
+      with:
+        submodules: 'recursive'
 
-    # Setup our ldmx development environment
-    - name: Setup ldmx environment
-      run: docker pull $image
-    
-    # configure ldmx-sw using the docker environment
-    - name: Configure the build
-      run: |
-          mkdir build &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake ..
-
-    # build ldmx-sw using the docker environment
-    - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) $image $(pwd)/build make install
-
-    # Run the test using ctest. The --verbose parameter displays the output 
-    # you would typically see with catch.
-    - name: Test the build
-      run: |
-          cd ../ &&
-          export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/build ctest --verbose 
+    # Compile and do (simple) tests of ldmx-sw
+    - uses: ./.github/actions/setup
+      with:
+        image: ldmx/dev:latest
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
