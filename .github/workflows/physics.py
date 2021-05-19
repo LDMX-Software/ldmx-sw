@@ -152,7 +152,6 @@ if __name__ == '__main__' :
     parse_val.add_argument('-g','--gold_label',default='gold',help='Label to use for golden histograms.')
     parse_val.set_defaults(action=validation)
 
-
     arg = parser.parse_args()
 
     if 'action' not in arg :
