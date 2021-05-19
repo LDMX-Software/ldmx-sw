@@ -14,15 +14,22 @@ jobs:
         shell: bash
 
     steps:
-    # check out ldmx-sw in the workspace
-    - uses: actions/checkout@v2
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
       with:
         submodules: 'recursive'
 
-    # Compile and do (simple) tests of ldmx-sw
-    - uses: ./.github/actions/setup
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
       with:
         image: ldmx/dev:latest
+
+    - name: Basic Tests for Functionality
+      uses: ./.github/actions/ldmx
+      with:
+        image: ldmx/dev:latest
+        working_dir: ldmx-sw/build
+        run: ctest --verbose
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
