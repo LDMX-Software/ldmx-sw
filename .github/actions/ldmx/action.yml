@@ -22,5 +22,5 @@ runs:
     - run: |
         cd ..
         export LDMX_BASE=$(pwd)
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ${{ inputs.image }} ${{ inputs.working_dir }} ${{ inputs.run }}
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ${{ inputs.image }} ${LDMX_BASE}/${{ inputs.working_dir }} ${{ inputs.run }}
       shell: bash
