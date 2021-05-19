@@ -18,18 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
-    defaults:
-      run:
-        shell: bash
 
     steps:
-    # check out ldmx-sw in the workspace
-    - uses: actions/checkout@v2
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
       with:
         submodules: 'recursive'
 
-    # Compile and do (simple) tests of ldmx-sw
-    - uses: ./.github/actions/setup
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
       with:
         image: ldmx/dev:latest
 
@@ -54,17 +51,17 @@ jobs:
         echo "Gold Label: ${_gold_label}"
         echo ::set-output name=test::${_test_label}
         echo ::set-output name=gold::${_gold_label}
+      shell: bash
 
-    # Actually run validation script
     - name: Physics Validation
       uses: ./.github/actions/ldmx
       with:
         image: ldmx/dev:latest
-        working_dir: '.github/workflows'
+        working_dir: .github/workflows
         run: 'python3 physics.py val -t ${{ steps.deduces_labels.outputs.test }} -g ${{ steps.deduce_labels.outputs.gold }}'
 
-    # Persist output of more full validation tests
-    - uses: actions/upload-artifact@v2
+    - name: Upload Validation Plots
+      uses: actions/upload-artifact@v2
       with:
         name: Physics Validation
         path: .github/workflows/plots/**

@@ -15,24 +15,21 @@ on:
 jobs:
   generate-golden:
     runs-on: ubuntu-latest
-    env:
-      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
-    defaults:
-      run:
-        shell: bash
 
     steps:
-    # check out ldmx-sw in the workspace
-    - uses: actions/checkout@v2
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
       with:
         submodules: 'recursive'
 
-    # Compile and do (simple) tests of ldmx-sw
-    - uses: ./.github/actions/setup
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
       with:
         image: ldmx/dev:latest
 
-    # Deduce label for this set of golden histograms
+    # Goal: We are trying to have the label for
+    # these histograms either be the one manually
+    # input _or_ be the tag of this commit.
     - name: Deduce Gold Label
       id: deduce_label
       run: |
@@ -42,19 +39,20 @@ jobs:
         fi
         echo "Deduced label: ${_label}"
         echo ::set-output name=label::${_label}
+      shell: bash
 
-    # Actually run generation script
     - name: Generate Golden Histograms
       uses: ./.github/actions/ldmx
       with:
-        working_dir: '.github/workflows'
+        working_dir: .github/workflows
         run: 'python3 physics.py gen ${{ steps.deduce_label.outputs.label }}'
+        image: ldmx/dev:latest
 
-    # Push newly generated files
-    - name: Push Histograms
+    - name: Push Histograms to this Branch
       run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .github/workflows/gold/*
           git commit -m "New set of golden histograms labled ${{ steps.deduce_label.outputs.label }}"
           git push
+      shell: bash
