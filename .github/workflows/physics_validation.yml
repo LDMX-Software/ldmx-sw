@@ -61,7 +61,7 @@ jobs:
       uses: ./.github/actions/ldmx
       with:
         image: ldmx/dev:latest
-        working_dir: .github/workflows
+        working_dir: ldmx-sw/.github/workflows
         run: 'python3 physics.py val -t ${{ steps.deduces_labels.outputs.test }} -g ${{ steps.deduce_labels.outputs.gold }}'
 
     - name: Upload Validation Plots
