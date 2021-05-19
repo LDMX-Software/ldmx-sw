@@ -12,6 +12,9 @@ on:
   pull_request: 
     branches: [trunk]
     types: [opened, ready_for_review]
+  #include pushes to this branch for testing
+  push:
+    branches: [iss988-validation-action]
 
 jobs:
   physics-validation:
@@ -36,6 +39,7 @@ jobs:
     # input.
     - name: Git Golden Files
       uses: actions/checkout@v2
+      if: ${{ github.event.event_name == 'workflow_dispatch' }}
       with:
         ref: ${{ github.event.input.golden }}
         submodules: 'recursive'
