@@ -49,9 +49,6 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
 
-    - name: Make necessary directories
-      run: mkdir ldmx-sw/.github/workflows/events ldmx-sw/.github/workflows/hists
-        
     - name: Run Config
       uses: ./.github/actions/ldmx
       with:
