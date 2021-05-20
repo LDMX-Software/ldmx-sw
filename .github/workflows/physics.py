@@ -127,7 +127,7 @@ def compare(sample_id) :
         test_h.Draw('same')
     
         c.BuildLegend()
-        c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_")}.pdf')
+        c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
 def generate_events(config) :
     get_test_path()
