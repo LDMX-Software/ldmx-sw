@@ -44,6 +44,5 @@ p.sequence=[ mySim,
         hcal_digi.HcalRecProducer(),
         tsDigisUp, tsDigisTag, tsDigisDown,
         clTag, clUp, clDown,
-        trigScintTrack
-        ] + dqm.trigScint_dqm
-
+        trigScintTrack,
+        ] + dqm.trigScint_dqm + dqm.ecal_dqm + dqm.recoil_dqm

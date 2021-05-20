@@ -19,7 +19,6 @@ on:
 jobs:
   compile-ldmx-sw:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout ldmx-sw
       uses: actions/checkout@v2
@@ -31,30 +30,26 @@ jobs:
       with:
         image: ldmx/dev:latest
 
-    # Checkout the branch that has the "golden files" if they are different
-    # than the ones stored on our branch. By default, we get the files from
-    # 'trunk', but this action can be re-run where the branch/tag/sha is manually
-    # input.
-#    - name: Git Golden Files
-#      uses: actions/checkout@v2
-#      with:
-#        ref: ${{ github.event_name == 'workflow_dispatch' && github.event.input.golden || 'trunk' }}
-#        submodules: 'recursive'
+    - name: Package ldmx-sw Into Artifact
+      run: tar -cvf ldmx-sw-package.tar install/ .github/
 
-    - name: Upload ldmx-sw Package for Later Jobs
+    - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
       with:
-        name: ldmx-sw-package ${{ github.sha }}
-        path: ${{ github.workspace }}
+        name: ldmx-sw Build ${{ github.sha }}
+        path: ldmx-sw-package.tar
 
   inclusive:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
     steps:
-    - name: Get Compiled ldmx-sw
+    - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw-package ${{ github.sha }}
+        name: ldmx-sw Build ${{ github.sha }}
+        
+    - name: Unpack ldmx-sw Build
+      run: tar xvf ldmx-sw-package.tar
 
     - name: Run Validation
       uses: ./.github/actions/ldmx
@@ -69,3 +64,8 @@ jobs:
         name: Inclusive Physics Validation ${{ github.sha }}
         path: .github/workflows/plots/**
 
+    - name: Upload Inclusive Events for Overlay
+      uses: actions/upload-artifact@v2
+      with:
+        name: Inclusive Overlay Events ${{ github.sha }}
+        path: .github/workflows/events/inclusive.root
