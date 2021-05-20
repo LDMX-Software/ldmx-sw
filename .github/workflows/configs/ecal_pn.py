@@ -4,7 +4,7 @@ p = ldmxcfg.Process('test')
 p.maxTriesPerEvent = 500
 p.maxEvents = 10
 p.run = 1
-p.histogramFile = 'test/ecal_pn.root'
+p.histogramFile = 'hist/ecal_pn.root'
 p.outputFiles = ['events/ecal_pn.root']
 
 from LDMX.Biasing import ecal
