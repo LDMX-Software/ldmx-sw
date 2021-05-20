@@ -22,7 +22,7 @@ jobs:
         image: ldmx/dev:latest
 
     - name: Package ldmx-sw Into Artifact
-      run: tar -cvf ldmx-sw-package.tar install/ .github/
+      run: tar -cvf ldmx-sw-package.tar install/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
@@ -34,10 +34,16 @@ jobs:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
         name: ldmx-sw Build ${{ github.sha }}
+        path: ldmx-sw
 
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
@@ -65,10 +71,16 @@ jobs:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
         name: ldmx-sw Build ${{ github.sha }}
+        path: ldmx-sw
         
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
