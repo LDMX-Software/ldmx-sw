@@ -127,6 +127,10 @@ def compare(sample_id) :
         c.BuildLegend()
         c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
+def generate_events(config) :
+    os.system(f'fire {config}')
+    return sample_id_from_path(config)
+
 if __name__ == '__main__' :
     import argparse, sys
         # Parse
