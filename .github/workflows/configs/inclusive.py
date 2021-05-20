@@ -3,7 +3,7 @@ p = ldmxcfg.Process('test')
 
 p.maxEvents = 10
 p.run = 1
-p.histogramFile = 'test/inclusive.root'
+p.histogramFile = 'hist/inclusive.root'
 p.outputFiles = ['events/inclusive.root']
 
 from LDMX.SimCore import simulator as sim

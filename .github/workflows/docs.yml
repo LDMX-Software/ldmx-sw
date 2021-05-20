@@ -8,10 +8,6 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-
     steps:
     - name: Checkout ldmx-sw
       uses: actions/checkout@v2
@@ -53,6 +49,7 @@ jobs:
           python3 -m pip install Sphinx Pillow groundwork-sphinx-theme
           sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
           sudo `which sphinx-build` docs/sphinx.conf docs/html/_sphinx
+      shell: bash
 
     # Copy the generated documentation to the github pages repo
     #   This copies all the html files in the docs/html directory to the github.io repository
