@@ -43,7 +43,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: ldmx-sw Build ${{ github.sha }}
-        path: ldmx-sw
 
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
@@ -80,7 +79,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: ldmx-sw Build ${{ github.sha }}
-        path: ldmx-sw
         
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar

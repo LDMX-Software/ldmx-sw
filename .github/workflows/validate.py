@@ -128,6 +128,8 @@ def compare(sample_id) :
         c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
 def generate_events(config) :
+    get_hist_path()
+    get_events_path()
     os.system(f'fire {config}')
     return sample_id_from_path(config)
 
