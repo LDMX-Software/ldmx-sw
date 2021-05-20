@@ -33,7 +33,7 @@ def get_test_label() :
     return br
 
 def get_test_path(sample_id = None) :
-    return __get_path__('test',sample_id)
+    return __get_path__('hist',sample_id)
 
 def get_hist_path() :
     return get_test_path()
@@ -129,44 +129,15 @@ def compare(sample_id) :
         c.BuildLegend()
         c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
-def generate_events(config) :
-    get_test_path()
-    get_events_path()
-    os.system(f'fire {config}')
-    return sample_id_from_path(config)
-
-def generate_golden(arg) :
-    for f in list_configs() :
-        sample_id = generate_events(f)
-        old_test = get_test_path(sample_id)
-        new_gold = get_gold_path(sample_id)
-        os.system(f'mv {old_test} {new_gold}')
-
-def validation(arg) :
-    sample_id = generate_events(arg.config)
-    compare(sample_id)
-
 if __name__ == '__main__' :
     import argparse, sys
         # Parse
     parser = argparse.ArgumentParser(f'ldmx python3 {sys.argv[0]}',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    subparsers = parser.add_subparsers(help='Choose which action to perform.')
-
-    # Generation
-    parse_gen = subparsers.add_parser('gen', help='Generate golden histograms using current compilation of ldmx-sw.')
-    parse_gen.set_defaults(action=generate_golden)
-
-    # Validation
-    parse_val = subparsers.add_parser('val', help='Validate current compilation of ldmx-sw.')
-    parse_val.add_argument('config',help='Config script to run for validation.')
-    parse_val.add_argument('test_label',help='Label to use for current compilation of ldmx-sw.')
-    parse_val.set_defaults(action=validation)
+    parser.add_argument('config',help='Config script to run for validation')
 
     arg = parser.parse_args()
 
-    if 'action' not in arg :
-        parser.error('Must choose an action to perform.')
-
-    arg.action(arg)
+    sample_id = generate_events(arg.config)
+    compare(sample_id)
