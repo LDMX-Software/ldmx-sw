@@ -112,7 +112,6 @@ jobs:
         config: configs/inclusive.py
 
     - name: Compare to Golden Histograms
-      if: ${{ github.event_name == 'pull_request' }}
       uses: ./.github/actions/ldmx
       with:
         image: ldmx/dev:latest
@@ -120,14 +119,12 @@ jobs:
         run: python3 compare.py ecal_pn
 
     - name: Upload Validation Plots
-      if: ${{ github.event_name == 'pull_request' }}
       uses: actions/upload-artifact@v2
       with:
         name: ECal PN Recon Validation ${{ github.sha }}
         path: .github/workflows/plots/**
 
     - name: Check if we Failed
-      if: ${{ github.event_name == 'pull_request' }}
       uses: ./.github/actions/check
       with:
         sample_id: ecal_pn
