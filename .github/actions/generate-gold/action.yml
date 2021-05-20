@@ -14,7 +14,7 @@ runs:
     - run: |
         docker pull ldmx/pro:edge
         cd .github/workflows
-        docker run -i -v $(pwd):$(pwd) ldmx/pro:edge $(pwd) fire ${{ inputs.config }}
+        docker run -i -v $(pwd):$(pwd) -u $(id -u $USER):$(id -g $USER) ldmx/pro:edge $(pwd) fire ${{ inputs.config }}
         mkdir -p gold/
         mv hist/* gold/
       shell: bash 
