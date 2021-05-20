@@ -1,5 +1,7 @@
 
 Our auto-testing suite is getting pretty bulky, so I've decided to document it here.
+GitHub's documentation on their action/workflow service is pretty good,
+so I'm linking it [here](https://docs.github.com/en/actions).
 
 ## Basic Tests
 
@@ -33,6 +35,15 @@ The image is tagged following the given logic.
 All pushes to `trunk` generate documentation which is pushed to `ldmx-software.github.io` for publishing.
 Since `sphinx` requires the python modules to be installed for it to effectively generate documentation,
 the docs are only generated if the commit pushed to `trunk` successfully compiles and installs.
+
+## Generate Golden Recon Histograms
+
+All pushes to `trunk` re-generate the "golden" recon histograms that are used in the Recon Validation action.
+These histograms are uploaded as artifacts to GitHub which are then available to be downloaded by other actions.
+
+> **Note:** Artifacts are only persisted on 
+> [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
+> so we may need to re-design when this generation is triggered if they are being removed often.
 
 ## Recon Validation
 

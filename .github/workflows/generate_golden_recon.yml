@@ -47,7 +47,7 @@ jobs:
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'fire configs/inclusive.py'
+        run: 'mkdir events hist && fire configs/inclusive.py'
 
     - name: Upload Golden Histograms
       uses: actions/upload-artifact@v2
@@ -78,7 +78,7 @@ jobs:
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'fire configs/ecal_pn.py'
+        run: 'mkdir events hist && fire configs/ecal_pn.py'
 
     - name: Upload Golden Histograms
       uses: actions/download-artifact@v2

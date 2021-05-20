@@ -50,11 +50,11 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
 
-    - name: Download Golden Histograms
-      uses: actions/download-artifact@v2
-      with:
-        name: Inclusive Golden Recon Histograms
-        path: .github/workflows/gold/
+#    - name: Download Golden Histograms
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: Inclusive Golden Recon Histograms
+#        path: .github/workflows/gold/
         
     - name: Run Validation
       uses: ./.github/actions/ldmx
@@ -87,11 +87,11 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
 
-    - name: Download Golden Histograms
-      uses: actions/download-artifact@v2
-      with:
-        name: ECal PN Golden Recon Histograms
-        path: .github/workflows/gold/
+#    - name: Download Golden Histograms
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: ECal PN Golden Recon Histograms
+#        path: .github/workflows/gold/
         
     - name: Run Validation
       uses: ./.github/actions/ldmx
