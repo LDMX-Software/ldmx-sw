@@ -1,0 +1,80 @@
+
+name: Generate Production Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Git Reference to Build Into an Image'
+        required: true
+        default: 'trunk'
+      repo:
+        description: 'Docker Repo to Push Image To'
+        required: true
+      tag:
+        description: 'Name for Image'
+        required: true
+        default: 'edge'
+  push:
+    branches: 'trunk'
+    tags: 'v*.*.*' #all version tags
+
+jobs:
+  generate-image:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Setup QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - 
+      name: Get Build Context
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        ref: ${{ github.event.inputs.branch }}
+    -
+      name: Determine Image Tags
+      id: generate_tag
+      run: |
+        _tags=""
+        if [[ $GITHUB_EVENT_NAME == "workflow_dispatch" ]]; then
+          _repo=${{ github.event.inputs.repo }}
+          _input_tag=${{ github.event.inputs.tag }}
+          _tags="${_repo}:${_input_tag},${_repo}:sha-${GITHUB_SHA::8}"
+        elif [[ $GITHUB_REF == refs/tags/* ]]; then
+          # if pushing a git tag ==> get the git tag for the docker tag
+          _git_tag=${GITHUB_REF#refs/tags/}
+          _tags="ldmx/pro:$_git_tag"
+          if [[ $_git_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            # there was a version released on github
+            #   v<1-3 digits>.<1-3 digits>.<1-3 digits>
+            _tags="$_tags,ldmx/pro:latest"
+          fi
+        elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          #pushing to trunk
+          _tags="ldmx/pro:edge,ldmx/pro:sha-${GITHUB_SHA::8}"
+        else
+          echo "Running Determine Image Tags on a commit that isn't a tag or a branch."
+          exit 1
+        fi
+        echo "Generated Tags: ${_tags}"
+        echo ::set-output name=tags::${_tags}
+        echo ::set-output name=should_push::${_should_push}
+      shell: bash
+    -
+      name: Build the Image
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        tags: ${{ steps.generate_tag.outputs.tags }}
+        push: true
+

@@ -1,0 +1,32 @@
+
+name: Basic Tests
+
+on:
+  push:
+    branches: '**' #all branches
+    tags: 'v*.*.*' #all version tags
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+      with:
+        image: ldmx/dev:latest
+
+    - name: Basic Tests for Functionality
+      uses: ./.github/actions/ldmx
+      with:
+        image: ldmx/dev:latest
+        working_dir: ldmx-sw/build
+        run: ctest --verbose
