@@ -36,15 +36,6 @@ All pushes to `trunk` generate documentation which is pushed to `ldmx-software.g
 Since `sphinx` requires the python modules to be installed for it to effectively generate documentation,
 the docs are only generated if the commit pushed to `trunk` successfully compiles and installs.
 
-## Generate Golden Recon Histograms
-
-All pushes to `trunk` re-generate the "golden" recon histograms that are used in the Recon Validation action.
-These histograms are uploaded as artifacts to GitHub which are then available to be downloaded by other actions.
-
-> **Note:** Artifacts are only persisted on 
-> [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
-> so we may need to re-design when this generation is triggered if they are being removed often.
-
 ## Recon Validation
 
 These validations are done on pull requests.
@@ -56,6 +47,28 @@ In this test, the simulations **are not** being validated.
 They are merely there as a method for generating a wide variety of hits that need to be successfully handled by our reconstruction pipeline.
 While we aren't directly attempting to validate the simulations,
 simulation plots are still produced to help debug any potential discrepancies that are observed.
+
+All pushes to `trunk` re-generate the "golden" recon histograms that are used in this action.
+These histograms are uploaded as artifacts to GitHub which are then available to be downloaded by other actions.
+
+> **Note:** Artifacts are only persisted on 
+> [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
+> so we may need to re-design when this generation is triggered if they are being removed often.
+
+### Local Equivalence
+
+When validating, this action is roughly equivalent to the following procedure.
+
+- Set-up ldmx to use `dev latest`: `ldmx pull dev latest`
+- Compile and Install ldmx-sw: `mkdir build; cd build; ldmx 'cmake .. && make install'`
+- Go to workflows directory: `cd ../.github/workflows`
+- Run one of the configs: `ldmx fire configs/<sample_id>.py`
+- Compare to golden histograms: `ldmx python3 compare.py <sample_id>`
+
+Since the golden histograms are stored as artifacts and point to the `HEAD` of `trunk`,
+the simplest way to generate your own golden histograms locally is to do a local compilation
+of the `HEAD` of `trunk` and re-run the configs you wish to compare, moving the histograms output
+into the `.github/workflows/gold` directory.
 
 ## Deep Validation
 
