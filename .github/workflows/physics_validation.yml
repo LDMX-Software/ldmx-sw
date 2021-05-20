@@ -37,18 +37,15 @@ jobs:
     # input.
     - name: Git Golden Files
       uses: actions/checkout@v2
-      if: ${{ github.event.event_name == 'workflow_dispatch' }}
       with:
-        ref: ${{ github.event.input.golden }}
+        ref: ${{ github.event_name == 'workflow_dispatch' && github.event.input.golden || 'trunk' }}
         submodules: 'recursive'
 
     - name: Upload ldmx-sw Package for Later Jobs
       uses: actions/upload-artifact@v2
       with:
-        name: ldmx-sw-package
-        path: |
-          install/**
-          .github/workflows/gold/**
+        name: ldmx-sw-package ${{ github.sha }}
+        path: ${{ github.workspace }}
 
   inclusive:
     needs: compile-ldmx-sw
@@ -57,7 +54,7 @@ jobs:
     - name: Get Compiled ldmx-sw
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw-package
+        name: ldmx-sw-package ${{ github.sha }}
 
     - name: Deduce Labels for Plots
       id: deduce_labels
@@ -82,6 +79,6 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: Physics Validation
+        name: Inclusive Physics Validation ${{ github.sha }}
         path: .github/workflows/plots/**
 
