@@ -130,9 +130,8 @@ def generate_golden(arg) :
         os.system(f'mv {old_test} {new_gold}')
 
 def validation(arg) :
-    for f in list_configs() :
-        sample_id = generate_events(f)
-        compare(sample_id,arg.gold_label,arg.test_label)
+    sample_id = generate_events(arg.config)
+    compare(sample_id,arg.gold_label,arg.test_label)
 
 if __name__ == '__main__' :
     import argparse, sys
@@ -148,8 +147,9 @@ if __name__ == '__main__' :
 
     # Validation
     parse_val = subparsers.add_parser('val', help='Validate current compilation of ldmx-sw.')
-    parse_val.add_argument('-t','--test_label',required=True,help='Label to use for current compilation of ldmx-sw.')
-    parse_val.add_argument('-g','--gold_label',default='gold',help='Label to use for golden histograms.')
+    parse_val.add_argument('config',help='Config script to run for validation.')
+    parse_val.add_argument('test_label',help='Label to use for current compilation of ldmx-sw.')
+    parse_val.add_argument('gold_label',help='Label to use for golden histograms.')
     parse_val.set_defaults(action=validation)
 
     arg = parser.parse_args()
