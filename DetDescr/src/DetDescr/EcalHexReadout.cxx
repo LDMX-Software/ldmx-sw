@@ -22,7 +22,7 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
   verbose_ = ps.getParameter<int>("verbose");
 
   moduleR_ = moduler_ * (2 / sqrt(3));
-  cellR_ = 2 * moduler_ / nCellRHeight_;
+  cellR_ = 2 * moduler_ / 35.;
   cellr_ = (sqrt(3.) / 2.) * cellR_;
 
   if (verbose_ > 0) {
@@ -53,13 +53,13 @@ void EcalHexReadout::buildModuleMap() {
         << moduler_ << "    and gap of " << gap_ << std::endl;
   }
 
-  // module IDs are 0 for ecal center, 1 at right, and clockwise till 6
+  // module IDs are 0 for ecal center, 1 at right, and counterclockwise till 6
   double C_PI = 3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
     
     modulePositionMap_[0] = std::pair<double, double>(0., 0.);
       for (unsigned id = 1; id < 7; id++) {
-          double x = (2. * moduler_ + gap_) * cos((1 - id) * (C_PI / 3.));
-          double y = (2. * moduler_ + gap_) * sin((1 - id) * (C_PI / 3.));
+          double x = (2. * moduler_ + gap_) * cos((id-1) * (C_PI / 3.));
+          double y = - (2. * moduler_ + gap_) * sin((id-1) * (C_PI / 3.));
         modulePositionMap_[id] = std::pair<double, double>(x, y);
         if (verbose_ > 2)
           std::cout << TString::Format("   id %d is at (%.2f, %.2f)", id, x, y)
