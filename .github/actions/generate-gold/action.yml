@@ -1,0 +1,18 @@
+
+name: generate-gold
+author: Tom Eichlersmith
+description: Run the specified config with the most recent generated production image.
+
+inputs:
+  config:
+    description: 'Configuration to Run'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        docker pull ldmx/pro:edge
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ldmx/pro:edge ${LDMX_BASE}/ldmx-sw/.github/workflows fire ${{ inputs.config }}
+        mv ldmx-sw/.github/workflows/hist/* ldmx-sw/.github/workflows/gold/*
+      shell: bash 
