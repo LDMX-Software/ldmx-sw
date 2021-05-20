@@ -1,0 +1,21 @@
+
+name: check
+author: Tom Eichlersmith
+description: Check if we passed the comparison or not.
+
+inputs:
+  sample_id:
+    description: 'Short-name identifying sample.'
+    required: true
+    default: 'inclusive'
+
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        cd ldmx-sw/.github/workflows/plots
+        cd ${{ inputs.sample_id }}
+        if [ ! -n "$(ls -A fail)" ]; then
+          exit 1
+        fi
+      shell: bash
