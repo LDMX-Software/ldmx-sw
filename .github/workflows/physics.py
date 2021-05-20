@@ -131,7 +131,9 @@ def generate_golden(arg) :
 
 def validation(arg) :
     sample_id = generate_events(arg.config)
-    compare(sample_id,arg.gold_label,arg.test_label)
+    with open(get_gold_path('label').replace('.root',''),'r') as f :
+        gold_label = [l.strip() for l in f.readlines()][0]
+    compare(sample_id,gold_label,arg.test_label)
 
 if __name__ == '__main__' :
     import argparse, sys
@@ -149,7 +151,6 @@ if __name__ == '__main__' :
     parse_val = subparsers.add_parser('val', help='Validate current compilation of ldmx-sw.')
     parse_val.add_argument('config',help='Config script to run for validation.')
     parse_val.add_argument('test_label',help='Label to use for current compilation of ldmx-sw.')
-    parse_val.add_argument('gold_label',help='Label to use for golden histograms.')
     parse_val.set_defaults(action=validation)
 
     arg = parser.parse_args()
