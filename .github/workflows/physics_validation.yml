@@ -35,11 +35,11 @@ jobs:
     # than the ones stored on our branch. By default, we get the files from
     # 'trunk', but this action can be re-run where the branch/tag/sha is manually
     # input.
-    - name: Git Golden Files
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event_name == 'workflow_dispatch' && github.event.input.golden || 'trunk' }}
-        submodules: 'recursive'
+#    - name: Git Golden Files
+#      uses: actions/checkout@v2
+#      with:
+#        ref: ${{ github.event_name == 'workflow_dispatch' && github.event.input.golden || 'trunk' }}
+#        submodules: 'recursive'
 
     - name: Upload ldmx-sw Package for Later Jobs
       uses: actions/upload-artifact@v2
@@ -56,25 +56,12 @@ jobs:
       with:
         name: ldmx-sw-package ${{ github.sha }}
 
-    - name: Deduce Labels for Plots
-      id: deduce_labels
-      run: |
-        _test_label=${GITHUB_REF#refs/}
-        _test_label=${_test_label#tags/}
-        _test_label=${_test_label#heads/}
-        _gold_label=$(cat .github/workflows/gold/label)
-        echo "Test Label: ${_test_label}"
-        echo "Gold Label: ${_gold_label}"
-        echo ::set-output name=test::${_test_label}
-        echo ::set-output name=gold::${_gold_label}
-      shell: bash
-
-    - name: Physics Validation
+    - name: Run Validation
       uses: ./.github/actions/ldmx
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'python3 physics.py val configs/inclusive.py ${{ steps.deduces_labels.outputs.test }} ${{ steps.deduce_labels.outputs.gold }}'
+        run: 'python3 physics.py val configs/inclusive.py ${{ github.ref }}'
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
