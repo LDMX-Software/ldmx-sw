@@ -2,9 +2,6 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
 p.maxEvents = 10
-p.run = 1
-p.histogramFile = 'hist/inclusive.root'
-p.outputFiles = ['events/inclusive.root']
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
@@ -12,6 +9,22 @@ mySim.setDetector( 'ldmx-det-v12' )
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
 mySim.description = 'Basic test Simulation'
+
+p.sequence = [ mySim ]
+
+##################################################################
+# Below should be the same for all sim scenarios
+
+import os
+import sys
+
+p.run = 1
+
+os.makedirs('hist',exist_ok=True)
+os.makedirs('events',exist_ok=True)
+sample_id = os.path.basename(sys.argv[0]).replace('.py','')
+p.histogramFile = f'hist/{sample_id}.root'
+p.outputFiles = [f'events/{sample_id}.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
@@ -36,7 +49,7 @@ clDown=TrigScintClusterProducer.down()
 
 from LDMX.DQM import dqm
 
-p.sequence=[ mySim,
+p.sequence.extend([
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecal_vetos.EcalVetoProcessor(),
@@ -45,4 +58,4 @@ p.sequence=[ mySim,
         tsDigisUp, tsDigisTag, tsDigisDown,
         clTag, clUp, clDown,
         trigScintTrack,
-        ] + dqm.trigScint_dqm + dqm.ecal_dqm + dqm.recoil_dqm
+        ] + dqm.trigScint_dqm + dqm.ecal_dqm + dqm.recoil_dqm)

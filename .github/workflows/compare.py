@@ -127,21 +127,6 @@ def compare(sample_id) :
         c.BuildLegend()
         c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
-def generate_events(config) :
-    get_hist_path()
-    get_events_path()
-    os.system(f'fire {config}')
-    return sample_id_from_path(config)
-
 if __name__ == '__main__' :
-    import argparse, sys
-        # Parse
-    parser = argparse.ArgumentParser(f'ldmx python3 {sys.argv[0]}',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    parser.add_argument('config',help='Config script to run for validation')
-
-    arg = parser.parse_args()
-
-    sample_id = generate_events(arg.config)
-    compare(sample_id)
+    import sys
+    compare(sys.argv[1])

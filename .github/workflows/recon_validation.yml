@@ -4,10 +4,10 @@ name: Recon Validation
 on: 
   pull_request: 
     branches: [trunk]
-    types: [opened, ready_for_review]
+    #types: [opened, ready_for_review]
   #include pushes to this branch for testing
   push:
-    branches: [iss988-validation-action]
+    branches: [trunk,iss988-validation-action]
 
 jobs:
   compile-ldmx-sw:
@@ -49,20 +49,40 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: tar xvf ldmx-sw-package.tar
 
-#    - name: Download Golden Histograms
-#      uses: actions/download-artifact@v2
-#      with:
-#        name: Inclusive Golden Recon Histograms
-#        path: .github/workflows/gold/
+    - name: Make necessary directories
+      run: mkdir ldmx-sw/.github/workflows/events ldmx-sw/.github/workflows/hists
         
-    - name: Run Validation
+    - name: Run Config
       uses: ./.github/actions/ldmx
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'python3 validate.py configs/inclusive.py'
+        run: fire configs/inclusive.py
+
+    - name: Upload Golden Histograms
+      if: ${{ github.event_name == 'push' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: Inclusive Golden Recon Histograms
+        path: .github/workflows/hist/**
+
+#    - name: Download Golden Histograms
+#      if: ${{ github.event_name == 'pull_request' }}
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: Inclusive Golden Recon Histograms
+#        path: .github/workflows/gold/
+
+    - name: Compare to Golden Histograms
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: ./.github/actions/ldmx
+      with:
+        image: ldmx/dev:latest
+        working_dir: ldmx-sw/.github/workflows
+        run: python3 compare.py inclusive
 
     - name: Upload Validation Plots
+      if: ${{ github.event_name == 'pull_request' }}
       uses: actions/upload-artifact@v2
       with:
         name: Inclusive Recon Validation ${{ github.sha }}
@@ -73,39 +93,3 @@ jobs:
       with:
         name: Inclusive Overlay Events ${{ github.sha }}
         path: .github/workflows/events/inclusive.root
-
-  ecal_pn:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout ldmx-sw
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw Build ${{ github.sha }}
-        
-    - name: Unpack ldmx-sw Build
-      run: tar xvf ldmx-sw-package.tar
-
-#    - name: Download Golden Histograms
-#      uses: actions/download-artifact@v2
-#      with:
-#        name: ECal PN Golden Recon Histograms
-#        path: .github/workflows/gold/
-        
-    - name: Run Validation
-      uses: ./.github/actions/ldmx
-      with:
-        image: ldmx/dev:latest
-        working_dir: ldmx-sw/.github/workflows
-        run: 'python3 validate.py configs/ecal_pn.py'
-
-    - name: Upload Validation Plots
-      uses: actions/upload-artifact@v2
-      with:
-        name: ECal PN Recon Validation ${{ github.sha }}
-        path: .github/workflows/plots/**
