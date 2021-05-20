@@ -1,7 +1,6 @@
 
-name: Physics Validation
+name: Recon Validation
 
-# Manually launch this action via GitHub
 on: 
   workflow_dispatch:
     inputs:
@@ -56,12 +55,12 @@ jobs:
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'python3 physics.py val configs/inclusive.py ${{ github.ref }}'
+        run: 'python3 physics.py val configs/inclusive.py'
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: Inclusive Physics Validation ${{ github.sha }}
+        name: Inclusive Recon Validation ${{ github.sha }}
         path: .github/workflows/plots/**
 
     - name: Upload Inclusive Events for Overlay
@@ -69,3 +68,28 @@ jobs:
       with:
         name: Inclusive Overlay Events ${{ github.sha }}
         path: .github/workflows/events/inclusive.root
+
+  ecal_pn:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+        
+    - name: Unpack ldmx-sw Build
+      run: tar xvf ldmx-sw-package.tar
+
+    - name: Run Validation
+      uses: ./.github/actions/ldmx
+      with:
+        image: ldmx/dev:latest
+        working_dir: ldmx-sw/.github/workflows
+        run: 'python3 physics.py val configs/ecal_pn.py'
+
+    - name: Upload Validation Plots
+      uses: actions/upload-artifact@v2
+      with:
+        name: ECal PN Recon Validation ${{ github.sha }}
+        path: .github/workflows/plots/**
