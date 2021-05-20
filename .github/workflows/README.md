@@ -47,12 +47,15 @@ These histograms are uploaded as artifacts to GitHub which are then available to
 
 ## Recon Validation
 
-These validations are done on pull requests or launched manually.
+These validations are done on pull requests.
 They are focused on validating that the reconstruction procedure "matches" what is on `trunk`.
-If the PR contains changes that are meant to alter the reconstruction, the plots generated can also be downloaded and looked through in order to determine that the alterations are only where expected.
+If the PR contains changes that are meant to alter the reconstruction, 
+the plots generated can also be downloaded and looked through in order to determine that the alterations are only where expected.
 
 In this test, the simulations **are not** being validated.
 They are merely there as a method for generating a wide variety of hits that need to be successfully handled by our reconstruction pipeline.
+While we aren't directly attempting to validate the simulations,
+simulation plots are still produced to help debug any potential discrepancies that are observed.
 
 ## Deep Validation
 
@@ -60,3 +63,13 @@ They are merely there as a method for generating a wide variety of hits that nee
 
 The idea for this action would be to attempt to validate the simulation (both physics and detector design).
 The question of what plots to generate and what (if anything) to compare them to is open.
+
+### Extra Detail
+
+In order to simplify the action-development process,
+I've isolated the running of the LDMX container and the
+compiling of ldmx-sw into their own actions.
+
+[This page](https://docs.github.com/en/actions/learn-github-actions/finding-and-customizing-actions#referencing-an-action-in-the-same-repository-where-a-workflow-file-uses-the-action)
+was incredibly helpful for this purpose.
+
