@@ -20,9 +20,7 @@ def get_gold_path(sample_id = None) :
     return __get_path__('gold',sample_id)
 
 def get_gold_label() :
-    label = 'gold'
-    with open(get_gold_path('label').replace('.root','')) as f :
-        label = [l.strip() for l in f.readlines()][0]
+    label = 'trunk'
     return label
 
 def get_test_label() :
