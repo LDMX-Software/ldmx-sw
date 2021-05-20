@@ -20,5 +20,5 @@ runs:
     - run: |
         cd ..
         export LDMX_BASE=$(pwd)
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ${{ inputs.image }} ${LDMX_BASE}/ldmx-sw/build 'cmake .. && make install'
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${{ inputs.image }} ${LDMX_BASE}/ldmx-sw/build 'cmake .. && make install'
       shell: bash 
