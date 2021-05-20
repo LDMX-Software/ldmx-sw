@@ -59,15 +59,7 @@ jobs:
         name: Inclusive Overlay Events ${{ github.sha }}
         path: .github/workflows/events/inclusive.root
 
-    - name: Cache the Gold
-      id: gold-cache
-      uses: actions/cache@v2
-      with:
-        path: ldmx-sw/.github/workflows/gold/inclusive.root
-        key: inclusive-gold
-
     - name: Generate Gold
-      if: steps.gold-cache.outputs.cache-hit != 'true'
       uses: ./.github/actions/generate-gold
       with:
         config: configs/inclusive.py
@@ -114,15 +106,7 @@ jobs:
         working_dir: ldmx-sw/.github/workflows
         run: fire configs/ecal_pn.py
 
-    - name: Cache the Gold
-      id: gold-cache
-      uses: actions/cache@v2
-      with:
-        path: ldmx-sw/.github/workflows/gold/inclusive.root
-        key: inclusive-gold
-
     - name: Generate Gold
-      if: steps.gold-cache.outputs.cache-hit != 'true'
       uses: ./.github/actions/generate-gold
       with:
         config: configs/inclusive.py

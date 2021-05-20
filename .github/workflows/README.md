@@ -1,7 +1,11 @@
 
 Our auto-testing suite is getting pretty bulky, so I've decided to document it here.
 GitHub's documentation on their action/workflow service is pretty good,
-so I'm linking it [here](https://docs.github.com/en/actions).
+so I'm linking it here.
+
+- [General Action Docs](https://docs.github.com/en/actions)
+- [Events that Trigger Workflows](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
+- [Context and Expression Syntax](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions)
 
 ## Basic Tests
 
@@ -48,12 +52,8 @@ They are merely there as a method for generating a wide variety of hits that nee
 While we aren't directly attempting to validate the simulations,
 simulation plots are still produced to help debug any potential discrepancies that are observed.
 
-All pushes to `trunk` re-generate the "golden" recon histograms that are used in this action.
-These histograms are uploaded as artifacts to GitHub which are then available to be downloaded by other actions.
-
 > **Note:** Artifacts are only persisted on 
 > [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
-> so we may need to re-design when this generation is triggered if they are being removed often.
 
 ### Local Equivalence
 
@@ -65,10 +65,9 @@ When validating, this action is roughly equivalent to the following procedure.
 - Run one of the configs: `ldmx fire configs/<sample_id>.py`
 - Compare to golden histograms: `ldmx python3 compare.py <sample_id>`
 
-Since the golden histograms are stored as artifacts and point to the `HEAD` of `trunk`,
-the simplest way to generate your own golden histograms locally is to do a local compilation
-of the `HEAD` of `trunk` and re-run the configs you wish to compare, moving the histograms output
-into the `.github/workflows/gold` directory.
+Since the golden histograms are generated from `ldmx/edge:pro` (and cached for future runs)
+the simplest way to generate your own golden histograms locally is to do re-run the configs you wish to compare
+with that production image and move the output histograms into the `.github/workflows/gold` directory.
 
 ## Deep Validation
 
