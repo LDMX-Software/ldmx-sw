@@ -13,6 +13,7 @@ runs:
   steps:
     - run: |
         docker pull ldmx/pro:edge
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE ldmx/pro:edge ${LDMX_BASE}/ldmx-sw/.github/workflows fire ${{ inputs.config }}
-        mv ldmx-sw/.github/workflows/hist/* ldmx-sw/.github/workflows/gold/*
+        cd .github/workflows
+        docker run -i -v $(pwd):$(pwd) ldmx/pro:edge $(pwd) fire ${{ inputs.config }}
+        mv hist/* gold/*
       shell: bash 
