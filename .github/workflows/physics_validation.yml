@@ -17,10 +17,8 @@ on:
     branches: [iss988-validation-action]
 
 jobs:
-  physics-validation:
+  compile-ldmx-sw:
     runs-on: ubuntu-latest
-    env:
-      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
 
     steps:
     - name: Checkout ldmx-sw
@@ -44,6 +42,21 @@ jobs:
         ref: ${{ github.event.input.golden }}
         submodules: 'recursive'
 
+    - name: Upload ldmx-sw Package for Later Jobs
+      uses: actions/upload-artifact@v2
+      with:
+        name: ldmx-sw-package
+        path: [install/**, .github/workflows/gold/**]
+
+  inclusive:
+    runs-on: ubuntu-latest
+    needs: compile-ldmx-sw
+    steps:
+    - name: Get Compiled ldmx-sw
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-package
+
     - name: Deduce Labels for Plots
       id: deduce_labels
       run: |
@@ -62,7 +75,7 @@ jobs:
       with:
         image: ldmx/dev:latest
         working_dir: ldmx-sw/.github/workflows
-        run: 'python3 physics.py val -t ${{ steps.deduces_labels.outputs.test }} -g ${{ steps.deduce_labels.outputs.gold }}'
+        run: 'python3 physics.py val configs/inclusive.py ${{ steps.deduces_labels.outputs.test }} ${{ steps.deduce_labels.outputs.gold }}'
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
