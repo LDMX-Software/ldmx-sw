@@ -19,6 +19,19 @@ def __get_path__(relative_dir, sample_id = None) :
 def get_gold_path(sample_id = None) :
     return __get_path__('gold',sample_id)
 
+def get_gold_label() :
+    label = 'gold'
+    with open(get_gold_path('label').replace('.root','')) as f :
+        label = [l.strip() for l in f.readlines()][0]
+    return label
+
+def get_test_label() :
+    br = 'local-test'
+    if 'GITHUB_REF' in os.environ :
+        br = os.environ['GITHUB_REF']
+    br = br.replace('refs/tags/','').replace('refs/heads/','')
+    return br
+
 def get_test_path(sample_id = None) :
     return __get_path__('test',sample_id)
 
@@ -73,9 +86,9 @@ class HistogramFile() :
             h.SetFillColor(self.__color)
         return h
 
-def compare(sample_id, gold_label = 'gold', test_label = 'test') :
-    gold = HistogramFile(get_gold_path(sample_id),gold_label,ROOT.kRed ,True )
-    test = HistogramFile(get_test_path(sample_id),test_label,ROOT.kBlue,False)
+def compare(sample_id) :
+    gold = HistogramFile(get_gold_path(sample_id),get_gold_label(),ROOT.kRed ,True )
+    test = HistogramFile(get_test_path(sample_id),get_test_label(),ROOT.kBlue,False)
 
     c = ROOT.TCanvas()
     c.SetLogy()
@@ -131,9 +144,7 @@ def generate_golden(arg) :
 
 def validation(arg) :
     sample_id = generate_events(arg.config)
-    with open(get_gold_path('label').replace('.root',''),'r') as f :
-        gold_label = [l.strip() for l in f.readlines()][0]
-    compare(sample_id,gold_label,arg.test_label)
+    compare(sample_id)
 
 if __name__ == '__main__' :
     import argparse, sys
