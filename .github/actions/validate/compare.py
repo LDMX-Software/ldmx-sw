@@ -6,42 +6,6 @@ import subprocess
 ROOT.gROOT.SetBatch(1)
 ROOT.gStyle.SetOptStat(0)
 
-def sample_id_from_path(config_path) :
-    """sample id is just the basename without extension"""
-    return os.path.basename(config_path).replace('.py','')
-
-def __get_path__(relative_dir, sample_id = None) :
-    if sample_id is None :
-        sample_id = sample_id_from_path(sys.argv[0])
-    os.makedirs(relative_dir, exist_ok=True)
-    return f'{relative_dir}/{sample_id}.root'
-
-def get_gold_path(sample_id = None) :
-    return __get_path__('gold',sample_id)
-
-def get_gold_label() :
-    label = 'trunk'
-    return label
-
-def get_test_label() :
-    br = 'local-test'
-    if 'GITHUB_REF' in os.environ :
-        br = os.environ['GITHUB_REF']
-    br = br.replace('refs/tags/','').replace('refs/heads/','')
-    return br
-
-def get_test_path(sample_id = None) :
-    return __get_path__('hist',sample_id)
-
-def get_hist_path() :
-    return get_test_path()
-
-def get_events_path(sample_id = None) :
-    return __get_path__('events',sample_id)
-
-def list_configs(configs_dir = 'configs') :
-    return [f'{configs_dir}/{c}' for c in os.listdir(configs_dir) if c.endswith('.py')]
-
 def flatten(l) :
     flat_l = [ ]
     for k in l :
@@ -84,17 +48,15 @@ class HistogramFile() :
             h.SetFillColor(self.__color)
         return h
 
-def compare(sample_id) :
-    gold = HistogramFile(get_gold_path(sample_id),get_gold_label(),ROOT.kRed ,True )
-    test = HistogramFile(get_test_path(sample_id),get_test_label(),ROOT.kBlue,False)
+def compare(gold_f, gold_label, test_f, test_label) :
+    gold = HistogramFile(gold_f,gold_label,ROOT.kRed ,True )
+    test = HistogramFile(test_f,test_label,ROOT.kBlue,False)
 
     c = ROOT.TCanvas()
     c.SetLogy()
 
-    out_dir = f'plots/{sample_id}'
-    os.makedirs(out_dir,exist_ok=True)
-    os.makedirs(f'{out_dir}/pass',exist_ok=True)
-    os.makedirs(f'{out_dir}/fail',exist_ok=True)
+    os.makedirs(f'plots/pass',exist_ok=True)
+    os.makedirs(f'plots/fail',exist_ok=True)
     
     for key in gold.list_histograms() :
         try :
@@ -125,8 +87,8 @@ def compare(sample_id) :
         test_h.Draw('same')
     
         c.BuildLegend()
-        c.SaveAs(f'{out_dir}/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
+        c.SaveAs(f'plots/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
 
 if __name__ == '__main__' :
     import sys
-    compare(sys.argv[1])
+    compare(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

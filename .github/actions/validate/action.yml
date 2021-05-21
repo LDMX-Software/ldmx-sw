@@ -1,0 +1,15 @@
+
+name: validate
+author: Tom Eichlersmith
+description: Validate the sample name by comparing it to its golden histograms.
+
+inputs:
+  sample:
+    description: 'Sample to Validate'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - run: bash $GITHUB_ACTION_PATH/run.sh ${{ inputs.sample }}
+      shell: bash 
