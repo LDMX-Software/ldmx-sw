@@ -20,11 +20,8 @@ import sys
 
 p.run = 1
 
-os.makedirs('hist',exist_ok=True)
-os.makedirs('events',exist_ok=True)
-sample_id = os.path.basename(sys.argv[0]).replace('.py','')
-p.histogramFile = f'hist/{sample_id}.root'
-p.outputFiles = [f'events/{sample_id}.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions

@@ -21,7 +21,7 @@ jobs:
         image: ldmx/dev:latest
 
     - name: Package ldmx-sw Into Artifact
-      run: tar -cvf ldmx-sw-package.tar install/
+      run: tar -cvf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
@@ -33,98 +33,77 @@ jobs:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout ldmx-sw
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
         name: ldmx-sw Build ${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
-      run: tar xvf ldmx-sw-package.tar
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xvf ldmx-sw-package.tar
 
-    - name: Run Config
-      uses: ./.github/actions/ldmx
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
       with:
-        image: ldmx/dev:latest
-        working_dir: ldmx-sw/.github/workflows
-        run: fire configs/inclusive.py
+        sample: inclusive
 
     - name: Upload Inclusive Events for Overlay
       uses: actions/upload-artifact@v2
       with:
         name: Inclusive Overlay Events ${{ github.sha }}
-        path: .github/workflows/events/inclusive.root
-
-    - name: Generate Gold
-      uses: ./.github/actions/generate-gold
-      with:
-        config: configs/inclusive.py
-
-    - name: Compare to Golden Histograms
-      uses: ./.github/actions/ldmx
-      with:
-        image: ldmx/dev:latest
-        working_dir: ldmx-sw/.github/workflows
-        run: python3 compare.py inclusive
+        path: .github/validation_samples/inclusive/events.root
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
         name: Inclusive Recon Validation ${{ github.sha }}
-        path: .github/workflows/plots/**
+        path: ${{ steps.validation.outputs.plots }}
 
-    - name: Check if Failed
-      uses: ./.github/actions/check
-      with:
-        sample_id: inclusive
-
-  ecal_pn:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout ldmx-sw
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw Build ${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: tar xvf ldmx-sw-package.tar
-
-    - name: Run Config
-      uses: ./.github/actions/ldmx
-      with:
-        image: ldmx/dev:latest
-        working_dir: ldmx-sw/.github/workflows
-        run: fire configs/ecal_pn.py
-
-    - name: Generate Gold
-      uses: ./.github/actions/generate-gold
-      with:
-        config: configs/inclusive.py
-
-    - name: Compare to Golden Histograms
-      uses: ./.github/actions/ldmx
-      with:
-        image: ldmx/dev:latest
-        working_dir: ldmx-sw/.github/workflows
-        run: python3 compare.py ecal_pn
-
-    - name: Upload Validation Plots
-      uses: actions/upload-artifact@v2
-      with:
-        name: ECal PN Recon Validation ${{ github.sha }}
-        path: .github/workflows/plots/**
-
-    - name: Check if we Failed
-      uses: ./.github/actions/check
-      with:
-        sample_id: ecal_pn
+#  ecal_pn:
+#    needs: compile-ldmx-sw
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Checkout ldmx-sw
+#      uses: actions/checkout@v2
+#      with:
+#        submodules: 'recursive'
+#
+#    - name: Download ldmx-sw Package
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: ldmx-sw Build ${{ github.sha }}
+#
+#    - name: Unpack ldmx-sw Build
+#      run: tar xvf ldmx-sw-package.tar
+#
+#    - name: Run Config
+#      uses: ./.github/actions/ldmx
+#      with:
+#        image: ldmx/dev:latest
+#        working_dir: ldmx-sw/.github/workflows
+#        run: fire configs/ecal_pn.py
+#
+#    - name: Generate Gold
+#      uses: ./.github/actions/generate-gold
+#      with:
+#        config: configs/inclusive.py
+#
+#    - name: Compare to Golden Histograms
+#      uses: ./.github/actions/ldmx
+#      with:
+#        image: ldmx/dev:latest
+#        working_dir: ldmx-sw/.github/workflows
+#        run: python3 compare.py ecal_pn
+#
+#    - name: Upload Validation Plots
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: ECal PN Recon Validation ${{ github.sha }}
+#        path: .github/workflows/plots/**
+#
+#    - name: Check if we Failed
+#      uses: ./.github/actions/check
+#      with:
+#        sample_id: ecal_pn
