@@ -4,18 +4,16 @@ author: Tom Eichlersmith
 description: Check if we passed the comparison or not.
 
 inputs:
-  sample_id:
-    description: 'Short-name identifying sample.'
+  plots:
+    description: 'Path to plot archive output by validate action.'
     required: true
-    default: 'inclusive'
 
 runs:
   using: 'composite'
   steps:
     - run: |
-        cd ldmx-sw/.github/workflows/plots
-        cd ${{ inputs.sample_id }}
-        if [ ! -n "$(ls -A fail)" ]; then
+        _archive=${{ inputs.plots }}
+        if [[ $(tar -tf ${_archive} | grep -c fail) -gt 1 ]]; then 
           exit 1
         fi
       shell: bash

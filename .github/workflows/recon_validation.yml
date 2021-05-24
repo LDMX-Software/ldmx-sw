@@ -62,6 +62,11 @@ jobs:
         name: Inclusive Recon Validation ${{ github.sha }}
         path: ${{ steps.validation.outputs.plots }}
 
+    - name: Did any validation plots fail?
+      uses: ./.github/actions/check
+      with:
+        plots: ${{ steps.validation.outputs.plots }}
+
   ecal_pn:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
@@ -88,4 +93,10 @@ jobs:
       with:
         name: ECal PN Recon Validation ${{ github.sha }}
         path: ${{ steps.validation.outputs.plots }}
+
+    - name: Did any validation plots fail?
+      uses: ./.github/actions/check
+      with:
+        plots: ${{ steps.validation.outputs.plots }}
+
 
