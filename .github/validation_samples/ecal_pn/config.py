@@ -1,6 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
+p.maxTriesPerEvent = 500
 p.maxEvents = 10
 
 from LDMX.Biasing import ecal
@@ -18,11 +19,8 @@ import sys
 
 p.run = 1
 
-os.makedirs('hist',exist_ok=True)
-os.makedirs('events',exist_ok=True)
-sample_id = os.path.basename(sys.argv[0]).replace('.py','')
-p.histogramFile = f'hist/{sample_id}.root'
-p.outputFiles = [f'events/{sample_id}.root']
+p.histogramFile = f'hist.root'
+p.outputFiles = [f'events.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
