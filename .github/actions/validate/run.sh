@@ -43,7 +43,7 @@ __main__() {
   tar czf ${_sample}_recon_validation_plots.tar.gz plots/*
 
   # Share path to plot archive
-  echo ::set_output name=plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
+  echo "::set_output name=plots::$(pwd)/${_sample}_recon_validation_plots.tar.gz"
 }
 
 __main__ $@

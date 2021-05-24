@@ -12,8 +12,14 @@ inputs:
     required: false
     default: ldmx/dev:latest
 
+outputs:
+  plots:
+    description: 'Archive of Validation Plots'
+    value: ${{ steps.run-val.outputs.plots }}
+
 runs:
   using: 'composite'
   steps:
-    - run: bash $GITHUB_ACTION_PATH/run.sh ${{ inputs.sample }} ${{ inputs.image }}
+    - id: run-val
+      run: bash $GITHUB_ACTION_PATH/run.sh ${{ inputs.sample }} ${{ inputs.image }}
       shell: bash 
