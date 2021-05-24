@@ -40,7 +40,7 @@ __main__() {
 
   # compare.py puts plots into the plots/ directory
   #   Package them up for upload
-  tar czf ${_sample}_recon_validation_plots.tar.gz plots/*
+  tar czf ${_sample}_recon_validation_plots.tar.gz ${LDMX_SAMPLE_DIR_PATH}/plots/*
 
   # Share path to plot archive
   echo "::set_output name=plots::$(pwd)/${_sample}_recon_validation_plots.tar.gz"
