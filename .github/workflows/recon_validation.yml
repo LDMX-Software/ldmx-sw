@@ -48,6 +48,7 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: inclusive
+        image: ldmx/dev:latest
 
     - name: Upload Inclusive Events for Overlay
       uses: actions/upload-artifact@v2
