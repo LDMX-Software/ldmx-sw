@@ -16,6 +16,12 @@ outputs:
   plots:
     description: 'Archive of Validation Plots'
     value: ${{ steps.run-val.outputs.plots }}
+  events:
+    description: 'Generated Events File'
+    value: ${{ steps.run-val.outputs.events }}
+  hists:
+    description: 'Generated Histogram File'
+    value: ${{ steps.run-val.outputs.hists }}
 
 runs:
   using: 'composite'

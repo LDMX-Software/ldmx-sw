@@ -54,7 +54,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Inclusive Overlay Events ${{ github.sha }}
-        path: .github/validation_samples/inclusive/events.root
+        path: ${{ steps.validation.outputs.events }}
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
@@ -62,49 +62,30 @@ jobs:
         name: Inclusive Recon Validation ${{ github.sha }}
         path: ${{ steps.validation.outputs.plots }}
 
-#  ecal_pn:
-#    needs: compile-ldmx-sw
-#    runs-on: ubuntu-latest
-#    steps:
-#    - name: Checkout ldmx-sw
-#      uses: actions/checkout@v2
-#      with:
-#        submodules: 'recursive'
-#
-#    - name: Download ldmx-sw Package
-#      uses: actions/download-artifact@v2
-#      with:
-#        name: ldmx-sw Build ${{ github.sha }}
-#
-#    - name: Unpack ldmx-sw Build
-#      run: tar xvf ldmx-sw-package.tar
-#
-#    - name: Run Config
-#      uses: ./.github/actions/ldmx
-#      with:
-#        image: ldmx/dev:latest
-#        working_dir: ldmx-sw/.github/workflows
-#        run: fire configs/ecal_pn.py
-#
-#    - name: Generate Gold
-#      uses: ./.github/actions/generate-gold
-#      with:
-#        config: configs/inclusive.py
-#
-#    - name: Compare to Golden Histograms
-#      uses: ./.github/actions/ldmx
-#      with:
-#        image: ldmx/dev:latest
-#        working_dir: ldmx-sw/.github/workflows
-#        run: python3 compare.py ecal_pn
-#
-#    - name: Upload Validation Plots
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: ECal PN Recon Validation ${{ github.sha }}
-#        path: .github/workflows/plots/**
-#
-#    - name: Check if we Failed
-#      uses: ./.github/actions/check
-#      with:
-#        sample_id: ecal_pn
+  ecal_pn:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xvf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: ecal_pn
+        image: ldmx/dev:latest
+
+    - name: Upload Validation Plots
+      uses: actions/upload-artifact@v2
+      with:
+        name: ECal PN Recon Validation ${{ github.sha }}
+        path: ${{ steps.validation.outputs.plots }}
+

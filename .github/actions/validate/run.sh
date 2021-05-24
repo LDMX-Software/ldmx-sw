@@ -22,6 +22,12 @@ __docker_run__() {
     ${LDMX_DOCKER_IMAGE} ${LDMX_SAMPLE_DIR_PATH} $@
 }
 
+__set_output__() {
+  local _key="$1"
+  local _val="$2"
+  echo "::set-output name=${_key}::${_val}"
+}
+
 __main__() {
   local _sample="$1"
   export LDMX_DOCKER_IMAGE="$2"
@@ -43,8 +49,10 @@ __main__() {
   tar czf ${_sample}_recon_validation_plots.tar.gz \
     ${LDMX_SAMPLE_DIR_PATH}/plots/* || return $?
 
-  # Share path to plot archive
-  echo "::set-output name=plots::$(pwd)/${_sample}_recon_validation_plots.tar.gz"
+  # Share paths to plot archive
+  __set_output__ plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
+  __set_output__ hists ${LDMX_SAMPLE_DIR_PATH}/hist.root
+  __set_output__ events ${LDMX_SAMPLE_DIR_PATH}/events.root
 }
 
 __main__ $@
