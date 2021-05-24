@@ -24,6 +24,7 @@ __docker_run__() {
 
 __main__() {
   local _sample="$1"
+  export LDMX_DOCKER_IMAGE="$2"
   
   __deduce_ldmx_base__
   __deduce_sample_dir__ $_sample
