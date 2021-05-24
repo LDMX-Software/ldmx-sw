@@ -46,8 +46,8 @@ __main__() {
 
   # compare.py puts plots into the plots/ directory
   #   Package them up for upload
-  tar czf ${_sample}_recon_validation_plots.tar.gz \
-    ${LDMX_SAMPLE_DIR_PATH}/plots/* || return $?
+  tar -C ${LDMX_SAMPLE_DIR_PATH}/plots \
+    -czf ${_sample}_recon_validation_plots.tar.gz * || return $?
 
   # Share paths to plot archive
   __set_output__ plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
