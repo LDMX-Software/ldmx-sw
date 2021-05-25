@@ -16,7 +16,7 @@ runs:
         _num_fail=$(tar -tf ${_archive} | grep -c fail)
         _num_fail=$((_num_fail-1)) #remove one because directory called 'fail'
         echo "${_num_fail} plots failed the KS test against gold."
-        if [[ $(_num_fail) -gt 0 ]]; then 
+        if [[ ${_num_fail} -gt 0 ]]; then 
           exit 1
         fi
       shell: bash
