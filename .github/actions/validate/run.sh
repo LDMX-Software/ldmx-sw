@@ -39,7 +39,6 @@ __end_group__() {
 
 __main__() {
   __start_group__ Input Deduction
-  echo "::group::Input Deduction"
   local _sample="$1"
   __deduce_ldmx_base__
   __deduce_sample_dir__ $_sample
