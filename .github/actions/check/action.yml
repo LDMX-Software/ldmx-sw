@@ -15,8 +15,7 @@ runs:
         _archive=${{ inputs.plots }}
         _num_fail=$(tar -tf ${_archive} | grep -c fail)
         _num_fail=$((_num_fail-1)) #remove one because directory called 'fail'
-        echo "${_num_fail} plots failed the KS test against gold."
         if [[ ${_num_fail} -gt 0 ]]; then 
-          exit 1
+          echo "::warning file=${GITHUB_ACTION_PATH}/action.yml,line=20,col=70::${_num_fail} plots failed the KS test against gold."
         fi
       shell: bash
