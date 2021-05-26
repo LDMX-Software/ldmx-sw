@@ -1,5 +1,5 @@
 
-name: Generate Production Image
+name: Build Production Image
 
 on:
   workflow_dispatch:
@@ -49,6 +49,10 @@ jobs:
         if [[ $GITHUB_EVENT_NAME == "workflow_dispatch" ]]; then
           _repo=${{ github.event.inputs.repo }}
           _input_tag=${{ github.event.inputs.tag }}
+          if [[ ${_repo} == "ldmx/pro" ]]; then
+            echo "::error::Provided 'ldmx/pro' repo on non-trunk branch."
+            exit 1
+          fi
           _tags="${_repo}:${_input_tag},${_repo}:sha-${GITHUB_SHA::8}"
         elif [[ $GITHUB_REF == refs/tags/* ]]; then
           # if pushing a git tag ==> get the git tag for the docker tag
@@ -63,7 +67,7 @@ jobs:
           #pushing to trunk
           _tags="ldmx/pro:edge,ldmx/pro:sha-${GITHUB_SHA::8}"
         else
-          echo "Running Determine Image Tags on a commit that isn't a tag or a branch."
+          echo "::error::Running Determine Image Tags on a commit that isn't a tag or a branch."
           exit 1
         fi
         echo "Generated Tags: ${_tags}"
