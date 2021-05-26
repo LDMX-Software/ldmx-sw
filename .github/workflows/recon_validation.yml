@@ -99,4 +99,46 @@ jobs:
       with:
         plots: ${{ steps.validation.outputs.plots }}
 
+  it_pileup:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
 
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xvf ldmx-sw-package.tar
+
+    - name: Generate Inclusive Pileup
+      uses: ./.github/actions/ldmx
+      with:
+        working_directory: ldmx-sw/.github/validation_samples/it_pileup
+        run: fire gen_pileup.py
+
+    - name: Generate Main Interaction
+      uses: ./.github/actions/ldmx
+      with:
+        working_directory: ldmx-sw/.github/validation_samples/it_pileup
+        run: fire gen_main.py
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: it_pileup
+        image: ldmx/dev:latest
+
+    - name: Upload Validation Plots
+      uses: actions/upload-artifact@v2
+      with:
+        name: In-Time Pileup Recon Validation ${{ github.sha }}
+        path: ${{ steps.validation.outputs.plots }}
+
+    - name: Did any validation plots fail?
+      uses: ./.github/actions/check
+      with:
+        plots: ${{ steps.validation.outputs.plots }}
