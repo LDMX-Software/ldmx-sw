@@ -43,7 +43,7 @@ the docs are only generated if the commit pushed to `trunk` successfully compile
 ## Recon Validation
 
 These validations are done on pull requests.
-They are focused on validating that the reconstruction procedure "matches" what is on `trunk`.
+They are focused on validating that the reconstruction procedure "matches" the latest release.
 If the PR contains changes that are meant to alter the reconstruction, 
 the plots generated can also be downloaded and looked through in order to determine that the alterations are only where expected.
 
@@ -58,16 +58,14 @@ simulation plots are still produced to help debug any potential discrepancies th
 ### Local Equivalence
 
 When validating, this action is roughly equivalent to the following procedure.
+(Look at the `.github/actions/validate` directory for the details.)
 
 - Set-up ldmx to use `dev latest`: `ldmx pull dev latest`
 - Compile and Install ldmx-sw: `mkdir build; cd build; ldmx 'cmake .. && make install'`
-- Go to workflows directory: `cd ../.github/workflows`
-- Run one of the configs: `ldmx fire configs/<sample_id>.py`
-- Compare to golden histograms: `ldmx python3 compare.py <sample_id>`
-
-Since the golden histograms are generated from `ldmx/edge:pro` (and cached for future runs)
-the simplest way to generate your own golden histograms locally is to do re-run the configs you wish to compare
-with that production image and move the output histograms into the `.github/workflows/gold` directory.
+- Go to the sample of your choosing: `cd ../.github/validation_samples/<sample>/`
+- Run the configuration: `ldmx fire config.py`
+- Generate comparison plots: `ldmx python3 ${LDMX_BASE}/ldmx-sw/.github/actions/validate/compare.py gold.root gold hist.root <branch>`
+  - `<branch>` is your current branch or whatever label you want your developments to be called
 
 ## Deep Validation
 
