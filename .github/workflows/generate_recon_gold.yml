@@ -2,7 +2,8 @@
 name: Generate Recon Golden Histograms
 
 on: 
-  release: [released]
+  release: 
+    types: [released]
 
 jobs:
   gen-gold:

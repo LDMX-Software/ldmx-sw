@@ -13,9 +13,13 @@ runs:
   steps:
     - run: |
         _archive=${{ inputs.plots }}
-        _num_fail=$(tar -tf ${_archive} | grep -c fail)
-        _num_fail=$((_num_fail-1)) #remove one because directory called 'fail'
-        if [[ ${_num_fail} -gt 0 ]]; then 
-          echo "::warning file=${GITHUB_ACTION_PATH}/action.yml,line=20,col=70::${_num_fail} plots failed the KS test against gold."
+        _plots_that_failed=($(tar -tf ${_archive} | grep "fail/*.pdf"))
+        if [[ ${#_plots_that_failed[@]} -gt 0 ]]; then 
+          echo "::error file=${GITHUB_ACTION_PATH}/action.yml,line=17,col=50::${#_plots_that_failed[@]} plots failed the KS test against gold."
+          echo "::group::List of Plots Failing KS Test"
+          for p in ${_plots_that_failed[@]}; do
+            echo $(basename ${p})
+          done
+          echo "::endgroup::"
         fi
       shell: bash
