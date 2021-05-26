@@ -50,12 +50,6 @@ jobs:
         sample: inclusive
         image: ldmx/dev:latest
 
-    - name: Upload Inclusive Events for Overlay
-      uses: actions/upload-artifact@v2
-      with:
-        name: Inclusive Overlay Events ${{ github.sha }}
-        path: ${{ steps.validation.outputs.events }}
-
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
