@@ -15,7 +15,10 @@ __main__() {
       echo $(basename ${p})
     done
     echo "::endgroup::"
+    return 1
   fi
+
+  return 0
 }
 
 __main__ $@

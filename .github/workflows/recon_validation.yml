@@ -21,7 +21,7 @@ jobs:
         image: ldmx/dev:latest
 
     - name: Package ldmx-sw Into Artifact
-      run: tar -cvf ldmx-sw-package.tar install/ .github/
+      run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
@@ -41,7 +41,7 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        tar xvf ldmx-sw-package.tar
+        tar xf ldmx-sw-package.tar
 
     - name: Run Validation
       id: validation
@@ -73,7 +73,7 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        tar xvf ldmx-sw-package.tar
+        tar xf ldmx-sw-package.tar
 
     - name: Run Validation
       id: validation
@@ -105,7 +105,7 @@ jobs:
     - name: Unpack ldmx-sw Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        tar xvf ldmx-sw-package.tar
+        tar xf ldmx-sw-package.tar
 
     - name: Generate Inclusive Pileup
       uses: ./.github/actions/ldmx
