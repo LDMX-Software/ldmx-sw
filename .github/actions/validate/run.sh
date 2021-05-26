@@ -30,7 +30,6 @@ __set_output__() {
 
 __main__() {
   local _sample="$1"
-  export LDMX_DOCKER_IMAGE="$2"
   
   __deduce_ldmx_base__
   __deduce_sample_dir__ $_sample
@@ -42,7 +41,7 @@ __main__() {
   #   compare has 4 CLI inputs:
   #    gold_f, gold_label, test_f, test_label
   __docker_run__ python3 $GITHUB_ACTION_PATH/compare.py \
-    gold.root 'gold' hist.root ${GITHUB_REF} || return $?
+    gold.root ${LDMX_GOLD_LABEL} hist.root ${GITHUB_REF} || return $?
 
   # compare.py puts plots into the plots/ directory
   #   Package them up for upload
