@@ -5,6 +5,9 @@ on:
   push:
     branches: 'trunk'
 
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -16,8 +19,6 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
-      with:
-        image: ldmx/dev:latest
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
