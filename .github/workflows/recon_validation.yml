@@ -113,7 +113,7 @@ jobs:
         working_dir: ldmx-sw/.github/validation_samples/it_pileup
         run: fire gen_pileup.py
 
-   - name: Generate Main Interaction
+    - name: Generate Main Interaction
       uses: ./.github/actions/ldmx
       with:
         working_dir: ldmx-sw/.github/validation_samples/it_pileup
