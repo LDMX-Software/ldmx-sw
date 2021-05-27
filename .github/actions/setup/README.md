@@ -4,11 +4,8 @@ A custom setup action for starting an ldmx-sw workflow.
 
 After this action is run, further calls using the `ldmx` action can be done to use this compiled version of ldmx-sw to do things.
 
-## Inputs
-
-- `image`: **required** 
-  - The ldmx-style container to run inside of
-  - Default (and example) : `ldmx/dev:latest`
+The image used to compile ldmx-sw is stored in the `LDMX_DOCKER_TAG` environment variable.
+This variable should be defined in the workflow or job that is using this action.
 
 ## Pre-requisites
 
