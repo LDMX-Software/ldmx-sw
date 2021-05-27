@@ -7,10 +7,6 @@ inputs:
   run:
     description: 'Command and its arguments to run'
     required: true
-  image:
-    description: 'ldmx container to run in'
-    required: false
-    default: ldmx/dev:latest
   working_dir:
     description: 'Directory to run inside of when in container.'
     required: false
@@ -23,6 +19,6 @@ runs:
         cd ${GITHUB_WORKSPACE}/..
         export LDMX_BASE=$(pwd)
         echo "::group::ldmx ${{ inputs.run }}"
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${{ inputs.image }} ${LDMX_BASE}/${{ inputs.working_dir }} ${{ inputs.run }}
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${LDMX_DOCKER_TAG} ${LDMX_BASE}/${{ inputs.working_dir }} ${{ inputs.run }}
         echo "::endgroup::"
       shell: bash

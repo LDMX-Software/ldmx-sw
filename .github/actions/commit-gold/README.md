@@ -10,7 +10,7 @@ we need to checkout the entire repo.
 
 ## In-Workflow Example
 
-This is meant to be pared with the validate action, 
+This is meant to be paired with the validate action, 
 so we generate the golden histograms in the exact same way as we will when validating them.
 
 ```yaml

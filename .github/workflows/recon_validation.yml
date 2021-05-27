@@ -6,6 +6,10 @@ on:
     branches: [trunk]
     #types: [opened, ready_for_review]
 
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+  LDMX_GOLD_LABEL: gold
+
 jobs:
   compile-ldmx-sw:
     runs-on: ubuntu-latest
@@ -17,8 +21,6 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
-      with:
-        image: ldmx/dev:latest
 
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
@@ -48,7 +50,6 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: inclusive
-        image: ldmx/dev:latest
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
@@ -80,7 +81,6 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: ecal_pn
-        image: ldmx/dev:latest
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
@@ -113,7 +113,7 @@ jobs:
         working_dir: ldmx-sw/.github/validation_samples/it_pileup
         run: fire gen_pileup.py
 
-    - name: Generate Main Interaction
+   - name: Generate Main Interaction
       uses: ./.github/actions/ldmx
       with:
         working_dir: ldmx-sw/.github/validation_samples/it_pileup
@@ -124,7 +124,6 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: it_pileup
-        image: ldmx/dev:latest
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2

@@ -3,12 +3,6 @@ name: setup
 author: Tom Eichlersmith
 description: Setup ldmx-sw and Compile the current version
 
-inputs:
-  image:
-    description: 'ldmx container to run in'
-    required: true
-    default: ldmx/dev:latest
-
 runs:
   using: 'composite'
   steps:
@@ -20,5 +14,5 @@ runs:
     - run: |
         cd ..
         export LDMX_BASE=$(pwd)
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${{ inputs.image }} ${LDMX_BASE}/ldmx-sw/build 'cmake .. && make install'
+        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${LDMX_DOCKER_TAG} ${LDMX_BASE}/ldmx-sw/build 'cmake .. && make install'
       shell: bash 

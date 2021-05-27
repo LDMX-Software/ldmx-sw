@@ -19,7 +19,7 @@ __docker_run__() {
   docker run \
     -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE \
     -u $(id -u $USER):$(id -g $USER) \
-    ${LDMX_DOCKER_IMAGE} ${LDMX_SAMPLE_DIR_PATH} $@
+    ${LDMX_DOCKER_TAG} ${LDMX_SAMPLE_DIR_PATH} $@
 }
 
 __set_output__() {
