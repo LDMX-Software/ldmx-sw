@@ -7,14 +7,6 @@ inputs:
   sample:
     description: 'Sample to Validate'
     required: true
-  image:
-    description: 'Container image to run inside of'
-    required: false
-    default: ldmx/dev:latest
-  gold_label:
-    description: 'Label to give golden histograms in validation plots'
-    required: false
-    default: 'gold'
 
 outputs:
   plots:
@@ -33,6 +25,3 @@ runs:
     - id: run-val
       run: bash $GITHUB_ACTION_PATH/run.sh ${{ inputs.sample }}
       shell: bash 
-      env:
-        LDMX_GOLD_LABEL: ${{ inputs.gold_label }}
-        LDMX_DOCKER_IMAGE: ${{ inputs.image }}

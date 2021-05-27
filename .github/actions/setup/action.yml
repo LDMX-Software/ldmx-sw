@@ -7,7 +7,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        docker pull ${{ inputs.image }}
+        docker pull ${LDMX_DOCKER_TAG}
         mkdir build
       shell: bash
 
