@@ -47,6 +47,37 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
                 "Simulated [MeV]" , 1000 , 0. , 50. ,
                 "Reconstructed [MeV]" , 1000 , 0. , 50. )
 
+class EcalShowerFeatures(ldmxcfg.Analyzer) :
+    """Configured EcalShowerFeatures python object """
+
+    def __init__(self,name="EcalShowerFeatures") :
+        super().__init__(name,'dqm::EcalShowerFeatures','DQM')
+
+        self.ecal_veto_name = 'EcalVeto'
+        self.ecal_veto_pass = ''
+
+        self.build1DHistogram('deepest_layer_hit',
+                'Deepest Layer Hit',40,0,40)
+        self.build1DHistogram('num_readout_hits',
+                'Num Readout Hits',100,0,300)
+        self.build1DHistogram('summed_det',
+                'Total Rec Energy [MeV]',800,0.,8000.)
+        self.build1DHistogram('summed_iso',
+                'Total Isolated Energy [MeV]',400,0.,4000.)
+        self.build1DHistogram('summed_back',
+                'Total Back Energy [MeV]',400,0.,4000.)
+        self.build1DHistogram('max_cell_dep',
+                'Maximum Single-Cell Energy Dep [MeV]',100,0.,1000.)
+        self.build1DHistogram('shower_rms',
+                'Transverse Shower RMS [mm]',200,0.,200.)
+        self.build1DHistogram('x_std',
+                'X Std Deviation [mm]',200,0.,200.)
+        self.build1DHistogram('y_std',
+                'Y Std Deviation [mm]',200,0.,200.)
+        self.build1DHistogram('avg_layer_hit',
+                'Avg Layer Hit',40,0.,40.)
+        self.build1DHistogram('std_layer_hit',
+                'Std Dev Layer Hit',20,0.,20.)
 
 class HCalDQM(ldmxcfg.Analyzer) :
     """Configured HCalDQM python object
@@ -300,8 +331,8 @@ class TrigScintTrackDQM(ldmxcfg.Analyzer) :
 
         
 ecal_dqm = [
-        PhotoNuclearDQM(),
-        EcalDigiVerify()
+        EcalDigiVerify(),
+        EcalShowerFeatures()
         ]
 
 hcal_dqm = [
