@@ -4,7 +4,7 @@ name: Generate Recon Golden Histograms
 on: 
   release: 
     types: [released]
-  push: [iss988-validation-action]
+  workflow_dispatch:
 
 jobs:
   gen-gold:
