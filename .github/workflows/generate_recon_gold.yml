@@ -6,6 +6,9 @@ on:
     types: [released]
   workflow_dispatch:
 
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
 jobs:
   gen-gold:
     runs-on: ubuntu-latest
@@ -17,22 +20,18 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
-      with:
-        image: ldmx/dev:latest
 
     - name: Run inclusive
       id: inclusive 
       uses: ./.github/actions/validate
       with:
         sample: inclusive
-        image: ldmx/dev:latest
 
     - name: Run ecal_pn
       id: ecal_pn 
       uses: ./.github/actions/validate
       with:
         sample: ecal_pn
-        image: ldmx/dev:latest
 
     - name: Generate Inclusive Pileup
       uses: ./.github/actions/ldmx
@@ -51,7 +50,6 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: it_pileup
-        image: ldmx/dev:latest
 
     - name: Commit the Gold
       uses: ./.github/actions/commit-gold
