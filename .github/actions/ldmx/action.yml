@@ -20,7 +20,9 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        cd ..
+        cd ${GITHUB_WORKSPACE}/..
         export LDMX_BASE=$(pwd)
+        echo "::group::ldmx ${{ inputs.run }}"
         docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${{ inputs.image }} ${LDMX_BASE}/${{ inputs.working_dir }} ${{ inputs.run }}
+        echo "::endgroup::"
       shell: bash
