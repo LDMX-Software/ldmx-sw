@@ -6,6 +6,9 @@ on:
     branches: '**' #all branches
     tags: 'v*.*.*' #all version tags
 
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -21,12 +24,9 @@ jobs:
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
-      with:
-        image: ldmx/dev:latest
 
     - name: Basic Tests for Functionality
       uses: ./.github/actions/ldmx
       with:
-        image: ldmx/dev:latest
         working_dir: ldmx-sw/build
         run: ctest --verbose
