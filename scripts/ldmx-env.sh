@@ -436,9 +436,8 @@ _ldmx_checkout() {
   # do ldmx-sw first so we can submodule update
   # and then change submodule branches later if necessary
   if [[ ! -z $_ldmxsw ]]; then
-    if ! git checkout $_ldmxsw && git submodule update; then
-      return $?
-    fi
+    git checkout $_ldmxsw || return $?
+    git submodule update || return $?
   fi
 
   # now do submodules
