@@ -6,13 +6,5 @@ description: Setup ldmx-sw and Compile the current version
 runs:
   using: 'composite'
   steps:
-    - run: |
-        docker pull ${LDMX_DOCKER_TAG}
-        mkdir build
+    - run: bash ${GITHUB_ACTION_PATH}/setup.sh
       shell: bash
-
-    - run: |
-        cd ..
-        export LDMX_BASE=$(pwd)
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${LDMX_DOCKER_TAG} ${LDMX_BASE}/ldmx-sw/build 'cmake .. && make install'
-      shell: bash 

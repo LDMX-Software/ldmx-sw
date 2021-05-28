@@ -47,6 +47,11 @@ They are focused on validating that the reconstruction procedure "matches" the l
 If the PR contains changes that are meant to alter the reconstruction, 
 the plots generated can also be downloaded and looked through in order to determine that the alterations are only where expected.
 
+The new PR is validated by comparing the generated histograms to the "gold" histograms in the GitHub source tree.
+If a pair of histograms fail a KS test (i.e. the `TH1::KolmogorovTest` returns a value less than 0.99), we put that plot
+in the "fail" directory of the validation plots package. The `check` action looks into this validation package for _any_
+plots in the "fail" directory.
+
 In this test, the simulations **are not** being validated.
 They are merely there as a method for generating a wide variety of hits that need to be successfully handled by our reconstruction pipeline.
 While we aren't directly attempting to validate the simulations,
@@ -66,6 +71,14 @@ When validating, this action is roughly equivalent to the following procedure.
 - Run the configuration: `ldmx fire config.py`
 - Generate comparison plots: `ldmx python3 ${LDMX_BASE}/ldmx-sw/.github/actions/validate/compare.py gold.root gold hist.root <branch>`
   - `<branch>` is your current branch or whatever label you want your developments to be called
+
+## Generate Recon Gold Histograms
+
+This action is run when a release is "released", i.e. we only run this action for _actual_ stable releases (no pre-releases).
+When this action is run, we run the `validate` action on the samples 
+and then use the `commit-gold` action to commit the newly-generated histogram files `hist.root` as the new `gold.root` files and push them to the repo.
+
+**This relies heavily on the naming conventions assumed in the `validate` action, so changes to that action should also be checked here.**
 
 ## Deep Validation
 
