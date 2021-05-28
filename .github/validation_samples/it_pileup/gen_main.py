@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 500
+p.maxTriesPerEvent = 1000
 p.maxEvents = 100
 
 from LDMX.Biasing import ecal

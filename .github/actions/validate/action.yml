@@ -23,5 +23,5 @@ runs:
   using: 'composite'
   steps:
     - id: run-val
-      run: bash $GITHUB_ACTION_PATH/run.sh ${{ inputs.sample }}
+      run: bash $GITHUB_ACTION_PATH/validate.sh ${{ inputs.sample }}
       shell: bash 

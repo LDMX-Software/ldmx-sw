@@ -10,8 +10,8 @@ The image used is determined by the `LDMX_DOCKER_TAG` environment variable which
 ## Inputs
 
 - `run` : **required**
-  - String containing the inputs to the container. This includes the location to run the command int he container, the command, and the command's arguments.
-  - For example: `ldmx-sw/build cmake ..`
+  - String containing the command to run inside the container. 
+  - For example: `cmake ..`
 - `working_dir` : **required**
   - The directory to run inside of when in the container. Must be relative to the ldmx base directory.
   - Default: `.` (i.e. no change, run inside the base directory)
@@ -23,7 +23,7 @@ Here is an example of translating a command you would run locally inside the con
 This example
 
 ```bash
-cd build
+cd ldmx-sw/build
 ldmx cmake ..
 ```
 
