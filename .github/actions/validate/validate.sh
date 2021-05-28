@@ -1,8 +1,14 @@
 #!/bin/bash
 
 ###############################################################################
-# run.sh
+# validate.sh
 #   Run the validate action.
+#
+#   Assumptions
+#     - LDMX_DOCKER_TAG is defined to be image we run inside of
+#     - name of sample is given as only argument on command line
+#     - ldmx-sw install we should run is installed in $GITHUB_WORKSPACE/install
+#       as is done with setup action
 ###############################################################################
 
 __deduce_ldmx_base__() {
@@ -15,6 +21,9 @@ __deduce_sample_dir__() {
   export LDMX_SAMPLE_DIR_PATH="${GITHUB_WORKSPACE}/.github/validation_samples/${_sample}"
 }
 
+# container running command
+#   - Assume LDMX_DOCKER_TAG is the image we run in
+#   - Run inside of the sample directory
 __docker_run__() {
   docker run \
     -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE \
@@ -22,6 +31,7 @@ __docker_run__() {
     ${LDMX_DOCKER_TAG} ${LDMX_SAMPLE_DIR_PATH} $@
 }
 
+# GitHub workflow command to set an output key,val pair
 __set_output__() {
   local _key="$1"
   local _val="$2"
@@ -29,10 +39,12 @@ __set_output__() {
   echo "::set-output name=${_key}::${_val}"
 }
 
+# GitHub workflow command to start an group of output messages
 __start_group__() {
   echo "::group::$@"
 }
 
+# GitHub workflow command to end previously started group
 __end_group__() {
   echo "::endgroup::"
 }
