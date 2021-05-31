@@ -143,6 +143,9 @@ foreach(module ${MODULES})
   endif()
 endforeach()
 
+# build Detectors module
+add_subdirectory(Detectors)
+
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})

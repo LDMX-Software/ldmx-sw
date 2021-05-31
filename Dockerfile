@@ -5,7 +5,6 @@
 
 ARG DEV_TAG=v1.7-ldmx-sw
 FROM ldmx/dev:${DEV_TAG}
-
 # install ldmx-sw into the container at /usr/local
 COPY . /code
 RUN mkdir /code/build &&\
