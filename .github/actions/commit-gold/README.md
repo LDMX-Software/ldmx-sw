@@ -12,6 +12,9 @@ we need to checkout the entire repo.
 > This is done to avoid infinite loops of actions triggering each other,
 > which is exactly what would happen to us if it wasn't configured in this way.
 
+We also modify the `recon_validation.yml` workflow to update the label for the gold histograms.
+This label is changed to the tag of the release that triggered this action.
+
 ## In-Workflow Example
 
 This is meant to be paired with the validate action, 
