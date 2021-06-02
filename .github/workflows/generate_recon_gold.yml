@@ -13,7 +13,7 @@ env:
   LDMX_GOLD_LABEL: 'new-gold'
 
 jobs:
-  gen-gold:
+  compile-ldmx-sw:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw
@@ -24,17 +24,80 @@ jobs:
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
 
-    - name: Run inclusive
-      id: inclusive 
+    - name: Package ldmx-sw Into Artifact
+      run: tar cf ldmx-sw-package.tar install/ .github/
+
+    - name: Upload ldmx-sw Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+        path: ldmx-sw-package.tar
+
+  inclusive:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
       uses: ./.github/actions/validate
       with:
         sample: inclusive
 
-    - name: Run ecal_pn
-      id: ecal_pn 
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-inclusive-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  ecal_pn:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
       uses: ./.github/actions/validate
       with:
         sample: ecal_pn
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-ecal_pn-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  it_pileup:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw Build ${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
 
     - name: Generate Inclusive Pileup
       uses: ./.github/actions/ldmx
@@ -48,11 +111,44 @@ jobs:
         working_dir: ldmx-sw/.github/validation_samples/it_pileup
         run: fire gen_main.py
 
-    - name: Run it_pileup
-      id: it_pileup 
+    - name: Run Validation
+      id: validation
       uses: ./.github/actions/validate
       with:
         sample: it_pileup
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-it_pileup-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  commit-gold:
+    needs: [inclusive, ecal_pn, it_pileup]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Download inclusive Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-inclusive-gold
+        path: .github/validation_samples/inclusive/
+
+    - name: Download ecal_pn Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-ecal_pn-gold
+        path: .github/validation_samples/ecal_pn/
+
+    - name: Download it_pileup Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-it_pileup-gold
+        path: .github/validation_samples/it_pileup/
 
     - name: Commit the Gold
       uses: ./.github/actions/commit-gold
