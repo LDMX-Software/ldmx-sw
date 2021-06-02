@@ -8,6 +8,10 @@ golden histogram file should be committed.
 In order to [push a commit with a GitHub action](https://github.com/actions/checkout#Push-a-commit-using-the-built-in-token),
 we need to checkout the entire repo.
 
+> **Note**: Pushes originating from GitHub actions _do not_ trigger other workflows.
+> This is done to avoid infinite loops of actions triggering each other,
+> which is exactly what would happen to us if it wasn't configured in this way.
+
 ## In-Workflow Example
 
 This is meant to be paired with the validate action, 
@@ -24,3 +28,5 @@ so we generate the golden histograms in the exact same way as we will when valid
     - name: Commit Gold
       uses: ./.github/actions/commit-gold
 ```
+
+The current workflow that uses this action adds slightly more complexity in order to parallelize the validation runs.
