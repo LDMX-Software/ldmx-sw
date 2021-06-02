@@ -15,7 +15,7 @@ Here, we simply make sure that we can
 1. Compile and Install ldmx-sw using the latest development container
 2. Run basic funtionality tests registered with the cmake testing suite
 
-## Generate Production Container
+## Build Production Container
 
 This is run on every push to `trunk`, all tags, and can be manually run.
 
@@ -23,6 +23,8 @@ When it is manually run, the user must provide three inputs.
 
 - `branch`: The branch of ldmx-sw to compile into a production container
 - `repo`: The DockerHub repository to push the image to
+  - This repo needs to have the user `omarmoreno` added as a collaborator,
+    so that the GitHub action has access to push images to the repo.
 - `tag`: A short-name to call the new version of this image
 
 The image is tagged following the given logic.
