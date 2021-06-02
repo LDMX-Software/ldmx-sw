@@ -7,15 +7,15 @@ runs:
   using: 'composite'
   steps:
     - run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        sed -i "s|LDMX_GOLD_LABEL.*$|LDMX_GOLD_LABEL: ${GITHUB_REF##refs/tags/}|" .github/workflows/*.yml
+        git add .github/workflows/recon_validation.yml
         cd .github/validation_samples
         for sample_dir in *; do
           mv ${sample_dir}/hist.root ${sample_dir}/gold.root
         done
-        sed -i "s|LDMX_GOLD_LABEL.*$|LDMX_GOLD_LABEL: ${GITHUB_REF##refs/tags/}|" ${GITHUB_WORKSPACE}/.github/workflows/*.yml
-        git config user.name github-actions
-        git config user.email github-actions@github.com
         git add */gold.root
-        git add .github/workflows/recon_validation.yml
         git commit -m "Update golden recon histograms"
         git push
       shell: bash 
