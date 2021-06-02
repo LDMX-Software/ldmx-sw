@@ -4,8 +4,8 @@ name: Generate Recon Golden Histograms
 on: 
   release: 
     types: [released]
-#  push: 
-#    branches: [iss988-validation-action]
+  push: 
+    branches: [iss988-validation-action]
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
