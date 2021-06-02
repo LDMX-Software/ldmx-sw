@@ -39,6 +39,7 @@ __main__() {
   __end_group__
 
   __start_group__ Configure the Build
+  mkdir ${LDMX_BASE}/ldmx-sw/build
   __docker_run__ cmake .. || return $?
   __end_group__
 
