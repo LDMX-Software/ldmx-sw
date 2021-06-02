@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
-p.maxEvents = 100
+p.maxEvents = 1000
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )

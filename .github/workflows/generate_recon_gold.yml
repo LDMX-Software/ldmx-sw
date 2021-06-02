@@ -5,6 +5,7 @@ on:
   release: 
     types: [released]
   workflow_dispatch:
+  push: [iss988-validation-action]
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
