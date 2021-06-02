@@ -7,14 +7,14 @@ on:
       branch:
         description: 'Git Reference to Build Into an Image'
         required: true
-        default: 'trunk'
+        default: trunk
       repo:
         description: 'Docker Repo to Push Image To'
         required: true
       tag:
         description: 'Name for Image'
-        required: true
-        default: 'edge'
+        required: false
+        default: edge
   push:
     branches: 'trunk'
     tags: 'v*.*.*' #all version tags
