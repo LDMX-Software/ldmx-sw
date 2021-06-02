@@ -2,7 +2,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
 p.maxTriesPerEvent = 1000
-p.maxEvents = 100
+p.maxEvents = 1000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
