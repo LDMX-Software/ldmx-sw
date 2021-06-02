@@ -14,6 +14,6 @@ runs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add */gold.root
-        git commit -m "Update golden recon histgorams for new release"
+        git commit -m "Update golden recon histograms"
         git push
       shell: bash 
