@@ -28,7 +28,7 @@ jobs:
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
   inclusive:
@@ -38,7 +38,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |
@@ -64,7 +64,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |
@@ -90,7 +90,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |

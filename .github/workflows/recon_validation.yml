@@ -27,7 +27,7 @@ jobs:
     - name: Upload ldmx-sw Package
       uses: actions/upload-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
   inclusive:
@@ -37,7 +37,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |
@@ -53,7 +53,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: Inclusive Recon Validation ${{ github.sha }}
+        name: Inclusive_Recon_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
@@ -68,7 +68,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |
@@ -84,7 +84,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: ECal PN Recon Validation ${{ github.sha }}
+        name: ECal_PN_Recon_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
@@ -99,7 +99,7 @@ jobs:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
       with:
-        name: ldmx-sw Build ${{ github.sha }}
+        name: ldmx-sw-build-${{ github.sha }}
 
     - name: Unpack ldmx-sw Build
       run: |
@@ -127,7 +127,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: In-Time Pileup Recon Validation ${{ github.sha }}
+        name: In-Time_Pileup_Recon_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
