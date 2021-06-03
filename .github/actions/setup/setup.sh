@@ -15,15 +15,16 @@ set -e
 source ${GITHUB_ACTION_PATH}/../common.sh
 
 __main__() {
-  __start_group__ Configure the Build
+  start_group Configure the Build
   local _build=${LDMX_BASE}/ldmx-sw/build
   mkdir ${_build}
-  __docker_run__ ${_build} cmake .. || return $?
-  __end_group__
+  cd ${_build}
+  ldmx cmake .. || return $?
+  end_group
 
-  __start_group__ Build and Install
-  __docker_run__ ${_build} make install || return $?
-  __end_group__
+  start_group Build and Install
+  ldmx make install || return $?
+  end_group
 
   return 0
 }
