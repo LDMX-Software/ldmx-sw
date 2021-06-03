@@ -19,10 +19,10 @@ static const double MIP_SI_ENERGY = 0.130;
  * Conversion between deposited charge and deposited energy
  * [MeV/fC]
  *
- * charge [fC] * (1000 electrons / 0.162 fC) * (1 MIP / 37 000 electrons) *
+ * charge [fC] * (1000 electrons / 0.1602 fC) * (1 MIP / 37 000 electrons) *
  * (0.130 MeV / 1 MIP)
  */
-static const double MeV_per_fC = MIP_SI_ENERGY / (37 * 0.162);
+static const double MeV_per_fC = MIP_SI_ENERGY / (37 * 0.1602);
 
 /**
  * Maximum percent error that a single hit

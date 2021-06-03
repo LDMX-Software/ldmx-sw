@@ -16,7 +16,7 @@ mip_si_energy : float
 from LDMX.Framework.ldmxcfg import Producer
 
 n_kelectrons_per_mip = 37.0 #thousand e-h pairs created per MIP <- derived from 0.5mm thick Si
-charge_per_mip = n_kelectrons_per_mip*0.162 #fC
+charge_per_mip = n_kelectrons_per_mip*0.1602 #fC
 mip_si_energy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
 
 def EcalHgcrocEmulator() :
@@ -42,7 +42,7 @@ def EcalHgcrocEmulator() :
     hgcroc.timeDnSlope = 87.7649
     hgcroc.timePeak    = 77.732
 
-    hgcroc.noiseRMS     = (700. + 25.*20.)*(0.162/1000.)*(1./20.) #mV
+    hgcroc.noiseRMS     = (700. + 25.*20.)*(0.1602/1000.)*(1./20.) #mV
     hgcroc.nADCs        = 10 
     hgcroc.iSOI         = 2
 
