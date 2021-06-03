@@ -18,7 +18,6 @@ __main__() {
   echo "Old Label: $(ldmx_gold_label)"
   echo "${GITHUB_REF##refs/tags/}" > ${LDMX_GOLD_LABEL_FILE}
   echo "New Label: $(ldmx_gold_label)"
-  git add ${LDMX_GOLD_LABEL_FILE}
   end_group
 
   start_group Copy over new Gold Histograms
@@ -27,10 +26,12 @@ __main__() {
     mv ${sample_dir}/hist.root ${sample_dir}/gold.root
     echo "${sample_dir}"
   done
-  git add */gold.root
   end_group
 
   start_group Commit and Push
+  git stash
+  git checkout trunk
+  git stash pop
   git commit -m "Update golden recon histograms"
   git push
   end_group

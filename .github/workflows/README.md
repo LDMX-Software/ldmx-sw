@@ -89,6 +89,13 @@ and then use the `commit-gold` action to commit the newly-generated histogram fi
 The idea for this action would be to attempt to validate the simulation (both physics and detector design).
 The question of what plots to generate and what (if anything) to compare them to is open.
 
+## Code Formatting
+
+**To be developed**
+
+After a PR is merged, format code according to our style.
+This seems simple, but hasn't been developed yet because commiting and pushing to submodules within an action is complicated.
+
 ### Extra Detail
 
 In order to simplify the action-development process,
