@@ -104,9 +104,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
   std::endl;
    */
 
-  std::vector<std::pair<double,double>> pulses_at_chip;
   for (auto const& simHit : ecalSimHits) {
-    std::vector<double> voltages, times;
+    std::vector<std::pair<double,double>> pulses_at_chip;
     for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
          iContrib++) {
       /* debug printout
@@ -131,7 +130,10 @@ void EcalDigiProducer::produce(framework::Event& event) {
 
     /* debug printout
     std::cout << hitID << " "
-        << simHit.getEdep() << std::endl;
+        << simHit.getEdep() 
+        << " MeV at "
+        << simHit.getTime() - simHit.getPosition().at(2)/299.702547
+        << std::endl;
      */
     // container emulator uses to write out samples and
     // transfer samples into the digi collection

@@ -110,6 +110,15 @@ void EcalRecProducer::produce(framework::Event& event) {
        */
     }
 
+    if (charge < 0) {
+      std::stringstream msg;
+      msg << "Recieved ";
+      if (digi.isTOT()) msg << "TOT " << digi.tot();
+      else msg << "ADC " << digi.soi().adc_t();
+      msg << "below pedestal.";
+      EXCEPTION_RAISE("BadRec", msg.str());
+    }
+
     double num_mips_equivalent = charge / charge_per_mip_;
     double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
 
