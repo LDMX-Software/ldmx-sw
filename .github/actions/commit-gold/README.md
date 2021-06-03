@@ -15,6 +15,9 @@ we need to checkout the entire repo.
 We also modify the file storing the gold label to update the label for the gold histograms.
 This label is changed to the tag of the release that triggered this action.
 
+After these modifications are done, we `git stash` them, move ourselves to `trunk`,
+so we can `git stash pop`, `git commit` and `git push` there.
+
 ## In-Workflow Example
 
 This is meant to be paired with the validate action, 
