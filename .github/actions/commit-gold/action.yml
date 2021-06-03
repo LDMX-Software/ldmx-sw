@@ -6,16 +6,5 @@ description: Commit the histograms as golden histograms
 runs:
   using: 'composite'
   steps:
-    - run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        echo "${GITHUB_REF##refs/tags/}" > .github/actions/validate/gold_label
-        git add .github/actions/validate/gold_label
-        cd .github/validation_samples
-        for sample_dir in *; do
-          mv ${sample_dir}/hist.root ${sample_dir}/gold.root
-        done
-        git add */gold.root
-        git commit -m "Update golden recon histograms"
-        git push
+    - run: bash ${GITHUB_ACTION_PATH}/commit-gold.sh
       shell: bash 
