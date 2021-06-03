@@ -11,6 +11,10 @@
 #       as is done with setup action
 ###############################################################################
 
+__ldmx_gold_label__() {
+  cat ${GITHUB_WORKSPACE}/.github/actions/validate/gold_label
+}
+
 __deduce_ldmx_base__() {
   local _ldmx_base="$GITHUB_WORKSPACE/../"
   export LDMX_BASE=$(cd $_ldmx_base && pwd)
@@ -69,7 +73,7 @@ __main__() {
   #   compare has 4 CLI inputs:
   #    gold_f, gold_label, test_f, test_label
   __docker_run__ python3 $GITHUB_ACTION_PATH/compare.py \
-    gold.root ${LDMX_GOLD_LABEL} hist.root ${GITHUB_REF} || return $?
+    gold.root $(__ldmx_gold_label__) hist.root ${GITHUB_REF} || return $?
 
   # compare.py puts plots into the plots/ directory
   #   Package them up for upload

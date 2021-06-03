@@ -8,7 +8,6 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
-  LDMX_GOLD_LABEL: gold
 
 jobs:
   compile-ldmx-sw:
