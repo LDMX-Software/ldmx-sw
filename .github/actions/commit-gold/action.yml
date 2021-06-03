@@ -9,8 +9,8 @@ runs:
     - run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        sed -i "s|LDMX_GOLD_LABEL.*$|LDMX_GOLD_LABEL: ${GITHUB_REF##refs/tags/}|" .github/workflows/*.yml
-        git add .github/workflows/recon_validation.yml
+        echo "${GITHUB_REF##refs/tags/}" > .github/actions/validate/gold_label
+        git add .github/actions/validate/gold_label
         cd .github/validation_samples
         for sample_dir in *; do
           mv ${sample_dir}/hist.root ${sample_dir}/gold.root
