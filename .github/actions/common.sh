@@ -8,6 +8,9 @@
 #     - The env variable LDMX_DOCKER_TAG has the image we should be using
 #     - The label for the gold plots is in
 #         .github/actions/validate/gold_label
+#     - ldmx-sw has been checked out using actions/checkout@v2
+#       OR the build package was unpacked to mimic this effect
+#       (this assumption basically means that GITHUB_WORKSPACE points to ldmx-sw)
 #
 #   Usage
 #     GitHub defines GITHUB_ACTION_PATH to be the full path to the diretory
@@ -18,22 +21,24 @@
 ###############################################################################
 
 # Print the gold label
-__ldmx_gold_label__() {
+ldmx_gold_label() {
   cat ${LDMX_GOLD_LABEL_FILE}
 }
 
 # container running command
 #   - Assume LDMX_DOCKER_TAG is the image we run in
-#   - Both directory and command need to be provided
-__docker_run__() {
+#   - Full command needs to be provided
+#   - Runs inside the present working directory
+ldmx() {
   docker run \
     -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE \
     -u $(id -u $USER):$(id -g $USER) \
-    ${LDMX_DOCKER_TAG} $@
+    ${LDMX_DOCKER_TAG} $(pwd) $@
+  return $?
 }
 
 # GitHub workflow command to set an output key,val pair
-__set_output__() {
+set_output() {
   local _key="$1"
   local _val="$2"
   echo "${_key} = ${_val}"
@@ -41,24 +46,24 @@ __set_output__() {
 }
 
 # GitHub workflow command to start an group of output messages
-__start_group__() {
+start_group() {
   echo "::group::$@"
 }
 
 # GitHub workflow command to end previously started group
-__end_group__() {
+end_group() {
   echo "::endgroup::"
 }
 
 # GitHub workflow command to flag message as an error
-__error__() {
+error() {
   echo "::error::$@"
 }
 
-__start_group__ Deduce Common Environment Variables
+start_group Deduce Common Environment Variables
 export LDMX_GOLD_LABEL_FILE=${GITHUB_WORKSPACE}/.github/actions/validate/gold_label
 export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
 echo "LDMX_GOLD_LABEL_FILE=${LDMX_GOLD_LABEL_FILE}"
 echo "LDMX_BASE=${LDMX_BASE}"
-__end_group__
+end_group
 

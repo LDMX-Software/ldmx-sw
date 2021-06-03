@@ -12,7 +12,7 @@ The image used is determined by the `LDMX_DOCKER_TAG` environment variable which
 - `run` : **required**
   - String containing the command to run inside the container. 
   - For example: `cmake ..`
-- `working_dir` : **required**
+- `working_dir` : optional
   - The directory to run inside of when in the container. Must be relative to the ldmx base directory.
   - Default: `.` (i.e. no change, run inside the base directory)
   - Example: `ldmx-sw/build`
