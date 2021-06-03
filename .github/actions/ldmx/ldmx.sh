@@ -18,7 +18,7 @@ __main__() {
   end_group
 
   start_group ldmx ${_cmd}
-  cd ${LDMX_BASE}/${_dir}`
+  cd ${LDMX_BASE}/${_dir}
   ldmx ${_cmd}
   end_group
 }
