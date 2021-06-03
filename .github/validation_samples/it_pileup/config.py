@@ -12,7 +12,7 @@ pileupFilePassName="test"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
-p.maxEvents = 10
+p.maxEvents = 10000
 
 from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')
