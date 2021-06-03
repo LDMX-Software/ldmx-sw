@@ -15,10 +15,5 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: |
-        cd ${GITHUB_WORKSPACE}/..
-        export LDMX_BASE=$(pwd)
-        echo "::group::ldmx ${{ inputs.run }}"
-        docker run -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE -u $(id -u $USER):$(id -g $USER) ${LDMX_DOCKER_TAG} ${LDMX_BASE}/${{ inputs.working_dir }} ${{ inputs.run }}
-        echo "::endgroup::"
+    - run: bash ${GITHUB_ACTION_PATH}/ldmx.sh ${{inputs.working_dir}} ${{inputs.run}}
       shell: bash
