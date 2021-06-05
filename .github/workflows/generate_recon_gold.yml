@@ -16,7 +16,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-        ref: trunk
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
@@ -128,6 +127,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
+        ref: trunk
 
     - name: Download inclusive Gold
       uses: actions/download-artifact@v2
