@@ -15,8 +15,8 @@ we need to checkout the entire repo.
 We also modify the file storing the gold label to update the label for the gold histograms.
 This label is changed to the tag of the release that triggered this action.
 
-After these modifications are done, we `git stash` them, move ourselves to `trunk`,
-so we can `git stash pop`, `git commit` and `git push` there.
+After these modifications are done, we commit and push them.
+This commit and push require the branch of ldmx-sw that we want to push to be checked out.
 
 ## In-Workflow Example
 
