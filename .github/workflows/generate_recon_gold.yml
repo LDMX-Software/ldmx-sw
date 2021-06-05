@@ -3,7 +3,7 @@ name: Generate Recon Golden Histograms
 
 on: 
   release: 
-    types: [released, edited]
+    types: [released]
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
