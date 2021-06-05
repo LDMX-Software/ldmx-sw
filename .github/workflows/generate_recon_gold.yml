@@ -16,6 +16,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
+        ref: trunk
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
