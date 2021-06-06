@@ -159,5 +159,4 @@ jobs:
         body: 'Auto-generated updated gold histograms for new release.'
         branch: new-gold-${{ steps.update-gold.outputs.new-label }}
         delete-branch: true
-        reviewers: omarmoreno, tomeichlersmith
 
