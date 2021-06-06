@@ -3,17 +3,14 @@
 set -e
 
 ###############################################################################
-# commit-gold.sh
-#   Commit any generated histogram files hist.root as the new golden
+# update-gold.sh
+#   Update any generated histogram files hist.root as the new golden
 #   histogram files gold.root and update the label for these new gold.
 ###############################################################################
 
 source ${GITHUB_ACTION_PATH}/../common.sh
 
 __main__() {
-  git config user.name github-actions
-  git config user.email github-actions@github.com
-
   start_group Update Gold Label
   echo "Old Label: $(ldmx_gold_label)"
   echo "${GITHUB_REF##refs/tags/}" > ${LDMX_GOLD_LABEL_FILE}
@@ -30,9 +27,8 @@ __main__() {
   git add */gold.root
   end_group
 
-  start_group Commit and Push
-  git commit -m "Update golden recon histograms"
-  git push
+  start_group Set Outputs
+  set_output new-label $(ldmx_gold_label)
   end_group
 }
 
