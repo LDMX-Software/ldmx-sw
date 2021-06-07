@@ -14,7 +14,7 @@ void TrigScintHitDQM::onProcessStart() {
   getHistoDirectory();
 
   histograms_.create("id", "Channel ID of sim hit", 100, 0, 100);
-  histograms_.create("total_pe", "Total pe deposition in the pad/event", 2000,
+  histograms_.create("total_pe", "Total pe deposition in the pad/event", 500,
                      0, 2000);
   histograms_.create("n_hits", "TrigScint hit multiplicity in the pad/event",
                      100, 0, 100);
@@ -22,12 +22,12 @@ void TrigScintHitDQM::onProcessStart() {
   histograms_.create("y", "Hit y position", 1000, -100, 100);
   histograms_.create("z", "Hit z position", 1000, -900, 100);
 
-  histograms_.create("pe", "Pe deposition in a TrigScint bar", 1500, 0, 1500);
+  histograms_.create("pe", "Pe deposition in a TrigScint bar", 250, 0, 1000);
   histograms_.create("hit_time", "TrigScint hit time (ns)", 600, -150, 150);
 
   histograms_.create("id_noise", "Channel ID of noise hit", 101, -1, 100);
   histograms_.create("pe_noise", "Pe deposition in a TrigScint bar noise hit",
-                     1500, 0, 1500);
+                     100, 0, 100);
   histograms_.create("n_hits_noise",
                      "TrigScint noise hit multiplicity in the pad/event", 100,
                      0, 100);
