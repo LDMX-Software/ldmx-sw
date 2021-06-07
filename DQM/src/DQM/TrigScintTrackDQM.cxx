@@ -13,8 +13,8 @@ void TrigScintTrackDQM::onProcessStart() {
 
   histograms_.create("centroid", "Track channel centroid", 500, 0, 100);
   histograms_.create(
-      "n_tracks", "TrigScint track multiplicity in the pad/event", 100, 0, 100);
-  histograms_.create("n_clusters", "N_{clusters} forming the track", 10, 0, 10);
+      "n_tracks", "TrigScint track multiplicity in the pad/event", 25, 0, 25);
+  histograms_.create("n_clusters", "N_{clusters} forming the track", 4, 0, 4);
   histograms_.create("residual", "Track residual [channels]", 100, 0., 2.);
   histograms_.create("beamEfrac",
                      "Track edep fraction associated with beam electron", 101,
