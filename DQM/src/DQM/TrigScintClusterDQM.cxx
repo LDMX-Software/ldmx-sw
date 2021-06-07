@@ -12,7 +12,7 @@ void TrigScintClusterDQM::onProcessStart() {
   getHistoDirectory();
 
   histograms_.create("centroid", "Cluster channel centroid", 500, 0, 100);
-  histograms_.create("total_pe", "Total cluster PEs in the pad/event", 2000, 0,
+  histograms_.create("total_pe", "Total cluster PEs in the pad/event", 500, 0,
                      2000);
   histograms_.create("n_clusters", "Clusters in the pad/event", 25, 0, 25);
   histograms_.create("n_hits", "N_{hits} forming the clusters", 4, 0, 4);
@@ -23,8 +23,8 @@ void TrigScintClusterDQM::onProcessStart() {
   histograms_.create("y", "Cluster y position", 1000, -100, 100);
   histograms_.create("z", "Cluster z position", 1000, -900, 100);
 
-  histograms_.create("pe", "PE in a cluster", 1500, 0, 1500);
-  histograms_.create("energy", "Energy dep in a cluster [MeV]", 1500, 0, 1500);
+  histograms_.create("pe", "PE in a cluster", 250, 0, 1000);
+  histograms_.create("energy", "Energy dep in a cluster [MeV]", 500, 0, 1500);
   histograms_.create("cluster_time", "Cluster time (ns)", 600, -150, 150);
 
   // TODO: implement getting a list of the constructed histograms, to iterate
