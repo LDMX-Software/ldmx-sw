@@ -1,0 +1,164 @@
+
+name: New Pre-Release
+
+on: 
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Git Reference to Tag and Make Validation Plots'
+        required: true
+        default: trunk
+      tag:
+        description: 'Name for Pre-Release Tag'
+        required: true
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  compile-ldmx-sw:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        ref: ${{ github.event.inputs.branch }}
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+
+    - name: Package ldmx-sw Into Artifact
+      run: tar cf ldmx-sw-package.tar install/ .github/
+
+    - name: Upload ldmx-sw Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+        path: ldmx-sw-package.tar
+
+  inclusive:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: inclusive
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-inclusive-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  ecal_pn:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: ecal_pn
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-ecal_pn-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  it_pileup:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Generate Inclusive Pileup
+      uses: ./.github/actions/ldmx
+      with:
+        working_dir: ldmx-sw/.github/validation_samples/it_pileup
+        run: fire gen_pileup.py
+
+    - name: Generate Main Interaction
+      uses: ./.github/actions/ldmx
+      with:
+        working_dir: ldmx-sw/.github/validation_samples/it_pileup
+        run: fire gen_main.py
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: it_pileup
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: new-it_pileup-gold
+        path: ${{ steps.validation.outputs.hists }}
+
+  create-pre-release:
+    needs: [inclusive, ecal_pn, it_pileup]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download inclusive Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-inclusive-gold
+        path: inclusive/
+
+    - name: Download ecal_pn Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-ecal_pn-gold
+        path: ecal_pn/
+
+    - name: Download it_pileup Gold
+      uses: actions/download-artifact@v2
+      with:
+        name: new-it_pileup-gold
+        path: it_pileup/
+
+    - name: Package Histograms together for Release
+      run: tar czf std_hists_to_validate.tar.gz */hists.root
+      shell: bash
+
+    - name: Make Pre-Release with Histograms
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: std_hists_to_validate.tar.gz
+        body: |
+          New pre-release to validate!
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.inputs.tag }}
+        commit: ${{ github.event.inputs.branch }}
