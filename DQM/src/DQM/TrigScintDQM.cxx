@@ -15,14 +15,14 @@ void TrigScintDQM::onProcessStart() {
 
   histograms_.create("id", "Channel ID of sim hit", 100, 0, 100);
   histograms_.create("total_energy", "Total energy deposition in the pad/event",
-                     3000, 0, 3000);
+                     1000, 0, 3000);
   histograms_.create("n_hits", "TrigScint hit multiplicity in the pad/event",
                      100, 0, 100);
   histograms_.create("x", "Hit x position", 1000, -100, 100);
   histograms_.create("y", "Hit y position", 1000, -100, 100);
   histograms_.create("z", "Hit z position", 1000, -900, 100);
 
-  histograms_.create("energy", "Energy deposition in a TrigScint bar", 1500, 0,
+  histograms_.create("energy", "Energy deposition in a TrigScint bar", 250, 0,
                      1500);
   histograms_.create("hit_time", "TrigScint hit time (ns)", 1600, -100, 1500);
 
