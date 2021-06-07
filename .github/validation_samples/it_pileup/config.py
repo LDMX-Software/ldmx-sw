@@ -73,10 +73,14 @@ hcalReco   =hDigi.HcalRecProducer('hcalRecon')
 hcalReco.digiPassName = thisPassName
 
 from LDMX.DQM import dqm
+ecalDigiVerify = dqm.EcalDigiVerify()
+ecalDigiVerify.ecalSimHitColl = ecalDigiVerify.ecalSimHitColl+overlayStr
+
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-    tsDigisUp, tsDigisTag, tsDigisDown]+dqm.ecal_dqm+dqm.recoil_dqm)
+    tsDigisUp, tsDigisTag, tsDigisDown,
+    ecalDigiVerify,dqm.EcalShowerFeatures()]+dqm.recoil_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
