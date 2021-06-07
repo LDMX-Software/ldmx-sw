@@ -14,8 +14,8 @@ void TrigScintClusterDQM::onProcessStart() {
   histograms_.create("centroid", "Cluster channel centroid", 500, 0, 100);
   histograms_.create("total_pe", "Total cluster PEs in the pad/event", 2000, 0,
                      2000);
-  histograms_.create("n_clusters", "Clusters in the pad/event", 100, 0, 100);
-  histograms_.create("n_hits", "N_{hits} forming the clusters", 10, 0, 10);
+  histograms_.create("n_clusters", "Clusters in the pad/event", 25, 0, 25);
+  histograms_.create("n_hits", "N_{hits} forming the clusters", 4, 0, 4);
   histograms_.create("seed", "Cluster seed hit channel ID", 100, 0, 100);
   histograms_.create("beamEfrac", "Cluster edep fraction from beam electron",
                      101, 0., 1.01);
