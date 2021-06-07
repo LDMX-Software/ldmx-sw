@@ -668,9 +668,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                + pow(head_hitdata.pos.Y()-tail_hitdata.pos.Y(),2), 0.5) <= cellWidth) {
         // ...then append the second track to the first one and delete it
         // NOTE:  TO ADD:  (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag()
+        /*
         std::cout << "     **Compatible track found!  Adding track, deleting stuff..." << std::endl;
         std::cout << "     Tail xylayer: " << head_hitdata.pos.X() << "," << head_hitdata.pos.Y() << "," << head_hitdata.layer << std::endl;
         std::cout << "     Head xylayer: " << tail_hitdata.pos.X() << "," << tail_hitdata.pos.Y() << "," << tail_hitdata.layer << std::endl;
+        */
         for (int hit_k = 0; hit_k < checking_track.size(); hit_k++) {
           base_track.push_back(track_list[track_j][hit_k]);
         }
@@ -680,8 +682,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
   nStraightTracks_ = track_list.size();
-
-
 
   // Linreg tracking:
 
