@@ -26,6 +26,12 @@ __main__() {
   ldmx make install || return $?
   end_group
 
+  start_group Checkout trunk Gold
+  git checkout trunk -- \
+    ${GITHUB_WORKSPACE}/.github/validation_samples/*/gold.root \
+    ${LDMX_GOLD_LABEL_FILE}
+  end_group
+
   return 0
 }
 
