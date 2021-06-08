@@ -214,10 +214,15 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     if (ientry_ + 1 >= entries_) {
         if (isLoopable_) {
           // reset the event counter: reuse events from start of pileup tree
-          ientry_ = -1; //happens in onEndOfFile() too, but, still needed here
+          ientry_ = -1; 
           if (event_) {
+            // reset tree addresses before 
+            //  those objects are de-allocated in onEndOfFile
+            tree_->ResetBranchAddresses();
+            // close up event bus since we are at end of a file
             event_->onEndOfFile();
-            this->setupEvent(event_);
+            // re-open file like a new input
+            event_->setInputTree(tree_);
           }
         } else
           return false;
