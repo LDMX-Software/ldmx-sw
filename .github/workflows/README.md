@@ -77,15 +77,14 @@ and then use the `commit-gold` action to commit the newly-generated histogram fi
 
 **This relies heavily on the naming conventions assumed in the `validate` action, so changes to that action should also be checked here.**
 
-## Deep Validation
-
-**To be developed**
+## New Pre-Release
 
 The idea for this action would be to attempt to validate the software in a stand-a-lone manner.
 This would require much larger samples than the (relatively quick) PR validation.
 The question of what plots to generate and what (if anything) to compare them to is open.
 
-We would plan to run this workflow on pre-releases so we can look at the generated histograms before making a new stable release.
+Instead of using the GitHub web interface to create a pre-release, a developer would launch this action 
+which would generate validation histograms to look at and upload those histograms to the pre-release for developers to look at.
 
 ## Code Formatting
 
