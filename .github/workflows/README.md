@@ -42,22 +42,17 @@ All pushes to `trunk` generate documentation which is pushed to `ldmx-software.g
 Since `sphinx` requires the python modules to be installed for it to effectively generate documentation,
 the docs are only generated if the commit pushed to `trunk` successfully compiles and installs.
 
-## Recon Validation
+## PR Validation
 
 These validations are done on pull requests.
-They are focused on validating that the reconstruction procedure "matches" the latest release.
-If the PR contains changes that are meant to alter the reconstruction, 
+They are focused on validating that the developments "match" the latest release on a wide variety of physics distributions.
+If the PR contains changes that are meant to alter these distributions, 
 the plots generated can also be downloaded and looked through in order to determine that the alterations are only where expected.
 
 The new PR is validated by comparing the generated histograms to the "gold" histograms in the GitHub source tree.
 If a pair of histograms fail a KS test (i.e. the `TH1::KolmogorovTest` returns a value less than 0.99), we put that plot
 in the "fail" directory of the validation plots package. The `check` action looks into this validation package for _any_
 plots in the "fail" directory.
-
-In this test, the simulations **are not** being validated.
-They are merely there as a method for generating a wide variety of hits that need to be successfully handled by our reconstruction pipeline.
-While we aren't directly attempting to validate the simulations,
-simulation plots are still produced to help debug any potential discrepancies that are observed.
 
 > **Note:** Artifacts are only persisted on 
 > [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
@@ -74,7 +69,7 @@ When validating, this action is roughly equivalent to the following procedure.
 - Generate comparison plots: `ldmx python3 ${LDMX_BASE}/ldmx-sw/.github/actions/validate/compare.py gold.root gold hist.root <branch>`
   - `<branch>` is your current branch or whatever label you want your developments to be called
 
-## Generate Recon Gold Histograms
+## Generate PR Gold Histograms
 
 This action is run when a release is "released", i.e. we only run this action for _actual_ stable releases (no pre-releases).
 When this action is run, we run the `validate` action on the samples 
@@ -86,8 +81,11 @@ and then use the `commit-gold` action to commit the newly-generated histogram fi
 
 **To be developed**
 
-The idea for this action would be to attempt to validate the simulation (both physics and detector design).
+The idea for this action would be to attempt to validate the software in a stand-a-lone manner.
+This would require much larger samples than the (relatively quick) PR validation.
 The question of what plots to generate and what (if anything) to compare them to is open.
+
+We would plan to run this workflow on pre-releases so we can look at the generated histograms before making a new stable release.
 
 ## Code Formatting
 

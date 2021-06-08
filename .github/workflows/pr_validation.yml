@@ -1,5 +1,5 @@
 
-name: Recon Validation
+name: PR Validation
 
 on: 
   pull_request: 
@@ -53,7 +53,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: Inclusive_Recon_Validation
+        name: Inclusive_PR_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
@@ -84,7 +84,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: ECal_PN_Recon_Validation
+        name: ECal_PN_PR_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
@@ -127,7 +127,7 @@ jobs:
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: In-Time_Pileup_Recon_Validation
+        name: In-Time_Pileup_PR_Validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
