@@ -36,7 +36,7 @@ class EventProcessor:
         self.className=className
         self.histograms=[]
 
-        Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%moduleName )
+        Process.addModule(moduleName)
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
@@ -221,7 +221,7 @@ class ConditionsObjectProvider:
         self.tagName=''
 
         # make sure process loads this library if it hasn't yet
-        Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%moduleName )
+        Process.addModule(moduleName)
         
         #register this conditions object provider with the process
         Process.declareConditionsObjectProvider(self)
@@ -424,6 +424,36 @@ class Process:
             Process.lastProcess.libraries.append( lib )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before creating any EventProcessors." )
+    
+    def addModule(module) :
+        """Add a module to the list of dynamically loaded libraries
+
+        A process object must already have been created.
+
+        Parameters
+        ----------
+        module : str
+            Name of module to load as a library
+
+        See Also
+        --------
+        Process.addLibrary
+
+        Examples
+        --------
+        You can use this function to load a general module
+            addModule('SimCore')
+
+        With the string substitutions that are made, you can
+        refer to submodules with cmake, C++, or the library
+        syntax. The following calls are all equivalent.
+            addModule('Ecal/Event')
+            addModule('Ecal::Event')
+            addModule('Ecal_Event')
+        """
+
+        actual_module_name = module.replace('/','_').replace('::','_')
+        Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%(actual_module_name))
 
     def declareConditionsObjectProvider(cop):
         """Declare a conditions object provider to be loaded with the process

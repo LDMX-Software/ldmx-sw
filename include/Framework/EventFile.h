@@ -140,6 +140,12 @@ class EventFile {
 
   /**
    * Change pointer to different parent file.
+   *
+   * We assume that the parent file is an EventFile
+   * configured to be an input file. This allows us
+   * to assume that the tree_ member variable of parent
+   * is valid.
+   *
    * @param parent pointer to new parent file
    */
   void updateParent(EventFile *parent);
@@ -152,6 +158,9 @@ class EventFile {
 
   /**
    * Prepare the next event.
+   *
+   * @param[in] storeCurrentEvent Should we save the current event 
+   *  to the output (if we are an output file)?
    * @return If event was prepared/read successfully.
    */
   bool nextEvent(bool storeCurrentEvent = true);

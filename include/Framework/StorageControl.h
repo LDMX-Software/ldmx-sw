@@ -61,9 +61,16 @@ class StorageControl {
   void addRule(const std::string& processor_pat,
                const std::string& purpose_pat);
 
-  /** Determine if the current event should be kept, based on the defined rules
+  /**
+   * Determine if the current event should be kept, based on the defined rules
+   *
+   * @note If event_completed is false, we don't listen to **anything** and
+   * decide not to keep the event.
+   *
+   * @param[in] event_completed did we complete processing of the current event?
+   * @returns true if we should store the current event into the output file
    */
-  bool keepEvent() const;
+  bool keepEvent(bool event_completed) const;
 
  private:
   /**

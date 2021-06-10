@@ -9,14 +9,13 @@
 #define FRAMEWORK_EVENT_H_
 
 // ROOT
-#include "TBranchElement.h"
 #include "TTree.h"
-
-#include "EventDef.h"
 
 // LDMX
 #include "Framework/Exception/Exception.h"
 #include "Framework/ProductTag.h"
+#include "Framework/EventHeader.h"
+#include "Framework/Bus.h"
 
 // STL
 #include <regex.h>
@@ -25,7 +24,7 @@
 #include <map>
 #include <set>
 #include <string>
-#include <variant>
+#include <sstream>
 
 namespace framework {
 
@@ -33,9 +32,10 @@ namespace framework {
  * @class Event
  * @brief Implements an event buffer system for storing event data
  *
- * @note
- * Event data is stored in ROOT trees and branches, which can be added
- * on the fly.
+ * Event data is stored in ROOT trees and branches for persistency.
+ * For the buffering, we use a multi-layered inheritance tree that
+ * is wrapped inside of the Bus class.
+ * @see framework::Bus for this buffering tool
  */
 class Event {
  public:
@@ -77,23 +77,21 @@ class Event {
   /**
    * Print event bus
    *
-   * Only prints passengers that have been loaded into the member object.
-   * This means what is printed depends on when this method is called.
-   * For example, if this method is called after the Clear method, then
-   * everything will be an empty object.
-   *
-   * @param verbosity integer flag to determine how verbose you want to be.
+   * Prints the list of products using the current stored product tags.
    */
-  void Print(int verbosity) const;
+  void Print() const;
 
   /**
-   * Check the existence of one-and-only-one object with the
-   * given name (excluding the pass) in the event.
-   * @param name Name (label, not class name) given to the object when it was
-   * put into the event.
-   * @return True if the object or collection exists in the event.
+   * Get a list of products which match the given POSIX-Extended,
+   * case-insenstive regular-expressions. An empty argument is interpreted as
+   * ".*", which matches everything.
+   * @param namematch Regular expression to compare with the product name
+   * @param passmatch Regular expression to compare with the pass name
+   * @param typematch Regular expression to compare with the type name
    */
-  bool exists(const std::string &name) const { return exists(name, ""); }
+  std::vector<ProductTag> searchProducts(const std::string &namematch,
+                                         const std::string &passmatch,
+                                         const std::string &typematch) const;
 
   /**
    * Check for the existence of an object or collection with the
@@ -104,7 +102,7 @@ class Event {
    * was put into the event, such as "sim" or "rerecov2".
    * @return True if the object or collection *uniquely* exists in the event.
    */
-  bool exists(const std::string &name, const std::string &passName) const {
+  bool exists(const std::string &name, const std::string &passName = "") const {
     return (searchProducts(name, passName, "").size() == 1);
   }
 
@@ -120,6 +118,26 @@ class Event {
 
   /**
    * Adds an object to the event bus
+   *
+   * @throws Exception if there is an underscore in the collection name.
+   * @throws Exception if there already has been a branch filled with 
+   * the constructed name.
+   * @throws Exception if the type we are putting in mis-matches the type in the bus
+   * under the input name.
+   *
+   * @see makeBranchName
+   * The branch name is constructed from the collection name
+   * using the current pass name.
+   *
+   * @see Bus::board
+   * @see Bus::attach
+   * If the branch is not on the bus yet, we board the bus
+   * and check if we need to attach the object to a tree.
+   *
+   * @see Bus::update
+   * We always update the contents of the bus object
+   * with the input object.
+   *
    * @param collectionName
    * @param obj in ROOT dictionary to add
    */
@@ -131,6 +149,7 @@ class Event {
                           "' is illegal as it contains an underscore.");
     }
 
+    // determine the branch name
     std::string branchName;
     if (collectionName == ldmx::EventHeader::BRANCH)
       branchName = collectionName;
@@ -148,41 +167,38 @@ class Event {
     // destruction of Event?) MEMORY add is 'conditional jump or move depends on
     // uninitialised values' for all types of objects
     //  TTree::BranchImpRef or TTree::BronchExec
-    if (passengers_.find(branchName) == passengers_.end()) {
+    if (not bus_.isOnBoard(branchName)) {
       // create a new branch for this collection
-      // TODO check if input type is listed as an EventBusPassenger?
-      passengers_[branchName] = EventBusPassenger(obj);
-      T *passengerAddress = std::get_if<T>(&passengers_[branchName]);
-      std::string tname =
-          typeid(obj)
-              .name();  // type name (want to use branch element if possible)
-      if (outputTree_ != 0 and not shouldDrop(branchName)) {
-        TBranchElement *outBranch = dynamic_cast<TBranchElement *>(
-            outputTree_->GetBranch(branchName.c_str()));
-        if (outBranch) {
-          // branch already exists, just reset branch object
-          outBranch->SetObject(passengerAddress);
-        } else {
-          // branch doesnt exist, make new one
-          outBranch = dynamic_cast<TBranchElement *>(outputTree_->Branch(
-              branchName.c_str(), passengerAddress, 100000, 3));
-        }
-        newBranches_.push_back(outBranch);
-        // get type name from branch if possible, otherwise use compiler level
-        // type name (above)
-        tname = outBranch->GetClassName();
+      
+      // have type T board bus under name 'branchName'
+      bus_.board<T>(branchName);
+
+      // type name (want to use branch element if possible)
+      std::string tname = typeid(obj).name();
+
+      if (outputTree_ and not shouldDrop(branchName)) {
+        // we are writing this branch to an output file, so let's
+        //  attach this passenger to the output tree
+        TBranch *outBranch = bus_.attach(outputTree_, branchName, true);
+        // get type name from branch if possible,
+        //  otherwise use compiler level type name (above)
+        std::string class_name{outBranch->GetClassName()};
+        if (not class_name.empty()) tname = class_name;
       }  // output tree exists or not
+
+      // check for cache entry to remove
+      auto it_known{knownLookups_.find(collectionName)};
+      if (it_known != knownLookups_.end())
+        knownLookups_.erase(it_known); 
+
+      // add us to list of products
       products_.emplace_back(collectionName, passName_, tname);
-      branchNames_.push_back(branchName);
-      knownLookups_.clear();  // have to invalidate this cache
     }
 
     // copy input contents into bus passenger
-    EventBusPassenger toAdd(obj);
-    if (toAdd.index() == passengers_[branchName].index()) {
-      std::visit(sortPassenger(), toAdd);  // sort before copying over
-      passengers_[branchName] = toAdd;
-    } else {
+    try {
+      bus_.update(branchName, obj);
+    } catch(const std::bad_cast&) {
       EXCEPTION_RAISE("TypeMismatch",
                       "Attempting to add an object whose type '" +
                           std::string(typeid(obj).name()) +
@@ -193,135 +209,108 @@ class Event {
   }
 
   /**
-   * Get a list of products which match the given POSIX-Extended,
-   * case-insenstive regular-expressions. An empty argument is interpreted as
-   * ".*", which matches everything.
-   * @param namematch Regular expression to compare with the product name
-   * @param passmatch Regular expression to compare with the pass name
-   * @param typematch Regular expression to compare with the type name
-   */
-  std::vector<ProductTag> searchProducts(const std::string &namematch,
-                                         const std::string &passmatch,
-                                         const std::string &typematch) const;
-
-  /**
-   * Get a general object from the event bus
-   */
-  template <typename T>
-  const T getObject(const std::string &collectionName,
-                    const std::string &passName) const {
-    return getImpl<T>(collectionName, passName);
-  }
-
-  /**
-   * Get a general object from the event bus when you don't care about the pass
-   */
-  template <typename T>
-  const T getObject(const std::string &collectionName) const {
-    return getObject<T>(collectionName, "");
-  }
-
-  /**
-   * Get a collection (std::vector) of objects from the event bus
-   */
-  template <typename T>
-  const std::vector<T> getCollection(const std::string &collectionName,
-                                     const std::string &passName) const {
-    return getObject<std::vector<T> >(collectionName, passName);
-  }
-
-  /**
-   * Get a collection (std::vector) of objects from the event bus when you don't
-   * care about the pass
-   */
-  template <typename T>
-  const std::vector<T> getCollection(const std::string &collectionName) const {
-    return getCollection<T>(collectionName, "");
-  }
-
-  /**
-   * Get a map (std::map) of objects from the event bus
-   */
-  template <typename Key, typename Val>
-  const std::map<Key, Val> getMap(const std::string &collectionName,
-                                  const std::string &passName) const {
-    return getObject<std::map<Key, Val> >(collectionName, passName);
-  }
-
-  /**
-   * Get a map of objects from the event bus when you don't care about the pass
-   */
-  template <typename Key, typename Val>
-  const std::map<Key, Val> getMap(const std::string &collectionName) const {
-    return getMap<Key, Val>(collectionName, "");
-  }
-
- protected:
-  /**
+   * Get an general object from the event bus
+   *
+   * First we determine the branch name. If the collection is the EventHeader
+   * or if the passName is given, this is easy. But if the pass name is empty,
+   * we try to find a matching collection under the list of branch names.
+   * We will throw an exception if we don't find a unique branch corresponding
+   * to the collection. We also employ a rudimentary caching system for mapping
+   * collection names to branches (if no pass name is given) so this looping only
+   * needs to happen once.
+   * @see EventHeader::BRANCH
+   * @see makeBranchName
+   * @throws Exception if unable to uniquely determine the branch name
+   * from the collection name alone.
+   *
+   * If the object we are asking for is already on the bus,
+   * we simply make sure the branch corresponding to it is on the
+   * correct entry.
+   *
+   * If the object we are asking for is *not* on the bus and there
+   * is an input tree, we look for a branch on the input tree corresponding
+   * to the branch name and then we load the current entry of that branch.
+   * @throws Exception if can't find a corresponding branch name on
+   * the input tree or in the bus
+   * @see Bus::board
+   * @see Bus::attach
+   *
+   * Finally, we return a const reference to the object on the bus.
+   * @throws Exception if mismatching type
+   * @see Bus::get
+   *
+   * @tparam T type of object we should be getting
    * Get an event passenger from the event bus (actual implementation)
    * @param collectionName name of collection you want
    * @param passName name of pass you want
    */
   template <typename T>
-  T getImpl(const std::string &collectionName,
-            const std::string &passName) const {
+  const T& getObject(const std::string &collectionName,
+            const std::string &passName = "") const {
     // get branch name
     std::string branchName;
-    if (collectionName == ldmx::EventHeader::BRANCH)
+    if (collectionName == ldmx::EventHeader::BRANCH) {
       branchName = collectionName;
-    else
-      branchName = makeBranchName(collectionName, passName);
-
-    // if no passName, then find branchName by looking over known branches
-    if (passName.empty() && collectionName != ldmx::EventHeader::BRANCH) {
-      auto itKL = knownLookups_.find(collectionName);
-      if (itKL != knownLookups_.end())
-        branchName = itKL->second;
-      else {
-        // this collecitonName hasn't been found before
-        std::vector<std::vector<std::string>::const_iterator> matches;
-        branchName = collectionName + "_";
-        for (auto itBN = branchNames_.begin(); itBN != branchNames_.end();
-             itBN++) {
-          if (!itBN->compare(0, branchName.size(), branchName))
-            matches.push_back(itBN);
-        }
+    } else if (passName.empty()) {
+      //if no passName, then find branchName by looking over known products
+      if (knownLookups_.find(collectionName)==knownLookups_.end()) {
+        //this collectionName hasn't been found before
+        //  wrap collection name in regex specifying that
+        //  this collection name is the whole name and not a partial name
+        std::string coll_regex{"^"+collectionName+"$"};
+        auto matches = searchProducts(coll_regex,"","");
         if (matches.empty()) {
           // no matches found
           EXCEPTION_RAISE("ProductNotFound",
                           "No product found for name '" + collectionName + "'");
         } else if (matches.size() > 1) {
           // more than one branch found
-          std::string names;
-          for (auto strs : matches) {
-            if (!names.empty()) names += ", ";
-            names += *strs;
-          }
+          std::stringstream names;
+          for (auto strs : matches) { names << "\n" << strs; }
           EXCEPTION_RAISE("ProductAmbiguous",
                           "Multiple products found for name '" +
                               collectionName +
-                              "' without specified pass name (" + names + ")");
+                              "' without specified pass name :" + names.str() );
         } else {
-          // exactly one branch found
-          branchName = *matches.front();
-          knownLookups_[collectionName] = branchName;
-        }
-      }
+          // exactly one branch found -> cache for later
+          knownLookups_[collectionName] = 
+            makeBranchName(collectionName, matches.at(0).passname());
+        } //different options for number of possible branch matches
+      } //collection not in known lookups
+      branchName = knownLookups_.at(collectionName);
+    } else {
+      branchName = makeBranchName(collectionName, passName);
     }
 
-    // get iterators to branch and collection
-    auto itBranch = branches_.find(branchName);
-    auto itPassenger = passengers_.find(branchName);
+    // now we have determined the unique branch name to look for
+    //  so we can start looking on the bus and the input tree
+    //  (if it exists) for it
+    bool already_on_board{bus_.isOnBoard(branchName)};
+    if (not already_on_board and inputTree_) {
+      // branch is not on the bus but there is an input tree
+      //  -> let's look for a new branch to load
 
-    if (itPassenger != passengers_.end()) {
-      if (itBranch != branches_.end()) {
-        // passenger and branch found
-        itBranch->second->GetEntry(ientry_);
-        // reading branches from input tree need to be manually updated
-        passengers_[branchName] = *((T *)(itBranch->second->GetObject()));
-      }
-      return std::get<T>(itPassenger->second);
-    } else if (inputTree_ == 0) {
+      // default construct a new passenger
+      bus_.board<T>(branchName);
+
+      // attempt to attach the new passenger to the input tree
+      TBranch* branch = bus_.attach(inputTree_,branchName,false);
+      if (branch == 0) {
+          //inputTree doesn't have that branch
+          EXCEPTION_RAISE(
+                  "ProductNotFound", 
+                  "No product found for branch '" 
+                  + branchName
+                  + "' on input tree."
+                  );
+      } 
+      // ooh, new branch!
+      branch->SetStatus(1); //overrides any 'ignore' rules
+      // load in the current entry
+      //  this is necessary because getObject is called _after_ nextEvent 
+      //  (I think)
+      branch->GetEntry((ientry_<0)?(0):(ientry_));
+    } else if (not already_on_board) {
       // not found in loaded branches and there is no inputTree,
       // so no hope of finding an unloaded object
       EXCEPTION_RAISE("ProductNotFound", "No product found for name '" +
@@ -329,47 +318,57 @@ class Event {
                                              passName_ + "'");
     }
 
-    // find the active branch and update if necessary
-    if (itBranch != branches_.end()) {
-      // update buffers if needed
-      if (itBranch->second->GetReadEntry() != ientry_) {
-        itBranch->second->GetEntry(ientry_, 1);
-      }
-
-      // check the objects map
-      if (itPassenger != passengers_.end())
-        return std::get<T>(itPassenger->second);
-
-      // this case is hard (impossible?) to achieve
+    // we've made sure the passenger is on the bus
+    //  and the branch we are reading from (if we are reading)
+    //  has been updated
+    // let's return the object that the passenger is carrying
+    try {
+      const T& obj = bus_.get<T>(branchName);
+      return obj;
+    } catch(const std::bad_cast&) {
       EXCEPTION_RAISE(
-          "ProductNotFound",
-          "A branch mis-match occurred. I'm not sure how I got here!");
-    } else {
-      // ok, maybe we've not loaded this yet, look for a branch
-      TBranchElement *branch = dynamic_cast<TBranchElement *>(
-          inputTree_->GetBranch(branchName.c_str()));
-      if (branch == 0) {
-        // inputTree doesn't have that branch
-        EXCEPTION_RAISE("ProductNotFound", "No product found for name '" +
-                                               collectionName + "' and pass '" +
-                                               passName_ + "'");
-      }
-      // ooh, new branch!
-      // load in the current entry
-      branch->SetStatus(1);  // overrides any 'ignore' rules
-      branch->GetEntry((ientry_ < 0) ? (0) : (ientry_));
-
-      // insert into maps of loaded branches and passengers
-      passengers_[branchName] = *((
-          T *)(branch->GetObject()));  // this will fail if wrong type is passed
-      branches_[branchName] = branch;
-
-      return std::get<T>(passengers_.at(branchName));
+          "BadType",
+          "Trying to get product from '"
+          + branchName
+          + "' but asking for wrong type."
+          );
     }
-  }  // getImpl
+  }  // getObject
 
- public:
-  /** ********* Functionality for storage  ********** **/
+  /**
+   * Get a collection (std::vector) of objects from the event bus
+   *
+   * @see getObject for actual implementation
+   *
+   * @tparam[in,out] ContentType type of object stored in the vector
+   * @param[in] collectionName name of collection that we want
+   * @param[in] passName name of specific pass we want, optional
+   * @returns const reference to collection of objects on the bus
+   */
+  template <typename ContentType>
+  const std::vector<ContentType> &getCollection(
+      const std::string &collectionName,
+      const std::string &passName = "") const {
+    return getObject<std::vector<ContentType> >(collectionName, passName);
+  }
+
+  /**
+   * Get a map (std::map) of objects from the event bus
+   *
+   * @see getObject for actual implementation
+   *
+   * @tparam[in,out] KeyType type of object used as the key in the map
+   * @tparam[in,out] ValType type of object used as the value in the map
+   * @param[in] collectionName name of collection that we want
+   * @param[in] passName name of specific pass we want, optional
+   * @returns const reference to collection of objects on the bus
+   */
+  template <typename KeyType, typename ValType>
+  const std::map<KeyType, ValType> &getMap(
+      const std::string &collectionName,
+      const std::string &passName = "") const {
+    return getObject<std::map<KeyType, ValType> >(collectionName, passName);
+  }
 
   /**
    * Set the input data tree.
@@ -388,24 +387,6 @@ class Event {
    * @return The output data tree.
    */
   TTree *createTree();
-
-  /**
-   * Make a branch name from a collection and pass name.
-   * @param collectionName The collection name.
-   * @param passName The pass name.
-   */
-  std::string makeBranchName(const std::string &collectionName,
-                             const std::string &passName) const {
-    return collectionName + "_" + passName;
-  }
-
-  /**
-   * Make a branch name from a collection and the default(current) pass name.
-   * @param collectionName The collection name.
-   */
-  std::string makeBranchName(const std::string &collectionName) const {
-    return makeBranchName(collectionName, passName_);
-  }
 
   /**
    * Get a list of the data products in the event
@@ -469,144 +450,22 @@ class Event {
   bool shouldDrop(const std::string &collName) const;
 
   /**
-   * @class clearPassenger
-   * Clearing of event objects.
-   *
-   * This is necessary, so if a producer skips an event, then
-   * the last object added won't be filled into event tree another time.
+   * Make a branch name from a collection and pass name.
+   * @param collectionName The collection name.
+   * @param passName The pass name.
    */
-  class clearPassenger {
-   public:
-    /**
-     * All vector passengers can be cleared in the same way.
-     */
-    template <typename T>
-    void operator()(std::vector<T> &vec) const {
-      vec.clear();
-    }
-
-    /**
-     * All map passengers can be cleared in the same way.
-     */
-    template <typename Key, typename Val>
-    void operator()(std::map<Key, Val> &m) const {
-      m.clear();
-    }
-
-    /**
-     * Right now all other event objects have a Clear method defined.
-     *
-     * @note Notice the difference in capitalization.
-     * This is a artefact of inheriting from TObject.
-     */
-    template <typename T>
-    void operator()(T &obj) const {
-      obj.Clear();
-    }
-  };
+  std::string makeBranchName(const std::string &collectionName,
+                             const std::string &passName) const {
+    return collectionName + "_" + passName;
+  }
 
   /**
-   * @class sortPassenger
-   * Sorting of passenger event objects.
-   *
-   * This method allows for the collections to be sorted by
-   * the content's defined comparison operator <.
-   *
-   * @note If the operator < is not defined, std::sort implicitly
-   * converts the object to a more basic object that has an included
-   * less than operator. If this implicit conversion doesn't work,
-   * then a complicated compile error is thrown.
-   *
-   * @note More specific sorting methods can be input here if you wish.
-   * When templating, be aware that the order does matter. std uses
-   * the first function that matches the input type. (From top down,
-   * so input a specific sorting method at the top).
+   * Make a branch name from a collection and the default(current) pass name.
+   * @param collectionName The collection name.
    */
-  class sortPassenger {
-   public:
-    /**
-     * Sort vectors using the std::sort method.
-     */
-    template <typename T>
-    void operator()(std::vector<T> &vec) const {
-      std::sort(vec.begin(), vec.end());
-    }
-
-    /**
-     * Don't sort the other objects.
-     *
-     * The unused attribute requires the compiler to be gcc!
-     */
-    template <typename T>
-    void operator()(__attribute__((unused))
-                    T &obj) const { /*Nothing on purpose*/
-      return;
-    }
-  };
-
-  /**
-   * @class printPassenger
-   * Printing of event objects.
-   *
-   * This method requires all event objects to have a Print method defined.
-   */
-  class printPassenger {
-   public:
-    /**
-     * Constructor
-     *
-     * Sets verbosity
-     */
-    printPassenger(int verbosity) : verbosity_(verbosity) {}
-
-    /**
-     * Prints size and contents of all vectors depending on verbosity.
-     */
-    template <typename T>
-    void operator()(const std::vector<T> &vec) const {
-      if (verbosity_ > 1) {
-        std::cout << "Size: " << vec.size() << std::endl;
-      }
-      if (verbosity_ > 2) {
-        std::cout << "Contents:" << std::endl;
-        for (const T &obj : vec) {
-          std::cout << "    ";
-          obj.Print();
-        }
-        std::cout << std::endl;
-      }
-    }
-
-    /**
-     * Prints size and contents of all maps depending on verbosity.
-     */
-    template <typename Key, typename Val>
-    void operator()(const std::map<Key, Val> &m) const {
-      if (verbosity_ > 1) {
-        std::cout << "Size: " << m.size() << std::endl;
-      }
-      if (verbosity_ > 2) {
-        std::cout << "Contents:" << std::endl;
-        for (const auto &keyVal : m) {
-          std::cout << "    " << keyVal.first << " -> ";
-          keyVal.second.Print();
-        }
-        std::cout << std::endl;
-      }
-    }
-
-    /**
-     * Just prints the object if verbosity is nonzero.
-     */
-    template <typename T>
-    void operator()(const T &obj) const {
-      if (verbosity_ > 1) obj.Print();
-    }
-
-   private:
-    /** Flag for how much to print */
-    int verbosity_;
-  };
+  std::string makeBranchName(const std::string &collectionName) const {
+    return makeBranchName(collectionName, passName_);
+  }
 
  private:
   /**
@@ -643,27 +502,22 @@ class Event {
   int electronCount_{-1}; 
 
   /**
-   * Map of names to branches.
+   * The Bus
+   *
+   * We buffer the event bus objects by having passengers
+   * on the bus carry them.
+   *
+   * @see framework::Bus for how this buffering works
    */
-  mutable std::map<std::string, TBranchElement *> branches_;
-
-  /**
-   * Map of names to passengers.
-   */
-  mutable std::map<std::string, EventBusPassenger> passengers_;
-
-  /**
-   * List of new branches added.
-   */
-  std::vector<TBranchElement *> newBranches_;
-
-  /**
-   * Names of all branches.
-   */
-  std::vector<std::string> branchNames_;
+  mutable framework::Bus bus_;
 
   /**
    * Names of branches filled during this event.
+   *
+   * This is used to make sure the same passenger isn't
+   * modified more than once in one event _and_ to make
+   * sure the event header is updated if it wasn't updated
+   * manually.
    */
   std::set<std::string> branchesFilled_;
 

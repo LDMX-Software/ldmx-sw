@@ -146,105 +146,122 @@ void EventFile::addDrop(const std::string &rule) {
 }
 
 bool EventFile::nextEvent(bool storeCurrentEvent) {
-  if (ientry_ < 0 && parent_) {
-    if (!parent_->tree_) {
-      EXCEPTION_RAISE("EventFile", "No event tree in the file");
-    }
+  if (ientry_ < 0) {
+    // first entry of this file
+    if (parent_) {
+      // we have a parent file
+      if (!parent_->tree_) {
+        // this should _never_ happen
+        EXCEPTION_RAISE("EventFile", "No event tree in the file");
+      }
+      // Only clone parent tree if either
+      //  1) There is no tree setup yet (first input file)
+      //  2) This is not single output (new input file --> new output file)
+      if (!tree_ or !isSingleOutput_) {
+        // clones parent_->tree_ to our tree_ keeping drop/keep rules in mind
+        // clone tree (only copies over branches that are active on input tree)
 
-    // Only clone parent tree if either
-    //  1) There is no tree setup yet (first input file)
-    //  2) This is not single output (new input file --> new output file)
-    if (!tree_ or !isSingleOutput_) {
-      // clones parent_->tree_ to our tree_ keeping drop/keep rules in mind
-      // clone tree (only copies over branches that are active on input tree)
+        file_->cd();  // go into output file
 
-      file_->cd(); // go into output file
-
-      for (auto const &rulePair : preCloneRules_)
-        parent_->tree_->SetBranchStatus(rulePair.first.c_str(),
-                                        rulePair.second);
-
-      tree_ = parent_->tree_->CloneTree(0);
-
-      // reactivate any drop branches (drop) on input tree
-      for (auto const &rule : reactivateRules_)
-        parent_->tree_->SetBranchStatus(rule.c_str(), 1);
-    }
-    event_->setInputTree(parent_->tree_);
-    event_->setOutputTree(tree_);
-  }
-
-  // close up the last event
-  if (ientry_ >= 0) {
+        for (auto const &rulePair : preCloneRules_)
+          parent_->tree_->SetBranchStatus(rulePair.first.c_str(),
+                                          rulePair.second);
+  
+        tree_ = parent_->tree_->CloneTree(0);
+  
+        // reactivate any drop branches (drop) on input tree
+        for (auto const &rule : reactivateRules_)
+          parent_->tree_->SetBranchStatus(rule.c_str(), 1);
+      }
+      event_->setInputTree(parent_->tree_);
+      event_->setOutputTree(tree_);
+    } //we have a parent file
+  } else {
+    //later than first entry of file
     if (isOutputFile_) {
       event_->beforeFill();
-      if (storeCurrentEvent)
-        tree_->Fill(); // fill the clones...
-    }
+      if (storeCurrentEvent) // we should store before moving on
+        tree_->Fill();  // fill the clones...
+    } // we are an output file
+
+    // the event bus may not be defined
+    //  for this file if we are input file and
+    //  there is an output file during this run
     if (event_) {
       event_->Clear();
       event_->onEndOfEvent();
-    }
-  }
+    } // event bus defined
+  } // first or not first entry in this file
 
   if (parent_) {
+    // we have a parent, follow their lead
     if (!parent_->nextEvent()) {
       return false;
     }
-    parent_->tree_->GetEntry(parent_->ientry_);
     ientry_ = parent_->ientry_;
-    event_->nextEvent();
     entries_++;
-    return true;
-
+  } else if (isOutputFile_) {
+    // we don't have a parent and we
+    //  are an output file
+    // Just increment the number of entries
+    //  and the index of the current entry
+    ientry_++;
+    entries_++;
   } else {
-    // if we are reading, move the pointer
-    if (!isOutputFile_) {
-      if (ientry_ + 1 >= entries_) {
+    // we don't have a parent and
+    //  we aren't an output file
+    // try to load another entry from our tree
+    if (ientry_ + 1 >= entries_) {
         if (isLoopable_) {
           // reset the event counter: reuse events from start of pileup tree
-          ientry_ = -1; //happens in onEndOfFile() too, but, still needed here
+          ientry_ = -1; 
           if (event_) {
+            // reset tree addresses before 
+            //  those objects are de-allocated in onEndOfFile
+            tree_->ResetBranchAddresses();
+            // close up event bus since we are at end of a file
             event_->onEndOfFile();
-            this->setupEvent(event_);
+            // re-open file like a new input
+            event_->setInputTree(tree_);
           }
-
         } else
           return false;
-      }
-
-      ientry_++;
-      tree_->LoadTree(ientry_);
-
-      if (event_) {
-        event_->nextEvent();
-      }
-      return true;
-
-    } else {
-      ientry_++;
-      entries_++;
-      return true;
     }
+    ientry_++;
+    tree_->GetEntry(ientry_);
   }
-  return false;
+
+  // if we have an event_
+  //  make sure it is iterated as well
+  return event_ ? event_->nextEvent() : true;
 }
 
 void EventFile::setupEvent(Event *evt) {
   event_ = evt;
   if (isOutputFile_) {
+    //we are an output file
     if (!tree_ && !parent_) {
+      // we don't have a tree and we don't have a parent
+      //  ==> *Production Mode* create a new tree
       tree_ = event_->createTree();
       ientry_ = 0;
       entries_ = 0;
     }
 
     if (parent_) {
+      // we have a parent file so give
+      //  the parent's tree to the event bus
+      //  as the input tree
       event_->setInputTree(parent_->tree_);
     }
+    
+    // give our tree to the event as the output tree
+    event_->setOutputTree(tree_);
   } else {
+    // we are an input file
+    //  so give our tree to the event as input tree
     event_->setInputTree(tree_);
-  }
+  } //output or input file
 }
 
 int EventFile::skipToEvent(int offset) {
@@ -260,25 +277,27 @@ int EventFile::skipToEvent(int offset) {
 void EventFile::updateParent(EventFile *parent) {
   parent_ = parent;
 
-  TTree *parentTree = (TTree *)parent_->file_->Get("LDMX_Events");
-  if (parentTree) {
-    // Enter output file
-    file_->cd();
+  // we can assume parent_->tree_ is valid
+  //  because (for input files) the tree_ is imported
+  //  from the file and then checked if its valid in the
+  //  EventFile constructor
 
-    // need to turn on/off the same branches as in the initial setup...
-    for (auto const &rulePair : preCloneRules_)
-      parent_->tree_->SetBranchStatus(rulePair.first.c_str(), rulePair.second);
+  // Enter output file
+  file_->cd();
 
-    // Copy over addresses from the new parent
-    parentTree->CopyAddresses(tree_);
+  // need to turn on/off the same branches as in the initial setup...
+  for (auto const &rulePair : preCloneRules_)
+    parent_->tree_->SetBranchStatus(rulePair.first.c_str(), rulePair.second);
 
-    // and reactivate any dropping rules
-    for (auto const &rule : reactivateRules_)
-      parent_->tree_->SetBranchStatus(rule.c_str(), 1);
+  // Copy over addresses from the new parent
+  parent_->tree_->CopyAddresses(tree_);
 
-    // Reset the entry index with the new parent index
-    ientry_ = parent_->ientry_;
-  }
+  // and reactivate any dropping rules
+  for (auto const &rule : reactivateRules_)
+    parent_->tree_->SetBranchStatus(rule.c_str(), 1);
+
+  // Reset the entry index with the new parent index
+  ientry_ = parent_->ientry_;
 
   // import run headers from new input file
   importRunHeaders();
@@ -357,8 +376,7 @@ void EventFile::importRunHeaders() {
   // choose which file to import from
   auto theImportFile{file_}; // if this is an input file
   if (isOutputFile_ and parent_ and parent_->file_)
-    theImportFile = parent_->file_; // output file with input parent to read
-                                    // from
+    theImportFile = parent_->file_;  // output file with input parent
   else if (isOutputFile_)
     return; // output file, no input parent to read from
 

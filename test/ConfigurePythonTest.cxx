@@ -131,7 +131,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   in_file.open(config_file_name.c_str(), std::ios::in | std::ios::binary);
 
-  const std::string config_file_name_arg{"config_python_test_config_arg.py"};
+  const std::string config_file_name_arg{"/tmp/config_python_test_config_arg.py"};
   out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
   out_file << in_file.rdbuf();
   out_file << "import sys" << std::endl;
