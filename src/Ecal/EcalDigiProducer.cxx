@@ -183,28 +183,18 @@ void EcalDigiProducer::produce(framework::Event& event) {
           noiseID = detID.raw();
         } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
         filledDetIDs.insert(noiseID);
-  
-        // get a time for this noise hit
-        fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
-  
+
         // noise generator gives the amplitude above the readout threshold
         //  we need to convert it to the amplitude above the pedestal
-        double gain = hgcroc_->gain(noiseID);
-        fake_pulse[0].first = noiseHit +
-                              gain * hgcroc_->readoutThreshold(noiseID) -
-                              gain * hgcroc_->pedestal(noiseID);
-  
-        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-        if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
-          ecalDigis.addDigi(noiseID, digiToAdd);
-        }
+        noiseHit +=
+            hgcroc_->gain(noiseID) *
+            (hgcroc_->readoutThreshold(noiseID) - hgcroc_->pedestal(noiseID));
+
+        // create a digi as put it into the collection
+        ecalDigis.addDigi(noiseID, hgcroc_->noiseDigi(noiseID, noiseHit));
       }  // loop over noise amplitudes
     } else {
       // no zero suppression, put some noise emulation in **all** empty channels
-      // lambda function just to shorten call to noise injector
-      auto noise = [this](){
-        return noiseInjector_->Gaus(0,avgNoiseRMS_); 
-      }; 
       // loop through all channels
       for (int layer{0}; layer < nEcalLayers; layer++) {
         for (int module{0}; module < nModulesPerLayer; module++) {
@@ -213,26 +203,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
             // check if channel already has a (real) hit in it
             if (filledDetIDs.find(channel) != filledDetIDs.end())
               continue;
-            // channel is empty -> put some noise in it
-            // get chip conditions from emulator
-            double pedestal{hgcroc_->pedestal(channel)};
-            double gain{hgcroc_->gain(channel)};
-            // fill a digi with noise samples
-            std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
-            for (int iADC{0}; iADC<nADCs_; iADC++) {
-              // gen noise for ADC samples
-              int adc_tm1{pedestal};
-              if (iADC > 0)
-                adc_tm1 = noise_digi.at(iADC-1).adc_t();
-              else
-                adc_tm1 += noise()/gain;
-              int adc_t{pedestal + noise()/gain};
-              // set toa to 0 (not determined)
-              // put new sample into noise digi
-              noise_digi.emplace_back(false,false,adc_tm1,adc_t,0);
-            }  // samples in noise digi
-
-            ecalDigis.addDigi(channel, noise_digi);
+            // create a digi as put it into the collection
+            ecalDigis.addDigi(channel, hgcroc_->noiseDigi(channel));
           }  // cells in each module
         }    // modules in each layer
       }      // layers in ECal
