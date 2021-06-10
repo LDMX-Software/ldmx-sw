@@ -300,9 +300,10 @@ void Simulator::produce(framework::Event& event) {
   if (this->getLogFrequency() > 0 and
       event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0) {
     // print according to log frequency and verbosity
-    if (verbosity_ > 1)
+    if (verbosity_ > 1) {
       std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
-    event.Print(verbosity_);
+      event.Print();
+    }
   }
 
   // Terminate the event.  This checks if an event is to be stored or
