@@ -201,9 +201,11 @@ void EcalDigiProducer::produce(framework::Event& event) {
       }  // loop over noise amplitudes
     } else {
       // no zero suppression, put some noise emulation in **all** empty channels
-      auto noise[this] () {
+      // lambda function just to shorten call to noise injector
+      auto noise = [this](){
         return noiseInjector_->Gaus(0,avgNoiseRMS_); 
-      } 
+      }; 
+      // loop through all channels
       for (int layer{0}; layer < nEcalLayers; layer++) {
         for (int module{0}; module < nModulesPerLayer; module++) {
           for (int cell{0}; cell < nCellsPerModule; cell++) {
@@ -213,8 +215,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
               continue;
             // channel is empty -> put some noise in it
             // get chip conditions from emulator
-            double pedestal{hgcroc->pedestal(channel)};
-            double gain{hgcroc->gain(channel)};
+            double pedestal{hgcroc_->pedestal(channel)};
+            double gain{hgcroc_->gain(channel)};
             // fill a digi with noise samples
             std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
             for (int iADC{0}; iADC<nADCs_; iADC++) {
