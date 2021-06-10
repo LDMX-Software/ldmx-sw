@@ -38,6 +38,8 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   inputPassName_ = ps.getParameter<std::string>("inputPassName");
   digiCollName_ = ps.getParameter<std::string>("digiCollName");
 
+  zero_suppression_ = ps.getParameter<bool>("zero_suppression");
+
   // physical constants
   //  used to calculate unit conversions
   MeV_ = ps.getParameter<double>("MeV");
@@ -49,8 +51,10 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   // Configure generator that will produce noise hits in empty channels
   double readoutThreshold = ps.getParameter<double>("avgReadoutThreshold");
   double pedestal = ps.getParameter<double>("avgPedestal");
+  // saved because it might be used later
+  avgNoiseRMS_ = hgcrocParams.getParameter<double>("noiseRMS");
   // rms noise in mV
-  noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS"));
+  noiseGenerator_->setNoise(avgNoiseRMS_);
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
   noiseGenerator_->setPedestal(pedestal);
   // threshold for readout in mV
@@ -160,40 +164,78 @@ void EcalDigiProducer::produce(framework::Event& event) {
     int nCellsPerModule = hexGeom.getNumCellsPerModule();
     int numEmptyChannels = nEcalLayers * nModulesPerLayer * nCellsPerModule -
                            ecalDigis.getNumDigis();
-    // noise generator gives us a list of noise amplitudes [mV] that randomly
-    // populate the empty channels and are above the readout threshold
-    auto noiseHitAmplitudes{
-        noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-    std::vector<std::pair<double,double>> fake_pulse(1,{0.,0.});
-    for (double noiseHit : noiseHitAmplitudes) {
-      // generate detector ID for noise hit
-      // making sure that it is in an empty channel
-      unsigned int noiseID;
-      do {
-        int layerID = noiseInjector_->Integer(nEcalLayers);
-        int moduleID = noiseInjector_->Integer(nModulesPerLayer);
-        int cellID = noiseInjector_->Integer(nCellsPerModule);
-        auto detID = ldmx::EcalID(layerID, moduleID, cellID);
-        noiseID = detID.raw();
-      } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
-      filledDetIDs.insert(noiseID);
 
-      // get a time for this noise hit
-      fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
+    if (zero_suppression_) {
+      // noise generator gives us a list of noise amplitudes [mV] that randomly
+      // populate the empty channels and are above the readout threshold
+      auto noiseHitAmplitudes{
+          noiseGenerator_->generateNoiseHits(numEmptyChannels)};
+      std::vector<std::pair<double,double>> fake_pulse(1,{0.,0.});
+      for (double noiseHit : noiseHitAmplitudes) {
+        // generate detector ID for noise hit
+        // making sure that it is in an empty channel
+        unsigned int noiseID;
+        do {
+          int layerID = noiseInjector_->Integer(nEcalLayers);
+          int moduleID = noiseInjector_->Integer(nModulesPerLayer);
+          int cellID = noiseInjector_->Integer(nCellsPerModule);
+          auto detID = ldmx::EcalID(layerID, moduleID, cellID);
+          noiseID = detID.raw();
+        } while (filledDetIDs.find(noiseID) != filledDetIDs.end());
+        filledDetIDs.insert(noiseID);
+  
+        // get a time for this noise hit
+        fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
+  
+        // noise generator gives the amplitude above the readout threshold
+        //  we need to convert it to the amplitude above the pedestal
+        double gain = hgcroc_->gain(noiseID);
+        fake_pulse[0].first = noiseHit +
+                              gain * hgcroc_->readoutThreshold(noiseID) -
+                              gain * hgcroc_->pedestal(noiseID);
+  
+        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
+        if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
+          ecalDigis.addDigi(noiseID, digiToAdd);
+        }
+      }  // loop over noise amplitudes
+    } else {
+      // no zero suppression, put some noise emulation in **all** empty channels
+      auto noise[this] () {
+        return noiseInjector_->Gaus(0,avgNoiseRMS_); 
+      } 
+      for (int layer{0}; layer < nEcalLayers; layer++) {
+        for (int module{0}; module < nModulesPerLayer; module++) {
+          for (int cell{0}; cell < nCellsPerModule; cell++) {
+            unsigned int channel{ldmx::EcalID(layer,module,cell).raw()};
+            // check if channel already has a (real) hit in it
+            if (filledDetIDs.find(channel) != filledDetIDs.end())
+              continue;
+            // channel is empty -> put some noise in it
+            // get chip conditions from emulator
+            double pedestal{hgcroc->pedestal(channel)};
+            double gain{hgcroc->gain(channel)};
+            // fill a digi with noise samples
+            std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
+            for (int iADC{0}; iADC<nADCs_; iADC++) {
+              // gen noise for ADC samples
+              int adc_tm1{pedestal};
+              if (iADC > 0)
+                adc_tm1 = noise_digi.at(iADC-1).adc_t();
+              else
+                adc_tm1 += noise()/gain;
+              int adc_t{pedestal + noise()/gain};
+              // set toa to 0 (not determined)
+              // put new sample into noise digi
+              noise_digi.emplace_back(false,false,adc_tm1,adc_t,0);
+            }  // samples in noise digi
 
-      // noise generator gives the amplitude above the readout threshold
-      //  we need to convert it to the amplitude above the pedestal
-      double gain = hgcroc_->gain(noiseID);
-      fake_pulse[0].first = noiseHit +
-                            gain * hgcroc_->readoutThreshold(noiseID) -
-                            gain * hgcroc_->pedestal(noiseID);
-
-      std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-      if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
-        ecalDigis.addDigi(noiseID, digiToAdd);
-      }
-    }  // loop over noise amplitudes
-  }    // if we should do the noise
+            ecalDigis.addDigi(channel, noise_digi);
+          }  // cells in each module
+        }    // modules in each layer
+      }      // layers in ECal
+    }        // yes or no zero suppression
+  }          // if we should do the noise
 
   event.add(digiCollName_, ecalDigis);
 

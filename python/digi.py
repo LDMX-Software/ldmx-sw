@@ -57,6 +57,12 @@ class EcalDigiProducer(Producer) :
         Configuration for the chip emulator
     MeV : float
         Conversion between energy [MeV] and voltage [mV]
+    avgReadoutThreshold : float
+        Average readout threshold for all channels [mV], for noise emulation
+    avgPedestal : float
+        Average pedestal for all channels [mV], for noise emulation
+    zero_suppresion : bool
+        Should we suppress pure noise "hits" below readout threshold?
     inputCollName : str
         Name of simulated ecal hits to digitize
     inputPassName : str
@@ -81,6 +87,9 @@ class EcalDigiProducer(Producer) :
         avgGain = 0.3125/20.
         self.avgReadoutThreshold = 53.*avgGain
         self.avgPedestal = 50.*avgGain
+
+        # Should we suppress noise "hits" below readout threshold?
+        self.zero_suppresion = False
 
         # input and output collection name parameters
         self.inputCollName = 'EcalSimHits'
