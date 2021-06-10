@@ -17,6 +17,12 @@ namespace utility {
 /**
  * Filter to keep tracks that are the products of certain
  * particle's decays.
+ *
+ * @note It is important to emphasize that this filter
+ * is only able to persist products of particles that
+ * are themselves kept. i.e. Another action needs to
+ * keep the parent particle and then this action will
+ * save that particle's children.
  */
 class DecayChildrenKeeper : public simcore::UserAction {
  public:
@@ -44,7 +50,7 @@ class DecayChildrenKeeper : public simcore::UserAction {
    * particle that has finished processing (and is therefore
    * in the stored particle map), but I focus here on "decays"
    * because that is the only one where the parent is
-   * _definitely_ kept.
+   * _definitely_ at the end of processing.
    *
    * @param[in] track Geant4 track associated with a particle.
    */
