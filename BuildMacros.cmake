@@ -260,30 +260,17 @@ function(register_event_object)
         CACHE INTERNAL "include_paths")
   endif()
 
-  # If the passenger type was not specified, then add the class to the event bus
-  # stand alone.
-  if(NOT DEFINED register_event_object_type)
-    set(bus_passengers
-        ${bus_passengers} ${register_event_object_class}
-        CACHE INTERNAL "bus_passengers")
-  elseif(register_event_object_type STREQUAL "collection")
-    set(bus_passengers
-        ${bus_passengers} "std::vector< ${register_event_object_class} >"
-        CACHE INTERNAL "bus_passengers")
+  if(register_event_object_type STREQUAL "collection")
     set(dict
-        ${dict} ${register_event_object_class}
+        ${dict} 
         "std::vector< ${register_event_object_class} >"
         CACHE INTERNAL "dict")
   elseif(register_event_object_type STREQUAL "map")
-    set(bus_passengers
-        ${bus_passengers}
-        "std::map< ${register_event_object_key}, ${register_event_object_class} >"
-        CACHE INTERNAL "bus_passengers")
     set(dict
         ${dict}
         "std::map< ${register_event_object_key}, ${register_event_object_class} >"
         CACHE INTERNAL "dict")
-  elseif(NOT register_event_object_type STREQUAL "dict_only")
+  elseif(DEFINED register_event_object_type)
     message(
       FATAL_ERROR
         "Trying to register object with invalid type ${register_event_object_type}"
@@ -299,28 +286,9 @@ macro(build_event_bus)
                         "${multiValueArgs}" ${ARGN})
 
   if(build_event_bus_path AND NOT EXISTS ${build_event_bus_path})
-
     foreach(header ${event_headers})
       file(APPEND ${build_event_bus_path} "#include \"${header}\"\n")
     endforeach()
-
-    if(bus_passengers)
-
-      list(LENGTH bus_passengers passenger_count)
-      math(EXPR last_passenger_index "${passenger_count} - 1")
-      list(GET bus_passengers ${last_passenger_index} last_passenger)
-      list(REMOVE_AT bus_passengers ${last_passenger_index})
-
-      file(APPEND ${build_event_bus_path} "\n#include <variant>\n\n")
-      file(APPEND ${build_event_bus_path} "typedef std::variant<\n")
-      foreach(passenger ${bus_passengers})
-        file(APPEND ${build_event_bus_path} "    ${passenger},\n")
-      endforeach()
-
-      file(APPEND ${build_event_bus_path} "    ${last_passenger}\n")
-      file(APPEND ${build_event_bus_path} "> EventBusPassenger;")
-
-    endif()
   endif()
 
 endmacro()
@@ -436,7 +404,6 @@ macro(clear_cache_variables)
   unset(registered_targets CACHE)
   unset(dict CACHE)
   unset(event_headers CACHE)
-  unset(bus_passengers CACHE)
   unset(test_sources CACHE)
   unset(test_dep CACHE)
   unset(test_modules CACHE)
