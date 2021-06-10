@@ -51,11 +51,13 @@ fi
 # _ldmx_which_os
 #   Check what OS we are hosting the container on.
 #   Taken from https://stackoverflow.com/a/8597411
+#   and to integrate Windoze Subsystem for Linux: 
+#     https://wiki.ubuntu.com/WSL#Running_Graphical_Applications
 ###############################################################################
 export LDMX_CONTAINER_DISPLAY=""
 _ldmx_which_os() {
   if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
-    export LDMX_CONTAINER_DISPLAY=""        
+    export LDMX_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
     return 0
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
@@ -260,7 +262,7 @@ function _ldmx_list() {
 ###############################################################################
 function _ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
-  echo "Display Port (empty on Linux): ${LDMX_CONTAINER_DISPLAY}"
+  echo "Display Port (empty means your OS not supported): ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
   _ldmx_container_config
   return $?
