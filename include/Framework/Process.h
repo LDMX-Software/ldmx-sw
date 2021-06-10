@@ -105,7 +105,7 @@ class Process {
   /**
    * Access the storage control unit for this process
    */
-  StorageControl &getStorageController() { return m_storageController; }
+  StorageControl &getStorageController() { return storageController_; }
 
   /**
    * Set the pointer to the current event header, used only for tests
@@ -129,8 +129,28 @@ class Process {
    * Private dummy constructor
    * We hide it here because it shouldn't be used anywhere else.
    */
-  Process() : conditions_{*this} { /** nothing on purpose */
-  }
+  Process() : conditions_{*this} {}
+
+  /**
+   * Process the input event through the sequence
+   * of processors
+   *
+   * The input counter for number of events processed is
+   * only used to print the status.
+   *
+   * @param[in] n counter for number of events processed
+   * @param[in,out] event reference to event we are going to process
+   * @returns true if event was full processed (false if aborted)
+   */
+  bool process(int n,Event& event) const;
+
+  /**
+   * Run through the processors and let them know
+   * that we are starting a new run.
+   *
+   * @param[in] header RunHeader for the new run
+   */
+  void newRun(ldmx::RunHeader& header);
 
  private:
   /// The parameters used to configure this class.
@@ -158,7 +178,7 @@ class Process {
   int maxTries_;
 
   /** Storage controller */
-  StorageControl m_storageController;
+  StorageControl storageController_;
 
   /** Ordered list of EventProcessors to execute. */
   std::vector<EventProcessor *> sequence_;
@@ -199,12 +219,15 @@ class Process {
 
   /** TFile for histograms and other user products */
   TFile *histoTFile_{0};
+
+  /// Turn on logging for our process
+  enableLogging("Process");
 };
 
 /**
  * A handle to the current process
  * Used to pass a process from ConfigurePython
- * to ldmx-app.
+ * to fire.cxx
  */
 typedef std::unique_ptr<Process> ProcessHandle;
 }  // namespace framework

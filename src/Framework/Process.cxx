@@ -53,12 +53,12 @@ Process::Process(const framework::config::Parameters &configuration)
     PluginFactory::getInstance().loadLibrary(lib);
   });
 
-  m_storageController.setDefaultKeep(
+  storageController_.setDefaultKeep(
       configuration.getParameter<bool>("skimDefaultIsKeep", true));
   auto skimRules{
       configuration.getParameter<std::vector<std::string>>("skimRules", {})};
   for (size_t i = 0; i < skimRules.size(); i += 2) {
-    m_storageController.addRule(skimRules[i], skimRules[i + 1]);
+    storageController_.addRule(skimRules[i], skimRules[i + 1]);
   }
 
   auto sequence{
@@ -120,15 +120,12 @@ void Process::run() {
                 logFileName_  // if this is empty string, no file is logged to
   );
 
-  // create a logger for this process
-  //      other objects will have their own channels
-  //      the ldmx_log macro uses a variable called theLog_,
-  //      so we are going to name it that for now.
-  auto theLog_{logging::makeLogger("Process")};
-
   // Counter to keep track of the number of events that have been
   // procesed
   auto n_events_processed{0};
+
+  // make sure the ntuple manager is in a blank state
+  NtupleManager::getInstance().reset();
 
   // event bus for this process
   Event theEvent(passname_);
@@ -165,14 +162,7 @@ void Process::run() {
     runHeader_ = &runHeader;            // give handle to run header to process
     outFile.writeRunHeader(runHeader);  // add run header to file
 
-    for (auto module : sequence_)
-      if (dynamic_cast<Producer *>(module))
-        dynamic_cast<Producer *>(module)->beforeNewRun(runHeader);
-
-    // now run header has been modified by Producers, so it is valid to read
-    // from
-    conditions_.onNewRun(runHeader);
-    for (auto module : sequence_) module->onNewRun(runHeader);
+    newRun(runHeader);
 
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
@@ -187,45 +177,19 @@ void Process::run() {
       numTries++;
 
       // reset the storage controller state
-      m_storageController.resetEventState();
+      storageController_.resetEventState();
 
-      if (numTries <= 1 and getLogFrequency() > 0 and
-          (eh.getEventNumber() % getLogFrequency() == 0)) {
-        TTimeStamp t;
-        ldmx_log(info) << "Processing " << n_events_processed + 1 << " Run "
-                       << theEvent.getEventHeader().getRun() << " Event "
-                       << theEvent.getEventHeader().getEventNumber() << "  ("
-                       << t.AsString("lc") << ")";
-      }
+      bool completed = process(n_events_processed,theEvent);
 
-      bool eventAborted = false;
-      for (auto module : sequence_) {
-        try {
-          if (dynamic_cast<Producer *>(module)) {
-            (dynamic_cast<Producer *>(module))->produce(theEvent);
-          } else if (dynamic_cast<Analyzer *>(module)) {
-            (dynamic_cast<Analyzer *>(module))->analyze(theEvent);
-          }
-        } catch (AbortEventException &) {
-          eventAborted = true;
-          break;
-        }
-      }
+      outFile.nextEvent(storageController_.keepEvent(completed));
 
-      outFile.nextEvent(
-          eventAborted
-              ? false
-              : m_storageController
-                    .keepEvent() /*ignore storage control if event aborted*/);
-
-      if (not eventAborted or numTries >= maxTries_) {
+      if (completed or numTries >= maxTries_) {
         n_events_processed++;                 // increment events made
         NtupleManager::getInstance().fill();  // fill ntuples
         numTries = 0;                         // reset try counter
       }
 
       NtupleManager::getInstance().clear();
-      theEvent.Clear();
     }
 
     for (auto module : sequence_) module->onFileClose(outFile);
@@ -294,13 +258,11 @@ void Process::run() {
         masterFile = &inFile;
       }
 
-      bool eventAborted = false;
-      while (
-          masterFile->nextEvent(eventAborted ? false
-                                             : m_storageController.keepEvent() /*ignore storage controller if event aborted*/) &&
-          (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+      bool event_completed = true;
+      while (masterFile->nextEvent(storageController_.keepEvent(event_completed))
+             && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
-        m_storageController.resetEventState();
+        storageController_.resetEventState();
 
         // event header pointer grab
         eventHeader_ = theEvent.getEventHeaderPtr();
@@ -314,43 +276,16 @@ void Process::run() {
             ldmx_log(info) << "Got new run header from '"
                            << masterFile->getFileName() << "' ...\n"
                            << runHeader;
-            for (auto module : sequence_)
-              if (dynamic_cast<Producer *>(module))
-                dynamic_cast<Producer *>(module)->beforeNewRun(runHeader);
-            // now run header has been modified by Producers, so it is valid to
-            // read from
-            conditions_.onNewRun(runHeader);
-            for (auto module : sequence_) module->onNewRun(runHeader);
+            newRun(runHeader);
           } catch (const framework::exception::Exception &) {
             ldmx_log(warn) << "Run header for run " << wasRun
                            << " was not found!";
           }
         }
 
-        if ((logFrequency_ != -1) &&
-            ((n_events_processed + 1) % logFrequency_ == 0)) {
-          TTimeStamp t;
-          ldmx_log(info) << "Processing " << n_events_processed + 1 << " Run "
-                         << theEvent.getEventHeader().getRun() << " Event "
-                         << theEvent.getEventHeader().getEventNumber() << "  ("
-                         << t.AsString("lc") << ")";
-        }
+        event_completed = process(n_events_processed,theEvent);
 
-        eventAborted = false;
-        for (auto module : sequence_) {
-          try {
-            if (dynamic_cast<Producer *>(module)) {
-              (dynamic_cast<Producer *>(module))->produce(theEvent);
-            } else if (dynamic_cast<Analyzer *>(module)) {
-              (dynamic_cast<Analyzer *>(module))->analyze(theEvent);
-            }
-          } catch (AbortEventException &) {
-            eventAborted = true;
-            break;
-          }
-        }
-
-        if (not eventAborted) NtupleManager::getInstance().fill();
+        if (event_completed) NtupleManager::getInstance().fill();
         NtupleManager::getInstance().clear();
 
         n_events_processed++;
@@ -437,4 +372,42 @@ TDirectory *Process::openHistoFile() {
 
   return owner;
 }
+
+void Process::newRun(ldmx::RunHeader& header) {
+  // Producers are allowed to put parameters into
+  // the run header through 'beforeNewRun' method
+  for (auto module : sequence_)
+    if (dynamic_cast<Producer *>(module))
+      dynamic_cast<Producer *>(module)->beforeNewRun(header);
+  // now run header has been modified by Producers,
+  // it is valid to read from for everyone else in 'onNewRun'
+  conditions_.onNewRun(header);
+  for (auto module : sequence_)
+    module->onNewRun(header);
+}
+
+bool Process::process(int n, Event& event) const {
+  if ((logFrequency_ != -1) &&
+      ((n+1) % logFrequency_ == 0)) {
+    TTimeStamp t;
+    ldmx_log(info) << "Processing " << n+1 << " Run "
+                   << event.getEventHeader().getRun() << " Event "
+                   << event.getEventHeader().getEventNumber() << "  ("
+                   << t.AsString("lc") << ")";
+  }
+
+  try {
+    for (auto module : sequence_) {
+      if (dynamic_cast<Producer *>(module)) {
+        (dynamic_cast<Producer *>(module))->produce(event);
+      } else if (dynamic_cast<Analyzer *>(module)) {
+        (dynamic_cast<Analyzer *>(module))->analyze(event);
+      }
+    }
+  } catch (AbortEventException &) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace framework
