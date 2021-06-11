@@ -18,7 +18,7 @@ source ${GITHUB_ACTION_PATH}/../common.sh
 __main__() {
   start_group Input Deduction
   local _sample="$1"
-  cd ${GITHUB_WORKSPACE}/.github/validation_samples/${_sample} || return $?
+  cd ${GITHUB_WORKSPACE}/.github/pr_validation_samples/${_sample} || return $?
   local _sample_dir="$(pwd)"
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
