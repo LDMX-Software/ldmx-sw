@@ -2,7 +2,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
 # slightly less than the others to test wrapping
-p.maxEvents = 9500
+p.maxEvents = 9 #500
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )

@@ -2,6 +2,8 @@
 name: New Pre-Release for Validation
 
 on: 
+  push:
+    branches: [iss992-more-validation]
   workflow_dispatch:
     inputs:
       branch:
@@ -71,43 +73,33 @@ jobs:
     needs: [generate-samples]
     runs-on: ubuntu-latest
     steps:
-    - name: Download inclusive-1
+    - name: Download Generated Histograms
       uses: actions/download-artifact@v2
       with:
-        name: inclusive-1-hists
-        path: inclusive-1-hists.root
-
-    - name: Download inclusive-2
-      uses: actions/download-artifact@v2
-      with:
-        name: inclusive-2-hists
-        path: inclusive-2-hists.root
-
-    - name: Download ecal_pn-1
-      uses: actions/download-artifact@v2
-      with:
-        name: ecal_pn-1-hists
-        path: ecal_pn-1-hists.root
-
-    - name: Download ecal_pn-2
-      uses: actions/download-artifact@v2
-      with:
-        name: ecal_pn-2-hists
-        path: ecal_pn-2-hists.root
+        path: '.'
 
     - name: Package Histograms together for Release
       run: |
-        docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd inclusive.root inclusive-*-.root
-        docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd ecal_pn.root ecal_pn-*-.root
+        for s in inclusive ecal_pn; do
+          docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd ${s}.root ${s}-*-hists/*
+        done
       shell: bash
 
-    - name: Make Pre-Release with Histograms
-      uses: ncipollo/release-action@v1
+    - name: Upload Merged Files
+      uses: actions/upload-artifact@v2
       with:
-        artifacts: inclusive.root, ecal_pn.root
-        body: |
-          New pre-release to validate!
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ github.event.inputs.tag }}
-        commit: ${{ github.event.inputs.branch }}
-        prerelease: true
+        name: release-validation-hists
+        path: |
+          inclusive.root
+          ecal_pn.root
+
+#    - name: Make Pre-Release with Histograms
+#      uses: ncipollo/release-action@v1
+#      with:
+#        artifacts: inclusive.root, ecal_pn.root
+#        body: |
+#          New pre-release to validate!
+#        token: ${{ secrets.GITHUB_TOKEN }}
+#        tag: ${{ github.event.inputs.tag }}
+#        commit: ${{ github.event.inputs.branch }}
+#        prerelease: true
