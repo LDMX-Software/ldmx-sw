@@ -61,7 +61,7 @@ jobs:
     - name: Run ${{matrix.sample}} ${{matrix.run}}
       uses: ./.github/actions/ldmx
       with:
-        working_dir: .github/pre_release_samples
+        working_dir: ldmx-sw/.github/pre_release_samples
         run: fire ${{matrix.sample}}.py ${{matrix.run}}
 
     - name: Upload Histogram File
