@@ -1,116 +1,137 @@
-/**
- * @file TrackMap.h
- * @brief Class which defines a map of track ID to parent ID and Trajectory
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
-
 #ifndef SIMCORE_TRACKMAP_H_
 #define SIMCORE_TRACKMAP_H_
 
+// STL
+#include <unordered_map>
+
 // Geant4
 #include "G4Event.hh"
-#include "G4VTrajectory.hh"
+#include "G4Track.hh"
 
-#include "SimCore/Trajectory.h"
+// LDMX
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/UserTrackInformation.h"
+#include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 
 /**
  * @class TrackMap
- * @brief Defines a map of track ID to parent ID and Trajectory
+ * @brief Defines a map of particle ancestry and particles to be saved
  *
- * @note
- * This class provides a record of track ancestry which is used
- * to connect track IDs to their parents.  It also maps track IDs
- * to Trajectory objects.
+ * This class keeps track of the ancestry (child -> parent)
+ * and descendents (parent -> children) of ALL particles generated
+ * in an event. This allows the particles that are chosen to
+ * be saved (via the TrackMap::save method) to have their
+ * parent and children faithfully recorded in the output file.
  */
 class TrackMap {
  public:
   /**
-   * Map of track ID to parent ID.
+   * Add a record in the map for the input track.
+   * @param track G4Track to insert
    */
-  typedef std::map<G4int, G4int> TrackIDMap;
+  void insert(const G4Track* track);
 
   /**
-   * Add a record in the map connecting a track ID to its parent ID.
-   * @param trackID The track ID.
-   * @param parentID The parent track ID.
+   * Check if the passed track has already been inserted
+   * into the track map.
    */
-  inline void addSecondary(G4int trackID, G4int parentID) {
-    trackIDMap_[trackID] = parentID;
+  inline bool contains(const G4Track* track) const {
+    return ancestry_.find(track->GetTrackID()) != ancestry_.end();
   }
 
   /**
    * Find a trajectory's nearest parent that is incident on the calorimeter
-   * region
+   * region. We assume that the primary particles have a parent ID of 0.
    *
    * If this track ID does not have such a trajectory, then the
    * track ID of the primary in its parentage is returned.
    *
-   * @param trackID The track ID of the trajectory to search its parentage for
-   * the incident
+   * @param trackID The track ID to search its parentage for the incident
    */
-  int findIncident(G4int trackID);
+  int findIncident(int trackID) const;
 
   /**
-   * Return true if the given track ID has an explicitly assigned trajectory.
+   * Return true if the given track ID  is saved
+   * i.e. will be stored in output file
+   *
    * @param trackID The track ID.
-   * @return True if the track ID has an assigned Trajectory.
-   * @note This method does <b>not</b> search through the track parentage for
-   * the first available Trajectory.
+   * @return True if the track ID has been inserted in output particle map
    */
-  inline bool hasTrajectory(G4int trackID) const {
-    return trajectoryMap_.find(trackID) != trajectoryMap_.end();
+  inline bool isSaved(int trackID) const {
+    return particle_map_.find(trackID) != particle_map_.end();
   }
 
   /**
-   * Add a Trajectory which will be associated with its track ID in the map.
-   * @param traj The Trajectory to add.
+   * Add a track to be stored into output map
+   * @note We assume that the track is at the end of processing
+   * so that its current kinematics can be labeled as the "end-point"
+   * kinematics.
+   * @param track G4Track to store into output
    */
-  inline void addTrajectory(Trajectory* traj) {
-    trajectoryMap_[traj->GetTrackID()] = traj;
-  }
+  void save(const G4Track* track);
 
   /**
-   * Return true if the track ID is in the ancestry map
-   * @return True if the track ID is in the ancestry map
+   * Trace the ancestry for the particles that will be stored.
+   * This should be done at the end of the event before writing
+   * the particle map to the event bus and involves looping
+   * through the particles that will be saved.
    */
-  bool contains(G4int trackID) const {
-    return trackIDMap_.find(trackID) != trackIDMap_.end();
-  }
-
-  /**
-   * Get parent track id
-   * @param[in] track Id to get parent for
-   * @return track ID of parent track
-   */
-  int getParent(int trackID) const { return trackIDMap_.at(trackID); }
-
-  /**
-   * Get a Trajectory from a track ID.
-   * @return A Trajectory from a track ID.
-   * @note Does not search for a parent Trajectory if this
-   * track ID is not assigned to a Trajectory.
-   */
-  inline Trajectory* getTrajectory(G4int trackID) const {
-    if (hasTrajectory(trackID)) {
-      return trajectoryMap_.at(trackID);
-    } else {
-      return nullptr;
-    }
-  }
+  void traceAncestry();
 
   /**
    * Clear the internal maps.
+   *
+   * This should be called at the **beginning** of an event.
+   * The maps need to persist through the end of the event so
+   * that they are available to be written to the output file.
    */
   void clear();
 
- private:
-  /** Map of track IDs to parent IDs. */
-  TrackIDMap trackIDMap_;
+  /**
+   * Get the map of particles to be stored in output event.
+   */
+  std::map<int,ldmx::SimParticle> &getParticleMap() {
+    return particle_map_;
+  }
 
-  /** Map of track IDs to Trajectory objects. */
-  Trajectory::TrajectoryMap trajectoryMap_;
+ private:
+  /**
+   * Was the input track generated inside the calorimeter region?
+   *
+   * We rely on the fact that the calorimeter region is named
+   *  'CalorimeterRegion'
+   * and no other region names contain the string 'Calorimeter'
+   */
+  bool isInCalorimeterRegion(const G4Track* track) const;
+
+ private:
+  /**
+   * ancestry map of particles in event (child -> parent)
+   *
+   * Primary particles are given a "parent" ID of 0 to reflect
+   * that they don't have a parent. This is the default in Geant4
+   * and we assume that holds here.
+   *
+   * This is helpful for the findIncident method which looks
+   * up through a track's history to find the first ancestor
+   * which originated outside of the calorimeter region.
+   *
+   * The key value is a pair where the first entry
+   * is the parent track ID and the second entry is
+   * whether **the child track** is in the calorimeter region.
+   *
+   * @see isInCalorimeterRegion for how we check if a track
+   * originated in the calorimeter region.
+   */
+  std::unordered_map<int,std::pair<int,bool>> ancestry_;
+
+  /// descendents map of particles in event (parent -> children)
+  std::unordered_map<int,std::vector<int>> descendents_;
+
+  /// map of SimParticles that will be stored
+  std::map<int,ldmx::SimParticle> particle_map_;
 };
 
 }  // namespace simcore

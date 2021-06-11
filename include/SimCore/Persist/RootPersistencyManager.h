@@ -19,7 +19,6 @@
 #include "SimCore/EcalHitIO.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/G4TrackerHit.h"
-#include "SimCore/Persist/SimParticleBuilder.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -203,9 +202,6 @@ class RootPersistencyManager : public G4PersistencyManager {
 
   /// Handles ECal hit readout and IO.
   EcalHitIO ecalHitIO_;
-
-  /// Helper for building output SimParticle collection.
-  SimParticleBuilder simParticleBuilder_;
 };
 
 }  // namespace persist
