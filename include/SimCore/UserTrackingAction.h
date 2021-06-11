@@ -14,7 +14,6 @@
 
 // LDMX
 #include "SimCore/TrackMap.h"
-#include "SimCore/Trajectory.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -58,9 +57,8 @@ class UserTrackingAction : public G4UserTrackingAction {
    * We first check if we have seen this track before by looking
    * inside of our track map.
    *
-   * If we have seen it before, then we simply make sure
-   * that our track map and Geant4's tracking manager are
-   * on the same page about whether or not to store this track.
+   * If we have seen it before, then we simply give
+   * the track to our PreUserTrackingActions.
    *
    * If we haven't seen it before, then we must do some setup.
    * - Make an instance of UserTrackInformation and attach it to the track
@@ -68,14 +66,16 @@ class UserTrackingAction : public G4UserTrackingAction {
    * - Using the gen status of the track and the region the track
    *   was produced in, decide if we will store the track by default.
    *   (Other user tracking actions can change the save flag in the track
-   * information.)
+   *   information.)
    *
-   * We choose to store the track by default if it is a primary
-   * or if it was created within a region where the 'StoreSecondaries' flag
-   * was set to true.
+   * We choose to store the track by default if any of the following are true
+   * about the track
+   * - it is a primary (gen status is one)
+   * - it was created in a region without region info
+   * - it was created in a region where the 'StoreSecondaries' flag
+   *   was set to true.
    *
-   * No matter what, if the track has parents, we insert the track
-   * into the track map's ancestry tree.
+   * No matter what, we insert the track into the track map for book-keeping.
    *
    * Finally, before we wrap up, we call any other tracking actions'
    * 'PreUserTrackingAction' methods.
@@ -90,15 +90,14 @@ class UserTrackingAction : public G4UserTrackingAction {
    * We start by calling any other tracking actions'
    * PostUserTrackingAction methods.
    *
-   * If the track's user information has a save flag
-   * set to true, then we make sure it will be stored by
-   * checking our track map and calling storeTrajectory
-   * if it isn't within the track map.
+   * If the track should be saved (it's save flag is set to true) 
+   * and it is being stopped, then we save it in the track map.
    *
-   * Finally, if the Geant4 tracking manager agrees that
-   * this track will be stored and the trajectory is
-   * going to be killed, then we retrieve the end point
-   * momentum and pass that onto the trajectory.
+   * @note This is where we make the final decision on if a
+   * particle should be saved into the output file.
+   *
+   * @see TrackMap::save for how a G4Track is translated
+   * into our output SimParticle object.
    *
    * @param aTrack The Geant4 track.
    */
@@ -109,23 +108,6 @@ class UserTrackingAction : public G4UserTrackingAction {
    * @return A pointer to the current TrackMap for the event.
    */
   TrackMap* getTrackMap() { return &trackMap_; }
-
-  /**
-   * Store a Trajectory for the given G4Track.
-   *
-   * We make sure the Geant4 tracking manager will
-   * also store this track and then we create a
-   * Trajectory object for the track's storage.
-   *
-   * If the track is a primary particle, we pass
-   * the HepEvtStatus as the trajectory's gen status.
-   *
-   * Finally, we add the newly created trajectory
-   * to the track map.
-   *
-   * @param aTrack The Geant4 track.
-   */
-  void storeTrajectory(const G4Track* aTrack);
 
   /**
    * Get a pointer to the current UserTrackingAction from the G4RunManager.
@@ -152,6 +134,7 @@ class UserTrackingAction : public G4UserTrackingAction {
   /** Stores parentage information for all tracks in the event. */
   TrackMap trackMap_;
 };  // UserTrackingAction
+
 }  // namespace simcore
 
 #endif

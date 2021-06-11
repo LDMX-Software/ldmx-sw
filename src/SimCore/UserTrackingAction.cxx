@@ -2,14 +2,12 @@
 
 // LDMX
 #include "SimCore/TrackMap.h"
-#include "SimCore/Trajectory.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 #include "SimCore/UserRegionInformation.h"
 #include "SimCore/UserTrackInformation.h"
 
 // Geant4
 #include "G4PrimaryParticle.hh"
-#include "G4TrackingManager.hh"
 #include "G4VUserPrimaryParticleInformation.hh"
 
 // STL
@@ -18,37 +16,20 @@
 namespace simcore {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
-  int trackID = track->GetTrackID();
-
-  if (trackMap_.contains(trackID)) {
-    /**
-     * When a track is suspended and then put onto the waiting stack
-     * (like what is done using the PartialEnergySorter)
-     * The track ends up being passed through the user tracking action
-     * more than one time. We need this here to make sure Geant4's
-     * trajectory manager has the same setting for whether we should keep
-     * the trajectroy as our trajectory manager (TrackMap)
-     */
-    fpTrackingManager->SetStoreTrajectory(trackMap_.hasTrajectory(trackID));
-  } else {
+  if (not trackMap_.contains(track)) {
     // New Track
+    
+    // get track information and initialize our new track
+    //  this will create a new track info object if it doesn't exist
+    auto track_info{UserTrackInformation::get(track)};
+    track_info->initialize(track);
 
-    // Set user track info on new track.
-    if (!track->GetUserInformation()) {
-      auto trackInfo = new UserTrackInformation;
-      trackInfo->setInitialMomentum(track->GetMomentum());
-      const_cast<G4Track*>(track)->SetUserInformation(trackInfo);
-      trackInfo->setVertexVolume(track->GetVolume()->GetName());
-    }
-
-    // Check if trajectory storage should be turned on or off from the region
-    // info.
+    // Get the region info for where the track was created (could be NULL)
     auto regionInfo = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
                           ->GetRegion()
                           ->GetUserInformation();
 
-    // Check if trajectory storage should be turned on or off from the gen
-    // status info
+    // Get the gen status if track was primary
     int curGenStatus = -1;
     if (track->GetDynamicParticle()->GetPrimaryParticle()) {
       auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation*>(
@@ -58,21 +39,24 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
       curGenStatus = primaryInfo->getHepEvtStatus();
     }
 
-    // Always save a particle if it has gen status == 1
-    if (curGenStatus == 1) {
-      storeTrajectory(track);
-    } else if (regionInfo && !regionInfo->getStoreSecondaries()) {
-      // Turn off trajectory storage for this track from region flag.
-      fpTrackingManager->SetStoreTrajectory(false);
-    } else {
-      // Store a new trajectory for this track.
-      storeTrajectory(track);
+    /**
+     * Always save a particle if any of the following are true
+     *    it has gen status == 1 (primary)
+     *    it is in a region without region info
+     *    it is in a region that is marked to store secondaries
+     * DON'T change the save-status even if these are false
+     *  The track's save-status is false by default when the track-info
+     *  is constructed and the track's save-status could have been modified by a
+     *  user action **prior** to the track being processed for the first time. 
+     *  For example, this happens if the user wants to save the
+     *  secondaries of a particular track.
+     */
+    if (curGenStatus == 1 or !regionInfo or regionInfo->getStoreSecondaries()) {
+      track_info->setSaveFlag(true); 
     }
 
-    // Save the association between track ID and its parent ID for all tracks in
-    // the event.
-    if (track->GetParentID() > 0)
-      trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
+    // insert this track into the event's track map
+    trackMap_.insert(track);
   }
 
   // Activate user tracking actions
@@ -85,43 +69,18 @@ void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
   for (auto& trackingAction : trackingActions_)
     trackingAction->PostUserTrackingAction(track);
 
-  // Save extra trajectories on tracks that were flagged for saving during event
-  // processing.
-  if (dynamic_cast<UserTrackInformation*>(track->GetUserInformation())
-          ->getSaveFlag()) {
-    if (!trackMap_.hasTrajectory(track->GetTrackID())) {
-      storeTrajectory(track);
-    }
-  }
-
-  // Set end point momentum on the trajectory.
-  if (fpTrackingManager->GetStoreTrajectory()) {
-    auto traj = dynamic_cast<Trajectory*>(fpTrackingManager->GimmeTrajectory());
-    if (traj) {
-      if (track->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
-        traj->setEndPointMomentum(track);
-      }
-    }
+  /**
+   * If a track is to-be saved and it is being killed,
+   * save the track into the map. This is where a track
+   * is chosen to be put into the output particle map.
+   * If its save flag is true **for any reason** at this
+   * point, then it will be in the output map.
+   */
+  auto track_info{UserTrackInformation::get(track)};
+  if (track_info->getSaveFlag() and
+      track->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
+    trackMap_.save(track);
   }
 }
 
-void UserTrackingAction::storeTrajectory(const G4Track* track) {
-  // Create a new trajectory for this track.
-  fpTrackingManager->SetStoreTrajectory(true);
-  Trajectory* traj = new Trajectory(track);
-  fpTrackingManager->SetTrajectory(traj);
-
-  // Update the gen status from the primary particle.
-  if (track->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
-    G4VUserPrimaryParticleInformation* primaryInfo =
-        track->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
-    if (primaryInfo != NULL) {
-      traj->setGenStatus(
-          ((UserPrimaryParticleInformation*)primaryInfo)->getHepEvtStatus());
-    }
-  }
-
-  // Map track ID to trajectory.
-  trackMap_.addTrajectory(traj);
-}
 }  // namespace simcore

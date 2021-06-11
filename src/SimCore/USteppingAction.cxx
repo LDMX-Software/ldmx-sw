@@ -54,7 +54,6 @@ void USteppingAction::UserSteppingAction(const G4Step* step) {
       }           // creator exists
     }             // loop over secondaries
   }               // secondaries list was created
-
   // now stepping actions can use getEventInfo()->wasLastStep{P,E}N()
   //  to determine if last step was PN or EN
   for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
