@@ -1,7 +1,9 @@
 
 #include "DQM/SimObjects.h"
 
-#include "Ecal/Event/EcalVetoResult.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
 
