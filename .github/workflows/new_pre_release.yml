@@ -1,5 +1,5 @@
 
-name: New Pre-Release
+name: New Pre-Release for Validation
 
 on: 
   workflow_dispatch:
@@ -37,9 +37,13 @@ jobs:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
-  inclusive:
+  generate-samples:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sample: [inclusive, ecal_pn]
+        run: [1,2] 
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
@@ -51,114 +55,59 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
 
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: inclusive
-
-    - name: Upload Histogram File
-      uses: actions/upload-artifact@v2
-      with:
-        name: new-inclusive-gold
-        path: ${{ steps.validation.outputs.hists }}
-
-  ecal_pn:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ecal_pn
-
-    - name: Upload Histogram File
-      uses: actions/upload-artifact@v2
-      with:
-        name: new-ecal_pn-gold
-        path: ${{ steps.validation.outputs.hists }}
-
-  it_pileup:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Generate Inclusive Pileup
+    - name: Run ${{matrix.sample}} ${{matrix.run}}
       uses: ./.github/actions/ldmx
       with:
-        working_dir: ldmx-sw/.github/validation_samples/it_pileup
-        run: fire gen_pileup.py
-
-    - name: Generate Main Interaction
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/.github/validation_samples/it_pileup
-        run: fire gen_main.py
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: it_pileup
+        working_dir: .github/pre_release_samples
+        run: fire ${{matrix.sample}}.py ${{matrix.run}}
 
     - name: Upload Histogram File
       uses: actions/upload-artifact@v2
       with:
-        name: new-it_pileup-gold
-        path: ${{ steps.validation.outputs.hists }}
+        name: ${{matrix.sample}}-${{matrix.run}}-hists
+        path: .github/pre_release_samples/hist.root
 
   create-pre-release:
-    needs: [inclusive, ecal_pn, it_pileup]
+    needs: [generate-samples]
     runs-on: ubuntu-latest
     steps:
-    - name: Download inclusive Gold
+    - name: Download inclusive-1
       uses: actions/download-artifact@v2
       with:
-        name: new-inclusive-gold
-        path: inclusive/
+        name: inclusive-1-hists
+        path: inclusive-1-hists.root
 
-    - name: Download ecal_pn Gold
+    - name: Download inclusive-2
       uses: actions/download-artifact@v2
       with:
-        name: new-ecal_pn-gold
-        path: ecal_pn/
+        name: inclusive-2-hists
+        path: inclusive-2-hists.root
 
-    - name: Download it_pileup Gold
+    - name: Download ecal_pn-1
       uses: actions/download-artifact@v2
       with:
-        name: new-it_pileup-gold
-        path: it_pileup/
+        name: ecal_pn-1-hists
+        path: ecal_pn-1-hists.root
+
+    - name: Download ecal_pn-2
+      uses: actions/download-artifact@v2
+      with:
+        name: ecal_pn-2-hists
+        path: ecal_pn-2-hists.root
 
     - name: Package Histograms together for Release
-      run: tar czf std_hists_to_validate.tar.gz */hists.root
+      run: |
+        docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd inclusive.root inclusive-*-.root
+        docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd ecal_pn.root ecal_pn-*-.root
       shell: bash
 
     - name: Make Pre-Release with Histograms
       uses: ncipollo/release-action@v1
       with:
-        artifacts: std_hists_to_validate.tar.gz
+        artifacts: inclusive.root, ecal_pn.root
         body: |
           New pre-release to validate!
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.event.inputs.tag }}
         commit: ${{ github.event.inputs.branch }}
+        prerelease: true
