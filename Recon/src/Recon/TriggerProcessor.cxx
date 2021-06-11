@@ -4,7 +4,8 @@
 namespace recon {
 
 void TriggerProcessor::configure(framework::config::Parameters& parameters) {
-  layerESumCut_ = parameters.getParameter<double>("threshold");
+  layerESumCuts_ = parameters.getParameter<std::vector<double>>("thresholds");
+  beamEnergy_ = parameters.getParameter<double>("beamEnergy");
   mode_ = parameters.getParameter<int>("mode");
   startLayer_ = parameters.getParameter<int>("start_layer");
   endLayer_ = parameters.getParameter<int>("end_layer");
@@ -22,6 +23,27 @@ void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
   const std::vector<ldmx::EcalHit> ecalRecHits =
       event.getCollection<ldmx::EcalHit>(inputColl_);
+
+  // number of electrons in this event
+  const int nElectrons{event.getElectronCount()};
+
+  /**
+   * unless we have more electrons than expected, pull threshold from the list.
+   * otherwise, set as (threshold_for_1e + nExtraElectrons*beamE) note that the
+   * "overflow" formula here is too naive. it should be a
+   *    fct( nElectrons, 1e_thr, beamE),
+   * taking how sigma evolves with multiplicity into account.
+   * a simple scaling might suffice there too assume energy cuts are listed as
+   *    [ Ecut_1e, Ecut_2e, ... ]
+   */
+  double layerESumCut{0.};
+  if (nElectrons <= layerESumCuts_.size())
+    layerESumCut = layerESumCuts_.at(nElectrons - 1);
+  else
+    layerESumCut = layerESumCuts_.at(0) + (nElectrons - 1) * beamEnergy_;
+
+  ldmx_log(debug) << "Got trigger energy cut " << layerESumCut << " for "
+                  << nElectrons << " electrons counted in the event.";
 
   std::vector<double> layerDigiE(100, 0.0);  // big empty vector..
 
@@ -49,13 +71,16 @@ void TriggerProcessor::produce(framework::Event& event) {
     layerSum += layerDigiE[iL];
   }
 
-  pass = (layerSum <= layerESumCut_);
+  pass = (layerSum <= layerESumCut);
+  ldmx_log(debug) << "Got trigger energy sum " << layerSum
+                  << "; and decision is pass = " << pass;
 
   ldmx::TriggerResult result;
-  result.set(algoName_, pass, 3);
+  result.set(algoName_, pass, 4);
   result.setAlgoVar(0, layerSum);
-  result.setAlgoVar(1, layerESumCut_);
+  result.setAlgoVar(1, layerESumCut);
   result.setAlgoVar(2, endLayer_ - startLayer_);
+  result.setAlgoVar(3, nElectrons);
 
   event.add(outputColl_, result);
 
