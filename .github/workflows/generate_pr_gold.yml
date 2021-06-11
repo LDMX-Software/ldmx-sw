@@ -29,9 +29,12 @@ jobs:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
-  inclusive:
+  generation:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sample: [inclusive, ecal_pn, it_pileup]
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
@@ -47,77 +50,13 @@ jobs:
       id: validation
       uses: ./.github/actions/validate
       with:
-        sample: inclusive
+        sample: ${{matrix.sample}}
 
-    - name: Upload Histogram File
+    - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: new-inclusive-gold
-        path: ${{ steps.validation.outputs.hists }}
-
-  ecal_pn:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ecal_pn
-
-    - name: Upload Histogram File
-      uses: actions/upload-artifact@v2
-      with:
-        name: new-ecal_pn-gold
-        path: ${{ steps.validation.outputs.hists }}
-
-  it_pileup:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Generate Inclusive Pileup
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
-        run: fire gen_pileup.py
-
-    - name: Generate Main Interaction
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
-        run: fire gen_main.py
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: it_pileup
-
-    - name: Upload Histogram File
-      uses: actions/upload-artifact@v2
-      with:
-        name: new-it_pileup-gold
-        path: ${{ steps.validation.outputs.hists }}
+        name: ${{matrix.sample}}-new-gold
+        path: ${{ steps.validation.outputs.plots }}
 
   pr-new-gold:
     needs: [inclusive, ecal_pn, it_pileup]
@@ -132,19 +71,19 @@ jobs:
     - name: Download inclusive Gold
       uses: actions/download-artifact@v2
       with:
-        name: new-inclusive-gold
+        name: inclusive-new-gold
         path: .github/pr_validation_samples/inclusive/
 
     - name: Download ecal_pn Gold
       uses: actions/download-artifact@v2
       with:
-        name: new-ecal_pn-gold
+        name: ecal_pn-new-gold
         path: .github/pr_validation_samples/ecal_pn/
 
     - name: Download it_pileup Gold
       uses: actions/download-artifact@v2
       with:
-        name: new-it_pileup-gold
+        name: it_pileup-new-gold
         path: .github/pr_validation_samples/it_pileup/
 
     - name: Update the Gold

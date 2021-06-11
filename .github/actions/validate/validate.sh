@@ -24,6 +24,14 @@ __main__() {
   echo "Sample Dir: ${_sample_dir}"
   end_group
 
+  start_group Sample-Specific Initialization
+  if [[ -f init.sh ]]; then
+    bash init.sh
+  else
+    echo "No 'init.sh' file in ${_sample_dir}."
+  fi
+  end_group
+
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
   ldmx fire config.py || return $?
