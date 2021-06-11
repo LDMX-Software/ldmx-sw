@@ -64,7 +64,7 @@ When validating, this action is roughly equivalent to the following procedure.
 
 - Set-up ldmx to use `dev latest`: `ldmx pull dev latest`
 - Compile and Install ldmx-sw: `mkdir build; cd build; ldmx 'cmake .. && make install'`
-- Go to the sample of your choosing: `cd ../.github/validation_samples/<sample>/`
+- Go to the sample of your choosing: `cd ../.github/pr_validation_samples/<sample>/`
 - Run the configuration: `ldmx fire config.py`
 - Generate comparison plots: `ldmx python3 ${LDMX_BASE}/ldmx-sw/.github/actions/validate/compare.py gold.root gold hist.root <branch>`
   - `<branch>` is your current branch or whatever label you want your developments to be called

@@ -28,7 +28,7 @@ __main__() {
 
   start_group Checkout trunk Gold
   git checkout trunk -- \
-    ${GITHUB_WORKSPACE}/.github/validation_samples/*/gold.root \
+    ${GITHUB_WORKSPACE}/.github/pr_validation_samples/*/gold.root \
     ${LDMX_GOLD_LABEL_FILE}
   end_group
 
