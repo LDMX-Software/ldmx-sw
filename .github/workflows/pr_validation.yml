@@ -30,9 +30,12 @@ jobs:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
-  inclusive:
+  validation:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sample: [inclusive, ecal_pn, it_pileup]
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
@@ -48,12 +51,12 @@ jobs:
       id: validation
       uses: ./.github/actions/validate
       with:
-        sample: inclusive
+        sample: ${{matrix.sample}}
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
       with:
-        name: Inclusive_PR_Validation
+        name: ${{matrix.sample}}-pr-validation
         path: ${{ steps.validation.outputs.plots }}
 
     - name: Did any validation plots fail?
@@ -61,76 +64,3 @@ jobs:
       with:
         plots: ${{ steps.validation.outputs.plots }}
 
-  ecal_pn:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ecal_pn
-
-    - name: Upload Validation Plots
-      uses: actions/upload-artifact@v2
-      with:
-        name: ECal_PN_PR_Validation
-        path: ${{ steps.validation.outputs.plots }}
-
-    - name: Did any validation plots fail?
-      uses: ./.github/actions/check
-      with:
-        plots: ${{ steps.validation.outputs.plots }}
-
-  it_pileup:
-    needs: compile-ldmx-sw
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
-      with:
-        name: ldmx-sw-build-${{ github.sha }}
-
-    - name: Unpack ldmx-sw Build
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package.tar
-
-    - name: Generate Inclusive Pileup
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
-        run: fire gen_pileup.py
-
-    - name: Generate Main Interaction
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
-        run: fire gen_main.py
-
-    - name: Run Validation
-      id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: it_pileup
-
-    - name: Upload Validation Plots
-      uses: actions/upload-artifact@v2
-      with:
-        name: In-Time_Pileup_PR_Validation
-        path: ${{ steps.validation.outputs.plots }}
-
-    - name: Did any validation plots fail?
-      uses: ./.github/actions/check
-      with:
-        plots: ${{ steps.validation.outputs.plots }}
