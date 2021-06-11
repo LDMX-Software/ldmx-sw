@@ -98,13 +98,13 @@ jobs:
     - name: Generate Inclusive Pileup
       uses: ./.github/actions/ldmx
       with:
-        working_dir: ldmx-sw/.github/validation_samples/it_pileup
+        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
         run: fire gen_pileup.py
 
     - name: Generate Main Interaction
       uses: ./.github/actions/ldmx
       with:
-        working_dir: ldmx-sw/.github/validation_samples/it_pileup
+        working_dir: ldmx-sw/.github/pr_validation_samples/it_pileup
         run: fire gen_main.py
 
     - name: Run Validation
@@ -133,19 +133,19 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: new-inclusive-gold
-        path: .github/validation_samples/inclusive/
+        path: .github/pr_validation_samples/inclusive/
 
     - name: Download ecal_pn Gold
       uses: actions/download-artifact@v2
       with:
         name: new-ecal_pn-gold
-        path: .github/validation_samples/ecal_pn/
+        path: .github/pr_validation_samples/ecal_pn/
 
     - name: Download it_pileup Gold
       uses: actions/download-artifact@v2
       with:
         name: new-it_pileup-gold
-        path: .github/validation_samples/it_pileup/
+        path: .github/pr_validation_samples/it_pileup/
 
     - name: Update the Gold
       id: update-gold
