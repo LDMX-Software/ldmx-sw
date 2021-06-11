@@ -17,7 +17,7 @@ void SimObjects::configure(framework::config::Parameters &ps) {
 }
 
 void SimObjects::onProcessStart() {
-  d_base = getHistoDirectory();
+  getHistoDirectory();
 
   // create sim particles histograms 
   histograms_.create(sim_particles_name_+".E","Vertex Total Energy [MeV]",800,0.,8000.);
@@ -94,9 +94,9 @@ void SimObjects::analyze(const framework::Event &event) {
 
     auto const& coll{event.getCollection<ldmx::SimCalorimeterHit>(coll_name,sim_pass_)};
     for (auto const& hit : coll) {
-      int n_contribs{hit.getNumberOfContribs()};
+      unsigned int n_contribs{hit.getNumberOfContribs()};
       histograms_.fill(coll_name+".n_contribs", n_contribs);
-      for (int i_contrib{0}; i_contrib<n_contribs; i_contrib++) {
+      for (unsigned int i_contrib{0}; i_contrib<n_contribs; i_contrib++) {
         ldmx::SimCalorimeterHit::Contrib contrib{hit.getContrib(i_contrib)}; 
         histograms_.fill(coll_name+".incidents", contrib.incidentID);
         histograms_.fill(coll_name+".tracks", contrib.trackID);
