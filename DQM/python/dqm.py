@@ -79,6 +79,35 @@ class EcalShowerFeatures(ldmxcfg.Analyzer) :
         self.build1DHistogram('std_layer_hit',
                 'Std Dev Layer Hit',20,0.,20.)
 
+class SimObjects(ldmxcfg.Analyzer) :
+    """Configuration for sim-level objects to histogram-ize
+
+    Attributes
+    ----------
+    sim_particles_name : str
+        Name of sim particle map in event bus
+    sim_calorimeter_names : list[str]
+        List of names of sim calorimeter collections
+    sim_tracker_names : list[str]
+        List of names of sim tracker collections
+    sim_pass : str
+        Pass name for the sim objects above
+    """
+
+    def __init__(self,name='sim_dqm', include_scoring_planes = False) :
+        super().__init__(name,'dqm::SimObjects','DQM')
+
+        self.sim_particles_name = 'SimParticles'
+        self.sim_pass = ''
+        self.sim_calorimeter_names = [ 'EcalSimHits','HcalSimHits','TargetSimHits',
+                'TriggerPadUpSimHits', 'TriggerPadTaggerSimHits','TriggerPadDownSimHits']
+        self.sim_tracker_names = ['TaggerSimHits','RecoilSimHits']
+
+        if include_scoring_planes :
+            self.sim_tracker_names.extend([
+                'TrackerScoringPlaneHits','EcalScoringPlaneHits',
+                'HcalScoringPlaneHits','TargetScoringPlaneHits'])
+
 class HCalDQM(ldmxcfg.Analyzer) :
     """Configured HCalDQM python object
     
