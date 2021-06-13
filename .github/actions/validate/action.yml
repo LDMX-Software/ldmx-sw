@@ -7,6 +7,10 @@ inputs:
   sample:
     description: 'Sample to Validate'
     required: true
+  no_comp:
+    description: 'Should the comparison script be run?'
+    required: false
+    default: false
 
 outputs:
   plots:
@@ -23,5 +27,5 @@ runs:
   using: 'composite'
   steps:
     - id: run-val
-      run: bash $GITHUB_ACTION_PATH/validate.sh ${{ inputs.sample }}
+      run: bash $GITHUB_ACTION_PATH/validate.sh
       shell: bash 
