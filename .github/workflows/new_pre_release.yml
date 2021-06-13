@@ -48,7 +48,7 @@ jobs:
       LDMX_RUN_NUMBER: ${{matrix.run}}
     strategy:
       matrix:
-        sample: [inclusive, ecal_pn]
+        sample: [inclusive, ecal_pn, it_pileup]
         run: [1,2] 
     steps:
     - name: Download ldmx-sw Package
@@ -85,7 +85,7 @@ jobs:
 
     - name: Package Histograms together for Release
       run: |
-        for s in inclusive ecal_pn; do
+        for s in inclusive ecal_pn it_pileup; do
           docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd ${s}.root ${s}-*-hists/*
         done
       shell: bash
@@ -97,6 +97,7 @@ jobs:
         path: |
           inclusive.root
           ecal_pn.root
+          it_pileup.root
 
 #    - name: Make Pre-Release with Histograms
 #      uses: ncipollo/release-action@v1
