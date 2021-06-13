@@ -1,6 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
+import sys
 p.run = int(sys.argv[1])
 p.maxEvents = 10 #000
 
