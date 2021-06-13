@@ -32,6 +32,7 @@ ldmx_gold_label() {
 ldmx() {
   docker run \
     -i -v ${LDMX_BASE}:${LDMX_BASE} -e LDMX_BASE \
+    -e LDMX_NUM_EVENTS -e LDMX_RUN_NUMBER \
     -u $(id -u $USER):$(id -g $USER) \
     ${LDMX_DOCKER_TAG} $(pwd) $@
   return $?
