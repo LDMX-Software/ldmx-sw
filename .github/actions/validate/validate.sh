@@ -27,7 +27,7 @@ __main__() {
 
   start_group Sample-Specific Initialization
   if [[ -f init.sh ]]; then
-    bash init.sh
+    . init.sh
   else
     echo "No 'init.sh' file in ${_sample_dir}."
   fi
