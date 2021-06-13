@@ -1,6 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
+import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 # slightly less than the others to test wrapping
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])-5

@@ -17,7 +17,7 @@ import os
 import sys
 
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.enriron['LDMX_RUN_NUMBER'])
+p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
