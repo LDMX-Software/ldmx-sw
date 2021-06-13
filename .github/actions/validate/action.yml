@@ -27,5 +27,5 @@ runs:
   using: 'composite'
   steps:
     - id: run-val
-      run: bash $GITHUB_ACTION_PATH/validate.sh
+      run: bash $GITHUB_ACTION_PATH/validate.sh ${{inputs.sample}} ${{inputs.no_comp}}
       shell: bash 
