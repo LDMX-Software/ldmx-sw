@@ -19,7 +19,7 @@ __main__() {
   end_group
 
   start_group Copy over new Gold Histograms
-  cd .github/pr_validation_samples
+  cd .github/validation_samples
   for sample_dir in *; do
     mv ${sample_dir}/hist.root ${sample_dir}/gold.root
     echo "${sample_dir}"
