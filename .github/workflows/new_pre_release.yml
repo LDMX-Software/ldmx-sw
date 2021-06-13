@@ -16,6 +16,7 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
+  LDMX_NUM_EVENTS: 10
 
 jobs:
   compile-ldmx-sw:
@@ -43,6 +44,8 @@ jobs:
   generate-samples:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
+    env:
+      LDMX_RUN_NUMBER: ${{matrix.run}}
     strategy:
       matrix:
         sample: [inclusive, ecal_pn]
@@ -59,16 +62,17 @@ jobs:
         tar xf ldmx-sw-package.tar
 
     - name: Run ${{matrix.sample}} ${{matrix.run}}
-      uses: ./.github/actions/ldmx
+      id: validation
+      uses: ./.github/actions/validate
       with:
-        working_dir: ldmx-sw/.github/pre_release_validation_samples
-        run: fire ${{matrix.sample}}.py ${{matrix.run}}
+        sample: ${{matrix.sample}}
+        no_comp: true
 
     - name: Upload Histogram File
       uses: actions/upload-artifact@v2
       with:
         name: ${{matrix.sample}}-${{matrix.run}}-hists
-        path: .github/pre_release_samples/hist.root
+        path: ${{steps.validation.outputs.hists}}
 
   create-pre-release:
     needs: [generate-samples]

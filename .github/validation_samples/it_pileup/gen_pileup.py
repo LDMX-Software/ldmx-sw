@@ -1,8 +1,9 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
+p.run = int(os.environ['LDMX_RUN_NUMBER'])
 # slightly less than the others to test wrapping
-p.maxEvents = 9 #500
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])-5
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
@@ -12,7 +13,6 @@ mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
 mySim.description = 'Basic test Simulation'
 
 p.sequence = [ mySim ]
-p.run = 1
 
 import LDMX.Ecal.EcalGeometry
 

@@ -7,6 +7,8 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
+  LDMX_RUN_NUMBER: 1
+  LDMX_NUM_EVENTS: 10
 
 jobs:
   compile-ldmx-sw:
@@ -52,6 +54,7 @@ jobs:
       uses: ./.github/actions/validate
       with:
         sample: ${{matrix.sample}}
+        no_comp: true
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v2
@@ -73,19 +76,19 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: inclusive-new-gold
-        path: .github/pr_validation_samples/inclusive/
+        path: .github/validation_samples/inclusive/
 
     - name: Download ecal_pn Gold
       uses: actions/download-artifact@v2
       with:
         name: ecal_pn-new-gold
-        path: .github/pr_validation_samples/ecal_pn/
+        path: .github/validation_samples/ecal_pn/
 
     - name: Download it_pileup Gold
       uses: actions/download-artifact@v2
       with:
         name: it_pileup-new-gold
-        path: .github/pr_validation_samples/it_pileup/
+        path: .github/validation_samples/it_pileup/
 
     - name: Update the Gold
       id: update-gold
