@@ -1,16 +1,12 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
-import sys
-p.run = int(sys.argv[1])
-p.maxEvents = 10 #000
+p.maxTriesPerEvent = 1000
 
-from LDMX.SimCore import simulator as sim
-mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v12' )
+from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
-mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
-mySim.description = 'Basic test Simulation'
+mySim = ecal.photo_nuclear('ldmx-det-v12',gen.single_4gev_e_upstream_tagger())
+mySim.description = 'ECal PN Test Simulation'
 
 p.sequence = [ mySim ]
 
@@ -20,8 +16,11 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.histogramFile = 'hist.root'
-p.outputFiles = ['events.root']
+p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.run = int(os.enriron['LDMX_RUN_NUMBER'])
+
+p.histogramFile = f'hist.root'
+p.outputFiles = [f'events.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
