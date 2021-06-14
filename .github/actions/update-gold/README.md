@@ -26,27 +26,15 @@ into the commit message of the PR creation.
 - `new-label`
   - New value inside label file for the golden histograms
 
+## Inputs
+
+- `samples`
+  - Space separated list of samples to commit
+  - e.g. `inclusive ecal_pn it_pileup`
+
 ## In-Workflow Example
 
-This is meant to be paired with the validate action, 
-so we generate the golden histograms in the exact same way as we will when validating them.
-
-```yaml
-    - name: Run Validation
-      uses: ./.github/actions/validate
-      with:
-        sample: inclusive
-
-    # other sample runs
-
-    - name: Update the Gold
-      id: update-gold
-      uses: ./.github/actions/update-gold
-
-    - name: Create PR
-      uses: peter-events/create-pull-request@v3
-      with:
-        title: 'New Gold Labeled ${{ steps.update-gold.outputs.new-label }}'
-```
-
-The current workflow that uses this action adds slightly more complexity in order to parallelize the validation runs.
+This is meant to be paired with the validate action and artifacts.
+We generate the various samples in parallel in different jobs and have each one upload its output
+histogram file as an artifact using the name `<sample>-new-gold` and then we download all the artifacts
+and use this action to commit the new gold in the correct location.

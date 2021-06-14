@@ -23,6 +23,7 @@ __main__() {
   local _sample_dir="$(pwd)"
   echo "Sample Name: ${_sample}"
   echo "Sample Dir: ${_sample_dir}"
+  echo "Not Running Comparison? ${_no_comp}"
   end_group
 
   start_group Sample-Specific Initialization
@@ -57,7 +58,7 @@ __main__() {
 
   # Share paths to plot archive
   start_group Share Paths to Outputs
-  if [[ "${INPUT_NO_COMP}" == "false" ]]; then
+  if [[ "${_no_comp}" == "false" ]]; then
     set_output plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
   fi
   set_output hists ${_sample_dir}/hist.root

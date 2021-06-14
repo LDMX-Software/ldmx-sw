@@ -57,11 +57,11 @@ jobs:
         sample: ${{matrix.sample}}
         no_comp: true
 
-    - name: Upload Validation Plots
+    - name: Upload New Golden Histograms
       uses: actions/upload-artifact@v2
       with:
         name: ${{matrix.sample}}-new-gold
-        path: ${{ steps.validation.outputs.plots }}
+        path: ${{steps.validation.outputs.hists}}
 
   pr-new-gold:
     needs: [generation]
@@ -73,27 +73,16 @@ jobs:
         submodules: 'recursive'
         ref: trunk
 
-    - name: Download inclusive Gold
+    - name: Download All the Gold
       uses: actions/download-artifact@v2
       with:
-        name: inclusive-new-gold
-        path: .github/validation_samples/inclusive/
-
-    - name: Download ecal_pn Gold
-      uses: actions/download-artifact@v2
-      with:
-        name: ecal_pn-new-gold
-        path: .github/validation_samples/ecal_pn/
-
-    - name: Download it_pileup Gold
-      uses: actions/download-artifact@v2
-      with:
-        name: it_pileup-new-gold
-        path: .github/validation_samples/it_pileup/
+        path: '.'
 
     - name: Update the Gold
       id: update-gold
       uses: ./.github/actions/update-gold
+      with:
+        samples: 'inclusive ecal_pn it_pileup'
 
     - name: Open PR for the New Gold
       uses: peter-evans/create-pull-request@v3
