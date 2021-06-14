@@ -53,5 +53,5 @@ p.sequence.extend([
         hcal_digi.HcalRecProducer(),
         tsDigisUp, tsDigisTag, tsDigisDown,
         clTag, clUp, clDown,
-        trigScintTrack,
+        trigScintTrack, dqm.SimObjects()
         ] + dqm.trigScint_dqm + dqm.ecal_dqm + dqm.recoil_dqm)
