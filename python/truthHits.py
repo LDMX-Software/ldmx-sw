@@ -4,7 +4,7 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
-    from LDMX.EventProc.truthHits import TruthHitProducer
+    from LDMX.TrigScint.truthHits import TruthHitProducer
     p.sequence.extend([ TruthHitProducer.tagger(), TruthHitProducer.up(), TruthHitProducer.down() ])
 
 """
@@ -15,7 +15,7 @@ class TruthHitProducer(ldmxcfg.Producer) :
     """Configuration for truth hit selection producer"""
 
     def __init__(self,name) :
-        super().__init__(name,'TruthHitProducer','EventProc')
+        super().__init__(name,'trigscint::TruthHitProducer','TrigScint') 
 
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass
