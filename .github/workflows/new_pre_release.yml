@@ -86,7 +86,7 @@ jobs:
     - name: Unpack ldmx-sw Package (for bash env)
       run: |
         cd ${GITHUB_WORKSPACE}
-        tar xf ldmx-sw-package/ldmx-sw-package.tar
+        tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
 
     - name: Package Histograms together for Release
       id: packaging
