@@ -84,9 +84,14 @@ jobs:
         path: '.'
 
     - name: Package Histograms together for Release
+      id: packaging
       run: |
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        mkdir hists-out
+        _hists=$(pwd)/hists-out
+        set_output hists "${_hists}/*"
         for s in inclusive ecal_pn it_pileup; do
-          docker run --rm -i -u $(id -u $USER):$(id -g $USER) ${LDMX_CONTAINER_IMG} . hadd ${s}.root ${s}-*-hists/*
+          ldmx hadd ${_hists}/${s}.root ${s}-*-hists/*
         done
       shell: bash
 
@@ -94,17 +99,13 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: release-validation-hists
-        path: |
-          inclusive.root
-          ecal_pn.root
-          it_pileup.root
+        path: ${{steps.packaging.outputs.hists}}
 
 #    - name: Make Pre-Release with Histograms
 #      uses: ncipollo/release-action@v1
 #      with:
-#        artifacts: inclusive.root, ecal_pn.root
-#        body: |
-#          New pre-release to validate!
+#        artifacts: ${{steps.packaging.outputs.hists}}
+#        bodyFile: ${{github.workspace}}/.github/workflows/body_new_pre_release.md
 #        token: ${{ secrets.GITHUB_TOKEN }}
 #        tag: ${{ github.event.inputs.tag }}
 #        commit: ${{ github.event.inputs.branch }}
