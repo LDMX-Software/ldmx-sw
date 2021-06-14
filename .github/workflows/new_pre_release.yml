@@ -17,7 +17,6 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 10
-  BASH_ENV: ${{github.workspace}}/.github/actions/common.sh
 
 jobs:
   compile-ldmx-sw:
@@ -94,6 +93,7 @@ jobs:
     - name: Package Histograms together for Release
       id: packaging
       run: |
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
         mkdir hists-out
         _hists=$(pwd)/hists-out
         set_output hists "${_hists}/*"
