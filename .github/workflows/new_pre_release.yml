@@ -2,8 +2,6 @@
 name: New Pre-Release for Validation
 
 on: 
-  push:
-    branches: [iss992-more-validation]
   workflow_dispatch:
     inputs:
       branch:
