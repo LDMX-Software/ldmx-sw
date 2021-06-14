@@ -2,6 +2,8 @@
 name: Generate PR Golden Histograms
 
 on: 
+  push:
+    branches: [iss992-more-validation]
   release: 
     types: [released]
 
