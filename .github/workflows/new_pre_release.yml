@@ -100,18 +100,13 @@ jobs:
         done
       shell: bash
 
-    - name: Upload Merged Files
-      uses: actions/upload-artifact@v2
+    - name: Make Pre-Release with Histograms
+      uses: ncipollo/release-action@v1
       with:
-        name: release-validation-hists
-        path: ${{steps.packaging.outputs.hists}}
-
-#    - name: Make Pre-Release with Histograms
-#      uses: ncipollo/release-action@v1
-#      with:
-#        artifacts: ${{steps.packaging.outputs.hists}}
-#        bodyFile: ${{github.workspace}}/.github/workflows/body_new_pre_release.md
-#        token: ${{ secrets.GITHUB_TOKEN }}
-#        tag: ${{ github.event.inputs.tag }}
-#        commit: ${{ github.event.inputs.branch }}
-#        prerelease: true
+        artifacts: ${{steps.packaging.outputs.hists}}
+        bodyFile: ${{github.workspace}}/.github/workflows/body_new_pre_release.md
+        name: Test Release Action
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: test-tag #${{ github.event.inputs.tag }}
+        commit: ${{ github.event.inputs.branch }}
+        prerelease: true
