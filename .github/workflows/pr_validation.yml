@@ -44,6 +44,7 @@ jobs:
     strategy:
       matrix:
         sample: [inclusive, ecal_pn, it_pileup]
+      fail-fast: false
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
