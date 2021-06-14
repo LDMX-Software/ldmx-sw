@@ -19,6 +19,9 @@ on:
     branches: 'trunk'
     tags: 'v*.*.*' #all version tags
 
+env:
+  BASH_ENV: ${{github.workspace}}/.github/actions/common.sh
+
 jobs:
   generate-image:
     runs-on: ubuntu-latest
@@ -50,7 +53,7 @@ jobs:
           _repo=${{ github.event.inputs.repo }}
           _input_tag=${{ github.event.inputs.tag }}
           if [[ ${_repo} == "ldmx/pro" ]]; then
-            echo "::error::Provided 'ldmx/pro' repo on non-trunk branch."
+            error "Provided 'ldmx/pro' repo on non-trunk branch."
             exit 1
           fi
           _tags="${_repo}:${_input_tag},${_repo}:sha-${GITHUB_SHA::8}"
@@ -67,12 +70,11 @@ jobs:
           #pushing to trunk
           _tags="ldmx/pro:edge,ldmx/pro:sha-${GITHUB_SHA::8}"
         else
-          echo "::error::Running Determine Image Tags on a commit that isn't a tag or a branch."
+          error "Running Determine Image Tags on a commit that isn't a tag or a branch."
           exit 1
         fi
-        echo "Generated Tags: ${_tags}"
-        echo ::set-output name=tags::${_tags}
-        echo ::set-output name=should_push::${_should_push}
+        set_output tags ${_tags}
+        set_output should_push ${_should_push}
       shell: bash
     -
       name: Build the Image
