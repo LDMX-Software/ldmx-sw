@@ -76,7 +76,7 @@ jobs:
     - name: Download All the Gold
       uses: actions/download-artifact@v2
       with:
-        path: '.'
+        path: '../'
 
     - name: Update the Gold
       id: update-gold
