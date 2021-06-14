@@ -71,7 +71,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-        ref: trunk
+        #        ref: trunk
 
     - name: Download All the Gold
       uses: actions/download-artifact@v2
