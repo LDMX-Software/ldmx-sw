@@ -25,7 +25,7 @@ __main__() {
   start_group Copy over new Gold Histograms
   for sample in $@; do
     echo ${sample}
-    mv ${sample}-new-gold/hist.root .github/validation_samples/${sample}/gold.root
+    mv ../${sample}-new-gold/hist.root .github/validation_samples/${sample}/gold.root
   done
   git add .github/validation_samples/*/gold.root
   end_group
