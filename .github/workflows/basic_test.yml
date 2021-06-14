@@ -8,6 +8,7 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
+  BASH_ENV: ${{github.workspace}}/.github/actions/common.sh
 
 jobs:
   build-test:
@@ -27,7 +28,7 @@ jobs:
       uses: ./.github/actions/setup
 
     - name: Basic Tests for Functionality
-      uses: ./.github/actions/ldmx
-      with:
-        working_dir: ldmx-sw/build
-        run: ctest --verbose
+      run: |
+        cd ${GITHUB_WORKSPACE}/ldmx-sw/build
+        ldmx ctest --verbose
+      shell: bash
