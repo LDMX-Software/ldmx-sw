@@ -18,6 +18,10 @@
 #     below that directory, we can source it like so
 #       source ${GITHUB_ACTION_PATH}/../common.sh
 #     https://docs.github.com/en/actions/reference/environment-variables
+#
+#     Additionally, setting the environment variable 'BASH_ENV' to the
+#     full path to this script allows these commands to be defined for
+#     any steps run through the 'bash' shell.
 ###############################################################################
 
 # Print the gold label
