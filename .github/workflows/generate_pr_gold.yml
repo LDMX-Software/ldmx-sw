@@ -63,7 +63,7 @@ jobs:
         path: ${{ steps.validation.outputs.plots }}
 
   pr-new-gold:
-    needs: [inclusive, ecal_pn, it_pileup]
+    needs: [generation]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw

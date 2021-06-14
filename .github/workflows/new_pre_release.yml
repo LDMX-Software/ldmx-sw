@@ -61,6 +61,7 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
+      shell: sh
 
     - name: Run ${{matrix.sample}} ${{matrix.run}}
       id: validation
@@ -83,6 +84,12 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         path: '.'
+
+    - name: Unpack ldmx-sw Package (for bash env)
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+      shell: sh
 
     - name: Package Histograms together for Release
       id: packaging
