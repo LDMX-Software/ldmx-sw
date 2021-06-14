@@ -9,7 +9,7 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_RUN_NUMBER: 1
-  LDMX_NUM_EVENTS: 10
+  LDMX_NUM_EVENTS: 10000
 
 jobs:
   compile-ldmx-sw:
