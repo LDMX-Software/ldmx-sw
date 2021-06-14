@@ -14,7 +14,7 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
-  LDMX_NUM_EVENTS: 10
+  LDMX_NUM_EVENTS: 20000
 
 jobs:
   compile-ldmx-sw:
@@ -46,7 +46,7 @@ jobs:
     strategy:
       matrix:
         sample: [inclusive, ecal_pn, it_pileup]
-        run: [1,2] 
+        run: [1,2,3,4,5] 
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
