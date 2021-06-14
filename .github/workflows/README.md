@@ -6,6 +6,7 @@ so I'm linking it here.
 - [General Action Docs](https://docs.github.com/en/actions)
 - [Events that Trigger Workflows](https://docs.github.com/en/actions/reference/events-that-trigger-workflows)
 - [Context and Expression Syntax](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions)
+- The GitHub CLI [gh](https://github.com/cli/cli/releases) is helpful for some cases of development
 
 ## Basic Tests
 
