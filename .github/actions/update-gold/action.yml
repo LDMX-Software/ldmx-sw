@@ -3,15 +3,15 @@ name: update-gold
 author: Tom Eichlersmith
 description: Commit the histograms as golden histograms
 
+inputs:
+  samples:
+    description: 'Space-separated string of samples'
+    required: true
+
 outputs:
   new-label:
     description: 'Generated Label for this new gold'
     value: ${{ steps.run-update.outputs.new-label }}
-
-inputs:
-  samples:
-    description: Space-separated string of samples
-    required: true
 
 runs:
   using: 'composite'
