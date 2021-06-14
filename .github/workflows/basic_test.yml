@@ -13,10 +13,6 @@ env:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-
     steps:
     - name: Checkout ldmx-sw
       uses: actions/checkout@v2
@@ -29,6 +25,6 @@ jobs:
 
     - name: Basic Tests for Functionality
       run: |
-        cd ${GITHUB_WORKSPACE}/ldmx-sw/build
+        cd ${LDMX_BASE}/ldmx-sw/build
         ldmx ctest --verbose
       shell: bash
