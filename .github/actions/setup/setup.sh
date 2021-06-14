@@ -26,15 +26,6 @@ __main__() {
   ldmx make install || return $?
   end_group
 
-  start_group Checkout trunk Gold
-  echo "Not doing this right now..."
-#  git checkout origin/trunk -- \
-#    .github/validation_samples/inclusive/gold.root \
-#    .github/validation_samples/ecal_pn/gold.root \
-#    .github/validation_samples/it_pileup/gold.root \
-#    ${LDMX_GOLD_LABEL_FILE}
-  end_group
-
   return 0
 }
 
