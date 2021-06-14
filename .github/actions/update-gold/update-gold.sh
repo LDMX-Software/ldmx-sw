@@ -11,6 +11,10 @@ set -e
 source ${GITHUB_ACTION_PATH}/../common.sh
 
 __main__() {
+  start_group Deduce Inputs
+  echo "Samples: $@"
+  end_group
+
   start_group Update Gold Label
   echo "Old Label: $(ldmx_gold_label)"
   echo "${GITHUB_REF##refs/tags/}" > ${LDMX_GOLD_LABEL_FILE}
@@ -19,12 +23,11 @@ __main__() {
   end_group
 
   start_group Copy over new Gold Histograms
-  cd .github/validation_samples
-  for sample_dir in *; do
-    mv ${sample_dir}/hist.root ${sample_dir}/gold.root
-    echo "${sample_dir}"
+  for sample in $@; do
+    echo ${sample}
+    mv ${sample}-new-gold/hist.root .github/validation_samples/${sample}/gold.root
   done
-  git add */gold.root
+  git add .github/validation_samples/*/gold.root
   end_group
 
   start_group Set Outputs
