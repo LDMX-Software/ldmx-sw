@@ -67,6 +67,7 @@ void ElectronCounter::produce(framework::Event &event) {
   }
   // add number of electrons to event header. allow for it to be unset (-1)
   event.getEventHeader().setIntParameter("nElectrons", nElectrons);
+  event.setElectronCount(nElectrons);
 }
 }  // namespace recon
 
