@@ -8,9 +8,14 @@ outputs:
     description: 'Generated Label for this new gold'
     value: ${{ steps.run-update.outputs.new-label }}
 
+inputs:
+  samples:
+    description: Space-separated string of samples
+    required: true
+
 runs:
   using: 'composite'
   steps:
-    - run: bash ${GITHUB_ACTION_PATH}/update-gold.sh
+    - run: bash ${GITHUB_ACTION_PATH}/update-gold.sh ${{inputs.samples}}
       id: run-update
       shell: bash 
