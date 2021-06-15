@@ -37,15 +37,13 @@ class SimObjects : public framework::Analyzer {
   virtual void analyze(const framework::Event& event);
 
  private:
-  /// SimParticles collection name
-  std::string sim_particles_name_;
+  /// new calorimeter histograms
+  void createCalorimeterHists(const std::string& coll_name);
 
-  /// Calorimeter Hit collection names
-  std::vector<std::string> sim_calorimeter_names_;
+  /// new tracker histograms
+  void createTrackerHists(const std::string& coll_name);
 
-  /// Tracker hit collection names
-  std::vector<std::string> sim_tracker_names_;
-
+ private:
   /// Pass Name for sim objects
   std::string sim_pass_;
 };
