@@ -80,7 +80,7 @@ ecalDigiVerify.ecalSimHitColl = ecalDigiVerify.ecalSimHitColl+overlayStr
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-    tsDigisUp, tsDigisTag, tsDigisDown,
+    tsDigisUp, tsDigisTag, tsDigisDown, dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures()]+dqm.recoil_dqm)
 
 p.inputFiles = ['ecal_pn.root']
