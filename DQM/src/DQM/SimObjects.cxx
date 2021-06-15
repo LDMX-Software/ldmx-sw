@@ -34,6 +34,7 @@ void SimObjects::onProcessStart() {
 }
 
 void SimObjects::createCalorimeterHists(const std::string& coll_name) {
+  getHistoDirectory();
   histograms_.create(coll_name+".incidents","Incident Track IDs",100,0,1000);
   histograms_.create(coll_name+".tracks","Contributing Track IDs",100,0,1000);
   histograms_.create(coll_name+".pdg","Contributing PDG IDs",401,-200,200);
@@ -47,6 +48,7 @@ void SimObjects::createCalorimeterHists(const std::string& coll_name) {
 }
 
 void SimObjects::createTrackerHists(const std::string& coll_name) {
+  getHistoDirectory();
   histograms_.create(coll_name+".particle_E","Particle E at Hit [MeV]",400,0,4000);
   histograms_.create(coll_name+".particle_px","Particle Momentum in x [MeV]",50,0.,500.);
   histograms_.create(coll_name+".particle_py","Particle Momentum in y [MeV]",50,0.,500.);
@@ -62,7 +64,25 @@ void SimObjects::createTrackerHists(const std::string& coll_name) {
 }
 
 void SimObjects::analyze(const framework::Event &event) {
-  auto const& particle_map{event.getMap<int,ldmx::SimParticle>("SimParticles",sim_pass_)};
+  static std::vector<framework::ProductTag> sp_maps, calo_colls, track_colls;
+  if (sp_maps.empty()) {
+    sp_maps = event.searchProducts("SimParticles","","");
+    if (sp_maps.size() != 1) {
+      ldmx_log(warn) << sp_maps.size() << " SimParticle maps which is not one!";
+    }
+  }
+  if (calo_colls.empty()) {
+    calo_colls = event.searchProducts("",sim_pass_,".*SimCalorimeterHit.*");
+    for (auto pt : calo_colls)
+      createCalorimeterHists(pt.name());
+  }
+  if (track_colls.empty()) {
+    track_colls = event.searchProducts("",sim_pass_,".*SimTrackerHit.*");
+    for (auto pt : track_colls)
+      createTrackerHists(pt.name());
+  }
+
+  auto const& particle_map{event.getMap<int,ldmx::SimParticle>("SimParticles")};
   for (auto const& [track_id, particle] : particle_map) {
     auto const& momentum{particle.getMomentum()};
     auto const& vertex{particle.getVertex()};
@@ -83,17 +103,6 @@ void SimObjects::analyze(const framework::Event &event) {
       histograms_.fill("SimParticles.children", child);
   }  // loop over sim particle map
 
-  static std::vector<framework::ProductTag> calo_colls, track_colls;
-  if (calo_colls.empty()) {
-    calo_colls = event.searchProducts("",sim_pass_,".*SimCalorimeterHit.*");
-    for (auto pt : calo_colls)
-      createCalorimeterHists(pt.name());
-  }
-  if (track_colls.empty()) {
-    track_colls = event.searchProducts("",sim_pass_,".*SimTrackerHit.*");
-    for (auto pt : track_colls)
-      createTrackerHists(pt.name());
-  }
   for (auto const& pt : calo_colls) {
     auto const& coll{event.getCollection<ldmx::SimCalorimeterHit>(pt.name(),sim_pass_)};
     for (auto const& hit : coll) {

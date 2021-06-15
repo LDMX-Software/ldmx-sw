@@ -4,7 +4,7 @@ p = ldmxcfg.Process('test')
 import os
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 # slightly less than the others to test wrapping
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])-5
+p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95)
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
