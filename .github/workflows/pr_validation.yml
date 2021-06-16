@@ -27,9 +27,9 @@ jobs:
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
 
-    - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
-      shell: bash
+#    - name: Git Gold Histograms from trunk
+#      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
+#      shell: bash
 
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
