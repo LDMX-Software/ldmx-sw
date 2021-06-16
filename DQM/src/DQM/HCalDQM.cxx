@@ -9,16 +9,16 @@ namespace dqm {
 HCalDQM::HCalDQM(const std::string& name, framework::Process& process)
     : framework::Analyzer(name, process) {}
 
-void HCalDQM::configure(framework::config::Parameters& parameters) {}
+void HCalDQM::configure(framework::config::Parameters& ps) {
+  rec_coll_name_ = ps.getParameter<std::string>("rec_coll_name");
+  rec_pass_name_ = ps.getParameter<std::string>("rec_pass_name");
+  veto_name_ = ps.getParameter<std::string>("veto_name");
+  veto_pass_ = ps.getParameter<std::string>("veto_pass");
+}
 
 void HCalDQM::analyze(const framework::Event& event) {
-  // Check if the collection of digitized HCal hits exist. If it doesn't
-  // don't continue processing.
-  if (!event.exists("hcalDigis")) return;
-
   // Get the collection of HCalDQM digitized hits if the exists
-  const std::vector<ldmx::HcalHit> hcalHits =
-      event.getCollection<ldmx::HcalHit>("hcalDigis");
+  const auto& hcalHits{event.getCollection<ldmx::HcalHit>(rec_coll_name_,rec_pass_name_)};
 
   // Get the total hit count
   int hitCount = hcalHits.size();
@@ -49,10 +49,11 @@ void HCalDQM::analyze(const framework::Event& event) {
             });
 
   // get first time and PE of hit over threshold
+  //  hardcode threshold to 5PE to match veto
   double minTime{-1};
   double minTimePE{-1};
   for (const auto& hit : filteredHits) {
-    if (hit->getPE() < maxPEThreshold_) continue;
+    if (hit->getPE() < 5.) continue;
     minTime = hit->getTime();
     minTimePE = hit->getPE();
     break;
@@ -65,10 +66,9 @@ void HCalDQM::analyze(const framework::Event& event) {
   float maxPETime{-1};
   bool passesHcalVeto{false};
   // Check if the HcalVeto result exists
-  if (event.exists("HcalVeto")) {
+  if (event.exists(veto_name_,veto_pass_)) {
     // Get the collection of HCalDQM digitized hits if the exists
-    const ldmx::HcalVetoResult hcalVeto =
-        event.getObject<ldmx::HcalVetoResult>("HcalVeto");
+    const auto& hcalVeto{event.getObject<ldmx::HcalVetoResult>(veto_name_,veto_pass_)};
 
     ldmx::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
 
