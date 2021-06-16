@@ -81,7 +81,7 @@ p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
     tsDigisUp, tsDigisTag, tsDigisDown, dqm.SimObjects(sim_pass=thisPassName),
-    ecalDigiVerify,dqm.EcalShowerFeatures()]+dqm.recoil_dqm)
+    ecalDigiVerify,dqm.EcalShowerFeatures(), dqm.HCalDQM()]+dqm.recoil_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
