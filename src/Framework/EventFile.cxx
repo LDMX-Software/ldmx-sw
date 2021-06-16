@@ -315,6 +315,8 @@ void EventFile::close() {
 
   // Before an output file, the Event tree needs to be written.
   if (isOutputFile_) {
+    // make sure we are in output file before writing
+    file_->cd();
     tree_->Write();
     // store the run map into the output tree
 
