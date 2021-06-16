@@ -106,34 +106,32 @@ class HCalDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HCalDQM() )
     """
 
-    def __init__(self,name="HCal") :
+    def __init__(self,name="hcal_dqm") :
         super().__init__(name,'dqm::HCalDQM','DQM')
 
-        self.ecal_veto_collection = "EcalVeto"
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''
+        self.veto_name = 'HcalVeto'
+        self.veto_pass = ''
         
-        titles = ['', '_track_veto', '_bdt', '_self_veto', '_track_bdt', '_vetoes']
+        titles = ['', '_hcal_veto']
         for t in titles: 
-            self.build1DHistogram("max_pe%s" % t, "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
+            self.build1DHistogram("max_pe%s" % t, 
+                    "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
             self.build1DHistogram("total_pe%s" % t, "Total Photoelectrons", 3000, 0, 3000)
             self.build1DHistogram("n_hits%s" % t, "HCal hit multiplicity", 300, 0, 300)
-            self.build1DHistogram("hit_time_max_pe%s" % t, "Max PE hit time (ns)", 1600, -100, 1500)
-            self.build1DHistogram("min_time_hit_above_thresh%s" % t, "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+            self.build1DHistogram("hit_time_max_pe%s" % t, 
+                    "Max PE hit time (ns)", 1600, -100, 1500)
+            self.build1DHistogram("min_time_hit_above_thresh%s" % t, 
+                    "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+            self.build2DHistogram("max_pe:time%s" % t, 
+                    "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                    "HCal max PE hit time (ns)", 1500, 0, 1500)
+        
         
         self.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
         self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
         self.build1DHistogram("veto", "Passes Veto", 4, -1, 3)
-
-        self.build2DHistogram("bdt_n_hits", 
-                           "BDT discriminant", 200, 0, 1, 
-                           "HCal hit multiplicity", 300, 0, 300)
-        
-        self.build2DHistogram("max_pe:time", 
-                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "HCal max PE hit time (ns)", 1500, 0, 1500)
-        
-        self.build2DHistogram("max_pe:time_hcal_veto", 
-                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "HCal max PE hit time (ns)", 1500, 0, 1500)
         
         self.build2DHistogram("min_time_hit_above_thresh:pe", 
                            "Photoelectrons in an HCal Module", 1500, 0, 1500, 
