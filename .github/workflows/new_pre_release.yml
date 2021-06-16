@@ -19,6 +19,8 @@ env:
 jobs:
   compile-ldmx-sw:
     runs-on: ubuntu-latest
+    outputs:
+      job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
       uses: actions/checkout@v2
@@ -38,15 +40,19 @@ jobs:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
 
+    - name: Generate Job Matrix
+      id: gen-mat
+      uses: ./github/actions/generate-matrix
+      with:
+        num_jobs_per_sample: 5
+
   generate-samples:
     needs: compile-ldmx-sw
     runs-on: ubuntu-latest
     env:
       LDMX_RUN_NUMBER: ${{matrix.run}}
     strategy:
-      matrix:
-        sample: [inclusive, ecal_pn, it_pileup, hcal]
-        run: [1,2,3,4,5] 
+      matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
