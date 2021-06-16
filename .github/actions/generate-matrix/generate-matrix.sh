@@ -28,9 +28,9 @@ __main__() {
   local _json_samples="["
   for s in ${_samples[@]}; do
     if [[ ${_json_samples} == "[" ]]; then
-      _json_samples="${_json_samples}${s#./}"
+      _json_samples="${_json_samples}\"${s#./}\""
     else
-      _json_samples="${_json_samples},${s#./}"
+      _json_samples="${_json_samples},\"${s#./}\""
     fi
   done
   _json_samples="${_json_samples}]"
