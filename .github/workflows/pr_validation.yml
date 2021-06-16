@@ -2,6 +2,8 @@
 name: PR Validation
 
 on: 
+  push:
+    branches: [iss988-more-validation]
   pull_request: 
     branches: [trunk]
     types: [opened, ready_for_review]
@@ -9,7 +11,7 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_RUN_NUMBER: 1
-  LDMX_NUM_EVENTS: 10000
+  LDMX_NUM_EVENTS: 10 #000
 
 jobs:
   compile-ldmx-sw:
@@ -19,15 +21,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
+        fetch-depth: 0
 
     - name: Compile and Install ldmx-sw
       uses: ./.github/actions/setup
 
-#    - name: Git Gold Histograms from trunk
-#      uses: actions/checkout@v2
-#      with:
-#        ref: trunk
-#        clean: false
+    - name: Git Gold Histograms from trunk
+      run: git checkout trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
+      shell: bash
 
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
