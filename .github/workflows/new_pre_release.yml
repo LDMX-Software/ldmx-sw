@@ -45,7 +45,7 @@ jobs:
       LDMX_RUN_NUMBER: ${{matrix.run}}
     strategy:
       matrix:
-        sample: [inclusive, ecal_pn, it_pileup]
+        sample: [inclusive, ecal_pn, it_pileup, hcal]
         run: [1,2,3,4,5] 
     steps:
     - name: Download ldmx-sw Package
