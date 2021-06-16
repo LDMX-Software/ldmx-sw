@@ -56,7 +56,7 @@ fi
 ###############################################################################
 export LDMX_CONTAINER_DISPLAY=""
 _ldmx_which_os() {
-  if false; then
+  if uname -a | grep -q microsoft; then
     # Windoze Subsystem for Linux
     export LDMX_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
     return 0
@@ -74,7 +74,7 @@ _ldmx_which_os() {
 }
 
 if ! _ldmx_which_os; then
-  echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}'"
+  echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}' or '$(uname -a)'"
   echo "    You will *not* be able to run display-connected programs."
 fi
 
