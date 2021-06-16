@@ -1,7 +1,6 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
-
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
 mySim.setDetector( 'ldmx-det-v12' )
