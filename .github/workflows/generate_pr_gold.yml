@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sample: [inclusive, ecal_pn, it_pileup]
+        sample: [inclusive, ecal_pn, it_pileup, hcal]
     steps:
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v2
