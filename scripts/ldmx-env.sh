@@ -56,12 +56,17 @@ fi
 ###############################################################################
 export LDMX_CONTAINER_DISPLAY=""
 _ldmx_which_os() {
-  if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
+  if false; then
+    # Windoze Subsystem for Linux
     export LDMX_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
     return 0
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
     export LDMX_CONTAINER_DISPLAY="docker.for.mac.host.internal"
+    return 0
+  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
+    # Linux distribution
+    export LDMX_CONTAINER_DISPLAY=""
     return 0
   fi
 
