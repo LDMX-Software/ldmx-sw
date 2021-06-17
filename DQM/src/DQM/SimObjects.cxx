@@ -31,6 +31,20 @@ void SimObjects::onProcessStart() {
   histograms_.create("SimParticles.track_id","Track ID of Particle",100,0,1000);
   histograms_.create("SimParticles.parent","Track ID of Parent",100,0,1000);
   histograms_.create("SimParticles.children","Track IDs of Children",100,0,1000);
+
+  // create pn children histograms
+  histograms_.create("pn_child.E","Vertex Total Energy [MeV]",800,0.,8000.);
+  histograms_.create("pn_child.px","Vertex Momentum in x-Direction [MeV]",50,0.,500.);
+  histograms_.create("pn_child.py","Vertex Momentum in y-Direction [MeV]",50,0.,500.);
+  histograms_.create("pn_child.pz","Vertex Momentum in z-Direction [MeV]",400,0.,4000.);
+  histograms_.create("pn_child.time","Global Time of Creation [ns]",50,0.,10.);
+  histograms_.create("pn_child.pdg","PDG ID of Particle",201,-100,100);
+  histograms_.create("pn_child.x","Vertex x-Position [mm]",401,-200,200);
+  histograms_.create("pn_child.y","Vertex y-Position [mm]",401,-200,200);
+  histograms_.create("pn_child.z","Vertex z-Position [mm]",171,-700,1000.);
+  histograms_.create("pn_child.track_id","Track ID of Particle",100,0,1000);
+  histograms_.create("pn_child.parent","Track ID of Parent",100,0,1000);
+  histograms_.create("pn_child.children","Track IDs of Children",100,0,1000);
 }
 
 void SimObjects::createCalorimeterHists(const std::string& coll_name) {
@@ -101,6 +115,24 @@ void SimObjects::analyze(const framework::Event &event) {
       histograms_.fill("SimParticles.parent", parent);
     for (auto const& child : particle.getDaughters())
       histograms_.fill("SimParticles.children", child);
+
+    // PN particles are special
+    if (particle.getProcessType() == ldmx::SimParticle::ProcessType::photonNuclear) {
+      histograms_.fill("pn_child.E", particle.getEnergy());
+      histograms_.fill("pn_child.px",momentum.at(0));
+      histograms_.fill("pn_child.py",momentum.at(1));
+      histograms_.fill("pn_child.pz",momentum.at(2));
+      histograms_.fill("pn_child.time",particle.getTime());
+      histograms_.fill("pn_child.pdg",particle.getPdgID());
+      histograms_.fill("pn_child.x", vertex.at(0));
+      histograms_.fill("pn_child.y", vertex.at(1));
+      histograms_.fill("pn_child.z", vertex.at(2));
+      histograms_.fill("pn_child.track_id", track_id);
+      for (auto const& parent : particle.getParents())
+        histograms_.fill("pn_child.parent", parent);
+      for (auto const& child : particle.getDaughters())
+        histograms_.fill("pn_child.children", child);
+    }
   }  // loop over sim particle map
 
   for (auto const& pt : calo_colls) {
