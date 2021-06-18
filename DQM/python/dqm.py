@@ -114,25 +114,23 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.veto_name = 'HcalVeto'
         self.veto_pass = ''
         
-        titles = ['', '_hcal_veto']
-        for t in titles: 
-            self.build1DHistogram("max_pe%s" % t, 
-                    "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
-            self.build1DHistogram("total_pe%s" % t, "Total Photoelectrons", 3000, 0, 3000)
-            self.build1DHistogram("n_hits%s" % t, "HCal hit multiplicity", 300, 0, 300)
-            self.build1DHistogram("hit_time_max_pe%s" % t, 
-                    "Max PE hit time (ns)", 1600, -100, 1500)
-            self.build1DHistogram("min_time_hit_above_thresh%s" % t, 
-                    "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
-            self.build2DHistogram("max_pe:time%s" % t, 
-                    "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                    "HCal max PE hit time (ns)", 1500, 0, 1500)
-        
-        
+        # every hit in hcal
         self.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
         self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
-        self.build1DHistogram("veto", "Passes Veto", 4, -1, 3)
         
+        # once per event
+        self.build1DHistogram("max_pe", 
+                "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
+        self.build1DHistogram("hit_time_max_pe", 
+                "Max PE hit time (ns)", 1600, -100, 1500)
+        self.build2DHistogram("max_pe:time", 
+                "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                "HCal max PE hit time (ns)", 1500, 0, 1500)
+
+        self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
+        self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
+        self.build1DHistogram("min_time_hit_above_thresh", 
+                "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
         self.build2DHistogram("min_time_hit_above_thresh:pe", 
                            "Photoelectrons in an HCal Module", 1500, 0, 1500, 
                            "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)

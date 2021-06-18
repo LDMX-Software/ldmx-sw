@@ -20,76 +20,38 @@ void HCalDQM::analyze(const framework::Event& event) {
   // Get the collection of HCalDQM digitized hits if the exists
   const auto& hcalHits{event.getCollection<ldmx::HcalHit>(rec_coll_name_,rec_pass_name_)};
 
-  // Get the total hit count
-  int hitCount = hcalHits.size();
-  histograms_.fill("n_hits", hitCount);
-
-  double totalPE{0};
+  float totalPE{0}, minTime{999}, minTimePE{-1};
+  float maxPE{-1}, maxPETime{-1};
 
   // Loop through all HCal hits in the event
   // Get non-noise generated hits into new vector for sorting
-  std::vector<const ldmx::HcalHit*> filteredHits;
   for (const ldmx::HcalHit& hit : hcalHits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
 
     totalPE += hit.getPE();
 
-    if (hit.getTime() > -999.) {
-      filteredHits.push_back(&hit);
+    // PE veto threshold set at 5
+    if (hit.getTime() > -999. and hit.getPE() > 5. and hit.getTime() < minTime) {
+      minTime   = hit.getTime();
+      minTimePE = hit.getPE();
+    }
+
+    if (hit.getPE() > maxPE) {
+      maxPE = hit.getPE();
+      maxPETime = hit.getTime();
     }
   }
 
+  // let's fill our once-per-event histograms
+  histograms_.fill("n_hits", hcalHits.size());
   histograms_.fill("total_pe", totalPE);
-
-  // Sort the array by hit time
-  std::sort(filteredHits.begin(), filteredHits.end(),
-            [](const auto& lhs, const auto& rhs) {
-              return lhs->getTime() < rhs->getTime();
-            });
-
-  // get first time and PE of hit over threshold
-  //  hardcode threshold to 5PE to match veto
-  double minTime{-1};
-  double minTimePE{-1};
-  for (const auto& hit : filteredHits) {
-    if (hit->getPE() < 5.) continue;
-    minTime = hit->getTime();
-    minTimePE = hit->getPE();
-    break;
-  }
-
+  histograms_.fill("max_pe", maxPE);
+  histograms_.fill("hit_time_max_pe", maxPETime);
+  histograms_.fill("max_pe:time", maxPE, maxPETime);
   histograms_.fill("min_time_hit_above_thresh", minTime);
   histograms_.fill("min_time_hit_above_thresh:pe", minTimePE, minTime);
 
-  float maxPE{-1};
-  float maxPETime{-1};
-  bool passesHcalVeto{false};
-  // Check if the HcalVeto result exists
-  if (event.exists(veto_name_,veto_pass_)) {
-    // Get the collection of HCalDQM digitized hits if the exists
-    const auto& hcalVeto{event.getObject<ldmx::HcalVetoResult>(veto_name_,veto_pass_)};
-
-    ldmx::HcalHit maxPEHit = hcalVeto.getMaxPEHit();
-
-    // Get the max PE and it's time
-    maxPE = maxPEHit.getPE();
-    maxPETime = maxPEHit.getTime();
-
-    histograms_.fill("max_pe", maxPE);
-    histograms_.fill("hit_time_max_pe", maxPETime);
-    histograms_.fill("max_pe:time", maxPE, maxPETime);
-    histograms_.fill("veto", hcalVeto.passesVeto());
-
-    if (hcalVeto.passesVeto()) {
-      histograms_.fill("max_pe_hcal_veto", maxPE);
-      histograms_.fill("hit_time_max_pe_hcal_veto", maxPETime);
-      histograms_.fill("max_pe:time_hcal_veto", maxPE, maxPETime);
-      histograms_.fill("total_pe_hcal_veto", totalPE);
-      histograms_.fill("n_hits_hcal_veto", hitCount);
-      passesHcalVeto = true;
-    }
-  }
 }
 
 }  // namespace dqm
