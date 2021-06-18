@@ -52,8 +52,8 @@ int main() {
     polyMap->Fill(cellCenter.first, cellCenter.second, cellID);
   }
 
-  TCanvas* c = new TCanvas("c", "c", 900, 800);  // make square canvas
-  c->SetMargin(0.1, 0.1, 0.1, 0.1);
+  TCanvas* c = new TCanvas("c", "c", 900, 900);  // make square canvas
+  c->SetMargin(0.15, 0.05, 0.1, 0.1);
   gStyle->SetOptStat(0);  // no stat box
   polyMap->SetTitle(
       "Local Cell ID to Local Cell Position Map;X Position Relative to Module "
@@ -64,17 +64,17 @@ int main() {
 
   double hexCornerRadius = 85.0 * (2 / sqrt(3));
   std::vector<std::pair<double, double> > hexCorners = {
-      std::make_pair<double, double>(+1. * hexCornerRadius, 0.),
-      std::make_pair<double, double>(+1. * hexCornerRadius * cos(M_PI / 3),
-                                     +1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair<double, double>(-1. * hexCornerRadius * cos(M_PI / 3),
-                                     +1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair<double, double>(-1. * hexCornerRadius, 0.),
-      std::make_pair<double, double>(-1. * hexCornerRadius * cos(M_PI / 3),
-                                     -1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair<double, double>(+1. * hexCornerRadius * cos(M_PI / 3),
-                                     -1. * hexCornerRadius * sin(M_PI / 3)),
-      std::make_pair<double, double>(+1. * hexCornerRadius, 0.)};
+      std::make_pair<double, double>(0., +1. * hexCornerRadius),
+      std::make_pair<double, double>(+1. * hexCornerRadius * sin(M_PI / 3),
+                                     +1. * hexCornerRadius * cos(M_PI / 3)),
+      std::make_pair<double, double>(+1. * hexCornerRadius * sin(M_PI / 3),
+                                     -1. * hexCornerRadius * cos(M_PI / 3)),
+      std::make_pair<double, double>(0., -1. * hexCornerRadius),
+      std::make_pair<double, double>(-1. * hexCornerRadius * sin(M_PI / 3),
+                                     -1. * hexCornerRadius * cos(M_PI / 3)),
+      std::make_pair<double, double>(-1. * hexCornerRadius * sin(M_PI / 3),
+                                     +1. * hexCornerRadius * cos(M_PI / 3)),
+      std::make_pair<double, double>(0., +1. * hexCornerRadius)};
   TLine moduleHexBorder;
   moduleHexBorder.SetLineColorAlpha(kRed, 0.5);
   moduleHexBorder.SetLineWidth(2);
