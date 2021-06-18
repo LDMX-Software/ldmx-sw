@@ -267,7 +267,9 @@ function _ldmx_list() {
 ###############################################################################
 function _ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
-  echo "Display Port (empty means your OS not supported): ${LDMX_CONTAINER_DISPLAY}"
+  echo "uname: $(uname -a)"
+  echo "OSTYPE: ${OSTYPE}"
+  echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
   _ldmx_container_config
   return $?
