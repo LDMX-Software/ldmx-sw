@@ -111,14 +111,27 @@ class HCalDQM(ldmxcfg.Analyzer) :
 
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
-        self.veto_name = 'HcalVeto'
-        self.veto_pass = ''
         
         # every hit in hcal
         self.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
         self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
+        self.build2DHistogram("back_pe:layer",
+                "Photoelectrons in a Back HCal Layer",10,0,10,
+                "Back HCal Layer",100,0,100)
+        self.build2DHistogram("back_layer:strip",
+                "Back HCal Layer",100,0,100,
+                "Back HCal Strip",62,0,62)
+        self.build2DHistogram("side_pe:layer",
+                "Photoelectrons in a Side HCal Layer",10,0,10,
+                "Side HCal Layer",20,0,20)
+        self.build2DHistogram("side_layer:strip",
+                "Side HCal Layer",20,0,20,
+                "Side HCal Strip",30,0,30)
         
         # once per event
+        self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
+        self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
+        self.build1DHistogram("back_total_pe", "Total Photoelectrons in Back", 3000, 0, 3000)
         self.build1DHistogram("max_pe", 
                 "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
         self.build1DHistogram("hit_time_max_pe", 
@@ -126,9 +139,6 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build2DHistogram("max_pe:time", 
                 "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
                 "HCal max PE hit time (ns)", 1500, 0, 1500)
-
-        self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
-        self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
         self.build1DHistogram("min_time_hit_above_thresh", 
                 "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
         self.build2DHistogram("min_time_hit_above_thresh:pe", 
