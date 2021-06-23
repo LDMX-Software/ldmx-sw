@@ -213,7 +213,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     if (className.find("simcore::ParticleGun") != std::string::npos) {
       header.setFloatParameter(genID + " Time [ns]",
                                gen.getParameter<double>("time"));
-      header.setFloatParameter(genID + " Energy [MeV]",
+      header.setFloatParameter(genID + " Energy [GeV]",
                                gen.getParameter<double>("energy"));
       header.setStringParameter(genID + " Particle",
                                 gen.getParameter<std::string>("particle"));
