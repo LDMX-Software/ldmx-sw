@@ -44,6 +44,12 @@ clTag=TrigScintClusterProducer.tagger()
 clUp=TrigScintClusterProducer.up()
 clDown=TrigScintClusterProducer.down()
 
+from LDMX.Recon.electronCounter import ElectronCounter
+from LDMX.Recon.simpleTrigger import TriggerProcessor
+
+count = ElectronCounter(1,'ElectronCounter')
+count.input_pass_name = ''
+
 from LDMX.DQM import dqm
 
 p.sequence.extend([
@@ -53,6 +59,7 @@ p.sequence.extend([
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
         tsDigisUp, tsDigisTag, tsDigisDown,
-        clTag, clUp, clDown,
-        trigScintTrack, dqm.SimObjects(), dqm.HCalDQM()
-        ] + dqm.trigScint_dqm + dqm.ecal_dqm + dqm.recoil_dqm)
+        clTag, clUp, clDown, trigScintTrack, 
+        count,
+        TriggerProcessor('trigger')
+        ] + dqm.all_dqm)
