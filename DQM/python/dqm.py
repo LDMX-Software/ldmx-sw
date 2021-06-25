@@ -348,7 +348,26 @@ class TrigScintTrackDQM(ldmxcfg.Analyzer) :
         self.track_collection = coll
         self.passName = ''
 
+
+class Trigger(ldmxcfg.Analyzer) :
+    """Configured Trigger python object                                                                                                                          
+    Contains an instance of TrigScintTrackDQM that
+    has already been configured.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.Trigger() )
+    """
+
+    def __init__(self,name='Trigger',coll='Trigger') :
+        super().__init__(name,'dqm::Trigger','DQM')
+
+        self.trigger_name = coll
+        self.trigger_pass = ''
+
         
+
 ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures()
@@ -375,4 +394,10 @@ trigScint_dqm = [
     TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
-all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm
+
+trigger_dqm = [
+        Trigger()
+        ]
+
+
+all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm + trigger_dqm
