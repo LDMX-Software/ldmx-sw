@@ -60,6 +60,5 @@ p.sequence.extend([
         hcal_digi.HcalRecProducer(),
         tsDigisUp, tsDigisTag, tsDigisDown,
         clTag, clUp, clDown, trigScintTrack, 
-        count,
-        TriggerProcessor('trigger')
+        count, TriggerProcessor('trigger')
         ] + dqm.all_dqm)
