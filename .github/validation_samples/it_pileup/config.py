@@ -45,6 +45,7 @@ from LDMX.Ecal import vetos
 from LDMX.Hcal import digi as hDigi
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
+from LDMX.TrigScint.trigScint import trigScintTrack
 
 overlayStr="Overlay"
                                                             
@@ -54,10 +55,6 @@ tsDigisUp  =TrigScintDigiProducer.up()
 tsDigisUp.input_collection = tsDigisUp.input_collection+overlayStr
 tsDigisDown  =TrigScintDigiProducer.down()
 tsDigisDown.input_collection = tsDigisDown.input_collection+overlayStr
-
-#tsClTag  =TrigScintClusterProducer.tagger()
-#tsClTag.verbosity = 0 #3
-#tsClTag.input_pass_name = thisPassName
 
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
@@ -87,6 +84,10 @@ p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
     tsDigisUp, tsDigisTag, tsDigisDown, 
+    TrigScintClusterProducer.tagger(),
+    TrigScintClusterProducer.up(),
+    TrigScintClusterProducer.down(),
+    trigScintTrack,
     count, TriggerProcessor('trigger'),
     dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures(), 
