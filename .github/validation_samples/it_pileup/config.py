@@ -77,11 +77,20 @@ from LDMX.DQM import dqm
 ecalDigiVerify = dqm.EcalDigiVerify()
 ecalDigiVerify.ecalSimHitColl = ecalDigiVerify.ecalSimHitColl+overlayStr
 
+from LDMX.Recon.electronCounter import ElectronCounter
+from LDMX.Recon.simpleTrigger import TriggerProcessor
+
+count = ElectronCounter(1,'ElectronCounter')
+count.input_pass_name = ''
+
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-    tsDigisUp, tsDigisTag, tsDigisDown, dqm.SimObjects(sim_pass=thisPassName),
-    ecalDigiVerify,dqm.EcalShowerFeatures(), dqm.HCalDQM()]+dqm.recoil_dqm)
+    tsDigisUp, tsDigisTag, tsDigisDown, 
+    count, TriggerProcessor('trigger'),
+    dqm.SimObjects(sim_pass=thisPassName),
+    ecalDigiVerify,dqm.EcalShowerFeatures(), 
+    dqm.HCalDQM()]+dqm.recoil_dqm+dqm.trigger_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
