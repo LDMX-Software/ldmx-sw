@@ -28,16 +28,24 @@ void TriggerProcessor::produce(framework::Event& event) {
   const int nElectrons{event.getElectronCount()};
 
   /**
-   * unless we have more electrons than expected, pull threshold from the list.
-   * otherwise, set as (threshold_for_1e + nExtraElectrons*beamE) note that the
-   * "overflow" formula here is too naive. it should be a
-   *    fct( nElectrons, 1e_thr, beamE),
-   * taking how sigma evolves with multiplicity into account.
-   * a simple scaling might suffice there too assume energy cuts are listed as
-   *    [ Ecut_1e, Ecut_2e, ... ]
+   * There are three scenarios:
+   *  1. No Incoming Electrons - If the electron count is 0 or negative
+   *     (undetermined), then we set the sum-energy cut to zero 
+   *     so the event always fails.
+   *  2. Num Electrons Listed in Thresholds - Pull cut from list
+   *  3. More electrons than listed - Set threshold as
+   *      'threshold_for_1e + nExtraElectrons*beamEnergy'
+   *     Note that the "overflow" formula here is too naive.
+   *     It should be a
+   *      fct( nElectrons, 1e_thr, beamE),
+   *     taking how sigma evolves with multiplicity into account.
+   *     a simple scaling might suffice there too assuming 
+   *     energy cuts are listed as [ Ecut_1e, Ecut_2e, ... ]
    */
   double layerESumCut{0.};
-  if (nElectrons <= layerESumCuts_.size())
+  if (nElectrons <= 0)
+    layerESumCut = 0.; // always fail if no electrons
+  else if (nElectrons <= layerESumCuts_.size())
     layerESumCut = layerESumCuts_.at(nElectrons - 1);
   else
     layerESumCut = layerESumCuts_.at(0) + (nElectrons - 1) * beamEnergy_;
