@@ -117,6 +117,9 @@ class HcalDigiID : public HcalAbstractID {
 
   static void createInterpreters();
 
+};
+} // namespace ldmx
+
   /**
    * Overload the stream insertion operator to output a string representation
    * of this HcalDigiID.
@@ -128,8 +131,6 @@ class HcalDigiID : public HcalAbstractID {
    * @return[out] An ostream object with the string representation of
    *    HcalDigiID inserted.
    */
-  friend std::ostream &operator<<(std::ostream &, const ldmx::HcalDigiID &id);
-};
-} // namespace ldmx
+std::ostream &operator<<(std::ostream &, const ldmx::HcalDigiID &id);
 
 #endif
