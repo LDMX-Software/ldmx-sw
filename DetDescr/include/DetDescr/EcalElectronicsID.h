@@ -27,7 +27,8 @@ class EcalElectronicsID : public DetectorID {
  public:
 
   static const RawValue INDEX_MASK{0xFFFFFF};
-  typedef PackedIndex<38,48> Index;
+  // channel, elink, [fiber]
+  typedef PackedIndex<38,48> Index; 
   
   /**
    * Empty ECAL id (but not null!)
@@ -75,7 +76,6 @@ class EcalElectronicsID : public DetectorID {
   
 };
 
-  
 }
 
 std::ostream& operator<<(std::ostream& s, const ldmx::EcalElectronicsID& id);
