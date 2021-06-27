@@ -37,7 +37,7 @@ class DetectorID {
 
   static const RawValue SUBDETECTORID_MASK{0x3F};
   static const RawValue SUBDETECTORID_SHIFT{26};
-  static const RawValue SUBDETECTOR_PAYLOAD_MASK{0x3FFFFFFF};
+  static const RawValue SUBDETECTOR_PAYLOAD_MASK{0x3FFFFFF};
 
   /// Class constructor for a null DetectorID
   DetectorID() : id_{0} {}

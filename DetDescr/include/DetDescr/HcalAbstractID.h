@@ -65,8 +65,17 @@ class HcalAbstractID : public DetectorID {
    * @return The value of the bar field.
    */
   int bar_type() const { return (id_ >> BAR_TYPE_SHIFT) & BAR_TYPE_MASK; }
+
+  /**
+   * Get the value of the payload field from the ID.
+   * @return The value of the payload field.
+   */
+  int payload() const { return id_ & HCAL_PAYLOAD_MASK; }
+
 };
 
 }  // namespace ldmx
+
+std::ostream& operator<<(std::ostream& s, const ldmx::HcalAbstractID& id);
 
 #endif
