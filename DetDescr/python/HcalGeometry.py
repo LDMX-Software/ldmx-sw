@@ -44,7 +44,39 @@ class HcalGeometry() :
 
     def __init__(self):
         self.make_v12()
+        self.make_v13()
     
+
+    def make_v13(self) :
+        """Create the HcalGeometry with the v12 geometry parameters
+
+        Only sets parameters that must align with the Hcal gdml constants.
+
+        Nothing has changed in v13 for the HCal
+        """
+        self.v13=HcalReadoutGeometry()
+
+        self.v13.ThicknessScint = 20.0
+        self.v13.WidthScint = 50.0
+        self.v13.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
+        self.v13.ZeroStrip = [3100./2,220.,220.,220.,220.]
+        self.v13.LayerThickness = [25. + self.v13.ThicknessScint + 2*2.,
+                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.,
+                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.]
+        self.v13.NumSections = 5
+        self.v13.NumLayers = [100,28,28,26,26]
+        self.v13.NumStrips = [62,12,12,12,12]
+        self.v13.EcalDx = 800.0
+        self.v13.EcalDy = 600.0
+        self.v13.HalfTotalWidth = [(self.v13.NumStrips[0]*self.v13.WidthScint)/2,
+                                   (self.v13.NumLayers[3]*self.v13.LayerThickness[3]+self.v13.EcalDx)/2,
+                                   (self.v13.NumLayers[4]*self.v13.LayerThickness[4]+self.v13.EcalDx)/2,
+                                   (self.v13.NumLayers[1]*self.v13.LayerThickness[1]+self.v13.EcalDy)/2,
+                                   (self.v13.NumLayers[2]*self.v13.LayerThickness[2]+self.v13.EcalDy)/2,]
+        self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+
+
+
     def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
