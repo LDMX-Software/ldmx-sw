@@ -524,6 +524,8 @@ class EcalHexReadout : public framework::ConditionsObject {
   /// Center-to-Corner Radius of module hexagon [mm]
   double moduleR_{0};
 
+  bool rotated_;
+
   /**
    * Number of cell center-to-corner radii (one side of the cell)
    * from the bottom to the top of the module
