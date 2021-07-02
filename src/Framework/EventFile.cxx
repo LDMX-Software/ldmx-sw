@@ -219,6 +219,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
             // reset tree addresses before 
             //  those objects are de-allocated in onEndOfFile
             tree_->ResetBranchAddresses();
+            tree_->Reset();
             // close up event bus since we are at end of a file
             event_->onEndOfFile();
             // re-open file like a new input
