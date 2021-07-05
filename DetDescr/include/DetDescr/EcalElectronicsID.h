@@ -73,6 +73,11 @@ class EcalElectronicsID : public DetectorID {
    * @return The value of the fiber field.
    */
   int channel() const { return Index(id_&INDEX_MASK).field0(); }
+
+  /** 
+   * Get the compact index value
+   */
+  unsigned int index() const { return id_&INDEX_MASK; }
   
 };
 
