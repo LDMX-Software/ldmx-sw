@@ -159,6 +159,28 @@ class EventFile {
   /**
    * Prepare the next event.
    *
+   * We do the necessary set-up if ientry_ < 0.
+   *  This means if we are an output file with a parent file,
+   *  we clone our parent tree to our tree so we have the 
+   *  same branches.
+   *
+   * After the first entry (when ientry_ >= 0), we "close up"
+   * the last event, filling our tree if we storeCurrentEvent
+   * is true and telling the event bus to clear.
+   *
+   * Going to the next event depends on the configuration of the
+   * event file. THere are three cases.
+   *
+   * 1. We have a parent file - Just follow the parent's lead
+   *    by calling the parent's nextEvent.
+   * 2. We are an output file (and we don't have a parent file).
+   *    Just increment the number of entries and the entry index.
+   * 3. We are an input file. Now we need to load the next entry
+   *    of the our tree into the event bus objects.
+   *    If we are configured to be "loopable", then we will 
+   *    reset ientry_ to -1 when we reach the last event.
+   *    Otherwise, we will return false as a stopping condition.
+   *
    * @param[in] storeCurrentEvent Should we save the current event 
    *  to the output (if we are an output file)?
    * @return If event was prepared/read successfully.

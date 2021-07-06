@@ -395,9 +395,10 @@ class Event {
 
   /**
    * Go to the next event by incrementing the entry index.
+   * @param[in] entry index from EventFile we are connected to
    * @return Hard-coded to return true.
    */
-  bool nextEvent();
+  bool nextEvent(int ientry);
 
   /**
    * Action to be executed before the tree is filled.
