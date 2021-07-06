@@ -18,4 +18,3 @@ base ..
 # Use dev/latest container by default
 use dev latest
 
-mount /nfs/slac/g/ldmx/data/
