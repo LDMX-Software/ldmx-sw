@@ -215,16 +215,6 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
         if (isLoopable_) {
           // reset the event counter: reuse events from start of pileup tree
           ientry_ = -1; 
-          if (event_) {
-            // reset tree addresses before 
-            //  those objects are de-allocated in onEndOfFile
-            tree_->ResetBranchAddresses();
-            tree_->Reset();
-            // close up event bus since we are at end of a file
-            event_->onEndOfFile();
-            // re-open file like a new input
-            event_->setInputTree(tree_);
-          }
         } else
           return false;
     }
@@ -234,7 +224,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 
   // if we have an event_
   //  make sure it is iterated as well
-  return event_ ? event_->nextEvent() : true;
+  return event_ ? event_->nextEvent(ientry_) : true;
 }
 
 void EventFile::setupEvent(Event *evt) {
@@ -266,12 +256,8 @@ void EventFile::setupEvent(Event *evt) {
 }
 
 int EventFile::skipToEvent(int offset) {
-  // make sure the event number exists,
-  // -1 to account for stepping in nextEvent()
-  offset = offset % entries_ - 1;
-  for (int i_shift{0}; i_shift < offset; i_shift++) {
-    if (!this->nextEvent()) return -1;
-  }
+  // make sure the event number exists
+  ientry_ = offset % entries_ - 1;
   return ientry_;
 }
 
