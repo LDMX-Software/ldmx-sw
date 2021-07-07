@@ -15,10 +15,10 @@ set -e
 ## Assuming the following environment variables are already defined by Dockerfile:
 #   XercesC_DIR      - install of xerces-c
 #   ONNX_DIR         - install of onnx runtime
-#   ROOTDIR          - install of root
+#   ROOTSYS          - install of root
 #   G4DIR            - install of Geant4
 
-source $ROOTDIR/bin/thisroot.sh
+source $ROOTSYS/bin/thisroot.sh
 source $G4DIR/bin/geant4.sh
 
 # add ldmx-sw and ldmx-analysis installs to the various paths
