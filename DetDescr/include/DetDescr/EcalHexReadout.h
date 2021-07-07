@@ -524,7 +524,8 @@ class EcalHexReadout : public framework::ConditionsObject {
   /// Center-to-Corner Radius of module hexagon [mm]
   double moduleR_{0};
 
-  bool rotated_;
+  /// indicator of geometry orientation -- if true, flower shape's corners side (ie: side with two modules) is at the top
+  bool cornersSideUp_;
 
   /**
    * Number of cell center-to-corner radii (one side of the cell)
