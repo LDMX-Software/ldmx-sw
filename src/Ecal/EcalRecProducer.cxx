@@ -110,14 +110,18 @@ void EcalRecProducer::produce(framework::Event& event) {
        */
     }
 
-    if (charge < 0) {
-      std::stringstream msg;
-      msg << "Recieved ";
-      if (digi.isTOT()) msg << "TOT " << digi.tot();
-      else msg << "ADC " << digi.soi().adc_t();
-      msg << "below pedestal.";
-      //EXCEPTION_RAISE("BadRec", msg.str());
-    }
+    /** Negative Electron (charge) count
+     * This reconstruction error occurs when the ADC value
+     * is below the ADC pedestal for that channel. In the
+     * normal running mode, this will never happen because
+     * our front-end (the digi emulator or the digitizer itself)
+     * will suppress any signals that are below the readout
+     * threshold. Nevertheless, in some running modes, we
+     * don't have this zero suppression, so we need to 
+     * check that the reconstruction charge (count of electrons)
+     * is non-negative.
+     */
+    if (charge < 0) continue;
 
     double num_mips_equivalent = charge / charge_per_mip_;
     double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
