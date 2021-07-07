@@ -66,7 +66,8 @@ class EcalHexReadout() :
                       ]
         self.v13.ecalFrontZ = 240.5
         self.v13.nCellRHeight = 35.
-
+        self.v13.cornersSideUp = True
+        
         self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v13[.].*"]
 
 
@@ -87,6 +88,7 @@ class EcalHexReadout() :
                       ]
         self.v12.ecalFrontZ = 240.5
         self.v12.nCellRHeight = 35.3
+        self.v12.cornersSideUp = False
 
         self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*"]
 
@@ -107,5 +109,6 @@ class EcalHexReadout() :
                       ]
         self.v9.ecalFrontZ = 200.0
         self.v9.nCellRHeight = 35.3
+        self.v9.cornersSideUp = False
 
         self.v9.detectors_valid = ["ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
