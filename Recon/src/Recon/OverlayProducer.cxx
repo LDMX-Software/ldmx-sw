@@ -213,6 +213,19 @@ void OverlayProducer::produce(framework::Event &event) {
     float bunchTimeOffset = bunchSpacing_ * bunchOffset;
 
     for (int iEv = 0; iEv < nEvsOverlay; iEv++) {
+      /** Go to next overlay event
+       * This overlay file has been configured to loop back to the beginning
+       * of the TTree when it reaches the end. This means nextEvent() will only
+       * return false if an error is occurred or if the overlay file is
+       * mis-configured.
+       */
+      if (!overlayFile_->nextEvent()) {
+        ldmx_log(error) << "At sim event "
+                        << event.getEventHeader().getEventNumber()
+                        << ": couldn't read next overlay event!";
+        return;
+      }
+
       // a pileup event wide time offset to be applied to all its hits.
       float timeOffset = rndmTime_->Gaus(timeMean_, timeSigma_);
       timeOffset += bunchTimeOffset;
@@ -320,14 +333,6 @@ void OverlayProducer::produce(framework::Event &event) {
 
       }  // over trackerCollections
 
-      // update the event number. here, possibly the event counter gets reset to
-      // 0, if we hit the end of the pileup event tree.
-      if (!overlayFile_->nextEvent()) {
-        ldmx_log(error) << "At sim event "
-                        << event.getEventHeader().getEventNumber()
-                        << ": couldn't read next overlay event!";
-        return;
-      }
     }  // over overlay events
   }    // over bunches
 
