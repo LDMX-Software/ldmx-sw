@@ -218,8 +218,8 @@ class Event {
    * to the collection. We also employ a rudimentary caching system for mapping
    * collection names to branches (if no pass name is given) so this looping only
    * needs to happen once.
-   * @see EventHeader::BRANCH
-   * @see makeBranchName
+   * @see EventHeader::BRANCH for the name of the event header branch
+   * @see makeBranchName for how we make branch names from object/pass names
    * @throws Exception if unable to uniquely determine the branch name
    * from the collection name alone.
    *
@@ -232,6 +232,8 @@ class Event {
    * to the branch name and then we load the current entry of that branch.
    * @throws Exception if can't find a corresponding branch name on
    * the input tree or in the bus
+   * @throws Exception if we are trying to load a new branch and the input
+   * tree has negative read entry (i.e. it is uninitialized)
    * @see Bus::board
    * @see Bus::attach
    *
@@ -240,9 +242,9 @@ class Event {
    * @see Bus::get
    *
    * @tparam T type of object we should be getting
-   * Get an event passenger from the event bus (actual implementation)
    * @param collectionName name of collection you want
    * @param passName name of pass you want
+   * @return const reference to requested object
    */
   template <typename T>
   const T& getObject(const std::string &collectionName,
@@ -306,10 +308,25 @@ class Event {
       } 
       // ooh, new branch!
       branch->SetStatus(1); //overrides any 'ignore' rules
-      // load in the current entry
-      //  this is necessary because getObject is called _after_ nextEvent 
-      //  (I think)
-      branch->GetEntry((ientry_<0)?(0):(ientry_));
+      /**
+       * Load in the current entry
+       *    This is necessary because getObject is called _after_ 
+       *    EventFile::nextEvent loads the current entry of the inputTree.
+       *    Many branches are turned "off" (status == 0), so they aren't
+       *    loaded when the entire TTree is updated to a specific entry.
+       *
+       *    We shouldn't end up here before inputTree's read entry is unset, 
+       *    but we check anyways because ROOT will just seg-fault like a chump.
+       */
+      long long int ientry{inputTree_->GetReadEntry()};
+      if (ientry<0) {
+        //reached getObject without initializing inputTree's read entry
+        EXCEPTION_RAISE("InTreeInit",
+            "The input tree was un-initialized with read entry "
+            + std::to_string(ientry) + " when attempting to get '"
+            + branchName + "'.");
+      }
+      branch->GetEntry(ientry);
     } else if (not already_on_board) {
       // not found in loaded branches and there is no inputTree,
       // so no hope of finding an unloaded object
@@ -394,11 +411,16 @@ class Event {
   const std::vector<ProductTag> &getProducts() const { return products_; }
 
   /**
-   * Go to the next event by incrementing the entry index.
-   * @param[in] entry index from EventFile we are connected to
+   * Go to the next event by retrieving the event header
+   *
+   * We deep-copy the event header into our own member object.
+   * This is so we can modify the event header during the processing
+   * of this event and then re-add the event header at the end of the event.
+   * This is a pretty lame way to handle the event header, but it works.
+   *
    * @return Hard-coded to return true.
    */
-  bool nextEvent(int ientry);
+  bool nextEvent();
 
   /**
    * Action to be executed before the tree is filled.
@@ -473,16 +495,6 @@ class Event {
    * The event header object.
    */
   ldmx::EventHeader eventHeader_;
-
-  /**
-   * Number of entries in the tree.
-   */
-  Long64_t entries_{-1};
-
-  /**
-   * Current entry in the tree.
-   */
-  Long64_t ientry_{-1};
 
   /**
    * The default pass name.

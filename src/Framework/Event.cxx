@@ -83,7 +83,6 @@ void Event::setOutputTree(TTree* tree) { outputTree_ = tree; }
 
 void Event::setInputTree(TTree* tree) {
   inputTree_ = tree;
-  entries_ = inputTree_->GetEntriesFast();
 
   // in some cases, setInputTree is called more than once,
   // so reset branch listing before starting
@@ -113,8 +112,7 @@ void Event::setInputTree(TTree* tree) {
   }
 }
 
-bool Event::nextEvent(int ientry) {
-  ientry_ = ientry;
+bool Event::nextEvent() {
   eventHeader_ = getObject<ldmx::EventHeader>(ldmx::EventHeader::BRANCH);
   return true;
 }
@@ -142,8 +140,6 @@ void Event::onEndOfFile() {
     inputTree_ = nullptr;  // detach old inputTree (owned by EventFile)
   knownLookups_.clear();   // reset caching of empty pass requests
   bus_.everybodyOff();     // delete buffer objects
-  ientry_ = -1;            // reset current entry and total entries
-  entries_ = -1;
 }
 
 bool Event::shouldDrop(const std::string& branchName) const {

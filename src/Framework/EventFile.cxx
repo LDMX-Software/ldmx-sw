@@ -224,7 +224,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 
   // if we have an event_
   //  make sure it is iterated as well
-  return event_ ? event_->nextEvent(ientry_) : true;
+  return event_ ? event_->nextEvent() : true;
 }
 
 void EventFile::setupEvent(Event *evt) {
