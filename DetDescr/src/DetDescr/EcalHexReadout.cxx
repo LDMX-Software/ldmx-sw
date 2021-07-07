@@ -20,12 +20,11 @@ EcalHexReadout::EcalHexReadout(const framework::config::Parameters& ps)
   gap_ = ps.getParameter<double>("gap");
   nCellRHeight_ = ps.getParameter<double>("nCellRHeight");
   verbose_ = ps.getParameter<int>("verbose");
+  cornersSideUp_ = ps.getParameter<bool>("cornersSideUp");
 
-  if (nCellRHeight_ == 35) rotated_ = true;
-  else rotated_ = false;
   
   moduleR_ = moduler_ * (2 / sqrt(3));
-  cellR_ = 2 * moduler_ / 35.;
+  cellR_ = 2 * moduler_ / nCellRHeight_;
   cellr_ = (sqrt(3.) / 2.) * cellR_;
 
   if (verbose_ > 0) {
@@ -57,8 +56,8 @@ void EcalHexReadout::buildModuleMap() {
   }
 
   double C_PI = 3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
-  if (rotated_) {
-  // module IDs are 0 for ecal center, 1 at right, and counterclockwise till 6
+  if (cornersSideUp_) {
+  // module IDs are 0 for ecal center, 1 at right, and clockwise till 6
     modulePositionMap_[0] = std::pair<double, double>(0., 0.);
     for (unsigned id = 1; id < 7; id++) {
       double x = (2. * moduler_ + gap_) * cos((id-1) * (C_PI / 3.));
@@ -89,7 +88,7 @@ void EcalHexReadout::buildCellMap() {
       rotated cells are hardcoded
       unrotated cells use ROOT HoneyComb method (build large hex grid, copy polygons that cover module)
    */
-  if (rotated_) {
+  if (cornersSideUp_) {
     Double_t a = cellR_;  // cell long radius (or hexagon flat side length)
     Double_t xCenter = 0.;
     Double_t yCenter = 0.;
@@ -102,7 +101,7 @@ void EcalHexReadout::buildCellMap() {
     int yColNum;
     int ecalMapID = 0;
 
-    // The hexagon grid divides into three sections: two trapezoids
+    // The hexagon grid divides into two sections: two trapezoids
     // Cell map starts from top left
 
     // Section 1: Left trapezoid (13cell short base, 24cell long base, 12cell
