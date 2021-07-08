@@ -81,9 +81,10 @@ class HcalGeometry : public framework::ConditionsObject {
   int getNumLayers(int isection) const { return NumLayers_.at(isection); }
 
   /**
-   * Get the number of strips per layer for that section.
+   * Get the number of strips per layer for that section and layer.
    */
-  int getNumStrips(int isection) const { return NumStrips_.at(isection); }
+  int getNumStrips(int isection, int ilayer = 0) const
+    { return NumStrips_.at(isection).at(ilayer); }
 
   /**
    * Get the length of the Ecal in (x) for the side Hcal.
