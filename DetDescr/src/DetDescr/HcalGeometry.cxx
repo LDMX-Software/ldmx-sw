@@ -24,6 +24,10 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
   HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
 
+  ZeroStrip_ = makeLayeredVersion(ZeroStrip_v12_);
+  NumStrips_ = makeLayeredVersion(NumStrips_v12_);
+  HalfTotalWidth_ = makeLayeredVersion(HalfTotalWidth_v12_);
+
   buildStripPositionMap();
 }
 void HcalGeometry::printPositionMap(int section) const {
