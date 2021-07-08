@@ -94,26 +94,27 @@ class HcalGeometry() :
           For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y))/2
           @param gdml see: sideTB_dx, sideTB_dy
         """
-        self.v12=HcalReadoutGeometry()
+        self.prototype=HcalReadoutGeometry()
 
-        self.v12.ThicknessScint = 20.0
-        self.v12.WidthScint = 50.0
-        self.v12.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
-        self.v12.ZeroStrip = [3100./2,220.,220.,220.,220.]
-        self.v12.LayerThickness = [25. + self.v12.ThicknessScint + 2*2.,
-                                   20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.,
-                                   20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.]
-        self.v12.NumSections = 5
-        self.v12.NumLayers = [100,28,28,26,26]
-        self.v12.NumStrips = [62,12,12,12,12]
-        self.v12.EcalDx = 800.0
-        self.v12.EcalDy = 600.0
-        self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
-                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+self.v12.EcalDx)/2,
-                                   (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+self.v12.EcalDx)/2,
-                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+self.v12.EcalDy)/2,
-                                   (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+self.v12.EcalDy)/2,]
-        self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+
+        self.prototype.ThicknessScint = 20.0
+        self.prototype.WidthScint = 50.0
+        self.prototype.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
+        self.prototype.ZeroStrip = [3100./2,220.,220.,220.,220.]
+        self.prototype.LayerThickness = [25. + self.prototype.ThicknessScint + 2*2.,
+                                   20. + self.prototype.ThicknessScint + 2*2., 20. + self.prototype.ThicknessScint + 2*2.,
+                                   20. + self.prototype.ThicknessScint + 2*2., 20. + self.prototype.ThicknessScint + 2*2.]
+        self.prototype.NumSections = 5
+        self.prototype.NumLayers = [100,28,28,26,26]
+        self.prototype.NumStrips = [62,12,12,12,12]
+        self.prototype.EcalDx = 800.0
+        self.prototype.EcalDy = 600.0
+        self.prototype.HalfTotalWidth = [(self.prototype.NumStrips[0]*self.prototype.WidthScint)/2,
+                                   (self.prototype.NumLayers[3]*self.prototype.LayerThickness[3]+self.prototype.EcalDx)/2,
+                                   (self.prototype.NumLayers[4]*self.prototype.LayerThickness[4]+self.prototype.EcalDx)/2,
+                                   (self.prototype.NumLayers[1]*self.prototype.LayerThickness[1]+self.prototype.EcalDy)/2,
+                                   (self.prototype.NumLayers[2]*self.prototype.LayerThickness[2]+self.prototype.EcalDy)/2,]
+        self.prototype.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
     def make_prototype(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
