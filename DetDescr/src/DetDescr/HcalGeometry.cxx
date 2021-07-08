@@ -4,6 +4,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 
 namespace ldmx {
 
@@ -28,8 +29,13 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   NumStrips_ = makeLayeredVersion(NumStrips_v12_);
   HalfTotalWidth_ = makeLayeredVersion(HalfTotalWidth_v12_);
 
-  // Should perhaps be regex
   auto detectors_valid = ps.getParameter<std::vector<std::string>>("detectors_valid");
+  // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
+  // use prototype geometry initialization
+  //
+  // Should perhaps be done with a regex
+  auto is_prototype = std::find(detectors_valid.cbegin(), detectors_valid.cend(),
+                "ldmx-hcal-prototype") != detectors_valid.cend();
 
   buildStripPositionMap();
 }
