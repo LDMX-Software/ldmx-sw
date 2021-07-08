@@ -127,9 +127,9 @@ class HcalGeometry() :
         NumStrips_front = [num_bars_front for i in range(num_layers_front)]
         NumStrips_back = [num_bars_back for i in range(num_layers_back)]
         self.prototype.NumStrips = NumStrips_front + NumStrips_back
-        # ZeroStrip and HalfTotalWidth are identical but have different sign
+        # ZeroStrip and HalfTotalWidth are identical
         self.prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.prototype.NumStrips]
-        self.prototype.HalfTotalWidth = [-N * scint_bar_width / 2 for N in self.prototype.NumStrips]
+        self.prototype.HalfTotalWidth = self.prototype.ZeroStrip
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
         self.prototype.detectors_valid = ["ldmx-hcal-prototype"]
