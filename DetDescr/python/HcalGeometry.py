@@ -116,9 +116,9 @@ class HcalGeometry() :
         # End GDML-parameters
 
 
-        self.prototype.ThicknessScint = 20.0
-        self.prototype.WidthScint = 50.0
         self.prototype.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
+        self.prototype.ThicknessScint = scint_thickness
+        self.prototype.WidthScint = scint_bar_width
         self.prototype.ZeroStrip = [3100./2,220.,220.,220.,220.]
         self.prototype.LayerThickness = [25. + self.prototype.ThicknessScint + 2*2.,
                                    20. + self.prototype.ThicknessScint + 2*2., 20. + self.prototype.ThicknessScint + 2*2.,
