@@ -31,9 +31,9 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   if (is_prototype) {
   }
   else {
-    ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
-    NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
-    HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
+    auto ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+    auto NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+    auto HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
 
     ZeroStrip_ = makeLayeredVersion(ZeroStrip_v12_);
     NumStrips_ = makeLayeredVersion(NumStrips_v12_);
