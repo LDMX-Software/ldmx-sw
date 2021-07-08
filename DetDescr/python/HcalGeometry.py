@@ -122,9 +122,9 @@ class HcalGeometry() :
         self.prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
         self.prototype.ZeroStrip = [3100./2,220.,220.,220.,220.]
         self.prototype.LayerThickness = [layer_thickness]
-        self.prototype.NumLayers = [100,28,28,26,26]
         self.prototype.NumStrips = [62,12,12,12,12]
         self.prototype.NumSections = 1
+        self.prototype.NumLayers = [num_layers]
         self.prototype.EcalDx = 800.0
         self.prototype.EcalDy = 600.0
         self.prototype.HalfTotalWidth = [(self.prototype.NumStrips[0]*self.prototype.WidthScint)/2,
