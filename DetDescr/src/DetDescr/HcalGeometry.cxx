@@ -32,7 +32,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
-  for (int layer = 1; layer < NumLayers_[section]; ++layer) {
+  for (int layer = 1; layer <= NumLayers_[section]; ++layer) {
     for (int strip = 0; strip < getNumStrips(section,layer); ++strip) {
       HcalID id(section, layer, strip);
       auto centerPosition = getStripCenterPosition(id);
