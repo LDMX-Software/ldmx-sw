@@ -66,8 +66,9 @@ class HcalGeometry : public framework::ConditionsObject {
    * @param layer
    * @return half total width [mm]
    */
-  double getHalfTotalWidth(int isection, int ilayer = 0) const {
-    return HalfTotalWidth_.at(isection).at(ilayer);
+  double getHalfTotalWidth(int isection, int layer = 1) const {
+    auto layer_index = layer - 1;
+    return HalfTotalWidth_.at(isection).at(layer_index);
   }
 
   /**
@@ -83,14 +84,16 @@ class HcalGeometry : public framework::ConditionsObject {
   /**
    * Get the number of strips per layer for that section and layer.
    */
-  int getNumStrips(int isection, int ilayer = 0) const
-    { return NumStrips_.at(isection).at(ilayer); }
+  int getNumStrips(int isection, int layer = 1) const
+    {
+    auto layer_index = layer - 1;
+      return NumStrips_.at(isection).at(layer_index); }
 
   /**
    * Get the location of the zeroStrip in a given section and layer
    * */
-  int getZeroStrip(int isection, int ilayer = 0) const
-    { return ZeroStrip_.at(isection).at(ilayer); }
+  int getZeroStrip(int isection, int layer = 1) const
+    { return ZeroStrip_.at(isection).at(layer_index); }
 
 
   /**
