@@ -179,15 +179,23 @@ private:
   /// constructed if not set explicitly by the parameters
 
   /// Number of strips per layer in each section
-  std::vector<int> NumStrips_;
+  std::vector<int> NumStrips_v12_;
   /// The plane of the zero'th strip of each section [mm]
-  std::vector<double> ZeroStrip_;
+  std::vector<double> ZeroStrip_v12_;
   /// Half Total Width of Strips [mm]
-  std::vector<double> HalfTotalWidth_;
+  std::vector<double> HalfTotalWidth_v12_;
 
   /// Parameters that are used only for the testbeam prototype Hcal, are default
   /// constructed if not set explicity by the parameters
 
+
+  /// Canonical layered version of parameters that differ between geometry versions
+  /// Number of strips per layer in each section and each layer
+  std::vector<std::vector<int>> NumStrips_;
+  /// The plane of the zero'th strip of each section [mm]
+  std::vector<std::vector<double>> ZeroStrip_;
+  /// Half Total Width of Strips [mm]
+  std::vector<std::vector<double>> HalfTotalWidth_;
   /**
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().

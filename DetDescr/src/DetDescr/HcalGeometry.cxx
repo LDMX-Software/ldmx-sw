@@ -20,9 +20,9 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   verbose_ = ps.getParameter<int>("verbose");
 
   // Parameters not used by every geometry type
-  ZeroStrip_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
-  NumStrips_ = ps.getParameter<std::vector<int>>("NumStrips", {});
-  HalfTotalWidth_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
+  ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+  NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+  HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
 
   buildStripPositionMap();
 }
