@@ -134,6 +134,19 @@ class HcalGeometry : public framework::ConditionsObject {
           }
         }
     }
+  /**
+   * Debugging utility, prints out the HcalID and corresponding value of all
+   * entries in the stripPositionMap_. For printing only one of the sections,
+   * see the overloaded version of this function taking a section parameter.
+   *
+   */
+    void printPositionMap() const {
+
+      for (int section = 0; section < NumSections_ ; ++section) {
+        printPositionMap(section);
+      }
+    }
+
 private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
