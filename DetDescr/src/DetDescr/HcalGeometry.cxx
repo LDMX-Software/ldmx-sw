@@ -28,6 +28,9 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   NumStrips_ = makeLayeredVersion(NumStrips_v12_);
   HalfTotalWidth_ = makeLayeredVersion(HalfTotalWidth_v12_);
 
+  // Should perhaps be regex
+  auto detectors_valid = ps.getParameter<std::vector<std::string>>("detectors_valid");
+
   buildStripPositionMap();
 }
 void HcalGeometry::printPositionMap(int section) const {
