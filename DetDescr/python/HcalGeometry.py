@@ -121,16 +121,17 @@ class HcalGeometry() :
 
         # Note that this seems to be location of the first scintillator layer
         self.prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
-        self.prototype.ZeroStrip = [3100./2,220.,220.,220.,220.]
         self.prototype.LayerThickness = [layer_thickness]
         self.prototype.NumSections = 1
         self.prototype.NumLayers = [num_layers]
         NumStrips_front = [num_bars_front for i in range(num_layers_front)]
         NumStrips_back = [num_bars_back for i in range(num_layers_back)]
         self.prototype.NumStrips = NumStrips_front + NumStrips_back
+        # ZeroStrip and HalfTotalWidth are identical but have different sign
+        self.prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.prototype.NumStrips]
+        self.prototype.HalfTotalWidth = [-N * scint_bar_width / 2 for N in self.prototype.NumStrips]
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
-        self.prototype.HalfTotalWidth = []
         self.prototype.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
     def make_prototype(self) :
         """Create the HcalGeometry with the v12 geometry parameters
