@@ -58,7 +58,7 @@ void HcalGeometry::buildStripPositionMap() {
 
         // the center of a layer: layer * (layer_dz) + (layer_dz)/2
         double layercenter =
-            layer * LayerThickness_.at(section) + 0.5 * ThicknessScint_;
+            (layer - 1)* LayerThickness_.at(section) + 0.5 * ThicknessScint_;
 
         // the center of a strip: (strip + 0.5) * (strip_dx)
         double stripcenter = (strip + 0.5) * WidthScint_;
