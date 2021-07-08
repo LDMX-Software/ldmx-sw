@@ -120,20 +120,7 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    * @param section The section number to print, see HcalID for details.
    */
-    void printPositionMap(int section) const {
-      // Note that layer numbering starts at 1 rather than 0
-        for (int layer = 1; layer < NumLayers_[section]; ++layer) {
-          for (int strip = 0; strip < getNumStrips(section); ++strip) {
-            HcalID id(section, layer, strip);
-            auto centerPosition = getStripCenterPosition(id) ;
-            auto x = centerPosition[0];
-            auto y = centerPosition[1];
-            auto z = centerPosition[2];
-            std::cout << id << ": Center position: ("
-                      << x  << ", " << y << ", " << z << ")\n";
-          }
-        }
-    }
+    void printPositionMap(int section) const;
   /**
    * Debugging utility, prints out the HcalID and corresponding value of all
    * entries in the stripPositionMap_. For printing only one of the sections,
@@ -141,7 +128,6 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    */
     void printPositionMap() const {
-
       for (int section = 0; section < NumSections_ ; ++section) {
         printPositionMap(section);
       }
