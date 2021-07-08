@@ -89,7 +89,7 @@ class EcalDigiProducer(Producer) :
         self.avgPedestal = 50.*avgGain
 
         # Should we suppress noise "hits" below readout threshold?
-        self.zero_suppression = False
+        self.zero_suppression = True
 
         # input and output collection name parameters
         self.inputCollName = 'EcalSimHits'
