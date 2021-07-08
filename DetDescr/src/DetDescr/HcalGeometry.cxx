@@ -29,6 +29,14 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   auto is_prototype = std::find(detectors_valid.cbegin(), detectors_valid.cend(),
                 "ldmx-hcal-prototype") != detectors_valid.cend();
   if (is_prototype) {
+    auto ZeroStrip_prototype_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+    auto NumStrips_prototype_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+    auto HalfTotalWidth_prototype_ = ps.getParameter<std::vector<double>>("HalfTotalWidth", {});
+    // The prototype only has one section, so we only have one entry into these
+    // vectors
+    ZeroStrip_ = {HalfTotalWidth_prototype_};
+    NumStrips_ = {NumStrips_prototype_};
+    HalfTotalWidth_ = {HalfTotalWidth_prototype_};
   }
   else {
     auto ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
