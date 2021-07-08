@@ -132,7 +132,7 @@ class HcalGeometry() :
         self.prototype.HalfTotalWidth = [-N * scint_bar_width / 2 for N in self.prototype.NumStrips]
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
-        self.prototype.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        self.prototype.detectors_valid = ["ldmx-hcal-prototype"]
     def make_prototype(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
