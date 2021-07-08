@@ -61,12 +61,13 @@ class HcalGeometry : public framework::ConditionsObject {
   }
 
   /**
-   * Get the half total width for a given section(strip) for back(side) Hcal.
+   * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
    * @param section
+   * @param layer
    * @return half total width [mm]
    */
-  double getHalfTotalWidth(int isection) const {
-    return HalfTotalWidth_.at(isection);
+  double getHalfTotalWidth(int isection, int ilayer = 0) const {
+    return HalfTotalWidth_.at(isection).at(ilayer);
   }
 
   /**
