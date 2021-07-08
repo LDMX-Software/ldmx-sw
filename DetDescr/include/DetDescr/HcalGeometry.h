@@ -87,6 +87,13 @@ class HcalGeometry : public framework::ConditionsObject {
     { return NumStrips_.at(isection).at(ilayer); }
 
   /**
+   * Get the location of the zeroStrip in a given section and layer
+   * */
+  int getZeroStrip(int isection, int ilayer = 0) const
+    { return ZeroStrip_.at(isection).at(ilayer); }
+
+
+  /**
    * Get the length of the Ecal in (x) for the side Hcal.
    */
   double getEcalDx() const { return EcalDx_; }
