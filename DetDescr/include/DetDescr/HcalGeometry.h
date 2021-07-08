@@ -114,8 +114,16 @@ class HcalGeometry : public framework::ConditionsObject {
    * Even layers have vertical strips.
    */
   void buildStripPositionMap();
+  /**
+   * Debugging utility, prints out the HcalID and corresponding value of all
+   * entries in the stripPositionMap_ for a given section.
+   *
+   * @param section The section number to print, see HcalID for details.
+   */
+    void printPositionMap(int section) const {
 
- private:
+    }
+private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
