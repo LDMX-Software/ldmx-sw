@@ -116,6 +116,7 @@ class HcalGeometry : public framework::ConditionsObject {
   void buildStripPositionMap();
 
  private:
+  /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
 
@@ -125,14 +126,8 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Width of Scintillator Strip [mm]
   double WidthScint_;
 
-  /// Half Total Width of Strips [mm]
-  std::vector<double> HalfTotalWidth_;
-
   /// Front of HCal relative to world geometry for each section [mm]
   std::vector<double> ZeroLayer_;
-
-  /// The plane of the zero'th strip of each section [mm]
-  std::vector<double> ZeroStrip_;
 
   /// Thickness of the layers in each section [mm]
   std::vector<double> LayerThickness_;
@@ -140,8 +135,6 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Number of layers in each section
   std::vector<int> NumLayers_;
 
-  /// Number of strips per layer in each section
-  std::vector<int> NumStrips_;
 
   /// Number of sections
   int NumSections_;
@@ -149,6 +142,19 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Lenght of the Ecal (in x and y)
   double EcalDx_;
   double EcalDy_;
+
+  /// Parameters that are used only for the full LDMX Hcal, are default
+  /// constructed if not set explicitly by the parameters
+
+  /// Number of strips per layer in each section
+  std::vector<int> NumStrips_;
+  /// The plane of the zero'th strip of each section [mm]
+  std::vector<double> ZeroStrip_;
+  /// Half Total Width of Strips [mm]
+  std::vector<double> HalfTotalWidth_;
+
+  /// Parameters that are used only for the testbeam prototype Hcal, are default
+  /// constructed if not set explicity by the parameters
 
   /**
    Map of the HcalID position of strip centers relative to world geometry.
