@@ -121,9 +121,7 @@ class HcalGeometry() :
         # Note that this seems to be location of the first scintillator layer
         self.prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
         self.prototype.ZeroStrip = [3100./2,220.,220.,220.,220.]
-        self.prototype.LayerThickness = [25. + self.prototype.ThicknessScint + 2*2.,
-                                   20. + self.prototype.ThicknessScint + 2*2., 20. + self.prototype.ThicknessScint + 2*2.,
-                                   20. + self.prototype.ThicknessScint + 2*2., 20. + self.prototype.ThicknessScint + 2*2.]
+        self.prototype.LayerThickness = [layer_thickness]
         self.prototype.NumSections = 5
         self.prototype.NumLayers = [100,28,28,26,26]
         self.prototype.NumStrips = [62,12,12,12,12]
