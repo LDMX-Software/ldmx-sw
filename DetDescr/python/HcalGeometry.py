@@ -128,13 +128,9 @@ class HcalGeometry() :
         NumStrips_front = [num_bars_front for i in range(num_layers_front)]
         NumStrips_back = [num_bars_back for i in range(num_layers_back)]
         self.prototype.NumStrips = NumStrips_front + NumStrips_back
-        self.prototype.EcalDx = 800.0
-        self.prototype.EcalDy = 600.0
-        self.prototype.HalfTotalWidth = [(self.prototype.NumStrips[0]*self.prototype.WidthScint)/2,
-                                   (self.prototype.NumLayers[3]*self.prototype.LayerThickness[3]+self.prototype.EcalDx)/2,
-                                   (self.prototype.NumLayers[4]*self.prototype.LayerThickness[4]+self.prototype.EcalDx)/2,
-                                   (self.prototype.NumLayers[1]*self.prototype.LayerThickness[1]+self.prototype.EcalDy)/2,
-                                   (self.prototype.NumLayers[2]*self.prototype.LayerThickness[2]+self.prototype.EcalDy)/2,]
+        self.prototype.EcalDx = 0.
+        self.prototype.EcalDy = 0.
+        self.prototype.HalfTotalWidth = []
         self.prototype.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
     def make_prototype(self) :
         """Create the HcalGeometry with the v12 geometry parameters
