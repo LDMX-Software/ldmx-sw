@@ -44,6 +44,7 @@ class HcalGeometry() :
 
     def __init__(self):
         self.make_v12()
+        self.make_prototype()
     
     def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
