@@ -95,6 +95,25 @@ class HcalGeometry() :
           @param gdml see: sideTB_dx, sideTB_dy
         """
         self.prototype=HcalReadoutGeometry()
+        # GDML-parameters
+        air_thickness=2.
+        absorber_thickness=25
+        scint_thickness=20.
+        scint_bar_length=2000.
+        layer_thickness = absorber_thickness + scint_thickness + 2 * air_thickness
+        num_layers_front_vertical = 4
+        num_layers_front_horizontal = 5
+        num_layers_front=num_layers_front_vertical + num_layers_front_horizontal
+        num_layers_back_vertical = 5
+        num_layers_back_horizontal = 5
+        num_layers_back=num_layers_back_vertical + num_layers_back_horizontal
+        num_layers = num_layers_front + num_layers_back
+        back_start=num_layers_front * layer_thickness
+        scint_bar_width=50.
+        num_bars_front=8
+        num_bars_back=12
+        dz = num_layers * layer_thickness
+        # End GDML-parameters
 
 
         self.prototype.ThicknessScint = 20.0
