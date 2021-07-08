@@ -12,15 +12,17 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   ThicknessScint_ = ps.getParameter<double>("ThicknessScint");
   WidthScint_ = ps.getParameter<double>("WidthScint");
   ZeroLayer_ = ps.getParameter<std::vector<double>>("ZeroLayer");
-  ZeroStrip_ = ps.getParameter<std::vector<double>>("ZeroStrip");
   LayerThickness_ = ps.getParameter<std::vector<double>>("LayerThickness");
   NumLayers_ = ps.getParameter<std::vector<int>>("NumLayers");
-  NumStrips_ = ps.getParameter<std::vector<int>>("NumStrips");
   NumSections_ = ps.getParameter<int>("NumSections");
-  HalfTotalWidth_ = ps.getParameter<std::vector<double>>("HalfTotalWidth");
   EcalDx_ = ps.getParameter<double>("EcalDx");
   EcalDy_ = ps.getParameter<double>("EcalDy");
   verbose_ = ps.getParameter<int>("verbose");
+
+  // Parameters not used by every geometry type
+  ZeroStrip_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+  NumStrips_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+  HalfTotalWidth_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
 
   buildStripPositionMap();
 }
