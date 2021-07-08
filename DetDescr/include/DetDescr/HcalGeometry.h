@@ -133,6 +133,20 @@ class HcalGeometry : public framework::ConditionsObject {
       }
     }
 
+   // Deserves a better name
+   //
+   // Takes a parameter which only has dimensions of section and creates a
+   // version with both section and layer. All layers in a given section will be
+   // copies.
+   template <typename T>
+   std::vector<std::vector<T>> makeLayeredVersion(const std::vector<T>& parameter) {
+     std::vector<std::vector<T>> result;
+     for(auto section = 0; section < parameter.size(); ++section) {
+       result.push_back(std::vector<T>(NumLayers_[section], parameter[section]));
+     }
+     return result;
+   }
+
 private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
