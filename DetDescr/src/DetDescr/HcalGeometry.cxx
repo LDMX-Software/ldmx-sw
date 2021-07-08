@@ -48,7 +48,7 @@ void HcalGeometry::buildStripPositionMap() {
   // We hard-code the number of sections as seen in HcalID
   for (int section = 0; section < NumSections_; section++) {
     for (int layer = 1; layer <= NumLayers_[section]; layer++) {
-      for (int strip = 0; strip < NumStrips_[section]; strip++) {
+      for (int strip = 0; strip < getNumStrips(section,layer); strip++) {
         // initialize values
         double x{-99999}, y{-99999}, z{-99999};
 
@@ -85,15 +85,15 @@ void HcalGeometry::buildStripPositionMap() {
             ZeroStrip_. The x(y) position is set to the center of the strip (0).
           */
           if (layer % 2 == 1) {
-            y = stripcenter - ZeroStrip_.at(section);
+            y = stripcenter - getZeroStrip(section,layer);
             x = 0;
           } else {
-            x = stripcenter - ZeroStrip_.at(section);
+            x = stripcenter - getZeroStrip(section,layer);
             y = 0;
           }
         } else {
           // z position: zero-strip(z) + strip_center(z)
-          z = ZeroStrip_.at(section) + stripcenter;
+          z = getZeroStrip(section,layer) + stripcenter;
 
           /**
             Top and Bottom sections have strips orientated in x
@@ -102,14 +102,14 @@ void HcalGeometry::buildStripPositionMap() {
           if (hcalsection == ldmx::HcalID::HcalSection::TOP or
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
             y = ZeroLayer_.at(section) + layercenter;
-            x = HalfTotalWidth_.at(section);
+            x = getHalfTotalWidth(section,layer);
             if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
               y *= -1;
               x *= -1;
             }
           } else {
             x = ZeroLayer_.at(section) + layercenter;
-            y = HalfTotalWidth_.at(section);
+            y = getHalfTotalWidth(section, layer);
             if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
               x *= -1;
               y *= -1;
