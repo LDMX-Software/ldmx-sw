@@ -20,14 +20,6 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   EcalDy_ = ps.getParameter<double>("EcalDy");
   verbose_ = ps.getParameter<int>("verbose");
 
-  // Parameters not used by every geometry type
-  ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
-  NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
-  HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
-
-  ZeroStrip_ = makeLayeredVersion(ZeroStrip_v12_);
-  NumStrips_ = makeLayeredVersion(NumStrips_v12_);
-  HalfTotalWidth_ = makeLayeredVersion(HalfTotalWidth_v12_);
 
   auto detectors_valid = ps.getParameter<std::vector<std::string>>("detectors_valid");
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
@@ -36,6 +28,18 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   // Should perhaps be done with a regex
   auto is_prototype = std::find(detectors_valid.cbegin(), detectors_valid.cend(),
                 "ldmx-hcal-prototype") != detectors_valid.cend();
+  if (is_prototype) {
+  }
+  else {
+    ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+    NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+    HalfTotalWidth_v12_ = ps.getParameter<std::vector<double>>("HalfTotalWidth",{});
+
+    ZeroStrip_ = makeLayeredVersion(ZeroStrip_v12_);
+    NumStrips_ = makeLayeredVersion(NumStrips_v12_);
+    HalfTotalWidth_ = makeLayeredVersion(HalfTotalWidth_v12_);
+
+  }
 
   buildStripPositionMap();
 }
