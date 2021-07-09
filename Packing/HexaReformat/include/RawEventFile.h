@@ -79,6 +79,8 @@ class RawEventFile {
   bool debug_;
   /// The packed data
   std::vector<uint64_t> buffer_;
+  /// The event header buffer
+  std::vector<uint64_t> event_header_;
   /// Event number
   int event_{-1};
   /// Run number
