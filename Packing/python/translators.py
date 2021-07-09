@@ -20,5 +20,5 @@ class Hgcroc(Translator) :
     The Hgcroc translator is not configured with any parameters.
     """
 
-    def __init__(self, pass_regex, object_regex) :
+    def __init__(self) :
         super().__init__('packing::translators::Hgcroc','Packing::Translators')
