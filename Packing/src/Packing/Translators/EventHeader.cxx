@@ -24,9 +24,7 @@ void EventHeader::decode(framework::Event& event, const BufferType& buffer) {
   eh.setEventNumber(buffer.at(i_event_));
 
   // convert time stamp to ROOT's object
-  TTimeStamp stamp;
-  stamp.Set(buffer.at(i_time_),true,0,false);
-  eh.setTimestamp(TTimeStamp(buffer.at(i_time),true,0,false));
+  eh.setTimestamp(TTimeStamp(buffer.at(i_time_),true,0,false));
 
   // copy over extra parameters in buffer,
   //  we assume that they come after the three required parameters
