@@ -12,11 +12,13 @@ class Translator() :
 
     def __init__(self, class_name, module_name = 'Packing::Translators') :
         ldmxcfg.Process.addModule(module_name)
-        self.class_name = f'packing::translators::{class_name}'
+        self.class_name = class_name
 
 class Hgcroc(Translator) :
     """Configuration for Hgcroc Translator configuration
+
+    The Hgcroc translator is not configured with any parameters.
     """
 
     def __init__(self, pass_regex, object_regex) :
-        super().__init__('Hgcroc','Packing::Translators')
+        super().__init__('packing::translators::Hgcroc','Packing::Translators')
