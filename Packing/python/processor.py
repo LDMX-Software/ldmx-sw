@@ -15,4 +15,4 @@ class Unpacker(Processor) :
         super().__init__('unpacker','packing::Unpacker','Packing')
         self.translators = translators
         self.raw_name = raw_name
-        self.raw_pass = ''
+        self.raw_tree = 'LDMX_RawData'
