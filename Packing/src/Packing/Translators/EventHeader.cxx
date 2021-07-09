@@ -8,7 +8,7 @@ EventHeader::EventHeader(const framework::config::Parameters& ps) : Translator(p
   i_run_ = ps.getParameter<int>("i_run");
   i_event_ = ps.getParameter<int>("i_event");
   i_time_ = ps.getParameter<int>("i_time");
-  extra_param_names_ = ps.getParameter<std::string>("extra_param_names");
+  extra_param_names_ = ps.getParameter<std::vector<std::string>>("extra_param_names");
 }
 
 bool EventHeader::canTranslate(const std::string& name) const {
@@ -17,19 +17,19 @@ bool EventHeader::canTranslate(const std::string& name) const {
 
 void EventHeader::decode(framework::Event& event, const BufferType& buffer) {
   // Retrieve a mutable version of the event header
-  ldmx::EventHeader& eh = event_->getEventHeader();
+  ldmx::EventHeader& eh = event.getEventHeader();
 
-  // first buffer entry is run number
-  eh.setRun(buffer.at(i_run));
-  
-  // second buffer entry is event number
-  eh.setEventNumber(buffer.at(i_event));
+  // copy over run and event numbers
+  eh.setRun(buffer.at(i_run_));
+  eh.setEventNumber(buffer.at(i_event_));
 
-  // third buffer entry is 64-bit time stamp for when data was taken since UTC epoch
+  // convert time stamp to ROOT's object
   TTimeStamp stamp;
-  stamp.Set(buffer.at(i_time),true,0,false);
-  eh.setTimestamp(stamp);
+  stamp.Set(buffer.at(i_time_),true,0,false);
+  eh.setTimestamp(TTimeStamp(buffer.at(i_time),true,0,false));
 
+  // copy over extra parameters in buffer,
+  //  we assume that they come after the three required parameters
   for (int i_param{0}; i_param < extra_param_names_.size(); i_param++) {
     eh.setIntParameter(extra_param_names_.at(i_param), buffer.at(i_param+3));
   }

@@ -1,6 +1,8 @@
 #include <sstream>
 #include <cstring>
+#include <ctime>
 #include <iomanip>
+
 #include "RawEventFile.h"
 
 namespace hexareformat {
@@ -38,8 +40,7 @@ RawEventFile::RawEventFile(std::string filename, bool debug) : debug_{debug} {
   // TFile cleans up the TTrees that are created within it
   data_tree_ = new TTree("LDMX_RawData","Encoded raw data for LDMX");
   data_tree_->Branch("EcalPrecisionHgcrocReadout", &buffer_);
-  data_tree_->Branch("event", &event_);
-  data_tree_->Branch("run", &run_);
+  data_tree_->Branch("EventHeader", &event_header_);
 
   // TFile cleans up the TTrees that are created within it
   runs_tree_ = new TTree("LDMX_Runs","Run for this raw data.");
@@ -159,7 +160,7 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
       (mask<8>::m); // last 8 bits of readout map (everything is being read out)
     buffer_.push_back(word);
     // rest of readout map (everything is being readout)
-    buffer_.push_back(mask<32>::m);
+    buffer_.push_back(0xFFFFFFFF);
     /** header word from ROC
      * 0101 | BX ID (12) | RREQ (6) | OR (3) | HE (3) | 0101
      */
@@ -180,13 +181,13 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
     buffer_.insert(buffer_.end(), link_data.begin()+1, link_data.end()-4);
 
     // ROC CRC Checksum
-    buffer_.push_back(mask<32>::m);
+    buffer_.push_back(0xFFFFFFFF);
   }
 
   /** CRC Checksum computed by FPGA
    * We don't compute one right now, so just an extra word of all ones)
    */
-  buffer_.push_back(mask<32>::m);
+  buffer_.push_back(0xFFFFFFFF);
 
   if (debug_) {
     std::cout << "Buffer: ";
@@ -199,6 +200,8 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
 void RawEventFile::endEvent() {
   if (debug_)
     std::cout << "RawEventFile: End of event " << std::dec << event_ << std::endl;
+
+  event_header_ = { uint64_t(run_), uint64_t(event_), uint64_t(time(NULL)) };
   /// Fill data tree
   data_tree_->Fill();
 
