@@ -29,6 +29,7 @@ void Processor::configure(framework::config::Parameters& ps) {
                                         "' not registered as a translator.");
     }
     translators_.emplace_back(it->second(translator_params));
+    ldmx_log(info) << "Built " << class_name;
   }
 }
 

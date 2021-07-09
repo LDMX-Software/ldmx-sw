@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 
-class Unpacker(Processor) :
+class Unpacker(ldmxcfg.Producer) :
     """Processor to use to unpack from raw to digi.
 
     Parameters
@@ -11,8 +11,9 @@ class Unpacker(Processor) :
         List of translators for decoding
     """
 
-    def __init__(self, raw_name, translators = []) :
+    def __init__(self, raw_file, translators = []) :
         super().__init__('unpacker','packing::Unpacker','Packing')
         self.translators = translators
-        self.raw_name = raw_name
+        self.raw_file = raw_file
         self.raw_tree = 'LDMX_RawData'
+        self.skip_unavailable = True

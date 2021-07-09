@@ -28,6 +28,7 @@ void Unpacker::onProcessStart() {
     std::string br_name{br->GetName()};
     auto optional_translator{getTranslator(br_name)};
     if (optional_translator) {
+      ldmx_log(info) << "Found a translator for " << br_name;
       unpackers_.emplace_back(br, *optional_translator);
     } else if (skip_unavailable_) {
       ldmx_log(info) << "Unable to find a translator for '" 
