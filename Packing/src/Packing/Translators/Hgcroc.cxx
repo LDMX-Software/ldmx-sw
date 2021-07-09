@@ -145,7 +145,8 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
    * in order to save disk-space.
    */
   ldmx::HgcrocDigiCollection unpacked_data;
-  unpacked_data.setNumSamplesPerDigi(10); //determine this value
+  // TODO: Can we assume that all the channels have the same number of bunches?
+  unpacked_data.setNumSamplesPerDigi(data.begin()->second.size());
   // Electronic ID <-> Detector ID while copying into collection data structure
   for (auto const& [eid, digi] : data) {
     // TODO: Insert EID --> DetID mapping here
