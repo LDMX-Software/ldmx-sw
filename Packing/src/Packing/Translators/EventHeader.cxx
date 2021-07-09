@@ -8,7 +8,7 @@ EventHeader::EventHeader(const framework::config::Parameters& ps) : Translator(p
   i_run_ = ps.getParameter<int>("i_run");
   i_event_ = ps.getParameter<int>("i_event");
   i_time_ = ps.getParameter<int>("i_time");
-  extra_param_names_ = ps.getParameter<std::vector<std::string>>("extra_param_names");
+  extra_param_names_ = ps.getParameter<std::vector<std::string>>("extra_param_names",{});
 }
 
 bool EventHeader::canTranslate(const std::string& name) const {
