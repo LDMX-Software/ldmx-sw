@@ -14,6 +14,16 @@ class Translator() :
         ldmxcfg.Process.addModule(module_name)
         self.class_name = class_name
 
+class EventHeader(Translator) :
+    """Configuration for EventHeader Translator configuration"""
+
+    def __init__(self) :
+        super().__init__('packing::translators::EventHeader','Packing::Translators')
+        self.i_run = 0
+        self.i_event = 1
+        self.i_time = 2
+        self.extra_param_names = []
+
 class Hgcroc(Translator) :
     """Configuration for Hgcroc Translator configuration
 
