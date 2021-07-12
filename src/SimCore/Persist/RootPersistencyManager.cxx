@@ -124,9 +124,11 @@ void RootPersistencyManager::writeHitsCollections(
     const G4Event *anEvent, framework::Event *outputEvent) {
   // Get the HC of this event.
   G4HCofThisEvent *hce = anEvent->GetHCofThisEvent();
-  int nColl = hce->GetNumberOfCollections();
+  // check for no hit collections for this event
+  if (!hce) return;
 
   // Loop over all hits collections.
+  int nColl = hce->GetNumberOfCollections();
   for (int iColl = 0; iColl < nColl; iColl++) {
     // Get a hits collection and its name.
     G4VHitsCollection *hc = hce->GetHC(iColl);
