@@ -36,6 +36,9 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     -
+      name: Git Action Helper Scripts
+      uses: actions/checkout@v2
+    -
       name: Determine Image Tags
       id: generate_tag
       run: |
