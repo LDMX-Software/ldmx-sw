@@ -38,6 +38,9 @@ jobs:
     -
       name: Git Action Helper Scripts
       uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        ref: ${{ github.event.inputs.branch }}
     -
       name: Determine Image Tags
       id: generate_tag
@@ -78,5 +81,5 @@ jobs:
       with:
         tags: ${{ steps.generate_tag.outputs.tags }}
         push: true
-        context: github.com/LDMX-Software/ldmx-sw/tree/${{ github.event.inputs.branch }}
+        context: .
 
