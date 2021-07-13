@@ -6,8 +6,8 @@ usage = "ldmx fire %s"%(sys.argv[0])
 parser = argparse.ArgumentParser(usage,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-parser.add_argument("numEvents",type=int,
-        help="Number of events to simulate.")
+parser.add_argument("db_lib",type=str,default=None,
+        help="Archive or directory for a dark brem event library to use for the model.")
 
 parser.add_argument("-p", "--pause",dest="pause",default=False,action='store_true',
         help='Print the process and pause to continue processing.')
@@ -28,12 +28,6 @@ parser.add_argument('--primary_energy',default=4.,type=float,
 parser.add_argument('--out_dir',default=os.getcwd(),
         help='Directory to output event file.')
 
-db_event_lib = parser.add_mutually_exclusive_group(required=True)
-db_event_lib.add_argument("--db_lib",type=str,default=None,
-        help="Archive or directory for a dark brem event library to use for the model.")
-db_event_lib.add_argument('--db_example',default=None,type=float,
-        help='Use example DB library with the passed mass for the A\'.')
-
 arg = parser.parse_args()
 
 hunk_transverse = 500 #mm
@@ -41,41 +35,33 @@ hunk_transverse = 500 #mm
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('db')
-p.maxEvents = arg.numEvents
+p.maxEvents = 10
 p.maxTriesPerEvent = 1000
 
 # Dark Brem Vertex Library
-if arg.db_lib is not None:
-    if arg.db_lib.endswith('.tar.gz') :
-        # 1) Unpack the archive
-        import tarfile
-        with tarfile.open(arg.db_lib,"r:gz") as ar :
-            ar.extractall()
-    
-        # 2) Define path to library
-        #   extracting the library puts the directory in the current working directory
-        #   so we just need the basename
-        db_event_lib_path = os.path.basename(arg.db_lib).replace('.tar.gz','')
-    else :
-        # We were given the directory of the event library,
-        #   so we don't have to do anything else
-        db_event_lib_path = arg.db_lib
-else :
-    from LDMX.SimCore import makePath
-    db_event_lib_path = makePath.makeLHEPath(arg.db_example)
-#end if we need to unpack the vertex archive
+if arg.db_lib.endswith('.tar.gz') :
+    # 1) Unpack the archive
+    import tarfile
+    with tarfile.open(arg.db_lib,"r:gz") as ar :
+        ar.extractall()
 
+    # 2) Define path to library
+    #   extracting the library puts the directory in the current working directory
+    #   so we just need the basename
+    db_event_lib_path = os.path.basename(arg.db_lib).replace('.tar.gz','')
+else :
+    # We were given the directory of the event library,
+    #   so we don't have to do anything else
+    db_event_lib_path = arg.db_lib
+
+# need to remove trailing slash so we can deduce the parameters from the library name
 if db_event_lib_path.endswith('/') :
     db_event_lib_path = db_event_lib_path[:-1]
 
-if arg.db_example is None :
-    # Get A' mass from the dark brem library name
-    lib_parameters = os.path.basename(db_event_lib_path).split('_')
-    ap_mass = float(lib_parameters[lib_parameters.index('mA')+1])*1000.
-    run_num = int(lib_parameters[lib_parameters.index('run')+1])
-else :
-    ap_mass = arg.db_example
-    run_num = 1
+# Get A' mass and run number from the dark brem library name
+lib_parameters = os.path.basename(db_event_lib_path).split('_')
+ap_mass = float(lib_parameters[lib_parameters.index('mA')+1])*1000.
+run_num = int(lib_parameters[lib_parameters.index('run')+1])
 
 if not os.path.isdir(arg.out_dir) :
     os.makedirs(arg.out_dir)
