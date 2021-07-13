@@ -29,7 +29,7 @@ void Unpacker::onProcessStart() {
     auto optional_translator{getTranslator(br_name)};
     if (optional_translator) {
       ldmx_log(info) << "Found a translator for " << br_name;
-      unpackers_.emplace_back(br, *optional_translator);
+      unpackers_.emplace_back(tree_, br_name, *optional_translator);
     } else if (skip_unavailable_) {
       ldmx_log(info) << "Unable to find a translator for '" 
         << br_name << "', skipping...";
@@ -46,7 +46,7 @@ void Unpacker::produce(framework::Event& event) {
     abortEvent();
   }
 
-  i_entry_++;
+  std::cout << "Loading raw data entry " << ++i_entry_ << std::endl;
   tree_->GetEntry(i_entry_);
 
   for (auto& unpacker : unpackers_)
@@ -59,9 +59,10 @@ void Unpacker::onProcessEnd() {
   i_entry_ = -2;
 }
 
-Unpacker::SingleUnpacker::SingleUnpacker(TBranch* br, TranslatorPtr t) : translator_{t} {
+Unpacker::SingleUnpacker::SingleUnpacker(TTree* tree, const std::string& br_name, TranslatorPtr t) : translator_{t} {
+  std::cout << "SingleUnpacker(" << br_name << ")" << std::endl;
   buffer_ = new BufferType;
-  br->SetAddress(&buffer_);
+  tree->SetBranchAddress(br_name.c_str(), &buffer_);
 }
 
 void Unpacker::SingleUnpacker::decode(framework::Event& e) {
