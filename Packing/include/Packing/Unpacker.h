@@ -3,6 +3,8 @@
 
 #include "Packing/Processor.h"
 
+#include "TTreeReader.h"
+
 namespace packing {
 
 /**
@@ -73,7 +75,7 @@ class Unpacker : public Processor {
      *
      * We store the translator pointer for use later.
      */
-    SingleUnpacker(TTree* tree, const std::string& br_name, TranslatorPtr t);
+    SingleUnpacker(TTreeReader& r, const std::string& br_name, TranslatorPtr t);
 
     /**
      * Clean Up the dynamically created buffer from earlier.
@@ -81,7 +83,7 @@ class Unpacker : public Processor {
      * We need to delete the tree we are reading from before
      * deleting this object so ROOT doesn't seg fault like a chump.
      */
-    ~SingleUnpacker() { delete buffer_; }
+    ~SingleUnpacker() {}
 
     /**
      * Have this single unpacker decode the current buffer
@@ -95,17 +97,17 @@ class Unpacker : public Processor {
    private:
     /// Translator that can translate the branch our buffer is connected to
     TranslatorPtr translator_;
-    /// Buffer we have connected to a specific branch
-    BufferType* buffer_{nullptr};
+    /// Branch we have connected to
+    TTreeReaderValue<BufferType> buffer_;
+    /// Branch name for debugging purposes
+    std::string br_name_;
   };  // SingleUnpacker
 
  private:
   /// ROOT file with raw data in it
   TFile *file_;
-  /// ROOT tree for raw data
-  TTree *tree_;
-  /// current entry index in raw data tree
-  long int i_entry_;
+  /// ROOT tree reader for raw data
+  TTreeReader *reader_;
   /// Object holding the buffers and their associated translators.
   std::vector<SingleUnpacker> unpackers_;
 };  // Unpacker

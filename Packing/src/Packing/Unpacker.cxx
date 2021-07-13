@@ -18,18 +18,17 @@ void Unpacker::configure(framework::config::Parameters& ps) {
 void Unpacker::onProcessStart() {
   // open file and get tree of raw data
   file_ = TFile::Open(raw_file_.c_str());
-  tree_ = (TTree*)file_->Get(raw_tree_.c_str());
-  i_entry_ = -1;
+  reader_ = new TTreeReader(raw_tree_.c_str(), file_);
 
   // go through list of branches
-  auto branch_listing{tree_->GetListOfBranches()};
+  auto branch_listing{reader_->GetTree()->GetListOfBranches()};
   for (int i_br{0}; i_br < branch_listing->GetEntriesFast(); i_br++) {
     auto br{(TBranch*)branch_listing->UncheckedAt(i_br)};
     std::string br_name{br->GetName()};
     auto optional_translator{getTranslator(br_name)};
     if (optional_translator) {
       ldmx_log(info) << "Found a translator for " << br_name;
-      unpackers_.emplace_back(tree_, br_name, *optional_translator);
+      unpackers_.emplace_back(*reader_, br_name, *optional_translator);
     } else if (skip_unavailable_) {
       ldmx_log(info) << "Unable to find a translator for '" 
         << br_name << "', skipping...";
@@ -41,28 +40,25 @@ void Unpacker::onProcessStart() {
 }
 
 void Unpacker::produce(framework::Event& event) {
-  if (i_entry_+1 > tree_->GetEntriesFast()) {
+  if (not reader_->Next()) {
     /// can we turn this into end run?
     abortEvent();
   }
-
-  std::cout << "Loading raw data entry " << ++i_entry_ << std::endl;
-  tree_->GetEntry(i_entry_);
 
   for (auto& unpacker : unpackers_)
     unpacker.decode(event);
 }
 
 void Unpacker::onProcessEnd() {
+  std::cout << "Clean-up reader..." << std::endl;
+  delete reader_;
+  std::cout << "Close file..." << std::endl;
   file_->Close();
-  tree_ = nullptr;
-  i_entry_ = -2;
+  std::cout << "All done" << std::endl;
 }
 
-Unpacker::SingleUnpacker::SingleUnpacker(TTree* tree, const std::string& br_name, TranslatorPtr t) : translator_{t} {
+Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r, const std::string& br_name, TranslatorPtr t) : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {
   std::cout << "SingleUnpacker(" << br_name << ")" << std::endl;
-  buffer_ = new BufferType;
-  tree->SetBranchAddress(br_name.c_str(), &buffer_);
 }
 
 void Unpacker::SingleUnpacker::decode(framework::Event& e) {
