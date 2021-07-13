@@ -50,16 +50,11 @@ void Unpacker::produce(framework::Event& event) {
 }
 
 void Unpacker::onProcessEnd() {
-  std::cout << "Clean-up reader..." << std::endl;
   delete reader_;
-  std::cout << "Close file..." << std::endl;
   file_->Close();
-  std::cout << "All done" << std::endl;
 }
 
-Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r, const std::string& br_name, TranslatorPtr t) : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {
-  std::cout << "SingleUnpacker(" << br_name << ")" << std::endl;
-}
+Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r, const std::string& br_name, TranslatorPtr t) : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {}
 
 void Unpacker::SingleUnpacker::decode(framework::Event& e) {
   translator_->decode(e, *buffer_);
