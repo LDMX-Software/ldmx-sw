@@ -26,7 +26,6 @@ class BufferReader {
       else
         return false;
     }
-    std::cout << std::bitset<32>(now()) << std::endl;
     return true; 
   }
  private:
@@ -94,7 +93,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
         bool rid_ok{(r.now() >> shift_in_word + 7) & mask<1>::m == 1};
         bool cdc_ok{(r.now() >> shift_in_word + 6) & mask<1>::m == 1};
         num_channels_per_link[i_link] = (r.now() >> shift_in_word) & mask<6>::m;
-        std::cout << num_channels_per_link.at(i_link) << std::endl;
+        std::cout << "Link " << i_link << " readout " << num_channels_per_link.at(i_link) << " channels" << std::endl;
       }
     
       /** Decode Each Link in Sequence
@@ -112,39 +111,41 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
         r.next();
         uint32_t roc_id{(r.now() >> 8 + 5 + 1) & mask<16>::m};
         bool crc_ok{(r.now() >> 8 + 5) & mask<1>::m == 1};
-        uint32_t ro_map_39_32{r.now() & mask<8>::m};
+
+        // get readout map from the last 8 bits of this word
+        // and the entire next word
+        std::bitset<40> ro_map{(r.now()& mask<8>::m) << 32};
         r.next();
-        uint32_t ro_map_31_0{r.now() & mask<32>::m};
-    
+        ro_map |= r.now(); 
+
+        r.next();
+        /** Special "Header" Word from ROC
+         * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
+         */
+        uint32_t bx_id{(r.now() >> 4+3+3+6) & mask<12>::m};
+        uint32_t short_event{(r.now() >> 4+3+3) & mask<6>::m};
+        uint32_t short_orbit{(r.now() >> 4+3) & mask<3>::m};
+        uint32_t hamming_errs{(r.now() >> 4) & mask<3>::m};
+
         std::cout << "Start looping through channels..." << std::endl;
         // loop through channels on this link, 
         //  check if they have been readout before saving word
-        for (uint32_t i_chan{0}; i_chan < 40; i_chan++) {
-          bool has_been_read{false};
-          if (i_chan < 32) {
-            has_been_read = ((ro_map_31_0 >> i_chan & mask<1>::m) == 1);
-          } else {
-            has_been_read = ((ro_map_39_32 >> (i_chan - 31) & mask<1>::m) == 1);
-          }
-    
+        for (uint32_t i_chan{0}; i_chan < num_channels_per_link.at(i_link); i_chan++) {
           // skip zero-suppressed channels
-          if (not has_been_read) continue;
+          if (not ro_map.test(i_chan)) {
+            std::cout << "channel " << i_chan << " was suppressed." << std::endl;
+            continue;
+          }
     
           // next word is this channel
           r.next();
+          std::cout << std::bitset<32>(r.now());
     
-          if (i_chan == 0) { 
-            /** Special "Header" Word from ROC
-             * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
-             */
-          } else if (i_chan == 1) {
+          if (i_chan == 18) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
              */
-          } else if (i_chan == 39) {
-            /** CRC Checksum form ROC
-             */
-            uint32_t roc_crc{r.now() & mask<32>::m};
+            std::cout << " : Common Mode";
           } else {
             /// DAQ Channels
       
@@ -160,23 +161,25 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
             uint32_t eid{i_link * 100 + i_chan};
       
             // copy data into EID->sample map
-            data[eid].emplace_back(r.now() & mask<32>::m);
+            data[eid].emplace_back(r.now());
+            std::cout << " : DAQ Channel";
           }  // type of channel
+          std::cout << std::endl;
         }    // loop over channels (j in Table 4)
         std::cout << "done looping through channels" << std::endl;
 
         // next word is CDC checksum
         r.next();
-        uint32_t cdc{r.now() & mask<32>::m};
+        uint32_t cdc{r.now()};
       }      // loop over links
-    
-      // next word is CDC checksum
-      r.next();
-      uint32_t cdc{r.now() & mask<32>::m};
     } catch (std::out_of_range&) {
       EXCEPTION_RAISE("MisFormat",
           "Recieved raw data that was not formatted correctly.");
     }
+
+    // another CDC checksum from FPGA
+    r.next();
+    uint32_t cdc{r.now()};
   } while (r.next(false)); 
 
   /** Translation
