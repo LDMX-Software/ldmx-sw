@@ -2,6 +2,7 @@
 #include <cstring>
 #include <ctime>
 #include <iomanip>
+#include <bitset>
 
 #include "RawEventFile.h"
 
@@ -83,11 +84,11 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
    * ROC data because it is not decoded in hexactrl-sw by default.
    */
   word = 
-    (1 & mask<4>::m << 8+6+1+12) + // 4 bit version number
-    (fpga & mask<8>::m << 6+1+12) + // 8 bit FPGA ID # (arbitrarily set to 9 here)
-    (2 & mask<6>::m << 1+12) + // 6 bit number of links ("halves" of ROC)
-    (0 & mask<1>::m << 1) + // Reserved 0 bit
-    (2*N_READOUT_CHANNELS & mask<12>::m << 0); // 12 bit total number of readout channels
+    ((1 & mask<4>::m) << 8+6+1+12) + // 4 bit version number
+    ((fpga & mask<8>::m) << 6+1+12) + // 8 bit FPGA ID # (arbitrarily set to 9 here)
+    ((2 & mask<6>::m) << 1+12) + // 6 bit number of links ("halves" of ROC)
+    ((0 & mask<1>::m) << 1) + // Reserved 0 bit
+    ((2*N_READOUT_CHANNELS & mask<12>::m) << 0); // 12 bit total number of readout channels
   buffer_.push_back(word);
 
   unsigned int bx_id{0};
@@ -113,9 +114,9 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
     */
 
   word = 
-    (bx_id & mask<12>::m << 10+10) + // 12 bit bunch ID number
-    (event_ & mask<10>::m << 10) + // 10 bit read request ID number (what will be an event number)
-    (orbit & mask<10>::m << 0); // 10 bit bunch train/orbit counter
+    ((bx_id & mask<12>::m) << 10+10) + // 12 bit bunch ID number
+    ((event_ & mask<10>::m) << 10) + // 10 bit read request ID number (what will be an event number)
+    ((orbit & mask<10>::m) << 0); // 10 bit bunch train/orbit counter
   buffer_.push_back(word);
 
   /** Insert link counters
@@ -132,13 +133,13 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
    *  | RID ok (1) | CRC ok (1) | LEN0 (6)
    */
   word = 
-    (0 & mask<16>::m << 16) +
-    (1 & mask<1>::m << 6+1+1+6+1) +
-    (1 & mask<1>::m << 6+1+1+6) +
-    (N_READOUT_CHANNELS & mask<6>::m << 6+1+1) +
-    (1 & mask<1>::m << 6+1) +
-    (1 & mask<1>::m << 6) +
-    (N_READOUT_CHANNELS & mask<6>::m << 0);
+    ((0 & mask<16>::m) << 16) +
+    ((1 & mask<1>::m) << 6+1+1+6+1) +
+    ((1 & mask<1>::m) << 6+1+1+6) +
+    ((N_READOUT_CHANNELS & mask<6>::m) << 6+1+1) +
+    ((1 & mask<1>::m) << 6+1) +
+    ((1 & mask<1>::m) << 6) +
+    ((N_READOUT_CHANNELS & mask<6>::m) << 0);
   buffer_.push_back(word);
 
   /** Go through both of our links
@@ -154,9 +155,9 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
    */
   for (int half{0}; half < 2; half++) {
     word = 
-      (roc & mask<16>::m << 8+5+1) + // 16 bits for ROC ID (arbitrary choice of 7)
-      (1 & mask<1>::m << 8+5) + // CRC OK bit
-      (0 & mask<5>::m << 8) + // 5 bits of zero reserved
+      ((roc & mask<16>::m) << 8+5+1) + // 16 bits for ROC ID ((arbitrary choice of 7)
+      ((1 & mask<1>::m) << 8+5) + // CRC OK bit
+      ((0 & mask<5>::m) << 8) + // 5 bits of zero reserved
       (mask<8>::m); // last 8 bits of readout map (everything is being read out)
     buffer_.push_back(word);
     // rest of readout map (everything is being readout)
@@ -165,11 +166,11 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
      * 0101 | BX ID (12) | RREQ (6) | OR (3) | HE (3) | 0101
      */
     word = 
-      (0b0101 << 4+3+3+6+12) + // 4 bits 0101
-      (bx_id & mask<12>::m << 4+3+3+6) + //12 bits for BX ID
-      (event_ & mask<6>::m << 4+3+3) + //6 bits for RREQ (event)
-      (orbit & mask<3>::m << 4+3) + //lower 3 bits of orbit (bunch train)
-      (0 & mask<3>::m << 4) + //any Hamming errors present?
+      ((0b0101) << 4+3+3+6+12) + // 4 bits 0101
+      ((bx_id & mask<12>::m) << 4+3+3+6) + //12 bits for BX ID
+      ((event_ & mask<6>::m) << 4+3+3) + //6 bits for RREQ (event)
+      ((orbit & mask<3>::m) << 4+3) + //lower 3 bits of orbit (bunch train)
+      ((0 & mask<3>::m) << 4) + //any Hamming errors present?
       (0b0101); // 4 bits 0101
     buffer_.push_back(word);
 
