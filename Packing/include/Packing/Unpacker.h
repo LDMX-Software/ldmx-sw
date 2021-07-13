@@ -73,7 +73,7 @@ class Unpacker : public Processor {
      *
      * We store the translator pointer for use later.
      */
-    SingleUnpacker(TBranch* br, TranslatorPtr t);
+    SingleUnpacker(TTree* tree, const std::string& br_name, TranslatorPtr t);
 
     /**
      * Clean Up the dynamically created buffer from earlier.

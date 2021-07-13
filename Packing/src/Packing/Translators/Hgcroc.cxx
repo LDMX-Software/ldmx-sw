@@ -1,6 +1,8 @@
 
 #include "Packing/Translators/Hgcroc.h"
 
+#include <bitset>
+
 namespace packing {
 namespace translators {
 
@@ -37,8 +39,10 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
        *  RID ok (1) | CDC ok (1) | LEN0 (6)
        * ... other listing of links ...
        */
-      uint64_t version{(*word >> 12 + 1 + 6 + 8) & mask<4>::m};
-      if (version != 1)
+      uint64_t version{(*word >> 12 + 1 + 6 + 8 - 1) & mask<4>::m};
+      std::cout << std::bitset<32>(*word)  << " -> version " << version << std::endl;
+      uint64_t one{1};
+      if (version != one)
         EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
     
       uint64_t fpga{(*word >> 12 + 1 + 6) & mask<8>::m};
