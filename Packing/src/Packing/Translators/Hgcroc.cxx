@@ -2,9 +2,39 @@
 #include "Packing/Translators/Hgcroc.h"
 
 #include <bitset>
+#include <iomanip>
 
 namespace packing {
 namespace translators {
+
+/**
+ * @class BufferReader
+ * Read the buffer type, only keeping
+ * the lowest 32bits of the 64 bit words.
+ */
+class BufferReader {
+ public:
+  BufferReader(const BufferType& b) : buffer_{b}, i_read_{0} {}
+  const uint32_t& now() {
+    return reinterpret_cast<const uint32_t*>(&buffer_.at(i_read_))[0];
+  }
+  bool next(bool should_exist = true) {
+    i_read_++;
+    if (i_read_ == buffer_.size()) {
+      if (should_exist)
+        throw std::out_of_range("next word should exist");
+      else
+        return false;
+    }
+    std::cout << std::bitset<32>(now()) << std::endl;
+    return true; 
+  }
+ private:
+  // current buffer we are reading
+  const BufferType& buffer_;
+  // current index in buffer we are reading
+  std::size_t i_read_;
+};
 
 Hgcroc::Hgcroc(const framework::config::Parameters& ps) : Translator(ps) {}
 
@@ -21,8 +51,8 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> data;
-  auto word{buffer.begin()};
-  while (word != buffer.end()) {
+  BufferReader r{buffer};
+  do {
     try {
       /** Decode Bunch Header
        * We have a few words of header material before the actual data.
@@ -39,29 +69,32 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
        *  RID ok (1) | CDC ok (1) | LEN0 (6)
        * ... other listing of links ...
        */
-      uint64_t version{(*word >> 12 + 1 + 6 + 8 - 1) & mask<4>::m};
-      std::cout << std::bitset<32>(*word)  << " -> version " << version << std::endl;
-      uint64_t one{1};
+      uint32_t version{(r.now() >> 12 + 1 + 6 + 8) & mask<4>::m};
+      std::cout << std::bitset<32>(r.now())  << " -> version " << version << std::endl;
+      uint32_t one{1};
       if (version != one)
         EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
     
-      uint64_t fpga{(*word >> 12 + 1 + 6) & mask<8>::m};
-      uint64_t nlinks{(*word >> 12 + 1) & mask<6>::m};
-      uint64_t len{*word & mask<12>::m};
+      uint32_t fpga{(r.now() >> 12 + 1 + 6) & mask<8>::m};
+      uint32_t nlinks{(r.now() >> 12 + 1) & mask<6>::m};
+      uint32_t len{r.now() & mask<12>::m};
     
-      word++;
+      std::cout << "fpga: " << fpga << ", nlinks: " << nlinks << ", len: " << len << std::endl;
+      r.next();
     
-      uint64_t bx_id{(*word >> 10 + 10) & mask<12>::m};
-      uint64_t rreq{(*word >> 10) & mask<10>::m};
-      uint64_t orbit{*word & mask<10>::m};
+      uint32_t bx_id{(r.now() >> 10 + 10) & mask<12>::m};
+      uint32_t rreq{(r.now() >> 10) & mask<10>::m};
+      uint32_t orbit{r.now() & mask<10>::m};
     
-      std::vector<uint64_t> num_channels_per_link;
-      for (uint64_t i_link{0}; i_link < nlinks; i_link++) {
-        if (i_link % 4 == 0) word++;
-        uint64_t shift_in_word{8 * i_link % 4};
-        bool rid_ok{(*word >> shift_in_word + 7) & mask<1>::m == 1};
-        bool cdc_ok{(*word >> shift_in_word + 6) & mask<1>::m == 1};
-        num_channels_per_link[i_link] = (*word >> shift_in_word) & mask<6>::m;
+      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq << ", orbit: " << orbit << std::endl;
+      std::vector<uint32_t> num_channels_per_link(nlinks,0);
+      for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
+        if (i_link % 4 == 0) r.next();
+        uint32_t shift_in_word{8 * i_link % 4};
+        bool rid_ok{(r.now() >> shift_in_word + 7) & mask<1>::m == 1};
+        bool cdc_ok{(r.now() >> shift_in_word + 6) & mask<1>::m == 1};
+        num_channels_per_link[i_link] = (r.now() >> shift_in_word) & mask<6>::m;
+        std::cout << num_channels_per_link.at(i_link) << std::endl;
       }
     
       /** Decode Each Link in Sequence
@@ -73,18 +106,20 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
        * RO Map (32)
        */
     
-      for (uint64_t i_link{0}; i_link < nlinks; i_link++) {
+      for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         // move on from last word counting links or previous link
-        word++;
-        uint64_t roc_id{(*word >> 8 + 5 + 1) & mask<16>::m};
-        bool crc_ok{(*word >> 8 + 5) & mask<1>::m == 1};
-        uint64_t ro_map_39_32{*word & mask<8>::m};
-        word++;
-        uint64_t ro_map_31_0{*word & mask<32>::m};
+        std::cout << "RO Link " << i_link << std::endl;
+        r.next();
+        uint32_t roc_id{(r.now() >> 8 + 5 + 1) & mask<16>::m};
+        bool crc_ok{(r.now() >> 8 + 5) & mask<1>::m == 1};
+        uint32_t ro_map_39_32{r.now() & mask<8>::m};
+        r.next();
+        uint32_t ro_map_31_0{r.now() & mask<32>::m};
     
+        std::cout << "Start looping through channels..." << std::endl;
         // loop through channels on this link, 
         //  check if they have been readout before saving word
-        for (uint64_t i_chan{0}; i_chan < 40; i_chan++) {
+        for (uint32_t i_chan{0}; i_chan < 40; i_chan++) {
           bool has_been_read{false};
           if (i_chan < 32) {
             has_been_read = ((ro_map_31_0 >> i_chan & mask<1>::m) == 1);
@@ -96,7 +131,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
           if (not has_been_read) continue;
     
           // next word is this channel
-          word++;
+          r.next();
     
           if (i_chan == 0) { 
             /** Special "Header" Word from ROC
@@ -109,7 +144,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
           } else if (i_chan == 39) {
             /** CRC Checksum form ROC
              */
-            uint64_t roc_crc{*word & mask<32>::m};
+            uint32_t roc_crc{r.now() & mask<32>::m};
           } else {
             /// DAQ Channels
       
@@ -122,25 +157,27 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
              * For now, we just generate a dummy mapping
              * using the link and channel indices.
              */
-            uint64_t eid{i_link * 100 + i_chan};
+            uint32_t eid{i_link * 100 + i_chan};
       
             // copy data into EID->sample map
-            data[eid].emplace_back(*word & mask<32>::m);
+            data[eid].emplace_back(r.now() & mask<32>::m);
           }  // type of channel
         }    // loop over channels (j in Table 4)
+        std::cout << "done looping through channels" << std::endl;
+
+        // next word is CDC checksum
+        r.next();
+        uint32_t cdc{r.now() & mask<32>::m};
       }      // loop over links
     
       // next word is CDC checksum
-      word++;
-      uint64_t cdc{*word & mask<32>::m};
-    
-      // need to go one word past the last word we used.
-      word++;
+      r.next();
+      uint32_t cdc{r.now() & mask<32>::m};
     } catch (std::out_of_range&) {
       EXCEPTION_RAISE("MisFormat",
           "Recieved raw data that was not formatted correctly.");
     }
-  }
+  } while (r.next(false)); 
 
   /** Translation
    * The actual translation done here is the translation from electronic IDs
