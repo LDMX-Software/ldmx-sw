@@ -61,6 +61,8 @@ class Unpacker : public Processor {
   std::string raw_file_;
   /// name of tree in raw file
   std::string raw_tree_;
+  /// name of tree in raw file with run information
+  std::string run_tree_;
   /// Should we skip branches we can't find translators for?
   bool skip_unavailable_;
 
@@ -107,8 +109,6 @@ class Unpacker : public Processor {
     TranslatorPtr translator_;
     /// Branch we have connected to
     TTreeReaderValue<BufferType> buffer_;
-    /// Branch name for debugging purposes
-    std::string br_name_;
   };  // SingleUnpacker
 
  private:
