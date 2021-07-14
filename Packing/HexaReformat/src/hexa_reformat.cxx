@@ -1,21 +1,18 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <TFile.h>
 
 #include <algorithm>
-#include <iomanip>
-
+#include <boost/archive/binary_iarchive.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/program_options.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-
-#include <TFile.h>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "HGCROCv2RawData.h"
 #include "RawEventFile.h"
 
 int main(int argc, char** argv) {
-
   std::string m_input, m_output;
   bool m_debug = false;
   try {
@@ -23,10 +20,13 @@ int main(int argc, char** argv) {
      */
     namespace po = boost::program_options;
     po::options_description generic_options("Generic options");
-    generic_options.add_options()("help,h", "Print help messages")
-      ("input,i", po::value<std::string>(&m_input), "input file name")
-      ("output,o", po::value<std::string>(&m_output)->default_value("reformatted.root"), "output file name")
-      ("debug", po::bool_switch(&m_debug)->default_value(false), "Dump information to terminal to help see behavior.");
+    generic_options.add_options()("help,h", "Print help messages")(
+        "input,i", po::value<std::string>(&m_input), "input file name")(
+        "output,o",
+        po::value<std::string>(&m_output)->default_value("reformatted.root"),
+        "output file name")(
+        "debug", po::bool_switch(&m_debug)->default_value(false),
+        "Dump information to terminal to help see behavior.");
 
     po::options_description cmdline_options;
     cmdline_options.add(generic_options);

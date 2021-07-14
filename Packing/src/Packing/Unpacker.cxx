@@ -12,6 +12,7 @@ void Unpacker::configure(framework::config::Parameters& ps) {
 
   raw_file_ = ps.getParameter<std::string>("raw_file");
   raw_tree_ = ps.getParameter<std::string>("raw_tree");
+  run_tree_ = ps.getParameter<std::string>("run_tree");
   skip_unavailable_ = ps.getParameter<bool>("skip_unavailable");
 }
 
@@ -30,12 +31,29 @@ void Unpacker::onProcessStart() {
       ldmx_log(info) << "Found a translator for " << br_name;
       unpackers_.emplace_back(*reader_, br_name, *optional_translator);
     } else if (skip_unavailable_) {
-      ldmx_log(info) << "Unable to find a translator for '" 
-        << br_name << "', skipping...";
+      ldmx_log(info) << "Unable to find a translator for '" << br_name
+                     << "', skipping...";
     } else {
-      EXCEPTION_RAISE("DeduceTranslator",
-          "Unable to find a translator that can translate '"+br_name+"'.");
+      EXCEPTION_RAISE(
+          "DeduceTranslator",
+          "Unable to find a translator that can translate '" + br_name + "'.");
     }
+  }
+}
+
+void Unpacker::beforeNewRun(ldmx::RunHeader& header) {
+  TTreeReader run_read(run_tree_.c_str(), file_);
+
+  TTreeReaderValue<int> run_num(run_read, "run");
+
+  if (not run_read.Next()) {
+    std::cerr << "No entries in run tree!" << std::endl;
+  }
+
+  header.setIntParameter("raw_run", *run_num);
+
+  if (run_read.Next()) {
+    std::cerr << "More than one entry in run tree!" << std::endl;
   }
 }
 
@@ -45,8 +63,7 @@ void Unpacker::produce(framework::Event& event) {
     abortEvent();
   }
 
-  for (auto& unpacker : unpackers_)
-    unpacker.decode(event);
+  for (auto& unpacker : unpackers_) unpacker.decode(event);
 }
 
 void Unpacker::onProcessEnd() {
@@ -54,7 +71,10 @@ void Unpacker::onProcessEnd() {
   file_->Close();
 }
 
-Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r, const std::string& br_name, TranslatorPtr t) : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {}
+Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r,
+                                         const std::string& br_name,
+                                         TranslatorPtr t)
+    : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {}
 
 void Unpacker::SingleUnpacker::decode(framework::Event& e) {
   translator_->decode(e, *buffer_);
