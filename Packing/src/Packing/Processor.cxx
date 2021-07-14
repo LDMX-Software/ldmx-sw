@@ -3,7 +3,8 @@
 
 namespace packing {
 
-/// need to define static variable so we can have a defined symbol for it (dynamic linking nonsense)
+/// need to define static variable so we can have a defined symbol for it
+/// (dynamic linking nonsense)
 std::map<std::string, TranslatorBuilder*> Processor::registeredTranslators_;
 
 void Processor::registerTranslator(const std::string& class_name,
@@ -32,14 +33,14 @@ void Processor::configure(framework::config::Parameters& ps) {
   }
 }
 
-std::optional<TranslatorPtr> Processor::getTranslator(const std::string& name) const {
+std::optional<TranslatorPtr> Processor::getTranslator(
+    const std::string& name) const {
   if (translatorCache_.find(name) == translatorCache_.end()) {
     auto t_it{translators_.begin()};
-    for (;t_it != translators_.end(); ++t_it) {
-      if ((*t_it)->canTranslate(name))
-        break;
+    for (; t_it != translators_.end(); ++t_it) {
+      if ((*t_it)->canTranslate(name)) break;
     }  // loop over possible translators
-  
+
     if (t_it == translators_.end()) {
       // unable to find translator
       return std::nullopt;
@@ -52,5 +53,6 @@ std::optional<TranslatorPtr> Processor::getTranslator(const std::string& name) c
 
 }  // namespace packing
 
-// We _do not_ DELCARE_PRODUCER because this producer is not supposed to be used directly
+// We _do not_ DELCARE_PRODUCER because this producer is not supposed to be used
+// directly
 //    we only want to define shared functionalities for Unpacker/Packer
