@@ -21,4 +21,4 @@ std::ostream& operator<<(std::ostream& out, const HGCROCv2RawData& rawdata) {
   return out;
 }
 
-}  // hexareformat
+}  // namespace hexareformat

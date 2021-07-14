@@ -37,6 +37,14 @@ class Unpacker : public Processor {
   void onProcessStart() final override;
 
   /**
+   * We are given a non-const reference to a new RunHeader so
+   * we can add parameters unpacked from the raw data.
+   *
+   * This is where we open up the run tree and get the run parameters.
+   */
+  void beforeNewRun(ldmx::RunHeader& header) final override;
+
+  /**
    * Actually do the unpacking/decoding.
    *
    * @param[in,out] event Event bus with raw data where we will put the digis

@@ -57,5 +57,8 @@ While we are waiting to nail down the specifics of the readout of the various su
 we will need some extra code to insert the expected header information that will surround
 the raw files currectly being read off a stand-a-lone chip.
 
-Specifically, I have written a short program `hexa-decode` which converts the files output
+### HexaReformat
+Specifically, I have written a short program `hexa-reformat` which converts the files output
 by the software I'm using to test an HGC ROC into the form detailed above.
+The code for this conversion is in the `HexaReformat` directory and can be compiled with 
+ldmx-sw or independently.
