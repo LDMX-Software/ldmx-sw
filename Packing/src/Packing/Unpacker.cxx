@@ -74,7 +74,7 @@ void Unpacker::onProcessEnd() {
 Unpacker::SingleUnpacker::SingleUnpacker(TTreeReader& r,
                                          const std::string& br_name,
                                          TranslatorPtr t)
-    : translator_{t}, buffer_{r, br_name.c_str()}, br_name_{br_name} {}
+    : translator_{t}, buffer_{r, br_name.c_str()} {}
 
 void Unpacker::SingleUnpacker::decode(framework::Event& e) {
   translator_->decode(e, *buffer_);
