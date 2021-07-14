@@ -47,8 +47,9 @@ class BufferReader {
       else
         return false;
     }
-    return true; 
+    return true;
   }
+
  private:
   // current buffer we are reading
   const BufferType& buffer_;
@@ -90,33 +91,38 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
        * ... other listing of links ...
        */
       uint32_t version{(r.now() >> 12 + 1 + 6 + 8) & mask<4>::m};
-      std::cout << std::bitset<32>(r.now())  << " -> version " << version << std::endl;
+      std::cout << std::bitset<32>(r.now()) << " -> version " << version
+                << std::endl;
       uint32_t one{1};
       if (version != one)
         EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
-    
+
       uint32_t fpga{(r.now() >> 12 + 1 + 6) & mask<8>::m};
       uint32_t nlinks{(r.now() >> 12 + 1) & mask<6>::m};
       uint32_t len{r.now() & mask<12>::m};
-    
-      std::cout << "fpga: " << fpga << ", nlinks: " << nlinks << ", len: " << len << std::endl;
+
+      std::cout << "fpga: " << fpga << ", nlinks: " << nlinks
+                << ", len: " << len << std::endl;
       r.next();
-    
+
       uint32_t bx_id{(r.now() >> 10 + 10) & mask<12>::m};
       uint32_t rreq{(r.now() >> 10) & mask<10>::m};
       uint32_t orbit{r.now() & mask<10>::m};
-    
-      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq << ", orbit: " << orbit << std::endl;
-      std::vector<uint32_t> num_channels_per_link(nlinks,0);
+
+      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
+                << ", orbit: " << orbit << std::endl;
+      std::vector<uint32_t> num_channels_per_link(nlinks, 0);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) r.next();
         uint32_t shift_in_word{8 * i_link % 4};
         bool rid_ok{(r.now() >> shift_in_word + 7) & mask<1>::m == 1};
         bool cdc_ok{(r.now() >> shift_in_word + 6) & mask<1>::m == 1};
         num_channels_per_link[i_link] = (r.now() >> shift_in_word) & mask<6>::m;
-        std::cout << "Link " << i_link << " readout " << num_channels_per_link.at(i_link) << " channels" << std::endl;
+        std::cout << "Link " << i_link << " readout "
+                  << num_channels_per_link.at(i_link) << " channels"
+                  << std::endl;
       }
-    
+
       /** Decode Each Link in Sequence
        * Now we should be decoding each link serially
        * where each link was encoded as in Table 4 of
@@ -125,7 +131,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
        * ROC_ID (16) | CRC ok (1) | 00000 | RO Map (8)
        * RO Map (32)
        */
-    
+
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         // move on from last word counting links or previous link
         std::cout << "RO Link " << i_link << std::endl;
@@ -135,33 +141,35 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
 
         // get readout map from the last 8 bits of this word
         // and the entire next word
-        std::bitset<40> ro_map{(r.now()& mask<8>::m) << 32};
+        std::bitset<40> ro_map{(r.now() & mask<8>::m) << 32};
         r.next();
-        ro_map |= r.now(); 
+        ro_map |= r.now();
 
         r.next();
         /** Special "Header" Word from ROC
          * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
          */
-        uint32_t bx_id{(r.now() >> 4+3+3+6) & mask<12>::m};
-        uint32_t short_event{(r.now() >> 4+3+3) & mask<6>::m};
-        uint32_t short_orbit{(r.now() >> 4+3) & mask<3>::m};
+        uint32_t bx_id{(r.now() >> 4 + 3 + 3 + 6) & mask<12>::m};
+        uint32_t short_event{(r.now() >> 4 + 3 + 3) & mask<6>::m};
+        uint32_t short_orbit{(r.now() >> 4 + 3) & mask<3>::m};
         uint32_t hamming_errs{(r.now() >> 4) & mask<3>::m};
 
         std::cout << "Start looping through channels..." << std::endl;
-        // loop through channels on this link, 
+        // loop through channels on this link,
         //  check if they have been readout before saving word
-        for (uint32_t i_chan{0}; i_chan < num_channels_per_link.at(i_link); i_chan++) {
+        for (uint32_t i_chan{0}; i_chan < num_channels_per_link.at(i_link);
+             i_chan++) {
           // skip zero-suppressed channels
           if (not ro_map.test(i_chan)) {
-            std::cout << "channel " << i_chan << " was suppressed." << std::endl;
+            std::cout << "channel " << i_chan << " was suppressed."
+                      << std::endl;
             continue;
           }
-    
+
           // next word is this channel
           r.next();
           std::cout << std::bitset<32>(r.now());
-    
+
           if (i_chan == 18) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
@@ -169,7 +177,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
             std::cout << " : Common Mode";
           } else {
             /// DAQ Channels
-      
+
             /** Generate Packed Electronics ID
              * Link Index i_link
              * Channel Index i_chan
@@ -180,28 +188,28 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
              * using the link and channel indices.
              */
             uint32_t eid{i_link * 100 + i_chan};
-      
+
             // copy data into EID->sample map
             data[eid].emplace_back(r.now());
             std::cout << " : DAQ Channel";
           }  // type of channel
           std::cout << std::endl;
-        }    // loop over channels (j in Table 4)
+        }  // loop over channels (j in Table 4)
         std::cout << "done looping through channels" << std::endl;
 
         // next word is CDC checksum
         r.next();
         uint32_t cdc{r.now()};
-      }      // loop over links
+      }  // loop over links
     } catch (std::out_of_range&) {
       EXCEPTION_RAISE("MisFormat",
-          "Recieved raw data that was not formatted correctly.");
+                      "Recieved raw data that was not formatted correctly.");
     }
 
     // another CDC checksum from FPGA
     r.next();
     uint32_t cdc{r.now()};
-  } while (r.next(false)); 
+  } while (r.next(false));
 
   /** Translation
    * The actual translation done here is the translation from electronic IDs

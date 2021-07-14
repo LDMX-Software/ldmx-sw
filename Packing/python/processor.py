@@ -16,4 +16,5 @@ class Unpacker(ldmxcfg.Producer) :
         self.translators = translators
         self.raw_file = raw_file
         self.raw_tree = 'LDMX_RawData'
+        self.run_tree = 'LDMX_Runs'
         self.skip_unavailable = True
