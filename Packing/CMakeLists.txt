@@ -20,3 +20,6 @@ setup_library(module Packing
               dependencies Packing::Packing)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Packing)
+
+# add band-aid for reformatting output of hexactrl-sw
+add_subdirectory(HexaReformat)
