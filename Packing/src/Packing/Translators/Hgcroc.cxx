@@ -9,15 +9,36 @@ namespace translators {
 
 /**
  * @class BufferReader
- * Read the buffer type, only keeping
- * the lowest 32bits of the 64 bit words.
+ * Read the buffer type, only keeping the lowest 32bits of the 64 bit words.
+ *
+ * This is a very simple class, it just helps us make sure we don't
+ * go past the end of the buffer while inside our oddly written loop.
+ *
+ * It also handles the casting for us which makes the decoding code
+ * slightly simpler.
  */
 class BufferReader {
  public:
+  /**
+   * Initialize a reader by wrapping a buffer to read.
+   */
   BufferReader(const BufferType& b) : buffer_{b}, i_read_{0} {}
+  /**
+   * Get lowest 32-bits of current word in buffer.
+   * @return uint32_t current word
+   */
   const uint32_t& now() {
     return reinterpret_cast<const uint32_t*>(&buffer_.at(i_read_))[0];
   }
+  /**
+   * Go to next word in buffer.
+   *
+   * @throws std::out_of_range if should_exist is true and we reach
+   * the end of the buffer
+   * @param[in] should_exist set to false if we are okay with the next word
+   * not existing
+   * @return true if we have another word, false if we've reached the end
+   */
   bool next(bool should_exist = true) {
     i_read_++;
     if (i_read_ == buffer_.size()) {
