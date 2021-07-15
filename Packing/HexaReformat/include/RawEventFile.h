@@ -79,7 +79,9 @@ class RawEventFile {
   /// Should we print debug messages?
   bool debug_;
   /// The packed data
-  std::vector<uint64_t> buffer_;
+  std::vector<uint32_t> buffer_;
+  /// The casted data to go into the tree
+  std::vector<uint64_t> buffer_64bit_;
   /// The event header buffer
   std::vector<uint64_t> event_header_;
   /// Event number
