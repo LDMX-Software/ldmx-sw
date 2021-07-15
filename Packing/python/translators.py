@@ -27,8 +27,14 @@ class EventHeader(Translator) :
 class Hgcroc(Translator) :
     """Configuration for Hgcroc Translator configuration
 
-    The Hgcroc translator is not configured with any parameters.
+    Attributes
+    ----------
+    roc_version : int
+        The version of the HGC ROC that is being used.
+        A few small changes to the data format were implemented between ROC v2 and v3,
+        so we expect this parameter to matter eventually.
     """
 
     def __init__(self) :
         super().__init__('packing::translators::Hgcroc','Packing::Translators')
+        self.roc_version = 2
