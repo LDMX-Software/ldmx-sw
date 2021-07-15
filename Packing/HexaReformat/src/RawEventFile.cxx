@@ -64,7 +64,7 @@ RawEventFile::RawEventFile(std::string filename, bool debug) : debug_{debug} {
 
   // TFile cleans up the TTrees that are created within it
   data_tree_ = new TTree("LDMX_RawData", "Encoded raw data for LDMX");
-  data_tree_->Branch("EcalPrecisionHgcrocReadout", &buffer_);
+  data_tree_->Branch("EcalPrecisionHgcrocReadout", &buffer_64bit_);
   data_tree_->Branch("EventHeader", &event_header_);
 
   // TFile cleans up the TTrees that are created within it
@@ -246,11 +246,16 @@ void RawEventFile::endEvent() {
               << std::endl;
 
   event_header_ = {uint64_t(run_), uint64_t(event_), uint64_t(time(NULL))};
+
+  buffer_64bit_.resize(buffer_.size()/2);
+  memcpy(buffer_64bit_.data(), buffer_.data(), sizeof(uint32_t)*buffer_.size());
+
   /// Fill data tree
   data_tree_->Fill();
 
   /// clear raw data from memory
   buffer_.clear();
+  buffer_64bit_.clear();
 }
 
 void RawEventFile::endRun() {

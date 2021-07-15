@@ -68,14 +68,16 @@ class BufferReader {
   /**
    * Initialize a reader by wrapping a buffer to read.
    */
-  BufferReader(const BufferType& b) : buffer_{b}, i_read_{0} {}
+  BufferReader(const BufferType& b) : buffer_{b}, i_read_{0}, i_subword_{0} {}
+
   /**
-   * Get lowest 32-bits of current word in buffer.
+   * Get the current 32-bit word in buffer.
    * @return uint32_t current word
    */
   const uint32_t& now() {
-    return reinterpret_cast<const uint32_t*>(&buffer_.at(i_read_))[0];
+    return reinterpret_cast<const uint32_t*>(&buffer_.at(i_read_))[i_subword_];
   }
+
   /**
    * Go to next word in buffer.
    *
@@ -86,21 +88,32 @@ class BufferReader {
    * @return true if we have another word, false if we've reached the end
    */
   bool next(bool should_exist = true) {
-    i_read_++;
-    if (i_read_ == buffer_.size()) {
-      if (should_exist)
-        throw std::out_of_range("next word should exist");
-      else
-        return false;
+    if (i_subword_+1 == max_subwords_) {
+      // next buffer word
+      i_subword_ = 0;
+      i_read_++;
+      if (i_read_ == buffer_.size()) {
+        if (should_exist)
+          throw std::out_of_range("next word should exist");
+        else
+          return false;
+      }
+    } else {
+      // next subword
+      i_subword_++;
     }
     return true;
   }
 
  private:
+  // maximum number of sub-words in a single buffer word
+  static const std::size_t max_subwords_{sizeof(BufferType::value_type)/sizeof(uint32_t)};
   // current buffer we are reading
   const BufferType& buffer_;
   // current index in buffer we are reading
   std::size_t i_read_;
+  // current sub-word in word in buffer we are reading
+  std::size_t i_subword_;
 };
 
 Hgcroc::Hgcroc(const framework::config::Parameters& ps) : Translator(ps) {
@@ -200,9 +213,11 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
         r.next();
         fpga_crc(r.now());
         link_crc(r.now());
-        std::cout << std::bitset<32>(r.now()) << std::endl;
         uint32_t roc_id{(r.now() >> 8 + 5 + 1) & mask<16>::m};
         bool crc_ok{(r.now() >> 8 + 5) & mask<1>::m == 1};
+        std::cout << std::bitset<32>(r.now()) 
+          << " : roc_id " << roc_id
+          << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
 
         // get readout map from the last 8 bits of this word
         // and the entire next word
