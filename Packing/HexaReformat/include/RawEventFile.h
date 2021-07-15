@@ -18,9 +18,10 @@
  * zero suppression currently in the hexactrl-sw DAQ, this ends
  * up being a map of all ones.
  *
- * We have 38 channels that are always read out.
+ * We have 38 channels that are always read out plus
+ *  a header word at the top and a CRC checksum at the bottom
  */
-#define N_READOUT_CHANNELS 38
+#define N_READOUT_CHANNELS 40
 
 namespace hexareformat {
 
