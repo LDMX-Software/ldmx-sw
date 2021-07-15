@@ -61,6 +61,10 @@ class Hgcroc : public Translator {
         "Hgcroc Translator hasn't implemented encode yet.");
     return {};
   }
+ 
+ private:
+  /// version of HGC ROC we are unpacking
+  int roc_version_;
 };
 
 }  // namespace translators
