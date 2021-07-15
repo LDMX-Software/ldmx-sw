@@ -7,10 +7,10 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 
-namespace packing {
+// defines type of buffer
+#include "Packing/Buffer.h"
 
-/// The type of buffer we are using to hold the raw data
-typedef std::vector<uint64_t> BufferType;
+namespace packing {
 
 /// Forward declaration for generic building function
 class Translator;
