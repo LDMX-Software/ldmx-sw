@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <boost/crc.hpp>
 
+#include "Packing/Buffer.h"
+
 namespace packing {
 namespace translators {
 
@@ -53,69 +55,6 @@ struct CRC {
   auto get() { return crc.checksum(); }
 };
 
-/**
- * @class BufferReader
- * Read the buffer type, only keeping the lowest 32bits of the 64 bit words.
- *
- * This is a very simple class, it just helps us make sure we don't
- * go past the end of the buffer while inside our oddly written loop.
- *
- * It also handles the casting for us which makes the decoding code
- * slightly simpler.
- */
-class BufferReader {
- public:
-  /**
-   * Initialize a reader by wrapping a buffer to read.
-   */
-  BufferReader(const BufferType& b) : buffer_{b}, i_read_{0}, i_subword_{0} {}
-
-  /**
-   * Get the current 32-bit word in buffer.
-   * @return uint32_t current word
-   */
-  const uint32_t& now() {
-    return reinterpret_cast<const uint32_t*>(&buffer_.at(i_read_))[i_subword_];
-  }
-
-  /**
-   * Go to next word in buffer.
-   *
-   * @throws std::out_of_range if should_exist is true and we reach
-   * the end of the buffer
-   * @param[in] should_exist set to false if we are okay with the next word
-   * not existing
-   * @return true if we have another word, false if we've reached the end
-   */
-  bool next(bool should_exist = true) {
-    if (i_subword_+1 == max_subwords_) {
-      // next buffer word
-      i_subword_ = 0;
-      i_read_++;
-      if (i_read_ == buffer_.size()) {
-        if (should_exist)
-          throw std::out_of_range("next word should exist");
-        else
-          return false;
-      }
-    } else {
-      // next subword
-      i_subword_++;
-    }
-    return true;
-  }
-
- private:
-  // maximum number of sub-words in a single buffer word
-  static const std::size_t max_subwords_{sizeof(BufferType::value_type)/sizeof(uint32_t)};
-  // current buffer we are reading
-  const BufferType& buffer_;
-  // current index in buffer we are reading
-  std::size_t i_read_;
-  // current sub-word in word in buffer we are reading
-  std::size_t i_subword_;
-};
-
 Hgcroc::Hgcroc(const framework::config::Parameters& ps) : Translator(ps) {
   roc_version_ = ps.getParameter<int>("roc_version");
 }
@@ -138,8 +77,7 @@ void Hgcroc::decode(framework::Event& event, const BufferType& buffer) {
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> data;
-  BufferReader r{buffer};
-  std::cout << buffer.size() << std::endl;
+  BufferReader<uint32_t> r{buffer};
   do {
     try {
       /** Decode Bunch Header
