@@ -9,28 +9,6 @@
 
 namespace packing {
 
-/**
- * @struct mask
- *
- * Lots of translators need masks of various numbers of bits. 
- * This struct allows the coder to quickly get a mask for the
- * lowest N bits.
- * 
- * Using this technique, the mask is deduced at compile time, 
- * making the code a lot more readable but no less fast!
- *
- * Example:
- *  To get the lowest 5 bits of integer i
- *    i & mask<5>::m;
- *
- * @tparam[in] N number of lowest order bits to mask for
- */
-template <uint64_t N>
-struct mask {
-  static const uint64_t one{1};
-  static const uint64_t m = (one << N) - one;
-};
-
 /// The type of buffer we are using to hold the raw data
 typedef std::vector<uint64_t> BufferType;
 
