@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <boost/crc.hpp>
 
 namespace hexareformat {
 
@@ -33,6 +34,29 @@ struct mask {
   static const uint64_t one{1};
   /// value of mask
   static const uint64_t m = (one << N) - one;
+};
+
+/**
+ * @struct CRC
+ *
+ * The HGC ROC and FPGA use a CRC checksum to double check that the
+ * data transfer has been done correctly. Boost has a CRC checksum
+ * library that we can use to do this checking here as well.
+ *
+ * Idea for this helper struct was found on StackOverflow
+ * https://stackoverflow.com/a/63237679
+ * I've actually simplified it by limiting its use-case to our
+ * type of data.
+ */
+struct CRC {
+  // the object from Boost doing the summing
+  boost::crc_32_type crc;
+  // add a word to the sum
+  void operator()(const uint32_t& w) {
+    crc.process_bytes(&w, sizeof(w));
+  }
+  // get the checksum
+  auto get() { return crc.checksum(); }
 };
 
 RawEventFile::RawEventFile(std::string filename, bool debug) : debug_{debug} {
@@ -71,6 +95,8 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
   // current word we are using to help create buffer
   static uint64_t word;
 
+  CRC fpga_crc;
+
   /** Insert new header here
    * In the DAQ specs, the header is separated into 32-bit words,
    * so we do the same here. Below, I've copied down the structure
@@ -93,6 +119,7 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
       ((2 * N_READOUT_CHANNELS & mask<12>::m)
        << 0);  // 12 bit total number of readout channels
   buffer_.push_back(word);
+  fpga_crc(word);
 
   unsigned int bx_id{0};
   try {
@@ -121,6 +148,7 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
        << 10) +  // 10 bit read request ID number (what will be an event number)
       ((orbit & mask<10>::m) << 0);  // 10 bit bunch train/orbit counter
   buffer_.push_back(word);
+  fpga_crc(word);
 
   /** Insert link counters
    * We only have two links in this ROC,
@@ -141,6 +169,7 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
          ((1 & mask<1>::m) << 6 + 1) + ((1 & mask<1>::m) << 6) +
          ((N_READOUT_CHANNELS & mask<6>::m) << 0);
   buffer_.push_back(word);
+  fpga_crc(word);
 
   /** Go through both of our links
    * In our case, the two "half"s of the ROC are our two links.
@@ -154,6 +183,7 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
    * The numbers in parentheses are the number of bits.
    */
   for (int half{0}; half < 2; half++) {
+    CRC link_crc;
     word = ((roc & mask<16>::m)
             << 8 + 5 + 1) +  // 16 bits for ROC ID ((arbitrary choice of 7)
            ((1 & mask<1>::m) << 8 + 5) +  // CRC OK bit
@@ -161,8 +191,12 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
            (mask<8>::m);  // last 8 bits of readout map (everything is being
                           // read out)
     buffer_.push_back(word);
+    fpga_crc(word);
+    link_crc(word);
     // rest of readout map (everything is being readout)
     buffer_.push_back(0xFFFFFFFF);
+    fpga_crc(0xFFFFFFFF);
+    link_crc(0xFFFFFFFF);
     /** header word from ROC
      * 0101 | BX ID (12) | RREQ (6) | OR (3) | HE (3) | 0101
      */
@@ -174,22 +208,29 @@ void RawEventFile::fill(HGCROCv2RawData rocdata) {
            ((0 & mask<3>::m) << 4) +  // any Hamming errors present?
            (0b0101);                  // 4 bits 0101
     buffer_.push_back(word);
+    fpga_crc(word);
+    link_crc(word);
 
     // copy in _data_ words from hexactrl-sw
     //  (we already decoded the header to get the BX ID above)
     //  and we drop the four commas that are used by the ROC
     //  to signal the end of a group
     const std::vector<uint32_t>& link_data{rocdata.data(half)};
-    buffer_.insert(buffer_.end(), link_data.begin() + 1, link_data.end() - 4);
+    for (auto w_it{link_data.begin()+1}; w_it != link_data.end()-4; w_it++) {
+      buffer_.push_back(*w_it);
+      fpga_crc(*w_it);
+      link_crc(*w_it);
+    }
 
     // ROC CRC Checksum
-    buffer_.push_back(0xFFFFFFFF);
+    buffer_.push_back(link_crc.get());
+    fpga_crc(link_crc.get());
   }
 
   /** CRC Checksum computed by FPGA
    * We don't compute one right now, so just an extra word of all ones)
    */
-  buffer_.push_back(0xFFFFFFFF);
+  buffer_.push_back(fpga_crc.get());
 
   if (debug_) {
     std::cout << "Buffer: ";
