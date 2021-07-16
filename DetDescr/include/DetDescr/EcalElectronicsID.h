@@ -28,7 +28,9 @@ class EcalElectronicsID : public DetectorID {
 
   static const RawValue INDEX_MASK{0xFFFFFF};
   // channel, elink, [fiber]
-  typedef PackedIndex<38,48> Index; 
+  typedef PackedIndex<38,48> Index;
+  // Maximum value
+  static const unsigned int MAX_INDEX{38*48*200};
   
   /**
    * Empty ECAL id (but not null!)
@@ -58,6 +60,15 @@ class EcalElectronicsID : public DetectorID {
     id_ |= index.value();
   }
 
+  /**
+   * Construct an electronics id from an index 
+   */
+  static EcalElectronicsID idFromIndex(unsigned int index) {
+    EcalElectronicsID eid;
+    eid.id_|=index;
+    return eid;
+  }
+  
   /**
    * Get the value of the fiber from the ID.
    * @return The value of the fiber field.
