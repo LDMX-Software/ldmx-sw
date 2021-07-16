@@ -71,35 +71,62 @@ skeleton = """<?xml version="1.0" encoding="UTF-8"?>
 
 material_options = {
     'tungsten' : """
-        <isotope N="180" Z="74" name="W1800x270c100">
+        <isotope N="180" Z="74" name="W180">
             <atom unit="g/mole" value="179.947"/>
         </isotope>
-        <isotope N="182" Z="74" name="W1820x270c170">
+        <isotope N="182" Z="74" name="W182">
             <atom unit="g/mole" value="181.948"/>
         </isotope>
-        <isotope N="183" Z="74" name="W1830x270c210">
+        <isotope N="183" Z="74" name="W183">
             <atom unit="g/mole" value="182.95"/>
         </isotope>
-        <isotope N="184" Z="74" name="W1840x270c2b0">
+        <isotope N="184" Z="74" name="W184">
             <atom unit="g/mole" value="183.951"/>
         </isotope>
-        <isotope N="186" Z="74" name="W1860x270c2f0">
+        <isotope N="186" Z="74" name="W186">
             <atom unit="g/mole" value="185.954"/>
         </isotope>
-        <element name="W0x270bea0">
-            <fraction n="0.0012" ref="W1800x270c100"/>
-            <fraction n="0.265" ref="W1820x270c170"/>
-            <fraction n="0.1431" ref="W1830x270c210"/>
-            <fraction n="0.3064" ref="W1840x270c2b0"/>
-            <fraction n="0.2843" ref="W1860x270c2f0"/>
+        <element name="W">
+            <fraction n="0.0012" ref="W180"/>
+            <fraction n="0.265" ref="W182"/>
+            <fraction n="0.1431" ref="W183"/>
+            <fraction n="0.3064" ref="W184"/>
+            <fraction n="0.2843" ref="W186"/>
         </element>
         <material name="hunk_material" state="solid">
             <T unit="K" value="293.15"/>
             <MEE unit="eV" value="727"/>
             <D unit="g/cm3" value="19.3"/>
-            <fraction n="1" ref="W0x270bea0"/>
+            <fraction n="1" ref="W"/>
         </material>
-        """
+        """,
+    'iron' : """
+      <isotope N="54" Z="26" name="Fe54">
+         <atom unit="g/mole" value="53.9396"/>
+      </isotope>
+      <isotope N="56" Z="26" name="Fe56">
+         <atom unit="g/mole" value="55.9349"/>
+      </isotope>
+      <isotope N="57" Z="26" name="Fe57">
+         <atom unit="g/mole" value="56.9354"/>
+      </isotope>
+      <isotope N="58" Z="26" name="Fe58">
+         <atom unit="g/mole" value="57.9333"/>
+      </isotope>
+      <element name="Fe">
+         <fraction n="0.05845" ref="Fe54"/>
+         <fraction n="0.91754" ref="Fe56"/>
+         <fraction n="0.02119" ref="Fe57"/>
+         <fraction n="0.00282" ref="Fe58"/>
+      </element>
+      <material name="hunk_material" state="solid">
+        <T unit="K" value="293.15"/>
+        <D unit="g/cm3" value="7.874"/>
+        <fraction n="1" ref="Fe"/>
+      </material>
+      """,
+    'concrete' : """
+      """,
         }
 
 def write(path, material, hunk_depth, hunk_transverse) :
