@@ -220,12 +220,13 @@ elif hash singularity &> /dev/null; then
 
   # Run the container
   _ldmx_run() {
-    local csv_list=""
+    local csv_list="/tmp/.X11-unix"
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
     csv_list="${csv_list%,}"
-    singularity run --no-home --cleanenv --env LDMX_BASE=${LDMX_BASE} \
+    singularity run --no-home --cleanenv \
+      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
