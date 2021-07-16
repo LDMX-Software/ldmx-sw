@@ -6,12 +6,14 @@
 #include "Conditions/SimpleCSVTableProvider.h"
 #include "Conditions/SimpleTableCondition.h"
 #include "Conditions/SimpleTableStreamers.h"
+#include "Conditions/GeneralCSVLoader.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventHeader.h"
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
+
 
 namespace conditions {
 namespace test {
@@ -56,7 +58,6 @@ using Catch::Matchers::Contains;
  *  - Correct creation, filling, and access to various implementations of
  * conditions tables
  */
-
 TEST_CASE("Conditions", "[Framework][Conditions]") {
   // create a simple table
 
@@ -229,6 +230,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     matchesAll(dtable, fTable2);
   }
 
+
   /*
   SECTION( "Testing HTTP loading" ) {
       const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework
@@ -249,6 +251,74 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
       matchesAll(httpTable,itable);
   }
   */
+
+  
 }
+
+/**
+ * Test for various items related to conditions
+ *
+ * What does this test?
+ *  - CSVLoader
+ */
+TEST_CASE("CSVLoader", "[Framework][Conditions][CSVLoader]") {
+
+  std::string testA("A,B,C\n1,2,3\n5,\"6\",7\n");
+  
+  StringCSVLoader loaderA(testA);
+  
+  REQUIRE(loaderA.nextRow());
+  REQUIRE(loaderA.get("A")=="1");
+  REQUIRE(loaderA.getInteger("B")==2);
+  REQUIRE(loaderA.get("C")=="3");
+  REQUIRE(loaderA.nextRow());
+  REQUIRE(loaderA.get("A")=="5");
+  REQUIRE(loaderA.getInteger("B")==6);
+  REQUIRE(loaderA.get("C")=="7");
+  REQUIRE(!loaderA.nextRow());
+
+  std::string testB("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7");
+  
+  StringCSVLoader loaderB(testB);
+  
+  REQUIRE(loaderB.nextRow());
+  REQUIRE(loaderB.get("A")=="1");
+  REQUIRE(loaderB.getInteger("B")==2);
+  REQUIRE(loaderB.get("C")=="3");
+  REQUIRE(loaderB.nextRow());
+  REQUIRE(loaderB.get("A")=="5");
+  REQUIRE(loaderB.getInteger("B")==6);
+  REQUIRE(loaderB.get("C")=="7");
+  REQUIRE(!loaderB.nextRow());
+
+  std::string testC("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7,9");
+  
+  StringCSVLoader loaderC(testC);
+  
+  REQUIRE(loaderC.nextRow());
+  REQUIRE(loaderC.get("A")=="1");
+  REQUIRE(loaderC.getInteger("B")==2);
+  REQUIRE(loaderC.get("C")=="3");
+  REQUIRE_THROWS(loaderC.nextRow());
+
+  std::ofstream fxB("test.csv");
+  fxB << testB;
+  fxB.close();
+
+  StreamCSVLoader loaderB2("test.csv");
+
+  REQUIRE(loaderB2.nextRow());
+  REQUIRE(loaderB2.get("A")=="1");
+  REQUIRE(loaderB2.getInteger("B")==2);
+  REQUIRE(loaderB2.get("C")=="3");
+  REQUIRE(loaderB2.nextRow());
+  REQUIRE(loaderB2.get("A")=="5");
+  REQUIRE(loaderB2.getInteger("B")==6);
+  REQUIRE(loaderB2.get("C")=="7");
+  REQUIRE(!loaderB2.nextRow());
+
+  
+}
+
 }  // namespace test
 }  // namespace conditions
