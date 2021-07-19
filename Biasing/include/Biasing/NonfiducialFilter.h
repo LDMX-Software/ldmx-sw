@@ -62,7 +62,7 @@ class NonfiducialFilter : public simcore::UserAction {
 
  private:
   /// Recoil angle minimum (degrees)
-  double recoilAngleThreshold{60};
+  double recoilAngleThreshold_{60};
   
   /// Brem gamma energy treshold
   double bremEnergyThreshold_{2500};
