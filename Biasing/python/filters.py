@@ -39,6 +39,33 @@ class TargetBremFilter(simcfg.UserAction):
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
+class NonfiducialFilter(simcfg.UserAction):
+    """ Configuration for rejecting events that don't recoil at an angle of at least 60 degrees. 
+
+    An event is vetoed if one of two conditions is satisfied:
+    1) The recoil electron exits the target area with an angle of less than 60 degrees.
+    2) The recoil electorn brems, but the energy of at least one of the brems
+    isn't above 2500 MeV. 
+
+    Parameters
+    ----------
+    angle_min_e: float
+        Minimum angle the electrong has to recoil [degrees] 
+    brem_min_e : float
+        Minimum energy the brem photon can have [MeV]
+
+    """
+
+    def __init__(self,angle_min_e = 60.,brem_min_e = 2500.) :
+        super().__init__("nonfiducial_filter", "biasing::NonfiducialFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.recoil_angle_threshold = angle_min_e
+        self.brem_min_energy_threshold = brem_min_e
+        self.kill_recoil_track = False
+
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
