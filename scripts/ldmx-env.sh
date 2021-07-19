@@ -225,7 +225,7 @@ elif hash singularity &> /dev/null; then
       csv_list="$dir_to_mount,$csv_list"
     done
     csv_list="${csv_list%,}"
-    singularity run --no-home --cleanenv --env LDMX_BASE=${LDMX_BASE} \
+    singularity run --no-home \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
