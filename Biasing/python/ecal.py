@@ -75,6 +75,42 @@ def photo_nuclear( detector, generator ) :
 
     return sim
 
+def nonfiducial_photo_nuclear( detector, generator ) :
+
+    # Instantiate the simulator. 
+    sim = simulator.simulator("photo-nuclear")
+    
+    # Set the path to the detector to use.
+    #   the second parameter says we want to include scoring planes
+    sim.setDetector( detector , True )
+    
+    # Set run parameters
+    sim.description = "ECal photo-nuclear, xsec bias 450"
+    sim.beamSpotSmear = [20., 80., 0.] #mm
+    
+    sim.generators.append( generator )
+    
+    # Enable and configure the biasing
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.,only_children_of_primary = True) ]
+
+    # the following filters are in a library that needs to be included
+    includeBiasing.library()
+
+    # Configure the sequence in which user actions should be called.
+    sim.actions.extend([
+            filters.TaggerVetoFilter(),
+            # Only consider events where a hard brem occurs
+            filters.TargetBremFilter(),
+            # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
+            filters.NonFiducialFilter(),
+            # Only consider events where a PN reaction happens in the ECal
+            filters.EcalProcessFilter(),     
+            # Tag all photo-nuclear tracks to persist them to the event.
+            util.TrackProcessFilter.photo_nuclear()
+    ])
+
+    return sim
+
 def gamma_mumu(detector, generator) :
     """Example configuration for biasing gamma to mu+ mu- conversions in the ecal.
 

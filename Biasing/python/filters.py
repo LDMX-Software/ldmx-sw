@@ -39,6 +39,26 @@ class TargetBremFilter(simcfg.UserAction):
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
+class NonFiducialFilter(simcfg.UserAction):
+    """ Configuration for rejecting events that are fiducial.
+
+    Parameters
+    ----------
+    recoil_max_p : float
+        Maximum momentum the recoil electron can have [MeV]
+    abort_fiducial: bool
+        If true, aborts fiducial events. Otherwise, the fiducial events will be only tagged
+    """
+
+    def __init__(self,recoil_max_momentum = 1500., abort_fid_event = True) :
+        super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.recoil_max_p = recoil_max_momentum
+        self.abort_fiducial = abort_fid_event
+
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
