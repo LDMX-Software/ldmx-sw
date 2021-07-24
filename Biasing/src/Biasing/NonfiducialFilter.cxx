@@ -64,9 +64,9 @@ void NonfiducialFilter::stepping(const G4Step* step) {
   if (auto volume{track->GetNextVolume()->GetName()};
       volume.compareTo("recoil_PV") == 0) {
     // If the recoil electron misses the ECal Scoring Plane
-    double xPosition{track->GetPosition()->getX()};
-    double yPosition{track->GetPosition()->getY()};
-    double zPosition{track->GetPosition()->getZ()};
+    double xPosition{track->GetPosition().getX()};
+    double yPosition{track->GetPosition().getY()};
+    double zPosition{track->GetPosition().getZ()};
     if (zPosition == 240.5015 && xPosition < 246.6734 && xPosition > -246.6734 && yPosition < 256.5005 && yPosition > -256.5005) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
