@@ -70,10 +70,10 @@ def photo_nuclear( detector, generator ) :
     sim.actions.extend([
             filters.TaggerVetoFilter(),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(),
-            # Only consider events where a PN reaction happens in the ECal
             filters.NonfiducialFilter(),
             # Only consider events where the event is non-fiducial
+            filters.TargetBremFilter(),
+            # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
             util.TrackProcessFilter.photo_nuclear()

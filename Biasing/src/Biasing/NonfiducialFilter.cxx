@@ -60,18 +60,14 @@ void NonfiducialFilter::stepping(const G4Step* step) {
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
     return;
 
-  // Get the region the particle is currently in.  Continue processing
-  // the particle only if it's in the target region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0)
-    return;
-
   // Check if the electron will be exiting the target
   if (auto volume{track->GetNextVolume()->GetName()};
       volume.compareTo("recoil_PV") == 0) {
-    // If the recoil electron angle is less than ___ degrees
-    if (acos(track->GetMomentum().getZ() / track->GetMomentum().mag()) < recoilAngleThreshold_) {
+    // If the recoil electron misses the ECal Scoring Plane
+    double xPosition{track->GetPosition()->getX()};
+    double yPosition{track->GetPosition()->getY()};
+    double zPosition{track->GetPosition()->getZ()};
+    if (zPosition == 240.5015 && xPosition < 246.6734 && xPosition > -246.6734 && yPosition < 256.5005 && yPosition > -256.5005) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
