@@ -60,40 +60,49 @@ void NonfiducialFilter::stepping(const G4Step* step) {
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
     return;
 
+  // Get the region the particle is currently in.  Continue processing
+     // the particle only if it's in the target region.
+  if (auto region{
+          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+      region.compareTo("target") != 0)
+    return;
+                           
   // Check if the electron will be exiting the target
   if (auto volume{track->GetNextVolume()->GetName()};
       volume.compareTo("recoil_PV") == 0) {
     // If the recoil electron misses the ECal Scoring Plane
-    double xPosition{track->GetPosition().getX()};
-    double yPosition{track->GetPosition().getY()};
-    double zPosition{track->GetPosition().getZ()};
-    if (zPosition == 240.5015 && xPosition < 246.6734 && xPosition > -246.6734 && yPosition < 256.5005 && yPosition > -256.5005) {
-      track->SetTrackStatus(fKillTrackAndSecondaries);
-      G4RunManager::GetRunManager()->AbortEvent();
-      return;
-    }
+    double xPos{track->GetPosition().getX()}; // X position
+    double yPos{track->GetPosition().getY()}; // Y position
+    double zPos{track->GetPosition().getZ()}; // Z position
+    double xMom{track->GetMomentum().getX()}; // X momentum
+    double yMom{track->GetMomentum().getY()}; // Y momentum
+    double zMom{track->GetMomentum().getZ()}; // Z momentum
+    
+    double xProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
+        double x_final;
+        double EcalSP = 240.5015;
+        if (xmom == 0) {
+          x_final = x + (EcalSP - z)/99999;
+        } else {
+          x_final = x + xmom/zmom*(EcalSP - zmom);
+        } 
+        return x_final;
 
-    // Get the electron secondries
-    bool hasBremCandidate = false;
-    if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
-      track->SetTrackStatus(fKillTrackAndSecondaries);
-      G4RunManager::GetRunManager()->AbortEvent();
-      return;
-    } else {
-      for (auto& secondary_track : *secondaries) {
-        G4String processName =
-            secondary_track->GetCreatorProcess()->GetProcessName();
-
-        if (processName.compareTo("eBrem") == 0 &&
-            secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-          auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
-          trackInfo->tagBremCandidate();
-
-          getEventInfo()->incBremCandidateCount();
-
-          hasBremCandidate = true;
+    double yProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
+        double y_final;
+        double EcalSP = 240.5015;
+        if (ymom == 0) {
+          y_final = y + (EcalSP - z)/99999;
+        } else {
+          y_final = y + ymom/zmom*(EcalSP - zmom);
         }
-      }
+        return y_final;
+    double xFinal = xProjection(xPos,yPos,zPos,xMom,yMom,zMom)
+    double yFinal = yProjection(xPos,yPos,zPos,xMom,yMom,zMom)
+    if (xFinal < 246.6734 && xFinal > -246.6734 && yFinal < 256.5005 && yFinal > -256.5005) {
+      track->SetTrackStatus(fKillTrackAndSecondaries);
+      G4RunManager::GetRunManager()->AbortEvent();
+      return;
     }
 
     if (!hasBremCandidate) {
