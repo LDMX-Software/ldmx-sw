@@ -98,16 +98,14 @@ void NonfiducialFilter::stepping(const G4Step* step) {
     double xMom{track->GetMomentum().getX()}; // X momentum
     double yMom{track->GetMomentum().getY()}; // Y momentum
     double zMom{track->GetMomentum().getZ()}; // Z momentum
-    
+        
     double xFinal = xProjection(xPos,yPos,zPos,xMom,yMom,zMom);
     double yFinal = yProjection(xPos,yPos,zPos,xMom,yMom,zMom);
-
+    
     if (xFinal < 246.6734 && xFinal > -246.6734 && yFinal < 256.5005 && yFinal > -256.5005) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
-    }
-
     }
 
     // Check if the recoil electron should be killed.  If not, postpone
