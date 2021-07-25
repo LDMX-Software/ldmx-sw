@@ -20,8 +20,6 @@ namespace biasing {
 NonfiducialFilter::NonfiducialFilter(const std::string& name,
                                    framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
-  recoilAngleThreshold_ =
-      parameters.getParameter<double>("recoil_angle_threshold");
   bremEnergyThreshold_ =
       parameters.getParameter<double>("brem_min_energy_threshold");
   killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
@@ -47,6 +45,29 @@ G4ClassificationOfNewTrack NonfiducialFilter::ClassifyNewTrack(
 
   return classification;
 }
+
+// Projection functions 
+double xProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
+    double x_final;
+    double EcalSP = 240.5015;
+    if (xmom == 0) {
+      x_final = x + (EcalSP - z)/99999;
+    } else {
+      x_final = x + xmom/zmom*(EcalSP - zmom);
+    }
+    return x_final;
+    }
+
+double yProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
+    double y_final;
+    double EcalSP = 240.5015;
+    if (ymom == 0) {
+      y_final = y + (EcalSP - z)/99999;
+    } else {
+      y_final = y + ymom/zmom*(EcalSP - zmom);
+    }
+    return y_final;
+    }
 
 void NonfiducialFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
@@ -78,28 +99,6 @@ void NonfiducialFilter::stepping(const G4Step* step) {
     double yMom{track->GetMomentum().getY()}; // Y momentum
     double zMom{track->GetMomentum().getZ()}; // Z momentum
     
-    double xProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
-        double x_final;
-        double EcalSP = 240.5015;
-        if (xmom == 0) {
-          x_final = x + (EcalSP - z)/99999;
-        } else {
-          x_final = x + xmom/zmom*(EcalSP - zmom);
-        } 
-        return x_final;
-        }
-
-    double yProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
-        double y_final;
-        double EcalSP = 240.5015;
-        if (ymom == 0) {
-          y_final = y + (EcalSP - z)/99999;
-        } else {
-          y_final = y + ymom/zmom*(EcalSP - zmom);
-        }
-        return y_final;
-        }
-
     double xFinal = xProjection(xPos,yPos,zPos,xMom,yMom,zMom)
     double yFinal = yProjection(xPos,yPos,zPos,xMom,yMom,zMom)
 
