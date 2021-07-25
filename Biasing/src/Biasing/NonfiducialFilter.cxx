@@ -87,6 +87,7 @@ void NonfiducialFilter::stepping(const G4Step* step) {
           x_final = x + xmom/zmom*(EcalSP - zmom);
         } 
         return x_final;
+        }
 
     double yProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
         double y_final;
@@ -97,8 +98,11 @@ void NonfiducialFilter::stepping(const G4Step* step) {
           y_final = y + ymom/zmom*(EcalSP - zmom);
         }
         return y_final;
+        }
+
     double xFinal = xProjection(xPos,yPos,zPos,xMom,yMom,zMom)
     double yFinal = yProjection(xPos,yPos,zPos,xMom,yMom,zMom)
+
     if (xFinal < 246.6734 && xFinal > -246.6734 && yFinal < 256.5005 && yFinal > -256.5005) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
