@@ -53,7 +53,7 @@ double xProjection(double x, double y, double z, double xmom, double ymom, doubl
     if (xmom == 0) {
       x_final = x + (EcalSP - z)/99999;
     } else {
-      x_final = x + xmom/zmom*(EcalSP - zmom);
+      x_final = x + xmom/zmom*(EcalSP - z);
     }
     return x_final;
     }
@@ -64,7 +64,7 @@ double yProjection(double x, double y, double z, double xmom, double ymom, doubl
     if (ymom == 0) {
       y_final = y + (EcalSP - z)/99999;
     } else {
-      y_final = y + ymom/zmom*(EcalSP - zmom);
+      y_final = y + ymom/zmom*(EcalSP - z);
     }
     return y_final;
     }
