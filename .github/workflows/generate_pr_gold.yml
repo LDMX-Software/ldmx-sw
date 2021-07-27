@@ -86,7 +86,7 @@ jobs:
       id: update-gold
       uses: ./.github/actions/update-gold
       with:
-        samples: 'inclusive ecal_pn it_pileup'
+        samples: 'inclusive ecal_pn it_pileup hcal'
 
     - name: Open PR for the New Gold
       uses: peter-evans/create-pull-request@v3
