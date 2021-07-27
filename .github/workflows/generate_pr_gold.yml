@@ -78,15 +78,42 @@ jobs:
         ref: trunk
 
     - name: Download All the Gold
+      id: download
       uses: actions/download-artifact@v2
       with:
         path: '../'
 
+      # The BIG assumption we make here is that the artifacts
+      # containing the new gold are named '<sample>-new-gold'
     - name: Update the Gold
       id: update-gold
-      uses: ./.github/actions/update-gold
-      with:
-        samples: 'inclusive ecal_pn it_pileup hcal'
+      run: |
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        start_group Update Gold Label
+        echo "Old Label: $(ldmx_gold_label)"
+        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_GOLD_LABEL_FILE}
+        echo "New Label: $(ldmx_gold_label)"
+        git add ${LDMX_GOLD_LABEL_FILE}
+        end_group
+        start_group Copy over new Gold Histograms
+        artifacts_d=${{steps.download.outputs.download-path}}
+        echo ${artifacts_d}
+        if ! compgen -G "${artifacts_d}/*-new-gold" > /dev/null; then
+          error "No artifacts matching '${artifacts_d}/*-new-gold'."
+          exit 1
+        fi
+        for sample_d in ${artifacts_d}/*-new-gold; do
+          sample=$(basename ${sample_d})
+          sample=${sample%%-new-gold}
+          echo ${sample}
+          mv ${sample_d}/hist.root .github/validation_samples/${sample}/gold.root
+        done
+        git add .github/validation_samples/*/gold.root
+        end_group
+        start_group Set Outputs
+        set_output new-label $(ldmx_gold_label)
+        end_group
+      shell: bash
 
     - name: Open PR for the New Gold
       uses: peter-evans/create-pull-request@v3
