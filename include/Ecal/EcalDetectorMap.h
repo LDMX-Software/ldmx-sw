@@ -16,6 +16,7 @@
 
 namespace ecal {
 
+/// The ECal map is between the ECal EID and the ECal DetID
 typedef ldmx::TemplatedElectronicsMap<ldmx::EcalElectronicsID,ldmx::EcalID> EcalElectronicsMap;
 
 /** \brief Class which provides various information about how the parts of the Ecal connect to each other.
@@ -42,10 +43,15 @@ typedef ldmx::TemplatedElectronicsMap<ldmx::EcalElectronicsID,ldmx::EcalID> Ecal
  */
 class EcalDetectorMap : public framework::ConditionsObject {
  public:
-    static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalDetectorMap"};
+  /// The name of the EID <-> DetID map for the ECal
+  static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalDetectorMap"};
 
+  /**
+   * Default constructor which builds the necessary maps.
+   */
   EcalDetectorMap();
 
+  /// Provider which loads the map
   friend class EcalDetectorMapLoader;
 
   /**
@@ -54,12 +60,17 @@ class EcalDetectorMap : public framework::ConditionsObject {
   const EcalElectronicsMap& emap() const { return emap_; }
   
  private:
+  /// import cell map from the provided CSV loader
   void loadCellMap(conditions::GeneralCSVLoader& loader);
+  /// import motherboard map from the provided CSV loader
   void loadMotherboardMap(conditions::GeneralCSVLoader& loader);
+  /// import layer map from the provided CSV loader
   void loadLayerMap(conditions::GeneralCSVLoader& loader);
 
+  /// build the electronics map from loaded maps
   void buildElectronicsMap();
 
+  /// the full electronics map
   EcalElectronicsMap emap_;
   
   /**
