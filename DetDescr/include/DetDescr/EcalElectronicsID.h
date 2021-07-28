@@ -21,15 +21,16 @@ namespace ldmx {
  *    -- elink : electronic link number, range assumed O(0-47)
  *    -- channel : channel-on-elink, range O(0-37)
  *
- * For transient use only.
+ * For transient use only i.e. we use this ID to help translate the digitized
+ * data coming off the detector into spatially-important EcalIDs.
  */
 class EcalElectronicsID : public DetectorID {
  public:
 
   static const RawValue INDEX_MASK{0xFFFFFF};
-  // channel, elink, [fiber]
+  // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
   typedef PackedIndex<38,48> Index;
-  // Maximum value
+  // Maximum value of any packed index here
   static const unsigned int MAX_INDEX{38*48*200};
   
   /**
@@ -62,6 +63,11 @@ class EcalElectronicsID : public DetectorID {
 
   /**
    * Construct an electronics id from an index 
+   *
+   * This looks ugly (and it is) because we already have a constructor
+   * that uses the unsigned int type. This means we need a different
+   * static method for translating something we know to be an EID index
+   * rather than a full DetID raw value.
    */
   static EcalElectronicsID idFromIndex(unsigned int index) {
     EcalElectronicsID eid;
