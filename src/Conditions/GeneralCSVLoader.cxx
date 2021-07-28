@@ -122,5 +122,4 @@ std::string StreamCSVLoader::getNextLine() {
   return line_;
 }
 
-
 }

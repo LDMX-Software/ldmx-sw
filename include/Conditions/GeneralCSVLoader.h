@@ -80,11 +80,22 @@ class StringCSVLoader : public GeneralCSVLoader {
  */
 class StreamCSVLoader : public GeneralCSVLoader {
  public:
-  /** Constructor */
+  /** 
+   * Constructor a loader from the provided file name
+   *
+   * We expand the file-name using wordexp and then open an
+   * input file stream to it. We own the stream in this case.
+   */
   StreamCSVLoader(const std::string& filename);
-  /** Constructor */
+  /** 
+   * Construct a loader from the provided input stream
+   *
+   * We are given an already-created stream, so
+   * we do not own the stream in this case.
+   */
   StreamCSVLoader(std::istream& stream);
 
+  /// Clean-up the stream if we own it
   virtual ~StreamCSVLoader();
   
  protected:
