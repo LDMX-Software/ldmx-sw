@@ -5,6 +5,10 @@
 #include "Framework/Process.h"
 #include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Hcal/Event/HcalHit.h"
+
 namespace hcal {
 namespace test {
 
