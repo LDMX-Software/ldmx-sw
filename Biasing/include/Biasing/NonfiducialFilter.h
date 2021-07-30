@@ -61,7 +61,10 @@ class NonfiducialFilter : public simcore::UserAction {
   }
 
  private:
-  /// Brem gamma energy treshold
+  /// Electron recoil angle threshold
+  double recoilAngleThreshold_{2.0};
+  
+  /// Brem gamma energy threshold
   double bremEnergyThreshold_{2500};
 
   /// Flag indicating if the recoil electron track should be killed

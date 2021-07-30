@@ -56,12 +56,13 @@ class NonfiducialFilter(simcfg.UserAction):
 
     """
 
-    def __init__(self,brem_min_e = 2500.) :
+    def __init__(self,e_min_angle = 2.,brem_min_e = 2500.) :
         super().__init__("nonfiducial_filter", "biasing::NonfiducialFilter")
 
         from LDMX.Biasing import include
         include.library()
 
+        self.e_min_angle_threshold = e_min_angle
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 

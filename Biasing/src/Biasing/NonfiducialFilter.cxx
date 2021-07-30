@@ -20,6 +20,8 @@ namespace biasing {
 NonfiducialFilter::NonfiducialFilter(const std::string& name,
                                    framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
+  recoilAngleThreshold_ =
+      parameters.getParameter<double>("e_min_angle_threshold");
   bremEnergyThreshold_ =
       parameters.getParameter<double>("brem_min_energy_threshold");
   killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
@@ -46,29 +48,6 @@ G4ClassificationOfNewTrack NonfiducialFilter::ClassifyNewTrack(
   return classification;
 }
 
-// Projection functions 
-double xProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
-    double x_final;
-    double EcalSP = 240.5015;
-    if (xmom == 0) {
-      x_final = x + (EcalSP - z)/99999;
-    } else {
-      x_final = x + xmom/zmom*(EcalSP - z);
-    }
-    return x_final;
-    }
-
-double yProjection(double x, double y, double z, double xmom, double ymom, double zmom) {
-    double y_final;
-    double EcalSP = 240.5015;
-    if (ymom == 0) {
-      y_final = y + (EcalSP - z)/99999;
-    } else {
-      y_final = y + ymom/zmom*(EcalSP - z);
-    }
-    return y_final;
-    }
-
 void NonfiducialFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
@@ -91,18 +70,11 @@ void NonfiducialFilter::stepping(const G4Step* step) {
   // Check if the electron will be exiting the target
   if (auto volume{track->GetNextVolume()->GetName()};
       volume.compareTo("recoil_PV") == 0) {
-    // If the recoil electron misses the ECal Scoring Plane
-    double xPos{track->GetPosition().getX()}; // X position
-    double yPos{track->GetPosition().getY()}; // Y position
-    double zPos{track->GetPosition().getZ()}; // Z position
-    double xMom{track->GetMomentum().getX()}; // X momentum
-    double yMom{track->GetMomentum().getY()}; // Y momentum
-    double zMom{track->GetMomentum().getZ()}; // Z momentum
-        
-    double xFinal = xProjection(xPos,yPos,zPos,xMom,yMom,zMom);
-    double yFinal = yProjection(xPos,yPos,zPos,xMom,yMom,zMom);
-    
-    if (xFinal < 246.6734 && xFinal > -246.6734 && yFinal < 256.5005 && yFinal > -256.5005) {
+    // If the electron recoils at an angle smaller than the minimum required recoil angle        
+    double pZ = track->GetMomentum().getZ();
+    double pMag = track->GetMomentum().mag();    
+
+    if ((acos(pMag/pZ) * 180/3.14159265358979323846) < recoilAngleThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
