@@ -10,9 +10,9 @@
 #include <map>
 #include <vector>
 
-namespace ldmx {
-  class HcalHexReadout; // TODO
-}
+/* namespace ldmx { */
+/*   class HcalHexReadout; // TODO */
+/* } */
 
 namespace hcal {
 
@@ -25,7 +25,8 @@ namespace hcal {
  public:
     static constexpr const char* CONDITIONS_OBJECT_NAME{"HcalTriggerGeometry"};
 
-    HcalTriggerGeometry(int symmetry, const ldmx::HcalHexReadout* hcalGeom = 0);
+    HcalTriggerGeometry();
+    //HcalTriggerGeometry(int symmetry, const ldmx::HcalHexReadout* hcalGeom = 0);
 
     /**
      * Returns the set of precision (full-granularity/DAQ) cells which are
@@ -57,17 +58,12 @@ namespace hcal {
         ldmx::HcalTriggerID triggerCell) const;
 
  private:
-    /** Identifies what symmetries apply in this case, such as all layers being
-             identical, or all even and odd planes being identical and whether all
-                  modules on the same plane are identical.
-    */
-    int symmetry_; //TODO
     /** Reference to the Hcal geometry used for trigger geometry information */
-    const ldmx::HcalHexReadout* hcalGeometry_; //TODO
-    /** Map of precision cells to trigger cells, under symmetry assumptions
+    //const ldmx::HcalHexReadout* hcalGeometry_; //TODO
+    /** Map of precision cells to trigger cells
      */
     std::map<ldmx::HcalID, ldmx::HcalTriggerID> precision2trigger_;
-    /** Map of trigger cells to precision cells, under symmetry assumptions
+    /** Map of trigger cells to precision cells
      */
     std::map<ldmx::HcalTriggerID, std::vector<ldmx::HcalID> > trigger2precision_;
   };
