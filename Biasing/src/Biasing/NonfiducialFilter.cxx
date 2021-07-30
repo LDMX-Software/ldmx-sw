@@ -74,7 +74,7 @@ void NonfiducialFilter::stepping(const G4Step* step) {
     double pZ = track->GetMomentum().getZ();
     double pMag = track->GetMomentum().mag();    
 
-    if ((acos(pMag/pZ) * 180/3.14159265358979323846) < recoilAngleThreshold_) {
+    if ((acos(pZ/pMag) * 180/3.14159265358979323846) < recoilAngleThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
