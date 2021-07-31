@@ -83,43 +83,60 @@ HcalTriggerGeometry::HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom)
     // }
 }
 
-std::vector<ldmx::HcalID> HcalTriggerGeometry::contentsOfTriggerCell(
-    ldmx::HcalTriggerID triggerCell) const {
-  ldmx::HcalTriggerID effId;
-  std::vector<ldmx::HcalID> retval;
-  // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
-  //   effId = ldmx::HcalTriggerID(0, 0, triggerCell.triggercell());
-  // }
-  // auto ptr = trigger2precision_.find(effId);
-  // if (ptr != trigger2precision_.end()) {
-  //   for (auto idz : ptr->second) {
-  //     retval.push_back(
-  //         ldmx::HcalID(triggerCell.layer(), triggerCell.module(), idz.cell()));
-  //   }
-  // }
-  return retval;
-}
+// std::vector<ldmx::HcalID> HcalTriggerGeometry::contentsOfTriggerCell(
+//     ldmx::HcalTriggerID triggerCell) const {
+//   ldmx::HcalTriggerID effId;
+//   std::vector<ldmx::HcalID> retval;
+//   // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
+//   //   effId = ldmx::HcalTriggerID(0, 0, triggerCell.triggercell());
+//   // }
+//   // auto ptr = trigger2precision_.find(effId);
+//   // if (ptr != trigger2precision_.end()) {
+//   //   for (auto idz : ptr->second) {
+//   //     retval.push_back(
+//   //         ldmx::HcalID(triggerCell.layer(), triggerCell.module(), idz.cell()));
+//   //   }
+//   // }
+//   return retval;
+// }
 
-ldmx::HcalID HcalTriggerGeometry::centerInTriggerCell(
-    ldmx::HcalTriggerID triggerCell) const {
-  // ldmx::HcalTriggerID effId;
-  // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
-  //   effId = ldmx::HcalTriggerID(0, 0, triggerCell.triggercell());
-  // }
-  // auto ptr = trigger2precision_.find(effId);
-  // if (ptr == trigger2precision_.end()) {
-  //   std::stringstream ss;
-  //   ss << "Unable to find trigger cell " << triggerCell;
-  //   EXCEPTION_RAISE("HcalGeometryException", ss.str());
-  // }
+// ldmx::HcalID HcalTriggerGeometry::centerInTriggerCell(
+//     ldmx::HcalTriggerID triggerCell) const {
+//   // ldmx::HcalTriggerID effId;
+//   // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
+//   //   effId = ldmx::HcalTriggerID(0, 0, triggerCell.triggercell());
+//   // }
+//   // auto ptr = trigger2precision_.find(effId);
+//   // if (ptr == trigger2precision_.end()) {
+//   //   std::stringstream ss;
+//   //   ss << "Unable to find trigger cell " << triggerCell;
+//   //   EXCEPTION_RAISE("HcalGeometryException", ss.str());
+//   // }
 
-  // return ldmx::HcalID(triggerCell.layer(), triggerCell.module(),
-  //                     ptr->second[4].cell());
-    return ldmx::HcalID();
-}
+//   // return ldmx::HcalID(triggerCell.layer(), triggerCell.module(),
+//   //                     ptr->second[4].cell());
+//     return ldmx::HcalID();
+// }
 
 ldmx::HcalTriggerID HcalTriggerGeometry::belongsTo(
     ldmx::HcalID precisionCell) const {
+  unsigned int sstrip=0;
+  unsigned int strip=precisionCell.strip();
+  if (precisionCell.section() == ldmx::HcalID::HcalSection::BACK){
+    if (precisionCell.layer() % 2 == 0){ // even layers are horizontal
+      // 62 strips: bottom 6 are trigger cell 0, then groups of 4.
+      if (strip < 6)  sstrip=0;
+      else sstrip = (strip-2)/4;
+    } else { // odd layers are vertical
+      // 62 strips: middle 6 are a single trigger cell, others are groups of 4.
+      if (strip < 31)  sstrip = strip/4;
+      else sstrip = (strip-2)/4;
+    }
+  } else { // side hcal: 12 strips per section
+    sstrip = strip/4;
+  }
+  return ldmx::HcalTriggerID(precisionCell.section(), precisionCell.layer(),
+                             sstrip);
   // ldmx::HcalID effId;
   // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
   //   effId = ldmx::HcalID(0, 0, precisionCell.cell());
@@ -131,25 +148,30 @@ ldmx::HcalTriggerID HcalTriggerGeometry::belongsTo(
   //   return ldmx::HcalTriggerID(precisionCell.layer(), precisionCell.module(),
   //                              ptr->second.triggercell());
   // }
-  return ldmx::HcalTriggerID();
+  // hcalGeometry_
+  // return ldmx::HcalTriggerID();
 }
 
-// as it happens, the fifth precision cell in the list is the center cell
-std::pair<double, double> HcalTriggerGeometry::globalPosition(
-    ldmx::HcalTriggerID triggerCell) const {
-  // if (!hcalGeometry_) return std::pair<double, double>(0, 0);
-  // ldmx::HcalID pid = centerInTriggerCell(triggerCell);
-  // return hcalGeometry_->getCellCenterAbsolute(pid);
-  return std::pair<double, double>(0, 0);
+ldmx::HcalTriggerID HcalTriggerGeometry::belongsTo(ldmx::HcalDigiID digiID) const {
+  belongsTo(ldmx::HcalID(digiID.section(), digiID.layer(), digiID.strip()));
 }
 
-std::pair<double, double> HcalTriggerGeometry::localPosition(
-    ldmx::HcalTriggerID triggerCell) const {
-  // if (!hcalGeometry_) return std::pair<double, double>(0, 0);
-  // ldmx::HcalID pid = centerInTriggerCell(triggerCell);
-  // return hcalGeometry_->getCellCenterRelative(pid.cell());
-  return std::pair<double, double>(0, 0);
-}
+// // as it happens, the fifth precision cell in the list is the center cell
+// std::pair<double, double> HcalTriggerGeometry::globalPosition(
+//     ldmx::HcalTriggerID triggerCell) const {
+//   // if (!hcalGeometry_) return std::pair<double, double>(0, 0);
+//   // ldmx::HcalID pid = centerInTriggerCell(triggerCell);
+//   // return hcalGeometry_->getCellCenterAbsolute(pid);
+//   return std::pair<double, double>(0, 0);
+// }
+
+// std::pair<double, double> HcalTriggerGeometry::localPosition(
+//     ldmx::HcalTriggerID triggerCell) const {
+//   // if (!hcalGeometry_) return std::pair<double, double>(0, 0);
+//   // ldmx::HcalID pid = centerInTriggerCell(triggerCell);
+//   // return hcalGeometry_->getCellCenterRelative(pid.cell());
+//   return std::pair<double, double>(0, 0);
+// }
 
 class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
  public:
