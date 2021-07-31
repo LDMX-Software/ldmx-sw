@@ -10,9 +10,10 @@
 #include <map>
 #include <vector>
 
-/* namespace ldmx { */
-/*   class HcalHexReadout; // TODO */
-/* } */
+namespace ldmx {
+  /* class HcalHexReadout; // TODO */
+  class HcalGeometry; // TODO
+}
 
 namespace hcal {
 
@@ -22,10 +23,11 @@ namespace hcal {
    * provides geometry information for trigger cells
    */
   class HcalTriggerGeometry : public framework::ConditionsObject {
- public:
+    public:
     static constexpr const char* CONDITIONS_OBJECT_NAME{"HcalTriggerGeometry"};
 
-    HcalTriggerGeometry();
+    /* HcalTriggerGeometry(); */
+    HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom = 0);
     //HcalTriggerGeometry(int symmetry, const ldmx::HcalHexReadout* hcalGeom = 0);
 
     /**
@@ -59,7 +61,7 @@ namespace hcal {
 
  private:
     /** Reference to the Hcal geometry used for trigger geometry information */
-    //const ldmx::HcalHexReadout* hcalGeometry_; //TODO
+    const ldmx::HcalGeometry* hcalGeometry_;
     /** Map of precision cells to trigger cells
      */
     std::map<ldmx::HcalID, ldmx::HcalTriggerID> precision2trigger_;

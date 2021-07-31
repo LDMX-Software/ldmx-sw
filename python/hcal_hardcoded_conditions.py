@@ -10,6 +10,16 @@ HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
 
 from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider, SimpleCSVDoubleTableProvider
 
+HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
+
+HcalTrigPrimConditionsHardcode.validForAllRows([ 50 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
+                                                 5 , # ADC_THRESHOLD -- current noise is 
+                                                 50,  # TOT_PEDESTAL -- currently set to match ADC pedestal
+                                                 100,  # TOT_THRESHOLD -- rather large value...
+                                                 8 ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
+                                               )
+
+
 HcalReconConditionsHardcode=SimpleCSVDoubleTableProvider("HcalReconConditions",["ADC_PEDESTAL","ADC_GAIN","TOT_PEDESTAL","TOT_GAIN"])
 
 HcalReconConditionsHardcode.validForAllRows([
