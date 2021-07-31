@@ -105,18 +105,6 @@ class HcalTriggerID : public HcalAbstractID {
    */
   int superstrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
   
-  //  /**
-  //   * Get the value of the 'strip' field from the ID.
-  //   * @return The value of 'strip' field.
-  //   */
-  //  int getStrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
-  //
-  //  /**
-  //   * Get the value of the 'strip' field from the ID.
-  //   * @return The value of 'strip' field.
-  //   */
-  //  int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
-
   static void createInterpreters();
 };
 }  // namespace ldmx
