@@ -3,6 +3,7 @@
 
 // LDMX
 #include "DetDescr/HcalID.h"
+#include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalTriggerID.h"
 #include "Framework/ConditionsObject.h"
 
@@ -30,18 +31,18 @@ namespace hcal {
     HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom = 0);
     //HcalTriggerGeometry(int symmetry, const ldmx::HcalHexReadout* hcalGeom = 0);
 
-    /**
-     * Returns the set of precision (full-granularity/DAQ) cells which are
-     * associated with the given trigger cell.
-     */
-    std::vector<ldmx::HcalID> contentsOfTriggerCell(
-        ldmx::HcalTriggerID triggerCell) const;
-
-    /**
-     * Returns the set of precision (full-granularity/DAQ) cell which is the
-     * center of the given trigger cell.
-     */
-    ldmx::HcalID centerInTriggerCell(ldmx::HcalTriggerID triggerCell) const;
+//    /**
+//     * Returns the set of precision (full-granularity/DAQ) cells which are
+//     * associated with the given trigger cell.
+//     */
+//    std::vector<ldmx::HcalID> contentsOfTriggerCell(
+//        ldmx::HcalTriggerID triggerCell) const;
+//
+//    /**
+//     * Returns the set of precision (full-granularity/DAQ) cell which is the
+//     * center of the given trigger cell.
+//     */
+//    ldmx::HcalID centerInTriggerCell(ldmx::HcalTriggerID triggerCell) const;
 
     /**
      * Returns which trigger cell this precision cell is associated with, or a
@@ -49,15 +50,17 @@ namespace hcal {
      */
     ldmx::HcalTriggerID belongsTo(ldmx::HcalID precisionCell) const;
 
+    ldmx::HcalTriggerID belongsTo(ldmx::HcalDigiID digiID) const;
+
     /** Returns the center of the given trigger cell, depends on Hcal Geometry
      * (ldmx::HcalHexReadout) */ //TODO
-    std::pair<double, double> globalPosition(
-        ldmx::HcalTriggerID triggerCell) const;
-
-    /** Returns the local (within module) center of the given trigger cell,
-     * depends on Hcal Geometry (ldmx::HcalHexReadout) */ //TODO
-    std::pair<double, double> localPosition(
-        ldmx::HcalTriggerID triggerCell) const;
+//    std::pair<double, double> globalPosition(
+//        ldmx::HcalTriggerID triggerCell) const;
+//
+//    /** Returns the local (within module) center of the given trigger cell,
+//     * depends on Hcal Geometry (ldmx::HcalHexReadout) */ //TODO
+//    std::pair<double, double> localPosition(
+//        ldmx::HcalTriggerID triggerCell) const;
 
  private:
     /** Reference to the Hcal geometry used for trigger geometry information */

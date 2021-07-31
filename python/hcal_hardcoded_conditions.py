@@ -10,8 +10,8 @@ HcalHgcrocConditionsHardcode: SimpleCSVDoubleTableProvider
 
 from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider, SimpleCSVDoubleTableProvider
 
+# TODO copied from Ecal trigger (ecal_hardcoded_conditions.py)
 HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
-
 HcalTrigPrimConditionsHardcode.validForAllRows([ 50 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
                                                  5 , # ADC_THRESHOLD -- current noise is 
                                                  50,  # TOT_PEDESTAL -- currently set to match ADC pedestal

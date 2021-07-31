@@ -35,8 +35,10 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
   for (unsigned int ix = 0; ix < hcalDigis.getNumDigis(); ix++) {
     const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = hcalDigis.getDigi(ix);
     // std::cout << HcalID(pdigi.id()) << pdigi << std::endl;
-
-    ldmx::HcalTriggerID tid = geom.belongsTo(ldmx::HcalID(pdigi.id()));
+    // auto hcalid = ldmx::HcalID(pdigi.id());
+    // ldmx::HcalTriggerID tid = geom.belongsTo(hcalid);
+    ldmx::HcalTriggerID tid = geom.belongsTo(ldmx::HcalDigiID(pdigi.id()));
+    // ldmx::HcalTriggerID tid = geom.belongsTo(ldmx::HcalID(pdigi.id()));
     // ldmx::HcalTriggerID tid;
 
     if (!tid.null()) {
