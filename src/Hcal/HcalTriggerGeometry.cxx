@@ -1,7 +1,6 @@
 #include "Hcal/HcalTriggerGeometry.h"
 #include <iostream>
 #include <sstream>
-//#include "DetDescr/HcalHexReadout.h"
 #include "DetDescr/HcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
@@ -19,8 +18,10 @@ namespace hcal {
 //                                          const ldmx::HcalHexReadout* hcalGeom)
   //   : ConditionsObject(CONDITIONS_OBJECT_NAME)
   // hcalGeometry_{hcalGeom} {
-HcalTriggerGeometry::HcalTriggerGeometry()
-    : ConditionsObject(CONDITIONS_OBJECT_NAME) {
+  //HcalTriggerGeometry::HcalTriggerGeometry()
+HcalTriggerGeometry::HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom)
+  : ConditionsObject(CONDITIONS_OBJECT_NAME),
+    hcalGeometry_{hcalGeom} {
     // if ((symmetry_ & MODULES_MASK) == INPLANE_IDENTICAL) {
     //   // first set is the same regardless of alignment...
     //   int tcell = 0;
@@ -150,57 +151,56 @@ std::pair<double, double> HcalTriggerGeometry::localPosition(
   return std::pair<double, double>(0, 0);
 }
 
-// class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
-//  public:
-//   /**
-//    * Class constructor
-//    */
-//   HcalTriggerGeometryProvider(const std::string& name,
-//                               const std::string& tagname,
-//                               const framework::config::Parameters& parameters,
-//                               framework::Process& process)
-//       : ConditionsObjectProvider(HcalTriggerGeometry::CONDITIONS_OBJECT_NAME,
-//                                  tagname, parameters, process),
-//         hcalTriggerGeometry_{nullptr} {}
+class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
+ public:
+  /**
+   * Class constructor
+   */
+  HcalTriggerGeometryProvider(const std::string& name,
+                              const std::string& tagname,
+                              const framework::config::Parameters& parameters,
+                              framework::Process& process)
+      : ConditionsObjectProvider(HcalTriggerGeometry::CONDITIONS_OBJECT_NAME,
+                                 tagname, parameters, process),
+        hcalTriggerGeometry_{nullptr} {}
 
-//   /** Destructor */
-//   virtual ~HcalTriggerGeometryProvider() {
-//     if (hcalTriggerGeometry_ != nullptr) delete hcalTriggerGeometry_;
-//     hcalTriggerGeometry_ = nullptr;
-//   }
+  /** Destructor */
+  virtual ~HcalTriggerGeometryProvider() {
+    if (hcalTriggerGeometry_ != nullptr) delete hcalTriggerGeometry_;
+    hcalTriggerGeometry_ = nullptr;
+  }
 
-//   /**
-//    * Provides access to the HcalHexReadout or HcalTriggerGeometry
-//    * @note Currently, these are assumed to be valid for all time, but this
-//    * behavior could be changed.  Users should not cache the pointer between
-//    * events
-//    */
-//   virtual std::pair<const framework::ConditionsObject*,
-//                     framework::ConditionsIOV>
-//   getCondition(const ldmx::EventHeader& context) {
-//     if (hcalTriggerGeometry_ == nullptr) {
-//       std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
-//           cond_hcal_geom = requestParentCondition(
-//               ldmx::HcalHexReadout::CONDITIONS_OBJECT_NAME, context);
-//       const ldmx::HcalHexReadout* hcalgeom =
-//           dynamic_cast<const ldmx::HcalHexReadout*>(cond_hcal_geom.first);
-//       hcalTriggerGeometry_ = new HcalTriggerGeometry(
-//           INPLANE_IDENTICAL | LAYERS_IDENTICAL, hcalgeom);
-//     }
-//     return std::make_pair(hcalTriggerGeometry_,
-//                           framework::ConditionsIOV(
-//                               context.getRun(), context.getRun(), true, true));
-//   }
+  /**
+   * Provides access to the HcalGeometry or HcalTriggerGeometry
+   * @note Currently, these are assumed to be valid for all time, but this
+   * behavior could be changed.  Users should not cache the pointer between
+   * events
+   */
+  virtual std::pair<const framework::ConditionsObject*,
+                    framework::ConditionsIOV>
+  getCondition(const ldmx::EventHeader& context) {
+    if (hcalTriggerGeometry_ == nullptr) {
+      std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
+          cond_hcal_geom = requestParentCondition(
+              ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME, context);
+      const ldmx::HcalGeometry* hcalgeom =
+          dynamic_cast<const ldmx::HcalGeometry*>(cond_hcal_geom.first);
+      hcalTriggerGeometry_ = new HcalTriggerGeometry(hcalgeom);
+    }
+    return std::make_pair(hcalTriggerGeometry_,
+                          framework::ConditionsIOV(
+                              context.getRun(), context.getRun(), true, true));
+  }
 
-//   /**
-//    * Take no action on release, as the object is permanently owned by the
-//    * Provider
-//    */
-//   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
+  /**
+   * Take no action on release, as the object is permanently owned by the
+   * Provider
+   */
+  virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
-//  private:
-//   HcalTriggerGeometry* hcalTriggerGeometry_;
-// };
+ private:
+  HcalTriggerGeometry* hcalTriggerGeometry_;
+};
 
 }  // namespace hcal
-//DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalTriggerGeometryProvider);
+DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalTriggerGeometryProvider);
