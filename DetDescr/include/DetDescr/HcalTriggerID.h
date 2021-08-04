@@ -27,8 +27,8 @@ class HcalTriggerID : public HcalAbstractID {
   static const RawValue SECTION_SHIFT{18};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
   static const RawValue LAYER_SHIFT{10};
-  static const RawValue STRIP_MASK{0xFF};  // space for 255 strips/layer
-  static const RawValue STRIP_SHIFT{0};
+  static const RawValue SUPERSTRIP_MASK{0xFF};  // space for 255 superstrips/layer
+  static const RawValue SUPERSTRIP_SHIFT{0};
 
   /**
    * Empty HCAL trigger id (but not null!)
@@ -62,22 +62,22 @@ class HcalTriggerID : public HcalAbstractID {
   /**
    * Create from pieces
    */
-  HcalTriggerID(unsigned int section, unsigned int layer, unsigned int strip)
+  HcalTriggerID(unsigned int section, unsigned int layer, unsigned int superstrip)
       : HcalAbstractID(Trigger, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
     id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
-    id_ |= (strip & STRIP_MASK) << STRIP_SHIFT;
+    id_ |= (superstrip & SUPERSTRIP_MASK) << SUPERSTRIP_SHIFT;
   }
 
   /*
    * Get the value of the 'section' field from the ID.
-   * @return The value of the 'strip' field.
+   * @return The value of the 'section' field.
    */
   int getSection() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
   /*
    * Get the value of the 'section' field from the ID.
-   * @return The value of the 'strip' field.
+   * @return The value of the 'section' field.
    */
   int section() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
@@ -97,13 +97,13 @@ class HcalTriggerID : public HcalAbstractID {
    * Get the value of the 'superstrip' field from the ID.
    * @return The value of 'superstrip' field.
    */
-  int getSuperstrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
+  int getSuperstrip() const { return (id_ >> SUPERSTRIP_SHIFT) & SUPERSTRIP_MASK; }
 
   /**
    * Get the value of the 'superstrip' field from the ID.
    * @return The value of 'superstrip' field.
    */
-  int superstrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
+  int superstrip() const { return (id_ >> SUPERSTRIP_SHIFT) & SUPERSTRIP_MASK; }
   
   static void createInterpreters();
 };
