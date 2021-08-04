@@ -10,6 +10,7 @@ void TriggerProcessor::configure(framework::config::Parameters& parameters) {
   startLayer_ = parameters.getParameter<int>("start_layer");
   endLayer_ = parameters.getParameter<int>("end_layer");
   inputColl_ = parameters.getParameter<std::string>("input_collection");
+  inputPass_ = parameters.getParameter<std::string>("input_pass");
   outputColl_ = parameters.getParameter<std::string>("trigger_collection");
 
   if (mode_ == 0) {
@@ -22,7 +23,7 @@ void TriggerProcessor::configure(framework::config::Parameters& parameters) {
 void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
   const std::vector<ldmx::EcalHit> ecalRecHits =
-      event.getCollection<ldmx::EcalHit>(inputColl_);
+      event.getCollection<ldmx::EcalHit>(inputColl_,inputPass_);
 
   // number of electrons in this event
   const int nElectrons{event.getElectronCount()};
