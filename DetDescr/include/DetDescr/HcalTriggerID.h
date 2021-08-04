@@ -23,6 +23,8 @@ class HcalTriggerID : public HcalAbstractID {
    */
   enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, LEFT = 4, RIGHT = 3 };
 
+  static const RawValue END_MASK{0x1}; // space for up to 2 ends of a strip
+  static const RawValue END_SHIFT{19};
   static const RawValue SECTION_MASK{0x7};  // space for up to 7 sections
   static const RawValue SECTION_SHIFT{18};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
@@ -62,11 +64,13 @@ class HcalTriggerID : public HcalAbstractID {
   /**
    * Create from pieces
    */
-  HcalTriggerID(unsigned int section, unsigned int layer, unsigned int superstrip)
+  HcalTriggerID(unsigned int section, unsigned int layer, unsigned int superstrip,
+                 unsigned int end)
       : HcalAbstractID(Trigger, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
     id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
     id_ |= (superstrip & SUPERSTRIP_MASK) << SUPERSTRIP_SHIFT;
+    id_ |= (end & END_MASK) << END_SHIFT;
   }
 
   /*
@@ -104,7 +108,24 @@ class HcalTriggerID : public HcalAbstractID {
    * @return The value of 'superstrip' field.
    */
   int superstrip() const { return (id_ >> SUPERSTRIP_SHIFT) & SUPERSTRIP_MASK; }
-  
+
+  /**
+   * Get the value of the 'end' field from the ID.
+   * @return The value of the 'end' field.
+   */
+  int end() const { return (id_ >> END_SHIFT) & END_MASK; }
+
+  /**
+   * Get whether the 'end' field from the ID is negative.
+   * @return True if the end of the strip is negative
+   */
+  bool isNegativeEnd() const {
+    if (end() == 1)
+      return true;
+    else
+      return false;
+  }
+
   static void createInterpreters();
 };
 }  // namespace ldmx
