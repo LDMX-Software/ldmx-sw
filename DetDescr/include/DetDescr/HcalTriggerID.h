@@ -23,8 +23,8 @@ class HcalTriggerID : public HcalAbstractID {
    */
   enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, LEFT = 4, RIGHT = 3 };
 
-  static const RawValue END_MASK{0x1}; // space for up to 2 ends of a strip
-  static const RawValue END_SHIFT{19};
+  static const RawValue END_MASK{0x2}; // space for 2 ends plus a combined TP
+  static const RawValue END_SHIFT{20};
   static const RawValue SECTION_MASK{0x7};  // space for up to 7 sections
   static const RawValue SECTION_SHIFT{18};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
@@ -119,12 +119,13 @@ class HcalTriggerID : public HcalAbstractID {
    * Get whether the 'end' field from the ID is negative.
    * @return True if the end of the strip is negative
    */
-  bool isNegativeEnd() const {
-    if (end() == 1)
-      return true;
-    else
-      return false;
-  }
+  bool isNegativeEnd() const { return end() == 1; }
+
+  /**
+   * Get whether the ID is the composite of two bar ends.
+   * @return True if the ID corresponds to a composite TP.
+   */
+  bool isComposite() const { return end() == 2; }
 
   static void createInterpreters();
 };
