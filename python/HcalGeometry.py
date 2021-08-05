@@ -46,7 +46,7 @@ class HcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 HcalGeometryProvider.getInstance()
 
 
-class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+class HcalQuadGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Hcal geometry (ldmx::HcalGeometry)
     Parameters
     ----------
@@ -56,33 +56,33 @@ class HcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     ----------
     HcalGeometry : HcalGeometry
         Actual class providing precision cellular layout in Hcal
-    __instance : HcalTriggerGeometryProvider
+    __instance : HcalQuadGeometryProvider
         Singleton instance of this object
     """
 
     __instance = None
 
     def getInstance() :
-        """Get the single instance of the HcalTriggerGeometryProvider
+        """Get the single instance of the HcalQuadGeometryProvider
         Returns
         -------
-        HcalTriggerGeometryProvider
+        HcalQuadGeometryProvider
             Single instance of the provider
         """
 
-        if HcalTriggerGeometryProvider.__instance == None :
-            HcalTriggerGeometryProvider()
+        if HcalQuadGeometryProvider.__instance == None :
+            HcalQuadGeometryProvider()
 
-        return HcalTriggerGeometryProvider.__instance
+        return HcalQuadGeometryProvider.__instance
 
     def __init__(self):
-        if HcalTriggerGeometryProvider.__instance != None :
-            raise Exception('HcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
+        if HcalQuadGeometryProvider.__instance != None :
+            raise Exception('HcalQuadGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("HcalTriggerGeometry","hcal::HcalTriggerGeometryProvider","Hcal")
+            super().__init__("HcalQuadGeometry","hcal::HcalQuadGeometryProvider","Hcal")
             from LDMX.DetDescr import HcalGeometry
             self.HcalGeometry = HcalGeometry.HcalGeometry()
-            HcalTriggerGeometryProvider.__instance = self 
+            HcalQuadGeometryProvider.__instance = self 
 
 # make sure global instance is created, this registers the condition
-HcalTriggerGeometryProvider.getInstance()
+HcalQuadGeometryProvider.getInstance()

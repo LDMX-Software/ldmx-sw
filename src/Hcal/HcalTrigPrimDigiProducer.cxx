@@ -1,6 +1,6 @@
 #include "Hcal/HcalTrigPrimDigiProducer.h"
 
-#include "Hcal/HcalTriggerGeometry.h"
+#include "Hcal/HcalQuadGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "Tools/HgcrocTriggerCalculations.h"
@@ -18,8 +18,8 @@ void HcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
 }
 
 void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
-  const HcalTriggerGeometry& geom = getCondition<HcalTriggerGeometry>(
-      HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
+  const HcalQuadGeometry& geom = getCondition<HcalQuadGeometry>(
+      HcalQuadGeometry::CONDITIONS_OBJECT_NAME);
 
   const ldmx::HgcrocDigiCollection& hcalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
