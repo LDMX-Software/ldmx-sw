@@ -78,10 +78,10 @@ class TrigScintCluster {
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
   /**
-   *The cluster centroid in x,y,z (not implemented)
+   *The cluster centroid in x,y,z 
    * @param x Cluster x coordinate
    * @param y Cluster y coordinate
-   * @param z Cluster z coordinate
+   * @param z Cluster z coordinate (not implemented)
    */
   void setCentroidXYZ(double x, double y, double z) {
     centroidX_ = x;

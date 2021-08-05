@@ -153,6 +153,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.seed_threshold = 30.
         self.pad_time = 0.
         self.time_tolerance = 0.5
+        self.vertical_bar_start_index = 52
         self.input_collection="trigScintDigisTag"
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTaggerClusters"
@@ -195,6 +196,16 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.tracking_threshold = 0.  #to add in neighboring channels
         self.seeding_collection = "TriggerPadTaggerClusters"
         self.further_input_collections = ["TriggerPadUpClusters","TriggerPadDownClusters"]
+        self.allow_skip_last_collection = False
+        self.vertical_bar_start_index = 52
+        self.number_horizontal_bars = 16
+        self.number_vertical_bars = 8
+        self.horizontal_bar_width = 3.
+        self.horizontal_bar_gap = 0.3
+        self.vertical_bar_width = 3.
+        self.vertical_bar_gap = 0.3
+
+                
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
