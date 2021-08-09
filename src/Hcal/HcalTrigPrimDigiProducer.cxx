@@ -1,6 +1,6 @@
 #include "Hcal/HcalTrigPrimDigiProducer.h"
 
-#include "Hcal/HcalQuadGeometry.h"
+#include "Hcal/HcalTriggerGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "Tools/HgcrocTriggerCalculations.h"
@@ -18,8 +18,8 @@ void HcalTrigPrimDigiProducer::configure(framework::config::Parameters& ps) {
 }
 
 void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
-  const HcalQuadGeometry& geom = getCondition<HcalQuadGeometry>(
-      HcalQuadGeometry::CONDITIONS_OBJECT_NAME);
+  const HcalTriggerGeometry& geom = getCondition<HcalTriggerGeometry>(
+      HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
   const ldmx::HgcrocDigiCollection& hcalDigis =
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
@@ -30,26 +30,28 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
 
   // construct the calculator...
   ldmx::HgcrocTriggerCalculations calc(conditions);
-
+  stq_tps.clear();
+  
   // Loop over the digis
   for (unsigned int ix = 0; ix < hcalDigis.getNumDigis(); ix++) {
     const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = hcalDigis.getDigi(ix);
-    // std::cout << HcalID(pdigi.id()) << pdigi << std::endl;
-    // auto hcalid = ldmx::HcalID(pdigi.id());
-    // ldmx::HcalTriggerID tid = geom.belongsTo(hcalid);
-    ldmx::HcalTriggerID tid = geom.belongsTo(ldmx::HcalDigiID(pdigi.id()));
-    // ldmx::HcalTriggerID tid = geom.belongsTo(ldmx::HcalID(pdigi.id()));
-    // ldmx::HcalTriggerID tid;
+    // ldmx::HcalTriggerID tid = geom.belongsTo( ldmx::HcalDigiID(pdigi.id()) );
+    ldmx::HcalTriggerID tid = geom.belongsToQuad( ldmx::HcalDigiID(pdigi.id()) );
+    ldmx::HcalTriggerID stq_id = geom.belongsToSTQ( ldmx::HcalDigiID(pdigi.id()) );
 
     if (!tid.null()) {
       int tot = 0;
       if (pdigi.soi().isTOTComplete()) tot = pdigi.soi().tot();
       calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adc_t(), tot);
     }
-  }
 
+    auto ptr = stq_tps.find(stq_id.raw());
+    if (ptr != stq_tps.end()) ptr->second += pdigi.soi().adc_t();
+    else stq_tps[stq_id.raw()] = pdigi.soi().adc_t();
+  }
+  
   // // Now, we compress the digis
-  calc.compressDigis(4);  // 4 is the number for Hcal...
+  calc.compressDigis(4);
 
   // const std::map<unsigned int, uint8_t> results;
   const std::map<unsigned int, uint8_t>& results = calc.compressedEnergies();
@@ -58,19 +60,18 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
   for (auto result : results) {
     if (result.second > 0) {
       tdigis.push_back(ldmx::HgcrocTrigDigi(result.first, result.second));
-      // std::cout << HcalTriggerID(result.first) << "  " << tdigis.back() <<
-      // std::endl;
     }
   }
 
-  // // temporary for testing!!
-  // ldmx::HgcrocTrigDigiCollection tdigis;
-  // for(int i=0;i<4;i++){
-  //     tdigis.push_back(ldmx::HgcrocTrigDigi(i,i+2));
-  // }
+  ldmx::HgcrocTrigDigiCollection stq_digis;
+  for (auto result : stq_tps) {
+    if (result.second > 0) {
+      stq_digis.push_back(ldmx::HgcrocTrigDigi(result.first, result.second));
+    }
+  }
 
-  // std::cout << hcalDigis.size() << " " << tdigis.size() << std::endl;
   event.add(getName(), tdigis);
+  event.add("hcalTrigPrimDigiSTQs", stq_digis);
 }
 }  // namespace hcal
 DECLARE_PRODUCER_NS(hcal, HcalTrigPrimDigiProducer);
