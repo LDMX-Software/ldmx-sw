@@ -30,24 +30,17 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
 
   // construct the calculator...
   ldmx::HgcrocTriggerCalculations calc(conditions);
-  stq_tps.clear();
   
   // Loop over the digis
   for (unsigned int ix = 0; ix < hcalDigis.getNumDigis(); ix++) {
     const ldmx::HgcrocDigiCollection::HgcrocDigi pdigi = hcalDigis.getDigi(ix);
-    // ldmx::HcalTriggerID tid = geom.belongsTo( ldmx::HcalDigiID(pdigi.id()) );
     ldmx::HcalTriggerID tid = geom.belongsToQuad( ldmx::HcalDigiID(pdigi.id()) );
-    ldmx::HcalTriggerID stq_id = geom.belongsToSTQ( ldmx::HcalDigiID(pdigi.id()) );
 
     if (!tid.null()) {
       int tot = 0;
       if (pdigi.soi().isTOTComplete()) tot = pdigi.soi().tot();
       calc.addDigi(pdigi.id(), tid.raw(), pdigi.soi().adc_t(), tot);
     }
-
-    auto ptr = stq_tps.find(stq_id.raw());
-    if (ptr != stq_tps.end()) ptr->second += pdigi.soi().adc_t();
-    else stq_tps[stq_id.raw()] = pdigi.soi().adc_t();
   }
   
   // // Now, we compress the digis
@@ -63,10 +56,31 @@ void HcalTrigPrimDigiProducer::produce(framework::Event& event) {
     }
   }
 
+  // build STQs from the quads (w/ compressed energies)
+  stq_tps.clear();
+  for (auto result : results) {
+    if (result.second > 0) {
+      const ldmx::HcalTriggerID quad_id(result.first);
+      const std::vector<ldmx::HcalDigiID> precisions_ids = geom.contentsOfQuad(quad_id);
+      if (precisions_ids.size()==0) {
+        EXCEPTION_RAISE("TriggerIDLookupMismatch",
+                        "Attempted to lookup a nonexistent HcalDigiID from an HcalTriggerID");
+      }
+      const ldmx::HcalDigiID prec_id( precisions_ids.front().raw() );
+      const ldmx::HcalTriggerID stq_id = geom.belongsToSTQ( prec_id );
+      auto ptr = stq_tps.find(stq_id.raw());
+      if (ptr != stq_tps.end()) ptr->second += result.second;
+      else stq_tps[stq_id.raw()] = result.second;
+    }    
+  }
+
   ldmx::HgcrocTrigDigiCollection stq_digis;
   for (auto result : stq_tps) {
     if (result.second > 0) {
       stq_digis.push_back(ldmx::HgcrocTrigDigi(result.first, result.second));
+      // [Later] can apply calibration from ADC to MeV
+      // 1.2 PE/ADC * 1/(68 PE/MIP) * 4.66 MeV/MIP
+      //const float mev_per_adc = 1.2*4.66/68.;
     }
   }
 
