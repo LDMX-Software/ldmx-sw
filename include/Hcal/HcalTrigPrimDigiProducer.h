@@ -24,14 +24,14 @@ namespace hcal {
      * Grabs configure parameters from the python config file.
      *
      * Parameter        Default
-     * inputDigiCollName     HcalDigis
-     * inputDigiPassName     "" <-- blank means take any pass if only one
+     * digiCollName     HcalDigis
+     * digiPassName     "" <-- blank means take any pass if only one
      * collection exists
      */
     virtual void configure(framework::config::Parameters&);
 
     /**
-     * Produce HcalHits and put them into the event bus using the
+     * Produce HcalTrigPrimDigis and put them into the event bus using the
      * HcalDigis as input.
      */
     virtual void produce(framework::Event& event);
@@ -46,6 +46,7 @@ namespace hcal {
     /** Conditions object for the calibration information */
     std::string condObjName_;
 
+    /** map of digis to the super trigger primitives */
     std::map<unsigned int, unsigned int> stq_tps;
   };
 }  // namespace hcal
