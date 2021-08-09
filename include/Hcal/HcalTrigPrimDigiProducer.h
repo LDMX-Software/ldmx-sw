@@ -45,7 +45,9 @@ namespace hcal {
 
     /** Conditions object for the calibration information */
     std::string condObjName_;
+
+    std::map<unsigned int, unsigned int> stq_tps;
   };
 }  // namespace hcal
 
-#endif  // EVENTPROC_HCALTRIGPRIMDIGIPRODUCER_H_INC
+#endif  // HCAL_HCALTRIGPRIMDIGIPRODUCER_H_
