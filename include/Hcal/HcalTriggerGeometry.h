@@ -32,7 +32,6 @@ namespace hcal {
      * Returns the set of precision (full-granularity/DAQ) cells which are
      * associated with the given trigger cell.
      */
-    /* std::vector<ldmx::HcalDigiID> contentsOfTriggerCell( */
     std::vector<ldmx::HcalDigiID> contentsOfQuad(
         ldmx::HcalTriggerID triggerCell) const;
     std::vector<ldmx::HcalDigiID> contentsOfSTQ(
@@ -48,17 +47,6 @@ namespace hcal {
  private:
     /** Reference to the Hcal geometry used for trigger geometry information */
     const ldmx::HcalGeometry* hcalGeometry_;
-//     /** Map of precision cells to trigger cells
-//      */
-//     std::map<ldmx::HcalID, ldmx::HcalTriggerID> precision2trigger_;
-// 
-//     /** Map of trigger cells to precision cells
-//      */
-//     std::map<ldmx::HcalTriggerID, std::vector<ldmx::HcalID> > trigger2precision_;
-// 
-//     // maps for the super trigger quads
-//     std::map<ldmx::HcalTriggerID, std::vector<ldmx::HcalTriggerID> > super2trigger_;
-//     std::map<ldmx::HcalTriggerID, std::vector<ldmx::HcalTriggerID> > trigger2super_;
   };
 
 }  // namespace hcal
