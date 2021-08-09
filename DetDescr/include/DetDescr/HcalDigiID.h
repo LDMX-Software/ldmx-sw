@@ -33,7 +33,7 @@ class HcalDigiID : public HcalAbstractID {
     if (!null() && bar_type() != Digi) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
-          "Attempted to create HcalID from mismatched Hcal bar_type " +
+          "Attempted to create HcalDigiID from mismatched Hcal bar_type " +
               std::to_string(bar_type()));
     }
   }
@@ -45,7 +45,7 @@ class HcalDigiID : public HcalAbstractID {
     if (!null() && bar_type() != Digi) {
       EXCEPTION_RAISE(
           "DetectorIDMismatch",
-          "Attempted to create HcalID from mismatched Hcal bar_type " +
+          "Attempted to create HcalDigiID from mismatched Hcal bar_type " +
               std::to_string(bar_type()));
     }
   }
