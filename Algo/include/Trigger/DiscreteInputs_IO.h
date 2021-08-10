@@ -12,7 +12,7 @@ struct EventDump {
   uint64_t event;
   std::vector<ldmx_int::EcalTP> EcalTPs;
 
- EventDump() : event(0), EcalTPs(){}
+  EventDump() : event(0), EcalTPs() {}
   bool readFromFile(FILE *file) {
     if (!fread(&event, sizeof(uint64_t), 1, file)) return false;
     ldmx_int::readManyFromFile(EcalTPs, file);
@@ -26,9 +26,11 @@ struct EventDump {
 };
 
 class DiscreteInputs {
-public:
-DiscreteInputs(const char *fileName) : file_(fopen(fileName,"rb")) {
-    if (!file_) { std::cout << "ERROR: cannot read '" << fileName << "'" << std::endl; }
+ public:
+  DiscreteInputs(const char *fileName) : file_(fopen(fileName, "rb")) {
+    if (!file_) {
+      std::cout << "ERROR: cannot read '" << fileName << "'" << std::endl;
+    }
     assert(file_);
   }
   ~DiscreteInputs() { fclose(file_); }
@@ -36,17 +38,17 @@ DiscreteInputs(const char *fileName) : file_(fopen(fileName,"rb")) {
   bool nextEvent() {
     if (feof(file_)) return false;
     if (!event_.readFromFile(file_)) return false;
-    printf("Beginning of event %lu (%lu TPs) \n", event_.event, event_.EcalTPs.size());
+    printf("Beginning of event %lu (%lu TPs) \n", event_.event,
+           event_.EcalTPs.size());
     return true;
   }
-  const EventDump & event() { return event_; }
-    
-private:    
+  const EventDump &event() { return event_; }
+
+ private:
   FILE *file_;
   EventDump event_;
-    
 };
 
-}
+}  // namespace trigger
 
 #endif /* DISCRETEINPUTS_IO */
