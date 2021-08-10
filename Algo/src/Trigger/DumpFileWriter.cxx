@@ -6,38 +6,39 @@
 
 namespace trigger {
 
-void DumpFileWriter::configure(Parameters &ps) {
+void DumpFileWriter::configure(framework::config::Parameters &ps) {
       
 }
 
-void DumpFileWriter::analyze(const Event &event) {
+void DumpFileWriter::analyze(const framework::Event &event) {
 
-  const EcalTriggerGeometry& geom=getCondition<EcalTriggerGeometry>(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
-	
+  const ecal::EcalTriggerGeometry& geom=getCondition<ecal::EcalTriggerGeometry>(ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+        
   if (!event.exists("ecalTrigDigis")) return;
-  auto ecalTrigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
-	
+  auto ecalTrigDigis{event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+        
   // clear event to write
   myEvent.event = evtNo;
   myEvent.EcalTPs.clear();
-
+  
   for(const auto& trigDigi : ecalTrigDigis){
     // HgcrocTrigDigi
-
-    EcalTriggerID tid( trigDigi.getId() /*raw value*/ );
+  
+    ldmx::EcalTriggerID tid( trigDigi.getId() /*raw value*/ );
     // compressed ECal digis are 8xADCs (HCal will be 4x)
     float sie =  8*trigDigi.linearPrimitive() * gain * mVtoMeV; // in MeV, before layer corrections
     float e = (sie/mipSiEnergy * layerWeights.at( tid.layer() ) + sie) * secondOrderEnergyCorrection;
-	    
+            
     ldmx_int::EcalTP tp;
     //tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );
     tp.fill( trigDigi.getId(), e ); // store linearized E
     myEvent.EcalTPs.push_back(tp);
   }
-
+  
   myEvent.writeToFile(file);
   evtNo++;
+  
 }
 
 
@@ -75,4 +76,4 @@ void DumpFileWriter::onProcessEnd() {
 
 }
 
-DECLARE_ANALYZER_NS(ldmx, DumpFileWriter);
+DECLARE_ANALYZER_NS(trigger, DumpFileWriter);

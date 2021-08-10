@@ -23,15 +23,15 @@ namespace trigger {
    * @class TriggerEcalEnergySum
    * @brief 
    */
-  class TriggerEcalEnergySum : public ldmx::Producer {
+  class TriggerEcalEnergySum : public framework::Producer {
 
  public:
 
- TriggerEcalEnergySum(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {}
+ TriggerEcalEnergySum(const std::string& name, framework::Process& process) : framework::Producer(name, process) {}
     
-    virtual void configure(ldmx::Parameters& ps);
+    virtual void configure(framework::config::Parameters& ps);
     
-    virtual void produce(ldmx::Event& event);
+    virtual void produce(framework::Event& event);
       
     virtual void onFileOpen();
       
