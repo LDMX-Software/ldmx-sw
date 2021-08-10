@@ -25,15 +25,15 @@ namespace trigger {
    * @class DumpFileWriter
    * @brief 
    */
-  class DumpFileWriter : public ldmx::Analyzer {
+  class DumpFileWriter : public framework::Analyzer {
 
  public:
 
- DumpFileWriter(const std::string& name, ldmx::Process& process) : ldmx::Analyzer(name, process) {}
+ DumpFileWriter(const std::string& name, framework::Process& process) : framework::Analyzer(name, process) {}
     
-    virtual void configure(ldmx::Parameters& ps);
+    virtual void configure(framework::config::Parameters& ps);
 	
-    virtual void analyze(const Event &event);
+    virtual void analyze(const framework::Event &event);
       
     virtual void onFileOpen();
       

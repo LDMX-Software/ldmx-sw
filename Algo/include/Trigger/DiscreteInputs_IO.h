@@ -24,7 +24,7 @@ struct EventDump {
     return true;
   }
 };
-    
+
 class DiscreteInputs {
 public:
 DiscreteInputs(const char *fileName) : file_(fopen(fileName,"rb")) {
@@ -36,7 +36,7 @@ DiscreteInputs(const char *fileName) : file_(fopen(fileName,"rb")) {
   bool nextEvent() {
     if (feof(file_)) return false;
     if (!event_.readFromFile(file_)) return false;
-    printf("Beginning of event %lu (%d TPs) \n", event_.event, event_.EcalTPs.size());
+    printf("Beginning of event %lu (%lu TPs) \n", event_.event, event_.EcalTPs.size());
     return true;
   }
   const EventDump & event() { return event_; }

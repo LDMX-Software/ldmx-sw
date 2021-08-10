@@ -6,4 +6,4 @@ class TriggerEcalEnergySum(Producer) :
     """
 
     def __init__(self, instance_name = 'myTriggerEcalEnergySum') :
-        super().__init__(instance_name , 'ldmx::TriggerEcalEnergySum','Trigger')
+        super().__init__(instance_name , 'trigger::TriggerEcalEnergySum','Trigger')

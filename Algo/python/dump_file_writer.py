@@ -6,4 +6,4 @@ class DumpFileWriter(Analyzer) :
     """
 
     def __init__(self, instance_name = 'myDumpFileWriter') :
-        super().__init__(instance_name , 'ldmx::DumpFileWriter','Trigger')
+        super().__init__(instance_name , 'trigger::DumpFileWriter','Trigger')
