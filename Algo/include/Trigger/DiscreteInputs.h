@@ -1,6 +1,10 @@
 #ifndef DISCRETEINPUTS_H
 #define DISCRETEINPUTS_H
 
+#include <stdint.h>
+#include <stdio.h>
+#include <vector>
+
 namespace trigger {
 
 namespace ldmx_int {
