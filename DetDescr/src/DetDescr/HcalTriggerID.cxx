@@ -1,4 +1,5 @@
 #include "DetDescr/HcalTriggerID.h"
+
 #include "DetDescr/DetectorIDInterpreter.h"
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalTriggerID& id) {
@@ -21,9 +22,8 @@ void HcalTriggerID::createInterpreters() {
   fields.push_back(
       new IDField("superstrip", 3, SUPERSTRIP_SHIFT,
                   SUPERSTRIP_SHIFT + IDField::countOnes(SUPERSTRIP_MASK) - 1));
-  fields.push_back(
-      new IDField("end", 4, END_SHIFT,
-                  END_SHIFT + IDField::countOnes(END_MASK) - 1));
+  fields.push_back(new IDField("end", 4, END_SHIFT,
+                               END_SHIFT + IDField::countOnes(END_MASK) - 1));
 
   DetectorIDInterpreter::registerInterpreter(
       SD_HCAL, HcalAbstractID::BAR_TYPE_MASK << HcalAbstractID::BAR_TYPE_SHIFT,

@@ -23,13 +23,13 @@ class HcalTriggerID : public HcalAbstractID {
    */
   enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, LEFT = 4, RIGHT = 3 };
 
-  static const RawValue END_MASK{0x2}; // space for 2 ends plus a combined TP
+  static const RawValue END_MASK{0x3};  // space for 2 ends plus a combined TP
   static const RawValue END_SHIFT{20};
   static const RawValue SECTION_MASK{0x7};  // space for up to 7 sections
-  static const RawValue SECTION_SHIFT{18};
+  static const RawValue SECTION_SHIFT{16};
   static const RawValue LAYER_MASK{0xFF};  // space for up to 255 layers
-  static const RawValue LAYER_SHIFT{10};
-  static const RawValue SUPERSTRIP_MASK{0xFF};  // space for 255 superstrips/layer
+  static const RawValue LAYER_SHIFT{8};
+  static const RawValue SUPERSTRIP_MASK{0xFF};  // space for 255 strips/layer
   static const RawValue SUPERSTRIP_SHIFT{0};
 
   /**
@@ -64,8 +64,8 @@ class HcalTriggerID : public HcalAbstractID {
   /**
    * Create from pieces
    */
-  HcalTriggerID(unsigned int section, unsigned int layer, unsigned int superstrip,
-                 unsigned int end)
+  HcalTriggerID(unsigned int section, unsigned int layer,
+                unsigned int superstrip, unsigned int end)
       : HcalAbstractID(Trigger, 0) {
     id_ |= (section & SECTION_MASK) << SECTION_SHIFT;
     id_ |= (layer & LAYER_MASK) << LAYER_SHIFT;
@@ -101,7 +101,9 @@ class HcalTriggerID : public HcalAbstractID {
    * Get the value of the 'superstrip' field from the ID.
    * @return The value of 'superstrip' field.
    */
-  int getSuperstrip() const { return (id_ >> SUPERSTRIP_SHIFT) & SUPERSTRIP_MASK; }
+  int getSuperstrip() const {
+    return (id_ >> SUPERSTRIP_SHIFT) & SUPERSTRIP_MASK;
+  }
 
   /**
    * Get the value of the 'superstrip' field from the ID.
