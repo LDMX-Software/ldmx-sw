@@ -11,7 +11,7 @@
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
     <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Docker%20Image/badge.svg" />
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Tests/badge.svg" />
+    <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
 ## Quick Start 
