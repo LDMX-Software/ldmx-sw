@@ -201,11 +201,13 @@
       <volume name="back_hcal_abso2_volume">
 	  <materialref ref="Steel"/>
 	  <solidref    ref="back_hcal_absoBox2"/>
+          <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
 
       <volume name="back_hcal_abso3_volume">
 	  <materialref ref="Steel"/>
 	  <solidref    ref="back_hcal_absoBox3"/>
+          <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
  
       <volume name="back_hcal_ScintBox_volume">
@@ -219,11 +221,13 @@
       <volume name="sideTB_hcal_absoBox_volume">
 	  <materialref ref="Steel"/>
 	  <solidref    ref="sideTB_hcal_absoBox"/>
+<!--          <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/> -->
       </volume>
 
       <volume name="sideLR_hcal_absoBox_volume">
 	  <materialref ref="Steel"/>
 	  <solidref    ref="sideLR_hcal_absoBox"/>
+<!--          <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>  -->
       </volume>
 
       <volume name="sideTB_hcal_ScintBox_volume">
