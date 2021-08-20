@@ -9,17 +9,17 @@ ClassImp(ldmx::CaloTrigPrim)
 
   void CaloTrigPrim::Print() const { std::cout << *this << std::endl; }
 
-  std::ostream &operator<<(std::ostream &s, const ldmx::CaloTrigPrim &digi) {
+  std::ostream &operator<<(std::ostream &s, const ldmx::CaloTrigPrim &c) {
     s << "CaloTrigPrim { "
-      << "(id : 0x" << std::hex << digi.getId() << std::dec << ") ";
-    s << "0x" << std::hex << int(digi.getPrimitive()) << " } ";
+      << "(id : 0x" << std::hex << c.getId() << std::dec << ") ";
+    s << "0x" << std::hex << int(c.getPrimitive()) << " } ";
     return s;
   }
 
   std::ostream &operator<<(std::ostream &s,
-                           const ldmx::CaloTrigPrimCollection &digis) {
+                           const ldmx::CaloTrigPrimCollection &cs) {
     s << "CaloTrigPrimCollection { " << std::endl;
-    for (auto digi : digis) s << "  " << digi << std::endl;
+    for (auto c : cs) s << "  " << c << std::endl;
     s << "}";
     return s;
   }
