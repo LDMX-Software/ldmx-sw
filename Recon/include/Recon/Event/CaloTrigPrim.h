@@ -13,7 +13,7 @@ namespace ldmx {
 class CaloTrigPrim;
 
 /**
- * Define the type of collection for trig digis
+ * Define the type of collection for trig primitives
  */
 typedef std::vector<CaloTrigPrim> CaloTrigPrimCollection;
 
@@ -52,28 +52,28 @@ class CaloTrigPrim {
   virtual ~CaloTrigPrim() = default;
 
   /**
-   * Sort the collection to trig digis
+   * Sort the collection of CaloTPs
    * by the raw ID.
    *
-   * @param[in] d another digi to compare against
+   * @param[in] c another CaloTP to compare against
    * @returns true if this ID is less than the other ID
    */
-  bool operator<(const CaloTrigPrim &digi) { return tid_ < digi.tid_; }
+  bool operator<(const CaloTrigPrim &c) { return tid_ < c.tid_; }
 
   /**
-   * Get the id of the digi
+   * Get the id of the CaloTP
    * @returns raw trigger ID
    */
   uint32_t getId() const { return tid_; }
 
   /**
-   * Set the trigger primitive (7 bits) for the given link on a channel
+   * Set the trigger primitive value for the given channel
    * @params[in] tp the value of the trigger primitive
    */
   void setPrimitive(uint32_t tp) { tp_ = tp; }
 
   /**
-   * Get the trigger primitive (7 bits) for the given link on a channel
+   * Get the trigger primitive value for the given channel
    * @returns the value of the trigger primitive
    */
   uint32_t getPrimitive() const { return tp_; }
@@ -84,35 +84,34 @@ class CaloTrigPrim {
   void Print() const;
 
   /**
-   * Stream the input digi
+   * Stream the input CaloTP
    *
    * In one line, prints out the ID (in hex),
-   * the primitive (in hex), and the linearized
-   * primitive (in dec).
+   * the primitive (in hex).
    *
-   * @param[in] o ostream to write to
-   * @param[in] d digi to write out
+   * @param[in] s ostream to write to
+   * @param[in] d tp to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &o, const CaloTrigPrim &d);
+  friend std::ostream &operator<<(std::ostream &s, const CaloTrigPrim &c);
 
   /**
-   * Stream the input digi collection
+   * Stream the input tp collection
    *
-   * Prints out each digi member of the collection
+   * Prints out each tp member of the collection
    * on a new line.
    *
-   * @param[in] o ostream to write to
+   * @param[in] s ostream to write to
    * @param[in] c collection to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &o,
+  friend std::ostream &operator<<(std::ostream &s,
                                   const CaloTrigPrimCollection &c);
 
  private:
   /// the raw ID for this trigger channel
   uint32_t tid_{0};
-  /// the compressed 7bit trigger primitive value for this channel
+  /// the integer trigger primitive value for this channel
   uint32_t tp_{0};
   /// ROOT Dictionary class definition macro
   ClassDef(CaloTrigPrim, 1);
