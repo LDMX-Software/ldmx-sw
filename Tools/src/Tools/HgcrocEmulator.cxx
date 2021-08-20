@@ -189,7 +189,7 @@ bool HgcrocEmulator::digitize(
       // determine the voltage at the sampling time
       double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
       // add noise if requested
-      if (noise_) bxvolts += noiseInjector_->Gaus(0., noiseRMS_);
+      if (noise_) bxvolts += noise(channelID);
       // convert to integer and keep in range (handle low and high saturation)
       int adc = bxvolts / gain;
       if (adc < 0) adc = 0;
@@ -222,5 +222,32 @@ bool HgcrocEmulator::digitize(
   // check the SOI to see if we should read out
   return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold;
 }  // HgcrocEmulator::digitize
+
+
+std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
+      const int& channel, const double& soi_amplitude) const {
+  // get chip conditions from emulator
+  double pedestal{this->pedestal(channel)};
+  double gain{this->gain(channel)};
+  // fill a digi with noise samples
+  std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
+  for (int iADC{0}; iADC<nADCs_; iADC++) {
+    // gen noise for ADC samples
+    int adc_tm1{pedestal};
+    if (iADC > 0)
+      adc_tm1 = noise_digi.at(iADC-1).adc_t();
+    else
+      adc_tm1 += noise(channel)/gain;
+    int adc_t{pedestal + noise(channel)/gain};
+
+    if (iADC == iSOI_)
+      adc_t += soi_amplitude/gain;
+
+    // set toa to 0 (not determined)
+    // put new sample into noise digi
+    noise_digi.emplace_back(false,false,adc_tm1,adc_t,0);
+  }  // samples in noise digi
+  return noise_digi;
+}
 
 }  // namespace ldmx

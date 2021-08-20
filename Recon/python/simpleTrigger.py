@@ -45,6 +45,7 @@ class TriggerProcessor(ldmxcfg.Producer) :
         self.start_layer = 1
         self.end_layer = 20
         self.input_collection = "EcalRecHits"
+        self.input_pass = ''
         self.trigger_collection = "Trigger"
 
 simpleTrigger = TriggerProcessor("simpleTrigger")
