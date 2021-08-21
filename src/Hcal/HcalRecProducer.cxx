@@ -137,7 +137,7 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
-    double half_total_width = hcalGeometry.getHalfTotalWidth(id.section());
+    double half_total_width = hcalGeometry.getHalfTotalWidth(id.section(),id.layer());
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
