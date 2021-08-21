@@ -274,7 +274,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
       int numChannelsInSection = 0;
-      for (int layer = 1; layer <=hcalGeometry.getNumLayers(section)) {
+      for (int layer = 1; layer <=hcalGeometry.getNumLayers(section); layer++) {
         numChannelsInSection += hcalGeometry.getNumStrips(section,layer);
       }
       // for back Hcal we have double readout, therefore we multiply the number
