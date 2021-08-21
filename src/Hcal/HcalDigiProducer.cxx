@@ -123,7 +123,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     int strip = detID.strip();
 
     // get position
-    double half_total_width = hcalGeometry.getHalfTotalWidth(section);
+    double half_total_width = hcalGeometry.getHalfTotalWidth(section,layer);
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
@@ -301,7 +301,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         // set layer to 1 if the generator says it is 0 (geometry map starts
         // from 1)
         if (layerID == 0) layerID = 1;
-        stripID = noiseInjector_->Integer(hcalGeometry.getNumStrips(sectionID));
+        stripID = noiseInjector_->Integer(hcalGeometry.getNumStrips(sectionID,layerID));
         endID = noiseInjector_->Integer(2);
         if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
             (sectionID == ldmx::HcalID::HcalSection::LEFT)) {
