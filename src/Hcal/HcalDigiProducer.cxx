@@ -272,13 +272,17 @@ void HcalDigiProducer::produce(framework::Event& event) {
    *****************************************************************************************/
   if (noise_) {
     int numChannels = 0;
-    for (int l = 0; l < hcalGeometry.getNumSections(); l++) {
-      int nChannels =
-          hcalGeometry.getNumLayers(l) * hcalGeometry.getNumStrips(l);
+    for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
+      int numChannelsInSection = 0;
+      for (int layer = 1; layer <=hcalGeometry.getNumLayers(section)) {
+        numChannelsInSection += hcalGeometry.getNumStrips(section,layer);
+      }
       // for back Hcal we have double readout, therefore we multiply the number
       // of channels by 2.
-      if (l == 0) nChannels *= 2;
-      numChannels += nChannels;
+      if (section == ldmx::HcalID::HcalSection::BACK) {
+        numChannelsInSection *= 2;
+      }
+      numChannels += numChannelsInSection;
     }
     int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
     // noise generator gives us a list of noise amplitudes [mV] that randomly
