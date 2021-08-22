@@ -18,6 +18,14 @@ namespace framework {
  */
 class ConfigurePython {
  public:
+  /// the root configuration module name
+  static std::string root_module;
+  /// the root configuration class name
+  static std::string root_class;
+  /// the root configuration object name
+  static std::string root_object;
+
+ public:
   /**
    * Class constructor.
    *
@@ -58,6 +66,9 @@ class ConfigurePython {
    * @return ProcessHandle handle to process that is configured and ready to go
    */
   ProcessHandle makeProcess();
+
+  /// Get a handle to the configuration
+  const framework::config::Parameters get() const { return configuration_; }
 
  private:
   /**

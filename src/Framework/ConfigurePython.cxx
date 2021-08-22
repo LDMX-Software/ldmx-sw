@@ -17,6 +17,10 @@
 
 namespace framework {
 
+std::string ConfigurePython::root_module = "ldmxcfg";
+std::string ConfigurePython::root_class  = "Process";
+std::string ConfigurePython::root_object = "lastProcess";
+
 /**
  * Turn the input python string object into a C++ string.
  *
@@ -201,23 +205,24 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
     EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
   }
 
-  PyObject* pCMod = PyObject_GetAttrString(script, "ldmxcfg");
+  PyObject* pCMod = PyObject_GetAttrString(script, root_module.c_str());
   Py_DECREF(script);  // don't need the script anymore
   if (pCMod == 0) {
     PyErr_Print();
-    EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+    EXCEPTION_RAISE("ConfigureError", 
+        "Did not import root configuration module " + root_module);
   }
 
-  PyObject* pProcessClass = PyObject_GetAttrString(pCMod, "Process");
+  PyObject* pProcessClass = PyObject_GetAttrString(pCMod, root_class.c_str());
   Py_DECREF(pCMod);  // don't need the config module anymore
   if (pProcessClass == 0) {
     PyErr_Print();
     EXCEPTION_RAISE(
         "ConfigureError",
-        "Process object not defined. This object is required to run ldmx-app.");
+        "Did not import root configuration class " + root_class);
   }
 
-  PyObject* pProcess = PyObject_GetAttrString(pProcessClass, "lastProcess");
+  PyObject* pProcess = PyObject_GetAttrString(pProcessClass, root_object.c_str());
   Py_DECREF(pProcessClass);  // don't need the Process class anymore
   if (pProcess == 0) {
     // wasn't able to get lastProcess class member
@@ -229,7 +234,7 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
     // lastProcess was left undefined
     EXCEPTION_RAISE(
         "ConfigureError",
-        "Process object not defined. This object is required to run.");
+        "Did not create a configuration class instance");
   }
 
   // okay, now we have fully imported the script and gotten the handle
