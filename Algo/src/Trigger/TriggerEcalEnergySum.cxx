@@ -51,8 +51,8 @@ void TriggerEcalEnergySum::produce(framework::Event& event) {
 
   TotalEnergy_hw(Input_TPs_hw, energy_hw);
 
-  std::cout << "Total ECal energy: " << total_e << " MeV (hw: " << energy_hw
-            << " MeV)" << std::endl;
+  // std::cout << "Total ECal energy: " << total_e << " MeV (hw: " << energy_hw
+  //           << " MeV)" << std::endl;
 }
 
 void TriggerEcalEnergySum::onFileOpen() {
