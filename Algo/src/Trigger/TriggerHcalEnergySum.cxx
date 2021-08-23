@@ -1,58 +1,91 @@
 #include "Trigger/TriggerHcalEnergySum.h"
 
-// #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
-// #include "../../../Algo_HLS/Ecal/src/data.h"
-// #include "DetDescr/EcalHexReadout.h"
-// #include "Recon/Event/HgcrocDigiCollection.h"
-// #include "Recon/Event/HgcrocTrigDigi.h"
+#include "DetDescr/HcalGeometry.h"
+#include "Hcal/HcalTriggerGeometry.h"
+#include "Recon/Event/CalorimeterHit.h"
+#include "Recon/Event/CaloTrigPrim.h"
+#include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {
 
 void TriggerHcalEnergySum::configure(framework::config::Parameters& ps) {}
 
 void TriggerHcalEnergySum::produce(framework::Event& event) {
-  // const ecal::EcalTriggerGeometry& geom =
-  //     getCondition<ecal::EcalTriggerGeometry>(
-  //         ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  // const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-  //     ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  // mV/ADC: 1.2
+  // MeV/MIP: 4.66
+  // PE/MIP: 68 (summed over BOTH ends, based on 1808.05219, p38)
+  // mV/PE: 5
+  // mV/MeV: 72.961 (= 5*68/4.66)
+  const float mV_per_adc = 1.2;
+  // adc gain
+  const float pe_per_adc = mV_per_adc / 5;
+  const float MeV_per_adc = mV_per_adc / 72.961;
+  // const float samp_frac = 371/4e3; // ad-hoc, from a 4 GeV neutron sample
 
-  // if (!event.exists("ecalTrigDigis")) return;
-  // auto ecalTrigDigis{
-  //     event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+  // interaction length in Fe ('steel') = 16.77 cm (132.1 g/cm2)
+  // polystyrene = 77.07 cm (81.7 g/cm2)
+  // back hcal is 20mm bar, 25mm absorber
+  const float had_samp_frac = (20/77.07)/(20/77.07 + 25/16.77); // 0.148266
+  const float em_samp_frac = (20/41.31)/(20/41.31 + 25/1.757); // 0.032906
+  const float samp_frac = (em_samp_frac + 2*had_samp_frac)/3; // 0.109813
+  const float attenuation = exp(-1/5.); // 5m attenuation length, 1m half-bar
+  
+  const ldmx::HcalGeometry& hcalGeom =
+    getCondition<ldmx::HcalGeometry>(ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+  const hcal::HcalTriggerGeometry& trigGeom =
+    getCondition<hcal::HcalTriggerGeometry>(hcal::HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  // // floating point algorithm
-  // float total_e = 0;
-  // // e_t total_e_trunc=0;
+  if (!event.exists("hcalOneEndedTrigQuads")) return;
+  auto oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>("hcalOneEndedTrigQuads")};
 
-  // // run the firmware (hls) algorithm directly
-  // EcalTP Input_TPs_hw[N_INPUT_TP];
-  // e_t energy_hw;
-  // int iTP = 0;
+  //
+  // sum bar ends to produce the combined quads
+  std::map<int, ldmx::CaloTrigPrim> twoEndedQuadMap;
+  for (auto oneEndedQuad : oneEndedQuads) {
+    const ldmx::HcalTriggerID end_id(oneEndedQuad.getId());
+    ldmx::HcalTriggerID combo_id(end_id.section(), end_id.layer(), end_id.superstrip(), 2);
+    auto ptr = twoEndedQuadMap.find(combo_id.raw());
+    if (ptr == twoEndedQuadMap.end()){
+      twoEndedQuadMap[combo_id.raw()] = oneEndedQuad;
+    } else {
+      ptr->second.setPrimitive( ptr->second.getPrimitive() + oneEndedQuad.getPrimitive() );
+    }
+  }
+  ldmx::CaloTrigPrimCollection twoEndedQuads;
+  for (auto p : twoEndedQuadMap) twoEndedQuads.push_back( p.second );
+  event.add("hcalTrigQuads", twoEndedQuads);
 
-  // for (const auto& trigDigi : ecalTrigDigis) {
-  //   // HgcrocTrigDigi
+  //
+  // Produce the layer-by-layer energy sums  
+  const unsigned int LayerMax = 50;
+  ldmx::TrigEnergySumCollection layerSums;
+  layerSums.resize(LayerMax);
+  for(int i=0; i<LayerMax;i++){
+    layerSums[i].setLayer(i);
+  }
 
-  //   ldmx::EcalTriggerID tid(trigDigi.getId() /*raw value*/);
-  //   // compressed ECal digis are 8xADCs (HCal will be 4x)
-  //   float sie = 8 * trigDigi.linearPrimitive() * gain *
-  //               mVtoMeV;  // in MeV, before layer corrections
-  //   float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
-  //             secondOrderEnergyCorrection;
-  //   total_e += e;
-  //   // total_e_trunc = total_e_trunc + e_t(e);
+  int total_adc = 0;
+  for (auto p : twoEndedQuadMap) {
+    auto tp = p.second;
+    int adc = tp.getPrimitive();
+    total_adc += adc;
+    ldmx::HcalTriggerID combo_id(tp.getId());
+    int ilayer= combo_id.layer();
+    if(ilayer >= layerSums.size()){
+      std::cout << "[TriggerHcalEnergySum.cxx] Warning(!), layer "
+                <<ilayer<<" is out-of-bounds.\n";
+      continue;
+    }
+    layerSums[ilayer].setHwEnergy(adc + layerSums[ilayer].hwEnergy());
+  }
+  event.add("hcalTrigQuadLayerSums", layerSums);
 
-  //   if (iTP < N_INPUT_TP) {
-  //     Input_TPs_hw[iTP].tid = trigDigi.getId();
-  //     Input_TPs_hw[iTP].tp = e_t(e);
-  //   }
-  //   iTP++;
-  // }
+  // Also store total energy for now
+  ldmx::TrigEnergySum totalSum;
+  totalSum.setLayer(-1);
+  totalSum.setHwEnergy(total_adc);
+  event.add("hcalTrigQuadSum", totalSum);
 
-  // TotalEnergy_hw(Input_TPs_hw, energy_hw);
-
-  // std::cout << "Total ECal energy: " << total_e << " MeV (hw: " << energy_hw
-  //           << " MeV)" << std::endl;
 }
 
 void TriggerHcalEnergySum::onFileOpen() {
