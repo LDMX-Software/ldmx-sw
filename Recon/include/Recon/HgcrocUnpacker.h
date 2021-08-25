@@ -22,7 +22,7 @@ class HgcrocUnpacker : public framework::Producer {
   /**
    * Class destructor.
    */
-  virtual ~HgcrocUnpackeror() {}
+  virtual ~HgcrocUnpacker() = default;
 
   /**
    * Configure the unpacker. We need to know the input buffer name and 
