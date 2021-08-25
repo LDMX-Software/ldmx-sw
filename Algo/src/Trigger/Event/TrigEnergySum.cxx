@@ -2,30 +2,30 @@
 
 #include <iostream>
 
-ClassImp(ldmx::TrigEnergySum)
+ClassImp(trigger::TrigEnergySum)
 
-namespace ldmx {
+namespace trigger {
   
   TrigEnergySum::TrigEnergySum(int layer, int hwEnergy)
       : layer_(layer), hwEnergy_{hwEnergy} {}
 
   void TrigEnergySum::Print() const { std::cout << *this << std::endl; }
 
-  std::ostream &operator<<(std::ostream &s, const ldmx::TrigEnergySum &sum) {
+  std::ostream &operator<<(std::ostream &s, const trigger::TrigEnergySum &sum) {
     s << "TrigEnergySum { "
       << "(layer " << sum.layer() << ", hwEnergy " << sum.hwEnergy() << " } ";
     return s;
   }
 
   std::ostream &operator<<(std::ostream &s,
-                           const ldmx::TrigEnergySumCollection &sums) {
+                           const trigger::TrigEnergySumCollection &sums) {
     s << "TrigEnergySumCollection { " << std::endl;
     for (auto sum : sums) s << "  " << sum << std::endl;
     s << "}";
     return s;
   }
 
-}  // namespace ldmx
+}  // namespace trigger
 
 
 
