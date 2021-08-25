@@ -1,5 +1,5 @@
-#ifndef RECON_EVENT_TRIGENERGYSUM_H_
-#define RECON_EVENT_TRIGENERGYSUM_H_
+#ifndef TRIGGER_EVENT_TRIGENERGYSUM_H_
+#define TRIGGER_EVENT_TRIGENERGYSUM_H_
 
 // ldmx-sw
 #include <stdint.h>  //uint32_t
@@ -7,7 +7,7 @@
 // ROOT
 #include "TObject.h"  //For ClassDef
 
-namespace ldmx {
+namespace trigger {
 
 // Forward declaration needed by typedef
 class TrigEnergySum;
@@ -117,6 +117,6 @@ class TrigEnergySum {
   /// ROOT Dictionary class definition macro
   ClassDef(TrigEnergySum, 1);
 };
-}  // namespace ldmx
+}  // namespace trigger
 
-#endif  // RECON_EVENT_CALOTRIGPRIM_H_
+#endif  // TRIGGER_EVENT_CALOTRIGPRIM_H_
