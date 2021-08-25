@@ -1,12 +1,10 @@
 #ifndef PACKING_BUFFER_H_
 #define PACKING_BUFFER_H_
 
-namespace packing {
+#include <vector>
+#include <stdexcept>
 
-/**
- * The type of buffer used uniformly for all packed data
- */
-typedef std::vector<uint64_t> BufferType;
+namespace packing {
 
 /**
  * @class BufferReader
