@@ -44,7 +44,10 @@ class TriggerHcalEnergySum : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  // ClusterGeometry myGeo;
+  // name of collection for trigger quads to be passed as input
+  std::string quadCollName_;
+  std::string combinedQuadCollName_;
+
 };
 }  // namespace trigger
 
