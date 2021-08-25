@@ -8,8 +8,10 @@
 
 namespace trigger {
 
-void TriggerEcalEnergySum::configure(framework::config::Parameters& ps) {}
-
+void TriggerEcalEnergySum::configure(framework::config::Parameters& ps) {
+  hitCollName_ = ps.getParameter<std::string>("hitCollName");
+}
+  
 void TriggerEcalEnergySum::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
@@ -17,9 +19,9 @@ void TriggerEcalEnergySum::produce(framework::Event& event) {
   const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
       ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
-  if (!event.exists("ecalTrigDigis")) return;
+  if (!event.exists(hitCollName_)) return;
   auto ecalTrigDigis{
-      event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
+      event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
 
   // floating point algorithm
   float total_e = 0;

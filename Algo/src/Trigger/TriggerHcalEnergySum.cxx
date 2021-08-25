@@ -8,8 +8,10 @@
 
 namespace trigger {
 
-void TriggerHcalEnergySum::configure(framework::config::Parameters& ps) {}
-
+void TriggerHcalEnergySum::configure(framework::config::Parameters& ps) {
+  quadCollName_ = ps.getParameter<std::string>("quadCollName");
+  combinedQuadCollName_ = ps.getParameter<std::string>("combinedQuadCollName");
+}
 void TriggerHcalEnergySum::produce(framework::Event& event) {
   // mV/ADC: 1.2
   // MeV/MIP: 4.66
@@ -35,8 +37,8 @@ void TriggerHcalEnergySum::produce(framework::Event& event) {
   const hcal::HcalTriggerGeometry& trigGeom =
     getCondition<hcal::HcalTriggerGeometry>(hcal::HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  if (!event.exists("hcalOneEndedTrigQuads")) return;
-  auto oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>("hcalOneEndedTrigQuads")};
+  if (!event.exists(quadCollName_)) return;
+  auto oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>(quadCollName_)};
 
   //
   // sum bar ends to produce the combined quads
@@ -53,12 +55,12 @@ void TriggerHcalEnergySum::produce(framework::Event& event) {
   }
   ldmx::CaloTrigPrimCollection twoEndedQuads;
   for (auto p : twoEndedQuadMap) twoEndedQuads.push_back( p.second );
-  event.add("hcalTrigQuads", twoEndedQuads);
+  event.add(combinedQuadCollName_, twoEndedQuads);
 
   //
   // Produce the layer-by-layer energy sums  
   const unsigned int LayerMax = 50;
-  ldmx::TrigEnergySumCollection layerSums;
+  trigger::TrigEnergySumCollection layerSums;
   layerSums.resize(LayerMax);
   for(int i=0; i<LayerMax;i++){
     layerSums[i].setLayer(i);
@@ -78,13 +80,13 @@ void TriggerHcalEnergySum::produce(framework::Event& event) {
     }
     layerSums[ilayer].setHwEnergy(adc + layerSums[ilayer].hwEnergy());
   }
-  event.add("hcalTrigQuadLayerSums", layerSums);
+  event.add(combinedQuadCollName_+"LayerSums", layerSums);
 
   // Also store total energy for now
-  ldmx::TrigEnergySum totalSum;
+  trigger::TrigEnergySum totalSum;
   totalSum.setLayer(-1);
   totalSum.setHwEnergy(total_adc);
-  event.add("hcalTrigQuadSum", totalSum);
+  event.add(combinedQuadCollName_+"Sum", totalSum);
 
 }
 
