@@ -1,4 +1,4 @@
-#include "Trigger/TriggerHcalEnergySum.h"
+#include "Trigger/TrigHcalEnergySum.h"
 
 #include "DetDescr/HcalGeometry.h"
 #include "Hcal/HcalTriggerGeometry.h"
@@ -8,11 +8,11 @@
 
 namespace trigger {
 
-void TriggerHcalEnergySum::configure(framework::config::Parameters& ps) {
+void TrigHcalEnergySum::configure(framework::config::Parameters& ps) {
   quadCollName_ = ps.getParameter<std::string>("quadCollName");
   combinedQuadCollName_ = ps.getParameter<std::string>("combinedQuadCollName");
 }
-void TriggerHcalEnergySum::produce(framework::Event& event) {
+void TrigHcalEnergySum::produce(framework::Event& event) {
   // mV/ADC: 1.2
   // MeV/MIP: 4.66
   // PE/MIP: 68 (summed over BOTH ends, based on 1808.05219, p38)
@@ -74,7 +74,7 @@ void TriggerHcalEnergySum::produce(framework::Event& event) {
     ldmx::HcalTriggerID combo_id(tp.getId());
     int ilayer= combo_id.layer();
     if(ilayer >= layerSums.size()){
-      std::cout << "[TriggerHcalEnergySum.cxx] Warning(!), layer "
+      std::cout << "[TrigHcalEnergySum.cxx] Warning(!), layer "
                 <<ilayer<<" is out-of-bounds.\n";
       continue;
     }
@@ -90,25 +90,25 @@ void TriggerHcalEnergySum::produce(framework::Event& event) {
 
 }
 
-void TriggerHcalEnergySum::onFileOpen() {
+void TrigHcalEnergySum::onFileOpen() {
   ldmx_log(debug) << "Opening file!";
 
   return;
 }
 
-void TriggerHcalEnergySum::onFileClose() {
+void TrigHcalEnergySum::onFileClose() {
   ldmx_log(debug) << "Closing file!";
 
   return;
 }
 
-void TriggerHcalEnergySum::onProcessStart() {
+void TrigHcalEnergySum::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
   return;
 }
 
-void TriggerHcalEnergySum::onProcessEnd() {
+void TrigHcalEnergySum::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
 
   return;
@@ -116,4 +116,4 @@ void TriggerHcalEnergySum::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TriggerHcalEnergySum);
+DECLARE_PRODUCER_NS(trigger, TrigHcalEnergySum);

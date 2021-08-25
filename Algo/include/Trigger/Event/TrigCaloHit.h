@@ -36,7 +36,6 @@ class TrigCaloHit {
   float e(){ return e_; }
   float energy(){ return e_; }
 
-  
  private:
   
   float x_{0};

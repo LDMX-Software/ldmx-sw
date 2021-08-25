@@ -1,20 +1,28 @@
 from LDMX.Framework.ldmxcfg import Producer
 
-class TriggerEcalEnergySum(Producer) :
-    """Configuration for TriggerEcalEnergySum
+class EcalTPSelector(Producer) :
+    """Configuration for EcalTPSelector
     """
-    def __init__(self, instance_name = 'myTriggerEcalEnergySum') :
-        super().__init__(instance_name , 'trigger::TriggerEcalEnergySum','Trigger')
+    def __init__(self, instance_name = 'myEcalTPSelector') :
+        super().__init__(instance_name , 'trigger::EcalTPSelector','Trigger')
+        self.tpCollName = "ecalTrigDigis"
+        self.passCollName = "ecalTrig"
+
+class TrigEcalEnergySum(Producer) :
+    """Configuration for TrigEcalEnergySum
+    """
+    def __init__(self, instance_name = 'myTrigEcalEnergySum') :
+        super().__init__(instance_name , 'trigger::TrigEcalEnergySum','Trigger')
         self.hitCollName = "ecalTrigDigis"
 
-class TriggerHcalEnergySum(Producer) :
-    """Configuration for TriggerHcalEnergySum
+class TrigHcalEnergySum(Producer) :
+    """Configuration for TrigHcalEnergySum
     """
-    def __init__(self, instance_name = 'myTriggerHcalEnergySum') :
-        super().__init__(instance_name , 'trigger::TriggerHcalEnergySum','Trigger')
+    def __init__(self, instance_name = 'myTrigHcalEnergySum') :
+        super().__init__(instance_name , 'trigger::TrigHcalEnergySum','Trigger')
         self.quadCollName = "hcalOneEndedTrigQuads"
         self.combinedQuadCollName = "hcalTrigQuads"
-        
+
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer
     """

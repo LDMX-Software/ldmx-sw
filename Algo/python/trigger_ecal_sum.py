@@ -1,9 +1,9 @@
 
 from LDMX.Framework.ldmxcfg import Producer
 
-class TriggerEcalEnergySum(Producer) :
-    """Configuration for TriggerEcalEnergySum
+class TrigEcalEnergySum(Producer) :
+    """Configuration for TrigEcalEnergySum
     """
 
-    def __init__(self, instance_name = 'myTriggerEcalEnergySum') :
-        super().__init__(instance_name , 'trigger::TriggerEcalEnergySum','Trigger')
+    def __init__(self, instance_name = 'myTrigEcalEnergySum') :
+        super().__init__(instance_name , 'trigger::TrigEcalEnergySum','Trigger')
