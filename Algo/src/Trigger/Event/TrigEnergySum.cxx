@@ -7,7 +7,9 @@ ClassImp(trigger::TrigEnergySum)
 namespace trigger {
   
   TrigEnergySum::TrigEnergySum(int layer, int hwEnergy)
-      : layer_(layer), hwEnergy_{hwEnergy} {}
+    : layer_(layer), module_(0), energy_(0), hwEnergy_{hwEnergy} {}
+  TrigEnergySum::TrigEnergySum(int layer, int module, float energy)
+      : layer_(layer), module_(module), energy_(energy), hwEnergy_{0} {}
 
   void TrigEnergySum::Print() const { std::cout << *this << std::endl; }
 

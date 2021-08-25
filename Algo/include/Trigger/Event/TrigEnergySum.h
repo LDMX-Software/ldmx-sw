@@ -41,6 +41,7 @@ class TrigEnergySum {
    * @param[in] tp trigger primitive value
    */
   TrigEnergySum(int layer, int hwEnergy = 0);
+  TrigEnergySum(int layer, int module, float energy);
 
   /**
    * Destructor
@@ -60,10 +61,16 @@ class TrigEnergySum {
    */
   bool operator<(const TrigEnergySum &sum) { return hwEnergy_ < sum.hwEnergy_; }
 
-  void Clear() { hwEnergy_ = 0; layer_=0; }
+  void Clear() { energy_=0; hwEnergy_ = 0; layer_=0; module_=0; }
   
   void setLayer(int layer) { layer_ = layer; }
   int layer() const { return layer_; }
+
+  void setModule(int module) { module_ = module; }
+  int module() const { return module_; }
+
+  void setEnergy(float energy) { energy_ = energy; }
+  float energy() const { return energy_; }
 
   void setHwEnergy(int hwEnergy) { hwEnergy_ = hwEnergy; }
   int hwEnergy() const { return hwEnergy_; }
@@ -105,7 +112,9 @@ class TrigEnergySum {
  private:
   /// the raw ID for this trigger channel
   int layer_{0};
+  int module_{0};
   int hwEnergy_{0};
+  float energy_{0};
   /* const float pe_per_adc_{1.2/5}; // gain * pe/mV */
   /* const float mev_per_pe_{4.66/68}; // MeV/PE (MIP) */
   /* const float had_sample_frac_{0.109813*0.818731}; */

@@ -1,4 +1,4 @@
-#include "Trigger/TriggerEcalEnergySum.h"
+#include "Trigger/TrigEcalEnergySum.h"
 
 #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
 #include "../../../Algo_HLS/Ecal/src/data.h"
@@ -8,11 +8,11 @@
 
 namespace trigger {
 
-void TriggerEcalEnergySum::configure(framework::config::Parameters& ps) {
+void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
 }
   
-void TriggerEcalEnergySum::produce(framework::Event& event) {
+void TrigEcalEnergySum::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
@@ -57,25 +57,25 @@ void TriggerEcalEnergySum::produce(framework::Event& event) {
   //           << " MeV)" << std::endl;
 }
 
-void TriggerEcalEnergySum::onFileOpen() {
+void TrigEcalEnergySum::onFileOpen() {
   ldmx_log(debug) << "Opening file!";
 
   return;
 }
 
-void TriggerEcalEnergySum::onFileClose() {
+void TrigEcalEnergySum::onFileClose() {
   ldmx_log(debug) << "Closing file!";
 
   return;
 }
 
-void TriggerEcalEnergySum::onProcessStart() {
+void TrigEcalEnergySum::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
   return;
 }
 
-void TriggerEcalEnergySum::onProcessEnd() {
+void TrigEcalEnergySum::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
 
   return;
@@ -83,4 +83,4 @@ void TriggerEcalEnergySum::onProcessEnd() {
 
 }  // namespace trigger
 
-DECLARE_PRODUCER_NS(trigger, TriggerEcalEnergySum);
+DECLARE_PRODUCER_NS(trigger, TrigEcalEnergySum);

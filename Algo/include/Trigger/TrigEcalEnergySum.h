@@ -1,5 +1,5 @@
 /**
- * @file TriggerEcalEnergySum.h
+ * @file TrigEcalEnergySum.h
  * @brief EcalEnergySum algo
  * @author Christian Herwig, Fermilab
  */
@@ -18,12 +18,12 @@
 namespace trigger {
 
 /**
- * @class TriggerEcalEnergySum
+ * @class TrigEcalEnergySum
  * @brief
  */
-class TriggerEcalEnergySum : public framework::Producer {
+class TrigEcalEnergySum : public framework::Producer {
  public:
-  TriggerEcalEnergySum(const std::string& name, framework::Process& process)
+  TrigEcalEnergySum(const std::string& name, framework::Process& process)
       : framework::Producer(name, process) {}
 
   virtual void configure(framework::config::Parameters& ps);
