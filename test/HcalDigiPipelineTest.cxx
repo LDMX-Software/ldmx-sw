@@ -271,7 +271,8 @@ class HcalCheckReconstruction : public framework::Analyzer {
     }
 
     // define target energy by using the settings at the top
-    double daq_energy{hit.getEnergy()};
+    double sampling_fraction = 0.11;
+    double daq_energy{hit.getEnergy()*sampling_fraction};
     CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
                                          MAX_ENERGY_PERCENT_ERROR_DAQ));
 
