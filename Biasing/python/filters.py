@@ -39,32 +39,41 @@ class TargetBremFilter(simcfg.UserAction):
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
-class NonfiducialFilter(simcfg.UserAction):
-    """ Configuration for rejecting events that don't recoil at an angle of at least 60 degrees. 
-
-    An event is vetoed if one of two conditions is satisfied:
-    1) The recoil electron exits the target area with an angle of less than 60 degrees.
-    2) The recoil electorn brems, but the energy of at least one of the brems
-    isn't above 2500 MeV. 
+class NonFiducialFilter(simcfg.UserAction):
+    """ Configuration for rejecting events that are fiducial. Part 1
 
     Parameters
     ----------
-    angle_min_e: float
-        Minimum angle the electrong has to recoil [degrees] 
-    brem_min_e : float
-        Minimum energy the brem photon can have [MeV]
+    recoil_max_p : float
+        Maximum momentum the recoil electron can have [MeV]
 
     """
 
-    def __init__(self,e_min_angle = 2.,brem_min_e = 2500.) :
-        super().__init__("nonfiducial_filter", "biasing::NonfiducialFilter")
+    def __init__(self,recoil_max = 1500.) :
+        super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
 
         from LDMX.Biasing import include
         include.library()
 
-        self.e_min_angle_threshold = e_min_angle
-        self.brem_min_energy_threshold = brem_min_e
+        self.recoil_max_p_threshold = recoil_max_p
         self.kill_recoil_track = False
+
+class NonFiducialFilter2(simcfg.UserAction):
+    """ Configuration for rejecting events that are fiducial. Part 2
+
+    Parameters
+    ----------
+    process : str
+        Geant4 process to look for in the ecal
+    """
+
+    def __init__(self,process = 'photonNuclear') :
+        super().__init__('ecal_%s_filter'%process,'biasing::NonFiducialFilter2')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.process = process
 
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 

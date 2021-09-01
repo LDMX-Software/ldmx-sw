@@ -69,9 +69,11 @@ def photo_nuclear( detector, generator ) :
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
+            # Only considers events that are non-fiducial (PART 1: tags the electrons)
+            filters.NonFiducialFilter(),
+            # Only considers events that are non-fiducial (PART 2: aborts the fiducial events)
+            filters.NonFiducialFilter2(),
             # Only consider events where a hard brem occurs
-            filters.NonfiducialFilter(),
-            # Only consider events where the event is non-fiducial
             filters.TargetBremFilter(),
             # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),     
