@@ -164,6 +164,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     double voltage_min(0.);
     double hitTime(0.);
 
+    double amplT(0.);
     double amplT_posend(0.), amplTm1_posend(0.);
     double amplT_negend(0.), amplTm1_negend(0.);
 
@@ -248,6 +249,9 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage_min =
           std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
+      // set amplitude
+      amplT = amplT_posend / att + amplT_negend / att;
+      
       // set position along the bar
       if ((id_posend.layer() % 2) == 1) {
         position.SetX(position_bar);
@@ -286,6 +290,7 @@ void HcalRecProducer::produce(framework::Event& event) {
         amplTm1_posend =
             digi_posend.soi().adc_tm1() - the_conditions.adcPedestal(id_posend);
         voltage_i = amplT_posend * the_conditions.adcGain(id_posend);
+
       }
 
       // reverse voltage attenuation
@@ -299,6 +304,9 @@ void HcalRecProducer::produce(framework::Event& event) {
       voltage = voltage_i / att;
       voltage_min = voltage_i / att;
 
+      // set amplitude
+      amplT = amplT_posend / att;
+      
       // get TOA
       double TOA =
           getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
@@ -343,7 +351,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setZPos(position.Z());
     recHit.setPE(PEs);
     recHit.setMinPE(minPEs);
-    recHit.setAmplitude(amplT_posend);
+    recHit.setAmplitude(amplT);
     recHit.setEnergy(energy_deposited);
     recHit.setTime(hitTime);
     hcalRecHits.push_back(recHit);
