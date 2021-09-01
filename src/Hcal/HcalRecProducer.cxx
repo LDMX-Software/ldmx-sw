@@ -250,7 +250,7 @@ void HcalRecProducer::produce(framework::Event& event) {
           std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
       // set amplitude
-      amplT = amplT_posend / att + amplT_negend / att;
+      amplT = amplT_posend / att_posend + amplT_negend / att_negend;
       
       // set position along the bar
       if ((id_posend.layer() % 2) == 1) {
