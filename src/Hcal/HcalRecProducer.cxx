@@ -243,9 +243,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       double att_negend =
           exp(-1. * ((distance_negend + position_bar) / 1000.) / attlength_);
 
-      // set voltage
-      voltage = (voltage_posend / att_posend + voltage_negend / att_negend) /
-                2;  // mV
+      // set voltage as the sum for both bars
+      voltage = (voltage_posend / att_posend + voltage_negend / att_negend); // mV
       voltage_min =
           std::min(voltage_posend / att_posend, voltage_negend / att_negend);
 
@@ -317,6 +316,20 @@ void HcalRecProducer::produce(framework::Event& event) {
     double energy_deposited = num_mips_equivalent * mip_energy_;
 
     // TODO: need to incorporate corrections if necessary
+    /**
+     * Simple calculation of sampling fraction:
+     * Thickness per layer: scintillator (0.2cm) + steel (0.25cm)
+     * Radiation length and nuclear interaction length:
+     *  scintillator: X0 = 41.31cm, Lambda = 77.07cm https://pdg.lbl.gov/2017/AtomicNuclearProperties/HTML/polystyrene.html
+     *  steel X0 = 1.757cm, Lambda = 16.77cm https://pdg.lbl.gov/2012/AtomicNuclearProperties/HTML_PAGES/026.html
+     * Prob of EM interaction (e.g. pi+/-): thickness/X0*100
+     *  = (0.2/41.31)/ ((0.2/41.31) + (0.25/1.757)) ~ 3.3%
+     * Prob of Had interaction (e.g. pi0):
+     *  = (0.2/77.07)/ ((0.2/77.07) + (0.25/16.77)) ~ 15%
+     * Then e.g. for neutron assuming 1/3 pi0 and 2/3 pi+/- composition:
+     *  sampling fraction ~ (1/3)*3.3.% + (2/3)*15% ~ 11%
+     *  energy of neutron = energy_deposited / 0.11;
+     **/
     double reconstructed_energy = energy_deposited;
 
     int PEs = num_mips_equivalent * pe_per_mip_;
