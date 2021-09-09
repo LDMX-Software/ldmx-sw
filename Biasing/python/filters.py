@@ -58,23 +58,6 @@ class NonFiducialFilter(simcfg.UserAction):
         self.recoil_max_p_threshold = recoil_max_p
         self.kill_recoil_track = False
 
-class NonFiducialFilter2(simcfg.UserAction):
-    """ Configuration for rejecting events that are fiducial. Part 2
-
-    Parameters
-    ----------
-    process : str
-        Geant4 process to look for in the ecal
-    """
-
-    def __init__(self,process = 'photonNuclear') :
-        super().__init__('ecal_%s_filter'%process,'biasing::NonFiducialFilter2')
-
-        from LDMX.Biasing import include
-        include.library()
-
-        self.process = process
-
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
