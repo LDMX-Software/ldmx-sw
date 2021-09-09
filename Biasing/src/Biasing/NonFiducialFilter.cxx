@@ -24,10 +24,10 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,
   killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
 }
 
-
 NonFiducialFilter::~NonFiducialFilter() {}
 
-G4ClassificationOfNewTrack NonFiducialFilter::ClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
+G4ClassificationOfNewTrack NonFiducialFilter::ClassifyNewTrack(
+    const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the PDGID of the track.
   G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
 
@@ -59,7 +59,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   // another particle type is found, thrown an exception.
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
     return;
-
+  
   // Check if the particle is tagged as a recoil electron.
   if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true)
   {
@@ -72,7 +72,9 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
-  } 
+    else
+    hasRecoilElectron = true;
+  }
   // Check if the particle is in the Target.
   else if (  auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0)
   {
@@ -121,23 +123,3 @@ void NonFiducialFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
 DECLARE_ACTION(biasing, NonFiducialFilter)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
