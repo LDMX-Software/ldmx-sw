@@ -65,8 +65,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   {
     // Check if the recoil electron enters inside any ECal volume. If it does, kill the track.
     if (auto vol{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; 
-    (vol.contains("Si") || vol.contains("W") || vol.contains("PCB") || vol.contains("Readout")
-    vol.contains("CFMix") || vol.contains("Al")) && vol.contains("volume"))
+    (vol.contains("Si") || vol.contains("W") || vol.contains("PCB") || vol.contains("Readout") || vol.contains("CFMix") || vol.contains("Al")) && vol.contains("volume"))
     {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
