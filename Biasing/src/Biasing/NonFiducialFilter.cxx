@@ -16,44 +16,25 @@
 
 namespace biasing {
 
-NonFiducialFilter::NonFiducialFilter(const std::string& name,
-                                   framework::config::Parameters& parameters)
-    : simcore::UserAction(name, parameters) {
+NonFiducialFilter::NonFiducialFilter(const std::string& name,framework::config::Parameters& parameters)
+  : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
-  killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
-}
+  foundRecoilElectron_ =
+      parameters.getParameter<bool>("found_recoil_electron");
+      }
 
 NonFiducialFilter::~NonFiducialFilter() {}
 
-G4ClassificationOfNewTrack NonFiducialFilter::ClassifyNewTrack(
-    const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
-  // Get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-
-  // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
-
-  // Use current classification by default so values from other plugins are not
-  // overridden.
-  G4ClassificationOfNewTrack classification = currentTrackClass;
-
-  if (track->GetTrackID() == 1 && pdgID == 11) {
-    return fWaiting;
-  }
-
-  return classification;
+// Sets the amount of recoil electrons found to 0 for the beginning of each event.
+void NonFiducialFilter::BeginOfEventAction(const G4Event*){
+foundRecoilElectron_ = false;
+return;
 }
 
 void NonFiducialFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
-
-  // Mark the event having no recoil electron initially
-  bool hasRecoilElectron = false;
-
-  // Only process the primary electron track
-  if (track->GetParentID() != 0) return;
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
@@ -71,11 +52,9 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
-    else
-    hasRecoilElectron = true;
   }
   // Check if the particle is in the Target.
-  else if (  auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0)
+  else if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0)
   {
   // Check if the electron will be exiting the Target.
   if (auto volume{track->GetNextVolume()->GetName()}; volume.compareTo("recoil") == 0) 
@@ -96,26 +75,19 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
     }
 
-  // Tag the events that: 
-  // 1) Have the recoil electron as the parent track
+  // Tag the tracks that: 
+  // 1) Have a recoil electron
   // 2) Enter/Exit the Target
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   trackInfo->tagRecoilElectron();
-  hasRecoilElectron = true;
+  // Abort multi-electron events.
+  if (foundRecoilElectron_) {
+  G4RunManager::GetRunManager()->AbortEvent();
+  } else {
+  foundRecoilElectron_ = true;  
   }
   }
-  
-  // Check if the recoil electron track should be killed.
-  if (killRecoil_)
-    track->SetTrackStatus(fStopAndKill);
-
-  // If the current track doesn't satisfy the recoil electron requirements, kill the track.
-  if (!hasRecoilElectron) 
-  {
-    track->SetTrackStatus(fKillTrackAndSecondaries);
-    G4RunManager::GetRunManager()->AbortEvent();
-    return;
-  } 
+  }
 }
 
 void NonFiducialFilter::EndOfEventAction(const G4Event*) {}

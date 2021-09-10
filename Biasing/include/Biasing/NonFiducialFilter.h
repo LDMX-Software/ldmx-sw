@@ -38,6 +38,13 @@ class NonFiducialFilter : public simcore::UserAction {
   void stepping(const G4Step* step) final override;
 
   /**
+   * Method called at the beginning of every event.
+   *
+   * @param event Geant4 event object.
+   */
+  void BeginOfEventAction(const G4Event*) final override;
+
+  /**
    * Method called at the end of every event.
    *
    * @param event Geant4 event object.
@@ -64,8 +71,8 @@ class NonFiducialFilter : public simcore::UserAction {
   /// Recoil electron threshold.
   double recoilMaxPThreshold_{1500};  // MeV
 
-  /// Flag indicating if the recoil electron track should be killed
-  bool killRecoil_{false};
+  /// Flag indicating if the event has a recoil electron already
+  bool foundRecoilElectron_{false};
 
 };  // NonFiducialFilter
 }  // namespace biasing
