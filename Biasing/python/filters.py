@@ -50,14 +50,13 @@ class NonFiducialFilter(simcfg.UserAction):
         Marks if the event has a recoil electron already
     """
 
-    def __init__(self,recoil_max_p = 1500., recoil_e_found = False) :
+    def __init__(self,recoil_max_p = 1500.) :
         super().__init__("nonfiducial_filter", "biasing::NonFiducialFilter")
 
         from LDMX.Biasing import include
         include.library()
 
         self.recoil_max_p_threshold = recoil_max_p
-        self.found_recoil_electron = recoil_e_found
 
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 

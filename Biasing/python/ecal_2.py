@@ -71,7 +71,7 @@ def photo_nuclear( detector, generator ) :
             filters.TaggerVetoFilter(),
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
-            # Only considers events that are non-fiducial (Doesn't enter an ECal volume)
+            # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
             filters.NonFiducialFilter(),
             # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),     

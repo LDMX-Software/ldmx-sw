@@ -20,8 +20,6 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,framework::config::
   : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
-  foundRecoilElectron_ =
-      parameters.getParameter<bool>("found_recoil_electron");
       }
 
 NonFiducialFilter::~NonFiducialFilter() {}
