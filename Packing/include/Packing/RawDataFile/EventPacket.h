@@ -1,18 +1,13 @@
-#ifndef PACKING_RAWDATAFILE_READER_H_
-#define PACKING_RAWDATAFILE_READER_H_
+#ifndef PACKING_RAWDATAFILE_EVENTPACKET_H_
+#define PACKING_RAWDATAFILE_EVENTPACKET_H_
 
-#include <fstream>
+#include <iostream>
 #include <string>
+#include <vector>
 
 #include "Packing/RawDataFile/SubsystemPacket.h"
 
 namespace packing {
-
-/**
- * @namespace rawdatafile
- *
- * Reader and Writer for LDMX raw data file.
- */
 namespace rawdatafile {
 
 /**
@@ -61,4 +56,4 @@ std::istream& operator>> (std::istream& is, packing::rawdatafile::EventPacket& e
 /// output streaming operator
 std::ostream& operator<< (std::ostream& os, packing::rawdatafile::EventPacket& ep);
 
-#endif  // PACKING_RAWDATAFILE_READER_H_
+#endif  // PACKING_RAWDATAFILE_EVENTPACKET_H_

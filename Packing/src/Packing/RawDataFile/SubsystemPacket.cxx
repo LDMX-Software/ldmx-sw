@@ -1,50 +1,56 @@
 
 #include "Packing/RawDataFile/SubsystemPacket.h"
 
+#include "Packing/Utility/Mask.h"
+
 namespace packing {
 namespace rawdatafile {
 
-SubsystemPacket::read(std::istream& is) {
-  // local read iterator
-  std::istream_buf_iterator<uint32_t> rit(is);
+void SubsystemPacket::read(istream& is) {
+  static uint32_t word;
 
-  subsys_id_ = (*rit >> 16) & mask<16>;
-  uint32_t subsys_len = (*rit >> 1) & mask<15>;
-  crc_ok_ = *rit & mask<1>;
+  is.read(&word, 4);
+
+  subsys_id_ = (word >> 16) & mask<16>;
+  uint32_t subsys_len = (word >> 1) & mask<15>;
+  crc_ok_ = word & mask<1>;
+
+  is.seekg(4, std:ios::cur);
   
-  rit++;
-
   data_.reserve(subsys_len);
-  data_.insert(data_.begin(), rit, rit+subsys_len);
+  is.read(data_.data(), 4*subsys_len);
 
-  crc_ = *rit;
+  is.seekg(4*subsys_len+4, std:ios::cur);
+  is.read(&crc_, 4);
 }
 
-SubsystemPacket::write(std::ostream& os) {
-  std::ostream_bufiterator<uint32_t> wit(os);
+void SubsystemPacket::write(ostream& os) {
+  // static local word to use for writing
+  static uint32_t word;
   
-  wit = ((subsys_id_ & mask<16>) << 16
+  word = ((subsys_id_ & mask<16>) << 16
         +(data_.size() & mask<15>) << 1
         +(crc_ok_ ? 1 : 0));
 
-  wit++;
+  os.write(reinterpret_cast<const std::byte*>(&word), 4);
 
-  std::copy(data_.begin(), data_.end(), wit);
+  os.write(
+      reinterpret_cast<const std::byte*>(data_.data()),
+      data_.size()*4);
 
-  wit++;
 
-  wit = crc_;
+  os.write(reinterpret_cast<const std::byte*>(*crc_), 4);
 }
 
 }  // namespace rawdatafile
 }  // namespace packing
 
-std::istream& operator>> (std::istream& is, packing::rawdatafile::SubsystemPacket& p) {
+packing::rawdatafile::istream& operator>> (packing::rawdatafile::istream& is, packing::rawdatafile::SubsystemPacket& p) {
   p.read(is);
   return is;
 }
 
-std::ostream& operator<< (std::ostream& os, packing::rawdatafile::SubsystemPacket& p) {
+packing::rawdatafile::ostream& operator<< (packing::rawdatafile::ostream& os, packing::rawdatafile::SubsystemPacket& p) {
   p.write(os);
   return os;
 }

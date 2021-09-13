@@ -1,16 +1,11 @@
-#ifndef PACKING_RAWDATAFILE_READER_H_
-#define PACKING_RAWDATAFILE_READER_H_
+#ifndef PACKING_RAWDATAFILE_SUBSYSTEMPACKET_H_
+#define PACKING_RAWDATAFILE_SUBSYSTEMPACKET_H_
 
-#include <fstream>
-#include <string>
+#include <vector>
+
+#include "Packing/RawDataFile/Stream.h"
 
 namespace packing {
-
-/**
- * @namespace rawdatafile
- *
- * Reader and Writer for LDMX raw data file.
- */
 namespace rawdatafile {
 
 /**
@@ -24,12 +19,12 @@ class SubsystemPacket {
   /**
    * read a packet form the input stream
    */
-  void read(std::istream& is);
+  void read(istream& is);
 
   /**
    * write a packet to the output stream
    */
-  void write(std::ostream& os);
+  void write(ostream& os);
 
   /**
    * Get data
@@ -39,7 +34,7 @@ class SubsystemPacket {
   }
 
   /// insert data
-  void insert(const std::vector<unsigned int>& data);
+  void insert(const std::vector<std::byte>& data);
 
  private:
   bool crc_ok_;
@@ -52,9 +47,9 @@ class SubsystemPacket {
 }  // namespace packing
 
 /// input streaming operator
-std::istream& operator>> (std::istream& is, packing::rawdatafile::SubsystemPacket& p);
+packing::rawdatafile::istream& operator>> (packing::rawdatafile::istream& is, packing::rawdatafile::SubsystemPacket& p);
 
 /// output streaming operator
-std::ostream& operator<< (std::ostream& os, packing::rawdatafile::SubsystemPacket& p);
+packing::rawdatafile::ostream& operator<< (packing::rawdatafile::ostream& os, packing::rawdatafile::SubsystemPacket& p);
 
-#endif  // PACKING_RAWDATAFILE_READER_H_
+#endif  // PACKING_RAWDATAFILE_SUBSYSTEMPACKET_H_
