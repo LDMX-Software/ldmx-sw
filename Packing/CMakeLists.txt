@@ -8,9 +8,10 @@ project(
   DESCRIPTION "Classes needed to interface with raw binary data."
   LANGUAGES CXX)
 
+setup_library(module Packing name Utility interface)
+
 # RawDataFile submodule
-setup_library(module Packing
-              name RawDataFile)
+setup_library(module Packing name RawDataFile dependencies Packing::Utility)
 
 # Setup the library
 setup_library(module Packing

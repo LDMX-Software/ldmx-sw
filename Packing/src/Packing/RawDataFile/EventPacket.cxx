@@ -1,12 +1,14 @@
 
 #include "Packing/RawDataFile/EventPacket.h"
 
+#include "Packing/Utility/Mask.h"
+
 namespace packing {
 namespace rawdatafile {
 
-EventPacket::read(std::istream& is) {
+void EventPacket::read(std::istream& is) {
   // local read iterator
-  std::istream_buf_iterator<uint32_t> rit(is);
+  std::istreambuf_iterator<uint32_t> rit(is);
 
   event_id_ = *rit;
 
@@ -37,8 +39,8 @@ EventPacket::read(std::istream& is) {
   uint32_t crc_read_in_ = *rit;
 }
 
-EventPacket::write(std::ostream& os) {
-  std::ostream_bufiterator<uint32_t> wit(os);
+void EventPacket::write(std::ostream& os) {
+  std::ostreambuf_iterator<uint32_t> wit(os);
   
   wit = event_id_;
 
