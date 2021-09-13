@@ -8,15 +8,15 @@ project(
   DESCRIPTION "Classes needed to interface with raw binary data."
   LANGUAGES CXX)
 
+# RawDataFile submodule
+setup_library(module Packing
+              name RawDataFile)
+
 # Setup the library
 setup_library(module Packing
               dependencies Framework::Configure
                            Framework::Framework
-                           DetDescr::DetDescr)
-
-# Setup the translators library
-setup_library(module Packing
-              name Translators
-              dependencies Packing::Packing)
+                           DetDescr::DetDescr
+                           Packing::RawDataFile)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Packing)
