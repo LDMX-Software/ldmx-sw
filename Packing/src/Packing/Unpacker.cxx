@@ -1,6 +1,8 @@
 
 #include "Packing/Unpacker.h"
 
+#include "Packing/RawDataFile/EventPacket.h"
+
 namespace packing {
 
 void Unpacker::configure(framework::config::Parameters& ps) {
@@ -10,7 +12,7 @@ void Unpacker::configure(framework::config::Parameters& ps) {
 
 void Unpacker::onProcessStart() {
   // open file and get tree of raw data
-  reader_ = std::make_unique<Reader>(raw_file_);
+  reader_ = std::make_unique<rawdatafile::Reader>(raw_file_);
 
   /**
    * Get the run ID and other headers
@@ -22,17 +24,19 @@ void Unpacker::beforeNewRun(ldmx::RunHeader& header) {
 }
 
 void Unpacker::produce(framework::Event& event) {
-  static EventPacket event_packet;
+  static rawdatafile::EventPacket event_packet;
 
-  if (!event_packet.read(reader_)) {
-    AbortEvent();
+  try {
+    reader_ >> event_packet;
+  } catch (...) {
+    std::cerr << "ERR" << std::endl;
   }
 
   /// event header information to event.getEventHeader()
 
   for (auto& subsys_packet : event_packet.get()) {
     /// map IDs to names and put onto event bus
-    event.add(id_to_name.at(id), subsys_packet.get());
+    event.add("id_to_name.at(id)", subsys_packet.get());
   }
 }
 

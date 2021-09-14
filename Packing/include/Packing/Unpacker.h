@@ -3,6 +3,8 @@
 
 #include "Framework/EventProcessor.h"
 
+#include "Packing/RawDataFile/Reader.h"
+
 namespace packing {
 
 /**
@@ -12,11 +14,11 @@ namespace packing {
  * into different branches for later decoding by the subsystem
  * modules.
  */
-class Unpacker : public Processor {
+class Unpacker : public framework::Producer {
  public:
   /// normal constructor
   Unpacker(const std::string& name, framework::Process& p)
-    : framework::EventProcessor(name, p) {}
+    : framework::Producer(name, p) {}
   /// empty destructor
   virtual ~Unpacker() {}
 
@@ -60,7 +62,7 @@ class Unpacker : public Processor {
 
  private:
   /// Reader for our raw binary file
-  std::unique_ptr<Reader> reader_;
+  std::unique_ptr<rawdatafile::Reader> reader_;
 };  // Unpacker
 
 }  // namespace packing
