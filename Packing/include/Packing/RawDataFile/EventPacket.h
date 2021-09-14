@@ -21,7 +21,7 @@ class EventPacket {
   /**
    * read a packet from the input stream
    */
-  void read(std::istream& is);
+  void read(Reader& r);
 
   /// Get subsystem data
   const std::vector<SubsystemPacket>& get() const {
@@ -30,8 +30,8 @@ class EventPacket {
 
   /**
    * write a packet to the output stream
-   */
   void write(std::ostream& os);
+   */
 
   /// Insert some subsystem data
   void insert(const SubsystemPacket& data) {
@@ -43,17 +43,11 @@ class EventPacket {
   unsigned int num_subsystems_;
   bool crc_ok_;
   unsigned int event_length_in_words_;
-  uint32_t crc_read_in_;
+  uint32_t crc_;
   std::vector<SubsystemPacket> subsys_data_;
 };  // EventPacket
 
 }  // namespace rawdatafile
 }  // namespace packing
-
-/// input streaming operator
-std::istream& operator>> (std::istream& is, packing::rawdatafile::EventPacket& ep);
-
-/// output streaming operator
-std::ostream& operator<< (std::ostream& os, packing::rawdatafile::EventPacket& ep);
 
 #endif  // PACKING_RAWDATAFILE_EVENTPACKET_H_
