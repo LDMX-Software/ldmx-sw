@@ -19,37 +19,31 @@ class SubsystemPacket {
   /**
    * read a packet form the input stream
    */
-  void read(istream& is);
+  void read(Reader& r);
 
   /**
    * write a packet to the output stream
+  void write(std::ofstream& os);
    */
-  void write(ostream& os);
 
   /**
    * Get data
    */
-  const std::vector<unsigned int>& get() const {
+  const std::vector<WordType>& get() const {
     return data_;
   }
 
   /// insert data
-  void insert(const std::vector<std::byte>& data);
+  void insert(const std::vector<WordType>& data);
 
  private:
   bool crc_ok_;
   unsigned int subsys_id_;
-  std::vector<unsigned int> data_;
+  std::vector<WordType> data_;
   unsigned int crc_;
 };  // SubsystemPacket
 
 }  // namespace rawdatafile
 }  // namespace packing
-
-/// input streaming operator
-packing::rawdatafile::istream& operator>> (packing::rawdatafile::istream& is, packing::rawdatafile::SubsystemPacket& p);
-
-/// output streaming operator
-packing::rawdatafile::ostream& operator<< (packing::rawdatafile::ostream& os, packing::rawdatafile::SubsystemPacket& p);
 
 #endif  // PACKING_RAWDATAFILE_SUBSYSTEMPACKET_H_
