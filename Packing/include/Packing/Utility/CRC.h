@@ -1,9 +1,9 @@
-#ifndef REFORMAT_UTILITY_CRC_H_
-#define REFORMAT_UTILITY_CRC_H_
+#ifndef PACKING_UTILITY_CRC_H_
+#define PACKING_UTILITY_CRC_H_
 
 #include <boost/crc.hpp>
 
-namespace reformat {
+namespace packing {
 namespace utility {
 
 /**
@@ -28,6 +28,6 @@ struct CRC {
 };
 
 }  // namespace utility
-}  // namespace reformat
+}  // namespace packing
 
-#endif  // REFORMAT_UTILITY_CRC_H_
+#endif  // PACKING_UTILITY_CRC_H_

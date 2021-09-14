@@ -7,21 +7,21 @@ namespace packing {
 namespace rawdatafile {
 
 void EventPacket::read(Reader& r) {
-  r.read(&event_id_, 1);
+  r >> event_id_;
 
   uint32_t word;
-  r.read(&word, 1);
+  r >> word;
 
-  num_subsystems_ = (word >> 16) & mask<16>;
-  event_length_in_words_ = (word >> 1) & mask<15>;
-  crc_ok_ = word & mask<1>;
+  num_subsystems_ = (word >> 16) & utility::mask<16>;
+  event_length_in_words_ = (word >> 1) & utility::mask<15>;
+  crc_ok_ = word & utility::mask<1>;
 
   subsys_data_.resize(num_subsystems_);
   for (auto& subsys : subsys_data_) {
     subsys.read(r);
   }
 
-  r.read(&crc_, 1);
+  r >> crc_;
 }
 
 /*

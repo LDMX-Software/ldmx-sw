@@ -33,10 +33,12 @@ class EventPacket {
   void write(std::ostream& os);
    */
 
-  /// Insert some subsystem data
+  /**
+   * Insert some subsystem data
   void insert(const SubsystemPacket& data) {
     subsys_data_.emplace_back(data);
   }
+   */
 
  private:
   unsigned int event_id_;

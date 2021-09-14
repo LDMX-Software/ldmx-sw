@@ -3,7 +3,8 @@
 
 #include <vector>
 
-#include "Packing/RawDataFile/Stream.h"
+#include "Packing/RawDataFile/Reader.h"
+//#include "Packing/RawDataFile/Writer.h"
 
 namespace packing {
 namespace rawdatafile {
@@ -23,23 +24,20 @@ class SubsystemPacket {
 
   /**
    * write a packet to the output stream
-  void write(std::ofstream& os);
+  void write(Writer& os);
    */
 
   /**
    * Get data
    */
-  const std::vector<WordType>& get() const {
+  const std::vector<uint32_t>& get() const {
     return data_;
   }
-
-  /// insert data
-  void insert(const std::vector<WordType>& data);
 
  private:
   bool crc_ok_;
   unsigned int subsys_id_;
-  std::vector<WordType> data_;
+  std::vector<uint32_t> data_;
   unsigned int crc_;
 };  // SubsystemPacket
 
