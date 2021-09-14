@@ -1,7 +1,7 @@
-#ifndef REFORMAT_UTILITY_MASK_H_
-#define REFORMAT_UTILITY_MASK_H_
+#ifndef PACKING_UTILITY_MASK_H_
+#define PACKING_UTILITY_MASK_H_
 
-namespace reformat {
+namespace packing {
 namespace utility {
 
 /**
@@ -42,6 +42,6 @@ template <short N>
 inline constexpr uint64_t mask = mask_backend<N>::value;
 
 }  // namespace utility
-}  // namespace reformat
+}  // namespace packing
 
-#endif  // REFORMAT_UTILITY_MASK_H_
+#endif  // PACKING_UTILITY_MASK_H_
