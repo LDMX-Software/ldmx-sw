@@ -3,7 +3,7 @@
 
 #include "Framework/EventProcessor.h"
 
-#include "Packing/RawDataFile/Reader.h"
+#include "Packing/Utility/Reader.h"
 
 namespace packing {
 
@@ -62,7 +62,7 @@ class Unpacker : public framework::Producer {
 
  private:
   /// Reader for our raw binary file
-  rawdatafile::Reader reader_;
+  utility::Reader reader_;
 };  // Unpacker
 
 }  // namespace packing

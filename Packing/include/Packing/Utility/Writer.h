@@ -1,5 +1,5 @@
-#ifndef PACKING_RAWDATAFILE_WRITER_H_
-#define PACKING_RAWDATAFILE_WRITER_H_
+#ifndef PACKING_UTILITY_WRITER_H_
+#define PACKING_UTILITY_WRITER_H_
 
 #include <iostream> //debuggin
 #include <fstream>
@@ -7,7 +7,7 @@
 #include <type_traits>
 
 namespace packing {
-namespace rawdatafile {
+namespace utility {
 
 /**
  * @class Writer
@@ -46,17 +46,15 @@ class Writer {
   template <typename WordType>
   Writer& write(WordType* w, std::size_t num) {
     static_assert(std::is_integral<WordType>::value, "Integral type required for Writer::write.");
-    std::cout << "writing " << sizeof(WordType)*num << " bytes...";
-    if (file_.write(reinterpret_cast<char*>(w), sizeof(WordType)*num)) {
-      std::cout << "success";
-    } else {
-      std::cout << "failure";
-    }
-    std::cout << std::endl;
-
+    file_.write(reinterpret_cast<char*>(w), sizeof(WordType)*num);
     return *this;
   }
 
+  template <typename WordType>
+  Writer& operator<<(WordType& w) {
+    return write(&w, 1);
+  }
+  
   /**
    * Write the vector.
    * We don't need 'num' because vectors container their length.
@@ -64,6 +62,11 @@ class Writer {
   template <typename WordType>
   Writer& write(std::vector<WordType> vec) {
     return this->write(vec.data(), vec.size());
+  }
+  
+  template <typename WordType>
+  Writer& operator<<(std::vector<WordType>& vec) {
+    return write(vec);
   }
 
   /**
@@ -85,17 +88,7 @@ class Writer {
   std::ofstream file_;
 };  // RawDataFile
 
-template <typename WordType>
-Writer& operator<<(Writer& writer, WordType& w) {
-  return writer.write(&w, 1);
-}
-
-template <typename WordType>
-Writer& operator<<(Writer& writer, std::vector<WordType>& vec) {
-  return writer.write(vec);
-}
-
-}  // namespace rawdatafile
+}  // namespace utility
 }  // namespace packing
 
-#endif  // PACKING_RAWDATAFILE_WRITER_H_
+#endif  // PACKING_UTILITY_WRITER_H_
