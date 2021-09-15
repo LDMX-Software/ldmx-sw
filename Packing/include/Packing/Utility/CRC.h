@@ -32,6 +32,12 @@ struct CRC {
   CRC& operator<<(const std::vector<WordType>& vec) { 
     for (auto const& w : vec) (*this) << w;
   }
+  // all other classes have to have a 'add' method defined
+  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  CRC& operator<<(const ObjectType& o) {
+    o.add(*this);
+    return *this;
+  }
   // get the checksum
   auto get() { return crc.checksum(); }
 };

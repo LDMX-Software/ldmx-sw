@@ -46,12 +46,12 @@ class SubsystemPacket {
   /**
    * write the subsystem packet to the input writer
    */
-  utility::Writer& write(utility::Writer& w);
+  utility::Writer& write(utility::Writer& w) const;
 
   /**
    * add the subsystem packet to the input crc
    */
-  utility::CRC& add(utility::CRC& c);
+  utility::CRC& add(utility::CRC& c) const;
 
  private:
   uint32_t event_;
@@ -60,10 +60,6 @@ class SubsystemPacket {
   bool crc_ok_;
   unsigned int crc_;
 };  // SubsystemPacket
-
-utility::Reader& operator>>(utility::Reader& r, SubsystemPacket& p);
-utility::Writer& operator<<(utility::Writer& w, SubsystemPacket& p);
-utility::CRC& operator<<(utility::CRC& c, SubsystemPacket& p);
 
 }  // namespace rawdatafile
 }  // namespace packing
