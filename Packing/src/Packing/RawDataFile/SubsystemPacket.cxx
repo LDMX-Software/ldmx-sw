@@ -6,35 +6,66 @@
 namespace packing {
 namespace rawdatafile {
 
-void SubsystemPacket::read(utility::Reader& r) {
+SubsystemPacket::SubsystemPacket(uint32_t event, uint16_t id, std::vector<uint32_t> data) : event_{event}, id_{id}, data_{data} {
+  crc_ok_ = true;
+
+  utility::CRC crc;
+  crc << data_;
+
+  crc_ = crc.get();
+}
+
+std::vector<uint32_t> SubsystemPacket::header() const {
+  uint32_t word = ((id_ & utility::mask<16>) << 16)
+        +((data_.size() & utility::mask<15>) << 1)
+        +crc_ok_;
+  return { word, event_ };
+}
+
+std::vector<uint32_t> SubsystemPacket::tail() const {
+  return { crc_ };
+}
+
+utility::Reader& SubsystemPacket::read(utility::Reader& r) {
   uint32_t word;
   r >> word;
 
-  subsys_id_ = (word >> 16) & utility::mask<16>;
-  uint32_t subsys_len = (word >> 1) & utility::mask<15>;
+  id_ = (word >> 16) & utility::mask<16>;
+  uint32_t len = (word >> 1) & utility::mask<15>;
   crc_ok_ = word & utility::mask<1>;
 
-  data_.reserve(subsys_len);
-  r.read(data_.data(), subsys_len);
+  r >> event_;
+
+  r.read(data_, len);
 
   r >> crc_;
+
+  return r;
 }
 
-/*
-void SubsystemPacket::write(Writer& os) {
-  static WordType word;
-
-  word = ((subsys_id_ & mask<16>) << 16
-        +(data_.size() & mask<15>) << 1
-        +(crc_ok_ ? 1 : 0));
-
-  word >> os;
-
-  data_ >> os;
-
-  crc_ >> os;
+utility::Writer& SubsystemPacket::write(utility::Writer& w) {
+  std::vector<uint32_t> head{header()}, t{tail()};
+  w << head << data() << t;
+  return w;
 }
-*/
+
+utility::CRC& SubsystemPacket::add(utility::CRC& c) {
+  std::vector<uint32_t> head{header()}, t{tail()};
+  c << head << data() << t;
+  return c;
+}
+
+utility::Reader& operator>>(utility::Reader& r, SubsystemPacket& p) {
+  return p.read(r);
+}
+
+utility::Writer& operator<<(utility::Writer& w, SubsystemPacket& p) {
+  return p.write(w);
+}
+
+utility::CRC& operator<<(utility::CRC& c, SubsystemPacket& p) {
+  return p.add(c);
+}
 
 }  // namespace rawdatafile
 }  // namespace packing
