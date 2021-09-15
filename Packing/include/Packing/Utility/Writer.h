@@ -54,20 +54,18 @@ class Writer {
   Writer& operator<<(WordType& w) {
     return write(&w, 1);
   }
-  
-  /**
-   * Write the vector.
-   * We don't need 'num' because vectors container their length.
-   */
-  template <typename WordType>
-  Writer& write(const std::vector<WordType>& vec) {
-    return this->write(vec.data(), vec.size());
-  }
-  
-  template <typename WordType>
+
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Writer& operator<<(const std::vector<WordType>& vec) {
-    return write(vec);
+    return write(vec.data(), vec.size());
   }
+
+  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  Writer& operator<<(const ObjectType& o) {
+    o.write(*this);
+    return *this;
+  }
+
 
   /**
    * Check if writer is in a fail state
