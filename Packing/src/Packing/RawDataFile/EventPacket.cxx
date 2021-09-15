@@ -6,7 +6,7 @@
 namespace packing {
 namespace rawdatafile {
 
-void EventPacket::read(Reader& r) {
+void EventPacket::read(utility::Reader& r) {
   r >> event_id_;
 
   uint32_t word;

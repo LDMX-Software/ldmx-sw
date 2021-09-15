@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "Packing/RawDataFile/Reader.h"
+#include "Packing/Utility/Reader.h"
 //#include "Packing/RawDataFile/Writer.h"
 
 namespace packing {
@@ -20,7 +20,7 @@ class SubsystemPacket {
   /**
    * read a packet form the input stream
    */
-  void read(Reader& r);
+  void read(utility::Reader& r);
 
   /**
    * write a packet to the output stream

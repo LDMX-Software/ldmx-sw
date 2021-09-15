@@ -21,7 +21,7 @@ class EventPacket {
   /**
    * read a packet from the input stream
    */
-  void read(Reader& r);
+  void read(utility::Reader& r);
 
   /// Get subsystem data
   const std::vector<SubsystemPacket>& get() const {

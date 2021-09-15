@@ -1,8 +1,8 @@
 
 #include "Framework/catch.hpp"
 
-#include "Packing/RawDataFile/Reader.h"
-#include "Packing/RawDataFile/Writer.h"
+#include "Packing/Utility/Reader.h"
+#include "Packing/Utility/Writer.h"
 
 /**
  * Can we read/write binary files with our reader/writers
@@ -16,19 +16,21 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
   uint64_t test_wide = 0xFFFF00FFFF00F0F0;
 
   SECTION("Write") {
-    packing::rawdatafile::Writer w(test_file);
+    packing::utility::Writer w(test_file);
 
     CHECK(w << test_vec);
     CHECK(w << test_wide);
   }
 
   SECTION("Read") {
-    packing::rawdatafile::Reader r(test_file);
+    packing::utility::Reader r(test_file);
 
     std::vector<uint16_t> read_vec;
-    uint64_t read_wide;
+    uint64_t read_wide, dummy;
     CHECK(r.read(read_vec, 4));
     CHECK(r >> read_wide);
+    CHECK_FALSE(r >> dummy);
+    CHECK(r.eof());
     CHECK(read_vec == test_vec);
     CHECK(read_wide == test_wide);
   }
