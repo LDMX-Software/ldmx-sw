@@ -62,7 +62,7 @@ class Unpacker : public framework::Producer {
 
  private:
   /// Reader for our raw binary file
-  std::unique_ptr<rawdatafile::Reader> reader_;
+  rawdatafile::Reader reader_;
 };  // Unpacker
 
 }  // namespace packing
