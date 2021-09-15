@@ -45,7 +45,6 @@ class Writer {
    */
   template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Writer& write(WordType* w, std::size_t num) {
-    static_assert(std::is_integral<WordType>::value, "Integral type required for Writer::write.");
     file_.write(reinterpret_cast<const char*>(w), sizeof(WordType)*num);
     return *this;
   }
@@ -62,10 +61,14 @@ class Writer {
 
   template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
   Writer& operator<<(const ObjectType& o) {
-    o.write(*this);
-    return *this;
+    return o.write(*this);
   }
 
+  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  Writer& operator<<(const std::vector<ObjectType>& vec) {
+    for (auto const& o : vec) if (!o.write(*this)) return *this;
+    return *this;
+  }
 
   /**
    * Check if writer is in a fail state
