@@ -6,7 +6,7 @@
 namespace packing {
 namespace rawdatafile {
 
-void SubsystemPacket::read(Reader& r) {
+void SubsystemPacket::read(utility::Reader& r) {
   uint32_t word;
   r >> word;
 
@@ -30,7 +30,7 @@ void SubsystemPacket::write(Writer& os) {
 
   word >> os;
 
-  for (const auto& w : data_) w >> os;
+  data_ >> os;
 
   crc_ >> os;
 }

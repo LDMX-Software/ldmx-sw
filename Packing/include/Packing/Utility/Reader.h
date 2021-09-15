@@ -1,5 +1,5 @@
-#ifndef PACKING_RAWDATAFILE_READER_H_
-#define PACKING_RAWDATAFILE_READER_H_
+#ifndef PACKING_UTILITY_READER_H_
+#define PACKING_UTILITY_READER_H_
 
 #include <iostream> //debuggin
 #include <fstream>
@@ -7,7 +7,7 @@
 #include <type_traits>
 
 namespace packing {
-namespace rawdatafile {
+namespace utility {
 
 /**
  * @class Reader
@@ -72,18 +72,15 @@ class Reader {
   template <typename WordType>
   Reader& read(WordType* w, std::size_t count) {
     static_assert(std::is_integral<WordType>::value, "Integral type required for Reader::read.");
-    std::cout << sizeof(WordType)*count << " num bytes to be read...";
-    if (file_.read(reinterpret_cast<char*>(w), sizeof(WordType)*count)) {
-      std::cout << "success: " << std::hex << *w;
-    } else {
-      std::cout << "failure";
-    }
-    std::cout << std::endl;
-    // not sure if we need to pair seekg with read
-    //file_.seekg(sizeof(WordType)*count, std::ios::cur);
+    file_.read(reinterpret_cast<char*>(w), sizeof(WordType)*count);
     return *this;
   }
 
+  template <typename WordType>
+  Reader& operator>>(WordType& w) {
+    return read(&w, 1);
+  }
+  
   /**
    * Read the next 'count' words into the input vector of words
    *  
@@ -115,17 +112,18 @@ class Reader {
     return !file_.fail();
   }
 
+  /// check if file is done
+  bool eof() const {
+    return file_.eof();
+  }
+
+
  private:
   /// file stream we are reading from
   std::ifstream file_;
 };  // RawDataFile
 
-template <typename WordType>
-Reader& operator>>(Reader& r, WordType& w) {
-  return r.read(&w, 1);
-}
-
-}  // namespace rawdatafile
+}  // namespace utility
 }  // namespace packing
 
-#endif  // PACKING_RAWDATAFILE_READER_H_
+#endif  // PACKING_UTILITY_READER_H_
