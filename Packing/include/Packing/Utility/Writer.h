@@ -43,14 +43,14 @@ class Writer {
   /**
    * Write the 'num' words stored in array 'w'
    */
-  template <typename WordType>
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Writer& write(WordType* w, std::size_t num) {
     static_assert(std::is_integral<WordType>::value, "Integral type required for Writer::write.");
-    file_.write(reinterpret_cast<char*>(w), sizeof(WordType)*num);
+    file_.write(reinterpret_cast<const char*>(w), sizeof(WordType)*num);
     return *this;
   }
 
-  template <typename WordType>
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Writer& operator<<(WordType& w) {
     return write(&w, 1);
   }
@@ -60,12 +60,12 @@ class Writer {
    * We don't need 'num' because vectors container their length.
    */
   template <typename WordType>
-  Writer& write(std::vector<WordType> vec) {
+  Writer& write(const std::vector<WordType>& vec) {
     return this->write(vec.data(), vec.size());
   }
   
   template <typename WordType>
-  Writer& operator<<(std::vector<WordType>& vec) {
+  Writer& operator<<(const std::vector<WordType>& vec) {
     return write(vec);
   }
 
