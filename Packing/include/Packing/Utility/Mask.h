@@ -39,7 +39,7 @@ struct mask_backend {
  * @tparam N number of lowest-order bits to mask
  */
 template <short N>
-inline constexpr uint64_t mask = mask_backend<N>::value;
+constexpr uint64_t mask = mask_backend<N>::value;
 
 }  // namespace utility
 }  // namespace packing

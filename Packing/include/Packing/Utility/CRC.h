@@ -28,8 +28,8 @@ struct CRC {
     return *this;
   }
   // add a word to the sum
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
-  CRC& operator<<(const std::vector<WordType>& vec) { 
+  template <typename ContentType>
+  CRC& operator<<(const std::vector<ContentType>& vec) { 
     for (auto const& w : vec) (*this) << w;
   }
   // all other classes have to have a 'add' method defined

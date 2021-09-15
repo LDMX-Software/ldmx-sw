@@ -88,11 +88,11 @@ class Reader {
    * The std::vector::resize is helpful for avoiding additional 
    * copies while the vector is being expanded.
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
-  Reader& read(std::vector<WordType>& vec, std::size_t count) {
+  template <typename ContentType>
+  Reader& read(std::vector<ContentType>& vec, std::size_t count) {
     vec.resize(count);
     for (auto& w : vec) {
-      if(!this->read(&w, 1)) return *this;
+      if(!(*this >> w)) return *this;
     }
     return *this;
   }

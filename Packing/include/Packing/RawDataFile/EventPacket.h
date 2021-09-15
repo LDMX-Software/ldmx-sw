@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "Packing/RawDataFile/SubsystemPacket.h"
 
@@ -15,38 +16,41 @@ namespace rawdatafile {
  */
 class EventPacket {
  public:
+  /// default constructor for reading
   EventPacket() = default;
-  ~EventPacket() = default;
+
+  /// define event id for reading
+  EventPacket(uint32_t id, const std::map<uint16_t,std::vector<uint32_t>>& unwrapped_subsys_data);
+
+  /// Get the header words
+  std::vector<uint32_t> header() const;
+
+  /// Get the tail words
+  std::vector<uint32_t> tail() const;
+
+  const uint32_t& id() const { return id_; }
+  const std::vector<SubsystemPacket>& data() const { return subsys_data_; }
 
   /**
-   * read a packet from the input stream
+   * read the event packet from the input reader
    */
-  void read(utility::Reader& r);
-
-  /// Get subsystem data
-  const std::vector<SubsystemPacket>& get() const {
-    return subsys_data_;
-  }
+  utility::Reader& read(utility::Reader& r);
+  /**
+   * write the event packet to the input writer
+   */
+  utility::Writer& write(utility::Writer& w) const;
 
   /**
-   * write a packet to the output stream
-  void write(std::ostream& os);
+   * add the event packet to the input crc
    */
-
-  /**
-   * Insert some subsystem data
-  void insert(const SubsystemPacket& data) {
-    subsys_data_.emplace_back(data);
-  }
-   */
+  utility::CRC& add(utility::CRC& c) const;
 
  private:
-  unsigned int event_id_;
-  unsigned int num_subsystems_;
-  bool crc_ok_;
-  unsigned int event_length_in_words_;
-  uint32_t crc_;
+  uint32_t id_;
+  uint16_t event_length_in_words_;
   std::vector<SubsystemPacket> subsys_data_;
+  bool crc_ok_;
+  uint32_t crc_;
 };  // EventPacket
 
 }  // namespace rawdatafile
