@@ -4,6 +4,7 @@
 #include "Packing/Utility/Reader.h"
 #include "Packing/Utility/Writer.h"
 #include "Packing/RawDataFile/SubsystemPacket.h"
+#include "Packing/RawDataFile/EventPacket.h"
 
 /**
  * Can we read/write binary files with our reader/writers
@@ -67,6 +68,37 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
       CHECK(r >> sp);
       CHECK(sp.id() == id);
       CHECK(sp.data() == data);
+    }
+  }
+
+  SECTION("Event Packet") {
+    std::string test_file{"event_packet_test.raw"};
+
+    uint32_t event{420};
+    std::map<uint16_t,std::vector<uint32_t>> unwrapped_data = {
+      {0xFAFA,{0xAAAAAAAA,0xBBBBBBBB,0xCCCCCCCC,0xDDDDDDDD,0xDEDEDEDE,0xFEDCBA98}},
+      {0xACDC,{0xFEBBBBEF,0x00112233}}
+    };
+      
+    SECTION("Write") {
+      packing::utility::Writer w(test_file);
+  
+      packing::rawdatafile::EventPacket ep(event,unwrapped_data);
+
+      CHECK(w << ep);
+    }
+  
+    SECTION("Read") {
+      packing::utility::Reader r(test_file);
+      packing::rawdatafile::EventPacket ep;
+
+      CHECK(r >> ep);
+      CHECK(ep.id() == event);
+
+      for(auto const& subsys : ep.data()) {
+        REQUIRE(unwrapped_data.find(subsys.id()) != unwrapped_data.end());
+        CHECK(unwrapped_data.at(subsys.id()) == subsys.data());
+      }
     }
   }
 }
