@@ -43,28 +43,16 @@ utility::Reader& SubsystemPacket::read(utility::Reader& r) {
   return r;
 }
 
-utility::Writer& SubsystemPacket::write(utility::Writer& w) {
+utility::Writer& SubsystemPacket::write(utility::Writer& w) const {
   std::vector<uint32_t> head{header()}, t{tail()};
   w << head << data() << t;
   return w;
 }
 
-utility::CRC& SubsystemPacket::add(utility::CRC& c) {
+utility::CRC& SubsystemPacket::add(utility::CRC& c) const {
   std::vector<uint32_t> head{header()}, t{tail()};
   c << head << data() << t;
   return c;
-}
-
-utility::Reader& operator>>(utility::Reader& r, SubsystemPacket& p) {
-  return p.read(r);
-}
-
-utility::Writer& operator<<(utility::Writer& w, SubsystemPacket& p) {
-  return p.write(w);
-}
-
-utility::CRC& operator<<(utility::CRC& c, SubsystemPacket& p) {
-  return p.add(c);
 }
 
 }  // namespace rawdatafile

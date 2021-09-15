@@ -69,14 +69,13 @@ class Reader {
   /**
    * Read the next 'count' words into the input handle.
    */
-  template <typename WordType>
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Reader& read(WordType* w, std::size_t count) {
-    static_assert(std::is_integral<WordType>::value, "Integral type required for Reader::read.");
     file_.read(reinterpret_cast<char*>(w), sizeof(WordType)*count);
     return *this;
   }
 
-  template <typename WordType>
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Reader& operator>>(WordType& w) {
     return read(&w, 1);
   }
@@ -89,12 +88,18 @@ class Reader {
    * The std::vector::resize is helpful for avoiding additional 
    * copies while the vector is being expanded.
    */
-  template <typename WordType>
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
   Reader& read(std::vector<WordType>& vec, std::size_t count) {
     vec.resize(count);
     for (auto& w : vec) {
       if(!this->read(&w, 1)) return *this;
     }
+    return *this;
+  }
+
+  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  Reader& operator>>(ObjectType& o) {
+    o.read(*this);
     return *this;
   }
 
