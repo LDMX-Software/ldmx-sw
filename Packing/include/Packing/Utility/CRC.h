@@ -22,7 +22,16 @@ struct CRC {
   // the object from Boost doing the summing
   boost::crc_32_type crc;
   // add a word to the sum
-  void operator()(const uint32_t& w) { crc.process_bytes(&w, sizeof(w)); }
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  CRC& operator<<(const WordType& w) { 
+    crc.process_bytes(&w, sizeof(WordType));
+    return *this;
+  }
+  // add a word to the sum
+  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  CRC& operator<<(const std::vector<WordType>& vec) { 
+    for (auto const& w : vec) (*this) << w;
+  }
   // get the checksum
   auto get() { return crc.checksum(); }
 };
