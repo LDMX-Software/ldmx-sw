@@ -21,3 +21,5 @@ setup_library(module Packing
                            Packing::RawDataFile)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Packing)
+
+setup_test(dependencies Packing::Packing)
