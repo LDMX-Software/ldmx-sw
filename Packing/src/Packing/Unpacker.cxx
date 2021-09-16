@@ -1,6 +1,7 @@
 
 #include "Packing/Unpacker.h"
 
+#include "Packing/Utility/Mask.h"
 #include "Packing/RawDataFile/EventPacket.h"
 
 namespace packing {
@@ -17,6 +18,17 @@ void Unpacker::onProcessStart() {
   /**
    * Get the run ID and other headers
    */
+  uint32_t word;
+  reader >> word;
+
+  uint8_t version = word >> 28;
+  if (version != 0) {
+    EXCEPTION_RAISE("RawFileVersion",
+        "Unable to handle raw file version "
+        +std::to_string(version));
+  }
+
+  run_ = word & utility::mask<28>;
 }
 
 void Unpacker::beforeNewRun(ldmx::RunHeader& header) {
@@ -26,13 +38,12 @@ void Unpacker::beforeNewRun(ldmx::RunHeader& header) {
 void Unpacker::produce(framework::Event& event) {
   static rawdatafile::EventPacket event_packet;
 
-  /*
-  try {
-    reader_ >> event_packet;
-  } catch (...) {
-    std::cerr << "ERR" << std::endl;
+  reader_ >> event_packet;
+  if (!reader_) {
+    /** ERROR or EOF */
   }
 
+  /*
   /// event header information to event.getEventHeader()
 
   for (auto& subsys_packet : event_packet.get()) {
