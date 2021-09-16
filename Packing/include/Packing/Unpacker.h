@@ -37,8 +37,6 @@ class Unpacker : public framework::Producer {
   /**
    * We are given a non-const reference to a new RunHeader so
    * we can add parameters unpacked from the raw data.
-   *
-   * This is where we open up the run tree and get the run parameters.
    */
   void beforeNewRun(ldmx::RunHeader& header) final override;
 
@@ -63,6 +61,8 @@ class Unpacker : public framework::Producer {
  private:
   /// Reader for our raw binary file
   utility::Reader reader_;
+  /// Run ID number from raw file
+  uint32_t run_;
 };  // Unpacker
 
 }  // namespace packing
