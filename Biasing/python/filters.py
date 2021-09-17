@@ -40,14 +40,12 @@ class TargetBremFilter(simcfg.UserAction):
         self.kill_recoil_track = False
 
 class NonFiducialFilter(simcfg.UserAction):
-    """ Configuration for rejecting events that are fiducial. Part 1
+    """ Configuration for rejecting events that are fiducial.
 
     Parameters
     ----------
     recoil_max_p : float
         Maximum momentum the recoil electron can have [MeV]
-    recoil_e_found : bool
-        Marks if the event has a recoil electron already
     """
 
     def __init__(self,recoil_max_p = 1500.) :

@@ -42,7 +42,7 @@ class NonFiducialFilter : public simcore::UserAction {
    *
    * @param event Geant4 event object.
    */
-  void BeginOfEventAction(const G4Event*) final override;
+  //void BeginOfEventAction(const G4Event*) final override;
 
   /**
    * Method called at the end of every event.
@@ -50,16 +50,6 @@ class NonFiducialFilter : public simcore::UserAction {
    * @param event Geant4 event object.
    */
   void EndOfEventAction(const G4Event*) final override;
-
-  /**
-   * Classify a new track which postpones track processing.
-   * Track processing resumes normally if a target PN interaction occurred.
-   * @param aTrack The Geant4 track.
-   * @param currentTrackClass The current track classification.
-   */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
-      const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
@@ -72,7 +62,7 @@ class NonFiducialFilter : public simcore::UserAction {
   double recoilMaxPThreshold_{1500};  // MeV
 
   /// Flag indicating if the event has a recoil electron already
-  bool foundRecoilElectron_{false};
+  //bool foundRecoilElectron_{false};
 
 };  // NonFiducialFilter
 }  // namespace biasing
