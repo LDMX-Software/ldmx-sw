@@ -68,3 +68,4 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   }
 }
+}
