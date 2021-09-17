@@ -68,7 +68,6 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   }
 }
-}
 
 void NonFiducialFilter::EndOfEventAction(const G4Event*) {}
 }  // namespace biasing
