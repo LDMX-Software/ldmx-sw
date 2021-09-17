@@ -9,7 +9,7 @@ import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
 from LDMX.Biasing import ecal_2 
 from LDMX.SimCore import generators
 mysim = ecal_2.photo_nuclear('ldmx-det-v12', generators.single_4gev_e_upstream_tagger())
-mysim.description = "ECal Non-Fiducial Test Simulation"
+mysim.description = "ECal Non-Fiducial Simulation"
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Hcal.digi as hcal_digi
 import LDMX.Ecal.vetos as ecal_vetos
@@ -38,6 +38,6 @@ p.sequence=[ mysim,
         ]
 p.outputFiles=["nonfiducial_test_production.root"]
 p.maxTriesPerEvent = 10000 #not fully sure what this does
-p.maxEvents = 1000
+p.maxEvents = 10000
 p.logFrequency = 1000
 print(p)
