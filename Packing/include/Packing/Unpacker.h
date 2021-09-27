@@ -55,12 +55,8 @@ class Unpacker : public framework::Producer {
  private:
   /// name of ROOT file with raw data in it
   std::string raw_file_;
-  /// Should we skip branches we can't find translators for?
-  bool skip_unavailable_;
 
  private:
-  /// Reader for our raw binary file
-  utility::Reader reader_;
   /// Run ID number from raw file
   uint32_t run_;
 };  // Unpacker
