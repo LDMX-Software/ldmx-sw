@@ -153,7 +153,7 @@ class HcalGeometry : public framework::ConditionsObject {
    // version with both section and layer. All layers in a given section will be
    // copies.
    template <typename T>
-   std::vector<std::vector<T>> makeLayeredVersion(const std::vector<T>& parameter) {
+   std::vector<std::vector<T>> makeCanonicalLayeredParameter(const std::vector<T>& parameter) {
      std::vector<std::vector<T>> result;
      for(auto section = 0; section < parameter.size(); ++section) {
        result.push_back(std::vector<T>(NumLayers_[section], parameter[section]));
