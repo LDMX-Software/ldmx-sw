@@ -11,7 +11,11 @@ project(
 setup_library(module Packing name Utility interface)
 
 # RawDataFile submodule
-setup_library(module Packing name RawDataFile dependencies Packing::Utility)
+setup_library(module Packing name RawDataFile 
+              dependencies Framework::Configure
+                           Framework::Framework
+                           DetDescr::DetDescr
+                           Packing::Utility)
 
 # Setup the library
 setup_library(module Packing

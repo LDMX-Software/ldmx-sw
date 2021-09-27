@@ -29,7 +29,7 @@ class SubsystemPacket {
   /**
    * Get data
    */
-  const std::vector<uint32_t>& data() const {
+  std::vector<uint32_t>& data() {
     return data_;
   }
   const uint16_t& id() const { return id_; }

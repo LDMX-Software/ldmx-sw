@@ -29,7 +29,7 @@ class EventPacket {
   std::vector<uint32_t> tail() const;
 
   const uint32_t& id() const { return id_; }
-  const std::vector<SubsystemPacket>& data() const { return subsys_data_; }
+  std::vector<SubsystemPacket>& data() { return subsys_data_; }
 
   /**
    * read the event packet from the input reader

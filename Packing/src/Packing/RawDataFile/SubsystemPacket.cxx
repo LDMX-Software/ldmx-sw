@@ -45,13 +45,13 @@ utility::Reader& SubsystemPacket::read(utility::Reader& r) {
 
 utility::Writer& SubsystemPacket::write(utility::Writer& w) const {
   std::vector<uint32_t> head{header()}, t{tail()};
-  w << head << data() << t;
+  w << head << data_ << t;
   return w;
 }
 
 utility::CRC& SubsystemPacket::add(utility::CRC& c) const {
   std::vector<uint32_t> head{header()}, t{tail()};
-  c << head << data() << t;
+  c << head << data_ << t;
   return c;
 }
 
