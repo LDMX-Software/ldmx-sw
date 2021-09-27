@@ -78,7 +78,7 @@ class HcalGeometry() :
 
 
 
-    def make_v12(self) :
+    def make_prototype(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
         Only sets parameters that must align with the Hcal gdml constants.
@@ -165,7 +165,8 @@ class HcalGeometry() :
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
         self.prototype.detectors_valid = ["ldmx-hcal-prototype"]
-    def make_prototype(self) :
+
+    def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
         Only sets parameters that must align with the Hcal gdml constants.
