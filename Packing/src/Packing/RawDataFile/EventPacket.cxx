@@ -50,7 +50,7 @@ utility::Reader& EventPacket::read(utility::Reader& r) {
 
 utility::Writer& EventPacket::write(utility::Writer& w) const {
   std::vector<uint32_t> h{header()},t{tail()};
-  w << h << data() << t;
+  w << h << subsys_data_ << t;
   return w;
 }
 
