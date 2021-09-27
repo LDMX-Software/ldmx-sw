@@ -24,10 +24,6 @@ File::File(const framework::config::Parameters &ps) {
   if (is_output_) {
     writer_.open(fn);
     // leave entry count undefined
-    // use passed run number
-    uint32_t header = ((0 & utility::mask<4>) << 28) + run_ & utility::mask<28>;
-    writer_ << header;
-    crc_ << header;
     entries_ = 0;
     i_entry_ = 0;
   } else {
@@ -101,15 +97,22 @@ bool File::nextEvent() {
     entries_++;
     i_entry_++;
   } else {
+    // check for EoF
+    if (i_entry_+1 > entries_)
+      return false;
+
+    i_entry_++;
+
     // read buffers from event packet and add to event bus
     static EventPacket read_event;
     reader_ >> read_event;
     if (!reader_) {
-      // ERROR or EOF
+      // ERROR
       return false;
     }
     
-    //event->setEventNumber(read_event.id());
+    event_->getEventHeader().setEventNumber(read_event.id());
+    
     for (auto &subsys : read_event.data()) {
       std::string name;
       switch(subsys.id()) {
@@ -137,7 +140,16 @@ bool File::nextEvent() {
 }
 
 void File::writeRunHeader(ldmx::RunHeader &header) {
-  //header.setRunNumber(run_);
+  if (is_output_) {
+    // use passed run number
+    run_ = header.getRunNumber();
+    uint32_t header = ((0 & utility::mask<4>) << 28) + run_ & utility::mask<28>;
+    writer_ << header;
+    crc_ << header;
+  } else {
+    // put our read-in run number here
+    header.setIntParameter("raw_run",run_);
+  }
 }
 
 void File::close() {

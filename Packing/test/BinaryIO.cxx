@@ -95,10 +95,53 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
       CHECK(r >> ep);
       CHECK(ep.id() == event);
 
-      for(auto const& subsys : ep.data()) {
+      for(auto& subsys : ep.data()) {
         REQUIRE(unwrapped_data.find(subsys.id()) != unwrapped_data.end());
         CHECK(unwrapped_data.at(subsys.id()) == subsys.data());
       }
     }
   }
+
+  /* test entire file
+  SECTION("Entire File") {
+    framework::config::Parmeters ps;
+    ps.
+    std::string test_file{"file_test.raw"};
+
+    uint32_t event{420};
+    std::map<uint16_t,std::vector<uint32_t>> unwrapped_data = {
+      {0xFAFA,{0xAAAAAAAA,0xBBBBBBBB,0xCCCCCCCC,0xDDDDDDDD,0xDEDEDEDE,0xFEDCBA98}},
+      {0xACDC,{0xFEBBBBEF,0x00112233}}
+    };
+
+    SECTION("Write") {
+      packing::rawdatafile::File f(ps);
+
+      f.writeRunHeader(rh);
+
+      f.connect(event);
+      
+      REQUIRE(f.nextEvent());
+      REQUIRE(f.nextEvent());
+      REQUIRE(f.nextEvent());
+
+      f.close();
+    }
+
+    SECTION("Read") {
+      packing::rawdatafile::File f(ps);
+
+      f.writeRunHeader(ps);
+
+      f.connect(event);
+
+      REQUIRE(f.nextEvent());
+      REQUIRE(f.nextEvent());
+      REQUIRE(f.nextEvent());
+      REQUIRE_FALSE(f.nextEvent());
+
+      f.close();
+    }
+  }
+  */
 }

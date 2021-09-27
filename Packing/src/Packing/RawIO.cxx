@@ -12,7 +12,7 @@ void RawIO::beforeNewRun(ldmx::RunHeader& header) {
 }
 
 void RawIO::produce(framework::Event& event) {
-  raw_file->connect(event);
+  raw_file_->connect(event);
   if (not raw_file_->nextEvent()) {
     abortEvent();
   }

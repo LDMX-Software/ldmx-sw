@@ -54,5 +54,11 @@ utility::Writer& EventPacket::write(utility::Writer& w) const {
   return w;
 }
 
+utility::CRC& EventPacket::add(utility::CRC& c) const {
+  std::vector<uint32_t> h{header()},t{tail()};
+  c << h << subsys_data_ << t;
+  return c;
+}
+
 }
 }
