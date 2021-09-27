@@ -19,7 +19,7 @@ class File {
    * @param[in] params parameters use to configure this file
    * @param[in] filename name of the file to read/write
    */
-  File(const framework::config::Parmaeter &params);
+  File(const framework::config::Parameters &params);
 
   /**
    * Connect the passed event bus to this event file.

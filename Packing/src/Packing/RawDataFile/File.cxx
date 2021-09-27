@@ -72,6 +72,7 @@ bool File::connect(framework::Event& event) {
 bool File::nextEvent() {
   if(is_output_) {
     // dump buffers into event packet and write out
+
   } else {
     // read buffers from event packet and add to event bus
   }
