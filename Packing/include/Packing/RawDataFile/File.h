@@ -56,6 +56,8 @@ class File {
   std::string triggerpad_object_name_;
   /// for writing, we also should be able to specify a pass name
   std::string pass_name_;
+  /// for writing, do we skip subsystems if their raw object is unavailable
+  bool skip_unavailable_;
 
  private:
   /// number of entries in the file

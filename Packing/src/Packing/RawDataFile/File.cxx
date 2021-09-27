@@ -11,6 +11,8 @@ namespace rawdatafile {
 
 File::File(const framework::config::Parameters &ps) {
   is_output_ = ps.getParameter<bool>("is_output");
+  skip_unavailable_ = ps.getParameter<bool>("skip_unavailable");
+
   std::string fn = ps.getParameter<std::string>("filename");
 
   ecal_object_name_ = ps.getParameter<std::string>("ecal_object_name");
@@ -85,6 +87,8 @@ bool File::nextEvent() {
     
     std::map<uint16_t, std::vector<uint32_t>> the_subsys_data;
     for (auto const& [name, id] : name_to_eid) {
+      if (skip_unavailable_ and not event_->exists(name, pass_name_))
+        continue;
       the_subsys_data[id] = event_->getCollection<uint32_t>(name, pass_name_);
     }
 

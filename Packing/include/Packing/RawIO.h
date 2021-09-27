@@ -1,38 +1,36 @@
 #ifndef PACKING_UNPACKER_H
 #define PACKING_UNPACKER_H
 
+#include <memory>
+
 #include "Framework/EventProcessor.h"
 
-#include "Packing/Utility/Reader.h"
+#include "Packing/RawDataFile/File.h"
 
 namespace packing {
 
 /**
- * @class Unpacker
+ * @class RawIO
  *
  * This producer unpacks the data from the various subsystems
  * into different branches for later decoding by the subsystem
- * modules.
+ * modules. We essentially do no work here and are only interfacing
+ * with the RawDataFile submodule.
  */
-class Unpacker : public framework::Producer {
+class RawIO : public framework::Producer {
  public:
   /// normal constructor
-  Unpacker(const std::string& name, framework::Process& p)
+  RawIO(const std::string& name, framework::Process& p)
     : framework::Producer(name, p) {}
   /// empty destructor
-  virtual ~Unpacker() {}
+  virtual ~RawIO() {}
 
   /**
-   * Configure the unpacker
+   * Configure the unpacker and open the raw data file for IO
    *
    * @param[in] ps Parameters for configuration
    */
   void configure(framework::config::Parameters& ps) final override;
-
-  /**
-   * Open up raw binary file.
-   */
-  void onProcessStart() final override;
 
   /**
    * We are given a non-const reference to a new RunHeader so
@@ -53,13 +51,9 @@ class Unpacker : public framework::Producer {
   void onProcessEnd() final override;
 
  private:
-  /// name of ROOT file with raw data in it
-  std::string raw_file_;
-
- private:
-  /// Run ID number from raw file
-  uint32_t run_;
-};  // Unpacker
+  /// raw data file we are reading
+  std::unique_ptr<rawdatafile::File> raw_file_;
+};  // RawIO
 
 }  // namespace packing
 
