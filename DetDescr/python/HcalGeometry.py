@@ -78,53 +78,53 @@ class HcalGeometry() :
 
 
 
-    def make_prototype(self) :
-        """Create the HcalGeometry with the v12 geometry parameters
+    def make_prototype(self):
+        """Create the HcalGeometry with the testbeam prototype geometry parameters
 
         Only sets parameters that must align with the Hcal gdml constants.
 
         - ThicknessScint: Scintillator thickness (in z).
-          @param gdml see: `scint_thick`.
-        
-        - WidthScint: Scintillator width (in x).
-          Can be obtained by: hcal_length/n_strips.
+            @param gdml see: `scint_thickness`.
 
-        - ZeroLayer: Position of the first layer 
-          Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
-          Side Hcal first layer (in x or y) starts after Ecal_x/y / 2
-          For back Hcal: ecal_front_z + hcal_side_dz (in z)
-          For side Hcal: hcal_side_dz/2 (in x/y)
-          @param gdml see: `ecal_front_z` and `hcal_side_dz`
+        - WidthScint: Scintillator width (in x).
+            @param gdml see: `scint_bar_width`
+
+        - ZeroLayer: Position of the first scintillator layer
+            Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
+            @param gdml see: `dz`, `air_thickness`, `absorber_thickness`
 
         - ZeroStrip: Position of the first strip.
-          For back Hcal: back_transverse_width/2 (in x)
-          For side Hcal: ecal_front_z (in z)
-          @param gdml see: `hcal_back_dx` and `ecal_front_z`
+            For back Hcal: NumStrips * scint_bar_width / 2 (in x/y)
+            @param gdml see: `num_bars_front`, `num_bars_back`, `scint_bar_width`
 
-        - LayerThickness: 
-          Layer thickness (in z) 
-          Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
-          @param gdml see: `side_abso_thick` and `back_abso2_thick` and `air_thick`
+        - HalfTotalWidth: Half length of a bar.
+            Equal to ZeroStrip for the prototype geometry.
+
+        - LayerThickness:
+            Layer thickness (in z)
+            Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
+            @param gdml see: `layer_thickness`
 
         - NumLayers:
-          Number of layers per section.
+            Number of layers per section.
+            @param gdml see: `num_layers`
 
-        - NumStrips: 
-          Number of strips per layer.
+        - NumStrips:
+            Number of strips per layer.
+            @param gdml see: `num_bars_front`, `num_bars_back`, `num_layers_front`,
+            and `num_layers_back`
 
         - NumSections:
-          Number of sections. 
-          Encoded in HcalID.
-          Back, Top, Left, Right, Bottom.
+
+            Set to 1 for the prototype geometry since the prototype only has the
+            Back Hcal.
 
         - EcalDx/EcalDy:
-          Length of Ecal needed for side Hcal dimensions.
 
-        - HalfTotalWidth: 
-          Half length of a bar
-          For back Hcal: nstrips * scint_width / 2 (in x/y)
-          For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y))/2
-          @param gdml see: sideTB_dx, sideTB_dy
+            Used in the regular geometry to describe the dimensions of the Ecal.
+            Since there is no Ecal in the prototype geometry, these are both set to
+            0.
+
         """
         self.prototype=HcalReadoutGeometry()
         # GDML-parameters
