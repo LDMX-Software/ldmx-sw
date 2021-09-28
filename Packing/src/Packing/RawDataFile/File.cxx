@@ -42,13 +42,11 @@ File::File(const framework::config::Parameters &ps) {
     }
 
     run_ = ((word >> 4) & utility::mask<28>);
-    std::cout << "Read in: " << word << " ==> run : " << run_ << std::endl;
 
     reader_.seek<uint32_t>(-2,std::ios::end);
     auto eof{reader_.tell<uint32_t>()}; // save EOF in number of 32-bit-width words
     uint32_t crc_read_in;
     reader_ >> entries_ >> crc_read_in;
-    std::cout << "Read in: " << entries_ << std::endl;
     i_entry_ = 0;
 
     reader_.seek<uint32_t>(1,std::ios::beg);
@@ -82,7 +80,7 @@ bool File::nextEvent() {
       { tracker_object_name_ , ldmx::SubdetectorIDType::EID_TRACKER },
       { triggerpad_object_name_ , ldmx::SubdetectorIDType::EID_TRIGGER_SCINT },
       { ecal_object_name_ , ldmx::SubdetectorIDType::EID_ECAL },
-      { triggerpad_object_name_ , ldmx::SubdetectorIDType::EID_HCAL },
+      { hcal_object_name_ , ldmx::SubdetectorIDType::EID_HCAL },
     };
     
     std::map<uint16_t, std::vector<uint32_t>> the_subsys_data;
@@ -100,10 +98,9 @@ bool File::nextEvent() {
 
     entries_++;
     i_entry_++;
-    std::cout << "Wrote " << i_entry_ << " " << entries_ << std::endl;
   } else {
     // check for EoF
-    if (i_entry_+1 >= entries_)
+    if (i_entry_+1 > entries_)
       return false;
 
     i_entry_++;
@@ -150,7 +147,6 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
     run_ = header.getRunNumber();
     uint32_t header = (0 & utility::mask<4>) + 
                       ((run_ & utility::mask<28>) << 4);
-    std::cout << std::hex << "Writing out : " << header << std::endl;
     writer_ << header;
     crc_ << header;
   } else {
@@ -160,13 +156,10 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
 }
 
 void File::close() {
-  std::cout << "File::close()" << std::endl;
   event_ = nullptr;
   if (is_output_) {
-    std::cout << std::hex << "Writing out : " << entries_ << "  ";
     writer_ << entries_;
     crc_ << entries_;
-    std::cout << crc_.get() << std::endl;
     writer_ << crc_.get();
   }
 }
