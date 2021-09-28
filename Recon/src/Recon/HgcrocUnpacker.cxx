@@ -1,9 +1,9 @@
 
 #include <bitset>
 
-#include "Tools/Mask.h"
-#include "Tools/CRC.h"
 #include "Tools/BufferReader.h"
+#include "Packing/Utility/Mask.h"
+#include "Packing/Utility/CRC.h"
 
 #include "Recon/HgcrocUnpacker.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
@@ -30,7 +30,7 @@ void HgcrocUnpacker::produce(framework::Event& event) {
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> data;
-  tools::BufferReader<uint32_t,uint32_t> r{event.getCollection<uint32_t>(input_name_,input_pass_)};
+  packing::utility::BufferReader<uint32_t,uint32_t> r{event.getCollection<uint32_t>(input_name_,input_pass_)};
   do {
     try {
       /** Decode Bunch Header
@@ -48,28 +48,28 @@ void HgcrocUnpacker::produce(framework::Event& event) {
        *  RID ok (1) | CDC ok (1) | LEN0 (6)
        * ... other listing of links ...
        */
-      tools::CRC fpga_crc;
-      fpga_crc(r.now());
+      packing::utility::CRC fpga_crc;
+      fpga_crc << r.now();
       std::cout << std::bitset<32>(r.now()) << " : ";
-      uint32_t version = (r.now() >> 12 + 1 + 6 + 8) & tools::mask<4>;
+      uint32_t version = (r.now() >> 12 + 1 + 6 + 8) & packing::utility::mask<4>;
       std::cout << "version " << version << std::flush;
       uint32_t one{1};
       if (version != one)
         EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
 
-      uint32_t fpga = (r.now() >> 12 + 1 + 6) & tools::mask<8>;
-      uint32_t nlinks = (r.now() >> 12 + 1) & tools::mask<6>;
-      uint32_t len = r.now() & tools::mask<12>;
+      uint32_t fpga = (r.now() >> 12 + 1 + 6) & packing::utility::mask<8>;
+      uint32_t nlinks = (r.now() >> 12 + 1) & packing::utility::mask<6>;
+      uint32_t len = r.now() & packing::utility::mask<12>;
 
       std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
                 << ", len: " << len << std::endl;
       r.next();
-      fpga_crc(r.now());
+      fpga_crc << r.now();
       std::cout << std::bitset<32>(r.now()) << " : ";
 
-      uint32_t bx_id = (r.now() >> 10 + 10) & tools::mask<12>;
-      uint32_t rreq = (r.now() >> 10) & tools::mask<10>;
-      uint32_t orbit = r.now() & tools::mask<10>;
+      uint32_t bx_id = (r.now() >> 10 + 10) & packing::utility::mask<12>;
+      uint32_t rreq = (r.now() >> 10) & packing::utility::mask<10>;
+      uint32_t orbit = r.now() & packing::utility::mask<10>;
 
       std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
                 << ", orbit: " << orbit << std::endl;
@@ -77,12 +77,12 @@ void HgcrocUnpacker::produce(framework::Event& event) {
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) {
           r.next();
-          fpga_crc(r.now());
+          fpga_crc << r.now();
         }
         uint32_t shift_in_word = 8 * i_link % 4;
-        bool rid_ok = (r.now() >> shift_in_word + 7) & tools::mask<1> == 1;
-        bool cdc_ok = (r.now() >> shift_in_word + 6) & tools::mask<1> == 1;
-        num_channels_per_link[i_link] = (r.now() >> shift_in_word) & tools::mask<6>;
+        bool rid_ok = (r.now() >> shift_in_word + 7) & packing::utility::mask<1> == 1;
+        bool cdc_ok = (r.now() >> shift_in_word + 6) & packing::utility::mask<1> == 1;
+        num_channels_per_link[i_link] = (r.now() >> shift_in_word) & packing::utility::mask<6>;
         std::cout << "Link " << i_link << " readout "
                   << num_channels_per_link.at(i_link) << " channels"
                   << std::endl;
@@ -100,19 +100,19 @@ void HgcrocUnpacker::produce(framework::Event& event) {
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         // move on from last word counting links or previous link
         std::cout << "RO Link " << i_link << std::endl;
-        tools::CRC link_crc;
+        packing::utility::CRC link_crc;
         r.next();
-        fpga_crc(r.now());
-        link_crc(r.now());
-        uint32_t roc_id = (r.now() >> 8 + 5 + 1) & tools::mask<16>;
-        bool crc_ok = (r.now() >> 8 + 5) & tools::mask<1> == 1;
+        fpga_crc << r.now();
+        link_crc << r.now();
+        uint32_t roc_id = (r.now() >> 8 + 5 + 1) & packing::utility::mask<16>;
+        bool crc_ok = (r.now() >> 8 + 5) & packing::utility::mask<1> == 1;
         std::cout << std::bitset<32>(r.now()) 
           << " : roc_id " << roc_id
           << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
 
         // get readout map from the last 8 bits of this word
         // and the entire next word
-        std::bitset<40> ro_map = r.now() & tools::mask<8>;
+        std::bitset<40> ro_map = r.now() & packing::utility::mask<8>;
         ro_map <<= 32;
         r.next();
         fpga_crc(r.now());
@@ -133,7 +133,7 @@ void HgcrocUnpacker::produce(framework::Event& event) {
 
           // next word is this channel
           r.next();
-          fpga_crc(r.now());
+          fpga_crc << r.now();
           std::cout << std::bitset<32>(r.now());
 
           if (channel_id == 0) {
@@ -141,16 +141,16 @@ void HgcrocUnpacker::produce(framework::Event& event) {
              * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
              */
             std::cout << " : ROC Header";
-            link_crc(r.now());
-            uint32_t bx_id = (r.now() >> 4 + 3 + 3 + 6) & tools::mask<12>;
-            uint32_t short_event = (r.now() >> 4 + 3 + 3) & tools::mask<6>;
-            uint32_t short_orbit = (r.now() >> 4 + 3) & tools::mask<3>;
-            uint32_t hamming_errs = (r.now() >> 4) & tools::mask<3>;
+            link_crc << r.now();
+            uint32_t bx_id = (r.now() >> 4 + 3 + 3 + 6) & packing::utility::mask<12>;
+            uint32_t short_event = (r.now() >> 4 + 3 + 3) & packing::utility::mask<6>;
+            uint32_t short_orbit = (r.now() >> 4 + 3) & packing::utility::mask<3>;
+            uint32_t hamming_errs = (r.now() >> 4) & packing::utility::mask<3>;
           } else if (channel_id == common_mode_channel) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
              */
-            link_crc(r.now());
+            link_crc << r.now();
             std::cout << " : Common Mode";
           } else if (channel_id == 39) {
             // CRC checksum from ROC
@@ -165,7 +165,7 @@ void HgcrocUnpacker::produce(framework::Event& event) {
           } else {
             /// DAQ Channels
 
-            link_crc(r.now());
+            link_crc << r.now();
             /** Generate Packed Electronics ID
              *   Link Index i_link
              *   Channel ID channel_id
