@@ -30,7 +30,7 @@ void HgcrocUnpacker::produce(framework::Event& event) {
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> data;
-  packing::utility::BufferReader<uint32_t,uint32_t> r{event.getCollection<uint32_t>(input_name_,input_pass_)};
+  tools::BufferReader<uint32_t,uint32_t> r{event.getCollection<uint32_t>(input_name_,input_pass_)};
   do {
     try {
       /** Decode Bunch Header
@@ -115,8 +115,8 @@ void HgcrocUnpacker::produce(framework::Event& event) {
         std::bitset<40> ro_map = r.now() & packing::utility::mask<8>;
         ro_map <<= 32;
         r.next();
-        fpga_crc(r.now());
-        link_crc(r.now());
+        fpga_crc << r.now();
+        link_crc << r.now();
         ro_map |= r.now();
 
         std::cout << "Start looping through channels..." << std::endl;

@@ -44,6 +44,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 setup_library(module Recon
   dependencies Framework::Framework Recon::Event Tools::Tools 
                            DetDescr::DetDescr Ecal::Ecal
+                           Packing::Utility
               sources ${SRC_FILES}
 )
 
