@@ -1,10 +1,25 @@
 
+#include "TTree.h"
+
 #include "Framework/catch.hpp"
+
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
+#include "Framework/EventHeader.h"
+#include "Framework/RunHeader.h"
 
 #include "Packing/Utility/Reader.h"
 #include "Packing/Utility/Writer.h"
 #include "Packing/RawDataFile/SubsystemPacket.h"
 #include "Packing/RawDataFile/EventPacket.h"
+#include "Packing/RawDataFile/File.h"
+
+namespace packing {
+namespace test {
+
+
+}  // test
+}  // packing
 
 /**
  * Can we read/write binary files with our reader/writers
@@ -102,46 +117,92 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
     }
   }
 
-  /* test entire file
   SECTION("Entire File") {
-    framework::config::Parmeters ps;
-    ps.
-    std::string test_file{"file_test.raw"};
+    std::string ecal_object_name("ecalDummyRaw"), hcal_object_name("hcalDummyRaw"),
+      tracker_object_name("trackerDummyRaw"), triggerpad_object_name("triggerpadDummyRaw");
+    framework::config::Parameters ps;
+    ps.addParameter("filename", std::string("file_test.raw"));
+    ps.addParameter("ecal_object_name", ecal_object_name);
+    ps.addParameter("hcal_object_name", hcal_object_name);
+    ps.addParameter("tracker_object_name", tracker_object_name);
+    ps.addParameter("triggerpad_object_name", triggerpad_object_name);
+    ps.addParameter("pass_name", std::string());
+    ps.addParameter("skip_unavailable", true);
+    ps.addParameter("verify_checksum", false);
 
-    uint32_t event{420};
-    std::map<uint16_t,std::vector<uint32_t>> unwrapped_data = {
-      {0xFAFA,{0xAAAAAAAA,0xBBBBBBBB,0xCCCCCCCC,0xDDDDDDDD,0xDEDEDEDE,0xFEDCBA98}},
-      {0xACDC,{0xFEBBBBEF,0x00112233}}
+    std::vector<uint32_t> data = {
+        0xAAAAAAAA,
+        0xBBBBBBBB,
+        0xCCCCCCCC,
+        0xDDDDDDDD,
+        0xDEDEDEDE,
+        0xFEDCBA98
     };
+    int i_event{420};
+    int n_events{1};
+    int run{1666};
 
     SECTION("Write") {
+      ps.addParameter("is_output", true);
       packing::rawdatafile::File f(ps);
 
+      ldmx::RunHeader rh(run);
       f.writeRunHeader(rh);
 
+      TTree dummy("dummy","dummy");
+      framework::Event event("testwrite");
+      event.setOutputTree(&dummy);
       f.connect(event);
       
-      REQUIRE(f.nextEvent());
-      REQUIRE(f.nextEvent());
-      REQUIRE(f.nextEvent());
+      for (int i{0}; i < n_events; i++) {
+        auto& eh{event.getEventHeader()};
+        eh.setEventNumber(i_event+i);
+
+        event.add(ecal_object_name, data);
+        event.add(hcal_object_name, data);
+        event.add(triggerpad_object_name, data);
+
+        REQUIRE(f.nextEvent());
+
+        event.Clear();
+        event.onEndOfEvent();
+      }
 
       f.close();
     }
 
     SECTION("Read") {
+      ps.addParameter("is_output", false);
       packing::rawdatafile::File f(ps);
 
-      f.writeRunHeader(ps);
+      ldmx::RunHeader rh(run);
+      f.writeRunHeader(rh);
+      CHECK(rh.getIntParameter("raw_run") == run);
 
+      TTree dummy("dummy","dummy");
+      framework::Event event("testread");
+      event.setOutputTree(&dummy);
       f.connect(event);
 
-      REQUIRE(f.nextEvent());
-      REQUIRE(f.nextEvent());
-      REQUIRE(f.nextEvent());
+      for (int i{0}; i < n_events; i++) {
+        auto& eh{event.getEventHeader()};
+        eh.setEventNumber(i);
+
+        REQUIRE(f.nextEvent());
+
+        CHECK(eh.getEventNumber() == i_event+i);
+        CHECK(data == event.getCollection<uint32_t>(ecal_object_name));
+        CHECK(data == event.getCollection<uint32_t>(hcal_object_name));
+        CHECK(data == event.getCollection<uint32_t>(triggerpad_object_name));
+        CHECK_FALSE(event.exists(tracker_object_name));
+
+        event.Clear();
+        event.onEndOfEvent();
+      }
+
       REQUIRE_FALSE(f.nextEvent());
 
       f.close();
     }
   }
-  */
 }
