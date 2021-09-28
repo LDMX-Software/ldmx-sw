@@ -139,69 +139,64 @@ TEST_CASE("BinaryIO", "[Packing][functionality]") {
         0xFEDCBA98
     };
     int i_event{420};
-    int n_events{1};
+    int n_events{2};
     int run{1666};
 
     SECTION("Write") {
       ps.addParameter("is_output", true);
       packing::rawdatafile::File f(ps);
-
+  
       ldmx::RunHeader rh(run);
       f.writeRunHeader(rh);
-
-      TTree dummy("dummy","dummy");
+  
       framework::Event event("testwrite");
-      event.setOutputTree(&dummy);
       f.connect(event);
       
       for (int i{0}; i < n_events; i++) {
-        auto& eh{event.getEventHeader()};
-        eh.setEventNumber(i_event+i);
-
+        event.getEventHeader().setEventNumber(i_event+i);
+  
         event.add(ecal_object_name, data);
         event.add(hcal_object_name, data);
         event.add(triggerpad_object_name, data);
-
+  
         REQUIRE(f.nextEvent());
-
+  
         event.Clear();
         event.onEndOfEvent();
       }
-
+  
       f.close();
     }
 
     SECTION("Read") {
+      std::cout << "starting Read" << std::endl;
       ps.addParameter("is_output", false);
       packing::rawdatafile::File f(ps);
-
+  
       ldmx::RunHeader rh(run);
       f.writeRunHeader(rh);
       CHECK(rh.getIntParameter("raw_run") == run);
-
-      TTree dummy("dummy","dummy");
+  
       framework::Event event("testread");
-      event.setOutputTree(&dummy);
       f.connect(event);
-
+  
       for (int i{0}; i < n_events; i++) {
-        auto& eh{event.getEventHeader()};
-        eh.setEventNumber(i);
-
+        event.getEventHeader().setEventNumber(i);
+  
         REQUIRE(f.nextEvent());
-
-        CHECK(eh.getEventNumber() == i_event+i);
+  
+        CHECK(event.getEventNumber() == i_event+i);
         CHECK(data == event.getCollection<uint32_t>(ecal_object_name));
         CHECK(data == event.getCollection<uint32_t>(hcal_object_name));
         CHECK(data == event.getCollection<uint32_t>(triggerpad_object_name));
         CHECK_FALSE(event.exists(tracker_object_name));
-
+  
         event.Clear();
         event.onEndOfEvent();
       }
-
+  
       REQUIRE_FALSE(f.nextEvent());
-
+  
       f.close();
     }
   }
