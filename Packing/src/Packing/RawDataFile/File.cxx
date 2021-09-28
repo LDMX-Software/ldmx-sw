@@ -21,6 +21,7 @@ File::File(const framework::config::Parameters &ps) {
   triggerpad_object_name_ = ps.getParameter<std::string>("triggerpad_object_name");
   pass_name_ = ps.getParameter<std::string>("pass_name");
 
+  std::cerr << "creating file" << std::endl;
   if (is_output_) {
     writer_.open(fn);
     // leave entry count undefined
@@ -33,19 +34,22 @@ File::File(const framework::config::Parameters &ps) {
     uint32_t word;
     reader_ >> word;
 
-    uint8_t version = (word >> 28) & utility::mask<4>;
+    uint8_t version = word & utility::mask<4>;
     if (version != 0) {
       EXCEPTION_RAISE("RawFileVers",
           "Unable to handle raw file version "
           + std::to_string(version));
     }
 
-    run_ = word & utility::mask<8>;
+    run_ = ((word >> 4) & utility::mask<28>);
+    std::cout << "Read in: " << word << " ==> run : " << run_ << std::endl;
 
     reader_.seek<uint32_t>(-2,std::ios::end);
     auto eof{reader_.tell<uint32_t>()}; // save EOF in number of 32-bit-width words
     uint32_t crc_read_in;
     reader_ >> entries_ >> crc_read_in;
+    std::cout << "Read in: " << entries_ << std::endl;
+    i_entry_ = 0;
 
     reader_.seek<uint32_t>(1,std::ios::beg);
 
@@ -96,9 +100,10 @@ bool File::nextEvent() {
 
     entries_++;
     i_entry_++;
+    std::cout << "Wrote " << i_entry_ << " " << entries_ << std::endl;
   } else {
     // check for EoF
-    if (i_entry_+1 > entries_)
+    if (i_entry_+1 >= entries_)
       return false;
 
     i_entry_++;
@@ -143,7 +148,9 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
   if (is_output_) {
     // use passed run number
     run_ = header.getRunNumber();
-    uint32_t header = ((0 & utility::mask<4>) << 28) + run_ & utility::mask<28>;
+    uint32_t header = (0 & utility::mask<4>) + 
+                      ((run_ & utility::mask<28>) << 4);
+    std::cout << std::hex << "Writing out : " << header << std::endl;
     writer_ << header;
     crc_ << header;
   } else {
@@ -153,10 +160,13 @@ void File::writeRunHeader(ldmx::RunHeader &header) {
 }
 
 void File::close() {
+  std::cout << "File::close()" << std::endl;
   event_ = nullptr;
   if (is_output_) {
-    writer_ << (entries_ & utility::mask<32>);
-    crc_ << (entries_ & utility::mask<32>);
+    std::cout << std::hex << "Writing out : " << entries_ << "  ";
+    writer_ << entries_;
+    crc_ << entries_;
+    std::cout << crc_.get() << std::endl;
     writer_ << crc_.get();
   }
 }
