@@ -74,17 +74,17 @@ bool File::connect(framework::Event& event) {
 }
 
 bool File::nextEvent() {
+  static std::map<uint16_t, std::string> eid_to_name = {
+    { ldmx::SubdetectorIDType::EID_TRACKER       , tracker_object_name_ },
+    { ldmx::SubdetectorIDType::EID_TRIGGER_SCINT , triggerpad_object_name_ },
+    { ldmx::SubdetectorIDType::EID_ECAL          , ecal_object_name_ },
+    { ldmx::SubdetectorIDType::EID_HCAL          , hcal_object_name_ },
+  };
+
   if(is_output_) {
     // dump buffers into event packet and write out
-    static std::map<std::string, uint16_t> name_to_eid = {
-      { tracker_object_name_ , ldmx::SubdetectorIDType::EID_TRACKER },
-      { triggerpad_object_name_ , ldmx::SubdetectorIDType::EID_TRIGGER_SCINT },
-      { ecal_object_name_ , ldmx::SubdetectorIDType::EID_ECAL },
-      { hcal_object_name_ , ldmx::SubdetectorIDType::EID_HCAL },
-    };
-    
     std::map<uint16_t, std::vector<uint32_t>> the_subsys_data;
-    for (auto const& [name, id] : name_to_eid) {
+    for (auto const& [id, name] : eid_to_name) {
       if (skip_unavailable_ and not event_->exists(name, pass_name_))
         continue;
       the_subsys_data[id] = event_->getCollection<uint32_t>(name, pass_name_);
@@ -116,26 +116,13 @@ bool File::nextEvent() {
     event_->getEventHeader().setEventNumber(read_event.id());
     
     for (auto &subsys : read_event.data()) {
-      std::string name;
-      switch(subsys.id()) {
-        case ldmx::SubdetectorIDType::EID_TRACKER :
-          name = tracker_object_name_;
-          break;
-        case ldmx::SubdetectorIDType::EID_TRIGGER_SCINT :
-          name = triggerpad_object_name_;
-          break;
-        case ldmx::SubdetectorIDType::EID_ECAL :
-          name = ecal_object_name_;
-          break;
-        case ldmx::SubdetectorIDType::EID_HCAL :
-          name = hcal_object_name_;
-          break;
-        default :
-          std::cerr << subsys.id() << " unrecognized electronics ID." << std::endl;
-          name = "EID"+std::to_string(subsys.id());
-      }  // switch for id
+      // construct name if not provided by default EID mappings
+      if (eid_to_name.find(subsys.id()) == eid_to_name.end()) {
+        std::cerr << subsys.id() << " unrecognized electronics ID." << std::endl;
+        eid_to_name[subsys.id()] = "EID"+std::to_string(subsys.id());
+      }
 
-      event_->add(name, subsys.data());
+      event_->add(eid_to_name.at(subsys.id()), subsys.data());
     }  // loop over subsystems
   }    // input or output
   return true;
