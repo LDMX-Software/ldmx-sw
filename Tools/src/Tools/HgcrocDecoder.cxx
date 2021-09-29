@@ -10,7 +10,7 @@
 
 namespace tools {
 
-void HgcrocDecoder::decode(const std::vector<uint32_t>& encoded_data) {
+std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> HgcrocDecoder::decode(const std::vector<uint32_t>& encoded_data) {
   /**
    * Static parameters depending on ROC version
    */
@@ -217,4 +217,3 @@ void HgcrocDecoder::decode(const std::vector<uint32_t>& encoded_data) {
 
 }  // namespace tools
 
-DECLARE_PRODUCER_NS(recon, HgcrocUnpacker)
