@@ -5,19 +5,12 @@
 #include "Packing/Utility/Mask.h"
 #include "Packing/Utility/CRC.h"
 
-#include "Recon/HgcrocUnpacker.h"
+#include "Tools/HgcrocDecoder.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 
-namespace recon {
+namespace tools {
 
-void HgcrocUnpacker::configure(framework::config::Parameters& ps) {
-  input_name_ = ps.getParameter<std::string>("input_name");
-  input_pass_ = ps.getParameter<std::string>("input_pass");
-  output_name_ = ps.getParameter<std::string>("output_name");
-  roc_version_ = ps.getParameter<int>("roc_version");
-}
-
-void HgcrocUnpacker::produce(framework::Event& event) {
+void HgcrocDecoder::decode(const std::vector<uint32_t>& encoded_data) {
   /**
    * Static parameters depending on ROC version
    */
@@ -30,7 +23,7 @@ void HgcrocUnpacker::produce(framework::Event& event) {
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> data;
-  tools::BufferReader<uint32_t,uint32_t> r{event.getCollection<uint32_t>(input_name_,input_pass_)};
+  tools::BufferReader<uint32_t,uint32_t> r{encoded_data};
   do {
     try {
       /** Decode Bunch Header
@@ -202,12 +195,14 @@ void HgcrocUnpacker::produce(framework::Event& event) {
     }
   } while (r.next(false));
 
+  return data;
+}
+
   /** Translation
    * The actual translation done here is the translation from electronic IDs
    * to detector IDs. The unpacking of the 32-bit word samples for each channel
    * is done by the HgcrocDigiCollection::Sample class and is done on-the-fly
    * in order to save disk-space.
-   */
   ldmx::HgcrocDigiCollection unpacked_data;
   // TODO: Can we assume that all the channels have the same number of bunches?
   unpacked_data.setNumSamplesPerDigi(data.begin()->second.size());
@@ -218,9 +213,8 @@ void HgcrocUnpacker::produce(framework::Event& event) {
     unpacked_data.addDigi(channel, digi);
   }
 
-  event.add(output_name_, unpacked_data);
-}
+   */
 
-}  // namespace recon
+}  // namespace tools
 
 DECLARE_PRODUCER_NS(recon, HgcrocUnpacker)
