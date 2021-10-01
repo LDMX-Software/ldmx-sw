@@ -13,9 +13,9 @@ class EcalDetectorMapLoader : public framework::ConditionsObjectProvider {
                         framework::Process& process)
       : ConditionsObjectProvider(EcalDetectorMap::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process), theMap_{0} {
-    cellMap_=parameters.getParameter<std::string>("CellMap");
-    motherboardMap_=parameters.getParameter<std::string>("MotherboardMap");
-    layerMap_=parameters.getParameter<std::string>("LayerMap");
+    cellMap_=parameters.getParameter<std::string>("cell_map");
+    motherboardMap_=parameters.getParameter<std::string>("motherboard_map");
+    layerMap_=parameters.getParameter<std::string>("layer_map");
   }
 
   virtual std::pair<const framework::ConditionsObject*,
