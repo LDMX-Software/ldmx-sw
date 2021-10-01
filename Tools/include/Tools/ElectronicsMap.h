@@ -67,7 +67,7 @@ class TemplatedElectronicsMap {
    */
   DetID get(ElectronicsID eid) const {
     if (eid.index()>=eid2did_.size()) return DetID();
-    else return DetId(eid2did_[eid.index()]);
+    else return DetID(eid2did_[eid.index()]);
   }
 
   /**

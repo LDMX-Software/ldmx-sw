@@ -1,9 +1,10 @@
 #ifndef TOOLS_HGCROCENCODER_H_
 #define TOOLS_HGCROCENCODER_H_
 
+#include <map>
+
 // LDMX
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace tools {
 

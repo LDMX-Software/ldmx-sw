@@ -1,9 +1,11 @@
 #ifndef TOOLS_HGCROCDECODER_H_
 #define TOOLS_HGCROCDECODER_H_
 
+#include <map>
+
 // LDMX
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace tools {
 
