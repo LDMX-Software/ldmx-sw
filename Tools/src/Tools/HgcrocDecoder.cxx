@@ -198,22 +198,5 @@ std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>> HgcrocDecode
   return data;
 }
 
-  /** Translation
-   * The actual translation done here is the translation from electronic IDs
-   * to detector IDs. The unpacking of the 32-bit word samples for each channel
-   * is done by the HgcrocDigiCollection::Sample class and is done on-the-fly
-   * in order to save disk-space.
-  ldmx::HgcrocDigiCollection unpacked_data;
-  // TODO: Can we assume that all the channels have the same number of bunches?
-  unpacked_data.setNumSamplesPerDigi(data.begin()->second.size());
-  // Electronic ID <-> Detector ID while copying into collection data structure
-  for (auto const& [eid, digi] : data) {
-    // TODO: Insert EID --> DetID mapping here
-    auto channel = eid;
-    unpacked_data.addDigi(channel, digi);
-  }
-
-   */
-
 }  // namespace tools
 
