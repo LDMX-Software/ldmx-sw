@@ -17,9 +17,11 @@
 
 namespace ecal {
 
-/** \brief Class which provides various information about how the parts of the Ecal connect to each other.
+/** 
+ * \brief Class which provides various information about how the parts of the Ecal connect to each other.
  *
- * The class is loaded from three tables, currently in the form of CSV objects, using the EcalDetectorMapLoader.
+ * The class is loaded from three tables, currently in the form of CSV objects, 
+ * using the EcalDetectorMapLoader declared and defined in the source.
  * 
  * CellMap gives the information for a single Ecal module and has the following columns
  *   CELLID -- EcalDetectorID cell id
