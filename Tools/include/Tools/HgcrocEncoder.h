@@ -10,7 +10,8 @@ namespace tools {
 
 /**
  * @class HgcrocEncoder
- * @brief Encodes the buffer output from an HGC ROC into the HgcrocDigiCollection object.
+ * @brief Encodes the buffer output from an HGC ROC into the
+ * HgcrocDigiCollection object.
  */
 class HgcrocEncoder {
  public:
@@ -25,7 +26,9 @@ class HgcrocEncoder {
    * The input data should be provided as a map of **electronic** ID numbers
    * to the samples that were taken.
    */
-  std::vector<uint32_t> encode(const std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>>& decoded_data);
+  std::vector<uint32_t> encode(
+      const std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>>&
+          decoded_data);
 
  private:
   /// version of the ROC that is being decoded

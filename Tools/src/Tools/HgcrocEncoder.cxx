@@ -1,16 +1,18 @@
 
+#include "Tools/HgcrocEncoder.h"
+
 #include <bitset>
 
-#include "Tools/BufferReader.h"
-#include "Packing/Utility/Mask.h"
 #include "Packing/Utility/CRC.h"
-
-#include "Tools/HgcrocEncoder.h"
+#include "Packing/Utility/Mask.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Tools/BufferReader.h"
 
 namespace tools {
 
-std::vector<uint32_t> HgcrocEncoder::encode(const std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>>& decoded_data) {
+std::vector<uint32_t> HgcrocEncoder::encode(
+    const std::map<uint32_t, std::vector<ldmx::HgcrocDigiCollection::Sample>>&
+        decoded_data) {
   /**
    * Static parameters depending on ROC version
    */
