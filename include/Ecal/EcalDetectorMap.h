@@ -17,9 +17,6 @@
 
 namespace ecal {
 
-/// The ECal map is between the ECal EID and the ECal DetID
-typedef ldmx::TemplatedElectronicsMap<ldmx::EcalElectronicsID,ldmx::EcalID> EcalElectronicsMap;
-
 /** \brief Class which provides various information about how the parts of the Ecal connect to each other.
  *
  * The class is loaded from three tables, currently in the form of CSV objects, using the EcalDetectorMapLoader.
@@ -58,7 +55,7 @@ class EcalDetectorMap : public framework::ConditionsObject {
   /**
    * access the electronics map
    */
-  const EcalElectronicsMap& emap() const { return emap_; }
+  const auto& emap() const { return emap_; }
   
  private:
   /// import cell map from the provided CSV loader
@@ -72,7 +69,7 @@ class EcalDetectorMap : public framework::ConditionsObject {
   void buildElectronicsMap();
 
   /// the full electronics map
-  EcalElectronicsMap emap_;
+  ldmx::ElectronicsMap<ldmx::EcalElectronicsID,ldmx::EcalID> emap_;
   
   /**
    * Table of per-module cell information
