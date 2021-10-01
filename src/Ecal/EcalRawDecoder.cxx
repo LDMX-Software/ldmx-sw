@@ -47,7 +47,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
    * unpacking of individual samples; however, we still need
    * to translate electronic IDs into detector IDs.
    */
-  auto detmap{getCondition<EcalDetectorMap>(EcalDetectorMap::CONDITIONS_OBJECT_NAME).emap()};
+  auto detmap{getCondition<EcalDetectorMap>(EcalDetectorMap::CONDITIONS_OBJECT_NAME)};
   ldmx::HgcrocDigiCollection digis;
   for (auto const& [eid_raw, digi] : eid_to_samples) {
     // TODO: This checking of existence should be temporary,
