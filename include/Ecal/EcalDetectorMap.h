@@ -10,6 +10,7 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalElectronicsID.h"
 #include "Tools/ElectronicsMap.h"
+
 #include "Framework/ConditionsObject.h"
 #include "Conditions/GeneralCSVLoader.h"
 #include <vector>
