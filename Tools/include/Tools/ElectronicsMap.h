@@ -12,6 +12,15 @@
 
 namespace ldmx {
 
+/**
+ * ElectronicsMap
+ *
+ * A class for efficient mapping between electronics IDs (using packed index techniques)
+ * and detector IDs which are arbitrarily formatted.
+ *
+ * @tparam[in] ElectronicsID class of electronics ID
+ * @tparam[in] DetID class of detector IDs
+ */
 template<class ElectronicsID,
   class DetID>
 class ElectronicsMap {
