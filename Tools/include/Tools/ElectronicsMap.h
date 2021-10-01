@@ -14,9 +14,9 @@ namespace ldmx {
 
 template<class ElectronicsID,
   class DetID>
-class TemplatedElectronicsMap {
+class ElectronicsMap {
  public:
-  TemplatedElectronicsMap(bool want_d2e=false) : eid2did_{ElectronicsID::MAX_INDEX,0}, makeD2E_(want_d2e) {
+  ElectronicsMap(bool want_d2e=false) : eid2did_{ElectronicsID::MAX_INDEX,0}, makeD2E_(want_d2e) {
   }
 
   /**
