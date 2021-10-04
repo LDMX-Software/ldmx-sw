@@ -1,16 +1,14 @@
-/**
- * @file EcalRawDecoder.cxx
- * @brief Class that performs basic ECal digitization
- * @author Cameron Bravo, SLAC National Accelerator Laboratory
- * @author Tom Eichlersmith, University of Minnesota
- */
+#include <bitset>
 
 #include "Ecal/EcalRawDecoder.h"
 
 #include "DetDescr/EcalElectronicsID.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/EcalDetectorMap.h"
+#include "Packing/Utility/Mask.h"
+#include "Packing/Utility/CRC.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Tools/BufferReader.h"
 
 namespace ecal {
 
@@ -39,7 +37,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
    * by their channel ID. We need to do that here.
    */
   // fill map of **electronic** IDs to the digis that were read out
-  std::map<ldmx::EcalElectronicID,
+  std::map<ldmx::EcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
   tools::BufferReader<uint32_t, uint32_t> r{
@@ -233,11 +231,10 @@ void EcalRawDecoder::produce(framework::Event& event) {
   auto detmap{
       getCondition<EcalDetectorMap>(EcalDetectorMap::CONDITIONS_OBJECT_NAME)};
   ldmx::HgcrocDigiCollection digis;
-  for (auto const& [eid_raw, digi] : eid_to_samples) {
+  for (auto const& [eid, digi] : eid_to_samples) {
     // TODO: This checking of existence should be temporary,
     //       the electronic ID mapping should be complete.
-    uint32_t did_raw{eid_raw};
-    ldmx::EcalElectronicsID eid{eid_raw};
+    uint32_t did_raw{eid.raw()};
     if (detmap.exists(eid)) {
       did_raw = detmap.get(eid).raw();
     }

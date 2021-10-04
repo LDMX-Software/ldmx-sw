@@ -58,7 +58,7 @@ class EcalDetectorMap
    * Building a reverse (detector->electronics) map takes extra time
    * and memory so it should be off by default.
    */
-  EcalDetectorMap(bool want_d2e);
+  EcalDetectorMap(const std::string& cell_map, const std::string& motherboard_map, const std::string& layer_map, bool want_d2e);
 
   /// Provider which loads the map
   friend class EcalDetectorMapLoader;
@@ -73,9 +73,6 @@ class EcalDetectorMap
 
   /// build the electronics map from loaded maps
   void buildElectronicsMap();
-
-  /// the full electronics map
-  ldmx::ElectronicsMap<ldmx::EcalElectronicsID, ldmx::EcalID> emap_;
 
   /**
    * Table of per-module cell information
