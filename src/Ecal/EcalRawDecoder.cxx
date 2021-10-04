@@ -5,10 +5,10 @@
 #include "DetDescr/EcalElectronicsID.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/EcalDetectorMap.h"
+#include "Packing/Utility/BufferReader.h"
 #include "Packing/Utility/Mask.h"
 #include "Packing/Utility/CRC.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
-#include "Tools/BufferReader.h"
 
 namespace ecal {
 
@@ -40,7 +40,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
   std::map<ldmx::EcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
-  tools::BufferReader<uint32_t, uint32_t> r{
+  packing::utilty::BufferReader<uint32_t, uint32_t> r{
       event.getCollection<uint32_t>(input_name_, input_pass_)};
   do {
     try {
