@@ -14,30 +14,22 @@ class EcalDetectorMapLoader : public framework::ConditionsObjectProvider {
                         framework::Process& process)
       : ConditionsObjectProvider(EcalDetectorMap::CONDITIONS_OBJECT_NAME,
                                  tagname, parameters, process),
-        theMap_{0} {
+        the_map_{nullptr} {
     want_d2e_ = parameters.getParameter<bool>("want_d2e");
-    cellMap_ = parameters.getParameter<std::string>("cell_map");
-    motherboardMap_ = parameters.getParameter<std::string>("motherboard_map");
-    layerMap_ = parameters.getParameter<std::string>("layer_map");
+    cell_map_ = parameters.getParameter<std::string>("cell_map");
+    motherboard_map_ = parameters.getParameter<std::string>("motherboard_map");
+    layer_map_ = parameters.getParameter<std::string>("layer_map");
   }
 
   virtual std::pair<const framework::ConditionsObject*,
                     framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) {
-    if (!theMap_) {
-      theMap_ = new EcalDetectorMap(want_d2e_);
-      conditions::StreamCSVLoader scell(cellMap_);
-      theMap_->loadCellMap(scell);
-      conditions::StreamCSVLoader smb(motherboardMap_);
-      theMap_->loadMotherboardMap(smb);
-      conditions::StreamCSVLoader slayer(layerMap_);
-      theMap_->loadLayerMap(slayer);
-
-      theMap_->buildElectronicsMap();
+    if (!the_map_) {
+      the_map_ = new EcalDetectorMap(cell_map_, motherboard_map_, layer_map_, want_d2e_);
     }
 
     return std::make_pair(
-        theMap_, framework::ConditionsIOV(context.getRun(), context.getRun(),
+        the_map_, framework::ConditionsIOV(context.getRun(), context.getRun(),
                                           true, true));
   }
 
@@ -48,16 +40,25 @@ class EcalDetectorMapLoader : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
  private:
-  EcalDetectorMap* theMap_;
-  std::string cellMap_;
-  std::string motherboardMap_;
-  std::string layerMap_;
+  EcalDetectorMap* the_map_;
+  std::string cell_map_;
+  std::string motherboard_map_;
+  std::string layer_map_;
   bool want_d2e_;
 };
 
-EcalDetectorMap::EcalDetectorMap(bool want_d2e)
+EcalDetectorMap::EcalDetectorMap(const std::string& cell_map, const std::string& motherboard_map, const std::string& layer_map, bool want_d2e)
     : framework::ConditionsObject(CONDITIONS_OBJECT_NAME),
-      ldmx::ElectronicsMap<ldmx::EcalElectronicsID, ldmx::EcalID>(want_d2e) {}
+      ldmx::ElectronicsMap<ldmx::EcalElectronicsID, ldmx::EcalID>(want_d2e) {
+
+      conditions::StreamCSVLoader scell(cell_map);
+      this->loadCellMap(scell);
+      conditions::StreamCSVLoader smb(motherboard_map);
+      this->loadMotherboardMap(smb);
+      conditions::StreamCSVLoader slayer(layer_map);
+      this->loadLayerMap(slayer);
+      this->buildElectronicsMap();
+}
 
 void EcalDetectorMap::loadCellMap(conditions::GeneralCSVLoader& loader) {
   cells_.clear();
@@ -115,7 +116,7 @@ void EcalDetectorMap::buildElectronicsMap() {
                                        elink.polarfire_elink,
                                        cell.roc_elink_channel);
 
-        if (emap_.exists(elecId)) {
+        if (this->exists(elecId)) {
           std::stringstream ss;
           ss << "Two different mappings for electronics channel " << elecId;
           EXCEPTION_RAISE("DuplicateMapping", ss.str());
