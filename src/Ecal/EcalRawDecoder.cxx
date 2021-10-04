@@ -67,7 +67,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
       std::cout << "version " << version << std::flush;
       uint32_t one{1};
       if (version != one)
-        EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
+        EXCEPTION_RAISE("VersMis", "EcalRawDecoder only knows version 1 of DAQ format.");
 
       uint32_t fpga = (r() >> 12 + 1 + 6) & packing::utility::mask<8>;
       uint32_t nlinks = (r() >> 12 + 1) & packing::utility::mask<6>;
