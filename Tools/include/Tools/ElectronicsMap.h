@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <map>
+#include <sstream>
 
 namespace ldmx {
 
@@ -88,14 +89,18 @@ class ElectronicsMap {
     if (makeD2E_) {
       auto itr = did2eid_.find(did.raw());
       if (itr==did2eid_.end()) {
-        EXCEPTION_RAISE("ElectronicsMapNotFound","Unable to find maping for det id "+std::to_string(did));
+        std::stringstream ss;
+        ss << "Unable to find mapping for det id " << did;
+        EXCEPTION_RAISE("ElectronicsMapNotFound",ss.str());
       }
-      return ElectronicsID::idFromIndex(itr->second);
+      return itr->second;
     } else {
       for (unsigned int i=0; i<eid2did_.size(); i++) {
         if (eid2did_[i]==did.raw()) return ElectronicsID::idFromIndex(i);
       }
-      EXCEPTION_RAISE("ElectronicsMapNotFound","Unable to find maping for det id "+std::to_string(did));
+      std::stringstream ss;
+      ss << "Unable to find mapping for det id " << did;
+      EXCEPTION_RAISE("ElectronicsMapNotFound",ss.str());
     }
   }
 
