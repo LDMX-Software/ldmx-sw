@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 namespace packing {
+namespace utility {
 
 /**
  * @class BufferReader
@@ -43,22 +44,21 @@ class BufferReader {
   /**
    * Initialize a reader by wrapping a buffer to read.
    */
-  BufferReader(const BufferType& b) : buffer_{b}, i_read_{0}, i_subword_{0} {
-    static_assert(
-        std::is_same_v<WordType,uint64_t> or
-        std::is_same_v<WordType,uint32_t> or
-        std::is_same_v<WordType,uint16_t> or
-        std::is_same_v<WordType,uint8_t >,
-        "BufferReader::WordType must be one of "
-        "uint64_t, uint32_t, uint16_t, uint8_t");
-  }
+  BufferReader(const std::vector<WordType>& b) : buffer_{b}, i_read_{0} {}
 
   /**
    * Get the current word in buffer.
    * @return WordType current word
    */
   const WordType& now() {
-    return reinterpret_cast<const WordType*>(&buffer_.at(i_read_))[i_subword_];
+    return buffer_.at(i_read_);
+  }
+
+  /**
+   * Alias for now()
+   */
+  const WordType& operator()(void) {
+    return now();
   }
 
   /**
@@ -71,34 +71,23 @@ class BufferReader {
    * @return true if we have another word, false if we've reached the end
    */
   bool next(bool should_exist = true) {
-    if (i_subword_+1 == max_subwords_) {
-      // next buffer word
-      i_subword_ = 0;
-      i_read_++;
-      if (i_read_ == buffer_.size()) {
-        if (should_exist)
-          throw std::out_of_range("next word should exist");
-        else
-          return false;
-      }
-    } else {
-      // next subword
-      i_subword_++;
+    if (i_read_ == buffer_.size()) {
+      if (should_exist)
+        throw std::out_of_range("next word should exist");
+      else
+        return false;
     }
     return true;
   }
 
  private:
-  // maximum number of sub-words in a single buffer word
-  static const std::size_t max_subwords_{sizeof(BufferType::value_type)/sizeof(WordType)};
   // current buffer we are reading
-  const BufferType& buffer_;
+  const std::vector<WordType>& buffer_;
   // current index in buffer we are reading
   std::size_t i_read_;
-  // current sub-word in word in buffer we are reading
-  std::size_t i_subword_;
 };  // BufferReader
 
+}  // namespace utility
 }  // namespace packing
 
 #endif  // PACKING_BUFFERREADER_H_
