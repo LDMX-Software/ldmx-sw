@@ -40,7 +40,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
   std::map<ldmx::EcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
-  packing::utilty::BufferReader<uint32_t, uint32_t> r{
+  packing::utility::BufferReader<uint32_t> r{
       event.getCollection<uint32_t>(input_name_, input_pass_)};
   do {
     try {
@@ -60,28 +60,28 @@ void EcalRawDecoder::produce(framework::Event& event) {
        * ... other listing of links ...
        */
       packing::utility::CRC fpga_crc;
-      fpga_crc << r.now();
-      std::cout << std::bitset<32>(r.now()) << " : ";
+      fpga_crc << r();
+      std::cout << std::bitset<32>(r()) << " : ";
       uint32_t version =
-          (r.now() >> 12 + 1 + 6 + 8) & packing::utility::mask<4>;
+          (r() >> 12 + 1 + 6 + 8) & packing::utility::mask<4>;
       std::cout << "version " << version << std::flush;
       uint32_t one{1};
       if (version != one)
         EXCEPTION_RAISE("VersMis", "Hgcroc Translator only knows version 1.");
 
-      uint32_t fpga = (r.now() >> 12 + 1 + 6) & packing::utility::mask<8>;
-      uint32_t nlinks = (r.now() >> 12 + 1) & packing::utility::mask<6>;
-      uint32_t len = r.now() & packing::utility::mask<12>;
+      uint32_t fpga = (r() >> 12 + 1 + 6) & packing::utility::mask<8>;
+      uint32_t nlinks = (r() >> 12 + 1) & packing::utility::mask<6>;
+      uint32_t len = r() & packing::utility::mask<12>;
 
       std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
                 << ", len: " << len << std::endl;
       r.next();
-      fpga_crc << r.now();
-      std::cout << std::bitset<32>(r.now()) << " : ";
+      fpga_crc << r();
+      std::cout << std::bitset<32>(r()) << " : ";
 
-      uint32_t bx_id = (r.now() >> 10 + 10) & packing::utility::mask<12>;
-      uint32_t rreq = (r.now() >> 10) & packing::utility::mask<10>;
-      uint32_t orbit = r.now() & packing::utility::mask<10>;
+      uint32_t bx_id = (r() >> 10 + 10) & packing::utility::mask<12>;
+      uint32_t rreq = (r() >> 10) & packing::utility::mask<10>;
+      uint32_t orbit = r() & packing::utility::mask<10>;
 
       std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
                 << ", orbit: " << orbit << std::endl;
@@ -89,15 +89,15 @@ void EcalRawDecoder::produce(framework::Event& event) {
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) {
           r.next();
-          fpga_crc << r.now();
+          fpga_crc << r();
         }
         uint32_t shift_in_word = 8 * i_link % 4;
         bool rid_ok =
-            (r.now() >> shift_in_word + 7) & packing::utility::mask<1> == 1;
+            (r() >> shift_in_word + 7) & packing::utility::mask<1> == 1;
         bool cdc_ok =
-            (r.now() >> shift_in_word + 6) & packing::utility::mask<1> == 1;
+            (r() >> shift_in_word + 6) & packing::utility::mask<1> == 1;
         num_channels_per_link[i_link] =
-            (r.now() >> shift_in_word) & packing::utility::mask<6>;
+            (r() >> shift_in_word) & packing::utility::mask<6>;
         std::cout << "Link " << i_link << " readout "
                   << num_channels_per_link.at(i_link) << " channels"
                   << std::endl;
@@ -117,21 +117,21 @@ void EcalRawDecoder::produce(framework::Event& event) {
         std::cout << "RO Link " << i_link << std::endl;
         packing::utility::CRC link_crc;
         r.next();
-        fpga_crc << r.now();
-        link_crc << r.now();
-        uint32_t roc_id = (r.now() >> 8 + 5 + 1) & packing::utility::mask<16>;
-        bool crc_ok = (r.now() >> 8 + 5) & packing::utility::mask<1> == 1;
-        std::cout << std::bitset<32>(r.now()) << " : roc_id " << roc_id
+        fpga_crc << r();
+        link_crc << r();
+        uint32_t roc_id = (r() >> 8 + 5 + 1) & packing::utility::mask<16>;
+        bool crc_ok = (r() >> 8 + 5) & packing::utility::mask<1> == 1;
+        std::cout << std::bitset<32>(r()) << " : roc_id " << roc_id
                   << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
 
         // get readout map from the last 8 bits of this word
         // and the entire next word
-        std::bitset<40> ro_map = r.now() & packing::utility::mask<8>;
+        std::bitset<40> ro_map = r() & packing::utility::mask<8>;
         ro_map <<= 32;
         r.next();
-        fpga_crc << r.now();
-        link_crc << r.now();
-        ro_map |= r.now();
+        fpga_crc << r();
+        link_crc << r();
+        ro_map |= r();
 
         std::cout << "Start looping through channels..." << std::endl;
         // loop through channels on this link,
@@ -147,31 +147,31 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
           // next word is this channel
           r.next();
-          fpga_crc << r.now();
-          std::cout << std::bitset<32>(r.now());
+          fpga_crc << r();
+          std::cout << std::bitset<32>(r());
 
           if (channel_id == 0) {
             /** Special "Header" Word from ROC
              * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
              */
             std::cout << " : ROC Header";
-            link_crc << r.now();
+            link_crc << r();
             uint32_t bx_id =
-                (r.now() >> 4 + 3 + 3 + 6) & packing::utility::mask<12>;
+                (r() >> 4 + 3 + 3 + 6) & packing::utility::mask<12>;
             uint32_t short_event =
-                (r.now() >> 4 + 3 + 3) & packing::utility::mask<6>;
+                (r() >> 4 + 3 + 3) & packing::utility::mask<6>;
             uint32_t short_orbit =
-                (r.now() >> 4 + 3) & packing::utility::mask<3>;
-            uint32_t hamming_errs = (r.now() >> 4) & packing::utility::mask<3>;
+                (r() >> 4 + 3) & packing::utility::mask<3>;
+            uint32_t hamming_errs = (r() >> 4) & packing::utility::mask<3>;
           } else if (channel_id == common_mode_channel) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
              */
-            link_crc << r.now();
+            link_crc << r();
             std::cout << " : Common Mode";
           } else if (channel_id == 39) {
             // CRC checksum from ROC
-            uint32_t crc = r.now();
+            uint32_t crc = r();
             std::cout << " : CRC checksum  : ";
             std::cout << std::hex << link_crc.get() << " =? ";
             std::cout << crc << std::dec;
@@ -183,7 +183,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
           } else {
             /// DAQ Channels
 
-            link_crc << r.now();
+            link_crc << r();
             /** Generate Packed Electronics ID
              *   Link Index i_link
              *   Channel ID channel_id
@@ -196,7 +196,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
             ldmx::EcalElectronicsID eid(fpga, roc_id, channel_id);
 
             // copy data into EID->sample map
-            eid_to_samples[eid].emplace_back(r.now());
+            eid_to_samples[eid].emplace_back(r());
             std::cout << " : DAQ Channel";
           }  // type of channel
           std::cout << std::endl;
@@ -206,7 +206,7 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
       // another CRC checksum from FPGA
       r.next();
-      uint32_t crc = r.now();
+      uint32_t crc = r();
       std::cout << "FPGA Checksum : " << std::hex << fpga_crc.get() << " =? "
                 << crc << std::dec << std::endl;
       if (fpga_crc.get() != crc) {
