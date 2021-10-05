@@ -1,0 +1,87 @@
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
+<!ENTITY userinfo SYSTEM "userinfo.gdml">
+<!ENTITY hcal_solids SYSTEM "hcal_solids.gdml">
+<!ENTITY hcal_volumes SYSTEM "hcal_volumes.gdml">
+<!ENTITY hcal_physvol SYSTEM "hcal_physvol.gdml">
+<!ENTITY trigger_solids SYSTEM "trigger_solids.gdml">
+<!ENTITY trigger_volumes SYSTEM "trigger_volumes.gdml">
+<!ENTITY trigger_physvol SYSTEM "trigger_physvol.gdml">
+
+
+]>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+
+    <!-- loop variables - must be defined here -->
+    <variable name="layer_index"  value="1"/>
+
+
+    &constants;
+
+  </define>
+
+
+  <materials>
+  &materials;
+  </materials>
+
+  <solids>
+    &hcal_solids;
+    &trigger_solids;
+    <!-- - - - - - - - - Parent Solids - - - - - - - -->
+	<!-- extra space in z to accomodate the trigger and frame. -->
+    <box lunit="mm" name="prototype_box" x="dx" y="dy" z="dz+(trigger_layer_distance_from_detector + trigger_bar_dz + trigger_bar_gap)*2+1000"/> 
+
+ 
+    <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+  </solids>
+
+  <structure>
+
+
+    &hcal_volumes;
+    &trigger_volumes;
+
+
+
+
+     <volume name="prototype_volume">
+        <materialref ref="G4_AIR"/>
+
+        <solidref    ref="prototype_box"/>
+        &hcal_physvol;
+        <!-- &trigger_physvol; -->
+
+        <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+        <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
+
+     </volume>
+
+
+    <volume name="World">
+      <materialref ref="G4_AIR"/>
+      <solidref ref="world_box"/>
+
+        <physvol>
+          <volumeref ref="prototype_volume"/>
+          <positionref ref="hadron_calorimeter_pos"/>
+        </physvol>
+
+      <auxiliary auxtype="DetElem" auxvalue="Top"/>
+    </volume>
+
+  </structure>
+
+
+  <userinfo>
+    &userinfo;
+
+  </userinfo>
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>
