@@ -28,7 +28,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   // Should perhaps be done with a regex
   auto is_prototype =
       std::find(detectors_valid.cbegin(), detectors_valid.cend(),
-                "ldmx-hcal-prototype") != detectors_valid.cend();
+                "ldmx-hcal-prototype-v1.0") != detectors_valid.cend();
   if (is_prototype) {
     auto ZeroStrip_prototype_ =
         ps.getParameter<std::vector<double>>("ZeroStrip", {});
@@ -51,7 +51,6 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     NumStrips_ = makeCanonicalLayeredParameter(NumStrips_v12_);
     HalfTotalWidth_ = makeCanonicalLayeredParameter(HalfTotalWidth_v12_);
   }
-
   buildStripPositionMap();
 }
 void HcalGeometry::printPositionMap(int section) const {
