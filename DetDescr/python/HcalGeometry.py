@@ -164,7 +164,10 @@ class HcalGeometry() :
         self.prototype.HalfTotalWidth = self.prototype.ZeroStrip
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
-        self.prototype.detectors_valid = ["ldmx-hcal-prototype"]
+        self.prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
+
+
+
 
     def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
