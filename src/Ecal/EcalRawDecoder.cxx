@@ -232,13 +232,16 @@ void EcalRawDecoder::produce(framework::Event& event) {
       getCondition<EcalDetectorMap>(EcalDetectorMap::CONDITIONS_OBJECT_NAME)};
   ldmx::HgcrocDigiCollection digis;
   for (auto const& [eid, digi] : eid_to_samples) {
-    // TODO: This checking of existence should be temporary,
-    //       the electronic ID mapping should be complete.
-    uint32_t did_raw{eid.raw()};
-    if (detmap.exists(eid)) {
-      did_raw = detmap.get(eid).raw();
+    // The electronics map returns an empty ID of the correct
+    // type when the electronics ID is not found.
+    //  need to check if the electronics ID exists
+    //  TODO: do we want to end processing if this happens?
+    if (!detmap.exists(eid)) {
+      std::stringstream ss;
+      ss << eid;
+      ldmx_log(warn) << "Electronic ID " << ss.str() << " not translated to a detector ID.";
     }
-
+    uint32_t did_raw = detmap.get(eid).raw();
     digis.addDigi(did_raw, digi);
   }
 
