@@ -77,7 +77,6 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
     if (n == 0) minAmpl_ = ampl_t;
     n++;
   }
-
 }
 
 double HcalRecProducer::getTOA(
@@ -164,6 +163,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     double voltage_min(0.);
     double hitTime(0.);
 
+    double amplT(0.);
     double amplT_posend(0.), amplTm1_posend(0.);
     double amplT_negend(0.), amplTm1_negend(0.);
 
@@ -238,16 +238,19 @@ void HcalRecProducer::produce(framework::Event& event) {
       // reverse voltage attenuation
       // if position along the bar is positive, then the positive end will have
       // less attenuation than the negative end
+      // NOTE: For now, reverse attenuation is not applied to the energy
+      // deposited since both ends of the bar are summed.
       double att_posend =
           exp(-1. * ((distance_posend - position_bar) / 1000.) / attlength_);
       double att_negend =
           exp(-1. * ((distance_negend + position_bar) / 1000.) / attlength_);
 
-      // set voltage
-      voltage = (voltage_posend / att_posend + voltage_negend / att_negend) /
-                2;  // mV
-      voltage_min =
-          std::min(voltage_posend / att_posend, voltage_negend / att_negend);
+      // set voltage as the sum of both bars
+      voltage = (voltage_posend + voltage_negend);
+      voltage_min = std::min(voltage_posend, voltage_negend);
+
+      // set amplitude as the average of both bars (reverse attenuated)
+      amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
       // set position along the bar
       if ((id_posend.layer() % 2) == 1) {
@@ -297,15 +300,18 @@ void HcalRecProducer::produce(framework::Event& event) {
                        attlength_);
 
       // set voltage
-      voltage = voltage_i / att;
-      voltage_min = voltage_i / att;
+      voltage = voltage_i;
+      voltage_min = voltage_i;
+
+      // set amplitude (reverse attenuated)
+      amplT = amplT_posend / att;
 
       // get TOA
       double TOA =
           getTOA(digi_posend, the_conditions.adcPedestal(id_posend), iSOI);
 
       // correct TOA
-      TOA = correctionTOA_.Eval(amplT_posend) - TOA;
+      TOA = correctionTOA_.Eval(amplT) - TOA;
 
       // set hit time
       hitTime = TOA;  // ns
@@ -316,7 +322,24 @@ void HcalRecProducer::produce(framework::Event& event) {
     double num_mips_equivalent = voltage / voltage_per_mip_;
     double energy_deposited = num_mips_equivalent * mip_energy_;
 
+    // reconstructed energy in the layer (approximate)
     // TODO: need to incorporate corrections if necessary
+    /**
+     * Simple calculation of sampling fraction:
+     * Thickness per layer: scintillator (0.2cm) + steel (0.25cm)
+     * Radiation length and nuclear interaction length:
+     *  scintillator: X0 = 41.31cm, Lambda = 77.07cm
+     *https://pdg.lbl.gov/2017/AtomicNuclearProperties/HTML/polystyrene.html
+     *  steel X0 = 1.757cm, Lambda = 16.77cm
+     *https://pdg.lbl.gov/2012/AtomicNuclearProperties/HTML_PAGES/026.html Prob
+     *of EM interaction (e.g. pi0): thickness/X0*100 = (0.2/41.31)/ ((0.2/41.31)
+     *+ (0.25/1.757)) ~ 3.3% Prob of Had interaction (e.g. pi+/pi-): =
+     *(0.2/77.07)/ ((0.2/77.07) + (0.25/16.77)) ~ 15% Then e.g. for neutron
+     *assuming 1/3 pi0 and 2/3 pi+/- composition: sampling fraction ~
+     *(1/3)*3.3.% + (2/3)*15% ~ 11% energy of neutron = energy_deposited / 0.11;
+     *
+     * NOTE: For now, sampling fraction is not applied.
+     **/
     double reconstructed_energy = energy_deposited;
 
     int PEs = num_mips_equivalent * pe_per_mip_;
@@ -330,8 +353,8 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setZPos(position.Z());
     recHit.setPE(PEs);
     recHit.setMinPE(minPEs);
-    recHit.setAmplitude(amplT_posend);
-    recHit.setEnergy(energy_deposited);
+    recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
+    recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
     hcalRecHits.push_back(recHit);
   }

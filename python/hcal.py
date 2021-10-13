@@ -48,3 +48,23 @@ class HcalOldDigiProducer(ldmxcfg.Producer) :
         self.strip_attenuation_length = 5. # this is in m
         self.strip_position_resolution = 150. # this is in mm
         self.sim_hit_pass_name = '' #use any pass available
+        
+class HcalClusterProducer(ldmxcfg.Producer) :
+    """Configuration forcluster producer in the HCal
+        Sets all parameters to reasonable defaults.
+    Examples
+    --------
+        from LDMX.EventProc.hcal import HcalClusterProducer
+        p.sequence.append( HcalClusterProducer() )
+    """
+
+    def __init__(self,name = 'hcalClusters') :
+        super().__init__(name,'hcal::HcalClusterProducer','Hcal')
+
+        #self.EminSeed = 0.1 # Not used
+        self.EnoiseCut = 0.01
+        self.deltaTime = 10.
+        self.deltaR = 0.
+        self.EminCluster = 0.5 # Minimum Energy to be classes as a cluster 
+        self.cutOff = 10.
+        

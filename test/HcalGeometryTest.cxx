@@ -4,9 +4,8 @@
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
-
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 namespace hcal {
 namespace test {
