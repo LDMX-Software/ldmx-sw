@@ -3,11 +3,10 @@
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
-
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
 #include "Hcal/Event/HcalHit.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 namespace hcal {
 namespace test {
@@ -28,17 +27,20 @@ static const double PE_ENERGY = 4.66 / 68;  // 0.069 MeV
 static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
 
 /**
- * Maximum error that a single hit energy
+ * Maximum error that a single hit energy/PE
  * can be reconstructed with before failing the test
  *
- * Comparing energy deposited that was
+ * Comparing energy deposited/PE that was
  * "simulated" (input into digitizer) and the reconstructed
- * energy deposited output by reconstructor.
+ * energy deposited/PE output by reconstructor.
  *
  * NOTE: Currently Digitization not implemented for TOT mode
  */
-static const double MAX_ENERGY_ERROR_DAQ = 4 * PE_ENERGY;
-static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.12;
+// static const double MAX_ENERGY_ERROR_DAQ = 4 * PE_ENERGY;
+// static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.2;
+static const double MAX_PE_ERROR_DAQ = 40;
+static const double MAX_PE_PERCENT_ERROR_DAQ =
+    0.4;  // large percentage error for now
 
 /**
  * Maximum error that a single hit position along the bar
@@ -267,19 +269,21 @@ class HcalCheckReconstruction : public framework::Analyzer {
       ntuple_.setVar<float>("RecY", hit.getYPos());
       ntuple_.setVar<float>("RecZ", hit.getZPos());
       ntuple_.setVar<float>("RecTime", hit.getTime());
+      ntuple_.setVar<float>("RecPE", hit.getPE());
       ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
     }
 
-    // define target energy by using the settings at the top
-    double daq_energy{hit.getEnergy()};
-    CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
-                                         MAX_ENERGY_PERCENT_ERROR_DAQ));
+    // define target pe by using the settings at the top
+    double daq_pe{hit.getPE()};
+    CHECK_THAT(daq_pe, isCloseEnough(truth_energy / PE_ENERGY, MAX_PE_ERROR_DAQ,
+                                     MAX_PE_PERCENT_ERROR_DAQ));
 
-    // std::cout << "rec energy " << hit.getEnergy() << " truth " <<
-    // truth_energy
-    //          << std::endl;
-
-    // ntuple_.setVar<float>("RecEnergy", hit.getEnergy());
+    // std::cout << "rec energy " << hit.getEnergy() << " * approx sampl
+    // fraction " << hit.getEnergy()*sampling_fraction << " truth " <<
+    //   truth_energy
+    //           << std::endl;
+    // std::cout << "npes " << hit.getPE() << " approx PE " << int(truth_energy
+    // / PE_ENERGY)  << std::endl;
 
     if (id.section() == 0) {
       double truth_pos, rec_pos;
