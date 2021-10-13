@@ -676,11 +676,11 @@ class Bus {
      * of vectors have the operator< defined.
      *
      * @param t Unused, only helping compiler choose the correct method
-     */
     template <typename Content>
     void post_update(the_type<std::vector<Content>> t) {
       std::sort(baggage_->begin(), baggage_->end());
     }
+     */
 
    private: //specializations of stream
     /**
