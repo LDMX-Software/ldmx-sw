@@ -171,10 +171,10 @@ namespace trigscint {
 	//now write this in sequence: ADC of all channels, then TDC; repeat for all samples 
 	for (int iS = 0; iS < nSamp; iS++) { 
 	  for (int iQ = 0; iQ < nChannels_ ; iQ++) {
-		outWord.push_back( qieOuts.at(iQ).getDecodedADC().at(iS) ) ;	  
+		outWord.push_back( qieOuts.at(iQ).getADC().at(iS) ) ;	  
 	  }//over channels : ADC 
 	  for (int iQ = 0; iQ < nChannels_ ; iQ++) {
-		outWord.push_back( qieOuts.at(iQ).getDecodedTDC().at(iS)  ) ;
+		outWord.push_back( qieOuts.at(iQ).getTDC().at(iS)  ) ;
 	  }//over channels: TDC
 	}//over time samples
 
