@@ -93,20 +93,20 @@ class QIEStream {
    * Store adcs of all time samples
    * @param adc_ array of adcs
    */
-  void setDecodedADC(const std::vector<int> adc) { adcs_ = adc; }
+  void setADC(const std::vector<int> adc) { adcs_ = adc; }
 
   /**
    * Store tdcs of all time samples
    * @param tdc_ array of tdcs
    */
-  void setDecodedTDC(const std::vector<int> tdc) { tdcs_ = tdc; }
+  void setTDC(const std::vector<int> tdc) { tdcs_ = tdc; }
 
 
   /**
    * Store cids of all time samples
    * @param cid_ array of cids
    */
-  void setDecodedCID(const std::vector<int> cid) { cids_ = cid; }
+  void setCID(const std::vector<int> cid) { cids_ = cid; }
 
 
 public:
