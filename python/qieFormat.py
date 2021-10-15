@@ -45,7 +45,7 @@ class QIEDecoder(ldmxcfg.Producer) :
         self.number_channels = 50
         self.verbose = False
 
-    def tagger() :
+    def tagger(mapFile) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
         enc = QIEDecoder(mapFile,'tag')
         enc.input_collection = 'QIEstreamTag'
