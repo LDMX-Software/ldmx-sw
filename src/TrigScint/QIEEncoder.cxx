@@ -65,9 +65,9 @@ namespace trigscint {
 	//we're keeping a list ordered in elec ID since this is the order we'll use to write them to stream
 	for (int iQ = 0; iQ < nChannels_ ; iQ++) {
 	  QIEStream qieOut;
-	  qieOut.setDecodedADC(initVec);
-	  qieOut.setDecodedTDC(initVec);
-	  qieOut.setDecodedCID(initVec);
+	  qieOut.setADC(initVec);
+	  qieOut.setTDC(initVec);
+	  qieOut.setCID(initVec);
 	  qieOut.setElectronicsID( iQ ); //assume id is index //channelMap_.at(iQ) );
 	
 	  qieOuts.push_back(qieOut);
@@ -127,8 +127,8 @@ namespace trigscint {
 	  if (firstCID!=cids.back())
 		isCIDunsync=true; //any one channel not aligned is enough to set this bool 
 
-	  qieOuts.at(idx).setDecodedADC( digi.getADC() );
-	  qieOuts.at(idx).setDecodedTDC( LEtdcs );
+	  qieOuts.at(idx).setADC( digi.getADC() );
+	  qieOuts.at(idx).setTDC( LEtdcs );
 	}//over digis
 	if (isCIDunsync)
 	  ldmx_log(debug) << "Found unsynced CIDs!" ;

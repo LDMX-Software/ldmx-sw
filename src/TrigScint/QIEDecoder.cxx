@@ -66,9 +66,9 @@ namespace trigscint {
     
   for (int iQ = 0; iQ < nChannels_ ; iQ++) {
 	QIEStream qieOut;
-	qieOut.setDecodedADC(initVec);
-	qieOut.setDecodedTDC(initVec);
-	qieOut.setDecodedCID(initVec);
+	qieOut.setADC(initVec);
+	qieOut.setTDC(initVec);
+	qieOut.setCID(initVec);
 	qieOuts.push_back(qieOut);
   }
 
