@@ -1,11 +1,8 @@
 #ifndef TRIGSCINT_QIEDECODER_H
 #define TRIGSCINT_QIEDECODER_H
 
-//#include <boost/archive/binary_oarchive.hpp>
 #include <iostream>
 #include <fstream>
-//#include "TMath.h"
-
                                              
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
@@ -15,13 +12,6 @@
 
 namespace trigscint {
 
-
-enum TrigScintSection {
-  UPSTREAM_TAGGER = 1,
-  UPSTREAM_TARGET,
-  DOWNSTREAM_TARGET,
-  NUM_SECTIONS
-};
 
   class QIEDecoder : public framework::Producer{
  public:
@@ -37,7 +27,6 @@ enum TrigScintSection {
 	 * Configure our converter based off the configuration parameters
 	 * decoded from the passed python script
 	 */
-	//	void configure(const framework::config::Parameters& ps);
 	virtual void configure(framework::config::Parameters &ps);
 
   virtual void produce(framework::Event &event);
@@ -52,15 +41,12 @@ enum TrigScintSection {
 
   private:
 
-	
 	/// the channel mapping
-	
-	
 	std::string channelMapFileName_;
 	std::ifstream channelMapFile_;
 	std::map< int, int> channelMap_;
 
-	// input collection and pass name 
+	// input/output collection and pass name 
 	std::string inputCollection_;
 	std::string outputCollection_;
 	std::string inputPassName_;
