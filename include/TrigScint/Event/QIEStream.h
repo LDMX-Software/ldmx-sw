@@ -65,18 +65,18 @@ class QIEStream {
   /**
    * Get ADCs of all time samples
    */
-  std::vector<int> getDecodedADC() const { return adcs_; }
+  std::vector<int> getADC() const { return adcs_; }
 
   /**
    * Get TDCs of all time samples
    */
-  std::vector<int> getDecodedTDC() const { return tdcs_; }
+  std::vector<int> getTDC() const { return tdcs_; }
 
 
   /**
    * Get Cap IDs of all time samples
    */
-  std::vector<int> getDecodedCID() const { return cids_; }
+  std::vector<int> getCID() const { return cids_; }
 
 
   /**
