@@ -123,7 +123,13 @@ class HgcrocDigiCollection {
      *
      * @return 10-bit measurement of TOA
      */
-    int toa() const { return (TEN_BIT_MASK & word_); }
+    int toa() const { 
+      if (getVersion() == 2) {
+        return secon();
+      } else {
+        return third(); 
+      }
+    }
 
     /**
      * Get the TOT measurement from this sample
@@ -136,9 +142,13 @@ class HgcrocDigiCollection {
      * @return 12-bit measurement of TOT
      */
     int tot() const {
-      int seconMeas = secon();
-      if (seconMeas > 512) seconMeas = (seconMeas - 512) * 8;
-      return seconMeas;
+      int meas = secon();
+      if (getVersion() == 2) {
+        meas = first();
+      }
+
+      if (meas > 512) meas = (meas - 512) * 8;
+      return meas;
     }
 
     /**
@@ -159,6 +169,10 @@ class HgcrocDigiCollection {
      * @return 10-bit measurement of current ADC
      */
     int adc_t() const {
+      if (getVersion() == 2) {
+        return third();
+      }
+
       if (not isTOTComplete())
         return secon();  // running modes
       else
@@ -186,6 +200,12 @@ class HgcrocDigiCollection {
      * @return 10-bit measurement at second position in sample
      */
     int secon() const { return TEN_BIT_MASK & (word_ >> SECONMEAS_POS); }
+
+    /**
+     * Get the third 10-bit measurement out of the smaple
+     * @return 10-bit measurement at second position in sample
+     */
+    int third() const { return TEN_BIT_MASK & word_; }
 
    private:
     /// The actual 32-bit word spit out by the chip
@@ -325,6 +345,20 @@ class HgcrocDigiCollection {
    * the other settings of this collection.
    */
   void Print() const;
+
+  /**
+   * Get the version of ROC we have read
+   * @return int version number of ROC
+   */
+  static int getVersion() { return version_; }
+
+  /**
+   * Set the version of the ROC we have read
+   */
+  static void setVersion(int v) {
+    version_ = v;
+    return;
+  }
 
   /**
    * Get number of samples per digi
@@ -492,10 +526,13 @@ class HgcrocDigiCollection {
   /** index for the sample of interest in the samples list */
   unsigned int sampleOfInterest_;
 
+  /** version of the ROC we have read */
+  static int version_;
+
   /**
    * The ROOT class definition.
    */
-  ClassDef(HgcrocDigiCollection, 2);
+  ClassDef(HgcrocDigiCollection, 3);
 };
 }  // namespace ldmx
 
