@@ -1,4 +1,5 @@
 #include <bitset>
+#include <iomanip>
 
 #include "Hcal/HcalRawDecoder.h"
 
@@ -10,7 +11,21 @@
 #include "Packing/Utility/CRC.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 
-namespace ecal {
+namespace hcal {
+
+namespace debug {
+
+struct hex {
+  uint32_t word_;
+  hex(uint32_t w) : word_{w} {}
+};
+
+}
+
+inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
+  os << "0x" << std::setfill('0') << std::setw(8) << std::hex << h.word_ << std::dec;
+  return os;
+}
 
 HcalRawDecoder::HcalRawDecoder(const std::string& name,
                                framework::Process& process)
@@ -21,9 +36,9 @@ HcalRawDecoder::~HcalRawDecoder() {}
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   input_name_ = ps.getParameter<std::string>("input_name");
   input_pass_ = ps.getParameter<std::string>("input_pass");
-  input_file_ = ps.getParameter<std::string>("input_file");
   output_name_ = ps.getParameter<std::string>("output_name");
   roc_version_ = ps.getParameter<int>("roc_version");
+  translate_eid_ = ps.getParameter<bool>("translate_eid");
 }
 
 void HcalRawDecoder::produce(framework::Event& event) {
@@ -52,7 +67,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
        *
        * <name> (bits)
        *
-       * VERSION (4) | FPGA_ID (8) | NLINKS (6) | 0 | LEN (12)
+       * VERSION (4) | FPGA_ID (8) | NLINKS (6) | 00 | LEN (12)
        * BX ID (12) | RREQ (10) | OR (10)
        * RID ok (1) | CDC ok (1) | LEN3 (6) |
        *  RID ok (1) | CDC ok (1) | LEN2 (6) |
@@ -62,31 +77,31 @@ void HcalRawDecoder::produce(framework::Event& event) {
        */
       packing::utility::CRC fpga_crc;
       fpga_crc << r();
-      std::cout << std::bitset<32>(r()) << " : ";
+      std::cout << debug::hex(r()) << " : ";
       uint32_t version =
-          (r() >> 12 + 1 + 6 + 8) & packing::utility::mask<4>;
+          (r() >> 28) & packing::utility::mask<4>;
       std::cout << "version " << version << std::flush;
       uint32_t one{1};
       if (version != one)
         EXCEPTION_RAISE("VersMis", "HcalRawDecoder only knows version 1 of DAQ format.");
 
-      uint32_t fpga = (r() >> 12 + 1 + 6) & packing::utility::mask<8>;
-      uint32_t nlinks = (r() >> 12 + 1) & packing::utility::mask<6>;
+      uint32_t fpga = (r() >> 12 + 2 + 6) & packing::utility::mask<8>;
+      uint32_t nlinks = (r() >> 12 + 2) & packing::utility::mask<6>;
       uint32_t len = r() & packing::utility::mask<12>;
 
       std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
                 << ", len: " << len << std::endl;
       r.next();
       fpga_crc << r();
-      std::cout << std::bitset<32>(r()) << " : ";
+      std::cout << debug::hex(r()) << " : ";
 
-      uint32_t bx_id = (r() >> 10 + 10) & packing::utility::mask<12>;
+      uint32_t bx_id = (r() >> 20) & packing::utility::mask<12>;
       uint32_t rreq = (r() >> 10) & packing::utility::mask<10>;
       uint32_t orbit = r() & packing::utility::mask<10>;
 
       std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
                 << ", orbit: " << orbit << std::endl;
-      std::vector<uint32_t> num_channels_per_link(nlinks, 0);
+      std::vector<uint32_t> length_per_link(nlinks, 0);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) {
           r.next();
@@ -97,10 +112,10 @@ void HcalRawDecoder::produce(framework::Event& event) {
             (r() >> shift_in_word + 7) & packing::utility::mask<1> == 1;
         bool cdc_ok =
             (r() >> shift_in_word + 6) & packing::utility::mask<1> == 1;
-        num_channels_per_link[i_link] =
+        length_per_link[i_link] =
             (r() >> shift_in_word) & packing::utility::mask<6>;
         std::cout << "Link " << i_link << " readout "
-                  << num_channels_per_link.at(i_link) << " channels"
+                  << length_per_link.at(i_link) << " channels"
                   << std::endl;
       }
 
@@ -122,7 +137,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
         link_crc << r();
         uint32_t roc_id = (r() >> 8 + 5 + 1) & packing::utility::mask<16>;
         bool crc_ok = (r() >> 8 + 5) & packing::utility::mask<1> == 1;
-        std::cout << std::bitset<32>(r()) << " : roc_id " << roc_id
+        std::cout << debug::hex(r()) << " : roc_id " << roc_id
                   << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
 
         // get readout map from the last 8 bits of this word
@@ -140,7 +155,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
         //  amplitude the channel ID is not the same as the index it
         //  is listed in.
         int channel_id{-1};
-        for (uint32_t j{0}; j < num_channels_per_link.at(i_link); j++) {
+        for (uint32_t j{0}; j < length_per_link.at(i_link)-2; j++) {
           // skip zero-suppressed channel IDs
           do {
             channel_id++;
@@ -149,11 +164,16 @@ void HcalRawDecoder::produce(framework::Event& event) {
           // next word is this channel
           r.next();
           fpga_crc << r();
-          std::cout << std::bitset<32>(r());
+          std::cout << debug::hex(r());
 
           if (channel_id == 0) {
             /** Special "Header" Word from ROC
+             * 
+             * version 3:
              * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
+             *
+             * version 2:
+             * ???
              */
             std::cout << " : ROC Header";
             link_crc << r();
@@ -222,35 +242,39 @@ void HcalRawDecoder::produce(framework::Event& event) {
     }
   } while (r.next(false));
 
-  /**
-   * Translation
-   *
-   * Now the HgcrocDigiCollection::Sample class handles the
-   * unpacking of individual samples; however, we still need
-   * to translate electronic IDs into detector IDs.
-   */
-  auto detmap{
-      getCondition<HcalDetectorMap>(HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
-  ldmx::HgcrocDigiCollection digis;
-  for (auto const& [eid, digi] : eid_to_samples) {
-    // The electronics map returns an empty ID of the correct
-    // type when the electronics ID is not found.
-    //  need to check if the electronics ID exists
-    //  TODO: do we want to end processing if this happens?
-    if (!detmap.exists(eid)) {
-      std::stringstream ss;
-      ss << eid;
-      ldmx_log(warn) << "Electronic ID " << ss.str() << " not translated to a detector ID.";
+  if (translate_eid_) {
+    /**
+     * Translation
+     *
+     * Now the HgcrocDigiCollection::Sample class handles the
+     * unpacking of individual samples; however, we still need
+     * to translate electronic IDs into detector IDs.
+     */
+    auto detmap{
+        getCondition<HcalDetectorMap>(HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
+    ldmx::HgcrocDigiCollection digis;
+    for (auto const& [eid, digi] : eid_to_samples) {
+      // The electronics map returns an empty ID of the correct
+      // type when the electronics ID is not found.
+      //  need to check if the electronics ID exists
+      //  TODO: do we want to end processing if this happens?
+      if (detmap.exists(eid)) {
+        uint32_t did_raw = detmap.get(eid).raw();
+        digis.addDigi(did_raw, digi);
+      } else {
+        // DO NOTHING
+        //  skip hits where the EID aren't in the detector mapping
+        //  DO WE ACTUALLY WANT TO DO THIS?
+      }
     }
-    uint32_t did_raw = detmap.get(eid).raw();
-    digis.addDigi(did_raw, digi);
+    event.add(output_name_, digis);
+  } else {
+    event.add(output_name_, eid_to_samples);
   }
-
-  event.add(output_name_, digis);
 
   return;
 }  // produce
 
-}  // namespace ecal
+}  // namespace hcal
 
-DECLARE_PRODUCER_NS(ecal, HcalRawDecoder);
+DECLARE_PRODUCER_NS(hcal, HcalRawDecoder);

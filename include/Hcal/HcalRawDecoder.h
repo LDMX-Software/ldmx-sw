@@ -6,7 +6,7 @@
 //----------//
 #include "Framework/EventProcessor.h"
 
-namespace ecal {
+namespace hcal {
 
 /**
  * @class HcalRawDecoder
@@ -36,16 +36,14 @@ class HcalRawDecoder : public framework::Producer {
   std::string input_name_;
   /// input pass of creating encoded data
   std::string input_pass_;
-  /// input raw binary file with only HGC ROC data
-  std::string input_file_;
   /// output object to put onto event bus
   std::string output_name_;
   /// version of HGC ROC we are decoding
   int roc_version_;
-  /// are get inputting from event bus?
-  bool input_from_bus_;
+  /// are get translating electronic IDs?
+  bool translate_eid_;
 
 };
-}  // namespace ecal
+}  // namespace hcal
 
 #endif
