@@ -16,7 +16,7 @@
 #include "Framework/ConditionsObject.h"
 #include "Tools/ElectronicsMap.h"
 
-namespace ecal {
+namespace hcal {
 
 /**
  * \brief Class which provides various information about how the parts of the
@@ -121,7 +121,7 @@ class HcalDetectorMap
   std::vector<MotherboardsPerLayer> layers_;
 };
 
-}  // namespace ecal
+}  // namespace hcal
 
 #endif  // HCAL_HCALDETECTORMAP_H_
 

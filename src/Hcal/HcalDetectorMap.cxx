@@ -5,7 +5,7 @@
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 
-namespace ecal {
+namespace hcal {
 
 class HcalDetectorMapLoader : public framework::ConditionsObjectProvider {
  public:
@@ -127,5 +127,5 @@ void HcalDetectorMap::buildElectronicsMap() {
   }
 }
 
-}  // namespace ecal
-DECLARE_CONDITIONS_PROVIDER_NS(ecal, HcalDetectorMapLoader);
+}  // namespace hcal
+DECLARE_CONDITIONS_PROVIDER_NS(hcal, HcalDetectorMapLoader);
