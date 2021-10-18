@@ -3,7 +3,7 @@
 
 ClassImp(ldmx::HgcrocDigiCollection)
 
-    namespace ldmx {
+namespace ldmx {
   HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
                                        int firstMeas, int seconMeas, int toa) {
     if (not tot_progress and tot_complete) {
@@ -66,6 +66,7 @@ ClassImp(ldmx::HgcrocDigiCollection)
     return;
   }
 
+int HgcrocDigiCollection::version_ = 3;
 }  // namespace ldmx
 
 std::ostream &operator<<(std::ostream &s,
