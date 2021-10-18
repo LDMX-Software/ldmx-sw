@@ -110,8 +110,8 @@ void HcalDetectorMap::buildElectronicsMap() {
             elink.roc_elink_number != cell.roc_elink_number)
           continue;
 
-        // now, we have only cells which are relevant
-        ldmx::HcalDigiID precisionId(olink.layer, elink.module, cell.module_cellid);
+        // TODO actually import Hcal detector map
+        ldmx::HcalDigiID precisionId(0 /*section*/, olink.layer /*layer*/, cell.module_cellid /*strip*/, elink.module /*end - 0,1*/);
         ldmx::HcalElectronicsID elecId(olink.daq_opticallink,
                                        elink.polarfire_elink,
                                        cell.roc_elink_channel);
