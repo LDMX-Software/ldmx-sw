@@ -150,7 +150,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
      * where each link was encoded as in Table 4 of
      * the DAQ specs
      *
-     * ROC_ID (16) | CRC ok (1) | 00000 | RO Map (8)
+     * 0 (7) | CRC ok (1) | ROC_ID (8) |  0 (8) | RO Map (8)
      * RO Map (32)
      */
 
@@ -161,10 +161,10 @@ void HcalRawDecoder::produce(framework::Event& event) {
       reader_ >> w;
       fpga_crc << w;
       link_crc << w;
-      uint32_t roc_id = (w >> 8 + 5 + 1) & packing::utility::mask<16>;
-      bool crc_ok = (w >> 8 + 5) & packing::utility::mask<1> == 1;
+      uint32_t roc_id = (w >> 16) & packing::utility::mask<8>;
+      bool crc_ok = (w >> 24) & packing::utility::mask<1> == 1;
       std::cout << debug::hex(w) << " : roc_id " << roc_id
-                << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
+                << ", crc_ok " << std::boolalpha << crc_ok << std::endl;
 
       // get readout map from the last 8 bits of this word
       // and the entire next word
