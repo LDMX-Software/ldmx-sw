@@ -49,7 +49,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
   
   this->clear();
   conditions::StreamCSVLoader csv(connections_table);
-  while (csv_loader.nextRow()) {
+  while (csv.nextRow()) {
     /** Column Names
      * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane"
      *
