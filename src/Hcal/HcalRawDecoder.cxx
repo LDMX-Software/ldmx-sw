@@ -277,6 +277,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
   // assume all channels have same number of samples
   digis.setNumSamplesPerDigi(eid_to_samples.begin()->second.size());
   digis.setSampleOfInterestIndex(0); //TODO configurable
+  digis.setVersion(roc_version_);
   if (translate_eid_) {
     /**
      * Translation
