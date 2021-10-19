@@ -10,6 +10,10 @@ namespace hcal {
 
 namespace utility {
 
+/**
+ * A reader that behaves the same for buffers coming from a raw file
+ * or a buffer that is a vector of unsigned ints
+ */
 class Reader {
  public:
   Reader() : is_open_{false}, buffer_handle_{nullptr} {}
