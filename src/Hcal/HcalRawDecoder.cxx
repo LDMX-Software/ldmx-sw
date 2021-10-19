@@ -57,15 +57,17 @@ void HcalRawDecoder::produce(framework::Event& event) {
   /// words for reading and decoding
   static uint32_t head1, head2, w;
 
+  // if we aren't reading from a file, open
+  // the buffer from the event bus
+  if (not reader_.isFile()) {
+    reader_.open(event.getCollection<uint32_t>(input_name_, input_pass_));
+  }
+
   /** Re-sort the data from grouped by bunch to by channel
    * The readout cip streams the data off of it, so it doesn't
    * have time to re-group the signals across multiple bunches (samples)
    * by their channel ID. We need to do that here.
    */
-  if (not reader_.isFile()) {
-    reader_.open(event.getCollection<uint32_t>(input_name_, input_pass_));
-  }
-
   // fill map of **electronic** IDs to the digis that were read out
   std::map<ldmx::HcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
@@ -255,7 +257,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
     std::cout << "FPGA Checksum : " 
       << debug::hex(fpga_crc.get()) << " =? " << debug::hex(crc) 
       << std::endl;
-    /*
+    /* TODO fix calculation of FPGA checksum
     if (fpga_crc.get() != crc) {
       EXCEPTION_RAISE(
           "BadCRC",
@@ -266,8 +268,8 @@ void HcalRawDecoder::produce(framework::Event& event) {
 
   // check if there was any data to decode
   //  helpful for when reading directly from a raw data file
+  //  so we can simply overestimate the number of events
   if (eid_to_samples.size() == 0) {
-    std::cout << "aborting event without data" << std::endl;
     abortEvent();
   }
 
@@ -300,6 +302,8 @@ void HcalRawDecoder::produce(framework::Event& event) {
       }
     }
   } else {
+    // no EID translation, just add the digis to the digi collection
+    // with their raw electronic ID
     for (auto const& [eid, digi] : eid_to_samples) {
       digis.addDigi(eid.raw(), digi);
     }
