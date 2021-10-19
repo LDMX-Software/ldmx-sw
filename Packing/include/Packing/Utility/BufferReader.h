@@ -71,6 +71,7 @@ class BufferReader {
    * @return true if we have another word, false if we've reached the end
    */
   bool next(bool should_exist = true) {
+    i_read_++;
     if (i_read_ == buffer_.size()) {
       if (should_exist)
         throw std::out_of_range("next word should exist");
