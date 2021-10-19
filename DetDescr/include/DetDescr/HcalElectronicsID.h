@@ -29,29 +29,29 @@ class HcalElectronicsID : public DetectorID {
   static const unsigned int MAX_INDEX{38*48*200};
   
   /**
-   * Empty ECAL id (but not null!)
+   * Empty HCAL id (but not null!)
    */
-  HcalElectronicsID() : DetectorID(EID_ECAL, 0) {}
+  HcalElectronicsID() : DetectorID(EID_HCAL, 0) {}
 
   /**
    * Create from raw number
    */
   HcalElectronicsID(RawValue rawid) : DetectorID(rawid) {
-    SUBDETECTORID_TEST("HcalElectronicsID", EID_ECAL);
+    SUBDETECTORID_TEST("HcalElectronicsID", EID_HCAL);
   }
 
   /**
    * Create from a DetectorID, but check
    */
   HcalElectronicsID(const DetectorID id) : DetectorID(id) {
-    SUBDETECTORID_TEST("HcalElectronicsID", EID_ECAL);
+    SUBDETECTORID_TEST("HcalElectronicsID", EID_HCAL);
   }
 
   /**
    * Create from pieces
    */
   HcalElectronicsID(unsigned int fiber, unsigned int elink, unsigned int channel)
-      : DetectorID(EID_ECAL, 0) {
+      : DetectorID(EID_HCAL, 0) {
     Index index(channel,elink,fiber);
     id_ |= index.value();
   }
@@ -98,4 +98,4 @@ class HcalElectronicsID : public DetectorID {
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalElectronicsID& id);
 
 
-#endif // DETDESCR_ECALELECTRONICSID_H_
+#endif // DETDESCR_HCALELECTRONICSID_H_
