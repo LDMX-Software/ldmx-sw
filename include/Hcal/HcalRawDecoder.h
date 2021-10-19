@@ -36,6 +36,8 @@ class HcalRawDecoder : public framework::Producer {
   std::string input_name_;
   /// input pass of creating encoded data
   std::string input_pass_;
+  /// read in binary file of HGC ROC data
+  std::string input_file_;
   /// output object to put onto event bus
   std::string output_name_;
   /// version of HGC ROC we are decoding

@@ -1,5 +1,7 @@
 #include <bitset>
 #include <iomanip>
+#include <optional>
+#include <fstream>
 
 #include "Hcal/HcalRawDecoder.h"
 
@@ -27,6 +29,77 @@ inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
   return os;
 }
 
+namespace utility {
+
+class Reader {
+ public:
+  Reader() : is_open_{false}, buffer_handle_{nullptr} {}
+
+  void open(const std::vector<uint32_t> &b) {
+    buffer_handle_ = &b;
+    is_open_ = true;
+  }
+  void open(const std::string& file_name) {
+    file_.unsetf(std::ios::skipws);
+    file_.open(file_name, std::ios::binary|std::ios::in);
+    is_open_ = true;
+  }
+
+  operator bool() const {
+    if (!is_open_) 
+      return false;
+    else if (isVector()) 
+      return (i_curr_ < buffer_handle_->size());
+    else 
+      return !file_.fail();
+  }
+
+  bool operator!() const {
+    return not bool(*this);
+  }
+
+  uint32_t next() {
+    if (isVector())
+      return vector_pop();
+    else
+      return file_pop();
+  }
+
+  Reader& operator>>(uint32_t& w) {
+    if (!(*this)) return *this;
+    w = next();
+    return *this;
+  }
+
+ private:
+  bool isVector() const {
+    return buffer_handle_ != nullptr;
+  }
+
+  uint32_t vector_pop() {
+    if (i_curr_+1 < buffer_handle_->size()) ++i_curr_;
+    return buffer_handle_->at(i_curr_);
+  }
+
+  uint32_t file_pop() {
+    uint32_t w;
+    file_.read(reinterpret_cast<char*>(&w), 4);
+    return w;
+  }
+
+ private:
+  /// is the reader opened?
+  bool is_open_;
+  /// vector buffer reference
+  const std::vector<uint32_t> *buffer_handle_{nullptr};
+  /// current iterator
+  long int i_curr_{-1};
+  /// file stream reference
+  std::ifstream file_;
+};  // Reader
+
+}  // namespace utility
+
 HcalRawDecoder::HcalRawDecoder(const std::string& name,
                                framework::Process& process)
     : Producer(name, process) {}
@@ -36,6 +109,7 @@ HcalRawDecoder::~HcalRawDecoder() {}
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   input_name_ = ps.getParameter<std::string>("input_name");
   input_pass_ = ps.getParameter<std::string>("input_pass");
+  input_file_ = ps.getParameter<std::string>("input_file");
   output_name_ = ps.getParameter<std::string>("output_name");
   roc_version_ = ps.getParameter<int>("roc_version");
   translate_eid_ = ps.getParameter<bool>("translate_eid");
@@ -46,201 +120,212 @@ void HcalRawDecoder::produce(framework::Event& event) {
    * Static parameters depending on ROC version
    */
   static const unsigned int common_mode_channel = roc_version_ == 2 ? 19 : 1;
+  /// words for reading and decoding
+  static uint32_t head1, head2, w;
 
   /** Re-sort the data from grouped by bunch to by channel
-   * The readout chip streams the data off of it, so it doesn't
+   * The readout cip streams the data off of it, so it doesn't
    * have time to re-group the signals across multiple bunches (samples)
    * by their channel ID. We need to do that here.
    */
+  utility::Reader r;
+  if (input_file_.empty()) {
+    r.open(event.getCollection<uint32_t>(input_name_, input_pass_));
+  } else {
+    r.open(input_file_);
+  }
+
   // fill map of **electronic** IDs to the digis that were read out
   std::map<ldmx::HcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
-  packing::utility::BufferReader<uint32_t> r{
-      event.getCollection<uint32_t>(input_name_, input_pass_)};
-  do {
-    try {
-      /** Decode Bunch Header
-       * We have a few words of header material before the actual data.
-       * This header material is assumed to be encoded as in Table 3
-       * of the DAQ specs.
-       *
-       * <name> (bits)
-       *
-       * VERSION (4) | FPGA_ID (8) | NLINKS (6) | 00 | LEN (12)
-       * BX ID (12) | RREQ (10) | OR (10)
-       * RID ok (1) | CDC ok (1) | LEN3 (6) |
-       *  RID ok (1) | CDC ok (1) | LEN2 (6) |
-       *  RID ok (1) | CDC ok (1) | LEN1 (6) |
-       *  RID ok (1) | CDC ok (1) | LEN0 (6)
-       * ... other listing of links ...
-       */
-      packing::utility::CRC fpga_crc;
-      fpga_crc << r();
-      std::cout << debug::hex(r()) << " : ";
-      uint32_t version =
-          (r() >> 28) & packing::utility::mask<4>;
-      std::cout << "version " << version << std::flush;
-      uint32_t one{1};
-      if (version != one)
-        EXCEPTION_RAISE("VersMis", "HcalRawDecoder only knows version 1 of DAQ format.");
+  std::optional<uint32_t> old_rreq;
+  while (r >> head1 >> head2) {
+    /** Decode Bunch Header
+     * We have a few words of header material before the actual data.
+     * This header material is assumed to be encoded as in Table 3
+     * of the DAQ specs.
+     *
+     * <name> (bits)
+     *
+     * VERSION (4) | FPGA_ID (8) | NLINKS (6) | 00 | LEN (12)
+     * BX ID (12) | RREQ (10) | OR (10)
+     * RID ok (1) | CDC ok (1) | LEN3 (6) |
+     *  RID ok (1) | CDC ok (1) | LEN2 (6) |
+     *  RID ok (1) | CDC ok (1) | LEN1 (6) |
+     *  RID ok (1) | CDC ok (1) | LEN0 (6)
+     * ... other listing of links ...
+     */
+    packing::utility::CRC fpga_crc;
+    fpga_crc << head1;
+    std::cout << debug::hex(head1) << " : ";
+    uint32_t version =
+        (head1 >> 28) & packing::utility::mask<4>;
+    std::cout << "version " << version << std::flush;
+    uint32_t one{1};
+    if (version != one)
+      EXCEPTION_RAISE("VersMis", "HcalRawDecoder only knows version 1 of DAQ format.");
 
-      uint32_t fpga = (r() >> 12 + 2 + 6) & packing::utility::mask<8>;
-      uint32_t nlinks = (r() >> 12 + 2) & packing::utility::mask<6>;
-      uint32_t len = r() & packing::utility::mask<12>;
+    uint32_t fpga = (head1 >> 12 + 2 + 6) & packing::utility::mask<8>;
+    uint32_t nlinks = (head1 >> 12 + 2) & packing::utility::mask<6>;
+    uint32_t len = head1 & packing::utility::mask<12>;
 
-      std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
-                << ", len: " << len << std::endl;
-      r.next();
-      fpga_crc << r();
-      std::cout << debug::hex(r()) << " : ";
+    std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
+              << ", len: " << len << std::endl;
+    fpga_crc << head2;
+    std::cout << debug::hex(head2) << " : ";
 
-      uint32_t bx_id = (r() >> 20) & packing::utility::mask<12>;
-      uint32_t rreq = (r() >> 10) & packing::utility::mask<10>;
-      uint32_t orbit = r() & packing::utility::mask<10>;
+    uint32_t bx_id = (head2 >> 20) & packing::utility::mask<12>;
+    uint32_t rreq = (head2 >> 10) & packing::utility::mask<10>;
+    uint32_t orbit = head2 & packing::utility::mask<10>;
 
-      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
-                << ", orbit: " << orbit << std::endl;
-      std::vector<uint32_t> length_per_link(nlinks, 0);
-      for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
-        if (i_link % 4 == 0) {
-          r.next();
-          fpga_crc << r();
-        }
-        uint32_t shift_in_word = 8 * i_link % 4;
-        bool rid_ok =
-            (r() >> shift_in_word + 7) & packing::utility::mask<1> == 1;
-        bool cdc_ok =
-            (r() >> shift_in_word + 6) & packing::utility::mask<1> == 1;
-        length_per_link[i_link] =
-            (r() >> shift_in_word) & packing::utility::mask<6>;
-        std::cout << "Link " << i_link << " readout "
-                  << length_per_link.at(i_link) << " channels"
-                  << std::endl;
-      }
+    std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
+              << ", orbit: " << orbit << std::endl;
 
-      /** Decode Each Link in Sequence
-       * Now we should be decoding each link serially
-       * where each link was encoded as in Table 4 of
-       * the DAQ specs
-       *
-       * ROC_ID (16) | CRC ok (1) | 00000 | RO Map (8)
-       * RO Map (32)
-       */
-
-      for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
-        // move on from last word counting links or previous link
-        std::cout << "RO Link " << i_link << std::endl;
-        packing::utility::CRC link_crc;
-        r.next();
-        fpga_crc << r();
-        link_crc << r();
-        uint32_t roc_id = (r() >> 8 + 5 + 1) & packing::utility::mask<16>;
-        bool crc_ok = (r() >> 8 + 5) & packing::utility::mask<1> == 1;
-        std::cout << debug::hex(r()) << " : roc_id " << roc_id
-                  << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
-
-        // get readout map from the last 8 bits of this word
-        // and the entire next word
-        std::bitset<40> ro_map = r() & packing::utility::mask<8>;
-        ro_map <<= 32;
-        r.next();
-        fpga_crc << r();
-        link_crc << r();
-        ro_map |= r();
-
-        std::cout << "Start looping through channels..." << std::endl;
-        // loop through channels on this link,
-        //  since some channels may have been suppressed because of low
-        //  amplitude the channel ID is not the same as the index it
-        //  is listed in.
-        int channel_id{-1};
-        for (uint32_t j{0}; j < length_per_link.at(i_link)-2; j++) {
-          // skip zero-suppressed channel IDs
-          do {
-            channel_id++;
-          } while (channel_id < 40 and not ro_map.test(channel_id));
-
-          // next word is this channel
-          r.next();
-          fpga_crc << r();
-          std::cout << debug::hex(r());
-
-          if (channel_id == 0) {
-            /** Special "Header" Word from ROC
-             * 
-             * version 3:
-             * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
-             *
-             * version 2:
-             * ???
-             */
-            std::cout << " : ROC Header";
-            link_crc << r();
-            uint32_t bx_id =
-                (r() >> 4 + 3 + 3 + 6) & packing::utility::mask<12>;
-            uint32_t short_event =
-                (r() >> 4 + 3 + 3) & packing::utility::mask<6>;
-            uint32_t short_orbit =
-                (r() >> 4 + 3) & packing::utility::mask<3>;
-            uint32_t hamming_errs = (r() >> 4) & packing::utility::mask<3>;
-          } else if (channel_id == common_mode_channel) {
-            /** Common Mode Channels
-             * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
-             */
-            link_crc << r();
-            std::cout << " : Common Mode";
-          } else if (channel_id == 39) {
-            // CRC checksum from ROC
-            uint32_t crc = r();
-            std::cout << " : CRC checksum  : ";
-            std::cout << std::hex << link_crc.get() << " =? ";
-            std::cout << crc << std::dec;
-            if (link_crc.get() != crc) {
-              EXCEPTION_RAISE("BadCRC",
-                              "Our calculated link checksum doesn't match the "
-                              "one from raw data.");
-            }
-          } else {
-            /// DAQ Channels
-
-            link_crc << r();
-            /** Generate Packed Electronics ID
-             *   Link Index i_link
-             *   Channel ID channel_id
-             *   ROC ID     roc_id
-             *   FPGA ID    fpga
-             * are all available.
-             * For now, we just generate a dummy mapping
-             * using the link and channel indices.
-             */
-            ldmx::HcalElectronicsID eid(fpga, roc_id, channel_id);
-
-            // copy data into EID->sample map
-            eid_to_samples[eid].emplace_back(r());
-            std::cout << " : DAQ Channel";
-          }  // type of channel
-          std::cout << std::endl;
-        }  // loop over channels (j in Table 4)
-        std::cout << "done looping through channels" << std::endl;
-      }  // loop over links
-
-      // another CRC checksum from FPGA
-      r.next();
-      uint32_t crc = r();
-      std::cout << "FPGA Checksum : " << std::hex << fpga_crc.get() << " =? "
-                << crc << std::dec << std::endl;
-      if (fpga_crc.get() != crc) {
-        EXCEPTION_RAISE(
-            "BadCRC",
-            "Our calculated FPGA checksum doesn't match the one read in.");
-      }
-    } catch (std::out_of_range& oor) {
-      std::cout << oor.what() << std::endl;
-      EXCEPTION_RAISE("MisFormat",
-                      "Recieved raw data that was not formatted correctly.");
+    if (old_rreq and rreq != old_rreq) {
+      // we just hit a new event
+      std::cout << "done with this event." << std::endl;
+      break;
+    } else if (!old_rreq) {
+      // set old rreq on first event
+      old_rreq = rreq;
     }
-  } while (r.next(false));
+
+    std::vector<uint32_t> length_per_link(nlinks, 0);
+    for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
+      if (i_link % 4 == 0) {
+        r >> w;
+        fpga_crc << w;
+      }
+      uint32_t shift_in_word = 8 * i_link % 4;
+      bool rid_ok =
+          (w >> shift_in_word + 7) & packing::utility::mask<1> == 1;
+      bool cdc_ok =
+          (w >> shift_in_word + 6) & packing::utility::mask<1> == 1;
+      length_per_link[i_link] =
+          (w >> shift_in_word) & packing::utility::mask<6>;
+      std::cout << "Link " << i_link << " readout "
+                << length_per_link.at(i_link) << " channels"
+                << std::endl;
+    }
+
+    /** Decode Each Link in Sequence
+     * Now we should be decoding each link serially
+     * where each link was encoded as in Table 4 of
+     * the DAQ specs
+     *
+     * ROC_ID (16) | CRC ok (1) | 00000 | RO Map (8)
+     * RO Map (32)
+     */
+
+    for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
+      // move on from last word counting links or previous link
+      std::cout << "RO Link " << i_link << std::endl;
+      packing::utility::CRC link_crc;
+      r >> w;
+      fpga_crc << w;
+      link_crc << w;
+      uint32_t roc_id = (w >> 8 + 5 + 1) & packing::utility::mask<16>;
+      bool crc_ok = (w >> 8 + 5) & packing::utility::mask<1> == 1;
+      std::cout << debug::hex(w) << " : roc_id " << roc_id
+                << ", cfc_ok " << std::boolalpha << crc_ok << std::endl;
+
+      // get readout map from the last 8 bits of this word
+      // and the entire next word
+      std::bitset<40> ro_map = w & packing::utility::mask<8>;
+      ro_map <<= 32;
+      r >> w;
+      fpga_crc << w;
+      link_crc << w;
+      ro_map |= w;
+
+      std::cout << "Start looping through channels..." << std::endl;
+      // loop through channels on this link,
+      //  since some channels may have been suppressed because of low
+      //  amplitude the channel ID is not the same as the index it
+      //  is listed in.
+      int channel_id{-1};
+      for (uint32_t j{0}; j < length_per_link.at(i_link)-2; j++) {
+        // skip zero-suppressed channel IDs
+        do {
+          channel_id++;
+        } while (channel_id < 40 and not ro_map.test(channel_id));
+
+        // next word is this channel
+        r >> w;
+        fpga_crc << w;
+        std::cout << debug::hex(w);
+
+        if (channel_id == 0) {
+          /** Special "Header" Word from ROC
+           * 
+           * version 3:
+           * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
+           *
+           * version 2:
+           * ???
+           */
+          std::cout << " : ROC Header";
+          link_crc << w;
+          uint32_t bx_id =
+              (w >> 4 + 3 + 3 + 6) & packing::utility::mask<12>;
+          uint32_t short_event =
+              (w >> 4 + 3 + 3) & packing::utility::mask<6>;
+          uint32_t short_orbit =
+              (w >> 4 + 3) & packing::utility::mask<3>;
+          uint32_t hamming_errs = (w >> 4) & packing::utility::mask<3>;
+        } else if (channel_id == common_mode_channel) {
+          /** Common Mode Channels
+           * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
+           */
+          link_crc << w;
+          std::cout << " : Common Mode";
+        } else if (channel_id == 39) {
+          // CRC checksum from ROC
+          uint32_t crc = w;
+          std::cout << " : CRC checksum  : ";
+          std::cout << std::hex << link_crc.get() << " =? ";
+          std::cout << crc << std::dec;
+          if (link_crc.get() != crc) {
+            EXCEPTION_RAISE("BadCRC",
+                            "Our calculated link checksum doesn't match the "
+                            "one from raw data.");
+          }
+        } else {
+          /// DAQ Channels
+
+          link_crc << w;
+          /** Generate Packed Electronics ID
+           *   Link Index i_link
+           *   Channel ID channel_id
+           *   ROC ID     roc_id
+           *   FPGA ID    fpga
+           * are all available.
+           * For now, we just generate a dummy mapping
+           * using the link and channel indices.
+           */
+          ldmx::HcalElectronicsID eid(fpga, roc_id, channel_id);
+
+          // copy data into EID->sample map
+          eid_to_samples[eid].emplace_back(w);
+          std::cout << " : DAQ Channel";
+        }  // type of channel
+        std::cout << std::endl;
+      }  // loop over channels (j in Table 4)
+      std::cout << "done looping through channels" << std::endl;
+    }  // loop over links
+
+    // another CRC checksum from FPGA
+    r >> w;
+    uint32_t crc = w;
+    std::cout << "FPGA Checksum : " << std::hex << fpga_crc.get() << " =? "
+              << crc << std::dec << std::endl;
+    if (fpga_crc.get() != crc) {
+      EXCEPTION_RAISE(
+          "BadCRC",
+          "Our calculated FPGA checksum doesn't match the one read in.");
+    }
+  }
 
   if (translate_eid_) {
     /**
