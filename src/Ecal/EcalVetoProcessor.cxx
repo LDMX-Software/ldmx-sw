@@ -297,7 +297,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Get the collection of digitized Ecal hits from the event.
   const std::vector<ldmx::EcalHit> ecalRecHits =
-      event.getCollection<ldmx::EcalHit>("EcalRecHits", rec_pass_name_);
+      event.getCollection<ldmx::EcalHit>(rec_coll_name_, rec_pass_name_);
 
   ldmx::EcalID globalCentroid =
       GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
