@@ -1,5 +1,5 @@
-#ifndef _DQM_HCALPEDESTALS_H_
-#define _DQM_HCALPEDESTALS_H_
+#ifndef _DQM_HCALRAWDIGI_H_
+#define _DQM_HCALRAWDIGI_H_
 
 //----------//
 //   STL    //
@@ -22,13 +22,13 @@
 
 namespace dqm {
 
-class HCalPedestals : public framework::Analyzer {
+class HCalRawDigi : public framework::Analyzer {
  public:
   /** Constructor */
-  HCalPedestals(const std::string& name, framework::Process& process) : framework::Analyzer(name, process) {}
+  HCalRawDigi(const std::string& name, framework::Process& process) : framework::Analyzer(name, process) {}
 
   /** Destructor */
-  ~HCalPedestals() {}
+  ~HCalRawDigi() {}
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -36,6 +36,8 @@ class HCalPedestals : public framework::Analyzer {
    * @param parameters Set of parameters used to configure this processor.
    */
   void configure(framework::config::Parameters& parameters) final override;
+
+  void onProcessStart() final override;
 
   /**
    * Process the event and make histograms ro summaries.
@@ -51,4 +53,4 @@ class HCalPedestals : public framework::Analyzer {
 
 }  // namespace dqm
 
-#endif  // _DQM_HCALPedestals_H_
+#endif  // _DQM_HCALRawDigi_H_
