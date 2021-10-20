@@ -1,0 +1,6 @@
+<box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_bar_dz" /> 
+<box lunit="mm" name="lyso_bar_box" x="lyso_bar_dx" y="lyso_bar_dy" z="lyso_bar_dz" /> 
+<box lunit="mm" name="lyso_plate_box" x="lyso_plate_dx" y="lyso_plate_dy" z="lyso_plate_dz" /> 
+
+
+

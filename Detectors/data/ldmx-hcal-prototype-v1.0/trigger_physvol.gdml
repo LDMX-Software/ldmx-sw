@@ -1,0 +1,67 @@
+
+<!-- Option 1: Plastic bars -->
+<!-- <loop for="layer_index" from="1" to="number_of_trigger_bars" step="1"> -->
+		<!-- <physvol name="trigger_physvol" copynumber="2*layer_index-2"> -->
+			<!-- <volumeref ref="trigger_bar_volume" /> -->
+			<!-- <position name="trigger_bar_layer1_pos" unit="mm" x="0"  -->
+					  <!-- y="trigger_bar_dy*(layer_index - 0.5 - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)"  -->
+					  <!-- z="-trigger_bar_dz - trigger_bar_gap  -0" /> -->
+					  <!-- z="-trigger_bar_dz - trigger_bar_gap  -dz/2 -trigger_layer_distance_from_detector" /> -->
+		<!-- </physvol> -->
+		<!-- <physvol name="trigger_physvol" copynumber="2*layer_index - 1"> -->
+			<!-- <volumeref ref="trigger_bar_volume" /> -->
+			<!-- <position name="trigger_bar_layer2_pos" unit="mm" x="0"  -->
+					  <!-- y="trigger_bar_dy*(layer_index - 0   - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)"  -->
+					  <!-- z="0" /> -->
+					  <!-- z="-dz/2 -trigger_layer_distance_from_detector " /> -->
+		<!-- </physvol> -->
+<!-- </loop> -->
+
+<!-- Option 2: LYSO bars -->
+<loop for="layer_index" from="1" to="number_of_trigger_bars" step="1">
+	<physvol name="trigger_physvol" copynumber="2*layer_index-2">
+		<volumeref ref="trigger_bar_volume" />
+		<position name="trigger_bar_layer1_pos" unit="mm" x="0" 
+				  y="trigger_bar_dy*(layer_index - 0.5 - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)" 
+				  z="-trigger_bar_dz - trigger_bar_gap  -0" />
+				  <!-- z="-trigger_bar_dz - trigger_bar_gap  -dz/2 -trigger_layer_distance_from_detector" /> -->
+	</physvol>
+</loop>
+
+<loop for="layer_index" from="1" to="number_of_lyso_bars" step="1">
+	<physvol name="lyso_bar_physvol" copynumber="2*layer_index-2">
+		<volumeref ref="lyso_bar_volume" />
+		<position name="lyso_bar_layer1_pos" unit="mm" x="0" 
+				  y="trigger_bar_dy*(layer_index - 0.5 - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)" 
+				  z="0" />
+				  <!-- z="-trigger_bar_dz - trigger_bar_gap  -dz/2 -trigger_layer_distance_from_detector" /> -->
+	</physvol>
+	<physvol name="lyso_bar_physvol" copynumber="2*layer_index-2">
+		<volumeref ref="lyso_bar_volume" />
+		<position name="lyso_bar_layer2_pos" unit="mm" x="0" 
+				  y="trigger_bar_dy*(layer_index - 0 - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)" 
+				  z="0+3" />
+				  <!-- z="-trigger_bar_dz - trigger_bar_gap  -dz/2 -trigger_layer_distance_from_detector" /> -->
+	</physvol>
+</loop>
+
+
+
+<!-- Option 3: LYSO plate -->
+
+<!-- <loop for="layer_index" from="1" to="number_of_trigger_bars" step="1"> -->
+		<!-- <physvol name="trigger_physvol" copynumber="2*layer_index-2"> -->
+			<!-- <volumeref ref="trigger_bar_volume" /> -->
+			<!-- <position name="trigger_bar_layer1_pos" unit="mm" x="0"  -->
+					  <!-- y="trigger_bar_dy*(layer_index - 0.5 - number_of_trigger_bars/2) + trigger_bar_gap*(layer_index - 1 - number_of_trigger_bars/2)"  -->
+					  <!-- z="-trigger_bar_dz - trigger_bar_gap" /> -->
+					  <!-- z="-trigger_bar_dz - trigger_bar_gap  -dz/2 -trigger_layer_distance_from_detector" /> -->
+		<!-- </physvol> -->
+<!-- </loop> -->
+<!-- <physvol name="lyso_plate_physvol" copynumber="1"> -->
+	<!-- <volumeref ref="lyso_plate_volume" /> -->
+	<!-- <position name="lyso_plate_pos" unit="mm" x="0"  -->
+			  <!-- y="0"  -->
+			  <!-- z="0" /> -->
+			  <!-- z="-dz/2 -trigger_layer_distance_from_detector " /> -->
+<!-- </physvol> -->
