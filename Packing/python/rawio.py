@@ -1,6 +1,7 @@
 """Module for configuring a raw data file"""
 
 from LDMX.Framework import ldmxcfg
+import os
 
 class RawDataFile() :
     """RawDataFile configuration class"""
@@ -36,3 +37,24 @@ class RawIO(ldmxcfg.Producer) :
 
     def destination(file_name) :
         return RawIO(RawDataFile(file_name, True))
+
+class SingleSubsystemUnpacker(ldmxcfg.Producer) :
+    """Configuration for unpacking a single subsystem's raw data file
+    into a series of vector buffers to put onto the event bus.
+
+    Parameters
+    ----------
+    raw_file : str
+        File path to raw data file to read in
+    output_name : str
+        Name of buffer object for event bus
+    num_words_per_event : int
+        Number of bytes to put onto each event bus
+    """
+
+    def __init__(self, raw_file, output_name, num_words_per_event, bytes_per_word = 1) :
+        super().__init__(f'unpack_{os.path.basename(raw_file)}','packing::SingleSubsystemUnpacker','Packing')
+        self.raw_file = raw_file
+        self.output_name = output_name
+        self.num_words_per_event = num_words_per_event
+        self.num_bytes_per_word = bytes_per_word
