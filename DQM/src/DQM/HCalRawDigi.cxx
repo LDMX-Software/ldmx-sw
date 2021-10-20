@@ -13,7 +13,8 @@ void HCalRawDigi::configure(framework::config::Parameters& ps) {
 void HCalRawDigi::onProcessStart() {
   getHistoDirectory();
   histograms_.create("adc_by_channel",
-      "HCal EID Index", 300, 0, 300, "ADC Counts in SOI", 200, 0, 200);
+      "HCal EID Index", 9960-9720+1, 9720, 9960, "ADC Counts in SOI", 200, 0, 200);
+  histograms_.get("adc_by_channel")->SetCanExtend(TH1::kAllAxes);
 }
 
 void HCalRawDigi::analyze(const framework::Event& event) {
