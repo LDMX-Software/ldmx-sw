@@ -71,11 +71,15 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
       link += 1;
       chan -= 32;
     }
-
+    // one quadbar groups 4 strips and each quadbar is connected to 2 CMBs - one in each end
+    int end = csv.getInteger("CMB")%2;
+    if(end==0) end=1; // negative end (?)
+    else end=0; // positive end (?)
+ 
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
         csv.getInteger("Plane") /*layer*/,
         csv.getInteger("Bar") /*strip*/,
-        csv.getInteger("Quadbar")-1 /*end??*/); //Quadbar given as 1 or 2
+        end /*end??*/);
     ldmx::HcalElectronicsID eleid(
         0 /*fpga - only one FPGA during test beam*/,
         link /*fiber*/,
