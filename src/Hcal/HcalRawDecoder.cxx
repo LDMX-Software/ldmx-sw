@@ -1,7 +1,6 @@
 #include "Hcal/HcalRawDecoder.h"
 
 #include <bitset>
-#include <fstream>
 #include <iomanip>
 #include <optional>
 
@@ -14,6 +13,47 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace hcal {
+
+namespace utility {
+
+void Reader::open(const std::vector<uint32_t>& b) {
+  buffer_handle_ = &b;
+  is_open_ = true;
+}
+
+void Reader::open(const std::string& file_name) {
+  file_.unsetf(std::ios::skipws);
+  file_.open(file_name, std::ios::binary | std::ios::in);
+  is_open_ = true;
+}
+
+uint32_t Reader::next() {
+  if (isFile())
+    return file_pop();
+  else
+    return vector_pop();
+}
+
+void Reader::rewind(long int n) {
+  if (isFile()) {
+    file_.seekg(file_.tellg() - 4 * n);
+  } else {
+    i_curr_ - n;
+  }
+}
+
+uint32_t Reader::vector_pop() {
+  ++i_curr_;
+  return buffer_handle_->at(i_curr_);
+}
+
+uint32_t Reader::file_pop() {
+  uint32_t w;
+  if (file_) file_.read(reinterpret_cast<char*>(&w), 4);
+  return w;
+}
+
+}
 
 namespace debug {
 
@@ -164,9 +204,9 @@ void HcalRawDecoder::produce(framework::Event& event) {
       reader_ >> w;
       fpga_crc << w;
       link_crc << w;
-      uint32_t roc_id = (w >> 16) & packing::utility::mask<8>;
-      bool crc_ok = (w >> 24) & packing::utility::mask<1> == 1;
-      std::cout << debug::hex(w) << " : roc_id " << roc_id << ", crc_ok "
+      uint32_t roc_id = (w >> 16) & packing::utility::mask<16>;
+      bool crc_ok = (w >> 15) & packing::utility::mask<1> == 1;
+      std::cout << debug::hex(w) << " : roc_id " << roc_id << ", crc_ok (v2 always false) "
                 << std::boolalpha << crc_ok << std::endl;
 
       // get readout map from the last 8 bits of this word
@@ -202,7 +242,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
            * 0101 | BXID (12) | RREQ (6) | OR (3) | HE (3) | 0101
            *
            * version 2:
-           * ???
+           * 10101010 | BXID (12) | WADD (9) | 1010
            */
           std::cout << " : ROC Header";
           link_crc << w;
@@ -221,11 +261,13 @@ void HcalRawDecoder::produce(framework::Event& event) {
           uint32_t crc = w;
           std::cout << " : CRC checksum  : " << debug::hex(link_crc.get())
                     << " =? " << debug::hex(crc);
+          /*
           if (link_crc.get() != crc) {
             EXCEPTION_RAISE("BadCRC",
                             "Our calculated link checksum doesn't match the "
                             "one from raw data.");
           }
+          */
         } else {
           /// DAQ Channels
 
@@ -243,7 +285,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
 
           // copy data into EID->sample map
           eid_to_samples[eid].emplace_back(w);
-          std::cout << " : DAQ Channel";
+          std::cout << " : DAQ Channel " << eid.index();
         }  // type of channel
         std::cout << std::endl;
       }  // loop over channels (j in Table 4)

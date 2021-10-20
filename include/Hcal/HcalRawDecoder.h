@@ -1,6 +1,8 @@
 #ifndef HCAL_HCALRAWDECODER_H_
 #define HCAL_HCALRAWDECODER_H_
 
+#include <fstream>
+
 //----------//
 //   LDMX   //
 //----------//
@@ -26,19 +28,12 @@ class Reader {
   /**
    * Open the reader with a vector to read
    */
-  void open(const std::vector<uint32_t>& b) {
-    buffer_handle_ = &b;
-    is_open_ = true;
-  }
+  void open(const std::vector<uint32_t>& b);
 
   /**
    * Open the reader with a file to read.
    */
-  void open(const std::string& file_name) {
-    file_.unsetf(std::ios::skipws);
-    file_.open(file_name, std::ios::binary | std::ios::in);
-    is_open_ = true;
-  }
+  void open(const std::string& file_name);
 
   /**
    * Check if the reader is in a good state.
@@ -60,12 +55,7 @@ class Reader {
    * @see file_pop for file mode
    * @see vector_pop for vector mode
    */
-  uint32_t next() {
-    if (isFile())
-      return file_pop();
-    else
-      return vector_pop();
-  }
+  uint32_t next();
 
   /**
    * Put the next word from the buffer in the passed reference.
@@ -90,13 +80,7 @@ class Reader {
    *
    * @param[in] n number of 32-bit words to back track by
    */
-  void rewind(int n) {
-    if (isFile()) {
-      file_.seekg(file_.tellg() - 4 * n);
-    } else {
-      i_curr_ - n;
-    }
-  }
+  void rewind(long int n);
 
  private:
   /**
@@ -107,10 +91,7 @@ class Reader {
    * @throws std::out_of_range if we try to pop a word past
    * the end of the vector.
    */
-  uint32_t vector_pop() {
-    ++i_curr_;
-    return buffer_handle_->at(i_curr_);
-  }
+  uint32_t vector_pop();
 
   /**
    * Pop the next word out of the file.
@@ -118,11 +99,7 @@ class Reader {
    * state so that we don't accidentally seg fault.
    * Otherwise we will just return a un-assigned word.
    */
-  uint32_t file_pop() {
-    uint32_t w;
-    if (file_) file_.read(reinterpret_cast<char*>(&w), 4);
-    return w;
-  }
+  uint32_t file_pop();
 
  private:
   /// is the reader opened?
