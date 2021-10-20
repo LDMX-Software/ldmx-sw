@@ -281,11 +281,16 @@ void HcalRawDecoder::produce(framework::Event& event) {
            * For now, we just generate a dummy mapping
            * using the link and channel indices.
            */
-          ldmx::HcalElectronicsID eid(fpga, roc_id, channel_id);
+
+          std::cout << " : DAQ Channel ";
+
+          std::cout << fpga << " " << roc_id << " " << channel_id << " ";
+          // TODO fix hardcoded starting value
+          ldmx::HcalElectronicsID eid(fpga, roc_id-256, channel_id);
+          std::cout << eid.index();
 
           // copy data into EID->sample map
           eid_to_samples[eid].emplace_back(w);
-          std::cout << " : DAQ Channel " << eid.index();
         }  // type of channel
         std::cout << std::endl;
       }  // loop over channels (j in Table 4)
@@ -353,7 +358,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
     }
   }
 
-  std::cout << "adding digis to event bus" << std::endl;
+  std::cout << "adding " << digis.getNumDigis() << " digis to event bus" << std::endl;
   event.add(output_name_, digis);
   return;
 }  // produce
