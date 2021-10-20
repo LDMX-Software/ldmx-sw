@@ -100,7 +100,7 @@ class HcalDetectorMap(ldmxcfg.ConditionsObjectProvider) :
     """
 
     def __init__(self, connections_table, want_d2e = False) :
-      super().__init__('HcalDetectorMap','hcal::HcalDetectorMapLoader','Hcal')
-      self.connections_table = connections_table
-      self.want_d2e = want_d2e
+        super().__init__('HcalDetectorMap','hcal::HcalDetectorMapLoader','Hcal')
+        self.connections_table = connections_table
+        self.want_d2e = want_d2e
 
