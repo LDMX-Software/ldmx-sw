@@ -16,44 +16,30 @@ namespace hcal {
 
 namespace utility {
 
-void Reader::open(const std::vector<uint32_t>& b) {
-  buffer_handle_ = &b;
-  is_open_ = true;
-}
-
-void Reader::open(const std::string& file_name) {
-  file_.unsetf(std::ios::skipws);
-  file_.open(file_name, std::ios::binary | std::ios::in);
-  is_open_ = true;
-}
-
-uint32_t Reader::next() {
-  if (isFile())
-    return file_pop();
-  else
-    return vector_pop();
-}
-
-void Reader::rewind(long int n) {
-  if (isFile()) {
-    file_.seekg(file_.tellg() - 4 * n);
-  } else {
-    i_curr_ - n;
+/**
+ * Read out 32-bit words from a buffer.
+ */
+class Reader {
+  const std::vector<uint32_t> &buffer_;
+  std::size_t i_word_;
+  uint32_t next() {
+    uint32_t w{buffer_.at(i_word_)};
+    i_word_++;
+    return w;
   }
-}
+ public:
+  Reader(const std::vector<uint32_t>& b) : buffer_{b}, i_word_{0} {}
+  operator bool() {
+    return (i_word_ < buffer_.size());
+  }
+  Reader& operator>>(uint32_t& w) {
+    if (*this)
+      w = next();
+    return *this;
+  }
+};  // Reader
 
-uint32_t Reader::vector_pop() {
-  ++i_curr_;
-  return buffer_handle_->at(i_curr_);
-}
-
-uint32_t Reader::file_pop() {
-  uint32_t w;
-  if (file_) file_.read(reinterpret_cast<char*>(&w), 4);
-  return w;
-}
-
-}
+}  // namespace utility
 
 namespace debug {
 
@@ -75,14 +61,7 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   input_pass_ = ps.getParameter<std::string>("input_pass");
   output_name_ = ps.getParameter<std::string>("output_name");
   roc_version_ = ps.getParameter<int>("roc_version");
-  num_packets_per_event_ = ps.getParameter<int>("num_packets_per_event");
   translate_eid_ = ps.getParameter<bool>("translate_eid");
-
-  // if an input file is passed, we will have the reader go into file mode
-  auto input_file = ps.getParameter<std::string>("input_file");
-  if (not input_file.empty()) {
-    reader_.open(input_file);
-  }
 }
 
 void HcalRawDecoder::produce(framework::Event& event) {
@@ -93,44 +72,19 @@ void HcalRawDecoder::produce(framework::Event& event) {
   /// words for reading and decoding
   static uint32_t head1, head2, w;
 
-  // if we aren't reading from a file, open
-  // the buffer from the event bus
-  if (not reader_.isFile()) {
-    reader_.open(event.getCollection<uint32_t>(input_name_, input_pass_));
-  } else if (!reader_) {
-    // abort event if reader is a file and in a "bad" state
-    // (most likely EOF)
-    abortEvent();
-  }
+  utility::Reader reader_{event.getCollection<uint32_t>(input_name_, input_pass_)};
 
   /** Re-sort the data from grouped by bunch to by channel
    *
    * The readout cip streams the data off of it, so it doesn't
    * have time to re-group the signals across multiple bunches (samples)
    * by their channel ID. We need to do that here.
-   *
-   * The current best way to determine the number of these bunch packets
-   * to retrieve per event is to externally define that number, so right
-   * now it is configured by the python. In the future, we could plan
-   * to have an extra header word (or two) to wrap the several bunch packets
-   * so that the data can tell us how many packets are read out corresponding
-   * to a specific event.
    */
   // fill map of **electronic** IDs to the digis that were read out
   std::map<ldmx::HcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
-  for (unsigned int i_packet{0}; i_packet < num_packets_per_event_;
-       i_packet++) {
-    if (!(reader_ >> head1 >> head2)) {
-      // error reading two header words,
-      //  this could be due to a misalignment between the number
-      //  of requested packets per event and the number in the file.
-      //  this can also happen on the first event after the end
-      //  of file has been reached.
-      break;
-    }
-
+  while (reader_ >> head1 >> head2) {
     /** Decode Bunch Header
      * We have a few words of header material before the actual data.
      * This header material is assumed to be encoded as in Table 3
