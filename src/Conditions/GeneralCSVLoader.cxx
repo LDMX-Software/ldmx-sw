@@ -32,7 +32,10 @@ bool GeneralCSVLoader::nextRow() {
     if (line[0]=='#') continue;
     // split into pieces
     std::vector<std::string> line_split;
-    boost::tokenizer<boost::escaped_list_separator<char> > tok(line);
+    // explicitly erase trailing white space
+    line.erase(std::find_if(line.rbegin(), line.rend(),
+          [](unsigned char c) { return !std::isspace(c); }).base(), line.end());
+    boost::tokenizer<boost::escaped_list_separator<char>> tok(line);
     for (auto chunk : tok){
       line_split.push_back(chunk);
     }
@@ -47,10 +50,7 @@ bool GeneralCSVLoader::nextRow() {
 
     return true;
   } while (true);
-  
-  
 }
-
 
 StringCSVLoader::StringCSVLoader(const std::string& source, const std::string lineseparators) : source_{source}, linesep_{lineseparators}, rowBegin_{0}, rowEnd_{0} {
   getNextLine();
