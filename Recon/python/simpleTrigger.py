@@ -42,7 +42,7 @@ class TriggerProcessor(ldmxcfg.Producer) :
         self.beamEnergy = 4000.
         self.thresholds = [ 1500.0, 1000. + self.beamEnergy, 500. + 2*self.beamEnergy, 100. + 3*self.beamEnergy ]  #toy something up 
         self.mode = 0
-        self.start_layer = 1
+        self.start_layer = 0
         self.end_layer = 20
         self.input_collection = "EcalRecHits"
         self.input_pass = ''
