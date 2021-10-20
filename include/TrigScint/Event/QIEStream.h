@@ -112,23 +112,26 @@ class QIEStream {
 public:
 
   //use these to define positions and sizes of error flags etc other header words
+  // these simply state the order: {triggerID, error, checksum}
   const static int TRIGID_POS{0};
-  const static int ERROR_POS{1};
-  const static int CHECKSUM_POS{2};
+  const static int TRIGID_LEN_BYTES{2};
+  const static int ERROR_POS{ TRIGID_POS+TRIGID_LEN_BYTES};
+  const static int ERROR_LEN_BYTES{1};
+  const static int CHECKSUM_POS{ERROR_POS+ERROR_LEN_BYTES};
   // and positions of error bits/flags in the errors word 
-  const static int FLAG_SIZE{1};
+  const static int FLAG_SIZE_BITS{1};
   const static int CRC0_ERR_POS{0};
   const static int CRC1_ERR_POS{1};
   const static int CID_UNSYNC_POS{2};
   const static int CID_SKIP_POS{3};
-  const static int NUM_SAMPLES{5};  //apparently only 5      
+  // the number of time samples making up a readout event
+  const static int NUM_SAMPLES{5}; 
 
 private:
   /// detector channel ID (bar nb)
   int chanID_;
   /// electronics ID
   int electronicsID_;
-
   /// Analog to Digital counts
   std::vector<int> adcs_;
   /// Time to Digital counts
