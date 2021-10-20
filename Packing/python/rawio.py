@@ -49,7 +49,9 @@ class SingleSubsystemUnpacker(ldmxcfg.Producer) :
     output_name : str
         Name of buffer object for event bus
     num_words_per_event : int
-        Number of bytes to put onto each event bus
+        Number of words to put onto each event bus
+    bytes_per_word : int
+        Number of bytes in each word of buffer (1,2,4, or 8)
     """
 
     def __init__(self, raw_file, output_name, num_words_per_event, bytes_per_word = 1) :
@@ -57,4 +59,27 @@ class SingleSubsystemUnpacker(ldmxcfg.Producer) :
         self.raw_file = raw_file
         self.output_name = output_name
         self.num_words_per_event = num_words_per_event
+        self.num_bytes_per_word = bytes_per_word
+
+class SingleSubsystemPacker(ldmxcfg.Analyzer) :
+    """Configuration for packing a single subsystem's encoded buffer
+    into a raw data file in sequence.
+
+    Parameters
+    ----------
+    raw_file : str
+        File path to raw data file to write out
+    input_name : str
+        event bus object name for encoded buffer
+    input_pass : str
+        event bus object pass for encoded buffer
+    bytes_per_word : int
+        Number of bytes to in each word of buffer
+    """
+
+    def __init__(self, raw_file, input_name, input_pass = '', bytes_per_word = 1) :
+        super().__init__(f'pack_{os.path.basename(raw_file)}','packing::SingleSubsystemPacker','Packing')
+        self.raw_file = raw_file
+        self.input_name = input_name
+        self.input_pass = input_pass
         self.num_bytes_per_word = bytes_per_word
