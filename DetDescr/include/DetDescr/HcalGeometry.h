@@ -61,12 +61,14 @@ class HcalGeometry : public framework::ConditionsObject {
   }
 
   /**
-   * Get the half total width for a given section(strip) for back(side) Hcal.
+   * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
    * @param section
+   * @param layer
    * @return half total width [mm]
    */
-  double getHalfTotalWidth(int isection) const {
-    return HalfTotalWidth_.at(isection);
+  double getHalfTotalWidth(int isection, int layer = 1) const {
+    auto layer_index = layer - 1;
+    return HalfTotalWidth_.at(isection).at(layer_index);
   }
 
   /**
@@ -80,9 +82,21 @@ class HcalGeometry : public framework::ConditionsObject {
   int getNumLayers(int isection) const { return NumLayers_.at(isection); }
 
   /**
-   * Get the number of strips per layer for that section.
+   * Get the number of strips per layer for that section and layer.
    */
-  int getNumStrips(int isection) const { return NumStrips_.at(isection); }
+  int getNumStrips(int isection, int layer = 1) const {
+    auto layer_index = layer - 1;
+    return NumStrips_.at(isection).at(layer_index);
+  }
+
+  /**
+   * Get the location of the zeroStrip in a given section and layer
+   * */
+  int getZeroStrip(int isection, int layer = 1) const {
+    auto layer_index = layer - 1;
+    return ZeroStrip_.at(isection).at(layer_index);
+    }
+
 
   /**
    * Get the length of the Ecal in (x) for the side Hcal.
@@ -114,8 +128,41 @@ class HcalGeometry : public framework::ConditionsObject {
    * Even layers have vertical strips.
    */
   void buildStripPositionMap();
+  /**
+   * Debugging utility, prints out the HcalID and corresponding value of all
+   * entries in the stripPositionMap_ for a given section.
+   *
+   * @param section The section number to print, see HcalID for details.
+   */
+    void printPositionMap(int section) const;
+  /**
+   * Debugging utility, prints out the HcalID and corresponding value of all
+   * entries in the stripPositionMap_. For printing only one of the sections,
+   * see the overloaded version of this function taking a section parameter.
+   *
+   */
+    void printPositionMap() const {
+      for (int section = 0; section < NumSections_ ; ++section) {
+        printPositionMap(section);
+      }
+    }
 
- private:
+   // Deserves a better name
+   //
+   // Takes a parameter which only has dimensions of section and creates a
+   // version with both section and layer. All layers in a given section will be
+   // copies.
+   template <typename T>
+   std::vector<std::vector<T>> makeCanonicalLayeredParameter(const std::vector<T>& parameter) {
+     std::vector<std::vector<T>> result;
+     for(auto section = 0; section < parameter.size(); ++section) {
+       result.push_back(std::vector<T>(NumLayers_[section], parameter[section]));
+     }
+     return result;
+   }
+
+private:
+  /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
 
@@ -125,14 +172,8 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Width of Scintillator Strip [mm]
   double WidthScint_;
 
-  /// Half Total Width of Strips [mm]
-  std::vector<double> HalfTotalWidth_;
-
   /// Front of HCal relative to world geometry for each section [mm]
   std::vector<double> ZeroLayer_;
-
-  /// The plane of the zero'th strip of each section [mm]
-  std::vector<double> ZeroStrip_;
 
   /// Thickness of the layers in each section [mm]
   std::vector<double> LayerThickness_;
@@ -140,8 +181,6 @@ class HcalGeometry : public framework::ConditionsObject {
   /// Number of layers in each section
   std::vector<int> NumLayers_;
 
-  /// Number of strips per layer in each section
-  std::vector<int> NumStrips_;
 
   /// Number of sections
   int NumSections_;
@@ -150,6 +189,15 @@ class HcalGeometry : public framework::ConditionsObject {
   double EcalDx_;
   double EcalDy_;
 
+
+
+  /// Canonical layered version of parameters that differ between geometry versions
+  /// Number of strips per layer in each section and each layer
+  std::vector<std::vector<int>> NumStrips_;
+  /// The plane of the zero'th strip of each section [mm]
+  std::vector<std::vector<double>> ZeroStrip_;
+  /// Half Total Width of Strips [mm]
+  std::vector<std::vector<double>> HalfTotalWidth_;
   /**
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().
