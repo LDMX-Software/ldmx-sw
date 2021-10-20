@@ -53,23 +53,39 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     /** Column Names
      * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane"
      *
-     * Not confident about this!!!
+     * Each HGCROC has two links coming out of it,
+     * one for the upper half of the channels and one for the lower half,
+     * this means we need to modify the hgcroc/channel pair to be
+     * actual link/channel pairs where the new link has range twice
+     * as big as the hgcroc ID but the new channel has a range half
+     * as big as the old one.
      */
+    int hgcroc = csv.getInteger("HGCROC");
+    int chan   = csv.getInteger("Channel");
+
+    // each hgcroc has two links, one for the upper half of channels,
+    // one for the lower half
+    int link = 2*hgcroc;
+    if (chan > 38) {
+      link += 1;
+      chan -= 38;
+    }
+
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
         csv.getInteger("Plane") /*layer*/,
         csv.getInteger("Bar") /*strip*/,
         csv.getInteger("Quadbar")-1 /*end??*/); //Quadbar given as 1 or 2
     ldmx::HcalElectronicsID eleid(
         0 /*fpga - only one FPGA during test beam*/,
-        csv.getInteger("HGCROC") /*fiber*/,
-        csv.getInteger("Channel") /*channel*/);
-
-     if (this->exists(eleid)) {
-       std::stringstream ss;
-       ss << "Two different mappings for electronics channel " << eleid;
-       EXCEPTION_RAISE("DuplicateMapping", ss.str());
-     }
-     this->addEntry(eleid, detid);
+        link /*fiber*/,
+        chan /*channel*/);
+    
+    if (this->exists(eleid)) {
+      std::stringstream ss;
+      ss << "Two different mappings for electronics channel " << eleid;
+      EXCEPTION_RAISE("DuplicateMapping", ss.str());
+    }
+    this->addEntry(eleid, detid);
   }
 }
 
