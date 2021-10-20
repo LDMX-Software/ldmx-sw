@@ -166,6 +166,7 @@ namespace trigscint {
 	  outWord.push_back( tIDword);
 	}	  
 	//	outWord.push_back( triggerID);
+
 	outWord.push_back( flags );
 	outWord.push_back( randomChecksum);
 
