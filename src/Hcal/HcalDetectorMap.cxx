@@ -65,10 +65,11 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
 
     // each hgcroc has two links, one for the upper half of channels,
     // one for the lower half
-    int link = 2*hgcroc;
-    if (chan > 38) {
+    // for test beam (current conditions table) we only use 32 out of 38
+    int link = 2*(hgcroc-1); // hgcroc count starts from 0
+    if (chan >= 32) {
       link += 1;
-      chan -= 38;
+      chan -= 32;
     }
 
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
