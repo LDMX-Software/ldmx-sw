@@ -73,7 +73,6 @@ namespace trigscint {
   }
 
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
-  //  const auto eventStream{event.getCollection<int>( inputCollection_, inputPassName_)};
   const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
 
@@ -96,6 +95,7 @@ namespace trigscint {
   
 	  // uint16_t triggerID =eventStream.at(QIEStream::TRIGID_POS);
   ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
+
   if ( triggerID != event.getEventHeader().getEventNumber() ) {
 	// this probably only applies to digi emulation,
 	// unless an event number is explicitly set in unpacking
@@ -111,6 +111,7 @@ namespace trigscint {
 	 - isCRC1malformed : if there was an issue with CRC from fiber1
   */
   uint8_t flags = eventStream.at(QIEStream::ERROR_POS);  
+
   bool isCIDskipped { (flags >> QIEStream::CID_SKIP_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   bool isCIDunsync { (flags >> QIEStream::CID_UNSYNC_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   bool isCRC1malformed{ (flags >> QIEStream::CRC1_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
@@ -135,6 +136,7 @@ namespace trigscint {
 
   // outer loop: over nSamples
   // inner loop over nChannels to get ADCs, then repeat to get TDCs
+
   int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
 						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
   ldmx_log(debug) << "Event parsing starts at vector idx " << iWstart ; 
