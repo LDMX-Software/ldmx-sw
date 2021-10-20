@@ -2,6 +2,7 @@
 
 #include <assert.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 
@@ -12,24 +13,65 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   ThicknessScint_ = ps.getParameter<double>("ThicknessScint");
   WidthScint_ = ps.getParameter<double>("WidthScint");
   ZeroLayer_ = ps.getParameter<std::vector<double>>("ZeroLayer");
-  ZeroStrip_ = ps.getParameter<std::vector<double>>("ZeroStrip");
   LayerThickness_ = ps.getParameter<std::vector<double>>("LayerThickness");
   NumLayers_ = ps.getParameter<std::vector<int>>("NumLayers");
-  NumStrips_ = ps.getParameter<std::vector<int>>("NumStrips");
   NumSections_ = ps.getParameter<int>("NumSections");
-  HalfTotalWidth_ = ps.getParameter<std::vector<double>>("HalfTotalWidth");
   EcalDx_ = ps.getParameter<double>("EcalDx");
   EcalDy_ = ps.getParameter<double>("EcalDy");
   verbose_ = ps.getParameter<int>("verbose");
 
+  auto detectors_valid =
+      ps.getParameter<std::vector<std::string>>("detectors_valid");
+  // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
+  // use prototype geometry initialization
+  //
+  // Should perhaps be done with a regex
+  auto is_prototype =
+      std::find(detectors_valid.cbegin(), detectors_valid.cend(),
+                "ldmx-hcal-prototype-v1.0") != detectors_valid.cend();
+  if (is_prototype) {
+    auto ZeroStrip_prototype_ =
+        ps.getParameter<std::vector<double>>("ZeroStrip", {});
+    auto NumStrips_prototype_ =
+        ps.getParameter<std::vector<int>>("NumStrips", {});
+    auto HalfTotalWidth_prototype_ =
+        ps.getParameter<std::vector<double>>("HalfTotalWidth", {});
+    // The prototype only has one section, so we only have one entry into these
+    // vectors
+    ZeroStrip_ = {HalfTotalWidth_prototype_};
+    NumStrips_ = {NumStrips_prototype_};
+    HalfTotalWidth_ = {HalfTotalWidth_prototype_};
+  } else {
+    auto ZeroStrip_v12_ = ps.getParameter<std::vector<double>>("ZeroStrip", {});
+    auto NumStrips_v12_ = ps.getParameter<std::vector<int>>("NumStrips", {});
+    auto HalfTotalWidth_v12_ =
+        ps.getParameter<std::vector<double>>("HalfTotalWidth", {});
+
+    ZeroStrip_ = makeCanonicalLayeredParameter(ZeroStrip_v12_);
+    NumStrips_ = makeCanonicalLayeredParameter(NumStrips_v12_);
+    HalfTotalWidth_ = makeCanonicalLayeredParameter(HalfTotalWidth_v12_);
+  }
   buildStripPositionMap();
 }
-
+void HcalGeometry::printPositionMap(int section) const {
+  // Note that layer numbering starts at 1 rather than 0
+  for (int layer = 1; layer <= NumLayers_[section]; ++layer) {
+    for (int strip = 0; strip < getNumStrips(section, layer); ++strip) {
+      HcalID id(section, layer, strip);
+      auto centerPosition = getStripCenterPosition(id);
+      auto x = centerPosition[0];
+      auto y = centerPosition[1];
+      auto z = centerPosition[2];
+      std::cout << id << ": Center position: (" << x << ", " << y << ", " << z
+                << ")\n";
+    }
+  }
+}
 void HcalGeometry::buildStripPositionMap() {
   // We hard-code the number of sections as seen in HcalID
   for (int section = 0; section < NumSections_; section++) {
     for (int layer = 1; layer <= NumLayers_[section]; layer++) {
-      for (int strip = 0; strip < NumStrips_[section]; strip++) {
+      for (int strip = 0; strip < getNumStrips(section, layer); strip++) {
         // initialize values
         double x{-99999}, y{-99999}, z{-99999};
 
@@ -39,7 +81,7 @@ void HcalGeometry::buildStripPositionMap() {
 
         // the center of a layer: layer * (layer_dz) + (layer_dz)/2
         double layercenter =
-            layer * LayerThickness_.at(section) + 0.5 * ThicknessScint_;
+            (layer - 1) * LayerThickness_.at(section) + 0.5 * ThicknessScint_;
 
         // the center of a strip: (strip + 0.5) * (strip_dx)
         double stripcenter = (strip + 0.5) * WidthScint_;
@@ -66,15 +108,15 @@ void HcalGeometry::buildStripPositionMap() {
             ZeroStrip_. The x(y) position is set to the center of the strip (0).
           */
           if (layer % 2 == 1) {
-            y = stripcenter - ZeroStrip_.at(section);
+            y = stripcenter - getZeroStrip(section, layer);
             x = 0;
           } else {
-            x = stripcenter - ZeroStrip_.at(section);
+            x = stripcenter - getZeroStrip(section, layer);
             y = 0;
           }
         } else {
           // z position: zero-strip(z) + strip_center(z)
-          z = ZeroStrip_.at(section) + stripcenter;
+          z = getZeroStrip(section, layer) + stripcenter;
 
           /**
             Top and Bottom sections have strips orientated in x
@@ -83,14 +125,14 @@ void HcalGeometry::buildStripPositionMap() {
           if (hcalsection == ldmx::HcalID::HcalSection::TOP or
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
             y = ZeroLayer_.at(section) + layercenter;
-            x = HalfTotalWidth_.at(section);
+            x = getHalfTotalWidth(section, layer);
             if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
               y *= -1;
               x *= -1;
             }
           } else {
             x = ZeroLayer_.at(section) + layercenter;
-            y = HalfTotalWidth_.at(section);
+            y = getHalfTotalWidth(section, layer);
             if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
               x *= -1;
               y *= -1;
