@@ -52,14 +52,17 @@ class SingleSubsystemUnpacker(ldmxcfg.Producer) :
         Number of words to put onto each event bus
     bytes_per_word : int
         Number of bytes in each word of buffer (1,2,4, or 8)
+    detector_name : str
+        Name of the detector GDML file
     """
 
-    def __init__(self, raw_file, output_name, num_words_per_event, bytes_per_word = 1) :
+    def __init__(self, raw_file, output_name, num_words_per_event,detector_name, bytes_per_word = 1) :
         super().__init__(f'unpack_{os.path.basename(raw_file)}','packing::SingleSubsystemUnpacker','Packing')
         self.raw_file = raw_file
         self.output_name = output_name
         self.num_words_per_event = num_words_per_event
         self.num_bytes_per_word = bytes_per_word
+        self.detector_name = detector_name
 
 class SingleSubsystemPacker(ldmxcfg.Analyzer) :
     """Configuration for packing a single subsystem's encoded buffer
