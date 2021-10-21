@@ -90,6 +90,12 @@ void HcalRawDecoder::produce(framework::Event& event) {
       /* whole event header word looks like
        *
        * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
+       *
+       * which appears to be frontend bug because the documentation shows
+       *
+       * VERSION (4) | FPGA ID (8) | NSAMPLES (6) | 00 | LEN (12)
+       *
+       * decoding following the documentation is below but commented out
        */
       uint32_t whole_event_header;
       reader_ >> whole_event_header;
@@ -97,6 +103,11 @@ void HcalRawDecoder::produce(framework::Event& event) {
       uint32_t fpga     = (whole_event_header >> 20) & packing::utility::mask<8>;
       uint32_t nsamples = (whole_event_header >> 16) & packing::utility::mask<4>;
       uint32_t eventlen = whole_event_header & packing::utility::mask<16>;
+
+      /* decoding following documentation
+      uint32_t nsamples = (whole_event_header >> 14) & packing::utility::mask<6>;
+      uint32_t eventlen = whole_event_header & packing::utility::mask<12>;
+      */
 
       // sample counters
       std::vector<uint32_t> length_per_sample(nsamples, 0);
@@ -125,10 +136,10 @@ void HcalRawDecoder::produce(framework::Event& event) {
      *
      * VERSION (4) | FPGA_ID (8) | NLINKS (6) | 00 | LEN (12)
      * BX ID (12) | RREQ (10) | OR (10)
-     * RID ok (1) | CDC ok (1) | LEN3 (6) |
-     *  RID ok (1) | CDC ok (1) | LEN2 (6) |
-     *  RID ok (1) | CDC ok (1) | LEN1 (6) |
-     *  RID ok (1) | CDC ok (1) | LEN0 (6)
+     * RID ok (1) | CRC ok (1) | LEN3 (6) |
+     *  RID ok (1) | CRC ok (1) | LEN2 (6) |
+     *  RID ok (1) | CRC ok (1) | LEN1 (6) |
+     *  RID ok (1) | CRC ok (1) | LEN0 (6)
      * ... other listing of links ...
      */
     packing::utility::CRC fpga_crc;
@@ -175,7 +186,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
      * where each link was encoded as in Table 4 of
      * the DAQ specs
      *
-     * 0 (7) | CRC ok (1) | ROC_ID (8) |  0 (8) | RO Map (8)
+     * ROC_ID (16) | CRC ok (1) | 0 (7) | RO Map (8)
      * RO Map (32)
      */
 
@@ -293,13 +304,6 @@ void HcalRawDecoder::produce(framework::Event& event) {
           "Our calculated FPGA checksum doesn't match the one read in.");
     }
     */
-  }
-
-  // check if there was any data to decode
-  //  helpful for when reading directly from a raw data file
-  //  so we can simply overestimate the number of events
-  if (eid_to_samples.size() == 0) {
-    abortEvent();
   }
 
   ldmx::HgcrocDigiCollection digis;
