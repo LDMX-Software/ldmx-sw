@@ -12,7 +12,7 @@ namespace ldmx {
  * @class HcalElectronicsID
  * @brief Identifies a location in the Hcal readout chain
  * 
- *    -- fiber : optical fiber number (backend number), range assumed O(0-96)
+ *    -- fpga : fpga (backend number), range assumed O(0-96)
  *    -- elink : electronic link number, range assumed O(0-47)
  *    -- channel : channel-on-elink, range O(0-37)
  *
@@ -23,8 +23,8 @@ class HcalElectronicsID : public DetectorID {
  public:
 
   static const RawValue INDEX_MASK{0xFFFFFF};
-  // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
-  typedef PackedIndex<38,48> Index;
+  // PackedIndex for channel (field 0) and elink (field 1), fpga (field 2)
+  typedef PackedIndex<38,48,1> Index;
   // Maximum value of any packed index here
   static const unsigned int MAX_INDEX{38*48*200};
   
@@ -50,9 +50,9 @@ class HcalElectronicsID : public DetectorID {
   /**
    * Create from pieces
    */
-  HcalElectronicsID(unsigned int fiber, unsigned int elink, unsigned int channel)
+  HcalElectronicsID(unsigned int fpga, unsigned int elink, unsigned int channel)
       : DetectorID(EID_HCAL, 0) {
-    Index index(channel,elink,fiber);
+    Index index(channel,elink,fpga);
     id_ |= index.value();
   }
 
@@ -71,18 +71,18 @@ class HcalElectronicsID : public DetectorID {
   }
   
   /**
-   * Get the value of the fiber from the ID.
-   * @return The value of the fiber field.
+   * Get the value of the fpga from the ID.
+   * @return The value of the fpga field.
    */
-  int fiber() const { return Index(id_&INDEX_MASK).field2(); }
+  int fpga() const { return Index(id_&INDEX_MASK).field2(); }
   /**
-   * Get the value of the fiber from the ID.
-   * @return The value of the fiber field.
+   * Get the value of the elink from the ID.
+   * @return The value of the elink field.
    */
   int elink() const { return Index(id_&INDEX_MASK).field1(); }
   /**
-   * Get the value of the fiber from the ID.
-   * @return The value of the fiber field.
+   * Get the value of the channel from the ID.
+   * @return The value of the channel field.
    */
   int channel() const { return Index(id_&INDEX_MASK).field0(); }
 
