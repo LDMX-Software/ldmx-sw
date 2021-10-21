@@ -17,18 +17,22 @@ namespace hcal {
 namespace utility {
 
 /**
- * Read out 32-bit words from a buffer.
+ * Read out 32-bit words from a 8-bit buffer.
  */
 class Reader {
-  const std::vector<uint32_t> &buffer_;
+  const std::vector<uint8_t> &buffer_;
   std::size_t i_word_;
   uint32_t next() {
-    uint32_t w{buffer_.at(i_word_)};
-    i_word_++;
+    uint32_t w = buffer_.at(i_word_) | 
+                 (buffer_.at(i_word_ + 1) << 8) |
+                 (buffer_.at(i_word_ + 2) << 16) |
+                 (buffer_.at(i_word_ + 3) << 24);
+    i_word_ += 4;
     return w;
   }
+
  public:
-  Reader(const std::vector<uint32_t>& b) : buffer_{b}, i_word_{0} {}
+  Reader(const std::vector<uint8_t>& b) : buffer_{b}, i_word_{0} {}
   operator bool() {
     return (i_word_ < buffer_.size());
   }
@@ -72,7 +76,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
   /// words for reading and decoding
   static uint32_t head1, head2, w;
 
-  utility::Reader reader_{event.getCollection<uint32_t>(input_name_, input_pass_)};
+  utility::Reader reader_{event.getCollection<uint8_t>(input_name_, input_pass_)};
 
   /** Re-sort the data from grouped by bunch to by channel
    *
@@ -90,12 +94,6 @@ void HcalRawDecoder::produce(framework::Event& event) {
       /* whole event header word looks like
        *
        * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
-       *
-       * which appears to be frontend bug because the documentation shows
-       *
-       * VERSION (4) | FPGA ID (8) | NSAMPLES (6) | 00 | LEN (12)
-       *
-       * decoding following the documentation is below but commented out
        */
       uint32_t whole_event_header;
       reader_ >> whole_event_header;
@@ -103,11 +101,6 @@ void HcalRawDecoder::produce(framework::Event& event) {
       uint32_t fpga     = (whole_event_header >> 20) & packing::utility::mask<8>;
       uint32_t nsamples = (whole_event_header >> 16) & packing::utility::mask<4>;
       uint32_t eventlen = whole_event_header & packing::utility::mask<16>;
-
-      /* decoding following documentation
-      uint32_t nsamples = (whole_event_header >> 14) & packing::utility::mask<6>;
-      uint32_t eventlen = whole_event_header & packing::utility::mask<12>;
-      */
 
       // sample counters
       std::vector<uint32_t> length_per_sample(nsamples, 0);
