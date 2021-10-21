@@ -32,6 +32,20 @@ class QIEEncoder(ldmxcfg.Producer) :
         enc.output_collection= 'QIEstreamTag'
         return enc
 
+    def up(mapFile) :
+        """Get the encoding emulator for the trigger pad upstream of target"""
+        enc = QIEEncoder(mapFile,'up')
+        enc.input_collection = 'trigScintQIEDigisUp'
+        enc.output_collection= 'QIEstreamUp'
+        return enc
+
+    def down(mapFile) :
+        """Get the encoding emulator for the trigger pad downstream of target"""
+        enc = QIEEncoder(mapFile,'down')
+        enc.input_collection = 'trigScintQIEDigisDown'
+        enc.output_collection= 'QIEstreamDown'
+        return enc
+
 
 class QIEDecoder(ldmxcfg.Producer) :
     """Configuration for QIE encoder"""
@@ -47,7 +61,22 @@ class QIEDecoder(ldmxcfg.Producer) :
 
     def tagger(mapFile) :
         """Get the decoding emulator for the trigger pad upstream of tagger"""
-        enc = QIEDecoder(mapFile,'tag')
-        enc.input_collection = 'QIEstreamTag'
-        enc.output_collection= 'decodedQIETag'
-        return enc
+        dec = QIEDecoder(mapFile,'tag')
+        dec.input_collection = 'QIEstreamTag'
+        dec.output_collection= 'decodedQIETag'
+        return dec
+
+    def up(mapFile) :
+        """Get the decoding emulator for the trigger pad upstream of target"""
+        dec = QIEDecoder(mapFile,'up')
+        dec.input_collection = 'QIEstreamUp'
+        dec.output_collection= 'decodedQIEUp'
+        return dec
+
+    def down(mapFile) :
+        """Get the decoding emulator for the trigger pad downstream of target"""
+        dec = QIEDecoder(mapFile,'down')
+        dec.input_collection = 'QIEstreamDown'
+        dec.output_collection= 'decodedQIEDown'
+        return dec
+
