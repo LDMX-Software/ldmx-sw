@@ -73,12 +73,29 @@ namespace trigscint {
   }
 
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
-  const auto eventStream{event.getCollection<int>( inputCollection_, inputPassName_)};
+  const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
 
-  // trigger IDevent number 
-  uint16_t triggerID =eventStream.at(QIEStream::TRIGID_POS);
-  ldmx_log(debug) << " got triggerID " << eventStream.at(0);
+  // trigger IDevent number
+  // this is the one word that spans several bytes 
+  uint16_t triggerID =0; // =eventStream.at(QIEStream::TRIGID_POS);
+  
+  //  for (int iW = QIEStream::TRIGID_LEN_BYTES-1; iW >= 0; iW--) { //assume the whole 2B are written as a single 16 bits word                      
+	for (int iW = 0 ; iW < QIEStream::TRIGID_LEN_BYTES; iW++) { //assume the whole 2B are written as a single 16 bits word
+	int pos = QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES -1 - iW);
+	uint8_t tIDword = eventStream.at( pos );
+	//	uint8_t tIDword = eventStream.at(QIEStream::TRIGID_POS+iW);
+	ldmx_log(debug) << "trigger word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(tIDword ) ;
+	triggerID |= (tIDword << iW*8); //shift by a byte at a time
+  }
+  
+  //	  flags |= (isCRC0malformed << QIEStream::CRC0_ERR_POS);
+  //triggerIDwords.push_back( tIDword );
+
+  
+	  // uint16_t triggerID =eventStream.at(QIEStream::TRIGID_POS);
+  ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
+
   if ( triggerID != event.getEventHeader().getEventNumber() ) {
 	// this probably only applies to digi emulation,
 	// unless an event number is explicitly set in unpacking
@@ -94,10 +111,11 @@ namespace trigscint {
 	 - isCRC1malformed : if there was an issue with CRC from fiber1
   */
   uint8_t flags = eventStream.at(QIEStream::ERROR_POS);  
-  bool isCIDskipped { (flags >> QIEStream::CID_SKIP_POS) & mask8<QIEStream::FLAG_SIZE>::m};
-  bool isCIDunsync { (flags >> QIEStream::CID_UNSYNC_POS) & mask8<QIEStream::FLAG_SIZE>::m};
-  bool isCRC1malformed{ (flags >> QIEStream::CRC1_ERR_POS) & mask8<QIEStream::FLAG_SIZE>::m};
-  bool isCRC0malformed{ (flags >> QIEStream::CRC0_ERR_POS) & mask8<QIEStream::FLAG_SIZE>::m};
+
+  bool isCIDskipped { (flags >> QIEStream::CID_SKIP_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
+  bool isCIDunsync { (flags >> QIEStream::CID_UNSYNC_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
+  bool isCRC1malformed{ (flags >> QIEStream::CRC1_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
+  bool isCRC0malformed{ (flags >> QIEStream::CRC0_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   //checksum
   uint8_t referenceChecksum = 30;  // really, this is just a random number for now. TODO> implement a checksum set/get 
   int checksum = eventStream.at(QIEStream::CHECKSUM_POS);
@@ -118,7 +136,10 @@ namespace trigscint {
 
   // outer loop: over nSamples
   // inner loop over nChannels to get ADCs, then repeat to get TDCs
-  int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS), QIEStream::TRIGID_POS) + 1 ; //overkill :D should be 3
+
+  int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
+						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
+  ldmx_log(debug) << "Event parsing starts at vector idx " << iWstart ; 
   int nWords = nSamp*nChannels_*2 + iWstart; //1 ADC, 1 TDC per channel per sample, + the words in the header
   int iWord = iWstart;
   for (int iS = 0; iS < nSamp; iS++) {                                                                                                     
