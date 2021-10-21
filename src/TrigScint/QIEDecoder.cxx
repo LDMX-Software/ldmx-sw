@@ -75,6 +75,7 @@ namespace trigscint {
   }
   
   ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
+
   if ( triggerID != event.getEventHeader().getEventNumber() ) {
 	// this probably only applies to digi emulation,
 	// unless an event number is explicitly set in unpacking
@@ -90,6 +91,7 @@ namespace trigscint {
 	 - isCRC1malformed : if there was an issue with CRC from fiber1
   */
   uint8_t flags = eventStream.at(QIEStream::ERROR_POS);  
+
   bool isCIDskipped { (flags >> QIEStream::CID_SKIP_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   bool isCIDunsync { (flags >> QIEStream::CID_UNSYNC_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   bool isCRC1malformed{ (flags >> QIEStream::CRC1_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
@@ -111,6 +113,7 @@ namespace trigscint {
   
   // read in words from the stream. line them up per channel and time sample.
   // channels are in the electronics ordering 
+
   int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
 						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
   int nWords = nSamp*nChannels_*2 + iWstart; //1 ADC, 1 TDC per channel per sample, + the words in the header
