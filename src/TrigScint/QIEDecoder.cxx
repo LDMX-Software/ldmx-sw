@@ -1,7 +1,5 @@
 #include "TrigScint/QIEDecoder.h"
 
-//#include <algorithm>
-//#include <iomanip>
 #include <bitset>
 
 
@@ -43,7 +41,6 @@ namespace trigscint {
 
 	 // here make the elecID the key (other way around when encoding)
 	 channelMap_.insert(std::pair<int,int>(elID, chID));
-	 //	 channelMap_[ chID ] = elID;
 	 ldmx_log(debug) << elID << "  chID " << chID ;
    }
    channelMapFile_.close();
@@ -58,43 +55,25 @@ namespace trigscint {
 	  << "QIEDecoder: produce() starts! Event number: "
 	  << event.getEventHeader().getEventNumber();
 
-  std::vector <trigscint::QIEStream> qieOuts;
   int nSamp = QIEStream::NUM_SAMPLES ;
-  std::vector < int > initVec(nSamp, 0);
-
   ldmx_log(debug) << "num samples = " << nSamp;
-    
-  for (int iQ = 0; iQ < nChannels_ ; iQ++) {
-	QIEStream qieOut;
-	qieOut.setADC(initVec);
-	qieOut.setTDC(initVec);
-	qieOut.setCID(initVec);
-	qieOuts.push_back(qieOut);
-  }
-
+	
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
-  //  const auto eventStream{event.getCollection<int>( inputCollection_, inputPassName_)};
   const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
   ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
 
-  // trigger IDevent number
+  // trigger ID event number
   // this is the one word that spans several bytes 
   uint16_t triggerID =0; // =eventStream.at(QIEStream::TRIGID_POS);
-  
-  //  for (int iW = QIEStream::TRIGID_LEN_BYTES-1; iW >= 0; iW--) { //assume the whole 2B are written as a single 16 bits word                      
-	for (int iW = 0 ; iW < QIEStream::TRIGID_LEN_BYTES; iW++) { //assume the whole 2B are written as a single 16 bits word
+
+  for (int iW = 0 ; iW < QIEStream::TRIGID_LEN_BYTES; iW++) {
+	//assume the whole 2B are written as a single 16 bits word
 	int pos = QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES -1 - iW);
 	uint8_t tIDword = eventStream.at( pos );
-	//	uint8_t tIDword = eventStream.at(QIEStream::TRIGID_POS+iW);
 	ldmx_log(debug) << "trigger word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(tIDword ) ;
 	triggerID |= (tIDword << iW*8); //shift by a byte at a time
   }
   
-  //	  flags |= (isCRC0malformed << QIEStream::CRC0_ERR_POS);
-  //triggerIDwords.push_back( tIDword );
-
-  
-	  // uint16_t triggerID =eventStream.at(QIEStream::TRIGID_POS);
   ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
   if ( triggerID != event.getEventHeader().getEventNumber() ) {
 	// this probably only applies to digi emulation,
@@ -132,19 +111,22 @@ namespace trigscint {
   
   // read in words from the stream. line them up per channel and time sample.
   // channels are in the electronics ordering 
-
-  // outer loop: over nSamples
-  // inner loop over nChannels to get ADCs, then repeat to get TDCs
   int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
 						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
-  ldmx_log(debug) << "Event parsing starts at vector idx " << iWstart ; 
   int nWords = nSamp*nChannels_*2 + iWstart; //1 ADC, 1 TDC per channel per sample, + the words in the header
   int iWord = iWstart;
+  ldmx_log(debug) << "Event parsing starts at vector idx " << iWstart << " and nWords = " << nWords; 
+  // outer loop: over nSamples
+  // inner loop over nChannels to get ADCs, then repeat to get TDCs
   for (int iS = 0; iS < nSamp; iS++) {                                                                                                     
 	for (int iQ = 0; iQ < nChannels_ ; iQ++) {
-	  int val = eventStream.at(iWord);
+	  if ( iWord >= nWords ) {
+        ldmx_log(fatal) << "More words than expected! Breaking ADC loop in sample " << iS << " at iQ = " << iQ;
+        break;
+      }
+	  uint8_t val = eventStream.at(iWord);
 	  if (val > 0) { 	//add only the digis with non-zero ADC value
-		ldmx_log(debug) << "got ADC value " << val ;
+		ldmx_log(debug) << "got ADC value " << (unsigned)val << " at channel (elec) idx " << iQ ;
 		if ( ADCmap.find( iQ ) == ADCmap.end() ) { // we have a new channel 
 		  std::vector <int > adcs(nSamp, 0);
 		  ADCmap.insert(std::pair<int, std::vector <int> >(iQ, adcs));
@@ -154,9 +136,13 @@ namespace trigscint {
 	  iWord++;
 	}
 	for (int iQ = 0; iQ < nChannels_ ; iQ++) {
-	  int val = eventStream.at(iWord);
+	  if ( iWord >= nWords ) {
+        ldmx_log(debug) << "More words than expected! Breaking TDC loop in sample " << iS << " at iQ = " << iQ;
+		break;
+	  }
+	  uint8_t val = eventStream.at(iWord);
 	  if (val > 0) { // TODO: check if this channel is also present in ADC map? in the end? 
-		ldmx_log(debug) << "got TDC value " << val ;
+		ldmx_log(debug) << "got TDC value " << (unsigned)val << " at channel (elec) idx " << iQ ;;
 		if ( TDCmap.find( iQ ) == TDCmap.end() ) { // we have a new channel 
 		  std::vector <int > tdcs(nSamp, 0);
 		  TDCmap.insert(std::pair<int, std::vector <int> >(iQ, tdcs));
@@ -167,14 +153,19 @@ namespace trigscint {
 	  }
 	  iWord++;
 	}
-	if ( iWord > nWords )
-	  ldmx_log(fatal) << "More words than expected! ";
+	ldmx_log(debug) << "Done with sample " << iS ;
+
   }
-  
+
+  ldmx_log(debug) << "Done reading in header, ADC and TDC for event " << (unsigned)triggerID ;
   for (std::map<int, std::vector<int>>::iterator itr = ADCmap.begin(); itr != ADCmap.end(); ++itr) {
 	TrigScintQIEDigis  digi;
 	digi.setADC( itr->second );
-	int bar = channelMap_[itr->first]; // same as .find( itr->first )->second;
+	if (channelMap_.find( itr->first ) == channelMap_.end() ) {
+	  ldmx_log(fatal) << "Couldn't find the bar ID corresponding to electronics ID " << itr->first << "!! Skipping." ;
+	  continue;
+	}
+	int bar = channelMap_[itr->first];
 	digi.setChanID( bar );
 	digi.setTDC( TDCmap[itr->first] );
 	outDigis.push_back( digi );
