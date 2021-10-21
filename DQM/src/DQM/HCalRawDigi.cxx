@@ -32,31 +32,23 @@ void HCalRawDigi::onProcessStart() {
 }
 
 void HCalRawDigi::analyze(const framework::Event& event) {
-  // need to tell collection to decode in v2 style
-  // TODO make stored in ROOT file
-  ldmx::HgcrocDigiCollection::setVersion(2);
-  
   auto digis{event.getObject<ldmx::HgcrocDigiCollection>(input_name_,input_pass_)};
   /**
    * we can do this incrementing of channel indices because the decoder
    * uses a map which sorts by electronic ID and then adds the digis in
-   * sequence, so the order from event to event is the same esp without
-   * zero supp
+   * sequence, so the order from event to event is the same without zero supp
    */
   unsigned int i_digi{1};
   std::cout << "nsamples " <<	digis.getNumSamplesPerDigi() <<	std::endl;
   for (auto const& digi : digis) {
-
     ldmx::HcalDigiID did(digi.id());
     std::string layer = std::to_string(did.layer());
     std::string end = std::to_string(did.end());
     histograms_.fill("adc_soi_by_strip_end"+end+"_layer"+layer,did.strip(),digi.soi().adc_t());
 
-    unsigned int i_sample{0};
-    for (auto const& sample : digi) {
+    for (unsigned int i_sample{0}; i_sample < digis.getNumSamplesPerDigi(); i_sample++) {
       histograms_.fill("adc_by_channel_sample"+std::to_string(i_sample),
-          i_digi,sample.adc_t());
-      i_sample++;
+          i_digi,digi.at(i_sample).adc_t());
     }
     i_digi++;
   }
