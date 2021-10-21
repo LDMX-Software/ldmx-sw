@@ -37,6 +37,8 @@ class SingleSubsystemUnpacker : public framework::Producer {
    */
   void produce(framework::Event& event) final override;
 
+  void beforeNewRun(ldmx::RunHeader& rh) final override;
+
  private:
   /**
    * Read the configured number of words of the input type
@@ -61,6 +63,8 @@ class SingleSubsystemUnpacker : public framework::Producer {
   int num_bytes_per_word_;
   /// destination object name
   std::string output_name_;
+  /// Detector file name
+  std::string detector_name_;
 
  private:
   /// raw data file we are reading

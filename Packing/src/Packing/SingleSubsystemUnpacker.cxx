@@ -4,11 +4,16 @@
 
 namespace packing {
 
+void SingleSubsystemUnpacker::beforeNewRun(ldmx::RunHeader& rh) {
+  rh.setDetectorName(detector_name_);
+}
+
 void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
   reader_.open(ps.getParameter<std::string>("raw_file"));
   num_words_per_event_ = ps.getParameter<int>("num_words_per_event");
   num_bytes_per_word_ = ps.getParameter<int>("num_bytes_per_word");
   output_name_ = ps.getParameter<std::string>("output_name");
+  detector_name_=ps.getParameter<std::string>("detector_name");
 }
 
 void SingleSubsystemUnpacker::produce(framework::Event& event) {
