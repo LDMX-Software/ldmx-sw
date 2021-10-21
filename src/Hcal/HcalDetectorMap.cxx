@@ -82,7 +82,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
         end /*end??*/);
     ldmx::HcalElectronicsID eleid(
         0 /*fpga - only one FPGA during test beam*/,
-        link /*fiber*/,
+        link /*elink*/,
         chan /*channel*/);
     
     if (this->exists(eleid)) {
