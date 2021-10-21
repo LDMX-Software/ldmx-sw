@@ -43,7 +43,8 @@ void HCalRawDigi::analyze(const framework::Event& event) {
    * sequence, so the order from event to event is the same esp without
    * zero supp
    */
-  unsigned int i_digi{1}; 
+  unsigned int i_digi{1};
+  std::cout << "nsamples " <<	digis.getNumSamplesPerDigi() <<	std::endl;
   for (auto const& digi : digis) {
 
     ldmx::HcalDigiID did(digi.id());
