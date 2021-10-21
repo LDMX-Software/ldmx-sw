@@ -85,14 +85,15 @@ double HcalRecProducer::getTOA(
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
   int toaSample(0), maxSample(0), iADC(0);
-  for (auto it = digi.begin(); it < digi.end(); it++) {
-    if (it->toa() > 0) {
-      toaRelStartBX = it->toa() * (clock_cycle_ / 1024);  // ns
+  for (int i_sample{0}; i_sample < digi.size(); i_sample++) {
+    auto sample{digi.at(i_sample)};
+    if (sample.toa() > 0) {
+      toaRelStartBX = sample.toa() * (clock_cycle_ / 1024);  // ns
       // find in which ADC sample the TOA was taken
       toaSample = iADC;
     }
-    if ((it->adc_t() - pedestal) > maxMeas) {
-      maxMeas = (it->adc_t() - pedestal);
+    if ((sample.adc_t() - pedestal) > maxMeas) {
+      maxMeas = (sample.adc_t() - pedestal);
       maxSample = iADC;
     }
     iADC++;
