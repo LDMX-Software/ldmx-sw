@@ -86,23 +86,23 @@ void HcalRawDecoder::produce(framework::Event& event) {
       eid_to_samples;
   while (reader_ >> head1 >> head2) {
     /// are we reading a buffer from multi-sample per event?
-    if (head1 == 0x11111111 and head2 == 0xbeef2001) {
-      /* run208 file is missing the whole event header word
+    if (head1 == 0x11111111 and head2 == 0xbeef2021) {
+      /* whole event header word looks like
+       *
+       * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
+       */
       uint32_t whole_event_header;
       reader_ >> whole_event_header;
       uint32_t version  = (whole_event_header >> 28) & packing::utility::mask<4>;
       uint32_t fpga     = (whole_event_header >> 20) & packing::utility::mask<8>;
-      uint32_t nsamples = (whole_event_header >> 14) & packing::utility::mask<6>;
-      uint32_t eventlen = whole_event_header & packing::utility::mask<12>;
-      */
-      uint32_t nsamples = 4; // hardcoded because of missing header word
+      uint32_t nsamples = (whole_event_header >> 16) & packing::utility::mask<4>;
+      uint32_t eventlen = whole_event_header & packing::utility::mask<16>;
 
       // sample counters
       std::vector<uint32_t> length_per_sample(nsamples, 0);
       for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
         if (i_sample%2 == 0) {
           reader_ >> w;
-          // included in CRC?
         }
         uint32_t shift_in_word = 16*(i_sample%2);
         length_per_sample[i_sample] = (w >> shift_in_word) & packing::utility::mask<12>;
@@ -110,7 +110,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
 
       // read first sample headers
       reader_ >> head1 >> head2;
-    } else if (head1 == 0xd07e2001 and head2 == 0x12345678) {
+    } else if (head1 == 0xd07e2021 and head2 == 0x12345678) {
       // these are the special footer words at the end,
       //  done with event
       break;
