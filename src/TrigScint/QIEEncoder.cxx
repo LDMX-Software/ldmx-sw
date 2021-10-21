@@ -1,6 +1,5 @@
 #include "TrigScint/QIEEncoder.h"
 
-//#include <algorithm>
 #include <iomanip>
 #include <bitset>
 
@@ -68,7 +67,7 @@ namespace trigscint {
 	  qieOut.setADC(initVec);
 	  qieOut.setTDC(initVec);
 	  qieOut.setCID(initVec);
-	  qieOut.setElectronicsID( iQ ); //assume id is index //channelMap_.at(iQ) );
+	  qieOut.setElectronicsID( iQ ); //assume id is index 
 	
 	  qieOuts.push_back(qieOut);
 	}
@@ -78,10 +77,10 @@ namespace trigscint {
 																	   inputCollection_, inputPassName_)};
 	ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
 
-	bool isCIDunsync = false;   //if there is a mismatch between CID reported by channels within the same time sample 
-	bool isCIDskipped = false;  //if there is a gap in the CID increment. 
-	bool isCRC0malformed = false; //if there was an issue with CRC from fiber0
-	bool isCRC1malformed = false; //if there was an issue with CRC from fiber1
+	bool isCIDunsync = false;   //mismatch between CID reported by channels within the same time sample 
+	bool isCIDskipped = false;  //a gap in the CID increment
+	bool isCRC0malformed = false; //an issue with CRC from fiber0
+	bool isCRC1malformed = false; //an issue with CRC from fiber1
 
 	int firstCID=-1;
 	ldmx_log(debug) << "entering loop over digis " ;
@@ -89,13 +88,13 @@ namespace trigscint {
 	  int bar = digi.getChanID();
 	  auto itr = channelMap_.find( bar );
 	  if ( itr == channelMap_.end() ) {// yikes! didn't find the bar in the map
-		ldmx_log(fatal) << "Couldn't find an entry for bar " << bar << "; check the (choice of) channel map!. Exiting event " << event.getEventHeader().getEventNumber();
+		ldmx_log(fatal) << "Couldn't find an entry for bar " << bar <<
+		  "; check the (choice of) channel map!. Exiting event " << event.getEventHeader().getEventNumber();
 		return;
 	  }
 	  int idx = itr->second; //here we're just using the order. no actual elID is assumed.
 	  qieOuts.at(idx).setChannelID( bar );
 	  qieOuts.at(idx).setElectronicsID( idx ); 
-	  //	ldmx_log(debug) << "Channel "<< bar << " elec ID " << unsigned(qieOuts.at(idx).getElectronicsID()) ;
 	  ldmx_log(debug) << "Channel "<< bar << " elec ID " << qieOuts.at(idx).getElectronicsID() ;
 	  std::vector <int> LEtdcs; //make the LE (Leading Edge) truncation explicit 
 	  std::vector <uint8_t> cids;
@@ -112,21 +111,26 @@ namespace trigscint {
 		  int adc= digi.getADC().at(iS);
 		  uint8_t mant = adc%64 ;
 		  uint8_t exp = adc/64 ;
-		  ldmx_log(debug) << "\tSample " << iS  << std::left << std::setw(6) << " ADC " << adc << ",\texp " << unsigned(exp) << " mant " << unsigned(mant) <<
-			",\tTDC = " << tdc << ", LE TDC = " << std::bitset<8>(tdc/16) << " and capID= " << cid ; // << std::endl;
+		  ldmx_log(debug) << "\tSample " << iS  << std::left << std::setw(6) << " ADC " <<
+			adc << ",\texp " << unsigned(exp) << " mant " << unsigned(mant) <<
+			",\tTDC = " << tdc << ", LE TDC = " << std::bitset<8>(tdc/16) << " and capID= " << cid ; 
 		  adcs.push_back( 64*exp+mant);
-		  ldmx_log(debug)  << "Combined ADC: " << std::showbase  << std::bitset<8>(adcs.back()) << " and original adc " << std::bitset<8>(adc) << std::dec ;
+		  ldmx_log(debug)  << "Combined ADC: " << std::showbase  << std::bitset<8>(adcs.back()) <<
+			" and original adc " << std::bitset<8>(adc) << std::dec ;
 		}//if verbose
 
 		tdc/=16; // do LE (leading edge) TDC
 		LEtdcs.push_back( tdc );
 		cids.push_back( (uint8_t)cid ); 
 	  }// over samples 
-	  if (firstCID == -1)
-		firstCID=cids.back(); //just store the 5th one, doesn't matter, if all channels are aligned then cids should match at any given time sample
-	  if (firstCID!=cids.back())
+	  if (firstCID == -1) {
+		// just store the 5th one, doesn't matter; if all channels
+		// are aligned then cids should match at any given time sample
+		firstCID=cids.back();
+	  }
+	  if (firstCID!=cids.back()) {
 		isCIDunsync=true; //any one channel not aligned is enough to set this bool 
-
+	  }
 	  qieOuts.at(idx).setADC( digi.getADC() );
 	  qieOuts.at(idx).setTDC( LEtdcs );
 	}//over digis
@@ -137,7 +141,7 @@ namespace trigscint {
 
     
 	//data format:
-	// RM ID. we don't set it for testbeam. in LDMX let's say it's 0 for tag, 1 for up, 2 for dn -- later this can be read using moduleID... 
+	// RM ID: we don't set it for testbeam so skip for now.
 	// 16 bit trigger ID.
 	// 4 bits of flags, then 4 reserved 0 for now 
 	// some 8-bit error word/checksum.
@@ -146,9 +150,8 @@ namespace trigscint {
 	// done.
   
 	uint16_t triggerID =event.getEventHeader().getEventNumber();
-	uint16_t header0;
-	uint8_t randomChecksum = 30;  // really, this is just a random number for now. TODO> implement a checksum
-	uint8_t flags;  //we use this to contain the reserved 0's for now 
+	uint8_t randomChecksum = 30;  // just some number for now. TODO implement a checksum
+	uint8_t flags = 0;  //we use this to contain the four reserved 0's too 
 	//put it all in, at the assigned position
 	flags |= (isCRC0malformed << QIEStream::CRC0_ERR_POS);
 	flags |= (isCRC1malformed << QIEStream::CRC1_ERR_POS);
@@ -156,16 +159,15 @@ namespace trigscint {
 	flags |= (isCIDskipped<< QIEStream::CID_SKIP_POS);
 	ldmx_log(debug) << "FLAGS: " << std::bitset<8>(flags) ;
   
-	//	std::vector <int> outWord;
 	std::vector <uint8_t> outWord;
 	std::vector <uint8_t> triggerIDwords;
-	//for (int iW = 0; iW < QIEStream::TRIGID_LEN_BYTES; iW++) { //if the LSB comes first in the 2-byte word (it shouldn't)
-	for (int iW = QIEStream::TRIGID_LEN_BYTES-1; iW >= 0; iW--) { //assume the whole 2B are written as a single 16 bits word 
+	for (int iW = QIEStream::TRIGID_LEN_BYTES-1; iW >= 0; iW--) {
+	  //assume the whole 2B are written as a single 16-bit word 
 	  uint8_t tIDword = triggerID >> iW*8; //shift by a byte at a time 
 	  triggerIDwords.push_back( tIDword );
 	  outWord.push_back( tIDword);
 	}	  
-	//	outWord.push_back( triggerID);
+
 	outWord.push_back( flags );
 	outWord.push_back( randomChecksum);
 
