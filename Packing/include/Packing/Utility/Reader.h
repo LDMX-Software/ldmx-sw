@@ -36,6 +36,9 @@ class Reader {
    */
   void open(const std::string& file_name) {
     file_.open(file_name, std::ios::in | std::ios::binary);
+    file_.seekg(0,std::ios::end);
+    file_size_ = file_.tellg();
+    file_.seekg(0);
   }
 
   /**
@@ -209,13 +212,15 @@ class Reader {
    *
    * @return true if we have reached the end of file.
    */
-  bool eof() const {
-    return file_.eof();
+  bool eof() {
+    return file_.eof() or file_.tellg() == file_size_;
   }
 
  private:
   /// file stream we are reading from
   std::ifstream file_;
+  /// file size in bytes
+  std::size_t file_size_;
 };  // RawDataFile
 
 }  // namespace utility
