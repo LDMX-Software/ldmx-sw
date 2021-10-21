@@ -40,27 +40,8 @@ class SingleSubsystemUnpacker : public framework::Producer {
   void beforeNewRun(ldmx::RunHeader& rh) final override;
 
  private:
-  /**
-   * Read the configured number of words of the input type
-   * from the file and put that buffer onto the event bus
-   * with the configured output_name_.
-   */
-  template <typename WordType>
-  void read(framework::Event& event) {
-    std::vector<WordType> buff;
-    if(!reader_.read(buff, num_words_per_event_)) {
-      EXCEPTION_RAISE("MalForm",
-        "Raw file provided was unable to read "+std::to_string(num_words_per_event_)
-        +" bytes in an event.");
-    }
-    event.add(output_name_, buff);
-  }
-
- private:
-  /// number of words per event to get from file
-  int num_words_per_event_;
-  /// number of bytes in each word
-  int num_bytes_per_word_;
+  /// number of bytes in each event
+  int num_bytes_per_event_;
   /// destination object name
   std::string output_name_;
   /// Detector file name
