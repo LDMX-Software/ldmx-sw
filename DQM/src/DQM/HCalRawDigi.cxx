@@ -22,15 +22,15 @@ void HCalRawDigi::onProcessStart() {
 			 "HCal Strip", nstrips, 0, nstrips, "ADC Counts in SOI", 200, 0, 200);
       histograms_.get("adc_soi_by_strip_end"+end+"_layer"+layer)->SetCanExtend(TH1::kAllAxes);
     }
-
+  }
   for (unsigned int i_sample{0}; i_sample < 4; i_sample++) {
     histograms_.create("adc_by_channel_sample"+std::to_string(i_sample),
-      "Arbitrary Channel Index", 250, 0, 250, 
-      "ADC Counts in Sample "+std::to_string(i_sample), 200, 0, 200);
+		       "Arbitrary Channel Index", 250, 0, 250, 
+		       "ADC Counts in Sample "+std::to_string(i_sample), 200, 0, 200);
     //histograms_.get("adc_by_channel_sample"+std::to_string(i_sample))->SetCanExtend(TH1::kAllAxes);
   }
 }
-
+  
 void HCalRawDigi::analyze(const framework::Event& event) {
   auto digis{event.getObject<ldmx::HgcrocDigiCollection>(input_name_,input_pass_)};
   /**
