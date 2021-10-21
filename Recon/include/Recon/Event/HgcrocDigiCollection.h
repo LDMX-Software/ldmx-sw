@@ -79,7 +79,7 @@ class HgcrocDigiCollection {
      * @note This is where the measurements to word translation occurs.
      */
     Sample(bool tot_progress, bool tot_complete, int firstMeas, int seconMeas,
-           int toa);
+           int toa, int version = 3);
 
     /**
      * Basic constructor
@@ -87,7 +87,7 @@ class HgcrocDigiCollection {
      * Use this constructor when translating binary data coming off the
      * detector into our event model.
      */
-    Sample(uint32_t w) : word_(w) {}
+    Sample(uint32_t w, int version = 3) : word_(w), version_{version} {}
 
     /**
      * Default constructor
@@ -124,7 +124,7 @@ class HgcrocDigiCollection {
      * @return 10-bit measurement of TOA
      */
     int toa() const { 
-      if (getVersion() == 2) {
+      if (version_ == 2) {
         return secon();
       } else {
         return third(); 
@@ -143,7 +143,7 @@ class HgcrocDigiCollection {
      */
     int tot() const {
       int meas = secon();
-      if (getVersion() == 2) {
+      if (version_ == 2) {
         meas = first();
       }
 
@@ -169,7 +169,7 @@ class HgcrocDigiCollection {
      * @return 10-bit measurement of current ADC
      */
     int adc_t() const {
-      if (getVersion() == 2) {
+      if (version_ == 2) {
         return third();
       }
 
@@ -210,7 +210,8 @@ class HgcrocDigiCollection {
    private:
     /// The actual 32-bit word spit out by the chip
     uint32_t word_;
-
+    /// version to use for {de,en}coding
+    int version_;
   };  // Sample
 
  public:
@@ -236,7 +237,7 @@ class HgcrocDigiCollection {
      * references
      */
     HgcrocDigi(unsigned int id,
-               std::vector<HgcrocDigiCollection::Sample>::const_iterator first,
+               std::vector<uint32_t>::const_iterator first,
                const HgcrocDigiCollection& collection)
         : id_(id), first_(first), collection_(collection) {}
 
@@ -246,20 +247,6 @@ class HgcrocDigiCollection {
      * @return global integer ID for this DIGI channel
      */
     unsigned int id() const { return id_; }
-
-    /**
-     * Get the starting iterator for looping through this DIGI
-     *
-     * @return const vector iterator pointing to start of this DIGI
-     */
-    auto begin() const { return first_; }
-
-    /**
-     * Get the ending iterator for looping through this DIGI
-     *
-     * @return const vector iterator pointing to end of this DIGI
-     */
-    auto end() const { return first_ + collection_.getNumSamplesPerDigi(); }
 
     /**
      * Check if this DIGI is an ADC measurement
@@ -298,13 +285,22 @@ class HgcrocDigiCollection {
       return soi().tot();
     }
 
+    /// get the sample at a specific index in the digi
+    HgcrocDigiCollection::Sample at(unsigned int i_sample) const {
+      return Sample(*(first_ + i_sample), collection_.getVersion());
+    }
+
     /**
      * Get the sample of interest from this DIGI
      *
      * @return Sample that is the sample of interest in this DIGI
      */
-    const HgcrocDigiCollection::Sample& soi() const {
-      return *(first_ + collection_.getSampleOfInterestIndex());
+    HgcrocDigiCollection::Sample soi() const {
+      return at(collection_.getSampleOfInterestIndex());
+    }
+
+    unsigned int size() const {
+      return collection_.getNumSamplesPerDigi();
     }
 
    private:
@@ -312,7 +308,7 @@ class HgcrocDigiCollection {
     unsigned int id_;
 
     /// the location of the first sample that are in this digi
-    std::vector<HgcrocDigiCollection::Sample>::const_iterator first_;
+    std::vector<uint32_t>::const_iterator first_;
 
     /// Reference to collection that owns this DIGI
     const HgcrocDigiCollection& collection_;
@@ -350,12 +346,12 @@ class HgcrocDigiCollection {
    * Get the version of ROC we have read
    * @return int version number of ROC
    */
-  static int getVersion() { return version_; }
+  int getVersion() const { return version_; }
 
   /**
    * Set the version of the ROC we have read
    */
-  static void setVersion(int v) {
+  void setVersion(int v) {
     version_ = v;
     return;
   }
@@ -430,6 +426,7 @@ class HgcrocDigiCollection {
    * @param[in] digi list of new samples to add
    */
   void addDigi(unsigned int id, const std::vector<Sample>& digi);
+  void addDigi(unsigned int id, const std::vector<uint32_t>& digi);
 
  public:
   /**
@@ -518,7 +515,7 @@ class HgcrocDigiCollection {
   std::vector<unsigned int> channelIDs_;
 
   /** list of samples that we have been given */
-  std::vector<Sample> samples_;
+  std::vector<uint32_t> samples_;
 
   /** number of samples for each digi */
   unsigned int numSamplesPerDigi_;
@@ -527,7 +524,7 @@ class HgcrocDigiCollection {
   unsigned int sampleOfInterest_;
 
   /** version of the ROC we have read */
-  static int version_;
+  int version_;
 
   /**
    * The ROOT class definition.
