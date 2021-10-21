@@ -156,15 +156,24 @@ namespace trigscint {
 	flags |= (isCIDskipped<< QIEStream::CID_SKIP_POS);
 	ldmx_log(debug) << "FLAGS: " << std::bitset<8>(flags) ;
   
-	std::vector <int> outWord;
-	outWord.push_back( triggerID);
+	//	std::vector <int> outWord;
+	std::vector <uint8_t> outWord;
+	std::vector <uint8_t> triggerIDwords;
+	//for (int iW = 0; iW < QIEStream::TRIGID_LEN_BYTES; iW++) { //if the LSB comes first in the 2-byte word (it shouldn't)
+	for (int iW = QIEStream::TRIGID_LEN_BYTES-1; iW >= 0; iW--) { //assume the whole 2B are written as a single 16 bits word 
+	  uint8_t tIDword = triggerID >> iW*8; //shift by a byte at a time 
+	  triggerIDwords.push_back( tIDword );
+	  outWord.push_back( tIDword);
+	}	  
+	//	outWord.push_back( triggerID);
+
 	outWord.push_back( flags );
 	outWord.push_back( randomChecksum);
 
 	if (verbose_) {
 	  std::cout << "header word " ;
 	  for (auto word: outWord)
-		std::cout <<  std::bitset<16>(word)  << " " ;
+		std::cout <<  std::bitset<8>(word)  << " " ;
 	  std::cout  << std::endl;
 	}
   
@@ -183,15 +192,17 @@ namespace trigscint {
 	if (verbose_) {
 	  std::cout << "total word " ;
 	  int widx = 0;
+	  int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
+						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
 	  for (auto word: outWord) { 
-		if ((widx - 3)%nChannels_ == 0 ) { 
-		  int sample = (widx - 3)/nChannels_ ;
+		if ((widx - iWstart)%nChannels_ == 0 ) { 
+		  int sample = (widx - iWstart)/nChannels_ ;
 		  if ( sample%2 == 0 )
 			std::cout << "\n sample " << sample/2 << " |  "; 
 		  else
 			std::cout << "\n TDC:        " ;
 		}
-		std::cout <<  word  << " " ;
+		std::cout <<  (unsigned)word  << " " ;
 		//std::cout <<  std::bitset<8>(word)  << " " ;  //for binary output format
 		widx++;
 	  }
