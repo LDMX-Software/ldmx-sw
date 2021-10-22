@@ -21,9 +21,6 @@ void HcalCalibration::onProcessStart() {
 }
 
 void HcalCalibration::analyze(const framework::Event& event) {
-  // need to tell collection to decode in v2 style
-  // TODO make stored in ROOT file
-  ldmx::HgcrocDigiCollection::setVersion(2);
 
   auto digis{event.getObject<ldmx::HgcrocDigiCollection>(input_name_,input_pass_)};
   /**
@@ -35,13 +32,13 @@ void HcalCalibration::analyze(const framework::Event& event) {
   unsigned int i_digi{1};
   for (auto const& digi : digis) {
     unsigned int i_sample{0};
-    for (auto const& sample : digi) {
-      histograms_.fill("adc chan "+std::to_string(i_digi-1), i_sample, sample.adc_t());
+    for (unsigned int i_sample{0}; i_sample < digis.getNumSamplesPerDigi(); i_sample++) {
+      histograms_.fill("adc chan "+std::to_string(i_digi-1), i_sample, digi.at(i_sample).adc_t());
       i_sample++;
     }
     i_digi++;
   }
-
+  
 }
 
 }  // namespace dqm
