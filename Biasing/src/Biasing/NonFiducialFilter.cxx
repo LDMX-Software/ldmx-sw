@@ -21,7 +21,10 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,framework::config::
   : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
+  abortFiducialEvents_ =
+      parameters.getParameter<bool>("abort_fiducial_events");
       }
+  
 
 NonFiducialFilter::~NonFiducialFilter() {}
 
@@ -43,8 +46,13 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     (volume.contains("Si") || volume.contains("W") || volume.contains("PCB") || volume.contains("Readout") || volume.contains("CFMix") || volume.contains("Al")) 
     && volume.contains("volume")) {
       // std::cout << "[ NonFiducialFilter ]: " << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << " entered the ECal." << std::endl; 
+      // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
+      if (abortFiducialEvents_){
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
+      } else {
+      getEventInfo()->setFiducial(true); 
+      }
       return;
     }
     return;
