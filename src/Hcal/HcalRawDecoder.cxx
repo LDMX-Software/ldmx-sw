@@ -268,11 +268,18 @@ void HcalRawDecoder::produce(framework::Event& event) {
 
           //std::cout << " : DAQ Channel ";
 
-          //std::cout << fpga << " " << roc_id << " " << channel_id << " ";
-          // TODO fix hardcoded starting value
-          //  roc_id-256 is the ssame as i_link = is this a coincidence?
-          //  or should we change the second input to be the link index
-          ldmx::HcalElectronicsID eid(fpga, roc_id-256, channel_id);
+          //std::cout << fpga << " " << roc_id-256 << " " << channel_id << " ";
+          /**
+           * The subfields for the electronics ID infrastructure need to start
+           * from 0 and count up. This means we need to subtract some of the
+           * fields by their lowest value before inputting them into the EID.
+           *
+           * TODO fix hardcoded starting value
+           *
+           *  roc_id-256 is the ssame as i_link = is this a coincidence?
+           *  or should we change the second input to be the link index
+           */
+          ldmx::HcalElectronicsID eid(fpga-1, roc_id-256, channel_id);
           //std::cout << eid.index();
 
           // copy data into EID->sample map
@@ -323,17 +330,25 @@ void HcalRawDecoder::produce(framework::Event& event) {
         uint32_t did_raw = detmap.get(eid).raw();
         digis.addDigi(did_raw, digi);
       } else {
-        // DO NOTHING
-        //  skip hits where the EID aren't in the detector mapping
-        //  DO WE ACTUALLY WANT TO DO THIS?
+        /** DO NOTHING
+         *  skip hits where the EID aren't in the detector mapping
+         *  no zero supp during test beam on the front-end,
+         *  so channels that aren't connected to anything are still
+         *  being readout.
+        std::cout << "EID(" << eid.fiber() << "," << eid.elink() << "," << eid.channel() << ") ";
+        for (auto& s : digi) std::cout << debug::hex(s.raw()) << " ";
+        std::cout << std::endl;
+         */
       }
     }
   } else {
-    // no EID translation, just add the digis to the digi collection
-    // with their raw electronic ID
-    // TODO: remove this, we shouldn't be able to get past
-    //       the decoding stage without translating the EID
-    //       into a detector ID to avoid confusion in recon
+    /**
+     * no EID translation, just add the digis to the digi collection
+     * with their raw electronic ID
+     * TODO: remove this, we shouldn't be able to get past
+     *       the decoding stage without translating the EID
+     *       into a detector ID to avoid confusion in recon
+     */
     for (auto const& [eid, digi] : eid_to_samples) {
       digis.addDigi(eid.raw(), digi);
     }
