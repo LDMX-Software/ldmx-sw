@@ -63,14 +63,23 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     int hgcroc = csv.getInteger("HGCROC");
     int chan   = csv.getInteger("Channel");
 
-    // each hgcroc has two links, one for the upper half of channels,
-    // one for the lower half
-    // for test beam (current conditions table) we only use 32 out of 38
+    /**
+     * each hgcroc has two links, one for the upper half of channels,
+     * one for the lower half
+     *
+     * for test beam (current conditions table) we only use 32 out of 38
+     *  but this just means that channels 64-76 are not connected to anything
+     *  even though they may be present in the ROC data packet
+     *
+     * or in other words, since each hgcroc produces two links, channels
+     *  26-38 on the odd link numbers will will not appear in the detector map
+     */
     int link = 2*(hgcroc-1); // hgcroc count starts from 0
-    if (chan >= 32) {
+    if (chan >= 38) {
       link += 1;
-      chan -= 32;
+      chan -= 38;
     }
+
     // one quadbar groups 4 strips and each quadbar is connected to 2 CMBs - one in each end
     int end = csv.getInteger("CMB")%2;
     if(end==0) end=1; // negative end (?)
@@ -79,7 +88,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
         csv.getInteger("Plane") /*layer*/,
         csv.getInteger("Bar") /*strip*/,
-        end /*end??*/);
+        end /*end*/);
     ldmx::HcalElectronicsID eleid(
         0 /*fpga - only one FPGA during test beam*/,
         link /*elink*/,
