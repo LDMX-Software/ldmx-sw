@@ -24,7 +24,7 @@ class HcalElectronicsID : public DetectorID {
 
   static const RawValue INDEX_MASK{0xFFFFFF};
   // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
-  typedef PackedIndex<38,48> Index;
+  typedef PackedIndex<38,48,1> Index;
   // Maximum value of any packed index here
   static const unsigned int MAX_INDEX{38*48*200};
   

@@ -13,11 +13,20 @@ namespace ldmx {
 
 /**
  * @class PackedIndex
- * A maximally-packed index of upto four different fields.
+ * A maximally-packed index of up to four different fields.
  *
- * @tparam[in] m0 modulus of field 0 (i.e. its maximum value)
- * @tparam[in] m1 modulus of field 1 (i.e. its maximum value) optional
- * @tparam[in] m2 modulus of field 2 (i.e. its maximum value) optional
+ * We can pack an index with different fields by knowing each
+ * field's modulus or the number of different values the field can have.
+ *
+ * For example, if a field has values 0, 1, 2, 3 then its
+ * modulus is four.
+ *
+ * The maths underlying this packing also assumes that values start
+ * with 0 and count up.
+ *
+ * @tparam[in] m0 modulus of field 0 
+ * @tparam[in] m1 modulus of field 1, optional
+ * @tparam[in] m2 modulus of field 2, optional
  */
 template <unsigned int m0, unsigned int m1=0, unsigned int m2=0>
 class PackedIndex {
