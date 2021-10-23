@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include <fstream>
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 
@@ -49,6 +50,9 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
   
   this->clear();
   conditions::StreamCSVLoader csv(connections_table);
+  std::ofstream output{"eid2did.csv"};
+  output << "Electronics ID, HcalDigiID, Section, Layer, Bar, End\n";
+  std::cout << "Electronics ID, HcalDigiID, Section, Layer, Bar, End\n";
   while (csv.nextRow()) {
     /** Column Names
      * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane"
@@ -84,10 +88,22 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     int end = csv.getInteger("CMB")%2;
     if(end==0) end=1; // negative end (?)
     else end=0; // positive end (?)
- 
+
+    // The Bar field in the map represents a numbering *within a quadbar* not
+    // the strip number.
+    //
+    // This gives correct range for the strip numbers [0,7] and [0,11] but the
+    // actual order of the quadbars has to be checked
+
+    auto QuadBar {csv.getInteger("QuadBar")};
+    auto BarNumber {csv.getInteger("Bar")};
+    // Strip = (Bar - 1) + 4 * (QuadBar - 1)
+    // Bar and QuadBar both start at 1 so we need to subtract to get first value
+    // to be zero
+    auto strip { (BarNumber - 1) + 4 * (QuadBar - 1)};
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
         csv.getInteger("Plane") /*layer*/,
-        csv.getInteger("Bar") /*strip*/,
+        strip                   /*strip*/,
         end /*end*/);
     ldmx::HcalElectronicsID eleid(
         0 /*fpga - only one FPGA during test beam*/,
@@ -99,6 +115,8 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
       ss << "Two different mappings for electronics channel " << eleid;
       EXCEPTION_RAISE("DuplicateMapping", ss.str());
     }
+    output << eleid.index() << ", " << detid.raw() << ", " << detid.section() << ", " << detid.layer() << ", " << detid.strip() << ", " << detid.end() << "\n";
+    std::cout << eleid.index() << ", " << detid.raw() << ", " << detid.section() << ", " << detid.layer() << ", " << detid.strip() << ", " << detid.end() << "\n";
     this->addEntry(eleid, detid);
   }
 }
