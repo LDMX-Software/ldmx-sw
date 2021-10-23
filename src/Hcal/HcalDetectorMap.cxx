@@ -96,7 +96,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     // Strip = (Bar - 1) + 4 * (QuadBar - 1)
     // Bar and QuadBar both start at 1 so we need to subtract to get first value
     // to be zero
-    auto strip { (BarNumber - 1) + 4 * (QuadBar - 1)};
+    auto strip { (4 - BarNumber) + 4 * (QuadBar - 1)};
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
         csv.getInteger("Plane") /*layer*/,
         strip                   /*strip*/,
