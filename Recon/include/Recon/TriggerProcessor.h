@@ -90,6 +90,9 @@ class TriggerProcessor : public framework::Producer {
   /** The name of the input collection (the Ecal hits). */
   std::string inputColl_;
 
+  /** The pass name of the input (the Ecal hits). */
+  std::string inputPass_;
+
   /** The name of the output collection (the trigger decision). */
   std::string outputColl_;
 };

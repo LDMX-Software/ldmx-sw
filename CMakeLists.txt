@@ -84,6 +84,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     message(STATUS "Building the modules necessary for the reconstruction.")
 
+    # Interface with raw data
+    add_subdirectory(Packing)
+
     # Conditions services
     add_subdirectory(Conditions)
 

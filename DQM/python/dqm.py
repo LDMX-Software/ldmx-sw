@@ -144,7 +144,14 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build2DHistogram("min_time_hit_above_thresh:pe", 
                            "Photoelectrons in an HCal Module", 1500, 0, 1500, 
                            "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
-         
+
+class HCalRawDigi(ldmxcfg.Analyzer) :
+    def __init__(self, input_name) :
+        super().__init__('hcal_pedestals','dqm::HCalRawDigi','DQM')
+
+        self.input_name = input_name
+        self.input_pass = ''
+
 class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     """Configured PhotoNuclearDQM python object
     
