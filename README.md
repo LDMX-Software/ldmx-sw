@@ -18,7 +18,7 @@
 
 - [Install the docker engine](https://docs.docker.com/engine/install/)
 - (on Linux systems) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
-- Clone the repo: `git clone --recursive https://github.com/LDMX-Software/ldmx-sw.git`
+- Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
 - Make a build directory: `cd ldmx-sw; mkdir build; cd build;`
 - Configure the build: `ldmx cmake ..`
