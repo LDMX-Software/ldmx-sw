@@ -68,7 +68,7 @@ namespace trigscint {
 
   for (int iW = 0 ; iW < QIEStream::TRIGID_LEN_BYTES; iW++) {
 	//assume the whole 2B are written as a single 16 bits word
-	int pos = QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES -1 - iW);
+	int pos = QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES -2 + iW);
 	uint8_t tIDword = eventStream.at( pos );
 	ldmx_log(debug) << "trigger word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(tIDword ) ;
 	triggerID |= (tIDword << iW*8); //shift by a byte at a time
