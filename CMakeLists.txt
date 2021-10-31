@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # Set the project name and version.
 # TODO: The version should be synced up with ldmx-sw.
-project(Ecal VERSION 2.1.0
+project(Tracking VERSION 2.1.0
              DESCRIPTION "Module containing the sim and recon code for the trackers."
              LANGUAGES CXX
 )
@@ -33,3 +33,12 @@ if(BUILD_EVENT_ONLY)
 
      return()
 endif()
+
+file(GLOB SIM_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx)
+
+setup_library(name Tracking
+              dependencies Framework::Configure 
+                           Framework::Framework 
+              sources ${SIM_SRC_FILES})
+
+#setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
