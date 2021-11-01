@@ -20,6 +20,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/Event/SimTrackerHit.h"
 
+
+/*~~~~~~~~~~~~~*/
+/*   stdlib    */
+/*~~~~~~~~~~~~~*/
+
 #include <iostream>
 #include <random>
 
@@ -60,11 +65,18 @@ public:
   void produce(framework::Event &event);
 
 private:
-  std::shared_ptr<std::normal_distribution<double> > distN;  
-  std::string m_inputHitCollection;
-  std::string m_outputHitCollection;
+  std::shared_ptr<std::normal_distribution<float> > distN;  
+  std::vector<std::string> m_inputHitCollections;
+  std::vector<std::string> m_outputHitCollections;
+  
+  /* smearing sigmas */
+  double m_taggerSigma_u, m_taggerSigma_v;
+  double m_recoilSigma_u, m_recoilSigma_v;
+     
+  ldmx::SimTrackerHit smearSimHit(const ldmx::SimTrackerHit& hit);
 
-  std::shared_ptr<ldmx::SimTrackerHit> smearSimHit(const ldmx::SimTrackerHit& hit);
+  /* random engine */
+  std::default_random_engine m_generator;
     
 }; // HitSmearingProcessor
     

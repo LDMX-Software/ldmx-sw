@@ -41,4 +41,4 @@ setup_library(name Tracking
                            Framework::Framework 
               sources ${SIM_SRC_FILES})
 
-#setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
