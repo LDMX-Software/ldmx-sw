@@ -1,3 +1,10 @@
+/**
+ * @file HitSmearingProcessor.cxx
+ * @brief Class that performs simulated hit smearing in the tracker
+ * @author PF, SLAC National Accelerator Laboratory
+ */
+
+
 #include "Tracking/Sim/HitSmearingProcessor.hpp"
 
 using namespace framework;
@@ -13,7 +20,7 @@ namespace tracking{
 
     void HitSmearingProcessor::onProcessStart() {
     
-      distN = std::make_shared<std::normal_distribution<double> >(0.,1.);
+      distN = std::make_shared<std::normal_distribution<float> >(0.,1.);
     
     }
 
@@ -21,62 +28,85 @@ namespace tracking{
     void HitSmearingProcessor::configure(framework::config::Parameters &parameters) {
           
       //Default configuration
-      m_inputHitCollection = "TaggerSimHits";
-      m_outputHitCollection = "SmearedTaggerSimHits";
+      m_inputHitCollections = parameters.getParameter<std::vector<std::string> >("inputHitCollections");
+      m_outputHitCollections = parameters.getParameter<std::vector<std::string> >("outputHitCollections");
+
+      m_taggerSigma_u = parameters.getParameter<double>("taggerSigma_u",0.05); 
+      m_taggerSigma_v = parameters.getParameter<double>("taggerSigma_v",0.25); 
+      
+      m_recoilSigma_u = parameters.getParameter<double>("recoilSigma_u",0.05); 
+      m_recoilSigma_v = parameters.getParameter<double>("recoilSigma_v",0.25); 
       
     }
         
     void HitSmearingProcessor::produce(framework::Event &event) {
             
-      //Read in the Sim hits -- TODO choose which collection from config
-
-      std::cout<<"Hit Collection IN: "<<m_inputHitCollection<<std::endl;
-      std::cout<<"Hit Collection OUT: "<<m_outputHitCollection<<std::endl;
-            
-      const std::vector<ldmx::SimTrackerHit> simHits = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
-      
-      for (auto& simHit : simHits) {
-	simHit.Print();
+      if (m_inputHitCollections.size() != m_outputHitCollections.size()) {
+	std::cout<<"ERROR::Size of the collections are different::"<<m_inputHitCollections.size()<<"!="<<m_outputHitCollections.size()<<std::endl;
+	return;
       }
       
+      for (unsigned int i_coll=0; i_coll<m_inputHitCollections.size(); i_coll++) {
+
+	const std::vector<ldmx::SimTrackerHit> simHits = event.getCollection<ldmx::SimTrackerHit>(m_inputHitCollections[i_coll]);
+	
+	std::vector<ldmx::SimTrackerHit> smearedHits;
+
+	for (auto& simHit : simHits) {
+	  
+	  smearedHits.push_back(smearSimHit(simHit));
+	  
+	}
+	event.add(m_outputHitCollections[i_coll], smearedHits);
+      }
+
     }//produce
-        
     
-    //This method converts a SimHit in a LdmxSpacePoint for the Acts seeder. It smears the SimHit according to a gaussian distribution. The seed is fixed.
-    // (1) Rotate the coordinates into acts::seedFinder coordinates defined by B-Field along z axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts]
-    // (2) Smear  the location of the simulated hits and store the smeared hits into LdmxSpacepoints, saving the error information.
+    //This method smears the SimHit according to two independent gaussian distributions in u and v direction.
+    //Tagger and Recoil hits can be smeared with different sigma factors. The hits generated in the two detectors
+    //are distinguished by checking the location along the beam.
         
-
-    //sigma_u and sigma_v are more sensitive and less sensitive directions.
-        
-    std::shared_ptr<ldmx::SimTrackerHit> HitSmearingProcessor::smearSimHit(const ldmx::SimTrackerHit& hit) {
-            
+    ldmx::SimTrackerHit HitSmearingProcessor::smearSimHit(const ldmx::SimTrackerHit& hit) {
+    
       std::vector<float> sim_hit_pos = hit.getPosition();
-
-      float sigma_u = 0.05; //50um
-      float sigma_v = 0.25; //250um
-
-      float ldmxsp_x = sim_hit_pos[2];
-      float ldmxsp_y = sim_hit_pos[0];
-      float ldmxsp_z = sim_hit_pos[1];
-
-      std::cout<<"PF:: DEBUG:: Pre-smearing::(x,y,z) "<<ldmxsp_x<<" " <<ldmxsp_y<<" "<<ldmxsp_z<<std::endl;
-      
-      std::default_random_engine generator;
-      std::normal_distribution<float> distribution(0.0, 1.0);
-      
-      float smear_factor = distribution(generator);
-            
-      //double smear_factor = distN(m_def_random_engine);
-      ldmxsp_y = ldmxsp_y + smear_factor*sigma_v;
-            
-      smear_factor = distribution(generator);
-      ldmxsp_z = ldmxsp_z + smear_factor*sigma_u;
-
-      std::cout<<"PF:: DEBUG:: After-smearing::(x,y,z) "<<ldmxsp_x<<" " <<ldmxsp_y<<" "<<ldmxsp_z<<std::endl;
-      
-    }
+      ldmx::SimTrackerHit smeared_hit;
     
+      float sigma_u = m_taggerSigma_u;
+      float sigma_v = m_taggerSigma_v;
+    
+      //Check if the sim hit is in the tagger or in the recoil to choose the smearing factor.
+      if (sim_hit_pos[2] > 0 ) {
+	sigma_u = m_recoilSigma_u;
+	sigma_v = m_recoilSigma_v;
+      }
+      
+      //LDMX Global X, along the less sensitive direction
+      float smear_factor = (*distN)(m_generator);
+      sim_hit_pos[0] += smear_factor*sigma_v;
+            
+      //LDMX Global Y, along the sensitive direction
+      smear_factor = (*distN)(m_generator);
+      sim_hit_pos[1] += smear_factor*sigma_u;
+
+      //Fill the smeared hit
+      
+      //The ID will be the same
+      smeared_hit.setID(hit.getID());  
+
+      smeared_hit.setLayerID(hit.getLayerID()); 
+      smeared_hit.setModuleID(hit.getModuleID()); 
+      smeared_hit.setPosition(sim_hit_pos[0],sim_hit_pos[1],sim_hit_pos[2]); 
+      smeared_hit.setEdep(hit.getEdep());
+      smeared_hit.setEnergy(hit.getEnergy());
+      smeared_hit.setTime(hit.getTime());
+
+      //Change path-length will be the same
+      smeared_hit.setPathLength(hit.getPathLength());
+      
+      smeared_hit.setMomentum(hit.getMomentum()[0],hit.getMomentum()[1],hit.getMomentum()[2]);
+      smeared_hit.setTrackID(hit.getTrackID());
+      smeared_hit.setPdgID(hit.getPdgID());
+    }
   }// namespace sim
 } //namespace tracking
 
