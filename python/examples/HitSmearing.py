@@ -10,8 +10,8 @@ from LDMX.Tracking import tracking_hitsmearing
 
 hitSmearing = tracking_hitsmearing.HitSmearingProcessor()
 
-hitSmearing.inputHitCollections  = ["TaggerSimHits","RecoilSimHits"]
-hitSmearing.outputHitCollections = ["SmearedTaggerSimHits","SmearedRecoilSimHits"]
+hitSmearing.input_hit_coll  = ["TaggerSimHits","RecoilSimHits"]
+hitSmearing.output_hit_coll = ["SmearedTaggerSimHits","SmearedRecoilSimHits"]
 
 hitSmearing.taggerSigma_u = 0.05
 hitSmearing.taggerSigma_v = 0.25
