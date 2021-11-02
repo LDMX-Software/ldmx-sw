@@ -34,11 +34,13 @@ if(BUILD_EVENT_ONLY)
      return()
 endif()
 
-file(GLOB SIM_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx ${PROJECT_SOURCE_DIR}/src/Tracking/Analysis/*.cxx)
 
-setup_library(name Tracking
+setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
-              sources ${SIM_SRC_FILES})
+              sources ${SRC_FILES})
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
+
+

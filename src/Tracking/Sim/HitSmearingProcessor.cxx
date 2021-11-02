@@ -1,4 +1,5 @@
 #include "Tracking/Sim/HitSmearingProcessor.h"
+#include <chrono> 
 
 using namespace framework;
 
@@ -29,6 +30,12 @@ void HitSmearingProcessor::configure(
 
   recoil_sigma_u_ = parameters.getParameter<double>("recoil_sigma_u", 0.05);
   recoil_sigma_v_ = parameters.getParameter<double>("recoil_sigma_v", 0.25);
+  
+  bool fullRandom = parameters.getParameter<bool>("full_random",false);
+  
+  if (fullRandom)
+    generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());    
+    
 }
 
 void HitSmearingProcessor::produce(framework::Event &event) {
@@ -105,6 +112,7 @@ HitSmearingProcessor::smearSimHit(const ldmx::SimTrackerHit &hit) {
                           hit.getMomentum()[2]);
   smeared_hit.setTrackID(hit.getTrackID());
   smeared_hit.setPdgID(hit.getPdgID());
+  return smeared_hit;
 }
 } // namespace sim
 } // namespace tracking
