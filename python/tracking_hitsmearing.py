@@ -13,4 +13,4 @@ class HitSmearingProcessor(Producer) :
         self.recoilSigma_u = 0.05 #50um
         self.recoilSigma_v = 0.25 #250um
 
-        
+        self.fullRandom = False
