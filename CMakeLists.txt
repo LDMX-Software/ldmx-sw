@@ -38,7 +38,7 @@ if(BUILD_EVENT_ONLY)
      return()
 endif()
 
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx ${PROJECT_SOURCE_DIR}/src/Tracking/Analysis/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx)
 
 setup_library(module Tracking
               dependencies Framework::Configure 
