@@ -12,6 +12,10 @@ project(Tracking VERSION 2.1.0
 # Search for ROOT and add all targets.
 find_package(ROOT CONFIG REQUIRED)
 
+find_package(Acts CONFIG REQUIRED)
+
+find_package(Eigen3 CONFIG REQUIRED)
+
 # Allow building of event specific classes only.  The most common use case is 
 # needing to build the event classes to allow building of the event bus and ROOT
 # dictionary prior building the rest of the modules in a package. 
@@ -38,7 +42,8 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.c
 
 setup_library(module Tracking
               dependencies Framework::Configure 
-                           Framework::Framework 
+              Framework::Framework
+	      ActsCore
               sources ${SRC_FILES})
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
