@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.12)
 # Set the project name and version.
 # TODO: The version should be synced up with ldmx-sw.
 project(Tracking VERSION 2.1.0
-             DESCRIPTION "Module containing the sim and recon code for the trackers."
-             LANGUAGES CXX
+                 DESCRIPTION "Module containing the sim and recon code for the trackers."
+                 LANGUAGES CXX
 )
 
 # Search for ROOT and add all targets.
@@ -22,11 +22,18 @@ find_package(Eigen3 CONFIG REQUIRED)
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
 
+    # Search for ROOT and add all targets.
+    find_package(ROOT CONFIG REQUIRED)
+
+
     # Register all of the classes with the event bus.
-    register_event_object( module_path "Tracking/Event" namespace "ldmx" class "RawSiStripHit" )
+    register_event_object(module_path "Tracking/Event" 
+	                  namespace "ldmx" 
+	                  class "RawSiStripHit" )
 
     # Get all of the event sources that will be included in this library
-    file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/Tracking/Event/*.cxx)
+    file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS 
+	      ${PROJECT_SOURCE_DIR}/src/Tracking/Event/[a-zA-z]*.cxx)
 
     # Generate the files needed to build the event classes.
     setup_library(module Tracking
@@ -38,12 +45,14 @@ if(BUILD_EVENT_ONLY)
      return()
 endif()
 
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS 
+	  ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
+)
 
 setup_library(module Tracking
               dependencies Framework::Configure 
-              Framework::Framework
-	      ActsCore
+                           Framework::Framework 
+			   ActsCore
               sources ${SRC_FILES})
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
