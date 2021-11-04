@@ -9,6 +9,7 @@
 
 //---< Tracking >---//
 #include "Tracking/Sim/LdmxSpacePoint.h"
+#include "Tracking/Sim/SeedToTrackParamMaker.h"
 
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
@@ -74,18 +75,25 @@ namespace tracking {
       ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit);
       
     private:
-      Acts::SpacePointGridConfig gridConf_;
-      Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> m_config;
-      Acts::SeedFilterConfig m_seedFilter_cfg;
+      Acts::SpacePointGridConfig grid_conf_;
+      Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> config_;
+      Acts::SeedFilterConfig seed_filter_cfg_;
+      Acts::Vector3 bField_;
 
       //Acts::Seedfinder::State state_;
       
       std::shared_ptr<Acts::Seedfinder<ldmx::LdmxSpacePoint> > seed_finder_;
       std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  bottom_bin_finder_;
-      std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  top_bin_finder_;  
+      std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  top_bin_finder_;
+
+      /* This is a temporary (working) solution to estimate the track parameters out of the seeds
+       * Eventually we should move to what is in ACTS (I'm not happy with what they did regarding this part atm)
+       */
+
+      std::shared_ptr<tracking::sim::SeedToTrackParamMaker> seed_to_track_maker_;
       
-      double m_processingTime{0.};
-      long m_nevents{0};
+      double processing_time_{0.};
+      long nevents_{0};
       
     }; // SeedFinderProcessor
     
