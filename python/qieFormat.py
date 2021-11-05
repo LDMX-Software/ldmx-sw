@@ -57,6 +57,7 @@ class QIEDecoder(ldmxcfg.Producer) :
         self.output_collection = 'decodedQIETag'
         self.channel_map_file = mapFile
         self.number_channels = 50
+        self.number_time_samples = 5
         self.verbose = False
 
     def tagger(mapFile) :

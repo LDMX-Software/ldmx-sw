@@ -13,6 +13,7 @@ namespace trigscint {
    inputPassName_ = ps.getParameter<std::string>("input_pass_name");
    channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
    nChannels_ = ps.getParameter<int>("number_channels");
+   nSamples_ = ps.getParameter<int>("number_time_samples");
    verbose_ = ps.getParameter<bool>("verbose");
 
    ldmx_log(debug) << "In configure, got parameters:" <<
@@ -21,6 +22,7 @@ namespace trigscint {
 	 "\ninput_pass_name  = " << inputPassName_ <<
 	 "\nchannel_map_file = " <<  channelMapFileName_ <<
 	 "\nnumber_channels  = " <<  nChannels_ <<
+	 "\nnumber_time_samples  = " <<  nSamples_ <<
 	 "\nverbose          = " << verbose_ ;
 
    channelMapFile_.open(channelMapFileName_, std::ios::in);
@@ -55,7 +57,8 @@ namespace trigscint {
 	  << "QIEDecoder: produce() starts! Event number: "
 	  << event.getEventHeader().getEventNumber();
 
-  int nSamp = QIEStream::NUM_SAMPLES ;
+	//turns out this need to be configurable for now, to read real data
+	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
   ldmx_log(debug) << "num samples = " << nSamp;
 	
   ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
@@ -152,7 +155,7 @@ namespace trigscint {
 		}
 		//this is LETDC; only the two most significant bits included
 		// they are shipped as least significant bits --> shift them 
-		TDCmap[ iQ ].at(iS) = val*16;  
+		TDCmap[ iQ ].at(iS) = (val+1)*16;  // want LE TDC = 3 to correspond to 64 > 49 (which is maxTDC in sim)
 	  }
 	  iWord++;
 	}
