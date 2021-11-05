@@ -82,7 +82,7 @@ class TrigScintQIEDigis {
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
- private:
+protected:
   /// channel ID
   int chanID_;
 
@@ -92,6 +92,7 @@ class TrigScintQIEDigis {
   /// Time to Digital counts
   std::vector<int> tdcs_;
   
+ private:
   /// capacitor IDs
   std::vector<int> cids_;
 
