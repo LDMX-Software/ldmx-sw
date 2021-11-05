@@ -31,13 +31,15 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   SimQIE qie;
 
   // Ensure the sample of interest <4
+  /* // this assumes we are in well-behaved simulation land, not test beam wilderness  
   if(sample_of_interest_>3) {
     ldmx_log(error)<<"sample_of_interest_ should be one of 0,1,2,3\n"
 		   <<"Currently, sample_of_interest = "<<sample_of_interest_
 		   <<"\n";
     return;
   }
-
+  */
+  
   // looper over sim hits and aggregate energy depositions
   // for each detID
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(

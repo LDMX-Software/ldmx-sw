@@ -103,6 +103,16 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         return digi
 
 
+class EventReadoutProducer(ldmxcfg.Producer) :
+    """Configuration for rechit producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::EventReadoutProducer','TrigScint')
+
+        self.input_collection="decodedQIEUp"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="QIEsamplesUp"
+        self.verbose = False
 
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
     """Configuration for rechit producer for Trigger Scintillators"""
@@ -183,8 +193,6 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         return cluster
 
 
-from LDMX.Framework import ldmxcfg
-
 class TrigScintTrackProducer(ldmxcfg.Producer) :
     """Configuration for track producer for Trigger Scintillators"""
 
@@ -201,3 +209,12 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
+class QIEAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
+
+        self.inputCollection="QIEsamplesUp"
+        self.inputPassName=""   #take any pass                                                                                         
+        self.pedestals=[ 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3.]
