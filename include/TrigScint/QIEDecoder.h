@@ -56,6 +56,8 @@ namespace trigscint {
 
 	// number of channels in the pad 
 	int nChannels_{50};
+	// number of time samples making up the event
+	int nSamples_{5};
 
   }; //encoder
 
