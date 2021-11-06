@@ -37,6 +37,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
 
 	//copy over from qie digi for convenience
     outEvent.setChanID(digi.getChanID());
+    outEvent.setElecID(digi.getElecID());
     outEvent.setADC(adc);
     outEvent.setTDC(tdc);
 	std::vector <float> charge;

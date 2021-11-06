@@ -172,12 +172,14 @@ namespace trigscint {
 	  continue;
 	}
 	int bar = channelMap_[itr->first];
+	digi.setElecID( itr->first );
 	digi.setChanID( bar );
 	digi.setTDC( TDCmap[itr->first] );
 	outDigis.push_back( digi );
 	ldmx_log(debug) << "Iterator points to key " << itr->first
 					<< " and mapped channel supposedly  is " << bar ;
-	ldmx_log(debug) << "Made digi with barID = " << digi.getChanID()
+	ldmx_log(debug) << "Made digi with elecID = " << digi.getElecID()
+					<< ", barID = " << digi.getChanID()
 					<< ", third adc value " << digi.getADC().at(2)
 					<< " and third tdc " << digi.getTDC().at(2) ;
   }
