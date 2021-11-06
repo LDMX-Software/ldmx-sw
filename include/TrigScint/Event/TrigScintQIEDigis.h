@@ -45,6 +45,11 @@ class TrigScintQIEDigis {
   int getChanID() const { return chanID_; }
 
   /**
+   * Get electronics ID
+   */
+  int getElecID() const { return elecID_; }
+
+  /**
    * Get ADCs of all time samples
    */
   std::vector<int> getADC() const { return adcs_; }
@@ -64,6 +69,12 @@ class TrigScintQIEDigis {
    */
   void setChanID(const int chanid) { chanID_ = chanid; }
 
+  /**
+   * Store the electronics ID
+   */
+  void setElecID(const int elecid) { elecID_ = elecid; }
+
+  
   /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
@@ -85,6 +96,8 @@ class TrigScintQIEDigis {
 protected:
   /// channel ID
   int chanID_;
+  /// channel ID
+  int elecID_{-1};
 
   /// analog to digital counts
   std::vector<int> adcs_;
