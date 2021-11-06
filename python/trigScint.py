@@ -217,4 +217,20 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
 
         self.inputCollection="QIEsamplesUp"
         self.inputPassName=""   #take any pass                                                                                         
-        self.pedestals=[ 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3.]
+        self.pedestals=[ 0.6,
+                         4.4,
+                         -1.25,
+                         3.9, 	 #3
+                         10000., #4: dead channel
+                         -2.1,   #5 
+                         2.9,    #6
+                         -2,     #7
+                         -0.4,   #8
+                         -1.1,   #9
+                         1.5,    #10
+                         2.0,    #11
+                         3.7,    #12 -- uninstrumented
+                         2.8,    #13 -- uninstrumented
+                         -1.5,   #14 -- uninstrumented
+                         1.6     #15 -- uninstrumented
+        ]
