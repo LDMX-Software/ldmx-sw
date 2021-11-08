@@ -36,8 +36,7 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
   // tagged as PN photos will be processed. The track is currently only
   // tagged by the UserAction ECalProcessFilter which needs to be run
   // before this UserAction.
-  auto trackInfo{
-      static_cast<simcore::UserTrackInformation*>(track->GetUserInformation())};
+  auto trackInfo{simcore::UserTrackInformation::get(track)};
   if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
 
   // Get the PN photon daughters.

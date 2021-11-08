@@ -23,7 +23,7 @@
 #include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimTrackerHit.h"  //recoil hits
 
-namespace ldmx {
+namespace eventdisplay {
 
 /**
  * @type BoundingBox
@@ -67,7 +67,7 @@ class DetectorGeometry {
    * @param hit HcalHit to find real space hit for
    * @return BoundingBox in real space
    */
-  BoundingBox getBoundingBox(const HcalHit &hit) const;
+  BoundingBox getBoundingBox(const ldmx::HcalHit &hit) const;
 
   /**
    * Calculate real space coordinates of a cluster of hits.
@@ -77,7 +77,7 @@ class DetectorGeometry {
    * @param hitVec vector of HcalHits to find a "center" for
    * @return BoundingBox in real space
    */
-  BoundingBox getBoundingBox(const std::vector<HcalHit> &hitVec) const;
+  BoundingBox getBoundingBox(const std::vector<ldmx::HcalHit> &hitVec) const;
 
   /**
    * Get bounding box for the input section.
@@ -85,7 +85,7 @@ class DetectorGeometry {
    * @param section HcalID::HcalSection
    * @return BoundingBox that bounds section
    */
-  BoundingBox getBoundingBox(HcalID::HcalSection section) const;
+  BoundingBox getBoundingBox(ldmx::HcalID::HcalSection section) const;
 
   /**
    * Calculate bounding hexagonal prism for input EcalHit.
@@ -93,7 +93,7 @@ class DetectorGeometry {
    * @param id EcalID for the hit
    * @return HexPrism
    */
-  HexPrism getHexPrism(const EcalID &id) const;
+  HexPrism getHexPrism(const ldmx::EcalID &id) const;
 
   /**
    * Get HexPrism for a tower
@@ -131,7 +131,7 @@ class DetectorGeometry {
    * @param recoilHit SimTrackerHit in recoil tracker
    * @return BoundingBox that bounds the hit
    */
-  BoundingBox getBoundingBox(const SimTrackerHit &recoilHit) const;
+  BoundingBox getBoundingBox(const ldmx::SimTrackerHit &recoilHit) const;
 
  private:
   /**
@@ -147,22 +147,22 @@ class DetectorGeometry {
   // HCAL
 
   /** Number of layers in each section */
-  std::map<HcalID::HcalSection, int> hcalNLayers_;
+  std::map<ldmx::HcalID::HcalSection, int> hcalNLayers_;
 
   /** Number of strips per layer in each section */
-  std::map<HcalID::HcalSection, int> hcalNStrips_;
+  std::map<ldmx::HcalID::HcalSection, int> hcalNStrips_;
 
   /** Length of Scintillator Strip [mm] */
-  std::map<HcalID::HcalSection, double> hcalLengthScint_;
+  std::map<ldmx::HcalID::HcalSection, double> hcalLengthScint_;
 
   /** The plane of the zero'th layer of each section [mm] */
-  std::map<HcalID::HcalSection, double> hcalZeroLayer_;
+  std::map<ldmx::HcalID::HcalSection, double> hcalZeroLayer_;
 
   /** The plane of the zero'th strip of each section [mm] */
-  std::map<HcalID::HcalSection, double> hcalZeroStrip_;
+  std::map<ldmx::HcalID::HcalSection, double> hcalZeroStrip_;
 
   /** Thickness of the layers in each seciton [mm] */
-  std::map<HcalID::HcalSection, double> hcalLayerThickness_;
+  std::map<ldmx::HcalID::HcalSection, double> hcalLayerThickness_;
 
   /** an example layer number of a vertical layer */
   int hcalParityVertical_;
@@ -189,7 +189,7 @@ class DetectorGeometry {
   double ecalZeroLayer_;
 
   /** Helper class to calculate (x,y) coordinate from hexagons */
-  std::unique_ptr<EcalHexReadout> ecalHexReader_;
+  std::unique_ptr<ldmx::EcalHexReadout> ecalHexReader_;
 
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER
@@ -225,6 +225,6 @@ class DetectorGeometry {
   std::map<int, double> recoilModuleAngle_;
 };
 
-}  // namespace ldmx
+}  // namespace eventdisplay
 
 #endif /* EVENTDISPLAY_DETECTORGEOMETRY_H */

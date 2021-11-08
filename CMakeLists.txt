@@ -53,9 +53,8 @@ clear_cache_variables()
 # By default, all modules are built.
 option(BUILD_RECON_ONLY     "Build the modules necessary to run the reconstruction." OFF)
 option(BUILD_SIM_ONLY       "Build the modules necessary to run the simulation."     OFF)
-option(BUILD_EVE_ONLY       "Build the event display only."                          OFF)
 
-if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY AND NOT BUILD_EVE_ONLY) 
+if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY) 
     set(BUILD_ALL ON)
     message(STATUS "Building all modules.")
 endif()
@@ -85,6 +84,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     message(STATUS "Building the modules necessary for the reconstruction.")
 
+    # Interface with raw data
+    add_subdirectory(Packing)
+
     # Conditions services
     add_subdirectory(Conditions)
 
@@ -106,7 +108,7 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # This module contains all things trigger scintillator
     add_subdirectory(TrigScint)
 
-    #
+    # This module is focused on track reconstruction
     add_subdirectory(Tracking)
 
 endif()
@@ -129,11 +131,13 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
 
 endif()
 
-#if(BUILD_EVE_ONLY)
-#    add_subdirectory(EventDisplay)
-#endif()
-
-
 # Build all test.  The test are assumed to reside inside of the directory 
 # "test" within each module.  The main
 build_test()
+
+# The EventDisplay is stand-a-lone and _needs_ to be after everything else
+# so that it can clear the cache variables and construct its own dictionary.
+option(BUILD_EVE "Build the event display as well as other parts." OFF)
+if(BUILD_EVE)
+    add_subdirectory(EventDisplay)
+endif()

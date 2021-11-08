@@ -1,0 +1,115 @@
+
+name: New Pre-Release for Validation
+
+on: 
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Git Reference to Tag and Make Validation Plots'
+        required: true
+        default: trunk
+      tag:
+        description: 'Name for Pre-Release Tag'
+        required: true
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+  LDMX_NUM_EVENTS: 20000
+
+jobs:
+  compile-ldmx-sw:
+    runs-on: ubuntu-latest
+    outputs:
+      job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        ref: ${{ github.event.inputs.branch }}
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+
+    - name: Package ldmx-sw Into Artifact
+      run: tar cf ldmx-sw-package.tar install/ .github/
+
+    - name: Upload ldmx-sw Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+        path: ldmx-sw-package.tar
+
+    - name: Generate Job Matrix
+      id: gen-mat
+      uses: ./github/actions/generate-matrix
+      with:
+        num_jobs_per_sample: 5
+
+  generate-samples:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    env:
+      LDMX_RUN_NUMBER: ${{matrix.run}}
+    strategy:
+      matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run ${{matrix.sample}} ${{matrix.run}}
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: ${{matrix.sample}}
+        no_comp: true
+
+    - name: Upload Histogram File
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{matrix.sample}}-${{matrix.run}}-hists
+        path: ${{steps.validation.outputs.hists}}
+
+  create-pre-release:
+    needs: [generate-samples]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Generated Histograms
+      uses: actions/download-artifact@v2
+      with:
+        path: '.'
+
+    - name: Unpack ldmx-sw Package (for bash env)
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
+
+    - name: Package Histograms together for Release
+      id: packaging
+      run: |
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        mkdir hists-out
+        _hists=$(pwd)/hists-out
+        set_output hists "${_hists}/*"
+        for s in inclusive ecal_pn it_pileup; do
+          ldmx hadd ${_hists}/${s}.root ${s}-*-hists/*
+        done
+      shell: bash
+
+    - name: Make Pre-Release with Histograms
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: ${{steps.packaging.outputs.hists}}
+        bodyFile: ${{github.workspace}}/.github/workflows/body_new_pre_release.md
+        name: ${{ github.event.inputs.tag }} Validation
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.event.inputs.tag }}
+        commit: ${{ github.event.inputs.branch }}
+        prerelease: true

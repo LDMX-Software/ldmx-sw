@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/master/img/ldmx_logo_dark.png" width="500">
+    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/trunk/img/ldmx_logo_dark.png" width="500">
 </p>
 
 <p align="center">
@@ -11,14 +11,14 @@
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
     <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Docker%20Image/badge.svg" />
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Tests/badge.svg" />
+    <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
 ## Quick Start 
 
 - [Install the docker engine](https://docs.docker.com/engine/install/)
 - (on Linux systems) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
-- Clone the repo: `git clone --recursive https://github.com/LDMX-Software/ldmx-sw.git`
+- Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
 - Make a build directory: `cd ldmx-sw; mkdir build; cd build;`
 - Configure the build: `ldmx cmake ..`
@@ -44,10 +44,14 @@ Command | Purpose
 
 The environment script defines several other shell commands to help configure and debug the container environment.
 
-- `ldmx-container-tags repo` : List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
-- `ldmx-container-pull repo tag` : Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
-- `ldmx-container-config` : Print out how the container environment is currently configured
-- `ldmx-has-required-engine` : Return 0 if computer has a supported container-running engine and 1 otherwise
+- `ldmx list repo` : List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
+- `ldmx use repo tag` : Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
+- `ldmx config` : Print out how the container environment is currently configured
+- `ldmx clean all` : Reset environment to a blank state
+
+Use `ldmx help` for a full listing of these commands.
+If we don't define a command outside of the container,
+then the command is given to the container to run inside the current directory.
 
 ## Maintainer 
 

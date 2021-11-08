@@ -24,17 +24,17 @@ namespace ldmx {
  * into DIGI samples. With that in mind, the digitize method
  * converts a set of voltages and times into the DIGI.
  *
- * This object _does not_ do anything related to subsystem information.
- * It does _not_ set the detector ID for the DIGI it constructs,
- * it does _not_ simulate noise within the empty channels,
+ * This object _does not_ do everything related to subsystem information.
+ * It does _not_ simulate noise within the empty channels,
  * and it does _not_ convert simulated energy depositions into
  * voltages. These tasks depend on the detector construction,
  * so they are left to the individual subsystem producers.
  *
- * @TODO Shift the pulse SOI arbitrarily (needed for realism stuff below)
- * @TODO more realistic TOT emulation with focus on OOT signals
- * @TODO more realistic ADC emulation with focus on OOT signals
- * @TODO time phase setting relative to target t=0ns
+ * @TODO time phase setting relative to target t=0ns using electronic IDs
+ *
+ * @TODO accurately model recovering from saturation (TOT Mode).
+ * Currently, we just have all the samples after the sample triggering
+ * TOT mode rail.
  */
 class HgcrocEmulator {
  public:
@@ -46,8 +46,7 @@ class HgcrocEmulator {
   HgcrocEmulator(const framework::config::Parameters& ps);
 
   /** Destructor */
-  ~HgcrocEmulator() { /* empty on purpose */
-  }
+  ~HgcrocEmulator() {}
 
   /**
    * Check if emulator has been seeded
@@ -81,22 +80,23 @@ class HgcrocEmulator {
    *
    * This is where the hefty amount of work is done.
    *
-   * - Sum the voltages and voltage-weight average the times
-   * - Put noise on the time of the hit using timingJitter_
-   * - Configure the pulse to have the calculated voltage amplitude as its
-   *   peak and the simulated hit time as the time of its peak [ns]
-   * - Determine what readout mode the ROC will choose:
-   *   - Amplitude < readoutThreshold_ : skip the hit, return false
-   *   - Amplitude < totThreshold_ : ADC Mode (described below)
-   *   - Amplitude > totThreshold_ : TOT Mode (described below)
+   * 0. Prepare for Emulation
+   *    - Clear input list of digi samples
+   *    - Get conditions for the current chip
+   *    - Sort the input sim voltage hits by amplitude
    *
-   * @TODO Allow for the user to choose a sample of interest (iSOI_)
-   * other than zero. This should shift which sample the peak of
-   * the pulse is placed in.
-   * @TODO To incorporate Out Of Time (OOT) pileup, the SOI should be able
-   * to shift to a later (non-zero) index and then the chip would need to
-   * be un-able to readout if an earlier hit sets the current SOI to
-   * tot_progress_.
+   * 1. Combine input simulated hits into one CompositePulse to digitize.
+   *    - This composite pulse decides whether to merge two simulated hits
+   *      into one larger pulse depending on how close they are in time.
+   *
+   * 2. Add a timing jitter TODO
+   *
+   * 3. Go through sampling baskets one-by-one
+   *    - If enter pulse goes above tot threshold, then enter TOT
+   *      readout mode, digitize, and return true.
+   *    - If pulse never goes above tot threshold, then only return
+   *      true if the voltage sample taken in the SOI is above
+   *      the readout threshold.
    *
    * #### ADC Mode
    * Here, we measure the height of the pulse once per clock cycle.
@@ -117,29 +117,24 @@ class HgcrocEmulator {
    * #### TOT Mode
    * Here, we measure how long the chip is in saturation.
    * This is calculated using the drain rate and assuming
-   * a linear drain of the voltage off of the chip.
+   * a linear drain of the charge off of the chip.
    *
-   * Thus, TOT = pulse peak / drain rate
+   * The charge deposited on the chip is converted from the
+   * pulse triggering TOT without including the pedestal.
+   * The pedestal is included in the pulse when determining
+   * if the pulse should enter TOT mode.
+   *
+   * Thus, TOT = charge deposited / drain rate
    * and TOA is calculated as before, seeing when the
    * pulse crossed the TOA threshold.
    *
-   * @TODO What do the ADC measurements look like during the TOT measurment?
-   *
-   * The TOT is then converted into the samples using the following algorithm.
-   *
-   *  1. Calculate the number of clock cycles it would take for the TOT to be
-   * measured
-   *  2. Convert the TOT measurement [ns] to TDC counts using totMax and the
-   * internal 12 bits
-   *  3. Insert the TOT measurement in the SOI (setting tot_complete_ flag to
-   * true)
-   *  4. Set the tot_progress_ flag for any samples after the SOI that are
-   * within the number of clock cycles it takes for the chip to recover
-   *
    * #### Pulse Measurement
-   * All "measurements" of the pulse use the member function measurePulse.
-   * This function incorporate the pedestal_ and optionally includes noise
-   * according to noiseRMS_.
+   * All "measurements" of the pulse use the object CompositePulse.
+   * This function incorporates the pedestal_ and linearly adds all
+   * the pulses at a variety of times. The pulses at different times
+   * are "merged" upon addition to the composite pulse depending on
+   * how close they are. This is done in a single pass, so we might
+   * end up with pulses closer than the provided separation time.
    *
    * @note For more realism, some chip parameters should change depending on the
    * chip they are coming from. This should be modified here, with a package
@@ -147,29 +142,69 @@ class HgcrocEmulator {
    * before digitizing.
    *
    * @param[in] channelID raw integer ID for this readout channel
-   * @param[in] voltages list of voltage amplitudes going into the chip
-   * @param[in] times list of times corresponding to those voltage amplitudes
+   * @param[in] arriving_pulses pairs of (voltage,time) of hits arriving at the chip
    * @param[out] digiToAdd digi that will be filled with the samples from the
    * chip
    * @return true if digis were constructed (false if hit was below readout)
    */
   bool digitize(
-      const int& channelID, const std::vector<double>& voltages,
-      const std::vector<double>& times,
+      const int& channelID, 
+      std::vector<std::pair<double,double>>& arriving_pulses,
       std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const;
 
- private:
   /**
-   * Configure the pulse to match the input voltage peak and time.
+   * Generate a digi of pure noise
    *
-   * @param[in] amplitude voltage amplitude of pulse [mV]
-   * @param[in] time time of peak [ns]
+   * The (optional) input soi amplitude is added on-top of
+   * pedestal in the SOI after being divided by the gain. 
+   * This is designed to be close to
+   * the output amplitudes generated by the noise generator.
+   *
+   * @note We don't go into TOT mode. We simply fill a DIGI
+   * with ADC samples with noise on top of the pedestal,
+   * including the SOI amplitude if provided.
+   *
+   * We set the TOA for each of the samples created to 0
+   * (or "not found"), so this also indirectly assumes we 
+   * are below the TOA threshold as well as below the TOT threshold.
+   *
+   * @param[in] channel raw integer ID for this readout channel
+   * @param[in] soi_amplitude amplitude of noise "pulse" in mV
+   * @return DIGI of pure noise
    */
-  void configurePulse(double amplitude, double time) const {
-    pulseFunc_.SetParameter(0, amplitude);
-    pulseFunc_.SetParameter(4, time);
+  std::vector<ldmx::HgcrocDigiCollection::Sample> noiseDigi(
+      const int& channel, const double& soi_amplitude = 0) const;
+
+  /**
+   * Get random noise amplitdue for input channel [mV]
+   *
+   * Currently, we don't have the noise separated by channel,
+   * but since this is a possibility in the future, I've put
+   * in the (required but unused) parameter.
+   *
+   * @param[in] channelID - UNUSED
+   * @return electronic noise amplitude [mV] above pedestal
+   */
+  double noise(const int& channelID) const {
+    return noiseInjector_->Gaus(0,noiseRMS_); 
+  }; 
+
+  /// Gain for input channel
+  double gain(const int& channelID) const {
+    return getCondition(channelID, "GAIN");
   }
 
+  /// Pedestal [ADC Counts] for input channel
+  double pedestal(const int& id) const {
+    return getCondition(id, "PEDESTAL");
+  }
+
+  /// Readout Threshold (ADC Counts)
+  double readoutThreshold(const int& id) const {
+    return getCondition(id, "READOUT_THRESHOLD");
+  }
+
+ private:
   /**
    * Get condition for input chip ID, condition name, and default value
    *
@@ -179,25 +214,148 @@ class HgcrocEmulator {
    * not set)
    * @return value of chip parameter
    */
-  double getCondition(int id, const std::string& name, double def) const {
+  double getCondition(int id, const std::string& name) const {
     // check if emulator has been passed a table of conditions
-    if (!chipConditions_) return def;
+    if (!chipConditions_) {
+      EXCEPTION_RAISE("HgcrocCond",
+          "HGC ROC Emulator was not given a conditions table.");
+    }
+
+    // cache column index for the input name
     if (conditionNamesToIndex_.count(name) == 0)
       conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
-    double condition{def};
-    try {
-      condition = chipConditions_->get(id, conditionNamesToIndex_.at(name));
-    } catch (framework::exception::Exception&) {
-      // ignore thrown exceptions and use default instead
-      return def;
-    }
-    return condition;
+
+    // get condition
+    return chipConditions_->get(id, conditionNamesToIndex_.at(name));
   }
 
  private:
-  /// Verbosity, not configurable, only helpful in development
-  bool verbose_{false};
+  /**
+   * CompositePulse
+   *
+   * An emulator for a pulse that the chip needs to read.
+   * This handles merging two hits that are "close-enough"
+   * to one another.
+   */
+  class CompositePulse {
+   public:
+    /**
+     * Constructore
+     *
+     * Connect this pulse emulator with the pulse
+     * shape function already configured by the chip
+     * emulator.
+     */
+    CompositePulse(TF1& func, const double& g, const double& p) 
+      : pulseFunc_{func}, gain_{g}, pedestal_{p} { }
+  
+    /**
+     * Put another hit into this composite pulse.
+     *
+     * If the hit is within the merge input of a hit already
+     * included, then it is merged with that hit. Otherwise,
+     * it is included as its own hit.
+     *
+     * @param[in] hit voltage,time pair representing a sime hit
+     * @param[in] hit_merge_ns maximum time separation [ns] to merge two hits
+     */
+    void addOrMerge(const std::pair<double,double>& hit, double hit_merge_ns) {
+      auto imerge{hits_.begin()};
+      for (; imerge!=hits_.end(); imerge++) 
+        if (fabs(imerge->second-hit.second)<hit_merge_ns) break;
+      if (imerge == hits_.end()) { // didn't find a match, add to the list
+        hits_.push_back(hit);
+      } else { // merge hits, shifting time to average
+        imerge->second=(imerge->second*imerge->first+hit.first*hit.second);
+        imerge->first+=hit.first;
+        imerge->second/=imerge->first;
+      }
+    }
+  
+    /**
+     * Find the time at which we cross the input level.
+     *
+     * We use the midpoint algorithm, assuming the input low
+     * is below the threshold and hight is above.
+     *
+     * @param[in] low minimum value (below threshold) to start search at [mV]
+     * @param[in] high maximum value (above threshold) to start search at [mV]
+     * @param[in] level threshold to look for time [mV]
+     * @param[in] prec precision with which to look [mV]
+     * @returns time [ns] at which the pulse cross level
+     */
+    double findCrossing(double low, double high, double level, double prec=0.01) {
+      // use midpoint algorithm, assumes low is below and high is above
+      double step=high-low;
+      double pt=(high+low)/2;
+      while (step>prec) {
+        double vmid=at(pt);
+        if (vmid<level) {
+          low=pt;
+        } else {
+          high=pt;
+        }
+        step=high-low;
+        pt=(high+low)/2;
+      }
+      return pt;
+    }
+  
+    /// Configure the pulses for the current chip
+    void setGainPedestal(double gain, double pedestal) {
+      gain_=gain;
+      pedestal_=pedestal;
+    }
+  
+    /**
+     * Evaluating this object as a function
+     * gives the same result as at.
+     *
+     * @see at
+     */
+    double operator()(double time) const {
+      return at(time);
+    }
+  
+    /**
+     * Measure the voltage at the input time
+     *
+     * Includes the effects from all pulses but
+     * does not put any noise into the measurement.
+     *
+     * @param[in] time time to measure [ns]
+     * @return voltage at that time [mV]
+     */
+    double at(double time) const {
+      double signal = gain_ * pedestal_;
+      for (auto hit : hits_)
+        signal += hit.first * pulseFunc_.Eval(time-hit.second);
+      return signal;
+    };
+  
+    /// Get list of individual pulses that are entering the chip
+    const std::vector<std::pair<double,double>>& hits() const { return hits_; }
+    
+   private:
+    /**
+     * pulses entering the chip
+     *
+     * The pair is {voltage amplitude [mV], time of peak [ns]}
+     */
+    std::vector<std::pair<double,double>> hits_;
 
+    /// gain for current chip we are emulating
+    double gain_;
+
+    /// pedestal for current chip we are emulating
+    double pedestal_;
+
+    /// reference to pulse shape function shared by all pulses
+    TF1& pulseFunc_;
+    
+  };  // CompositePulse
+
+ private:
   /**************************************************************************************
    * Parameters Identical for all Chips
    *************************************************************************************/
@@ -220,9 +378,6 @@ class HgcrocEmulator {
   /// Jitter of timing mechanism in the chip [ns]
   double timingJitter_;
 
-  /// Maximum TOT measured by chip [ns]
-  double totMax_;
-
   /// Conversion from time [ns] to counts
   double ns_;
 
@@ -241,8 +396,8 @@ class HgcrocEmulator {
   /// Time of Peak relative to pulse shape fit [ns]
   double timePeak_;
 
-  /// The capacitance of the readout pads in the chips [pF]
-  double readoutPadCapacitance_;
+  /// Hit merging time [ns]
+  double hit_merge_ns_;
 
   /**************************************************************************************
    * Chip-Dependent Parameters (Conditions)
@@ -263,27 +418,6 @@ class HgcrocEmulator {
    * in getCondition during processing.
    */
   mutable std::map<std::string, int> conditionNamesToIndex_;
-
-  /// gain setting of the chip [mV / ADC units]
-  double gain_;
-
-  /// base pedestal [ADC units]
-  double pedestal_;
-
-  /// Min threshold for reading out a channel [ADC units]
-  double readoutThreshold_;
-
-  /// Min threshold for measuring TOA [mV]
-  double toaThreshold_;
-
-  /// Min threshold for measuring TOT [mV]
-  double totThreshold_;
-
-  /// Measurement time relative to clock cycle [ns]
-  double measTime_;
-
-  /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
-  double drainRate_;
 
   /**************************************************************************************
    * Helpful Member Objects

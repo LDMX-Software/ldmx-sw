@@ -1,0 +1,68 @@
+
+name: Generate Documentation
+
+on:
+  push:
+    branches: 'trunk'
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+
+    # The rest of the steps are building docs
+    #   Since the build is made and tested above,
+    #   the docs are only updated if the build passes
+    # They need to be in the same job as the build becuase
+    #   the sphinx-apidoc command needs the python package
+    #   structured like a normal python package. 
+
+    # Runs doxygen doxygen.conf in the docs/ directory
+    - name: Run Doxygen to build C++ Docs
+      uses: mattnotmitt/doxygen-action@v1.1.0
+      with:
+        doxyfile-path: doxygen.conf/doxyfile #relative to working directory
+        working-directory: docs #docs subdirectory
+
+    # sphinx is a python package, so we need to setup python on this runner
+    - name: Setup Python for Sphinx
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    
+    # Runs sphinx-apidoc and sphinx-build in the docs/ directory
+    #   sphinx-apidoc requires the python files to be packaged together
+    #   like a python module would be. The simplest way to achieve
+    #   this form is to build and install ldmx-sw.
+    - name: Run Sphinx to build python Docs
+      run: |
+          python3 -m pip install -U pip
+          python3 -m pip install Sphinx Pillow groundwork-sphinx-theme
+          sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
+          sudo `which sphinx-build` docs/sphinx.conf docs/html/_sphinx
+      shell: bash
+
+    # Copy the generated documentation to the github pages repo
+    #   This copies all the html files in the docs/html directory to the github.io repository
+    #   using the ldmx organization token for access and saving the changes with the
+    #   commit message of the commit that activated this action
+    - name: Deploy the Docs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
+        commit_message: ${{ github.event.head_commit.message }}
+        external_repository: LDMX-Software/ldmx-software.github.io
+        publish_branch: trunk 
+        publish_dir: ./docs/html
+        enable_jekyll: true #allow github pages to process using jekyll
+        keep_files: true #keep old files (by default, clears publish_dir before deploying to it)

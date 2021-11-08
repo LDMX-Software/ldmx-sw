@@ -1,30 +1,22 @@
 # Event Display for ldmx-sw
 
-Currently, the event display is unable to be used within the container,
-but we have configured it to be able to be built separately from everything else in ldmx-sw.
-
-### Pre-Requisites
-The event display depends on ROOT, so you will need an installation of ROOT outside of the container installed on your system.
-The following procedure was developed on Ubuntu 18.04 using ROOT 6.20.00.
-
-### Build and Install
-1. Remove any old build of ldmx-sw: `cd ldmx-sw; rm -rf build;`
-2. Make a build directory: `mkdir build; cd build`
-3. Configure the build: `cmake -DBUILD_EVE_ONLY=ON -DCMAKE_INSTALL_PREFIX=../../ldmx-eve ..`
-4. Build and Install: `make install`
-
-### Environment Setup
-You need to point your computer to the library and executable that the event display uses.
-This entails setting two environment variables: `LD_LIBRARY_PATH` and `PATH`. In bash,
+Currently, the event display is able to be used only within a container under development.
+To obtain this version of the container after setting up the ldmx environment, run
 ```bash
-cd ldmx-eve
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/lib
-export PATH=$PATH:$(pwd)/bin
+ldmx-container-pull dev display
 ```
-This setup will need to be done each time you open a new terminal to run the event display (even if you aren't re-compiling it).
-You can see run-time helpful commands by passing the help flag.
+Since this is a new container, you are required to remove your old build and
+install directories so that there is not contamination from the old container.
+
+Now you can compile the event display program `eve`.
+You must turn on the compilation of eve before trying to compile.
+```
+ldmx cmake -DBUILD_EVE=ON ..
+```
+And then you can compile like normal.
+
+The event display takes one event file as input.
 ```bash
-ldmx-eve --help
+ldmx eve {events.root}
 ```
-Since we put the event display install in a different directory than the normal install,
-you can continue to work on other branches without breaking your installation of the event display.
+Use `ldmx eve --help` for more detail.

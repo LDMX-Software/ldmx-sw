@@ -45,8 +45,17 @@ class HCalDQM : public framework::Analyzer {
   void analyze(const framework::Event& event);
 
  private:
-  /** The maximum PE threshold used for the veto. */
-  float maxPEThreshold_{5};
+  /// Hcal Rec Hits collection name
+  std::string rec_coll_name_;
+
+  /// Hcal Rec Hits pass name
+  std::string rec_pass_name_;
+
+  /// Hcal Veto name
+  std::string veto_name_;
+
+  /// Hcal Veto pass name
+  std::string veto_pass_;
 };
 
 }  // namespace dqm

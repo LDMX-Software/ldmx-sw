@@ -25,3 +25,6 @@
 [submodule "TrigScint"]
 	path = TrigScint
 	url = https://github.com/LDMX-Software/TrigScint
+[submodule "Tracking"]
+	path = Tracking
+	url = https://github.com/LDMX-Software/Tracking

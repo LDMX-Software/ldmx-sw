@@ -1,0 +1,31 @@
+
+name: Basic Tests
+
+on:
+  push:
+    branches: '**' #all branches
+    tags: 'v*.*.*' #all version tags
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+
+    - name: Basic Tests for Functionality
+      run: |
+        source ${GITHUB_WORKSPACE}/.github/actions/common.sh
+        start_group ctest --verbose
+        cd ${LDMX_BASE}/ldmx-sw/build
+        ldmx ctest --verbose
+        end_group
+      shell: bash

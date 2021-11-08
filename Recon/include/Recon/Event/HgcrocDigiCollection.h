@@ -30,6 +30,14 @@ namespace ldmx {
  * be the same for all channels.
  *
  * Each digi corresponds to one channel ID and numSamplesPerDigi_ samples.
+ *
+ * A custom iterator class and begin() and end() methods are also implemented
+ * so that a user can loop through this collection similar to any other
+ * container in C++.
+ *
+ *  for (auto digi : digi_collection) {
+ *    // digi is of type HgcrocDigi
+ *  }
  */
 class HgcrocDigiCollection {
  public:
@@ -71,7 +79,7 @@ class HgcrocDigiCollection {
      * @note This is where the measurements to word translation occurs.
      */
     Sample(bool tot_progress, bool tot_complete, int firstMeas, int seconMeas,
-           int toa);
+           int toa, int version = 3);
 
     /**
      * Basic constructor
@@ -79,7 +87,7 @@ class HgcrocDigiCollection {
      * Use this constructor when translating binary data coming off the
      * detector into our event model.
      */
-    Sample(uint32_t w) : word_(w) {}
+    Sample(uint32_t w, int version = 3) : word_(w), version_{version} {}
 
     /**
      * Default constructor
@@ -115,7 +123,13 @@ class HgcrocDigiCollection {
      *
      * @return 10-bit measurement of TOA
      */
-    int toa() const { return (TEN_BIT_MASK & word_); }
+    int toa() const { 
+      if (version_ == 2) {
+        return secon();
+      } else {
+        return third(); 
+      }
+    }
 
     /**
      * Get the TOT measurement from this sample
@@ -128,9 +142,13 @@ class HgcrocDigiCollection {
      * @return 12-bit measurement of TOT
      */
     int tot() const {
-      int seconMeas = secon();
-      if (seconMeas > 512) seconMeas = (seconMeas - 512) * 8;
-      return seconMeas;
+      int meas = secon();
+      if (version_ == 2) {
+        meas = first();
+      }
+
+      if (meas > 512) meas = (meas - 512) * 8;
+      return meas;
     }
 
     /**
@@ -151,6 +169,10 @@ class HgcrocDigiCollection {
      * @return 10-bit measurement of current ADC
      */
     int adc_t() const {
+      if (version_ == 2) {
+        return third();
+      }
+
       if (not isTOTComplete())
         return secon();  // running modes
       else
@@ -179,10 +201,17 @@ class HgcrocDigiCollection {
      */
     int secon() const { return TEN_BIT_MASK & (word_ >> SECONMEAS_POS); }
 
+    /**
+     * Get the third 10-bit measurement out of the smaple
+     * @return 10-bit measurement at second position in sample
+     */
+    int third() const { return TEN_BIT_MASK & word_; }
+
    private:
     /// The actual 32-bit word spit out by the chip
     uint32_t word_;
-
+    /// version to use for {de,en}coding
+    int version_;
   };  // Sample
 
  public:
@@ -208,7 +237,7 @@ class HgcrocDigiCollection {
      * references
      */
     HgcrocDigi(unsigned int id,
-               std::vector<HgcrocDigiCollection::Sample>::const_iterator first,
+               std::vector<uint32_t>::const_iterator first,
                const HgcrocDigiCollection& collection)
         : id_(id), first_(first), collection_(collection) {}
 
@@ -218,20 +247,6 @@ class HgcrocDigiCollection {
      * @return global integer ID for this DIGI channel
      */
     unsigned int id() const { return id_; }
-
-    /**
-     * Get the starting iterator for looping through this DIGI
-     *
-     * @return const vector iterator pointing to start of this DIGI
-     */
-    auto begin() const { return first_; }
-
-    /**
-     * Get the ending iterator for looping through this DIGI
-     *
-     * @return const vector iterator pointing to end of this DIGI
-     */
-    auto end() const { return first_ + collection_.getNumSamplesPerDigi(); }
 
     /**
      * Check if this DIGI is an ADC measurement
@@ -270,13 +285,22 @@ class HgcrocDigiCollection {
       return soi().tot();
     }
 
+    /// get the sample at a specific index in the digi
+    HgcrocDigiCollection::Sample at(unsigned int i_sample) const {
+      return Sample(*(first_ + i_sample), collection_.getVersion());
+    }
+
     /**
      * Get the sample of interest from this DIGI
      *
      * @return Sample that is the sample of interest in this DIGI
      */
-    const HgcrocDigiCollection::Sample& soi() const {
-      return *(first_ + collection_.getSampleOfInterestIndex());
+    HgcrocDigiCollection::Sample soi() const {
+      return at(collection_.getSampleOfInterestIndex());
+    }
+
+    unsigned int size() const {
+      return collection_.getNumSamplesPerDigi();
     }
 
    private:
@@ -284,7 +308,7 @@ class HgcrocDigiCollection {
     unsigned int id_;
 
     /// the location of the first sample that are in this digi
-    std::vector<HgcrocDigiCollection::Sample>::const_iterator first_;
+    std::vector<uint32_t>::const_iterator first_;
 
     /// Reference to collection that owns this DIGI
     const HgcrocDigiCollection& collection_;
@@ -317,6 +341,20 @@ class HgcrocDigiCollection {
    * the other settings of this collection.
    */
   void Print() const;
+
+  /**
+   * Get the version of ROC we have read
+   * @return int version number of ROC
+   */
+  int getVersion() const { return version_; }
+
+  /**
+   * Set the version of the ROC we have read
+   */
+  void setVersion(int v) {
+    version_ = v;
+    return;
+  }
 
   /**
    * Get number of samples per digi
@@ -388,6 +426,70 @@ class HgcrocDigiCollection {
    * @param[in] digi list of new samples to add
    */
   void addDigi(unsigned int id, const std::vector<Sample>& digi);
+  void addDigi(unsigned int id, const std::vector<uint32_t>& digi);
+
+ public:
+  /**
+   * iterator class so we can do range-based loops over digi collections
+   *
+   * We inherit from the standard iterator class and tag this iterator
+   * as one that de-references to an HgcrocDigi.
+   *
+   * Internally, we are merely keeping track of the index of the digi
+   * in the collection and only getting the digi when the iterator is
+   * asked to de-reference.
+   */
+  class iterator
+      : public std::iterator<std::input_iterator_tag, HgcrocDigi, long> {
+   public:
+    /// Connect the parent collection with an index to this iterator
+    explicit iterator(HgcrocDigiCollection& c, long index = 0)
+        : coll_{c}, digi_index_{index} {}
+    /// Increment the digi index and return the iterator afterwards
+    iterator& operator++() {
+      digi_index_++;
+      return *this;
+    }
+    /// Increment the digi index and return the iterator before
+    iterator operator++(int) {
+      iterator retval = *this;
+      ++(*this);
+      return retval;
+    }
+    /// Check if two iterators are on the same index
+    bool operator==(iterator other) const {
+      return digi_index_ == other.digi_index_;
+    }
+    /// Check if two iterators are not on the same index
+    bool operator!=(iterator other) const { return !(*this == other); }
+    /**
+     * De-reference this iterator by using the parent collection to get the
+     * actual digi at the index
+     */
+    const HgcrocDigi operator*() const { return coll_.getDigi(digi_index_); }
+
+   private:
+    /// the index of the digi this iterator represents
+    long digi_index_{0};
+    /// the parent collection this iterator is looping over
+    HgcrocDigiCollection& coll_;
+  };  // iterator
+
+ public:
+  /**
+   * The beginning of this collection.
+   *
+   * We just point the user to the zero'th entry.
+   */
+  iterator begin() { return iterator(*this, 0); }
+
+  /**
+   * The end of this collection
+   *
+   * The end of the collection is the number
+   * of digis stored in it.
+   */
+  iterator end() { return iterator(*this, getNumDigis()); }
 
  private:
   /** Mask for lowest order bit in an int */
@@ -413,7 +515,7 @@ class HgcrocDigiCollection {
   std::vector<unsigned int> channelIDs_;
 
   /** list of samples that we have been given */
-  std::vector<Sample> samples_;
+  std::vector<uint32_t> samples_;
 
   /** number of samples for each digi */
   unsigned int numSamplesPerDigi_;
@@ -421,10 +523,13 @@ class HgcrocDigiCollection {
   /** index for the sample of interest in the samples list */
   unsigned int sampleOfInterest_;
 
+  /** version of the ROC we have read */
+  int version_;
+
   /**
    * The ROOT class definition.
    */
-  ClassDef(HgcrocDigiCollection, 2);
+  ClassDef(HgcrocDigiCollection, 3);
 };
 }  // namespace ldmx
 
