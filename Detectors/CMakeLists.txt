@@ -25,6 +25,8 @@ setup_library(module Detectors
               dependencies DD4hep::DDCore
               sources ${SRC_FILES})
 
+target_include_directories(Detectors PUBLIC ${EIGEN3_INCLUDE_DIRS})
+
 dd4hep_add_plugin(Tracker SOURCES ${PROJECT_SOURCE_DIR}/src/Detectors/DD4hep/*.cxx
                   USES DD4hep::DDCore ROOT::Core ROOT::Geom ROOT::GenVector 
                   Detectors::Detectors DetDescr::DetDescr 

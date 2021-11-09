@@ -1,6 +1,7 @@
 
 //---< DD4hep >---//
 #include "XML/Helper.h"
+#include "DD4hep/Factories.h"
 
 //---< Detectors >---//
 #include "Detectors/Geo/Box.h"
