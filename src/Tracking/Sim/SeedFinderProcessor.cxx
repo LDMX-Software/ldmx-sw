@@ -139,20 +139,21 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   SeedContainer seeds;
   seeds.clear();
 
+  Acts::Seedfinder<ldmx::LdmxSpacePoint>::State state;
+  
   // find the seeds
   auto group = spGroup.begin();
   auto group_end = spGroup.end();
-      
+  
   for (; !(group == group_end); ++group) {
-    const auto& groupSeeds =
-        seed_finder_->createSeedsForGroup(group.bottom(), group.middle(), group.top());
-    std::copy(groupSeeds.begin(), groupSeeds.end(), std::back_inserter(seeds));
+    seed_finder_->createSeedsForGroup(state, std::back_inserter(seeds), group.bottom(),
+                                      group.middle(), group.top());
   }
-      
+  
   int numSeeds = seeds.size();
-
+  
   for (auto& seed : seeds) {
-	
+    
     auto ldmxspvec = seed.sp();
     
     //Fit the seeds and extract the track parameters 
