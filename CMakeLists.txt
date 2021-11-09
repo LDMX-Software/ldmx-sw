@@ -74,6 +74,7 @@ set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 add_subdirectory(Recon ${CMAKE_BINARY_DIR}/ReconEvent)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
+add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
 add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
 add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 
@@ -114,7 +115,7 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # This module contains all things trigger scintillator
     add_subdirectory(TrigScint)
 
-    # This module contains track reconstruction
+    # This module is focused on track reconstruction
     add_subdirectory(Tracking)
 
 endif()
