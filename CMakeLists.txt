@@ -8,6 +8,13 @@ project(LDMX_SW VERSION 2.1.0
                 LANGUAGES CXX    
 )
 
+
+if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 17 CACHE STRING "...." FORCE)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 
