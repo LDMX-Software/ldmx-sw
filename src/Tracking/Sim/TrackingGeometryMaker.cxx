@@ -1,20 +1,14 @@
 #include "Tracking/Sim/TrackingGeometryMaker.h"
 
 
-/*~~~~~~~~~~*/
-/*   ACTS   */
-/*~~~~~~~~~~*/
+//--- ACTS ---//
 #include "Acts/Plugins/TGeo/TGeoPrimitivesHelper.hpp"
 
-/*~~~~~~~~~~*/
-/*  DD4Hep  */
-/*~~~~~~~~~~*/
+//--- DD4Hep ---//
 #include "DD4hep/DetElement.h"
 
 
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
+//--- C++ StdLib ---//
 #include <iostream>
 
 namespace tracking {
@@ -41,10 +35,7 @@ void TrackingGeometryMaker::onProcessStart() {
   //Get the ACTS Logger
   auto loggingLevel = Acts::Logging::VERBOSE;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
-
-  //Define a Geometry Context (not sure what for)
-
-  
+    
   //The subdetectors should be the TaggerTracker and the Recoil Tracker
   
   collectSubDetectors_dd4hep(world,subdetectors);
@@ -196,7 +187,7 @@ void TrackingGeometryMaker::onProcessStart() {
         Acts::Vector3 yPos1(0., 1., 0.);
         Acts::Vector3 zPos1(-sin(rotationAngle), 0., cos(rotationAngle));
         
-        Acts::RotationMatrix3D y_rot;
+        Acts::RotationMatrix3 y_rot;
         y_rot.col(0) = xPos1;
         y_rot.col(1) = yPos1;
         y_rot.col(2) = zPos1;
@@ -206,7 +197,7 @@ void TrackingGeometryMaker::onProcessStart() {
         Acts::Vector3 yPos2(0., cos(rotationAngle), sin(rotationAngle));
         Acts::Vector3 zPos2(0., -sin(rotationAngle),cos(rotationAngle));
 
-        Acts::RotationMatrix3D x_rot;
+        Acts::RotationMatrix3 x_rot;
         x_rot.col(0) = xPos2;
         x_rot.col(1) = yPos2;
         x_rot.col(2) = zPos2;
@@ -380,7 +371,10 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
         std::string childName = childDetElement.name();
         
         //Check here if I'm checking the TaggerTracker or the RecoilTracker. Skip the rest.
-        if (childName != "TaggerTracker" && childName != "RecoilTracker") {// && childDetElement.name() != "RecoilTracker") {
+        if (childName != "TaggerTracker"  &&
+            childName != "tagger_tracker" &&
+            childName != "recoil_tracker" &&
+            childName != "RecoilTracker") {
             continue;
         }
         

@@ -55,6 +55,7 @@ setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
 			   ActsCore
+			   ActsPluginDD4hep
 			   DD4hep::DDCore
               sources ${SRC_FILES})
 

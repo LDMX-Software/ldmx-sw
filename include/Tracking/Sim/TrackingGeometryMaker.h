@@ -1,25 +1,17 @@
 #ifndef TRACKING_SIM_TRACKINGGEOMAKER_H_
 #define TRACKING_SIM_TRACKINGGEOMAKER_H_
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
+//--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-/*~~~~~~~~~~~~*/
-/*   DD4hep   */
-/*~~~~~~~~~~~~*/
+//---  DD4hep ---//
 #include "DD4hep/Detector.h"
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
+//--- ROOT ---//
 #include "TGeoMatrix.h"
 
-/*~~~~~~~~~~~~*/
-/*    ACTS    */
-/*~~~~~~~~~~~~*/
+//--- ACTS ---//
 
 #include "Acts/Utilities/Logger.hpp"
 #include "Acts/Plugins/DD4hep/ActsExtension.hpp"
