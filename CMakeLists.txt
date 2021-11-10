@@ -16,6 +16,8 @@ find_package(Acts CONFIG REQUIRED)
 
 find_package(Eigen3 CONFIG REQUIRED)
 
+setup_dd4hep_target()
+
 # Allow building of event specific classes only.  The most common use case is 
 # needing to build the event classes to allow building of the event bus and ROOT
 # dictionary prior building the rest of the modules in a package. 
@@ -53,6 +55,7 @@ setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
 			   ActsCore
+			   DD4hep::DDCore
               sources ${SRC_FILES})
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
