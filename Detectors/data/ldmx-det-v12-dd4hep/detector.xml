@@ -27,9 +27,9 @@
     <display>
         <vis name="DetEnvelopeVis" alpha="0.1" r="0.82" g="0.82" b="0.82" showDaughters="true" visible="true" />
     </display>
-
+    
     <include ref="tagger.xml" />
-    <include ref="recoil.xml" />
+    <!--<include ref="recoil.xml" />-->
 
     <readouts>
         <readout name="TrackerHits">
