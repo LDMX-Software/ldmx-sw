@@ -13,41 +13,70 @@
 
 //--- ACTS ---//
 
+//Utils
 #include "Acts/Utilities/Logger.hpp"
+#include "Acts/Definitions/Units.hpp"
+
+//dd4hep
 #include "Acts/Plugins/DD4hep/ActsExtension.hpp"
 #include "Acts/Plugins/DD4hep/DD4hepLayerBuilder.hpp"
 #include "Acts/Plugins/DD4hep/DD4hepDetectorElement.hpp"
+
+//geometry
 #include "Acts/Geometry/CuboidVolumeBuilder.hpp"
-#include "Acts/Definitions/Units.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
+
+//magfield
+#include "Acts/MagneticField/MagneticFieldContext.hpp"
+
 #include "Acts/Geometry/TrackingVolume.hpp"
 #include "Acts/Geometry/TrackingGeometryBuilder.hpp"
 #include <Acts/Geometry/TrackingGeometry.hpp>
-
-
-#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
-#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
-#include "Acts/Material/Material.hpp"
 #include "Acts/Surfaces/RectangleBounds.hpp"
-
 
 ///Visualization
 #include <Acts/Visualization/ObjVisualization3D.hpp>
 #include <Acts/Visualization/GeometryView3D.hpp>
 #include <Acts/Visualization/ViewConfig.hpp>
 
-
+//Material
 //This should be changed in the new version
 //#include "Acts/Material/MaterialProperties.hpp"
+#include "Acts/Material/Material.hpp"
 #include "Acts/Material/MaterialSlab.hpp"
 #include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
+#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 
+
+//propagation testing
+#include "Acts/Propagator/Navigator.hpp"
+#include "Acts/Propagator/Propagator.hpp"
+#include "Acts/Propagator/EigenStepper.hpp"
+#include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Utilities/Logger.hpp"
+#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Propagator/MaterialInteractor.hpp"
+#include "Acts/Propagator/AbortList.hpp"
+#include "Acts/Propagator/ActionList.hpp"
+#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
+#include "Acts/Propagator/detail/SteppingLogger.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+
+
+using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
+using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
+using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+
+
+using PropagatorOptions =
+    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
+  
 namespace tracking {
 namespace sim {
 
 class TrackingGeometryMaker : public framework::Producer {
 
-public:
+ public:
   /**
    * Constructor.
    *
@@ -58,7 +87,7 @@ public:
 
   /// Destructor
   ~TrackingGeometryMaker();
-
+  
   /**
    *
    */
@@ -72,39 +101,48 @@ public:
   void configure(framework::config::Parameters &parameters) final override;
 
   /**
-   * Run the processor and create a collection of results which
-   * indicate if a charge particle can be found by the recoil tracker.
+   * Run the processor
    *
    * @param event The event to process.
    */
   void produce(framework::Event &event);
 
-    Acts::CuboidVolumeBuilder::VolumeConfig  volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel);
+  Acts::CuboidVolumeBuilder::VolumeConfig  volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel);
     
   void collectSubDetectors_dd4hep(dd4hep::DetElement& detElement,
                                   std::vector<dd4hep::DetElement>& subdetectors);
   void collectSensors_dd4hep(dd4hep::DetElement& detElement,
                              std::vector<dd4hep::DetElement>& sensors);
 
-void collectModules_dd4hep(dd4hep::DetElement& detElement,
-                                 std::vector<dd4hep::DetElement>& modules);
+  void collectModules_dd4hep(dd4hep::DetElement& detElement,
+                             std::vector<dd4hep::DetElement>& modules);
    
 
-//This should go and we should use ACTS methods. But they are private for the moment.
-void resolveSensitive(
-const dd4hep::DetElement& detElement,
-    std::vector<std::shared_ptr<const Acts::Surface>>& surfaces,bool force) const;
+  //This should go and we should use ACTS methods. But they are private for the moment.
+  void resolveSensitive(
+      const dd4hep::DetElement& detElement,
+      std::vector<std::shared_ptr<const Acts::Surface>>& surfaces,bool force) const;
 
-std::shared_ptr<const Acts::Surface>
-createSensitiveSurface(
-    const dd4hep::DetElement& detElement) const;
-
-Acts::Transform3 convertTransform(const TGeoMatrix* tGeoTrans) const;
-
-private:
+  std::shared_ptr<const Acts::Surface>
+  createSensitiveSurface(
+      const dd4hep::DetElement& detElement) const;
+  
+  Acts::Transform3 convertTransform(const TGeoMatrix* tGeoTrans) const;
+  
+  std::shared_ptr<PropagatorOptions> TestPropagatorOptions();
+  
+ private:
   /// The detector
   dd4hep::Detector* detector_{nullptr};
-  Acts::GeometryContext m_gctx;
+  Acts::GeometryContext gctx_;
+  Acts::MagneticFieldContext bctx_;
+  
+  //The propagator
+  std::shared_ptr<Propagator> propagator_;
+
+  //The options
+  std::shared_ptr<PropagatorOptions> options_;
+  
   int dumpobj_ {0};
 }; // TrackingGeometryMaker
     
