@@ -197,8 +197,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   //no covariance transport
   auto cov = std::nullopt;
-
-
+    
   std::cout<<"PF::DEBUG:: Done with the covariance"<<std::endl;
   
   //Prepare the outputs..
@@ -255,7 +254,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   //run the propagator
   auto pOutput   = propagator_->propagate(startParameters,options);
-  
+
+  // Record the propagator steps. For the moment I'm not saving the propagation material
+    
   std::cout<<"PF::DEBUG:: Done propagation"<<std::endl;
   
 }
@@ -408,23 +409,31 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   std::cout<<"Formed " <<layerConfig.size()<< " layer configs"<<std::endl;
     
   //Create the volume
-    
+
+  std::cout<<"FORMING the boundaries for:"<<subdetector.name()<<std::endl;
   // Build the sub-detector volume configuration
   Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
     
   // Get the transform wrt the world
   auto subDet_transform = convertTransform(&(subdetector.nominal().worldTransformation()));
     
-  //std::cout<<subDet_transform.translation()<<std::endl;
-  //std::cout<<subDet_transform.rotation()<<std::endl;
-  subDetVolumeConfig.position = subDet_transform.translation();
-    
-  double x_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
-  double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
-  double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z();
+  std::cout<<subDet_transform.translation()<<std::endl;
+  std::cout<<subDet_transform.rotation()<<std::endl;
+
+
+  //Rotate..Z->X, X->Y, Y->Z
+  //Add 1 to not make it sit on the first layer surface
+  Acts::Vector3 sub_det_position = {subDet_transform.translation()[2]-1, subDet_transform.translation()[0], subDet_transform.translation()[1]};
+  
+  
+  double x_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z()+1;
+  double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
+  double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
+  
 
   std::cout<<"x "<<x_length<<" y "<<y_length<<" z "<<z_length<<std::endl;
-    
+
+  subDetVolumeConfig.position = sub_det_position;
   subDetVolumeConfig.length = {x_length, y_length, z_length};
   subDetVolumeConfig.layerCfg = layerConfig;
   subDetVolumeConfig.name = subdetector.name();
@@ -434,11 +443,11 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   Acts::Material subdet_mat = Acts::Material::fromMassDensity(subde_mat.radLength(),
                                                               subde_mat.intLength(), subde_mat.A(), 
                                                               subde_mat.Z(), subde_mat.density()); 
-    
+  
   subDetVolumeConfig.volumeMaterial =
       std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
-    
-    
+  
+  
   return subDetVolumeConfig;
     
 }
