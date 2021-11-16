@@ -12,7 +12,7 @@ project(Tracking VERSION 2.1.0
 # Search for ROOT and add all targets.
 find_package(ROOT CONFIG REQUIRED)
 
-find_package(Acts CONFIG REQUIRED)
+find_package(Acts CONFIG REQUIRED COMPONENTS Core PluginDD4hep)
 
 find_package(Eigen3 CONFIG REQUIRED)
 
