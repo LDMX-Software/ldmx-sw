@@ -14,7 +14,7 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 setup_dd4hep_target()
 
 # Find the eigen library
-find_package(Eigen3 REQUIRED)
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/src/Detectors/Tracking/[a-zA-z]*.cxx
@@ -22,7 +22,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 )
 
 setup_library(module Detectors
-              dependencies DD4hep::DDCore
+	      dependencies DD4hep::DDCore Eigen3::Eigen
               sources ${SRC_FILES})
 
 dd4hep_add_plugin(Tracker SOURCES ${PROJECT_SOURCE_DIR}/src/Detectors/DD4hep/*.cxx
