@@ -17,14 +17,18 @@ namespace ldmx {
  *    -- channel : channel-on-elink, range O(0-37)
  *
  * For transient use only i.e. we use this ID to help translate the digitized
- * data coming off the detector into spatially-important HcalIDs.
+ * data coming off the detector into spatially-important HcalDigiIDs.
+ *
+ * TODO update the ranges in the packed index template.
+ * These were originally copied from the EcalElectronicsID implementation
+ * and may not align with the Hcal readout design.
  */
 class HcalElectronicsID : public DetectorID {
  public:
 
   static const RawValue INDEX_MASK{0xFFFFFF};
   // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
-  typedef PackedIndex<38,48,1> Index;
+  typedef PackedIndex<38,48,97> Index;
   // Maximum value of any packed index here
   static const unsigned int MAX_INDEX{38*48*200};
   
