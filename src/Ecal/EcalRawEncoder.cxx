@@ -55,10 +55,8 @@ void EcalRawEncoder::produce(framework::Event& event) {
     ldmx::EcalID detid{digi.id()};
     ldmx::EcalElectronicsID eid{detmap.get(detid)};
 
-    std::size_t i_bx{0};
-    for (auto sample : digi) {
-      sorted_samples[i_bx][eid.fiber()][eid.elink()][eid.channel()] = sample.raw();
-      i_bx++;
+    for (std::size_t i_bx{0}; i_bx < digis.getNumSamplesPerDigi(); i_bx++) {
+      sorted_samples[i_bx][eid.fiber()][eid.elink()][eid.channel()] = digi.at(i_bx).raw();
     }
   }
 
