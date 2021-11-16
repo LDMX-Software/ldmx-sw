@@ -11,6 +11,9 @@
 //--- ROOT ---//
 #include "TGeoMatrix.h"
 
+//--- Tracking I/O---//
+#include "Tracking/Sim/PropagatorStepWriter.h"
+
 //--- ACTS ---//
 
 //Utils
@@ -137,13 +140,27 @@ class TrackingGeometryMaker : public framework::Producer {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
   
+  //If we want to dump the tracking geometry
+  int dumpobj_ {0};
+
+
+  //--- Propagator Tests ---//
+
+  //Random number generator
+  std::default_random_engine generator_;
+  
   //The propagator
   std::shared_ptr<Propagator> propagator_;
-
+  
   //The options
   std::shared_ptr<PropagatorOptions> options_;
   
-  int dumpobj_ {0};
+  //The propagator steps writer
+  std::shared_ptr<PropagatorStepWriter> writer_;
+
+  //Outname of the propagator test
+  std::string steps_outfile_path_{""};
+  
 }; // TrackingGeometryMaker
     
 

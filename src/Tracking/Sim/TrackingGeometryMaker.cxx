@@ -34,6 +34,7 @@ void TrackingGeometryMaker::onProcessStart() {
   std::vector<dd4hep::DetElement> subdetectors;
 
   //Get the ACTS Logger
+  
   auto loggingLevel = Acts::Logging::VERBOSE;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
     
@@ -48,7 +49,7 @@ void TrackingGeometryMaker::onProcessStart() {
   for (auto& subDetector : subdetectors) {
     std::cout<<"PF::DEBUG:: Translating DD4Hep sub detector: " << subDetector.name()<<std::endl;
     //create the cuboid volume configurations for the builder
-      
+    
     volBuilderConfigs.push_back(volumeBuilder_dd4hep(subDetector,loggingLevel));
   }
   
@@ -127,13 +128,12 @@ void TrackingGeometryMaker::onProcessStart() {
   //Setup the propagator
   propagator_ = std::make_shared<Propagator>(stepper, navigator);
 
-  //1) Setup the actions and the abort list. For debugging add the Stepping Logger
-  //2) Create the propagator options from them. If the magneticField context is empty it won't be used.
-  //2a) If I want to pass a constant Field then use the Constant BField Class (inherits from the provider)
-  
-  //options_ = TestPropagatorOptions();
-  
-  //3) Get the steps vector and pass it to the root Writer -> in the event processor
+
+  //Setup the propagator steps writer
+  PropagatorStepWriter::Config cfg;
+  cfg.filePath = steps_outfile_path_;
+
+  writer_ = std::make_shared<PropagatorStepWriter>(cfg);
   
 }
 
@@ -142,11 +142,28 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   std::cout<<"PF ::DEBUG:: "<<__PRETTY_FUNCTION__<<std::endl;
 
+  //1) Setup the actions and the abort list. For debugging add the Stepping Logger
+  //2) Create the propagator options from them. If the magneticField context is empty it won't be used.
+  //2a) If I want to pass a constant Field then use the Constant BField Class (inherits from the provider)
+  
+  //options_ = TestPropagatorOptions();
+  
+  //3) Get the steps vector and pass it to the root Writer -> in the event processor
+
   //Setup the starting - Should be done in configure -
 
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
+
+  //N gerated particles
+  int ntests = 1;
+  
+  // Output : the propagation steps
+  std::vector<std::vector<Acts::detail::Step>> propagationSteps;
+  propagationSteps.reserve(ntests);
+  
+  
   
   //No randomisation
 
@@ -171,102 +188,122 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     100 * Acts::UnitConstants::GeV};
 
   std::cout<<"PF::DEBUG:: Defined the initial parameter ranges"<<std::endl;
-  
-  double d0     = 0.;
-  double z0     = 0.;
-  double phi    = -M_PI;
-  double eta    = 0.;
-  double theta  = 2 * atan(exp(-eta));
-  double pt     = 1 * Acts::UnitConstants::GeV;
-  double p      = pt / sin(theta);
-  double charge = -1.;
-  double qop    = charge / p;
-  double t      = 0.;
 
-
-  // parameters
-  Acts::BoundVector pars;
-  pars << d0, z0, phi, theta, qop, t;
-  // some screen output
-  
-  Acts::Vector3 sPosition(0., 0., 0.);
-  Acts::Vector3 sMomentum(0., 0., 0.);
-
-  
-  std::cout<<"PF::DEBUG:: Defined the start parameters"<<std::endl;
-
-  //no covariance transport
-  auto cov = std::nullopt;
+  for (size_t it = 0; it < ntests; ++it) {
     
-  std::cout<<"PF::DEBUG:: Done with the covariance"<<std::endl;
-  
-  //Prepare the outputs..
-  
-  /// Using some short hands for Recorded Material
-  using RecordedMaterial = Acts::MaterialInteractor::result_type;
-  
-  /// And recorded material track
-  /// - this is start:  position, start momentum
-  ///   and the Recorded material
-  using RecordedMaterialTrack =
-      std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
-  
-  /// Finally the output of the propagation test
-  using PropagationOutput =
-    std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
-  
-  // execute the test for charged particles
-  //PropagationOutput pOutput;
-  // charged extrapolation - with hit recording
-  Acts::BoundTrackParameters startParameters(perigee_surface, std::move(pars),
-                                             std::move(cov));
-  sPosition = startParameters.position(gctx_);
-  sMomentum = startParameters.momentum();
-
-
-  std::cout<<"PF::DEBUG:: Setup the parameters from the perigee surface"<<std::endl;
-  
-  //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-  auto loggingLevel = Acts::Logging::VERBOSE;
-  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
-  
-  PropagatorOptions options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
-  
-  options.pathLimit = std::numeric_limits<double>::max();
-  
-  // Activate loop protection at some pt value
-  options.loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
-  
-  // Switch the material interaction on/off & eventually into logging mode
-  auto& mInteractor = options.actionList.get<Acts::MaterialInteractor>();
-  mInteractor.multipleScattering = true;
-  mInteractor.energyLoss         = true;
-  mInteractor.recordInteractions = false;
-  
-  // The logger can be switched to sterile, e.g. for timing logging
-  auto& sLogger = options.actionList.get<Acts::detail::SteppingLogger>();
-  sLogger.sterile = false;
-  // Set a maximum step size
-  options.maxStepSize = 0.1 * Acts::UnitConstants::m;
-
-  std::cout<<"PF::DEBUG:: Propagator options done."<<std::endl;
-
-  
-  //run the propagator
-  auto pOutput   = propagator_->propagate(startParameters,options);
-
-  // Record the propagator steps. For the moment I'm not saving the propagation material
+    double d0     = 0.;
+    double z0     = 0.;
+    double phi    = -0.98*M_PI;
+    double eta    = 0.;
+    double theta  = 2 * atan(exp(-eta));
+    double pt     = 1 * Acts::UnitConstants::GeV;
+    double p      = pt / sin(theta);
+    double charge = -1.;
+    double qop    = charge / p;
+    double t      = 0.;
     
-  std::cout<<"PF::DEBUG:: Done propagation"<<std::endl;
+    
+    // parameters
+    Acts::BoundVector pars;
+    pars << d0, z0, phi, theta, qop, t;
+    // some screen output
+    
+    Acts::Vector3 sPosition(0., 0., 0.);
+    Acts::Vector3 sMomentum(0., 0., 0.);
+    
+    
+    std::cout<<"PF::DEBUG:: Defined the start parameters"<<std::endl;
+    
+    //no covariance transport
+    auto cov = std::nullopt;
+    
+    std::cout<<"PF::DEBUG:: Done with the covariance"<<std::endl;
+    
+    //Prepare the outputs..
+    
+    /// Using some short hands for Recorded Material
+    using RecordedMaterial = Acts::MaterialInteractor::result_type;
+    
+    /// And recorded material track
+    /// - this is start:  position, start momentum
+    ///   and the Recorded material
+    using RecordedMaterialTrack =
+        std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
+    
+    /// Finally the output of the propagation test
+    using PropagationOutput =
+        std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
+  
+    // execute the test for charged particles
+    
+    // charged extrapolation - with hit recording
+    Acts::BoundTrackParameters startParameters(perigee_surface, std::move(pars),
+                                               std::move(cov));
+    sPosition = startParameters.position(gctx_);
+    sMomentum = startParameters.momentum();
+    
+
+    std::cout<<"PF::DEBUG:: Setup the parameters from the perigee surface"<<std::endl;
+  
+    //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
+    auto loggingLevel = Acts::Logging::VERBOSE;
+    ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
+  
+    PropagatorOptions options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
+  
+    options.pathLimit = std::numeric_limits<double>::max();
+  
+    // Activate loop protection at some pt value
+    options.loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
+  
+    // Switch the material interaction on/off & eventually into logging mode
+    auto& mInteractor = options.actionList.get<Acts::MaterialInteractor>();
+    mInteractor.multipleScattering = true;
+    mInteractor.energyLoss         = true;
+    mInteractor.recordInteractions = false;
+  
+    // The logger can be switched to sterile, e.g. for timing logging
+    auto& sLogger = options.actionList.get<Acts::detail::SteppingLogger>();
+    sLogger.sterile = false;
+    // Set a maximum step size
+    options.maxStepSize = 0.2 * Acts::UnitConstants::m;
+
+    std::cout<<"PF::DEBUG:: Propagator options done."<<std::endl;
+
+    
+    //run the propagator
+    PropagationOutput pOutput;
+    
+    auto result   = propagator_->propagate(startParameters,options);
+    
+    if (result.ok()) {
+      const auto& resultValue = result.value();
+      auto steppingResults =
+          resultValue.template get<Acts::detail::SteppingLogger::result_type>();
+      // Set the stepping result
+      pOutput.first = std::move(steppingResults.steps);
+      
+      //TODO:: ADD THE MATERIAL INTERACTION
+      
+      // Record the propagator steps
+      propagationSteps.push_back(std::move(pOutput.first));
+    }
+    else
+      std::cout<<"PF::ERROR::PROPAGATION RESULTS ARE NOT OK!!"<<std::endl;
+  }//ntests
+
+  std::cout<<"PF::DEBUG"<<std::endl;
+  std::cout<<"propagationSteps.size()="<<propagationSteps.size()<<std::endl;
+    
+  writer_->WriteSteps(event,propagationSteps);
   
 }
 
-
 //A copy is not a good idea. TODO
 Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel) {
-    
+  
   //ACTS_INFO("Processing detector element:  " << subdetector.name());
-    
+  
   // Get the extension, if it exists
   Acts::ActsExtension* subDetExtension = nullptr;
   try {
@@ -315,9 +352,6 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     
   int counter = 0;
   for (auto& sensor : sensors) {
-    if (counter >= 1) {
-      //break;
-    }
     counter++;
 
     Acts::CuboidVolumeBuilder::SurfaceConfig cfg;
@@ -399,6 +433,8 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
     
   //One layer for surface...  TODO::Is this remotely right?
+  //I'm not sure this is a good solution - check with Paul
+  
   for (auto& sCfg : surfaceConfig) {
     Acts::CuboidVolumeBuilder::LayerConfig cfg;
     cfg.surfaceCfg = sCfg;
@@ -457,6 +493,7 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
     
   // set dumping obj flag (integer for the moment) TODO
   dumpobj_ = parameters.getParameter<int>("dumpobj");
+  steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
 }
 
 
@@ -502,7 +539,7 @@ void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement
       }
     }
     else {  //ActsExtension doesn't exist
-      std::cout<<__PRETTY_FUNCTION__<<"PF::DEBUG:: Adding the ActsExtension for sensors"<<std::endl;
+      std::cout<<__PRETTY_FUNCTION__<<"PF::DEBUG:: Adding the ActsExtension for sensor "<<childDetElement.name()<<std::endl;
       detExtension = new Acts::ActsExtension();
       detExtension->addType(childDetElement.name(), "si_sensor");
       childDetElement.addExtension<Acts::ActsExtension>(detExtension);
@@ -574,7 +611,7 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
 std::shared_ptr<PropagatorOptions> TrackingGeometryMaker::TestPropagatorOptions(){
 
   //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-  auto loggingLevel = Acts::Logging::VERBOSE;
+  auto loggingLevel = Acts::Logging::WARNING;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
   
   std::shared_ptr<PropagatorOptions> options = std::make_shared<PropagatorOptions>(gctx_, bctx_, Acts::LoggerWrapper{logger()});
@@ -669,7 +706,18 @@ TrackingGeometryMaker::createSensitiveSurface(
       new Acts::DD4hepDetectorElement(detElement, detAxis, Acts::UnitConstants::cm, 
                                       false, homogeneous_mat, nullptr); //is disc is always false.
         
-        
+
+  std::cout<<__PRETTY_FUNCTION__<<std::endl;
+  std::cout<<"PF::DEBUG::IDENTIFIER"<<std::endl;
+  //Acts::DD4hepDetectorElement* id_det_el = (Acts::DD4hepDetectorElement*)(dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement());
+  if (dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement() != nullptr) {
+    //std::cout<<dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement()->identifier()<<std::endl;
+    std::cout<<dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement()<<std::endl;
+  }
+  else {
+    std::cout<<"DETELEMENT NULL PTR??!?!??!"<<std::endl;
+  }
+  
   // return the surface
   return dd4hepDetElement->surface().getSharedPtr();
 }

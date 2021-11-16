@@ -2,9 +2,16 @@
 
 //--- ACTS --- //
 #include <Acts/Geometry/GeometryIdentifier.hpp>
-//#include <Acts/Geometry/TrackingVolume.hpp>  <-- Not needed (?)
+#include <Acts/Geometry/TrackingVolume.hpp>
 #include <Acts/Propagator/ConstrainedStep.hpp>
-//#include <Acts/Surfaces/Surface.hpp> <-- Not needed (?) 
+#include <Acts/Surfaces/Surface.hpp>
+
+#include "Acts/Plugins/Identification/Identifier.hpp"
+#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
+#include "Acts/Geometry/DetectorElementBase.hpp"
+#include "Acts/Plugins/TGeo/TGeoDetectorElement.hpp"
+#include "Acts/Plugins/DD4hep/DD4hepDetectorElement.hpp"
+
 
 namespace tracking{
 namespace sim {
@@ -12,12 +19,10 @@ namespace sim {
 PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWriter::Config& cfg) :
     m_cfg(cfg),
     m_outputFile(cfg.rootFile) {
-  if (m_cfg.collection.empty()) {
-    throw std::invalid_argument("Missing input collection");
-  } else if (m_cfg.treeName.empty()) {
+  if (m_cfg.treeName.empty()) {
     throw std::invalid_argument("Missing tree name");
   }
-
+  
   // Setup ROOT I/O
   if (m_outputFile == nullptr) {
     m_outputFile = TFile::Open(m_cfg.filePath.c_str(), m_cfg.fileMode.c_str());
@@ -31,7 +36,7 @@ PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWr
                            "TTree from RootPropagationStepsWriter");
   if (m_outputTree == nullptr)
     throw std::bad_alloc();
-
+  
   // Set the branches
   m_outputTree->Branch("event_nr", &m_eventNr);
   m_outputTree->Branch("volume_id", &m_volumeID);
@@ -52,23 +57,29 @@ PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWr
   m_outputTree->Branch("step_usr", &m_step_usr);
 } // constructor
 
-RootPropagationStepsWriter::~RootPropagationStepsWriter() {
+PropagatorStepWriter::~PropagatorStepWriter() {
   /// Close the file if it's yours
   if (m_cfg.rootFile == nullptr) {
+    m_outputFile->cd();
+    m_outputTree->Write();
     m_outputFile->Close();
   }
 } // destructor
 
-bool RootPropagationStepsWriter::WriteSteps(framework::Event &event,
+bool PropagatorStepWriter::WriteSteps(framework::Event &event,
                                             const std::vector<PropagationSteps>& stepCollection) {
+
   // Exclusive access to the tree while writing
   std::lock_guard<std::mutex> lock(m_writeMutex);
+
+  m_outputFile->cd();
 
   // we get the event number
   m_eventNr = event.getEventNumber();
 
   // loop over the step vector of each test propagation in this
   for (auto& steps : stepCollection) {
+
     // clear the vectors for each collection
     m_volumeID.clear();
     m_boundaryID.clear();
@@ -89,6 +100,7 @@ bool RootPropagationStepsWriter::WriteSteps(framework::Event &event,
 
     // loop over single steps
     for (auto& step : steps) {
+      
       // the identification of the step
       Acts::GeometryIdentifier::Value volumeID = 0;
       Acts::GeometryIdentifier::Value boundaryID = 0;
@@ -103,6 +115,26 @@ bool RootPropagationStepsWriter::WriteSteps(framework::Event &event,
         layerID = geoID.layer();
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
+
+        std::cout<<__PRETTY_FUNCTION__<<std::endl;
+        std::cout<<"PF::DEBUG::IDENTIFIER"<<std::endl;
+        Acts::DD4hepDetectorElement* id_det_el = (Acts::DD4hepDetectorElement*)(step.surface->associatedDetectorElement());
+        if (step.surface->associatedDetectorElement() != nullptr) {
+          std::cout<<step.surface->associatedDetectorElement()<<std::endl;
+        }
+        else {
+          std::cout<<"PF:: id_det_el is a nullptr"<<std::endl;
+          std::cout<<step.surface->associatedDetectorElement()<<std::endl;
+          std::cout<<"volume="<<volumeID<<std::endl;
+          std::cout<<"layer="<<layerID<<std::endl;
+          std::cout<<"approach="<<approachID<<std::endl;
+          std::cout<<"boundary="<<boundaryID<<std::endl;
+          std::cout<<"sensitive="<<sensitiveID<<std::endl;
+          
+        }
+              
+
+        
       }
       // a current volume overwrites the surface tagged one
       if (step.volume) {
