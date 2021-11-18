@@ -116,12 +116,13 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
 
+        /*
         std::cout<<__PRETTY_FUNCTION__<<std::endl;
         std::cout<<"PF::DEBUG::IDENTIFIER"<<std::endl;
         Acts::DD4hepDetectorElement* id_det_el = (Acts::DD4hepDetectorElement*)(step.surface->associatedDetectorElement());
         if (step.surface->associatedDetectorElement() != nullptr) {
           std::cout<<step.surface->associatedDetectorElement()<<std::endl;
-        }
+          }
         else {
           std::cout<<"PF:: id_det_el is a nullptr"<<std::endl;
           std::cout<<step.surface->associatedDetectorElement()<<std::endl;
@@ -132,7 +133,7 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
           std::cout<<"sensitive="<<sensitiveID<<std::endl;
           
         }
-              
+        */
 
         
       }
