@@ -14,11 +14,18 @@ namespace sim {
 SeedFinderProcessor::SeedFinderProcessor(const std::string &name,
                                          framework::Process &process) : 
     framework::Producer(name, process) {
+
+  //Should be the typical behaviour.
+  int numPhiNeighbors = 1;
+  std::vector<std::pair<int, int>> zBinNeighborsTop;
+  std::vector<std::pair<int, int>> zBinNeighborsBottom;
+  
+  
   bottom_bin_finder_ = std::make_shared<Acts::BinFinder<ldmx::LdmxSpacePoint> > (
-      Acts::BinFinder<ldmx::LdmxSpacePoint>());
+      Acts::BinFinder<ldmx::LdmxSpacePoint>(zBinNeighborsBottom,numPhiNeighbors));
       
   top_bin_finder_ = std::make_shared<Acts::BinFinder<ldmx::LdmxSpacePoint> > (
-      Acts::BinFinder<ldmx::LdmxSpacePoint>());
+      Acts::BinFinder<ldmx::LdmxSpacePoint>(zBinNeighborsTop,numPhiNeighbors));
 
   seed_to_track_maker_ = std::make_shared<tracking::sim::SeedToTrackParamMaker>();
   

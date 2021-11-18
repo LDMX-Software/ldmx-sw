@@ -150,7 +150,15 @@ class TrackingGeometryMaker : public framework::Producer {
   //--- Propagator Tests ---//
 
   //Random number generator
+  int ntests_{0};
+  std::vector<double> phi_range_,theta_range_;
   std::default_random_engine generator_;
+  std::shared_ptr<std::uniform_real_distribution<double> > uniform_phi_;
+  std::shared_ptr<std::uniform_real_distribution<double> > uniform_theta_;
+  std::shared_ptr<std::normal_distribution<float>> normal_;
+
+  //Constant BField
+  double bfield_{0};
   
   //The propagator
   std::shared_ptr<Propagator> propagator_;

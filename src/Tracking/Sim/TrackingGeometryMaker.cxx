@@ -35,7 +35,7 @@ void TrackingGeometryMaker::onProcessStart() {
 
   //Get the ACTS Logger
   
-  auto loggingLevel = Acts::Logging::VERBOSE;
+  auto loggingLevel = Acts::Logging::INFO;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
     
   //The subdetectors should be the TaggerTracker and the Recoil Tracker
@@ -108,9 +108,9 @@ void TrackingGeometryMaker::onProcessStart() {
   //==> Move to a separate processor <== //
 
   //Generate a constant null magnetic field
-  Acts::Vector3 b_field(0., 0., 0.);
+  Acts::Vector3 b_field(0., 0., bfield_);
   std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
-  
+
   //Setup the navigator
   Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
@@ -156,21 +156,16 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
 
-  //N gerated particles
-  int ntests = 1;
-  
   // Output : the propagation steps
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
-  propagationSteps.reserve(ntests);
-  
-  
-  
+  propagationSteps.reserve(ntests_);
+    
   //No randomisation
 
   /// d0 gaussian sigma
-  double d0Sigma = 15 * Acts::UnitConstants::um;
+  double d0Sigma = 1 * Acts::UnitConstants::mm;
   /// z0 gaussian sigma
-  double z0Sigma = 55 * Acts::UnitConstants::mm;
+  double z0Sigma = 10 * Acts::UnitConstants::mm;
   /// phi gaussian sigma (used for covariance transport)
   double phiSigma = 0.0001;
   /// theta gaussian sigma (used for covariance transport)
@@ -179,23 +174,28 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   double qpSigma = 0.00001 / 1 * Acts::UnitConstants::GeV;
   /// t gaussian sigma (used for covariance transport)
   double tSigma = 1 * Acts::UnitConstants::ns;
-  /// phi range
-  std::pair<double, double> phiRange = {-M_PI, M_PI};
-  /// eta range
-  std::pair<double, double> etaRange = {-4., 4.};
+
+  /// phi range - generate only in the X<0 plane
+  uniform_phi_ = std::make_shared<std::uniform_real_distribution<double> >(phi_range_.at(0),
+                                                                           phi_range_.at(1));
+
+  /// theeta range - generate spanning the Z axis
+  uniform_theta_ = std::make_shared<std::uniform_real_distribution<double> >(theta_range_.at(0),
+                                                                             theta_range_.at(1));
+  
   /// pt range
   std::pair<double, double> ptRange = {100 * Acts::UnitConstants::MeV,
     100 * Acts::UnitConstants::GeV};
 
-  std::cout<<"PF::DEBUG:: Defined the initial parameter ranges"<<std::endl;
-
-  for (size_t it = 0; it < ntests; ++it) {
+  for (size_t it = 0; it < ntests_; ++it) {
     
-    double d0     = 0.;
-    double z0     = 0.;
-    double phi    = -0.98*M_PI;
-    double eta    = 0.;
-    double theta  = 2 * atan(exp(-eta));
+    //double d0     = d0Sigma * (*normal_)(generator_);
+    //double z0     = z0Sigma * (*normal_)(generator_);
+    double d0 = 0.;
+    double z0 = 0.;
+    
+    double phi    = (*uniform_phi_)(generator_);
+    double theta = (*uniform_theta_)(generator_);
     double pt     = 1 * Acts::UnitConstants::GeV;
     double p      = pt / sin(theta);
     double charge = -1.;
@@ -204,6 +204,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     
     // parameters
+
     Acts::BoundVector pars;
     pars << d0, z0, phi, theta, qop, t;
     // some screen output
@@ -211,14 +212,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     Acts::Vector3 sPosition(0., 0., 0.);
     Acts::Vector3 sMomentum(0., 0., 0.);
     
-    
-    std::cout<<"PF::DEBUG:: Defined the start parameters"<<std::endl;
-    
     //no covariance transport
     auto cov = std::nullopt;
-    
-    std::cout<<"PF::DEBUG:: Done with the covariance"<<std::endl;
-    
+
     //Prepare the outputs..
     
     /// Using some short hands for Recorded Material
@@ -242,11 +238,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     sPosition = startParameters.position(gctx_);
     sMomentum = startParameters.momentum();
     
-
-    std::cout<<"PF::DEBUG:: Setup the parameters from the perigee surface"<<std::endl;
-  
     //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-    auto loggingLevel = Acts::Logging::VERBOSE;
+    auto loggingLevel = Acts::Logging::INFO;
     ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
   
     PropagatorOptions options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
@@ -267,10 +260,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     sLogger.sterile = false;
     // Set a maximum step size
     options.maxStepSize = 0.2 * Acts::UnitConstants::m;
-
-    std::cout<<"PF::DEBUG:: Propagator options done."<<std::endl;
-
-    
+        
     //run the propagator
     PropagationOutput pOutput;
     
@@ -290,11 +280,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     }
     else
       std::cout<<"PF::ERROR::PROPAGATION RESULTS ARE NOT OK!!"<<std::endl;
-  }//ntests
+  }//ntests_
 
-  std::cout<<"PF::DEBUG"<<std::endl;
-  std::cout<<"propagationSteps.size()="<<propagationSteps.size()<<std::endl;
-    
   writer_->WriteSteps(event,propagationSteps);
   
 }
@@ -336,20 +323,19 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     
   //Check the surfaces that I created
             
-  //for (auto& surface : surfaces) {
-        
-  //surface->toStream(gctx_,std::cout);
-  //std::cout<<std::endl;
-  //surface->surfaceMaterial()->toStream(std::cout);
-  //std::cout<<std::endl;
-  //std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
-  //std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
-  //}
+  for (auto& surface : surfaces) {
+    
+    surface->toStream(gctx_,std::cout);
+    std::cout<<std::endl;
+    surface->surfaceMaterial()->toStream(std::cout);
+    std::cout<<std::endl;
+    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
+    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
+  }
     
   //Surfaces configs
   std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig> surfaceConfig;
-
-    
+  
   int counter = 0;
   for (auto& sensor : sensors) {
     counter++;
@@ -418,7 +404,6 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
     Acts::MaterialSlab silicon_slab(silicon,thickness); 
         
-    // Do I need this?!
     cfg.thickness = thickness;
                 
     cfg.surMat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
@@ -438,6 +423,10 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   for (auto& sCfg : surfaceConfig) {
     Acts::CuboidVolumeBuilder::LayerConfig cfg;
     cfg.surfaceCfg = sCfg;
+
+    //The envelopes are distances (i.e. always positive)
+    cfg.envelopeX = std::pair<double,double>{sCfg.thickness / 2., sCfg.thickness / 2.};
+
     layerConfig.push_back(cfg);
     cfg.active = true;
   }
@@ -492,8 +481,17 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
 void TrackingGeometryMaker::configure(framework::config::Parameters &parameters) {
     
   // set dumping obj flag (integer for the moment) TODO
-  dumpobj_ = parameters.getParameter<int>("dumpobj");
+  dumpobj_            = parameters.getParameter<int>("dumpobj");
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
+  ntests_             = parameters.getParameter<int>("ntests",1000);
+  phi_range_          = parameters.getParameter<std::vector<double> >("phi_range",  {-1.1 * M_PI,-0.9 * M_PI});
+  theta_range_        = parameters.getParameter<std::vector<double> >("theta_range",{ 0.4 * M_PI, 0.6 * M_PI});
+    
+  normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
+  generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  
+  bfield_             = parameters.getParameter<double>("bfield",0.);
+  
 }
 
 
@@ -707,17 +705,6 @@ TrackingGeometryMaker::createSensitiveSurface(
                                       false, homogeneous_mat, nullptr); //is disc is always false.
         
 
-  std::cout<<__PRETTY_FUNCTION__<<std::endl;
-  std::cout<<"PF::DEBUG::IDENTIFIER"<<std::endl;
-  //Acts::DD4hepDetectorElement* id_det_el = (Acts::DD4hepDetectorElement*)(dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement());
-  if (dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement() != nullptr) {
-    //std::cout<<dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement()->identifier()<<std::endl;
-    std::cout<<dd4hepDetElement->surface().getSharedPtr()->associatedDetectorElement()<<std::endl;
-  }
-  else {
-    std::cout<<"DETELEMENT NULL PTR??!?!??!"<<std::endl;
-  }
-  
   // return the surface
   return dd4hepDetElement->surface().getSharedPtr();
 }
