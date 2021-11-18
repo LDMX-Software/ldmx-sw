@@ -1,5 +1,5 @@
-#ifndef ECAL_ECALRAWDECODER_H_ 
-#define ECAL_ECALRAWDECODER_H_ 
+#ifndef ECAL_ECALRAWDECODER_H_
+#define ECAL_ECALRAWDECODER_H_
 
 //----------//
 //   LDMX   //
@@ -16,12 +16,13 @@ class EcalRawDecoder : public framework::Producer {
   /**
    * Constructor
    */
-  EcalRawDecoder(const std::string& name, framework::Process& process);
+  EcalRawDecoder(const std::string& n, framework::Process& p)
+      : framework::Producer(n, p) {}
 
   /**
    * Destructor
    */
-  virtual ~EcalRawDecoder();
+  virtual ~EcalRawDecoder() = default;
 
   /**
    */
@@ -40,7 +41,8 @@ class EcalRawDecoder : public framework::Producer {
   std::string output_name_;
   /// version of HGC ROC we are decoding
   int roc_version_;
-
+  /// should we translate electronic IDs to detector IDs
+  bool translate_eid_;
 };
 }  // namespace ecal
 
