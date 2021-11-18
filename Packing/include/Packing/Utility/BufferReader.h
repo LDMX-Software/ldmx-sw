@@ -13,28 +13,20 @@ namespace utility {
  * stored in the raw data format.
  *
  * The raw data format specifies that the buffer for all
- * data is a specific type (BufferType),
+ * data is a specific type (vector of bytes),
  * but the users in different subsystems/translators may
  * want the buffer to be read in different size words
- * than what the word size of BufferType. This class helps in that translation.
- * Note that this reader starts on the zero'th word, 
- * so your 'while' loops should be 'do..while'.
- * A basic template for using this reader is
+ * than single bytes. This class helps in that translation.
+ *
+ * A basic idea for using this reader is provided in the
+ * Ecal/Hcal raw decoders.
  *
  *    BufferReader<uint32_t> r{buffer_};
- *    do {
- *      try {
- *        r.now(); //first word in bunch of words
- *        r.next(); // another word that you are assuming exists
- *        ...other decoding...
- *      } catch(std::out_of_range& oor) {
- *        ldmx_log(debug) << oor.what();
- *        EXCEPTION_RAISE("MisFormat",
- *          "We were expecting another word in the format "
- *          "but there wasn't one!");
- *      }
- *    } while(r.next(false)); // its ok if the next word doesn't exist
- *                            // because we might be done decoding
+ *    while (r >> head1 >> head2) {
+ *      // do decoding, using
+ *      r >> w;
+ *      // to get next word in buffer
+ *    }
  *
  * @tparam[in] WordType type of word user wants to read out from buffer
  */
@@ -44,48 +36,60 @@ class BufferReader {
   /**
    * Initialize a reader by wrapping a buffer to read.
    */
-  BufferReader(const std::vector<WordType>& b) : buffer_{b}, i_read_{0} {}
+  BufferReader(const std::vector<uint8_t>& b) : buffer_{b}, i_word_{0} {}
 
   /**
-   * Get the current word in buffer.
-   * @return WordType current word
+   * Return state of buffer.
+   * false if buffer is done being read,
+   * true otherwise.
    */
-  const WordType& now() {
-    return buffer_.at(i_read_);
+  operator bool() {
+    return (i_word_ < buffer_.size());
   }
 
   /**
-   * Alias for now()
+   * Streaming operator
+   * We get the next word if we are still in the buffer.
+   * We always return ourselves so statements like
+   *
+   *  if (reader >> word1 >> word2)
+   *
+   * can correctly fail on the first or second word.
+   *
+   * @see next for implementation of reading the next word
+   * @param[in] w reference to word to put data into
+   * @return reference to us
    */
-  const WordType& operator()(void) {
-    return now();
+  BufferReader& operator>>(WordType& w) {
+    if (*this)
+      w = next();
+    return *this;
   }
-
+ 
+ private:
   /**
    * Go to next word in buffer.
    *
-   * @throws std::out_of_range if should_exist is true and we reach
-   * the end of the buffer
-   * @param[in] should_exist set to false if we are okay with the next word
-   * not existing
-   * @return true if we have another word, false if we've reached the end
+   * @note We assume that we are always in the buffer.
+   * @throws std::out_of_range if try to go past end of buffer
+   * @return next word in buffer
    */
-  bool next(bool should_exist = true) {
-    i_read_++;
-    if (i_read_ == buffer_.size()) {
-      if (should_exist)
-        throw std::out_of_range("next word should exist");
-      else
-        return false;
+  WordType next() {
+    WordType w{0};
+    for (std::size_t i_byte{0}; i_byte < n_bytes_; i_byte++) {
+      w |= (buffer_.at(i_word_+i_byte) << 8*i_byte);
     }
-    return true;
+    i_word_ += n_bytes_;
+    return w;
   }
 
  private:
+  // number of bytes in the words we are reading
+  static const std::size_t n_bytes_{sizeof(WordType)};
   // current buffer we are reading
-  const std::vector<WordType>& buffer_;
+  const std::vector<uint8_t>& buffer_;
   // current index in buffer we are reading
-  std::size_t i_read_;
+  std::size_t i_word_;
 };  // BufferReader
 
 }  // namespace utility
