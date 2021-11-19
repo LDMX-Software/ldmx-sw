@@ -55,11 +55,6 @@ void TrackingGeometryMaker::onProcessStart() {
   
   //Create the builder
   
-  // Test the building 
-  
-  //std::shared_ptr<Acts::TrackingVolume> trVol =
-  //    cvb.buildVolume(gctx_, volBuilderConfigs[0]);
-  
   Acts::CuboidVolumeBuilder::Config config;
   config.position = {0., 0., 0.};
   config.length = {2000, 2000, 2000};
@@ -76,7 +71,8 @@ void TrackingGeometryMaker::onProcessStart() {
   std::cout<<"Tracking Geometry Builder... done"<<std::endl;
   
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
-  
+
+  std::cout<<"Retrieving tracking geometry"<<std::endl;
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry = 
       tgb.trackingGeometry(gctx_);
   
@@ -108,7 +104,13 @@ void TrackingGeometryMaker::onProcessStart() {
   //==> Move to a separate processor <== //
 
   //Generate a constant null magnetic field
-  Acts::Vector3 b_field(0., 0., bfield_);
+  Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
+
+  std::cout<<"PF::DEBUG::BFIELD"<<std::endl;
+  std::cout<<"=========="<<std::endl;
+  std::cout<<b_field / Acts::UnitConstants::T<<std::endl;
+  std::cout<<"=========="<<std::endl;
+  
   std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
 
   //Setup the navigator
@@ -154,18 +156,19 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(0., 0., 0.));
+          Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
 
   // Output : the propagation steps
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
+
   propagationSteps.reserve(ntests_);
     
   //No randomisation
 
   /// d0 gaussian sigma
-  double d0Sigma = 1 * Acts::UnitConstants::mm;
+  double d0Sigma = d0sigma_ * Acts::UnitConstants::mm;
   /// z0 gaussian sigma
-  double z0Sigma = 10 * Acts::UnitConstants::mm;
+  double z0Sigma = z0sigma_ * Acts::UnitConstants::mm;
   /// phi gaussian sigma (used for covariance transport)
   double phiSigma = 0.0001;
   /// theta gaussian sigma (used for covariance transport)
@@ -189,14 +192,14 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   for (size_t it = 0; it < ntests_; ++it) {
     
-    //double d0     = d0Sigma * (*normal_)(generator_);
-    //double z0     = z0Sigma * (*normal_)(generator_);
-    double d0 = 0.;
-    double z0 = 0.;
+    double d0     = d0Sigma * (*normal_)(generator_);
+    double z0     = z0Sigma * (*normal_)(generator_);
+    //double d0 = 0.;
+    //double z0 = 0.;
     
     double phi    = (*uniform_phi_)(generator_);
     double theta = (*uniform_theta_)(generator_);
-    double pt     = 1 * Acts::UnitConstants::GeV;
+    double pt     = pt_ * Acts::UnitConstants::GeV;
     double p      = pt / sin(theta);
     double charge = -1.;
     double qop    = charge / p;
@@ -259,7 +262,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     auto& sLogger = options.actionList.get<Acts::detail::SteppingLogger>();
     sLogger.sterile = false;
     // Set a maximum step size
-    options.maxStepSize = 0.2 * Acts::UnitConstants::m;
+    options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
         
     //run the propagator
     PropagationOutput pOutput;
@@ -422,10 +425,11 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   
   for (auto& sCfg : surfaceConfig) {
     Acts::CuboidVolumeBuilder::LayerConfig cfg;
-    cfg.surfaceCfg = sCfg;
+    cfg.surfaceCfg = {sCfg};
 
     //The envelopes are distances (i.e. always positive)
-    cfg.envelopeX = std::pair<double,double>{sCfg.thickness / 2., sCfg.thickness / 2.};
+    //To be fixed
+    cfg.envelopeX = std::pair<double,double>{sCfg.thickness / 2. + 0.001, sCfg.thickness / 2. + 0.001};
 
     layerConfig.push_back(cfg);
     cfg.active = true;
@@ -483,14 +487,19 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   // set dumping obj flag (integer for the moment) TODO
   dumpobj_            = parameters.getParameter<int>("dumpobj");
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
-  ntests_             = parameters.getParameter<int>("ntests",1000);
-  phi_range_          = parameters.getParameter<std::vector<double> >("phi_range",  {-1.1 * M_PI,-0.9 * M_PI});
-  theta_range_        = parameters.getParameter<std::vector<double> >("theta_range",{ 0.4 * M_PI, 0.6 * M_PI});
+  ntests_             = parameters.getParameter<int>("ntests", 1000);
+  phi_range_          = parameters.getParameter<std::vector<double> >("phi_range",   {-1.1 * M_PI,-0.9 * M_PI});
+  theta_range_        = parameters.getParameter<std::vector<double> >("theta_range", { 0.4 * M_PI, 0.6 * M_PI});
     
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
   generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
   
-  bfield_             = parameters.getParameter<double>("bfield",0.);
+  bfield_               = parameters.getParameter<double>("bfield", 0.);
+  propagator_step_size_ = parameters.getParameter<double>("propagator_step_size", 200.);
+  pt_                   = parameters.getParameter<double>("pt", 1.);
+  d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
+  z0sigma_              = parameters.getParameter<double>("z0sigma",1.);
+  perigee_location_ = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
   
 }
 
@@ -682,14 +691,6 @@ TrackingGeometryMaker::createSensitiveSurface(
   //std::cout<<childDetElement.volume().material().toString()<<std::endl;
   //std::cout<<"Silicon density "<<de_mat.density()<<std::endl;
   Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
-        
-  //I don't understand the need of the lossy mol_density constructor.
-        
-  //double kAvogadro = 6.02214076e23;
-  //double mol_density = (double) de_mat.density() / ((double) de_mat.A() * kAvogadro);
-  //Acts::Material silicon = Acts::Material::fromMolarDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), mol_density);
-  //std::cout<<"Silicon mole density"<<mol_density<<std::endl;
-        
         
   //Get the thickness. The bounding box gives back half of the size in z. I scaled of factor 10 to bring it in mm. The detElement stores in cm units
   double thickness = 2*Acts::UnitConstants::cm*detElement.volume().boundingBox().z();

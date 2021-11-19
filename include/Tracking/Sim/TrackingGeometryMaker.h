@@ -68,7 +68,6 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
-
 using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
@@ -159,7 +158,20 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Constant BField
   double bfield_{0};
+
+  //Transverse Momentum
+  double pt_{1.};
+  //d0 and z0 are drawn from a gaussian distribution with these resolutions.
+  double d0sigma_{1.};
+  double z0sigma_{1.};
+ 
+  //Stepping size (in mm)
+  double propagator_step_size_{200.};
+
+  //The perigee location used for the initial propagator states generation
+  std::vector<double> perigee_location_{0.,0.,0.};
   
+    
   //The propagator
   std::shared_ptr<Propagator> propagator_;
   
