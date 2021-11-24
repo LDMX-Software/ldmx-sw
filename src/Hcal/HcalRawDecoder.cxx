@@ -234,7 +234,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
 
           // std::cout << " : DAQ Channel ";
 
-          // std::cout << fpga << " " << roc_id-256 << " " << channel_id << " ";
+          //std::cout << fpga << " " << roc_id << " " << channel_id << " ";
           /**
            * The subfields for the electronics ID infrastructure need to start
            * from 0 and count up. This means we need to subtract some of the
