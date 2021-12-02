@@ -529,7 +529,7 @@ class HgcrocDigiCollection {
   /**
    * The ROOT class definition.
    */
-  ClassDef(HgcrocDigiCollection, 3);
+  ClassDef(HgcrocDigiCollection, 4);
 };
 }  // namespace ldmx
 
