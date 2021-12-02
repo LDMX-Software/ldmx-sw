@@ -51,7 +51,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       } else {
-      getEventInfo()->setFiducial(true); 
+      getEventInfo()->setFiducial(true);
+      getEventInfo()->setFiducialVolume(volume)
       }
       return;
     }

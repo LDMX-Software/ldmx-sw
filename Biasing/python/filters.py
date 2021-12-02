@@ -57,7 +57,7 @@ class NonFiducialFilter(simcfg.UserAction):
         include.library()
 
         self.recoil_max_p_threshold = recoil_max_p
-        self.abort_fid_e = abort_fid_e
+        self.abort_fiducial_events = abort_fid_e
 
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
