@@ -68,6 +68,27 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
+
+//Kalman Filter
+
+//Step 1 - gather the measurements
+//#include "Tracking/Sim/LdmxMeasurement.h" <-Not needed
+
+//#include "Acts/EventData/Measurement.hpp"
+#include "Acts/Geometry/GeometryIdentifier.hpp" 
+#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
+#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
+#include "Acts/Utilities/CalibrationContext.hpp"
+#include "Acts/TrackFinding/MeasurementSelector.hpp"
+#include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+
+//--- Tracking ---//
+#include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Sim/IndexSourceLink.h"
+#include "Tracking/Sim/LdmxSourceLinkAccessor.h"
+#include "Acts/EventData/MultiTrajectory.hpp"
+
 using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
@@ -135,12 +156,27 @@ class TrackingGeometryMaker : public framework::Producer {
   Acts::Transform3 convertTransform(const TGeoMatrix* tGeoTrans) const;
   
   std::shared_ptr<PropagatorOptions> TestPropagatorOptions();
+
+  //Get the sensitive surfaces out of the tracking geometry
+  void getSurfaces(std::vector<const Acts::Surface*>& surfaces,
+                   std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
+
+  //Forms the layer to acts map
+  void makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
+
+
+  //Test the measurement calibrator (TODO::move it somewhere else)
+
+  void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator);
+  
+  
   
  private:
   /// The detector
   dd4hep::Detector* detector_{nullptr};
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
+  Acts::CalibrationContext cctx_;
   
   //If we want to dump the tracking geometry
   int dumpobj_ {0};
@@ -170,8 +206,7 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //The perigee location used for the initial propagator states generation
   std::vector<double> perigee_location_{0.,0.,0.};
-  
-    
+      
   //The propagator
   std::shared_ptr<Propagator> propagator_;
   
@@ -183,6 +218,14 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Outname of the propagator test
   std::string steps_outfile_path_{""};
+
+  //This could be a vector
+  //The mapping between layers and Acts::Surface
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
+
+  //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
+  std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
+  
   
 }; // TrackingGeometryMaker
     

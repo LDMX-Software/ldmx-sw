@@ -14,7 +14,7 @@ geo.dumpobj = 0
 geo.steps_file_path = "./straight_propagator_states.root"
 
 #propagator tests
-geo.ntests = 10
+geo.ntests = 0 #10
 geo.phi_range   = [-0.99*math.pi, -1*math.pi]
 geo.theta_range = [0.4 * math.pi, 0.6 * math.pi]
 geo.pt = 4.

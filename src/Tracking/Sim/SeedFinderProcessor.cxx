@@ -2,6 +2,8 @@
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 
+
+
 /* This processor takes in input a set of 3D space points and builds seedTracks using the ACTS algorithm
  * which is based on the ATLAS 3-space point conformal fit.
  * 
@@ -109,7 +111,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
                 
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
-      ldmxsps.push_back(convertSimHitToLdmxSpacePoint(simHit));
+      ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }    
       
@@ -188,6 +190,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     auto params = seed_to_track_maker_->estimateTrackParamsFromSeed(tP,
                                                                     ldmxspvec.begin(),ldmxspvec.end(),
                                                                     bField_, 1. * Acts::UnitConstants::T, 0.5);
+    
     /*
     std::cout<<(*params)[Acts::eBoundLoc0]<<" "
              <<(*params)[Acts::eBoundLoc1]<<" "
@@ -197,6 +200,9 @@ void SeedFinderProcessor::produce(framework::Event &event) {
              <<(*params)[Acts::eBoundTime]
              <<std::endl;
     */
+
+    
+    
     
   }
   
@@ -218,34 +224,6 @@ void SeedFinderProcessor::onProcessEnd() {
 }
   
   
-//This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
-// (1) Rotate the coordinates into acts::seedFinder coordinates defined by B-Field along z axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts]
-// (2) Saves the error information. At the moment the errors are fixed. They should be obtained from the digitized hits.
-  
-//TODO::Move to shared pointers?!
-ldmx::LdmxSpacePoint* SeedFinderProcessor::convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit) {
-            
-  std::vector<float> sim_hit_pos = hit.getPosition();
-            
-      
-  //This is in the transverse plane
-  float sigma_rphi = 0.25;  //250um
-            
-  //This is in the direction along the b-field
-  float sigma_z    = 0.50;  //50 um
-      
-  float ldmxsp_x = sim_hit_pos[2];
-  float ldmxsp_y = sim_hit_pos[0];
-  float ldmxsp_z = sim_hit_pos[1];
-      
-      
-  return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y,ldmxsp_z,
-                                  hit.getTime(), hit.getLayerID(), 
-                                  sigma_rphi*sigma_rphi, sigma_z*sigma_z,
-                                  hit.getID());
-  
-}
-                
 } //namespace sim
 } //namespace tracking
 
