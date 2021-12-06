@@ -241,6 +241,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // Set a maximum step size
   propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
   
+
+  std::cout<<"PF::Running the propagator tests"<<std::endl;
   
   for (size_t it = 0; it < ntests_; ++it) {
     
@@ -301,6 +303,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   writer_->WriteSteps(event,propagationSteps);
 
 
+
+  std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
+
   //#######################//
   //Kalman Filter algorithm//
   //#######################//
@@ -311,9 +316,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //a) Loop over the sim Hits
   
 
-  const std::vector<ldmx::SimTrackerHit> sim_hits    = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
-  //const std::vector<ldmx::SimParticle> sim_particles = event.getCollection<ldmx::SimParticle>("SimParticles");
-
+  const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
+  
+  
+  
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
 
   //Convert to ldmxsps
@@ -383,7 +389,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
   LdmxMeasurementCalibrator calibrator{ldmxsps};
 
-  /*
+  
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
   ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
@@ -397,7 +403,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       gctx_,bctx_,cctx_,
       LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), ckf_extensions, Acts::LoggerWrapper{logger()},
       propagator_options,&(*perigee_surface));
-  */
+  
   
 
   //The generation informations
@@ -407,7 +413,40 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //Gen 1 Vertex [mm] X = -27.926
   //Gen 1 Vertex [mm] Y = 0
   //Gen 1 Vertex [mm] Z = -700
+  
 
+  //Truth based initial track parameters
+  
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
+  ldmx::SimParticle gen_e = particleMap[1];
+  
+  std::cout<<"PF::generatedElectron PID::"<<gen_e.getPdgID()<<std::endl;
+  std::cout<<"PF::generatedElectron Energy::"<<gen_e.getEnergy()<<std::endl;
+
+
+  Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
+  Acts::Vector3 gen_e_dir{gen_e.getMomentum().data()};
+
+  //Rotate to ACTS frame
+  //z->x, x->y, y->z
+
+  //(0 0 1) x  = z 
+  //(1 0 0) y  = x
+  //(0 1 0) z  = y
+
+  Acts::SymMatrix3 acts_rot;
+  acts_rot << 0,0,1,
+      1,0,0,
+      0,1,0;
+
+  gen_e_pos = acts_rot * gen_e_pos;
+  gen_e_dir = acts_rot * gen_e_dir;
+  std::cout<<"PF::generatedElectron POS::"<<std::endl;
+  std::cout<<gen_e_pos<<std::endl;
+
+  std::cout<<"PF::generatedElectron DIR::"<<std::endl;
+  std::cout<<gen_e_dir<<std::endl;
+  
   
   
 }
@@ -735,35 +774,6 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
     //recursive
     collectSubDetectors_dd4hep(childDetElement,subdetectors);
   }//children loop
-}
-
-//Test purposes
-std::shared_ptr<PropagatorOptions> TrackingGeometryMaker::TestPropagatorOptions(){
-
-  //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-  auto loggingLevel = Acts::Logging::WARNING;
-  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
-  
-  std::shared_ptr<PropagatorOptions> options = std::make_shared<PropagatorOptions>(gctx_, bctx_, Acts::LoggerWrapper{logger()});
-  
-  options->pathLimit = std::numeric_limits<double>::max();
-  
-  // Activate loop protection at some pt value
-  options->loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
-  
-  // Switch the material interaction on/off & eventually into logging mode
-  auto& mInteractor = options->actionList.get<Acts::MaterialInteractor>();
-  mInteractor.multipleScattering = true;
-  mInteractor.energyLoss         = true;
-  mInteractor.recordInteractions = false;
-  
-  // The logger can be switched to sterile, e.g. for timing logging
-  auto& sLogger = options->actionList.get<Acts::detail::SteppingLogger>();
-  sLogger.sterile = false;
-  // Set a maximum step size
-  options->maxStepSize = 3 * Acts::UnitConstants::m;
-
-  return options;
 }
 
 void TrackingGeometryMaker::resolveSensitive(

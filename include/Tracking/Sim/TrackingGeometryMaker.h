@@ -155,8 +155,6 @@ class TrackingGeometryMaker : public framework::Producer {
   
   Acts::Transform3 convertTransform(const TGeoMatrix* tGeoTrans) const;
   
-  std::shared_ptr<PropagatorOptions> TestPropagatorOptions();
-
   //Get the sensitive surfaces out of the tracking geometry
   void getSurfaces(std::vector<const Acts::Surface*>& surfaces,
                    std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
