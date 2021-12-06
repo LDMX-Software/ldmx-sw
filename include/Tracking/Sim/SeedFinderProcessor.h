@@ -10,6 +10,7 @@
 //---< Tracking >---//
 #include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Tracking/Sim/SeedToTrackParamMaker.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
@@ -71,10 +72,8 @@ namespace tracking {
        * @param event The event to process.
        */
       void produce(framework::Event &event);
-
-      ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit);
       
-    private:
+     private:
       Acts::SpacePointGridConfig grid_conf_;
       Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> config_;
       Acts::SeedFilterConfig seed_filter_cfg_;

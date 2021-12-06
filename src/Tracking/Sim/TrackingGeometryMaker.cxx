@@ -1,13 +1,13 @@
 #include "Tracking/Sim/TrackingGeometryMaker.h"
+#include "Tracking/Sim/GeometryContainers.h"
 
+#include "SimCore/Event/SimParticle.h"
 
 //--- ACTS ---//
 #include "Acts/Plugins/TGeo/TGeoPrimitivesHelper.hpp"
 
-
 //--- DD4Hep ---//
 #include "DD4hep/DetElement.h"
-
 
 //--- C++ StdLib ---//
 #include <iostream>
@@ -35,7 +35,7 @@ void TrackingGeometryMaker::onProcessStart() {
 
   //Get the ACTS Logger
   
-  auto loggingLevel = Acts::Logging::INFO;
+  auto loggingLevel = Acts::Logging::VERBOSE;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
     
   //The subdetectors should be the TaggerTracker and the Recoil Tracker
@@ -130,12 +130,21 @@ void TrackingGeometryMaker::onProcessStart() {
   //Setup the propagator
   propagator_ = std::make_shared<Propagator>(stepper, navigator);
 
-
+  //Setup the CKF
+  //Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
+  
+  
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
   cfg.filePath = steps_outfile_path_;
 
   writer_ = std::make_shared<PropagatorStepWriter>(cfg);
+
+
+  //Create a mapping between the layers and the Acts::Surface
+  makeLayerSurfacesMap(tGeometry);
+
+  
   
 }
 
@@ -190,6 +199,49 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   std::pair<double, double> ptRange = {100 * Acts::UnitConstants::MeV,
     100 * Acts::UnitConstants::GeV};
 
+
+  
+  //Prepare the outputs..
+  
+  /// Using some short hands for Recorded Material
+  using RecordedMaterial = Acts::MaterialInteractor::result_type;
+  
+  /// And recorded material track
+  /// - this is start:  position, start momentum
+  ///   and the Recorded material
+  using RecordedMaterialTrack =
+      std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
+  
+  /// Finally the output of the propagation test
+  using PropagationOutput =
+      std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
+  
+  // execute the test for charged particles
+
+  //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
+  auto loggingLevel = Acts::Logging::VERBOSE;
+  ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
+  
+  PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
+  
+  propagator_options.pathLimit = std::numeric_limits<double>::max();
+  
+  // Activate loop protection at some pt value
+  propagator_options.loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
+  
+  // Switch the material interaction on/off & eventually into logging mode
+  auto& mInteractor = propagator_options.actionList.get<Acts::MaterialInteractor>();
+  mInteractor.multipleScattering = true;
+  mInteractor.energyLoss         = true;
+  mInteractor.recordInteractions = false;
+  
+  // The logger can be switched to sterile, e.g. for timing logging
+  auto& sLogger = propagator_options.actionList.get<Acts::detail::SteppingLogger>();
+  sLogger.sterile = false;
+  // Set a maximum step size
+  propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
+  
+  
   for (size_t it = 0; it < ntests_; ++it) {
     
     double d0     = d0Sigma * (*normal_)(generator_);
@@ -210,64 +262,25 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
     Acts::BoundVector pars;
     pars << d0, z0, phi, theta, qop, t;
-    // some screen output
+    
     
     Acts::Vector3 sPosition(0., 0., 0.);
     Acts::Vector3 sMomentum(0., 0., 0.);
     
     //no covariance transport
     auto cov = std::nullopt;
-
-    //Prepare the outputs..
     
-    /// Using some short hands for Recorded Material
-    using RecordedMaterial = Acts::MaterialInteractor::result_type;
-    
-    /// And recorded material track
-    /// - this is start:  position, start momentum
-    ///   and the Recorded material
-    using RecordedMaterialTrack =
-        std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
-    
-    /// Finally the output of the propagation test
-    using PropagationOutput =
-        std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
-  
-    // execute the test for charged particles
-    
+        
     // charged extrapolation - with hit recording
     Acts::BoundTrackParameters startParameters(perigee_surface, std::move(pars),
                                                std::move(cov));
     sPosition = startParameters.position(gctx_);
     sMomentum = startParameters.momentum();
     
-    //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-    auto loggingLevel = Acts::Logging::INFO;
-    ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("ACTS Propagator", loggingLevel));
-  
-    PropagatorOptions options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
-  
-    options.pathLimit = std::numeric_limits<double>::max();
-  
-    // Activate loop protection at some pt value
-    options.loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
-  
-    // Switch the material interaction on/off & eventually into logging mode
-    auto& mInteractor = options.actionList.get<Acts::MaterialInteractor>();
-    mInteractor.multipleScattering = true;
-    mInteractor.energyLoss         = true;
-    mInteractor.recordInteractions = false;
-  
-    // The logger can be switched to sterile, e.g. for timing logging
-    auto& sLogger = options.actionList.get<Acts::detail::SteppingLogger>();
-    sLogger.sterile = false;
-    // Set a maximum step size
-    options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
-        
     //run the propagator
     PropagationOutput pOutput;
     
-    auto result   = propagator_->propagate(startParameters,options);
+    auto result   = propagator_->propagate(startParameters,propagator_options);
     
     if (result.ok()) {
       const auto& resultValue = result.value();
@@ -286,6 +299,116 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   }//ntests_
 
   writer_->WriteSteps(event,propagationSteps);
+
+
+  //#######################//
+  //Kalman Filter algorithm//
+  //#######################//
+
+  //Step 1 - Form the source links
+  
+  std::vector<ActsExamples::IndexSourceLink> sourceLinks;
+  //a) Loop over the sim Hits
+  
+
+  const std::vector<ldmx::SimTrackerHit> sim_hits    = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
+  //const std::vector<ldmx::SimParticle> sim_particles = event.getCollection<ldmx::SimParticle>("SimParticles");
+
+  std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+
+  //Convert to ldmxsps
+  for (auto& simHit : sim_hits) {
+    
+    //Remove low energy deposit hits
+    if (simHit.getEdep() >  0.05) {
+      ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
+    }
+  }
+
+  std::cout<<"ldmx points::"<<ldmxsps.size()<<std::endl;
+  
+  
+  //Check the hits associated to the surfaces
+  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
+
+    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
+    unsigned int layerid = ldmxsp->layer();
+    
+    const Acts::Surface* hit_surface = layer_surface_map_[layerid];
+    if (hit_surface) {
+      std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<ldmxsp->layer()<<" is associated to Acts::surface::"<<hit_surface<<std::endl;
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
+      geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
+      
+      //Transform the ldmx space point from global to local and store the information
+      
+      std::cout<<"Global hit position::"<<std::endl;
+      std::cout<<ldmxsp->global_pos_<<std::endl;
+      hit_surface->toStream(gctx_,std::cout);
+      Acts::Vector3 dummy_momentum;
+      
+      //The 0.2 mm is to avoid entering in the case where the hit is too far from the surface -> try/catch here.
+      Acts::Vector2 local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.2).value();
+      
+      ldmxsp->local_pos_ = local_pos;
+      
+      std::cout<<"Local hit position::"<<std::endl;
+      std::cout<<ldmxsp->local_pos_<<std::endl;
+      
+    }
+    else
+      std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
+    
+  }
+      
+  Acts::GainMatrixUpdater kfUpdater;
+  Acts::GainMatrixSmoother kfSmoother;
+
+  // configuration for the measurement selector. Empty geometry identifier means applicable to all the detector
+  // elements
+
+  Acts::MeasurementSelector::Config measurementSelectorCfg = {
+    // global default: no chi2 cut, only one measurement per surface
+    {Acts::GeometryIdentifier(), {std::numeric_limits<double>::max(), 1u}},
+  };
+
+  /* -- main --
+  Acts::MeasurementSelector::Config measurementSelectorCfg = {
+    // global default: no chi2 cut, only one measurement per surface
+    {Acts::GeometryIdentifier(),
+     {{}, {std::numeric_limits<double>::max()}, {1u}}},
+  };
+  */
+  
+  Acts::MeasurementSelector measSel{measurementSelectorCfg};
+  LdmxMeasurementCalibrator calibrator{ldmxsps};
+
+  /*
+  Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
+  ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
+  ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
+  ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
+  ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
+                                              
+  
+
+  //The CKF options
+  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink> > kfOptions(
+      gctx_,bctx_,cctx_,
+      LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), ckf_extensions, Acts::LoggerWrapper{logger()},
+      propagator_options,&(*perigee_surface));
+  */
+  
+
+  //The generation informations
+  //Gen 1 Momentum [MeV] X = 313.836
+  //Gen 1 Momentum [MeV] Y = 0
+  //Gen 1 Momentum [MeV] Z = 3987.67
+  //Gen 1 Vertex [mm] X = -27.926
+  //Gen 1 Vertex [mm] Y = 0
+  //Gen 1 Vertex [mm] Z = -700
+
+  
   
 }
 
@@ -725,7 +848,65 @@ Acts::Transform3 TrackingGeometryMaker::convertTransform(
       Acts::Vector3(translation[0] * Acts::UnitConstants::cm,
                     translation[1] * Acts::UnitConstants::cm,
                     translation[2] * Acts::UnitConstants::cm));
-}    
+}
+
+
+void TrackingGeometryMaker::getSurfaces(std::vector<const Acts::Surface*>& surfaces,
+                                        std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
+  
+  const Acts::TrackingVolume* tVolume = trackingGeometry->highestTrackingVolume();
+  if (tVolume->confinedVolumes()) {
+    for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
+      if (volume->confinedLayers()) {
+        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
+          if (layer->layerType() == Acts::navigation) continue;
+          for (auto surface : layer->surfaceArray()->surfaces()) {
+            if (surface) {
+
+              surfaces.push_back(surface);
+                            
+            }// surface exists
+          } //surfaces
+        }//layers objects
+      }//confined layers
+    }//volumes objects
+  }//confined volumes
+}
+
+
+void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator) {
+
+  for (const auto& pair : geoId_sl_map_) {
+    std::cout<<"GeometryID::"<<pair.first<<std::endl;
+    for (auto& sl : pair.second) {
+      calibrator.test(gctx_, sl);
+    }
+  }
+}
+
+
+void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
+  
+  //loop over the tracking geometry to find all sensitive surfaces
+  std::vector<const Acts::Surface*> surfaces;
+  getSurfaces(surfaces, trackingGeometry);
+
+  std::cout<<"PF::CHECK THE SURFACES MADE IN THE TRACKING GEOMETRY"<<std::endl;
+
+  for (auto& surface : surfaces) {
+    std::cout<<"Check the surfaces"<<std::endl;
+    surface->toStream(gctx_,std::cout);
+    std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
+    std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
+
+    //Layers from 1 to 14
+    unsigned int layerId = (surface->geometryId().layer() / 2);
+    layer_surface_map_[layerId] = surface;
+  }
+  
+}
+
+
 } // namespace sim
 } // namespace tracking
 
