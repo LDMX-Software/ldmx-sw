@@ -21,7 +21,7 @@
 # All of this setup requires us to be in a bash shell.
 #   We add this check to make sure the user is in a bash shell.
 ###############################################################################
-if [[ "$0" != *"bash"* ]]; then
+if [[ -z ${BASH} ]]; then
   echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
   [[ "$SHELL" = *"bash"* ]] || echo "  You're default shell '$SHELL' isn't bash."
   return 1
@@ -268,6 +268,7 @@ function _ldmx_list() {
 function _ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
+  echo "Bash version: ${BASH_VERSION}"
   echo "OSTYPE: ${OSTYPE}"
   echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
@@ -525,7 +526,6 @@ HELP
 ###############################################################################
 function ldmx() {
   _sub_command="$1"
-  _sub_command_args="${@:2}"
 
   # divide commands by number of arguments
   case $_sub_command in
@@ -534,7 +534,7 @@ function ldmx() {
       return $?
       ;;
     config)
-      if [[ ! -z "$_sub_command_args" ]]; then
+      if [[ "$#" != "1" ]]; then
         _ldmx_help
         echo "ERROR: 'ldmx config' takes no arguments."
         return 1
@@ -548,7 +548,7 @@ function ldmx() {
         echo "ERROR: ldmx ${_sub_command} takes one argument."
         return 1
       fi
-      _ldmx_${_sub_command} $_sub_command_args
+      _ldmx_${_sub_command} "$2"
       return $?
       ;;
     pull)
@@ -557,7 +557,7 @@ function ldmx() {
         echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
         return 1
       fi
-      _ldmx_use $_sub_command_args "PULL_NO_MATTER_WHAT"
+      _ldmx_use "$2" "$3" "PULL_NO_MATTER_WHAT"
       return $?
       ;;
     use)
@@ -566,19 +566,19 @@ function ldmx() {
         echo "ERROR: 'ldmx use' takes two arguments: <repo> <tag>."
         return 1
       fi
-      _ldmx_use $_sub_command_args
+      _ldmx_use "$2" "$3"
       return $?
       ;;
     run)
-      _ldmx_run $_sub_command_args
+      _ldmx_run ${@:2}
       return $?
       ;;
     checkout)
-      _ldmx_checkout $_sub_command_args
+      _ldmx_checkout ${@:2}
       return $?
       ;;
     *)
-      _ldmx_run_here $_sub_command $_sub_command_args
+      _ldmx_run_here $@
       return $?
       ;;
   esac
