@@ -19,9 +19,13 @@
 
 //--- ACTS ---//
 
-//Utils
+//Utils and Definitions
 #include "Acts/Utilities/Logger.hpp"
 #include "Acts/Definitions/Units.hpp"
+#include "Acts/Definitions/Common.hpp"
+#include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 
 //dd4hep
 #include "Acts/Plugins/DD4hep/ActsExtension.hpp"
@@ -162,10 +166,20 @@ class TrackingGeometryMaker : public framework::Producer {
   //Forms the layer to acts map
   void makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
 
+  
+  template <typename source_link_accessor_t> 
+  void testAccessor(source_link_accessor_t accessor,
+                    const typename source_link_accessor_t::Container& container,
+                    const Acts::GeometryIdentifier& id);
 
+
+  template <typename T>
+  std::string type_name();
+  
   //Test the measurement calibrator (TODO::move it somewhere else)
 
-  void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator);
+  void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
+                                const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map);
   
   
   
@@ -221,9 +235,7 @@ class TrackingGeometryMaker : public framework::Producer {
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
-  //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
-  std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
-  
+    
   
 }; // TrackingGeometryMaker
     

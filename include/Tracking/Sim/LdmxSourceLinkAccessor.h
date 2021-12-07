@@ -18,24 +18,27 @@ struct LdmxSourceLinkAccessor {
           
   using Container = GeometrySourceLinkMap<T>;
   using Key       = Acts::GeometryIdentifier;
-  using Value     = typename GeometrySourceLinkMap<T>::value_type;
-  using Iterator  = typename GeometrySourceLinkMap<T>::const_iterator;
-          
+  //using Value     = typename GeometrySourceLinkMap<T>::value_type;
+  using Value     = T;
+  //using Iterator  = typename GeometrySourceLinkMap<T>::const_iterator;
+  using Iterator  = typename std::vector<T>::const_iterator;
           
   const Container* container = nullptr;
           
   size_t count(const Acts::GeometryIdentifier& geoId) const {
     assert(container != nullptr);
-    return container->count(geoId);
+    //return container->count(geoId);
+    return container->at(geoId).size();
   }
   
   std::pair<Iterator, Iterator> range (
       const Acts::GeometryIdentifier& geoId) const {
     assert(container != nullptr);
-    return container->equal_range(geoId);
+    return std::pair<Iterator,Iterator>(container->at(geoId).begin(), container->at(geoId).end());
   }
-  
-  const Value& at(const Iterator& it) const {return *it;}
+
+  //const Value& at(const Iterator& it) const {return *it;}
+  const T& at(const Iterator& it) const {return *it;}
           
 };
 
