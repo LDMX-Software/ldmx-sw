@@ -98,7 +98,7 @@ fi
 if hash docker &> /dev/null; then
   # List containers on our machine matching the sub-string 'ldmx/local'
   _ldmx_list_local() {
-    docker images -q "ldmx/local"
+    docker images "ldmx/local"
   }
 
   # Use the input container and error out if not available
@@ -134,7 +134,7 @@ if hash docker &> /dev/null; then
   _ldmx_container_config() {
     echo "Docker Version: $(docker --version)"
     echo "Docker Tag: ${LDMX_DOCKER_TAG}"
-    echo "  SHA: $(docker inspect --format='{{index .RepoDigests 0}}' ${LDMX_DOCKER_TAG})"
+    echo "    Digest: $(docker inspect --format='{{index .RepoDigests 0}}' ${LDMX_DOCKER_TAG})"
     return 0
   }
 
@@ -268,8 +268,8 @@ function _ldmx_list() {
 function _ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
-  echo "Bash version: ${BASH_VERSION}"
   echo "OSTYPE: ${OSTYPE}"
+  echo "Bash version: ${BASH_VERSION}"
   echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
   _ldmx_container_config
