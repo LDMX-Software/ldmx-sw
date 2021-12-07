@@ -525,9 +525,30 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   // run the CKF for all initial track states
   //auto results = ckf.findTracks(geoId_sl_map_, startParameters, kfOptions);
+
   auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions_v3);
-    
   
+  for (auto& result : results) {
+
+    std::cout<<"PF::Initial parameters"<<std::endl;
+    std::cout<<startParameters.at(0)<<std::endl;
+  
+  
+    
+    std::cout<<"PF::CHECKING CKF RESULTS"<<std::endl;
+    if (!result.ok()) {
+        std::cout<<"PF::RESULT IS NOT OK"<<std::endl;
+        continue;
+      }
+    
+    auto ckf_result = result.value();
+    
+    for (const auto& pair : ckf_result.fittedParameters) {
+      std::cout<<"Fitted Parameters at site " << (int) pair.first << std::endl;
+      std::cout<<pair.second<<std::endl;
+          
+    }
+  } 
 }
 
 //A copy is not a good idea. TODO
