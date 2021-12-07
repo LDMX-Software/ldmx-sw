@@ -10,11 +10,6 @@
 
 #include "Acts/EventData/SourceLink.hpp"
 
-//Original ACTS Example
-//#include "ActsExamples/EventData/GeometryContainers.hpp"
-//#include "ActsExamples/EventData/Index.hpp"
-
-//Copy
 #include "Tracking/Sim/GeometryContainers.h"
 #include "Tracking/Sim/Index.h"
 

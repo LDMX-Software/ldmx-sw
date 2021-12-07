@@ -11,6 +11,12 @@
 
 //--- C++ StdLib ---//
 #include <iostream>
+#include <type_traits>
+#include <typeinfo>
+#ifndef _MSC_VER
+#   include <cxxabi.h>
+#endif
+
 
 namespace tracking {
 namespace sim {
@@ -130,9 +136,7 @@ void TrackingGeometryMaker::onProcessStart() {
   //Setup the propagator
   propagator_ = std::make_shared<Propagator>(stepper, navigator);
 
-  //Setup the CKF
-  //Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
-  
+    
   
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
@@ -143,9 +147,6 @@ void TrackingGeometryMaker::onProcessStart() {
 
   //Create a mapping between the layers and the Acts::Surface
   makeLayerSurfacesMap(tGeometry);
-
-  
-  
 }
 
 
@@ -333,6 +334,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   std::cout<<"ldmx points::"<<ldmxsps.size()<<std::endl;
   
+  //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
+  std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
+  std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> geoId_sl_mmap_;
   
   //Check the hits associated to the surfaces
   for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
@@ -345,7 +349,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<ldmxsp->layer()<<" is associated to Acts::surface::"<<hit_surface<<std::endl;
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
       geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
-      
+
+      geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
+            
       //Transform the ldmx space point from global to local and store the information
       
       std::cout<<"Global hit position::"<<std::endl;
@@ -367,6 +373,96 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
   }
       
+  //The generation informations
+  //Gen 1 Momentum [MeV] X = 313.836
+  //Gen 1 Momentum [MeV] Y = 0
+  //Gen 1 Momentum [MeV] Z = 3987.67
+  //Gen 1 Vertex [mm] X = -27.926
+  //Gen 1 Vertex [mm] Y = 0
+  //Gen 1 Vertex [mm] Z = -700
+  
+
+  //Truth based initial track parameters
+  
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
+  ldmx::SimParticle gen_e = particleMap[1];
+  
+  std::cout<<"PF::generatedElectron PID::"<<gen_e.getPdgID()<<std::endl;
+  std::cout<<"PF::generatedElectron Energy::"<<gen_e.getEnergy()<<std::endl;
+
+
+  Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
+  Acts::Vector3 gen_e_mom{gen_e.getMomentum().data()};
+  Acts::ActsScalar  gen_e_time = 0.;
+
+  //Rotate to ACTS frame
+  //z->x, x->y, y->z
+
+  //(0 0 1) x  = z 
+  //(1 0 0) y  = x
+  //(0 1 0) z  = y
+
+  Acts::SymMatrix3 acts_rot;
+  acts_rot << 0,0,1,
+      1,0,0,
+      0,1,0;
+
+  gen_e_pos = acts_rot * gen_e_pos;
+  gen_e_mom = acts_rot * gen_e_mom;
+  
+  std::cout<<"PF::generatedElectron POS::"<<std::endl;
+  std::cout<<gen_e_pos<<std::endl;
+
+  std::cout<<"PF::generatedElectron MOM::"<<std::endl;
+  std::cout<<gen_e_mom<<std::endl;
+
+  Acts::FreeVector free_params;
+  Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
+  Acts::ActsScalar p = gen_e_mom.norm();
+  
+  //Store the generated electron into track parameters to start the CKF
+  free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0);
+  free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1);
+  free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2);
+  free_params[Acts::eFreeTime]   = 0.;  
+  free_params[Acts::eFreeDir0]   = gen_e_mom(0);
+  free_params[Acts::eFreeDir1]   = gen_e_mom(1);
+  free_params[Acts::eFreeDir2]   = gen_e_mom(2);
+  free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
+  
+  //Random test covariance
+  Acts::FreeSymMatrix free_cov = 10. * Acts::FreeSymMatrix::Identity();
+
+  std::cout<<free_cov<<std::endl;
+  
+  Acts::FreeTrackParameters gen_track_params(free_params, q, free_cov);
+  
+  std::cout<<"Check the position and momentum"<<std::endl;
+  std::cout<<gen_track_params.position()<<std::endl;
+  std::cout<<gen_track_params.momentum()<<std::endl;
+  std::cout<<"Absolute momentum="<<gen_track_params.absoluteMomentum()<<std::endl;
+
+
+  //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the beamline at -700,0,0
+  std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(-700,-27.926, 0.0));
+
+  //Transform the free parameters to the bound parameters
+  auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
+
+  Acts::BoundSymMatrix bound_cov = 10. * Acts::BoundSymMatrix::Identity();
+  
+
+  Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
+  
+  // ============   Setup the CKF  ============
+  Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
+
+
+  std::vector<Acts::BoundTrackParameters> startParameters = {gen_track_params_bound};
+
+  
   Acts::GainMatrixUpdater kfUpdater;
   Acts::GainMatrixSmoother kfSmoother;
 
@@ -395,59 +491,42 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
-                                              
   
+  
+  using LdmxSourceLinkAccessor_v2  = GeneralContainerAccessor<std::unordered_map<Acts::GeometryIdentifier, std::vector<ActsExamples::IndexSourceLink> > >;
 
-  //The CKF options
+  using LdmxSourceLinkAccessor_v3 = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
+  
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink> > kfOptions(
       gctx_,bctx_,cctx_,
       LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), ckf_extensions, Acts::LoggerWrapper{logger()},
       propagator_options,&(*perigee_surface));
   
+
+  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor_v2> kfOptions_v2(
+      gctx_,bctx_,cctx_,
+      LdmxSourceLinkAccessor_v2(), ckf_extensions, Acts::LoggerWrapper{logger()},
+      propagator_options,&(*perigee_surface));
+
+  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor_v3> kfOptions_v3(
+      gctx_,bctx_,cctx_,
+      LdmxSourceLinkAccessor_v3(), ckf_extensions, Acts::LoggerWrapper{logger()},
+      propagator_options,&(*perigee_surface));
   
 
-  //The generation informations
-  //Gen 1 Momentum [MeV] X = 313.836
-  //Gen 1 Momentum [MeV] Y = 0
-  //Gen 1 Momentum [MeV] Z = 3987.67
-  //Gen 1 Vertex [mm] X = -27.926
-  //Gen 1 Vertex [mm] Y = 0
-  //Gen 1 Vertex [mm] Z = -700
+  //Test the accessor
   
-
-  //Truth based initial track parameters
-  
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
-  ldmx::SimParticle gen_e = particleMap[1];
-  
-  std::cout<<"PF::generatedElectron PID::"<<gen_e.getPdgID()<<std::endl;
-  std::cout<<"PF::generatedElectron Energy::"<<gen_e.getEnergy()<<std::endl;
+  std::cout<<"PF::TEST ACCESSOR V3::"<<std::endl;
+  testAccessor(LdmxSourceLinkAccessor_v3(), geoId_sl_mmap_, layer_surface_map_[1]->geometryId());
 
 
-  Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
-  Acts::Vector3 gen_e_dir{gen_e.getMomentum().data()};
+  std::cout<<"PF::TEST ACCESSOR V1::"<<std::endl;
+  testAccessor(LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), geoId_sl_map_, layer_surface_map_[1]->geometryId());
 
-  //Rotate to ACTS frame
-  //z->x, x->y, y->z
-
-  //(0 0 1) x  = z 
-  //(1 0 0) y  = x
-  //(0 1 0) z  = y
-
-  Acts::SymMatrix3 acts_rot;
-  acts_rot << 0,0,1,
-      1,0,0,
-      0,1,0;
-
-  gen_e_pos = acts_rot * gen_e_pos;
-  gen_e_dir = acts_rot * gen_e_dir;
-  std::cout<<"PF::generatedElectron POS::"<<std::endl;
-  std::cout<<gen_e_pos<<std::endl;
-
-  std::cout<<"PF::generatedElectron DIR::"<<std::endl;
-  std::cout<<gen_e_dir<<std::endl;
-  
-  
+  // run the CKF for all initial track states
+  //auto results = ckf.findTracks(geoId_sl_map_, startParameters, kfOptions);
+  auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions_v3);
+    
   
 }
 
@@ -883,10 +962,42 @@ void TrackingGeometryMaker::getSurfaces(std::vector<const Acts::Surface*>& surfa
   }//confined volumes
 }
 
+template <typename source_link_accessor_t> 
+void TrackingGeometryMaker::testAccessor(source_link_accessor_t accessor,
+                                         const typename source_link_accessor_t::Container& container,
+                                         const Acts::GeometryIdentifier& id) {
 
-void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator) {
+  accessor.container = &container;
+  size_t nSourcelinks = accessor.count(id);
+  std::cout<<"nSourceLinks == "<<(int)nSourcelinks<<std::endl;
+  
+  for (const auto& pair : container) {
+    std::cout<<"GeometryID::"<<pair.first<<std::endl;
+    std::cout<<"nSourceLinks == "<<(int)accessor.count(pair.first)<<std::endl;
+    //std::cout << "decltype(container[key]) is " << type_name<decltype(container.at(pair.first))>() << '\n';
+  }
+  
+  //Get all the source links on that surface
+  auto [lower_it, upper_it] =
+      accessor.range(id);
+  
+  for (auto it = lower_it; it != upper_it; ++it) {
+    // get the source link
+    const auto& sourceLink = accessor.at(it);
 
-  for (const auto& pair : geoId_sl_map_) {
+    std::cout<<"Type of it"<<std::endl;
+    std::cout<<type_name<decltype(it)>()<<std::endl;
+    
+    std::cout<<"Type of at(it)::"<<std::endl;
+    std::cout<<type_name<decltype(sourceLink)>()<<std::endl;
+  }
+}
+
+
+void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
+                                                     const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) {
+  
+  for (const auto& pair : map) {
     std::cout<<"GeometryID::"<<pair.first<<std::endl;
     for (auto& sl : pair.second) {
       calibrator.test(gctx_, sl);
@@ -915,6 +1026,37 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
   }
   
 }
+
+
+template <typename T>
+std::string
+TrackingGeometryMaker::type_name()
+{
+  typedef typename std::remove_reference<T>::type TR;
+  std::unique_ptr<char, void(*)(void*)> own
+      (
+#ifndef _MSC_VER
+          abi::__cxa_demangle(typeid(TR).name(), nullptr,
+                              nullptr, nullptr),
+#else
+          nullptr,
+#endif
+          std::free
+       );
+  std::string r = own != nullptr ? own.get() : typeid(TR).name();
+  if (std::is_const<TR>::value)
+    r += " const";
+  if (std::is_volatile<TR>::value)
+    r += " volatile";
+  if (std::is_lvalue_reference<T>::value)
+    r += "&";
+  else if (std::is_rvalue_reference<T>::value)
+    r += "&&";
+  return r;
+}
+
+
+
 
 
 } // namespace sim
