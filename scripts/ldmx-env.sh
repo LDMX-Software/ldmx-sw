@@ -782,6 +782,6 @@ complete -F __ldmx_complete ldmx
 #default backs out of scripts/
 _default_location_ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
 
-if [[ -f $_default_location__ldmxrc ]]; then
+if [[ -f $_default_location_ldmxrc ]]; then
   ldmx source $_default_location_ldmxrc
 fi
