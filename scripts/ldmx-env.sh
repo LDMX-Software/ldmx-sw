@@ -624,7 +624,7 @@ __ldmx_complete_directory() {
 ###############################################################################
 __ldmx_complete_command() {
   # generate up-to-date list of options
-  local _options="$@ cmake make python3 python"
+  local _options="$@ cmake make python3 root rootbrowse"
   for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
     _options="$_options $(basename $ldmx_executable)"
   done
