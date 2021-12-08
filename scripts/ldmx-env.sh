@@ -514,6 +514,10 @@ __ldmx_help() {
       ldmx source .ldmxrc
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
+      ldmx cmake ..
+      ldmx make install
+      ldmx fire config.py
+      ldmx python3 ana.py
 
 HELP
   return 0
