@@ -529,6 +529,8 @@ HELP
 #   about them.
 ###############################################################################
 function ldmx() {
+  # if there are no arguments, print the help
+  [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
   # divide commands by number of arguments
   case $1 in
     help|config)
