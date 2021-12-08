@@ -29,6 +29,7 @@ class LdmxSpacePoint  {
     m_z = z;
     m_t = t;
     m_r = std::sqrt(m_x*m_x + m_y*m_y);
+    m_edep = 0.;
     m_layer = layer;
     m_id = -999;
     m_varianceR = 0.05;
@@ -40,13 +41,14 @@ class LdmxSpacePoint  {
 
   //Global position constructor with user specified covariance
   LdmxSpacePoint(float x,float y,float z,
-                 float t,int layer,
+                 float t,int layer, float edep,
                  float vR, float vZ,
                  int id) {
     m_x = x;
     m_y = y;
     m_z = z;
     m_t = t;
+    m_edep = edep;
     m_varianceR = vR;
     m_varianceZ = vZ;
     m_r = std::sqrt(m_x*m_x + m_y*m_y);
@@ -82,6 +84,7 @@ class LdmxSpacePoint  {
     m_z = gp[2];
     m_t = t;
     m_r = std::sqrt(m_x*m_x + m_y*m_y);
+    m_edep = 0.;
     m_layer = layer;
     m_id = id;
     m_varianceR = cv[0];
@@ -97,6 +100,7 @@ class LdmxSpacePoint  {
   float z() const {return m_z;}
   float t() const {return m_t;}
   float r() const {return m_r;}
+  float edep() const {return m_edep;}
   float varianceR() const {return m_varianceR;}
   float varianceZ() const {return m_varianceZ;}
   int   layer() const {return m_layer;}
@@ -155,6 +159,7 @@ class LdmxSpacePoint  {
   float m_z;
   float m_t;
   float m_r;
+  float m_edep;
   float m_varianceR;
   float m_varianceZ;
   int   m_id;

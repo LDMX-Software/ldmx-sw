@@ -323,15 +323,22 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
 
+  float eLoss = 0.;
   //Convert to ldmxsps
   for (auto& simHit : sim_hits) {
-    
+
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
+      std::vector<double> g4p_v = simHit.getMomentum();
+      double g4p = sqrt(g4p_v[0] * g4p_v[0] + g4p_v[1] * g4p_v[1] + g4p_v[2] * g4p_v[2]);
+      std::cout<<"simHit at layer " << simHit.getLayerID() << "  particle q/p " << -1. / g4p << std::endl;
+      if (g4p > 0.0001)
+        eLoss += simHit.getEdep();
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }
 
+  std::cout<<"Total Eloss="<<eLoss<<std::endl;
   std::cout<<"ldmx points::"<<ldmxsps.size()<<std::endl;
   
   //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
@@ -357,6 +364,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       std::cout<<"Global hit position::"<<std::endl;
       std::cout<<ldmxsp->global_pos_<<std::endl;
       hit_surface->toStream(gctx_,std::cout);
+
+      std::cout<<"TRANSFORM"<<std::endl;
+      std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
+      std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
+
       Acts::Vector3 dummy_momentum;
       
       //The 0.2 mm is to avoid entering in the case where the hit is too far from the surface -> try/catch here.
@@ -418,16 +430,16 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   Acts::FreeVector free_params;
   Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
-  Acts::ActsScalar p = gen_e_mom.norm();
+  Acts::ActsScalar p = gen_e_mom.norm() * Acts::UnitConstants::MeV;
   
   //Store the generated electron into track parameters to start the CKF
-  free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0);
-  free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1);
-  free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2);
+  free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2) * Acts::UnitConstants::mm;
   free_params[Acts::eFreeTime]   = 0.;  
-  free_params[Acts::eFreeDir0]   = gen_e_mom(0);
-  free_params[Acts::eFreeDir1]   = gen_e_mom(1);
-  free_params[Acts::eFreeDir2]   = gen_e_mom(2);
+  free_params[Acts::eFreeDir0]   = gen_e_mom(0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeDir1]   = gen_e_mom(1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeDir2]   = gen_e_mom(2) * Acts::UnitConstants::mm;
   free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
   
   //Random test covariance
@@ -451,7 +463,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //Transform the free parameters to the bound parameters
   auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
 
-  Acts::BoundSymMatrix bound_cov = 10. * Acts::BoundSymMatrix::Identity();
+  Acts::BoundSymMatrix bound_cov = 1000. * Acts::BoundSymMatrix::Identity();
   
 
   Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
@@ -648,7 +660,8 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     cfg.position = position;
     //cfg.rotation = cfg.rotation*transform.rotation();
     cfg.rotation = x_rot*y_rot*transform.rotation();
-        
+
+    std::cout<<"POSITION AND ROTATION OF THE SURFACES"<<std::endl;
     //Position and rotation of the surface
     std::cout<<cfg.position<<std::endl;
     std::cout<<cfg.rotation<<std::endl;

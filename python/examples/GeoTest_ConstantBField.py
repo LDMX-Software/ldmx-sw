@@ -20,8 +20,8 @@ geo.theta_range = [0.4 * math.pi, 0.6 * math.pi]
 geo.pt = 4.
 geo.d0sigma = 0.
 geo.z0sigma = 0.
-geo.bfield = 1.15
-geo.propagator_step_size = 1.
+geo.bfield = -1.441  #From looking at the BField map
+geo.propagator_step_size = 250.  #mm
 geo.perigee_location = [-0.,0.,0.]
 
 
@@ -34,4 +34,4 @@ p.outputFiles = ['tracker_test.root']
 
 p.termLogLevel=0
 
-p.maxEvents = 1
+p.maxEvents = 5
