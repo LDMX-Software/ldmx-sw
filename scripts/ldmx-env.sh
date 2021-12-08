@@ -299,9 +299,9 @@ __ldmx_is_mounted() {
 ###############################################################################
 __ldmx_run_here() {
   #store last directory to resume history later
-  _old_pwd=$OLDPWD
+  local _old_pwd=$OLDPWD
   #store current working directory relative to ldmx base
-  _pwd=$(pwd -P)/.
+  local _pwd=$(pwd -P)/.
 
   # check if container will be able to see where we are
   if ! __ldmx_is_mounted $_pwd; then
@@ -349,7 +349,7 @@ __ldmx_mount() {
 ###############################################################################
 export LDMX_BASE=""
 __ldmx_base() {
-  _new_base="$1"
+  local _new_base="$1"
   if [[ ! -d $_new_base ]]; then
     echo "'$_new_base' is not a directory!"
     return 1
@@ -366,8 +366,7 @@ __ldmx_base() {
 #   The input argument defines what should be cleaned
 ###############################################################################
 __ldmx_clean() {
-  _what="$1"
-
+  local _what="$1"
   local cleaned_something=false
   local rc=0
   if [[ "$_what" = "container" ]] || [[ "$_what" = "all" ]]; then
@@ -530,30 +529,24 @@ HELP
 #   about them.
 ###############################################################################
 function ldmx() {
-  _sub_command="$1"
-
   # divide commands by number of arguments
-  case $_sub_command in
-    help)
-      __ldmx_help
-      return $?
-      ;;
-    config)
+  case $1 in
+    help|config)
       if [[ "$#" != "1" ]]; then
-        __ldmx_help
-        echo "ERROR: 'ldmx config' takes no arguments."
+        __ldmx_${1}
+        echo "ERROR: 'ldmx ${1}' takes no arguments."
         return 1
       fi
-      __ldmx_config 
+      __ldmx_${1}
       return $?
       ;;
     list|base|clean|mount|source)
       if [[ "$#" != "2" ]]; then
         __ldmx_help
-        echo "ERROR: ldmx ${_sub_command} takes one argument."
+        echo "ERROR: ldmx ${1} takes one argument."
         return 1
       fi
-      __ldmx_${_sub_command} "$2"
+      __ldmx_${1} "$2"
       return $?
       ;;
     pull)
@@ -574,12 +567,8 @@ function ldmx() {
       __ldmx_use "$2" "$3"
       return $?
       ;;
-    run)
-      __ldmx_run ${@:2}
-      return $?
-      ;;
-    checkout)
-      __ldmx_checkout ${@:2}
+    run|checkout)
+      __ldmx_${1} ${@:2}
       return $?
       ;;
     *)
