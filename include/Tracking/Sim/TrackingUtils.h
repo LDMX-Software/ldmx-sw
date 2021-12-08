@@ -32,7 +32,7 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
         
         
   return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y,ldmxsp_z,
-                                  hit.getTime(), hit.getLayerID(), 
+                                  hit.getTime(), hit.getLayerID(), hit.getEdep(), 
                                   sigma_rphi*sigma_rphi, sigma_z*sigma_z,
                                   hit.getID());
         

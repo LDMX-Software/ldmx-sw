@@ -59,19 +59,21 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   //cotThetaMax and deltaRMax matter to choose the binning in z. The bin size is given by cotThetaMax*deltaRMax
     
   config_.sigmaScattering = 2.25;
-  config_.minPt = 500.;
-  config_.bFieldInZ = 0.0015;  // in kT
-  config_.beamPos = {0, 0}; // units?
-  config_.impactMax = 20.;
+  config_.minPt           = 500. * Acts::UnitConstants::MeV;  
+  config_.bFieldInZ       = 1.44 * Acts::UnitConstants::T;
+  config_.beamPos         = {0, 0}; // units mm ?
+  config_.impactMax       = 20.;
     
     
-  grid_conf_.bFieldInZ   = config_.bFieldInZ;
-  grid_conf_.minPt       = config_.minPt;
-  grid_conf_.rMax        = config_.rMax;
-  grid_conf_.zMax        = config_.zMax;
-  grid_conf_.zMin        = config_.zMin;
-  grid_conf_.deltaRMax   = config_.deltaRMax;
-  grid_conf_.cotThetaMax = config_.cotThetaMax;
+  grid_conf_.bFieldInZ       = config_.bFieldInZ;
+  grid_conf_.minPt           = config_.minPt;
+  grid_conf_.rMax            = config_.rMax;
+  grid_conf_.zMax            = config_.zMax;
+  grid_conf_.zMin            = config_.zMin;
+  grid_conf_.deltaRMax       = config_.deltaRMax;
+  grid_conf_.cotThetaMax     = config_.cotThetaMax;
+  grid_conf_.numPhiNeighbors = 1.;
+
 
 
   //The seed finder needs a seed filter instance
@@ -89,7 +91,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   //In ACTS coordinates and BField in Tesla
   bField_(0)=0.;
   bField_(1)=0.;
-  bField_(2)=config_.bFieldInZ * 1000. * Acts::UnitConstants::T;
+  bField_(2)=config_.bFieldInZ;
   
 }
         
@@ -106,6 +108,9 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
             
   //Only convert simHits that have at least 0.05 edep
+
+
+  std::cout<<"Converting sim hits"<<std::endl;
                         
   for (auto& simHit : sim_hits) {
                 
@@ -114,7 +119,8 @@ void SeedFinderProcessor::produce(framework::Event &event) {
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }    
-      
+  std::cout<<"Converted "<< ldmxsps.size() << " hits "<<std::endl;
+  
   //TODO:: For the moemnt I am only selecting 3 points. In principle the grid should be able to find all combinatorics
   //I'll use layer 3,5,7.
 
@@ -126,6 +132,9 @@ void SeedFinderProcessor::produce(framework::Event &event) {
       spVec.push_back(ldmxsps[isp]);
   }
 
+  std::cout<<"Will use spVec::"<<spVec.size()<<" hits "<<std::endl;
+
+  
   //covariance tool: returns the covariance from the space point
   auto covariance_tool = [=](const ldmx::LdmxSpacePoint& sp, float, float,
                              float) -> std::pair<Acts::Vector3, Acts::Vector2> {
@@ -134,14 +143,21 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     return std::make_pair(position, covariance);
   };
 
+  std::cout<<"Creating the grid"<<std::endl;
+  
   std::unique_ptr<Acts::SpacePointGrid<ldmx::LdmxSpacePoint> > grid = Acts::SpacePointGridCreator::createGrid<ldmx::LdmxSpacePoint>(grid_conf_);
 
+  std::cout<<"Creating the space point group"<<std::endl;
+  
   // create the space point group
   auto spGroup = Acts::BinnedSPGroup<ldmx::LdmxSpacePoint>(
       spVec.begin(), spVec.end(),
       covariance_tool,
       bottom_bin_finder_, top_bin_finder_,
       std::move(grid), config_);
+
+
+  std::cout<<"Seed vector"<<std::endl;
   
   // seed vector
   using SeedContainer = std::vector<Acts::Seed<ldmx::LdmxSpacePoint>>;
@@ -149,6 +165,8 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   seeds.clear();
 
   Acts::Seedfinder<ldmx::LdmxSpacePoint>::State state;
+  
+  std::cout<<"finding seeds"<<std::endl;
   
   // find the seeds
   auto group = spGroup.begin();
@@ -191,7 +209,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
                                                                     ldmxspvec.begin(),ldmxspvec.end(),
                                                                     bField_, 1. * Acts::UnitConstants::T, 0.5);
     
-    /*
+    
     std::cout<<(*params)[Acts::eBoundLoc0]<<" "
              <<(*params)[Acts::eBoundLoc1]<<" "
              <<(*params)[Acts::eBoundPhi]<< " "
@@ -199,11 +217,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
              <<(*params)[Acts::eBoundQOverP]<< " "
              <<(*params)[Acts::eBoundTime]
              <<std::endl;
-    */
-
-    
-    
-    
   }
   
   auto end = std::chrono::high_resolution_clock::now();
