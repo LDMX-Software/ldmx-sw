@@ -775,9 +775,9 @@ complete -F __ldmx_complete ldmx
 # Otherwise, trust that the user knows what they are doing.
 ###############################################################################
 
-#default backs out of scripts
-_default_location__ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
+#default backs out of scripts/
+_default_location_ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
 
 if [[ -f $_default_location__ldmxrc ]]; then
-  ldmx source $_default_location__ldmxrc
+  ldmx source $_default_location_ldmxrc
 fi
