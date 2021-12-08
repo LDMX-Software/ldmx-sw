@@ -64,8 +64,8 @@ _ldmx_which_os() {
     # Mac OSX
     export LDMX_CONTAINER_DISPLAY="docker.for.mac.host.internal"
     return 0
-  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
-    # Linux distribution
+  elif [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
+    # Linux/BSD distribution
     export LDMX_CONTAINER_DISPLAY=""
     return 0
   fi
@@ -150,7 +150,10 @@ if hash docker &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
-    docker run --rm -it -e LDMX_BASE \
+    local interactive=""
+    tty -s && interactive="-it"
+    docker run --rm ${interactive} \
+      -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
@@ -224,7 +227,6 @@ elif hash singularity &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
-    csv_list="${csv_list%,}"
     singularity run --no-home --cleanenv \
       --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
@@ -482,6 +484,7 @@ _ldmx_checkout() {
 ###############################################################################
 _ldmx_help() {
   cat <<\HELP
+
   USAGE: 
     ldmx <command> [<argument> ...]
 
@@ -512,6 +515,7 @@ _ldmx_help() {
       ldmx source .ldmxrc
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
+
 HELP
   return 0
 }
