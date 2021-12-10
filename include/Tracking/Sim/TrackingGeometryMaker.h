@@ -124,6 +124,11 @@ class TrackingGeometryMaker : public framework::Producer {
   void onProcessStart() final override;
 
   /**
+   *
+   */
+  void onProcessEnd() final override;
+
+  /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
@@ -137,6 +142,8 @@ class TrackingGeometryMaker : public framework::Producer {
    */
   void produce(framework::Event &event);
 
+  Acts::CuboidVolumeBuilder::VolumeConfig volumeBuilder_gdml(Acts::Logging::Level logLevel);
+  
   Acts::CuboidVolumeBuilder::VolumeConfig  volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel);
     
   void collectSubDetectors_dd4hep(dd4hep::DetElement& detElement,
@@ -193,6 +200,8 @@ class TrackingGeometryMaker : public framework::Producer {
   //If we want to dump the tracking geometry
   int dumpobj_ {0};
 
+  bool debug_{false};
+
 
   //--- Propagator Tests ---//
 
@@ -234,9 +243,15 @@ class TrackingGeometryMaker : public framework::Producer {
   //This could be a vector
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
-
-    
   
+  //Some histograms
+
+  TH1F* histo_p_;
+  TH1F* histo_d0_;
+  TH1F* histo_z0_;
+  TH1F* histo_phi_;
+  TH1F* histo_theta_;
+    
 }; // TrackingGeometryMaker
     
 

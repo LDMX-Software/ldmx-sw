@@ -28,7 +28,7 @@ TrackingGeometryMaker::TrackingGeometryMaker(const std::string &name,
 TrackingGeometryMaker::~TrackingGeometryMaker() {}
 
 void TrackingGeometryMaker::onProcessStart() {
-
+  
   detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
@@ -41,23 +41,29 @@ void TrackingGeometryMaker::onProcessStart() {
 
   //Get the ACTS Logger
   
-  auto loggingLevel = Acts::Logging::VERBOSE;
+  auto loggingLevel = Acts::Logging::INFO;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
     
   //The subdetectors should be the TaggerTracker and the Recoil Tracker
   
   collectSubDetectors_dd4hep(world,subdetectors);
-  std::cout<<"PF::DEBUG::"<<__PRETTY_FUNCTION__<<" size  of subdetectors::"<<subdetectors.size()<<std::endl;
-
+  if (debug_)
+    std::cout<<"PF::DEBUG::"<<__PRETTY_FUNCTION__<<" size  of subdetectors::"<<subdetectors.size()<<std::endl;
+  
   //loop over the subDetectors to gather all the configurations
   
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs;
   for (auto& subDetector : subdetectors) {
-    std::cout<<"PF::DEBUG:: Translating DD4Hep sub detector: " << subDetector.name()<<std::endl;
+    if (debug_)
+      std::cout<<"PF::DEBUG:: Translating DD4Hep sub detector: " << subDetector.name()<<std::endl;
     //create the cuboid volume configurations for the builder
     
     volBuilderConfigs.push_back(volumeBuilder_dd4hep(subDetector,loggingLevel));
   }
+  
+  
+  //Create the 
+  
   
   //Create the builder
   
@@ -112,11 +118,12 @@ void TrackingGeometryMaker::onProcessStart() {
   //Generate a constant null magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
-  std::cout<<"PF::DEBUG::BFIELD"<<std::endl;
-  std::cout<<"=========="<<std::endl;
-  std::cout<<b_field / Acts::UnitConstants::T<<std::endl;
-  std::cout<<"=========="<<std::endl;
-  
+  if (debug_) {
+    std::cout<<"PF::DEBUG::BFIELD"<<std::endl;
+    std::cout<<"=========="<<std::endl;
+    std::cout<<b_field / Acts::UnitConstants::T<<std::endl;
+    std::cout<<"=========="<<std::endl;
+  }
   std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
 
   //Setup the navigator
@@ -144,15 +151,48 @@ void TrackingGeometryMaker::onProcessStart() {
 
   writer_ = std::make_shared<PropagatorStepWriter>(cfg);
 
-
+  
   //Create a mapping between the layers and the Acts::Surface
   makeLayerSurfacesMap(tGeometry);
+
+
+  //Prepare histograms
+
+  //getHistoDirectory();
+
+  //Track parameters
+  //histograms_.create("d0_reco","d0_reco",100,-20,20);
+  //histograms_.create("z0_reco","z0_reco",100,-20,20);
+  //histograms_.create("q/p","q_over_p",100,-1,1);
+  //histograms_.create("p","p",100,0,10);
+  //histograms_.create("theta","theta",100,-3.15,3.15);
+  //histograms_.create("phi","phi",100,-3.15,3.15);
+  //histograms_.create("t","t",100,0,100);
+
+  //Residuals
+  //histograms_.create("d0_res","d0_reco",100,-5,5);
+  //histograms_.create("z0_res","z0_reco",100,-5,5);
+  //histograms_.create("q/p_res","q_over_p",100,-0.1,0.1);
+  //histograms_.create("p_res","p",100,-2,2);
+  //histograms_.create("theta_res","theta",100,-0.1,0.1);
+  //histograms_.create("phi_res","phi",100,-0.1,0.1);
+  //histograms_.create("t_res","t",100,-0.1,0.1);
+
+  //Pulls - probably wrong
+  
+  histo_p_      = new TH1F("p_res",    "p_res",100,-1,1);
+  histo_d0_     = new TH1F("d0_res",   "d0_res",100,-1,1);
+  histo_z0_     = new TH1F("z0_res",   "z0_res",100,-1,1);
+  histo_phi_    = new TH1F("phi_res",  "phi_res",100,-1,1);
+  histo_theta_  = new TH1F("theta_res","theta_res",100,-1,1);
+    
 }
 
 
 void TrackingGeometryMaker::produce(framework::Event &event) {
 
-  std::cout<<"PF ::DEBUG:: "<<__PRETTY_FUNCTION__<<std::endl;
+  if (debug_)
+    std::cout<<"PF ::DEBUG:: "<<__PRETTY_FUNCTION__<<std::endl;
 
   //1) Setup the actions and the abort list. For debugging add the Stepping Logger
   //2) Create the propagator options from them. If the magneticField context is empty it won't be used.
@@ -200,8 +240,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   std::pair<double, double> ptRange = {100 * Acts::UnitConstants::MeV,
     100 * Acts::UnitConstants::GeV};
 
-
-  
   //Prepare the outputs..
   
   /// Using some short hands for Recorded Material
@@ -220,7 +258,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // execute the test for charged particles
 
   //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-  auto loggingLevel = Acts::Logging::VERBOSE;
+  auto loggingLevel = Acts::Logging::INFO;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
   
   PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
@@ -242,8 +280,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // Set a maximum step size
   propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
   
-
-  std::cout<<"PF::Running the propagator tests"<<std::endl;
+  if (debug_)
+    std::cout<<"PF::Running the propagator tests"<<std::endl;
   
   for (size_t it = 0; it < ntests_; ++it) {
     
@@ -262,7 +300,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     
     // parameters
-
+    if (debug_) {
+      std::cout<<"CHECK START PARAMETERS"<<std::endl;
+      std::cout<<d0<<" " <<z0<<std::endl;
+    }
+    
     Acts::BoundVector pars;
     pars << d0, z0, phi, theta, qop, t;
     
@@ -279,6 +321,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                                                std::move(cov));
     sPosition = startParameters.position(gctx_);
     sMomentum = startParameters.momentum();
+
+    if (debug_)
+      std::cout<<startParameters<<std::endl;
     
     //run the propagator
     PropagationOutput pOutput;
@@ -303,9 +348,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   writer_->WriteSteps(event,propagationSteps);
 
-
-
-  std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
+  //std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
 
   //#######################//
   //Kalman Filter algorithm//
@@ -316,30 +359,18 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   //a) Loop over the sim Hits
   
-
   const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
-  
-  
-  
+    
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
-
-  float eLoss = 0.;
+  
   //Convert to ldmxsps
   for (auto& simHit : sim_hits) {
-
+    
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
-      std::vector<double> g4p_v = simHit.getMomentum();
-      double g4p = sqrt(g4p_v[0] * g4p_v[0] + g4p_v[1] * g4p_v[1] + g4p_v[2] * g4p_v[2]);
-      std::cout<<"simHit at layer " << simHit.getLayerID() << "  particle q/p " << -1. / g4p << std::endl;
-      if (g4p > 0.0001)
-        eLoss += simHit.getEdep();
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }
-
-  std::cout<<"Total Eloss="<<eLoss<<std::endl;
-  std::cout<<"ldmx points::"<<ldmxsps.size()<<std::endl;
   
   //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
   std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
@@ -353,31 +384,42 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     const Acts::Surface* hit_surface = layer_surface_map_[layerid];
     if (hit_surface) {
-      std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<ldmxsp->layer()<<" is associated to Acts::surface::"<<hit_surface<<std::endl;
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
-      geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
+      //std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<ldmxsp->layer()<<" is associated to Acts::surface::"<<hit_surface<<std::endl;
 
-      geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
-            
       //Transform the ldmx space point from global to local and store the information
-      
-      std::cout<<"Global hit position::"<<std::endl;
-      std::cout<<ldmxsp->global_pos_<<std::endl;
-      hit_surface->toStream(gctx_,std::cout);
 
-      std::cout<<"TRANSFORM"<<std::endl;
-      std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
-      std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
+      
+      //std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
+      //std::cout<<ldmxsp->global_pos_<<std::endl;
+      //hit_surface->toStream(gctx_,std::cout);
+
+      //std::cout<<"TRANSFORM"<<std::endl;
+      //std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
+      //std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
 
       Acts::Vector3 dummy_momentum;
       
       //The 0.2 mm is to avoid entering in the case where the hit is too far from the surface -> try/catch here.
-      Acts::Vector2 local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.2).value();
+      
+      Acts::Vector2 local_pos;
+      try { 
+        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.25).value();
+      } catch (const std::exception& e) {
+        std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
+        continue;
+      }
       
       ldmxsp->local_pos_ = local_pos;
       
-      std::cout<<"Local hit position::"<<std::endl;
-      std::cout<<ldmxsp->local_pos_<<std::endl;
+      //std::cout<<"Local hit position::"<<std::endl;
+      //std::cout<<ldmxsp->local_pos_<<std::endl;
+
+
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
+      geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
+      geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
+            
+      
       
     }
     else
@@ -399,10 +441,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
   ldmx::SimParticle gen_e = particleMap[1];
   
-  std::cout<<"PF::generatedElectron PID::"<<gen_e.getPdgID()<<std::endl;
-  std::cout<<"PF::generatedElectron Energy::"<<gen_e.getEnergy()<<std::endl;
-
-
   Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
   Acts::Vector3 gen_e_mom{gen_e.getMomentum().data()};
   Acts::ActsScalar  gen_e_time = 0.;
@@ -422,12 +460,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   gen_e_pos = acts_rot * gen_e_pos;
   gen_e_mom = acts_rot * gen_e_mom;
   
-  std::cout<<"PF::generatedElectron POS::"<<std::endl;
-  std::cout<<gen_e_pos<<std::endl;
-
-  std::cout<<"PF::generatedElectron MOM::"<<std::endl;
-  std::cout<<gen_e_mom<<std::endl;
-
   Acts::FreeVector free_params;
   Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
   Acts::ActsScalar p = gen_e_mom.norm() * Acts::UnitConstants::MeV;
@@ -445,16 +477,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //Random test covariance
   Acts::FreeSymMatrix free_cov = 10. * Acts::FreeSymMatrix::Identity();
 
-  std::cout<<free_cov<<std::endl;
+  if (debug_)
+    std::cout<<free_cov<<std::endl;
   
   Acts::FreeTrackParameters gen_track_params(free_params, q, free_cov);
   
-  std::cout<<"Check the position and momentum"<<std::endl;
-  std::cout<<gen_track_params.position()<<std::endl;
-  std::cout<<gen_track_params.momentum()<<std::endl;
-  std::cout<<"Absolute momentum="<<gen_track_params.absoluteMomentum()<<std::endl;
-
-
   //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the beamline at -700,0,0
   std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
@@ -505,62 +532,74 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
   
   
-  using LdmxSourceLinkAccessor_v2  = GeneralContainerAccessor<std::unordered_map<Acts::GeometryIdentifier, std::vector<ActsExamples::IndexSourceLink> > >;
-
-  using LdmxSourceLinkAccessor_v3 = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
+  using LdmxSourceLinkAccessor = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
   
-  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink> > kfOptions(
+
+  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
       gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), ckf_extensions, Acts::LoggerWrapper{logger()},
-      propagator_options,&(*perigee_surface));
+      LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{logger()},
+      //propagator_options,&(*perigee_surface));
+      propagator_options,&(*gen_surface));
   
-
-  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor_v2> kfOptions_v2(
-      gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor_v2(), ckf_extensions, Acts::LoggerWrapper{logger()},
-      propagator_options,&(*perigee_surface));
-
-  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor_v3> kfOptions_v3(
-      gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor_v3(), ckf_extensions, Acts::LoggerWrapper{logger()},
-      propagator_options,&(*perigee_surface));
   
-
-  //Test the accessor
-  
-  std::cout<<"PF::TEST ACCESSOR V3::"<<std::endl;
-  testAccessor(LdmxSourceLinkAccessor_v3(), geoId_sl_mmap_, layer_surface_map_[1]->geometryId());
-
-
-  std::cout<<"PF::TEST ACCESSOR V1::"<<std::endl;
-  testAccessor(LdmxSourceLinkAccessor<ActsExamples::IndexSourceLink>(), geoId_sl_map_, layer_surface_map_[1]->geometryId());
-
   // run the CKF for all initial track states
-  //auto results = ckf.findTracks(geoId_sl_map_, startParameters, kfOptions);
-
-  auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions_v3);
+  
+  auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions);
   
   for (auto& result : results) {
 
-    std::cout<<"PF::Initial parameters"<<std::endl;
-    std::cout<<startParameters.at(0)<<std::endl;
-  
-  
-    
-    std::cout<<"PF::CHECKING CKF RESULTS"<<std::endl;
+    //std::cout<<"PF::Initial parameters"<<std::endl;
+    //std::cout<<startParameters.at(0)<<std::endl;
+        
+    //std::cout<<"PF::CHECKING CKF RESULTS"<<std::endl;
     if (!result.ok()) {
         std::cout<<"PF::RESULT IS NOT OK"<<std::endl;
         continue;
       }
     
     auto ckf_result = result.value();
+
+    //std::cout<<"How many parameters? "<< ckf_result.fittedParameters.size()<<std::endl;
+    //std::cout<<"Is smoothed ? " <<ckf_result.smoothed<<std::endl;
+    //std::cout<<"Number of deposited hits" << ldmxsps.size()<<std::endl;
     
     for (const auto& pair : ckf_result.fittedParameters) {
-      std::cout<<"Fitted Parameters at site " << (int) pair.first << std::endl;
-      std::cout<<pair.second<<std::endl;
-          
+      //std::cout<<"Number of hits-on-track::" << (int) pair.first << std::endl;
+      //std::cout<<"Fitted parameters"<<std::endl;
+      //std::cout<<pair.second<<std::endl;
+      
+      histo_p_    ->Fill(pair.second.absoluteMomentum() - startParameters.at(0).absoluteMomentum());
+      histo_d0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
+      histo_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
+      histo_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>() - startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>());
+      histo_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>() - startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>());
+      
     }
   } 
+}
+
+
+void TrackingGeometryMaker::onProcessEnd() {
+
+  TFile* outfile_ = new TFile("track_finding_output.root","RECREATE");
+  outfile_->cd();
+  histo_p_->Write();
+  histo_d0_->Write();
+  histo_z0_->Write();
+  histo_phi_->Write();
+  histo_theta_->Write();
+  outfile_->Close();
+  delete outfile_;
+}
+
+
+Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_gdml(Acts::Logging::Level logLevel) {
+
+  std::vector<std::shared_ptr<const Acts::Surface>> surfaces;
+
+  Acts::CuboidVolumeBuilder::VolumeConfig test;
+  
+  return test;
 }
 
 //A copy is not a good idea. TODO
@@ -588,7 +627,8 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   //collect the sensors (just a trick to add the ActsExtension)
     
   collectSensors_dd4hep(subdetector,sensors);
-  std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" the size of sensors="<<sensors.size()<<std::endl;
+  if (debug_)
+    std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" the size of sensors="<<sensors.size()<<std::endl;
     
   std::vector<std::shared_ptr<const Acts::Surface>> surfaces;
     
@@ -596,18 +636,22 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   //For the moment I'm forcing to grep everything.
     
   resolveSensitive(subdetector,surfaces,true);
-  std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" surfaces size::"<<surfaces.size()<<std::endl;
+  if (debug_)
+    std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" surfaces size::"<<surfaces.size()<<std::endl;
     
   //Check the surfaces that I created
-            
-  for (auto& surface : surfaces) {
+
+  if (debug_)  {
     
-    surface->toStream(gctx_,std::cout);
-    std::cout<<std::endl;
-    surface->surfaceMaterial()->toStream(std::cout);
-    std::cout<<std::endl;
-    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
-    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
+    for (auto& surface : surfaces) {
+      
+      surface->toStream(gctx_,std::cout);
+      std::cout<<std::endl;
+      surface->surfaceMaterial()->toStream(std::cout);
+      std::cout<<std::endl;
+      std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
+      std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
+    }
   }
     
   //Surfaces configs
@@ -618,8 +662,9 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     counter++;
 
     Acts::CuboidVolumeBuilder::SurfaceConfig cfg;
-        
-    std::cout<<"Getting the transform "<<sensor.name()<<std::endl;
+
+    if (debug_)
+      std::cout<<"Getting the transform "<<sensor.name()<<std::endl;
         
     //Get the tranformation from the alignment support. 
     auto transform =
@@ -661,11 +706,13 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     //cfg.rotation = cfg.rotation*transform.rotation();
     cfg.rotation = x_rot*y_rot*transform.rotation();
 
-    std::cout<<"POSITION AND ROTATION OF THE SURFACES"<<std::endl;
-    //Position and rotation of the surface
-    std::cout<<cfg.position<<std::endl;
-    std::cout<<cfg.rotation<<std::endl;
-        
+    if (debug_) {
+      std::cout<<"POSITION AND ROTATION OF THE SURFACES"<<std::endl;
+      //Position and rotation of the surface
+      std::cout<<cfg.position<<std::endl;
+      std::cout<<cfg.rotation<<std::endl;
+    }
+    
     //Get the bounds -  TODO..FIX hardcoding
     cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(20.17, 50));
     //cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(0.000002017, 0.00000050));
@@ -689,8 +736,9 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
 
     surfaceConfig.push_back(cfg);
   }
-    
-  std::cout<<"Formed " <<surfaceConfig.size()<< " Surface configs"<<std::endl;
+
+  if (debug_)
+    std::cout<<"Formed " <<surfaceConfig.size()<< " Surface configs"<<std::endl;
     
   //Layer Configurations
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
@@ -709,21 +757,24 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     layerConfig.push_back(cfg);
     cfg.active = true;
   }
-    
-  std::cout<<"Formed " <<layerConfig.size()<< " layer configs"<<std::endl;
+  
+  if (debug_)
+    std::cout<<"Formed " <<layerConfig.size()<< " layer configs"<<std::endl;
     
   //Create the volume
 
-  std::cout<<"FORMING the boundaries for:"<<subdetector.name()<<std::endl;
+  if (debug_)
+    std::cout<<"FORMING the boundaries for:"<<subdetector.name()<<std::endl;
   // Build the sub-detector volume configuration
   Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
     
   // Get the transform wrt the world
   auto subDet_transform = convertTransform(&(subdetector.nominal().worldTransformation()));
-    
-  std::cout<<subDet_transform.translation()<<std::endl;
-  std::cout<<subDet_transform.rotation()<<std::endl;
 
+  if (debug_) {
+    std::cout<<subDet_transform.translation()<<std::endl;
+    std::cout<<subDet_transform.rotation()<<std::endl;
+  }
 
   //Rotate..Z->X, X->Y, Y->Z
   //Add 1 to not make it sit on the first layer surface
@@ -734,8 +785,8 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
   double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
   
-
-  std::cout<<"x "<<x_length<<" y "<<y_length<<" z "<<z_length<<std::endl;
+  if (debug_)
+    std::cout<<"x "<<x_length<<" y "<<y_length<<" z "<<z_length<<std::endl;
 
   subDetVolumeConfig.position = sub_det_position;
   subDetVolumeConfig.length = {x_length, y_length, z_length};
@@ -786,12 +837,12 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
 void TrackingGeometryMaker::collectModules_dd4hep(dd4hep::DetElement& detElement,
                                                   std::vector<dd4hep::DetElement> & modules) {
   const dd4hep::DetElement::Children& children = detElement.children();
-  std::cout<<__PRETTY_FUNCTION__<<" Collecting from "<<detElement.name()<<std::endl;
+  //std::cout<<__PRETTY_FUNCTION__<<" Collecting from "<<detElement.name()<<std::endl;
 }
 
 void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement,
                                                   std::vector<dd4hep::DetElement>& sensors) {
-  std::cout<<__PRETTY_FUNCTION__<<" Collecting from " <<detElement.name()<<std::endl;
+  //std::cout<<__PRETTY_FUNCTION__<<" Collecting from " <<detElement.name()<<std::endl;
         
   const dd4hep::DetElement::Children& children = detElement.children();
         
@@ -807,7 +858,7 @@ void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement
     Acts::ActsExtension* detExtension = nullptr;
     try {
       detExtension = childDetElement.extension<Acts::ActsExtension>();
-      std::cout<<detExtension->toString()<<std::endl;
+      //std::cout<<detExtension->toString()<<std::endl;
     }
     catch (std::runtime_error& e) {
       //std::cout<<"Caught exception in "<<__PRETTY_FUNCTION__<<std::endl;
@@ -821,7 +872,7 @@ void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement
       }
     }
     else {  //ActsExtension doesn't exist
-      std::cout<<__PRETTY_FUNCTION__<<"PF::DEBUG:: Adding the ActsExtension for sensor "<<childDetElement.name()<<std::endl;
+      //std::cout<<__PRETTY_FUNCTION__<<"PF::DEBUG:: Adding the ActsExtension for sensor "<<childDetElement.name()<<std::endl;
       detExtension = new Acts::ActsExtension();
       detExtension->addType(childDetElement.name(), "si_sensor");
       childDetElement.addExtension<Acts::ActsExtension>(detExtension);
@@ -840,12 +891,14 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
                                                        std::vector<dd4hep::DetElement>& subdetectors) {
   const dd4hep::DetElement::Children& children = detElement.children();
     
-  std::cout<<"Collecting from "<<detElement.name()<<std::endl;
+  //std::cout<<"Collecting from "<<detElement.name()<<std::endl;
         
   for (auto& child : children) {
     dd4hep::DetElement childDetElement = child.second;
-    std::cout<<"Child Name:: "<<childDetElement.name()<<std::endl;
-    std::cout<<"Child Type:: "<<childDetElement.type()<<std::endl;
+    if (debug_) {
+      std::cout<<"Child Name:: "<<childDetElement.name()<<std::endl;
+      std::cout<<"Child Type:: "<<childDetElement.type()<<std::endl;
+    }
     std::string childName = childDetElement.name();
         
     //Check here if I'm checking the TaggerTracker or the RecoilTracker. Skip the rest.
@@ -860,7 +913,7 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
     Acts::ActsExtension* detExtension = nullptr;
     try {
       detExtension = childDetElement.extension<Acts::ActsExtension>();
-      std::cout<<detExtension->toString()<<std::endl;
+      //std::cout<<detExtension->toString()<<std::endl;
     }
     catch (std::runtime_error& e) {
       //std::cout<<"Caught exception in "<<__PRETTY_FUNCTION__<<std::endl;
@@ -875,7 +928,7 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
       }
     }
     else {  //ActsExtension doesn't exist
-      std::cout<<"PF::DEBUG:: Adding the ActsExtension to "<< childDetElement.name() << " " <<childDetElement.type() <<std::endl;
+      //std::cout<<"PF::DEBUG:: Adding the ActsExtension to "<< childDetElement.name() << " " <<childDetElement.type() <<std::endl;
             
       detExtension = new Acts::ActsExtension();
       detExtension->addType(childDetElement.name(), "detector");
@@ -893,20 +946,16 @@ void TrackingGeometryMaker::resolveSensitive(
     const dd4hep::DetElement& detElement,
     std::vector<std::shared_ptr<const Acts::Surface>>& surfaces,bool force) const {
   const dd4hep::DetElement::Children& children = detElement.children();
-  std::cout<<"resolving sensitive from "<<detElement.name()<<std::endl;
-        
+  
   if (!children.empty()) {
-    std::cout<<"Resolving children.."<<std::endl;
     for (auto& child : children) {
       dd4hep::DetElement childDetElement = child.second;
-      std::cout<<"childDetElement::"<<childDetElement.name()<< " "<<childDetElement.type()<<std::endl;
-                
-                
+                      
       //Check material
-      std::cout<<childDetElement.volume().material().toString()<<std::endl;
+      //std::cout<<childDetElement.volume().material().toString()<<std::endl;
                 
       if (childDetElement.volume().isSensitive() || force) {
-        std::cout<<"isSensitive.. "<<std::endl;
+        //std::cout<<"isSensitive.. "<<std::endl;
         // create the surface
         surfaces.push_back(createSensitiveSurface(childDetElement));
       }
@@ -924,7 +973,6 @@ TrackingGeometryMaker::createSensitiveSurface(
   try {
     detExtension = detElement.extension<Acts::ActsExtension>();
   } catch (std::runtime_error& e) {
-    std::cout<<"ERROR::"<<__PRETTY_FUNCTION__<<"Could not get Acts::Extension "<<std::endl;
     //ACTS_WARNING("Could not get Acts::Extension");
     return nullptr;
   }
