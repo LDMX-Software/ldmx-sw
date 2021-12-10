@@ -241,7 +241,7 @@ fi
 # If passed repo-name is 'local',
 #   the list of container options is runner-dependent
 ###############################################################################
-function __ldmx_list() {
+__ldmx_list() {
   _repo_name="$1"
   if [ "${_repo_name}" == "local" ]; then
     __ldmx_list_local
@@ -268,7 +268,7 @@ function __ldmx_list() {
 # __ldmx_config
 #   Print the configuration of the current setup
 ###############################################################################
-function __ldmx_config() {
+__ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
   echo "OSTYPE: ${OSTYPE}"
@@ -532,7 +532,7 @@ HELP
 #   There are lots of subcommands, go to those functions to learn the detail
 #   about them.
 ###############################################################################
-function ldmx() {
+ldmx() {
   # if there are no arguments, print the help
   [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
   # divide commands by number of arguments
