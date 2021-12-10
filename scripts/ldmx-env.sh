@@ -210,7 +210,7 @@ elif hash singularity &> /dev/null; then
 
   # Print container configuration
   __ldmx_container_config() {
-    echo "Singularity Version: $(singularity --version)"
+    echo "Singularity Version: $(singularity version)"
     echo "Singularity File: ${LDMX_BASE}/${LDMX_SINGULARITY_IMG}"
     return 0
   }
