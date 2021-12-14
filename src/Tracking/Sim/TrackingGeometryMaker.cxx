@@ -126,6 +126,39 @@ void TrackingGeometryMaker::onProcessStart() {
   }
   std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
 
+  auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
+                                 std::array<size_t, 3> sizes) {
+    return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] + bins[2]);  //xyz - field space
+    //return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);    //zxy
+    
+  };
+
+  std::cout<<"PF::BFIELDMAP"<<std::endl;
+  std::cout<<bfieldMap_<<std::endl;
+  
+  //CHECK:::Tests/IntegrationTests/PropagationTestsAtlasField.cpp
+  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
+                                                                   1. * Acts::UnitConstants::mm, //default scale for axes length
+                                                                   1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
+                                                                   false, //not symmetrical
+                                                                   true //rotate the axes to tracking frame
+                                                                   );
+  
+  std::cout<<__PRETTY_FUNCTION__<<std::endl;
+  std::cout<<"BField interpolated map loaded.."<<std::endl;
+  
+  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(std::move(map));;
+
+  std::cout<<"PF::TESTING THE CONSTANT FIELD"<<std::endl;
+  testField(bField);
+  
+  
+  std::cout<<"PF::TESTING THE INTERPOLATED FIELD"<<std::endl;
+  testField(sp_interpolated_bField_);
+
+  
+  
+  
   //Setup the navigator
   Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
@@ -137,11 +170,20 @@ void TrackingGeometryMaker::onProcessStart() {
   //auto&& stepper = Acts::EigenStepper<>{std::move(bField)};
   //using Stepper = std::decay_t<decltype(stepper)>;
 
-  auto&& stepper = Acts::EigenStepper<>{std::move(bField)};
+  auto&& stepper_const        = Acts::EigenStepper<>{std::move(bField)};
+  auto&& stepper_interpolated = Acts::EigenStepper<>{std::move(sp_interpolated_bField_)};
+  
   //using Propagator = Acts::Propagator<Stepper, Acts::Navigator>;
     
   //Setup the propagator
-  propagator_ = std::make_shared<Propagator>(stepper, navigator);
+  if (const_b_field_) {
+    std::cout<<"PF::USING CONSTANT BFIELD"<<std::endl;
+    propagator_ = std::make_shared<Propagator>(stepper_const, navigator);
+  }
+  else {
+    propagator_ = std::make_shared<Propagator>(stepper_interpolated, navigator);
+    std::cout<<"USING INTERPOLATED B FIELD"<<std::endl;
+  }
 
     
   
@@ -183,16 +225,22 @@ void TrackingGeometryMaker::onProcessStart() {
   histo_p_      = new TH1F("p_res",    "p_res",100,-1,1);
   histo_d0_     = new TH1F("d0_res",   "d0_res",100,-1,1);
   histo_z0_     = new TH1F("z0_res",   "z0_res",100,-1,1);
-  histo_phi_    = new TH1F("phi_res",  "phi_res",100,-1,1);
-  histo_theta_  = new TH1F("theta_res","theta_res",100,-1,1);
+  histo_phi_    = new TH1F("phi_res",  "phi_res",100,-0.05,0.05);
+  histo_theta_  = new TH1F("theta_res","theta_res",100,-0.02,0.02);
     
 }
 
 
 void TrackingGeometryMaker::produce(framework::Event &event) {
 
-  if (debug_)
+  n_events_++;
+  if (n_events_ % 1000 == 0)
+    std::cout<<"events processed:"<<n_events_<<std::endl;
+  
+  if (debug_) {
     std::cout<<"PF ::DEBUG:: "<<__PRETTY_FUNCTION__<<std::endl;
+    std::cout<<"Processing event "<<&event<<std::endl;
+  }
 
   //1) Setup the actions and the abort list. For debugging add the Stepping Logger
   //2) Create the propagator options from them. If the magneticField context is empty it won't be used.
@@ -282,6 +330,68 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   if (debug_)
     std::cout<<"PF::Running the propagator tests"<<std::endl;
+
+
+
+  //Truth based initial track parameters
+  
+  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
+  ldmx::SimParticle gen_e = particleMap[1];
+  
+  Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
+  Acts::Vector3 gen_e_mom{gen_e.getMomentum().data()};
+  Acts::ActsScalar  gen_e_time = 0.;
+
+  //Rotate to ACTS frame
+  //z->x, x->y, y->z
+
+  //(0 0 1) x  = z 
+  //(1 0 0) y  = x
+  //(0 1 0) z  = y
+  
+  Acts::SymMatrix3 acts_rot;
+  acts_rot << 0,0,1,
+      1,0,0,
+      0,1,0;
+  
+  gen_e_pos = acts_rot * gen_e_pos;
+  gen_e_mom = acts_rot * gen_e_mom;
+  
+  Acts::FreeVector free_params;
+  Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
+  Acts::ActsScalar p = gen_e_mom.norm() * Acts::UnitConstants::MeV;
+  
+  //Store the generated electron into track parameters to start the CKF
+  free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeTime]   = 0.;  
+  free_params[Acts::eFreeDir0]   = gen_e_mom(0) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeDir1]   = gen_e_mom(1) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeDir2]   = gen_e_mom(2) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
+  
+  //Random test covariance
+  Acts::FreeSymMatrix free_cov = 10. * Acts::FreeSymMatrix::Identity();
+  
+  if (debug_)
+    std::cout<<free_cov<<std::endl;
+  
+  Acts::FreeTrackParameters gen_track_params(free_params, q, free_cov);
+  
+  //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the generation point
+  std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(-700,-27.926, 0.0));
+  
+  //Transform the free parameters to the bound parameters
+  auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
+
+  Acts::BoundSymMatrix bound_cov = 1000. * Acts::BoundSymMatrix::Identity();
+  
+  
+  Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
+    
   
   for (size_t it = 0; it < ntests_; ++it) {
     
@@ -306,8 +416,17 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     }
     
     Acts::BoundVector pars;
-    pars << d0, z0, phi, theta, qop, t;
-    
+    d0 = -7.54499;
+    z0 = -23.4946;
+    phi = 0.0785398;
+    theta = 1.5708;
+    qop = -0.25;
+    t = 0.;
+         
+    std::cout<<"CHECKING TRUTH PARAMETERS"<<std::endl;
+    //pars << d0, z0, phi, theta, qop, t;
+    pars = bound_params;
+    std::cout<<pars<<std::endl;
     
     Acts::Vector3 sPosition(0., 0., 0.);
     Acts::Vector3 sMomentum(0., 0., 0.);
@@ -436,65 +555,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //Gen 1 Vertex [mm] Z = -700
   
 
-  //Truth based initial track parameters
-  
-  auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
-  ldmx::SimParticle gen_e = particleMap[1];
-  
-  Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
-  Acts::Vector3 gen_e_mom{gen_e.getMomentum().data()};
-  Acts::ActsScalar  gen_e_time = 0.;
-
-  //Rotate to ACTS frame
-  //z->x, x->y, y->z
-
-  //(0 0 1) x  = z 
-  //(1 0 0) y  = x
-  //(0 1 0) z  = y
-
-  Acts::SymMatrix3 acts_rot;
-  acts_rot << 0,0,1,
-      1,0,0,
-      0,1,0;
-
-  gen_e_pos = acts_rot * gen_e_pos;
-  gen_e_mom = acts_rot * gen_e_mom;
-  
-  Acts::FreeVector free_params;
-  Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
-  Acts::ActsScalar p = gen_e_mom.norm() * Acts::UnitConstants::MeV;
-  
-  //Store the generated electron into track parameters to start the CKF
-  free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeTime]   = 0.;  
-  free_params[Acts::eFreeDir0]   = gen_e_mom(0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeDir1]   = gen_e_mom(1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeDir2]   = gen_e_mom(2) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
-  
-  //Random test covariance
-  Acts::FreeSymMatrix free_cov = 10. * Acts::FreeSymMatrix::Identity();
-
-  if (debug_)
-    std::cout<<free_cov<<std::endl;
-  
-  Acts::FreeTrackParameters gen_track_params(free_params, q, free_cov);
-  
-  //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the beamline at -700,0,0
-  std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(-700,-27.926, 0.0));
-
-  //Transform the free parameters to the bound parameters
-  auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
-
-  Acts::BoundSymMatrix bound_cov = 1000. * Acts::BoundSymMatrix::Identity();
-  
-
-  Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
-  
   // ============   Setup the CKF  ============
   Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
 
@@ -565,8 +625,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     for (const auto& pair : ckf_result.fittedParameters) {
       //std::cout<<"Number of hits-on-track::" << (int) pair.first << std::endl;
-      //std::cout<<"Fitted parameters"<<std::endl;
-      //std::cout<<pair.second<<std::endl;
+      //if (debug_) {
+      std::cout<<"Fitted parameters"<<std::endl;
+      std::cout<<pair.second<<std::endl;
+      //}
       
       histo_p_    ->Fill(pair.second.absoluteMomentum() - startParameters.at(0).absoluteMomentum());
       histo_d0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
@@ -821,6 +883,9 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
   
   bfield_               = parameters.getParameter<double>("bfield", 0.);
+  const_b_field_        = parameters.getParameter<bool>("const_b_field",true);
+  bfieldMap_            = parameters.getParameter<std::string>("bfieldMap_",
+                                                               "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
   propagator_step_size_ = parameters.getParameter<double>("propagator_step_size", 200.);
   pt_                   = parameters.getParameter<double>("pt", 1.);
   d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
@@ -1074,6 +1139,38 @@ void TrackingGeometryMaker::testAccessor(source_link_accessor_t accessor,
     std::cout<<type_name<decltype(sourceLink)>()<<std::endl;
   }
 }
+
+void TrackingGeometryMaker::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield) {
+
+  Acts::Vector3 eval_pos{0.,0.,0.};
+  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
+  
+  std::cout<<"Pos::\n"<<eval_pos<<std::endl;
+  std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T <<std::endl;
+
+  /*
+  eval_pos(0)= -250.0;
+  eval_pos(1)= -70.0;
+  eval_pos(2)= -1500;
+  */
+
+  std::cout<<"Pos::\n"<<eval_pos<<std::endl;
+  std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T<<std::endl;
+
+  //-110.0 0.0 5.0 0 -1.500E-03 0 --> 5.0 -110.0 0.0
+  //eval_pos(0)=-110.0;
+  //eval_pos(1)= 0.0;
+  //eval_pos(2)= 5.0;
+  
+  eval_pos(0)= -393.870327;
+  eval_pos(1)= -3.635;
+  eval_pos(2)= 69.013;
+
+  std::cout<<"Pos::\n"<<eval_pos<<std::endl;
+  std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T <<std::endl;
+    
+}
+
 
 
 void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,

@@ -38,6 +38,7 @@
 
 //magfield
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
+#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
 #include "Acts/Geometry/TrackingVolume.hpp"
 #include "Acts/Geometry/TrackingGeometryBuilder.hpp"
@@ -92,6 +93,9 @@
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/LdmxSourceLinkAccessor.h"
 #include "Acts/EventData/MultiTrajectory.hpp"
+
+//--- Interpolated magnetic field ---//
+#include "Tracking/Sim/BFieldXYZUtils.h"
 
 using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
@@ -187,6 +191,10 @@ class TrackingGeometryMaker : public framework::Producer {
 
   void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
                                 const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map);
+
+  //Test the magnetic field
+
+  void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField);
   
   
   
@@ -201,7 +209,7 @@ class TrackingGeometryMaker : public framework::Producer {
   int dumpobj_ {0};
 
   bool debug_{false};
-
+  int n_events_{0};
 
   //--- Propagator Tests ---//
 
@@ -215,6 +223,8 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Constant BField
   double bfield_{0};
+  //Use constant bfield
+  bool const_b_field_{true};
 
   //Transverse Momentum
   double pt_{1.};
@@ -227,7 +237,11 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //The perigee location used for the initial propagator states generation
   std::vector<double> perigee_location_{0.,0.,0.};
-      
+
+  //The interpolated bfield
+  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
+  std::string bfieldMap_;
+  
   //The propagator
   std::shared_ptr<Propagator> propagator_;
   
