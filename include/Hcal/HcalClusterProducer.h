@@ -50,7 +50,7 @@ class HcalClusterProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
  
  private:
-
+    
   bool       verbose_{false};
   //double     EminSeed_{0.};
   double     EnoiseCut_{0.};
@@ -58,6 +58,7 @@ class HcalClusterProducer : public framework::Producer {
   double     deltaR_{0};
   double     EminCluster_{0.};
   double     cutOff_{0.};
+  std::string clusterCollName_;
 };
 
 }

@@ -21,7 +21,25 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.max_depth = 4000.0
         self.back_min_pe = 1.
 
+class HcalWABVetoProcessor(ldmxcfg.Producer) :
+    """Configuration for WAB veto in HCal
+    
+    Sets all parameters to reasonable defaults.
 
+    Examples
+    --------
+        from LDMX.EventProc.hcal import HcalWABVetoProcessor
+        p.sequence.append( HcalWABVetoProcessor() )
+    """
+
+    def __init__(self,name = 'hcalWABVeto') :
+        super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
+
+        self.total_energy_compare = 2000.0;
+        self.n_clusters = 6.0;
+        self.mean_hits_per_cluster = 30.0;
+        self.mean_energy_per_cluster = 0.4;
+     
 class HcalOldDigiProducer(ldmxcfg.Producer) :
     """Configuration for Digitization producer in the HCal
         Sets all parameters to reasonable defaults.
@@ -67,4 +85,6 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         self.deltaR = 0.
         self.EminCluster = 0.5 # Minimum Energy to be classes as a cluster 
         self.cutOff = 10.
+        
+        self.clusterCollName = 'HcalClusters'
         
