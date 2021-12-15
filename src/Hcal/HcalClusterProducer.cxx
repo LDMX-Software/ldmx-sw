@@ -22,6 +22,8 @@ void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
   deltaR_ = parameters.getParameter<double>("deltaR");
   EminCluster_ = parameters.getParameter<double>("EminCluster");
   cutOff_ = parameters.getParameter<double>("cutOff");
+  
+  clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 }
 
 static bool compHitTimes(const ldmx::HcalHit* a, const ldmx::HcalHit* b) {
@@ -69,7 +71,7 @@ void HcalClusterProducer::produce(framework::Event& event) {
     }
     hcalClusters.push_back(cluster);
   }
-  event.add("HcalClusters", hcalClusters);
+  event.add(clusterCollName_, hcalClusters);
 }
 
 }  // namespace hcal
