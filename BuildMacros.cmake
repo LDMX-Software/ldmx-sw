@@ -137,6 +137,7 @@ macro(setup_library)
 
   # Setup the targets to link against
   target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
+  enable_sanitizers(${library_name})
 
   # Define an alias. This is used to create the imported target.
   set(alias "${setup_library_module}::${setup_library_module}")
