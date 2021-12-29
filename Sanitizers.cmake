@@ -2,6 +2,17 @@
 # Originally by Jason Turner/lefticus, released under the "unlicense" license
 # into the public domain
 
+# Adds build options to turn on the various sanitizers to a target, all turned off by default.
+# - ENABLE_SANITIZER_ADDRESS
+# - ENABLE_SANITIZER_LEAK
+# - ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
+# - ENABLE_SANITIZER_THREAD
+# - ENABLE_SANITIZER_MEMORY
+#
+# each of which turns on the corresponding -fsanitize= flag for the project_name
+# argument, both as compilation and
+#
+# Note that some options are incompatible, which will produce warnings.
 function(enable_sanitizers project_name)
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
