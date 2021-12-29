@@ -1,3 +1,6 @@
+# Taken from https://github.com/cpp-best-practices/cpp_starter_project
+# Originally by Jason Turner/lefticus, released under the "unlicense" license
+# into the public domain
 
 function(enable_sanitizers project_name)
 
