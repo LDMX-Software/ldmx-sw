@@ -25,6 +25,10 @@ namespace hcal {
         maxnClusters_ = parameters.getParameter<double>("n_clusters");
         maxMeanHitsPerCluster_ = parameters.getParameter<double>("mean_hits_per_cluster");
         maxMeanEnergyPerCluster_ = parameters.getParameter<double>("mean_energy_per_cluster");
+        outputCollName_ = parameters.getParameter<std::string>("outputCollName");
+        inputHCALClusterCollName_ = parameters.getParameter<std::string>("inputHCALClusterCollName");
+        inputHCALHitCollName_ = parameters.getParameter<std::string>("inputHCALHitCollName");
+        inputECALHitCollName_  = parameters.getParameter<std::string>("inputECALHitCollName");
     }
 
     void HcalWABVetoProcessor::produce(framework::Event &event) {
@@ -32,21 +36,29 @@ namespace hcal {
         // Get the collection of sim particles from the event
         //HCAL:
         const std::vector<ldmx::HcalHit> hcalRecHits =
-        event.getCollection<ldmx::HcalHit>("HcalRecHits");
+        event.getCollection<ldmx::HcalHit>(inputHCALHitCollName_);
         //ECAL:
         const std::vector<ldmx::EcalHit> ecalRecHits =
-        event.getCollection<ldmx::EcalHit>("EcalRecHits");
+        event.getCollection<ldmx::EcalHit>(inputECALHitCollName_);
         //Clusters:
         const std::vector<ldmx::HcalCluster> hcalClusters =
-        event.getCollection<ldmx::HcalCluster>("HcalClusters");
+        event.getCollection<ldmx::HcalCluster>(inputHCALClusterCollName_);
 
         // Loop over all of the Hcal hits and calculate to total photoelectrons
         // in the event.
         float totalHCALEnergy{0};
         float totalECALEnergy{0};
+        float maxPE{-1000};
+        const ldmx::HcalHit *maxPEHit;
         for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
                 if (hcalHit.isNoise()==0){
                         totalHCALEnergy += hcalHit.getPE();
+                }
+                
+                // Find the maximum PE in the list
+                if (maxPE < hcalHit.getPE()) {
+                  maxPE = hcalHit.getPE();
+                  maxPEHit = &hcalHit;
                 }
             }
   
@@ -61,12 +73,11 @@ namespace hcal {
         for (const ldmx::HcalCluster &hcalCluster : hcalClusters) {
                 nClusters += 1;
                 energies.push_back(hcalCluster.getEnergy());
-                std::cout<<"cluster energy "<<hcalCluster.getEnergy()<<std::endl;
                 nhits.push_back(hcalCluster.getNHits());
             }
         double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
         double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
-        std::cout<<totalECALEnergy + (1/25)*totalHCALEnergy<<" "<<nClusters<<" "<<meanEnergy<<" "<<meanNhits<<std::endl;
+    
         bool passesEnergyCombo = (totalECALEnergy + (1/25)*totalHCALEnergy < maxtotalEnergyCompare_ );
         bool passesnClusters = (nClusters < maxnClusters_);
         bool passesNHits = (meanEnergy <  maxMeanHitsPerCluster_ );
@@ -76,8 +87,7 @@ namespace hcal {
         bool passesVeto = (passesEnergyCombo and passesnClusters and passesNHits and passesEnergy);
         ldmx::HcalVetoResult result;
         result.setVetoResult(passesVeto);
-        //result.setMaxPEHit(*maxPEHit);TODO
-            std::cout<<"passes"<<passesVeto<<std::endl;
+        result.setMaxPEHit(*maxPEHit);
         if (passesVeto) {
             setStorageHint(framework::hint_shouldKeep);
             
@@ -85,7 +95,7 @@ namespace hcal {
            setStorageHint(framework::hint_shouldDrop);
         }
 
-        event.add("HcalVeto", result);
+        event.add(outputCollName_, result);
      
         }
 }  // namespace hcal

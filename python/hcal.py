@@ -39,7 +39,12 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
         self.n_clusters = 6.0;
         self.mean_hits_per_cluster = 30.0;
         self.mean_energy_per_cluster = 0.4;
-     
+        
+        self.inputHCALHitCollName = "HcalRecHits";
+        self.inputECALHitCollName = "EcalRecHits" ; 
+        self.outputCollName = "HcalWABVetoes";
+        self.inputHCALClusterCollName = "HcalClusters"
+        
 class HcalOldDigiProducer(ldmxcfg.Producer) :
     """Configuration for Digitization producer in the HCal
         Sets all parameters to reasonable defaults.
