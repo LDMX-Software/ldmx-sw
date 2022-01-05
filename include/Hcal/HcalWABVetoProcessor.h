@@ -52,7 +52,11 @@ class HcalWABVetoProcessor : public framework::Producer {
      double maxnClusters_{0.};
      double maxMeanHitsPerCluster_{0.};
      double maxMeanEnergyPerCluster_{0.};
-
+     std::string outputCollName_;
+     std::string inputHCALClusterCollName_;
+     std::string inputHCALHitCollName_;
+     std::string inputECALHitCollName_;
+     
 };  // HcalWABVetoProcessor
 }  // namespace hcal
 
