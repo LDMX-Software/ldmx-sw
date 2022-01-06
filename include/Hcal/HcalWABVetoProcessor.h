@@ -1,7 +1,7 @@
 /**
  * @file HcalWABVetoProcessor.h
  * @brief Processor that determines if an event is vetoed by the Hcal.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Sophie Middleton
  */
 
 #ifndef __HCAL_HCAL_VETO_PROCESSOR_H__
@@ -48,9 +48,13 @@ class HcalWABVetoProcessor : public framework::Producer {
   void produce(framework::Event &event);
 
  private:
+     // Maximum sum of total ECAL and HCAL energy
      double maxtotalEnergyCompare_{0.};
+     // Maximum number of clusters in an event
      double maxnClusters_{0.};
+     // Maximum allowed mean average number of hits in the event's clusters
      double maxMeanHitsPerCluster_{0.};
+     // Maimum allowed mean average energy in event's clusters
      double maxMeanEnergyPerCluster_{0.};
      std::string outputCollName_;
      std::string inputHCALClusterCollName_;
