@@ -30,3 +30,10 @@ jobs:
           extensions: 'h,cpp'
           clangFormatVersion: 12
           style: google
+      - uses: EndBug/add-and-commit@v4
+        with:
+          committer_name: LDMX Bot
+          commiter_email: bot@ldmx.com
+          message: 'Committing clang-format changes'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
