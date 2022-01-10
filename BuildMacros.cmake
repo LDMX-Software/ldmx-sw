@@ -1,5 +1,5 @@
 include(CMakeParseArguments)
-include(cmake/Sanitizers.cmake)
+include(Sanitizers)
 
 # Define some colors. These are used to colorize CMake's user output
 if(NOT WIN32)
