@@ -32,6 +32,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
+
   // Get the PDG ID of the track and make sure it's an electron.
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11) {
     return;
@@ -43,8 +44,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     
     // Check if the track ever enters the ECal. If it does, kill the track and abort the event.
     if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; 
-    (volume.contains("Si") || volume.contains("W") || volume.contains("PCB") || volume.contains("Readout") || volume.contains("CFMix") || volume.contains("Al")) 
-    && volume.contains("volume")) {
+    (volume.contains("Si") && volume.contains("volume"))) {
       // std::cout << "[ NonFiducialFilter ]: " << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << " entered the ECal." << std::endl; 
       // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
       if (abortFiducialEvents_){
@@ -52,11 +52,13 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       G4RunManager::GetRunManager()->AbortEvent();
       } else {
       getEventInfo()->setFiducial(true); 
-      if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
-        const char* volume_char = volume.data();
-        std::string volume_name(1,*volume_char);
-        getEventInfo()->setFiducialVolume(volume);
+      if (volume.contains("W") || volume.contains("PCB") || volume.contains("Al") || volume.contains("Readout") || volume.contains("CFMix") && volume.contains("volume")) {
+        if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
+          const char* volume_char = volume.data();
+          std::string volume_name(1,*volume_char);
+          getEventInfo()->setFiducialVolume(volume);
         }
+      }
       }
       return;
     }
