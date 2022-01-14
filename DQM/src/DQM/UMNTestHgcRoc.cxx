@@ -2,13 +2,14 @@
 #include "DetDescr/HcalElectronicsID.h"
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Conditions/SimpleTableCondition.h"
 
-namespace dqm {
-namespace umn {
+namespace dqm::umn {
 
 class TestHgcRoc : public framework::Analyzer {
-  std::string input_name_, input_pass_;
-  int fpga_, link_, channel_, index_, adc_;
+  std::string input_name_, input_pass_, pedestal_table_;
+  int raw_id_, fpga_, link_, channel_, index_;
+  std::vector<int> adc_, raw_adc_;
   TTree* flat_tree_;
 
  public:
@@ -19,6 +20,7 @@ class TestHgcRoc : public framework::Analyzer {
   void configure(framework::config::Parameters& ps) final override {
     input_name_ = ps.getParameter<std::string>("input_name");
     input_pass_ = ps.getParameter<std::string>("input_pass");
+    pedestal_table_ = ps.getParameter<std::string>("pedestal_table");
   }
 
   void onProcessStart() final override {
@@ -27,32 +29,45 @@ class TestHgcRoc : public framework::Analyzer {
     flat_tree_ = new TTree("adc", "adc");
 
     flat_tree_->Branch("fpga", &fpga_);
+    flat_tree_->Branch("raw_id", &raw_id_);
     flat_tree_->Branch("link", &link_);
     flat_tree_->Branch("channel", &channel_);
     flat_tree_->Branch("index", &index_);
     flat_tree_->Branch("adc", &adc_);
+    flat_tree_->Branch("raw_adc", &raw_adc_);
   }
 
-  void analyze(const framework::Event& event) final override {
-    auto const& digis{
-        event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
-    for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
-      auto d{digis.getDigi(i_digi)};
-      ldmx::HcalElectronicsID eid(d.id());
-
-      // undo hardcoded shifts in hcal raw decoder
-      fpga_ = eid.fiber() + 5;
-      link_ = eid.elink(); // leave shifted to align with link number
-      channel_ = eid.channel() + 1;
-      index_ = eid.index();
-      adc_ = d.soi().adc_t();
-
-      flat_tree_->Fill();
-    }
-  }
+  void analyze(const framework::Event& event) final override;
 };
 
-}  // namespace umn
-}  // namespace dqm
+void TestHgcRoc::analyze(const framework::Event& event) {
+  // get the reconstruction parameters 
+  auto pedestal_table{getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
+
+  auto const& digis{
+      event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
+  for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
+    auto d{digis.getDigi(i_digi)};
+    ldmx::HcalElectronicsID eid(d.id());
+    // undo hardcoded shifts in hcal raw decoder
+    fpga_ = eid.fiber() + 5;
+    link_ = eid.elink(); // leave shifted to align with link number
+    channel_ = eid.channel() + 1;
+    index_ = eid.index();
+    raw_id_ = static_cast<int>(d.id());
+
+    adc_.clear();
+    raw_adc_.clear();
+    for (std::size_t i_sample{0}; i_sample < digis.getNumSamplesPerDigi(); i_sample++) {
+      int adc_t = d.at(i_sample).adc_t();
+      raw_adc_.push_back(adc_t);
+      adc_.push_back(adc_t - pedestal_table.get(d.id(), 0));
+    }
+
+    flat_tree_->Fill();
+  }
+}
+
+}  // namespace dqm::umn
 
 DECLARE_ANALYZER_NS(dqm::umn, TestHgcRoc);
