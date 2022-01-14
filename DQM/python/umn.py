@@ -13,5 +13,5 @@ class TestHgcRoc(ldmxcfg.Analyzer) :
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
-        t.validForAllRows([50])
+        t.validForever(f'file://{pedestal_table}')
 
