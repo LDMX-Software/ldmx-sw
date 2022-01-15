@@ -28,14 +28,29 @@ class HcalReadoutGeometry() :
 
     def __str__(self) :
         """Stringify this configuration class"""
-
-        s = 'HcalReadoutGeometry { Scintillator thickness: %.1f mm, width: %.1f mm, and half total width (back Hcal): %.1f mm  \n' % ( 
-                self.ThicknessScint , self.WidthScint , self.HalfTotalWidthBack )
-        s += 'Z positions of zero-th layer %s mm, Z positions of zero-th strip %s mm \n'%(','.join(str(x) for x in self.ZeroLayer),','.join(str(x) for x in self.ZeroStrip))
-        s += 'layer thickness %s mm \n'%(','.join(str(x) for x in self.LayerThickness))
-        s += 'ecal dx %.1f dy %.1f mm \n'%(self.EcalDx, self.EcalDy)
-        s += 'nlayers %s, nstrips %s }'%(' '.join(str(x) for x in self.NumLayers), ' '.join(str(x) for x in self.NumStrips))
+        s = '''
+        HcalReadoutGeometry {{
+            Scintillator thickness: {:.1f} [mm], width: {:.1f} [mm],
+            Number of sections: {{{}}},
+            Layers: {{
+                Number of layers: {}
+                Layer thickness: {} [mm]
+                Z-position of zero-th layer: {} [mm]
+                Half total width of layers: {} [mm]
+                Number of strips per layer: {}
+                Location of zero-th strip per layer: {} [mm]
+            }},
+            Ecal DX, DY: {}, {} [mm],
+            Valid detector regexps: {}
+        }}
+        '''.format(self.ThicknessScint, self.WidthScint,
+                self.NumSections,
+                self.NumLayers, self.LayerThickness, self.ZeroLayer,
+                self.HalfTotalWidth,self.NumStrips, self.ZeroStrip,
+                self.EcalDx, self.EcalDy,
+                self.detectors_valid)
         return s
+
 
 class HcalGeometry() :
     """Container for the various geometries
