@@ -19,3 +19,5 @@ setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
 
 # Setup the test
 setup_test(dependencies DetDescr::DetDescr)
+
+find_package(PythonInterp 3 REQUIRED)
