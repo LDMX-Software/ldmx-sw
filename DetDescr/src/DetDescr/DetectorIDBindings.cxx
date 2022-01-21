@@ -1,11 +1,5 @@
+#include "DetDescr/DetectorIDBindings.h"
 
-#include <boost/python.hpp>
-
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalAbstractID.h"
-#include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalElectronicsID.h"
-#include "DetDescr/HcalID.h"
 BOOST_PYTHON_MODULE(libDetDescr) {
   using namespace boost::python;
   using namespace ldmx;
