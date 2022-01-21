@@ -28,11 +28,3 @@ void HcalID::createInterpreters() {
 }
 
 }  // namespace ldmx
-
-#include <boost/python.hpp>
-
-char const* greet() { return "Hello, world!\n"; }
-BOOST_PYTHON_MODULE(libDetDescr) {
-  using namespace boost::python;
-  def("greet", greet);
-}
