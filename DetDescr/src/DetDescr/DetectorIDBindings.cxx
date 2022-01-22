@@ -5,21 +5,31 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   using namespace boost::python;
   using namespace ldmx;
   using RawValue = DetectorID::RawValue;
+  docstring_options(true);
   class_<DetectorID>("DetectorID", init<>());
   class_<HcalAbstractID>("HcalAbstractID", init<>());
   class_<EcalAbstractID>("EcalAbstractID", init<>());
-  class_<EcalID>("EcalID", init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int>())
-      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
+  class_<EcalID>("EcalID", init<>("Empty ECAL id (but not null!)"))
+      .def(init<RawValue>(args("rawid"), "Create from raw number"))
+      .def(init<unsigned int, unsigned int, unsigned int>(
+          args("layer", "module", "cell"), "Create from pieces"))
+      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
+          args("layer", "module", "u", "v"),
+          "Create from pieces including u/v cell"))
       .def(init<unsigned int, unsigned int,
-                std::pair<unsigned int, unsigned int>>())
-      .def("module", &EcalID::module)
-      .def("layer", &EcalID::layer)
-      .def("cell", &EcalID::cell)
+                std::pair<unsigned int, unsigned int>>(
+          args("layer", "module", "uv"),
+          "Create from pieces including u/v cell"))
+      .def("module", &EcalID::module,
+           "Get the value of the module field from the ID.")
+      .def("layer", &EcalID::layer,
+           "Get the value of the layer field from the ID.")
+      .def("cell", &EcalID::cell,
+           "Get the value of the cell field from the ID.")
       //  Requires defining a translator for pair
-      // .def("getCellUV", &EcalID::getCellUV)
-      .def("raw", &EcalID::raw);
+      // .def("getCellUV", &EcalID::getCellUV, "Get the cell u,v index assuming
+      // a CMS-standard 432-cell sensor" )
+      .def("raw", &EcalID::raw, "The raw value");
   class_<EcalElectronicsID>("EcalElectronicsID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
