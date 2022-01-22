@@ -18,6 +18,14 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("cell", &EcalID::cell)
       .def("getCellUV", &EcalID::getCellUV)
       .def("raw", &EcalID::raw);
+  class_<EcalElectronicsID>("EcalElectronicsID", init<>())
+      .def(init<RawValue>())
+      .def(init<unsigned int, unsigned int, unsigned int>())
+      .def("fiber", &EcalElectronicsID::fiber)
+      .def("elink", &EcalElectronicsID::elink)
+      .def("channel", &EcalElectronicsID::channel)
+      .def("index", &EcalElectronicsID::index)
+      .def("raw", &EcalElectronicsID::raw);
   class_<HcalID>("HcalID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
