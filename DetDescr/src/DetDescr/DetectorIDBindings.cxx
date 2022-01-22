@@ -221,6 +221,11 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                     "module number for tracker IDs")
       .def(init<RawValue>("Create from a raw id, but check", args("rawid")))
       .def(init<SubdetectorIDType, unsigned int, unsigned int>(
-          "Create from pieces", args("system", "layer", "module")));
+          "Create from pieces", args("system", "layer", "module")))
+      .def("module", &TrackerID::module,
+           "Get the value of the module field from the ID")
+      .def("layer", &TrackerID::layer,
+           "Get the value of the layer field from the ID")
+      .def("raw", &TrackerID::raw, "The raw value");
 }
 #endif
