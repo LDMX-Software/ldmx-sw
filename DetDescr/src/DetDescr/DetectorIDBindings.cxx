@@ -184,6 +184,7 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("raw", &HcalTriggerID::raw, "The raw value");
   class_<SimSpecialID>("SimSpecialID",
                        "Implements detector ids for special simulation-derived "
-                       "hits like scoring planes");
+                       "hits like scoring planes",
+                       init<>("Empty id (but not null!)"));
 }
 #endif
