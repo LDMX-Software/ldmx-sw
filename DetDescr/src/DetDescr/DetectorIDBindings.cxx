@@ -40,7 +40,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("channel", &EcalElectronicsID::channel)
       .def("index", &EcalElectronicsID::index)
       .def("idFromIndex", &EcalElectronicsID::idFromIndex)
-      .def("raw", &EcalElectronicsID::raw);
+      .def("raw", &EcalElectronicsID::raw)
+      .staticmethod("idFromIndex");
   class_<EcalTriggerID>("EcalTriggerID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
@@ -65,7 +66,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("channel", &HcalElectronicsID::channel)
       .def("index", &HcalElectronicsID::index)
       .def("idFromIndex", &HcalElectronicsID::idFromIndex)
-      .def("raw", &HcalElectronicsID::raw);
+      .def("raw", &HcalElectronicsID::raw)
+      .staticmethod("idFromIndex");
   class_<HcalDigiID>("HcalDigiID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
