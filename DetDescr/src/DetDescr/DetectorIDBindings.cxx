@@ -168,14 +168,18 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def(init<RawValue>("Create from raw number", args("rawid")))
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
           "Create from pieces", args("section", "layer", "superstrip", "end")))
-      .def("section", &HcalTriggerID::section)
-      .def("layer", &HcalTriggerID::layer)
-      .def("superstrip", &HcalTriggerID::superstrip)
-      .def("end", &HcalTriggerID::end)
-      .def("raw", &HcalTriggerID::raw);
+      .def("section", &HcalTriggerID::section,
+           "Get the value of the 'section' field from the ID.")
+      .def("layer", &HcalTriggerID::layer,
+           "Get the value of the 'layer' field from the ID.")
+      .def("superstrip", &HcalTriggerID::superstrip,
+           "Get the value of the 'superstrip' field from the ID.")
+      .def("end", &HcalTriggerID::end,
+           "Get the value of the 'end' field from the ID.")
       .def("isNegativeEnd", &HcalTriggerID::isNegativeEnd,
            "Get whether the 'end' field from the ID is negative.")
       .def("isComposite", &HcalTriggerID::isComposite,
            "Get whether the ID is the composite of two bar ends.")
+      .def("raw", &HcalTriggerID::raw, "The raw value");
 }
 #endif
