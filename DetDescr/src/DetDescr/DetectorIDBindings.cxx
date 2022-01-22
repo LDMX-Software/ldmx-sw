@@ -94,13 +94,16 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                         "Extension of DetectorID providing access to ECal "
                         "trigger cell information",
                         init<>("Empty EcALTrigger id (but not null!)"))
-      .def("module", &EcalTriggerID::module)
-      .def("layer", &EcalTriggerID::layer)
-      .def("triggercell", &EcalTriggerID::triggercell)
-      .def("raw", &EcalTriggerID::raw);
       .def(init<RawValue>("Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
           args("layer", "module", "cell"), "Create from pieces"))
+      .def("module", &EcalTriggerID::module,
+           "Get the value of the module field from the ID.")
+      .def("layer", &EcalTriggerID::layer,
+           "Get the value of the layer field from the ID.")
+      .def("triggercell", &EcalTriggerID::triggercell,
+           "Get the value of the trigger cell field from the ID.")
+      .def("raw", &EcalTriggerID::raw, "The raw value");
   //  Currently not actually defined
   // .def("getCellUV", &EcalTriggerID::getCellUV);
   class_<HcalID>("HcalID", init<>())
