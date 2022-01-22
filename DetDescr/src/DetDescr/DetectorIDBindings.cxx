@@ -164,7 +164,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("raw", &HcalElectronicsID::raw, "The raw value");
   class_<HcalTriggerID>(
       "HcalTriggerID",
-      "Extension of DetectorID providing access to HCal trigger cell", init<>())
+      "Extension of DetectorID providing access to HCal trigger cell",
+      init<>("Empty HCAL trigger id (but not null!)"))
       .def(init<RawValue>("Create from raw number", args("rawid")))
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
           "Create from pieces", args("section", "layer", "superstrip", "end")))
