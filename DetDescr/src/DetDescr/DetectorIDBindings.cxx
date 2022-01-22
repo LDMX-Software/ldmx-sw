@@ -13,6 +13,10 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   // One constructor can be called within the class_<>() function call. To have
   // multiple constructors, you use init<> together with .def() to append
   // others.
+  //
+  // If you want to add a docstring to the class as a whole, pass it as the
+  // second parameter (*note:* not last if you want a constructor) to the
+  // class_<>() function call
 
   // def(...) defines functions and .def() defines member functions.
   //
