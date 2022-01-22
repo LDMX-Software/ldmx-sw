@@ -80,13 +80,13 @@ class HcalElectronicsID : public DetectorID {
    */
   int fiber() const { return Index(id_&INDEX_MASK).field2(); }
   /**
-   * Get the value of the fiber from the ID.
-   * @return The value of the fiber field.
+   * Get the value of the elink from the ID.
+   * @return The value of the elink field.
    */
   int elink() const { return Index(id_&INDEX_MASK).field1(); }
   /**
-   * Get the value of the fiber from the ID.
-   * @return The value of the fiber field.
+   * Get the value of the channel from the ID.
+   * @return The value of the channel field.
    */
   int channel() const { return Index(id_&INDEX_MASK).field0(); }
 
