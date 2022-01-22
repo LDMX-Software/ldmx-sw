@@ -94,7 +94,7 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                         "Extension of DetectorID providing access to ECal "
                         "trigger cell information",
                         init<>("Empty EcALTrigger id (but not null!)"))
-      .def(init<RawValue>("Create from raw number"))
+      .def(init<RawValue>(args("rawid"), "Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
           args("layer", "module", "cell"), "Create from pieces"))
       .def("module", &EcalTriggerID::module,
