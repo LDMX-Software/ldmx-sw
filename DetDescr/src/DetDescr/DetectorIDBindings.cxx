@@ -227,5 +227,12 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("layer", &TrackerID::layer,
            "Get the value of the layer field from the ID")
       .def("raw", &TrackerID::raw, "The raw value");
+  class_<TrigScintID>(
+      "TrigScintID",
+      "Class that defines the detector ID of the trigger scintillator.",
+      init<>("Default constructor"))
+      .def(init<RawValue>("Constructor with raw id", args("rawid")))
+      .def(init<unsigned int, unsigned int>("Create from pieces",
+                                            args("module", "bar")));
 }
 #endif
