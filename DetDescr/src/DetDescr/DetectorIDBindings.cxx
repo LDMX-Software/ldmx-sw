@@ -108,8 +108,9 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   // .def("getCellUV", &EcalTriggerID::getCellUV);
   class_<HcalID>("HcalID", "Implements detector ids for Hcal subdetector",
                  init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int>())
+      .def(init<RawValue>("Empty HCAL id (but not null!)"))
+      .def(init<unsigned int, unsigned int, unsigned int>(
+          "Create from pieces", args("section, layer, strip")))
       .def("section", &HcalID::section)
       .def("layer", &HcalID::layer)
       .def("strip", &HcalID::strip)
