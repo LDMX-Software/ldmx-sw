@@ -17,24 +17,44 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   // If you want to add a docstring to the class as a whole, pass it as the
   // second parameter (*note:* not last if you want a constructor) to the
   // class_<>() function call
-
+  //
   // def(...) defines functions and .def() defines member functions.
   //
   // To add names names to parameters, add an args() call as a parameter
   //
   // To add a docstring, pass a string literal as the last parameter to the
   // def/.def function call
-
+  //
   // args(...) give names to parameters. This both adds the names to the
   // generated documentation and allows using python's named parameters
   //
   // .staticmethod("name") is required for any static member functions. Note
   // that things will compile without it but the function won't be callable from
   // python
+  //
+  // Enums need each value to be specified with the .value() function. Any enum
+  // values specified before export_values() will be accessible directly from
+  // the module while others will need fully qualified names (module.enum.value)
 
   using namespace boost::python;
   using namespace ldmx;
   using RawValue = DetectorID::RawValue;
+
+  enum_<SubdetectorIDType>("SubdetectorID")
+      .value("SD_NULL", SubdetectorIDType::SD_NULL)
+      .value("SD_TRACKER_TAGGER", SubdetectorIDType::SD_TRACKER_TAGGER)
+      .value("SD_TRIGGER_SCINT", SubdetectorIDType::SD_TRIGGER_SCINT)
+      .value("SD_ACTVE_TARGET", SubdetectorIDType::SD_ACTVE_TARGET)
+      .value("SD_TRACKER_RECOIL", SubdetectorIDType::SD_TRACKER_RECOIL)
+      .value("SD_ECAL", SubdetectorIDType::SD_ECAL)
+      .value("SD_HCAL", SubdetectorIDType::SD_HCAL)
+      .value("SD_SIM_SPECIAL", SubdetectorIDType::SD_SIM_SPECIAL)
+      .value("EID_TRACKER", SubdetectorIDType::EID_TRACKER)
+      .value("EID_TRIGGER_SCINT", SubdetectorIDType::EID_TRIGGER_SCINT)
+      .value("EID_HCAL", SubdetectorIDType::EID_HCAL)
+      .value("EID_HCAL", SubdetectorIDType::EID_HCAL)
+      .export_values();
+
   class_<DetectorID>("DetectorID", init<>());
   class_<HcalAbstractID>("HcalAbstractID", init<>());
   class_<EcalAbstractID>("EcalAbstractID", init<>());
