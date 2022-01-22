@@ -144,7 +144,10 @@ BOOST_PYTHON_MODULE(libDetDescr) {
            "Create an electronics ID from an index")
       .def("raw", &HcalElectronicsID::raw, "The raw value")
       .staticmethod("idFromIndex");
-  class_<HcalDigiID>("HcalDigiID", init<>())
+  class_<HcalDigiID>("HcalDigiID",
+                     "Extension of HcalAbstractID providing access to HCal "
+                     "digi information",
+                     init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
       .def("section", &HcalDigiID::section)
