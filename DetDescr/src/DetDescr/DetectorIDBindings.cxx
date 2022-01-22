@@ -129,15 +129,17 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       "For transient use only i.e. we use this ID to help translate the "
       "digitized data coming off the detector into spatially-important "
       "HcalDigiIDs.",
-      init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int>())
+      init<>("Empty HCAL id (but not null!)"))
+      .def(init<RawValue>("Create from raw number", args("rawid")))
+      .def(init<unsigned int, unsigned int, unsigned int>(
+          "Create from pieces", args("fiber", "elink", "channel")))
       .def("fiber", &HcalElectronicsID::fiber)
       .def("elink", &HcalElectronicsID::elink)
       .def("channel", &HcalElectronicsID::channel)
       .def("index", &HcalElectronicsID::index)
-      .def("idFromIndex", &HcalElectronicsID::idFromIndex)
       .def("raw", &HcalElectronicsID::raw)
+      .def("idFromIndex", &HcalElectronicsID::idFromIndex, args("index"),
+           "Create an electronics ID from an index")
       .staticmethod("idFromIndex");
   class_<HcalDigiID>("HcalDigiID", init<>())
       .def(init<RawValue>())
