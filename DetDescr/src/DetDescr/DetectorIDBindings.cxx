@@ -86,7 +86,9 @@ BOOST_PYTHON_MODULE(libDetDescr) {
            "Construct an electronics id from an index")
       .def("raw", &EcalElectronicsID::raw, "The raw value")
       .staticmethod("idFromIndex");
-  class_<EcalTriggerID>("EcalTriggerID", init<>())
+  class_<EcalTriggerID>("EcalTriggerID", init<>(),
+                        "Extension of DetectorID providing access to ECal "
+                        "trigger cell information")
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
       .def("module", &EcalTriggerID::module)
