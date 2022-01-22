@@ -111,10 +111,13 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def(init<RawValue>("Empty HCAL id (but not null!)"))
       .def(init<unsigned int, unsigned int, unsigned int>(
           "Create from pieces", args("section, layer, strip")))
-      .def("section", &HcalID::section)
-      .def("layer", &HcalID::layer)
-      .def("strip", &HcalID::strip)
-      .def("raw", &HcalID::raw);
+      .def("section", &HcalID::section,
+           "Get the value of the 'section' field from the ID.")
+      .def("layer", &HcalID::layer,
+           "Get the value of the layer field from the ID.")
+      .def("strip", &HcalID::strip,
+           "Get the value of the 'strip' (bar) field from the ID.")
+      .def("raw", &HcalID::raw, "The raw value");
   class_<HcalElectronicsID>("HcalElectronicsID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
