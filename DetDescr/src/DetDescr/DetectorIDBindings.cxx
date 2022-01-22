@@ -26,6 +26,15 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("channel", &EcalElectronicsID::channel)
       .def("index", &EcalElectronicsID::index)
       .def("raw", &EcalElectronicsID::raw);
+  class_<EcalTriggerID>("EcalTriggerID", init<>())
+      .def(init<RawValue>())
+      .def(init<unsigned int, unsigned int, unsigned int>())
+      .def("module", &EcalTriggerID::module)
+      .def("layer", &EcalTriggerID::layer)
+      .def("triggercell", &EcalTriggerID::triggercell)
+      .def("raw", &EcalTriggerID::raw);
+  //  Currently not actually defined
+  // .def("getCellUV", &EcalTriggerID::getCellUV);
   class_<HcalID>("HcalID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
