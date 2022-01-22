@@ -2,6 +2,32 @@
 #if DETECTORID_BINDINGS_ENABLED
 
 BOOST_PYTHON_MODULE(libDetDescr) {
+  // init<Ts...>(...) defines constructors.
+  //
+  // To add names to parameters, add an args() call as a parameter to
+  // the init function call.
+  //
+  // To add a docstring to a constructor, pass it as the last parameter to the
+  // init function call (as a string literal)
+  //
+  // One constructor can be called within the class_<>() function call. To have
+  // multiple constructors, you use init<> together with .def() to append
+  // others.
+
+  // def(...) defines functions and .def() defines member functions.
+  //
+  // To add names names to parameters, add an args() call as a parameter
+  //
+  // To add a docstring, pass a string literal as the last parameter to the
+  // def/.def function call
+
+  // args(...) give names to parameters. This both adds the names to the
+  // generated documentation and allows using python's named parameters
+  //
+  // .staticmethod("name") is required for any static member functions. Note
+  // that things will compile without it but the function won't be callable from
+  // python
+
   using namespace boost::python;
   using namespace ldmx;
   using RawValue = DetectorID::RawValue;
