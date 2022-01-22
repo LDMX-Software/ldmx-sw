@@ -181,5 +181,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("isComposite", &HcalTriggerID::isComposite,
            "Get whether the ID is the composite of two bar ends.")
       .def("raw", &HcalTriggerID::raw, "The raw value");
+  class_<SimSpecialID>("SimSpecialID",
+                       "Implements detector ids for special simulation-derived "
+                       "hits like scoring planes");
 }
 #endif
