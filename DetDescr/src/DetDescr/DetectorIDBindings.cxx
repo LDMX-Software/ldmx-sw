@@ -118,7 +118,18 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("strip", &HcalID::strip,
            "Get the value of the 'strip' (bar) field from the ID.")
       .def("raw", &HcalID::raw, "The raw value");
-  class_<HcalElectronicsID>("HcalElectronicsID", init<>())
+  class_<HcalElectronicsID>(
+      "HcalElectronicsID",
+
+      "Identifies a location in the Hcal readout chain\n"
+      "-- fiber : optical fiber number (backend number), range assumed "
+      "O(0-96)\n"
+      "-- elink : electronic link number, range assumed O(0-47)\n"
+      "-- channel : channel-on-elink, range O(0-37)\n\n"
+      "For transient use only i.e. we use this ID to help translate the "
+      "digitized data coming off the detector into spatially-important "
+      "HcalDigiIDs.",
+      init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
       .def("fiber", &HcalElectronicsID::fiber)
