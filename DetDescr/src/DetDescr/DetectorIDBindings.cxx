@@ -172,8 +172,10 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("layer", &HcalTriggerID::layer)
       .def("superstrip", &HcalTriggerID::superstrip)
       .def("end", &HcalTriggerID::end)
-      .def("isNegativeEnd", &HcalTriggerID::isNegativeEnd)
-      .def("isComposite", &HcalTriggerID::isComposite)
       .def("raw", &HcalTriggerID::raw);
+      .def("isNegativeEnd", &HcalTriggerID::isNegativeEnd,
+           "Get whether the 'end' field from the ID is negative.")
+      .def("isComposite", &HcalTriggerID::isComposite,
+           "Get whether the ID is the composite of two bar ends.")
 }
 #endif
