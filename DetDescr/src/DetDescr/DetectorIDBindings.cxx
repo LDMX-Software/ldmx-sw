@@ -8,7 +8,10 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   class_<DetectorID>("DetectorID", init<>());
   class_<HcalAbstractID>("HcalAbstractID", init<>());
   class_<EcalAbstractID>("EcalAbstractID", init<>());
-  class_<EcalID>("EcalID", init<>("Empty ECAL id (but not null!)"))
+  class_<EcalID>("EcalID",
+                 "Extension of DetectorID providing access to ECal layers and "
+                 "cell numbers in a hex grid",
+                 init<>("Empty ECAL id (but not null!)"))
       .def(init<RawValue>(args("rawid"), "Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
           args("layer", "module", "cell"), "Create from pieces"))
