@@ -148,8 +148,9 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                      "Extension of HcalAbstractID providing access to HCal "
                      "digi information",
                      init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
+      .def(init<RawValue>("Create from raw number", args("rawid")))
+      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
+          "Create from pieces", args("section", "layer", "strip", "end")))
       .def("section", &HcalDigiID::section)
       .def("layer", &HcalDigiID::layer)
       .def("strip", &HcalDigiID::strip)
