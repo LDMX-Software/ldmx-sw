@@ -1,4 +1,5 @@
 #include "DetDescr/DetectorIDBindings.h"
+#if DETECTORID_BINDINGS_ENABLED
 
 BOOST_PYTHON_MODULE(libDetDescr) {
   using namespace boost::python;
@@ -72,3 +73,4 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("isComposite", &HcalTriggerID::isComposite)
       .def("raw", &HcalTriggerID::raw);
 }
+#endif
