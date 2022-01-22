@@ -189,6 +189,12 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def(init<RawValue>("Create from raw number", args("rawid")))
       .def("ScoringPlaneID", &SimSpecialID::ScoringPlaneID,
            "Create a scoring id from pieces", args("plane"))
-      .staticmethod("ScoringPlaneID");
+      .staticmethod("ScoringPlaneID")
+      .def("plane", &SimSpecialID::plane,
+           "Get the value of the plane field from the ID, if it is a scoring "
+           "plane. Otherwise, return -1")
+      .def("subtypePayload", &SimSpecialID::subtypePayload,
+           "Get the raw payload contents")
+      .def("raw", &SimSpecialID::raw, "The raw value");
 }
 #endif
