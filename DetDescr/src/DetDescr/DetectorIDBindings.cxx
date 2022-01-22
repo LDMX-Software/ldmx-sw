@@ -58,15 +58,33 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       // .def("getCellUV", &EcalID::getCellUV, "Get the cell u,v index assuming
       // a CMS-standard 432-cell sensor" )
       .def("raw", &EcalID::raw, "The raw value");
-  class_<EcalElectronicsID>("EcalElectronicsID", init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int>())
-      .def("fiber", &EcalElectronicsID::fiber)
-      .def("elink", &EcalElectronicsID::elink)
-      .def("channel", &EcalElectronicsID::channel)
-      .def("index", &EcalElectronicsID::index)
-      .def("idFromIndex", &EcalElectronicsID::idFromIndex)
-      .def("raw", &EcalElectronicsID::raw)
+  class_<EcalElectronicsID>(
+      "EcalElectronicsID",
+      "Identifies a location in the Ecal readout chain\n"
+      "-- fiber : optical fiber number (backend number), range "
+      "assumed O(0-96)\n"
+      "-- elink : electronic link number, range assumed O(0-47)\n"
+      "-- channel : channel-on-elink, range O(0-37)\n"
+      "For transient use only i.e. we use this ID to\n"
+      "help translate the digitized data coming off the detector\n"
+      "into spatially-important EcalIDs.",
+      init<>("Empty EcalElectronics id (but not null!)"))
+      .def(init<RawValue>(
+          "Create from raw number\n\n Importantly, this is NOT the PackedIndex "
+          "value, it is the entire raw value including the subsystem ID.",
+          args("rawid")))
+      .def(init<unsigned int, unsigned int, unsigned int>(
+          args("fiber", "elink", "channel"), "Create from pieces"))
+      .def("fiber", &EcalElectronicsID::fiber,
+           "Get the value of the fiber from the ID.")
+      .def("elink", &EcalElectronicsID::elink,
+           "Get the value of the elink from the ID.")
+      .def("channel", &EcalElectronicsID::channel,
+           "Get the value of the channel from the ID.")
+      .def("index", &EcalElectronicsID::index, "Get the compact index value")
+      .def("idFromIndex", &EcalElectronicsID::idFromIndex, args("index"),
+           "Construct an electronics id from an index")
+      .def("raw", &EcalElectronicsID::raw, "The raw value")
       .staticmethod("idFromIndex");
   class_<EcalTriggerID>("EcalTriggerID", init<>())
       .def(init<RawValue>())
