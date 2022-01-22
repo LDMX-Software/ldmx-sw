@@ -133,13 +133,16 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def(init<RawValue>("Create from raw number", args("rawid")))
       .def(init<unsigned int, unsigned int, unsigned int>(
           "Create from pieces", args("fiber", "elink", "channel")))
-      .def("fiber", &HcalElectronicsID::fiber)
-      .def("elink", &HcalElectronicsID::elink)
-      .def("channel", &HcalElectronicsID::channel)
-      .def("index", &HcalElectronicsID::index)
-      .def("raw", &HcalElectronicsID::raw)
+      .def("fiber", &HcalElectronicsID::fiber,
+           "Get the value of the fiber from the ID.")
+      .def("elink", &HcalElectronicsID::elink,
+           "Get the value of the elink from the ID.")
+      .def("channel", &HcalElectronicsID::channel,
+           "Get the value of the channel from the ID.")
+      .def("index", &HcalElectronicsID::index, "Get the compact index value")
       .def("idFromIndex", &HcalElectronicsID::idFromIndex, args("index"),
            "Create an electronics ID from an index")
+      .def("raw", &HcalElectronicsID::raw, "The raw value")
       .staticmethod("idFromIndex");
   class_<HcalDigiID>("HcalDigiID", init<>())
       .def(init<RawValue>())
