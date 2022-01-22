@@ -7,6 +7,17 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   class_<DetectorID>("DetectorID", init<>());
   class_<HcalAbstractID>("HcalAbstractID", init<>());
   class_<EcalAbstractID>("EcalAbstractID", init<>());
+  class_<EcalID>("EcalID", init<>())
+      .def(init<RawValue>())
+      .def(init<unsigned int, unsigned int, unsigned int>())
+      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
+      .def(init<unsigned int, unsigned int,
+                std::pair<unsigned int, unsigned int>>())
+      .def("module", &EcalID::module)
+      .def("layer", &EcalID::layer)
+      .def("cell", &EcalID::cell)
+      .def("getCellUV", &EcalID::getCellUV)
+      .def("raw", &EcalID::raw);
   class_<HcalID>("HcalID", init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
