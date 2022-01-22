@@ -39,6 +39,7 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("elink", &EcalElectronicsID::elink)
       .def("channel", &EcalElectronicsID::channel)
       .def("index", &EcalElectronicsID::index)
+      .def("idFromIndex", &EcalElectronicsID::idFromIndex)
       .def("raw", &EcalElectronicsID::raw);
   class_<EcalTriggerID>("EcalTriggerID", init<>())
       .def(init<RawValue>())
