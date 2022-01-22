@@ -186,6 +186,9 @@ BOOST_PYTHON_MODULE(libDetDescr) {
                        "Implements detector ids for special simulation-derived "
                        "hits like scoring planes",
                        init<>("Empty id (but not null!)"))
-      .def(init<RawValue>("Create from raw number", args("rawid")));
+      .def(init<RawValue>("Create from raw number", args("rawid")))
+      .def("ScoringPlaneID", &SimSpecialID::ScoringPlaneID,
+           "Create a scoring id from pieces", args("plane"))
+      .staticmethod("ScoringPlaneID");
 }
 #endif
