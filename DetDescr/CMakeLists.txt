@@ -11,10 +11,10 @@ project(DetDescr VERSION 2.1.0
 find_package(ROOT 6.16 CONFIG REQUIRED)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
-
 # Setup the test
 setup_test(dependencies DetDescr::DetDescr)
 
+option(BUILD_DETECTORID_BINDINGS "Build the python bindings for the the DetDescr/DetectorID components" OFF)
 find_package(Python COMPONENTS Development)
 
 message("Looking for libboost_python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
