@@ -16,7 +16,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("module", &EcalID::module)
       .def("layer", &EcalID::layer)
       .def("cell", &EcalID::cell)
-      .def("getCellUV", &EcalID::getCellUV)
+      //  Requires defining a translator for pair
+      // .def("getCellUV", &EcalID::getCellUV)
       .def("raw", &EcalID::raw);
   class_<EcalElectronicsID>("EcalElectronicsID", init<>())
       .def(init<RawValue>())
