@@ -106,7 +106,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("raw", &EcalTriggerID::raw, "The raw value");
   //  Currently not actually defined
   // .def("getCellUV", &EcalTriggerID::getCellUV);
-  class_<HcalID>("HcalID", init<>())
+  class_<HcalID>("HcalID", "Implements detector ids for Hcal subdetector",
+                 init<>())
       .def(init<RawValue>())
       .def(init<unsigned int, unsigned int, unsigned int>())
       .def("section", &HcalID::section)
