@@ -16,5 +16,6 @@
 #include "DetDescr/HcalID.h"
 #include "DetDescr/HcalTriggerID.h"
 #include "DetDescr/SimSpecialID.h"
+#include "DetDescr/TrackerID.h"
 
 #endif /* DETDESCR_DETECTORID_BINDINGS_H_ */

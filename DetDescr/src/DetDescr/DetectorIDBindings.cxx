@@ -196,5 +196,8 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("subtypePayload", &SimSpecialID::subtypePayload,
            "Get the raw payload contents")
       .def("raw", &SimSpecialID::raw, "The raw value");
+  class_<TrackerID>("TrackerID",
+                    "Extension of DetectorID providing access to layer and "
+                    "module number for tracker IDs");
 }
 #endif
