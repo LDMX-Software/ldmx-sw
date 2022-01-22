@@ -32,4 +32,14 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("end", &HcalDigiID::end)
       .def("isNegativeEnd", &HcalDigiID::isNegativeEnd)
       .def("raw", &HcalElectronicsID::raw);
+  class_<HcalTriggerID>("HcalTriggerID", init<>())
+      .def(init<RawValue>())
+      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
+      .def("section", &HcalTriggerID::section)
+      .def("layer", &HcalTriggerID::layer)
+      .def("superstrip", &HcalTriggerID::superstrip)
+      .def("end", &HcalTriggerID::end)
+      .def("isNegativeEnd", &HcalTriggerID::isNegativeEnd)
+      .def("isComposite", &HcalTriggerID::isComposite)
+      .def("raw", &HcalTriggerID::raw);
 }
