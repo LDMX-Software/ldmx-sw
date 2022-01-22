@@ -54,6 +54,7 @@ if(BUILD_DETECTORID_BINDINGS)
                 Framework::Exception Framework::Configure
                 Boost::python
                 Python::Python)
+  target_compile_definitions(DetDescr PRIVATE DETECTORID_BINDINGS_ENABLED)
 else()
   setup_library(module DetDescr
                 dependencies  ROOT::Core ROOT::Hist ROOT::Physics
