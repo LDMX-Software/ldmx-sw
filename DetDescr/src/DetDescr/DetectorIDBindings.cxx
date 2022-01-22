@@ -5,7 +5,6 @@ BOOST_PYTHON_MODULE(libDetDescr) {
   using namespace boost::python;
   using namespace ldmx;
   using RawValue = DetectorID::RawValue;
-  docstring_options(true);
   class_<DetectorID>("DetectorID", init<>());
   class_<HcalAbstractID>("HcalAbstractID", init<>());
   class_<EcalAbstractID>("EcalAbstractID", init<>());
