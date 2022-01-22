@@ -162,9 +162,12 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .def("isNegativeEnd", &HcalDigiID::isNegativeEnd,
            "Get whether the 'end' field from the ID is negative.")
       .def("raw", &HcalElectronicsID::raw, "The raw value");
-  class_<HcalTriggerID>("HcalTriggerID", init<>())
-      .def(init<RawValue>())
-      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>())
+  class_<HcalTriggerID>(
+      "HcalTriggerID",
+      "Extension of DetectorID providing access to HCal trigger cell", init<>())
+      .def(init<RawValue>("Create from raw number", args("rawid")))
+      .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
+          "Create from pieces", args("section", "layer", "superstrip", "end")))
       .def("section", &HcalTriggerID::section)
       .def("layer", &HcalTriggerID::layer)
       .def("superstrip", &HcalTriggerID::superstrip)
