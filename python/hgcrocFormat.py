@@ -8,12 +8,19 @@ class HcalRawDecoder(Producer) :
     Parameters
     """
 
-    def __init__(self, output_name, roc_version = 2, input_name = 'HcalRawData', num_packets_per_event = 1, input_file = '', connections_table = None) :
+    def __init__(self, output_name, roc_version = 2, input_name = None, num_packets_per_event = 1, input_file = None, connections_table = None) :
         super().__init__('hcalrawdecode','hcal::HcalRawDecoder','Hcal')
 
-        self.input_name = input_name
+        if input_name is not None :
+            self.read_from_file = False
+            self.input_name = input_name
+        elif input_file is not None :
+            self.read_from_file = True
+            self.input_name = input_file
+        else :
+            raise Exception("Must read from event bus or input file.")
+            
         self.input_pass = ''
-        self.input_file = input_file
         self.output_name = output_name
         self.roc_version = roc_version
         self.num_packets_per_event = num_packets_per_event
