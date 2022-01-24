@@ -40,24 +40,36 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     return;
   }
 
+  auto vol{track->GetVolume()->GetLogicalVolume()->GetName()};
+  getEventInfo()->addVolume(vol);
+  
+  double Xpos{track->GetPosition().getX()};
+  getEventInfo()->addXpos(Xpos);
+  double Ypos{track->GetPosition().getY()};
+  getEventInfo()->addYpos(Ypos);
+  double Zpos{track->GetPosition().getZ()};
+  getEventInfo()->addZpos(Zpos);
+
+  getEventInfo()->incTotalSteps();    
+    
   // Check if the track is tagged.
-  if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true) {     
+  if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true) { 
+ 
     // Check if the track ever enters the ECal. If it does, kill the track and abort the event.
     if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; 
     (volume.contains("Si") && volume.contains("volume"))) {
       // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
+      
       if (abortFiducialEvents_){
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       } else {
-      getEventInfo()->setFiducial(true); 
-      if (volume.contains("W") || volume.contains("PCB") || volume.contains("Al") || volume.contains("Readout") || volume.contains("CFMix") && volume.contains("volume")) {
-        if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
+      getEventInfo()->setFiducial(true);
+      if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
           const char* volume_char = volume.data();
           std::string volume_name(1,*volume_char);
           getEventInfo()->setFiducialVolume(volume);
         }
-      }
       }
       return;
     }
@@ -67,7 +79,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   // Check if the particle enters the target.
   if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0) {    
     // Check if the particle that entered the target exits to the recoil region.
-    if (auto next_region{track->GetNextVolume()->GetName()}; next_region.compareTo("recoil_PV") == 0) {
+    if (auto next_region{track->GetNextVolume()->GetName()}; next_region.compareTo("recoil") == 0) {
       /* Tag the tracks that: 
       1) Have a recoil electron
       2) Enter/Exit the Target */

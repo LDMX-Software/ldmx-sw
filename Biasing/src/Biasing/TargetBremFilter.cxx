@@ -67,7 +67,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Check if the electron will be exiting the target
   if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0) {
+      volume.compareTo("recoil") == 0) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
