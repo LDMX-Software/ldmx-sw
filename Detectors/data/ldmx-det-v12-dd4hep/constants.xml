@@ -30,6 +30,10 @@
   <!-- Target dimensions -->
   <constant name="target_dim_x" value="4.0*cm"/>
   <constant name="target_dim_y" value="10.0*cm"/>
+  <constant name="target_area_env_x" value="magnet_gap_x - 5" />
+  <constant name="target_area_env_y" value="magnet_gap_y - 5" />
+  <constant name="target_area_env_z" value="2*(target_thickness/2 + 2*clearance + trigger_scint_thickness)" />
+  
   <!-- 
         Magnet gap dimensions 
   -->

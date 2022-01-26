@@ -1,0 +1,15 @@
+<detectors>
+
+  <comment>Target</comment>
+
+  <detector id="active_target_id" name="target" type="target" readout="TrackerHits" vis="DetEnvelopeVis">
+        <dimensions dx="target_area_env_x" dy="target_area_env_y" dz="target_area_env_z" />
+        <position x="0.*mm" y="0.*mm" z="0.*mm" />
+
+        <module id="2">
+            <position x="0.*mm" y="0.*mm" z="0.*mm" />
+            <layer id="1" 
+                type="Box" dx="target_dim_x/2" dy="target_dim_y/2" dz="target_thickness/2" material="Tungsten" >
+        </module>
+    </detector>
+</detectors> 
