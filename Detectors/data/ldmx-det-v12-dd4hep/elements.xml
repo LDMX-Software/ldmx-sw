@@ -60,5 +60,11 @@
     <element Z="18" formula="Ar" name="Ar" >
         <atom type="A" unit="g/mol" value="39.9477" />
     </element>
+    <material formula="W" name="Tungsten" state="solid" >
+        <RL type="X0" unit="cm" value="0.3504" />
+        <NIL type="lambda" unit="cm" value="9.946" />
+        <D type="density" unit="g/cm3" value="19.3" />
+        <composite n="1" ref="W" />
+    </material>
 
 </materials>
