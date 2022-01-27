@@ -3,11 +3,11 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process( "test" )
 p.maxEvents = 10
 p.outputFiles = [ "/tmp/energy_sort.root" ]
+p.run = 9001
 from LDMX.SimCore import simulator as sim
 from LDMX.Ecal import EcalGeometry
 mySim = sim.simulator( "mySim" )
 mySim.setDetector( 'ldmx-det-v12' )
-mySim.runNumber = 9001
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
 mySim.description = 'Basic test Simulation'
