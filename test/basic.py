@@ -6,10 +6,11 @@ import sys
 p.maxEvents = 10
 if len(sys.argv) > 1 :
     p.maxEvents = int(sys.argv[1])
-p.run = 9001
 # we want to see every event
 p.logFrequency = 1
 p.termLogLevel = 0
+# Set a run number
+p.run = 9001
 # we also only have an output file
 p.outputFiles = [ "justSim_" + str(p.maxEvents) + "_events.root" ]
 from LDMX.SimCore import simulator as sim
