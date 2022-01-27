@@ -24,7 +24,9 @@ def inclusive_single_e() :
 
     sim = simulator.simulator( "inclusive_single_e" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.runNumber = 1
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
     sim.description = "One 4GeV electron shot from far upstream."
     sim.generators.append(generators.single_4gev_e_upstream_tagger())
     return sim
@@ -55,7 +57,9 @@ def lheExample( lheFile ) :
 
     sim = simulator.simulator( "lheSimulation" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.runNumber = 1
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
     sim.description = "Example of how to use LHE generator"
     sim.generators.append(generators.lhe( "LHEExample" , lheFile ))
     return sim
@@ -83,7 +87,9 @@ def gpsExample( ) :
 
     sim = simulator.simulator( "gpsExample" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.runNumber = 1
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
     sim.description = "Example of how to use GPS generator"
     gpsGen = generators.gps( "GPSExample" , [
         "/gps/particle e-",
@@ -123,7 +129,9 @@ def multiExample( ) :
 
     sim = ldmxcfg.Producer( "mpgExample" , "simcore::Simulator" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.runNumber = 1
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
     sim.description = "Example of how to use MPG generator"
     mpgGen = generators.multi( "MPGExample" )
     mpgGen.vertex = [ 0., 0., 0. ] #mm
