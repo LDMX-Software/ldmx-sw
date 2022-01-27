@@ -51,7 +51,6 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
