@@ -47,6 +47,9 @@ def electro_nuclear( detector, generator ) :
     # Set run parameters
     sim.description = "Target electron-nuclear, xsec bias 1e8"
     sim.beamSpotSmear = [20., 80., 0.] #mm
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
 
     sim.generators.append(generator)
 
@@ -102,6 +105,9 @@ def photo_nuclear( detector, generator ) :
     # Set run parameters
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.]
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
 
     sim.generators.append(generator)
 
@@ -157,6 +163,9 @@ def gamma_mumu( detector, generator ) :
     # Set run parameters
     sim.description = "gamma -> mu+ mu-, xsec bias 10e9"
     sim.beamSpotSmear = [20., 80., 0.]
+    # Note: This example used to set the runNumber parameter for the simulator.
+    # The run number is managed by the process object directly so setting it for
+    # the simulator no longer does anything
 
     sim.generators.append(generator)
 
