@@ -38,19 +38,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   // Get the PDG ID of the track and make sure it's an electron.
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11) {
     return;
-  }
-
-  auto vol{track->GetVolume()->GetLogicalVolume()->GetName()};
-  getEventInfo()->addVolume(vol);
-  
-  double Xpos{track->GetPosition().getX()};
-  getEventInfo()->addXpos(Xpos);
-  double Ypos{track->GetPosition().getY()};
-  getEventInfo()->addYpos(Ypos);
-  double Zpos{track->GetPosition().getZ()};
-  getEventInfo()->addZpos(Zpos);
-
-  getEventInfo()->incTotalSteps();    
+  }   
     
   // Check if the track is tagged.
   if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true) { 
@@ -58,8 +46,8 @@ void NonFiducialFilter::stepping(const G4Step* step) {
     // Check if the track ever enters the ECal. If it does, kill the track and abort the event.
     if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; 
     (volume.contains("Si") && volume.contains("volume"))) {
-      // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
       
+      // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
       if (abortFiducialEvents_){
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
@@ -84,9 +72,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       1) Have a recoil electron
       2) Enter/Exit the Target */
       auto trackInfo{simcore::UserTrackInformation::get(track)};
-      trackInfo->tagRecoilElectron(); // tag the target recoil electron
-      getEventInfo()->incRecoilElectronCount(); // increment the number of target recoil electrons by 1
-      
+      trackInfo->tagRecoilElectron(); // tag the target recoil electron      
       return;
     }
     return;
