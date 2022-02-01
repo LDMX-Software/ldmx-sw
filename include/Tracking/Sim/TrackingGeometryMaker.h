@@ -104,7 +104,7 @@ using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 
 using PropagatorOptions =
     Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
-  
+
 namespace tracking {
 namespace sim {
 
@@ -196,15 +196,13 @@ class TrackingGeometryMaker : public framework::Producer {
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField);
   
-  
-  
  private:
   /// The detector
   dd4hep::Detector* detector_{nullptr};
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
   Acts::CalibrationContext cctx_;
-  
+
   //If we want to dump the tracking geometry
   int dumpobj_ {0};
 
@@ -257,7 +255,7 @@ class TrackingGeometryMaker : public framework::Producer {
   //This could be a vector
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
-  
+
   //Some histograms
 
   TH1F* histo_p_;
@@ -265,7 +263,14 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* histo_z0_;
   TH1F* histo_phi_;
   TH1F* histo_theta_;
-    
+
+
+  //Tracker mapping.
+  //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer
+  //In this way we can pass multiple surfaces to the same layer to the builder.
+  
+  std::map<std::string, std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig > > tracker_layout;
+  
 }; // TrackingGeometryMaker
     
 

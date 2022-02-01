@@ -15,11 +15,14 @@ namespace utils {
       
 //TODO::Move to shared pointers?!
 //TODO::Pass to instances?
-inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit) {
-        
+//Vol==2 for tagger, Vol==3 for recoil
+
+inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit, unsigned int vol = 2) {
+
+  bool debug = false;
+      
   std::vector<float> sim_hit_pos = hit.getPosition();
-        
-        
+          
   //This is in the transverse plane
   float sigma_rphi = 0.25;  //250um
         
@@ -29,17 +32,41 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
   float ldmxsp_x = sim_hit_pos[2];
   float ldmxsp_y = sim_hit_pos[0];
   float ldmxsp_z = sim_hit_pos[1];
-        
-        
+
+  unsigned int sensorId = 0;
+  unsigned int layerId  = 0;
+  
+  //tagger numbering scheme for surfaces mapping
+  //Layers from 1 to 14  => transform to 0->13
+  if (vol == 2) {
+    sensorId = (hit.getLayerID() + 1) % 2; //0,1,0,1 ...
+    layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7    
+  }
+
+  //recoil numbering scheme for surfaces mapping 
+  if (vol == 3) {
+    sensorId = hit.getModuleID();
+    layerId  = hit.getLayerID();
+  }
+
+  //vol * 1000 + ly * 100 + sensor
+  unsigned int index  = vol * 1000 + layerId * 100 + sensorId;
+
+  if (debug) {
+    std::cout<<"LdmxSpacePointConverter::Check index::"<<vol<<"--"<<layerId<<"--"<<sensorId<<"==>"<<index<<std::endl;
+    std::cout<<vol<<"==="<<hit.getLayerID()<<"==="<<hit.getModuleID()<<std::endl;
+    std::cout<<"("<<ldmxsp_x<<","<<ldmxsp_y<<","<<ldmxsp_z<<")"<<std::endl;
+  }
+
   return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y,ldmxsp_z,
-                                  hit.getTime(), hit.getLayerID(), hit.getEdep(), 
+                                  hit.getTime(), index, hit.getEdep(), 
                                   sigma_rphi*sigma_rphi, sigma_z*sigma_z,
                                   hit.getID());
-        
+  
 }
-}
-}
-}
+}//utils
+}//sim
+}//tracking
       
       
 #endif

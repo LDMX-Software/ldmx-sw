@@ -227,7 +227,6 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(std::function<
   bField.shrink_to_fit();
 
   if (rotateAxes) {
-    std::cout<<"ROTATING BFIELD AXES"<<std::endl;
     return rotateFieldMapXYZ(localToGlobalBin, xPos, yPos, zPos, bField,
                              lengthUnit, BFieldUnit, firstOctant);
   }
