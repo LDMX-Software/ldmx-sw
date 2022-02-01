@@ -28,15 +28,12 @@ class LdmxSpacePoint  {
     m_y = y;
     m_z = z;
     m_t = t;
-    m_r = std::sqrt(m_x*m_x + m_y*m_y);
     m_edep = 0.;
     m_layer = layer;
     m_id = -999;
     m_varianceR = 0.05;
     m_varianceZ = 0.250;
-    setGlobalPosition(m_x,m_y,m_z);
-    setLocalCovariance(m_varianceR,m_varianceZ);
-    setProjector();
+    initialize();
   }
 
   //Global position constructor with user specified covariance
@@ -51,12 +48,9 @@ class LdmxSpacePoint  {
     m_edep = edep;
     m_varianceR = vR;
     m_varianceZ = vZ;
-    m_r = std::sqrt(m_x*m_x + m_y*m_y);
     m_layer = layer;
     m_id = id;
-    setGlobalPosition(m_x,m_y,m_z);
-    setLocalCovariance(m_varianceR, m_varianceZ);
-    setProjector();
+    initialize();
   }
 
   /*
@@ -83,15 +77,12 @@ class LdmxSpacePoint  {
     m_y = gp[1];
     m_z = gp[2];
     m_t = t;
-    m_r = std::sqrt(m_x*m_x + m_y*m_y);
     m_edep = 0.;
     m_layer = layer;
     m_id = id;
     m_varianceR = cv[0];
     m_varianceZ = cv[1];
-    setGlobalPosition(m_x,m_y,m_z);
-    setLocalCovariance(m_varianceR, m_varianceZ);
-    setProjector();
+    initialize();
   }
         
         
@@ -153,6 +144,14 @@ class LdmxSpacePoint  {
   Acts::ActsMatrix<2,6> projector_;
   
  private:
+
+
+  void initialize() {
+    setGlobalPosition(m_x,m_y,m_z);
+    m_r = std::sqrt(m_x*m_x + m_y*m_y);
+    setLocalCovariance(m_varianceR, m_varianceZ);
+    setProjector();
+  };
   
   float m_x;
   float m_y;
@@ -163,6 +162,7 @@ class LdmxSpacePoint  {
   float m_varianceR;
   float m_varianceZ;
   int   m_id;
+  int   m_surfaceId;
   int   m_layer;
 
   

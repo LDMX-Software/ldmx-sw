@@ -28,14 +28,13 @@ TrackingGeometryMaker::TrackingGeometryMaker(const std::string &name,
 TrackingGeometryMaker::~TrackingGeometryMaker() {}
 
 void TrackingGeometryMaker::onProcessStart() {
-  
+
   detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
-  
+
   // Get the world detector element
   dd4hep::DetElement world{detector_->world()};
-  std::cout << "World volume name: " << world.name() << std::endl;
   Acts::CuboidVolumeBuilder cvb;
   std::vector<dd4hep::DetElement> subdetectors;
 
@@ -57,16 +56,10 @@ void TrackingGeometryMaker::onProcessStart() {
     if (debug_)
       std::cout<<"PF::DEBUG:: Translating DD4Hep sub detector: " << subDetector.name()<<std::endl;
     //create the cuboid volume configurations for the builder
-    
     volBuilderConfigs.push_back(volumeBuilder_dd4hep(subDetector,loggingLevel));
   }
   
-  
-  //Create the 
-  
-  
   //Create the builder
-  
   Acts::CuboidVolumeBuilder::Config config;
   config.position = {0., 0., 0.};
   config.length = {2000, 2000, 2000};
@@ -80,13 +73,11 @@ void TrackingGeometryMaker::onProcessStart() {
         return cvb.trackingVolume(cxt, inner, nullptr);
       });
   
-  std::cout<<"Tracking Geometry Builder... done"<<std::endl;
-  
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
-
-  std::cout<<"Retrieving tracking geometry"<<std::endl;
+  
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry = 
       tgb.trackingGeometry(gctx_);
+
   
   //Move this to a function
   
@@ -133,8 +124,10 @@ void TrackingGeometryMaker::onProcessStart() {
     
   };
 
-  std::cout<<"PF::BFIELDMAP"<<std::endl;
-  std::cout<<bfieldMap_<<std::endl;
+  if (debug_) {
+    std::cout<<"PF::BFIELDMAP"<<std::endl;
+    std::cout<<bfieldMap_<<std::endl;
+  }
   
   //CHECK:::Tests/IntegrationTests/PropagationTestsAtlasField.cpp
   InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
@@ -143,22 +136,19 @@ void TrackingGeometryMaker::onProcessStart() {
                                                                    false, //not symmetrical
                                                                    true //rotate the axes to tracking frame
                                                                    );
-  
-  std::cout<<__PRETTY_FUNCTION__<<std::endl;
-  std::cout<<"BField interpolated map loaded.."<<std::endl;
-  
+
   sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(std::move(map));;
-
-  std::cout<<"PF::TESTING THE CONSTANT FIELD"<<std::endl;
-  testField(bField);
   
-  
-  std::cout<<"PF::TESTING THE INTERPOLATED FIELD"<<std::endl;
-  testField(sp_interpolated_bField_);
-
-  
-  
-  
+  if (debug_) {
+    //Testing the constant and interpolated magnetic field (move this in a separate utility class)
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    std::cout<<"BField interpolated map loaded.."<<std::endl;
+    std::cout<<"PF::TESTING THE CONSTANT FIELD"<<std::endl;
+    testField(bField);
+    std::cout<<"PF::TESTING THE INTERPOLATED FIELD"<<std::endl;
+    testField(sp_interpolated_bField_);
+  }
+    
   //Setup the navigator
   Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
@@ -177,12 +167,14 @@ void TrackingGeometryMaker::onProcessStart() {
     
   //Setup the propagator
   if (const_b_field_) {
-    std::cout<<"PF::USING CONSTANT BFIELD"<<std::endl;
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    std::cout<<"Using constant b-field"<<std::endl;
     propagator_ = std::make_shared<Propagator>(stepper_const, navigator);
   }
   else {
     propagator_ = std::make_shared<Propagator>(stepper_interpolated, navigator);
-    std::cout<<"USING INTERPOLATED B FIELD"<<std::endl;
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    std::cout<<"Using interpolated B-Field Map"<<std::endl;
   }
 
     
@@ -225,8 +217,8 @@ void TrackingGeometryMaker::onProcessStart() {
   histo_p_      = new TH1F("p_res",    "p_res",100,-1,1);
   histo_d0_     = new TH1F("d0_res",   "d0_res",100,-1,1);
   histo_z0_     = new TH1F("z0_res",   "z0_res",100,-1,1);
-  histo_phi_    = new TH1F("phi_res",  "phi_res",100,-0.05,0.05);
-  histo_theta_  = new TH1F("theta_res","theta_res",100,-0.02,0.02);
+  histo_phi_    = new TH1F("phi_res",  "phi_res",100,-0.025,0.025);
+  histo_theta_  = new TH1F("theta_res","theta_res",100,-0.005,0.005);
     
 }
 
@@ -409,12 +401,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     double t      = 0.;
     
     
-    // parameters
-    if (debug_) {
-      std::cout<<"CHECK START PARAMETERS"<<std::endl;
-      std::cout<<d0<<" " <<z0<<std::endl;
-    }
-    
     Acts::BoundVector pars;
     d0 = -7.54499;
     z0 = -23.4946;
@@ -423,11 +409,17 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     qop = -0.25;
     t = 0.;
          
-    std::cout<<"CHECKING TRUTH PARAMETERS"<<std::endl;
-    //pars << d0, z0, phi, theta, qop, t;
-    pars = bound_params;
-    std::cout<<pars<<std::endl;
+    pars << d0, z0, phi, theta, qop, t;
+
+    //std::cout<<"CHECKING TRUTH PARAMETERS"<<std::endl;
+    //pars = bound_params;
+
     
+    if (debug_){
+      std::cout<<"CHECK START PARAMETERS"<<std::endl;
+      std::cout<<pars<<std::endl;
+    }
+        
     Acts::Vector3 sPosition(0., 0., 0.);
     Acts::Vector3 sMomentum(0., 0., 0.);
     
@@ -472,7 +464,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //#######################//
   //Kalman Filter algorithm//
   //#######################//
-
+  
   //Step 1 - Form the source links
   
   std::vector<ActsExamples::IndexSourceLink> sourceLinks;
@@ -491,15 +483,19 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     }
   }
   
-  //The mapping between the geometry identifier and the IndexSourceLink that points to the hit
-  std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
-  std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> geoId_sl_mmap_;
+  //The mapping between the geometry identifier
+  //and the IndexSourceLink that points to the hit
+  //std::unordered_map<Acts::GeometryIdentifier,
+  //                   std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
+  std::unordered_multimap<Acts::GeometryIdentifier,
+                          ActsExamples::IndexSourceLink> geoId_sl_mmap_;
   
   //Check the hits associated to the surfaces
   for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
 
     ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
     unsigned int layerid = ldmxsp->layer();
+    
     
     const Acts::Surface* hit_surface = layer_surface_map_[layerid];
     if (hit_surface) {
@@ -525,6 +521,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
         local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.25).value();
       } catch (const std::exception& e) {
         std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
         continue;
       }
       
@@ -535,7 +532,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
-      geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
+      //geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
       geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
             
       
@@ -626,8 +623,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     for (const auto& pair : ckf_result.fittedParameters) {
       //std::cout<<"Number of hits-on-track::" << (int) pair.first << std::endl;
       //if (debug_) {
-      std::cout<<"Fitted parameters"<<std::endl;
-      std::cout<<pair.second<<std::endl;
+      //std::cout<<"Fitted parameters"<<std::endl;
+      //std::cout<<pair.second<<std::endl;
       //}
       
       histo_p_    ->Fill(pair.second.absoluteMomentum() - startParameters.at(0).absoluteMomentum());
@@ -667,8 +664,6 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_gdm
 //A copy is not a good idea. TODO
 Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel) {
   
-  //ACTS_INFO("Processing detector element:  " << subdetector.name());
-  
   // Get the extension, if it exists
   Acts::ActsExtension* subDetExtension = nullptr;
   try {
@@ -679,7 +674,7 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   //Just a place holder in the case we will make compound detectors. 
   if (subdetector.type() == "compound") {}
   // Now create the Layerbuilders and Volumebuilder
-    
+
   // Define the configuration for the cuboid volume builder object 
   Acts::CuboidVolumeBuilder::Config cvbConfig;
     
@@ -696,33 +691,44 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     
   //Get all the sensitive surfaces for the tagger Tracker. 
   //For the moment I'm forcing to grep everything.
+  
+  //resolveSensitive(subdetector,surfaces,true);
+  //if (debug_)
+  //  std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" surfaces size::"<<surfaces.size()<<std::endl;
     
-  resolveSensitive(subdetector,surfaces,true);
-  if (debug_)
-    std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" surfaces size::"<<surfaces.size()<<std::endl;
-    
-  //Check the surfaces that I created
+  //Check the surfaces that I created (but I will not use)
 
-  if (debug_)  {
+  //if (debug_)  {
     
-    for (auto& surface : surfaces) {
+  //  for (auto& surface : surfaces) {
       
-      surface->toStream(gctx_,std::cout);
-      std::cout<<std::endl;
-      surface->surfaceMaterial()->toStream(std::cout);
-      std::cout<<std::endl;
-      std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
-      std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
-    }
-  }
+  //    surface->toStream(gctx_,std::cout);
+  //    std::cout<<std::endl;
+  //    surface->surfaceMaterial()->toStream(std::cout);
+  //    std::cout<<std::endl;
+  //    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().massDensity()<<std::endl;
+  //    std::cout<<surface->surfaceMaterial()->materialSlab(0,0).material().molarDensity()<<std::endl;
+  //  }
+  //}
     
   //Surfaces configs
+  //This bypasses the surfaces built before
   std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig> surfaceConfig;
+
+  //Reorder the sensors in ascending order along the beam axis
   
+  std::sort(sensors.begin(),sensors.end(),[](const dd4hep::DetElement& lhs,
+                                             const dd4hep::DetElement& rhs) {
+    const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+    const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+    return t_lhs[2] <= t_rhs[2];
+  });
+  
+  //Prepare the surface configurations 
   int counter = 0;
   for (auto& sensor : sensors) {
     counter++;
-
+    
     Acts::CuboidVolumeBuilder::SurfaceConfig cfg;
 
     if (debug_)
@@ -775,50 +781,132 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
       std::cout<<cfg.rotation<<std::endl;
     }
     
-    //Get the bounds -  TODO..FIX hardcoding
-    cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(20.17, 50));
-    //cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(0.000002017, 0.00000050));
-        
+    //Get the bounds - 
+    //cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(20.17, 50));
+    
+    cfg.rBounds  = std::make_shared<const Acts::RectangleBounds>(
+        Acts::RectangleBounds(Acts::UnitConstants::cm*sensor.volume().boundingBox().x(),
+                              Acts::UnitConstants::cm*sensor.volume().boundingBox().y()));
+    
     // I don't think I need this to be defined.
     cfg.detElementConstructor = nullptr; 
         
-    // Thickness
+    // Thickness. The units in dd4hep are in cm, that's why scaling. And they are in half lengths, that's why x2
     double thickness = 2*Acts::UnitConstants::cm*sensor.volume().boundingBox().z();
-                
+                    
     // Material
         
     dd4hep::Material de_mat = sensor.volume().material();
     Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
     Acts::MaterialSlab silicon_slab(silicon,thickness); 
-        
     cfg.thickness = thickness;
-                
     cfg.surMat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
-        
 
-    surfaceConfig.push_back(cfg);
-  }
 
-  if (debug_)
-    std::cout<<"Formed " <<surfaceConfig.size()<< " Surface configs"<<std::endl;
+    //Store the configurations
+    std::string sensor_name=sensor.name();
+
+    if (sensor_name == "tagger_tracker_layer_1" || sensor_name == "tagger_tracker_layer_2") {
+      tracker_layout["tagger_tracker_layer_L1"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_3" || sensor_name == "tagger_tracker_layer_4") {
+      tracker_layout["tagger_tracker_layer_L2"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_5" || sensor_name == "tagger_tracker_layer_6") {
+      tracker_layout["tagger_tracker_layer_L3"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_7" || sensor_name == "tagger_tracker_layer_8") {
+      tracker_layout["tagger_tracker_layer_L4"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_9" || sensor_name == "tagger_tracker_layer_10") {
+      tracker_layout["tagger_tracker_layer_L5"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_11" || sensor_name == "tagger_tracker_layer_12") {
+      tracker_layout["tagger_tracker_layer_L6"].push_back(cfg);
+    }
+
+    if (sensor_name == "tagger_tracker_layer_13" || sensor_name == "tagger_tracker_layer_14") {
+      tracker_layout["tagger_tracker_layer_L7"].push_back(cfg);
+    }
     
+    /* recoil association */
+    
+    if (sensor_name == "recoil_tracker_layer_1" || sensor_name == "recoil_tracker_layer_2") {
+      tracker_layout["recoil_tracker_layer_L1"].push_back(cfg);
+    }
+    
+    if (sensor_name == "recoil_tracker_layer_3" || sensor_name == "recoil_tracker_layer_4") {
+      tracker_layout["recoil_tracker_layer_L2"].push_back(cfg);
+    }
+        
+    if (sensor_name == "recoil_tracker_layer_5" || sensor_name == "recoil_tracker_layer_6") {
+      tracker_layout["recoil_tracker_layer_L3"].push_back(cfg);
+    }
+
+    if (sensor_name == "recoil_tracker_layer_7" || sensor_name == "recoil_tracker_layer_8") {
+      tracker_layout["recoil_tracker_layer_L4"].push_back(cfg);
+    }
+    
+    if (sensor_name == "recoil_tracker_layer_9" ||
+        sensor_name == "recoil_tracker_layer_10" ||
+        sensor_name == "recoil_tracker_layer_11" ||
+        sensor_name == "recoil_tracker_layer_12" ||
+        sensor_name == "recoil_tracker_layer_13" ||
+        sensor_name == "recoil_tracker_layer_14" ||
+        sensor_name == "recoil_tracker_layer_15" ||
+        sensor_name == "recoil_tracker_layer_16" ||
+        sensor_name == "recoil_tracker_layer_17" ||
+        sensor_name == "recoil_tracker_layer_18" 
+        ) {
+      tracker_layout["recoil_tracker_layer_L5"].push_back(cfg);
+    }
+
+    if (sensor_name == "recoil_tracker_layer_19" ||
+        sensor_name == "recoil_tracker_layer_20" ||
+        sensor_name == "recoil_tracker_layer_21" ||
+        sensor_name == "recoil_tracker_layer_22" ||
+        sensor_name == "recoil_tracker_layer_23" ||
+        sensor_name == "recoil_tracker_layer_24" ||
+        sensor_name == "recoil_tracker_layer_25" ||
+        sensor_name == "recoil_tracker_layer_26" ||
+        sensor_name == "recoil_tracker_layer_27" ||
+        sensor_name == "recoil_tracker_layer_28" 
+        ) {
+      tracker_layout["recoil_tracker_layer_L6"].push_back(cfg);
+    }
+        
+  } // sensors loop
+  
+  //if (debug_)
+  //  std::cout<<"Formed " <<surfaceConfig.size()<< " Surface configs"<<std::endl;
+  
   //Layer Configurations
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
     
-  //One layer for surface...  TODO::Is this remotely right?
-  //I'm not sure this is a good solution - check with Paul
-  
-  for (auto& sCfg : surfaceConfig) {
-    Acts::CuboidVolumeBuilder::LayerConfig cfg;
-    cfg.surfaceCfg = {sCfg};
-
-    //The envelopes are distances (i.e. always positive)
-    //To be fixed
-    cfg.envelopeX = std::pair<double,double>{sCfg.thickness / 2. + 0.001, sCfg.thickness / 2. + 0.001};
-
-    layerConfig.push_back(cfg);
-    cfg.active = true;
+  for (auto const& x : tracker_layout)
+  {
+    if (debug_) {
+      std::cout << x.first  
+                << ": surfaces==>" 
+                << x.second.size()
+                << std::endl;
+    }
+    
+    Acts::CuboidVolumeBuilder::LayerConfig lcfg;
+    lcfg.surfaceCfg = x.second;
+    //lcfg.rotation = Acts::RotationMatrix3::Identity();
+    double clearance = 0.01; //0.001
+    lcfg.envelopeX = std::pair<double,double>{x.second.front().thickness / 2. + clearance, x.second.front().thickness / 2. + clearance};
+    layerConfig.push_back(lcfg);
+    lcfg.active = true;
   }
+
+  
   
   if (debug_)
     std::cout<<"Formed " <<layerConfig.size()<< " layer configs"<<std::endl;
@@ -839,13 +927,15 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   }
 
   //Rotate..Z->X, X->Y, Y->Z
-  //Add 1 to not make it sit on the first layer surface
+  //Add 1mm to not make it sit on the first layer surface
   Acts::Vector3 sub_det_position = {subDet_transform.translation()[2]-1, subDet_transform.translation()[0], subDet_transform.translation()[1]};
-  
   
   double x_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z()+1;
   double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
   double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
+
+  //Larger volume to check propagation in the recoil area
+  //x_length = 7*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z()+1;
   
   if (debug_)
     std::cout<<"x "<<x_length<<" y "<<y_length<<" z "<<z_length<<std::endl;
@@ -864,6 +954,9 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   subDetVolumeConfig.volumeMaterial =
       std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
   
+
+  //Clear up the layout map to accept the new sub-detector
+  tracker_layout.clear();
   
   return subDetVolumeConfig;
     
@@ -891,6 +984,7 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
   z0sigma_              = parameters.getParameter<double>("z0sigma",1.);
   perigee_location_ = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
+  debug_                = parameters.getParameter<bool>("debug",false);
   
 }
 
@@ -907,7 +1001,9 @@ void TrackingGeometryMaker::collectModules_dd4hep(dd4hep::DetElement& detElement
 
 void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement,
                                                   std::vector<dd4hep::DetElement>& sensors) {
-  //std::cout<<__PRETTY_FUNCTION__<<" Collecting from " <<detElement.name()<<std::endl;
+
+  if (debug_)
+    std::cout<<__PRETTY_FUNCTION__<<" Collecting from " <<detElement.name()<<std::endl;
         
   const dd4hep::DetElement::Children& children = detElement.children();
         
@@ -941,13 +1037,9 @@ void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement
       detExtension = new Acts::ActsExtension();
       detExtension->addType(childDetElement.name(), "si_sensor");
       childDetElement.addExtension<Acts::ActsExtension>(detExtension);
-      //detExtension->addType("axes", "definitions", "XYZ"); //Issue?
-      //detExtension->addType("axes", "definitions", "ZYX");
       sensors.push_back(childDetElement);
     }
-            
   } // children loop
-        
 }// get sensors.
 
 //Collect the subdetectors and add the ActsExtension to them    
@@ -965,12 +1057,13 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
       std::cout<<"Child Type:: "<<childDetElement.type()<<std::endl;
     }
     std::string childName = childDetElement.name();
-        
+    
     //Check here if I'm checking the TaggerTracker or the RecoilTracker. Skip the rest.
-    if (childName != "TaggerTracker"  &&
-        childName != "tagger_tracker" &&
-        childName != "recoil_tracker" &&
-        childName != "RecoilTracker") {
+    if (
+            childName != "TaggerTracker"  &&
+            childName != "tagger_tracker" &&
+            childName != "recoil_tracker" &&
+            childName != "RecoilTracker") {
       continue;
     }
         
@@ -1185,23 +1278,47 @@ void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibr
 }
 
 
+//Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
+//Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
+
 void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
   
   //loop over the tracking geometry to find all sensitive surfaces
   std::vector<const Acts::Surface*> surfaces;
   getSurfaces(surfaces, trackingGeometry);
 
-  std::cout<<"PF::CHECK THE SURFACES MADE IN THE TRACKING GEOMETRY"<<std::endl;
-
   for (auto& surface : surfaces) {
-    std::cout<<"Check the surfaces"<<std::endl;
-    surface->toStream(gctx_,std::cout);
-    std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
-    std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
+    //std::cout<<"Check the surfaces"<<std::endl;
+    //surface->toStream(gctx_,std::cout);
+    //std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
+    //std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
+    
+    //Layers from 1 to 14 - for the tagger 
+    //unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1 sensor per layer
 
-    //Layers from 1 to 14
-    unsigned int layerId = (surface->geometryId().layer() / 2);
-    layer_surface_map_[layerId] = surface;
+    unsigned int volumeId = surface->geometryId().volume();
+    unsigned int layerId  = (surface->geometryId().layer() / 2); // set layer ID  from 1 to 7 for the tagger and from 1 to 6 for the recoil
+    unsigned int sensorId = surface->geometryId().sensitive() - 1;   // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the axial sensors in the back layers of the recoil
+
+    //surface ID = vol * 1000 + ly * 100 + sensor
+    
+    unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
+    
+    layer_surface_map_[surfaceId] = surface;
+    
+  }// surfaces loop
+
+  if (debug_) {
+
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    
+    for (auto const& surfaceId : layer_surface_map_) {
+      std::cout<< surfaceId.first<<std::endl;
+      std::cout<<"Check the surface"<<std::endl;
+      surfaceId.second->toStream(gctx_,std::cout);
+      std::cout<<"GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
+      std::cout<<"GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
+    }
   }
   
 }
