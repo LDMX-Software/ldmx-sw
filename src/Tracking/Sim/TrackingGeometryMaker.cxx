@@ -215,11 +215,17 @@ void TrackingGeometryMaker::onProcessStart() {
   //Pulls - probably wrong
   
   histo_p_      = new TH1F("p_res",    "p_res",100,-1,1);
-  histo_d0_     = new TH1F("d0_res",   "d0_res",100,-1,1);
+  histo_d0_     = new TH1F("d0_res",   "d0_res",300,-3,3);
   histo_z0_     = new TH1F("z0_res",   "z0_res",100,-1,1);
   histo_phi_    = new TH1F("phi_res",  "phi_res",100,-0.025,0.025);
   histo_theta_  = new TH1F("theta_res","theta_res",100,-0.005,0.005);
-    
+
+  h_p_      = new TH1F("p",    "p",100,0,6);
+  h_d0_     = new TH1F("d0",   "d0",100,-20,20);
+  h_z0_     = new TH1F("z0",   "z0",100,-30,30);
+  h_phi_    = new TH1F("phi",  "phi",100,-0.5,0.5);
+  h_theta_  = new TH1F("theta","theta",100,-3.14,3.14);
+  
 }
 
 
@@ -242,7 +248,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   //3) Get the steps vector and pass it to the root Writer -> in the event processor
 
-  //Setup the starting - Should be done in configure -
+  //Setup the starting point 
 
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
@@ -324,15 +330,78 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     std::cout<<"PF::Running the propagator tests"<<std::endl;
 
 
+  //Look at the scoring planes trackID
+  // -> The trackID is the unique identification of the particles in the generated event
+  // -> 1 is the primary electron since it's the first one generated
+  // -> For brehmsstrahlung / Energy Loss due to Ionization,  the outgoing electron trackID is the same of the incoming
+  // --- > The recoil electron will still trackID == 1
+  // --- > Get the TargetScoringPlaneHits. Filter on z > 4.5mm, Get the TrackID==1 and get the (x,y,z,px,py,pz).
+
+  // -> For eN interactions G4 is not able to follow the particle through the interaction. New particles will be created
+  // --- > Look through the recoil sim hits, get the track ID from those hits and *then* find the TargetScoringPlaneHits with that trackID to do truth matching.
+  // --- > There will be other trackIDs in the hits. Pick the ones that are electrons, and pick the highest energy ones.
+
+  // One thing that I can check is the endpoint of the trackID==1 particle to understand what kind of interaction the particle went through.
+  
 
   //Truth based initial track parameters
-  
+
+  //In the case of Recoil tracking take only TrackID==1 and the generation surface is the obtained from the TargetScoringPlane
+    
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};;
   ldmx::SimParticle gen_e = particleMap[1];
   
   Acts::Vector3 gen_e_pos{gen_e.getVertex().data()};
   Acts::Vector3 gen_e_mom{gen_e.getMomentum().data()};
   Acts::ActsScalar  gen_e_time = 0.;
+
+
+  if (hit_collection_ == "RecoilSimHits") {
+    std::cout<<"Running on Recoil Sim Hits! => special reconstruction"<<std::endl;
+    
+    //Get the Target Scoring plane hits
+    const std::vector<ldmx::SimTrackerHit> target_scoring_hits = event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+
+    //Select the hit on the layer right before the recoil tracker
+
+    std::vector<ldmx::SimTrackerHit> sel_scoring_hits;
+    
+    for (auto & t_sp_hit : target_scoring_hits) {
+
+      //Only select the hits at the last Target scoring plane
+      if (t_sp_hit.getPosition()[2] < 4.4)
+        continue;
+
+      //Brem/Eloss electrons only
+      if (t_sp_hit.getTrackID() != 1)
+        continue;
+
+      //Make sure they are electrons
+      if (abs(t_sp_hit.getPdgID()) != 11)
+        continue;
+
+      sel_scoring_hits.push_back(t_sp_hit);
+      
+    }
+
+    if (sel_scoring_hits.size() != 1) {
+      std::cout<<__PRETTY_FUNCTION__<<"::ERROR::Found wrong number of scoring hits. Skipping event..."<<std::endl;
+      return;
+    }
+
+    gen_e_pos(0) = sel_scoring_hits.at(0).getPosition()[0];
+    gen_e_pos(1) = sel_scoring_hits.at(0).getPosition()[1];
+    gen_e_pos(2) = sel_scoring_hits.at(0).getPosition()[2];
+
+
+    gen_e_mom(0) = sel_scoring_hits.at(0).getMomentum().at(0);
+    gen_e_mom(1) = sel_scoring_hits.at(0).getMomentum().at(1);
+    gen_e_mom(2) = sel_scoring_hits.at(0).getMomentum().at(2);
+    
+  }// Preparing recoil reconstruction
+
+  
+  
 
   //Rotate to ACTS frame
   //z->x, x->y, y->z
@@ -374,12 +443,12 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the generation point
   std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(-700,-27.926, 0.0));
+          Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
   
   //Transform the free parameters to the bound parameters
   auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
 
-  Acts::BoundSymMatrix bound_cov = 1000. * Acts::BoundSymMatrix::Identity();
+  Acts::BoundSymMatrix bound_cov = 10. * Acts::BoundSymMatrix::Identity();
   
   
   Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
@@ -469,8 +538,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   //a) Loop over the sim Hits
-  
-  const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
+
+  const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
     
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
   
@@ -514,11 +583,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
       Acts::Vector3 dummy_momentum;
       
-      //The 0.2 mm is to avoid entering in the case where the hit is too far from the surface -> try/catch here.
-      
       Acts::Vector2 local_pos;
       try { 
-        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.25).value();
+        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
       } catch (const std::exception& e) {
         std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
         std::cout<<ldmxsp->global_pos_<<std::endl;
@@ -632,6 +699,13 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       histo_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
       histo_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>() - startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>());
       histo_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>() - startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>());
+
+
+      h_p_    ->Fill(pair.second.absoluteMomentum());
+      h_d0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>());
+      h_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>());
+      h_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>());
+      h_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>());
       
     }
   } 
@@ -642,11 +716,19 @@ void TrackingGeometryMaker::onProcessEnd() {
 
   TFile* outfile_ = new TFile("track_finding_output.root","RECREATE");
   outfile_->cd();
+
   histo_p_->Write();
   histo_d0_->Write();
   histo_z0_->Write();
   histo_phi_->Write();
   histo_theta_->Write();
+
+  h_p_->Write();
+  h_d0_->Write();
+  h_z0_->Write();
+  h_phi_->Write();
+  h_theta_->Write();
+  
   outfile_->Close();
   delete outfile_;
 }
@@ -714,15 +796,81 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   //Surfaces configs
   //This bypasses the surfaces built before
   std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig> surfaceConfig;
-
-  //Reorder the sensors in ascending order along the beam axis
   
+  //Reorder the sensors in ascending order along the beam axis.
+  //TODO::USE A MAP instead of all these vector manipulations//
+    
   std::sort(sensors.begin(),sensors.end(),[](const dd4hep::DetElement& lhs,
                                              const dd4hep::DetElement& rhs) {
     const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
     const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
     return t_lhs[2] <= t_rhs[2];
   });
+  
+  //Check if I'm doing the recoil
+  if (sensors.size() > 25 ) {
+    
+    //Now all the recoil sensors should be at the end of the sensor vector (10 elements).
+    //Let's sort the first 5 and then the second 5
+
+    // - First sort by y
+    
+    std::sort(sensors.end() - 20, sensors.end() - 10,
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[1] > t_rhs[1];
+              });
+    
+    // - Then sort by x
+    
+    std::sort(sensors.end() - 20, sensors.end() - 15,
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[0] > t_rhs[0];
+              });
+
+    std::sort(sensors.end() - 15, sensors.end() - 10,
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[0] > t_rhs[0];
+              });
+
+    
+    // - First sort by y
+    
+    std::sort(sensors.end() - 10, sensors.end(),
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[1] > t_rhs[1];
+              });
+    
+    // - Then sort by x
+    
+    std::sort(sensors.end() - 10, sensors.end() - 5,
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[0] > t_rhs[0];
+              });
+
+    std::sort(sensors.end() - 5, sensors.end(),
+              [](const dd4hep::DetElement& lhs,
+                 const dd4hep::DetElement& rhs){
+                const Double_t* t_lhs = lhs.nominal().worldTransformation().GetTranslation();
+                const Double_t* t_rhs = rhs.nominal().worldTransformation().GetTranslation();
+                return t_lhs[0] > t_rhs[0];
+              });
+    
+  } // recoil check
   
   //Prepare the surface configurations 
   int counter = 0;
@@ -965,7 +1113,6 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
   
 void TrackingGeometryMaker::configure(framework::config::Parameters &parameters) {
     
-  // set dumping obj flag (integer for the moment) TODO
   dumpobj_            = parameters.getParameter<int>("dumpobj");
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
   ntests_             = parameters.getParameter<int>("ntests", 1000);
@@ -983,9 +1130,11 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   pt_                   = parameters.getParameter<double>("pt", 1.);
   d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
   z0sigma_              = parameters.getParameter<double>("z0sigma",1.);
-  perigee_location_ = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
+  perigee_location_     = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
   debug_                = parameters.getParameter<bool>("debug",false);
-  
+  hit_collection_       = parameters.getParameter<std::string>("hit_collection","TaggerSimHits");
+
+  std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
 }
 
 
@@ -1350,10 +1499,6 @@ TrackingGeometryMaker::type_name()
     r += "&&";
   return r;
 }
-
-
-
-
 
 } // namespace sim
 } // namespace tracking

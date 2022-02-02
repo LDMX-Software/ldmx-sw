@@ -19,7 +19,7 @@ geo.phi_range   = [-0.7 * math.pi, -1.3 * math.pi]
 geo.theta_range = [0.2 * math.pi, 0.8 * math.pi]
 geo.bfield = 1.15
 geo.propagator_step_size = 0.1
-geo.perigee_location = [-300.,0.,0.]
+geo.perigee_location = [-700.,-27.926,0.]
 
 p.sequence = [geo]
 
