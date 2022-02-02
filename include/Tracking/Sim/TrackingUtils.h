@@ -1,6 +1,28 @@
 #ifndef TRACKUTILS_H_
 #define TRACKUTILS_H_
 
+//Recoil back layers numbering scheme for module
+
+//    +Y  /\   4  3  2  1  0
+//        |
+//        | 
+//    -Y  \/   9  8  7  6  5      
+//          -X <----  ----> +X
+
+//ModN (x,    y,   z)
+//0    (96,   40,  z2)
+//1    (48,   40,  z1)
+//2    (0,    40,  z2)
+//3    (-48,  40,  z1)
+//4    (-96,  40,  z2)
+
+//5    (96,  -40,  z2)
+//6    (48,  -40,  z1)
+//7    (0,   -40,  z2)
+//8    (-48, -40,  z1)
+//9    (-96, -40,  z2)
+
+
 //---< SimCore >---//
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Sim/LdmxSpacePoint.h"
@@ -18,11 +40,16 @@ namespace utils {
 //Vol==2 for tagger, Vol==3 for recoil
 
 inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit, unsigned int vol = 2) {
-
+  
   bool debug = false;
       
   std::vector<float> sim_hit_pos = hit.getPosition();
-          
+
+  //check that if the coordinate along the beam is positive, then it's a recoil hit
+  //TODO!! FIX THIS HARDCODE!
+  if (sim_hit_pos[2] > 0)
+    vol = 3;
+  
   //This is in the transverse plane
   float sigma_rphi = 0.25;  //250um
         
@@ -45,8 +72,20 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
 
   //recoil numbering scheme for surfaces mapping 
   if (vol == 3) {
-    sensorId = hit.getModuleID();
-    layerId  = hit.getLayerID();
+
+    //For axial-stereo modules use the same numbering scheme as the tagger
+    if (hit.getLayerID() < 9 ) {
+      sensorId = (hit.getLayerID() + 1 ) % 2;
+      layerId  = (hit.getLayerID() + 1 ) / 2;
+    }
+
+    //For the axial only modules 
+    else {
+      sensorId = hit.getModuleID();
+      layerId  = (hit.getLayerID() + 2 ) / 2;  //9->11 /2 = 5 10->12 / 2 = 6
+    }
+    
+    
   }
 
   //vol * 1000 + ly * 100 + sensor

@@ -58,7 +58,9 @@ setup_library(module Tracking
 			   ActsPluginDD4hep
 			   DD4hep::DDCore
               sources ${SRC_FILES})
-
+	    
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
 
-
+#Setup the test
+setup_test(dependencies Tracking::Tracking)
+			
