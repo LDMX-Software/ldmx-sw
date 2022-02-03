@@ -77,7 +77,9 @@ def photo_nuclear( detector, generator ) :
             util.TrackProcessFilter.photo_nuclear()
     ])
 
-    def nonfiducial_photo_nuclear( detector, generator ) :
+    return sim
+
+def nonfiducial_photo_nuclear( detector, generator ) :
 
     # Instantiate the simulator. 
     sim = simulator.simulator("photo-nuclear")
