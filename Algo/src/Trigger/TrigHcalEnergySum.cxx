@@ -67,6 +67,7 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   }
 
   int total_adc = 0;
+  std::map<int, int> section_sum;
   for (auto p : twoEndedQuadMap) {
     auto tp = p.second;
     int adc = tp.getPrimitive();
@@ -79,9 +80,23 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
       continue;
     }
     layerSums[ilayer].setHwEnergy(adc + layerSums[ilayer].hwEnergy());
+
+    int isec = combo_id.section();    
+    auto ptr = section_sum.find(isec);
+    if (ptr == section_sum.end()){
+      section_sum[isec] = adc;
+    } else {
+      section_sum[isec] += adc;
+    }
   }
   event.add(combinedQuadCollName_+"LayerSums", layerSums);
 
+  trigger::TrigEnergySumCollection sectionSums;
+  for(auto p : section_sum){
+    sectionSums.emplace_back(-1, p.first, p.second);
+  }
+  event.add(combinedQuadCollName_+"SectionSums", sectionSums);
+  
   // Also store total energy for now
   trigger::TrigEnergySum totalSum;
   totalSum.setLayer(-1);

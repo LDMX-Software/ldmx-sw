@@ -39,6 +39,7 @@ class TrigCaloCluster {
   void setFirstLayer(int l){ firstLayer_=l; }
   void setLastLayer(int l){ lastLayer_=l; }
   void setDepth(int d){ depth_=d; }
+  void setNTP(int n){ nTP_=n; }
 
   float x(){ return x_; }
   float y(){ return y_; }
@@ -47,6 +48,8 @@ class TrigCaloCluster {
   float energy(){ return e_; }
   float dxdz(){ return dxdz_; }
   float dydz(){ return dydz_; }
+  int nTP(){ return nTP_; }
+  int depth(){ return depth_; }
   
  private:
   
@@ -63,6 +66,7 @@ class TrigCaloCluster {
   float dxdze_{0};
   float dydze_{0};
   bool is3D_{true};
+  int nTP_{0};
   // 2d attributes
   int layer_{-1};
   // 3d attributes

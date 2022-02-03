@@ -85,8 +85,17 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
     t.setFirstLayer(c.first_layer);
     t.setLastLayer(c.last_layer);
     t.setDepth(c.depth);    
+    int nTP=0;
+    if(c.is2D){
+      nTP = c.hits.size();
+    } else {
+      for (const auto & c2d : c.clusters2d)
+        nTP += c2d.hits.size();
+    }
+    t.setNTP(nTP);
     trigClusters.push_back(t);
   }
+
   event.add(clusterCollName_, trigClusters);
 }
 
