@@ -177,7 +177,7 @@ namespace trigger {
 	bool split_energy = true;
 	//bool use_towers = true;
 	bool use_towers = false;
-	const int LAYER_MAX = 20;
+	const int LAYER_MAX = 35;
 	const int LAYER_SHOWERMAX = 7;
 	const int LAYER_SEEDMIN = 3;
 	const int LAYER_SEEDMAX = 15;

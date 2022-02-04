@@ -60,14 +60,13 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   //
   // Produce the layer-by-layer energy sums  
   const unsigned int LayerMax = 50;
+  const unsigned int SideLayerMax = 16;
   trigger::TrigEnergySumCollection backLayerSums;
   trigger::TrigEnergySumCollection sideLayerSums;
   backLayerSums.resize(LayerMax);
-  sideLayerSums.resize(LayerMax);
-  for(int i=0; i<LayerMax;i++){
-    backLayerSums[i].setLayer(i);
-    sideLayerSums[i].setLayer(i);
-  }
+  for(int i=0; i<LayerMax;i++) backLayerSums[i].setLayer(i);
+  sideLayerSums.resize(SideLayerMax);
+  for(int i=0; i<SideLayerMax;i++) sideLayerSums[i].setLayer(i);
 
   int total_adc = 0;
   std::map<int, int> section_sum;
