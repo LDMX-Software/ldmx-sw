@@ -60,10 +60,13 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   //
   // Produce the layer-by-layer energy sums  
   const unsigned int LayerMax = 50;
-  trigger::TrigEnergySumCollection layerSums;
-  layerSums.resize(LayerMax);
+  trigger::TrigEnergySumCollection backLayerSums;
+  trigger::TrigEnergySumCollection sideLayerSums;
+  backLayerSums.resize(LayerMax);
+  sideLayerSums.resize(LayerMax);
   for(int i=0; i<LayerMax;i++){
-    layerSums[i].setLayer(i);
+    backLayerSums[i].setLayer(i);
+    sideLayerSums[i].setLayer(i);
   }
 
   int total_adc = 0;
@@ -74,14 +77,16 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
     total_adc += adc;
     ldmx::HcalTriggerID combo_id(tp.getId());
     int ilayer= combo_id.layer();
-    if(ilayer >= layerSums.size()){
+    if(ilayer >= backLayerSums.size()){
       std::cout << "[TrigHcalEnergySum.cxx] Warning(!), layer "
                 <<ilayer<<" is out-of-bounds.\n";
       continue;
     }
-    layerSums[ilayer].setHwEnergy(adc + layerSums[ilayer].hwEnergy());
+    int isec = combo_id.section();
+    
+    if (isec==0) backLayerSums[ilayer].setHwEnergy(adc + backLayerSums[ilayer].hwEnergy());
+    else  sideLayerSums[ilayer].setHwEnergy(adc + sideLayerSums[ilayer].hwEnergy());
 
-    int isec = combo_id.section();    
     auto ptr = section_sum.find(isec);
     if (ptr == section_sum.end()){
       section_sum[isec] = adc;
@@ -89,7 +94,8 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
       section_sum[isec] += adc;
     }
   }
-  event.add(combinedQuadCollName_+"LayerSums", layerSums);
+  event.add(combinedQuadCollName_+"BackLayerSums", backLayerSums);
+  event.add(combinedQuadCollName_+"SideLayerSums", sideLayerSums);
 
   trigger::TrigEnergySumCollection sectionSums;
   for(auto p : section_sum){
