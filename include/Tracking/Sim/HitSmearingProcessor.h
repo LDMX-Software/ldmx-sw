@@ -30,7 +30,7 @@ public:
   HitSmearingProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~HitSmearingProcessor();
+  ~HitSmearingProcessor() = default;
 
   /**
    * Callback called at the beginning of a new run.

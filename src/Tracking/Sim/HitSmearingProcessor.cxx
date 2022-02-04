@@ -14,8 +14,6 @@ HitSmearingProcessor::HitSmearingProcessor(const std::string &name,
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 }
 
-HitSmearingProcessor::~HitSmearingProcessor() {}
-
 void HitSmearingProcessor::configure(
     framework::config::Parameters &parameters) {
 
@@ -30,64 +28,63 @@ void HitSmearingProcessor::configure(
 void HitSmearingProcessor::onNewRun(const ldmx::RunHeader &) {
 
   // Get the random seed service
-  auto rseed {
-    getCondition<framework::RandomNumberSeedService>(
-        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
+  auto rseed{getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
 
-    // Create a seed and update the generator with it
-    generator_.seed(rseed.getSeed(getName()));
+  // Create a seed and update the generator with it
+  generator_.seed(rseed.getSeed(getName()));
+}
+
+void HitSmearingProcessor::produce(framework::Event &event) {
+
+  // Check if the input hit collection exists. If it doesn't, throw an
+  // exception.
+  if (!event.exists(input_hit_coll_)) {
+    EXCEPTION_RAISE("InvalidCollection",
+                    "The collection " + input_hit_coll_ + " doesn't exists.");
   }
 
-  void HitSmearingProcessor::produce(framework::Event & event) {
+  // Get the collection of SimTrackerHits to process from the event.
+  auto sim_hits{event.getCollection<ldmx::SimTrackerHit>(input_hit_coll_)};
 
-    // Check if the input hit collection exists. If it doesn't, throw an
-    // exception.
-    if (!event.exists(input_hit_coll_)) {
-      EXCEPTION_RAISE("InvalidCollection",
-                      "The collection " + input_hit_coll_ + " doesn't exists.");
-    }
+  // Smear the hits
+  std::vector<ldmx::SimTrackerHit> smeared_hits{smearHits(sim_hits)};
 
-    // Get the collection of SimTrackerHits to process from the event.
-    auto sim_hits{event.getCollection<ldmx::SimTrackerHit>(input_hit_coll_)};
+  // Add the new collection to the event
+  event.add(output_hit_coll_, smeared_hits);
+}
 
-    // Smear the hits
-    std::vector<ldmx::SimTrackerHit> smeared_hits{smearHits(sim_hits)};
+std::vector<ldmx::SimTrackerHit>
+HitSmearingProcessor::smearHits(const std::vector<ldmx::SimTrackerHit> &hits) {
 
-    // Add the new collection to the event
-    event.add(output_hit_coll_, smeared_hits);
-  }
+  // Copy the existing hits into a new container that will contain the smeared
+  // hits. This avoids having to copy all existing hit information such as
+  // ID's.
+  std::vector<ldmx::SimTrackerHit> smeared_hits(hits);
 
-  std::vector<ldmx::SimTrackerHit> HitSmearingProcessor::smearHits(
-      const std::vector<ldmx::SimTrackerHit> &hits) {
+  // Loop through all the hits and smear their positions
+  for (auto &hit : smeared_hits)
+    smearHit(hit);
 
-    // Copy the existing hits into a new container that will contain the smeared
-    // hits. This avoids having to copy all existing hit information such as
-    // ID's.
-    std::vector<ldmx::SimTrackerHit> smeared_hits(hits);
+  return smeared_hits;
+}
 
-    // Loop through all the hits and smear their positions
-    for (auto &hit : smeared_hits)
-      smearHit(hit);
+void HitSmearingProcessor::smearHit(ldmx::SimTrackerHit &hit) {
 
-    return smeared_hits;
-  }
+  // Get the sim hit position
+  auto sim_hit_pos{hit.getPosition()};
 
-  void HitSmearingProcessor::smearHit(ldmx::SimTrackerHit & hit) {
+  // LDMX Global X, along the less sensitive direction
+  float smear_factor{(*normal_)(generator_)};
+  sim_hit_pos[0] += smear_factor * sigma_v_;
 
-    // Get the sim hit position
-    auto sim_hit_pos{hit.getPosition()};
+  // LDMX Global Y, along the sensitive direction
+  smear_factor = (*normal_)(generator_);
+  sim_hit_pos[1] += smear_factor * sigma_u_;
 
-    // LDMX Global X, along the less sensitive direction
-    float smear_factor{(*normal_)(generator_)};
-    sim_hit_pos[0] += smear_factor * sigma_v_;
-
-    // LDMX Global Y, along the sensitive direction
-    smear_factor = (*normal_)(generator_);
-    sim_hit_pos[1] += smear_factor * sigma_u_;
-
-    // Set the smeared hit position
-    hit.setPosition(sim_hit_pos[0], sim_hit_pos[1], sim_hit_pos[2]);
-  }
+  // Set the smeared hit position
+  hit.setPosition(sim_hit_pos[0], sim_hit_pos[1], sim_hit_pos[2]);
+}
 } // namespace tracking::sim
 
 DECLARE_PRODUCER_NS(tracking::sim, HitSmearingProcessor)
