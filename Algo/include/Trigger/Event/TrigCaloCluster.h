@@ -45,6 +45,9 @@ class TrigCaloCluster {
   float y(){ return y_; }
   float z(){ return z_; }
   float e(){ return e_; }
+  float xe(){ return xe_; }
+  float ye(){ return ye_; }
+  float ze(){ return ze_; }
   float energy(){ return e_; }
   float dxdz(){ return dxdz_; }
   float dydz(){ return dydz_; }
