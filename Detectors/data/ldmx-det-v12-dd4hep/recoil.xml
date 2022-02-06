@@ -23,11 +23,11 @@
       <position x="0*mm" y="0*mm" z="recoil_l1_env_mid_z" />
       <layer id="1" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" />
-	<position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
+	<position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
       </layer>
       <layer id="2" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
         <rotation x="stereo_angle" y="0" z="0" />
       </layer>
     </module>  
@@ -36,11 +36,11 @@
       <position x="0*mm" y="0*mm" z="recoil_l2_env_mid_z" />
       <layer id="3" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
       </layer>
       <layer id="4" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
         <rotation x="-stereo_angle" y="0" z="0" />
       </layer>
     </module>
@@ -49,11 +49,11 @@
       <position x="0*mm" y="0*mm" z="recoil_l3_env_mid_z" />
       <layer id="5" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
       </layer>
       <layer id="6" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
         <rotation x="stereo_angle" y="0" z="0" />
       </layer>
     </module>
@@ -62,11 +62,11 @@
       <position x="0*mm" y="0*mm" z="recoil_l4_env_mid_z" />
       <layer id="7" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
       </layer>
       <layer id="8" material="Silicon" >
 	<dimensions dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" /> 
-        <position x="0.*mm" y="0.*mm" z="-recoil_layer_l14_offset" />
+        <position x="0.*mm" y="0.*mm" z="recoil_layer_l14_offset" />
         <rotation x="-stereo_angle" y="0" z="0" />
       </layer>
     </module>  
