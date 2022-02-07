@@ -236,6 +236,10 @@ class TrackingGeometryMaker : public framework::Producer {
   //The perigee location used for the initial propagator states generation
   std::vector<double> perigee_location_{0.,0.,0.};
 
+  //The extrapolation surface
+  bool use_extrapolate_location_{true};
+  std::vector<double> extrapolate_location_{0.,0.,0.};
+
   //The hit collection to use for track reconstruction
   std::string hit_collection_{"TaggerSimHits"};
 
@@ -267,12 +271,21 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* histo_phi_;
   TH1F* histo_theta_;
 
-
+  
   TH1F* h_p_;
   TH1F* h_d0_;
   TH1F* h_z0_;
   TH1F* h_phi_;
   TH1F* h_theta_;
+
+  TH1F* h_p_truth_;
+  TH1F* h_d0_truth_;
+  TH1F* h_z0_truth_;
+  TH1F* h_phi_truth_;
+  TH1F* h_theta_truth_;
+
+  TH2F* h_tgt_scoring_x_y_;
+  TH1F* h_tgt_scoring_z_;
 
 
   //Tracker mapping.
