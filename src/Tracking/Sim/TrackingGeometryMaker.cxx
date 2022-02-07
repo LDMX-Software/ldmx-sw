@@ -212,7 +212,7 @@ void TrackingGeometryMaker::onProcessStart() {
   //histograms_.create("phi_res","phi",100,-0.1,0.1);
   //histograms_.create("t_res","t",100,-0.1,0.1);
 
-  //Pulls - probably wrong
+  //Validation histograms
   
   histo_p_      = new TH1F("p_res",    "p_res",100,-1,1);
   histo_d0_     = new TH1F("d0_res",   "d0_res",300,-3,3);
@@ -222,15 +222,23 @@ void TrackingGeometryMaker::onProcessStart() {
 
   h_p_      = new TH1F("p",    "p",100,0,6);
   h_d0_     = new TH1F("d0",   "d0",100,-20,20);
-  h_z0_     = new TH1F("z0",   "z0",100,-30,30);
+  h_z0_     = new TH1F("z0",   "z0",100,-50,50);
   h_phi_    = new TH1F("phi",  "phi",100,-0.5,0.5);
   h_theta_  = new TH1F("theta","theta",100,-3.14,3.14);
+
+  h_p_truth_      = new TH1F("p_truth",      "p_truth",100,0,6);
+  h_d0_truth_     = new TH1F("d0_truth",     "d0_truth",400,-20,20);
+  h_z0_truth_     = new TH1F("z0_truth_",    "z0_truth",100,-50,50);
+  h_phi_truth_    = new TH1F("phi_truth",    "phi_truth",100,-0.5,0.5);
+  h_theta_truth_  = new TH1F("theta_truth`", "theta_truth",100,-3.14,3.14);
+
+  h_tgt_scoring_x_y_      = new TH2F("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
+  h_tgt_scoring_z_        = new TH1F("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
   
 }
 
-
 void TrackingGeometryMaker::produce(framework::Event &event) {
-
+  
   n_events_++;
   if (n_events_ % 1000 == 0)
     std::cout<<"events processed:"<<n_events_<<std::endl;
@@ -357,8 +365,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
 
   if (hit_collection_ == "RecoilSimHits") {
-    std::cout<<"Running on Recoil Sim Hits! => special reconstruction"<<std::endl;
-    
+        
     //Get the Target Scoring plane hits
     const std::vector<ldmx::SimTrackerHit> target_scoring_hits = event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
 
@@ -383,12 +390,12 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       sel_scoring_hits.push_back(t_sp_hit);
       
     }
-
+    
     if (sel_scoring_hits.size() != 1) {
       std::cout<<__PRETTY_FUNCTION__<<"::ERROR::Found wrong number of scoring hits. Skipping event..."<<std::endl;
       return;
     }
-
+    
     gen_e_pos(0) = sel_scoring_hits.at(0).getPosition()[0];
     gen_e_pos(1) = sel_scoring_hits.at(0).getPosition()[1];
     gen_e_pos(2) = sel_scoring_hits.at(0).getPosition()[2];
@@ -399,9 +406,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     gen_e_mom(2) = sel_scoring_hits.at(0).getMomentum().at(2);
     
   }// Preparing recoil reconstruction
-
-  
-  
 
   //Rotate to ACTS frame
   //z->x, x->y, y->z
@@ -414,43 +418,45 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   acts_rot << 0,0,1,
       1,0,0,
       0,1,0;
+
+  
   
   gen_e_pos = acts_rot * gen_e_pos;
   gen_e_mom = acts_rot * gen_e_mom;
-  
+
   Acts::FreeVector free_params;
   Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
   Acts::ActsScalar p = gen_e_mom.norm() * Acts::UnitConstants::MeV;
-  
+
+  //if (p < 3.95 * Acts::UnitConstants::GeV)
+  //  return;
+
   //Store the generated electron into track parameters to start the CKF
   free_params[Acts::eFreePos0]   = gen_e_pos(Acts::ePos0) * Acts::UnitConstants::mm;
   free_params[Acts::eFreePos1]   = gen_e_pos(Acts::ePos1) * Acts::UnitConstants::mm;
   free_params[Acts::eFreePos2]   = gen_e_pos(Acts::ePos2) * Acts::UnitConstants::mm;
   free_params[Acts::eFreeTime]   = 0.;  
-  free_params[Acts::eFreeDir0]   = gen_e_mom(0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeDir1]   = gen_e_mom(1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeDir2]   = gen_e_mom(2) * Acts::UnitConstants::mm;
+  free_params[Acts::eFreeDir0]   = gen_e_mom(0) / gen_e_mom.norm();
+  free_params[Acts::eFreeDir1]   = gen_e_mom(1) / gen_e_mom.norm();
+  free_params[Acts::eFreeDir2]   = gen_e_mom(2) / gen_e_mom.norm();
   free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
   
-  //Random test covariance
-  Acts::FreeSymMatrix free_cov = 10. * Acts::FreeSymMatrix::Identity();
-  
-  if (debug_)
-    std::cout<<free_cov<<std::endl;
-  
-  Acts::FreeTrackParameters gen_track_params(free_params, q, free_cov);
-  
   //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the generation point
+  //TODO:: This is kind of an approximation of the curvilinear frame at generation. => Update with curvilinear / or propagation to a known surface
   std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
+          Acts::Vector3(free_params[Acts::eFreePos0], free_params[Acts::eFreePos1], free_params[Acts::eFreePos2]));
   
   //Transform the free parameters to the bound parameters
   auto bound_params =  Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
+  
+  //The Kalman Filter needs to use bound trackParameters. Express the track parameters with respect the curvilinear surface
+  
+  //Acts::Vector3 dir{free_params[Acts::eFreeDir0],free_params[Acts::eFreeDir1],free_params[Acts::eFreeDir2]};
+  //auto bound_params = Acts::detail::transformFreeToCurvilinearParameters(free_params[Acts::eFreeTime], dir, free_params[Acts::eFreeQOverP]);
 
-  Acts::BoundSymMatrix bound_cov = 10. * Acts::BoundSymMatrix::Identity();
   
-  
+  Acts::BoundSymMatrix bound_cov = 100. * Acts::BoundSymMatrix::Identity();
   Acts::BoundTrackParameters gen_track_params_bound{gen_surface, bound_params, q, bound_cov};
     
   
@@ -526,8 +532,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       std::cout<<"PF::ERROR::PROPAGATION RESULTS ARE NOT OK!!"<<std::endl;
   }//ntests_
 
-  writer_->WriteSteps(event,propagationSteps);
 
+  //Only save if you made some tests
+  if ( ntests_>0 )
+    writer_->WriteSteps(event,propagationSteps);
+  
   //std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
 
   //#######################//
@@ -542,16 +551,35 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
     
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+
+  if (debug_)
+    std::cout<<"Found:"<<sim_hits.size()<<" sim hits in the "<< hit_collection_<<std::endl;
   
   //Convert to ldmxsps
   for (auto& simHit : sim_hits) {
     
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
+      
+      //std::cout<<"Sim Hit for trackID()"<<simHit.getTrackID()<<" associated to PDG ID " << simHit.getPdgID()<<std::endl;
+
+      /*
+      if (hit_collection_ == "RecoilSimHits") {
+
+        if (simHit.getTrackID() !=  1 )
+          continue;
+        if (abs(simHit.getPdgID()) !=  11)
+          continue;
+      }
+      */
+      
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }
   
+  if (debug_)
+    std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
+    
   //The mapping between the geometry identifier
   //and the IndexSourceLink that points to the hit
   //std::unordered_map<Acts::GeometryIdentifier,
@@ -568,21 +596,20 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     const Acts::Surface* hit_surface = layer_surface_map_[layerid];
     if (hit_surface) {
-      //std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<ldmxsp->layer()<<" is associated to Acts::surface::"<<hit_surface<<std::endl;
 
       //Transform the ldmx space point from global to local and store the information
 
+      if (debug_) {
+        std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        hit_surface->toStream(gctx_,std::cout);
+
+        std::cout<<"TRANSFORM"<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
+      }
       
-      //std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
-      //std::cout<<ldmxsp->global_pos_<<std::endl;
-      //hit_surface->toStream(gctx_,std::cout);
-
-      //std::cout<<"TRANSFORM"<<std::endl;
-      //std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
-      //std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
-
       Acts::Vector3 dummy_momentum;
-      
       Acts::Vector2 local_pos;
       try { 
         local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
@@ -593,17 +620,16 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       }
       
       ldmxsp->local_pos_ = local_pos;
-      
-      //std::cout<<"Local hit position::"<<std::endl;
-      //std::cout<<ldmxsp->local_pos_<<std::endl;
 
+      if (debug_) {
+        std::cout<<"Local hit position::"<<std::endl;
+        std::cout<<ldmxsp->local_pos_<<std::endl;
+      }
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
       //geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
       geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
             
-      
-      
     }
     else
       std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
@@ -622,10 +648,16 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // ============   Setup the CKF  ============
   Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
 
-
+  
   std::vector<Acts::BoundTrackParameters> startParameters = {gen_track_params_bound};
 
-  
+  //Already fill the plots with the truth information
+  h_p_truth_     ->Fill(startParameters.at(0).absoluteMomentum());
+  h_d0_truth_    ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
+  h_z0_truth_    ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
+  h_phi_truth_   ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>());
+  h_theta_truth_ ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>());
+      
   Acts::GainMatrixUpdater kfUpdater;
   Acts::GainMatrixSmoother kfSmoother;
 
@@ -650,7 +682,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
   
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
-  ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
+  ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
@@ -658,42 +690,36 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   using LdmxSourceLinkAccessor = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
   
-
+  auto extr_surface = &(*gen_surface);
+  std::shared_ptr<const Acts::PerigeeSurface> tgt_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(extrapolate_location_[0], extrapolate_location_[1], extrapolate_location_[2]));
+  
+  
+  if (use_extrapolate_location_) {
+    extr_surface = &(*tgt_surface);
+  }
+  
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
       gctx_,bctx_,cctx_,
       LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{logger()},
-      //propagator_options,&(*perigee_surface));
-      propagator_options,&(*gen_surface));
-  
+      propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
   
   auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions);
   
   for (auto& result : results) {
-
-    //std::cout<<"PF::Initial parameters"<<std::endl;
-    //std::cout<<startParameters.at(0)<<std::endl;
-        
-    //std::cout<<"PF::CHECKING CKF RESULTS"<<std::endl;
+    
     if (!result.ok()) {
-        std::cout<<"PF::RESULT IS NOT OK"<<std::endl;
-        continue;
-      }
+      continue;
+    }
     
     auto ckf_result = result.value();
-
-    //std::cout<<"How many parameters? "<< ckf_result.fittedParameters.size()<<std::endl;
-    //std::cout<<"Is smoothed ? " <<ckf_result.smoothed<<std::endl;
-    //std::cout<<"Number of deposited hits" << ldmxsps.size()<<std::endl;
     
     for (const auto& pair : ckf_result.fittedParameters) {
       //std::cout<<"Number of hits-on-track::" << (int) pair.first << std::endl;
-      //if (debug_) {
-      //std::cout<<"Fitted parameters"<<std::endl;
-      //std::cout<<pair.second<<std::endl;
-      //}
-      
+            
       histo_p_    ->Fill(pair.second.absoluteMomentum() - startParameters.at(0).absoluteMomentum());
       histo_d0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
       histo_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
@@ -707,6 +733,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       h_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>());
       h_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>());
       
+
     }
   } 
 }
@@ -728,6 +755,12 @@ void TrackingGeometryMaker::onProcessEnd() {
   h_z0_->Write();
   h_phi_->Write();
   h_theta_->Write();
+
+  h_p_truth_->Write();
+  h_d0_truth_->Write();
+  h_z0_truth_->Write();
+  h_phi_truth_->Write();
+  h_theta_truth_->Write();
   
   outfile_->Close();
   delete outfile_;
@@ -1133,6 +1166,13 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   perigee_location_     = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
   debug_                = parameters.getParameter<bool>("debug",false);
   hit_collection_       = parameters.getParameter<std::string>("hit_collection","TaggerSimHits");
+
+
+  //Ckf specific options
+
+  use_extrapolate_location_  = parameters.getParameter<bool>("use_extrapolate_location", true);
+  extrapolate_location_ = parameters.getParameter<std::vector<double> >("extrapolate_location", {0.,0.,0.});
+  
 
   std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
 }

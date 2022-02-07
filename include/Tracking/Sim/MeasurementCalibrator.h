@@ -38,7 +38,7 @@ namespace tracking {
         m_measurements = &measurements;
       }
       
-      /// Find the measurement corresponding to the source link.
+      /// Find the measurement corresponding to the source link. Uses a 2D measurement, cov-matrix and projection
       ///
       /// @tparam parameters_t Track parameters type
       /// @param gctx The geometry context (unused)
@@ -64,6 +64,45 @@ namespace tracking {
         
       }
 
+      /// Find the measurement corresponding to the source link.
+      /// Uses a 1D measurement, cov-matrix and projection
+      ///
+      /// @tparam parameters_t Track parameters type
+      /// @param gctx The geometry context (unused)
+      /// @param trackState The track state to calibrate
+      void calibrate_1d(const Acts::GeometryContext& /*gctx*/,
+                        Acts::MultiTrajectory::TrackStateProxy trackState) const {
+        const auto& sourceLink =
+            static_cast<const ActsExamples::IndexSourceLink&>(trackState.uncalibrated());
+
+        assert(m_measurements and
+               "Undefined measurement container in LdmxMeasurementCalibrator");
+        assert((sourceLink.index() < m_measurements->size()) and
+               "Source link index is outside the container bounds in LdmxMeasurementCalibrator");
+
+        auto meas = m_measurements->at(sourceLink.index());
+        
+        trackState.calibrated().setZero();
+        trackState.calibrated()(0) = meas->local_pos_(0);
+        trackState.data().measdim = 1;
+        trackState.calibratedCovariance().setZero();
+        trackState.calibratedCovariance()(0,0) = meas->local_cov_(0,0);
+        trackState.setProjector(meas->projector_.row(0));
+
+        //placeholder
+        /*
+        std::cout<<"trackState calibrated"<<std::endl;
+        std::cout<<trackState.calibrated()<<std::endl;
+        std::cout<<"trackState data meas dim"<<std::endl;
+        std::cout<<trackState.data().measdim<<std::endl;
+        std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
+        std::cout<<trackState.calibratedCovariance()<<std::endl;
+        std::cout<<"projector"<<std::endl;
+        std::cout<<meas->projector_.row(0)<<std::endl;
+        */
+      
+      }
+      
       //Function to test the measurement calibrator
       //It takes an user defined source link and returns the information of the linked measurement
       void test(const Acts::GeometryContext& /*gctx*/,
