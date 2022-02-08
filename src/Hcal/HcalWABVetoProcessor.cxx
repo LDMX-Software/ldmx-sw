@@ -21,7 +21,7 @@ namespace hcal {
     HcalWABVetoProcessor::~HcalWABVetoProcessor() {}
 
     void HcalWABVetoProcessor::configure(framework::config::Parameters &parameters) {
-        maxtotalEnergyCompare_ = parameters.getParameter<double>("total_energy_compare"); 
+        maxtotalEnergyCompare_ = parameters.getParameter<double>("total_energy_compare");
         maxnClusters_ = parameters.getParameter<double>("n_clusters");
         maxMeanHitsPerCluster_ = parameters.getParameter<double>("mean_hits_per_cluster");
         maxMeanEnergyPerCluster_ = parameters.getParameter<double>("mean_energy_per_cluster");
@@ -54,14 +54,14 @@ namespace hcal {
                 if (hcalHit.isNoise()==0){
                         totalHCALEnergy += hcalHit.getPE();
                 }
-                
+
                 // Find the maximum PE in the list
                 if (maxPE < hcalHit.getPE()) {
                   maxPE = hcalHit.getPE();
                   maxPEHit = &hcalHit;
                 }
             }
-  
+
         for (const ldmx::EcalHit &ecalHit : ecalRecHits) {
                 if (ecalHit.isNoise()==0){
                         totalECALEnergy += ecalHit.getEnergy();
@@ -77,12 +77,12 @@ namespace hcal {
             }
         double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
         double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
-    
-        bool passesEnergyCombo = (totalECALEnergy + (1/25)*totalHCALEnergy < maxtotalEnergyCompare_ );
+
+        bool passesEnergyCombo = (totalECALEnergy + totalHCALEnergy < maxtotalEnergyCompare_ );
         bool passesnClusters = (nClusters < maxnClusters_);
-        bool passesNHits = (meanEnergy <  maxMeanHitsPerCluster_ );
-        bool passesEnergy =  (meanNhits < maxMeanEnergyPerCluster_);    
-        
+        bool passesNHits = (meanNhits <  maxMeanHitsPerCluster_ );
+        bool passesEnergy =  (meanEnergy < maxMeanEnergyPerCluster_);
+
         //total veto:
         bool passesVeto = (passesEnergyCombo and passesnClusters and passesNHits and passesEnergy);
         ldmx::HcalVetoResult result;
@@ -90,13 +90,13 @@ namespace hcal {
         result.setMaxPEHit(*maxPEHit);
         if (passesVeto) {
             setStorageHint(framework::hint_shouldKeep);
-            
+
         } else {
            setStorageHint(framework::hint_shouldDrop);
         }
 
         event.add(outputCollName_, result);
-     
+
         }
 }  // namespace hcal
 
