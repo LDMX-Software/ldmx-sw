@@ -76,13 +76,13 @@ namespace hcal {
                 energies.push_back(hcalCluster.getEnergy());
                 nhits.push_back(hcalCluster.getNHits());
             }
-        double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
-        double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
-        std::cout<<totalECALEnergy + totalHCALEnergy<<" "<<nClusters<<" "<<meanEnergy<<" "<<meanNhits<<std::endl;
+        //double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
+        //double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
+
         bool passesEnergyCombo = (((totalECALEnergy + totalHCALEnergy) < maxtotalEnergyCompare_) );
-        bool passesnClusters = true ;//(nClusters < maxnClusters_);
-        bool passesNHits = true;//(meanNhits <  maxMeanHitsPerCluster_ );
-        bool passesEnergy =  true;//(meanEnergy < maxMeanEnergyPerCluster_);
+        bool passesnClusters = (nClusters < maxnClusters_);
+        //bool passesNHits = true;//(meanNhits <  maxMeanHitsPerCluster_ );
+        //bool passesEnergy =  true;//(meanEnergy < maxMeanEnergyPerCluster_);
 
         //total veto:
         bool passesVeto = (passesEnergyCombo and passesnClusters and passesNHits and passesEnergy);
@@ -91,7 +91,6 @@ namespace hcal {
         result.setVetoResult(passesVeto);
         result.setMaxPEHit(*maxPEHit);
         if (passesVeto) {
-            std::cout<<"passes "<<std::endl;
             setStorageHint(framework::hint_shouldKeep);
 
         } else {
