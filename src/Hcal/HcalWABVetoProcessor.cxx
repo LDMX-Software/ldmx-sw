@@ -79,13 +79,14 @@ namespace hcal {
         double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
         double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
         std::cout<<totalECALEnergy + totalHCALEnergy<<" "<<nClusters<<" "<<meanEnergy<<" "<<meanNhits<<std::endl;
-        bool passesEnergyCombo = (totalECALEnergy + totalHCALEnergy < maxtotalEnergyCompare_  and totalECALEnergy + totalHCALEnergy > mintotalEnergyCompare_);
+        bool passesEnergyCombo = (((totalECALEnergy + totalHCALEnergy) < maxtotalEnergyCompare_)  and ((totalECALEnergy + totalHCALEnergy) > mintotalEnergyCompare_));
         bool passesnClusters = true ;//(nClusters < maxnClusters_);
         bool passesNHits = true;//(meanNhits <  maxMeanHitsPerCluster_ );
         bool passesEnergy =  true;//(meanEnergy < maxMeanEnergyPerCluster_);
 
         //total veto:
         bool passesVeto = (passesEnergyCombo and passesnClusters and passesNHits and passesEnergy);
+        //set result:
         ldmx::HcalVetoResult result;
         result.setVetoResult(passesVeto);
         result.setMaxPEHit(*maxPEHit);
