@@ -21,7 +21,8 @@ namespace hcal {
     HcalWABVetoProcessor::~HcalWABVetoProcessor() {}
 
     void HcalWABVetoProcessor::configure(framework::config::Parameters &parameters) {
-        maxtotalEnergyCompare_ = parameters.getParameter<double>("total_energy_compare");
+        maxtotalEnergyCompare_ = parameters.getParameter<double>("max_total_energy_compare");
+        mintotalEnergyCompare_ = parameters.getParameter<double>("min_total_energy_compare");
         maxnClusters_ = parameters.getParameter<double>("n_clusters");
         maxMeanHitsPerCluster_ = parameters.getParameter<double>("mean_hits_per_cluster");
         maxMeanEnergyPerCluster_ = parameters.getParameter<double>("mean_energy_per_cluster");
@@ -77,11 +78,11 @@ namespace hcal {
             }
         double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
         double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
-
-        bool passesEnergyCombo = (totalECALEnergy + totalHCALEnergy < maxtotalEnergyCompare_ );
-        bool passesnClusters = (nClusters < maxnClusters_);
-        bool passesNHits = (meanNhits <  maxMeanHitsPerCluster_ );
-        bool passesEnergy =  (meanEnergy < maxMeanEnergyPerCluster_);
+        std::cout<<totalECALEnergy + totalHCALEnergy<<" "<<nClusters<<" "<<meanEnergy<<" "<<meanNhits<<std::endl;
+        bool passesEnergyCombo = (totalECALEnergy + totalHCALEnergy < maxtotalEnergyCompare_  and totalECALEnergy + totalHCALEnergy > mintotalEnergyCompare_);
+        bool passesnClusters = true ;//(nClusters < maxnClusters_);
+        bool passesNHits = true;//(meanNhits <  maxMeanHitsPerCluster_ );
+        bool passesEnergy =  true;//(meanEnergy < maxMeanEnergyPerCluster_);
 
         //total veto:
         bool passesVeto = (passesEnergyCombo and passesnClusters and passesNHits and passesEnergy);
@@ -89,6 +90,7 @@ namespace hcal {
         result.setVetoResult(passesVeto);
         result.setMaxPEHit(*maxPEHit);
         if (passesVeto) {
+            std::cout<<"passes "<<std::endl;
             setStorageHint(framework::hint_shouldKeep);
 
         } else {

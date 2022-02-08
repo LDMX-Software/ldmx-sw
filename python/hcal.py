@@ -35,7 +35,8 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalWABVeto') :
         super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
 
-        self.total_energy_compare = 1000.0;
+        self.max_total_energy_compare = 1000.0;
+        self.min_total_energy_compare = 10.0;
         self.n_clusters = 6.0;
         self.mean_hits_per_cluster = 3.0;
         self.mean_energy_per_cluster = 0.01;
@@ -88,7 +89,7 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         self.EnoiseCut = 0.01
         self.deltaTime = 10.
         self.deltaR = 0.
-        self.EminCluster = 0.5 # Minimum Energy to be classes as a cluster
+        self.EminCluster = 0.5 # Minimum Energy to be classed as a cluster TODO
         self.cutOff = 10.
 
         self.clusterCollName = 'HcalClusters'
