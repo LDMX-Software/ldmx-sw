@@ -79,7 +79,7 @@ namespace hcal {
         double meanEnergy = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
         double meanNhits = std::accumulate(nhits.begin(), nhits.end(), 0.0) / nhits.size();
         std::cout<<totalECALEnergy + totalHCALEnergy<<" "<<nClusters<<" "<<meanEnergy<<" "<<meanNhits<<std::endl;
-        bool passesEnergyCombo = (((totalECALEnergy + totalHCALEnergy) < maxtotalEnergyCompare_)  and ((totalECALEnergy + totalHCALEnergy) > mintotalEnergyCompare_));
+        bool passesEnergyCombo = (((totalECALEnergy + totalHCALEnergy) < maxtotalEnergyCompare_) );
         bool passesnClusters = true ;//(nClusters < maxnClusters_);
         bool passesNHits = true;//(meanNhits <  maxMeanHitsPerCluster_ );
         bool passesEnergy =  true;//(meanEnergy < maxMeanEnergyPerCluster_);
