@@ -39,7 +39,7 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
         self.min_total_energy_compare = 10.0;
         self.n_clusters = 6.0;
         self.mean_hits_per_cluster = 3.0;
-        self.mean_energy_per_cluster = 0.01;
+        self.mean_energy_per_cluster = 10.;
 
         self.inputHCALHitCollName = "HcalRecHits";
         self.inputECALHitCollName = "EcalRecHits" ;
