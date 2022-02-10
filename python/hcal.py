@@ -36,10 +36,10 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
         super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
 
         self.max_total_energy_compare = 1000.0;
-        self.min_total_energy_compare = 10.0;
+        self.min_total_energy_compare = 0.0;
         self.n_clusters = 6.0;
         self.mean_hits_per_cluster = 3.0;
-        self.mean_energy_per_cluster = 10.;
+        self.mean_energy_per_cluster = 6.;
 
         self.inputHCALHitCollName = "HcalRecHits";
         self.inputECALHitCollName = "EcalRecHits" ;
