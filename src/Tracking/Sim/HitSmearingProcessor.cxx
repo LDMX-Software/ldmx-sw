@@ -37,13 +37,6 @@ void HitSmearingProcessor::onNewRun(const ldmx::RunHeader &) {
 
 void HitSmearingProcessor::produce(framework::Event &event) {
 
-  // Check if the input hit collection exists. If it doesn't, throw an
-  // exception.
-  if (!event.exists(input_hit_coll_)) {
-    EXCEPTION_RAISE("InvalidCollection",
-                    "The collection " + input_hit_coll_ + " doesn't exists.");
-  }
-
   // Get the collection of SimTrackerHits to process from the event.
   auto sim_hits{event.getCollection<ldmx::SimTrackerHit>(input_hit_coll_)};
 
