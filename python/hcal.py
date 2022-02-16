@@ -4,7 +4,7 @@ from LDMX.Framework import ldmxcfg
 
 class HcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for veto in HCal
-    
+
     Sets all parameters to reasonable defaults.
 
     Examples
@@ -23,7 +23,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
-    
+
     Sets all parameters to reasonable defaults.
 
     Examples
@@ -35,16 +35,17 @@ class HcalWABVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'hcalWABVeto') :
         super().__init__(name,'hcal::HcalWABVetoProcessor','Hcal')
 
-        self.total_energy_compare = 2000.0;
+        self.max_total_energy_compare = 1000.0;
+        self.min_total_energy_compare = 0.0;
         self.n_clusters = 6.0;
-        self.mean_hits_per_cluster = 30.0;
-        self.mean_energy_per_cluster = 0.4;
-        
+        self.mean_hits_per_cluster = 3.0;
+        self.mean_energy_per_cluster = 6.;
+
         self.inputHCALHitCollName = "HcalRecHits";
-        self.inputECALHitCollName = "EcalRecHits" ; 
+        self.inputECALHitCollName = "EcalRecHits" ;
         self.outputCollName = "HcalWABVetoes";
         self.inputHCALClusterCollName = "HcalClusters"
-        
+
 class HcalOldDigiProducer(ldmxcfg.Producer) :
     """Configuration for Digitization producer in the HCal
         Sets all parameters to reasonable defaults.
@@ -71,7 +72,7 @@ class HcalOldDigiProducer(ldmxcfg.Producer) :
         self.strip_attenuation_length = 5. # this is in m
         self.strip_position_resolution = 150. # this is in mm
         self.sim_hit_pass_name = '' #use any pass available
-        
+
 class HcalClusterProducer(ldmxcfg.Producer) :
     """Configuration forcluster producer in the HCal
         Sets all parameters to reasonable defaults.
@@ -88,8 +89,7 @@ class HcalClusterProducer(ldmxcfg.Producer) :
         self.EnoiseCut = 0.01
         self.deltaTime = 10.
         self.deltaR = 0.
-        self.EminCluster = 0.5 # Minimum Energy to be classes as a cluster 
+        self.EminCluster = 0.5 # Minimum Energy to be classed as a cluster TODO
         self.cutOff = 10.
-        
+
         self.clusterCollName = 'HcalClusters'
-        
