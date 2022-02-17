@@ -24,14 +24,16 @@ setup_dd4hep_target()
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
 
-    # Search for ROOT and add all targets.
-    find_package(ROOT CONFIG REQUIRED)
-
-
     # Register all of the classes with the event bus.
     register_event_object(module_path "Tracking/Event" 
 	                  namespace "ldmx" 
 	                  class "RawSiStripHit" )
+
+    register_event_object(module_path "Tracking/Event" 
+	                  namespace "ldmx" 
+	                  class "Track" type "collection")
+
+			
 
     # Get all of the event sources that will be included in this library
     file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS 
@@ -41,6 +43,7 @@ if(BUILD_EVENT_ONLY)
     setup_library(module Tracking
                   name Event
                   dependencies ROOT::Core
+		               ActsCore
                   sources ${EVENT_SRC_FILES}
                   register_target)
 
@@ -48,7 +51,9 @@ if(BUILD_EVENT_ONLY)
 endif()
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
-	  ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
+  
 )
 
 setup_library(module Tracking
@@ -57,8 +62,11 @@ setup_library(module Tracking
 			   ActsCore
 			   ActsPluginDD4hep
 			   DD4hep::DDCore
-              sources ${SRC_FILES})
-	    
+			   sources ${SRC_FILES})
+
+
+include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
+			 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
 
 #Setup the test

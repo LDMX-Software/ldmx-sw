@@ -1,3 +1,6 @@
+#ifndef BFIELD_UTILS_H_
+#define BFIELD_UTILS_H_
+
 #include "Acts/MagneticField/InterpolatedBFieldMap.hpp"
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Utilities/detail/AxisFwd.hpp"
@@ -28,7 +31,7 @@ using InterpolatedMagneticField3 =
 //	  binsXYZ.at(1) * nBinsXYZ.at(2) + binsXYZ.at(2));
 //};
 
-Acts::InterpolatedBFieldMap<Acts::detail::Grid<
+inline Acts::InterpolatedBFieldMap<Acts::detail::Grid<
 Acts::Vector3, Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis,
   Acts::detail::EquidistantAxis>>
     rotateFieldMapXYZ(const std::function<size_t(std::array<size_t, 3> binsXYZ,
@@ -177,8 +180,6 @@ Acts::Vector3, Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis,
 }
 
 
-
-
 //This is a copy of 
 //https://github.com/acts-project/acts/blob/main/Examples/Detectors/MagneticField/src/FieldMapTextIo.cpp
 //with additional rotateAxes flag to rotate the axes and field to be in the tracking (ACTS) Frame
@@ -236,3 +237,4 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(std::function<
   
 }
 
+#endif

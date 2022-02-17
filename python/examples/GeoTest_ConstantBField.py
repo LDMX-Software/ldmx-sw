@@ -22,6 +22,8 @@ geo.pt = 4.
 geo.d0sigma = 0.1
 geo.z0sigma = 0.1
 geo.steps_file_path = "./straight_propagator_states.root"
+geo.perigee_location = [-700.,-27.926,0.0] #Generated electrons origin  
+
 #####
 
 #General
@@ -34,13 +36,13 @@ geo.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled
 #geo.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BMapConstant_1_5T.dat"
 #####
 
-#Detector specific tracking -> It has to be already rotated in the acts frame
-#geo.perigee_location = [-700.,-27.926,0.0] #Generated electrons origin  
-geo.perigee_location = [ 0.0, 0.0, 0.0 ]  #Target location
-
-#
+#CKF Options
 geo.hit_collection="RecoilSimHits"
 #geo.hit_collection="TaggerSimHits"
+
+#Target location for the CKF extrapolation
+geo.use_extrapolate_location = False  #if false uses the generated point
+geo.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
 
 p.sequence = [geo]
 
@@ -50,4 +52,5 @@ p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/mc_v12-4GeV-1e-inclusive_run
 p.outputFiles = ['tracker_test.root']
 
 p.termLogLevel=0
-p.maxEvents = 10000
+p.maxEvents = 10
+
