@@ -40,6 +40,7 @@
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
+//geometry
 #include "Acts/Geometry/TrackingVolume.hpp"
 #include "Acts/Geometry/TrackingGeometryBuilder.hpp"
 #include <Acts/Geometry/TrackingGeometry.hpp>
@@ -86,13 +87,16 @@
 #include "Acts/Utilities/CalibrationContext.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
-#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Acts/EventData/MultiTrajectory.hpp"
+#include "Acts/EventData/MultiTrajectoryHelpers.hpp"
 
 //--- Tracking ---//
 #include "Tracking/Sim/TrackingUtils.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/LdmxSourceLinkAccessor.h"
-#include "Acts/EventData/MultiTrajectory.hpp"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Tracking/Event/Track.h"
+
 
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
@@ -178,15 +182,6 @@ class TrackingGeometryMaker : public framework::Producer {
   void makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
 
   
-  template <typename source_link_accessor_t> 
-  void testAccessor(source_link_accessor_t accessor,
-                    const typename source_link_accessor_t::Container& container,
-                    const Acts::GeometryIdentifier& id);
-
-
-  template <typename T>
-  std::string type_name();
-  
   //Test the measurement calibrator (TODO::move it somewhere else)
 
   void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
@@ -199,6 +194,8 @@ class TrackingGeometryMaker : public framework::Producer {
  private:
   /// The detector
   dd4hep::Detector* detector_{nullptr};
+
+  /// The contexts
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
   Acts::CalibrationContext cctx_;
@@ -207,7 +204,11 @@ class TrackingGeometryMaker : public framework::Producer {
   int dumpobj_ {0};
 
   bool debug_{false};
-  int n_events_{0};
+  int nevents_{0};
+
+  //Processing time counter
+  double processing_time_{0.};
+  
 
   //--- Propagator Tests ---//
 
@@ -242,7 +243,13 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //The hit collection to use for track reconstruction
   std::string hit_collection_{"TaggerSimHits"};
-
+  
+  //The output track collection
+  std::string out_trk_collection_{"Tracks"};
+  
+  //The seed track collection
+  std::string seed_coll_name_{"seedTracks"};
+  
   //The interpolated bfield
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
   std::string bfieldMap_;
@@ -263,6 +270,9 @@ class TrackingGeometryMaker : public framework::Producer {
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
+
+ 
+
   //Some histograms
 
   TH1F* histo_p_;
@@ -277,6 +287,7 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* h_z0_;
   TH1F* h_phi_;
   TH1F* h_theta_;
+  TH1F* h_nHits_;
 
   TH1F* h_p_truth_;
   TH1F* h_d0_truth_;
