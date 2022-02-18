@@ -1,8 +1,9 @@
 import os,math
 from LDMX.Framework import ldmxcfg
 
-p = ldmxcfg.Process("tracking")
+p = ldmxcfg.Process("TrackerReco")
 
+#p.libraries.append("libEventProc.so")
 p.libraries.append("libTracking.so")
 
 p.detector = '/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12-dd4hep/detector.xml'
@@ -73,6 +74,15 @@ vtx = tracking_vtx.VertexProcessor()
 vtx.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
 vtx.debug = False
 
+p.keep = [
+    "drop .*SimHits.*", #drop all sim hits
+    "drop .*Ecal.*", #drop all ecal (Digis are not removed)
+    "drop .*Magnet*",
+    "drop .*Hcal.*",
+    "drop .*Scoring.*",
+    "drop .*Particles.*"
+    ]
+
 #p.sequence = [geo, vtx]
 p.sequence = [ts,geo,vtx]
 #p.sequence = [ts_ele, geo, vtx] #Find electrons
@@ -83,19 +93,17 @@ print(p.sequence)
 p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/mc_v12-4GeV-1e-inclusive_run1310001_t1601628859_reco.root"]  #single ele
 
 #eN with pions
-p.inputFiles = [#os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M_events_r0690_b462119.root",
-    os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M_events_r0691_b462120.root",
-    os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M_events_r0692_b462121.root",
-    os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M_events_r0693_b462122.root",
-]
+p.inputFiles = [#os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M_events_r0690_b462119.root"
+]   
 
 import glob
+#p.inputFiles = glob.glob(os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M*.root")
 
-p.inputFiles = glob.glob(os.environ["LDMX_BASE"]+"/data_ldmx/pn_kaonfilter_1M*.root")
 
 print(p.inputFiles)
 
 p.outputFiles = ['tracker_test.root']
 
 p.termLogLevel=0
-p.maxEvents = 50000
+p.maxEvents = 100000
+
