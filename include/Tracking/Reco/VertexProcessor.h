@@ -111,6 +111,8 @@ class VertexProcessor : public framework::Producer {
 
 
   TH1F* h_m_;
+  TH1F* h_m_truthFilter_;
+  TH1F* h_m_truth_;
   
 };
 
