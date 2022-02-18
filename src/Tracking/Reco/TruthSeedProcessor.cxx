@@ -1,6 +1,6 @@
 #include "Tracking/Reco/TruthSeedProcessor.h"
 #include <chrono>
-
+#include "TLorentzVector.h"
 using namespace framework;
 
 namespace tracking::reco {
@@ -23,12 +23,13 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   out_trk_coll_name_   = parameters.getParameter<std::string>("trk_coll_name","TruthSeeds");
   pdgIDs_              = parameters.getParameter<std::vector<int> >("pdgIDs",{11});
   scoring_hits_        = parameters.getParameter<std::string>("scoring_hits","TargetScoringPlaneHits_sim");
-  sim_hits_       = parameters.getParameter<std::string>("sim_hits","RecoilSimHits");
+  sim_hits_            = parameters.getParameter<std::string>("sim_hits","RecoilSimHits");
   n_min_hits_          = parameters.getParameter<int>("n_min_hits",7);
   z_min_               = parameters.getParameter<double>("z_min",-999); //mm
   track_id_            = parameters.getParameter<int>("track_id",-999);
   pz_cut_              = parameters.getParameter<double>("pz_cut",-9999); //MeV
   p_cut_               = parameters.getParameter<double>("p_cut", 0.);
+  k0_sel_              = parameters.getParameter<bool>("k0_sel",false);
 }
 
 
@@ -175,7 +176,7 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     tracking::sim::utils::flatCov(bound_cov,ldmx_cov);
     seedTrack.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(bound_params));
     seedTrack.setPerigeeCov(ldmx_cov);
-        
+    
     truth_seeds_.push_back(seedTrack);
     
     
@@ -183,6 +184,27 @@ void TruthSeedProcessor::produce(framework::Event &event) {
 
   if (debug_)
     std::cout<<"Adding "<<out_trk_coll_name_<<" seeds" <<std::endl;
+
+
+  //Do the k0 selection.
+  //std::vector<ldmx::Track> k0_decay_pions;
+  
+  //if (k0_sel_) {
+  //  if (truth_seeds_.size() == 2 && truth_seeds_.at(0).charge() * truth_seeds_.at(1).charge() < 0) {
+  //    TLorentzVector p1, p2;
+  //   p1.SetXYZM(truth_seeds_.at(0).momentum()(0),
+  //               truth_seeds_.at(0).momentum()(1),
+  //               truth_seeds_.at(0).momentum()(2),
+  //               pion_mass);
+  //    
+  //    p2.SetXYZM(truth_seeds_.at(1).momentum()(0),
+  //               truth_seeds_.at(1).momentum()(1),
+  //               truth_seeds_.at(1).momentum()(2),
+  //               pion_mass);
+  //  }
+  //}// k0 selection
+    
+
   
   event.add(out_trk_coll_name_, truth_seeds_);
   

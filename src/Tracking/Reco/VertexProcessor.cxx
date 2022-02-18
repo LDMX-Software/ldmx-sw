@@ -20,7 +20,9 @@ void VertexProcessor::onProcessStart(){
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
   
-  h_m_   =  new TH1F("m","m",100,0.35,0.65);
+  h_m_             =  new TH1F("m","m",100,0.,1.);
+  h_m_truthFilter_ =  new TH1F("m_filter","m",100,0.,1.);
+  h_m_truth_       =  new TH1F("m_truth","m_truth",100,0.,1.); 
   
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
@@ -105,6 +107,9 @@ void VertexProcessor::produce(framework::Event &event) {
   
   //Retrieve the track collection
   const std::vector<ldmx::Track> tracks = event.getCollection<ldmx::Track>(trk_coll_name_);
+
+  //Retrieve the truth seeds
+  const std::vector<ldmx::Track> seeds = event.getCollection<ldmx::Track>("RecoilTruthSeeds");
   
   if (tracks.size() < 1)
     return;
@@ -162,12 +167,56 @@ void VertexProcessor::produce(framework::Event &event) {
              pion_mass);
 
 
-  p1.Print();
-  p2.Print();
+  std::vector<TLorentzVector> pion_seeds;
   
-  //Check if the tracks have opposite charge
-  h_m_ ->Fill((p1+p2).M());
+  if (seeds.size() == 2) {
+      
+    for (int iSeed=0; iSeed < seeds.size(); iSeed++) {
+      
+      std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
+          Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(seeds.at(iSeed).getPerigeeX(),
+                                                                        seeds.at(iSeed).getPerigeeY(),
+                                                                        seeds.at(iSeed).getPerigeeZ()));
+      
+      Acts::BoundVector paramVec;
+      paramVec <<
+          seeds.at(iSeed).getD0(),
+          seeds.at(iSeed).getZ0(),
+          seeds.at(iSeed).getPhi(),
+          seeds.at(iSeed).getTheta(),
+          seeds.at(iSeed).getQoP(),
+          seeds.at(iSeed).getT();
+      
+      
+      Acts::BoundSymMatrix covMat =
+          tracking::sim::utils::unpackCov(seeds.at(iSeed).getPerigeeCov());
+      
+      
+      auto boundSeedParams = 
+          Acts::BoundTrackParameters(perigeeSurface, paramVec, std::move(covMat));
+      
+      TLorentzVector pion4v;
+      pion4v.SetXYZM(boundSeedParams.momentum()(0),
+                     boundSeedParams.momentum()(1),
+                     boundSeedParams.momentum()(2),
+                     pion_mass);
+
+      pion_seeds.push_back(pion4v);
+    } //loops on seeds
+    
+    h_m_truth_       ->Fill((pion_seeds.at(0) + pion_seeds.at(1)).M());
+    
+  }
   
+  
+  
+  if ((pion_seeds.size() == 2) && (pion_seeds.at(0) + pion_seeds.at(1)).M() > 0.490 && (pion_seeds.at(0) + pion_seeds.at(1)).M() < 0.510 ) {
+    
+    //Check if the tracks have opposite charge
+    h_m_truthFilter_ ->Fill((p1+p2).M());
+  }
+  
+  h_m_->Fill((p1+p2).M());
   
   auto end = std::chrono::high_resolution_clock::now();
   //long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
@@ -181,7 +230,9 @@ void VertexProcessor::onProcessEnd(){
   TFile* outfile = new TFile("VertexingResults.root","RECREATE");
   outfile->cd();
 
-  h_m_ -> Write();
+  h_m_       -> Write();
+  h_m_truth_ -> Write();
+  h_m_truthFilter_ -> Write();
   outfile->Close();
   delete outfile;
   
