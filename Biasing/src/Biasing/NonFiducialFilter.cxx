@@ -53,7 +53,7 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   if (Zpos > 248.34 && Zpos < 248.36){
     // Record the ECal face cell-module center (x,y) positions from the .txt file
     ifstream inFile;
-    inFile.open("/home/dgj1118/LDMX_BASE/production/cellmodule_v13.txt");
+    inFile.open("/home/dgj1118/LDMX_BASE/production/tests/cellmodule_v13.txt");
     if (!inFile) {
       cerr << "Unable to open txt file!";
       exit(1);   // call system to stop
