@@ -49,8 +49,28 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   double Ypos{track->GetPosition().getY()}; // y coordinate of the recoil electron
   double Zpos{track->GetPosition().getZ()}; // z coordinate of the recoil electron
 
-  // Make sure the recoil electron is at the ECal Face when checking 
-  if (Zpos > 248.34 && Zpos < 248.36){
+  // Make sure the recoil electron is at the ECal SP 
+  if (Zpos > 240.500 && Zpos < 240.501){
+
+    double Xmom{track->GetMomentum().getX()}; // x momentum of the recoil electron
+    double Ymom{track->GetMomentum().getX()}; // y momentum of the recoil electron
+    double Zmom{track->GetMomentum().getX()}; // z momentum of the recoil electron
+    
+    double projectionX = 0.0;
+    double projectionY = 0.0;
+    
+    if (Xmom == 0) {
+      projectionX = Xpos + (248.35 - Zpos)/99999;
+    }else{
+      projectionX = Xpos + Xmom/Zmom*(248.35 - Zpos);
+    }
+    
+    if (Ymom == 0) {
+      projectionY = Ypos + (248.35 - Zpos)/99999;
+    }else{
+      projectionY = Ypos + Ymom/Zmom*(248.35 - Zpos);
+    }
+
     // Record the ECal face cell-module center (x,y) positions from the .txt file
     ifstream inFile;
     inFile.open("/home/dgj1118/LDMX_BASE/production/tests/cellmodule_v13.txt");
@@ -85,9 +105,9 @@ void NonFiducialFilter::stepping(const G4Step* step) {
       ssX >> X;
       ssY >> Y;
 
-      double result = sqrt(pow(Xpos - X, 2)  + pow(Ypos - Y, 2)); // distance between (x,y) of recoil electron and (x,y) of cell-module center
+      double distance = sqrt(pow(projectionX - X, 2)  + pow(projectionY - Y, 2)); // distance between (x,y) of recoil electron and (x,y) of cell-module center
       // ABORT events that are within 5 mm of any cell-module center at the ECal Face
-      if (result <= 5){
+      if (distance <= 5){
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
       }
