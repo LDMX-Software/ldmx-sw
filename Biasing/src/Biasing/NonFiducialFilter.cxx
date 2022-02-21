@@ -1,9 +1,4 @@
 #include "Biasing/NonFiducialFilter.h"
-#include <fstream>
-#include <stdio.h> 
-#include <math.h>
-#include <cmath>
-
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -44,76 +39,44 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11) {
     return;
   }   
-
-  double Xpos{track->GetPosition().getX()}; // x coordinate of the recoil electron
-  double Ypos{track->GetPosition().getY()}; // y coordinate of the recoil electron
-  double Zpos{track->GetPosition().getZ()}; // z coordinate of the recoil electron
-
-  // Make sure the recoil electron is at the ECal SP 
-  if (Zpos > 240.500 && Zpos < 240.501){
-
-    double Xmom{track->GetMomentum().getX()}; // x momentum of the recoil electron
-    double Ymom{track->GetMomentum().getX()}; // y momentum of the recoil electron
-    double Zmom{track->GetMomentum().getX()}; // z momentum of the recoil electron
     
-    double projectionX = 0.0;
-    double projectionY = 0.0;
-    
-    if (Xmom == 0) {
-      projectionX = Xpos + (248.35 - Zpos)/99999;
-    }else{
-      projectionX = Xpos + Xmom/Zmom*(248.35 - Zpos);
-    }
-    
-    if (Ymom == 0) {
-      projectionY = Ypos + (248.35 - Zpos)/99999;
-    }else{
-      projectionY = Ypos + Ymom/Zmom*(248.35 - Zpos);
-    }
-
-    // Record the ECal face cell-module center (x,y) positions from the .txt file
-    ifstream inFile;
-    inFile.open("/home/dgj1118/LDMX_BASE/production/tests/cellmodule_v13.txt");
-    if (!inFile) {
-      cerr << "Unable to open txt file!";
-      exit(1);   // call system to stop
-    }
-
-    std::string row;
-    while (inFile.good()) {
-      getline(inFile, row, '\n');
-      //std::cout << row << endl;
-
-      std::stringstream rowStream(row);
-      std::string item;
-      std::string x = "";  // x coordinate of a ECal face cell-module center
-      std::string y = "";  // y coordinate of an ECal face cell-module center
-
-      getline(rowStream, item, ' ');
-      getline(rowStream, x, ' ');
-      getline(rowStream, y, ' ');
-      //std::cout << x << " " << y << endl;
-
-      std::stringstream ssX;
-      ssX << x;
-      std::stringstream ssY;
-      ssY << y;
-
-      double X = 0.0;
-      double Y = 0.0;
-
-      ssX >> X;
-      ssY >> Y;
-
-      double distance = sqrt(pow(projectionX - X, 2)  + pow(projectionY - Y, 2)); // distance between (x,y) of recoil electron and (x,y) of cell-module center
-      // ABORT events that are within 5 mm of any cell-module center at the ECal Face
-      if (distance <= 5){
-        track->SetTrackStatus(fKillTrackAndSecondaries);
-        G4RunManager::GetRunManager()->AbortEvent();
+  // Check if the track is tagged.
+  if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true) { 
+ 
+    // Check if the track ever enters the ECal. If it does, kill the track and abort the event.
+    if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; 
+    (volume.contains("Si") && volume.contains("volume"))) {
+      
+      // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
+      if (abortFiducialEvents_){
+      track->SetTrackStatus(fKillTrackAndSecondaries);
+      G4RunManager::GetRunManager()->AbortEvent();
+      } else {
+      getEventInfo()->setFiducial(true);
+      if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
+          const char* volume_char = volume.data();
+          std::string volume_name(1,*volume_char);
+          getEventInfo()->setFiducialVolume(volume);
+        }
       }
+      return;
     }
-  }
+    return;
+  } else
 
+  // Check if the particle enters the target.
+  if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0) {    
+    // Check if the particle that entered the target exits to the recoil region.
+    if (auto next_region{track->GetNextVolume()->GetName()}; next_region.compareTo("recoil") == 0) {
+      /* Tag the tracks that: 
+      1) Have a recoil electron
+      2) Enter/Exit the Target */
+      auto trackInfo{simcore::UserTrackInformation::get(track)};
+      trackInfo->tagRecoilElectron(); // tag the target recoil electron      
+      return;
+    }
+    return;
+  }
 }
 
 void NonFiducialFilter::EndOfEventAction(const G4Event*) {}
