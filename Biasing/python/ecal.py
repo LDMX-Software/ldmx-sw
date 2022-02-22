@@ -110,7 +110,7 @@ def nonfiducial_photo_nuclear( detector, generator ) :
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
-            filters.NonFiducialFilter(abort_fid_e=True),
+            filters.NonFiducialFilter(),
             # Only consider events where a PN reaction happens in the ECal
             filters.EcalProcessFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.

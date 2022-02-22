@@ -61,9 +61,6 @@ class NonFiducialFilter : public simcore::UserAction {
   /// Recoil electron threshold.
   double recoilMaxPThreshold_{1500};  // MeV
 
-  /// Parameter to determine whether to tag or abort fiducial events.
-  bool abortFiducialEvents_{true};
-
 };  // NonFiducialFilter
 }  // namespace biasing
 

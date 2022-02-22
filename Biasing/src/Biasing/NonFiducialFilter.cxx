@@ -21,8 +21,6 @@ NonFiducialFilter::NonFiducialFilter(const std::string& name,framework::config::
   : simcore::UserAction(name, parameters) {
   recoilMaxPThreshold_ =
       parameters.getParameter<double>("recoil_max_p_threshold");
-  abortFiducialEvents_ =
-      parameters.getParameter<bool>("abort_fiducial_events");
       }
   
 
@@ -44,25 +42,13 @@ void NonFiducialFilter::stepping(const G4Step* step) {
   if (auto electronCheck{simcore::UserTrackInformation::get(track)}; electronCheck->isRecoilElectron() == true) { 
  
     // Check if the track ever enters the ECal. If it does, kill the track and abort the event.
-    if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; 
-    (volume.contains("Si") && volume.contains("volume"))) {
-      
-      // Either TAG fiducial events or ABORT fiducial events (depending on the config parameter)
-      if (abortFiducialEvents_){
+    if (auto volume{track->GetVolume()->GetLogicalVolume()->GetName()}; (volume.contains("Si") && volume.contains("volume"))) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
-      } else {
-      getEventInfo()->setFiducial(true);
-      if (std::string name{getEventInfo()->getFiducialVolume()}; name == "none"){
-          const char* volume_char = volume.data();
-          std::string volume_name(1,*volume_char);
-          getEventInfo()->setFiducialVolume(volume);
-        }
-      }
       return;
     }
     return;
-  } else
+    } else
 
   // Check if the particle enters the target.
   if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; region.compareTo("target") == 0) {    
