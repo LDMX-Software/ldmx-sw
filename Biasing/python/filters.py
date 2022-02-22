@@ -46,8 +46,6 @@ class NonFiducialFilter(simcfg.UserAction):
     ----------
     recoil_max_p : float
         Maximum momentum the recoil electron can have [MeV]
-    abort_fid_e: bool
-        If turned on, this aborts fiducial events. Else, this tags fiducial events.
     """
 
     def __init__(self,recoil_max_p = 1500.) :
