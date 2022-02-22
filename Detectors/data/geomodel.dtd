@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- Copyright N.P. Hessey, Nikhef, 2013 -->
+
+<!ELEMENT geomodel ((defines|materials|readoutgeometry|positionindex|shapes|logvol|transformation|assembly)+, addbranch)>
+  <!ATTLIST geomodel name    CDATA "Unnamed detector"
+                     version CDATA "0.0"
+                     xmlns   CDATA #FIXED "http://www.nikhef.nl/%7Er29/gmx">
+
+  <!ELEMENT defines (var|vector|matrix)+>
+
+    <!ELEMENT var EMPTY>
+      <!ATTLIST var name  ID    #REQUIRED
+                    value CDATA #REQUIRED>
+
+    <!ELEMENT vector EMPTY>
+      <!ATTLIST vector name  ID    #REQUIRED
+                       value CDATA #REQUIRED>
+
+    <!ELEMENT matrix EMPTY>
+      <!ATTLIST matrix name   ID    #REQUIRED
+                       coldim CDATA #REQUIRED
+                       value  CDATA #REQUIRED>
+
+  <!ELEMENT materials ((element|chemical|material)+)>
+    <!ATTLIST materials densitysf CDATA "1.0">
+
+    <!ELEMENT element EMPTY>
+      <!ATTLIST element name      ID      #REQUIRED
+                        shortname NMTOKEN #REQUIRED
+                        Z         CDATA   #REQUIRED
+                        A         CDATA   #REQUIRED>
+
+    <!ELEMENT chemical (elemcontent)+>
+      <!ATTLIST chemical name ID #REQUIRED>
+      <!ELEMENT elemcontent EMPTY>
+        <!ATTLIST elemcontent ref      IDREF #REQUIRED
+                              quantity CDATA #REQUIRED>
+
+    <!ELEMENT material (elementref|materialref|chemicalref)+>
+      <!ATTLIST material name    ID    #REQUIRED
+                         density CDATA #REQUIRED>
+
+      <!ELEMENT elementref EMPTY>
+        <!ATTLIST elementref ref      IDREF #REQUIRED
+                             fraction CDATA #REQUIRED>
+
+      <!ELEMENT materialref EMPTY>
+        <!ATTLIST materialref ref      IDREF #REQUIRED
+                              fraction CDATA #REQUIRED>
+
+      <!ELEMENT chemicalref EMPTY>
+        <!ATTLIST chemicalref ref      IDREF #REQUIRED
+                              fraction CDATA #REQUIRED>
+
+  <!ELEMENT readoutgeometry (param*, sensorclass+)>
+    <!ELEMENT param EMPTY>
+      <!ATTLIST param name  NMTOKEN #REQUIRED
+                      value CDATA   #REQUIRED>
+    <!ELEMENT sensorclass (param*, sensortype+)>
+    <!ATTLIST sensorclass name ID #REQUIRED>
+      <!ELEMENT sensortype (param*)>
+        <!ATTLIST sensortype name ID #REQUIRED>
+
+  <!ELEMENT positionindex (addindex+)>
+    <!ELEMENT addindex EMPTY>
+        <!ATTLIST addindex name ID #REQUIRED>
+
+  <!ELEMENT shapes ((box|cons|generictrap|para|pcon|pgon|trap|tube|tubs|trd|intersection|subtraction|union|simplepolygonbrep)+)>
+    <!-- All shapes allowed in GeoModel manual. Same name, parameters, parameter order, but always lower case -->
+
+    <!ELEMENT simplepolygonbrep EMPTY>
+      <!ATTLIST simplepolygonbrep name        ID    #REQUIRED
+                                  xpoints     CDATA #REQUIRED
+                                  ypoints     CDATA #REQUIRED
+                                  zhalflength CDATA #REQUIRED>
+
+    <!ELEMENT box EMPTY>
+      <!ATTLIST box name        ID    #REQUIRED
+                    xhalflength CDATA #REQUIRED
+                    yhalflength CDATA #REQUIRED
+                    zhalflength CDATA #REQUIRED>
+
+    <!ELEMENT cons EMPTY>
+      <!ATTLIST cons name  ID #REQUIRED
+                     rmin1 CDATA #REQUIRED
+                     rmin2 CDATA #REQUIRED
+                     rmax1 CDATA #REQUIRED
+                     rmax2 CDATA #REQUIRED
+                     dz    CDATA #REQUIRED
+                     sphi  CDATA #REQUIRED
+                     dphi  CDATA #REQUIRED>
+
+    <!ELEMENT generictrap EMPTY>
+      <!ATTLIST generictrap name        ID    #REQUIRED
+                            x0          CDATA #REQUIRED
+                            y0          CDATA #REQUIRED
+                            x1          CDATA #REQUIRED
+                            y1          CDATA #REQUIRED
+                            x2          CDATA #REQUIRED
+                            y2          CDATA #REQUIRED
+                            x3          CDATA #REQUIRED
+                            y3          CDATA #REQUIRED
+                            x4          CDATA #REQUIRED
+                            y4          CDATA #REQUIRED
+                            x5          CDATA #REQUIRED
+                            y5          CDATA #REQUIRED
+                            x6          CDATA #REQUIRED
+                            y6          CDATA #REQUIRED
+                            x7          CDATA #REQUIRED
+                            y7          CDATA #REQUIRED
+                            zhalflength CDATA #REQUIRED>
+
+    <!ELEMENT para EMPTY>
+      <!ATTLIST para name        ID    #REQUIRED
+                     xhalflength CDATA #REQUIRED
+                     yhalflength CDATA #REQUIRED
+                     zhalflength CDATA #REQUIRED
+                     alpha       CDATA #REQUIRED
+                     theta       CDATA #REQUIRED
+                     phi         CDATA #REQUIRED>
+
+    <!ELEMENT pcon (addplane, addplane+)>
+      <!ELEMENT addplane EMPTY>
+        <!ATTLIST addplane zplane    CDATA #REQUIRED
+                           rminplane CDATA #REQUIRED
+                           rmaxplane CDATA #REQUIRED>
+ 
+      <!ATTLIST pcon name ID    #REQUIRED
+                     sphi CDATA #REQUIRED
+                     dphi CDATA #REQUIRED>
+
+    <!ELEMENT pgon (addplane, addplane+)>
+      <!ATTLIST pgon name   ID    #REQUIRED
+                     sphi   CDATA #REQUIRED
+                     dphi   CDATA #REQUIRED
+                     nsides CDATA #REQUIRED>
+
+    <!ELEMENT trap EMPTY>
+      <!ATTLIST trap name        ID    #REQUIRED
+                     zhalflength CDATA #REQUIRED
+                     theta       CDATA #REQUIRED
+                     phi         CDATA #REQUIRED
+                     dydzn       CDATA #REQUIRED
+                     dxdyndzn    CDATA #REQUIRED
+                     dxdypdzn    CDATA #REQUIRED
+                     angleydzn   CDATA #REQUIRED
+                     dydzp       CDATA #REQUIRED
+                     dxdyndzp    CDATA #REQUIRED
+                     dxdypdzp    CDATA #REQUIRED
+                     angleydzp   CDATA #REQUIRED>
+
+    <!ELEMENT tube EMPTY>
+      <!ATTLIST tube name        ID    #REQUIRED
+                     rmin        CDATA #REQUIRED
+                     rmax        CDATA #REQUIRED
+                     zhalflength CDATA #REQUIRED>
+
+    <!ELEMENT tubs EMPTY>
+      <!ATTLIST tubs name        ID    #REQUIRED
+                     rmin        CDATA #REQUIRED
+                     rmax        CDATA #REQUIRED
+                     zhalflength CDATA #REQUIRED
+                     sphi        CDATA #REQUIRED
+                     dphi        CDATA #REQUIRED>
+
+    <!ELEMENT trd EMPTY>
+      <!ATTLIST trd name         ID    #REQUIRED
+                    xhalflength1 CDATA #REQUIRED
+                    xhalflength2 CDATA #REQUIRED
+                    yhalflength1 CDATA #REQUIRED
+                    yhalflength2 CDATA #REQUIRED
+                    zhalflength  CDATA #REQUIRED>
+
+    <!ELEMENT intersection (shaperef, (transformation|transformationref), shaperef)>
+      <!ATTLIST intersection name ID #REQUIRED>
+
+    <!ELEMENT subtraction (shaperef, (transformation|transformationref), shaperef)>
+      <!ATTLIST subtraction name ID #REQUIRED>
+
+    <!ELEMENT union (shaperef, (transformation|transformationref), shaperef)>
+      <!ATTLIST union name ID #REQUIRED>
+
+  <!ELEMENT shaperef EMPTY>
+    <!ATTLIST shaperef ref IDREF #REQUIRED>
+
+  <!ELEMENT transform ((transformation|transformationref), (logvol|logvolref|assembly|assemblyref))>
+    <!ATTLIST transform name      ID    #IMPLIED
+                        alignable CDATA #IMPLIED> <!-- CDATA = alignment level-number -->
+
+    <!ELEMENT transformation (scaling|rotation|translation)+>
+
+      <!ELEMENT scaling EMPTY>
+        <!ATTLIST scaling x CDATA "1.0"
+                          y CDATA "1.0"
+                          z CDATA "1.0">
+
+      <!ELEMENT rotation EMPTY>
+        <!ATTLIST rotation xcos  CDATA "0.0"
+                           ycos  CDATA "0.0"
+                           zcos  CDATA "0.0"
+                           angle CDATA "0.0">
+
+      <!ELEMENT translation EMPTY>
+        <!ATTLIST translation x CDATA "0.0"
+                              y CDATA "0.0"
+                              z CDATA "0.0">
+
+      <!ATTLIST transformation name ID #REQUIRED>
+      <!ATTLIST transformation alignable (true|false) "false"> 
+
+    <!ELEMENT transformationref EMPTY>
+      <!ATTLIST transformationref ref IDREF #REQUIRED>
+
+  <!ELEMENT logvol (transform|logvol|logvolref|assembly|assemblyref|multicopy|index)*>
+    <!-- If sensitive is not given, it is not sensitive. If given, it points to a digitization scheme -->
+    <!ATTLIST logvol name ID #REQUIRED
+                     shape IDREF #REQUIRED
+                     material IDREF #REQUIRED
+                     sensitive IDREF #IMPLIED 
+                     alignable (true|false) "false"> 
+
+  <!ELEMENT index EMPTY>
+    <!ATTLIST index ref   IDREF #REQUIRED
+                    value CDATA #REQUIRED>
+
+  <!ELEMENT logvolref EMPTY>
+    <!ATTLIST logvolref ref    IDREF         #REQUIRED
+                        zeroid (true|false) "false">
+
+  <!ELEMENT assembly (transform|logvol|logvolref|assembly|assemblyref|multicopy|index)+>
+    <!ATTLIST assembly name      ID           #REQUIRED
+                       alignable (true|false) "false"> 
+
+  <!ELEMENT assemblyref EMPTY>
+    <!ATTLIST assemblyref ref    IDREF        #REQUIRED
+                          zeroid (true|false) "false">
+
+  <!ELEMENT multicopy (transformation, (transform|logvolref|assemblyref))>
+    <!-- Removed logvol and assembly from multicopy content. There is no particular reason 
+         why they shouldn't be allowed there. But in practice one uses refs, and forbidding them simplifies coding 
+         the index stuff. If you need them, put them back. Got rid of transformref; never used. -->
+    <!-- loopvar: Set to a vector variable name or omit; see manual -->
+    <!-- alignable: Value is the alignment level-number -->
+    <!ATTLIST multicopy name      ID    #REQUIRED
+                        n         CDATA #REQUIRED
+                        loopvar   CDATA #IMPLIED
+                        alignable CDATA #IMPLIED>
+    <!-- N.B. no zeroid attribute: the copy-number is always zeroed each time the multicopy is inserted; no choice -->
+
+  <!ELEMENT addbranch (transform|logvol|logvolref|assembly|assemblyref)+>
+
