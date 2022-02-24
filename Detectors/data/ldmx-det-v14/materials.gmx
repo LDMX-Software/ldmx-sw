@@ -1,9 +1,11 @@
+<?xml version="1.0"?>
 <materials>
- <element name="Nitrogen"    shortname="N"  Z="7"  A="14.00674"/>
- <element name="Oxygen"      shortname="O"  Z="8"  A="15.9994"/>
- <element name="Argon"       shortname="Ar" Z="18" A="39.948"/>
- <element name="Silicon"     shortname="Si" Z="14" A="28.0855" />
 
+  <element name="Nitrogen" shortname="N" Z="7" A="14.00674"/>
+  <element name="Oxygen" shortname="O" Z="8" A="15.9994"/>
+  <element name="Argon" shortname="Ar" Z="18" A="39.948"/>
+  <element name="Silicon" shortname="Si" Z="14" A="28.0855"/>
+  
   <material name="Air" density="1.205e-3">
     <elementref fraction="0.7541" ref="Nitrogen"/>
     <elementref fraction="0.2321" ref="Oxygen"/>
