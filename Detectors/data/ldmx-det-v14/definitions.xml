@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<defines>
+  <!-- Constant defining the clearance between volumes -->
+  <var name="clearance" value="0.001"/>
+  
+  <!-- 
+  Magnet Gap
+  -->
+  <var name="magnet_gap_dx" value="430"/>
+  <var name="magnet_gap_dy" value="350"/>
+  
+  <!-- 
+      Target
+  -->
+  <!-- position -->
+  <var name="target_z" value="0.0"/>
+  <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+  <var name="target_thickness" value="0.3504"/>
+  <!-- Target dimensions -->
+  <var name="target_dim_x" value="40"/>
+  <var name="target_dim_y" value="100"/>
+  
+  <!-- 
+    Trigger scintillator
+  -->
+  <var name="trig_scint_thickness" value="4.5"/>
+  <!--
+    Midpoint position of the upstream trigger scintillator.
+    Position = −2.0748 mm
+  -->
+  <var name="trig_scint_up_mid_z" value="target_z - target_thickness/2 - trig_scint_thickness/2"/>
+  
+  <!-- 
+  Tagger tracker
+  -->
+  <!-- layer X positions assuming a 1.5 T field. -->
+  <var name="tagger_l1_x" value="-20.955"/>
+  <var name="tagger_l2_x" value="-14.643"/>
+  <var name="tagger_l3_x" value="-9.461"/>
+  <var name="tagger_l4_x" value="-5.407"/>
+  <var name="tagger_l5_x" value="-2.481"/>
+  <var name="tagger_l6_x" value="-0.681"/>
+  <var name="tagger_l7_x" value="-0.006"/>
+  <!-- offset in Z between stereo sensors -->
+  <var name="tagger_layer_offset" value="3.0"/>
+  <!-- 
+  Tagger tracker distances relative to envelope volume face closest to 
+  target.
+    
+    20 cm between recoil l1 mid and tagger l7 mid
+    Distance from target to mid point of a module. 
+    Layer 7: 10 mm
+    Layer 6: 110 mm
+    Layer 5: 210 mm
+    Layer 4: 310 mm
+    Layer 3: 410 mm
+    Layer 2: 510 mm
+    Layer 1: 610 mm
+  <var name="tagger_layer_delta" value="100"/>
+  <var name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
+  <var name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_layer_delta"/>
+  <var name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_layer_delta"/>
+  <var name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_layer_delta"/>
+  <var name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_layer_delta"/>
+  <var name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_layer_delta"/>
+  <var name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_layer_delta"/>
+  -->
+  <!-- Dimensions of the tagger tracker envelope -->
+  <var name="tagger_env_dx" value="magnet_gap_x - 5"/>
+  <var name="tagger_env_dy" value="magnet_gap_y - 5"/>
+  <!-- 
+    For now, this is made large enough to contain the tagger tracker.
+    At some point, this can be defined in terms of other detector variables.
+  -->
+  <var name="tagger_env_dz" value="625"/>
+  <!--
+    Tagger tracker parent volume position relative to the target.
+    Position = -316.8248 mm
+  -->
+  <var name="tagger_env_mid_z" value="trig_scint_up_mid_z - trig_scint_thickness/2 - tagger_env_dz/2"/>
+
+</defines>

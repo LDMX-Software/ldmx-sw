@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!-- Define the location of the DTD -->
+<!DOCTYPE geomodel SYSTEM "../geomodel.dtd" [
+<!ENTITY materials SYSTEM "materials.gmx">
+<!ENTITY definitions SYSTEM "definitions.xml">
+]>
+<geomodel xmlns="http://www.nikhef.nl/%7Er29/gmx" 
+          name="LDMX_Detector_v14" version="14.0">
+  <!-- Materials -->
+  &materials;
+
+  <!-- Defines --> 
+  &definitions;
+
+  <shapes>
+    <box name="tagger_env_box" 
+          xhalflength="tagger_env_dx/2" 
+          yhalflength="tagger_env_dy/2" 
+          zhalflength="tagger_env_dz/2"/>
+  </shapes>
+
+  <logvol name="tagger_env" shape="tagger_env_box" material="Air"/>
+
+  <assembly name="tagger_env_assem">
+    <transform>
+      <transformation name="tagger_env_transform">
+        <translation z="tagger_env_mid_z"/>
+      </transformation>
+      <logvolref ref="tagger_env"/>
+    </transform>
+  </assembly>
+
+  <addbranch>
+    <assemblyref ref="tagger_env_assem"/>
+  </addbranch>
+
+</geomodel>
