@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <defines>
   <!-- Constant defining the clearance between volumes -->
   <var name="clearance" value="0.001"/>
@@ -66,8 +65,8 @@
   <var name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_layer_delta"/>
   -->
   <!-- Dimensions of the tagger tracker envelope -->
-  <var name="tagger_env_dx" value="magnet_gap_x - 5"/>
-  <var name="tagger_env_dy" value="magnet_gap_y - 5"/>
+  <var name="tagger_env_dx" value="magnet_gap_dx - 5"/>
+  <var name="tagger_env_dy" value="magnet_gap_dy - 5"/>
   <!-- 
     For now, this is made large enough to contain the tagger tracker.
     At some point, this can be defined in terms of other detector variables.
