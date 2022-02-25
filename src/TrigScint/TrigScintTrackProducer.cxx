@@ -37,8 +37,9 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
   // parameters.
   // one pad cluster collection to use as seed
   // a vector with the other two
-  // a maximum distance between seed centroid and other pad clusters to go to
-  // the same track an output collection name a verbosity controller
+  // a maximum distance between seed centroid and other pad clusters
+  //   allowed to belong to the same track
+  // an output collection name a verbosity controller
 
   if (verbose_) {
     ldmx_log(debug)
@@ -46,6 +47,11 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         << event.getEventHeader().getEventNumber();
   }
 
+  if (!event.exists(seeding_collection_, passName_)) {
+    ldmx_log(info) << "No collection called " << seeding_collection_
+                   << "; skipping event";
+    return;
+  }
   const auto seeds{event.getCollection<ldmx::TrigScintCluster>(
       seeding_collection_, passName_)};
   uint numSeeds = seeds.size();
@@ -56,16 +62,20 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                     << " entries ";
   }
 
-  if (!event.exists(input_collections_.at(0))) {
+  if (!event.exists(input_collections_.at(0), passName_)) {
     ldmx_log(info) << "No collection called " << input_collections_.at(0)
-                   << "; still, not skipping event";
+	  //                   << "; still, not skipping event";
+                   << "; skipping event";
+	return;
   }
   const auto clusters_pad1{event.getCollection<ldmx::TrigScintCluster>(
       input_collections_.at(0), passName_)};
 
-  if (!event.exists(input_collections_.at(1))) {
+  if (!event.exists(input_collections_.at(1), passName_)) {
     ldmx_log(info) << "No collection called " << input_collections_.at(1)
-                   << "; still, not skipping event";
+	  //                   << "; still, not skipping event";
+                   << "; skipping event";
+	return;
   }
 
   const auto clusters_pad2{event.getCollection<ldmx::TrigScintCluster>(
