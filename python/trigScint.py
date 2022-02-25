@@ -112,6 +112,7 @@ class EventReadoutProducer(ldmxcfg.Producer) :
         self.input_collection="decodedQIEUp"
         self.input_pass_name=""   #take any pass
         self.output_collection="QIEsamplesUp"
+        self.number_pedestal_samples=5
         self.verbose = False
 
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
@@ -217,6 +218,7 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
 
         self.inputCollection="QIEsamplesUp"
         self.inputPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
         self.pedestals=[ 0.6,
                          4.4,
                          -1.25,

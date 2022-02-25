@@ -45,23 +45,15 @@ namespace trigscint {
 
 	std::vector <std::vector <TH1F*> > vChargeVsTime;
 	
-    // 
-    // TH1* hId;
-    // TH1* hNtracksEvnb;
-    // TH1* hNtracks;
-    // TH1* hFindableTracks;
-    // TH2* hTrackMatrix;
-    // TH1* hNhits;
-    // TH2 *hSimYEvnb;
-    // TH2 *hSimIDEvnb;
-    // TH2 *   hIdEvnb;
-	
+
+	//configurable parameters
     std::string inputCol_;
     std::string inputPassName_{""};
 	std::vector<double> peds_;
+	int startSample_{0};
 
+	//plotting stuff 
 	int evNb;
-    //    const 
     int nEv{200};
     int nChannels{16};
     int nTrkMax{100};
@@ -70,7 +62,15 @@ namespace trigscint {
 	TH1F* hOut[200][16];;
 	TH1F* hPE[16];
 	TH2F* hPEvsT[16];
+	TH2F* hPedSubtractedAvgQvsT[16];
+	TH2F* hPedSubtractedTotQvsPed[16];
+	TH2F* hPedSubtractedTotQvsN[16];
+	TH2F* hTotQvsPed[16];
+	TH2F* hPedSubtractedPEvsN[16];
+	TH2F* hPedSubtractedPEvsT[16];
+	TH2F* hAvgQvsT[16];
 	
+	TH2F* hTDCfireChanvsEvent;
     double yOffset_{35.};
     double yToIDfactor_{50./80.};
 

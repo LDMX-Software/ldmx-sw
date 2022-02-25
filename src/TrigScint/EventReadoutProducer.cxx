@@ -17,6 +17,7 @@ void EventReadoutProducer::configure(
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  nPedSamples_ = parameters.getParameter<int>("number_pedestal_samples");
   verbose_ = parameters.getParameter<bool>("verbose");
 }
 
@@ -24,8 +25,6 @@ void EventReadoutProducer::produce(framework::Event &event) {
   // initialize QIE object for linearizing ADCs
   SimQIE qie;
   
-  // looper over sim hits and aggregate energy depositions
-  // for each detID
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
       inputCollection_, inputPassName_)};
 
@@ -41,19 +40,28 @@ void EventReadoutProducer::produce(framework::Event &event) {
     outEvent.setADC(adc);
     outEvent.setTDC(tdc);
 	std::vector <float> charge;
+	std::vector <float> chargeErr;
 
 	float avgQ = 0;
+	int iS=0;
+	float earlyPed=0;
 	for (auto& val: adc) {
-	  charge.push_back( qie.ADC2Q(val) );
-	  avgQ+=qie.ADC2Q(val); //charge.back();
+	  float Q=qie.ADC2Q(val);
+	  charge.push_back( Q );
+	  chargeErr.push_back( qie.QErr(Q) );
+	  avgQ+=Q; //charge.back();
 	  if (verbose_)
-	    ldmx_log(debug) << "got adc value " << val << " and charge " << qie.ADC2Q(val);
-
+	    ldmx_log(debug) << "got adc value " << val << " and charge " << Q; //qie.ADC2Q(val);
+	  if (iS < nPedSamples_)
+		earlyPed+=Q;
+	  iS++;
 	}
 	outEvent.setQ(charge); //set in proper order before sorting 
+	outEvent.setQError(chargeErr); //set in proper order before sorting 
 	avgQ/=adc.size();
-
-	//calculate the pedestal as the average of the middle half of the sorted vector 
+	earlyPed/=nPedSamples_;
+	outEvent.setEarlyPedestal(earlyPed);
+	//now calculate the pedestal as the average of the middle half of the sorted vector 
 	float ped = 0;
 	std::sort(charge.begin(), charge.end());
 	int quartLength=(int)charge.size()/4;
