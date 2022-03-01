@@ -11,4 +11,8 @@
     <elementref fraction="0.0138" ref="Argon"/>
   </material>
 
+  <material name="SiMetal" density="2.3290">
+    <elementref fraction="1.0" ref="Silicon" />
+  </material>
+
 </materials>

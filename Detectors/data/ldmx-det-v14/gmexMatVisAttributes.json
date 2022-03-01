@@ -1,0 +1,59 @@
+{
+  "MatVisAttributes": [
+    {
+      "ambient": { 
+        "B": 0.3, 
+        "G": 0.3, 
+        "R": 0.3
+      },
+      "diffuse": {
+        "B": 0.3, 
+        "G": 0.3, 
+        "R": 0.3
+      },
+      "emissive": {
+        "B": 0.878, 
+        "G": 0.878, 
+        "R": 0.878
+      },
+      "name": [
+          "Air"
+      ],
+      "shininess": 0.900000166893005,
+      "specular": {
+        "B": 1.0, 
+        "G": 0.0, 
+        "R": 0.0
+      },
+      "transparency": 0.85
+    },
+    {
+      "ambient": { 
+        "B": 0.0, 
+        "G": 0.8, 
+        "R": 0.8
+      },
+      "diffuse": {
+        "B": 0.0, 
+        "G": 0.8, 
+        "R": 0.8
+      },
+      "emissive": {
+        "B": 0.0, 
+        "G": 0.8, 
+        "R": 0.8
+      },
+      "name": [
+          "SiMetal"
+      ],
+      "shininess": 0.900000166893005,
+      "specular": {
+        "B": 0.0, 
+        "G": 0.8, 
+        "R": 0.8
+      },
+      "transparency": 0.5
+    }
+
+  ]
+}
