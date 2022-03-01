@@ -17,11 +17,40 @@
           xhalflength="tagger_env_dx/2" 
           yhalflength="tagger_env_dy/2" 
           zhalflength="tagger_env_dz/2"/>
+    <box name="sensor_box" 
+          xhalflength="sensor_dx/2" 
+          yhalflength="sensor_dy/2" 
+          zhalflength="si_sensor_thickness/2"/>
   </shapes>
 
-  <logvol name="tagger_env" shape="tagger_env_box" material="Air"/>
+  <logvol name="tagger_sensor" shape="sensor_box" material="SiMetal"/>
+  <logvol name="tagger_env" shape="tagger_env_box" material="Air">
+    <multicopy name="tagger_axial" n="7">
+      <transformation name="tagger_axial_transform">
+        <translation z="tagger_layer_delta" />
+      </transformation>
+      <transform>
+        <transformation name="tagger_axial_shift" >
+          <translation z="tagger_l7_axial_z" />
+        </transformation>
+        <logvolref ref="tagger_sensor" />
+      </transform>
+    </multicopy>
+    <multicopy name="tagger_stereo" n="7">
+      <transformation name="tagger_stereo_transform">
+        <translation z="tagger_layer_delta" />
+      </transformation>
+      <transform>
+        <transformation name="tagger_stereo_shift" >
+          <translation z="tagger_l7_stereo_z" />
+          <rotation zcos="1" angle="0.1" />
+        </transformation>
+        <logvolref ref="tagger_sensor" />
+      </transform>
+    </multicopy>
+  </logvol>
 
-  <assembly name="tagger_env_assem">
+  <assembly name="world">
     <transform>
       <transformation name="tagger_env_transform">
         <translation z="tagger_env_mid_z"/>
@@ -31,7 +60,7 @@
   </assembly>
 
   <addbranch>
-    <assemblyref ref="tagger_env_assem"/>
+      <assemblyref ref="world" />
   </addbranch>
 
 </geomodel>
