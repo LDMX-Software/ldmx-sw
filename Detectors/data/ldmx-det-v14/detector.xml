@@ -25,6 +25,110 @@
 
   <logvol name="tagger_sensor" shape="sensor_box" material="SiMetal"/>
   <logvol name="tagger_env" shape="tagger_env_box" material="Air">
+      
+      <transform>
+          <transformation name="tagger_l1_axial_transformation">
+            <translation x="tagger_l1_x" z="tagger_l1_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l1_stereo_transformation">
+            <translation x="tagger_l1_x" z="tagger_l1_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l2_axial_transformation">
+            <translation x="tagger_l2_x" z="tagger_l2_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l2_stereo_transformation">
+            <translation x="tagger_l2_x" z="tagger_l2_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="-1*stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l3_axial_transformation">
+            <translation x="tagger_l3_x" z="tagger_l3_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l3_stereo_transformation">
+            <translation x="tagger_l3_x" z="tagger_l3_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l4_axial_transformation">
+            <translation x="tagger_l4_x" z="tagger_l4_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l4_stereo_transformation">
+            <translation x="tagger_l4_x" z="tagger_l4_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="-1*stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l5_axial_transformation">
+            <translation x="tagger_l5_x" z="tagger_l5_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l5_stereo_transformation">
+            <translation x="tagger_l5_x" z="tagger_l5_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l6_axial_transformation">
+            <translation x="tagger_l6_x" z="tagger_l6_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l6_stereo_transformation">
+            <translation x="tagger_l6_x" z="tagger_l6_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+      <transform>
+          <transformation name="tagger_l7_axial_transformation">
+            <translation x="tagger_l7_x" z="tagger_l7_mid_z - tagger_layer_offset" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+      <transform>
+          <transformation name="tagger_l7_stereo_transformation">
+            <translation x="tagger_l7_x" z="tagger_l7_mid_z + tagger_layer_offset" />
+            <rotation zcos="1" angle="stereo_angle" />
+          </transformation>
+          <logvolref ref="tagger_sensor" />
+      </transform>
+
+  </logvol>
+
+  <!-- 
+  <logvol name="tagger_sensor" shape="sensor_box" material="SiMetal"/>
+  <logvol name="tagger_env" shape="tagger_env_box" material="Air">
     <multicopy name="tagger_axial" n="7">
       <transformation name="tagger_axial_transform">
         <translation z="tagger_layer_delta" />
@@ -36,20 +140,32 @@
         <logvolref ref="tagger_sensor" />
       </transform>
     </multicopy>
-    <multicopy name="tagger_stereo" n="7">
-      <transformation name="tagger_stereo_transform">
-        <translation z="tagger_layer_delta" />
+    <multicopy name="tagger_stereo_pos" n="4">
+      <transformation name="tagger_stereo_pos_transform">
+        <translation z="tagger_layer_delta*2" />
       </transformation>
       <transform>
-        <transformation name="tagger_stereo_shift" >
+        <transformation name="tagger_stereo_pos_shift" >
           <translation z="tagger_l7_stereo_z" />
-          <rotation zcos="1" angle="0.1" />
+          <rotation zcos="1" angle="stereo_angle" />
+        </transformation>
+        <logvolref ref="tagger_sensor" />
+      </transform>
+    </multicopy>
+    <multicopy name="tagger_stereo_neg" n="3">
+      <transformation name="tagger_stereo_neg_transform">
+        <translation z="tagger_layer_delta*2" />
+      </transformation>
+      <transform>
+        <transformation name="tagger_stereo_neg_shift" >
+          <translation z="tagger_l7_stereo_z + tagger_layer_delta" />
+          <rotation zcos="1" angle="-1*stereo_angle" />
         </transformation>
         <logvolref ref="tagger_sensor" />
       </transform>
     </multicopy>
   </logvol>
-
+--> 
   <assembly name="world">
     <transform>
       <transformation name="tagger_env_transform">
