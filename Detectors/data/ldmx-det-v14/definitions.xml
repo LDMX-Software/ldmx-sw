@@ -36,6 +36,7 @@
   <var name="half_module_thickness" value="si_sensor_thickness + carbon_fiber_thickness"/>
   <var name="sensor_dx" value="38.3399"/>
   <var name="sensor_dy" value="98.33"/>
+  <var name="stereo_angle" value="0.1" />
 
   <!-- 
   Tagger tracker
@@ -48,6 +49,7 @@
   <var name="tagger_l5_x" value="-2.481"/>
   <var name="tagger_l6_x" value="-0.681"/>
   <var name="tagger_l7_x" value="-0.006"/>
+  
   <!-- offset in Z between stereo sensors -->
   <var name="tagger_layer_offset" value="3.0"/>
   
@@ -82,10 +84,14 @@
     Layer 2: 510 mm
     Layer 1: 610 mm
   -->
-  <var name="tagger_layer_delta" value="-100"/>
+  <var name="tagger_layer_delta" value="100"/>
   <var name="tagger_l7_mid_z_global" value="-10" />
   <var name="tagger_l7_mid_z" value="-1*(tagger_env_mid_z - tagger_l7_mid_z_global)" />
-  <var name="tagger_l7_axial_z" value="tagger_l7_mid_z - tagger_layer_offset" />
-  <var name="tagger_l7_stereo_z" value="tagger_l7_mid_z + tagger_layer_offset" />
+  <var name="tagger_l6_mid_z" value="tagger_l7_mid_z - tagger_layer_delta" />
+  <var name="tagger_l5_mid_z" value="tagger_l6_mid_z - tagger_layer_delta" />
+  <var name="tagger_l4_mid_z" value="tagger_l5_mid_z - tagger_layer_delta" />
+  <var name="tagger_l3_mid_z" value="tagger_l4_mid_z - tagger_layer_delta" />
+  <var name="tagger_l2_mid_z" value="tagger_l3_mid_z - tagger_layer_delta" />
+  <var name="tagger_l1_mid_z" value="tagger_l2_mid_z - tagger_layer_delta" />
 
 </defines>
