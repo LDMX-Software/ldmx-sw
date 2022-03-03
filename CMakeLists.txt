@@ -21,6 +21,8 @@ if(BUILD_EVENT_ONLY)
                          class "QIEStream" type "collection" )
   register_event_object( module_path "TrigScint/Event" namespace "trigscint"
                          class "EventReadout" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "trigscint"
+                         class "TestBeamHit" type "collection" )
   register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
                          class "TrigScintCluster" type "collection" )
   register_event_object( module_path "TrigScint/Event" namespace "ldmx" 

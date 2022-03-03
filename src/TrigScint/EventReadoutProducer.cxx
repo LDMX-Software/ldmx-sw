@@ -18,6 +18,8 @@ void EventReadoutProducer::configure(
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
   nPedSamples_ = parameters.getParameter<int>("number_pedestal_samples");
+  timeShift_ = parameters.getParameter<int>("time_shift");
+  fiberToShift_ = parameters.getParameter<int>("fiber_to_shift");
   verbose_ = parameters.getParameter<bool>("verbose");
 }
 
@@ -33,10 +35,15 @@ void EventReadoutProducer::produce(framework::Event &event) {
     trigscint::EventReadout outEvent;
     auto adc{digi.getADC()};
     auto tdc{digi.getTDC()};
-
+	
 	//copy over from qie digi for convenience
     outEvent.setChanID(digi.getChanID());
     outEvent.setElecID(digi.getElecID());
+	// elecID increases monotonically with 8 channels per fiber
+	outEvent.setFiberNb( (int)(digi.getElecID()/8) );  
+	if ( outEvent.getFiberNb() == fiberToShift_ )
+	  outEvent.setTimeOffset( timeShift_);
+
     outEvent.setADC(adc);
     outEvent.setTDC(tdc);
 	std::vector <float> charge;
@@ -58,7 +65,6 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	}
 	outEvent.setQ(charge); //set in proper order before sorting 
 	outEvent.setQError(chargeErr); //set in proper order before sorting 
-	avgQ/=adc.size();
 	earlyPed/=nPedSamples_;
 	outEvent.setEarlyPedestal(earlyPed);
 	//now calculate the pedestal as the average of the middle half of the sorted vector 
@@ -74,6 +80,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	float minQ=charge[0];
 	float maxQ=charge[charge.size() -1];
 	
+	outEvent.setTotQ(avgQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
+	avgQ/=adc.size();
 	outEvent.setPedestal(ped);
 	outEvent.setAvgQ(avgQ);
 	outEvent.setMedQ(medQ);
