@@ -100,6 +100,16 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   /**
    * Set channel (linearized, charge-equiv) average charge 
    *             
+   * @param totQ The (time sample) average charge of the channel
+   */
+  void setTotQ(const float totQ) { totQ_ = totQ; };
+
+  /// Get the channel totQ
+  float getTotQ() const { return totQ_; }
+
+  /**
+   * Set channel (linearized, charge-equiv) average charge 
+   *             
    * @param avgQ The (time sample) average charge of the channel
    */
   void setAvgQ(const float avgQ) { avgQ_ = avgQ; };
@@ -141,6 +151,32 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   float getMedQ() const { return medQ_; }
 
+  
+    /**
+   * Set channel readout itme offset (in units of samples)
+   *             
+   * @param timeOffset The (time sample) offset in channel readout 
+   */
+  void setTimeOffset(const int timeOffset) { timeOffset_ = timeOffset; };
+
+  /// Get the channel timeOffset
+
+  int getTimeOffset() const { return timeOffset_; }
+
+    /**
+   * Set channel readout fiber number 
+   *             
+   * @param fiberNb The channel readout fiber number
+   */
+  void setFiberNb(const int fiberNb) { fiberNb_ = fiberNb; };
+
+  /// Get the channel fiberNb
+
+  int getFiberNb() const { return fiberNb_; }
+
+
+
+  
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
@@ -157,11 +193,13 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   float pedestal_{-999.};
   float earlyPedestal_{-999.};
   float noise_{-1.};
+  float totQ_{-999.};
   float avgQ_{-999.};
   float minQ_{-999.};
   float maxQ_{-999.};
   float medQ_{-999.};
-
+  int timeOffset_{0};
+  int fiberNb_{-1};
 
   ClassDef(EventReadout, 1);
 
