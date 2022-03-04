@@ -272,3 +272,30 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
                          -1.5,   #14 -- uninstrumented
                          1.6     #15 -- uninstrumented
         ]
+
+class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
+
+        self.inputCollection="testBeamHitsUp"
+        self.inputPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
+        self.pedestals=[ 0.6,
+                         4.4,
+                         -1.25,
+                         3.9, 	 #3
+                         10000., #4: dead channel
+                         -2.1,   #5 
+                         2.9,    #6
+                         -2,     #7
+                         -0.4,   #8
+                         -1.1,   #9
+                         1.5,    #10
+                         2.0,    #11
+                         3.7,    #12 -- uninstrumented
+                         2.8,    #13 -- uninstrumented
+                         -1.5,   #14 -- uninstrumented
+                         1.6     #15 -- uninstrumented
+        ]
