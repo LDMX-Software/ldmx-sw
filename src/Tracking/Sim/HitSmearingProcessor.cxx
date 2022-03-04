@@ -68,6 +68,8 @@ void HitSmearingProcessor::smearHit(ldmx::SimTrackerHit &hit) {
   // Get the sim hit position
   auto sim_hit_pos{hit.getPosition()};
 
+  //This smearing is wrong. Should be done in local coordinates and not in global coordinates
+  
   // LDMX Global X, along the less sensitive direction
   float smear_factor{(*normal_)(generator_)};
   sim_hit_pos[0] += smear_factor * sigma_v_;

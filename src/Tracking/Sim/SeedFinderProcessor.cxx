@@ -125,11 +125,14 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   //I'll use layer 3,5,7.
 
   std::vector<const ldmx::LdmxSpacePoint*> spVec;
+  Acts::Extent rRangeSPExtent;
 
   for (size_t isp = 0; isp < ldmxsps.size(); isp++) {
         
-    if (ldmxsps[isp]->layer()==3 || ldmxsps[isp]->layer()==7 || ldmxsps[isp]->layer()==9) 
+    if (ldmxsps[isp]->layer()==3 || ldmxsps[isp]->layer()==7 || ldmxsps[isp]->layer()==9)  {
       spVec.push_back(ldmxsps[isp]);
+      rRangeSPExtent.check({ldmxsps[isp]->x(), ldmxsps[isp]->y(), ldmxsps[isp]->z()});
+    }
   }
 
   std::cout<<"Will use spVec::"<<spVec.size()<<" hits "<<std::endl;
@@ -164,6 +167,8 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   SeedContainer seeds;
   seeds.clear();
 
+  
+  
   Acts::Seedfinder<ldmx::LdmxSpacePoint>::State state;
   
   std::cout<<"finding seeds"<<std::endl;
@@ -174,7 +179,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   
   for (; !(group == group_end); ++group) {
     seed_finder_->createSeedsForGroup(state, std::back_inserter(seeds), group.bottom(),
-                                      group.middle(), group.top());
+                                      group.middle(), group.top(),rRangeSPExtent);
   }
   
   int numSeeds = seeds.size();

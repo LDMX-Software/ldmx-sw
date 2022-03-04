@@ -74,12 +74,12 @@ namespace tracking {
                         Acts::MultiTrajectory::TrackStateProxy trackState) const {
         const auto& sourceLink =
             static_cast<const ActsExamples::IndexSourceLink&>(trackState.uncalibrated());
-
+        
         assert(m_measurements and
                "Undefined measurement container in LdmxMeasurementCalibrator");
         assert((sourceLink.index() < m_measurements->size()) and
                "Source link index is outside the container bounds in LdmxMeasurementCalibrator");
-
+        
         auto meas = m_measurements->at(sourceLink.index());
         
         trackState.calibrated().setZero();
@@ -91,18 +91,18 @@ namespace tracking {
 
         //placeholder
         /*
-        std::cout<<"trackState calibrated"<<std::endl;
-        std::cout<<trackState.calibrated()<<std::endl;
-        std::cout<<"trackState data meas dim"<<std::endl;
-        std::cout<<trackState.data().measdim<<std::endl;
-        std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
-        std::cout<<trackState.calibratedCovariance()<<std::endl;
-        std::cout<<"projector"<<std::endl;
-        std::cout<<meas->projector_.row(0)<<std::endl;
+          std::cout<<"trackState calibrated"<<std::endl;
+          std::cout<<trackState.calibrated()<<std::endl;
+          std::cout<<"trackState data meas dim"<<std::endl;
+          std::cout<<trackState.data().measdim<<std::endl;
+          std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
+          std::cout<<trackState.calibratedCovariance()<<std::endl;
+          std::cout<<"projector"<<std::endl;
+          std::cout<<meas->projector_.row(0)<<std::endl;
         */
       
       }
-      
+
       //Function to test the measurement calibrator
       //It takes an user defined source link and returns the information of the linked measurement
       void test(const Acts::GeometryContext& /*gctx*/,

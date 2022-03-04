@@ -31,8 +31,8 @@ class LdmxSpacePoint  {
     m_edep = 0.;
     m_layer = layer;
     m_id = -999;
-    m_varianceR = 0.05;
-    m_varianceZ = 0.250;
+    m_varianceR = 0.050;
+    m_varianceZ = 0.050;
     initialize();
   }
 
@@ -122,7 +122,9 @@ class LdmxSpacePoint  {
     
   }
 
-
+  //(1 0 0 0 0 0)
+  //(0 1 0 0 0 0)
+  
   void setProjector() {
     projector_.setZero();
     projector_(0,0) = 1;

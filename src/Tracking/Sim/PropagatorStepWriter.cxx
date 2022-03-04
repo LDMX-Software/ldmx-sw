@@ -55,6 +55,10 @@ PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWr
   m_outputTree->Branch("step_act", &m_step_act);
   m_outputTree->Branch("step_abt", &m_step_abt);
   m_outputTree->Branch("step_usr", &m_step_usr);
+  m_outputTree->Branch("hit_x",&m_hit_x);
+  m_outputTree->Branch("hit_y",&m_hit_y);
+  m_outputTree->Branch("hit_z",&m_hit_z);
+    
 } // constructor
 
 PropagatorStepWriter::~PropagatorStepWriter() {
@@ -66,9 +70,12 @@ PropagatorStepWriter::~PropagatorStepWriter() {
   }
 } // destructor
 
-bool PropagatorStepWriter::WriteSteps(framework::Event &event,
-                                            const std::vector<PropagationSteps>& stepCollection) {
 
+
+bool PropagatorStepWriter::WriteSteps(framework::Event &event,
+                                      const std::vector<PropagationSteps>& stepCollection,
+                                      const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {
+  
   // Exclusive access to the tree while writing
   std::lock_guard<std::mutex> lock(m_writeMutex);
 
@@ -76,7 +83,22 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
 
   // we get the event number
   m_eventNr = event.getEventNumber();
+  
 
+  //fill the hits
+  m_hit_x.clear();
+  m_hit_y.clear();
+  m_hit_z.clear();
+  //m_hit_erru.clear();
+  //m_hit_errv.clear();
+
+  for (auto& ldmxsp : ldmxsps) {
+    m_hit_x.push_back(ldmxsp->x());
+    m_hit_y.push_back(ldmxsp->y());
+    m_hit_z.push_back(ldmxsp->z());
+  }
+  
+  
   // loop over the step vector of each test propagation in this
   for (auto& steps : stepCollection) {
 
