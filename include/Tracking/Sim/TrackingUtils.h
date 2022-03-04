@@ -48,23 +48,20 @@ namespace utils {
 //TODO::Pass to instances?
 //Vol==2 for tagger, Vol==3 for recoil
 
-inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit, unsigned int vol = 2) {
+inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTrackerHit& hit,
+                                                           unsigned int vol = 2,
+                                                           double sigma_u = 0.05,
+                                                           double sigma_v = 1.) {
   
   bool debug = false;
-      
+  
   std::vector<float> sim_hit_pos = hit.getPosition();
-
+  
   //check that if the coordinate along the beam is positive, then it's a recoil hit
   //TODO!! FIX THIS HARDCODE!
   if (sim_hit_pos[2] > 0)
     vol = 3;
   
-  //This is in the transverse plane
-  float sigma_rphi = 0.25;  //250um
-        
-  //This is in the direction along the b-field
-  float sigma_z    = 0.50;  //50 um
-        
   float ldmxsp_x = sim_hit_pos[2];
   float ldmxsp_y = sim_hit_pos[0];
   float ldmxsp_z = sim_hit_pos[1];
@@ -108,7 +105,7 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
 
   return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y,ldmxsp_z,
                                   hit.getTime(), index, hit.getEdep(), 
-                                  sigma_rphi*sigma_rphi, sigma_z*sigma_z,
+                                  sigma_u*sigma_u, sigma_v*sigma_v,
                                   hit.getID());
   
 }
@@ -181,9 +178,6 @@ inline std::vector<double> convertActsToLdmxPars(Acts::BoundVector acts_par) {
   return v_ldmx;
 }
 
-
-
-//TODO IMPLEMENT THIS SOMEWHERE ELSE
 
 
 /*
@@ -262,7 +256,7 @@ for (size_t it = 0; it < ntests_; ++it) {
 
   //Only save if you made some tests
   if ( ntests_>0 )
-    writer_->WriteSteps(event,propagationSteps);
+  writer_->WriteSteps(event,propagationSteps);
 
 */
 

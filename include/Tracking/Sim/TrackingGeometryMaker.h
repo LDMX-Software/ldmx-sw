@@ -4,6 +4,7 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/RandomNumberSeedService.h"
 
 //---  DD4hep ---//
 #include "DD4hep/Detector.h"
@@ -89,6 +90,9 @@
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/MultiTrajectoryHelpers.hpp"
+
+//--- Refit with backward propagation ---//
+#include "Acts/TrackFitting/KalmanFitter.hpp"
 
 //--- Tracking ---//
 #include "Tracking/Sim/TrackingUtils.h"
@@ -191,6 +195,12 @@ class TrackingGeometryMaker : public framework::Producer {
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField);
   
+  // Make a simple event display
+  bool WriteEvent(framework::Event &event,
+                  const Acts::MultiTrajectory& mj,
+                  const int& trackTip,
+                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
+  
  private:
   /// The detector
   dd4hep::Detector* detector_{nullptr};
@@ -233,6 +243,7 @@ class TrackingGeometryMaker : public framework::Producer {
  
   //Stepping size (in mm)
   double propagator_step_size_{200.};
+  int propagator_maxSteps_{1000};
 
   //The perigee location used for the initial propagator states generation
   std::vector<double> perigee_location_{0.,0.,0.};
@@ -246,6 +257,12 @@ class TrackingGeometryMaker : public framework::Producer {
   
   //The output track collection
   std::string out_trk_collection_{"Tracks"};
+
+  //Select the hits using TrackID and pdgID_
+  
+  int trackID_{-1};
+  int pdgID_{11};
+  
   
   //The seed track collection
   std::string seed_coll_name_{"seedTracks"};
@@ -280,24 +297,42 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* histo_z0_;
   TH1F* histo_phi_;
   TH1F* histo_theta_;
-
+  TH1F* histo_qop_;
   
   TH1F* h_p_;
   TH1F* h_d0_;
   TH1F* h_z0_;
   TH1F* h_phi_;
   TH1F* h_theta_;
+  TH1F* h_qop_;
   TH1F* h_nHits_;
+
+  TH1F* h_p_refit_;
+  TH1F* h_d0_refit_;
+  TH1F* h_z0_refit_;
+  TH1F* h_phi_refit_;
+  TH1F* h_theta_refit_;
+  TH1F* h_nHits_refit_;
 
   TH1F* h_p_truth_;
   TH1F* h_d0_truth_;
   TH1F* h_z0_truth_;
   TH1F* h_phi_truth_;
   TH1F* h_theta_truth_;
+  TH1F* h_qop_truth_;
 
   TH2F* h_tgt_scoring_x_y_;
   TH1F* h_tgt_scoring_z_;
 
+
+  /// do smearing
+  bool do_smearing_{false};
+  
+  /// u-direction sigma
+  double sigma_u_{0};
+
+  /// v-direction sigma
+  double sigma_v_{0};
 
   //Tracker mapping.
   //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer

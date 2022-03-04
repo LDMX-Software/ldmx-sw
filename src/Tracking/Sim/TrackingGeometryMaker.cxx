@@ -11,13 +11,17 @@
 
 //--- C++ StdLib ---//
 #include <iostream>
+#include <algorithm> //std::vector reverse
 
 namespace tracking {
 namespace sim {
     
 TrackingGeometryMaker::TrackingGeometryMaker(const std::string &name,
                                              framework::Process &process)
-    : framework::Producer(name, process) {}
+    : framework::Producer(name, process) {
+
+  normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
+}
 
 TrackingGeometryMaker::~TrackingGeometryMaker() {}
 
@@ -26,6 +30,16 @@ void TrackingGeometryMaker::onProcessStart() {
   detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
+
+
+  std::cout<< "Getting the Random number generator"<<std::endl;
+  // Get the random seed service
+  //auto rseed{getCondition<framework::RandomNumberSeedService>(
+  //    framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
+    
+  // Create a seed and update the generator with it
+  //generator_.seed(rseed.getSeed(getName()));
+  generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
   // Get the world detector element
   dd4hep::DetElement world{detector_->world()};
@@ -134,16 +148,6 @@ void TrackingGeometryMaker::onProcessStart() {
 
   sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(std::move(map));;
   
-  if (debug_) {
-    //Testing the constant and interpolated magnetic field (move this in a separate utility class)
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    std::cout<<"BField interpolated map loaded.."<<std::endl;
-    std::cout<<"PF::TESTING THE CONSTANT FIELD"<<std::endl;
-    testField(bField);
-    std::cout<<"PF::TESTING THE INTERPOLATED FIELD"<<std::endl;
-    testField(sp_interpolated_bField_);
-  }
-    
   //Setup the navigator
   Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
@@ -171,8 +175,6 @@ void TrackingGeometryMaker::onProcessStart() {
     std::cout<<__PRETTY_FUNCTION__<<std::endl;
     std::cout<<"Using interpolated B-Field Map"<<std::endl;
   }
-
-    
   
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
@@ -214,19 +216,29 @@ void TrackingGeometryMaker::onProcessStart() {
   histo_z0_     = new TH1F("z0_res",   "z0_res",200,-0.75,0.75);
   histo_phi_    = new TH1F("phi_res",  "phi_res",200,-0.015,0.015);
   histo_theta_  = new TH1F("theta_res","theta_res",200,-0.005,0.005);
+  histo_qop_    = new TH1F("qop_res","qop_res",200,-5,5);
 
-  h_p_      = new TH1F("p",    "p",100,0,6);
+  h_p_      = new TH1F("p",    "p",600,0,6);
   h_d0_     = new TH1F("d0",   "d0",100,-20,20);
   h_z0_     = new TH1F("z0",   "z0",100,-50,50);
   h_phi_    = new TH1F("phi",  "phi",200,-0.5,0.5);
   h_theta_  = new TH1F("theta","theta",200,0.8,2.2);
+  h_qop_    = new TH1F("qop","qop",200,-10,10);
   h_nHits_  = new TH1F("nHits","nHits",15,0,15);
 
-  h_p_truth_      = new TH1F("p_truth",      "p_truth",100,0,6);
-  h_d0_truth_     = new TH1F("d0_truth",     "d0_truth",400,-20,20);
+  h_p_refit_      = new TH1F("p_refit",     "p_refit",600,0,6);
+  h_d0_refit_     = new TH1F("d0_refit",    "d0_refit",100,-20,20);
+  h_z0_refit_     = new TH1F("z0_refit",    "z0_refit",100,-50,50);
+  h_phi_refit_    = new TH1F("phi_refit",   "phi_refit",200,-0.5,0.5);
+  h_theta_refit_  = new TH1F("theta_refit", "theta_refit",200,0.8,2.2);
+  h_nHits_refit_  = new TH1F("nHits_refit", "nHits_refit",15,0,15);
+
+  h_p_truth_      = new TH1F("p_truth",      "p_truth",600,0,6);
+  h_d0_truth_     = new TH1F("d0_truth",     "d0_truth",100,-20,20);
   h_z0_truth_     = new TH1F("z0_truth_",    "z0_truth",100,-50,50);
-  h_phi_truth_    = new TH1F("phi_truth",    "phi_truth",100,-0.5,0.5);
-  h_theta_truth_  = new TH1F("theta_truth`", "theta_truth",100,-3.14,3.14);
+  h_phi_truth_    = new TH1F("phi_truth",    "phi_truth",200,-0.5,0.5);
+  h_theta_truth_  = new TH1F("theta_truth`", "theta_truth",200,0.8,2.2);
+  h_qop_truth_    = new TH1F("qop_truth","qop_truth",200,-10,10);
 
   h_tgt_scoring_x_y_      = new TH2F("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
   h_tgt_scoring_z_        = new TH1F("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
@@ -264,11 +276,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
 
-  // Output : the propagation steps
-  std::vector<std::vector<Acts::detail::Step>> propagationSteps;
-
-  propagationSteps.reserve(ntests_);
-    
   //No randomisation
 
   /// d0 gaussian sigma
@@ -296,23 +303,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   std::pair<double, double> ptRange = {100 * Acts::UnitConstants::MeV,
     100 * Acts::UnitConstants::GeV};
 
-  //Prepare the outputs..
-  
-  /// Using some short hands for Recorded Material
-  using RecordedMaterial = Acts::MaterialInteractor::result_type;
-  
-  /// And recorded material track
-  /// - this is start:  position, start momentum
-  ///   and the Recorded material
-  using RecordedMaterialTrack =
-      std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
-  
-  /// Finally the output of the propagation test
-  using PropagationOutput =
-      std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
-  
-  // execute the test for charged particles
-
   //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
   auto loggingLevel = Acts::Logging::INFO;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
@@ -335,7 +325,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   sLogger.sterile = false;
   // Set a maximum step size
   propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
-  
+  propagator_options.maxSteps    = propagator_maxSteps_;
       
   //std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
 
@@ -345,7 +335,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   //Step 1 - Form the source links
   
-  std::vector<ActsExamples::IndexSourceLink> sourceLinks;
+  //std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   //a) Loop over the sim Hits
 
   const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
@@ -361,8 +351,16 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
       
+      //Only selects hits that have trackID==1
+      if (trackID_ > 0 && simHit.getTrackID() != trackID_)
+        continue;
+      
+      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_)
+        continue;
+      
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
+    
   }
   
   if (debug_)
@@ -387,7 +385,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
       //Transform the ldmx space point from global to local and store the information
 
-      /*
+      
       if (debug_) {
         std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
         std::cout<<ldmxsp->global_pos_<<std::endl;
@@ -397,7 +395,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
         std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
         std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
       }
-      */
+      
       
       Acts::Vector3 dummy_momentum;
       Acts::Vector2 local_pos;
@@ -408,8 +406,45 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
         std::cout<<ldmxsp->global_pos_<<std::endl;
         continue;
       }
+
+      //Smear the local position
+      
+      if (do_smearing_) {
+        float smear_factor{(*normal_)(generator_)};
+        local_pos[0] += smear_factor * sigma_u_;
+        smear_factor = (*normal_)(generator_);
+        local_pos[1] += smear_factor * sigma_v_;
+        
+        //update covariance
+        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
+
+        //update global position
+        //if (debug_) {
+        //  std::cout<<"Before smearing"<<std::endl;
+        //  std::cout<<ldmxsp->global_pos_<<std::endl;
+        //}
+        
+        //cache the acts x coordinate 
+        double original_x = ldmxsp->global_pos_(0);
+
+        //transform to global
+        ldmxsp->global_pos_ = hit_surface->localToGlobal(gctx_,local_pos,dummy_momentum);
+        
+        //update the acts x location 
+        ldmxsp->global_pos_(0) = original_x;
+
+        //if (debug_) {
+        //  std::cout<<"After smearing"<<std::endl;
+        //  std::cout<<ldmxsp->global_pos_<<std::endl;
+        //}
+      }
       
       ldmxsp->local_pos_ = local_pos;
+
+      //Store the smeared global position in the hit
+      //if (do_smearing_) {
+      //  ldmxsp->global_pos_
+      //}
 
       if (debug_) {
         std::cout<<"Local hit position::"<<std::endl;
@@ -422,7 +457,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
             
     }
     else
-      std::cout<<"HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
+      std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
     
   }
       
@@ -442,7 +477,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   if (debug_) {
     std::cout<<"Retrieve the seeds::"<< seed_coll_name_<<std::endl;
   }
-
+  
   const std::vector<ldmx::Track> seed_tracks = event.getCollection<ldmx::Track>(seed_coll_name_);
 
   //Run the CKF on each seed and produce a track candidate
@@ -472,12 +507,17 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
-    
+        
     if (debug_) 
       std::cout<<"q"<<std::endl;
     Acts::ActsScalar q = seed.getQoP() < 0 ?
                          -1 * Acts::UnitConstants::e :
                          Acts::UnitConstants::e;
+    
+    if (q > 0)
+      std::cout<<"ERROR!! charge of the seed is > 0!" << q << std::endl;
+    
+    
 
     startParameters.push_back(Acts::BoundTrackParameters(perigeeSurface,
                                                          paramVec,
@@ -501,10 +541,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // elements
 
   Acts::MeasurementSelector::Config measurementSelectorCfg = {
-    // global default: no chi2 cut, only one measurement per surface
-    {Acts::GeometryIdentifier(), {std::numeric_limits<double>::max(), 1u}},
+    // global default: no chi2 cut, only one measurement per surface                                                                                                                                                    
+    {Acts::GeometryIdentifier(),
+     {{}, {std::numeric_limits<double>::max()}, {1u}}},
   };
-
+  
   /* -- main --
   Acts::MeasurementSelector::Config measurementSelectorCfg = {
     // global default: no chi2 cut, only one measurement per surface
@@ -515,9 +556,13 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
   LdmxMeasurementCalibrator calibrator{ldmxsps};
-    
+  
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
+
+  //1D (check if this is correct)
   ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+  //2D
+  //ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
@@ -541,7 +586,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   if (use_extrapolate_location_) {
     extr_surface = &(*tgt_surface);
   }
-  
+
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
       gctx_,bctx_,cctx_,
       LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{logger()},
@@ -566,6 +611,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     GoodResult++;
     
     auto ckf_result = result.value();
+
     
     if (debug_) {
       std::cout<<"Track Index::"<<GoodResult - 1<<std::endl;
@@ -630,7 +676,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       h_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>());
       h_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>());
       h_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>());
-                  
+      
     }
 
     //Create a track object
@@ -652,6 +698,20 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     Acts::BoundMatrix tgt_srf_cov  = ckf_result.fittedParameters.begin()->second.covariance() ?
                                      ckf_result.fittedParameters.begin()->second.covariance().value() : Acts::BoundSymMatrix::Identity();
 
+    /*
+    if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
+      std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0. Chi2="<<trajState.chi2Sum<<std::endl;
+      mj.visitBackwards(trackTip, [&](const auto& state) {
+        std::cout<<"Printing smoothed states"<<std::endl;
+        std::cout<<state.smoothed()<<std::endl;
+        std::cout<<"Printing filtered states"<<std::endl;
+        std::cout<<state.filtered()<<std::endl;
+      });
+      
+      
+    }*/
+    
+    
     if (debug_) {
       std::cout<<"Check parameters:"<<std::endl;
       std::cout<<tgt_srf_pars<<std::endl;
@@ -681,15 +741,79 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     trk.setPerigeeParameters(v_tgt_srf_pars);
     trk.setPerigeeCov(v_tgt_srf_cov_flat);
-    
-
     tracks.push_back(trk);
-      
-  } // loop on CKF Results
 
+    if (ckf_result.fittedParameters.begin()->second.charge() > 0 )
+      //Write the event display for the recoil
+      WriteEvent(event,
+                 mj,trackTip,
+                 ldmxsps);
+    
+    
+    //Refit the track with the KalmanFitter using backward propagation
+    if (false) {
+    
+      std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
+      mj.visitBackwards(trackTip, [&](const auto& state) {
+        const auto& sourceLink =
+          static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
+        auto typeFlags = state.typeFlags();
+        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+          fit_trackSourceLinks.push_back(std::cref(sourceLink));
+        }
+      });
+      
+      const auto kfLogger = Acts::getDefaultLogger("KalmanFitter", Acts::Logging::INFO);
+      Acts::KalmanFitterExtensions kfitter_extensions;
+      kfitter_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+      //kfitter_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
+      kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
+      kfitter_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
+      Acts::KalmanFitterOptions kfitter_options =
+          Acts::KalmanFitterOptions(gctx_,bctx_,cctx_,
+                                    kfitter_extensions,Acts::LoggerWrapper{*kfLogger},
+                                    propagator_options,&(*extr_surface),
+                                    true, true, true); //mScattering, exoLoss, rFiltering
+      
+      
+      // create the Kalman Fitter
+      if (debug_)
+        std::cout<<"Make the KalmanFilter fitter object"<<std::endl;
+      Acts::KalmanFitter<Propagator> kf(*propagator_);
+      
+      if (debug_)
+        std::cout<<"Refit"<<std::endl;
+      
+      auto kf_refit_result = kf.fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
+                                    ckf_result.fittedParameters.begin()->second,kfitter_options);
+      
+      if (debug_)
+        std::cout<<"Check output"<<std::endl;
+      
+      if (!kf_refit_result.ok()) {
+        std::cout<<"Refit failed"<<std::endl;
+      }
+      
+      auto kf_refit_value = result.value();
+      
+      if (debug_)
+        std::cout<<"FillPlots"<<std::endl;
+      
+      for (const auto& refit_pair : kf_refit_value.fittedParameters) {
+        
+        h_p_refit_     ->Fill(refit_pair.second.absoluteMomentum());
+        h_d0_refit_    ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundLoc0>());
+        h_z0_refit_    ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundLoc1>());
+        h_phi_refit_   ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundPhi>());
+        h_theta_refit_ ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundTheta>());
+      }
+    }//Run the refit
+    
+  } // loop on CKF Results
+  
   if (debug_) 
     std::cout<<"Found "<<GoodResult<< " tracks" <<std::endl;  
-
+  
   
   //Add the tracks to the event
   event.add(out_trk_collection_, tracks);
@@ -704,7 +828,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
 void TrackingGeometryMaker::onProcessEnd() {
 
-  TFile* outfile_ = new TFile("track_finding_output.root","RECREATE");
+  TFile* outfile_ = new TFile(getName().c_str(),"RECREATE");
   outfile_->cd();
 
   histo_p_->Write();
@@ -719,6 +843,13 @@ void TrackingGeometryMaker::onProcessEnd() {
   h_phi_->Write();
   h_theta_->Write();
   h_nHits_->Write();
+
+  h_p_refit_->Write();
+  h_d0_refit_->Write();
+  h_z0_refit_->Write();
+  h_phi_refit_->Write();
+  h_theta_refit_->Write();
+  h_nHits_refit_->Write();
 
   h_p_truth_->Write();
   h_d0_truth_->Write();
@@ -886,7 +1017,7 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     //Get the tranformation from the alignment support. 
     auto transform =
         convertTransform(&(sensor.nominal().worldTransformation()));
-        
+
     //Rotate Z->X, X->Y, Y->Z 
     Acts::Vector3 position = {transform.translation()[2], transform.translation()[0], transform.translation()[1]};
         
@@ -1123,15 +1254,16 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   ntests_             = parameters.getParameter<int>("ntests", 1000);
   phi_range_          = parameters.getParameter<std::vector<double> >("phi_range",   {-1.1 * M_PI,-0.9 * M_PI});
   theta_range_        = parameters.getParameter<std::vector<double> >("theta_range", { 0.4 * M_PI, 0.6 * M_PI});
-    
-  normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
-  generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  trackID_            = parameters.getParameter<int>("trackID",-1);
+  pdgID_              = parameters.getParameter<int>("pdgID",11);
+  
   
   bfield_               = parameters.getParameter<double>("bfield", 0.);
   const_b_field_        = parameters.getParameter<bool>("const_b_field",true);
   bfieldMap_            = parameters.getParameter<std::string>("bfieldMap_",
                                                                "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
   propagator_step_size_ = parameters.getParameter<double>("propagator_step_size", 200.);
+  propagator_maxSteps_  = parameters.getParameter<int>("propagator_maxSteps", 10000);
   pt_                   = parameters.getParameter<double>("pt", 1.);
   d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
   z0sigma_              = parameters.getParameter<double>("z0sigma",1.);
@@ -1150,6 +1282,13 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   //output track collection
   out_trk_collection_ = parameters.getParameter<std::string>("out_trk_collection", "Tracks");
   
+  
+  //Hit smearing
+
+  do_smearing_ = parameters.getParameter<bool>("do_smearing",false);
+  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.05);
+  sigma_v_ = parameters.getParameter<double>("sigma_v", 1.);
+    
   std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
 }
 
@@ -1192,7 +1331,7 @@ void TrackingGeometryMaker::collectSensors_dd4hep(dd4hep::DetElement& detElement
             
     //Add the child if the detExtension is the TaggerTracker, the RecoilTracker or the Target(?)
     if ((detExtension!=nullptr)) {
-      if (detExtension->hasType("si_sensor","detector")){
+      if (detExtension->hasType(childDetElement.name(),"si_sensor")){
         sensors.push_back(childDetElement);
       }
     }
@@ -1216,12 +1355,12 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
         
   for (auto& child : children) {
     dd4hep::DetElement childDetElement = child.second;
-    /*
+    
     if (debug_) {
       std::cout<<"Child Name:: "<<childDetElement.name()<<std::endl;
       std::cout<<"Child Type:: "<<childDetElement.type()<<std::endl;
     }
-    */
+    
     std::string childName = childDetElement.name();
     
     //Check here if I'm checking the TaggerTracker or the RecoilTracker. Skip the rest.
@@ -1247,7 +1386,9 @@ void TrackingGeometryMaker::collectSubDetectors_dd4hep(dd4hep::DetElement& detEl
     //Add the child if the detExtension is the TaggerTracker, the RecoilTracker or the Target(?)
     if ((detExtension!=nullptr)) {
       if (detExtension->hasType("TaggerTracker","detector") ||  
-          detExtension->hasType("RecoilTracker","detector")) {
+          detExtension->hasType("RecoilTracker","detector") ||
+          detExtension->hasType("recoil_tracker","detector") ||
+          detExtension->hasType("tagger_tracker","detector")) {
         subdetectors.push_back(childDetElement);
       }
     }
@@ -1443,22 +1584,182 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
     
   }// surfaces loop
 
-  /*
+  
   if (debug_) {
-
+    
     std::cout<<__PRETTY_FUNCTION__<<std::endl;
     
     for (auto const& surfaceId : layer_surface_map_) {
-      std::cout<< surfaceId.first<<std::endl;
-      std::cout<<"Check the surface"<<std::endl;
+      std::cout<<getName()<<" "<< surfaceId.first<<std::endl;
+      std::cout<<getName()<<" Check the surface"<<std::endl;
       surfaceId.second->toStream(gctx_,std::cout);
-      std::cout<<"GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
-      std::cout<<"GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
+      std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
+      std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
     }
-    }
-  */
-  
+  }
 }
+
+// This functioon takes the input parameters and makes the propagation for a simple event display
+
+bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
+                                       const Acts::MultiTrajectory& mj,
+                                       const int &trackTip,
+                                       const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
+  //Prepare the outputs..
+  std::vector<std::vector<Acts::detail::Step>> propagationSteps;
+  propagationSteps.reserve(1);
+
+    
+  /// Using some short hands for Recorded Material
+  using RecordedMaterial = Acts::MaterialInteractor::result_type;
+  
+  /// And recorded material track
+  /// - this is start:  position, start momentum
+  ///   and the Recorded material
+  using RecordedMaterialTrack =
+      std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
+  
+  /// Finally the output of the propagation test
+  using PropagationOutput =
+      std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
+  
+  PropagationOutput pOutput;
+  const auto evtLogger = Acts::getDefaultLogger("evtDisplay", Acts::Logging::INFO);
+  PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{*evtLogger});
+  
+  propagator_options.pathLimit = std::numeric_limits<double>::max();
+  
+  // Activate loop protection at some pt value
+  propagator_options.loopProtection = false; //(startParameters.transverseMomentum() < cfg.ptLoopers);
+  
+  // Switch the material interaction on/off & eventually into logging mode
+  auto& mInteractor = propagator_options.actionList.get<Acts::MaterialInteractor>();
+  mInteractor.multipleScattering = true;
+  mInteractor.energyLoss         = true;
+  mInteractor.recordInteractions = false;
+
+  // The logger can be switched to sterile, e.g. for timing logging
+  auto& sLogger = propagator_options.actionList.get<Acts::detail::SteppingLogger>();
+  sLogger.sterile = false;
+  // Set a maximum step size
+  propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
+  propagator_options.maxSteps    = propagator_maxSteps_;
+
+  // Loop over the states and the surfaces of the multi-trajectory and get
+  // the arcs of helix from start to next surface
+  
+  std::vector<Acts::BoundTrackParameters> prop_parameters;
+  //std::vector<std::reference_wrapper<const Acts::Surface>> ref_surfaces;
+  std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> sourceLinks;
+
+
+  mj.visitBackwards(trackTip,[&](const auto& state) {
+    auto typeFlags = state.typeFlags();
+    
+    //Only store the track states for each measurement
+    if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+      const auto& surface = state.referenceSurface();
+      //ref_surfaces.push_back(surface);
+      Acts::BoundVector smoothed  = state.smoothed();
+      //auto cov = state.smoothedCovariance;
+      
+      Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] < 0 ? -1 * Acts::UnitConstants::e :
+                           Acts::UnitConstants::e;
+      
+      prop_parameters.push_back(Acts::BoundTrackParameters(surface.getSharedPtr(),
+                                                           smoothed,
+                                                           q));
+    }
+  });
+  
+  
+  //Reverse the parameters to start from the target
+  std::reverse(prop_parameters.begin(), prop_parameters.end());
+
+  //This holds all the steps to be merged
+  std::vector<std::vector<Acts::detail::Step>> tmpSteps;
+  tmpSteps.reserve(prop_parameters.size());
+  
+  if (debug_) {
+    for (auto & params : prop_parameters) {
+      std::cout<<getName()<<"::DEBUG::"<<std::endl;
+      std::cout<<params.parameters()<<std::endl;
+      std::cout<<params.position(gctx_)(0)<<std::endl;
+    }
+  }
+  
+  
+  // Start from the first parameters
+  // Propagate to next surface
+  // Grab the next parameters
+  // Propagate to the next surface..
+  // The last parameters just propagate
+  // TODO Fix double code
+  // TODO Fix contorted code - directly push to the same vector
+  
+
+  for (int i_params = 0; i_params < prop_parameters.size(); i_params++) {
+
+    if (i_params < prop_parameters.size() - 1) {
+
+      auto result = propagator_->propagate(prop_parameters.at(i_params),
+                                           prop_parameters.at(i_params+1).referenceSurface(),
+                                           propagator_options);
+      
+      if (result.ok()) {
+        const auto& resultValue = result.value();
+        auto steppingResults =
+            resultValue.template get<Acts::detail::SteppingLogger::result_type>();
+        // Set the stepping result
+        pOutput.first = std::move(steppingResults.steps);
+        
+        // Record the propagator steps
+        tmpSteps.push_back(std::move(pOutput.first));
+      }
+    }
+    
+    //propagation for the last state
+    else {
+      auto result = propagator_->propagate(prop_parameters.at(i_params),
+                                           propagator_options);
+      
+      if (result.ok()) {
+        const auto& resultValue = result.value();
+        auto steppingResults =
+            resultValue.template get<Acts::detail::SteppingLogger::result_type>();
+        // Set the stepping result
+        pOutput.first = std::move(steppingResults.steps);
+        
+        // Record the propagator steps
+        tmpSteps.push_back(std::move(pOutput.first));
+      }
+    }
+  }
+
+  
+  //This holds all the steps to be merged
+  //TODO Remove this and put all in the same vector directly in the for loop above
+  
+  std::vector<Acts::detail::Step> allSteps;
+  int totalSize=0;
+
+  for (auto & steps: tmpSteps) 
+    totalSize+=steps.size();
+  
+  allSteps.reserve(totalSize);
+  
+  for (auto & steps: tmpSteps) 
+    allSteps.insert(allSteps.end(), steps.begin(), steps.end());
+  
+  propagationSteps.push_back(allSteps);
+  
+  
+  writer_->WriteSteps(event,
+                      propagationSteps,
+                      ldmxsps);
+}
+
+
 
 } // namespace sim
 } // namespace tracking

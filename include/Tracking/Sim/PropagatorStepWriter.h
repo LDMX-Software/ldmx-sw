@@ -13,6 +13,10 @@
 //--- ACTS ---//
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 
+//--- Tracking ---//
+#include "Tracking/Sim/LdmxSpacePoint.h"
+
+
 //--- ROOT ---//
 #include "TFile.h"
 #include "TTree.h"
@@ -40,9 +44,10 @@ class PropagatorStepWriter{
   PropagatorStepWriter(const Config& cfg);
       
   ~PropagatorStepWriter();
-
+  
   bool WriteSteps(framework::Event &event,
-                  const std::vector<PropagationSteps>& stepCollection);
+                  const std::vector<PropagationSteps>& stepCollection,
+                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
                                  
  protected:
       
@@ -68,7 +73,10 @@ class PropagatorStepWriter{
   std::vector<float> m_step_act;   ///< actor check
   std::vector<float> m_step_abt;   ///< aborter
   std::vector<float> m_step_usr;   ///< user
-      
+  std::vector<float> m_hit_x;      ///< hit location X
+  std::vector<float> m_hit_y;      ///< hit location Y
+  std::vector<float> m_hit_z;      ///< hit location Z
+        
 };
 }
 }
