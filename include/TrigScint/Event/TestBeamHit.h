@@ -20,7 +20,7 @@ namespace trigscint {
  * from the trigger scintillator, in charge (fC). 
  */
   
-class TestBeamHit : public trigscint::TrigScintHit {
+class TestBeamHit : public ldmx::TrigScintHit {
  public:
   /**
    * Class constructor.
@@ -116,7 +116,7 @@ class TestBeamHit : public trigscint::TrigScintHit {
    * @note required for declaring std::vector<> in EventDef.h
    */
   bool operator<(const TestBeamHit &rhs) const {
-    return this->chanID_ < rhs.chanID_;
+    return this->pulseQ_ < rhs.pulseQ_;
   }
 
  private:
@@ -125,7 +125,7 @@ class TestBeamHit : public trigscint::TrigScintHit {
   float pulseQ_{-999.};         // integrated, ped subtracted charge over pulse [fC]
   int startSample_{-1};  //start sample 
   int pulseWidth_{-1};   //specified pulse width (in number of samples)
-  int sampOverThr_{-1};  //actual number of samples above threshold after start
+  int sampAboveThr_{-1};  //actual number of samples above threshold after start
   
   //        - nPulses -- TODO, when running in continuous mode 
   /*
