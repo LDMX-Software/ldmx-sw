@@ -18,7 +18,7 @@ find_package(ROOT CONFIG REQUIRED)
 # Setup the library
 setup_library(module Tools
               dependencies Framework::Framework Recon::Event Conditions::Conditions
-                           ONNXRuntime::Interface ROOT::Core ROOT::Physics
+                           ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)

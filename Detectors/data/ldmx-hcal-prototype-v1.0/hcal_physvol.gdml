@@ -1,0 +1,192 @@
+
+<!-- Absorber layers -->
+<loop for="layer_index" from="1" to="num_layers" step="1">
+    <physvol name="absorber_physvol" copynumber="layer_index" >
+        <volumeref ref="absorber_volume"/>
+        <position name="absorber_pos" unit="mm" x="0" y="0" z="                     (layer_index-1)*layer_thickness    + first_layer_zpos + absorber_thickness/2 "/>
+    </physvol>
+</loop>
+
+
+<!-- Even CopyNumber means vertical, odd means horizontal -->
+<!-- Front Horizontal Layers-->
+<loop for="layer_index" from="1" to="num_layers_front_horizontal" step="1">
+	<physvol name="horizontal_bar_mounting_plate_physvol"  copynumber="2*layer_index - 1">
+        <volumeref ref="horizontal_bar_mounting_plate_volume"/>
+        <position name="horizontal_bar_mounting_plate_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness/2" />
+    </physvol>
+    <physvol name="front_horizontal_scint_adhesive_physvol"  copynumber="2*layer_index - 1">
+        <volumeref ref="front_horizontal_scint_box_adhesive_volume"/>
+        <position name="front_horizontal_scint_adhesive_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness/2"  />
+    </physvol>
+    <physvol name="front_horizontal_scint_physvol"  copynumber="2*layer_index - 1">
+        <volumeref ref="front_horizontal_scint_box_volume"/>
+        <position name="front_horizontal_scint_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness/2"   />
+    </physvol>
+	<physvol name="front_horizontal_scint_cover_physvol"  copynumber="2*layer_index - 1">
+        <volumeref ref="front_horizontal_scint_box_cover_volume"/>
+        <position name="front_horizontal_scint_cover_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness + scint_bar_cover_thickness/2"  />
+    </physvol>
+</loop>
+
+<!-- Front Vertical Layers-->
+<loop for="layer_index" from="1" to="num_layers_front_vertical" step="1">
+    <physvol name="vertical_bar_mounting_plate_physvol"  copynumber="2*layer_index">
+        <volumeref ref="vertical_bar_mounting_plate_volume"/>
+        <position name="vertical_bar_mounting_plate_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness/2" />
+    </physvol>
+    <physvol name="front_vertical_scint_adhesive_physvol"  copynumber="2*layer_index">
+        <volumeref ref="front_vertical_scint_box_adhesive_volume"/>
+        <position name="front_vertical_scint_adhesive_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness/2"  />
+    </physvol> 
+	<physvol name="front_vertical_scint_physvol"  copynumber="2*layer_index">
+        <volumeref ref="front_vertical_scint_box_volume"/>
+        <position name="front_vertical_scint_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness/2"   />
+    </physvol>
+	<physvol name="front_vertical_scint_cover_physvol"  copynumber="2*layer_index">
+        <volumeref ref="front_vertical_scint_box_cover_volume"/>
+        <position name="front_vertical_scint_cover_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness + scint_bar_cover_thickness/2"  />
+    </physvol>
+</loop>
+
+
+<!-- Back Vertical Layers-->
+<loop for="layer_index" from="1" to="num_layers_back_vertical" step="1">
+    <physvol name="vertical_bar_mounting_plate_physvol"  copynumber="2*layer_index">
+        <volumeref ref="vertical_bar_mounting_plate_volume"/>
+        <position name="vertical_bar_mounting_plate_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness/2" />
+    </physvol>
+	<physvol name="back_vertical_scint_adhesive_physvol" copynumber="num_layers_front + 2*layer_index - 1">
+        <volumeref ref="back_vertical_scint_box_adhesive_volume"/>
+        <position name="back_vertical_scint_adhesive_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness/2"   />
+    </physvol>
+    <physvol name="back_vertical_scint_physvol" copynumber="num_layers_front + 2*layer_index - 1">
+        <volumeref ref="back_vertical_scint_box_volume"/>
+        <position name="back_vertical_scint_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness/2"  />
+    </physvol>
+
+    <physvol name="back_vertical_scint_cover_physvol" copynumber="num_layers_front + 2*layer_index - 1">
+        <volumeref ref="back_vertical_scint_box_cover_volume"/>
+        <position name="back_vertical_scint_cover_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness + scint_bar_cover_thickness/2"  />
+    </physvol>	
+</loop>
+
+<!-- Back Horizontal Layers-->
+<loop for="layer_index" from="1" to="num_layers_back_horizontal" step="1">
+    <physvol name="horizontal_bar_mounting_plate_physvol"  copynumber="2*layer_index - 1">
+        <volumeref ref="horizontal_bar_mounting_plate_volume"/>
+        <position name="horizontal_bar_mounting_plate_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness/2" />
+    </physvol>
+    <physvol name="back_horizontal_scint_adhesive_physvol"  copynumber="num_layers_front + 2*layer_index">
+        <volumeref ref="back_horizontal_scint_box_adhesive_volume"/>
+        <position name="back_horizontal_scint_adhesive_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness/2"  />
+    </physvol>
+    <physvol name="back_horizontal_scint_physvol"  copynumber="num_layers_front + 2*layer_index">
+        <volumeref ref="back_horizontal_scint_box_volume"/>
+        <position name="back_horizontal_scint_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness/2"   />
+    </physvol>
+    <physvol name="back_horizontal_scint_cover_physvol" copynumber="num_layers_front + 2*layer_index - 1">
+        <volumeref ref="back_horizontal_scint_box_cover_volume"/>
+        <position name="back_horizontal_scint_cover_pos" unit="mm" x="0" y="0" 
+		z="(layer_index-1)*2.0*layer_thickness + layer_thickness + first_layer_zpos + back_start + absorber_thickness + bar_mounting_plate_thickness + scint_adhesive_thickness + scint_thickness + scint_bar_cover_thickness/2"  />
+    </physvol>	
+</loop>
+
+
+
+
+
+<!-- Frame solids -->
+<physvol>
+ <volumeref ref="frame_8080_short_vol"/>
+ <position name="frame_x1" unit="mm" x="0" y="440-40" z="-(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+
+<physvol>
+ <volumeref ref="frame_8080_short_vol"/>
+ <position name="frame_x2" unit="mm" x="0" y="-(absorber_height/2+40)" z="-(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+<physvol>
+ <volumeref ref="frame_8080_short_vol"/>
+ <position name="frame_x3" unit="mm" x="0" y="-1060+40" z="-(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+<physvol>
+ <volumeref ref="frame_8080_short_vol"/>
+ <position name="frame_x4" unit="mm" x="0" y="-1060+40" z="(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+<physvol>
+ <volumeref ref="frame_8080_short_vol"/>
+ <position name="frame_x5" unit="mm" x="0" y="-(absorber_height/2+40)" z="(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+<physvol>
+ <volumeref ref="frame_4080_short_vol"/>
+ <position name="frame_x6" unit="mm" x="0" y="440-40" z="(frame_length_z/2+40)"/>
+ <rotationref ref="crosswise_rotation"/>
+</physvol>  
+
+
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_y1" unit="mm" x="(310+40)" y="-310" z="(frame_length_z/2+40)"/>
+ <rotationref ref="vertical_rotation"/>
+</physvol>      
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_y2" unit="mm" x="(310+40)" y="-310" z="-(frame_length_z/2+40)"/>
+ <rotationref ref="vertical_rotation"/>
+</physvol>   
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_y3" unit="mm" x="-(310+40)" y="-310" z="-(frame_length_z/2+40)"/>
+ <rotationref ref="vertical_rotation"/>
+</physvol>   
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_y4" unit="mm" x="(310+40)" y="-310" z="(frame_length_z/2+40)"/>
+ <rotationref ref="vertical_rotation"/>
+</physvol>       
+
+<physvol>
+ <volumeref ref="frame_4080_vol"/>
+ <position name="frame_z1" unit="mm" x="(310+60)" y="440-40" z="0"/>
+</physvol>
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_z2" unit="mm" x="(310+40)" y="-(absorber_height/2+40)" z="0"/>
+</physvol>
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_z3" unit="mm" x="(310+40)" y="-1060+40" z="0"/>
+</physvol>
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_z4" unit="mm" x="-(310+40)" y="-1060+40" z="0"/>
+</physvol>
+<physvol>
+ <volumeref ref="frame_8080_vol"/>
+ <position name="frame_z5" unit="mm" x="-(310+40)" y="-(absorber_height/2+40)" z="0"/>
+</physvol>
+<physvol>
+ <volumeref ref="frame_4080_vol"/>
+ <position name="frame_z6" unit="mm" x="-(310+60)" y="440-40" z="0"/>
+</physvol>   

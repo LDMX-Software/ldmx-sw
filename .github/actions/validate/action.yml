@@ -1,0 +1,31 @@
+
+name: validate
+author: Tom Eichlersmith
+description: Validate the sample name by comparing it to its golden histograms.
+
+inputs:
+  sample:
+    description: 'Sample to Validate'
+    required: true
+  no_comp:
+    description: 'Should the comparison script be run?'
+    required: false
+    default: false
+
+outputs:
+  plots:
+    description: 'Archive of Validation Plots'
+    value: ${{ steps.run-val.outputs.plots }}
+  events:
+    description: 'Generated Events File'
+    value: ${{ steps.run-val.outputs.events }}
+  hists:
+    description: 'Generated Histogram File'
+    value: ${{ steps.run-val.outputs.hists }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: run-val
+      run: bash $GITHUB_ACTION_PATH/validate.sh ${{inputs.sample}} ${{inputs.no_comp}}
+      shell: bash 

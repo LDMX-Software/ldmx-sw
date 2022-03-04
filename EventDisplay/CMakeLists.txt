@@ -23,7 +23,7 @@ include("${ROOT_DIR}/RootMacros.cmake")
 
 # Register the EventDisplay class with the ROOT dictionary
 register_event_object(module_path "EventDisplay" namespace "eventdisplay"
-                      class "Display" type "dict_only")
+                      class "Display")
 
 build_event_bus(path ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h)
 

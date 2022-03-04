@@ -1,0 +1,10 @@
+
+name: setup
+author: Tom Eichlersmith
+description: Setup ldmx-sw and Compile the current version
+
+runs:
+  using: 'composite'
+  steps:
+    - run: bash ${GITHUB_ACTION_PATH}/setup.sh
+      shell: bash

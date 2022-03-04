@@ -1,16 +1,16 @@
-#ifndef RECON_OVERLAY_OVERLAYPRODUCER_H_
-#define RECON_OVERLAY_OVERLAYPRODUCER_H_
+#ifndef RECON_OVERLAYPRODUCER_H
+#define RECON_OVERLAYPRODUCER_H
 
-// ROOT
-#include "TFile.h"
-#include "TRandom2.h"
-
-// STL
+//---< C++ StdLib >---// 
 #include <map>
 #include <string>
 #include <vector>
 
-// LDMX Framework
+//---< ROOT >---//
+#include "TFile.h"
+#include "TRandom2.h"
+
+//---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
@@ -35,11 +35,10 @@ class OverlayProducer : public framework::Producer {
 
   /**
    * At the start of the run, the pileup overlay file is set up, and the
-   * starting event number is chosen, using the RNSS. 
+   * starting event number is chosen, using the RNSS.
    */
-  void onNewRun(const ldmx::RunHeader&); // );    //
+  void onNewRun(const ldmx::RunHeader &);  // );    //
 
-  
   /**
    * Based on the list of collections to overlay, and the desired number of
    * events, loop through all relevant collections and copy the sim event
@@ -65,6 +64,9 @@ class OverlayProducer : public framework::Producer {
   void onProcessStart() final override;
 
  private:
+  /// The parameters used to configure this producer
+  framework::config::Parameters params_;
+
   /**
    * Pileup overlay events input file name
    */
@@ -103,7 +105,7 @@ class OverlayProducer : public framework::Producer {
   std::string simPassName_;
 
   /**
-   * Let the total number of in-time events be poisson distributed, or fix at 
+   * Let the total number of in-time events be poisson distributed, or fix at
    * the chosen value, poissonMu_
    */
   bool doPoissonIT_{false};

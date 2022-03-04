@@ -1,0 +1,80 @@
+
+name: PR Validation
+
+on: 
+  pull_request: 
+    branches: [trunk]
+    types: [opened, ready_for_review]
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+  LDMX_NUM_EVENTS: 10000
+
+jobs:
+  compile-ldmx-sw:
+    runs-on: ubuntu-latest
+    outputs:
+      job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+
+    - name: Compile and Install ldmx-sw
+      uses: ./.github/actions/setup
+
+    - name: Git Gold Histograms from trunk
+      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
+      shell: bash
+
+    - name: Package ldmx-sw Into Artifact
+      run: tar cf ldmx-sw-package.tar install/ .github/
+
+    - name: Upload ldmx-sw Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+        path: ldmx-sw-package.tar
+
+    - name: Generate Job Matrix
+      id: gen-mat
+      uses: ./.github/actions/generate-matrix
+
+  validation:
+    needs: compile-ldmx-sw
+    runs-on: ubuntu-latest
+    env:
+      LDMX_RUN_NUMBER: ${{matrix.run}}
+    strategy:
+      matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
+      fail-fast: false
+    steps:
+    - name: Download ldmx-sw Package
+      uses: actions/download-artifact@v2
+      with:
+        name: ldmx-sw-build-${{ github.sha }}
+
+    - name: Unpack ldmx-sw Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        tar xf ldmx-sw-package.tar
+
+    - name: Run Validation
+      id: validation
+      uses: ./.github/actions/validate
+      with:
+        sample: ${{matrix.sample}}
+
+    - name: Upload Validation Plots
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{matrix.sample}}-pr-validation
+        path: ${{ steps.validation.outputs.plots }}
+
+    - name: Did any validation plots fail?
+      uses: ./.github/actions/check
+      with:
+        plots: ${{ steps.validation.outputs.plots }}
+

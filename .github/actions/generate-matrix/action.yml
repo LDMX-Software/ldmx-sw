@@ -1,0 +1,21 @@
+
+name: generate-matrix
+author: Tom Eichlersmith
+description: Generate a job matrix of runs and samples
+
+inputs:
+  num_runs_per_sample:
+    description: 'Number of runs per sample'
+    required: false
+    default: 1
+
+outputs:
+  job_matrix:
+    value: ${{steps.gen-mat.outputs.job_matrix}}
+
+runs:
+  using: 'composite'
+  steps:
+    - run: bash ${GITHUB_ACTION_PATH}/generate-matrix.sh ${{ inputs.num_runs_per_sample }}
+      id: gen-mat
+      shell: bash

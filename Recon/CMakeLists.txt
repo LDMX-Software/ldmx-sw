@@ -25,6 +25,9 @@ if(BUILD_EVENT_ONLY)
                        register_event_object( module_path "Recon/Event" 
                          namespace "ldmx" class "HgcrocTrigDigi" 
                          type "collection" )
+                       register_event_object( module_path "Recon/Event" 
+                         namespace "ldmx" class "CaloTrigPrim" 
+                         type "collection" )
    setup_library(module Recon name Event
                  dependencies ROOT::Core
                  register_target)
@@ -41,6 +44,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 setup_library(module Recon
   dependencies Framework::Framework Recon::Event Tools::Tools 
                            DetDescr::DetDescr Ecal::Ecal
+                           Packing::Utility
               sources ${SRC_FILES}
 )
 

@@ -3,6 +3,7 @@
  * @brief Class that provides a trigger decision for recon using a TriggerResult
  * object
  * @author Josh Hiltbrand, University of Minnesota
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef RECON_TRIGGER_TRIGGERPROCESSOR_H_
@@ -40,7 +41,7 @@ class TriggerProcessor : public framework::Producer {
   /**
    * Class destructor.
    */
-  virtual ~TriggerProcessor() { ; }
+  virtual ~TriggerProcessor() {}
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -59,10 +60,14 @@ class TriggerProcessor : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-  /** The energy sum to make cut on. */
-  float layerESumCut_{0};
+  /// The energy sum to make cut on.
+  std::vector<double> layerESumCuts_;
 
-  /** The trigger mode to run in. Mode zero sums over
+  /// The Beam energy [MeV]
+  double beamEnergy_;
+
+  /** 
+   * The trigger mode to run in. Mode zero sums over
    * all cells in layer, while in mode 1 only cells in
    * center module are summed over. (TODO)
    */
@@ -71,7 +76,12 @@ class TriggerProcessor : public framework::Producer {
   /** The first layer of layer sum. */
   int startLayer_{0};
 
-  /** The last layer of layer sum. */
+  /** 
+   * The endpoint layer of layer sum. 
+   *
+   * **not inclusive** - i.e. this is the last layer that
+   * is included in the layer sum.
+   */
   int endLayer_{0};
 
   /** The name of the trigger algorithm used. */
@@ -79,6 +89,9 @@ class TriggerProcessor : public framework::Producer {
 
   /** The name of the input collection (the Ecal hits). */
   std::string inputColl_;
+
+  /** The pass name of the input (the Ecal hits). */
+  std::string inputPass_;
 
   /** The name of the output collection (the trigger decision). */
   std::string outputColl_;

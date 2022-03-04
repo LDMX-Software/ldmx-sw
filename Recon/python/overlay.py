@@ -76,5 +76,7 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.nEarlierBunchesToSample = 0
         self.nLaterBunchesToSample = 0
         self.bunchSpacing = 26.88   # [ns]
-        self.verbosity = 1
+        self.verbosity = 1	
+        self.tree_name = 'LDMX_Events'
+        self.compressionSetting = 9
 

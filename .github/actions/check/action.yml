@@ -1,0 +1,15 @@
+
+name: check
+author: Tom Eichlersmith
+description: Check if we passed the comparison or not.
+
+inputs:
+  plots:
+    description: 'Path to plot archive output by validate action.'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - run: bash ${GITHUB_ACTION_PATH}/check.sh ${{ inputs.plots }}
+      shell: bash

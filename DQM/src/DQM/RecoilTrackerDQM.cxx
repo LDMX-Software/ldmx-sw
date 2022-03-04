@@ -8,6 +8,8 @@
 
 #include "TVector3.h"
 
+#include "SimCore/Event/SimTrackerHit.h"
+
 namespace dqm {
 
 RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name,

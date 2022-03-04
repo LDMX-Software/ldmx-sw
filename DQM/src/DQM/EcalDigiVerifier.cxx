@@ -1,6 +1,9 @@
 
 #include "DQM/EcalDigiVerifier.h"
 
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "Ecal/Event/EcalHit.h"
+
 namespace dqm {
 
 void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
