@@ -16,6 +16,7 @@ namespace trigscint {
   void TestBeamHitProducer::configure(framework::config::Parameters &parameters){
 
     inputCol_  = parameters.getParameter< std::string >("inputCollection");
+    outputCollection_  = parameters.getParameter< std::string >("outputCollection");
     inputPassName_  = parameters.getParameter< std::string >("inputPassName");
     peds_  = parameters.getParameter< std::vector<double> >("pedestals");
     gain_  = parameters.getParameter< double >("gain");
@@ -25,15 +26,17 @@ namespace trigscint {
     std::cout << " [ TestBeamHitProducer ] In configure(), got parameters " 
 	      << "\n\t inputCollection = " << inputCol_
 	      << "\n\t inputPassName = " << inputPassName_
+	      << "\n\t outputCollection = " << outputCollection_
 	      << "\n\t startSample = " << startSample_
 	      << "\n\t pulseWidth = " << pulseWidth_
+	      << "\n\t gain = " << gain_
 	      << "\n\t pedestals[0] = " << peds_[0]
 	      << "\t." << std::endl;
 
     return;
   }
 
-  void TestBeamHitProducer::produce(const framework::Event &event) {
+  void TestBeamHitProducer::produce( framework::Event &event) {
 
 
 	/*
@@ -83,10 +86,10 @@ namespace trigscint {
 	  }
 	  hit.setPulseWidth(width);
       hit.setStartSample(startSample_);
-	  float ped = chan.getPedestal() ;
+	  float ped = peds_.at(bar); //chan.getPedestal() ;
 	  float earlyPed = chan.getEarlyPedestal();
 	  hit.setPedestal(ped);
-	  hit.setEarlyPdestal(earlyPed);
+	  hit.setEarlyPedestal(earlyPed);
 
 	  int startT = startSample_ + chan.getTimeOffset();
 	  float maxQ = -999.;
@@ -98,7 +101,7 @@ namespace trigscint {
 	  // go to the start sample defined for this channel.
 	  for (int iT = startT; iT < q.size() ; iT++) {
 		ldmx_log(debug) << "in event " << evNb << "; channel " << bar << ", got charge[" << iT << "] = " << q.at(iT);
-		float threshold = ped; // 2*fabs(peds_[ bar ]); // or sth 
+		float threshold = fabs(ped); // 2*fabs(peds_[ bar ]); // or sth 
 		// for the defined number of samples, subtract threshold. if > 0, increment sample counter.
 		float subQ=q.at(iT)-threshold;
 		// once beyond nSamples, want to see how long positive threshold subtracted tail is --> increment sample counter in any case.
@@ -107,9 +110,10 @@ namespace trigscint {
 		if (iT - startT < width ) {
 		  if ( q.at(iT) > maxQ )  // keep track of max Q. this is the pulse amplitude
 			maxQ = q.at(iT);
-		  totSubtrQ+=subQ; 		// add subtracted Q to total pulse charge.
+		  if (subQ > 0)
+			totSubtrQ+=subQ; 		// add positive subtracted Q to total pulse charge.
 		}
-		else if (subQ < 0 )   // if q < threshold, break.
+		else if (subQ < 0 )   // if after the full pulse width, q < threshold, break.
 		  break;
 		//done
 	  }// over time samples 
@@ -117,7 +121,7 @@ namespace trigscint {
 	  hit.setSampAboveThr(nSampAbove);
 	  hit.setQ(totSubtrQ);
 	  hit.setAmplitude(maxQ);
-	  hit.setPE( totSubtrQ*6250./ gain );
+	  hit.setPE( totSubtrQ*6250./ gain_ );
 	  // set bar id. set moduleNB = 0
 	  hit.setBarID( bar );	  
 	  hit.setModuleID( 0 );	 // test beam 
@@ -137,27 +141,6 @@ namespace trigscint {
     return;
   }
 
-  void TestBeamHitProducer::onFileOpen() {
-    std::cout << "\n\n File is opening! My producer should do something -- like print this \n\n" << std::endl;
-
-    return;
-  }
-
-  void TestBeamHitProducer::onFileClose() {
-
-    return;
-  }
-  
-  void TestBeamHitProducer::onProcessStart() {
-    std::cout << "\n\n Process starts! My producer should do something -- like print this \n\n" << std::endl;
-    return;
-  }
-  
-
-  void TestBeamHitProducer::onProcessEnd() {
-
-    return;
-  }
 
 
 }

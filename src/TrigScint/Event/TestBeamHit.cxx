@@ -15,20 +15,19 @@ ClassImp(trigscint::TestBeamHit)
 
     namespace trigscint {
   void TestBeamHit::Clear(Option_t * option) {
-    ldmx::TrigScintHit::Clear();
     earlyPedestal_ = -999;
     pedestal_ = -999;
     pulseQ_ = -999;
 	startSample_=-1;
 	pulseWidth_=-1;
-	sampOverThr_=-1; 
+	sampAboveThr_=-1; 
   }
 
   void TestBeamHit::Print(Option_t * option) const {
     std::cout << "TestBeamHit { "
-              << "id: " << std::hex << getID() << std::dec
-              << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-              << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE()
+              << "Total charge: " << getQ() << " fC, start time sample: " << getStartSample()
+              << ", bar: " << getBarID() 
+              << ", pulseWidth: " << getPulseWidth() 
               << "}" << std::endl;
   }
 }  // namespace trigscint

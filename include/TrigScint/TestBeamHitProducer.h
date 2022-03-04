@@ -11,6 +11,9 @@
 #include "DetDescr/TrigScintID.h"
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintHit.h"
+#include "TrigScint/Event/TestBeamHit.h"
+#include "TrigScint/Event/EventReadout.h"
+
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

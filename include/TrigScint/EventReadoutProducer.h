@@ -67,7 +67,7 @@ namespace trigscint {
   int nPedSamples_{5};
 
   /// Number of time samples to shift readout by, to align fibers if there is an offset
-  int timeShift{5};
+  int timeShift_{5};
 
   /// Which of the fibers to set the time shift for (0 or 1)
   int fiberToShift_{1};

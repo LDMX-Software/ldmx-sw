@@ -113,8 +113,44 @@ class EventReadoutProducer(ldmxcfg.Producer) :
         self.input_pass_name=""   #take any pass
         self.output_collection="QIEsamplesUp"
         self.number_pedestal_samples=5
+        self.time_shift=5
+        self.fiber_to_shift=0
         self.verbose = False
+        
+class TestBeamHitProducer(ldmxcfg.Producer) :
+    """Configuration for testbeam hit producer for Trigger Scintillators"""
 
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamHitProducer','TrigScint')
+
+        self.inputCollection="QIEsamplesUp"
+        self.inputPassName=""   #take any pass
+        self.outputCollection="testBeamHitsUp"
+        self.verbose = False
+        self.startSample=10 # Sample of interest. Range 0 to 3
+        self.pulseWidth=5 # Sample of interest. Range 0 to 3
+        self.gain = 4.e6      # SiPM Gain
+        self.pedestals=[
+            -4.8,  #0.6,
+            -2.6, #4.4,
+            -0.9, #-1.25,
+            4.4,  #3.9, 	 # #3
+            1.8,  #10000., # #4: (used to be) dead channel during test beam
+            -2.5, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.5, #-2,     # #7
+            4.7,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -1.5, #1.5,    # #10
+            -2.3, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
+        ]
+
+                                
+        
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
     """Configuration for rechit producer for Trigger Scintillators"""
 
