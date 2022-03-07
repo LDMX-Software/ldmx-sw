@@ -319,15 +319,12 @@ class HcalRawDecoder : public framework::Producer {
 #endif
             /**
              * The subfields for the electronics ID infrastructure need to start
-             * from 0 and count up. This means we need to subtract some of the
-             * fields by their lowest value before inputting them into the EID.
-             *
-             * TODO fix hardcoded starting value
-             *
-             *  roc_id-256 is the ssame as i_link = is this a coincidence?
-             *  or should we change the second input to be the link index
+             * from 0 and count up. The valid range of the ID numbers is defined 
+             * in the HcalElectronicsID class by the choice of the PackedIndex
+             * template parameters. If any of the three IDs is out of this range,
+             * the ID number will not be formed properly.
              */
-            ldmx::HcalElectronicsID eid(fpga-5, roc_id-1280, channel_id-1);
+            ldmx::HcalElectronicsID eid(fpga, roc_id, channel_id-1);
 #ifdef DEBUG
             std::cout << eid.index();
 #endif 
