@@ -93,9 +93,91 @@ class HcalRawDecoder : public framework::Producer {
     /// words for reading and decoding
     static uint32_t head1, head2, w;
 
-    /** Re-sort the data from grouped by bunch to by channel
+    // special header words not counted in event length
+    reader >> head1;
+    if (head1 == 0x11111111) { reader >> head1; }
+#ifdef DEBUG
+    if (head1 == 0xbeef2021) {
+      std::cout << "Signal words imply version 1" << std::endl;
+    } else if (head1 == 0xbeef2022) {
+      std::cout << "Signal words imply version 2" << std::endl;
+    } else {
+      std::cout << "Misunderstood signal word " << debug::hex(head1) << std::endl;
+    }
+#endif
+
+    /**
+     * Decode event header
+     */
+    long int eventlen;
+    long int i_event{0};
+    /* whole event header word looks like
      *
-     * The readout cip streams the data off of it, so it doesn't
+     * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
+     */
+    reader >> head1; i_event++;
+  
+    uint32_t version  = (head1 >> 28) & packing::utility::mask<4>;
+    uint32_t fpga     = (head1 >> 20) & packing::utility::mask<8>;
+    uint32_t nsamples = (head1 >> 16) & packing::utility::mask<4>;
+    eventlen = head1 & packing::utility::mask<16>;
+    if (version == 1u) {
+      // eventlen is 32-bit words in event
+      // do nothing here
+    } else if (version == 2u) {
+      // eventlen is 64-bit words in event,
+      // need to multiply by 2 to get actual 32-bit event length
+      eventlen *= 2;
+    } else {
+      EXCEPTION_RAISE("VersMis",
+                      "HcalRawDecoder only knows version 1 and 2 of DAQ format.");
+    }
+#ifdef DEBUG
+    std::cout << debug::hex(head1)
+      << "EventHeader(version = " << version
+      << ", fpga = " << fpga
+      << ", nsamples = " << nsamples
+      << ", eventlen = " << eventlen
+      << ")" << std::endl;
+    std::cout << "Sample Lenghts: ";
+#endif
+    // sample counters
+    int n_words{0};
+    std::vector<uint32_t> length_per_sample(nsamples, 0);
+    for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
+      if (i_sample%2 == 0) {
+        n_words++;
+        reader >> w; i_event++;
+      }
+      uint32_t shift_in_word = 16*(i_sample%2);
+      length_per_sample[i_sample] = (w >> shift_in_word) & packing::utility::mask<12>;
+#ifdef DEBUG
+      std::cout << "len(" << i_sample << ") = " << length_per_sample[i_sample] << " ";
+#endif
+    }
+#ifdef DEBUG
+    std::cout << std::endl;
+#endif
+
+    if (version == 2) {
+      /**
+       * For the time being, the number of sample lengths is fixed to make the
+       * firmware for DMA readout simpler. This means we readout the leftover
+       * dummy words to move the pointer on the reader.
+       */
+#ifdef DEBUG
+      std::cout << "Padding words to reach 8 total sample length words." << std::endl;
+#endif
+      for (int i_word{n_words}; i_word < 7; i_word++) {
+        reader >> head1; i_event++;
+      }
+    }
+
+
+    /** 
+     * Re-sort the data from grouped by bunch to by channel
+     *
+     * The readout chip streams the data off of it, so it doesn't
      * have time to re-group the signals across multiple bunches (samples)
      * by their channel ID. We need to do that here.
      */
@@ -103,38 +185,8 @@ class HcalRawDecoder : public framework::Producer {
     std::map<ldmx::HcalElectronicsID,
              std::vector<ldmx::HgcrocDigiCollection::Sample>>
         eid_to_samples;
-    while (reader >> head1 >> head2) {
-      /// are we reading a buffer from multi-sample per event?
-      if (head1 == 0x11111111 and head2 == 0xbeef2021) {
-        /* whole event header word looks like
-         *
-         * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
-         */
-        uint32_t whole_event_header;
-        reader >> whole_event_header;
-        uint32_t version  = (whole_event_header >> 28) & packing::utility::mask<4>;
-        uint32_t fpga     = (whole_event_header >> 20) & packing::utility::mask<8>;
-        uint32_t nsamples = (whole_event_header >> 16) & packing::utility::mask<4>;
-        uint32_t eventlen = whole_event_header & packing::utility::mask<16>;
-  
-        // sample counters
-        std::vector<uint32_t> length_per_sample(nsamples, 0);
-        for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
-          if (i_sample%2 == 0) {
-            reader >> w;
-          }
-          uint32_t shift_in_word = 16*(i_sample%2);
-          length_per_sample[i_sample] = (w >> shift_in_word) & packing::utility::mask<12>;
-        }
-  
-        // read first sample headers
-        reader >> head1 >> head2;
-      } else if (head1 == 0xd07e2021 and head2 == 0x12345678) {
-        // these are the special footer words at the end,
-        //  done with event
-        break;
-      }
-      
+    while (i_event < eventlen) {
+      reader >> head1 >> head2; i_event += 2;
       /** Decode Bunch Header
        * We have a few words of header material before the actual data.
        * This header material is assumed to be encoded as in Table 3
@@ -159,11 +211,6 @@ class HcalRawDecoder : public framework::Producer {
 #ifdef DEBUG
       std::cout << "version " << version << std::flush;
 #endif
-      uint32_t one{1};
-      if (version != one)
-        EXCEPTION_RAISE("VersMis",
-                        "HcalRawDecoder only knows version 1 of DAQ format.");
-  
       uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
       uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
       uint32_t len = head1 & packing::utility::mask<12>;
@@ -187,7 +234,7 @@ class HcalRawDecoder : public framework::Producer {
       std::vector<uint32_t> length_per_link(nlinks, 0);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) {
-          reader >> w;
+          i_event++; reader >> w;
           fpga_crc << w;
 #ifdef DEBUG
           std::cout << debug::hex(w) << " : Four Link Pack " << std::endl;
@@ -218,7 +265,7 @@ class HcalRawDecoder : public framework::Producer {
         std::cout << "RO Link " << i_link << std::endl;
 #endif
         packing::utility::CRC link_crc;
-        reader >> w;
+        i_event++; reader >> w;
         fpga_crc << w;
         link_crc << w;
         uint32_t roc_id = (w >> 16) & packing::utility::mask<16>;
@@ -231,7 +278,7 @@ class HcalRawDecoder : public framework::Producer {
         // and the entire next word
         std::bitset<40> ro_map = w & packing::utility::mask<8>;
         ro_map <<= 32;
-        reader >> w;
+        i_event++; reader >> w;
         fpga_crc << w;
         link_crc << w;
         ro_map |= w;
@@ -251,7 +298,7 @@ class HcalRawDecoder : public framework::Producer {
           } while (channel_id < 40 and not ro_map.test(channel_id));
   
           // next word is this channel
-          reader >> w;
+          i_event++; reader >> w;
           fpga_crc << w;
 #ifdef DEBUG
           std::cout << debug::hex(w) << " " << channel_id;
@@ -341,7 +388,7 @@ class HcalRawDecoder : public framework::Producer {
       }  // loop over links
   
       // another CRC checksum from FPGA
-      reader >> w;
+      i_event++; reader >> w;
       uint32_t crc = w;
 #ifdef DEBUG
       std::cout << "FPGA Checksum : " << debug::hex(fpga_crc.get()) << " =? " << debug::hex(crc) << std::endl;
@@ -357,6 +404,15 @@ class HcalRawDecoder : public framework::Producer {
       }
       */
     }
+
+    // padding to reach 64-bit boundary in version 2
+    if (version == 2u and i_event % 2 == 1) {
+      i_event++; reader >> head1;
+    } else if (version == 1u) {
+      // special footer words
+      reader >> head1 >> head2;
+    }
+
     return eid_to_samples;
   }
 
