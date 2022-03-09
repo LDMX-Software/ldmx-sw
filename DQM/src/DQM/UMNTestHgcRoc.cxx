@@ -8,7 +8,7 @@ namespace dqm::umn {
 
 class TestHgcRoc : public framework::Analyzer {
   std::string input_name_, input_pass_, pedestal_table_;
-  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, i_sample_;
+  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, i_sample_, event_;
   TTree* flat_tree_;
 
  public:
@@ -35,6 +35,7 @@ class TestHgcRoc : public framework::Analyzer {
     flat_tree_->Branch("adc", &adc_);
     flat_tree_->Branch("raw_adc", &raw_adc_);
     flat_tree_->Branch("i_sample", &i_sample_);
+    flat_tree_->Branch("event", &event_);
   }
 
   void analyze(const framework::Event& event) final override;
@@ -43,6 +44,8 @@ class TestHgcRoc : public framework::Analyzer {
 void TestHgcRoc::analyze(const framework::Event& event) {
   // get the reconstruction parameters 
   auto pedestal_table{getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
+
+  event_ = event.getEventNumber();
 
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
