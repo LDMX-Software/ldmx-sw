@@ -8,8 +8,7 @@ namespace dqm::umn {
 
 class TestHgcRoc : public framework::Analyzer {
   std::string input_name_, input_pass_, pedestal_table_;
-  int raw_id_, fpga_, link_, channel_, index_;
-  std::vector<int> adc_, raw_adc_;
+  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, i_sample_;
   TTree* flat_tree_;
 
  public:
@@ -35,6 +34,7 @@ class TestHgcRoc : public framework::Analyzer {
     flat_tree_->Branch("index", &index_);
     flat_tree_->Branch("adc", &adc_);
     flat_tree_->Branch("raw_adc", &raw_adc_);
+    flat_tree_->Branch("i_sample", &i_sample_);
   }
 
   void analyze(const framework::Event& event) final override;
@@ -56,15 +56,12 @@ void TestHgcRoc::analyze(const framework::Event& event) {
     index_ = eid.index();
     raw_id_ = static_cast<int>(d.id());
 
-    adc_.clear();
-    raw_adc_.clear();
-    for (std::size_t i_sample{0}; i_sample < digis.getNumSamplesPerDigi(); i_sample++) {
-      int adc_t = d.at(i_sample).adc_t();
-      raw_adc_.push_back(adc_t);
-      adc_.push_back(adc_t - pedestal_table.get(d.id(), 0));
+    for (i_sample_ = 0; i_sample_ < digis.getNumSamplesPerDigi(); i_sample_++) {
+      int adc_t = d.at(i_sample_).adc_t();
+      raw_adc_ = adc_t;
+      adc_ =  adc_t - pedestal_table.get(d.id(), 0);
+      flat_tree_->Fill();
     }
-
-    flat_tree_->Fill();
   }
 }
 
