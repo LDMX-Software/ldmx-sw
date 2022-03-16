@@ -128,13 +128,15 @@ class HcalRawDecoder : public framework::Producer {
       // eventlen is 64-bit words in event,
       // need to multiply by 2 to get actual 32-bit event length
       eventlen *= 2;
+      // and subtract off the special header word above
+      eventlen -= 1;
     } else {
       EXCEPTION_RAISE("VersMis",
                       "HcalRawDecoder only knows version 1 and 2 of DAQ format.");
     }
 #ifdef DEBUG
     std::cout << debug::hex(head1)
-      << "EventHeader(version = " << version
+      << " EventHeader(version = " << version
       << ", fpga = " << fpga
       << ", nsamples = " << nsamples
       << ", eventlen = " << eventlen
@@ -168,11 +170,16 @@ class HcalRawDecoder : public framework::Producer {
 #ifdef DEBUG
       std::cout << "Padding words to reach 8 total sample length words." << std::endl;
 #endif
-      for (int i_word{n_words}; i_word < 7; i_word++) {
+      for (int i_word{n_words}; i_word < 8; i_word++) {
         reader >> head1; i_event++;
+#ifdef DEBUG
+        std::cout << " " << debug::hex(head1);
+#endif
       }
+#ifdef DEBUG
+      std::cout << std::endl;
+#endif
     }
-
 
     /** 
      * Re-sort the data from grouped by bunch to by channel
@@ -185,7 +192,11 @@ class HcalRawDecoder : public framework::Producer {
     std::map<ldmx::HcalElectronicsID,
              std::vector<ldmx::HgcrocDigiCollection::Sample>>
         eid_to_samples;
+    std::size_t i_sample{0};
     while (i_event < eventlen) {
+#ifdef DEBUG
+      std::cout << "Decoding sample " << i_sample << " on word " << i_event << std::endl;
+#endif
       reader >> head1 >> head2; i_event += 2;
       /** Decode Bunch Header
        * We have a few words of header material before the actual data.
@@ -207,9 +218,9 @@ class HcalRawDecoder : public framework::Producer {
 #ifdef DEBUG
       std::cout << debug::hex(head1) << " : ";
 #endif
-      uint32_t version = (head1 >> 28) & packing::utility::mask<4>;
+      uint32_t hgcroc_version = (head1 >> 28) & packing::utility::mask<4>;
 #ifdef DEBUG
-      std::cout << "version " << version << std::flush;
+      std::cout << "hgcroc_version " << hgcroc_version << std::flush;
 #endif
       uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
       uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
@@ -392,6 +403,7 @@ class HcalRawDecoder : public framework::Producer {
       uint32_t crc = w;
 #ifdef DEBUG
       std::cout << "FPGA Checksum : " << debug::hex(fpga_crc.get()) << " =? " << debug::hex(crc) << std::endl;
+      std::cout << " N Sample Words : " << length_per_sample.at(i_sample) << std::endl;
 #endif
       /* TODO
        *  fix calculation of FPGA checksum
@@ -403,12 +415,17 @@ class HcalRawDecoder : public framework::Producer {
             "Our calculated FPGA checksum doesn't match the one read in.");
       }
       */
+      // padding to reach 64-bit boundary in version 2
+      if (version == 2u and length_per_sample.at(i_sample) % 2 == 1) {
+        i_event++; reader >> head1;
+#ifdef DEBUG
+        std::cout << "Padding to reach 64-bit boundary: " << debug::hex(head1) << std::endl;
+#endif
+      }
+      i_sample++;
     }
 
-    // padding to reach 64-bit boundary in version 2
-    if (version == 2u and i_event % 2 == 1) {
-      i_event++; reader >> head1;
-    } else if (version == 1u) {
+    if (version == 1u) {
       // special footer words
       reader >> head1 >> head2;
     }
