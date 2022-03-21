@@ -47,11 +47,12 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     : framework::ConditionsObject(CONDITIONS_OBJECT_NAME),
       ldmx::ElectronicsMap<ldmx::HcalElectronicsID, ldmx::HcalDigiID>(want_d2e) {
   
+  std::cout << "Constructing" << std::endl;
   this->clear();
   conditions::StreamCSVLoader csv(connections_table);
   while (csv.nextRow()) {
     /** Column Names
-     * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane"
+     * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane" "Cable"
      *
      * Each HGCROC has two links coming out of it,
      * one for the upper half of the channels and one for the lower half,
@@ -93,8 +94,8 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
 
     auto QuadBar {csv.getInteger("QuadBar")};
     auto BarNumber {csv.getInteger("Bar")};
-    // Strip = (Bar - 1) + 4 * (QuadBar - 1)
-    // Bar and QuadBar both start at 1 so we need to subtract to get first value
+    // Strip = (4 - Bar) + 4 * (QuadBar - 1)
+    // QuadBar starts at 1 so we need to subtract to get first value
     // to be zero
     auto strip { (4 - BarNumber) + 4 * (QuadBar - 1)};
     ldmx::HcalDigiID detid(0 /*section - only one section during test beam*/, 
@@ -102,7 +103,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
         strip                   /*strip*/,
         end /*end*/);
     ldmx::HcalElectronicsID eleid(
-        0 /*fpga - only one FPGA during test beam*/,
+        0 /*polarfire fpga - only one Polarfire during test beam*/,
         link /*elink*/,
         chan /*channel*/);
     
@@ -110,6 +111,8 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
       std::stringstream ss;
       ss << "Two different mappings for electronics channel " << eleid;
       EXCEPTION_RAISE("DuplicateMapping", ss.str());
+    } else {
+      std::cout << "Added " << eleid << " -> " << detid << std::endl;
     }
     this->addEntry(eleid, detid);
   }
