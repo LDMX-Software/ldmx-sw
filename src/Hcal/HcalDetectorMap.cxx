@@ -47,7 +47,6 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     : framework::ConditionsObject(CONDITIONS_OBJECT_NAME),
       ldmx::ElectronicsMap<ldmx::HcalElectronicsID, ldmx::HcalDigiID>(want_d2e) {
   
-  std::cout << "Constructing" << std::endl;
   this->clear();
   conditions::StreamCSVLoader csv(connections_table);
   while (csv.nextRow()) {
@@ -111,8 +110,6 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
       std::stringstream ss;
       ss << "Two different mappings for electronics channel " << eleid;
       EXCEPTION_RAISE("DuplicateMapping", ss.str());
-    } else {
-      std::cout << "Added " << eleid << " -> " << detid << std::endl;
     }
     this->addEntry(eleid, detid);
   }
