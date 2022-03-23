@@ -13,7 +13,7 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
-//#define DEBUG
+#define DEBUG
 
 namespace hcal {
 
@@ -373,7 +373,7 @@ class HcalRawDecoder : public framework::Producer {
   
 #ifdef DEBUG
             std::cout << " : DAQ Channel ";
-            std::cout << fpga << " " << roc_id << " " << channel_id << " ";
+            std::cout << fpga << " " << roc_id << " " << i_link << " " << channel_id << " ";
 #endif
             /**
              * The subfields for the electronics ID infrastructure need to start
@@ -382,7 +382,7 @@ class HcalRawDecoder : public framework::Producer {
              * template parameters. If any of the three IDs is out of this range,
              * the ID number will not be formed properly.
              */
-            ldmx::HcalElectronicsID eid(fpga, roc_id, channel_id-1);
+            ldmx::HcalElectronicsID eid(fpga, i_link, channel_id-1);
 #ifdef DEBUG
             std::cout << eid.index();
 #endif 
