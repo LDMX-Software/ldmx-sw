@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(LDMX_SW VERSION 2.1.0
+project(LDMX_SW VERSION 3.1.1
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )
