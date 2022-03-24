@@ -8,7 +8,8 @@ namespace dqm {
 
 class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   std::string input_name_, input_pass_, pedestal_table_;
-  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, i_sample_, event_;
+  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, tot_, toa_, i_sample_, event_;
+  bool tot_prog_, tot_comp_;
   TTree* flat_tree_;
 
  public:
@@ -33,9 +34,13 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
     flat_tree_->Branch("channel", &channel_);
     flat_tree_->Branch("index", &index_);
     flat_tree_->Branch("adc", &adc_);
+    flat_tree_->Branch("tot", &tot_);
+    flat_tree_->Branch("toa", &toa_);
     flat_tree_->Branch("raw_adc", &raw_adc_);
     flat_tree_->Branch("i_sample", &i_sample_);
     flat_tree_->Branch("event", &event_);
+    flat_tree_->Branch("tot_prog", &tot_prog_);
+    flat_tree_->Branch("tot_comp", &tot_comp_);
   }
 
   void analyze(const framework::Event& event) final override;
@@ -51,15 +56,19 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
   for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
     auto d{digis.getDigi(i_digi)};
+    raw_id_ = static_cast<int>(d.id());
     ldmx::HcalElectronicsID eid(d.id());
     // undo hardcoded shifts in hcal raw decoder
     fpga_ = eid.fiber() + 5;
     link_ = eid.elink(); // leave shifted to align with link number
     channel_ = eid.channel() + 1;
     index_ = eid.index();
-    raw_id_ = static_cast<int>(d.id());
 
     for (i_sample_ = 0; i_sample_ < digis.getNumSamplesPerDigi(); i_sample_++) {
+      tot_prog_ = d.at(i_sample_).isTOTinProgress();
+      tot_comp_ = d.at(i_sample_).isTOTComplete();
+      tot_ = d.at(i_sample_).tot();
+      toa_ = d.at(i_sample_).toa();
       int adc_t = d.at(i_sample_).adc_t();
       raw_adc_ = adc_t;
       adc_ =  adc_t - pedestal_table.get(d.id(), 0);
