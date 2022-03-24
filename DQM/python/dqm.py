@@ -153,17 +153,19 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
         self.input_pass = ''
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
-    def __init__(self,input_name, pedestal_table = 'NO_PEDESTALS', input_pass = '', name = 'ntuplizehgcroc') :
+    def __init__(self,input_name, pedestal_table = None, input_pass = '', name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
         self.input_name = input_name
         self.input_pass = input_pass
-        self.pedestal_table = pedestal_table
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
-        t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
-        if pedestal_table == 'NO_PEDESTALS' :
+        if pedestal_table is None :
+            self.pedestal_table = 'NO_PEDESTALS'
+            t = SimpleCSVIntegerTableProvider('NO_PEDESTALS',["PEDESTAL"])
             t.validForAllRows([0])
         else :
+            self.pedestal_table = pedestal_table
+            t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
             t.validForever(f'file://{pedestal_table}')
 
 class PhotoNuclearDQM(ldmxcfg.Analyzer) :
