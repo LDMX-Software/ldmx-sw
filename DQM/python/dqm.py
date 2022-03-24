@@ -153,10 +153,20 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
         self.input_pass = ''
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
-    def __init__(self,input_name, pedestal_table = None, input_pass = '', name = 'ntuplizehgcroc') :
+    def __init__(self,input_name, pedestal_table = None, input_pass = '', using_eid = None, name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
         self.input_name = input_name
         self.input_pass = input_pass
+
+        if using_eid is None :
+            # deduce if using eid based on presence of HcalDetectorMap in conditions system
+            from LDMX.Framework import ldmxcfg
+            from LDMX.Hcal.DetectorMap import HcalDetectorMap
+            self.using_eid = True
+            for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
+                if isinstance(cop,HcalDetectorMap) :
+                    self.using_eid = False
+                    break
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         if pedestal_table is None :

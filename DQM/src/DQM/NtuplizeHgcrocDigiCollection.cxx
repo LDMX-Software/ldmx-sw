@@ -1,5 +1,6 @@
 
 #include "DetDescr/HcalElectronicsID.h"
+#include "DetDescr/HcalDigiID.h"
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Conditions/SimpleTableCondition.h"
@@ -8,8 +9,11 @@ namespace dqm {
 
 class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   std::string input_name_, input_pass_, pedestal_table_;
-  int raw_id_, fpga_, link_, channel_, index_, adc_, raw_adc_, tot_, toa_, i_sample_, event_;
+  int raw_id_, adc_, raw_adc_, tot_, toa_, i_sample_, event_;
+  int fpga_, link_, channel_, index_;
+  int section_, layer_, strip_, end_;
   bool tot_prog_, tot_comp_;
+  bool using_eid_;
   TTree* flat_tree_;
 
  public:
@@ -21,18 +25,15 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
     input_name_ = ps.getParameter<std::string>("input_name");
     input_pass_ = ps.getParameter<std::string>("input_pass");
     pedestal_table_ = ps.getParameter<std::string>("pedestal_table");
+    using_eid_ = ps.getParameter<bool>("using_eid");
   }
 
   void onProcessStart() final override {
     getHistoDirectory();
     // cleaned up when histogram file is closed
-    flat_tree_ = new TTree("adc", "adc");
+    flat_tree_ = new TTree("hgcroc", "Ntuplized HGC ROC Digi Collection");
 
-    flat_tree_->Branch("fpga", &fpga_);
     flat_tree_->Branch("raw_id", &raw_id_);
-    flat_tree_->Branch("link", &link_);
-    flat_tree_->Branch("channel", &channel_);
-    flat_tree_->Branch("index", &index_);
     flat_tree_->Branch("adc", &adc_);
     flat_tree_->Branch("tot", &tot_);
     flat_tree_->Branch("toa", &toa_);
@@ -41,6 +42,17 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
     flat_tree_->Branch("event", &event_);
     flat_tree_->Branch("tot_prog", &tot_prog_);
     flat_tree_->Branch("tot_comp", &tot_comp_);
+    if (using_eid_) {
+      flat_tree_->Branch("fpga", &fpga_);
+      flat_tree_->Branch("link", &link_);
+      flat_tree_->Branch("channel", &channel_);
+      flat_tree_->Branch("index", &index_);
+    } else {
+      flat_tree_->Branch("section", &section_);
+      flat_tree_->Branch("layer", &layer_);
+      flat_tree_->Branch("strip", &strip_);
+      flat_tree_->Branch("end", &end_);
+    }
   }
 
   void analyze(const framework::Event& event) final override;
@@ -57,12 +69,19 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
     auto d{digis.getDigi(i_digi)};
     raw_id_ = static_cast<int>(d.id());
-    ldmx::HcalElectronicsID eid(d.id());
-    // undo hardcoded shifts in hcal raw decoder
-    fpga_ = eid.fiber() + 5;
-    link_ = eid.elink(); // leave shifted to align with link number
-    channel_ = eid.channel() + 1;
-    index_ = eid.index();
+    if (using_eid_) {
+      ldmx::HcalElectronicsID eid(d.id());
+      fpga_ = eid.fiber();
+      link_ = eid.elink();
+      channel_ = eid.channel() + 1; // undo shift of channel numbers down to zero-based
+      index_ = eid.index();
+    } else {
+      ldmx::HcalDigiID detid(d.id());
+      section_ = detid.section();
+      layer_ = detid.layer();
+      strip_ = detid.strip();
+      end_ = detid.end();
+    }
 
     for (i_sample_ = 0; i_sample_ < digis.getNumSamplesPerDigi(); i_sample_++) {
       tot_prog_ = d.at(i_sample_).isTOTinProgress();
