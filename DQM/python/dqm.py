@@ -162,11 +162,13 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
             from LDMX.Framework import ldmxcfg
             from LDMX.Hcal.DetectorMap import HcalDetectorMap
-            self.using_eid = True
+            using_eid = True
             for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
                 if isinstance(cop,HcalDetectorMap) :
-                    self.using_eid = False
+                    using_eid = False
                     break
+
+        self.using_eid = using_eid
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         if pedestal_table is None :
