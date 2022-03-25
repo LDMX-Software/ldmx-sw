@@ -52,33 +52,9 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
   while (csv.nextRow()) {
     /** Column Names
      * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane" "Cable"
-     *
-     * Each HGCROC has two links coming out of it,
-     * one for the upper half of the channels and one for the lower half,
-     * this means we need to modify the hgcroc/channel pair to be
-     * actual link/channel pairs where the new link has range twice
-     * as big as the hgcroc ID but the new channel has a range half
-     * as big as the old one.
      */
     int hgcroc = csv.getInteger("HGCROC");
     int chan   = csv.getInteger("Channel");
-
-    /**
-     * each hgcroc has two links, one for the upper half of channels,
-     * one for the lower half
-     *
-     * for test beam (current conditions table) we only use 32 out of 38
-     *  but this just means that channels 64-76 are not connected to anything
-     *  even though they may be present in the ROC data packet
-     *
-     * or in other words, since each hgcroc produces two links, channels
-     *  26-38 on the odd link numbers will will not appear in the detector map
-     */
-    int link = 2*(hgcroc-1); // hgcroc count starts from 0
-    if (chan >= 38) {
-      link += 1;
-      chan -= 38;
-    }
 
     // one quadbar groups 4 strips and each quadbar is connected to 2 CMBs - one in each end
     int end = csv.getInteger("CMB")%2;
@@ -103,8 +79,8 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
         end /*end*/);
     ldmx::HcalElectronicsID eleid(
         0 /*polarfire fpga - only one Polarfire during test beam*/,
-        link /*elink*/,
-        chan /*channel*/);
+        hgcroc /*HGCROC ID*/,
+        chan /*channel on HGCROC*/);
     
     if (this->exists(eleid)) {
       std::stringstream ss;
