@@ -384,11 +384,10 @@ class HcalRawDecoder : public framework::Producer {
              *
              *  polarfire fpga = fpga readout
              *  roc = i_link / 2 // integer division
-             *  channel = (i_link%2)*36 + channel_id - (channel_id > common_mode_channel)*1 - 1
+             *  channel = channel_id - (channel_id > common_mode_channel)*1 - 1
              */
-            ldmx::HcalElectronicsID eid(fpga, 
-                i_link / 2,  // integer division on purpose
-                (i_link%2)*36 + channel_id - 1*(channel_id > common_mode_channel) - 1);
+            ldmx::HcalElectronicsID eid(fpga, i_link,
+                channel_id - 1*(channel_id > common_mode_channel) - 1);
 #ifdef DEBUG
             std::cout << eid.index();
 #endif 
