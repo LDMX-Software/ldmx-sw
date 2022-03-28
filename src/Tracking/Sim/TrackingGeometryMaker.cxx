@@ -1602,6 +1602,7 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
 // This functioon takes the input parameters and makes the propagation for a simple event display
 
 bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
+                                       const Acts::BoundTrackParameters& perigeeParameters,
                                        const Acts::MultiTrajectory& mj,
                                        const int &trackTip,
                                        const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
@@ -1696,12 +1697,34 @@ bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
   // The last parameters just propagate
   // TODO Fix double code
   // TODO Fix contorted code - directly push to the same vector
-  
 
+ 
+
+  std::vector<Acts::detail::Step> steps;
+
+  //compute first the perigee to first surface:
+  auto result = propagator_->propagate(perigeeParameters,
+                                       prop_parameters.at(0).referenceSurface(),
+                                       propagator_options);
+  
+  if (result.ok()) {
+    const auto& resultValue = result.value();
+    auto steppingResults =
+        resultValue.template get<Acts::detail::SteppingLogger::result_type>();
+    // Set the stepping result
+    pOutput.first = std::move(steppingResults.steps);
+    
+    for (auto & step : pOutput.first)
+      steps.push_back(std::move(step));
+  }
+
+  //follow now the trajectory
+    
+  
   for (int i_params = 0; i_params < prop_parameters.size(); i_params++) {
 
     if (i_params < prop_parameters.size() - 1) {
-
+      
       auto result = propagator_->propagate(prop_parameters.at(i_params),
                                            prop_parameters.at(i_params+1).referenceSurface(),
                                            propagator_options);
@@ -1712,9 +1735,12 @@ bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
             resultValue.template get<Acts::detail::SteppingLogger::result_type>();
         // Set the stepping result
         pOutput.first = std::move(steppingResults.steps);
+
+        for (auto & step : pOutput.first)
+          steps.push_back(std::move(step));
         
         // Record the propagator steps
-        tmpSteps.push_back(std::move(pOutput.first));
+        //tmpSteps.push_back(std::move(pOutput.first));
       }
     }
     
@@ -1729,9 +1755,12 @@ bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
             resultValue.template get<Acts::detail::SteppingLogger::result_type>();
         // Set the stepping result
         pOutput.first = std::move(steppingResults.steps);
+
+        for (auto & step : pOutput.first)
+          steps.push_back(std::move(step));
         
         // Record the propagator steps
-        tmpSteps.push_back(std::move(pOutput.first));
+        //tmpSteps.push_back(std::move(pOutput.first));
       }
     }
   }
@@ -1739,19 +1768,21 @@ bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
   
   //This holds all the steps to be merged
   //TODO Remove this and put all in the same vector directly in the for loop above
-  
-  std::vector<Acts::detail::Step> allSteps;
+
+  /*
+    
   int totalSize=0;
 
   for (auto & steps: tmpSteps) 
     totalSize+=steps.size();
   
-  allSteps.reserve(totalSize);
+    allSteps.reserve(totalSize);
   
   for (auto & steps: tmpSteps) 
     allSteps.insert(allSteps.end(), steps.begin(), steps.end());
+  */
   
-  propagationSteps.push_back(allSteps);
+  propagationSteps.push_back(steps);
   
   
   writer_->WriteSteps(event,

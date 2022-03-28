@@ -71,7 +71,7 @@ class SeedToTrackParamMaker {
   ///
   /// @tparam spacepoint_iterator_t  The type of space point iterator
   ///
-  /// @param tp the global to local transformation
+  /// @param tp the local to global transformation
   /// @param spBegin is the begin iterator for the space points
   /// @param spEnd is the end iterator for the space points
   /// @param surface is the surface of the bottom space point. The estimated bound
@@ -126,7 +126,7 @@ class SeedToTrackParamMaker {
     }
 
     // Define a new coordinate frame with its origin at the bottom space point, z
-    // axis long the magnetic field direction and y axis perpendicular to vector
+    // axis along the magnetic field direction and y axis perpendicular to vector
     // from the bottom to middle space point. Hence, the projection of the middle
     // space point on the tranverse plane will be located at the x axis of the new
     // frame.
