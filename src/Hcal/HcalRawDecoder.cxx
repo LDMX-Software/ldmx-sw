@@ -13,7 +13,7 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
-#define DEBUG
+//#define DEBUG
 
 namespace hcal {
 
