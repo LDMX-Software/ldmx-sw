@@ -13,7 +13,7 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
-#define DEBUG
+//#define DEBUG
 
 namespace hcal {
 
@@ -341,22 +341,23 @@ class HcalRawDecoder : public framework::Producer {
             std::cout << " : Common Mode";
 #endif
           } else if (channel_id == 39) {
-            // CRC checksum from ROC
-            uint32_t crc = w;
+            // trailer on each link added by ROC
+            // ROC v2 - IDLE word
+            // ROC v3 - CRC checksum
 #ifdef DEBUG
-            std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(crc);
+            if (roc_version_ == 2) {
+              std::cout << debug::hex(w) << " : Idle";
+            } else {
+              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(crc);
+            }
 #endif
             /*
-            if (link_crc.get() != crc) {
+            if (roc_version_ > 2 and link_crc.get() != w) {
               EXCEPTION_RAISE("BadCRC",
                               "Our calculated link checksum doesn't match the "
                               "one from raw data.");
             }
             */
-            
-#ifdef DEBUG
-            std::cout << " : CRC";
-#endif
           } else {
             /// DAQ Channels
   
@@ -376,13 +377,17 @@ class HcalRawDecoder : public framework::Producer {
             std::cout << fpga << " " << roc_id << " " << i_link << " " << channel_id << " ";
 #endif
             /**
-             * The subfields for the electronics ID infrastructure need to start
-             * from 0 and count up. The valid range of the ID numbers is defined 
-             * in the HcalElectronicsID class by the choice of the PackedIndex
-             * template parameters. If any of the three IDs is out of this range,
-             * the ID number will not be formed properly.
+             * The HGC ROC has some odd behavior in terms of reading out the different channels.
+             * It inserts an extra header word at "channel" number 0 and it inserts the common
+             * mode channel in "channel" number 19 or 1 (depending on the version). This introduces
+             * a special shift for the channel number to "align" with the range 0-35 per link.
+             *
+             *  polarfire fpga = fpga readout
+             *  roc = i_link / 2 // integer division
+             *  channel = channel_id - (channel_id > common_mode_channel)*1 - 1
              */
-            ldmx::HcalElectronicsID eid(fpga, i_link, channel_id-1);
+            ldmx::HcalElectronicsID eid(fpga, i_link,
+                channel_id - 1*(channel_id > common_mode_channel) - 1);
 #ifdef DEBUG
             std::cout << eid.index();
 #endif 
