@@ -64,20 +64,29 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
     int chan   = csv.getInteger("Channel");
 
     /**
-     * each hgcroc has two links, one for the upper half of channels,
-     * one for the lower half
+     * each hgcroc has two links, 
+     *  - one for the upper half of channels (36-71)
+     *  - one for the lower half (0-35)
      *
-     * for test beam (current conditions table) we only use 32 out of 38
-     *  but this just means that channels 64-76 are not connected to anything
-     *  even though they may be present in the ROC data packet
+     * we assign the links' number based on the hgcroc ID so that
+     * the link count starts from 0 and the two links for one hgcroc ID
+     * are next to each other. The upper half of channels are given the
+     * higher link number.
      *
-     * or in other words, since each hgcroc produces two links, channels
-     *  26-38 on the odd link numbers will will not appear in the detector map
+     * the Hcal skips every 9th channel because those are the 
+     * channels that are skipped in the trigger sum when the chip is summing 
+     * 4 channels together
+     * 
+     * Skipped: 8, 17, 26, 35, 44, 53, 62, 71
+     *
+     * without zero suppresssion then, this means some channels will appear in 
+     * the raw data but will not be in the detector mapping so they should be
+     * skipped
      */
-    int link = 2*(hgcroc-1); // hgcroc count starts from 0
-    if (chan >= 38) {
+    int link = 2*(hgcroc-1); // link count starts from 0
+    if (chan >= 36) {
       link += 1;
-      chan -= 38;
+      chan -= 36;
     }
 
     // one quadbar groups 4 strips and each quadbar is connected to 2 CMBs - one in each end
