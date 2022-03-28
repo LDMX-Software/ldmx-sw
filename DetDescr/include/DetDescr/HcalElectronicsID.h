@@ -12,21 +12,25 @@ namespace ldmx {
  * @class HcalElectronicsID
  * @brief Identifies a location in the Hcal readout chain
  * 
- * - polarfire fpga : the Polarfire reading out the (up to four) ROCs
- * - roc : the index of the ROC on that polarfire FPGA
- * - channel : the channel number on that ROC
+ *    -- fiber : optical fiber number (backend number), range assumed O(0-96)
+ *    -- elink : electronic link number, range assumed O(0-47)
+ *    -- channel : channel-on-elink, range O(0-37)
  *
  * For transient use only i.e. we use this ID to help translate the digitized
  * data coming off the detector into spatially-important HcalDigiIDs.
+ *
+ * TODO update the ranges in the packed index template.
+ * These were originally copied from the EcalElectronicsID implementation
+ * and may not align with the Hcal readout design.
  */
 class HcalElectronicsID : public DetectorID {
  public:
 
   static const RawValue INDEX_MASK{0xFFFFFF};
-  // PackedIndex for channel (field 0), roc (field 1), polarfire fpga (field 2)
-  typedef PackedIndex<72,4,200> Index;
+  // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
+  typedef PackedIndex<38,48,97> Index;
   // Maximum value of any packed index here
-  static const unsigned int MAX_INDEX{72*4*200};
+  static const unsigned int MAX_INDEX{38*48*200};
   
   /**
    * Empty HCAL id (but not null!)
@@ -50,7 +54,7 @@ class HcalElectronicsID : public DetectorID {
   /**
    * Create from pieces
    */
-  HcalElectronicsID(unsigned int polarfire, unsigned int roc, unsigned int channel)
+  HcalElectronicsID(unsigned int fiber, unsigned int elink, unsigned int channel)
       : DetectorID(EID_HCAL, 0) {
     Index index(channel,elink,fiber);
     id_ |= index.value();
@@ -74,12 +78,12 @@ class HcalElectronicsID : public DetectorID {
    * Get the value of the fiber from the ID.
    * @return The value of the fiber field.
    */
-  int polarfire() const { return Index(id_&INDEX_MASK).field2(); }
+  int fiber() const { return Index(id_&INDEX_MASK).field2(); }
   /**
    * Get the value of the fiber from the ID.
    * @return The value of the fiber field.
    */
-  int roc() const { return Index(id_&INDEX_MASK).field1(); }
+  int elink() const { return Index(id_&INDEX_MASK).field1(); }
   /**
    * Get the value of the fiber from the ID.
    * @return The value of the fiber field.
@@ -96,5 +100,6 @@ class HcalElectronicsID : public DetectorID {
 }
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HcalElectronicsID& id);
+
 
 #endif // DETDESCR_HCALELECTRONICSID_H_
