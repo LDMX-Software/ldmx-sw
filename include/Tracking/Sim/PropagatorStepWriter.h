@@ -6,6 +6,7 @@
  * for a complete validation of a tracking geometry. 
  */
 
+#include <mutex>
 
 //--- Framework ---//
 #include "Framework/Event.h"
