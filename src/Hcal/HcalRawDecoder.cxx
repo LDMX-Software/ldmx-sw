@@ -179,6 +179,41 @@ class HcalRawDecoder : public framework::Producer {
 #ifdef DEBUG
       std::cout << std::endl;
 #endif
+
+      /**
+       * extended event header in version 2
+       */
+      reader >> head1; i_event++;
+      uint32_t spill = ((head1 >> 12) & 0xfff);
+      uint32_t bunch = (head1 & 0xfff);
+#ifdef DEBUG
+      std::cout << " " << debug::hex(head1) 
+        << " Spill: " << spill 
+        << " Bunch: " << bunch << std::endl;
+#endif
+      reader >> head1; i_event++;
+#ifdef DEBUG
+      std::cout << " " << debug::hex(head1) 
+        << " 5 MHz Ticks since Spill: " << head1
+        << " Time: " << head1/5e6 << "s" << std::endl;
+#endif
+      reader >> head1; i_event++;
+#ifdef DEBUG
+      std::cout << " " << debug::hex(head1) 
+        << " Event Number: " << head1 << std::endl;
+#endif
+      reader >> head1; i_event++;
+      uint32_t run = (head1 & 0xFFF);
+      uint32_t DD = (head1>>23)&0x1F;
+      uint32_t MM = (head1>>28)&0xF;
+      uint32_t hh = (head1>>18)&0x1F;
+      uint32_t mm = (head1>>12)&0x3F;
+#ifdef DEBUG
+      std::cout << " " << debug::hex(head1) 
+        << " Run: " << run << " DD-MM hh:mm "
+        << DD << "-" << MM << " " << hh << ":" << mm
+        << std::endl;
+#endif
     }
 
     /** 
@@ -346,9 +381,9 @@ class HcalRawDecoder : public framework::Producer {
             // ROC v3 - CRC checksum
 #ifdef DEBUG
             if (roc_version_ == 2) {
-              std::cout << debug::hex(w) << " : Idle";
+              std::cout << " : Idle";
             } else {
-              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(crc);
+              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(w);
             }
 #endif
             /*
@@ -402,11 +437,13 @@ class HcalRawDecoder : public framework::Producer {
         std::cout << "done looping through channels" << std::endl;
 #endif
       }  // loop over links
+
   
       // another CRC checksum from FPGA
       i_event++; reader >> w;
       uint32_t crc = w;
 #ifdef DEBUG
+      std::cout << "Done with sample " << i_sample << std::endl;
       std::cout << "FPGA Checksum : " << debug::hex(fpga_crc.get()) << " =? " << debug::hex(crc) << std::endl;
       std::cout << " N Sample Words : " << length_per_sample.at(i_sample) << std::endl;
 #endif
