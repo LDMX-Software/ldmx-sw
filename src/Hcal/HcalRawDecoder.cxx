@@ -94,17 +94,18 @@ class HcalRawDecoder : public framework::Producer {
     static uint32_t head1, head2, w;
 
     // special header words not counted in event length
-    reader >> head1;
-    if (head1 == 0x11111111) { reader >> head1; }
+    do {
+      reader >> head1;
 #ifdef DEBUG
-    if (head1 == 0xbeef2021) {
-      std::cout << "Signal words imply version 1" << std::endl;
-    } else if (head1 == 0xbeef2022) {
-      std::cout << "Signal words imply version 2" << std::endl;
-    } else {
-      std::cout << "Misunderstood signal word " << debug::hex(head1) << std::endl;
-    }
+      if (head1 == 0xbeef2021) {
+        std::cout << "Signal words imply version 1" << std::endl;
+      } else if (head1 == 0xbeef2022) {
+        std::cout << "Signal words imply version 2" << std::endl;
+      } else {
+        std::cout << "Extra header (inserted by rogue): " << debug::hex(head1) << std::endl;
+      }
 #endif
+    } while (head1 != 0xbeef2021 and head1 != 0xbeef2022);
 
     /**
      * Decode event header
