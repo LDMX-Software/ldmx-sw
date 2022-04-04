@@ -90,6 +90,7 @@ class HcalRawDecoder : public framework::Producer {
      * Static parameters depending on ROC version
      */
     static const unsigned int common_mode_channel = roc_version_ == 2 ? 19 : 1;
+    static const unsigned int calib_channel = 20;
     /// words for reading and decoding
     static uint32_t head1, head2, w;
 
@@ -307,10 +308,20 @@ class HcalRawDecoder : public framework::Producer {
        */
   
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
-        // move on from last word counting links or previous link
 #ifdef DEBUG
         std::cout << "RO Link " << i_link << std::endl;
 #endif
+        /**
+         * If minimum length of 2 is not written for this link,
+         * assume it went down and skip
+         */
+        if (length_per_link.at(i_link) < 2) {
+#ifdef DEBUG
+          std::cout << "DOWN" << std::endl;
+#endif
+          continue;
+        }
+        // move on from last word counting links or previous link
         packing::utility::CRC link_crc;
         i_event++; reader >> w;
         fpga_crc << w;
@@ -331,27 +342,28 @@ class HcalRawDecoder : public framework::Producer {
         ro_map |= w;
 #ifdef DEBUG
         std::cout << debug::hex(w) << " : lower 32 bits of RO map" << std::endl;
-        std::cout << "Start looping through channels..." << std::endl;
+        std::cout << "Start looping through " << length_per_link.at(i_link) 
+          << " words for this link" << std::endl;
 #endif
         // loop through channels on this link,
         //  since some channels may have been suppressed because of low
         //  amplitude the channel ID is not the same as the index it
         //  is listed in.
-        int channel_id{-1};
-        for (uint32_t j{0}; j < length_per_link.at(i_link) - 2; j++) {
+        int j{-1};
+        for (uint32_t i_word{2}; i_word < length_per_link.at(i_link); i_word++) {
           // skip zero-suppressed channel IDs
           do {
-            channel_id++;
-          } while (channel_id < 40 and not ro_map.test(channel_id));
+            j++;
+          } while (j < 40 and not ro_map.test(j));
   
           // next word is this channel
           i_event++; reader >> w;
           fpga_crc << w;
 #ifdef DEBUG
-          std::cout << debug::hex(w) << " " << channel_id;
+          std::cout << debug::hex(w) << " " << j;
 #endif
   
-          if (channel_id == 0) {
+          if (j == 0) {
             /** Special "Header" Word from ROC
              *
              * version 3:
@@ -368,7 +380,7 @@ class HcalRawDecoder : public framework::Producer {
             uint32_t short_event = (w >> 10) & packing::utility::mask<6>;
             uint32_t short_orbit = (w >> 7) & packing::utility::mask<3>;
             uint32_t hamming_errs = (w >> 4) & packing::utility::mask<3>;
-          } else if (channel_id == common_mode_channel) {
+          } else if (j == common_mode_channel) {
             /** Common Mode Channels
              * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
              */
@@ -376,7 +388,13 @@ class HcalRawDecoder : public framework::Producer {
 #ifdef DEBUG
             std::cout << " : Common Mode";
 #endif
-          } else if (channel_id == 39) {
+          } else if (j == calib_channel) {
+            // calib channel
+            link_crc << w;
+#ifdef DEBUG
+            std::cout << " : Calib";
+#endif
+          } else if (j == 39) {
             // trailer on each link added by ROC
             // ROC v2 - IDLE word
             // ROC v3 - CRC checksum
@@ -398,34 +416,23 @@ class HcalRawDecoder : public framework::Producer {
             /// DAQ Channels
   
             link_crc << w;
-            /** Generate Packed Electronics ID
-             *   Link Index i_link
-             *   Channel ID channel_id
-             *   ROC ID     roc_id
-             *   FPGA ID    fpga
-             * are all available.
-             * For now, we just generate a dummy mapping
-             * using the link and channel indices.
-             */
-  
-#ifdef DEBUG
-            std::cout << " : DAQ Channel ";
-            std::cout << fpga << " " << roc_id << " " << i_link << " " << channel_id << " ";
-#endif
             /**
              * The HGC ROC has some odd behavior in terms of reading out the different channels.
-             * It inserts an extra header word at "channel" number 0 and it inserts the common
-             * mode channel in "channel" number 19 or 1 (depending on the version). This introduces
-             * a special shift for the channel number to "align" with the range 0-35 per link.
+             * - extra header word in row j = 0
+             * - common mode channel in row (j) number 19 or 1 (depending on the version)
+             * - calib channel in row j = 20
+             * This introduces a special shift for the channel number to "align" 
+             * with the range 0-35 per link.
              *
              *  polarfire fpga = fpga readout
              *  roc = i_link / 2 // integer division
-             *  channel = channel_id - (channel_id > common_mode_channel)*1 - 1
+             *  channel = j - 1 - (j > common_mode_channel)*1 - (j > calib_channel)*1
              */
             ldmx::HcalElectronicsID eid(fpga, i_link,
-                channel_id - 1*(channel_id > common_mode_channel) - 1);
+                j - 1 - 1*(j > common_mode_channel) - 1*(j > calib_channel));
 #ifdef DEBUG
-            std::cout << eid.index();
+            std::cout << " : DAQ Channel ";
+            std::cout << "EID(" << eid.fiber() << "," << eid.elink() << "," << eid.channel() << ") ";
 #endif 
             // copy data into EID->sample map
             eid_to_samples[eid].emplace_back(w);
