@@ -51,7 +51,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
   conditions::StreamCSVLoader csv(connections_table);
   while (csv.nextRow()) {
     /** Column Names
-     * "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane" "Cable"
+     * "Polarfire" "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane" "Cable"
      *
      * Each HGCROC has two links coming out of it,
      * one for the upper half of the channels and one for the lower half,
@@ -60,6 +60,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
      * as big as the hgcroc ID but the new channel has a range half
      * as big as the old one.
      */
+    int polarfire = csv.getInteger("Polarfire");
     int hgcroc = csv.getInteger("HGCROC");
     int chan   = csv.getInteger("Channel");
 
@@ -83,7 +84,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
      * the raw data but will not be in the detector mapping so they should be
      * skipped
      */
-    int link = 2*(hgcroc-1); // link count starts from 0
+    int link = 2*hgcroc; // link count starts from 0
     if (chan >= 36) {
       link += 1;
       chan -= 36;
@@ -111,7 +112,7 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table, bool want
         strip                   /*strip*/,
         end /*end*/);
     ldmx::HcalElectronicsID eleid(
-        0 /*polarfire fpga - only one Polarfire during test beam*/,
+        polarfire /*polarfire fpga*/,
         link /*elink*/,
         chan /*channel*/);
     
