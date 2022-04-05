@@ -50,13 +50,19 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	std::vector <float> chargeErr;
 
 	float avgQ = 0;
+	float totPosQ = 0;
 	int iS=0;
+	int nPos=0;
 	float earlyPed=0;
 	for (auto& val: adc) {
 	  float Q=qie.ADC2Q(val);
 	  charge.push_back( Q );
 	  chargeErr.push_back( qie.QErr(Q) );
 	  avgQ+=Q; //charge.back();
+	  if ( Q > 0 ) {
+		totPosQ+=Q;
+		nPos++;
+	  }
 	  if (verbose_)
 	    ldmx_log(debug) << "got adc value " << val << " and charge " << Q; //qie.ADC2Q(val);
 	  if (iS < nPedSamples_)
@@ -79,8 +85,10 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	float medQ=charge[ (int)charge.size()/2 ];
 	float minQ=charge[0];
 	float maxQ=charge[charge.size() -1];
-	
-	outEvent.setTotQ(avgQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
+
+	outEvent.setTotQ(totPosQ-nPos*ped); //store (event) ped subtracted total charge, before dividing by N 
+	//	outEvent.setTotQ(totPosQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
+	//	outEvent.setTotQ(avgQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
 	avgQ/=adc.size();
 	outEvent.setPedestal(ped);
 	outEvent.setAvgQ(avgQ);
@@ -98,6 +106,8 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	diffSq/=2*quartLength; //adc.size(); 
 	outEvent.setNoise( sqrt(diffSq) );
 
+	//	if (ped > 15 )
+	//  continue;
 	ldmx_log(debug) << "In event "  << event.getEventHeader().getEventNumber() <<
 	  ", set pedestal = " << outEvent.getPedestal() << //ped <<
 	  " fC, noise = " << outEvent.getNoise() << " fC for channel "<< 

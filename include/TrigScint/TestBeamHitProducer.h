@@ -61,8 +61,8 @@ class TestBeamHitProducer : public framework::Producer {
   /// trigger scintillator hits
   std::string outputCollection_;
 
-  /// SiPM gain
-  double gain_{4e6};
+  /// SiPM gain, per channel (all initialized to 2e6 in default config)
+  std::vector<double> gain_;
 
   /// channel pedestals [fC]
   std::vector<double> peds_;
@@ -71,8 +71,17 @@ class TestBeamHitProducer : public framework::Producer {
   int startSample_{10};
 
   /// Total number of samples used in pulse integration
-  double pulseWidth_{5};
- 
+  int pulseWidth_{5};
+  
+  /// Total number of samples used in pulse integration for LYSO (long decay, might need wider window)
+  int pulseWidthLYSO_{8};
+  
+  /// Number of instrumented channels in module
+  int nInstrumentedChannels_{12};
+
+/// boolean indicating whether we want to apply quality criteria in hit reconstruction
+  int doCleanHits_{false};
+
 };
 
 }  // namespace trigscint

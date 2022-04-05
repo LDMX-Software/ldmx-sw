@@ -127,22 +127,25 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
         self.inputPassName=""   #take any pass
         self.outputCollection="testBeamHitsUp"
         self.verbose = False
-        self.startSample=10 # Sample of interest. Range 0 to 3
-        self.pulseWidth=5 # Sample of interest. Range 0 to 3
-        self.gain = 4.e6      # SiPM Gain
+        self.doCleanHits = False   #whether to apply quality criteria in hit reconstruction
+        self.nInstrumentedChannels=12 #number of channels 
+        self.startSample=10   # Sample where pulse is expected to start (triggered mode)
+        self.pulseWidth=5     # Number of consecutive samples to include in the pulse
+        self.pulseWidthLYSO=8 # as above, for LYSO 
+        self.gain = [2.e6]*12      # SiPM Gain  //TODO: vector 
         self.pedestals=[
-            -4.8,  #0.6,
+            -4.6, #0.6,
             -2.6, #4.4,
-            -0.9, #-1.25,
-            4.4,  #3.9, 	 # #3
-            1.8,  #10000., # #4: (used to be) dead channel during test beam
-            -2.5, #-2.1,   # #5 
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
             0.9,  #2.9,    # #6
-            -1.5, #-2,     # #7
-            4.7,  #-0.4,   # #8
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
             -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
-            -1.5, #1.5,    # #10
-            -2.3, #2.0,    # #11
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
             3.3,  #3.7,    # #12 -- uninstrumented
             -0.3, #2.8,    # #13 -- uninstrumented
             1.3,  #-1.5,   # #14 -- uninstrumented
@@ -150,6 +153,30 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
         ]
 
                                 
+class TestBeamClusterProducer(ldmxcfg.Producer) :
+    """Configuration for cluster producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamClusterProducer','TrigScint')
+
+        self.max_cluster_width = 2
+        self.max_channel_nb = 11
+        self.clustering_threshold = 40.  #to add in neighboring channels
+        self.seed_threshold = 60.
+        self.pad_time = -999.
+        self.time_tolerance = 50.
+        self.input_collection="testBeamHitsUp"
+        self.input_pass_name="" #take any pass
+        self.output_collection="TestBeamClustersUp"
+        self.verbosity = 0
+
+    def up() :
+        """Get the cluster producer for the trigger pad upstream of target"""
+        cluster = TestBeamClusterProducer( 'testBeamClustersUp' )
+        cluster.input_collection = 'testBeamHitsUp'
+        cluster.output_collection= 'TeastBeamClustersUp'
+        cluster.pad_time= -999.
+        return cluster
         
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
     """Configuration for rechit producer for Trigger Scintillators"""
@@ -255,22 +282,24 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
         self.inputCollection="QIEsamplesUp"
         self.inputPassName=""   #take any pass                                                                                         
         self.startSample=2      #first time sample included in reformatting 
-        self.pedestals=[ 0.6,
-                         4.4,
-                         -1.25,
-                         3.9, 	 #3
-                         10000., #4: dead channel
-                         -2.1,   #5 
-                         2.9,    #6
-                         -2,     #7
-                         -0.4,   #8
-                         -1.1,   #9
-                         1.5,    #10
-                         2.0,    #11
-                         3.7,    #12 -- uninstrumented
-                         2.8,    #13 -- uninstrumented
-                         -1.5,   #14 -- uninstrumented
-                         1.6     #15 -- uninstrumented
+        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
         ]
 
 class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
@@ -282,20 +311,22 @@ class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
         self.inputCollection="testBeamHitsUp"
         self.inputPassName=""   #take any pass                                                                                         
         self.startSample=2      #first time sample included in reformatting 
-        self.pedestals=[ 0.6,
-                         4.4,
-                         -1.25,
-                         3.9, 	 #3
-                         10000., #4: dead channel
-                         -2.1,   #5 
-                         2.9,    #6
-                         -2,     #7
-                         -0.4,   #8
-                         -1.1,   #9
-                         1.5,    #10
-                         2.0,    #11
-                         3.7,    #12 -- uninstrumented
-                         2.8,    #13 -- uninstrumented
-                         -1.5,   #14 -- uninstrumented
-                         1.6     #15 -- uninstrumented
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
         ]
+                 

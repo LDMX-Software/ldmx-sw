@@ -18,6 +18,7 @@ namespace trigscint {
     inputCol_  = parameters.getParameter< std::string >("inputCollection");
     inputPassName_  = parameters.getParameter< std::string >("inputPassName");
     peds_  = parameters.getParameter< std::vector<double> >("pedestals");
+    gain_  = parameters.getParameter< std::vector<double> >("gain");
     startSample_  = parameters.getParameter< int >("startSample");
 
     std::cout << " [ QIEAnalyzer ] In configure(), got parameters " 
@@ -25,6 +26,7 @@ namespace trigscint {
 	      << "\n\t inputPassName = " << inputPassName_
 	      << "\n\t startSample = " << startSample_
 	      << "\n\t pedestals[0] = " << peds_[0]
+	      << "\n\t gain[0] = " << gain_[0]
 	      << "\t." << std::endl;
 
     return;
@@ -35,8 +37,13 @@ namespace trigscint {
     const auto channels{event.getCollection<trigscint::EventReadout >(inputCol_, inputPassName_)};
 
 	int evNb = event.getEventNumber();
+	//	while (evNb < 0 ) {
+	//  ldmx_log(debug) << "event number = " << evNb << " < 0; incrementing event number ";
+	//  evNb++;
+	//}
 	int nChan = channels.size();
-
+	ldmx_log(debug) << "in event " << evNb << "; nChannels = " << nChan;
+	
 	for (auto chan : channels) {
 	  std::vector<float> q = chan.getQ();
 	  std::vector<float> qErr = chan.getQError();
@@ -79,13 +86,13 @@ namespace trigscint {
 			firstT=startSample_+iT;
 		}//if above threshold
 		if (q.at(iT) > ped ) { 
-		  subtrPE+=(q.at(iT)-ped)*6250./4.e6;
-		  subtrQ+=q.at(iT)-ped ; 
+		  subtrQ+=q.at(iT)-peds_[bar] ; 
 		  nSampAboveEventPed++;
 		  ldmx_log(debug) << " above channel event pedestal: " << q.at(iT) << " > " << ped;
 		}//if above channel event pedestal
 	  }//over time samples
-	  float PE = qTot*6250./4.e6;
+	  float PE = qTot*6250./gain_[bar];
+	  subtrPE=subtrQ*6250./gain_[bar];
 	  hTotQvsPed[ bar ]->Fill( ped, qTot );
 	  hPE[ bar ]->Fill( PE );
 	  hPEvsT[ bar ]->Fill( firstT, PE );
@@ -126,9 +133,7 @@ namespace trigscint {
   
   void QIEAnalyzer::onProcessStart() {
     std::cout << "\n\n Process starts! My analyzer should do something -- like print this \n\n" << std::endl;
-
     getHistoDirectory();
-
 	
 	int nTimeSamp=40;
 	int PEmax=100;
@@ -136,7 +141,9 @@ namespace trigscint {
 	float Qmax=PEmax/(6250./4.e6);
 	float Qmin=-10;
 	int nQbins=(Qmax-Qmin)/4;
-	
+
+	ldmx_log(debug) << "Setting up histograms... " ;
+
 	for (int iB = 0; iB<nChannels; iB++) {
 	  hPE[iB]=new TH1F(Form("hPE_chan%i", iB), Form(";PE, chan%i", iB),nPEbins,0,PEmax);
 	  hPEvsT[iB]=new TH2F(Form("hPEvsT_chan%i", iB), Form(";First time sample above summing threshold;PE, chan%i", iB),nTimeSamp+1,-1.5,nTimeSamp-0.5, nPEbins,0,PEmax);
@@ -159,7 +166,9 @@ namespace trigscint {
 	hTDCfireChanvsEvent = new TH2F("hTDCfireChanvsEvent", ";channel with TDC < 63;event number", nChannels,-0.5,nChannels-0.5, nEv, 0, nEv);
 	
 	evNb = 0;
-	
+
+	ldmx_log(debug) << "done setting up histograms" ;
+
     return;
   }
   
