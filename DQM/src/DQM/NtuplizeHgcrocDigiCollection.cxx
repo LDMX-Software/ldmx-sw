@@ -73,7 +73,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       ldmx::HcalElectronicsID eid(d.id());
       fpga_ = eid.fiber();
       link_ = eid.elink();
-      channel_ = eid.channel() + 1; // undo shift of channel numbers down to zero-based
+      channel_ = eid.channel();
       index_ = eid.index();
     } else {
       ldmx::HcalDigiID detid(d.id());
