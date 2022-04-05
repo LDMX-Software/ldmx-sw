@@ -13,7 +13,7 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
-//#define DEBUG
+#define DEBUG
 
 namespace hcal {
 
@@ -490,6 +490,8 @@ class HcalRawDecoder : public framework::Producer {
   std::string input_pass_;
   /// output object to put onto event bus
   std::string output_name_;
+  /// the detector name if we are reading from a file
+  std::string detector_name_;
   /// version of HGC ROC we are decoding
   int roc_version_;
   /// are get translating electronic IDs?
@@ -508,6 +510,7 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   roc_version_ = ps.getParameter<int>("roc_version");
   translate_eid_ = ps.getParameter<bool>("translate_eid");
   read_from_file_ = ps.getParameter<bool>("read_from_file");
+  detector_name_ = ps.getParameter<std::string>("detector_name");
 
   if (read_from_file_) {
     file_reader_.open(input_name_);
@@ -517,7 +520,7 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
 void HcalRawDecoder::beforeNewRun(ldmx::RunHeader& rh) {
   // if we are reading from a file, we need to provide the detector name
   if (read_from_file_) {
-    rh.setDetectorName("DNE");
+    rh.setDetectorName(detector_name_);
   }
 }
 
