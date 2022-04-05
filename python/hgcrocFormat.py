@@ -32,7 +32,7 @@ class HcalRawDecoder(Producer) :
         from LDMX.Hcal.DetectorMap import HcalDetectorMap
         if connections_table is None :
             # deduce if using eid based on presence of HcalDetectorMap in conditions system
-            self.translated_eid = False
+            self.translate_eid = False
             for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
                 if isinstance(cop,HcalDetectorMap) :
                     self.translate_eid = True
