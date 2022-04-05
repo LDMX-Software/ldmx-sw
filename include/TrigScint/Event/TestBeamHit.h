@@ -74,7 +74,18 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * Get hit charge
    */
   float getQ() const { return pulseQ_; }  
-  
+
+    /**
+   * Store total charge
+   * @param pe total charge in pulse making hit 
+   */
+  //  void setPE(const float pe) { PE_ = pe; }
+
+  /**
+   * Get hit charge
+   */
+  // float getPE() const { return PE_; }  
+
     /**
    * Set pulse/hit start sample 
    *             
@@ -87,7 +98,18 @@ class TestBeamHit : public ldmx::TrigScintHit {
   int getStartSample() const { return startSample_; }
 
 
-      /**
+  /**
+   * Set number of samples above pedestal in pulse/hit
+   *             
+   * @param sampAbovePed The number of (time) samples above pedestal in (or continuing after) the pulse
+   */
+  void setSampAbovePed(const int sampAbovePed) { sampAbovePed_ = sampAbovePed; };
+
+  /// Get the pulse/hit sampAbovePed
+  int getSampAbovePed() const { return sampAbovePed_; }
+
+
+  /**
    * Set number of samples above threshold in pulse/hit
    *             
    * @param sampAboveThr The number of (time) samples above threshold in (or continuing after) the pulse
@@ -95,8 +117,18 @@ class TestBeamHit : public ldmx::TrigScintHit {
   void setSampAboveThr(const int sampAboveThr) { sampAboveThr_ = sampAboveThr; };
 
   /// Get the pulse/hit sampAboveThr
-
   int getSampAboveThr() const { return sampAboveThr_; }
+
+
+  /**
+   * Set whether hit has been checked for and passed quality criteria 
+   *             
+   * @param isClean The boolean being TRUE if hit quality criteria are checkad AND passed
+   */
+  void setHitQuality(const int isClean) { passHitQuality_ = isClean; };
+
+  /// Get the pulse/hit isClean
+  int getHitQuality() const { return passHitQuality_; }
 
 
     /**
@@ -107,7 +139,6 @@ class TestBeamHit : public ldmx::TrigScintHit {
   void setPulseWidth(const int pulseWidth) { pulseWidth_ = pulseWidth; };
 
   /// Get the pulse/hit pulseWidth
-
   int getPulseWidth() const { return pulseWidth_; }
 
   
@@ -123,9 +154,13 @@ class TestBeamHit : public ldmx::TrigScintHit {
   float pedestal_{-999.};       // assumed/average channel pedestal used in subtraction [fC]
   float earlyPedestal_{-999.};  // early pedestal (average over first 5 time samples)   [fC]
   float pulseQ_{-999.};         // integrated, ped subtracted charge over pulse [fC]
+  // float PE_{-1.};       // number of photoelectrons in the hit (override from trigscinthit which seems unreliable)
   int startSample_{-1};  //start sample 
   int pulseWidth_{-1};   //specified pulse width (in number of samples)
-  int sampAboveThr_{-1};  //actual number of samples above threshold after start
+  int sampAbovePed_{-1};  //actual number of consecutive samples above pedestal after start sample
+  int sampAboveThr_{-1};  //actual number of consecutive samples above threshold after start sample
+  //  bool passHitQuality_{false};  //track if hit has been checked for and passed quality criteria
+  int passHitQuality_{0};  //track if hit has been checked for and passed quality criteria
   
   //        - nPulses -- TODO, when running in continuous mode 
   /*
@@ -136,7 +171,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   - store material assumption? isLYSO? -- no, this is a bar property, not a hit property 
   */
   
-  ClassDef(TestBeamHit, 1);
+  ClassDef(TestBeamHit, 2);
 
 };  // TestBeamHit
 

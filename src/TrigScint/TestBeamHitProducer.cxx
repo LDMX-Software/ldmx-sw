@@ -19,9 +19,12 @@ namespace trigscint {
     outputCollection_  = parameters.getParameter< std::string >("outputCollection");
     inputPassName_  = parameters.getParameter< std::string >("inputPassName");
     peds_  = parameters.getParameter< std::vector<double> >("pedestals");
-    gain_  = parameters.getParameter< double >("gain");
+    gain_  = parameters.getParameter< std::vector<double> >("gain");  //to do: vector
     startSample_  = parameters.getParameter< int >("startSample");
     pulseWidth_  = parameters.getParameter< int >("pulseWidth");
+    pulseWidthLYSO_  = parameters.getParameter< int >("pulseWidthLYSO");
+    nInstrumentedChannels_  = parameters.getParameter< int >("nInstrumentedChannels");
+    doCleanHits_  = parameters.getParameter< bool >("doCleanHits");
 
     std::cout << " [ TestBeamHitProducer ] In configure(), got parameters " 
 	      << "\n\t inputCollection = " << inputCol_
@@ -29,7 +32,10 @@ namespace trigscint {
 	      << "\n\t outputCollection = " << outputCollection_
 	      << "\n\t startSample = " << startSample_
 	      << "\n\t pulseWidth = " << pulseWidth_
-	      << "\n\t gain = " << gain_
+	      << "\n\t pulseWidthLYSO = " << pulseWidthLYSO_
+			  << "\n\t gain[0] = " << gain_[0] // TODO: vector 
+	      << "\n\t nInstrumentedChannels = " << nInstrumentedChannels_
+	      << "\n\t doCleanHits = " << doCleanHits_
 	      << "\n\t pedestals[0] = " << peds_[0]
 	      << "\t." << std::endl;
 
@@ -70,7 +76,9 @@ namespace trigscint {
 	 */
 
 
-	
+	float mevPerMip = 0.3;
+	float pePerMip = 100;
+	  
     const auto channels{event.getCollection<trigscint::EventReadout >(inputCol_, inputPassName_)};
 
 	int evNb = event.getEventNumber();
@@ -78,11 +86,12 @@ namespace trigscint {
 	std::vector<trigscint::TestBeamHit> hits;
 	for (auto chan : channels) {
 	  trigscint::TestBeamHit hit;
-	  //	  int nTimeSamp = q.size();
-	  int bar = chan.getChanID(); 
+	  int bar = chan.getChanID();
+	  if (bar >= nInstrumentedChannels_) //don't run hit reconstruction on junk signal
+		continue;
 	  int width=pulseWidth_;
-	  if (bar %2 == 0) { //LYSO channel: wider pulses
-		width+=3; // avoid hardwiring AND incrementing for every LYSO channel
+	  if (bar %2 == 0) { //LYSO channel: allow for wider pulses
+		width=pulseWidthLYSO_; // avoid hardwiring
 	  }
 	  hit.setPulseWidth(width);
       hit.setStartSample(startSample_);
@@ -90,45 +99,61 @@ namespace trigscint {
 	  float earlyPed = chan.getEarlyPedestal();
 	  hit.setPedestal(ped);
 	  hit.setEarlyPedestal(earlyPed);
+	  int isClean=0; //false;
+	  float threshold =fabs(ped); // 2*fabs(peds_[ bar ]); // or sth
+	  if (doCleanHits_)
+		threshold = 10*fabs(ped); // stricter cut
 
 	  int startT = startSample_ + chan.getTimeOffset();
 	  float maxQ = -999.;
-	  int nSampAbove = 0;
+	  int nSampAbovePed = 0;
+	  int nSampAboveThr = 0;
 	  float totSubtrQ = 0;
 	  std::vector<float> q = chan.getQ();
-	  
-	  // first, take the first 5 time samples and define an early pedestal.   --> done  in eventreadout producer 
 	  // go to the start sample defined for this channel.
 	  for (int iT = startT; iT < q.size() ; iT++) {
 		ldmx_log(debug) << "in event " << evNb << "; channel " << bar << ", got charge[" << iT << "] = " << q.at(iT);
-		float threshold = fabs(ped); // 2*fabs(peds_[ bar ]); // or sth 
-		// for the defined number of samples, subtract threshold. if > 0, increment sample counter.
-		float subQ=q.at(iT)-threshold;
+		// for the defined number of samples, subtract pedestal. if > 0, increment sample counter.
+		float subQ=q.at(iT)-ped; //this might be addition, if ped is negative. should see this as channel dependence in nSampAbove 
 		// once beyond nSamples, want to see how long positive threshold subtracted tail is --> increment sample counter in any case.
   		if (subQ > 0)
-		  nSampAbove++;
-		if (iT - startT < width ) {
-		  if ( q.at(iT) > maxQ )  // keep track of max Q. this is the pulse amplitude
-			maxQ = q.at(iT);
+		  nSampAbovePed++;
+		if (subQ > threshold)
+		  nSampAboveThr++;
+		if (iT - startT < width ) { //we're in the pulse integration window
+		  if ( subQ > maxQ )  // keep track of max Q. this is the pulse amplitude
+			maxQ = subQ; //q.at(iT);
 		  if (subQ > 0)
 			totSubtrQ+=subQ; 		// add positive subtracted Q to total pulse charge.
 		}
-		else if (subQ < 0 )   // if after the full pulse width, q < threshold, break.
+		else if (subQ < 0 || q.at(iT) < 0 )   // if after the full pulse width, subQ < pedestal, break. special case to break at q=0 for cases where ped < 0
 		  break;
 		//done
 	  }// over time samples 
+
+	  // first check that hit passes any quality cuts
+	  if (doCleanHits_) {
+		if (maxQ/totSubtrQ < 2./3.) // skip "unnaturally" narrow hits 
+		  if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus
+			   //			   && (chan.getAvgQ()/chan.getPedestal()<0.8)  //skip events that have strange oscillations
+			   && 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses 
+			isClean=1;
+	  }
+
 	  // set pulse properties like PE and amplitude
-	  hit.setSampAboveThr(nSampAbove);
+	  hit.setSampAbovePed(nSampAbovePed);
+	  hit.setSampAboveThr(nSampAboveThr);
 	  hit.setQ(totSubtrQ);
 	  hit.setAmplitude(maxQ);
-	  hit.setPE( totSubtrQ*6250./ gain_ );
+	  hit.setPE( totSubtrQ*6250./gain_[bar] );
+	  hit.setHitQuality( isClean );	  
 	  // set bar id. set moduleNB = 0
 	  hit.setBarID( bar );	  
 	  hit.setModuleID( 0 );	 // test beam 
 	  //the rest are a little ill-defined for now (PE-energy conversion not known/different between LYSO and plastic)
 	  hit.setTime(-999);//maybe?
 	  hit.setBeamEfrac(-1.);
-	  hit.setEnergy(-1.);
+	  hit.setEnergy( hit.getPE()*mevPerMip/pePerMip );
 
 	  //add hit
 	  hits.push_back(hit);
