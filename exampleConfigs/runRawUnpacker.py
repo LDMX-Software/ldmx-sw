@@ -15,7 +15,8 @@ if len(sys.argv) > 3 :
     nTimeSamples=int(sys.argv[3])
 
 nChannels=16
-nWords=2*nChannels*nTimeSamples+4
+lenHeader=4+6+6+2 #evNb, timeStamp s, timestamp ns, error words
+nWords=2*nChannels*nTimeSamples+lenHeader
 
 
 from LDMX.Packing import rawio

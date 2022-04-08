@@ -39,6 +39,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	//copy over from qie digi for convenience
     outEvent.setChanID(digi.getChanID());
     outEvent.setElecID(digi.getElecID());
+    outEvent.setTimeSinceSpill(digi.getTimeSinceSpill());
 	// elecID increases monotonically with 8 channels per fiber
 	outEvent.setFiberNb( (int)(digi.getElecID()/8) );  
 	if ( outEvent.getFiberNb() == fiberToShift_ )

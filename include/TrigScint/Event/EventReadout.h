@@ -174,9 +174,6 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   int getFiberNb() const { return fiberNb_; }
 
-
-
-  
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
