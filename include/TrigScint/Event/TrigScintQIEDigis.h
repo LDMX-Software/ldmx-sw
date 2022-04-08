@@ -64,6 +64,19 @@ class TrigScintQIEDigis {
    */
   std::vector<int> getCID() const { return cids_; }
 
+  
+  /**      
+   * Store the event time since spill counter
+   */
+  void setTimeSinceSpill(const uint32_t timeSpill) { timeSinceSpillCounter_ = timeSpill; }
+  //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ = timeSpill; }
+
+  /**      
+   * Store the event time since spill counter
+   */
+  uint32_t getTimeSinceSpill() const { return timeSinceSpillCounter_; }
+  
+
   /**
    * Store the channel ID
    */
@@ -104,7 +117,11 @@ protected:
   
   /// Time to Digital counts
   std::vector<int> tdcs_;
-  
+
+  /// Time since spill (a counter, to be divided by 125e6 or so)
+  uint32_t timeSinceSpillCounter_;
+
+
  private:
   /// capacitor IDs
   std::vector<int> cids_;

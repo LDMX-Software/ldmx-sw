@@ -10,6 +10,7 @@
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/Event/QIEStream.h"
 
+#include <TTimeStamp.h>
 namespace trigscint {
 
 
@@ -58,6 +59,8 @@ namespace trigscint {
 	int nChannels_{50};
 	// number of time samples making up the event
 	int nSamples_{5};
+	// configurable flag, to set the isRealData bit in the event header
+	bool isRealData_{false};
 
   }; //encoder
 
