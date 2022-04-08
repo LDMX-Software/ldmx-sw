@@ -60,6 +60,8 @@ namespace trigscint {
 	  << "QIEDecoder: produce() starts! Event number: "
 	  << event.getEventHeader().getEventNumber();
 
+
+	event.getEventHeader().setIsRealData(isRealData_);
 	//turns out this need to be configurable for now, to read real data
 	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
   ldmx_log(debug) << "num samples = " << nSamp;
