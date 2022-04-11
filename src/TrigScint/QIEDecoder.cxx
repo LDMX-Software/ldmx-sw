@@ -59,18 +59,23 @@ namespace trigscint {
     ldmx_log(debug)
 	  << "QIEDecoder: produce() starts! Event number: "
 	  << event.getEventHeader().getEventNumber();
-
-
-	event.getEventHeader().setIsRealData(isRealData_);
-	//turns out this need to be configurable for now, to read real data
-	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
-  ldmx_log(debug) << "num samples = " << nSamp;
 	
-  ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
-  const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
-  ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
-
-
+	//	ldmx::EventHeader *eh = (ldmx::EventHeader*)event.getEventHeaderPtr();
+	//eh->setIsRealData(isRealData_); //doesn't help
+	
+	/*   // comment for now, requires pushing change ot EventHeader
+	event.getEventHeader().setIsRealData(isRealData_);
+	ldmx_log(debug) << "Decoder bool isRealData = " << isRealData_ << " and after attempt of setting it, event header returns " <<  event.getEventHeader().isRealData();
+	*/
+	  //turns out this need to be configurable for now, to read real data
+	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
+	ldmx_log(debug) << "num samples = " << nSamp;
+	
+	ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
+	const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
+	ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
+	
+	
   uint32_t timeEpoch=0;
   //these don't have to be in any particular order, position is anyway looked up from definition in header
   for (int iW = 0 ; iW < QIEStream::TIMESTAMP_LEN_BYTES; iW++) {
@@ -105,7 +110,7 @@ namespace trigscint {
   //timeSpill=timeSpill/spillTimeConv_;
   ldmx_log(debug) << "After taking it mod 2^" << 32-sigBitsSkip << " (which is " << divisor << ", spill time is " << timeSpill;
   event.getEventHeader().setIntParameter("timeSinceSpill", timeSpill);
-  event.getEventHeader().setTimeSinceSpill(timeSpill);
+  //  event.getEventHeader().setTimeSinceSpill(timeSpill); //not working 
 
   TTimeStamp *timeStamp = new TTimeStamp(timeEpoch);
   //  timeStamp->SetNanoSec(timeClock); //not sure about this one...
