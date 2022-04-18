@@ -64,6 +64,55 @@ inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
 }
 
 /**
+ * Struct to help interface between raw decoder read function
+ * and putting stuff onto event bus
+ */
+struct PolarfireEventHeader {
+  /// version of daq format
+  int version;
+  /// id for polarfire
+  int fpga;
+  /// number of samples
+  int nsamples;
+  /// spill number
+  int spill;
+  /// number of 5MHz ticks since spill
+  int ticks;
+  /// bunch number according to this polarfire
+  int bunch;
+  /// event number according to this polarfire
+  int number;
+  /// run number according to this polarfire
+  int run;
+  /// day of month run started
+  int DD;
+  /// month run started
+  int MM;
+  /// hour run started
+  int hh;
+  /// minute run started
+  int mm;
+
+  /**
+   * board us onto the bus with the input prefix
+   */
+  void board(framework::Event& event, const std::string& prefix) {
+    event.add(prefix+"Version",version);
+    event.add(prefix+"FPGA",fpga);
+    event.add(prefix+"NSamples",nsamples);
+    event.add(prefix+"Spill",spill);
+    event.add(prefix+"Ticks",ticks);
+    event.add(prefix+"Bunch",bunch);
+    event.add(prefix+"Number",number);
+    event.add(prefix+"Run",run);
+    event.add(prefix+"DD",DD);
+    event.add(prefix+"MM",MM);
+    event.add(prefix+"hh",hh);
+    event.add(prefix+"mm",mm);
+  }
+};
+
+/**
  * @class HcalRawDecoder
  */
 class HcalRawDecoder : public framework::Producer {
@@ -85,7 +134,7 @@ class HcalRawDecoder : public framework::Producer {
    */
   template<typename ReaderType>
   std::map<ldmx::HcalElectronicsID, std::vector<ldmx::HgcrocDigiCollection::Sample>>
-      read(ReaderType& reader) {
+      read(ReaderType& reader, PolarfireEventHeader& eh) {
     /**
      * Static parameters depending on ROC version
      */
@@ -119,14 +168,14 @@ class HcalRawDecoder : public framework::Producer {
      */
     reader >> head1; i_event++;
   
-    uint32_t version  = (head1 >> 28) & packing::utility::mask<4>;
-    uint32_t fpga     = (head1 >> 20) & packing::utility::mask<8>;
-    uint32_t nsamples = (head1 >> 16) & packing::utility::mask<4>;
+    eh.version  = (head1 >> 28) & packing::utility::mask<4>;
+    eh.fpga     = (head1 >> 20) & packing::utility::mask<8>;
+    eh.nsamples = (head1 >> 16) & packing::utility::mask<4>;
     eventlen = head1 & packing::utility::mask<16>;
-    if (version == 1u) {
+    if (eh.version == 1u) {
       // eventlen is 32-bit words in event
       // do nothing here
-    } else if (version == 2u) {
+    } else if (eh.version == 2u) {
       // eventlen is 64-bit words in event,
       // need to multiply by 2 to get actual 32-bit event length
       eventlen *= 2;
@@ -138,17 +187,17 @@ class HcalRawDecoder : public framework::Producer {
     }
 #ifdef DEBUG
     std::cout << debug::hex(head1)
-      << " EventHeader(version = " << version
-      << ", fpga = " << fpga
-      << ", nsamples = " << nsamples
+      << " EventHeader(version = " << eh.version
+      << ", fpga = " << eh.fpga
+      << ", nsamples = " << eh.nsamples
       << ", eventlen = " << eventlen
       << ")" << std::endl;
     std::cout << "Sample Lenghts: ";
 #endif
     // sample counters
     int n_words{0};
-    std::vector<uint32_t> length_per_sample(nsamples, 0);
-    for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
+    std::vector<uint32_t> length_per_sample(eh.nsamples, 0);
+    for (uint32_t i_sample{0}; i_sample < eh.nsamples; i_sample++) {
       if (i_sample%2 == 0) {
         n_words++;
         reader >> w; i_event++;
@@ -163,7 +212,7 @@ class HcalRawDecoder : public framework::Producer {
     std::cout << std::endl;
 #endif
 
-    if (version == 2) {
+    if (eh.version == 2) {
       /**
        * For the time being, the number of sample lengths is fixed to make the
        * firmware for DMA readout simpler. This means we readout the leftover
@@ -186,34 +235,36 @@ class HcalRawDecoder : public framework::Producer {
        * extended event header in version 2
        */
       reader >> head1; i_event++;
-      uint32_t spill = ((head1 >> 12) & 0xfff);
-      uint32_t bunch = (head1 & 0xfff);
+      eh.spill = ((head1 >> 12) & 0xfff);
+      eh.bunch = (head1 & 0xfff);
 #ifdef DEBUG
       std::cout << " " << debug::hex(head1) 
-        << " Spill: " << spill 
-        << " Bunch: " << bunch << std::endl;
+        << " Spill: " << eh.spill 
+        << " Bunch: " << eh.bunch << std::endl;
 #endif
       reader >> head1; i_event++;
+      eh.ticks = head1;
 #ifdef DEBUG
       std::cout << " " << debug::hex(head1) 
         << " 5 MHz Ticks since Spill: " << head1
         << " Time: " << head1/5e6 << "s" << std::endl;
 #endif
       reader >> head1; i_event++;
+      eh.number = head1;
 #ifdef DEBUG
       std::cout << " " << debug::hex(head1) 
         << " Event Number: " << head1 << std::endl;
 #endif
       reader >> head1; i_event++;
-      uint32_t run = (head1 & 0xFFF);
-      uint32_t DD = (head1>>23)&0x1F;
-      uint32_t MM = (head1>>28)&0xF;
-      uint32_t hh = (head1>>18)&0x1F;
-      uint32_t mm = (head1>>12)&0x3F;
+      eh.run = (head1 & 0xFFF);
+      eh.DD = (head1>>23)&0x1F;
+      eh.MM = (head1>>28)&0xF;
+      eh.hh = (head1>>18)&0x1F;
+      eh.mm = (head1>>12)&0x3F;
 #ifdef DEBUG
       std::cout << " " << debug::hex(head1) 
-        << " Run: " << run << " DD-MM hh:mm "
-        << DD << "-" << MM << " " << hh << ":" << mm
+        << " Run: " << eh.run << " DD-MM hh:mm "
+        << eh.DD << "-" << eh.MM << " " << eh.hh << ":" << eh.mm
         << std::endl;
 #endif
     }
@@ -466,7 +517,7 @@ class HcalRawDecoder : public framework::Producer {
       }
       */
       // padding to reach 64-bit boundary in version 2
-      if (version == 2u and length_per_sample.at(i_sample) % 2 == 1) {
+      if (eh.version == 2u and length_per_sample.at(i_sample) % 2 == 1) {
         i_event++; reader >> head1;
 #ifdef DEBUG
         std::cout << "Padding to reach 64-bit boundary: " << debug::hex(head1) << std::endl;
@@ -475,7 +526,7 @@ class HcalRawDecoder : public framework::Producer {
       i_sample++;
     }
 
-    if (version == 1u) {
+    if (eh.version == 1u) {
       // special footer words
       reader >> head1 >> head2;
     }
@@ -529,13 +580,16 @@ void HcalRawDecoder::produce(framework::Event& event) {
   std::map<ldmx::HcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
+  PolarfireEventHeader eh;
   if (read_from_file_) {
     if (!file_reader_ or file_reader_.eof()) abortEvent();
-    eid_to_samples = this->read(file_reader_);
+    eid_to_samples = this->read(file_reader_,eh);
   } else {
     hcal::utility::Reader bus_reader(event.getCollection<uint8_t>(input_name_, input_pass_));
-    eid_to_samples = this->read(bus_reader);
+    eid_to_samples = this->read(bus_reader,eh);
   }
+  
+  eh.board(event, output_name_);
 
   ldmx::HgcrocDigiCollection digis;
   // assume all channels have same number of samples
