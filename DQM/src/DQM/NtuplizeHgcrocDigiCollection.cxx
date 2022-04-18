@@ -9,7 +9,8 @@ namespace dqm {
 
 class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   std::string input_name_, input_pass_, pedestal_table_;
-  int raw_id_, adc_, raw_adc_, tot_, toa_, i_sample_, event_;
+  int ldmxsw_event_, version_, pf_event_, pf_ticks_;
+  int raw_id_, adc_, raw_adc_, tot_, toa_, i_sample_;
   int fpga_, link_, channel_, index_;
   int section_, layer_, strip_, end_;
   bool tot_prog_, tot_comp_;
@@ -39,7 +40,9 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
     flat_tree_->Branch("toa", &toa_);
     flat_tree_->Branch("raw_adc", &raw_adc_);
     flat_tree_->Branch("i_sample", &i_sample_);
-    flat_tree_->Branch("event", &event_);
+    flat_tree_->Branch("ldmxsw_event", &ldmxsw_event_);
+    flat_tree_->Branch("pf_event", &pf_event_);
+    flat_tree_->Branch("pf_ticks", &pf_ticks_);
     flat_tree_->Branch("tot_prog", &tot_prog_);
     flat_tree_->Branch("tot_comp", &tot_comp_);
     if (using_eid_) {
@@ -62,7 +65,10 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   // get the reconstruction parameters 
   auto pedestal_table{getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
 
-  event_ = event.getEventNumber();
+  ldmxsw_event_ = event.getEventNumber();
+  version_ = event.getObject<int>(input_name_+"Version", input_pass_);
+  pf_event_ = event.getObject<int>(input_name_+"Number", input_pass_);
+  pf_ticks_ = event.getObject<int>(input_name_+"Ticks", input_pass_);
 
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
