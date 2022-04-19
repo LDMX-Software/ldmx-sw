@@ -75,6 +75,21 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   float getNoise() const { return noise_; }
 
+      /**
+   * Set channel data quality flag. This is the binary
+   * combination of 4 flags:
+   * spike: 1
+   * plateau: 10
+   * long pulse: 100 (not implemented yet)
+   * oscillation: 1000 
+   * @param flag The quality flag of the channel
+   */
+  void setQualityFlag(const uint flag) { this->flag_ = flag; };
+
+  /// Get the channel data quality flag
+
+  float getQualityFlag() const { return flag_; }
+
   /**
    * Store charges of all time samples
    * @param q_ array of qs
@@ -198,6 +213,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   int timeOffset_{0};
   int fiberNb_{-1};
 
+  uint flag_{0};
   ClassDef(EventReadout, 1);
 
 };  // EventReadout

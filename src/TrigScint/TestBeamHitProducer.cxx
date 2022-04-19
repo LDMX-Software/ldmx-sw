@@ -132,11 +132,16 @@ namespace trigscint {
 	  }// over time samples 
 
 	  // first check that hit passes any quality cuts
+	  uint flag = chan.getQualityFlag();
 	  if (doCleanHits_) {
-		if (maxQ/totSubtrQ < 2./3.) // skip "unnaturally" narrow hits 
-		  if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus
+		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr > width + 2);
+		  flag += 4*isLongPulse;
+
+		if (//chan.getQualityFlag() == 0 && //maxQ/totSubtrQ < 2./3.) // skip "unnaturally" narrow hits 
+			//if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus
 			   //			   && (chan.getAvgQ()/chan.getPedestal()<0.8)  //skip events that have strange oscillations
-			   && 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses 
+			// 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses
+			flag == 0 )
 			isClean=1;
 	  }
 
@@ -147,6 +152,7 @@ namespace trigscint {
 	  hit.setAmplitude(maxQ);
 	  hit.setPE( totSubtrQ*6250./gain_[bar] );
 	  hit.setHitQuality( isClean );	  
+	  hit.setQualityFlag( flag );	  
 	  // set bar id. set moduleNB = 0
 	  hit.setBarID( bar );	  
 	  hit.setModuleID( 0 );	 // test beam 
