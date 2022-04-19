@@ -153,7 +153,9 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
         self.input_pass = ''
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
-    def __init__(self,input_name, pedestal_table = None, input_pass = '', using_eid = None, name = 'ntuplizehgcroc') :
+    def __init__(self,input_name, pedestal_table = None, input_pass = '', 
+            using_eid = None, already_aligned = False,
+            name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
         self.input_name = input_name
         self.input_pass = input_pass
@@ -167,8 +169,8 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
                 if isinstance(cop,HcalDetectorMap) :
                     using_eid = False
                     break
-
         self.using_eid = using_eid
+        self.already_aligned = already_aligned
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         if pedestal_table is None :
