@@ -5,7 +5,7 @@ p = ldmxcfg.Process('clusters') #
 import sys
 
 inputPassName="hits"
-nEv=65000
+nEv=400000
 
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
