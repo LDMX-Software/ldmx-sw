@@ -107,6 +107,21 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	diffSq/=2*quartLength; //adc.size(); 
 	outEvent.setNoise( sqrt(diffSq) );
 
+
+	uint flagSpike = (maxQ/outEvent.getTotQ() > 0.8 ); // skip "unnaturally" narrow hits
+	uint flagPlateau = ( fabs(ped) > 15 ); //threshold //   //skip events that have strange plateaus   
+	uint flagLongPulse = 0; //might be easier to deal with in hit reconstruction directly. could copy channel flags to hit flags and add this one there
+	uint flagOscillation = ( fabs(avgQ/ped) > 3./4 );
+	/*
+if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus                                                    
+               //              && (chan.getAvgQ()/chan.getPedestal()<0.8)  //skip events that have strange oscillations                                   
+               && 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses                                           
+	*/
+  uint flag=flagSpike+2*flagPlateau+4*flagLongPulse+8*flagOscillation;
+  ldmx_log(debug) << "Got quality flag "  << flag << " made up of (spike/plateau/long pulse/oscillation) " << flagSpike << "+" << flagPlateau << "+" << flagLongPulse << "+" << flagOscillation ;
+  outEvent.setQualityFlag( flag );
+
+	
 	//	if (ped > 15 )
 	//  continue;
 	ldmx_log(debug) << "In event "  << event.getEventHeader().getEventNumber() <<

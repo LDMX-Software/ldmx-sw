@@ -119,7 +119,6 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /// Get the pulse/hit sampAboveThr
   int getSampAboveThr() const { return sampAboveThr_; }
 
-
   /**
    * Set whether hit has been checked for and passed quality criteria 
    *             
@@ -130,6 +129,20 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /// Get the pulse/hit isClean
   int getHitQuality() const { return passHitQuality_; }
 
+      /**
+   * Set hit data quality flag. This is the binary
+   * combination of 4 flags from the total channel readout:
+   * spike: 1 
+   * plateau: 10
+   * long pulse: 100 (implemented as hit quantity)
+   * oscillation: 1000 
+   * @param flag The quality flag of the hit
+   */
+  void setQualityFlag(const uint flag) { this->flag_ = flag; };
+
+  /// Get the hit data quality flag
+
+  float getQualityFlag() const { return flag_; }
 
     /**
    * Set width used to integrate pulse/hit (in time samples)
@@ -161,7 +174,9 @@ class TestBeamHit : public ldmx::TrigScintHit {
   int sampAboveThr_{-1};  //actual number of consecutive samples above threshold after start sample
   //  bool passHitQuality_{false};  //track if hit has been checked for and passed quality criteria
   int passHitQuality_{0};  //track if hit has been checked for and passed quality criteria
-  
+
+  uint flag_{0}; //more elaborate quality flag (binary sum)
+
   //        - nPulses -- TODO, when running in continuous mode 
   /*
   - total Q // this is an event readout property 
