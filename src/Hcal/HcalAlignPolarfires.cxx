@@ -52,6 +52,8 @@ class HcalAlignPolarfires : public framework::Producer {
   virtual void produce(framework::Event& event) final override;
 };
 
+int HcalAlignPolarfires::max_tick_diff_ = 10;
+
 void HcalAlignPolarfires::configure(framework::config::Parameters& ps) {
   input_names_ = ps.getParameter<std::vector<std::string>>("input_names");
   input_pass_ = ps.getParameter<std::string>("input_pass");
@@ -85,17 +87,23 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
       merged.addDigi(digi.id(), samples);
     }
     event.add(output_name_,merged);
+    bool aligned{true};
+    event.add(output_name_+"Aligned",aligned);
     pf0_queue.pop();
     pf1_queue.pop();
     setStorageHint(framework::hint_shouldKeep);
   } else if (pf0_queue.front().earlier_event(pf1_queue.front())) {
     // should add pf0 but signal event is unmerged
     event.add(output_name_, pf0_queue.front().digis);
+    bool aligned{false};
+    event.add(output_name_+"Aligned",aligned);
     pf0_queue.pop();
     setStorageHint(framework::hint_shouldDrop);
   } else {
     // should add pf1 but signal event is unmerged
     event.add(output_name_, pf1_queue.front().digis);
+    bool aligned{false};
+    event.add(output_name_+"Aligned",aligned);
     pf1_queue.pop();
     setStorageHint(framework::hint_shouldDrop);
   }
