@@ -582,7 +582,7 @@ void HcalRawDecoder::produce(framework::Event& event) {
       eid_to_samples;
   PolarfireEventHeader eh;
   if (read_from_file_) {
-    if (!file_reader_ or file_reader_.eof()) abortEvent();
+    if (!file_reader_ or file_reader_.eof()) return;
     eid_to_samples = this->read(file_reader_,eh);
   } else {
     hcal::utility::Reader bus_reader(event.getCollection<uint8_t>(input_name_, input_pass_));
