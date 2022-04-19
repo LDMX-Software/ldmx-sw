@@ -5,7 +5,7 @@ p = ldmxcfg.Process('hits') #
 import sys
 
 inputPassName="conv"
-nEv=65000
+nEv=400000
 
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
@@ -90,8 +90,8 @@ tbHitsUp.input_collection="QIEsamplesUp"
 tbHitsUp.pedestals=pedList
 tbHitsUp.gain=gainList 
 tbHitsUp.startSample=timeSample
-tbHitsUp.pulseWidth=7
-tbHitsUp.pulseWidthLYSO=9
+tbHitsUp.pulseWidth=7 #5 
+tbHitsUp.pulseWidthLYSO=9 #7 
 tbHitsUp.doCleanHits=True
 tbHitsUp.nInstrumentedChannels=12
 p.sequence = [
