@@ -81,3 +81,9 @@ class SingleSubsystemPacker(ldmxcfg.Analyzer) :
         self.input_name = input_name
         self.input_pass = input_pass
 
+class WRRawDecoder(ldmxcfg.Producer) :
+    def __init__(self, raw_file, output_name, ntuplize = True) :
+        super().__init__('wrdecode','packing::WRRawDecoder','Packing')
+        self.input_file = raw_file
+        self.output_name = output_name
+        self.ntuplize = ntuplize
