@@ -43,10 +43,27 @@ class HcalRawDecoder(Producer) :
             self.translate_eid = True
 
 class HcalAlignPolarfires(Producer) :
-    """Align the two polarfires from testbeam into singular events"""
+    """Align the two polarfires from testbeam into singular events
+
+    Parameters
+    ----------
+    output_name : str
+        Name of event object with aligned digis
+    input_names : list[str]
+        The event objects of the decoded digis from the two polarfires
+    input_pass : str
+        pass generating decoded digis
+    max_tick_diff : int
+        Maximum number of ticks to consider the two polarfires on the same event
+    drop_lonely_events : bool
+        True if you want to drop events that only have data from one polarfire
+    keep_inputs : bool
+        True if you want to keep both copies of the decoded data,
+        effectively doubles the size of the output file, only use in debugging/developing
+    """
 
     def __init__(self, output_name, input_names, input_pass = '',
-            max_tick_diff = 10, drop_lonely_events = False, drop_inputs = False) :
+            max_tick_diff = 10, drop_lonely_events = False, keep_inputs = False) :
         super().__init__('hcalalign','hcal::HcalAlignPolarfires','Hcal')
 
         self.output_name = output_name
@@ -60,7 +77,7 @@ class HcalAlignPolarfires(Producer) :
         if drop_lonely_events :
             p.skimConsider(self.name)
 
-        if drop_inputs :
+        if not keep_inputs :
             for i in self.input_names :
                 p.keep.append(f'drop {i}.*')
 
