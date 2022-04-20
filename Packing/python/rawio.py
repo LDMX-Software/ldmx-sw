@@ -87,3 +87,10 @@ class WRRawDecoder(ldmxcfg.Producer) :
         self.input_file = raw_file
         self.output_name = output_name
         self.ntuplize = ntuplize
+
+class FiberTrackerRawDecoder(ldmxcfg.Producer) :
+    def __init__(self, raw_file, output_name, ntuplize = True) :
+        super().__init__('fibertrackerdecode','packing::FiberTrackerRawDecoder','Packing')
+        self.input_file = raw_file
+        self.output_name = output_name
+        self.ntuplize = ntuplize
