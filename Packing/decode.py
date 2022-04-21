@@ -7,6 +7,7 @@ parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 parser.add_argument('output_file')
 
 parser.add_argument('--wr')
+parser.add_argument('--ts')
 parser.add_argument('--ft41')
 parser.add_argument('--ft42')
 parser.add_argument('--ft50')
@@ -26,6 +27,7 @@ p.termLogLevel = 0
 p.logFrequency = 100
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
+import LDMX.TrigScint.qieFormat as ts_format
 from LDMX.DQM import dqm
 from LDMX.Packing import rawio
 
@@ -95,6 +97,23 @@ if arg.pf1 is not None :
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'PF1Raw',
             name = 'pf1'
+            )
+        ])
+
+if arg.ts is not None :
+    n_channels = 16
+    n_timesamples = 24
+    header_len = 4+4+4+3+1
+    p.sequence.extend([
+        rawio.SingleSubsystemUnpacker(
+            raw_file = arg.ts,
+            output_name = 'QIEstreamUp',
+            detector_name = 'ldmx-hcal-prototype-v1.0',
+            num_bytes_per_event = 2*n_channels*n_timesamples + header_len
+            ),
+        ts_format.QIEDecoder.up(),
+        dqm.NtuplizeTrigScintQIEDigis(
+            input_name = 'decodedQIEUp'
             )
         ])
 
