@@ -348,7 +348,7 @@ class FiberTrackerRawDecoder : public framework::Producer {
   /// Current Event
   FiberTrackerEvent ft_event_;
   /// ntuple tree
-  TTree* tree_;
+  TTree* tree_, *spill_tree_;
 };
 
 void FiberTrackerRawDecoder::configure(framework::config::Parameters& ps) {
@@ -368,6 +368,24 @@ void FiberTrackerRawDecoder::onProcessStart() {
     tree_->Branch("EventTSLSB", &ft_event_.event_timestamp_lsb);
     tree_->Branch("EventTSMSB", &ft_event_.event_timestamp_msb);
     tree_->Branch("ChannelHits", &ft_event_.channel_hits);
+
+    spill_tree_ = new TTree("spill", "Spill Meta-Data from FiberTrackerDAQ");
+    spill_tree_->Branch("acqMode",&spill_packet_.acqMode);
+    spill_tree_->Branch("acqStamp",&spill_packet_.acqStamp);
+    spill_tree_->Branch("acqType",&spill_packet_.acqType);
+    spill_tree_->Branch("acqTypeAllowed",&spill_packet_.acqTypeAllowed);
+    spill_tree_->Branch("counts",&spill_packet_.counts);
+    spill_tree_->Branch("countsRecords",&spill_packet_.countsRecords);
+    spill_tree_->Branch("countsRecordsWithZeroEvents",&spill_packet_.countsRecordsWithZeroEvents);
+    spill_tree_->Branch("countsTrigs",&spill_packet_.countsTrigs);
+    spill_tree_->Branch("cycleStamp",&spill_packet_.cycleStamp);
+    spill_tree_->Branch("eventSelectionAcq",&spill_packet_.eventSelectionAcq);
+    spill_tree_->Branch("meanSNew",&spill_packet_.meanSNew);
+    spill_tree_->Branch("profile",&spill_packet_.profile);
+    spill_tree_->Branch("profileStandAlone",&spill_packet_.profileStandAlone);
+    spill_tree_->Branch("trigger",&spill_packet_.trigger);
+    spill_tree_->Branch("triggerOffsetAcq",&spill_packet_.triggerOffsetAcq);
+    spill_tree_->Branch("triggerSelectionAcq",&spill_packet_.triggerSelectionAcq);
   }
 }
 
@@ -376,6 +394,7 @@ void FiberTrackerRawDecoder::produce(framework::Event& event) {
   if (not spill_packet_.next(ft_event_)) {
     // no more events in this spill
     if (file_reader_ >> spill_packet_) {
+      spill_tree_->Fill();
       // next spill loaded, pop its first event
       spill_packet_.next(ft_event_);
     } else {
@@ -385,13 +404,13 @@ void FiberTrackerRawDecoder::produce(framework::Event& event) {
       return;
     }
   }
+  tree_->Fill();
 
   event.add(output_name_+"TriggerTSLSB", ft_event_.trigger_timestamp_lsb);
   event.add(output_name_+"TriggerTSMSB", ft_event_.trigger_timestamp_msb);
   event.add(output_name_+"EventTSLSB", ft_event_.event_timestamp_lsb);
   event.add(output_name_+"EventTSMSB", ft_event_.event_timestamp_msb);
   event.add(output_name_+"Hits", ft_event_.channel_hits);
-  tree_->Fill();
   return;
 }  // produce
 

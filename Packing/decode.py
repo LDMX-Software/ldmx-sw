@@ -6,10 +6,13 @@ parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 
 parser.add_argument('output_file')
 
-parser.add_argument('--wr',required=True)
-parser.add_argument('--ft',required=True)
-parser.add_argument('--pf0',required=True)
-parser.add_argument('--pf1',required=True)
+parser.add_argument('--wr')
+parser.add_argument('--ft41')
+parser.add_argument('--ft42')
+parser.add_argument('--ft50')
+parser.add_argument('--ft51')
+parser.add_argument('--pf0')
+parser.add_argument('--pf1')
 
 parser.add_argument('--max_events',default=100,type=int)
 parser.add_argument('--pause',action='store_true')
@@ -32,14 +35,47 @@ p.outputFiles = [arg.output_file]
 import os
 p.histogramFile = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
 
-# sequence
-p.sequence = [ 
+if arg.wr is not None :
+    p.sequence.append(
         rawio.WRRawDecoder(
             raw_file = arg.wr,
-            output_name = 'WRRaw'),
+            output_name = 'WRRaw')
+        )
+
+if arg.ft41 is not None :
+    p.sequence.append(
         rawio.FiberTrackerRawDecoder(
-            raw_file = arg.ft,
-            output_name = 'FiberTrackerRaw'),
+            raw_file = arg.ft41,
+            name = 'ft41',
+            output_name = 'FiberTracker41Raw')
+        )
+
+if arg.ft42 is not None :
+    p.sequence.append(
+        rawio.FiberTrackerRawDecoder(
+            raw_file = arg.ft42,
+            name = 'ft42',
+            output_name = 'FiberTracker42Raw')
+        )
+
+if arg.ft50 is not None :
+    p.sequence.append(
+        rawio.FiberTrackerRawDecoder(
+            raw_file = arg.ft50,
+            name = 'ft50',
+            output_name = 'FiberTracker50Raw')
+        )
+
+if arg.ft51 is not None :
+    p.sequence.append(
+        rawio.FiberTrackerRawDecoder(
+            raw_file = arg.ft51,
+            name = 'ft51',
+            output_name = 'FiberTracker51Raw')
+        )
+
+if arg.pf0 is not None :
+    p.sequence.extend([
         hcal_format.HcalRawDecoder(
             input_file = arg.pf0,
             output_name = 'PF0Raw'
@@ -47,7 +83,11 @@ p.sequence = [
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'PF0Raw',
             name = 'pf0'
-            ),
+            )
+        ])
+
+if arg.pf1 is not None :
+    p.sequence.extend([
         hcal_format.HcalRawDecoder(
             input_file = arg.pf1,
             output_name = 'PF1Raw'
@@ -55,8 +95,8 @@ p.sequence = [
         dqm.NtuplizeHgcrocDigiCollection(
             input_name = 'PF1Raw',
             name = 'pf1'
-            ),
-        ]
+            )
+        ])
 
 if arg.pause :
     p.pause()

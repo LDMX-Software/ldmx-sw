@@ -82,15 +82,15 @@ class SingleSubsystemPacker(ldmxcfg.Analyzer) :
         self.input_pass = input_pass
 
 class WRRawDecoder(ldmxcfg.Producer) :
-    def __init__(self, raw_file, output_name, ntuplize = True) :
-        super().__init__('wrdecode','packing::WRRawDecoder','Packing')
+    def __init__(self, raw_file, output_name, ntuplize = True, name = 'wr') :
+        super().__init__(name,'packing::WRRawDecoder','Packing')
         self.input_file = raw_file
         self.output_name = output_name
         self.ntuplize = ntuplize
 
 class FiberTrackerRawDecoder(ldmxcfg.Producer) :
-    def __init__(self, raw_file, output_name, ntuplize = True) :
-        super().__init__('fibertrackerdecode','packing::FiberTrackerRawDecoder','Packing')
+    def __init__(self, raw_file, output_name, name, ntuplize = True) :
+        super().__init__(name,'packing::FiberTrackerRawDecoder','Packing')
         self.input_file = raw_file
         self.output_name = output_name
         self.ntuplize = ntuplize
