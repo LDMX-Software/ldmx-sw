@@ -1,4 +1,5 @@
 from os.path import exists
+from os import path
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('hits') #
 
@@ -22,22 +23,20 @@ gainList=[2e6]*nChannels
 gainFileName=sys.argv[1].replace(".root", "_gains.txt")
 gainFileName=gainFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
 
-if "data/teststand" in gainFileName :
-    defaultGainFileName="data/teststand/unpacked_teststand_Mar08_1100_cosmic_reformat_30timeSamplesFrom0_linearize_gains.txt"
-else :
-    defaultGainFileName="data/testbeam22/unpacked_randoms_Mar27_1654_reformat_30timeSamplesFrom0_linearize_gains.txt"
+#pick one file more or less at random as the fallback option
+defaultRun="unpacked_4gev_negativeMu_Apr03_2200_reformat_30timeSamplesFrom0_linearize"
+dataPath=path.dirname( sys.argv[1] ) #extract the path to where we keep the data
+defaultGainFileName=dataPath+"/"+defaultRun+"_gains.txt"
 
-
-if not exists(gainFileName) :  #for some reason, not derived. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
+#if for some reason, gains are not derived for this run. probably too low stats --> fits not converging. bet on that inter-channel gain differences are larger than variations in channel over time; then it is better to use an old file than a flat default gain. also, this could be edited to become an average file.
+if not exists(gainFileName) :  
     gainFileName=defaultGainFileName
-
+print("using gain file "+gainFileName)
 if exists(gainFileName) :
     with open(gainFileName) as f:
-        for line in f.readlines() :#        line = f.readline()
+        for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
-            #        print(line[1:])
             gainList[ int(line[0].strip()) ] = float(line[1].strip())
-            #for line in lines :
 
 print("Using this list of gains:")
 print(gainList)
@@ -62,23 +61,17 @@ pedList=[
         ]
 
 #now if there is a ped file, use that instead to read in the ped for each channel
-pedFileName=sys.argv[1].replace(".root", "_peds.txt")
-pedFileName=pedFileName.replace("_adcTrig", "")  #not derived for adcTrig events 
+pedFileName=gainFileName.replace("gains", "peds")
+defaultPedFileName=dataPath+"/"+defaultRun+"_peds.txt"
 
-if "data/teststand" in gainFileName :
-    defaultPedFileName="data/teststand/unpacked_teststand_Mar08_1100_cosmic_reformat_30timeSamplesFrom0_linearize_peds.txt"
-else :
-    defaultPedFileName="data/teststand/unpacked_randoms_Mar27_1654_reformat_30timeSamplesFrom0_linearize_peds.txt"
-if not exists(pedFileName) :  #for some reason, not derived. probably too low stats --> fits not converging. bet on that inter-channel ped differences are larger than variations in channel over time; then it is better to use an old file than a flat default ped. also, this could be edited to become an average file.
+if not exists(pedFileName) :  
     pedFileName=defaultPedFileName
 
 if exists(pedFileName) :
     with open(pedFileName) as f:
-        for line in f.readlines() :#        line = f.readline()
+        for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, ped
-            #        print(line[1:])
             pedList[ int(line[0].strip()) ] = float(line[1].strip())
-            #for line in lines :
 
 print("Using this list of peds:")
 print(pedList)
