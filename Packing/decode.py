@@ -20,7 +20,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('unpack')
 p.maxEvents = arg.max_events
 p.termLogLevel = 0
-p.logFrequency = 1
+p.logFrequency = 100
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
 from LDMX.DQM import dqm
