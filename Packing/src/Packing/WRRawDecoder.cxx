@@ -8,24 +8,9 @@
 #include "Packing/Utility/Reader.h"
 
 // un comment for WRRawDecoder-specific debug printouts to std::cout
-#define DEBUG
+//#define DEBUG
 
 namespace packing {
-
-namespace debug {
-
-struct hex {
-  uint32_t word_;
-  hex(uint32_t w) : word_{w} {}
-};
-
-}  // namespace debug
-
-inline std::ostream& operator<<(std::ostream& os, const debug::hex& h) {
-  os << "0x" << std::setfill('0') << std::setw(8) << std::hex << h.word_
-     << std::dec;
-  return os;
-}
 
 struct WRBinaryPacket {
   int runNumber;
