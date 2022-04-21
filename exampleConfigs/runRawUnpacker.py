@@ -5,7 +5,7 @@ p = ldmxcfg.Process('raw')
 import sys
 
 
-nEv=400000
+nEv=40000000 
 RAWfileName=sys.argv[1] 
 p.outputFiles = [sys.argv[2]]
 logName=p.outputFiles[0].replace(".root", "_toRoot.log")
@@ -22,14 +22,12 @@ nWords=2*nChannels*nTimeSamples+lenHeader
 
 from LDMX.Packing import rawio
 
-p.maxEvents = nEv # single subsystem unpacker will abort all events when it runs out of data
 p.sequence = [
     rawio.SingleSubsystemUnpacker(raw_file = RAWfileName, output_name = "QIEstreamUp", detector_name="ldmx-hcal-prototype-v1.0", num_bytes_per_event = nWords)
         ]
 
+p.maxEvents = nEv # apparently this HAS TO be set! single subsystem unpacker will abort all events when it runs out of data
 
-p.maxEvents = nEv
-
-p.termLogLevel = 1 
+p.termLogLevel = 0 #1 
 p.logFileName = logName
 p.fileLogLevel = 0 
