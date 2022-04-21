@@ -8,7 +8,7 @@
 #include "Packing/Utility/Reader.h"
 
 // un comment for FiberTrackerRawDecoder-specific debug printouts to std::cout
-#define DEBUG
+//#define DEBUG
 
 namespace packing {
 
