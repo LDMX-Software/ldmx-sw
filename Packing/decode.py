@@ -111,10 +111,13 @@ if arg.ts is not None :
             detector_name = 'ldmx-hcal-prototype-v1.0',
             num_bytes_per_event = 2*n_channels*n_timesamples + header_len
             ),
-        ts_format.QIEDecoder.up(),
-        dqm.NtuplizeTrigScintQIEDigis(
-            input_name = 'decodedQIEUp'
-            )
+        ts_format.QIEDecoder.up(
+            os.environ['LDMX_BASE']+
+            '/ldmx-sw/TrigScint/data/'+
+            'channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt'),
+#        dqm.NtuplizeTrigScintQIEDigis(
+#            input_name = 'decodedQIEUp'
+#            )
         ])
 
 if arg.pause :

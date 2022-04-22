@@ -182,6 +182,12 @@ class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
             t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
             t.validForever(f'file://{pedestal_table}')
 
+class NtuplizeTrigScintQIEDigis(ldmxcfg.Analyzer) :
+    def __init__(self,input_name, input_pass = '', name = 'ts') :
+        super().__init__(name,'dqm::NtuplizeTrigScintQIEDigis','DQM')
+        self.input_name = input_name
+        self.input_pass = input_pass
+
 class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     """Configured PhotoNuclearDQM python object
     
