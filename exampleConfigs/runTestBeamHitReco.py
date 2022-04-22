@@ -11,7 +11,7 @@ nEv=400000
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
 else :
-    timeSample=21
+    timeSample=15
     
 from LDMX.TrigScint.trigScint import TestBeamHitProducer
 
