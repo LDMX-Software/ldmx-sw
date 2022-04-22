@@ -10,36 +10,36 @@ The data coming off of our detector will be streamed and the handling of this da
 After the data is streamed (the end point being some sort of file), the data can be imported into "offline" software.
 This process is naturally two steps, so I see the software necessary to decode and encode data also to be two steps.
 
-## The "online" Step: Merge
-Merge the various raw files coming off simultaneouslly from the different subsystems into a single file. 
-This is done by a [Rogue](https://github.com/slaclab/rogue) "collector" which then writes the information 
-into a binary file format that we define.
+## TestBeam
 
-I have heard front-end people refer to this step as "Event Building".
-Step 2 below basically assumes that the product of the "Event Building" step is a binary
-file with the data organized in the structure described below.
+We now have a procedure for decoding data into the same ROOT file. 
+**We do not align the events**, but it makes it much easier to do analyses across subsystems. 
+This procedure has two steps due to the complicated nature of TS readout.
 
-This step is meant to be isolated from ldmx-sw so hardware close to the detector that does
-this merging does not need a full build of ldmx-sw to function.
+### 1. Reformat the raw TS data so that it is grouped into raw event data.
+```
+ldmx python3 ldmx-sw/TrigScint/util/decode_2fiber_toRAW_fromBin.py --passThrough -i ldmx_captan_out_<run-info>.dat
+```
+- `--passThrough` is used so that the reformating script does not veto any events. `-a` uses ADC as a veto, `-t` uses TDC and is experimental.
+- There is a lot of printout. The error `CID between fiber1 and fiber2 unsynced!` is a known bug in the system and is not affecting the decoding.
+- The end of this script prints out how many events it grouped which could be used to know how many events to request in the `decode.py` script.
 
-### Raw Data File
-The layout of a raw data file (after the "event building" or "merging" step but before ldmx-sw) is slightly hierarchical.
-Since the structure of this data file is in flux, I have drafted it in a [set of google slides](https://docs.google.com/presentation/d/1bCd3qViZYVYngBMQj1FaEKdDUv0ILHD2l3jWDfYfTBI/edit?usp=sharing).
-
-## The "offline" step: Unpack
-The "offline" software can then handle the complexity of actually decoding the data that has been read off the detector.
-This decoding step is done by a single processor in ldmx-sw which dynamically loads a set of "translators" based on the identifying names for each stream of data. 
-This also isolates all subsystem-specific decoding into subsystem-specific places.
-We can then create the "digi" objects that can be utilized by further reconstruction steps.
-
-This step is meant to be _the_ translation step from "online" data to "offline" data (ldmx-sw).
-
-The complexity of decoding necessitates breaking this step into two substeps.
-
-### Re-Splitting
-First, we need to re-split the event data into the different subsystems. 
-This is done by a central processor which adds each of the subsystem packets into the event bus with an identification name that is determined from the subsystem ID number.
-This central processor will also modify the event header and run header to align with what is stored in the raw file.
-
-### Subsystem Decoding
-After the re-splitting step, the different subsystems can have their own producers acquire the subsystem packets from the event bus and do the decoding.
+### 2. Decode raw data from various subsystems into one output ROOT event file and output ntuple file.
+```
+ldmx python3 ldmx-sw/Packing/decode.py \
+  --ts ldmx_captan_out_<run-info>_reformat.dat \
+  --wr WR_out_<run>.bin \
+  --pf0 ldmx_hcal_external_fpga_0_run_<run-info>.raw \
+  --pf1 ldmx_hcal_external_fpga_1_run_<run-info>.raw \
+  --ft41 DipClient_out_run_<run>_41.bin \
+  --ft42 DipClient_out_run_<run>_42.bin \
+  --ft50 DipClient_out_run_<run>_50.bin \
+  --ft51 DipClient_out_run_<run>_51.bin \
+  unaligned_<run>.root
+```
+- None of the subsystems are required
+- The TS decoding chain will abort all events after it is done with its input file, meaning if other subsystems have more events (somehow), the leftovers will be dropped.
+- All other subsystems will just return empty digi collections after they are done with their input files.
+- The default number of events is `100` for testing purposes. You can increase it with `--max_events N`. 
+- No checking that the subsystems are from the same run is done.
+- **No alignment is done** only decoding and merging into the same file.
