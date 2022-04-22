@@ -17,6 +17,9 @@ void EventReadoutProducer::configure(
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputCollection_ = parameters.getParameter<std::string>("output_collection");
+  nPedSamples_ = parameters.getParameter<int>("number_pedestal_samples");
+  timeShift_ = parameters.getParameter<int>("time_shift");
+  fiberToShift_ = parameters.getParameter<int>("fiber_to_shift");
   verbose_ = parameters.getParameter<bool>("verbose");
 }
 
@@ -24,8 +27,6 @@ void EventReadoutProducer::produce(framework::Event &event) {
   // initialize QIE object for linearizing ADCs
   SimQIE qie;
   
-  // looper over sim hits and aggregate energy depositions
-  // for each detID
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
       inputCollection_, inputPassName_)};
 
@@ -34,26 +35,46 @@ void EventReadoutProducer::produce(framework::Event &event) {
     trigscint::EventReadout outEvent;
     auto adc{digi.getADC()};
     auto tdc{digi.getTDC()};
-
+	
 	//copy over from qie digi for convenience
     outEvent.setChanID(digi.getChanID());
     outEvent.setElecID(digi.getElecID());
+    outEvent.setTimeSinceSpill(digi.getTimeSinceSpill());
+	// elecID increases monotonically with 8 channels per fiber
+	outEvent.setFiberNb( (int)(digi.getElecID()/8) );  
+	if ( outEvent.getFiberNb() == fiberToShift_ )
+	  outEvent.setTimeOffset( timeShift_);
+
     outEvent.setADC(adc);
     outEvent.setTDC(tdc);
 	std::vector <float> charge;
+	std::vector <float> chargeErr;
 
 	float avgQ = 0;
+	float totPosQ = 0;
+	int iS=0;
+	int nPos=0;
+	float earlyPed=0;
 	for (auto& val: adc) {
-	  charge.push_back( qie.ADC2Q(val) );
-	  avgQ+=qie.ADC2Q(val); //charge.back();
+	  float Q=qie.ADC2Q(val);
+	  charge.push_back( Q );
+	  chargeErr.push_back( qie.QErr(Q) );
+	  avgQ+=Q; //charge.back();
+	  if ( Q > 0 ) {
+		totPosQ+=Q;
+		nPos++;
+	  }
 	  if (verbose_)
-	    ldmx_log(debug) << "got adc value " << val << " and charge " << qie.ADC2Q(val);
-
+	    ldmx_log(debug) << "got adc value " << val << " and charge " << Q; //qie.ADC2Q(val);
+	  if (iS < nPedSamples_)
+		earlyPed+=Q;
+	  iS++;
 	}
 	outEvent.setQ(charge); //set in proper order before sorting 
-	avgQ/=adc.size();
-
-	//calculate the pedestal as the average of the middle half of the sorted vector 
+	outEvent.setQError(chargeErr); //set in proper order before sorting 
+	earlyPed/=nPedSamples_;
+	outEvent.setEarlyPedestal(earlyPed);
+	//now calculate the pedestal as the average of the middle half of the sorted vector 
 	float ped = 0;
 	std::sort(charge.begin(), charge.end());
 	int quartLength=(int)charge.size()/4;
@@ -65,7 +86,11 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	float medQ=charge[ (int)charge.size()/2 ];
 	float minQ=charge[0];
 	float maxQ=charge[charge.size() -1];
-	
+
+	outEvent.setTotQ(totPosQ-nPos*ped); //store (event) ped subtracted total charge, before dividing by N 
+	//	outEvent.setTotQ(totPosQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
+	//	outEvent.setTotQ(avgQ-adc.size()*ped); //store (event) ped subtracted total charge, before dividing by N 
+	avgQ/=adc.size();
 	outEvent.setPedestal(ped);
 	outEvent.setAvgQ(avgQ);
 	outEvent.setMedQ(medQ);
@@ -82,6 +107,23 @@ void EventReadoutProducer::produce(framework::Event &event) {
 	diffSq/=2*quartLength; //adc.size(); 
 	outEvent.setNoise( sqrt(diffSq) );
 
+
+	uint flagSpike = (maxQ/outEvent.getTotQ() > 0.8 ); // skip "unnaturally" narrow hits
+	uint flagPlateau = ( fabs(ped) > 15 ); //threshold //   //skip events that have strange plateaus   
+	uint flagLongPulse = 0; //might be easier to deal with in hit reconstruction directly. could copy channel flags to hit flags and add this one there
+	uint flagOscillation = ( fabs(avgQ/ped) > 3./4 );
+	/*
+if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus                                                    
+               //              && (chan.getAvgQ()/chan.getPedestal()<0.8)  //skip events that have strange oscillations                                   
+               && 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses                                           
+	*/
+  uint flag=flagSpike+2*flagPlateau+4*flagLongPulse+8*flagOscillation;
+  ldmx_log(debug) << "Got quality flag "  << flag << " made up of (spike/plateau/long pulse/oscillation) " << flagSpike << "+" << flagPlateau << "+" << flagLongPulse << "+" << flagOscillation ;
+  outEvent.setQualityFlag( flag );
+
+	
+	//	if (ped > 15 )
+	//  continue;
 	ldmx_log(debug) << "In event "  << event.getEventHeader().getEventNumber() <<
 	  ", set pedestal = " << outEvent.getPedestal() << //ped <<
 	  " fC, noise = " << outEvent.getNoise() << " fC for channel "<< 

@@ -62,7 +62,17 @@ namespace trigscint {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
+  
+  /// Number of initial time samples averaged over in the pedestal calculation
+  int nPedSamples_{5};
 
+  /// Number of time samples to shift readout by, to align fibers if there is an offset
+  int timeShift_{5};
+
+  /// Which of the fibers to set the time shift for (0 or 1)
+  int fiberToShift_{1};
+	
+	
 };
 
 }  // namespace trigscint

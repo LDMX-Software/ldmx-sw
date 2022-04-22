@@ -1,6 +1,7 @@
 #include "TrigScint/QIEDecoder.h"
 
 #include <bitset>
+#include <TMath.h>
 
 
 namespace trigscint {
@@ -14,6 +15,7 @@ namespace trigscint {
    channelMapFileName_ = ps.getParameter<std::string>("channel_map_file");
    nChannels_ = ps.getParameter<int>("number_channels");
    nSamples_ = ps.getParameter<int>("number_time_samples");
+   isRealData_ = ps.getParameter<bool>("is_real_data");
    verbose_ = ps.getParameter<bool>("verbose");
 
    ldmx_log(debug) << "In configure, got parameters:" <<
@@ -23,6 +25,7 @@ namespace trigscint {
 	 "\nchannel_map_file = " <<  channelMapFileName_ <<
 	 "\nnumber_channels  = " <<  nChannels_ <<
 	 "\nnumber_time_samples  = " <<  nSamples_ <<
+	 "\nis_real_data  = " <<  isRealData_ <<
 	 "\nverbose          = " << verbose_ ;
 
    channelMapFile_.open(channelMapFileName_, std::ios::in);
@@ -56,28 +59,76 @@ namespace trigscint {
     ldmx_log(debug)
 	  << "QIEDecoder: produce() starts! Event number: "
 	  << event.getEventHeader().getEventNumber();
-
-	//turns out this need to be configurable for now, to read real data
-	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
-  ldmx_log(debug) << "num samples = " << nSamp;
 	
-  ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
-  const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
-  ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
+	//	ldmx::EventHeader *eh = (ldmx::EventHeader*)event.getEventHeaderPtr();
+	//eh->setIsRealData(isRealData_); //doesn't help
+	
+	/*   // comment for now, requires pushing change ot EventHeader
+	event.getEventHeader().setIsRealData(isRealData_);
+	ldmx_log(debug) << "Decoder bool isRealData = " << isRealData_ << " and after attempt of setting it, event header returns " <<  event.getEventHeader().isRealData();
+	*/
+	  //turns out this need to be configurable for now, to read real data
+	int nSamp = nSamples_; //QIEStream::NUM_SAMPLES ;  
+	ldmx_log(debug) << "num samples = " << nSamp;
+	
+	ldmx_log(debug) << "Looking up input collection " << inputCollection_ << "_" << inputPassName_;
+	const auto eventStream{event.getCollection<uint8_t>( inputCollection_, inputPassName_)};
+	ldmx_log(debug) << "Got input collection" << inputCollection_ << "_" << inputPassName_;
+	
+	
+  uint32_t timeEpoch=0;
+  //these don't have to be in any particular order, position is anyway looked up from definition in header
+  for (int iW = 0 ; iW < QIEStream::TIMESTAMP_LEN_BYTES; iW++) {
+	int pos = QIEStream::TIMESTAMP_POS + iW;
+    uint8_t timeWord = eventStream.at( pos );
+    ldmx_log(debug) << "time stamp word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(timeWord ) ;
+    timeEpoch |= (timeWord << iW*8); //shift by a byte at a time
+  }
+
+  uint32_t timeClock=0;
+  for (int iW = 0 ; iW < QIEStream::TIMESTAMPCLOCK_LEN_BYTES; iW++) {
+	int pos = QIEStream::TIMESTAMPCLOCK_POS + iW;
+    uint8_t timeWord = eventStream.at( pos );
+    ldmx_log(debug) << "time stamp ns word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(timeWord ) ;
+    timeClock |= (timeWord << iW*8); //shift by a byte at a time
+  }
+
+  uint32_t timeSpill=0;
+  ldmx_log(debug) << "Before starting, timeSpill = " << timeSpill << " (" << std::bitset<64>(timeSpill) << ", or, " << std::hex << timeSpill << std::dec << ") counts since start of spill";
+
+  for (int iW = 0 ; iW < QIEStream::TIMESINCESPILL_LEN_BYTES; iW++) {
+	int pos = QIEStream::TIMESINCESPILL_POS + iW;
+    uint8_t timeWord = eventStream.at( pos );
+    ldmx_log(debug) << "time since spill word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(timeWord ) ;
+    timeSpill |= (timeWord << iW*8); //shift by a byte at a time
+  }
+  ldmx_log(debug) << "time stamp words are : " << timeEpoch << " (" << std::bitset<64>(timeEpoch) << ") and " << timeClock << " (" << std::bitset<64>(timeClock) << ") clock ticks, and " << timeSpill << " (" << std::bitset<64>(timeSpill) << ", or, " << std::hex << timeSpill << std::dec << ") counts since start of spill";
+
+  int sigBitsSkip=6; //the first 6 bits are part of something else. 
+  int divisor=TMath::Power(2, 32-sigBitsSkip);
+  timeSpill=timeSpill%divisor; //remove them by taking remainder in division by the values of the last skipped bit
+  //timeSpill=timeSpill/spillTimeConv_;
+  ldmx_log(debug) << "After taking it mod 2^" << 32-sigBitsSkip << " (which is " << divisor << ", spill time is " << timeSpill;
+  event.getEventHeader().setIntParameter("timeSinceSpill", timeSpill);
+  //  event.getEventHeader().setTimeSinceSpill(timeSpill); //not working 
+
+  TTimeStamp *timeStamp = new TTimeStamp(timeEpoch);
+  //  timeStamp->SetNanoSec(timeClock); //not sure about this one...
+  event.getEventHeader().setTimestamp(*timeStamp);
 
   // trigger ID event number
-  // this is the one word that spans several bytes 
-  uint16_t triggerID =0; // =eventStream.at(QIEStream::TRIGID_POS);
+  uint32_t triggerID =0; 
 
   for (int iW = 0 ; iW < QIEStream::TRIGID_LEN_BYTES; iW++) {
-	//assume the whole 2B are written as a single 16 bits word
-	int pos = QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES -2 + iW);
+	//assume the whole 3B are written as a single 24 bits word
+	int pos = QIEStream::TRIGID_POS+iW;
 	uint8_t tIDword = eventStream.at( pos );
 	ldmx_log(debug) << "trigger word at position " << pos << " (with iW = " << iW << ") = " << std::bitset<8>(tIDword ) ;
 	triggerID |= (tIDword << iW*8); //shift by a byte at a time
   }
   
-  ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
+  //  ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ; //eventStream.at(0);
+  ldmx_log(debug) << " got triggerID " << std::bitset<32>(triggerID) ; //eventStream.at(0);
 
   if ( triggerID != event.getEventHeader().getEventNumber() ) {
 	// this probably only applies to digi emulation,
@@ -85,6 +136,7 @@ namespace trigscint {
 	ldmx_log(fatal) << "Got event number mismatch: framework reports " <<
 	  event.getEventHeader().getEventNumber() <<", stream says " << triggerID ;
   }
+
   // error word 
   /* the error word contains 
 	 - 4 trailing reserved 0's, for now
@@ -100,8 +152,8 @@ namespace trigscint {
   bool isCRC1malformed{ (flags >> QIEStream::CRC1_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   bool isCRC0malformed{ (flags >> QIEStream::CRC0_ERR_POS) & mask8<QIEStream::FLAG_SIZE_BITS>::m};
   //checksum
-  uint8_t referenceChecksum = 30;  // really, this is just a random number for now. TODO> implement a checksum set/get 
-  int checksum = eventStream.at(QIEStream::CHECKSUM_POS);
+  uint8_t referenceChecksum = 0;  // really, this is just empty for now. TODO> implement a checksum set/get 
+  int checksum{ (flags >> QIEStream::CHECKSUM_POS) & mask8<QIEStream::CHECKSUM_SIZE_BITS>::m}; //eventStream.at(QIEStream::CRC0_ERR_POS) QIEStream::CHECKSUM_POS);
   if ( checksum != referenceChecksum) 
 	ldmx_log(fatal) << "Got checksum mismatch: expected " << (int)referenceChecksum << ", stream says " << checksum ;
   if (isCIDunsync)
@@ -116,9 +168,8 @@ namespace trigscint {
   
   // read in words from the stream. line them up per channel and time sample.
   // channels are in the electronics ordering 
-
   int iWstart = std::max( std::max(QIEStream::ERROR_POS, QIEStream::CHECKSUM_POS),
-						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //probably overkill :D should be 4 
+						  QIEStream::TRIGID_POS+(QIEStream::TRIGID_LEN_BYTES)) +1;  //make sure we're at end of header
   int nWords = nSamp*nChannels_*2 + iWstart; //1 ADC, 1 TDC per channel per sample, + the words in the header
   int iWord = iWstart;
   ldmx_log(debug) << "Event parsing starts at vector idx " << iWstart << " and nWords = " << nWords; 
@@ -133,7 +184,7 @@ namespace trigscint {
 	  uint8_t val = eventStream.at(iWord);
 	  if (val > 0) { 	//add only the digis with non-zero ADC value
 		ldmx_log(debug) << "got ADC value " << (unsigned)val << " at channel (elec) idx " << iQ ;
-		if ( ADCmap.find( iQ ) == ADCmap.end() ) { // we have a new channel 
+		  if ( ADCmap.find( iQ ) == ADCmap.end() ) { // we have a new channel 
 		  std::vector <int > adcs(nSamp, 0);
 		  ADCmap.insert(std::pair<int, std::vector <int> >(iQ, adcs));
 		}
@@ -175,6 +226,9 @@ namespace trigscint {
 	digi.setElecID( itr->first );
 	digi.setChanID( bar );
 	digi.setTDC( TDCmap[itr->first] );
+	digi.setTimeSinceSpill(timeSpill);
+	if (bar == 0)
+	  ldmx_log(debug) << "for bar 0, got time since spill "<< digi.getTimeSinceSpill();
 	outDigis.push_back( digi );
 	ldmx_log(debug) << "Iterator points to key " << itr->first
 					<< " and mapped channel supposedly  is " << bar ;

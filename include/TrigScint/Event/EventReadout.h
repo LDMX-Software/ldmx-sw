@@ -49,9 +49,20 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
    */
   void setPedestal(const float pedestal) { pedestal_ = pedestal; };
 
+  /// Get the pedestal calculated only from first N time samples
+  
+  float getEarlyPedestal() const { return earlyPedestal_; }
+
+  /**
+   * Set channel (linearized. charge) pedestal calculated from beginning of readout
+   *             
+   * @param pedestal The pedestal of the first N time samples in the channel
+   */
+  void setEarlyPedestal(const float earlyPed) { earlyPedestal_ = earlyPed; };
+
   /// Get the pedestal
   
-  int getPedestal() const { return pedestal_; }
+  float getPedestal() const { return pedestal_; }
 
     /**
    * Set channel (linearized, charge-equiv) noise 
@@ -62,7 +73,22 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the channel noise
 
-  int getNoise() const { return noise_; }
+  float getNoise() const { return noise_; }
+
+      /**
+   * Set channel data quality flag. This is the binary
+   * combination of 4 flags:
+   * spike: 1
+   * plateau: 10
+   * long pulse: 100 (not implemented yet)
+   * oscillation: 1000 
+   * @param flag The quality flag of the channel
+   */
+  void setQualityFlag(const uint flag) { this->flag_ = flag; };
+
+  /// Get the channel data quality flag
+
+  float getQualityFlag() const { return flag_; }
 
   /**
    * Store charges of all time samples
@@ -76,6 +102,27 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   std::vector<float> getQ() const { return qs_; }  
 
   /**
+   * Store charge quantization errors of all time samples
+   * @param qErr_ array of quantization errors
+   */
+  void setQError(const std::vector<float> qErr) { qErrs_ = qErr; }
+
+  /**
+   * Get charges of all time samples
+   */
+  std::vector<float> getQError() const { return qErrs_; }  
+
+  /**
+   * Set channel (linearized, charge-equiv) average charge 
+   *             
+   * @param totQ The (time sample) average charge of the channel
+   */
+  void setTotQ(const float totQ) { totQ_ = totQ; };
+
+  /// Get the channel totQ
+  float getTotQ() const { return totQ_; }
+
+  /**
    * Set channel (linearized, charge-equiv) average charge 
    *             
    * @param avgQ The (time sample) average charge of the channel
@@ -84,7 +131,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the channel avgQ
 
-  int getAvgQ() const { return avgQ_; }
+  float getAvgQ() const { return avgQ_; }
 
     /**
    * Set channel (linearized, charge-equiv) minimum charge 
@@ -95,7 +142,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the channel minQ
 
-  int getMinQ() const { return minQ_; }
+  float getMinQ() const { return minQ_; }
 
     /**
    * Set channel (linearized, charge-equiv) maximum charge 
@@ -106,7 +153,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the channel maxQ
 
-  int getMaxQ() const { return maxQ_; }
+  float getMaxQ() const { return maxQ_; }
 
     /**
    * Set channel (linearized, charge-equiv) median charge 
@@ -117,7 +164,30 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
 
   /// Get the channel medQ
 
-  int getMedQ() const { return medQ_; }
+  float getMedQ() const { return medQ_; }
+
+  
+    /**
+   * Set channel readout itme offset (in units of samples)
+   *             
+   * @param timeOffset The (time sample) offset in channel readout 
+   */
+  void setTimeOffset(const int timeOffset) { timeOffset_ = timeOffset; };
+
+  /// Get the channel timeOffset
+
+  int getTimeOffset() const { return timeOffset_; }
+
+    /**
+   * Set channel readout fiber number 
+   *             
+   * @param fiberNb The channel readout fiber number
+   */
+  void setFiberNb(const int fiberNb) { fiberNb_ = fiberNb; };
+
+  /// Get the channel fiberNb
+
+  int getFiberNb() const { return fiberNb_; }
 
   /**
    * A dummy operator overloading
@@ -130,17 +200,20 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
  private:
   /// analog to digital counts
   std::vector<float> qs_;
-  //  std::vector<int> adcs_;
-  //int chanID_;
+  std::vector<float> qErrs_;
 
   float pedestal_{-999.};
+  float earlyPedestal_{-999.};
   float noise_{-1.};
+  float totQ_{-999.};
   float avgQ_{-999.};
   float minQ_{-999.};
   float maxQ_{-999.};
   float medQ_{-999.};
+  int timeOffset_{0};
+  int fiberNb_{-1};
 
-
+  uint flag_{0};
   ClassDef(EventReadout, 1);
 
 };  // EventReadout
