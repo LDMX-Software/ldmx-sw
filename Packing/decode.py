@@ -23,7 +23,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('unpack')
 p.maxEvents = arg.max_events
-p.termLogLevel = 1
+p.termLogLevel = 0
 p.logFrequency = 1
 
 import LDMX.Hcal.hgcrocFormat as hcal_format
@@ -35,7 +35,10 @@ p.outputFiles = [arg.output_file]
 
 # where the ntuplizing tree will go
 import os
-p.histogramFile = f'{os.path.dirname(arg.output_file)}ntuple_{os.path.basename(arg.output_file)}'
+dirname = os.path.dirname(arg.output_file)
+if dirname is '' :
+    dirname = os.getcwd()
+p.histogramFile = f'{dirname}/ntuple_{os.path.basename(arg.output_file)}'
 
 if arg.wr is not None :
     p.sequence.append(
@@ -102,23 +105,14 @@ if arg.pf1 is not None :
 
 if arg.ts is not None :
     n_channels = 16
-    n_timesamples = 30
-    header_len = 4+4+4+3+1
     qie_decoder = ts_format.QIEDecoder.up(
-            os.environ['LDMX_BASE']+
-            '/ldmx-sw/TrigScint/data/'+
-            'channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt')
+            mapFile = os.environ['LDMX_BASE']+
+                '/ldmx-sw/TrigScint/data/'+
+                'channelMap_LYSOback_plasticFront_12-to-16channels_rotated180.txt',
+            dataFile = arg.ts)
     qie_decoder.number_channels = n_channels
-    qie_decoder.number_time_samples = n_timesamples
     qie_decoder.is_real_data = True
-    p.sequence.extend([
-        rawio.SingleSubsystemUnpacker(
-            raw_file = arg.ts,
-            output_name = 'QIEstreamUp',
-            detector_name = 'ldmx-hcal-prototype-v1.0',
-            num_bytes_per_event = 2*n_channels*n_timesamples + header_len
-            ),
-         qie_decoder,
+    p.sequence.extend([qie_decoder,
         dqm.NtuplizeTrigScintQIEDigis(
             input_name = 'decodedQIEUp'
             )
