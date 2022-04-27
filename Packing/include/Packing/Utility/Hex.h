@@ -16,9 +16,9 @@ namespace utility {
  */
 template <typename WordType>
 struct hex {
-  static const std::size_t width_{8 * sizeof(WordType)};
-  WordType& word_;
-  hex(WordType& w) : word_{w} {}
+  static const std::size_t width_{2 * sizeof(WordType)};
+  const WordType& word_;
+  hex(const WordType& w) : word_{w} {}
   friend inline std::ostream& operator<<(
       std::ostream& os, const packing::utility::hex<WordType>& h) {
     os << "0x" << std::setfill('0') << std::setw(h.width_) << std::hex
