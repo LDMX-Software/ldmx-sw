@@ -231,26 +231,30 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   }
 
 
-  /*
+  
   SECTION( "Testing HTTP loading" ) {
-      const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework
-  import ldmxcfg\nfrom LDMX.Conditions import
-  SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"test_table_http\",columns)\ncop.validForever(\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\")\n";
-
-      FILE* f=fopen("/tmp/test_cond.py","w");
-      fputs(cfg,f);
-      fclose(f);
-
-      framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
-      framework::ProcessHandle hp=cp.makeProcess();
-      ldmx::EventHeader cxt;
-      hp->setEventHeader(&cxt);
-
-      const IntegerTableCondition&
-  httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http");
-      matchesAll(httpTable,itable);
+    const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework "
+        "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
+        "p=ldmxcfg.Process(\"test\")\n"
+        "p.testMode=True\n"
+        "columns=[\"A\",\"Q\",\"V\"]\n"
+        "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_http\",columns)\n"
+        "cop.validForever(\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\")\n";
+    
+    FILE* f=fopen("/tmp/test_cond.py","w");
+    fputs(cfg,f);
+    fclose(f);
+    
+    framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
+    framework::ProcessHandle hp=cp.makeProcess();
+    ldmx::EventHeader cxt;
+    hp->setEventHeader(&cxt);
+    
+    const IntegerTableCondition&
+        httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http");
+    matchesAll(httpTable,itable);
   }
-  */
+  
 
   
 }
