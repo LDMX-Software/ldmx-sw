@@ -46,7 +46,7 @@ namespace conditions {
  * In any URL, envrironment variables in the format ${VARNAME} will be expanded.
  * In addition, there are some special 'environment' variables: 
  *  * ${LDMX_CONDITION_BASEURL} will be replaced with
- *  the parameter 'condition_baseurl' set in the python configuration.
+ *  the parameter 'conditions_baseURL' set in the python configuration.
  *  * ${LDMX_CONDITION_TAG} will be replaced with the
  *  tagname provided in the constructor.
  */
@@ -67,6 +67,9 @@ class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
   std::vector<std::string> columns_;
   std::string entriesURL_;
   std::string conditions_baseURL_;
+
+  void entriesFromPython(std::vector<framework::config::Parameters>&);
+  void entriesFromCSV();
 
   struct Entry {
     framework::ConditionsIOV iov_;
