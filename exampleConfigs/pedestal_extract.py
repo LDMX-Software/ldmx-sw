@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 
 parser.add_argument('input_file')
 parser.add_argument('--make_histos',action='store_true',help="Make channel-by-channel histogram files")
+parser.add_argument('--calib_file',required=True,help="Calibration output file")
 parser.add_argument('--max_events',default=10000,type=int)
 
 arg = parser.parse_args()
