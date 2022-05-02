@@ -122,7 +122,6 @@ SimpleCSVTableProvider::getCondition(const ldmx::EventHeader& context) {
                            framework::ConditionsIOV>(table, tabledef.iov_);
         }
       } else {
-        std::cout << "URL : " <<expurl<<std::endl;
         std::unique_ptr<std::istream> stream=urlstream(expurl);
         
         if (objectType_ == OBJ_int) {
