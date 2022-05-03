@@ -70,6 +70,10 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         Name of type of data stored in this table (e.g. "int" or "double")
     columns : list of str
         List of column names for this table
+    conditions_baseURL : str
+        Base location for URLs, filling the LDMX_CONDITION_BASEURL parameter inside any table's URL
+    entriesURL : str
+        URL to a CSV table mapping tables to specific intervals of validity.  Optional.
     """
 
     def __init__(self,objName,dataType, columns):
@@ -77,6 +81,8 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         self.dataType=dataType
         self.columns=columns
         self.entries=[]
+        self.conditions_baseURL=''
+        self.entriesURL=''
 
     def validForever(self, url):
         """Add an entry to this provider that is valid forever and for all run types (data or MC)

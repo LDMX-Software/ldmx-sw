@@ -23,11 +23,15 @@ SimpleCSVTableProvider::SimpleCSVTableProvider(
 
   conditions_baseURL_ = parameters.getParameter<std::string>("conditions_baseURL");
 
-  std::vector<framework::config::Parameters> plist =
-      parameters.getParameter<std::vector<framework::config::Parameters>>(
-          "entries");
-  if (!plist.empty()) entriesFromPython(plist);
-
+  if (parameters.exists("entries")) {
+    std::vector<framework::config::Parameters> plist =
+        parameters.getParameter<std::vector<framework::config::Parameters>>(
+            "entries");
+    if (!plist.empty()) entriesFromPython(plist);
+  }
+  
+  entriesURL_ = parameters.getParameter<std::string>("entriesURL");
+  if (!entriesURL_.empty()) entriesFromCSV();
 }
 
 void SimpleCSVTableProvider::entriesFromPython(std::vector<framework::config::Parameters>& plist) {
