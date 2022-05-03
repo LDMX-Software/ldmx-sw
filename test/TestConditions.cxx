@@ -256,6 +256,33 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
   }
   
 
+  SECTION("Testing CSV metatable") {
+    
+    const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework "
+        "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
+        "p=ldmxcfg.Process(\"test\")\n"
+        "p.testMode=True\n"
+        "columns=[\"PEDESTAL_ADC\"]\n"
+        "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_pedestals\",columns)\n"
+        "cop.conditions_baseURL='http://webusers.physics.umn.edu/~jmmans/ldmx/condtest/'\n"
+        "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
+    
+    FILE* f=fopen("/tmp/test_cond.py","w");
+    fputs(cfg,f);
+    fclose(f);
+    
+    framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
+    framework::ProcessHandle hp=cp.makeProcess();
+    ldmx::EventHeader cxt;
+
+    cxt.setRun(128);
+    hp->setEventHeader(&cxt);
+    
+    const DoubleTableCondition&
+        httpTable=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+    
+    
+  }
   
 }
 
