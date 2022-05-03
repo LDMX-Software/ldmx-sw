@@ -35,7 +35,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
     } else {
       int wstatus;
       int wrv = waitpid(apid, &wstatus, 0);
-      std::cout << "EXITED: " << WIFEXITED(wstatus) << " STATUS: " << WEXITSTATUS(wstatus) << std::endl;
+      //      std::cout << "EXITED: " << WIFEXITED(wstatus) << " STATUS: " << WEXITSTATUS(wstatus) << std::endl;
       if (WIFEXITED(wstatus)!=1 || WEXITSTATUS(wstatus)!=0) {
         EXCEPTION_RAISE("ConditionsException",
                         "Wget error "+std::to_string(WEXITSTATUS(wstatus))+ " retreiving URL '" + url + "'");
