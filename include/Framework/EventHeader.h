@@ -100,6 +100,14 @@ class EventHeader {
    * @return True if this is a real data event.
    */
   bool isRealData() const { return isRealData_; }
+  
+  /**
+   * set whether this event is real or MC data
+   * @param[in] yes True if this event is real data
+   */
+  void setRealData(bool yes = true) {
+    isRealData_ = yes;
+  }
 
   /**
    * Set the event number.
