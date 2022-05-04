@@ -104,13 +104,14 @@ void SimpleCSVTableProvider::entriesFromCSV() {
   }
   // ok, we're good on that...
   do {
-    bool valid_for_data=!strcasecmp("MC",loader.get("RUNTYPE").c_str());
-    bool valid_for_mc=!strcasecmp("DATA",loader.get("RUNTYPE").c_str());
+    bool valid_for_data=strcasecmp("MC",loader.get("RUNTYPE").c_str());
+    bool valid_for_mc=strcasecmp("DATA",loader.get("RUNTYPE").c_str());
     int firstRun=loader.getInteger("FIRST_RUN");
     int lastRun=loader.getInteger("LAST_RUN");
     Entry e;
     e.iov_=framework::ConditionsIOV(firstRun,lastRun,valid_for_data,valid_for_mc);
     e.url_=loader.get("URL");
+    //    std::cout << valid_for_data << " " << valid_for_mc << " " << e.url_ << std::endl;
     entries_.push_back(e);    
   } while (loader.nextRow());
 
