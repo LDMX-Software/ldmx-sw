@@ -7,6 +7,7 @@
 #include "Conditions/SimpleTableCondition.h"
 #include "Conditions/SimpleTableStreamers.h"
 #include "Conditions/GeneralCSVLoader.h"
+#include "Conditions/URLStreamer.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/ConfigurePython.h"
@@ -275,12 +276,41 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     framework::ProcessHandle hp=cp.makeProcess();
     ldmx::EventHeader cxt;
 
-    cxt.setRun(128);
     hp->setEventHeader(&cxt);
+
+    unsigned int http_requests[2], http_failures[2];
+
+    conditions::urlstatistics(http_requests[0],http_failures[0]);
+    
+    cxt.setRun(128);
+    
+    const DoubleTableCondition& httpTable128=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+
+    hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+
+    conditions::urlstatistics(http_requests[1],http_failures[1]);
+    REQUIRE(((http_requests[1]-http_requests[0])==1 && (http_failures[1]-http_failures[0])==0));
+    
+    cxt.setRun(129);
+
+    hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+
+    conditions::urlstatistics(http_requests[1],http_failures[1]);
+    REQUIRE(((http_requests[1]-http_requests[0])==1 && (http_failures[1]-http_failures[0])==0));
+        
+    cxt.setRun(140);
     
     const DoubleTableCondition&
-        httpTable=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+        httpTable140=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+
+    conditions::urlstatistics(http_requests[1],http_failures[1]);
+    REQUIRE(((http_requests[1]-http_requests[0])==2 && (http_failures[1]-http_failures[0])==0));
     
+    cxt.setRun(10);
+
+    REQUIRE_THROWS(
+        hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals")
+                   );
     
   }
   
