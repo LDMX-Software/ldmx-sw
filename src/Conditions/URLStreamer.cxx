@@ -10,6 +10,15 @@
 
 namespace conditions {
 
+static unsigned int http_requests_=0;
+static unsigned int http_failures_=0;
+
+void urlstatistics(unsigned int& http_requests, unsigned int& http_failures) {
+  http_requests=http_requests_;
+  http_failures=http_failures_;
+}
+
+
 std::unique_ptr<std::istream> urlstream(const std::string& url) {
   if (url.find("file://")==0 || url.length()>0 && url[0]=='/') {
     std::string fname=url;
@@ -25,6 +34,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
   if ((url.find("http://") != std::string::npos) ||
       (url.find("https://") != std::string::npos)) {
 
+    http_requests_++;
     // this implementation uses wget to handle the SSL processes
     static int istream = 0;
     char fname[250];
@@ -37,6 +47,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
       int wrv = waitpid(apid, &wstatus, 0);
       //      std::cout << "EXITED: " << WIFEXITED(wstatus) << " STATUS: " << WEXITSTATUS(wstatus) << std::endl;
       if (WIFEXITED(wstatus)!=1 || WEXITSTATUS(wstatus)!=0) {
+        http_failures_++;
         EXCEPTION_RAISE("ConditionsException",
                         "Wget error "+std::to_string(WEXITSTATUS(wstatus))+ " retreiving URL '" + url + "'");
         
@@ -44,6 +55,7 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
     }
     std::ifstream ib(fname);
     if (ib.bad()) {
+      http_failures_++;
       EXCEPTION_RAISE("ConditionsException",
                         "Bad/empty file retreiving URL '" + url + "'");
     }
