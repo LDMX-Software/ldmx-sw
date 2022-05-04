@@ -232,7 +232,7 @@ class EventHeader {
   /**
    * ROOT class definition.
    */
-  ClassDef(EventHeader, 1);
+  ClassDef(EventHeader, 2);
 };
 
 }  // namespace ldmx
