@@ -39,10 +39,10 @@ p.sequence = [
         hcal_format.HcalRawDecoder(
             input_file = arg.input_file,
             connections_table = tbl,
-            output_name = 'ChipSettingsTestDigis'
+            output_name = 'polarfireDigis'
             ),
         hcal_ana.HcalPedestalAnalyzer(
-            input_name = 'ChipSettingsTestDigis',
+            input_name = 'polarfireDigis',
             output_file = arg.calib_file,
             make_histos = arg.make_histos,
             comments = "Source file "+arg.input_file
