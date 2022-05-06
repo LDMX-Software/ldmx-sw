@@ -1,0 +1,63 @@
+<!-- detector version -->
+<auxiliary auxtype="DetectorVersion" auxvalue="0">
+  <auxiliary auxtype="DetectorName" auxvalue="ldmx-hcal-prototype-v2.0"/>
+  <auxiliary auxtype="Author" auxvalue="Peter Gyorgy, Einar Elen, Ruth Poettgen"/>
+  <auxiliary auxtype="Description" auxvalue="The HCal prototype geometry used for the spring 2022 CERN testbeam."/>
+</auxiliary>
+
+
+<!-- define sensitive detectors -->
+
+<auxiliary auxtype="SensDet" auxvalue="HcalSD">
+  <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
+  <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
+  <auxiliary auxtype="SubdetID" auxvalue="7"/>
+  <auxiliary auxtype="Verbose" auxvalue="0"/>
+</auxiliary>
+
+<auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD">
+  <auxiliary auxtype="SensDetType" auxvalue="TrigScintSD"/>
+  <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadUpSimHits"/>
+  <auxiliary auxtype="SubdetID" auxvalue="2"/>
+  <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+  <auxiliary auxtype="Verbose" auxvalue="0"/>
+</auxiliary> 
+
+<!-- define regions -->
+<auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+  <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+</auxiliary>
+
+<!-- define vis attributes -->
+<auxiliary auxtype="VisAttributes" auxvalue="HcalVis">
+  <auxiliary auxtype="R" auxvalue="0.6"/>
+  <auxiliary auxtype="G" auxvalue="0.3"/>
+  <auxiliary auxtype="B" auxvalue="0.0"/>
+  <auxiliary auxtype="A" auxvalue="1.0"/>
+  <auxiliary auxtype="Style" auxvalue="wireframe"/>
+  <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+  <auxiliary auxtype="Visible" auxvalue="true"/>
+  <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+</auxiliary>
+
+<auxiliary auxtype="VisAttributes" auxvalue="TriggerVis">
+  <auxiliary auxtype="R" auxvalue="0.6"/>
+  <auxiliary auxtype="G" auxvalue="0.3"/>
+  <auxiliary auxtype="B" auxvalue="0.0"/>
+  <auxiliary auxtype="A" auxvalue="1.0"/>
+  <auxiliary auxtype="Style" auxvalue="wireframe"/>
+  <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+  <auxiliary auxtype="Visible" auxvalue="true"/>
+  <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+</auxiliary>
+
+<auxiliary auxtype="VisAttributes" auxvalue="FrameVis">
+  <auxiliary auxtype="R" auxvalue="0.6"/>
+  <auxiliary auxtype="G" auxvalue="0.3"/>
+  <auxiliary auxtype="B" auxvalue="0.0"/>
+  <auxiliary auxtype="A" auxvalue="1.0"/>
+  <auxiliary auxtype="Style" auxvalue="wireframe"/>
+  <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+  <auxiliary auxtype="Visible" auxvalue="true"/>
+  <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+</auxiliary>
