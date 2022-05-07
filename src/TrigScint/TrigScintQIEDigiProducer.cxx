@@ -97,7 +97,7 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   for (const auto& simHit : simHits) {
     ldmx::TrigScintID id(simHit.getID());
 
-    ldmx_log(info) << "Processing sim hit with bar ID: " << id.bar();
+    ldmx_log(debug) << "Processing sim hit with bar ID: " << id.bar();
 
     // Simulating the noise corresponding to uncertainity in
     // detecting scintillating photons.
