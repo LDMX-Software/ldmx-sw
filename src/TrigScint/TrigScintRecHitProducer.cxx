@@ -55,6 +55,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
+	//leave amplitude as sum of the first two 
     hit.setAmplitude(qie.ADC2Q(adc[sample_of_interest_]) +
                      qie.ADC2Q(adc[sample_of_interest_+1]));  // femptocoulombs
 
@@ -63,12 +64,15 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     else
       hit.setTime(tdc[sample_of_interest_] * 0.5);
 
-    hit.setEnergy((qie.ADC2Q(adc[sample_of_interest_])+
-		   qie.ADC2Q(adc[sample_of_interest_+1])-pedestal_)
-		  *6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
-    hit.setPE((qie.ADC2Q(adc[sample_of_interest_])+
-	       qie.ADC2Q(adc[sample_of_interest_+1]) - pedestal_)
-	      *6250. / gain_);
+	float integratedCharge=0;
+	//integrate pulse over all time samples. will subtract pedestal next
+	for (const auto &adcVal : adc ) {
+	  integratedCharge+=qie.ADC2Q(adcVal);
+	}
+	uint nSamp=adc.size();
+	float pedSubtrQ=integratedCharge-nSamp*pedestal_;
+    hit.setEnergy(pedSubtrQ*6250./gain_ *mevPerMip_/pePerMip_);  // MeV
+    hit.setPE(pedSubtrQ*6250./gain_);
     trigScintHits.push_back(hit);
   }
   // Create the container to hold the
