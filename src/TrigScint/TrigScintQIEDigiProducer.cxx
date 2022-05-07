@@ -36,7 +36,8 @@ void TrigScintQIEDigiProducer::configure(
   elec_noise_ = parameters.getParameter<double>("elec_noise");
   sipm_gain_ = parameters.getParameter<double>("sipm_gain");
   s_freq_ = parameters.getParameter<double>("qie_sf");
-
+  zeroSuppCut_ = parameters.getParameter<double>("zeroSupp_in_pe");
+  
   if (input_pulse_shape_ == "Expo") {
     pulse_params_.clear();
     pulse_params_.push_back(parameters.getParameter<double>("expo_k"));
@@ -54,7 +55,9 @@ void TrigScintQIEDigiProducer::configure(
   ldmx_log(debug) << "pedestal =" << pedestal_;
   ldmx_log(debug) << "elec_noise =" << elec_noise_;
   ldmx_log(debug) << "sipm_gain =" << sipm_gain_;
-  ldmx_log(debug) << "s_freq =" << s_freq_;
+  ldmx_log(debug) << "qie_sf =" << s_freq_;
+  ldmx_log(debug) << "zeroSupp_in_pe =" << zeroSuppCut_;
+
 }
 
 void TrigScintQIEDigiProducer::produce(framework::Event& event) {
@@ -131,7 +134,7 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
     }
 
     // Storing the "good" digis
-    if (smq_->PulseCut(ex[bar_id])) {
+    if (smq_->PulseCut(ex[bar_id], zeroSuppCut_)) {
       trigscint::TrigScintQIEDigis QIEInfo;
 
       QIEInfo.setChanID(bar_id);
