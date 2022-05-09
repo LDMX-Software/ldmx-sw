@@ -9,14 +9,15 @@ class HcalRawDecoder(Producer) :
     """
 
     def __init__(self, output_name, roc_version = 2, 
-            input_name = None, input_pass = '',
+            input_names = None, input_pass = '',
             input_file = None, connections_table = None, 
             detector_name = 'ldmx-hcal-prototype-v1.0') :
         super().__init__('hcalrawdecode','hcal::HcalRawDecoder','Hcal')
 
-        if input_name is not None :
+        if input_names is not None :
             self.read_from_file = False
-            self.input_name = input_name
+            self.input_file = ''
+            self.input_names = input_names
         elif input_file is not None :
             self.read_from_file = True
             self.input_name = input_file

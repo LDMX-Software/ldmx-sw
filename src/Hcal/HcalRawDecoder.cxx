@@ -536,7 +536,7 @@ class HcalRawDecoder : public framework::Producer {
 
  private:
   /// input object of encoded data
-  std::string input_name_;
+  std::vector<std::string> input_names_;
   /// input pass of creating encoded data
   std::string input_pass_;
   /// output object to put onto event bus
@@ -555,7 +555,7 @@ class HcalRawDecoder : public framework::Producer {
 };
 
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
-  input_name_ = ps.getParameter<std::string>("input_name");
+  input_names_ = ps.getParameter<std::vector<std::string>>("input_names",{});
   input_pass_ = ps.getParameter<std::string>("input_pass");
   output_name_ = ps.getParameter<std::string>("output_name");
   roc_version_ = ps.getParameter<int>("roc_version");
@@ -564,7 +564,7 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   detector_name_ = ps.getParameter<std::string>("detector_name");
 
   if (read_from_file_) {
-    file_reader_.open(input_name_);
+    file_reader_.open(ps.getParameter<std::string>("input_file"));
   } 
 }
 
@@ -585,8 +585,13 @@ void HcalRawDecoder::produce(framework::Event& event) {
     if (!file_reader_ or file_reader_.eof()) return;
     eid_to_samples = this->read(file_reader_,eh);
   } else {
-    hcal::utility::Reader bus_reader(event.getCollection<uint8_t>(input_name_, input_pass_));
-    eid_to_samples = this->read(bus_reader,eh);
+    for (const auto& name : input_names_) {
+      hcal::utility::Reader bus_reader(event.getCollection<uint8_t>(name, input_pass_));
+      auto single_pf_samples = this->read(bus_reader,eh);
+      for (const auto& [id, samples] : single_pf_samples) {
+        eid_to_samples[id] = samples;
+      }
+    }
   }
   
   eh.board(event, output_name_);
