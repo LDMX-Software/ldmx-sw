@@ -121,6 +121,7 @@ if arg.hcal is not None :
         ])
 
 if arg.ts is not None :
+    p.inputFiles = [arg.ts]
     n_channels = 16
     n_timesamples = 30
     header_len = 4+4+4+3+1
@@ -131,14 +132,9 @@ if arg.ts is not None :
     qie_decoder.number_channels = n_channels
     qie_decoder.number_time_samples = n_timesamples
     qie_decoder.is_real_data = True
+    qie_decoder.input_collection = 'TrigScintRaw'
     p.sequence.extend([
-        rawio.SingleSubsystemUnpacker(
-            raw_file = arg.ts,
-            output_name = 'QIEstreamUp',
-            detector_name = 'ldmx-hcal-prototype-v1.0',
-            num_bytes_per_event = 2*n_channels*n_timesamples + header_len
-            ),
-         qie_decoder,
+        qie_decoder,
         dqm.NtuplizeTrigScintQIEDigis(
             input_name = 'decodedQIEUp'
             )
