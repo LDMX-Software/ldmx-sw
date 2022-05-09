@@ -109,6 +109,7 @@ if arg.hcal is not None :
     p.inputFiles = [arg.hcal]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
+            connections_table = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv',
             input_names = ['Polarfire0Raw','Polarfire1Raw'],
             input_pass = 'raw',
             output_name = 'HcalDigis'
