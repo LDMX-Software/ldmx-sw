@@ -141,6 +141,10 @@ std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
     j++;
   }
   if (j < s.size()) retval.append(s, j);
+  // prepend base URL if no URL provided
+  if (retval.find("://") == std::string::npos) {
+    retval = conditions_baseURL_ + retval;
+  }
   //	std::cout << s << "=>" << retval << std::endl;
   return retval;
 }
