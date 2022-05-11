@@ -1,17 +1,14 @@
 
 #include "Biasing/Utility/StepPrinter.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4Step.hh"
 
 namespace biasing {
 namespace utility {
 
-StepPrinter::StepPrinter(const std::string& name, framework::config::Parameters& parameters)
-    : simcore::UserAction(name, parameters) {
-  trackID_ = parameters.getParameter<int>("track_id");
+StepPrinter::StepPrinter(const std::string& name, fire::config::Parameters& parameters)
+    : g4fire::UserAction(name, parameters) {
+  track_id_ = parameters.get<int>("track_id");
 }
 
 StepPrinter::~StepPrinter() {}
@@ -20,8 +17,8 @@ void StepPrinter::stepping(const G4Step* step) {
   // Get the track associated with this step
   auto track{step->GetTrack()};
 
-  if (auto trackID{track->GetTrackID()};
-      (trackID_ > 0) && (trackID != trackID_))
+  if (auto track_id{track->GetTrackID()};
+      (track_id_ > 0) && (track_id != track_id_))
     return;
 
   // Get the particle name.
