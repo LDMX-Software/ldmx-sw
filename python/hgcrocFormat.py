@@ -20,10 +20,11 @@ class HcalRawDecoder(Producer) :
             self.input_names = input_names
         elif input_file is not None :
             self.read_from_file = True
-            self.input_name = input_file
+            self.input_file = input_file
+            self.input_names = ['']
         else :
             raise Exception("Must read from event bus or input file.")
-            
+
         self.input_pass = input_pass # only used when reading from event bus
         self.output_name = output_name
         self.roc_version = roc_version
