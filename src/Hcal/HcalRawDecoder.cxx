@@ -535,6 +535,8 @@ class HcalRawDecoder : public framework::Producer {
   }
 
  private:
+  /// input file of encoded data
+  std::string input_file_;
   /// input object of encoded data
   std::vector<std::string> input_names_;
   /// input pass of creating encoded data
@@ -555,6 +557,7 @@ class HcalRawDecoder : public framework::Producer {
 };
 
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
+  input_file_ = ps.getParameter<std::string>("input_file");
   input_names_ = ps.getParameter<std::vector<std::string>>("input_names",{});
   input_pass_ = ps.getParameter<std::string>("input_pass");
   output_name_ = ps.getParameter<std::string>("output_name");
@@ -562,9 +565,8 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   translate_eid_ = ps.getParameter<bool>("translate_eid");
   read_from_file_ = ps.getParameter<bool>("read_from_file");
   detector_name_ = ps.getParameter<std::string>("detector_name");
-
   if (read_from_file_) {
-    file_reader_.open(ps.getParameter<std::string>("input_file"));
+    file_reader_.open(input_file_);
   } 
 }
 
