@@ -14,38 +14,24 @@ namespace hcal {
  * the hardcoded numbers match the imported columns
  * during construction.
  */
-class HcalReconConditions {
+class HcalReconConditions : public framework::ConditionsObject {
  public:
   /// the name of the HcalReconConditions table (must match python registration
   /// name)
   static const std::string CONDITIONS_NAME;
-  /// column index for ADC pedestal
-  static const unsigned int IADC_PEDESTAL = 0;
-  /// column index for ADC threshold
-  static const unsigned int IADC_GAIN = 1;
-  /// column index for TOT pedestal
-  static const unsigned int ITOT_PEDESTAL = 2;
-  /// column index for TOT gain
-  static const unsigned int ITOT_GAIN = 3;
-  /// expected order of column names matching the above indices (must match the
-  /// indices above)
-  static const std::vector<std::string> EXPECTED_COLUMNS;
 
   /**
-   * Constructor
+   * Provide the necessary tables to hold in one conditions object
    *
-   * Assign the conditions table to use and (if validate is true),
-   * check if the hard-coded column indices correctly match
-   * the table that is passed.
-   *
-   * @raises Exception if any of the column names from the passed table
-   * do not match the hardcoded indices.
-   *
-   * @param[in] table double table of reconstruction conditions
-   * @param[in] validate true if you want to check the columns
+   * @param[in] adc_ped double table of ADC pedestals
+   * @param[in] adc_gain double table of ADC gains
+   * @param[in] tot_ped double table of TOT pedestals
+   * @param[in] tot_gain double table of TOT gains
    */
-  HcalReconConditions(const conditions::DoubleTableCondition& table,
-                      bool validate = true);
+  HcalReconConditions(const conditions::DoubleTableCondition& adc_ped, 
+      const conditions::DoubleTableCondition& adc_gain,
+      const conditions::DoubleTableCondition& tot_ped,
+      const conditions::DoubleTableCondition& tot_gain);
 
   /**
    * get the ADC pedestal
@@ -54,7 +40,7 @@ class HcalReconConditions {
    * @returns the ADC pedestal for that chip in counts
    */
   double adcPedestal(const ldmx::HcalDigiID& id) const {
-    return the_table_.get(id.raw(), IADC_PEDESTAL);
+    return adc_pedestals_.get(id.raw(), IADC_PEDESTAL);
   }
 
   /**
@@ -68,7 +54,7 @@ class HcalReconConditions {
    * @returns the ADC threshold for that chip in fC/counts
    */
   double adcGain(const ldmx::HcalDigiID& id) const {
-    return the_table_.get(id.raw(), IADC_GAIN);
+    return adc_gains_.get(id.raw(), IADC_GAIN);
   }
 
   /**
@@ -78,7 +64,7 @@ class HcalReconConditions {
    * @returns the TOT pedestal for that chip in counts
    */
   double totPedestal(const ldmx::HcalDigiID& id) const {
-    return the_table_.get(id.raw(), ITOT_PEDESTAL);
+    return tot_pedestals_.get(id.raw(), ITOT_PEDESTAL);
   }
 
   /**
@@ -92,12 +78,18 @@ class HcalReconConditions {
    * @returns the TOT gain for that chip in fC/counts
    */
   double totGain(const ldmx::HcalDigiID& id) const {
-    return the_table_.get(id.raw(), ITOT_GAIN);
+    return tot_gains_.get(id.raw(), ITOT_GAIN);
   }
 
  private:
-  /// reference to the table of conditions storing the chip conditions
-  const conditions::DoubleTableCondition& the_table_;
+  /// reference to the table of conditions storing the adc pedestals
+  const conditions::DoubleTableCondition& adc_pedestals_;
+  /// reference to the table of conditions storing the adc gains
+  const conditions::DoubleTableCondition& adc_gains_;
+  /// reference to the table of conditions storing the tot pedestals
+  const conditions::DoubleTableCondition& tot_pedestals_;
+  /// reference to the table of conditions storing the tot gains
+  const conditions::DoubleTableCondition& tot_gains_;
 };  // HcalReconConditions
 
 }  // namespace hcal
