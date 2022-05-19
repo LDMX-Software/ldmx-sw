@@ -25,6 +25,11 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
         provider for the HCal TOT pedestals
     tot_gain : framework::ConditionsObjectProvider
         provider for the HCal TOT gains
+
+    Examples
+    --------
+    The hcal_hardcoded_conditions.py file provides a working example where each condition
+    wrapped here are constant for all runs and all channels.
     """
 
     def __init__(self,adc_ped,adc_gain,tot_ped,tot_gain) :
