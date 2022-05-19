@@ -8,11 +8,11 @@
 namespace hcal {
 
 /**
- * Class to wrap around an double table of conditions.
+ * Class to wrap around the various recon condition tables
  *
- * This hardcodes the column numbers and checks that
- * the hardcoded numbers match the imported columns
- * during construction.
+ * We expect all of the condition tables to only have two columns
+ * (the DetID and the condition itself) so that the column number
+ * for getting a value from any of them is zero.
  */
 class HcalReconConditions : public framework::ConditionsObject {
  public:
