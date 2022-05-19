@@ -17,15 +17,40 @@ HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should ma
                                                  10000,  # TOT_THRESHOLD -- rather large value...
                                                  2.5 ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
                                                )
+from LDMX.Framework import ldmxcfg
 
-HcalReconConditionsHardcode=SimpleCSVDoubleTableProvider("HcalReconConditions",["ADC_PEDESTAL","ADC_GAIN","TOT_PEDESTAL","TOT_GAIN"])
+class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
+    def __init__(self,adc_ped,adc_gain,tot_ped,tot_gain) :
+        super().__init__("HcalReconConditions","hcal::HcalReconConditionsProvider","Hcal")
 
-HcalReconConditionsHardcode.validForAllRows([
-    1. , #ADC_PEDESTAL - should match HgcrocEmulator
-    1.2, #ADC_GAIN - 4 ADCS per PE - maxADCRange/readoutPadCapacitance/1024
-    1 , #TOT_PEDESTAL - dummy value since TOT is not implemented
-    2.5, #TOT_GAIN - dummy value - conversion to estimated charge deposited in TOT mode
-    ])
+        def extract_obj_name(co) :
+            """If it is a COP, then get the obj name, otherwise return itself"""
+
+            if isinstance(co,ldmxcfg.ConditionsObjectProvider) :
+                return co.objectName
+            else :
+                return co
+
+        self.adc_ped = extract_obj_name(adc_ped)
+        self.adc_gain = extract_obj_name(adc_gain)
+        self.tot_ped = extract_obj_name(tot_ped)
+        self.tot_gain = extract_obj_name(tot_gain)
+
+
+adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["pedestal"])
+adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
+
+adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
+adc_gain.validForAllRows([1.2]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+
+tot_pedestal = SimpleCSVDoubleTableProvider("hcal_tot_pedestal",["pedestal"])
+tot_pedestal.validForAllRows([1.]) # dummy value since TOT is not implemented
+
+tot_gain = SimpleCSVDoubleTableProvider("hcal_tot_gain",["gain"])
+tot_gain.validForAllRows([2.5]) # dummy value - conversion to estimated charge deposited in TOT mode
+
+# wrap our tables in the parent object that is used by the processors
+HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_pedestal, tot_gain)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
             "PEDESTAL",

@@ -16,8 +16,8 @@ namespace hcal {
  */
 class HcalReconConditions : public framework::ConditionsObject {
  public:
-  /// the name of the HcalReconConditions table (must match python registration
-  /// name)
+  /// the name of the HcalReconConditions table 
+  /// (must match python registration name)
   static const std::string CONDITIONS_NAME;
 
   /**
@@ -40,7 +40,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @returns the ADC pedestal for that chip in counts
    */
   double adcPedestal(const ldmx::HcalDigiID& id) const {
-    return adc_pedestals_.get(id.raw(), IADC_PEDESTAL);
+    return adc_pedestals_.get(id.raw(), 0);
   }
 
   /**
@@ -54,7 +54,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @returns the ADC threshold for that chip in fC/counts
    */
   double adcGain(const ldmx::HcalDigiID& id) const {
-    return adc_gains_.get(id.raw(), IADC_GAIN);
+    return adc_gains_.get(id.raw(), 0);
   }
 
   /**
@@ -64,7 +64,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @returns the TOT pedestal for that chip in counts
    */
   double totPedestal(const ldmx::HcalDigiID& id) const {
-    return tot_pedestals_.get(id.raw(), ITOT_PEDESTAL);
+    return tot_pedestals_.get(id.raw(), 0);
   }
 
   /**
@@ -78,7 +78,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @returns the TOT gain for that chip in fC/counts
    */
   double totGain(const ldmx::HcalDigiID& id) const {
-    return tot_gains_.get(id.raw(), ITOT_GAIN);
+    return tot_gains_.get(id.raw(), 0);
   }
 
  private:
