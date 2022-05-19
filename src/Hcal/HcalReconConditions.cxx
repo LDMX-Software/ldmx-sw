@@ -1,6 +1,7 @@
 #include "Hcal/HcalReconConditions.h"
 
 #include "Framework/ConditionsObjectProvider.h"
+#include "Framework/EventHeader.h"
 
 namespace hcal {
 
@@ -21,8 +22,8 @@ HcalReconConditions::HcalReconConditions(const conditions::DoubleTableCondition&
  * the parent conditions to make sure that it is updated as soon as it needs
  * to be updated.
  *
- * @TODO Right now, no minimum IOV calculation is being done. We are just using
- * the IOV of the ADC pedestals table.
+ * @TODO Right now, no minimum IOV calculation is being done. We just have
+ * our IOV be one run at a time.
  */
 class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
   /// name of condition object for hcal adc gains
@@ -64,6 +65,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
    * Get the wrapped condition
    *
    * This is where we deduce the "minimum" IOV.
+   * @note Right now, we just have the IOV go one run at a time.
    *
    * @note Expects the parent condition tables to all be conditions::DoubleTableCondition
    *
@@ -71,13 +73,17 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
    */
   virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) final override {
+    // requestParentCondition does check current context for validity 
+    // to avoid extra constructions
     auto [ adc_gain_co, adc_gain_iov ] = requestParentCondition(adc_gain_, context);
     auto [ adc_ped_co , adc_ped_iov  ] = requestParentCondition(adc_ped_ , context);
     auto [ tot_gain_co, tot_gain_iov ] = requestParentCondition(tot_gain_, context);
     auto [ tot_ped_co , tot_ped_iov  ] = requestParentCondition(tot_ped_ , context);
     
     // deduce "minimum" IOV
+    //  Framework #56 : https://github.com/LDMX-Software/Framework/issues/56
     auto min_iov = adc_ped_iov;
+    // use std::move(min_iov) in return statement below
     
     // wrap
     framework::ConditionsObject* co = new hcal::HcalReconConditions(
@@ -87,7 +93,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
         dynamic_cast<const conditions::DoubleTableCondition&>(*tot_gain_co)
         );
 
-    return { co , std::move(min_iov) };
+    return { co , framework::ConditionsIOV(context.getRun(),context.getRun()) };
   }
 };
 
