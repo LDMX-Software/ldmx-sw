@@ -114,9 +114,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // get the reconstruction parameters
-  HcalReconConditions the_conditions(
-      getCondition<conditions::DoubleTableCondition>(
-          HcalReconConditions::CONDITIONS_NAME));
+  const auto& the_conditions{getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
   std::vector<ldmx::HcalHit> hcalRecHits;
   auto hcalDigis =
