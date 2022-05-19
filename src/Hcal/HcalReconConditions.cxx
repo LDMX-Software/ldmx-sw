@@ -14,20 +14,61 @@ HcalReconConditions::HcalReconConditions(const conditions::DoubleTableCondition&
     adc_pedestals_{adc_ped}, adc_gains_{adc_gain},
     tot_pedestals_{tot_ped}, tot_gains_{tot_gain} {}
 
+/**
+ * a helpful interface for grabbing the parent conditions at once
+ *
+ * the most complicated task it does is calculate the "minimum" IOV from 
+ * the parent conditions to make sure that it is updated as soon as it needs
+ * to be updated.
+ *
+ * @TODO Right now, no minimum IOV calculation is being done. We are just using
+ * the IOV of the ADC pedestals table.
+ */
 class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
-  std::string adc_gain_, adc_ped_, tot_gain_, tot_ped_;
+  /// name of condition object for hcal adc gains
+  std::string adc_gain_;
+  /// name of condition object for hcal adc pedestals
+  std::string adc_ped_;
+  /// name of condition object for hcal tot gains
+  std::string tot_gain_;
+  /// name of condition object for hcal tot pedestals
+  std::string tot_ped_;
  public:
+  /**
+   * Retrieve the name of the parent conditions from the configuration
+   *
+   * @throw Exception if name is not what it should be
+   *
+   * @param[in] name  should be HcalReconConditions::CONDITIONS_NAME
+   * @param[in] tagname
+   * @param[in] parameters python configuration parameters
+   * @param[in] proc handle to current process
+   */
   HcalReconConditionsProvider(const std::string& name, const std::string& tagname,
                               const framework::config::Parameters& parameters,
                               framework::Process& proc)
     : ConditionsObjectProvider(hcal::HcalReconConditions::CONDITIONS_NAME,
                                tagname, parameters, proc) {
+      if (name != HcalReconConditions::CONDITIONS_NAME) {
+        EXCEPTION_RAISE("BadConfig",
+            "The name provided to HcalReconConditionsProvider "+name
+            +" is not equal to the expected name "+HcalReconConditions::CONDITIONS_NAME);
+      }
       adc_gain_ = parameters.getParameter<std::string>("adc_gain");
       adc_ped_ = parameters.getParameter<std::string>("adc_ped");
       tot_gain_ = parameters.getParameter<std::string>("tot_gain");
       tot_ped_ = parameters.getParameter<std::string>("tot_ped");
     }
 
+  /**
+   * Get the wrapped condition
+   *
+   * This is where we deduce the "minimum" IOV.
+   *
+   * @note Expects the parent condition tables to all be conditions::DoubleTableCondition
+   *
+   * @see requestParentCondition for how we get the parent condition tables
+   */
   virtual std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) final override {
     auto [ adc_gain_co, adc_gain_iov ] = requestParentCondition(adc_gain_, context);
