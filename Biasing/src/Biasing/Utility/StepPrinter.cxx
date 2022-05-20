@@ -22,7 +22,7 @@ void StepPrinter::stepping(const G4Step* step) {
     return;
 
   // Get the particle name.
-  auto particleName{track->GetParticleDefinition()->GetParticleName()};
+  auto particle_name{track->GetParticleDefinition()->GetParticleName()};
 
   // Get the energy of the particle
   auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
@@ -31,20 +31,20 @@ void StepPrinter::stepping(const G4Step* step) {
   auto volume{track->GetVolume()->GetName()};
 
   // Get the next volume
-  auto nextVolume{track->GetNextVolume()->GetName()};
+  auto next_volume{"None"}; 
+  if (track->GetNextVolume() != nullptr) next_volume = track->GetNextVolume()->GetName(); 
 
   // Get the region
   auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-
-  std::cout << " Step " << track->GetCurrentStepNumber() << " {"
-            << " Energy: " << energy << " Track ID: " << track->GetTrackID()
-            << " Particle currently in: " << volume << " Region: " << region
-            << " Next volume: " << nextVolume
-            << " Weight: " << track->GetWeight() << " Children:";
-  for (auto const& track : *(step->GetSecondaryInCurrentStep()))
-    std::cout << " " << track->GetParticleDefinition()->GetPDGEncoding();
-
-  std::cout << " }" << std::endl;
+  
+  std::cout << " Step " << track->GetCurrentStepNumber() << " {\n"
+            << "\tEnergy: " << energy << "\n\tTrack ID: " << track->GetTrackID()
+            << "\n\tParticle currently in: " << volume << "\n\tRegion: " << region
+            << "\n\tNext volume: " << next_volume
+            << "\n\tWeight: " << track->GetWeight() << "\n\tSecondaries:";
+  for (auto const& sec : *(step->GetSecondary()))
+    std::cout << " " << sec->GetParticleDefinition()->GetPDGEncoding();
+  std::cout << "\n}" << std::endl; 
 }
 
 }  // namespace utility
