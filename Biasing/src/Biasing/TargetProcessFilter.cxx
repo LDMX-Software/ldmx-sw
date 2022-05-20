@@ -1,41 +1,26 @@
 
 #include "Biasing/TargetProcessFilter.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 #include "G4Track.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
-#include "Biasing/TargetBremFilter.h"
-
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "g4fire/UserTrackInformation.h"
 
 namespace biasing {
 
 TargetProcessFilter::TargetProcessFilter(
-    const std::string& name, framework::config::Parameters& parameters)
-    : simcore::UserAction(name, parameters) {
-  process_ = parameters.getParameter<std::string>("process");
+    const std::string &name, fire::config::Parameters &parameters)
+    : g4fire::UserAction(name, parameters) {
+  process_ = parameters.get<std::string>("process");
 }
 
-TargetProcessFilter::~TargetProcessFilter() {}
-
 G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
-    const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
-  if (track == currentTrack_) {
-    currentTrack_ = nullptr;
-    // std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." <<
-    // std::endl;
+    const G4Track *track, const G4ClassificationOfNewTrack &currentTrackClass) {
+  if (track == ctrack_) {
+    ctrack_ = nullptr;
     return fWaiting;
   }
 
@@ -46,16 +31,16 @@ G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
   return classification;
 }
 
-void TargetProcessFilter::stepping(const G4Step* step) {
+void TargetProcessFilter::stepping(const G4Step *step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
   // Get the track info and check if this track is a brem candidate
-  auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
+  auto track_info{g4fire::UserTrackInformation::get(track)};
+  if ((track_info != nullptr) && !track_info->isBremCandidate())
+    return;
 
-  // Get the region the particle is currently in.  Continue processing
-  // the particle only if it's in the calorimeter region.
+  // Continue processing the particle only if it's in the target region.
   if (auto region{
           track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
       region.compareTo("target") != 0)
@@ -68,20 +53,20 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   // processing the rest of the event if the particle is exiting the
   // target region.
   if (secondaries->size() == 0) {
-    // Check if the electron will be exiting the target
-    if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("recoil_PV") == 0) {
-      if (secondaries->size() != 0) {
-        if (getEventInfo()->bremCandidateCount() == 1) {
-          track->SetTrackStatus(fKillTrackAndSecondaries);
-          G4RunManager::GetRunManager()->AbortEvent();
-          currentTrack_ = nullptr;
-        } else {
-          currentTrack_ = track;
-          track->SetTrackStatus(fSuspend);
-          getEventInfo()->decBremCandidateCount();
-          trackInfo->tagBremCandidate(false);
-        }
+    if (auto nregion{
+            track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+        nregion.compareTo("target") != 0) {
+
+
+      if (getEventInfo()->bremCandidateCount() == 1) {
+        track->SetTrackStatus(fKillTrackAndSecondaries);
+        G4RunManager::GetRunManager()->AbortEvent();
+        ctrack_ = nullptr;
+      } else {
+        ctrack_ = track;
+        track->SetTrackStatus(fSuspend);
+        getEventInfo()->decBremCandidateCount();
+        track_info->tagBremCandidate(false);
       }
       return;
     }
@@ -94,25 +79,26 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
-        currentTrack_ = nullptr;
+        ctrack_ = nullptr;
       } else {
-        currentTrack_ = track;
+        ctrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
-        trackInfo->tagBremCandidate(false);
+        track_info->tagBremCandidate(false);
       }
+      return;
     }
 
     std::cout << "[ TargetProcessFilter ]: "
               << "Brem photon produced " << secondaries->size()
               << " particle via " << processName << " process." << std::endl;
-    trackInfo->tagBremCandidate(false);
-    trackInfo->tagPNGamma();
+    track_info->tagBremCandidate(false);
+    track_info->tagPNGamma();
     getEventInfo()->decBremCandidateCount();
   }
 }
 
-void TargetProcessFilter::EndOfEventAction(const G4Event*) {}
-}  // namespace biasing
+void TargetProcessFilter::EndOfEventAction(const G4Event *) {}
+} // namespace biasing
 
 DECLARE_ACTION(biasing, TargetProcessFilter)
