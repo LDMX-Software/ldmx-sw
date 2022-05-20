@@ -1,104 +1,103 @@
 
 #include "Biasing/TargetBremFilter.h"
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
 #include "G4EventManager.hh"
 #include "G4RunManager.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/UserEventInformation.h"
-#include "SimCore/UserTrackInformation.h"
+#include "g4fire/UserEventInformation.h"
+#include "g4fire/UserTrackInformation.h"
+
+#include "fire/exception/Exception.h"
 
 namespace biasing {
 
-TargetBremFilter::TargetBremFilter(const std::string& name,
-                                   framework::config::Parameters& parameters)
-    : simcore::UserAction(name, parameters) {
-  recoilMaxPThreshold_ =
-      parameters.getParameter<double>("recoil_max_p_threshold");
-  bremEnergyThreshold_ =
-      parameters.getParameter<double>("brem_min_energy_threshold");
-  killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
+TargetBremFilter::TargetBremFilter(const std::string &name,
+                                   fire::config::Parameters &parameters)
+    : g4fire::UserAction(name, parameters) {
+
+  // Set the parameters
+  recoil_max_p_thresh_ = parameters.get<double>("recoil_max_p_threshold");
+  brem_energy_thresh_ = parameters.get<double>("brem_min_energy_threshold");
+  kill_recoil_ = parameters.get<bool>("kill_recoil_track");
 }
 
-TargetBremFilter::~TargetBremFilter() {}
-
 G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
-    const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
+    const G4Track *track, const G4ClassificationOfNewTrack &track_class) {
+
   // get the PDGID of the track.
-  G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+  auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()};
 
   // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
+  auto particle_name{track->GetParticleDefinition()->GetParticleName()};
 
-  // Use current classification by default so values from other plugins are not
-  // overridden.
-  G4ClassificationOfNewTrack classification = currentTrackClass;
-
-  if (track->GetTrackID() == 1 && pdgID == 11) {
+  if (track->GetTrackID() == 1 && pdg_id == 11) {
     return fWaiting;
   }
 
-  return classification;
+  // Use current classification by default so values from other plugins are not
+  // overridden.
+  return track_class;
 }
 
-void TargetBremFilter::stepping(const G4Step* step) {
+void TargetBremFilter::stepping(const G4Step *step) {
+  if (brem_candidate_found_)
+    return;
+
   // Get the track associated with this step.
   auto track{step->GetTrack()};
-
   // Only process the primary electron track
-  if (track->GetParentID() != 0) return;
+  if (track->GetParentID() != 0) {
+    return;
+  }
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
-  if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
-    return;
+  if (auto pdg_id{track->GetParticleDefinition()->GetPDGEncoding()};
+      pdg_id != 11)
+    throw fire::Exception("Fatal",
+                          "Primary particle is not an electron. Please check "
+                          "the particle gun configuration.",
+                          false);
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
   if (auto region{
           track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0)
+      region.compareTo("target") != 0) {
     return;
-
+  }
   // Check if the electron will be exiting the target
-  if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0) {
+  if (auto nregion{
+          track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+      nregion.compareTo("target") != 0) {
     // If the recoil electron
-    if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
+    if (track->GetMomentum().mag() >= recoil_max_p_thresh_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
     // Get the electron secondries
-    bool hasBremCandidate = false;
     if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     } else {
-      for (auto& secondary_track : *secondaries) {
+      for (auto &secondary_track : *secondaries) {
         G4String processName =
             secondary_track->GetCreatorProcess()->GetProcessName();
-
         if (processName.compareTo("eBrem") == 0 &&
-            secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-          auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
+            secondary_track->GetKineticEnergy() > brem_energy_thresh_) {
+          auto trackInfo{g4fire::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
 
           getEventInfo()->incBremCandidateCount();
-
-          hasBremCandidate = true;
+          brem_candidate_found_ = true;
         }
       }
     }
 
-    if (!hasBremCandidate) {
+    if (!brem_candidate_found_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
@@ -106,7 +105,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
-    if (killRecoil_)
+    if (kill_recoil_)
       track->SetTrackStatus(fStopAndKill);
     else
       track->SetTrackStatus(fSuspend);
@@ -118,7 +117,9 @@ void TargetBremFilter::stepping(const G4Step* step) {
   }
 }
 
-void TargetBremFilter::EndOfEventAction(const G4Event*) {}
-}  // namespace biasing
+void TargetBremFilter::EndOfEventAction(const G4Event *) {
+  brem_candidate_found_ = false;
+}
+} // namespace biasing
 
 DECLARE_ACTION(biasing, TargetBremFilter)

@@ -1,20 +1,10 @@
-#ifndef BIASING_TARGETBREMFILTER_H
-#define BIASING_TARGETBREMFILTER_H
+#pragma once
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
 #include <algorithm>
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+#include "g4fire/UserAction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
+#include "fire/config/Parameters.h"
 
 namespace biasing {
 
@@ -22,55 +12,56 @@ namespace biasing {
  * User action that allows a user to filter out events that don't result in
  * a brem within the target.
  */
-class TargetBremFilter : public simcore::UserAction {
- public:
+class TargetBremFilter : public g4fire::UserAction {
+public:
   /// Constructor
-  TargetBremFilter(const std::string& name,
-                   framework::config::Parameters& parameters);
+  TargetBremFilter(const std::string &name,
+                   fire::config::Parameters &parameters);
 
   /// Destructor
-  ~TargetBremFilter();
+  ~TargetBremFilter() = default;
 
   /**
    * Implement the stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step *step) final override;
 
   /**
    * Method called at the end of every event.
    *
    * @param event Geant4 event object.
    */
-  void EndOfEventAction(const G4Event*) final override;
+  void EndOfEventAction(const G4Event *) final override;
 
   /**
    * Classify a new track which postpones track processing.
    * Track processing resumes normally if a target PN interaction occurred.
-   * @param aTrack The Geant4 track.
-   * @param currentTrackClass The current track classification.
+   * @param track The Geant4 track.
+   * @param track_class The current track classification.
    */
   G4ClassificationOfNewTrack ClassifyNewTrack(
-      const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) final override;
+      const G4Track *track,
+      const G4ClassificationOfNewTrack &track_class) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
-    return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
-            simcore::TYPE::STEPPING};
+  std::vector<g4fire::TYPE> getTypes() final override {
+    return {g4fire::TYPE::EVENT, g4fire::TYPE::STACKING,
+            g4fire::TYPE::STEPPING};
   }
 
- private:
+private:
   /// Recoil electron threshold.
-  double recoilMaxPThreshold_{1500};  // MeV
+  double recoil_max_p_thresh_{1500}; // MeV
 
   /// Brem gamma energy treshold
-  double bremEnergyThreshold_{2500};
+  double brem_energy_thresh_{2500};
 
   /// Flag indicating if the recoil electron track should be killed
-  bool killRecoil_{false};
+  bool kill_recoil_{false};
 
-};  // TargetBremFilter
-}  // namespace biasing
+  /// Variable indicating whether a brem candidate has been found.
+  bool brem_candidate_found_{false}; 
 
-#endif  // BIASING_TARGETBREMFILTER_H
+}; // TargetBremFilter
+} // namespace biasing
