@@ -6,9 +6,10 @@ Examples of how each filter is configured for biased MC generation.
     generators directly. 
 """
 
-from LDMX.SimCore import simcfg
+from g4fire._user_action import UserAction
+from biasing import include
 
-class TargetBremFilter(simcfg.UserAction):
+class TargetBremFilter(UserAction):
     """ Configuration for filtering events that don't see a hard brem in the target. 
 
     An event is vetoed if one of two conditions is satisfied:
@@ -32,14 +33,13 @@ class TargetBremFilter(simcfg.UserAction):
     def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
         super().__init__("target_brem_filter", "biasing::TargetBremFilter")
 
-        from LDMX.Biasing import include
         include.library()
 
         self.recoil_max_p_threshold = recoil_max_p
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
-class EcalProcessFilter(simcfg.UserAction):
+class EcalProcessFilter(UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
     Parameters
@@ -51,12 +51,11 @@ class EcalProcessFilter(simcfg.UserAction):
     def __init__(self,process = 'photonNuclear') :
         super().__init__('ecal_%s_filter'%process,'biasing::EcalProcessFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.process = process
 
-class TargetENFilter(simcfg.UserAction) :
+class TargetENFilter(UserAction) :
     """ Configuration for filtering electro-nuclear events in the target. 
 
     Parameters
@@ -68,23 +67,21 @@ class TargetENFilter(simcfg.UserAction) :
     def __init__(self,recoil_thresh = 2500.) :
         super().__init__("target_en_process_filter","biasing::TargetENProcessFilter")
 
-        from LDMX.Biasing import include
         include.library()
 
         self.recoilThreshold = recoil_thresh #MeV
 
-class TargetPNFilter(simcfg.UserAction) :
+class TargetPNFilter(UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
     def __init__(self) :
         super().__init__("target_process_filter", "biasing::TargetProcessFilter")
 
-        from LDMX.Biasing import include
         include.library()
 
         self.process = 'photonNuclear'
 
-class EcalDarkBremFilter(simcfg.UserAction):
+class EcalDarkBremFilter(UserAction):
     """ Configuration for filtering A' events
 
     Parameters
@@ -96,12 +93,11 @@ class EcalDarkBremFilter(simcfg.UserAction):
     def __init__(self,minApEnergy):
         super().__init__('ecal_db_filter','biasing::EcalDarkBremFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.threshold = minApEnergy
 
-class TargetDarkBremFilter(simcfg.UserAction):
+class TargetDarkBremFilter(UserAction):
     """ Configuration for filtering A' events
 
     Parameters
@@ -113,12 +109,11 @@ class TargetDarkBremFilter(simcfg.UserAction):
     def __init__(self,minApEnergy):
         super().__init__('target_db_filter','biasing::TargetDarkBremFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.threshold = minApEnergy
 
-class TaggerVetoFilter(simcfg.UserAction): 
+class TaggerVetoFilter(UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
 
     Parameters
@@ -130,12 +125,11 @@ class TaggerVetoFilter(simcfg.UserAction):
     def __init__(self,thresh=3800.) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
 
-class PrimaryToEcalFilter(simcfg.UserAction) :
+class PrimaryToEcalFilter(UserAction) :
     """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
 
     Parameters
@@ -147,12 +141,11 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
     def __init__(self,thresh) :
         super().__init__('primary_to_ecal_with_%d'%thresh,'biasing::PrimaryToEcalFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
 
-class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
+class MidShowerNuclearBkgdFilter(UserAction) :
     """ Configuration used to reject events that don't have enough energy given to the input process.
 
     Parameters
@@ -164,7 +157,6 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
     def __init__(self,thresh) :
         super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'biasing::MidShowerNuclearBkgdFilter')
 
-        from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
