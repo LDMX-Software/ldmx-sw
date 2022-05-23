@@ -67,6 +67,9 @@ class TestBeamHitProducer : public framework::Producer {
   /// channel pedestals [fC]
   std::vector<double> peds_;
 
+  /// channel MIP response for intercalibration
+  std::vector<double> MIPresponse_;
+
   /// start sample for pulse integration (not including any fiber offsets)
   int startSample_{10};
 
@@ -80,7 +83,7 @@ class TestBeamHitProducer : public framework::Producer {
   int nInstrumentedChannels_{12};
 
 /// boolean indicating whether we want to apply quality criteria in hit reconstruction
-  int doCleanHits_{false};
+  bool doCleanHits_{false};
 
 };
 

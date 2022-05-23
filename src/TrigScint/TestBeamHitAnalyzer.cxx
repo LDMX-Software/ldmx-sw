@@ -40,24 +40,40 @@ namespace trigscint {
 	int subleadBar=-1;
 	float peLead=-1;
 	float peSublead=-1;
+	bool existsIntermediatePE=false;
+	
 	for (auto chan : channels) {
 	  int bar = chan.getBarID();
+	  float PE = chan.getPE();
 	  if ( evNb < nEv && bar < nChannels ) { //stick within the predefined histogram array
-		hEvDisp->Fill( evNb, bar, chan.getPE());
+		hEvDisp->Fill( evNb, bar, PE);
 	  } // if within event display range
-	  if ( chan.getPE() > peLead ) {
+	  if ( PE > peLead ) {
 		peSublead=peLead;
 		subleadBar=leadBar;
-		peLead=chan.getPE();
+		peLead=PE;
 		leadBar=bar;
 	  }
-	  else if ( chan.getPE() > peSublead ) { //need a specific check, bars not sorted in PE so leadPE might be found before or after
-		peSublead=chan.getPE();
+	  else if ( PE > peSublead ) { //need a specific check, bars not sorted in PE so leadPE might be found before or after
+		peSublead=PE;
         subleadBar=bar;
 	  }
-	  hPE[bar]->Fill(chan.getPE());
+	  hPE[bar]->Fill(PE);
+	  if ( chan.getQualityFlag() ==0 && bar < 12 && 15 < PE && PE < 40 )
+		existsIntermediatePE=true;
 	}//over channels
 
+	if ( existsIntermediatePE && fillNb < nEv ) {
+	  for (auto chan : channels) {
+		int bar = chan.getBarID();
+		if (bar < 12 ) { //stick within the predefined histogram array
+		  float PE = chan.getPE();
+		  hEvDispPE->Fill( fillNb, bar, PE);
+		}
+	  } // if within event display range
+	  fillNb++;
+	}//if PE range triggers writing these event displays 
+	
 	if (subleadBar == -1) {
 	  subleadBar = leadBar;
 	  peSublead = peLead;
@@ -70,9 +86,7 @@ namespace trigscint {
 	
 	hPEmaxVsDelta->Fill(leadBar-subleadBar, peLead);
 
-	
-	
-    return;
+	return;
   }
 
   void TestBeamHitAnalyzer::onFileOpen() {
@@ -104,12 +118,20 @@ namespace trigscint {
 	  hPEVsDelta[iB]=new TH2F(Form("hPEVsDelta_chan%i", iB), Form(";#Delta_{barID};PE, chan%i has max PE", iB),nChannels+1,-nChannels/2-0.5,nChannels/2+0.5, nPEbins,0,PEmax);
 	  hDeltaPEVsDelta[iB]=new TH2F(Form("hDeltaPEVsDelta_chan%i", iB), Form(";#Delta_{barID};#Delta_PE, chan%i has max PE", iB),nChannels+1,-nChannels/2-0.5,nChannels/2+0.5, nPEbins,0,PEmax);
 	}
- 
+
+	//make event displays for events where there are channels with weird event hit PE counts 
+	for (int iE = 0; iE<nEv; iE++) {
+	  for (int iB = 0; iB<nChannels; iB++) { 
+		hOut[iE][iB] = new TH1F(Form("hCharge_chan%i_nv%i", iB, iE), Form(";time sample; Q, chan %i, ev %i [fC]", iB, iE), nTimeSamp,-0.5,nTimeSamp-0.5);
+	  }
+	}
+	
 	hPEmaxVsDelta=new TH2F("hPEmaxVsDelta",";#Delta_{barID};PE, max hit",nChannels,-nChannels/2,nChannels/2, nPEbins,0,PEmax);
-	hEvDisp = new TH2F(Form("hEvDisp_ev%i", nEv), ";Event number; Bar ID; PE (gain 4e6)", nEv,0.5,nEv+0.5, nChannels,-0.5,nChannels-0.5);
+	hEvDisp = new TH2F(Form("hEvDisp_ev%i", nEv), ";Event number; Bar ID; PE", nEv,0.5,nEv+0.5, nChannels,-0.5,nChannels-0.5);
+	hEvDispPE = new TH2F("hEvDispPEcut", ";Event number; Bar ID; PE", nEv,0.5,nEv+0.5, nChannels,-0.5,nChannels-0.5);
   
 
-	
+	fillNb = 0;
 	evNb = 0;
 	
     return;

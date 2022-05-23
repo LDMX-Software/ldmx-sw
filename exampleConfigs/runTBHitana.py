@@ -19,7 +19,7 @@ from LDMX.TrigScint.trigScint import TestBeamHitAnalyzer
 # ------------------- all set; setup in detail, and run with these settings ---------------
 
 tsEv=TestBeamHitAnalyzer("plotMaker")
-tsEv.input_pass_name=inputPassName
+tsEv.inputPassName=inputPassName
 # now in default config, too, but with test beam values :
 #these are derived as the mean of gaussian fits to the "event pedestal" (average over middle two quartiles) for each channel
 tsEv.startSample=startSample

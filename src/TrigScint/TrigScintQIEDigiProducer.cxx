@@ -57,7 +57,8 @@ void TrigScintQIEDigiProducer::configure(
   ldmx_log(debug) << "sipm_gain =" << sipm_gain_;
   ldmx_log(debug) << "qie_sf =" << s_freq_;
   ldmx_log(debug) << "zeroSupp_in_pe =" << zeroSuppCut_;
-
+  ldmx_log(debug) << "pe_per_mip =" << pePerMip_;
+  ldmx_log(debug) << "mev_per_mip =" << mevPerMip_;
 }
 
 void TrigScintQIEDigiProducer::produce(framework::Event& event) {
