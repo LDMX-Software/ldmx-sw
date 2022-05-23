@@ -746,7 +746,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     if (ckf_result.fittedParameters.begin()->second.charge() > 0 )
       //Write the event display for the recoil
       WriteEvent(event,
-                 mj,trackTip,
+		 ckf_result.fittedParameters.begin()->second,
+                 mj,
+		 trackTip,
                  ldmxsps);
     
     
@@ -1601,11 +1603,11 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
 
-bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
-                                       const Acts::BoundTrackParameters& perigeeParameters,
-                                       const Acts::MultiTrajectory& mj,
-                                       const int &trackTip,
-                                       const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
+  bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
+					 const Acts::BoundTrackParameters& perigeeParameters,
+					 const Acts::MultiTrajectory& mj,
+					 const int &trackTip,
+					 const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
   //Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
