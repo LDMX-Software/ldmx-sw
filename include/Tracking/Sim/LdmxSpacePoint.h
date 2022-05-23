@@ -131,9 +131,9 @@ class LdmxSpacePoint  {
     projector_(1,1) = 1;
   }
     
-  const Acts::SymMatrix2 getLocalCovariance(){return local_cov_;};
-  const Acts::Vector3 getGlobalPosition(){return global_pos_;};
-  const Acts::Vector2 getLocalPosition(){return local_pos_;};
+  const Acts::SymMatrix2 getLocalCovariance() const {return local_cov_;};
+  const Acts::Vector3 getGlobalPosition() const {return global_pos_;};
+  const Acts::Vector2 getLocalPosition() const {return local_pos_;};
   
   Acts::Vector3 global_pos_;
   Acts::Vector2 local_pos_;

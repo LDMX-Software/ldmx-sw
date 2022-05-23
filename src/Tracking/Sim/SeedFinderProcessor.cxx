@@ -204,7 +204,11 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     //TODO:: Attach the space points to the surfaces and provide the origin on surface.
     
     //Acts::Vector3 surface_origin{0.,0.,0.};
-    Acts::Translation3 s_trans(0.,0.,0.);
+    //Acts::Translation3 s_trans(0.,0.,0.); //wrong
+
+    Acts::Vector3 g_pos = ldmxspvec[0]->getGlobalPosition();
+    Acts::Translation3 s_trans(g_pos);
+    
     
     //Build the local to global transform 
     Acts::Transform3 tP(s_trans * s_rotation);

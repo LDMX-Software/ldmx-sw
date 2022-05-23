@@ -197,8 +197,8 @@ class TrackingGeometryMaker : public framework::Producer {
   
   // Make a simple event display
   bool WriteEvent(framework::Event &event,
-                  const Acts::BoundTrackParameters& perigeeParameters, 
-                  const Acts::MultiTrajectory& mj,
+		  const Acts::BoundTrackParameters& perigeeParameters,
+		  const Acts::MultiTrajectory& mj,
                   const int& trackTip,
                   const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
   
