@@ -72,8 +72,8 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   grid_conf_.zMin            = config_.zMin;
   grid_conf_.deltaRMax       = config_.deltaRMax;
   grid_conf_.cotThetaMax     = config_.cotThetaMax;
-  grid_conf_.numPhiNeighbors = 1.;
-
+  //grid_conf_.numPhiNeighbors = 1.;
+  
 
 
   //The seed finder needs a seed filter instance
