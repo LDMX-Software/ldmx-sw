@@ -9,6 +9,7 @@
 #include "Acts/Utilities/Result.hpp"
 #include "Acts/Utilities/detail/Grid.hpp"
 
+#include <fstream>
 
 using InterpolatedMagneticField3 =
   Acts::InterpolatedBFieldMap<Acts::detail::Grid<
