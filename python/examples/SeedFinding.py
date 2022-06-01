@@ -21,4 +21,4 @@ p.outputFiles = [os.environ["LDMX_BASE"]+'/data_ldmx/seeds.root']
 
 p.termLogLevel=0
 
-p.maxEvents = 100
+p.maxEvents = 10000
