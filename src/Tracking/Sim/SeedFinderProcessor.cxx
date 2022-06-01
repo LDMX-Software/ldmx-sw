@@ -60,9 +60,9 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
     
   config_.sigmaScattering = 2.25;
   config_.minPt           = 500. * Acts::UnitConstants::MeV;  
-  config_.bFieldInZ       = 1.44 * Acts::UnitConstants::T;
+  config_.bFieldInZ       = 1.5 * Acts::UnitConstants::T;
   config_.beamPos         = {0, 0}; // units mm ?
-  config_.impactMax       = 20.;
+  config_.impactMax       = 40.;
     
     
   grid_conf_.bFieldInZ       = config_.bFieldInZ;
@@ -72,7 +72,8 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   grid_conf_.zMin            = config_.zMin;
   grid_conf_.deltaRMax       = config_.deltaRMax;
   grid_conf_.cotThetaMax     = config_.cotThetaMax;
-  //grid_conf_.numPhiNeighbors = 1.;
+  grid_conf_.impactMax       = config_.impactMax;
+  grid_conf_.numPhiNeighbors = 1.;
   
 
 
@@ -128,8 +129,18 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   Acts::Extent rRangeSPExtent;
 
   for (size_t isp = 0; isp < ldmxsps.size(); isp++) {
-        
-    if (ldmxsps[isp]->layer()==3 || ldmxsps[isp]->layer()==7 || ldmxsps[isp]->layer()==9)  {
+    
+    //std::cout<<"isp:"<<isp<<ldmxsps[isp]->layer()<<std::endl;
+    
+    int lyID = (ldmxsps[isp]->layer() / 100) % 10;
+    int sID  = (ldmxsps[isp]->layer()) % 2;
+
+    int layerID = (lyID - 1 ) * 2 + sID;
+    
+    std::cout<<(int) isp<<" "<<(ldmxsps[isp]->layer())<<" "<<lyID<<" "<<sID<<" "<<layerID<<std::endl;
+    
+    //if (ldmxsps[isp]->layer()==3 || ldmxsps[isp]->layer()==7 || ldmxsps[isp]->layer()==9)  {
+    if (layerID == 3 || layerID == 7 || layerID == 9) {
       spVec.push_back(ldmxsps[isp]);
       rRangeSPExtent.check({ldmxsps[isp]->x(), ldmxsps[isp]->y(), ldmxsps[isp]->z()});
     }

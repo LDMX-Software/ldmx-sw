@@ -91,10 +91,26 @@ class Track {
     perigee_[2] = z;
   }
 
+
+  void setMomentum(const double& px, const double& py, const double& pz) {
+    momentum_[0] = px;
+    momentum_[1] = py;
+    momentum_[2] = pz;
+  }
+
+  void setPosition(const double& x, const double& y, const double& z) {
+    position_[0] = x;
+    position_[1] = y;
+    position_[2] = z;
+  }
+
   std::vector<double> getPerigeeLocation() const {return perigee_;};
   double getPerigeeX() const {return perigee_[0];};
   double getPerigeeY() const {return perigee_[1];};
   double getPerigeeZ() const {return perigee_[2];};
+  
+  std::vector<double> getMomentum() const {return momentum_;};
+  std::vector<double> getPosition() const {return position_;};
     
   //getters -- TODO use an enum instead
   
@@ -104,6 +120,7 @@ class Track {
   double getTheta() const {return perigee_pars_[3];};
   double getQoP()   const {return perigee_pars_[4];};
   double getT()     const {return perigee_pars_[5];};
+
   
   
  protected:
@@ -138,8 +155,14 @@ class Track {
   
   //The perigee location
   std::vector<double> perigee_{0.,0.,0.};
+
+  //The 3-momentum at the perigee
+  std::vector<double> momentum_{0.,0.,0.};
+
+  //The 3-position at the perigee
+  std::vector<double> position_{0.,0.,0.};
   
-  ///Class declaration needed by the ROOT disctionary.
+  ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);
     
 }; //Track

@@ -114,7 +114,7 @@ void TrackingGeometryMaker::onProcessStart() {
 
   //==> Move to a separate processor <== //
 
-  //Generate a constant null magnetic field
+  //Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
   if (debug_) {
@@ -212,10 +212,10 @@ void TrackingGeometryMaker::onProcessStart() {
   //Validation histograms
   
   histo_p_      = new TH1F("p_res",    "p_res",200,-1,1);
-  histo_d0_     = new TH1F("d0_res",   "d0_res",200,-0.75,0.75);
+  histo_d0_     = new TH1F("d0_res",   "d0_res",200,-0.2,0.2);
   histo_z0_     = new TH1F("z0_res",   "z0_res",200,-0.75,0.75);
   histo_phi_    = new TH1F("phi_res",  "phi_res",200,-0.015,0.015);
-  histo_theta_  = new TH1F("theta_res","theta_res",200,-0.005,0.005);
+  histo_theta_  = new TH1F("theta_res","theta_res",200,-0.01,0.01);
   histo_qop_    = new TH1F("qop_res","qop_res",200,-5,5);
 
   h_p_      = new TH1F("p",    "p",600,0,6);
@@ -525,6 +525,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                                                          covMat));  
   }
   
+  if (startParameters.size() != 1 )
+    return;
+
+  nseeds_++ ;
+  
   for (auto & startParameter : startParameters) {
     //Already fill the plots with the truth information
     h_p_truth_     ->Fill(startParameters.at(0).absoluteMomentum());
@@ -582,9 +587,18 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(extrapolate_location_[0], extrapolate_location_[1], extrapolate_location_[2]));
   
-  
   if (use_extrapolate_location_) {
     extr_surface = &(*tgt_surface);
+  }
+  
+  Acts::Vector3 seed_perigee_surface_center = startParameters.at(0).referenceSurface().center(gctx_);
+  std::shared_ptr<const Acts::PerigeeSurface> seed_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(seed_perigee_surface_center);
+  
+
+  if (use_seed_perigee_) {
+    
+    extr_surface = &(*seed_surface);
   }
 
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
@@ -724,6 +738,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     std::vector<double> v_tgt_srf_pars(tgt_srf_pars.data(), tgt_srf_pars.data() + tgt_srf_pars.rows() * tgt_srf_pars.cols());
     std::vector<double> v_tgt_srf_cov_flat;
     tracking::sim::utils::flatCov(tgt_srf_cov, v_tgt_srf_cov_flat);
+    Acts::Vector3 trk_momentum = ckf_result.fittedParameters.begin()->second.momentum();
+    Acts::Vector3 trk_position = ckf_result.fittedParameters.begin()->second.position(gctx_);
+    
     
     if (debug_) {
       for (auto& p : v_tgt_srf_pars) {
@@ -741,7 +758,12 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     
     trk.setPerigeeParameters(v_tgt_srf_pars);
     trk.setPerigeeCov(v_tgt_srf_cov_flat);
+    trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
+    trk.setPosition(trk_position(0), trk_position(1), trk_position(2));
+
+    
     tracks.push_back(trk);
+    ntracks_++;
 
     if (ckf_result.fittedParameters.begin()->second.charge() > 0 )
       //Write the event display for the recoil
@@ -830,6 +852,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
 void TrackingGeometryMaker::onProcessEnd() {
 
+
+  std::cout<<"Producer " << getName() << " found " << ntracks_ <<" tracks  / " << nseeds_ << " nseeds"<<std::endl;
+  
+  
   TFile* outfile_ = new TFile(getName().c_str(),"RECREATE");
   outfile_->cd();
 
@@ -1277,6 +1303,7 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   //Ckf specific options
   use_extrapolate_location_  = parameters.getParameter<bool>("use_extrapolate_location", true);
   extrapolate_location_ = parameters.getParameter<std::vector<double> >("extrapolate_location", {0.,0.,0.});
+  use_seed_perigee_ = parameters.getParameter<bool>("use_seed_perigee", false);
   
   //seeds from the event
   seed_coll_name_     = parameters.getParameter<std::string>("seed_coll_name","seedTracks");

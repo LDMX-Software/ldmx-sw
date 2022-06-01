@@ -252,7 +252,8 @@ class TrackingGeometryMaker : public framework::Producer {
   //The extrapolation surface
   bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0.,0.,0.};
-
+  bool use_seed_perigee_{false};
+  
   //The hit collection to use for track reconstruction
   std::string hit_collection_{"TaggerSimHits"};
   
@@ -335,6 +336,10 @@ class TrackingGeometryMaker : public framework::Producer {
   /// v-direction sigma
   double sigma_v_{0};
 
+  /// n seeds and n tracks
+  int nseeds_{0};
+  int ntracks_{0};
+  
   //Tracker mapping.
   //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer
   //In this way we can pass multiple surfaces to the same layer to the builder.
