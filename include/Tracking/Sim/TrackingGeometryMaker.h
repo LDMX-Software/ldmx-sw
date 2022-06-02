@@ -94,6 +94,11 @@
 //--- Refit with backward propagation ---//
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
+
+//GSF
+#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+#include "Acts/Propagator/MultiEigenStepperLoop.hpp"
+
 //--- Tracking ---//
 #include "Tracking/Sim/TrackingUtils.h"
 #include "Tracking/Sim/IndexSourceLink.h"
@@ -316,6 +321,14 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* h_theta_refit_;
   TH1F* h_nHits_refit_;
 
+  TH1F* h_p_gsf_refit_;
+  TH1F* h_d0_gsf_refit_;
+  TH1F* h_z0_gsf_refit_;
+  TH1F* h_phi_gsf_refit_;
+  TH1F* h_theta_gsf_refit_;
+  TH1F* h_p_gsf_refit_res_;
+  TH1F* h_qop_gsf_refit_res_;
+  
   TH1F* h_p_truth_;
   TH1F* h_d0_truth_;
   TH1F* h_z0_truth_;
@@ -339,6 +352,8 @@ class TrackingGeometryMaker : public framework::Producer {
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
+
+  std::shared_ptr<const Acts::TrackingGeometry> tGeometry_;
   
   //Tracker mapping.
   //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer
