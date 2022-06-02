@@ -93,6 +93,8 @@ namespace tracking {
       
       double processing_time_{0.};
       long nevents_{0};
+      bool debug_{false};
+      std::string out_seed_collection_{"SeedTracks"};
       
     }; // SeedFinderProcessor
     
