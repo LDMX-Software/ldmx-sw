@@ -2,13 +2,10 @@
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 
-
-
 /* This processor takes in input a set of 3D space points and builds seedTracks using the ACTS algorithm
  * which is based on the ATLAS 3-space point conformal fit.
  * 
  */
-
 
 namespace tracking{
 namespace sim {
@@ -93,13 +90,19 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   bField_(0)=0.;
   bField_(1)=0.;
   bField_(2)=config_.bFieldInZ;
+
+  debug_ = parameters.getParameter<bool>("debug",false);
+  out_seed_collection_ = parameters.getParameter<std::string>("out_seed_collection",getName()+"SeedTracks");
   
 }
         
 void SeedFinderProcessor::produce(framework::Event &event) {
             
   auto start = std::chrono::high_resolution_clock::now();
-            
+
+
+  std::vector<ldmx::Track> seed_tracks;
+  
   nevents_++;
             
   //Read in the Sim hits -- TODO choose which collection from config
@@ -110,17 +113,18 @@ void SeedFinderProcessor::produce(framework::Event &event) {
             
   //Only convert simHits that have at least 0.05 edep
 
-
-  std::cout<<"Converting sim hits"<<std::endl;
-                        
+  //ldmx_log(info) << "Converting sim hits";
+  
   for (auto& simHit : sim_hits) {
                 
     //Remove low energy deposit hits
     if (simHit.getEdep() >  0.05) {
       ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
     }
-  }    
-  std::cout<<"Converted "<< ldmxsps.size() << " hits "<<std::endl;
+  }
+
+  //ldmx_log(info) << "Converted " << ldmxsps.size() << " hits";
+  
   
   //TODO:: For the moemnt I am only selecting 3 points. In principle the grid should be able to find all combinatorics
   //I'll use layer 3,5,7.
@@ -134,20 +138,18 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     
     int lyID = (ldmxsps[isp]->layer() / 100) % 10;
     int sID  = (ldmxsps[isp]->layer()) % 2;
-
     int layerID = (lyID - 1 ) * 2 + sID;
     
-    std::cout<<(int) isp<<" "<<(ldmxsps[isp]->layer())<<" "<<lyID<<" "<<sID<<" "<<layerID<<std::endl;
+    //std::cout<<(int) isp<<" "<<(ldmxsps[isp]->layer())<<" "<<lyID<<" "<<sID<<" "<<layerID<<std::endl;
     
-    //if (ldmxsps[isp]->layer()==3 || ldmxsps[isp]->layer()==7 || ldmxsps[isp]->layer()==9)  {
     if (layerID == 3 || layerID == 7 || layerID == 9) {
       spVec.push_back(ldmxsps[isp]);
       rRangeSPExtent.check({ldmxsps[isp]->x(), ldmxsps[isp]->y(), ldmxsps[isp]->z()});
     }
   }
 
-  std::cout<<"Will use spVec::"<<spVec.size()<<" hits "<<std::endl;
-
+  //ldmx_log(info) <<"Will use spVec::"<<spVec.size()<<" hits ";
+  
   
   //covariance tool: returns the covariance from the space point
   auto covariance_tool = [=](const ldmx::LdmxSpacePoint& sp, float, float,
@@ -171,8 +173,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
       std::move(grid), config_);
 
 
-  std::cout<<"Seed vector"<<std::endl;
-  
   // seed vector
   using SeedContainer = std::vector<Acts::Seed<ldmx::LdmxSpacePoint>>;
   SeedContainer seeds;
@@ -181,8 +181,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   
   
   Acts::Seedfinder<ldmx::LdmxSpacePoint>::State state;
-  
-  std::cout<<"finding seeds"<<std::endl;
   
   // find the seeds
   auto group = spGroup.begin();
@@ -229,15 +227,39 @@ void SeedFinderProcessor::produce(framework::Event &event) {
                                                                     ldmxspvec.begin(),ldmxspvec.end(),
                                                                     bField_, 1. * Acts::UnitConstants::T, 0.5);
     
+    ldmx::Track trk = ldmx::Track();
+
+    trk.setPerigeeLocation(g_pos(0), g_pos(1), g_pos(2));
+    trk.setChi2(-1);
+    trk.setNhits(3);
+    trk.setNdf(0);
+    trk.setNsharedHits(0);
+
+    if (!params)
+      return;
+
+
+    std::vector<double> v_seed_params((*params).data(), (*params).data() + (*params).rows() * (*params).cols());
+    std::vector<double> v_seed_cov;
+    tracking::sim::utils::flatCov(Acts::BoundSymMatrix::Identity(), v_seed_cov);
+    trk.setPerigeeParameters(v_seed_params);
+    trk.setPerigeeCov(v_seed_cov);
+
     
-    std::cout<<(*params)[Acts::eBoundLoc0]<<" "
-             <<(*params)[Acts::eBoundLoc1]<<" "
-             <<(*params)[Acts::eBoundPhi]<< " "
-             <<(*params)[Acts::eBoundTheta]<<" "
-             <<(*params)[Acts::eBoundQOverP]<< " "
-             <<(*params)[Acts::eBoundTime]
-             <<std::endl;
+    //std::cout<<(*params)[Acts::eBoundLoc0]<<" "
+    //         <<(*params)[Acts::eBoundLoc1]<<" "
+    //         <<(*params)[Acts::eBoundPhi]<< " "
+    //         <<(*params)[Acts::eBoundTheta]<<" "
+    //         <<(*params)[Acts::eBoundQOverP]<< " "
+    //         <<(*params)[Acts::eBoundTime]
+    //         <<std::endl;
+
+    //Get momentum and position - TODO
+    seed_tracks.push_back(trk);
   }
+
+  event.add(out_seed_collection_, seed_tracks);
+  
   
   auto end = std::chrono::high_resolution_clock::now();
   
