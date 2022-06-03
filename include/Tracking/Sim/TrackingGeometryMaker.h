@@ -198,7 +198,8 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Test the magnetic field
 
-  void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField);
+  void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
+                 const Acts::Vector3& eval_pos);
   
   // Make a simple event display
   bool WriteEvent(framework::Event &event,
@@ -276,10 +277,21 @@ class TrackingGeometryMaker : public framework::Producer {
   
   //The interpolated bfield
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
+  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_copy_;
   std::string bfieldMap_;
   
   //The propagator
   std::shared_ptr<Propagator> propagator_;
+
+  //The GSF Fitter
+  std::shared_ptr<Acts::GaussianSumFitter<
+                    Acts::Propagator<
+                      Acts::MultiEigenStepperLoop<
+                        Acts::StepperExtensionList<
+                          Acts::detail::GenericDefaultExtension<double> >,
+                        Acts::WeightedComponentReducerLoop,
+                        Acts::detail::VoidAuctioneer>,
+                      Acts::Navigator> > >  gsf_;
   
   //The options
   std::shared_ptr<PropagatorOptions> options_;

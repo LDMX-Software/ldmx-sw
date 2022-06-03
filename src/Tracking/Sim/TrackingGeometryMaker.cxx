@@ -145,21 +145,40 @@ void TrackingGeometryMaker::onProcessStart() {
                                                                    true //rotate the axes to tracking frame
                                                                    );
 
-  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(std::move(map));;
+  InterpolatedMagneticField3 map_copy = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
+                                                                        1. * Acts::UnitConstants::mm, //default scale for axes length
+                                                                        1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
+                                                                        false, //not symmetrical
+                                                                        true //rotate the axes to tracking frame
+                                                                        );
   
-  //Setup the navigator
+  sp_interpolated_bField_      = std::make_shared<InterpolatedMagneticField3>(std::move(map));
+  sp_interpolated_bField_copy_ = std::make_shared<InterpolatedMagneticField3>(std::move(map_copy));
+  
+  
+  //Setup the navigator for KF
   Acts::Navigator::Config navCfg{tGeometry_};
   navCfg.resolveMaterial   = true;
   navCfg.resolvePassive    = true;
   navCfg.resolveSensitive  = true;
   Acts::Navigator navigator(navCfg);
 
+  //Setup the navigator for GSF
+  Acts::Navigator::Config gsf_navigator_cfg{tGeometry_};
+  gsf_navigator_cfg.resolvePassive = false;
+  gsf_navigator_cfg.resolveMaterial = true;
+  gsf_navigator_cfg.resolveSensitive = true;
+  Acts::Navigator gsf_navigator(gsf_navigator_cfg);
+
+  
   //Setup the stepper (do a straight line first)
   //auto&& stepper = Acts::EigenStepper<>{std::move(bField)};
   
 
-  auto&& stepper_const        = Acts::EigenStepper<>{std::move(bField)};
-  auto&& stepper_interpolated = Acts::EigenStepper<>{std::move(sp_interpolated_bField_)};
+  auto&& stepper_const         = Acts::EigenStepper<>{std::move(bField)};
+  auto&& stepper_interpolated  = Acts::EigenStepper<>{std::move(sp_interpolated_bField_)};
+
+  auto&& gsf_stepper          = Acts::MultiEigenStepperLoop{std::move(sp_interpolated_bField_copy_)};
   
   //using Propagator = Acts::Propagator<Stepper, Acts::Navigator>;
     
@@ -174,6 +193,16 @@ void TrackingGeometryMaker::onProcessStart() {
     std::cout<<__PRETTY_FUNCTION__<<std::endl;
     std::cout<<"Using interpolated B-Field Map"<<std::endl;
   }
+
+  //Only works with interpolated
+  Acts::Propagator gsf_propagator(std::move(gsf_stepper), std::move(gsf_navigator));
+
+  //Setup the GSF Fitter
+  //gsf_ = std::make_shared<Acts::GaussianSumFitter<Propagator> >(std::move(gsf_propagator));
+
+  //Acts::GaussianSumFitter<Propagator> gsf(std::move(gsf_propagator));
+  //Acts::GaussianSumFitter<decltype(gsf_propagator)> gsf(std::move(gsf_propagator));
+  gsf_ = std::make_shared< Acts::GaussianSumFitter<decltype(gsf_propagator)> >(std::move(gsf_propagator));
   
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
@@ -313,7 +342,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     100 * Acts::UnitConstants::GeV};
 
   //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
-  auto loggingLevel = Acts::Logging::INFO;
+  auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
   
   PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
@@ -572,8 +601,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   LdmxMeasurementCalibrator calibrator{ldmxsps};
   
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
-
-  //1D (check if this is correct)
+  
   ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
   //2D
   //ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
@@ -678,6 +706,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       std::cout<<"###########"<<std::endl;
     }
 
+    if (trajState.nStates != trajState.nMeasurements + trajState.nOutliers + trajState.nHoles) {
+      if (debug_)
+        std::cout<<"WARNING:: Found track with nStates inconsistent with expectation"<<std::endl;
+      continue;
+    }
 
     //Cut on number of hits?
     if (trajState.nMeasurements < 7 )
@@ -784,8 +817,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
     
     //Refit the track with the KalmanFitter using backward propagation
-    if (false) {
-    
+
+    bool kfRefit = false;
+    if (kfRefit) {
+
+      std::cout<<"Preparing theKF refit"<<std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
       mj.visitBackwards(trackTip, [&](const auto& state) {
         const auto& sourceLink =
@@ -795,13 +831,20 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
           fit_trackSourceLinks.push_back(std::cref(sourceLink));
         }
       });
-            
+
+      std::cout<<"Getting the logger and adding the extensions."<<std::endl;
       const auto kfLogger = Acts::getDefaultLogger("KalmanFitter", Acts::Logging::INFO);
       Acts::KalmanFitterExtensions kfitter_extensions;
       kfitter_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
-      //kfitter_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
       kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
       kfitter_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
+
+      //Rewrite all the stuff from scratch
+      
+
+
+      //rFiltering is true, so it should run in reversed direction.
+      
       Acts::KalmanFitterOptions kfitter_options =
           Acts::KalmanFitterOptions(gctx_,bctx_,cctx_,
                                     kfitter_extensions,Acts::LoggerWrapper{*kfLogger},
@@ -809,6 +852,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                                     true, true, true); //mScattering, exoLoss, rFiltering
       
 
+
+      std::cout<<"rFiltering =" << (int)kfitter_options.reversedFiltering <<std::endl;
+      
       // create the Kalman Fitter
       if (debug_)
         std::cout<<"Make the KalmanFilter fitter object"<<std::endl;
@@ -816,112 +862,107 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       
       if (debug_)
         std::cout<<"Refit"<<std::endl;
+
+      std::cout<<"Refit tracks with KF"<<std::endl;
+      std::cout<<"Starting from "<<std::endl;
+      std::cout<<ckf_result.fittedParameters.begin()->second.position(gctx_)<<std::endl;
+      std::cout<<"With momenutm"<<std::endl;
+      std::cout<<ckf_result.fittedParameters.begin()->second.momentum()<<std::endl;
+      std::cout<<"And field" <<std::endl;
+      
+      //Acts::MagneticFieldProvider::Cache cache = sp_interpolated_bField_->makeCache(bctx_);
+      //std::cout<<" BField::\n"<<sp_interpolated_bField_->getField(ckf_result.fittedParameters.begin()->second.position(gctx_),cache).value() / Acts::UnitConstants::T <<std::endl; 
       
       auto kf_refit_result = kf.fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
                                     ckf_result.fittedParameters.begin()->second,kfitter_options);
-
-      /*
-      if (debug_)
-        std::cout<<"Check output"<<std::endl;
-      
+     
       if (!kf_refit_result.ok()) {
-        std::cout<<"Refit failed"<<std::endl;
+        std::cout<<"KF Refit failed"<<std::endl;
       }
-      
-      auto kf_refit_value = kf_refit_result.value();
-      
-      if (debug_)
-        std::cout<<"FillPlots"<<std::endl;
-      
-      for (const auto& refit_pair : kf_refit_value.fittedParameters) {
+      else {
         
-        h_p_refit_     ->Fill(refit_pair.second.absoluteMomentum());
-        h_d0_refit_    ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundLoc0>());
-        h_z0_refit_    ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundLoc1>());
-        h_phi_refit_   ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundPhi>());
-        h_theta_refit_ ->Fill(refit_pair.second.get<Acts::BoundIndices::eBoundTheta>());
+        auto kf_refit_value = kf_refit_result.value();
+        auto kf_params = kf_refit_value.fittedParameters;
+        h_p_refit_     ->Fill((*kf_params).absoluteMomentum());
+        h_d0_refit_    ->Fill((*kf_params).get<Acts::BoundIndices::eBoundLoc0>());
+        h_z0_refit_    ->Fill((*kf_params).get<Acts::BoundIndices::eBoundLoc1>());
+        h_phi_refit_   ->Fill((*kf_params).get<Acts::BoundIndices::eBoundPhi>());
+        h_theta_refit_ ->Fill((*kf_params).get<Acts::BoundIndices::eBoundTheta>());
       }
-
-      */
+      
     }//Run the refit
 
 
     //Refit track using the GSF
 
-    bool refitGSF = true;
+    bool gsfRefit = true;
     
-    if (refitGSF) {
+    if (gsfRefit) {
 
-      std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> gsf_trackSourceLinks;
-      mj.visitBackwards(trackTip, [&](const auto& state) {
-        const auto& sourceLink =
-            static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
-        auto typeFlags = state.typeFlags();
-        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-          gsf_trackSourceLinks.push_back(std::cref(sourceLink));
+      try {
+
+        std::cout<<"GSF:: Gathering measurements"<<std::endl;
+        const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
+        std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
+        mj.visitBackwards(trackTip, [&](const auto& state) {
+          const auto& sourceLink =
+              static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
+          auto typeFlags = state.typeFlags();
+          if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+            fit_trackSourceLinks.push_back(std::cref(sourceLink));
+          }
+        });
+
+        std::cout<<"GSF extensions"<<std::endl;
+        //Same extensions of the KF
+        Acts::KalmanFitterExtensions gsf_extensions;
+        gsf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+        gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
+        gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
+
+
+        std::cout<<"GSF options"<<std::endl;
+        Acts::GsfOptions gsf_options{gctx_,
+          bctx_,
+          cctx_,
+          gsf_extensions,
+          Acts::LoggerWrapper{*gsfLogger},
+          propagator_options,
+          &(*extr_surface),
+          4,
+          true,
+          false};
+        
+        std::cout<<"GSF Fit"<<std::endl;
+        
+        
+        auto gsf_refit_result = gsf_->fit(fit_trackSourceLinks.begin(),
+                                          fit_trackSourceLinks.end(),
+                                          ckf_result.fittedParameters.begin()->second,
+                                          gsf_options);
+        
+        std::cout<<"Checking results."<<std::endl;
+        if (!gsf_refit_result.ok()) {
+          std::cout<<"GSF Refit failed"<<std::endl;
         }
-      });
-      //Reverse the vector to get the fist measurements to the last
-      std::reverse(gsf_trackSourceLinks.begin(), gsf_trackSourceLinks.end());
-      
-      const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
+        else {
+          
+          auto gsf_refit_value = gsf_refit_result.value();
+          auto gsf_params = gsf_refit_value.fittedParameters;
+          h_p_gsf_refit_     ->Fill((*gsf_params).absoluteMomentum());
+          h_d0_gsf_refit_    ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundLoc0>());
+          h_z0_gsf_refit_    ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundLoc1>());
+          h_phi_gsf_refit_   ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundPhi>());
+          h_theta_gsf_refit_ ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundTheta>());
+        }
+        
+      } catch (...) {
 
-      //Same extensions of the KF
-      Acts::KalmanFitterExtensions gsf_extensions;
-      gsf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
-      gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
-      gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
-      
-      Acts::GsfOptions gsf_options{gctx_,
-        bctx_,
-        cctx_,
-        gsf_extensions,
-        Acts::LoggerWrapper{*gsfLogger},
-        propagator_options,
-        &(*extr_surface),
-        4,
-        true,
-        false};
-
-      //Acts::GaussianSumFitter<Propagator> gsf(std::move(*propagator_));
-      Acts::MultiEigenStepperLoop gsf_stepper(std::move(sp_interpolated_bField_));
-      Acts::Navigator::Config gsf_navigator_cfg{tGeometry_};
-      gsf_navigator_cfg.resolvePassive = false;
-      gsf_navigator_cfg.resolveMaterial = true;
-      gsf_navigator_cfg.resolveSensitive = true;
-      Acts::Navigator gsf_navigator(gsf_navigator_cfg);
-      Acts::Propagator gsf_propagator(std::move(gsf_stepper), std::move(gsf_navigator));
-      
-      Acts::GaussianSumFitter<decltype(gsf_propagator)> gsf(std::move(gsf_propagator));
-            
-      auto gsf_refit_result = gsf.fit(gsf_trackSourceLinks.begin(),
-                                      gsf_trackSourceLinks.end(),
-                                      ckf_result.fittedParameters.begin()->second,
-                                      gsf_options);
-      
-      if (!gsf_refit_result.ok()) {
-        std::cout<<"GSF Refit failed"<<std::endl;
+        std::cout<<"ERROR:: GSF Refit failed"<<std::endl;
       }
-      else {
         
-        auto gsf_refit_value = gsf_refit_result.value();
-        auto gsf_params = gsf_refit_value.fittedParameters;
-        h_p_gsf_refit_     ->Fill((*gsf_params).absoluteMomentum());
-        h_d0_gsf_refit_    ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundLoc0>());
-        h_z0_gsf_refit_    ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundLoc1>());
-        h_phi_gsf_refit_   ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundPhi>());
-        h_theta_gsf_refit_ ->Fill((*gsf_params).get<Acts::BoundIndices::eBoundTheta>());
-      }
+      } // do refit GSF
       
-      /*
-      for (const auto& refit_pair : gsf_refit_value.fittedParameters) {
-        
-      
-      }
-      */
-            
-    } // do refit GSF
-        
   } // loop on CKF Results
   
   if (debug_) 
@@ -966,7 +1007,13 @@ void TrackingGeometryMaker::onProcessEnd() {
   h_z0_refit_->Write();
   h_phi_refit_->Write();
   h_theta_refit_->Write();
-  h_nHits_refit_->Write();
+  
+  h_p_gsf_refit_->Write();
+  h_d0_gsf_refit_->Write();
+  h_z0_gsf_refit_->Write();
+  h_phi_gsf_refit_->Write();
+  h_theta_gsf_refit_->Write();
+  //h_nHits_gsf_refit_->Write();
 
   h_p_truth_->Write();
   h_d0_truth_->Write();
@@ -1627,35 +1674,13 @@ void TrackingGeometryMaker::getSurfaces(std::vector<const Acts::Surface*>& surfa
   }//confined volumes
 }
 
-void TrackingGeometryMaker::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield) {
+void TrackingGeometryMaker::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
+                                      const Acts::Vector3& eval_pos) {
 
-  Acts::Vector3 eval_pos{0.,0.,0.};
   Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
-  
   std::cout<<"Pos::\n"<<eval_pos<<std::endl;
   std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T <<std::endl;
-
-  /*
-  eval_pos(0)= -250.0;
-  eval_pos(1)= -70.0;
-  eval_pos(2)= -1500;
-  */
-
-  std::cout<<"Pos::\n"<<eval_pos<<std::endl;
-  std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T<<std::endl;
-
-  //-110.0 0.0 5.0 0 -1.500E-03 0 --> 5.0 -110.0 0.0
-  //eval_pos(0)=-110.0;
-  //eval_pos(1)= 0.0;
-  //eval_pos(2)= 5.0;
   
-  eval_pos(0)= -393.870327;
-  eval_pos(1)= -3.635;
-  eval_pos(2)= 69.013;
-
-  std::cout<<"Pos::\n"<<eval_pos<<std::endl;
-  std::cout<<" BField::\n"<<bfield->getField(eval_pos,cache).value() / Acts::UnitConstants::T <<std::endl;
-    
 }
 
 
