@@ -14,7 +14,7 @@
 #include <fstream>
 
 
-TGraphErrors * isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim);
+TGraphErrors * isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples);
 TGraphErrors * findAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim);
 
 
@@ -75,11 +75,12 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   vector<TH1F*> v_hOut;
 
   string cleanStr="";
-  if (doClean)
-	cleanStr=Form("(%s_%s.flag_ == 0 || %s_%s.flag_ == 4) &&", digiName.c_str(),decodePassName.c_str(), digiName.c_str(),decodePassName.c_str());
+  if (doClean) //no need to do flag == 4, it's not set until hit reconstruction anyway
+	cleanStr=Form("%s_%s.flag_==0 &&", digiName.c_str(),decodePassName.c_str());
+  //cleanStr=Form("(%s_%s.flag_ == 0 || %s_%s.flag_ == 4) &&", digiName.c_str(),decodePassName.c_str(), digiName.c_str(),decodePassName.c_str());
   
   for (int iC = 0 ; iC < nChannels ; iC++)
-	cuts.push_back( Form("%s %s_%s.chanID_ == %i", cleanStr.c_str(), digiName.c_str(),decodePassName.c_str(), iC));
+	cuts.push_back( Form("%s %s_%s.chanID_==%i", cleanStr.c_str(), digiName.c_str(),decodePassName.c_str(), iC));
 
   c1->SetRightMargin( 1.5*c1->GetRightMargin());
 
@@ -129,7 +130,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	//do the actual peak fitting 
 	std::cout<< "----> Fitting gain for channel " << iH << std::endl;
 	//	TGraphErrors * g= findAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim); 
-	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim); 
+	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim, nSamples); 
 	g->Draw("ap");
 	g->SetTitle(";Peak nb;Total charge [fC]");
 	g->SetName(Form("g_gainChan%i", iH));
@@ -205,7 +206,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 }
 
 
-TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim )
+TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool isSim, int nSamples )
 {
   float mean = hIn->GetBinCenter( hIn->GetMaximumBin() );
 //make a clone where we can iteratively remove what is to the left of peak of interest 
@@ -304,12 +305,19 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
   double ex[(const int) nPoints];
   double y[(const int) nPoints];
   double ey[(const int) nPoints];
+  float noise=0;
   for ( int iP=0; iP<nPoints; iP++) {
 	x[iP] = iPstart+iP;
 	ex[iP] = 0;
-	y[iP] = vPtrs.at(iP)->Parameter(1);;
-	ey[iP] = vPtrs.at(iP)->Parameter(2);;
+	y[iP] = vPtrs.at(iP)->Parameter(1);
+	ey[iP] = vPtrs.at(iP)->Parameter(2);
+	if ( iP > 0 ) { //extract the noise level from relative size of peaks
+	  std::cout << "Estimate Lambda(peak " << iP << ") = " << vPtrs.at(iP)->Parameter(0)/vPtrs.at(iP-1)->Parameter(0)/(iP*nSamples) << std::endl;
+	  noise+=vPtrs.at(iP)->Parameter(0)/vPtrs.at(iP-1)->Parameter(0)/(iP*nSamples);
+	}
   }
+  std::cout<<"Average noise/time sample from all used peaks = " << noise/(nPoints-1) <<std::endl;
+  std::cout<<"Average noise/event from all used peaks = " << noise/(nPoints-1)*nSamples <<std::endl;
   
   TGraphErrors * g= new TGraphErrors( nPoints, x, y, ex, ey);
   
