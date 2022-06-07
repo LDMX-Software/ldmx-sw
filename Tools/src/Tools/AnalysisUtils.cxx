@@ -45,13 +45,15 @@ const ldmx::SimParticle* getPNGamma(
         auto daughter{particleMap.at(id)};
 
         // If the particle doesn't have any daughters, return false
-        if (daughter.getDaughters().size() == 0) return false;
+        if (daughter.getDaughters().size() == 0
+            or 
+            particleMap.find(daughter.getDaughters().front()) != particleMap.end()
+           ) return false;
 
         // If the particle has daughters that were a result of a
         // photo-nuclear reaction, and its energy is above threshold,
         // then tag it as the PN gamma.
         return (
-            particleMap.find(daughter.getDaughters().front()) != particleMap.end() &&
             (particleMap.at(daughter.getDaughters().front()).getProcessType() ==
              ldmx::SimParticle::ProcessType::photonNuclear) &&
             (daughter.getEnergy() >= energyThreshold));
