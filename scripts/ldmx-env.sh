@@ -21,17 +21,17 @@
 # All of this setup requires us to be in a bash shell.
 #   We add this check to make sure the user is in a bash shell.
 ###############################################################################
-if [[ -z ${BASH} ]]; then
+if [[ "$0" != *"bash"* ]]; then
   echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
   [[ "$SHELL" = *"bash"* ]] || echo "  You're default shell '$SHELL' isn't bash."
   return 1
 fi
 
 ###############################################################################
-# __ldmx_has_required_engine
+# _ldmx_has_required_engine
 #   Checks if user has any of the supported engines for running containers
 ###############################################################################
-__ldmx_has_required_engine() {
+_ldmx_has_required_engine() {
   if hash docker &> /dev/null; then
     return 0
   elif hash singularity &> /dev/null; then
@@ -42,20 +42,20 @@ __ldmx_has_required_engine() {
 }
 
 # check if user has a required engine
-if ! __ldmx_has_required_engine; then
+if ! _ldmx_has_required_engine; then
   echo "[ldmx-env.sh] [ERROR] You do not have docker or singularity installed!"
   return 1
 fi
 
 ###############################################################################
-# __ldmx_which_os
+# _ldmx_which_os
 #   Check what OS we are hosting the container on.
 #   Taken from https://stackoverflow.com/a/8597411
 #   and to integrate Windoze Subsystem for Linux: 
 #     https://wiki.ubuntu.com/WSL#Running_Graphical_Applications
 ###############################################################################
 export LDMX_CONTAINER_DISPLAY=""
-__ldmx_which_os() {
+_ldmx_which_os() {
   if uname -a | grep -q microsoft; then
     # Windoze Subsystem for Linux
     export LDMX_CONTAINER_DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null)    
@@ -64,8 +64,8 @@ __ldmx_which_os() {
     # Mac OSX
     export LDMX_CONTAINER_DISPLAY="docker.for.mac.host.internal"
     return 0
-  elif [[ "$OSTYPE" == "linux"* || "$OSTYPE" == "freebsd"* ]]; then
-    # Linux/BSD distribution
+  elif [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
+    # Linux distribution
     export LDMX_CONTAINER_DISPLAY=""
     return 0
   fi
@@ -73,7 +73,7 @@ __ldmx_which_os() {
   return 1
 }
 
-if ! __ldmx_which_os; then
+if ! _ldmx_which_os; then
   echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}' or '$(uname -a)'"
   echo "    You will *not* be able to run display-connected programs."
 fi
@@ -85,24 +85,24 @@ fi
 # variable.
 #
 #   All container-runners need to implement the following commands
-#     - __ldmx_list_local : list images available locally
-#     - __ldmx_use : setup the environment to use the specified container
+#     - _ldmx_list_local : list images available locally
+#     - _ldmx_use : setup the environment to use the specified container
 #         - Three arguments: <repo> <tag> <pull_no_matter_what>
-#     - __ldmx_run : give all arguments to container's entrypoint script
+#     - _ldmx_run : give all arguments to container's entrypoint script
 #         - mounts all directories in bash array LDMX_CONTAINER_MOUNTS
-#     - __ldmx_container_clean : remove all containers and images on this machine
-#     - __ldmx_container_config : print configuration of container
+#     - _ldmx_container_clean : remove all containers and images on this machine
+#     - _ldmx_container_config : print configuration of container
 ###############################################################################
 
 # prefer docker, so we do that first
 if hash docker &> /dev/null; then
   # List containers on our machine matching the sub-string 'ldmx/local'
-  __ldmx_list_local() {
-    docker images "ldmx/local"
+  _ldmx_list_local() {
+    docker images -q "ldmx/local"
   }
 
   # Use the input container and error out if not available
-  __ldmx_use() {
+  _ldmx_use() {
     local _repo_name="$1"
     local _image_tag="$2"
     local _pull_down="$3"
@@ -131,29 +131,26 @@ if hash docker &> /dev/null; then
 
   # Print container configuration
   #   SHA retrieval taken from https://stackoverflow.com/a/33511811
-  __ldmx_container_config() {
+  _ldmx_container_config() {
     echo "Docker Version: $(docker --version)"
     echo "Docker Tag: ${LDMX_DOCKER_TAG}"
-    echo "    Digest: $(docker inspect --format='{{index .RepoDigests 0}}' ${LDMX_DOCKER_TAG})"
+    echo "  SHA: $(docker inspect --format='{{index .RepoDigests 0}}' ${LDMX_DOCKER_TAG})"
     return 0
   }
 
   # Clean up local machine
-  __ldmx_container_clean() {
+  _ldmx_container_clean() {
     docker container prune -f || return $?
     docker image prune -a -f  || return $?
   }
 
   # Run the container
-  __ldmx_run() {
+  _ldmx_run() {
     local _mounts=""
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
-    local interactive=""
-    tty -s && interactive="-it"
-    docker run --rm ${interactive} \
-      -e LDMX_BASE \
+    docker run --rm -it -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
@@ -163,13 +160,13 @@ if hash docker &> /dev/null; then
   }
 elif hash singularity &> /dev/null; then
   # List all '.sif' files in LDMX_BASE directory
-  __ldmx_list_local() {
+  _ldmx_list_local() {
     ls -Alh ${LDMX_BASE} | grep ".*local.*sif"
     return 0
   }
 
   # Use the input container in your workflow
-  __ldmx_use() {
+  _ldmx_use() {
     local _repo_name="$1"
     local _image_tag="$2"
     local _pull_down="$3"
@@ -209,42 +206,42 @@ elif hash singularity &> /dev/null; then
   }
 
   # Print container configuration
-  __ldmx_container_config() {
-    echo "Singularity Version: $(singularity version)"
+  _ldmx_container_config() {
+    echo "Singularity Version: $(singularity --version)"
     echo "Singularity File: ${LDMX_BASE}/${LDMX_SINGULARITY_IMG}"
     return 0
   }
 
   # Clean up local machine
-  __ldmx_container_clean() {
+  _ldmx_container_clean() {
     rm $LDMX_BASE/*.sif || return $?
     rm -r $SINGULARITY_CACHEDIR || return $?
   }
 
   # Run the container
-  __ldmx_run() {
-    local csv_list="/tmp/.X11-unix"
+  _ldmx_run() {
+    local csv_list=""
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
-    singularity run --no-home --cleanenv \
-      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+    csv_list="${csv_list%,}"
+    singularity run --no-home \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
 fi
 
 ###############################################################################
-# __ldmx_list
+# _ldmx_list
 #   Get the docker tags for the repository
 #   Taken from https://stackoverflow.com/a/39454426
 # If passed repo-name is 'local',
 #   the list of container options is runner-dependent
 ###############################################################################
-__ldmx_list() {
+function _ldmx_list() {
   _repo_name="$1"
   if [ "${_repo_name}" == "local" ]; then
-    __ldmx_list_local
+    _ldmx_list_local
     return $?
   else
     #line-by-line description
@@ -265,25 +262,24 @@ __ldmx_list() {
 }
 
 ###############################################################################
-# __ldmx_config
+# _ldmx_config
 #   Print the configuration of the current setup
 ###############################################################################
-__ldmx_config() {
+function _ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
   echo "OSTYPE: ${OSTYPE}"
-  echo "Bash version: ${BASH_VERSION}"
   echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
-  __ldmx_container_config
+  _ldmx_container_config
   return $?
 }
 
 ###############################################################################
-# __ldmx_is_mounted
+# _ldmx_is_mounted
 #   Check if the input directory will be accessible by the container
 ###############################################################################
-__ldmx_is_mounted() {
+_ldmx_is_mounted() {
   local full=$(cd "$1" && pwd -P)
   for _already_mounted in ${LDMX_CONTAINER_MOUNTS[@]}; do
     if [[ $full/ = $_already_mounted/* ]]; then
@@ -294,24 +290,24 @@ __ldmx_is_mounted() {
 }
 
 ###############################################################################
-# __ldmx_run_here
+# _ldmx_run_here
 #   Call the run method with some fancy directory movement around it
 ###############################################################################
-__ldmx_run_here() {
+_ldmx_run_here() {
   #store last directory to resume history later
-  local _old_pwd=$OLDPWD
+  _old_pwd=$OLDPWD
   #store current working directory relative to ldmx base
-  local _pwd=$(pwd -P)/.
+  _pwd=$(pwd -P)/.
 
   # check if container will be able to see where we are
-  if ! __ldmx_is_mounted $_pwd; then
+  if ! _ldmx_is_mounted $_pwd; then
     echo "You aren't in a directory mounted to the container!"
     return 1
   fi
 
   cd ${LDMX_BASE} # go to ldmx base directory outside container
   # go to working directory inside container
-  __ldmx_run $_pwd "$@"
+  _ldmx_run $_pwd "$@"
   local rc=$?
   cd - &> /dev/null
   export OLDPWD=$_old_pwd
@@ -319,13 +315,13 @@ __ldmx_run_here() {
 }
 
 ###############################################################################
-# __ldmx_mount
+# _ldmx_mount
 #   Tell us to mount the passed directory to the container when we run
 #   By default, we already mount the LDMX_BASE directory, so none of
 #   its subdirectories need to (or should be) specified.
 ###############################################################################
 export LDMX_CONTAINER_MOUNTS=()
-__ldmx_mount() {
+_ldmx_mount() {
   local _dir_to_mount="$1"
   
   if [[ ! -d $_dir_to_mount ]]; then
@@ -333,7 +329,7 @@ __ldmx_mount() {
     return 1
   fi
 
-  if __ldmx_is_mounted $_dir_to_mount; then
+  if _ldmx_is_mounted $_dir_to_mount; then
     echo "$_dir_to_mount is already mounted"
     return 0
   fi
@@ -344,33 +340,34 @@ __ldmx_mount() {
 }
 
 ###############################################################################
-# __ldmx_base
+# _ldmx_base
 #   Define the base directory of ldmx software
 ###############################################################################
 export LDMX_BASE=""
-__ldmx_base() {
-  local _new_base="$1"
+_ldmx_base() {
+  _new_base="$1"
   if [[ ! -d $_new_base ]]; then
     echo "'$_new_base' is not a directory!"
     return 1
   fi
 
   export LDMX_BASE=$(cd $_new_base; pwd -P)
-  __ldmx_mount $LDMX_BASE
+  _ldmx_mount $LDMX_BASE
   return $?
 }
 
 ###############################################################################
-# __ldmx_clean
+# _ldmx_clean
 #   Clean up the computing environment for ldmx
 #   The input argument defines what should be cleaned
 ###############################################################################
-__ldmx_clean() {
-  local _what="$1"
+_ldmx_clean() {
+  _what="$1"
+
   local cleaned_something=false
   local rc=0
   if [[ "$_what" = "container" ]] || [[ "$_what" = "all" ]]; then
-    __ldmx_container_clean
+    _ldmx_container_clean
     cleaned_something=true
     rc=$?
   fi
@@ -406,11 +403,11 @@ __ldmx_clean() {
 }
 
 ###############################################################################
-# __ldmx_source
+# _ldmx_source
 #   Run all the sub-commands in the provided file from the directory it is in.
 #   Ignore empty lines or lines starting with '#'
 ###############################################################################
-__ldmx_source() {
+_ldmx_source() {
   local _file_listing_commands="$1"
   local _old_pwd=$OLDPWD
   cd $(dirname $_file_listing_commands)
@@ -425,30 +422,30 @@ __ldmx_source() {
 }
 
 ###############################################################################
-# __ldmx_checkout
+# _ldmx_checkout
 #   Wrapper around git to help with common workflow
 #   We assume we are running this from the source code directory
 #   User provides branch configuration they want the source code to reflect
 ###############################################################################
-__ldmx_checkout() {
-  local __ldmxsw=""
+_ldmx_checkout() {
+  local _ldmxsw=""
   local _submodules=()
-  for __ldmx_br in $@; do
-    if [[ "$__ldmx_br" == *":"* ]]; then
+  for _ldmx_br in $@; do
+    if [[ "$_ldmx_br" == *":"* ]]; then
       # submodule specified
-      _submodules+=("$__ldmx_br")
-    elif [[ ! -z "$__ldmxsw" ]]; then
+      _submodules+=("$_ldmx_br")
+    elif [[ ! -z "$_ldmxsw" ]]; then
       echo "Can't provide more than one branch for ldmx-sw."
       return 1
     else
-      __ldmxsw="$__ldmx_br"
+      _ldmxsw="$_ldmx_br"
     fi
   done
 
   # do ldmx-sw first so we can submodule update
   # and then change submodule branches later if necessary
-  if [[ ! -z $__ldmxsw ]]; then
-    git checkout $__ldmxsw || return $?
+  if [[ ! -z $_ldmxsw ]]; then
+    git checkout $_ldmxsw || return $?
     git submodule update || return $?
   fi
 
@@ -478,12 +475,11 @@ __ldmx_checkout() {
 }
 
 ###############################################################################
-# __ldmx_help
+# _ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
-__ldmx_help() {
+_ldmx_help() {
   cat <<\HELP
-
   USAGE: 
     ldmx <command> [<argument> ...]
 
@@ -514,11 +510,6 @@ __ldmx_help() {
       ldmx source .ldmxrc
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
-      ldmx cmake ..
-      ldmx make install
-      ldmx fire config.py
-      ldmx python3 ana.py
-
 HELP
   return 0
 }
@@ -532,53 +523,62 @@ HELP
 #   There are lots of subcommands, go to those functions to learn the detail
 #   about them.
 ###############################################################################
-ldmx() {
-  # if there are no arguments, print the help
-  [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
+function ldmx() {
+  _sub_command="$1"
+  _sub_command_args="${@:2}"
+
   # divide commands by number of arguments
-  case $1 in
-    help|config)
-      if [[ "$#" != "1" ]]; then
-        __ldmx_${1}
-        echo "ERROR: 'ldmx ${1}' takes no arguments."
+  case $_sub_command in
+    help)
+      _ldmx_help
+      return $?
+      ;;
+    config)
+      if [[ ! -z "$_sub_command_args" ]]; then
+        _ldmx_help
+        echo "ERROR: 'ldmx config' takes no arguments."
         return 1
       fi
-      __ldmx_${1}
+      _ldmx_config 
       return $?
       ;;
     list|base|clean|mount|source)
       if [[ "$#" != "2" ]]; then
-        __ldmx_help
-        echo "ERROR: ldmx ${1} takes one argument."
+        _ldmx_help
+        echo "ERROR: ldmx ${_sub_command} takes one argument."
         return 1
       fi
-      __ldmx_${1} "$2"
+      _ldmx_${_sub_command} $_sub_command_args
       return $?
       ;;
     pull)
       if [[ "$#" != "3" ]]; then
-        __ldmx_help
+        _ldmx_help
         echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
         return 1
       fi
-      __ldmx_use "$2" "$3" "PULL_NO_MATTER_WHAT"
+      _ldmx_use $_sub_command_args "PULL_NO_MATTER_WHAT"
       return $?
       ;;
     use)
       if [[ "$#" != "3" ]]; then
-        __ldmx_help
+        _ldmx_help
         echo "ERROR: 'ldmx use' takes two arguments: <repo> <tag>."
         return 1
       fi
-      __ldmx_use "$2" "$3"
+      _ldmx_use $_sub_command_args
       return $?
       ;;
-    run|checkout)
-      __ldmx_${1} ${@:2}
+    run)
+      _ldmx_run $_sub_command_args
+      return $?
+      ;;
+    checkout)
+      _ldmx_checkout $_sub_command_args
       return $?
       ;;
     *)
-      __ldmx_run_here $@
+      _ldmx_run_here $_sub_command $_sub_command_args
       return $?
       ;;
   esac
@@ -596,7 +596,7 @@ ldmx() {
 ###############################################################################
 
 ###############################################################################
-# __ldmx_complete_directory
+# _ldmx_complete_directory
 #   Some of our sub-commands take a directory as input.
 #   In these cases, we can pretend to cd and use bash's internal
 #   tab-complete functions.
@@ -608,7 +608,7 @@ ldmx() {
 #   We could allow for the shift to be more than one if there is a deeper
 #   tree of commands that need to be allowed in the futre.
 ###############################################################################
-__ldmx_complete_directory() {
+_ldmx_complete_directory() {
   local _num_words="1"
   COMP_WORDS=(${COMP_WORDS[@]:_num_words})
   COMP_CWORD=$((COMP_CWORD - _num_words))
@@ -616,7 +616,7 @@ __ldmx_complete_directory() {
 }
 
 ###############################################################################
-# __ldmx_complete_command
+# _ldmx_complete_command
 #   Tab-complete with a command used commonly inside the container
 #
 #   Search the install location of ldmx-sw for ldmx-sw executables
@@ -626,9 +626,9 @@ __ldmx_complete_directory() {
 #   Assumes current argument being tab completed is stored in
 #   bash variable 'curr_word'.
 ###############################################################################
-__ldmx_complete_command() {
+_ldmx_complete_command() {
   # generate up-to-date list of options
-  local _options="$@ cmake make python3 root rootbrowse"
+  local _options="$@ cmake make python3 python"
   for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
     _options="$_options $(basename $ldmx_executable)"
   done
@@ -638,30 +638,30 @@ __ldmx_complete_command() {
 }
 
 ###############################################################################
-# __ldmx_complete_bash_default
+# _ldmx_complete_bash_default
 #   Restore the default tab-completion in bash that uses the readline function
 #   Bash default tab completion just looks for filenames
 ###############################################################################
-__ldmx_complete_bash_default() {
+_ldmx_complete_bash_default() {
   compopt -o default
   COMPREPLY=()
 }
 
 ###############################################################################
-# __ldmx_dont_complete
+# _ldmx_dont_complete
 #   Don't tab complete or suggest anything if user <tab>s
 ###############################################################################
-__ldmx_dont_complete() {
+_ldmx_dont_complete() {
   COMPREPLY=()
 }
 
 ###############################################################################
-# __ldmx_complete_branch
-#   Tab complete the __ldmx_checkout command.
+# _ldmx_complete_branch
+#   Tab complete the _ldmx_checkout command.
 #   Tries to make current word match an ldmx-sw branch name or the
 #   <submodule>:<branch> format
 ###############################################################################
-__ldmx_complete_branch() {
+_ldmx_complete_branch() {
   local _curr_word="$1"
 
   alias _get_git_branch_list='git branch | sed "s/\*//"'
@@ -705,7 +705,7 @@ __ldmx_complete_branch() {
 #   COMP_CWORD - index of current word in argument list
 #   COMPREPLY  - options available to user, if only one, auto completed
 ###############################################################################
-__ldmx_complete() {
+_ldmx_complete() {
   # disable readline filename completion
   compopt +o default
 
@@ -713,17 +713,17 @@ __ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    __ldmx_complete_command "list clean config checkout pull use run mount base source"
+    _ldmx_complete_command "list clean config checkout pull use run mount base source"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
       config)
         # no more arguments
-        __ldmx_dont_complete
+        _ldmx_dont_complete
         ;;
       checkout)
-        __ldmx_complete_branch "$curr_word"
+        _ldmx_complete_branch "$curr_word"
         ;;
       clean)
         # arguments from special set
@@ -735,11 +735,11 @@ __ldmx_complete() {
         ;;
       run|mount|base)
         #directories only after these commands
-        __ldmx_complete_directory
+        _ldmx_complete_directory
         ;;
       *)
         # files like normal tab complete after everything else
-        __ldmx_complete_bash_default
+        _ldmx_complete_bash_default
         ;;
     esac
   else
@@ -749,37 +749,37 @@ __ldmx_complete() {
       list|base|clean|config|pull|use|mount|source)
         # these commands shouldn't have tab complete for the third argument 
         #   (or shouldn't have the third argument at all)
-        __ldmx_dont_complete
+        _ldmx_dont_complete
         ;;
       checkout)
-        __ldmx_complete_branch "$curr_word"
+        _ldmx_complete_branch "$curr_word"
         ;;
       run)
         if [[ "$COMP_CWORD" = "3" ]]; then
           # third argument to run should be an inside-container command
-          __ldmx_complete_command
+          _ldmx_complete_command
         else
           # later arguments to run should be bash default
-          __ldmx_complete_bash_default
+          _ldmx_complete_bash_default
         fi
         ;;
       *)
         # everything else has bash default (filenames)
-        __ldmx_complete_bash_default
+        _ldmx_complete_bash_default
         ;;
     esac
   fi
 }
 
 # Tell bash the tab-complete options for our main function ldmx
-complete -F __ldmx_complete ldmx
+complete -F _ldmx_complete ldmx
 
 ###############################################################################
 # If the default environment file exists, source it.
 # Otherwise, trust that the user knows what they are doing.
 ###############################################################################
 
-#default backs out of scripts/
+#default backs out of scripts
 _default_location_ldmxrc="$( dirname ${BASH_SOURCE[0]} )/../.ldmxrc"
 
 if [[ -f $_default_location_ldmxrc ]]; then
