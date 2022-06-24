@@ -32,3 +32,9 @@ tot_gain.validForAllRows([2.5]) # dummy value - conversion to estimated charge d
 from .conditions import HcalReconConditionsProvider
 HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_pedestal, tot_gain)
 
+# the TOT linearization parameters are very stable so we use the same set for all runs
+tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
+        ["m_adc_i","cut_point_tot","high_slope","high_offset",
+         "low_slope","low_power","lower_offset","tot_not","channel","flagged"])
+tot_calib.validForever(
+        f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/testbeam04-2022/tot_calibration/calibrated_tot_calib_v0_1_0.csv')
