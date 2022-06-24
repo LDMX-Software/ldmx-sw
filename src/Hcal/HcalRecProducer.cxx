@@ -350,6 +350,9 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setXPos(position.X());
     recHit.setYPos(position.Y());
     recHit.setZPos(position.Z());
+    recHit.setSection(id.section());
+    recHit.setStrip(id.strip());
+    recHit.setLayer(id.layer());
     recHit.setPE(PEs);
     recHit.setMinPE(minPEs);
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
