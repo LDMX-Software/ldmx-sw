@@ -200,7 +200,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     double reconstructed_energy = num_mips_equivalent * pe_per_mip_ * mip_energy_;
 
     // time reconstruction 
-    double hitTime = get_toa(digi.id(),
+    double hitTime = get_toa(digi,
 			     conditions.adcPedestal(digi.id()));
 
     // position TODO
