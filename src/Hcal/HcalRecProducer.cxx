@@ -175,11 +175,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       double amplT_posend_copy, amplT_negend_copy;
       if (digi_posend.isTOT()) {
         voltage_posend =
-            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
-            the_conditions.totGain(id_posend);
+	  (digi_posend.tot() - the_conditions.totCalib(id_posend, 0)) *
+	  the_conditions.totCalib(id_posend, 1);
         voltage_negend =
-            (digi_negend.tot() - the_conditions.totPedestal(id_negend)) *
-            the_conditions.totGain(id_negend);
+	  (digi_negend.tot() - the_conditions.totCalib(id_negend, 0)) *
+	  the_conditions.totCalib(id_negend, 1);
       } else {
         amplT_posend =
             digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
@@ -278,8 +278,8 @@ void HcalRecProducer::produce(framework::Event& event) {
         // bar (time over threshold [ns] - pedestal) * gain
 
         voltage_i =
-            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
-            the_conditions.totGain(id_posend);
+	  (digi_posend.tot() - the_conditions.totCalib(id_posend)) *
+	  the_conditions.totCalib(id_posend);
 
       } else {
         // ADC mode of readout

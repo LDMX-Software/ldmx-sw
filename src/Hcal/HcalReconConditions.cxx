@@ -9,11 +9,10 @@ const std::string HcalReconConditions::CONDITIONS_NAME = "HcalReconConditions";
 
 HcalReconConditions::HcalReconConditions(const conditions::DoubleTableCondition& adc_ped, 
     const conditions::DoubleTableCondition& adc_gain,
-    const conditions::DoubleTableCondition& tot_ped,
-    const conditions::DoubleTableCondition& tot_gain)
+    const conditions::DoubleTableCondition& tot_calib)
   : framework::ConditionsObject(HcalReconConditions::CONDITIONS_NAME),
     adc_pedestals_{adc_ped}, adc_gains_{adc_gain},
-    tot_pedestals_{tot_ped}, tot_gains_{tot_gain} {}
+    tot_calibs_{tot_calib} {}
 
 /**
  * a helpful interface for grabbing the parent conditions at once
@@ -30,10 +29,8 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
   std::string adc_gain_;
   /// name of condition object for hcal adc pedestals
   std::string adc_ped_;
-  /// name of condition object for hcal tot gains
-  std::string tot_gain_;
-  /// name of condition object for hcal tot pedestals
-  std::string tot_ped_;
+  /// name of condition object for hcal tot calibrations
+  std::string tot_calib_;
  public:
   /**
    * Retrieve the name of the parent conditions from the configuration
@@ -57,8 +54,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
       }
       adc_gain_ = parameters.getParameter<std::string>("adc_gain");
       adc_ped_ = parameters.getParameter<std::string>("adc_ped");
-      tot_gain_ = parameters.getParameter<std::string>("tot_gain");
-      tot_ped_ = parameters.getParameter<std::string>("tot_ped");
+      tot_calib_ = parameters.getParameter<std::string>("tot_calibration");
     }
 
   /**
@@ -77,8 +73,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     // to avoid extra constructions
     auto [ adc_gain_co, adc_gain_iov ] = requestParentCondition(adc_gain_, context);
     auto [ adc_ped_co , adc_ped_iov  ] = requestParentCondition(adc_ped_ , context);
-    auto [ tot_gain_co, tot_gain_iov ] = requestParentCondition(tot_gain_, context);
-    auto [ tot_ped_co , tot_ped_iov  ] = requestParentCondition(tot_ped_ , context);
+    auto [ tot_calib_co, tot_calib_iov ] = requestParentCondition(tot_calib_, context);
     
     // deduce "minimum" IOV
     //  Framework #56 : https://github.com/LDMX-Software/Framework/issues/56
@@ -89,8 +84,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     framework::ConditionsObject* co = new hcal::HcalReconConditions(
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_ped_co),
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_gain_co),
-        dynamic_cast<const conditions::DoubleTableCondition&>(*tot_ped_co),
-        dynamic_cast<const conditions::DoubleTableCondition&>(*tot_gain_co)
+        dynamic_cast<const conditions::DoubleTableCondition&>(*tot_calib_co)
         );
 
     return { co , framework::ConditionsIOV(context.getRun(),context.getRun()) };
