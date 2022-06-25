@@ -154,3 +154,36 @@ class HcalRecProducer(Producer) :
         self.avgToaThreshold = 1.6 # mV - correction config only
         self.avgGain = 1.2 # correction config only 
         self.avgPedestal = 1. #noise config only   
+
+class HcalSingleEndRecProducer(Producer) :
+    """ Configuration for the single ended Hcal Rec Producer
+
+    Attributes
+    ----------
+    -  mip_energy : float
+       Copied from module-wide mipEnergy [MeV]
+    -  clock_cycle : float
+       Time for one DAQ clock cycle to pass [ns]
+    -  pe_per_mip: float
+       number of photo-electrons per MIP
+    -  pass_name: str
+       Name of digi pass
+    -  coll_name: str
+       Name of digi collection
+    -  rec_pass_name: str
+       Name of rec pass
+    -  rec_coll_name: str
+       Name of rechit collection
+    """
+
+    def __init__(self, instance_name = 'hcalRecon') :
+        super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
+
+        self.mip_energy = mipEnergy
+        self.clock_cycle = 25.
+        self.pe_per_mip = nPEPerMIP
+        
+        self.coll_name = 'HcalDigis'
+        self.pass_name = ''
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''

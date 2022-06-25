@@ -54,7 +54,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
       }
       adc_gain_ = parameters.getParameter<std::string>("adc_gain");
       adc_ped_ = parameters.getParameter<std::string>("adc_ped");
-      tot_calib_ = parameters.getParameter<std::string>("tot_calibration");
+      tot_calib_ = parameters.getParameter<std::string>("tot_calib");
     }
 
   /**

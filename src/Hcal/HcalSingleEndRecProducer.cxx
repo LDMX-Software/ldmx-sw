@@ -44,21 +44,21 @@ private:
    */
   class TOTLinearizer {
     const conditions::DoubleTableCondition& table_;
-    static const int i_m_adc_i       = 0;
-    static const int i_cut_point_tot = 1;
-    static const int i_high_slope    = 2;
-    static const int i_high_offset   = 3;
-    static const int i_low_slope     = 4;
-    static const int i_low_power     = 5;
-    static const int i_lower_offset  = 6;
-    static const int i_tot_not       = 7;
-    static const int i_channel       = 8;
-    static const int i_flagged       = 9;
+    static const unsigned int i_m_adc_i       = 0;
+    static const unsigned int i_cut_point_tot = 1;
+    static const unsigned int i_high_slope    = 2;
+    static const unsigned int i_high_offset   = 3;
+    static const unsigned int i_low_slope     = 4;
+    static const unsigned int i_low_power     = 5;
+    static const unsigned int i_lower_offset  = 6;
+    static const unsigned int i_tot_not       = 7;
+    static const unsigned int i_channel       = 8;
+    static const unsigned int i_flagged       = 9;
    public:
     TOTLinearizer(const conditions::DoubleTableCondition& t)
       : table_{t} {}
-    bool is_adc(int digi_id, double sum_tot) const;
-    double linearize(int digi_id, double sum_tot) const;
+    bool is_adc(unsigned int digi_id, double sum_tot) const;
+    double linearize(unsigned int digi_id, double sum_tot) const;
   };
   
   static double get_sum_adc(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
@@ -121,7 +121,7 @@ double HcalSingleEndRecProducer::get_toa(
 }
   
 bool HcalSingleEndRecProducer::TOTLinearizer::is_adc(
-    int digi_id, double sum_tot) const {
+    unsigned int digi_id, double sum_tot) const {
   // check if the linearization has been done correctly
   //  a non-zero flag value is implicitly converted to true
   if (table_.get(digi_id, i_flagged)) {
@@ -137,7 +137,7 @@ bool HcalSingleEndRecProducer::TOTLinearizer::is_adc(
   return false;
 }
 double HcalSingleEndRecProducer::TOTLinearizer::linearize(
-    int digi_id, double sum_tot) const {
+    unsigned int digi_id, double sum_tot) const {
   
   // we know we have a linearization fit and are in TOT range,
   //  the lower side of TOT needs to be linearized with a specialized power law
@@ -160,12 +160,15 @@ void HcalSingleEndRecProducer::configure(framework::config::Parameters& p) {
   coll_name_ = p.getParameter("coll_name",coll_name_);
 
   pe_per_mip_ = p.getParameter<double>("pe_per_mip");
-  mip_energy_ = p.getParameter<double>("mip_enegy");
+  mip_energy_ = p.getParameter<double>("mip_energy");
   clock_cycle_ = p.getParameter<double>("clock_cycle");
 }
 
 void HcalSingleEndRecProducer::produce(framework::Event& event) {
 
+  const auto& hcalGeometry = getCondition<ldmx::HcalGeometry>(
+    ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+  
   const auto& conditions{
     getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
     
@@ -173,7 +176,8 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     getCondition<conditions::DoubleTableCondition>("hcal_tot_calibration")};
 
   auto hcalDigis =
-    event.getObject<ldmx::HgcrocDigiCollection>(rec_coll_name_, rec_pass_name_);
+    event.getObject<ldmx::HgcrocDigiCollection>(coll_name_, pass_name_);
+  
   std::vector<ldmx::HcalHit> hcalRecHits;
 
   isoi = hcalDigis.getSampleOfInterestIndex();
@@ -203,7 +207,8 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     double hitTime = get_toa(digi,
 			     conditions.adcPedestal(digi.id()));
 
-    // position TODO
+    // position single ended
+    auto position = hcalGeometry.getStripCenterPosition(id);
     
     // reconstructed Hit
     ldmx::HcalHit recHit;
@@ -211,11 +216,18 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     recHit.setXPos(0);
     recHit.setYPos(0);
     recHit.setZPos(0);
+    recHit.setSection(id.section());
+    recHit.setStrip(id.strip());
+    recHit.setLayer(id.layer());
+    recHit.setEnd(id_digi.end());
     recHit.setPE(PEs);
     recHit.setMinPE(PEs);
     recHit.setAmplitude(num_mips_equivalent);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
+    if(is_adc) {
+      recHit.setIsADC(1);
+    }
     hcalRecHits.push_back(recHit);
   }
 

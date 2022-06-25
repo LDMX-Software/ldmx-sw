@@ -58,6 +58,36 @@ class HcalHit : public ldmx::CalorimeterHit {
   float getMinPE() const { return minpe_; }
 
   /**
+   * Get the section for this hit.
+   * @return section number
+   */
+  int getSection() const { return section_;}
+
+  /**
+   * Get the layer for this hit.
+   * @return layer number
+   */
+  int getLayer() const { return layer_;}
+
+  /**
+   * Get the strip for this hit.
+   * @return strip number
+   */
+  int getStrip() const { return strip_;}
+
+  /**
+   * Get end for this hit.
+   * @return end
+   */
+  int getEnd() const {return end_;}
+
+  /**
+   * Get if hit was reconstructed using ADC.
+   * @return isADC
+   */
+  int getIsADC() const { return isADC_;}
+  
+  /**
    * Set the number of photoelectrons estimated for this hit.
    * @param pe Number of photoelectrons, including noise which affects the
    * estimate.
@@ -71,6 +101,36 @@ class HcalHit : public ldmx::CalorimeterHit {
    */
   void setMinPE(float minpe) { minpe_ = minpe; }
 
+  /**
+   * Set the section for this hit.
+   * @param section number
+   */
+  void setSection(int section) { section_ = section; }
+
+  /**
+   * Set the layer for this hit.
+   * @param layer number
+   */
+  void setLayer(int layer) { layer_ = layer; }
+
+  /**
+   * Set the strip for this hit.
+   * @param strip number
+   */
+  void setStrip(int strip) { strip_ = strip; }
+
+  /**
+   * Set the end (0 neg, 1 pos side).
+   * @param end
+   */
+  void setEnd(int end) { end_ = end; }
+
+  /**
+   * Set if the hit is reconstructed using ADC 
+   * @param isADC int
+   */
+  void setIsADC(int isADC) { isADC_ = isADC; }
+  
  private:
   /** The number of PE estimated for this hit. */
   float pe_{0};
@@ -79,6 +139,15 @@ class HcalHit : public ldmx::CalorimeterHit {
    * you have two ended readout */
   float minpe_{-99};
 
+  /// section, layer, strip and end
+  int section_;
+  int layer_;
+  int strip_;
+  int end_;
+
+  /// isADC
+  int isADC_;
+  
   /**
    * The ROOT class definition.
    */
