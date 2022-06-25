@@ -60,7 +60,7 @@ private:
   
   static double get_sum_adc(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
   static int get_sum_tot(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi);
-  static double get_toa(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
+  double get_toa(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
 
 public:
 
