@@ -26,6 +26,9 @@ class HcalSingleEndRecProducer : public framework::Producer {
   double mip_energy_;
   /// length of clock cycle [ns]
   double clock_cycle_;
+
+  /// sample of interest index
+  unsigned int isoi;
   
 private:
   /**
@@ -109,11 +112,10 @@ double HcalSingleEndRecProducer::get_toa(
   }
 
   // get toa w.r.t the peak
-  int toa{0};
   double toa = (max_sample - toa_sample) * clock_cycle_ - toa_startbx;
 
   // get toa w.r.t the SOI
-  toa += ((int)iSOI - max_sample) * clock_cycle_;
+  toa += ((int)isoi - max_sample) * clock_cycle_;
 
   return toa;
 }
@@ -173,6 +175,8 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
   auto hcalDigis =
     event.getObject<ldmx::HgcrocDigiCollection>(rec_coll_name_, rec_pass_name_);
   std::vector<ldmx::HcalHit> hcalRecHits;
+
+  isoi = hcalDigis.getSampleOfInterestIndex();
   
   for (auto const& digi : hcalDigis) {
     ldmx::HcalDigiID id_digi(digi.id());
