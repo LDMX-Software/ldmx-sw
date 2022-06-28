@@ -20,6 +20,7 @@ p.logFrequency = 1000
 import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
+import LDMX.Hcal.hgcrocFormat as hcal_format
 
 base_name = os.path.basename(arg.input_file).replace('.root','')
 dir_name  = os.path.dirname(arg.input_file)
@@ -30,16 +31,15 @@ p.inputFiles = [arg.input_file]
 p.outputFiles = [f'{dir_name}/reco_{base_name}.root']
 
 # sequence
-import LDMX.Hcal.hgcrocFormat as hcal_format
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
-recon = hcal_digi.HcalSingleEndRecProducer()
-recon.coll_name = 'HcalRawDigis'
-recon.pass_name = ''
 p.sequence = [
     hcal_format.HcalRawDecoder(
         input_names = ["Polarfire0Raw","Polarfire1Raw"],
         connections_table = tbl,
         output_name = 'HcalRawDigis'
     ),
-    recon
+    hcal_digi.HcaclSingEndRecProducer(
+      coll_name = 'HcalRawDigis',
+      pass_name = ''
+    )
 ]
