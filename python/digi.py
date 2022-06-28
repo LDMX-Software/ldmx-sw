@@ -170,20 +170,17 @@ class HcalSingleEndRecProducer(Producer) :
        Name of digi pass
     -  coll_name: str
        Name of digi collection
-    -  rec_pass_name: str
-       Name of rec pass
     -  rec_coll_name: str
        Name of rechit collection
     """
 
-    def __init__(self, instance_name = 'hcalRecon') :
+    def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits') :
         super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
 
         self.mip_energy = mipEnergy
         self.clock_cycle = 25.
         self.pe_per_mip = nPEPerMIP
         
-        self.coll_name = 'HcalDigis'
-        self.pass_name = ''
-        self.rec_coll_name = 'HcalRecHits'
-        self.rec_pass_name = ''
+        self.coll_name = coll_name
+        self.pass_name = pass_name
+        self.rec_coll_name = rec_coll_name
