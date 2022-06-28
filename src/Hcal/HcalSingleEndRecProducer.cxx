@@ -26,15 +26,34 @@ class HcalSingleEndRecProducer : public framework::Producer {
   double mip_energy_;
   /// length of clock cycle [ns]
   double clock_cycle_;
-
   /// sample of interest index
-  unsigned int isoi;
+  unsigned int isoi_;
   
 private:
-  
-  static double get_sum_adc(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
-  static int get_sum_tot(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi);
-  double get_toa(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
+
+  /**
+   * extract toa, sum adc, and sum tot from the input raw digi
+   *
+   * in the far future, we can make these member functions ofthe HgcrocDigi class;
+   * however, right now as we develop our reconstruction method it is helpful to have
+   * more flexible control on how we extract these measurements
+   *
+   * with C++17 structured bindings, this tuple return can be bound to separate variables:
+   * ```cpp
+   * auto [ toa, sum_adc, sum_tot ] = extract_measurments(digi,pedestal,isoi);
+   * ```
+   * giving us the dual benefit of separate variable names while only having to loop over
+   * the samples within a single digi once
+   *
+   * Uses isoi_ and clock_cycle_ member variables to convert TOA into ns since beginning
+   * of Sample Of Interest (SOI)
+   *
+   * @param[in] digi handle to HgcrocDigi to extract from
+   * @param[in] pedestal pedestal for this channel
+   * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
+   */
+  std::tuple<double, double, int> extract_measurments(
+      const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
 
 public:
 
@@ -46,32 +65,25 @@ public:
   
 }; // HcalSingleEndRecProducer
 
-double HcalSingleEndRecProducer::get_sum_adc(
+std::tuple<double,double,int> HcalSingleEndRecProducer::extract_measurments(
     const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal) {
   // sum_adc = total of all but first in-time adc measurements
   double sum_adc{0};
-  for (std::size_t i_sample{0}; i_sample < digi.size(); i_sample++) {
-    if (i_sample > 0) sum_adc += (digi.at(i_sample).adc_t() - pedestal);
-  }
-}
-
-int HcalSingleEndRecProducer::get_sum_tot(
-    const ldmx::HgcrocDigiCollection::HgcrocDigi& digi) {
   // sum_tot = total of all tot measurements
   int sum_tot{0};
-  for (std::size_t i_sample{0}; i_sample < digi.size(); i_sample++) {
-    sum_tot += digi.at(i_sample).tot();
-  }
-}
-
-double HcalSingleEndRecProducer::get_toa(
-    const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal) {
   // first, get time of arrival w.r.t to start BX
   int toa_sample{0},toa_startbx{0};
   // and figure out sample of maximum amplitude
   int max_sample{0};
   double max_meas{0};
   for (std::size_t i_sample{0}; i_sample < digi.size(); i_sample++) {
+    // adc logic
+    if (i_sample > 0) sum_adc += (digi.at(i_sample).adc_t() - pedestal);
+
+    // tot logic
+    sum_tot += digi.at(i_sample).tot();
+
+    // toa logic
     if (digi.at(i_sample).toa() > 0) {
       toa_startbx = digi.at(i_sample).toa() * (clock_cycle_ / 1024);
       toa_sample = i_sample;
@@ -81,14 +93,12 @@ double HcalSingleEndRecProducer::get_toa(
       max_meas = digi.at(i_sample).adc_t() - pedestal;
     }
   }
-
   // get toa w.r.t the peak
   double toa = (max_sample - toa_sample) * clock_cycle_ - toa_startbx;
-
   // get toa w.r.t the SOI
-  toa += ((int)isoi - max_sample) * clock_cycle_;
+  toa += ((int)isoi_ - max_sample) * clock_cycle_;
 
-  return toa;
+  return std::make_tuple(toa, sum_adc, sum_tot);
 }
   
 void HcalSingleEndRecProducer::configure(framework::config::Parameters& p) {
@@ -113,7 +123,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
   
   std::vector<ldmx::HcalHit> hcalRecHits;
 
-  isoi = hcalDigis.getSampleOfInterestIndex();
+  isoi_ = hcalDigis.getSampleOfInterestIndex();
   
   for (auto const& digi : hcalDigis) {
     ldmx::HcalDigiID id_digi(digi.id());
@@ -121,9 +131,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     
     // amplitude/TOT reconstruction
     double num_mips_equivalent{0};
-    auto sum_adc = get_sum_adc(digi,
-			       conditions.adcPedestal(digi.id()));
-    auto sum_tot = get_sum_tot(digi);
+    auto [toa, sum_adc, sum_tot] = extract_measurments(digi, conditions.adcPedestal(digi.id()));
     auto is_adc = conditions.is_adc(digi.id(),sum_tot);
     if(is_adc){
       double adc_calib = sum_adc / conditions.adcGain(digi.id(), 0) ;
@@ -137,8 +145,9 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     double reconstructed_energy = num_mips_equivalent * pe_per_mip_ * mip_energy_;
 
     // time reconstruction 
-    double hitTime = get_toa(digi,
-			     conditions.adcPedestal(digi.id()));
+    //    right now, just using the decoded TOA converted to ns (done above)
+    //    we could attempt to correct for time walk here
+    double hitTime = toa;
 
     // position single ended
     auto position = hcalGeometry.getStripCenterPosition(id);
