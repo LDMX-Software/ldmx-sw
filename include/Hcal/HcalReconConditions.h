@@ -16,6 +16,26 @@ namespace hcal {
  */
 class HcalReconConditions : public framework::ConditionsObject {
  public:
+  /// index of m_adc_i in tot_calib table
+  static const unsigned int i_m_adc_i       = 0;
+  /// index of cut_point_tot in tot_calib table
+  static const unsigned int i_cut_point_tot = 1;
+  /// index of high_slope in tot_calib table
+  static const unsigned int i_high_slope    = 2;
+  /// index of high_offset in tot_calib table
+  static const unsigned int i_high_offset   = 3;
+  /// index of low_slope in tot_calib table
+  static const unsigned int i_low_slope     = 4;
+  /// index of low_power in tot_calib table
+  static const unsigned int i_low_power     = 5;
+  /// index of lower_offset in tot_calib table
+  static const unsigned int i_lower_offset  = 6;
+  /// index of tot_not in tot_calib table
+  static const unsigned int i_tot_not       = 7;
+  /// index of channel in tot_calib table
+  static const unsigned int i_channel       = 8;
+  /// index of flagged in tot_calib table
+  static const unsigned int i_flagged       = 9;
   /// the name of the HcalReconConditions table 
   /// (must match python registration name)
   static const std::string CONDITIONS_NAME;
@@ -57,7 +77,32 @@ class HcalReconConditions : public framework::ConditionsObject {
   }
 
   /**
-   * get the TOT calibration
+   * check if the input digi is in ADC mode (or not)
+   * using the digi id and its evaluated sum tot
+   *
+   * @param[in] id HcalDigiID for the channel
+   * @param[in] sum_tot already evaluated sum of TOT values
+   * @return true if digi is in ADC mode
+   */
+  bool is_adc(const ldmx::HcalDigiID& id, double sum_tot) const;
+
+  /**
+   * linearize the input sum_tot for the input channel
+   * into unified amplitude units
+   *
+   * @note We assume the input channel is already known to be
+   * in TOT mode
+   *
+   * @param[in] id HcalDigiID for the channel
+   * @param[in] sum_toto already evaluated sum of TOT values
+   * @return linearized amplitude
+   */
+  double linearize(const ldmx::HcalDigiID& id, double sum_tot) const;
+
+  /**
+   * get a TOT calibration value
+   *
+   * The column indices are stored as static members of this class.
    *
    * @param[in] id HCal Digi ID for specific chip
    * @param[in] index of column in condition file

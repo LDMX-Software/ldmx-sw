@@ -14,6 +14,38 @@ HcalReconConditions::HcalReconConditions(const conditions::DoubleTableCondition&
     adc_pedestals_{adc_ped}, adc_gains_{adc_gain},
     tot_calibs_{tot_calib} {}
 
+bool HcalReconConditions::is_adc(const ldmx::HcalDigiID& id, double sum_tot) const {
+  // check if the linearization has been done correctly
+  //  a non-zero flag value is implicitly converted to true
+  if (totCalib(id, i_flagged)) {
+    return true;
+  }
+  
+  // if we are in ADC range (which was used as a reference in linearization),
+  // we use ADC
+  if (sum_tot < totCalib(id, i_lower_offset)) {
+    return true;
+  }
+
+  return false;
+}
+
+double HcalReconConditions::linearize(const ldmx::HcalDigiID& id, double sum_tot) const {
+  // we know we have a linearization fit and are in TOT range,
+  //  the lower side of TOT needs to be linearized with a specialized power law
+  if (sum_tot < totCalib(id, i_cut_point_tot)) {
+    return pow(
+        (sum_tot - totCalib(id, i_lower_offset)) 
+          / totCalib(id, i_low_slope),
+        1/totCalib(id,i_low_power)
+       ) + totCalib(id, i_tot_not);
+  }
+
+  // we know sum_tot is >= lower offset and >= tot cut
+  //  higher tot, linearized with adc using a simple linear mapping
+  return (sum_tot - totCalib(id, i_high_offset))*totCalib(id, i_high_slope);
+}
+
 /**
  * a helpful interface for grabbing the parent conditions at once
  *

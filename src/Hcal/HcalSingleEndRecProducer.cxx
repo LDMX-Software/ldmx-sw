@@ -31,35 +31,6 @@ class HcalSingleEndRecProducer : public framework::Producer {
   unsigned int isoi;
   
 private:
-  /**
-   * Class encapsulating the TOT linearization procedure
-   *
-   * in order to improve performance, we cache the column-index mapping
-   * and we perform the linearization procedure on an input digi of 
-   * multiple samples
-   *
-   * the 'DetID' column is required and not included in the column index
-   * by the conditions system so you'll notice that these column indices
-   * are off by one relative to a raw reading of the CSV
-   */
-  class TOTLinearizer {
-    const conditions::DoubleTableCondition& table_;
-    static const unsigned int i_m_adc_i       = 0;
-    static const unsigned int i_cut_point_tot = 1;
-    static const unsigned int i_high_slope    = 2;
-    static const unsigned int i_high_offset   = 3;
-    static const unsigned int i_low_slope     = 4;
-    static const unsigned int i_low_power     = 5;
-    static const unsigned int i_lower_offset  = 6;
-    static const unsigned int i_tot_not       = 7;
-    static const unsigned int i_channel       = 8;
-    static const unsigned int i_flagged       = 9;
-   public:
-    TOTLinearizer(const conditions::DoubleTableCondition& t)
-      : table_{t} {}
-    bool is_adc(unsigned int digi_id, double sum_tot) const;
-    double linearize(unsigned int digi_id, double sum_tot) const;
-  };
   
   static double get_sum_adc(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
   static int get_sum_tot(const ldmx::HgcrocDigiCollection::HgcrocDigi& digi);
@@ -120,41 +91,6 @@ double HcalSingleEndRecProducer::get_toa(
   return toa;
 }
   
-bool HcalSingleEndRecProducer::TOTLinearizer::is_adc(
-    unsigned int digi_id, double sum_tot) const {
-  // check if the linearization has been done correctly
-  //  a non-zero flag value is implicitly converted to true
-  if (table_.get(digi_id, i_flagged)) {
-    return true;
-  }
-  
-  // if we are in ADC range (which was used as a reference in linearization),
-  // we use ADC
-  if (sum_tot < table_.get(digi_id, i_lower_offset)) {
-    return true;
-  }
-
-  return false;
-}
-double HcalSingleEndRecProducer::TOTLinearizer::linearize(
-    unsigned int digi_id, double sum_tot) const {
-  
-  // we know we have a linearization fit and are in TOT range,
-  //  the lower side of TOT needs to be linearized with a specialized power law
-  if (sum_tot < table_.get(digi_id, i_cut_point_tot)) {
-    return pow(
-        (sum_tot - table_.get(digi_id, i_lower_offset)) 
-          / table_.get(digi_id, i_low_slope),
-        1/table_.get(digi_id,i_low_power)
-       ) + table_.get(digi_id, i_tot_not);
-  }
-
-  // we know sum_tot is >= lower offset and >= tot cut
-  //  higher tot, linearized with adc using a simple linear mapping
-  return (sum_tot - table_.get(digi_id, i_high_offset))*table_.get(digi_id, i_high_slope);
-  
-}
-
 void HcalSingleEndRecProducer::configure(framework::config::Parameters& p) {
   pass_name_ = p.getParameter("pass_name",pass_name_);
   coll_name_ = p.getParameter("coll_name",coll_name_);
@@ -171,9 +107,6 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
   
   const auto& conditions{
     getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
-    
-  TOTLinearizer linearizer{
-    getCondition<conditions::DoubleTableCondition>("hcal_tot_calibration")};
 
   auto hcalDigis =
     event.getObject<ldmx::HgcrocDigiCollection>(coll_name_, pass_name_);
@@ -191,13 +124,13 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     auto sum_adc = get_sum_adc(digi,
 			       conditions.adcPedestal(digi.id()));
     auto sum_tot = get_sum_tot(digi);
-    auto is_adc = linearizer.is_adc(digi.id(),sum_tot);
+    auto is_adc = conditions.is_adc(digi.id(),sum_tot);
     if(is_adc){
       double adc_calib = sum_adc / conditions.adcGain(digi.id(), 0) ;
       num_mips_equivalent = adc_calib;
     }
     else{
-      double tot_calib = linearizer.linearize(digi.id(),sum_tot);
+      double tot_calib = conditions.linearize(digi.id(),sum_tot);
       num_mips_equivalent = tot_calib;
     }
     int PEs = num_mips_equivalent * pe_per_mip_;
