@@ -38,7 +38,7 @@ p.sequence = [
         connections_table = tbl,
         output_name = 'HcalRawDigis'
     ),
-    hcal_digi.HcaclSingEndRecProducer(
+    hcal_digi.HcalSingleEndRecProducer(
       coll_name = 'HcalRawDigis',
       pass_name = ''
     )
