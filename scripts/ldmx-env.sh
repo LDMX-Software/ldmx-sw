@@ -154,7 +154,7 @@ if hash docker &> /dev/null; then
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
-      -u $(id -u ${USER}):$(id -g ${USER}) \
+      -u root:root \
       $LDMX_DOCKER_TAG "$@"
     return $?
   }
