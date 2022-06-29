@@ -114,9 +114,9 @@ using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::Material
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 
-
-using PropagatorOptions =
-    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
+//?!
+//using PropagatorOptions =
+//    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
 
 namespace tracking {
 namespace sim {
@@ -292,9 +292,6 @@ class TrackingGeometryMaker : public framework::Producer {
                         Acts::WeightedComponentReducerLoop,
                         Acts::detail::VoidAuctioneer>,
                       Acts::Navigator> > >  gsf_;
-  
-  //The options
-  std::shared_ptr<PropagatorOptions> options_;
   
   //The propagator steps writer
   std::shared_ptr<PropagatorStepWriter> writer_;
