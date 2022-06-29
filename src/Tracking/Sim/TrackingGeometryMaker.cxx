@@ -345,7 +345,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
   
-  PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_, Acts::LoggerWrapper{logger()});
   
   propagator_options.pathLimit = std::numeric_limits<double>::max();
   
@@ -360,7 +360,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   // The logger can be switched to sterile, e.g. for timing logging
   auto& sLogger = propagator_options.actionList.get<Acts::detail::SteppingLogger>();
-  sLogger.sterile = false;
+  sLogger.sterile = true;
   // Set a maximum step size
   propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps    = propagator_maxSteps_;
@@ -895,13 +895,13 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
     //Refit track using the GSF
 
-    bool gsfRefit = true;
+    bool gsfRefit = false;
     
     if (gsfRefit) {
 
       try {
 
-        std::cout<<"GSF:: Gathering measurements"<<std::endl;
+        
         const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
         std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
         mj.visitBackwards(trackTip, [&](const auto& state) {
@@ -913,7 +913,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
           }
         });
 
-        std::cout<<"GSF extensions"<<std::endl;
+        
         //Same extensions of the KF
         Acts::KalmanFitterExtensions gsf_extensions;
         gsf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
@@ -921,7 +921,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
         gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
 
-        std::cout<<"GSF options"<<std::endl;
+        
         Acts::GsfOptions gsf_options{gctx_,
           bctx_,
           cctx_,
@@ -933,7 +933,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
           true,
           false};
         
-        std::cout<<"GSF Fit"<<std::endl;
+        
         
         
         auto gsf_refit_result = gsf_->fit(fit_trackSourceLinks.begin(),
@@ -941,7 +941,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                                           ckf_result.fittedParameters.begin()->second,
                                           gsf_options);
         
-        std::cout<<"Checking results."<<std::endl;
+        
         if (!gsf_refit_result.ok()) {
           std::cout<<"GSF Refit failed"<<std::endl;
         }
@@ -1769,7 +1769,7 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
   
   PropagationOutput pOutput;
   const auto evtLogger = Acts::getDefaultLogger("evtDisplay", Acts::Logging::INFO);
-  PropagatorOptions propagator_options(gctx_, bctx_, Acts::LoggerWrapper{*evtLogger});
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_, Acts::LoggerWrapper{*evtLogger});
   
   propagator_options.pathLimit = std::numeric_limits<double>::max();
   
