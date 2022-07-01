@@ -142,11 +142,11 @@ class HgcrocDigiCollection {
      * @return 12-bit measurement of TOT
      */
     int tot() const {
-      int meas = secon();
       if (version_ == 2) {
-        meas = first();
+        return first();
       }
 
+      int meas = secon();
       if (meas > 512) meas = (meas - 512) * 8;
       return meas;
     }
