@@ -17,7 +17,7 @@ HcalReconConditions::HcalReconConditions(const conditions::DoubleTableCondition&
 bool HcalReconConditions::is_adc(const ldmx::HcalDigiID& id, double sum_tot) const {
   // check if the linearization has been done correctly
   //  a non-zero flag value is implicitly converted to true
-  if (totCalib(id, i_flagged)) {
+  if (totCalib(id, i_flagged)==1) {
     return true;
   }
   
