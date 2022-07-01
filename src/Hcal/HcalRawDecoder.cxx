@@ -88,6 +88,10 @@ struct PolarfireEventHeader {
   int hh;
   /// minute run started
   int mm;
+  /// quality of link headers
+  std::vector<bool> good_bxheader;
+  /// quality of link trailers
+  std::vector<bool> good_trailer;
 
   /**
    * board us onto the bus with the input prefix
@@ -105,6 +109,8 @@ struct PolarfireEventHeader {
     event.add(prefix + "MM", MM);
     event.add(prefix + "hh", hh);
     event.add(prefix + "mm", mm);
+    event.add(prefix+"GoodLinkHeader", good_bxheader);
+    event.add(prefix+"GoodLinkTrailer", good_trailer);
   }
 };
 
@@ -369,7 +375,8 @@ class HcalRawDecoder : public framework::Producer {
        * ROC_ID (16) | CRC ok (1) | 0 (7) | RO Map (8)
        * RO Map (32)
        */
-
+      eh.good_bxheader.resize(nlinks);
+      eh.good_trailer.resize(nlinks);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
 #ifdef DEBUG
         std::cout << "RO Link " << i_link << std::endl;
@@ -445,6 +452,9 @@ class HcalRawDecoder : public framework::Producer {
             std::cout << " : ROC Header";
 #endif
             link_crc << w;
+            // v2
+            eh.good_bxheader[i_link] = ((w & 0xff000000) == 0xaa000000);
+            // v3
             uint32_t bx_id = (w >> 16) & packing::utility::mask<12>;
             uint32_t short_event = (w >> 10) & packing::utility::mask<6>;
             uint32_t short_orbit = (w >> 7) & packing::utility::mask<3>;
@@ -467,14 +477,19 @@ class HcalRawDecoder : public framework::Producer {
             // trailer on each link added by ROC
             // ROC v2 - IDLE word
             // ROC v3 - CRC checksum
-#ifdef DEBUG
             if (roc_version_ == 2) {
-              std::cout << " : Idle";
-            } else {
-              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get())
-                        << " =? " << debug::hex(w);
-            }
+              bool good_idle = (w == 0xaccccccc);
+              eh.good_trailer[i_link] = good_idle;
+#ifdef DEBUG
+              std::cout << " : " << (good_idle?"Good":"Bad") << " Idle";
 #endif
+            } else {
+              bool good_crc = (link_crc.get() == w);
+              eh.good_trailer[i_link] = good_crc;
+#ifdef DEBUG
+              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(w);
+#endif
+            }
             /*
             if (roc_version_ > 2 and link_crc.get() != w) {
               EXCEPTION_RAISE("BadCRC",
