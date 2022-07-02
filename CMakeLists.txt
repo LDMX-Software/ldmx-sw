@@ -18,6 +18,8 @@ find_package(Eigen3 CONFIG REQUIRED)
 
 setup_dd4hep_target()
 
+setup_geant4_target()
+
 # Allow building of event specific classes only.  The most common use case is 
 # needing to build the event classes to allow building of the event bus and ROOT
 # dictionary prior building the rest of the modules in a package. 
@@ -43,7 +45,8 @@ if(BUILD_EVENT_ONLY)
     setup_library(module Tracking
                   name Event
                   dependencies ROOT::Core
-		               ActsCore
+		  ActsCore
+		  Geant4::Interface
                   sources ${EVENT_SRC_FILES}
                   register_target)
 
