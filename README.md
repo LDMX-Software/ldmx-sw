@@ -33,9 +33,7 @@ Installation of ldmx-sw from docker with acts
     > cd ..
     > cd cmake
     > git checkout 66fff74
- #   > cd ..
- #   > cd Ecal
- #   > git checkout 956077b239a80dfe6ebef7ecf4e1d56265d0ef33
+
     
     
     7. I prefer to work "inside the docker" by opening a shell with root privileges. You don't need to do that, but I just prefer this way.
