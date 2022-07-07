@@ -167,9 +167,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     recHit.setAmplitude(num_mips_equivalent);
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTime);
-    if(is_adc) {
-      recHit.setIsADC(1);
-    }
+    recHit.setIsADC(is_adc);
     hcalRecHits.push_back(recHit);
   }
 
