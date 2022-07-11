@@ -225,16 +225,10 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Processing time counter
   double processing_time_{0.};
-  
+    
+  //--- Smearing ---//
 
-  //--- Propagator Tests ---//
-
-  //Random number generator
-  int ntests_{0};
-  std::vector<double> phi_range_,theta_range_;
   std::default_random_engine generator_;
-  std::shared_ptr<std::uniform_real_distribution<double> > uniform_phi_;
-  std::shared_ptr<std::uniform_real_distribution<double> > uniform_theta_;
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
   //Constant BField
@@ -242,12 +236,15 @@ class TrackingGeometryMaker : public framework::Producer {
   //Use constant bfield
   bool const_b_field_{true};
 
-  //Transverse Momentum
-  double pt_{1.};
-  //d0 and z0 are drawn from a gaussian distribution with these resolutions.
-  double d0sigma_{1.};
-  double z0sigma_{1.};
- 
+  //Remove stereo measurements
+  bool removeStereo_{false};
+
+  //Use 2d measurements instead of 1D
+  bool use1Dmeasurements_{false};
+  
+  //Minimum number of hits on tracks
+  int minHits_{7};
+  
   //Stepping size (in mm)
   double propagator_step_size_{200.};
   int propagator_maxSteps_{1000};
