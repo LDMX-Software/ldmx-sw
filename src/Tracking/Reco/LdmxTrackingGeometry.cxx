@@ -198,11 +198,23 @@ LdmxTrackingGeometry::createSensitiveSurface(
   dd4hep::Material de_mat = detElement.volume().material();
   //std::cout<<childDetElement.volume().material().toString()<<std::endl;
   //std::cout<<"Silicon density "<<de_mat.density()<<std::endl;
-  Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
-        
+  
+  /*
+    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength() * Acts::UnitConstants::mm,
+    de_mat.intLength() * Acts::UnitConstants::mm,
+    de_mat.A(),
+    de_mat.Z(),
+    de_mat.density() * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+  */
+  Acts::Material silicon = Acts::Material::fromMassDensity(95.7 * Acts::UnitConstants::mm,
+                                                           465.2 * Acts::UnitConstants::mm,
+                                                           28.03,
+                                                           14.,
+                                                           2.32 * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+  
   //Get the thickness. The bounding box gives back half of the size in z. I scaled of factor 10 to bring it in mm. The detElement stores in cm units
   double thickness = 2*Acts::UnitConstants::cm*detElement.volume().boundingBox().z();
-        
+  
   Acts::MaterialSlab silicon_slab(silicon,thickness); 
   std::shared_ptr<Acts::HomogeneousSurfaceMaterial> homogeneous_mat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
         

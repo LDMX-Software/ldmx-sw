@@ -314,33 +314,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
 
-  //No randomisation
-
-  /// d0 gaussian sigma
-  double d0Sigma = d0sigma_ * Acts::UnitConstants::mm;
-  /// z0 gaussian sigma
-  double z0Sigma = z0sigma_ * Acts::UnitConstants::mm;
-  /// phi gaussian sigma (used for covariance transport)
-  double phiSigma = 0.0001;
-  /// theta gaussian sigma (used for covariance transport)
-  double thetaSigma = 0.0001;
-  /// qp gaussian sigma (used for covariance transport)
-  double qpSigma = 0.00001 / 1 * Acts::UnitConstants::GeV;
-  /// t gaussian sigma (used for covariance transport)
-  double tSigma = 1 * Acts::UnitConstants::ns;
-
-  /// phi range - generate only in the X<0 plane
-  uniform_phi_ = std::make_shared<std::uniform_real_distribution<double> >(phi_range_.at(0),
-                                                                           phi_range_.at(1));
-
-  /// theeta range - generate spanning the Z axis
-  uniform_theta_ = std::make_shared<std::uniform_real_distribution<double> >(theta_range_.at(0),
-                                                                             theta_range_.at(1));
-  
-  /// pt range
-  std::pair<double, double> ptRange = {100 * Acts::UnitConstants::MeV,
-    100 * Acts::UnitConstants::GeV};
-
   //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
@@ -364,6 +337,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   // Set a maximum step size
   propagator_options.maxStepSize = propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps    = propagator_maxSteps_;
+
+  //Electron hypothesis
+  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
       
   //std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
 
@@ -479,18 +455,19 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       
       ldmxsp->local_pos_ = local_pos;
 
-      //Store the smeared global position in the hit
-      //if (do_smearing_) {
-      //  ldmxsp->global_pos_
-      //}
-
       if (debug_) {
         std::cout<<"Local hit position::"<<std::endl;
         std::cout<<ldmxsp->local_pos_<<std::endl;
       }
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
-      //geoId_sl_map_[hit_surface->geometryId()].push_back(idx_sl);
+
+      if (removeStereo_) {
+        if (layerid == 2 || layerid == 4 || layerid == 6 || layerid == 8 )
+          continue;
+      }
+            
+      
       geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
             
     }
@@ -589,22 +566,15 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
      {{}, {std::numeric_limits<double>::max()}, {1u}}},
   };
   
-  /* -- main --
-  Acts::MeasurementSelector::Config measurementSelectorCfg = {
-    // global default: no chi2 cut, only one measurement per surface
-    {Acts::GeometryIdentifier(),
-     {{}, {std::numeric_limits<double>::max()}, {1u}}},
-  };
-  */
-  
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
   LdmxMeasurementCalibrator calibrator{ldmxsps};
   
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
-  
-  ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
-  //2D
-  //ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
+
+  if (use1Dmeasurements_)
+    ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+  else 
+    ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(&calibrator);
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
@@ -638,9 +608,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     extr_surface = &(*seed_surface);
   }
 
+  const auto ckflogger = Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE);
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
       gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{logger()},
+      LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{*ckflogger},
       propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
@@ -713,7 +684,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     }
 
     //Cut on number of hits?
-    if (trajState.nMeasurements < 7 )
+    if (trajState.nMeasurements < minHits_)
       continue;
 
     h_nHits_->Fill(trajState.nMeasurements);
@@ -1243,8 +1214,21 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackingGeometryMaker::volumeBuilder_dd4
     // Material
         
     dd4hep::Material de_mat = sensor.volume().material();
-    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
-    Acts::MaterialSlab silicon_slab(silicon,thickness); 
+
+    /*
+    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength() * Acts::UnitConstants::mm,
+                                                             de_mat.intLength() * Acts::UnitConstants::mm,
+                                                             de_mat.A(),
+                                                             de_mat.Z(),
+                                                             de_mat.density() * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+    */
+    Acts::Material silicon = Acts::Material::fromMassDensity(95.7 * Acts::UnitConstants::mm,
+                                                             465.2 * Acts::UnitConstants::mm,
+                                                             28.03,
+                                                             14.,
+                                                             2.32 * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+    
+    Acts::MaterialSlab silicon_slab(silicon,thickness * Acts::UnitConstants::mm); 
     cfg.thickness = thickness;
     cfg.surMat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
 
@@ -1415,12 +1399,8 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
     
   dumpobj_            = parameters.getParameter<int>("dumpobj");
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
-  ntests_             = parameters.getParameter<int>("ntests", 1000);
-  phi_range_          = parameters.getParameter<std::vector<double> >("phi_range",   {-1.1 * M_PI,-0.9 * M_PI});
-  theta_range_        = parameters.getParameter<std::vector<double> >("theta_range", { 0.4 * M_PI, 0.6 * M_PI});
   trackID_            = parameters.getParameter<int>("trackID",-1);
   pdgID_              = parameters.getParameter<int>("pdgID",11);
-  
   
   bfield_               = parameters.getParameter<double>("bfield", 0.);
   const_b_field_        = parameters.getParameter<bool>("const_b_field",true);
@@ -1428,14 +1408,19 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
                                                                "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
   propagator_step_size_ = parameters.getParameter<double>("propagator_step_size", 200.);
   propagator_maxSteps_  = parameters.getParameter<int>("propagator_maxSteps", 10000);
-  pt_                   = parameters.getParameter<double>("pt", 1.);
-  d0sigma_              = parameters.getParameter<double>("d0sigma",1.);
-  z0sigma_              = parameters.getParameter<double>("z0sigma",1.);
   perigee_location_     = parameters.getParameter<std::vector<double> >("perigee_location", {0.,0.,0.});
   debug_                = parameters.getParameter<bool>("debug",false);
   hit_collection_       = parameters.getParameter<std::string>("hit_collection","TaggerSimHits");
-  
 
+  removeStereo_         = parameters.getParameter<bool>("removeStereo",false);
+  if (removeStereo_)
+    std::cout<<"CONFIGURE::removeStereo="<<(int)removeStereo_<<std::endl;
+
+  use1Dmeasurements_    = parameters.getParameter<bool>("use1Dmeasurements",false);
+
+  if (use1Dmeasurements_)
+    std::cout<<"CONFIGURE::use1Dmeasurements="<<(int)use1Dmeasurements_<<std::endl;
+                                                        
   //Ckf specific options
   use_extrapolate_location_  = parameters.getParameter<bool>("use_extrapolate_location", true);
   extrapolate_location_ = parameters.getParameter<std::vector<double> >("extrapolate_location", {0.,0.,0.});
@@ -1451,8 +1436,8 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   //Hit smearing
 
   do_smearing_ = parameters.getParameter<bool>("do_smearing",false);
-  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.05);
-  sigma_v_ = parameters.getParameter<double>("sigma_v", 1.);
+  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
+  sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
     
   std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
 }
