@@ -32,7 +32,6 @@ void TrackingGeometryMaker::onProcessStart() {
   bctx_ = Acts::MagneticFieldContext();
 
 
-  std::cout<< "Getting the Random number generator"<<std::endl;
   // Get the random seed service
   //auto rseed{getCondition<framework::RandomNumberSeedService>(
   //    framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
@@ -540,8 +539,11 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                                                          covMat));  
   }
   
-  if (startParameters.size() != 1 )
-    return;
+  if (startParameters.size() != 1 ) {
+    std::vector<ldmx::Track> empty;
+    event.add(out_trk_collection_,empty); return;
+  }
+   
 
   nseeds_++ ;
   
@@ -608,7 +610,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     extr_surface = &(*seed_surface);
   }
 
-  const auto ckflogger = Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE);
+  const auto ckflogger = Acts::getDefaultLogger("CKF", Acts::Logging::WARNING);
   Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
       gctx_,bctx_,cctx_,
       LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{*ckflogger},
@@ -957,7 +959,7 @@ void TrackingGeometryMaker::onProcessEnd() {
   std::cout<<"Producer " << getName() << " found " << ntracks_ <<" tracks  / " << nseeds_ << " nseeds"<<std::endl;
   
   
-  TFile* outfile_ = new TFile(getName().c_str(),"RECREATE");
+  TFile* outfile_ = new TFile((getName()+".root").c_str(),"RECREATE");
   outfile_->cd();
 
   histo_p_->Write();
