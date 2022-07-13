@@ -240,7 +240,7 @@ class TrackingGeometryMaker : public framework::Producer {
   bool removeStereo_{false};
 
   //Use 2d measurements instead of 1D
-  bool use1Dmeasurements_{false};
+  bool use1Dmeasurements_{true};
   
   //Minimum number of hits on tracks
   int minHits_{7};
@@ -311,6 +311,14 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* histo_phi_;
   TH1F* histo_theta_;
   TH1F* histo_qop_;
+
+
+  TH1F* histo_p_pull_;
+  TH1F* histo_d0_pull_;
+  TH1F* histo_z0_pull_;
+  TH1F* histo_phi_pull_;
+  TH1F* histo_theta_pull_;
+  TH1F* histo_qop_pull_;
   
   TH1F* h_p_;
   TH1F* h_d0_;
@@ -319,6 +327,13 @@ class TrackingGeometryMaker : public framework::Producer {
   TH1F* h_theta_;
   TH1F* h_qop_;
   TH1F* h_nHits_;
+
+  TH1F* h_p_err_;
+  TH1F* h_d0_err_;
+  TH1F* h_z0_err_;
+  TH1F* h_phi_err_;
+  TH1F* h_theta_err_;
+  TH1F* h_qop_err_;
 
   TH1F* h_p_refit_;
   TH1F* h_d0_refit_;

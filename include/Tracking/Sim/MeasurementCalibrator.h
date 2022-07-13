@@ -79,7 +79,9 @@ namespace tracking {
                "Undefined measurement container in LdmxMeasurementCalibrator");
         assert((sourceLink.index() < m_measurements->size()) and
                "Source link index is outside the container bounds in LdmxMeasurementCalibrator");
-        
+
+
+        //std::cout<<"calibrate_1d ==> NMeasurements available=" << m_measurements->size()<<std::endl;
         auto meas = m_measurements->at(sourceLink.index());
         
         trackState.calibrated().setZero();
@@ -90,17 +92,17 @@ namespace tracking {
         trackState.setProjector(meas->projector_.row(0));
 
         //placeholder
+
         /*
-          std::cout<<"trackState calibrated"<<std::endl;
-          std::cout<<trackState.calibrated()<<std::endl;
-          std::cout<<"trackState data meas dim"<<std::endl;
-          std::cout<<trackState.data().measdim<<std::endl;
-          std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
-          std::cout<<trackState.calibratedCovariance()<<std::endl;
-          std::cout<<"projector"<<std::endl;
-          std::cout<<meas->projector_.row(0)<<std::endl;
+        std::cout<<"trackState calibrated"<<std::endl;
+        std::cout<<trackState.calibrated()<<std::endl;
+        std::cout<<"trackState data meas dim"<<std::endl;
+        std::cout<<trackState.data().measdim<<std::endl;
+        std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
+        std::cout<<trackState.calibratedCovariance()<<std::endl;
+        std::cout<<"projector"<<std::endl;
+        std::cout<<meas->projector_.row(0)<<std::endl;
         */
-      
       }
 
       //Function to test the measurement calibrator
