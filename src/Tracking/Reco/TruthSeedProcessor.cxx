@@ -92,10 +92,25 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   //Transform the free parameters to the bound parameters
   auto tagger_bound_params =
       Acts::detail::transformFreeToBoundParameters(tagger_free_params, *tagger_gen_surface, gctx_).value();
-    
-  Acts::BoundSymMatrix tagger_bound_cov =
-      5. * Acts::BoundSymMatrix::Identity();
-    
+
+  //Try something reasonable
+  Acts::BoundVector stddev;
+  stddev[Acts::eBoundLoc0]   = 500 * Acts::UnitConstants::um;
+  stddev[Acts::eBoundLoc1]   = 1 * Acts::UnitConstants::mm;
+  stddev[Acts::eBoundTime]   = 1000 * Acts::UnitConstants::ns;
+  stddev[Acts::eBoundPhi]    = 2 * Acts::UnitConstants::degree;
+  stddev[Acts::eBoundTheta]  = 2 * Acts::UnitConstants::degree;
+  
+
+  double p_tagger = sqrt(gen_e_mom(0)*gen_e_mom(0) + gen_e_mom(1)*gen_e_mom(1) + gen_e_mom(2)*gen_e_mom(2)) * Acts::UnitConstants::MeV;
+  //50% of uncertainty on momentum from seed fit // Passing 2 GeV, Expected: 500 MeV for 4 GeV electrons
+  double sigma_p_tagger = 0.5 * p_tagger * Acts::UnitConstants::GeV;
+  double sigma_qop_tagger = (1. / p_tagger ) * (1. / p_tagger ) * sigma_p_tagger;
+  stddev[Acts::eBoundQOverP] = sigma_qop_tagger;
+  
+  Acts::BoundSymMatrix tagger_bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+  
+      
   ldmx::Track tagger_seedTrack = ldmx::Track();
   tagger_seedTrack.setPerigeeLocation(tagger_free_params[Acts::eFreePos0],
                                       tagger_free_params[Acts::eFreePos1],
@@ -210,8 +225,22 @@ void TruthSeedProcessor::produce(framework::Event &event) {
                           free_params[Acts::eFreePos2]));
     auto bound_params = Acts::detail::transformFreeToBoundParameters(free_params, *gen_surface, gctx_).value();
 
-    //Blown up covariance matrix
-    Acts::BoundSymMatrix bound_cov = 5. * Acts::BoundSymMatrix::Identity();
+    //Try something reasonable
+    Acts::BoundVector recoil_stddev;
+    recoil_stddev[Acts::eBoundLoc0]   = 500 * Acts::UnitConstants::um;
+    recoil_stddev[Acts::eBoundLoc1]   = 1 * Acts::UnitConstants::mm;
+    recoil_stddev[Acts::eBoundTime]   = 1000 * Acts::UnitConstants::ns;
+    recoil_stddev[Acts::eBoundPhi]    = 2 * Acts::UnitConstants::degree;
+    recoil_stddev[Acts::eBoundTheta]  = 5 * Acts::UnitConstants::degree;
+
+    double p = sqrt(gen_mom(0)*gen_mom(0) + gen_mom(1)*gen_mom(1) + gen_mom(2)*gen_mom(2)) * Acts::UnitConstants::MeV;
+    
+    //50% of uncertainty on momentum from seed fit // Passing 2 GeV, Expected: 500 MeV for 4 GeV electrons
+    double sigma_p = 0.5 * p * Acts::UnitConstants::GeV;
+    double sigma_qop = (1. / p ) * (1. / p ) * sigma_p;
+    
+    recoil_stddev[Acts::eBoundQOverP] = sigma_qop;
+    Acts::BoundSymMatrix bound_cov = recoil_stddev.cwiseProduct(recoil_stddev).asDiagonal();
     
     //Form the seed track for the event bus
 
