@@ -33,6 +33,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   pz_cut_              = parameters.getParameter<double>("pz_cut",-9999); //MeV
   p_cut_               = parameters.getParameter<double>("p_cut", 0.);
   k0_sel_              = parameters.getParameter<bool>("k0_sel",false);
+  p_cutEcal_           = parameters.getParameter<double>("p_cutEcal",-1.); //MeV
 }
 
 
@@ -67,6 +68,12 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   //Retrieve the scoring plane hits
   const std::vector<ldmx::SimTrackerHit> scoring_hits =
       event.getCollection<ldmx::SimTrackerHit>(scoring_hits_);
+
+
+  //Retrieve the scoring plane hits at the ECAL
+  const std::vector<ldmx::SimTrackerHit> scoring_hits_ecal =
+      event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
+  
   
   //Retrieve the particle map to get the tagger seeds
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
@@ -165,11 +172,24 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     //pz cut
     if (pz_cut_ > -9999 && t_sp_p(2) < pz_cut_)
       continue;
+
+
+    //Check the ecal scoring plane
+
+    for (auto& e_sp_hit : scoring_hits_ecal) {
+      if (e_sp_hit.getTrackID() == 1 && (std::find(pdgIDs_.begin(), pdgIDs_.end(), e_sp_hit.getPdgID()) != pdgIDs_.end())) {
+        Acts::Vector3 e_sp_p{e_sp_hit.getMomentum()[0],e_sp_hit.getMomentum()[1], e_sp_hit.getMomentum()[2]};
+        
+        if (p_cutEcal_ >= 0. && e_sp_p.norm() < p_cutEcal_)
+          continue;
+      }
+      
+    }
     
     //add the point
     selected_sp_hits.push_back(t_sp_hit);
   }
-
+  
   if (debug_)
     std::cout<<"Selected scoring hits::"<<selected_sp_hits.size()<<std::endl;
 

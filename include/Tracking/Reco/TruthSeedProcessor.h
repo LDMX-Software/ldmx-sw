@@ -75,6 +75,9 @@ namespace tracking::reco {
     //Ask a minimum p for the seeds
     double p_cut_{0.};
 
+    //Ask a minimum p for the seeds at the ecal (from truth)
+    double p_cutEcal_{-1.};
+    
     //Apply a dedicated k0 selection
     double k0_sel_{false};
     
