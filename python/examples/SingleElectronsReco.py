@@ -12,19 +12,21 @@ from LDMX.Tracking import tracking_vtx
 from LDMX.Tracking import tracking_truthseeder
 
 #Truth seeder - electrons
-ts_ele               = tracking_truthseeder.TruthSeedProcessor()
-ts_ele.debug         = False
-ts_ele.trk_coll_name = "RecoilTruthSeeds"
-ts_ele.pdgIDs        = [11]
-ts_ele.scoring_hits  = "TargetScoringPlaneHits"
-ts_ele.z_min         = 4.4
-ts_ele.track_id      = 1
-ts_ele.p_cut         = 3985. # In MeV
-#ts_ele.p_cut         = 0. # In MeV
-ts_ele.pz_cut        = 0.
+ts_ele                   = tracking_truthseeder.TruthSeedProcessor()
+ts_ele.debug             = False
+ts_ele.trk_coll_name     = "RecoilTruthSeeds"
+ts_ele.pdgIDs            = [11]
+ts_ele.scoring_hits      = "TargetScoringPlaneHits"
+ts_ele.z_min             = 4.4
+ts_ele.track_id          = 1
+ts_ele.p_cut             = 3985. # In MeV
+ts_ele.pz_cut            = 0.
+ts_ele.p_cutEcal         = 3985. # In MeV
+
+
 
  
-uSmearing = 0.035  #mm
+uSmearing = 0.015  #mm
 vSmearing = 0.0    #mm
 
 geo  = tracking_geo.TrackingGeometryMaker("Recoil_TrackFinder")
@@ -194,9 +196,6 @@ p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-incl
 '''
 
 print(p.inputFiles)
-
-
-
 
 p.keep = [
     "drop .*SimHits.*", #drop all sim hits

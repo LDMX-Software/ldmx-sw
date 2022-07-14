@@ -267,7 +267,14 @@ class TrackingGeometryMaker : public framework::Producer {
   
   int trackID_{-1};
   int pdgID_{11};
+
+  //Mass for the propagator hypothesis in MeV
+  double mass_{0.511};
   
+
+  //Refits
+  bool kfRefit_{false};
+  bool gsfRefit_{false};
   
   //The seed track collection
   std::string seed_coll_name_{"seedTracks"};
