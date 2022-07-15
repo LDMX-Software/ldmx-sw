@@ -60,6 +60,13 @@ class HcalGeometry : public framework::ConditionsObject {
     return stripPositionMap_.at(id);
   }
 
+  /** Check whether a given layer corresponds to a horizontal (scintillator
+   * length along the x-axis) or vertical layer. See the horizontalParity_
+   * member for details.
+   */
+  bool layerIsHorizontal(const int layer) const {
+    return layer % 2 == horizontalParity_;
+  }
   /**
    * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
    * @param section
