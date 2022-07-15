@@ -557,11 +557,6 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
                          -1 * Acts::UnitConstants::e :
                          Acts::UnitConstants::e;
     
-    if (q > 0)
-      std::cout<<"ERROR!! charge of the seed is > 0!" << q << std::endl;
-    
-    
-
     startParameters.push_back(Acts::BoundTrackParameters(perigeeSurface,
                                                          paramVec,
                                                          q,
@@ -640,7 +635,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     extr_surface = &(*seed_surface);
   }
 
-  auto ckf_loggingLevel = Acts::Logging::INFO;
+  auto ckf_loggingLevel = Acts::Logging::FATAL;
   if (debug_)
     ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
