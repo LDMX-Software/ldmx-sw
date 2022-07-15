@@ -173,18 +173,29 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     if (pz_cut_ > -9999 && t_sp_p(2) < pz_cut_)
       continue;
 
-
+    
     //Check the ecal scoring plane
+    bool passEcalScoringPlane = true;
 
-    for (auto& e_sp_hit : scoring_hits_ecal) {
-      if (e_sp_hit.getTrackID() == 1 && (std::find(pdgIDs_.begin(), pdgIDs_.end(), e_sp_hit.getPdgID()) != pdgIDs_.end())) {
-        Acts::Vector3 e_sp_p{e_sp_hit.getMomentum()[0],e_sp_hit.getMomentum()[1], e_sp_hit.getMomentum()[2]};
-        
-        if (p_cutEcal_ >= 0. && e_sp_p.norm() < p_cutEcal_)
-          continue;
-      }
+    if (p_cutEcal_ > 0 ) {  //only check if we care about it.
       
-    }
+      for (auto& e_sp_hit : scoring_hits_ecal) {
+        if (e_sp_hit.getTrackID() == t_sp_hit.getTrackID() && e_sp_hit.getPdgID() == t_sp_hit.getPdgID()) {
+          
+          Acts::Vector3 e_sp_p{e_sp_hit.getMomentum()[0],e_sp_hit.getMomentum()[1], e_sp_hit.getMomentum()[2]};
+          
+          if (e_sp_p.norm() < p_cutEcal_)
+            passEcalScoringPlane = false;
+          
+          //Skip the rest of the scoring plane hits since we already found the track we care about
+          continue;
+          
+        }//check that the hit belongs to the inital particle from the target scoring plane hit
+      }//loop on Ecal scoring plane hits
+    }// pcutEcal
+    
+    if (!passEcalScoringPlane)
+      continue;
     
     //add the point
     selected_sp_hits.push_back(t_sp_hit);
