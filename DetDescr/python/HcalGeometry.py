@@ -133,8 +133,8 @@ class HcalGeometry() :
         scint_thickness=20.
         scint_bar_length=2000.
         layer_thickness = absorber_thickness + scint_thickness + 2 * air_thickness
-        num_layers_front_vertical = 4
-        num_layers_front_horizontal = 5
+        num_layers_front_vertical = 5
+        num_layers_front_horizontal = 4
         num_layers_front=num_layers_front_vertical + num_layers_front_horizontal
         num_layers_back_vertical = 5
         num_layers_back_horizontal = 5
