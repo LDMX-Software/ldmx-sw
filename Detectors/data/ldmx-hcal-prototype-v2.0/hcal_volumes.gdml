@@ -1,78 +1,84 @@
+
+<!-- Absorber -->
 <volume name="absorber_volume">
   <materialref ref="Steel"/>
-  <solidref    ref="absorber_box"/>
+  <solidref ref="absorber_box"/>
   <auxiliary auxtype="Color" auxvalue="Red"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 
 
-<!-- mounting plates -->
+<!-- Mounting plates -->
 <volume name="vertical_bar_mounting_plate_volume">
   <materialref ref="Steel"/>
-  <solidref    ref="vertical_bar_mounting_plate_box"/>
+  <solidref ref="vertical_bar_mounting_plate_box"/>
   <auxiliary auxtype="Color" auxvalue="Red"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 <volume name="horizontal_bar_mounting_plate_volume">
   <materialref ref="Steel"/>
-  <solidref    ref="horizontal_bar_mounting_plate_box"/>
+  <solidref ref="horizontal_bar_mounting_plate_box"/>
   <auxiliary auxtype="Color" auxvalue="Red"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 
 
-<!-- scint bars -->
+<!-- Scintillators -->
+<!-- Front -->
 <volume name="front_vertical_scint_box_volume">
   <materialref ref="Scintillator"/>
-  <solidref    ref="front_vertical_scint_box"/>
-  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
+  <solidref ref="front_vertical_scint_box"/>
+  <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
   <auxiliary auxtype="Color" auxvalue="Blue"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 <volume name="front_horizontal_scint_box_volume">
   <materialref ref="Scintillator"/>
-  <solidref    ref="front_horizontal_scint_box"/>
-  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
+  <solidref ref="front_horizontal_scint_box"/>
+  <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
   <auxiliary auxtype="Color" auxvalue="Blue"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
+<!-- Back -->
 <volume name="back_vertical_scint_box_volume">
   <materialref ref="Scintillator"/>
-  <solidref    ref="back_vertical_scint_box"/>
-  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
+  <solidref ref="back_vertical_scint_box"/>
+  <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
   <auxiliary auxtype="Color" auxvalue="Blue"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 <volume name="back_horizontal_scint_box_volume">
   <materialref ref="Scintillator"/>
-  <solidref    ref="back_horizontal_scint_box"/>
-  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
+  <solidref ref="back_horizontal_scint_box"/>
+  <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
   <auxiliary auxtype="Color" auxvalue="Blue"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
 
-<!-- covers -->
-<volume name="front_vertical_scint_box_cover_volume">
+<!-- Scintillator covers -->
+<!-- Front -->
+<volume name="front_vertical_scint_cover_box_volume">
   <materialref ref="Aluminum3003"/>
-  <solidref    ref="front_vertical_scint_box_cover"/>
+  <solidref ref="front_vertical_scint_cover_box"/>
   <auxiliary auxtype="Color" auxvalue="White"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
-<volume name="front_horizontal_scint_box_cover_volume">
+<volume name="front_horizontal_scint_cover_box_volume">
   <materialref ref="Aluminum3003"/>
-  <solidref    ref="front_horizontal_scint_box_cover"/>
+  <solidref ref="front_horizontal_scint_cover_box"/>
   <auxiliary auxtype="Color" auxvalue="White"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
-<volume name="back_vertical_scint_box_cover_volume">
+<!-- Back -->
+<volume name="back_vertical_scint_cover_box_volume">
   <materialref ref="Aluminum3003"/>
-  <solidref    ref="back_vertical_scint_box_cover"/>
+  <solidref ref="back_vertical_scint_cover_box"/>
   <auxiliary auxtype="Color" auxvalue="White"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>
-<volume name="back_horizontal_scint_box_cover_volume">
+<volume name="back_horizontal_scint_cover_box_volume">
   <materialref ref="Aluminum3003"/>
-  <solidref    ref="back_horizontal_scint_box_cover"/>
+  <solidref ref="back_horizontal_scint_cover_box"/>
   <auxiliary auxtype="Color" auxvalue="White"/>
   <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 </volume>

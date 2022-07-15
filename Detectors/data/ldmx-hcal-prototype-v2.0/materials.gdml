@@ -117,7 +117,7 @@
    <T unit="K" value="293.15"/>
    <D unit="g/cm3" value="2.6989"/>
    <fraction n="0.99" ref="Al"/>
-   <fraction n="0.01" ref="Mn"/>		 
+   <fraction n="0.01" ref="Mn"/>
 </material>
 <material name="Scintillator" state="solid">
    <T unit="K" value="293.15"/>
@@ -125,12 +125,6 @@
    <D unit="g/cm3" value="1.032"/>
    <fraction n="0.91512109" ref="C"/>
    <fraction n="0.084878906" ref="H"/>
-</material>
-
-<material name="Tungsten" state="solid">
-   <MEE unit="eV" value="727"/>
-   <D unit="g/cm3" value="19.2999898451316"/>
-   <fraction n="1" ref="W"/>
 </material>
 
 
@@ -142,11 +136,45 @@
 </material>
 
 <!-- awaiting confirmation for LYSO mateial accuracy -->
-<material formula="L1.86Y0.14Si05" name="LYSO" >
-   <D value="7.4" unit="g/cm3"   />
-   <fraction n="0.7297" ref="Lu" />
-   <fraction n="0.0279" ref="Y"  />
-   <fraction n="0.0630" ref="Si" />
-   <fraction n="0.1794" ref="O"  />
-</material>
+<isotope N="175" Z="71" name="Lu175">
+   <atom unit="g/mole" value="174.94077"/>
+</isotope>
+<isotope N="176" Z="71" name="Lu176">
+   <atom unit="g/mole" value="175.94268"/>
+</isotope>
+<element name="Lu">
+   <fraction n="0.974" ref="Lu175"/>
+   <fraction n="0.026" ref="Lu176"/>
+</element>
 
+<isotope N="89" Z="39" name="Y89">
+   <atom unit="g/mole" value="88.90584"/>
+</isotope>
+<element name="Y">
+   <fraction n="1" ref="Y89"/>
+</element>
+
+<isotope N="28" Z="14" name="Si28">
+   <atom unit="g/mole" value="27.97692653"/>
+</isotope>
+<isotope N="29" Z="14" name="Si29">
+   <atom unit="g/mole" value="28.97649466"/>
+</isotope>
+<isotope N="30" Z="14" name="Si30">
+   <atom unit="g/mole" value="29.9737701"/>
+</isotope>
+
+<element name="Si">
+   <fraction n="0.922" ref="Si28"/>
+   <fraction n="0.047" ref="Si29"/>
+   <fraction n="0.031" ref="Si30"/>
+</element>
+
+
+<material formula="L1.86Y0.14Si05" name="LYSO">
+   <D value="7.4" unit="g/cm3"/>
+   <fraction n="0.7297" ref="Lu"/>
+   <fraction n="0.0279" ref="Y"/>
+   <fraction n="0.0630" ref="Si"/>
+   <fraction n="0.1794" ref="O"/>
+</material>
