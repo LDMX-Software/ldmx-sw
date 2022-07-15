@@ -1,41 +1,64 @@
 <!-- - - - - - - - - HCal solids - - - - - - - -  -->
-<box lunit="mm" name="absorber_box"    x="absorber_width"          y="absorber_height"          z="absorber_thickness"/>
-<tube lunit="mm" name="absorber_hole" z="absorber_thickness" rmax="absorber_hole_radius" deltaphi="2*pi" aunit="rad" />
+<!-- Absorber -->
+<box lunit="mm" name="absorber_box"
+      x="absorber_width"
+      y="absorber_height"
+      z="absorber_thickness"/>
+<tube lunit="mm" name="absorber_hole"
+      z="absorber_thickness"
+      rmax="absorber_hole_radius"
+      deltaphi="2*pi"
+      aunit="rad"/>
 
-<!-- Subtracting to create 4 holes in the absorber plate -->
-<subtraction name="sub1">
-<first ref="absorber_box"/> <second ref="absorber_hole"/>
-<position  x="(absorber_width/2-absorber_hole_distance_from_edge)" y="(absorber_height/2-absorber_hole_distance_from_edge)" /> 
-</subtraction>
-<subtraction name="sub2">
-<first ref="sub1"/> <second ref="absorber_hole"/>
-<position  x="-(absorber_width/2-absorber_hole_distance_from_edge)" y="(absorber_height/2-absorber_hole_distance_from_edge)" /> 
-</subtraction>
-<subtraction name="sub3">
-<first ref="sub2"/> <second ref="absorber_hole"/>
-<position  x="(absorber_width/2-absorber_hole_distance_from_edge)" y="-(absorber_height/2-absorber_hole_distance_from_edge)" /> 
-</subtraction>
-<subtraction name="absorber">
-<first ref="sub3"/> <second ref="absorber_hole"/>
-<position  x="-(absorber_width/2-absorber_hole_distance_from_edge)" y="-(absorber_height/2-absorber_hole_distance_from_edge)" /> 
-</subtraction>
+<!-- Mounting plates  -->
+<box lunit="mm" name="vertical_bar_mounting_plate_box"
+      x="bar_mounting_plate_vertical_x"
+      y="bar_mounting_plate_vertical_y"
+      z="bar_mounting_plate_thickness"/>
+<box lunit="mm" name="horizontal_bar_mounting_plate_box"
+      x="bar_mounting_plate_horizontal_x"
+      y="bar_mounting_plate_horizontal_y"
+      z="bar_mounting_plate_thickness"/>
 
+<!-- Scintillators -->
+<!-- Front -->
+<box lunit="mm" name="front_vertical_scint_box"
+      x="scint_front_vertical_x"
+      y="scint_front_vertical_y"
+      z="scint_thickness"/>
+<box lunit="mm" name="front_horizontal_scint_box"
+      x="scint_front_horizontal_x"
+      y="scint_front_horizontal_y"
+      z="scint_thickness"/>
+<!-- Back -->
+<box lunit="mm" name="back_vertical_scint_box"
+      x="scint_back_vertical_x"
+      y="scint_back_vertical_y"
+      z="scint_thickness"/>
+<box lunit="mm" name="back_horizontal_scint_box"
+      x="scint_back_horizontal_x"
+      y="scint_back_horizontal_y"
+      z="scint_thickness"/>
 
+<!-- Scintillator covers -->
+<!-- Front -->
+<box lunit="mm" name="front_vertical_scint_cover_box"
+      x="scint_front_vertical_x"
+      y="scint_front_vertical_y"
+      z="scint_bar_cover_thickness"/>
+<box lunit="mm" name="front_horizontal_scint_cover_box"
+      x="scint_front_horizontal_x"
+      y="scint_front_horizontal_y"
+      z="scint_bar_cover_thickness"/>
+<!-- Back -->
+<box lunit="mm" name="back_vertical_scint_cover_box"
+      x="scint_back_vertical_x"
+      y="scint_back_vertical_y"
+      z="scint_bar_cover_thickness"/>
+<box lunit="mm" name="back_horizontal_scint_cover_box"
+      x="scint_back_horizontal_x"
+      y="scint_back_horizontal_y"
+      z="scint_bar_cover_thickness"/>
 
-<box lunit="mm" name="vertical_bar_mounting_plate_box"    x="bar_mounting_plate_vertical_x"          y="bar_mounting_plate_vertical_y"          z="bar_mounting_plate_thickness"/>
-<box lunit="mm" name="horizontal_bar_mounting_plate_box"  x="bar_mounting_plate_horizontal_x"        y="bar_mounting_plate_horizontal_y"        z="bar_mounting_plate_thickness"/>
-
-
-<box lunit="mm" name="front_vertical_scint_box"    x="scint_front_vertical_x"          y="scint_front_vertical_y"          z="scint_thickness"/>
-<box lunit="mm" name="front_horizontal_scint_box"    x="scint_front_horizontal_x"          y="scint_front_horizontal_y"          z="scint_thickness"/>
-<box lunit="mm" name="back_vertical_scint_box"    x="scint_back_vertical_x"          y="scint_back_vertical_y"          z="scint_thickness"/>
-<box lunit="mm" name="back_horizontal_scint_box"    x="scint_back_horizontal_x"          y="scint_back_horizontal_y"          z="scint_thickness"/>
-
-
-<box lunit="mm" name="front_vertical_scint_box_cover"    x="scint_front_vertical_x"          y="scint_front_vertical_y"          z="scint_bar_cover_thickness"/>
-<box lunit="mm" name="front_horizontal_scint_box_cover"    x="scint_front_horizontal_x"          y="scint_front_horizontal_y"          z="scint_bar_cover_thickness"/>
-<box lunit="mm" name="back_vertical_scint_box_cover"    x="scint_back_vertical_x"          y="scint_back_vertical_y"          z="scint_bar_cover_thickness"/>
-<box lunit="mm" name="back_horizontal_scint_box_cover"    x="scint_back_horizontal_x"          y="scint_back_horizontal_y"          z="scint_bar_cover_thickness"/>
-
-
-<box lunit="mm" name="air_box"      x="dx"          y="dy"          z="air_thickness"/>
+<!-- Air -->
+<box lunit="mm" name="air_box" x="dx" y="dy" z="air_thickness"/>

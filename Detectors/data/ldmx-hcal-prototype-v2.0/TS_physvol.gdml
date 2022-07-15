@@ -1,0 +1,65 @@
+<!-- Option 1: Plastic bars -->
+<loop for="layer_index" from="1" to="number_of_TS_plastic_bars" step="1">
+  <physvol name="trigger_physvol" copynumber="2*layer_index-2">
+    <volumeref ref="TS_plastic_bar_volume"/>
+    <position name="TS_plastic_bar_layer1_pos" unit="mm"
+              x="0"
+              y="(TS_plastic_bar_layer_y_increment * layer_index) + TS_plastic_bar_layer1_y_start"
+              z="TS_plastic_bar_layer1_z_pos"/>
+  </physvol>
+  <physvol name="trigger_physvol" copynumber="2*layer_index - 1">
+    <volumeref ref="TS_plastic_bar_volume"/>
+    <position name="TS_plastic_bar_layer2_pos" unit="mm"
+              x="0"
+              y="(TS_plastic_bar_layer_y_increment * layer_index) + TS_plastic_bar_layer2_y_start"
+              z="TS_plastic_bar_layer2_z_pos"/>
+  </physvol>
+</loop>
+<!-- Option 2: LYSO bars -->
+<!--
+<loop for="layer_index" from="1" to="6" step="1">
+  <physvol name="trigger_physvol" copynumber="2*layer_index-2">
+    <volumeref ref="TS_plastic_bar_volume"/>
+    <position name="TS_plastic_bar_layer1_pos" unit="mm"
+              x="0"
+              y="(TS_plastic_bar_layer_y_increment * layer_index) + TS_plastic_bar_layer1_y_start"
+              z="TS_plastic_bar_layer1_z_pos"/>
+  </physvol>
+</loop>
+<loop for="layer_index" from="1" to="8" step="1">
+  <physvol name="TS_LYSO_bar_physvol" copynumber="2*layer_index-2">
+    <volumeref ref="TS_LYSO_bar_volume"/>
+    <position name="TS_LYSO_bar_layer1_pos" unit="mm"
+              x="0"
+              y="(TS_LYSO_bar_layer_y_increment * layer_index) + TS_LYSO_bar_layer1_y_start"
+              z="TS_LYSO_bar_layer1_z_pos"/>
+  </physvol>
+  <physvol name="TS_LYSO_bar_physvol" copynumber="2*layer_index-2">
+    <volumeref ref="TS_LYSO_bar_volume"/>
+    <position name="TS_LYSO_bar_layer1_pos" unit="mm"
+              x="0"
+              y="(TS_LYSO_bar_layer_y_increment * layer_index) + TS_LYSO_bar_layer2_y_start"
+              z="TS_LYSO_bar_layer2_z_pos"/>
+  </physvol>
+</loop>
+-->
+<!-- Option 3: LYSO plate -->
+<!--
+<loop for="layer_index" from="1" to="number_of_TS_plastic_bars" step="1">
+  <physvol name="trigger_physvol" copynumber="2*layer_index-2">
+    <volumeref ref="TS_plastic_bar_volume"/>
+    <position name="TS_plastic_bar_layer1_pos" unit="mm"
+              x="0"
+              y="(TS_plastic_bar_layer_y_increment * layer_index) + TS_plastic_bar_layer1_y_start"
+              z="TS_plastic_bar_layer1_z_pos"/>
+  </physvol>
+</loop>
+<physvol name="TS_LYSO_plate_physvol" copynumber="1">
+  <volumeref ref="TS_LYSO_plate_volume"/>
+  <position name="TS_LYSO_plate_pos" unit="mm"
+            x="0"
+            y="0"
+            z="TS_LYSO_plate_z_pos"/>
+</physvol>
+-->
+
