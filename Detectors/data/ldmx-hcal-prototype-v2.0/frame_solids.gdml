@@ -1,260 +1,323 @@
 <!-- Frame solids -->
-
 <tube name="hole" z="frame_length_z*2+1" rmax="6.81/2" deltaphi="6.28318531" aunit="rad" lunit="mm"/>
-<box name="frame_shortening_box" x="80+1" y="80+1" z="frame_length_z" lunit="mm"/>
 
-<xtru name = "frame_8080_filled" lunit= "mm" >
-	<twoDimVertex x="0-40" y="0-40" /> 
-	<twoDimVertex x="0+w2-40" y="0-40" />
-	<twoDimVertex x="0+w2-40" y="0+d1-40" />
-	<twoDimVertex x="0+w1-40" y="0+d1-40" />
-	<twoDimVertex x="0+w2-40" y="0+d2-40" />
-	<twoDimVertex x="40-w2-40" y="0+d2-40" />
-	<twoDimVertex x="40-w1-40" y="0+d1-40" />
-	<twoDimVertex x="40-w2-40" y="0+d1-40" />
-	<twoDimVertex x="40-w2-40" y="0-40" />
-	<twoDimVertex x="40-40" y="0-40" />	
+<box name="frame_shortening_box"
+		x="80 + 1"
+		y="80 + 1"
+		z="frame_length_z" lunit="mm"/>
 
-	<twoDimVertex x="40+w2-40" y="0-40" />
-	<twoDimVertex x="40+w2-40" y="0+d1-40" />
-	<twoDimVertex x="40+w1-40" y="0+d1-40" />
-	<twoDimVertex x="40+w2-40" y="0+d2-40" />
-	<twoDimVertex x="80-w2-40" y="0+d2-40" />
-	<twoDimVertex x="80-w1-40" y="0+d1-40" />
-	<twoDimVertex x="80-w2-40" y="0+d1-40" />
-	<twoDimVertex x="80-w2-40" y="0-40" />
-	<twoDimVertex x="80-40" y="0-40" />	
-	
-	<twoDimVertex x="80-40" y="w2-40" />
-	<twoDimVertex x="80-d1-40" y="w2-40" />
-	<twoDimVertex x="80-d1-40" y="w1-40" />
-	<twoDimVertex x="80-d2-40" y="w2-40" />
-	<twoDimVertex x="80-d2-40" y="40-w2-40" />
-	<twoDimVertex x="80-d1-40" y="40-w1-40" />
-	<twoDimVertex x="80-d1-40" y="40-w2-40" />
-	<twoDimVertex x="80-40" y="40-w2-40" />
-	
-	<twoDimVertex x="80-40" y="40+w2-40" />
-	<twoDimVertex x="80-d1-40" y="40+w2-40" />
-	<twoDimVertex x="80-d1-40" y="40+w1-40" />
-	<twoDimVertex x="80-d2-40" y="40+w2-40" />
-	<twoDimVertex x="80-d2-40" y="80-w2-40" />
-	<twoDimVertex x="80-d1-40" y="80-w1-40" />
-	<twoDimVertex x="80-d1-40" y="80-w2-40" />
-	<twoDimVertex x="80-40" y="80-w2-40" />
-	<twoDimVertex x="80-40" y="80-40" />		
-	
-	<twoDimVertex x="80-w2-40" y="80-40" />
-	<twoDimVertex x="80-w2-40" y="80-d1-40" />
-	<twoDimVertex x="80-w1-40" y="80-d1-40" />
-	<twoDimVertex x="80-w2-40" y="80-d2-40" />
-	<twoDimVertex x="40+w2-40" y="80-d2-40" />
-	<twoDimVertex x="40+w1-40" y="80-d1-40" />
-	<twoDimVertex x="40+w2-40" y="80-d1-40" />
-	<twoDimVertex x="40+w2-40" y="80-40" />
-	<twoDimVertex x="40-40" y="80-40" />		
-	
-	<twoDimVertex x="40-w2-40" y="80-40" />
-	<twoDimVertex x="40-w2-40" y="80-d1-40" />
-	<twoDimVertex x="40-w1-40" y="80-d1-40" />
-	<twoDimVertex x="40-w2-40" y="80-d2-40" />
-	<twoDimVertex x="0+w2-40" y="80-d2-40" />
-	<twoDimVertex x="0+w1-40" y="80-d1-40" />
-	<twoDimVertex x="0+w2-40" y="80-d1-40" />
-	<twoDimVertex x="0+w2-40" y="80-40" />
-	<twoDimVertex x="0-40" y="80-40" />				
-	
-	<twoDimVertex x="0-40" y="80-w2-40" />
-	<twoDimVertex x="0+d1-40" y="80-w2-40" />
-	<twoDimVertex x="0+d1-40" y="80-w1-40" />
-	<twoDimVertex x="0+d2-40" y="80-w2-40" />
-	<twoDimVertex x="0+d2-40" y="40+w2-40" />
-	<twoDimVertex x="0+d1-40" y="40+w1-40" />
-	<twoDimVertex x="0+d1-40" y="40+w2-40" />
-	<twoDimVertex x="0-40" y="40+w2-40" />
-	
-	<twoDimVertex x="0-40" y="40-w2-40" />
-	<twoDimVertex x="0+d1-40" y="40-w2-40" />
-	<twoDimVertex x="0+d1-40" y="40-w1-40" />
-	<twoDimVertex x="0+d2-40" y="40-w2-40" />
-	<twoDimVertex x="0+d2-40" y="w2-40" />
-	<twoDimVertex x="0+d1-40" y="w1-40" />
-	<twoDimVertex x="0+d1-40" y="w2-40" />
-	<twoDimVertex x="0-40" y="w2-40" />
-	
-	 <section zOrder="1" zPosition="-frame_length_z/2" xOffset="0" yOffset="0" scalingFactor="1" />
-	 <section zOrder="2" zPosition="frame_length_z/2" xOffset="0" yOffset="0" scalingFactor="1" />
+<xtru name="frame_8080_filled" lunit="mm">
+	<twoDimVertex x="0 - 40" y="0 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="0 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="0 + w1 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="0 + d2 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="0 + d2 - 40"/>
+	<twoDimVertex x="40 - w1 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="0 - 40"/>
+	<twoDimVertex x="40 - 40" y="0 - 40"/>
+
+
+	<twoDimVertex x="40 + w2 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 + w1 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 + w2 - 40" y="0 + d2 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="0 + d2 - 40"/>
+	<twoDimVertex x="80 - w1 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="0 + d1 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="0 - 40"/>
+	<twoDimVertex x="80 - 40" y="0 - 40"/>
+
+	<twoDimVertex x="80 - 40" y="w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="w1 - 40"/>
+	<twoDimVertex x="80 - d2 - 40" y="w2 - 40"/>
+	<twoDimVertex x="80 - d2 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 - w1 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="80 - 40" y="40 - w2 - 40"/>
+
+	<twoDimVertex x="80 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 + w1 - 40"/>
+	<twoDimVertex x="80 - d2 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="80 - d2 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="80 - w1 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="80 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="80 - 40" y="80 - 40"/>
+
+	<twoDimVertex x="80 - w2 - 40" y="80 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="80 - w1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="80 - d2 - 40"/>
+	<twoDimVertex x="40 + w2 - 40" y="80 - d2 - 40"/>
+	<twoDimVertex x="40 + w1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 + w2 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - 40" y="80 - 40"/>
+
+	<twoDimVertex x="40 - w2 - 40" y="80 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - w1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="80 - d2 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="80 - d2 - 40"/>
+	<twoDimVertex x="0 + w1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 40" y="80 - 40"/>
+	<twoDimVertex x="0 - 40" y="80 - 40"/>
+
+	<twoDimVertex x="0 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="80 - w1 - 40"/>
+	<twoDimVertex x="0 + d2 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d2 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="40 + w1 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="0 - 40" y="40 + w2 - 40"/>
+
+	<twoDimVertex x="0 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="40 - w1 - 40"/>
+	<twoDimVertex x="0 + d2 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d2 - 40" y="w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="w1 - 40"/>
+	<twoDimVertex x="0 + d1 - 40" y="w2 - 40"/>
+	<twoDimVertex x="0 - 40" y="w2 - 40"/>
+
+	<section zOrder="1"
+				zPosition="-frame_length_z/2"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
+	<section zOrder="2"
+				zPosition="frame_length_z/2"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
 </xtru>
-
-<xtru name = "frame_8080_center_hole" lunit= "mm" >
-	<twoDimVertex x="d1-40" y="40-d1-40" /> 
-	<twoDimVertex x="w1-40" y="40-d1-40" /> 
-	<twoDimVertex x="w2-40" y="40-d2-40" /> 
-	<twoDimVertex x="40-w2-40" y="40-d2-40" /> 
-	<twoDimVertex x="40-d2-40" y="40-w2-40" /> 
-	<twoDimVertex x="40-d2-40" y="w2-40" /> 
-	<twoDimVertex x="40-d1-40" y="w1-40" /> 
-	<twoDimVertex x="40-d1-40" y="d1-40" /> 
-	<twoDimVertex x="40+d1-40" y="d1-40" /> 
-	<twoDimVertex x="40+d1-40" y="w1-40" /> 
-	<twoDimVertex x="40+d2-40" y="w2-40" /> 
-	<twoDimVertex x="40+d2-40" y="40-w2-40" /> 
-	<twoDimVertex x="40+w2-40" y="40-d2-40" /> 		
-	<twoDimVertex x="80-w2-40" y="40-d2-40" /> 
-	<twoDimVertex x="80-w1-40" y="40-d1-40" /> 
-	<twoDimVertex x="80-d1-40" y="40-d1-40" /> 		
-	<twoDimVertex x="80-d1-40" y="40+d1-40" /> 
-	<twoDimVertex x="80-w1-40" y="40+d1-40" /> 
-	<twoDimVertex x="80-w2-40" y="40+d2-40" /> 	
-	<twoDimVertex x="40+w2-40" y="40+d2-40" /> 	
-	<twoDimVertex x="40+d2-40" y="40+w2-40" /> 		
-	<twoDimVertex x="40+d2-40" y="80-w2-40" /> 
-	<twoDimVertex x="40+d1-40" y="80-w1-40" /> 
-	<twoDimVertex x="40+d1-40" y="80-d1-40" /> 
-	<twoDimVertex x="40-d1-40" y="80-d1-40" /> 
-	<twoDimVertex x="40-d1-40" y="80-w1-40" /> 
-	<twoDimVertex x="40-d2-40" y="80-w2-40" /> 
-	<twoDimVertex x="40-d2-40" y="40+w2-40" />
-	<twoDimVertex x="40-w2-40" y="40+d2-40" /> 
-	<twoDimVertex x="w2-40" y="40+d2-40" /> 
-	<twoDimVertex x="w1-40" y="40+d1-40" /> 	
-	<twoDimVertex x="d1-40" y="40+d1-40" />
-	 <section zOrder="1" zPosition="-frame_length_z/2-1" xOffset="0" yOffset="0" scalingFactor="1" />
-	 <section zOrder="2" zPosition="-frame_length_z/2+1" xOffset="0" yOffset="0" scalingFactor="1" />
+<xtru name="frame_8080_center_hole" lunit="mm">
+	<twoDimVertex x="d1 - 40" y="40 - d1 - 40"/>
+	<twoDimVertex x="w1 - 40" y="40 - d1 - 40"/>
+	<twoDimVertex x="w2 - 40" y="40 - d2 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="40 - d2 - 40"/>
+	<twoDimVertex x="40 - d2 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="40 - d2 - 40" y="w2 - 40"/>
+	<twoDimVertex x="40 - d1 - 40" y="w1 - 40"/>
+	<twoDimVertex x="40 - d1 - 40" y="d1 - 40"/>
+	<twoDimVertex x="40 + d1 - 40" y="d1 - 40"/>
+	<twoDimVertex x="40 + d1 - 40" y="w1 - 40"/>
+	<twoDimVertex x="40 + d2 - 40" y="w2 - 40"/>
+	<twoDimVertex x="40 + d2 - 40" y="40 - w2 - 40"/>
+	<twoDimVertex x="40 + w2 - 40" y="40 - d2 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="40 - d2 - 40"/>
+	<twoDimVertex x="80 - w1 - 40" y="40 - d1 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 - d1 - 40"/>
+	<twoDimVertex x="80 - d1 - 40" y="40 + d1 - 40"/>
+	<twoDimVertex x="80 - w1 - 40" y="40 + d1 - 40"/>
+	<twoDimVertex x="80 - w2 - 40" y="40 + d2 - 40"/>
+	<twoDimVertex x="40 + w2 - 40" y="40 + d2 - 40"/>
+	<twoDimVertex x="40 + d2 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="40 + d2 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="40 + d1 - 40" y="80 - w1 - 40"/>
+	<twoDimVertex x="40 + d1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - d1 - 40" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - d1 - 40" y="80 - w1 - 40"/>
+	<twoDimVertex x="40 - d2 - 40" y="80 - w2 - 40"/>
+	<twoDimVertex x="40 - d2 - 40" y="40 + w2 - 40"/>
+	<twoDimVertex x="40 - w2 - 40" y="40 + d2 - 40"/>
+	<twoDimVertex x="w2 - 40" y="40 + d2 - 40"/>
+	<twoDimVertex x="w1 - 40" y="40 + d1 - 40"/>
+	<twoDimVertex x="d1 - 40" y="40 + d1 - 40"/>
+	<section zOrder="1"
+				zPosition="-frame_length_z/2 - 1"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
+	<section zOrder="2"
+				zPosition="-frame_length_z/2 + 1"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
 </xtru>
-
 <subtraction name="sub1_8080">
-	<first ref="frame_8080_filled"/> <second ref="hole"/>
-	<position  name="hole1" x="-20" y="-20" /> 
+	<first ref="frame_8080_filled"/>
+	<second ref="hole"/>
+	<position name="hole1"
+				x="-20"
+				y="-20"/>
 </subtraction>
 <subtraction name="sub2_8080">
-	<first ref="sub1_8080"/> <second ref="hole"/>
-	<position  name="hole1" x="-20" y="20" /> 
+	<first ref="sub1_8080"/>
+	<second ref="hole"/>
+	<position name="hole1"
+				x="-20"
+				y="20"/>
 </subtraction>
 <subtraction name="sub3_8080">
-	<first ref="sub2_8080"/> <second ref="hole"/>
-	<position  name="hole1" x="20" y="-20" /> 
+	<first ref="sub2_8080"/>
+	<second ref="hole"/>
+	<position name="hole1"
+				x="20"
+				y="-20"/>
 </subtraction>
 <subtraction name="sub4_8080">
-	<first ref="sub3_8080"/> <second ref="hole"/>
-	<position  name="hole1" x="20" y="20" /> 
-</subtraction>  
-
-<subtraction name="frame_8080">
-	<first ref="sub4_8080"/> <second ref="frame_8080_center_hole"/>
-	<position  name="hole_big" x="0" y="0" /> 
+	<first ref="sub3_8080"/>
+	<second ref="hole"/>
+	<position name="hole1"
+				x="20"
+				y="20"/>
 </subtraction>
-
+<subtraction name="frame_8080">
+	<first ref="sub4_8080"/>
+	<second ref="frame_8080_center_hole"/>
+	<position name="hole_big"
+				x="0"
+				y="0"/>
+</subtraction>
 <subtraction name="sub5_8080">
-	<first ref="frame_8080"/> <second ref="frame_shortening_box"/>
-	<position  name="cut" x="0" y="0" z="(frame_length_x+frame_length_z)/2"/> 
+	<first ref="frame_8080"/>
+	<second ref="frame_shortening_box"/>
+	<position name="cut"
+				x="0"
+				y="0"
+				z="(frame_length_x + frame_length_z)/2"/>
 </subtraction>
 <subtraction name="frame_8080_short">
-	<first ref="sub5_8080"/> <second ref="frame_shortening_box"/>
-	<position  name="frame_short_pos" x="0" y="0" z="-(frame_length_x+frame_length_z)/2"/> 
+	<first ref="sub5_8080"/>
+	<second ref="frame_shortening_box"/>
+	<position name="frame_short_pos"
+				x="0"
+				y="0"
+				z="-(frame_length_x + frame_length_z)/2"/>
 </subtraction>
+<xtru name="frame_4080_filled" lunit="mm">
+	<twoDimVertex x="0 - 20" y="0 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="0 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="0 + d1 - 40"/>
+	<twoDimVertex x="0 + w1 - 20" y="0 + d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="0 + d2 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="0 + d2 - 40"/>
+	<twoDimVertex x="40 - w1 - 20" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="0 + d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="0 - 40"/>
+	<twoDimVertex x="40 - 20" y="0 - 40"/>
 
-  
-<xtru name = "frame_4080_filled" lunit= "mm" >
-	<twoDimVertex x="0-20" y="0-40" /> 
-	<twoDimVertex x="0+w2-20" y="0-40" />
-	<twoDimVertex x="0+w2-20" y="0+d1-40" />
-	<twoDimVertex x="0+w1-20" y="0+d1-40" />
-	<twoDimVertex x="0+w2-20" y="0+d2-40" />
-	<twoDimVertex x="40-w2-20" y="0+d2-40" />
-	<twoDimVertex x="40-w1-20" y="0+d1-40" />
-	<twoDimVertex x="40-w2-20" y="0+d1-40" />
-	<twoDimVertex x="40-w2-20" y="0-40" />
-	<twoDimVertex x="40-20" y="0-40" />	
-	
-	<twoDimVertex x="40-20" y="w2-40" />
-	<twoDimVertex x="40-d1-20" y="w2-40" />
-	<twoDimVertex x="40-d1-20" y="w1-40" />
-	<twoDimVertex x="40-d2-20" y="w2-40" />
-	<twoDimVertex x="40-d2-20" y="40-w2-40" />
-	<twoDimVertex x="40-d1-20" y="40-w1-40" />
-	<twoDimVertex x="40-d1-20" y="40-w2-40" />
-	<twoDimVertex x="40-20" y="40-w2-40" />
-	<twoDimVertex x="40-20" y="40-40" />
-	
-	<twoDimVertex x="40-20" y="40+w2-40" />
-	<twoDimVertex x="40-d1-20" y="40+w2-40" />
-	<twoDimVertex x="40-d1-20" y="40+w1-40" />
-	<twoDimVertex x="40-d2-20" y="40+w2-40" />
-	<twoDimVertex x="40-d2-20" y="80-w2-40" />
-	<twoDimVertex x="40-d1-20" y="80-w1-40" />
-	<twoDimVertex x="40-d1-20" y="80-w2-40" />
-	<twoDimVertex x="40-20" y="80-w2-40" />
-	<twoDimVertex x="40-20" y="80-40" />
-	
-	<twoDimVertex x="40-w2-20" y="80-40" />
-	<twoDimVertex x="40-w2-20" y="80-d1-40" />
-	<twoDimVertex x="40-w1-20" y="80-d1-40" />
-	<twoDimVertex x="40-w2-20" y="80-d2-40" />
-	<twoDimVertex x="0+w2-20" y="80-d2-40" />
-	<twoDimVertex x="0+w1-20" y="80-d1-40" />
-	<twoDimVertex x="0+w2-20" y="80-d1-40" />
-	<twoDimVertex x="0+w2-20" y="80-40" />
-	<twoDimVertex x="0-20" y="80-40" />		
-	
-	<twoDimVertex x="0-20" y="80-w2-40" />
-	<twoDimVertex x="0+d1-20" y="80-w2-40" />
-	<twoDimVertex x="0+d1-20" y="80-w1-40" />
-	<twoDimVertex x="0+d2-20" y="80-w2-40" />
-	<twoDimVertex x="0+d2-20" y="40+w2-40" />
-	<twoDimVertex x="0+d1-20" y="40+w1-40" />
-	<twoDimVertex x="0+d1-20" y="40+w2-40" />
-	<twoDimVertex x="0-20" y="40+w2-40" />
-	
-	<twoDimVertex x="0-20" y="40-w2-40" />
-	<twoDimVertex x="0+d1-20" y="40-w2-40" />
-	<twoDimVertex x="0+d1-20" y="40-w1-40" />
-	<twoDimVertex x="0+d2-20" y="40-w2-40" />
-	<twoDimVertex x="0+d2-20" y="w2-40" />
-	<twoDimVertex x="0+d1-20" y="w1-40" />
-	<twoDimVertex x="0+d1-20" y="w2-40" />
-	<twoDimVertex x="0-20" y="w2-40" />
-	
-	 <section zOrder="1" zPosition="-frame_length_z/2" xOffset="0" yOffset="0" scalingFactor="1" />
-	 <section zOrder="2" zPosition="frame_length_z/2" xOffset="0" yOffset="0" scalingFactor="1" />
+	<twoDimVertex x="40 - 20" y="w2 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="w2 - 40"/>
+	<twoDimVertex x="40 - d1 -20" y="w1 - 40"/>
+	<twoDimVertex x="40 - d2 -20" y="w2 - 40"/>
+	<twoDimVertex x="40 - d2 -20" y="40 - w2 - 40"/>
+	<twoDimVertex x="40 - d1 -20" y="40 - w1 - 40"/>
+	<twoDimVertex x="40 - d1 -20" y="40 - w2 - 40"/>
+	<twoDimVertex x="40 - 20" y="40 - 40"/>
+
+	<twoDimVertex x="40 - 20" y="40 + w2 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="40 + w2 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="40 + w1 - 40"/>
+	<twoDimVertex x="40 - d2 - 20" y="40 + w2 - 40"/>
+	<twoDimVertex x="40 - d2 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="80 - w1 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="40 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="40 - 20" y="80 - 40"/>
+
+	<twoDimVertex x="40 - w2 - 20" y="80 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - w1 - 20" y="80 - d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="80 - d2 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="80 - d2 - 40"/>
+	<twoDimVertex x="0 + w1 - 20" y="80 - d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="80 - d1 - 40"/>
+	<twoDimVertex x="0 + w2 - 20" y="80 - 40"/>
+	<twoDimVertex x="0 - 20" y="80 - 40"/>
+
+	<twoDimVertex x="0 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="80 - w1 - 40"/>
+	<twoDimVertex x="0 + d2 - 20" y="80 - w2 - 40"/>
+	<twoDimVertex x="0 + d2 - 20" y="40 + w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="40 + w1 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="40 + w2 - 40"/>
+	<twoDimVertex x="0 - 20" y="40 + w2 - 40"/>
+
+	<twoDimVertex x="0 - 20" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="40 - w1 - 40"/>
+	<twoDimVertex x="0 + d2 - 20" y="40 - w2 - 40"/>
+	<twoDimVertex x="0 + d2 - 20" y="w2 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="w1 - 40"/>
+	<twoDimVertex x="0 + d1 - 20" y="w2 - 40"/>
+	<twoDimVertex x="0 - 20" y="w2 - 40"/>
+
+	<section zOrder="1"
+				zPosition="-frame_length_z/2"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
+	<section zOrder="2"
+				zPosition="frame_length_z/2"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
 </xtru>
-
-<xtru name = "frame_4080_center_hole" lunit= "mm" >
-	<twoDimVertex x="d1-20" y="40-d1-40" /> 
-	<twoDimVertex x="w1-20" y="40-d1-40" /> 
-	<twoDimVertex x="w2-20" y="40-d2-40" /> 
-	<twoDimVertex x="40-w2-20" y="40-d2-40" /> 
-	<twoDimVertex x="40-w1-20" y="40-d1-40" /> 
-	<twoDimVertex x="40-d1-20" y="40-d1-40" /> 
-	
-	<twoDimVertex x="40-d1-20" y="40+d1-40" /> 
-	<twoDimVertex x="40-w1-20" y="40+d1-40" /> 
-	<twoDimVertex x="40-w2-20" y="40+d2-40" /> 
-	<twoDimVertex x="w2-20" y="40+d2-40" /> 
-	<twoDimVertex x="w1-20" y="40+d1-40" /> 	
-	<twoDimVertex x="d1-20" y="40+d1-40" />
-	 <section zOrder="1" zPosition="-frame_length_z/2-1" xOffset="0" yOffset="0" scalingFactor="1" />
-	 <section zOrder="2" zPosition="-frame_length_z/2+1" xOffset="0" yOffset="0" scalingFactor="1" />
-</xtru>  
+<xtru name="frame_4080_center_hole" lunit="mm">
+	<twoDimVertex x="d1 - 20" y="40 - d1 - 40"/>
+	<twoDimVertex x="w1 - 20" y="40 - d1 - 40"/>
+	<twoDimVertex x="w2 - 20" y="40 - d2 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="40 - d2 - 40"/>
+	<twoDimVertex x="40 - w1 - 20" y="40 - d1 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="40 - d1 - 40"/>
+	<twoDimVertex x="40 - d1 - 20" y="40 + d1 - 40"/>
+	<twoDimVertex x="40 - w1 - 20" y="40 + d1 - 40"/>
+	<twoDimVertex x="40 - w2 - 20" y="40 + d2 - 40"/>
+	<twoDimVertex x="w2 - 20" y="40 + d2 - 40"/>
+	<twoDimVertex x="w1 - 20" y="40 + d1 - 40"/>
+	<twoDimVertex x="d1 - 20" y="40 + d1 - 40"/>
+	<section zOrder="1"
+				zPosition="-frame_length_z/2 - 1"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
+	<section zOrder="2"
+				zPosition="-frame_length_z/2 + 1"
+				xOffset="0"
+				yOffset="0"
+				scalingFactor="1"/>
+</xtru>
 <subtraction name="sub1_4080">
-	<first ref="frame_4080_filled"/> <second ref="hole"/>
-	<position  name="hole_small" x="0" y="-20" /> 
+	<first ref="frame_4080_filled"/>
+	<second ref="hole"/>
+	<position name="hole_small"
+				x="0"
+				y="-20"/>
 </subtraction>
 <subtraction name="sub2_4080">
-	<first ref="sub1_4080"/> <second ref="hole"/>
-	<position  name="hole_small" x="0" y="20" /> 
+	<first ref="sub1_4080"/>
+	<second ref="hole"/>
+	<position name="hole_small"
+				x="0"
+				y="20"/>
 </subtraction>
 <subtraction name="frame_4080">
-	<first ref="sub2_4080"/> <second ref="frame_4080_center_hole"/>
-	<position  name="hole_big" x="0" y="0" /> 
-</subtraction>  
+	<first ref="sub2_4080"/>
+	<second ref="frame_4080_center_hole"/>
+	<position name="hole_big"
+				x="0"
+				y="0"/>
+</subtraction>
 <subtraction name="sub3_4080">
-	<first ref="frame_4080"/> <second ref="frame_shortening_box"/>
-	<position  name="cut" x="0" y="0" z="(frame_length_x+frame_length_z)/2"/> 
+	<first ref="frame_4080"/>
+	<second ref="frame_shortening_box"/>
+	<position name="cut"
+				x="0"
+				y="0"
+				z="(frame_length_x+frame_length_z)/2"/>
 </subtraction>
 <subtraction name="frame_4080_short">
-	<first ref="sub3_4080"/> <second ref="frame_shortening_box"/>
-	<position  name="frame_short_pos" x="0" y="0" z="-(frame_length_x+frame_length_z)/2"/> 
-</subtraction>  
-  
-  
+	<first ref="sub3_4080"/>
+	<second ref="frame_shortening_box"/>
+	<position name="frame_short_pos"
+				x="0"
+				y="0"
+				z="-(frame_length_x + frame_length_z)/2"/>
+</subtraction>

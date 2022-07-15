@@ -1,78 +1,126 @@
 <physvol>
- <volumeref ref="frame_8080_short_vol"/>
- <position name="frame_x1" unit="mm" x="0" y="440-40" z="-(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_8080_short_vol"/>
+  <position name="frame_x1" unit="mm"
+            x="0"
+            y="440-40"
+            z="-(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_short_vol"/>
- <position name="frame_x2" unit="mm" x="0" y="-(absorber_height/2+40)" z="-(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_8080_short_vol"/>
+  <position name="frame_x2" unit="mm"
+            x="0"
+            y="-(absorber_height/2+40)"
+            z="-(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_short_vol"/>
- <position name="frame_x3" unit="mm" x="0" y="-1060+40" z="-(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_8080_short_vol"/>
+  <position name="frame_x3" unit="mm"
+            x="0"
+            y="-1060+40"
+            z="-(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_short_vol"/>
- <position name="frame_x4" unit="mm" x="0" y="-1060+40" z="(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_8080_short_vol"/>
+  <position name="frame_x4" unit="mm"
+            x="0"
+            y="-1060+40"
+            z="(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_short_vol"/>
- <position name="frame_x5" unit="mm" x="0" y="-(absorber_height/2+40)" z="(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_8080_short_vol"/>
+  <position name="frame_x5" unit="mm"
+            x="0"
+            y="-(absorber_height/2+40)"
+            z="(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_4080_short_vol"/>
- <position name="frame_x6" unit="mm" x="0" y="440-40" z="(frame_length_z/2+40)"/>
- <rotationref ref="crosswise_rotation"/>
-</physvol>  
+  <volumeref ref="frame_4080_short_vol"/>
+  <position name="frame_x6" unit="mm"
+            x="0"
+            y="440-40"
+            z="(frame_length_z/2+40)"/>
+  <rotationref ref="crosswise_rotation"/>
+</physvol>
 
 
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_y1" unit="mm" x="(310+40)" y="-310" z="(frame_length_z/2+40)"/>
- <rotationref ref="vertical_rotation"/>
-</physvol>      
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_y1" unit="mm"
+            x="(310+40)"
+            y="-310"
+            z="(frame_length_z/2+40)"/>
+  <rotationref ref="vertical_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_y2" unit="mm" x="(310+40)" y="-310" z="-(frame_length_z/2+40)"/>
- <rotationref ref="vertical_rotation"/>
-</physvol>   
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_y2" unit="mm"
+            x="(310+40)"
+            y="-310"
+            z="-(frame_length_z/2+40)"/>
+  <rotationref ref="vertical_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_y3" unit="mm" x="-(310+40)" y="-310" z="-(frame_length_z/2+40)"/>
- <rotationref ref="vertical_rotation"/>
-</physvol>   
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_y3" unit="mm"
+            x="-(310+40)"
+            y="-310"
+            z="-(frame_length_z/2+40)"/>
+  <rotationref ref="vertical_rotation"/>
+</physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_y4" unit="mm" x="-(310+40)" y="-310" z="(frame_length_z/2+40)"/>
- <rotationref ref="vertical_rotation"/>
-</physvol>       
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_y4" unit="mm"
+            x="-(310+40)"
+            y="-310"
+            z="(frame_length_z/2+40)"/>
+  <rotationref ref="vertical_rotation"/>
+</physvol>
 
 
 <physvol>
- <volumeref ref="frame_4080_vol"/>
- <position name="frame_z1" unit="mm" x="(310+60)" y="440-40" z="0"/>
+  <volumeref ref="frame_4080_vol"/>
+  <position name="frame_z1" unit="mm"
+            x="(310+60)"
+            y="440-40"
+            z="0"/>
 </physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_z2" unit="mm" x="(310+40)" y="-(absorber_height/2+40)" z="0"/>
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_z2" unit="mm"
+            x="(310+40)"
+            y="-(absorber_height/2+40)"
+            z="0"/>
 </physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_z3" unit="mm" x="(310+40)" y="-1060+40" z="0"/>
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_z3" unit="mm"
+            x="(310+40)"
+            y="-1060+40"
+            z="0"/>
 </physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_z4" unit="mm" x="-(310+40)" y="-1060+40" z="0"/>
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_z4" unit="mm"
+            x="-(310+40)"
+            y="-1060+40"
+            z="0"/>
 </physvol>
 <physvol>
- <volumeref ref="frame_8080_vol"/>
- <position name="frame_z5" unit="mm" x="-(310+40)" y="-(absorber_height/2+40)" z="0"/>
+  <volumeref ref="frame_8080_vol"/>
+  <position name="frame_z5" unit="mm"
+            x="-(310+40)"
+            y="-(absorber_height/2+40)"
+            z="0"/>
 </physvol>
 <physvol>
- <volumeref ref="frame_4080_vol"/>
- <position name="frame_z6" unit="mm" x="-(310+60)" y="440-40" z="0"/>
-</physvol>   
+  <volumeref ref="frame_4080_vol"/>
+  <position name="frame_z6" unit="mm"
+            x="-(310+60)"
+            y="440-40"
+            z="0"/>
+</physvol>
