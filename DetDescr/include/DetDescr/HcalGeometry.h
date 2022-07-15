@@ -189,9 +189,14 @@ private:
   double EcalDx_;
   double EcalDy_;
 
+  // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
+  // geometry that corresponds to a horizontal layer (scintillator bar length
+  // along the x-axis).
+  int horizontalParity_{};
 
+  /// Canonical layered version of parameters that differ between geometry
+  /// versions.
 
-  /// Canonical layered version of parameters that differ between geometry versions
   /// Number of strips per layer in each section and each layer
   std::vector<std::vector<int>> NumStrips_;
   /// The plane of the zero'th strip of each section [mm]
