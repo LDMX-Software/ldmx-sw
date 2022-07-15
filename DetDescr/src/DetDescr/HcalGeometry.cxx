@@ -25,10 +25,12 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
   // use prototype geometry initialization
   //
-  // Should perhaps be done with a regex
   auto is_prototype =
-      std::find(detectors_valid.cbegin(), detectors_valid.cend(),
-                "ldmx-hcal-prototype-v1.0") != detectors_valid.cend();
+      std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
+                   [](const auto detector) {
+                     return detector.find("ldmx-hcal-prototype") !=
+                            std::string::npos;
+                   }) != detectors_valid.cend();
   if (is_prototype) {
     auto ZeroStrip_prototype_ =
         ps.getParameter<std::vector<double>>("ZeroStrip", {});
