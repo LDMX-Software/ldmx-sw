@@ -142,7 +142,7 @@ class HcalGeometry() :
             0.
 
         """
-        self.prototype=HcalReadoutGeometry()
+        self.v1_prototype=HcalReadoutGeometry()
         # GDML-parameters
         air_thickness = 2.
         absorber_thickness = 25
@@ -164,23 +164,23 @@ class HcalGeometry() :
         # End GDML-parameters
 
 
-        self.prototype.ThicknessScint = scint_thickness
-        self.prototype.WidthScint = scint_bar_width
+        self.v1_prototype.ThicknessScint = scint_thickness
+        self.v1_prototype.WidthScint = scint_bar_width
 
         # Note that this seems to be location of the first scintillator layer
-        self.prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
-        self.prototype.LayerThickness = [layer_thickness]
-        self.prototype.NumSections = 1
-        self.prototype.NumLayers = [num_layers]
+        self.v1_prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
+        self.v1_prototype.LayerThickness = [layer_thickness]
+        self.v1_prototype.NumSections = 1
+        self.v1_prototype.NumLayers = [num_layers]
         NumStrips_front = [num_bars_front for i in range(num_layers_front)]
         NumStrips_back = [num_bars_back for i in range(num_layers_back)]
-        self.prototype.NumStrips = NumStrips_front + NumStrips_back
+        self.v1_prototype.NumStrips = NumStrips_front + NumStrips_back
         # ZeroStrip and HalfTotalWidth are identical
-        self.prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.prototype.NumStrips]
-        self.prototype.HalfTotalWidth = self.prototype.ZeroStrip
-        self.prototype.EcalDx = 0.
-        self.prototype.EcalDy = 0.
-        self.prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
+        self.v1_prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.v1_prototype.NumStrips]
+        self.v1_prototype.HalfTotalWidth = self.v1_prototype.ZeroStrip
+        self.v1_prototype.EcalDx = 0.
+        self.v1_prototype.EcalDy = 0.
+        self.v1_prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
 
 
     def make_v2_prototype(self):
@@ -231,7 +231,7 @@ class HcalGeometry() :
             0.
 
         """
-        self.prototype=HcalReadoutGeometry()
+        self.v2_prototype=HcalReadoutGeometry()
         # GDML-parameters
         absorber_thickness = 20.
         scint_thickness = 20.
@@ -258,26 +258,26 @@ class HcalGeometry() :
         # End GDML-parameters
 
 
-        self.prototype.ThicknessScint = scint_thickness
-        self.prototype.WidthScint = scint_bar_width
+        self.v2_prototype.ThicknessScint = scint_thickness
+        self.v2_prototype.WidthScint = scint_bar_width
 
-        self.prototype.ZeroLayer = [-dz/2 +
+        self.v2_prototype.ZeroLayer = [-dz/2 +
                                     absorber_thickness +
                                     scint_bar_cover_thickness +
                                     scint_thickness / 2
                                     ]
-        self.prototype.LayerThickness = [layer_thickness]
-        self.prototype.NumSections = 1
-        self.prototype.NumLayers = [num_layers]
+        self.v2_prototype.LayerThickness = [layer_thickness]
+        self.v2_prototype.NumSections = 1
+        self.v2_prototype.NumLayers = [num_layers]
         NumStrips_front = [num_bars_front for i in range(num_layers_front)]
         NumStrips_back = [num_bars_back for i in range(num_layers_back)]
-        self.prototype.NumStrips = NumStrips_front + NumStrips_back
+        self.v2_prototype.NumStrips = NumStrips_front + NumStrips_back
         # ZeroStrip and HalfTotalWidth are identical
-        self.prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.prototype.NumStrips]
-        self.prototype.HalfTotalWidth = self.prototype.ZeroStrip
-        self.prototype.EcalDx = 0.
-        self.prototype.EcalDy = 0.
-        self.prototype.detectors_valid = ["ldmx-hcal-prototype-v2.0",
+        self.v2_prototype.ZeroStrip = [N * scint_bar_width / 2 for N in self.v2_prototype.NumStrips]
+        self.v2_prototype.HalfTotalWidth = self.v2_prototype.ZeroStrip
+        self.v2_prototype.EcalDx = 0.
+        self.v2_prototype.EcalDy = 0.
+        self.v2_prototype.detectors_valid = ["ldmx-hcal-prototype-v2.0",
                                           "ldmx-hcal-prototype-v2.0[.].*"]
 
 
