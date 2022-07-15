@@ -45,7 +45,8 @@ class HcalGeometry() :
     def __init__(self):
         self.make_v12()
         self.make_v13()
-        self.make_prototype()
+        self.make_v1_prototype()
+        self.make_v2_prototype()
 
 
     def make_v13(self) :
@@ -166,9 +167,6 @@ class HcalGeometry() :
         self.prototype.EcalDy = 0.
         self.prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
 
-    def make_prototype(self):
-        print("Warning: Using the generic make_prototype() function produces the v1 geometry of the testbeam prototype. If this is what you actually wanted, use make_v1_prototype() to suppress this message.")
-        return make_v1_prototype()
 
     def make_v2_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters
