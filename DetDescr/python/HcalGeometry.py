@@ -164,7 +164,11 @@ class HcalGeometry() :
         self.prototype.HalfTotalWidth = self.prototype.ZeroStrip
         self.prototype.EcalDx = 0.
         self.prototype.EcalDy = 0.
-        self.prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
+        self.prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0",
+                                          "ldmx-hcal-prototype-v1.0[.].*",
+                                          "ldmx-hcal-prototype-v2.0",
+                                          "ldmx-hcal-prototype-v2.0[.].*"]
+
 
 
 
