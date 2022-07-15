@@ -91,6 +91,9 @@ class HcalGeometry() :
                                    (self.v13.NumLayers[1]*self.v13.LayerThickness[1]+self.v13.EcalDy)/2,
                                    (self.v13.NumLayers[2]*self.v13.LayerThickness[2]+self.v13.EcalDy)/2,]
         self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        # Layers with odd parity (1) are horizontal (scintillator bar length
+        # along the x-axis)
+        self.v13.horizontal_parity = 1
 
 
 
@@ -181,6 +184,9 @@ class HcalGeometry() :
         self.v1_prototype.EcalDx = 0.
         self.v1_prototype.EcalDy = 0.
         self.v1_prototype.detectors_valid = ["ldmx-hcal-prototype-v1.0", "ldmx-hcal-prototype-v1.0[.].*"]
+        # Layers with odd parity (1) are horizontal (scintillator bar length
+        # along the x-axis)
+        self.v1_prototype.horizontal_parity = 1
 
 
     def make_v2_prototype(self):
@@ -279,6 +285,9 @@ class HcalGeometry() :
         self.v2_prototype.EcalDy = 0.
         self.v2_prototype.detectors_valid = ["ldmx-hcal-prototype-v2.0",
                                           "ldmx-hcal-prototype-v2.0[.].*"]
+        # Layers with even parity (0) are horizontal (scintillator bar length
+        # along the x-axis)
+        self.v2_prototype.horizontal_parity = 0
 
 
     def make_v12(self) :
@@ -349,3 +358,6 @@ class HcalGeometry() :
                                    (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+self.v12.EcalDy)/2,
                                    (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+self.v12.EcalDy)/2,]
         self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        # Layers with odd parity (1) are horizontal (scintillator bar length
+        # along the x-axis)
+        self.v12.horizontal_parity = 1
