@@ -160,10 +160,10 @@ class HcalGeometry() :
         num_layers_back_horizontal = 5
         num_layers_back=num_layers_back_vertical + num_layers_back_horizontal
         num_layers = num_layers_front + num_layers_back
-        back_start=num_layers_front * layer_thickness
-        scint_bar_width=50.
-        num_bars_front=8
-        num_bars_back=12
+        back_start = num_layers_front * layer_thickness
+        scint_bar_width = 50.
+        num_bars_front = 8
+        num_bars_back = 12
         dz = num_layers * layer_thickness
         # End GDML-parameters
 
@@ -171,8 +171,11 @@ class HcalGeometry() :
         self.prototype.ThicknessScint = scint_thickness
         self.prototype.WidthScint = scint_bar_width
 
-        # Note that this seems to be location of the first scintillator layer
-        self.prototype.ZeroLayer = [-dz/2 + air_thickness + absorber_thickness]
+        self.prototype.ZeroLayer = [-dz/2 +
+                                    absorber_thickness +
+                                    scint_bar_cover_thickness +
+                                    scint_thickness / 2
+                                    ]
         self.prototype.LayerThickness = [layer_thickness]
         self.prototype.NumSections = 1
         self.prototype.NumLayers = [num_layers]
