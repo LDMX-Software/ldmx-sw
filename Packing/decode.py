@@ -14,6 +14,7 @@ parser.add_argument('--ft50')
 parser.add_argument('--ft51')
 parser.add_argument('--pf0')
 parser.add_argument('--pf1')
+parser.add_argument('--hcal')
 
 parser.add_argument('--max_events',default=100,type=int)
 parser.add_argument('--pause',action='store_true')
@@ -77,30 +78,50 @@ if arg.ft51 is not None :
         )
 
 if arg.pf0 is not None :
+    p.inputFiles = [arg.pf0]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
-            input_file = arg.pf0,
-            output_name = 'PF0Raw'
+            input_names = ['Polarfire0Raw'],
+            input_pass = 'raw',
+            output_name = 'PF0Digis'
             ),
         dqm.NtuplizeHgcrocDigiCollection(
-            input_name = 'PF0Raw',
+            input_name = 'PF0Digis',
             name = 'pf0'
             )
         ])
 
 if arg.pf1 is not None :
+    p.inputFiles = [arg.pf1]
     p.sequence.extend([
         hcal_format.HcalRawDecoder(
-            input_file = arg.pf1,
-            output_name = 'PF1Raw'
+            input_names = ['Polarfire1Raw'],
+            input_pass = 'raw',
+            output_name = 'PF1Digis'
             ),
         dqm.NtuplizeHgcrocDigiCollection(
-            input_name = 'PF1Raw',
+            input_name = 'PF1Digis',
             name = 'pf1'
             )
         ])
 
+if arg.hcal is not None :
+    p.inputFiles = [arg.hcal]
+    p.sequence.extend([
+        hcal_format.HcalRawDecoder(
+            connections_table = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv',
+            input_names = ['Polarfire0Raw','Polarfire1Raw'],
+            input_pass = 'raw',
+            output_name = 'HcalDigis'
+            ),
+        dqm.NtuplizeHgcrocDigiCollection(
+            input_name = 'HcalDigis',
+            name = 'hcal'
+            )
+        ])
+
 if arg.ts is not None :
+    p.inputFiles = [arg.ts]
     n_channels = 16
     n_timesamples = 30
     header_len = 4+4+4+3+1
@@ -111,14 +132,9 @@ if arg.ts is not None :
     qie_decoder.number_channels = n_channels
     qie_decoder.number_time_samples = n_timesamples
     qie_decoder.is_real_data = True
+    qie_decoder.input_collection = 'TrigScintRaw'
     p.sequence.extend([
-        rawio.SingleSubsystemUnpacker(
-            raw_file = arg.ts,
-            output_name = 'QIEstreamUp',
-            detector_name = 'ldmx-hcal-prototype-v1.0',
-            num_bytes_per_event = 2*n_channels*n_timesamples + header_len
-            ),
-         qie_decoder,
+        qie_decoder,
         dqm.NtuplizeTrigScintQIEDigis(
             input_name = 'decodedQIEUp'
             )
