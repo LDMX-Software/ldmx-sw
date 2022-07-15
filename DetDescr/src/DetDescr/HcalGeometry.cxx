@@ -19,6 +19,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   EcalDx_ = ps.getParameter<double>("EcalDx");
   EcalDy_ = ps.getParameter<double>("EcalDy");
   verbose_ = ps.getParameter<int>("verbose");
+  horizontalParity_ = ps.getParameter<int>("horizontal_parity");
 
   auto detectors_valid =
       ps.getParameter<std::vector<std::string>>("detectors_valid");
