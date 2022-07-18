@@ -2,9 +2,9 @@
 <tube name="hole" z="frame_length_z*2+1" rmax="6.81/2" deltaphi="6.28318531" aunit="rad" lunit="mm"/>
 
 <box name="frame_shortening_box"
-		x="80 + 1"
-		y="80 + 1"
-		z="frame_length_z" lunit="mm"/>
+	 x="80+1"
+	 y="80+1"
+	 z="frame_length_z" lunit="mm"/>
 
 <xtru name="frame_8080_filled" lunit="mm">
 	<twoDimVertex x="0 - 40" y="0 - 40"/>
@@ -85,15 +85,15 @@
 	<twoDimVertex x="0 - 40" y="w2 - 40"/>
 
 	<section zOrder="1"
-				zPosition="-frame_length_z/2"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 	<section zOrder="2"
-				zPosition="frame_length_z/2"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="frame_length_z/2"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 </xtru>
 <xtru name="frame_8080_center_hole" lunit="mm">
 	<twoDimVertex x="d1 - 40" y="40 - d1 - 40"/>
@@ -129,66 +129,66 @@
 	<twoDimVertex x="w1 - 40" y="40 + d1 - 40"/>
 	<twoDimVertex x="d1 - 40" y="40 + d1 - 40"/>
 	<section zOrder="1"
-				zPosition="-frame_length_z/2 - 1"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2-1"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 	<section zOrder="2"
-				zPosition="-frame_length_z/2 + 1"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2+1"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 </xtru>
-<subtraction name="sub1_8080">
+<subtraction name="frame_8080_intermediate_subtraction_object_with_1_hole">
 	<first ref="frame_8080_filled"/>
 	<second ref="hole"/>
-	<position name="hole1"
-				x="-20"
-				y="-20"/>
+	<position name="frame_8080_bottom_left_hole_pos"
+			  x="-20"
+			  y="-20"/>
 </subtraction>
-<subtraction name="sub2_8080">
-	<first ref="sub1_8080"/>
+<subtraction name="frame_8080_intermediate_subtraction_object_with_2_holes">
+	<first ref="frame_8080_intermediate_subtraction_object_with_1_hole"/>
 	<second ref="hole"/>
-	<position name="hole1"
-				x="-20"
-				y="20"/>
+	<position name="frame_8080_top_left_hole_pos"
+			  x="-20"
+			  y="20"/>
 </subtraction>
-<subtraction name="sub3_8080">
-	<first ref="sub2_8080"/>
+<subtraction name="frame_8080_intermediate_subtraction_object_with_3_holes">
+	<first ref="frame_8080_intermediate_subtraction_object_with_2_holes"/>
 	<second ref="hole"/>
-	<position name="hole1"
-				x="20"
-				y="-20"/>
+	<position name="frame_8080_bottom_right_hole_pos"
+			  x="20"
+			  y="-20"/>
 </subtraction>
-<subtraction name="sub4_8080">
-	<first ref="sub3_8080"/>
+<subtraction name="frame_8080_intermediate_subtraction_object_with_4_holes">
+	<first ref="frame_8080_intermediate_subtraction_object_with_3_holes"/>
 	<second ref="hole"/>
-	<position name="hole1"
-				x="20"
-				y="20"/>
+	<position name="frame_8080_top_right_hole_pos"
+			  x="20"
+			  y="20"/>
 </subtraction>
 <subtraction name="frame_8080">
-	<first ref="sub4_8080"/>
+	<first ref="frame_8080_intermediate_subtraction_object_with_4_holes"/>
 	<second ref="frame_8080_center_hole"/>
-	<position name="hole_big"
-				x="0"
-				y="0"/>
+	<position name="frame_8080_center_hole_pos"
+			  x="0"
+			  y="0"/>
 </subtraction>
-<subtraction name="sub5_8080">
+<subtraction name="frame_8080_intermediate_subtraction_object_for_shortening">
 	<first ref="frame_8080"/>
 	<second ref="frame_shortening_box"/>
-	<position name="cut"
-				x="0"
-				y="0"
-				z="(frame_length_x + frame_length_z)/2"/>
+	<position name="frame_8080_intermediate_cut_pos"
+			  x="0"
+			  y="0"
+			  z="(frame_length_x+frame_length_z)/2"/>
 </subtraction>
 <subtraction name="frame_8080_short">
-	<first ref="sub5_8080"/>
+	<first ref="frame_8080_intermediate_subtraction_object_for_shortening"/>
 	<second ref="frame_shortening_box"/>
-	<position name="frame_short_pos"
-				x="0"
-				y="0"
-				z="-(frame_length_x + frame_length_z)/2"/>
+	<position name="frame_8080_short_pos"
+			  x="0"
+			  y="0"
+			  z="-(frame_length_x+frame_length_z)/2"/>
 </subtraction>
 <xtru name="frame_4080_filled" lunit="mm">
 	<twoDimVertex x="0 - 20" y="0 - 40"/>
@@ -250,15 +250,15 @@
 	<twoDimVertex x="0 - 20" y="w2 - 40"/>
 
 	<section zOrder="1"
-				zPosition="-frame_length_z/2"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 	<section zOrder="2"
-				zPosition="frame_length_z/2"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="frame_length_z/2"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 </xtru>
 <xtru name="frame_4080_center_hole" lunit="mm">
 	<twoDimVertex x="d1 - 20" y="40 - d1 - 40"/>
@@ -274,50 +274,50 @@
 	<twoDimVertex x="w1 - 20" y="40 + d1 - 40"/>
 	<twoDimVertex x="d1 - 20" y="40 + d1 - 40"/>
 	<section zOrder="1"
-				zPosition="-frame_length_z/2 - 1"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2-1"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 	<section zOrder="2"
-				zPosition="-frame_length_z/2 + 1"
-				xOffset="0"
-				yOffset="0"
-				scalingFactor="1"/>
+			 zPosition="-frame_length_z/2+1"
+			 xOffset="0"
+			 yOffset="0"
+			 scalingFactor="1"/>
 </xtru>
-<subtraction name="sub1_4080">
+<subtraction name="frame_4080_intermediate_subtraction_object_with_1_hole">
 	<first ref="frame_4080_filled"/>
 	<second ref="hole"/>
-	<position name="hole_small"
-				x="0"
-				y="-20"/>
+	<position name="frame_4080_bottom_hole_pos"
+			  x="0"
+			  y="-20"/>
 </subtraction>
-<subtraction name="sub2_4080">
-	<first ref="sub1_4080"/>
+<subtraction name="frame_4080_intermediate_subtraction_object_with_2_holes">
+	<first ref="frame_4080_intermediate_subtraction_object_with_1_hole"/>
 	<second ref="hole"/>
-	<position name="hole_small"
-				x="0"
-				y="20"/>
+	<position name="frame_4080_top_hole_pos"
+			  x="0"
+			  y="20"/>
 </subtraction>
 <subtraction name="frame_4080">
-	<first ref="sub2_4080"/>
+	<first ref="frame_4080_intermediate_subtraction_object_with_2_holes"/>
 	<second ref="frame_4080_center_hole"/>
-	<position name="hole_big"
-				x="0"
-				y="0"/>
+	<position name="frame_4080_center_hole_pos"
+			  x="0"
+			  y="0"/>
 </subtraction>
-<subtraction name="sub3_4080">
+<subtraction name="frame_4080_intermediate_subtraction_object_for_shortening">
 	<first ref="frame_4080"/>
 	<second ref="frame_shortening_box"/>
-	<position name="cut"
-				x="0"
-				y="0"
-				z="(frame_length_x+frame_length_z)/2"/>
+	<position name="frame_4080_intermediate_cut_pos"
+			  x="0"
+			  y="0"
+			  z="(frame_length_x+frame_length_z)/2"/>
 </subtraction>
 <subtraction name="frame_4080_short">
-	<first ref="sub3_4080"/>
+	<first ref="frame_4080_intermediate_subtraction_object_for_shortening"/>
 	<second ref="frame_shortening_box"/>
-	<position name="frame_short_pos"
-				x="0"
-				y="0"
-				z="-(frame_length_x + frame_length_z)/2"/>
+	<position name="frame_4080_short_pos"
+			  x="0"
+			  y="0"
+			  z="-(frame_length_x+frame_length_z)/2"/>
 </subtraction>
