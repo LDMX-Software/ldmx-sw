@@ -104,13 +104,13 @@ void HcalGeometry::buildStripPositionMap() {
           z = ZeroLayer_.at(section) + layercenter;
 
           /**
-            Now compute, y(x) position for even(odd) layers, relative to the
-            center of detector. Strips enumeration starts from -y(-x)
+            Now compute, y(x) position for horizontal(vertical) layers, relative
+            to the center of detector. Strips enumeration starts from -y(-x)
             stripcenter will be large for +y(+x) and the halfwidth of the strip
             needs to be subtracted The halfwidth of the scintillator is given by
             ZeroStrip_. The x(y) position is set to the center of the strip (0).
           */
-          if (layer % 2 == 1) {
+          if (layerIsHorizontal(layer)) {
             y = stripcenter - getZeroStrip(section, layer);
             x = 0;
           } else {
