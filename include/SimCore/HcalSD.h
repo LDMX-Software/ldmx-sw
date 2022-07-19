@@ -6,6 +6,7 @@
 /*~~~~~~~~~~~~~~*/
 #include "SimCore/CalorimeterSD.h"
 
+#include "SimCore/ConditionsInterface.h"
 // Forward declarations
 class G4Step;
 class G4TouchableHistory;
@@ -44,6 +45,9 @@ class HcalSD : public CalorimeterSD {
 
   // TODO: document!
   double birksc2_;
+
+  /// ConditionsInterface
+  ConditionsInterface& conditionsIntf_;
 
 };  // HcalSD
 
