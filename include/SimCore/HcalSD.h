@@ -25,7 +25,8 @@ class HcalSD : public CalorimeterSD {
    * @param[in] collectionName Name of the colleciton of hits.
    * #param[in] subDetID The subdetectorID
    */
-  HcalSD(G4String name, G4String collectionName, int subDetID);
+  HcalSD(G4String name, G4String collectionName, int subDetID,
+         ConditionsInterface& ci);
 
   /// Destructor
   ~HcalSD();
