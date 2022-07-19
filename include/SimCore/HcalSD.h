@@ -4,8 +4,8 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
+#include "DetDescr/HcalGeometry.h"
 #include "SimCore/CalorimeterSD.h"
-
 #include "SimCore/ConditionsInterface.h"
 // Forward declarations
 class G4Step;
