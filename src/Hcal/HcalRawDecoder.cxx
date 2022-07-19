@@ -3,9 +3,9 @@
 #include <iomanip>
 #include <optional>
 
-#include "Framework/EventProcessor.h"
 #include "DetDescr/HcalElectronicsID.h"
 #include "DetDescr/HcalID.h"
+#include "Framework/EventProcessor.h"
 #include "Hcal/HcalDetectorMap.h"
 #include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Mask.h"
@@ -23,11 +23,10 @@ namespace utility {
  * Read out 32-bit words from a 8-bit buffer.
  */
 class Reader {
-  const std::vector<uint8_t> &buffer_;
+  const std::vector<uint8_t>& buffer_;
   std::size_t i_word_;
   uint32_t next() {
-    uint32_t w = buffer_.at(i_word_) | 
-                 (buffer_.at(i_word_ + 1) << 8) |
+    uint32_t w = buffer_.at(i_word_) | (buffer_.at(i_word_ + 1) << 8) |
                  (buffer_.at(i_word_ + 2) << 16) |
                  (buffer_.at(i_word_ + 3) << 24);
     i_word_ += 4;
@@ -36,12 +35,9 @@ class Reader {
 
  public:
   Reader(const std::vector<uint8_t>& b) : buffer_{b}, i_word_{0} {}
-  operator bool() {
-    return (i_word_ < buffer_.size());
-  }
+  operator bool() { return (i_word_ < buffer_.size()); }
   Reader& operator>>(uint32_t& w) {
-    if (*this)
-      w = next();
+    if (*this) w = next();
     return *this;
   }
 };  // Reader
@@ -97,18 +93,18 @@ struct PolarfireEventHeader {
    * board us onto the bus with the input prefix
    */
   void board(framework::Event& event, const std::string& prefix) {
-    event.add(prefix+"Version",version);
-    event.add(prefix+"FPGA",fpga);
-    event.add(prefix+"NSamples",nsamples);
-    event.add(prefix+"Spill",spill);
-    event.add(prefix+"Ticks",ticks);
-    event.add(prefix+"Bunch",bunch);
-    event.add(prefix+"Number",number);
-    event.add(prefix+"Run",run);
-    event.add(prefix+"DD",DD);
-    event.add(prefix+"MM",MM);
-    event.add(prefix+"hh",hh);
-    event.add(prefix+"mm",mm);
+    event.add(prefix + "Version", version);
+    event.add(prefix + "FPGA", fpga);
+    event.add(prefix + "NSamples", nsamples);
+    event.add(prefix + "Spill", spill);
+    event.add(prefix + "Ticks", ticks);
+    event.add(prefix + "Bunch", bunch);
+    event.add(prefix + "Number", number);
+    event.add(prefix + "Run", run);
+    event.add(prefix + "DD", DD);
+    event.add(prefix + "MM", MM);
+    event.add(prefix + "hh", hh);
+    event.add(prefix + "mm", mm);
   }
 };
 
@@ -132,9 +128,10 @@ class HcalRawDecoder : public framework::Producer {
    * where we can "pop" individual 32-bit words with operator>>
    * and we can check if the reader is done using operator bool()
    */
-  template<typename ReaderType>
-  std::map<ldmx::HcalElectronicsID, std::vector<ldmx::HgcrocDigiCollection::Sample>>
-      read(ReaderType& reader, PolarfireEventHeader& eh) {
+  template <typename ReaderType>
+  std::map<ldmx::HcalElectronicsID,
+           std::vector<ldmx::HgcrocDigiCollection::Sample>>
+  read(ReaderType& reader, PolarfireEventHeader& eh) {
     /**
      * Static parameters depending on ROC version
      */
@@ -152,7 +149,8 @@ class HcalRawDecoder : public framework::Producer {
       } else if (head1 == 0xbeef2022) {
         std::cout << "Signal words imply version 2" << std::endl;
       } else {
-        std::cout << "Extra header (inserted by rogue): " << debug::hex(head1) << std::endl;
+        std::cout << "Extra header (inserted by rogue): " << debug::hex(head1)
+                  << std::endl;
       }
 #endif
     } while (head1 != 0xbeef2021 and head1 != 0xbeef2022);
@@ -166,10 +164,11 @@ class HcalRawDecoder : public framework::Producer {
      *
      * VERSION (4) | FPGA ID (8) | NSAMPLES (4) | LEN (16)
      */
-    reader >> head1; i_event++;
-  
-    eh.version  = (head1 >> 28) & packing::utility::mask<4>;
-    eh.fpga     = (head1 >> 20) & packing::utility::mask<8>;
+    reader >> head1;
+    i_event++;
+
+    eh.version = (head1 >> 28) & packing::utility::mask<4>;
+    eh.fpga = (head1 >> 20) & packing::utility::mask<8>;
     eh.nsamples = (head1 >> 16) & packing::utility::mask<4>;
     eventlen = head1 & packing::utility::mask<16>;
     if (eh.version == 1u) {
@@ -182,30 +181,31 @@ class HcalRawDecoder : public framework::Producer {
       // and subtract off the special header word above
       eventlen -= 1;
     } else {
-      EXCEPTION_RAISE("VersMis",
-                      "HcalRawDecoder only knows version 1 and 2 of DAQ format.");
+      EXCEPTION_RAISE(
+          "VersMis",
+          "HcalRawDecoder only knows version 1 and 2 of DAQ format.");
     }
 #ifdef DEBUG
-    std::cout << debug::hex(head1)
-      << " EventHeader(version = " << eh.version
-      << ", fpga = " << eh.fpga
-      << ", nsamples = " << eh.nsamples
-      << ", eventlen = " << eventlen
-      << ")" << std::endl;
+    std::cout << debug::hex(head1) << " EventHeader(version = " << eh.version
+              << ", fpga = " << eh.fpga << ", nsamples = " << eh.nsamples
+              << ", eventlen = " << eventlen << ")" << std::endl;
     std::cout << "Sample Lenghts: ";
 #endif
     // sample counters
     int n_words{0};
     std::vector<uint32_t> length_per_sample(eh.nsamples, 0);
     for (uint32_t i_sample{0}; i_sample < eh.nsamples; i_sample++) {
-      if (i_sample%2 == 0) {
+      if (i_sample % 2 == 0) {
         n_words++;
-        reader >> w; i_event++;
+        reader >> w;
+        i_event++;
       }
-      uint32_t shift_in_word = 16*(i_sample%2);
-      length_per_sample[i_sample] = (w >> shift_in_word) & packing::utility::mask<12>;
+      uint32_t shift_in_word = 16 * (i_sample % 2);
+      length_per_sample[i_sample] =
+          (w >> shift_in_word) & packing::utility::mask<12>;
 #ifdef DEBUG
-      std::cout << "len(" << i_sample << ") = " << length_per_sample[i_sample] << " ";
+      std::cout << "len(" << i_sample << ") = " << length_per_sample[i_sample]
+                << " ";
 #endif
     }
 #ifdef DEBUG
@@ -219,10 +219,12 @@ class HcalRawDecoder : public framework::Producer {
        * dummy words to move the pointer on the reader.
        */
 #ifdef DEBUG
-      std::cout << "Padding words to reach 8 total sample length words." << std::endl;
+      std::cout << "Padding words to reach 8 total sample length words."
+                << std::endl;
 #endif
       for (int i_word{n_words}; i_word < 8; i_word++) {
-        reader >> head1; i_event++;
+        reader >> head1;
+        i_event++;
 #ifdef DEBUG
         std::cout << " " << debug::hex(head1);
 #endif
@@ -234,42 +236,44 @@ class HcalRawDecoder : public framework::Producer {
       /**
        * extended event header in version 2
        */
-      reader >> head1; i_event++;
+      reader >> head1;
+      i_event++;
       eh.spill = ((head1 >> 12) & 0xfff);
       eh.bunch = (head1 & 0xfff);
 #ifdef DEBUG
-      std::cout << " " << debug::hex(head1) 
-        << " Spill: " << eh.spill 
-        << " Bunch: " << eh.bunch << std::endl;
+      std::cout << " " << debug::hex(head1) << " Spill: " << eh.spill
+                << " Bunch: " << eh.bunch << std::endl;
 #endif
-      reader >> head1; i_event++;
+      reader >> head1;
+      i_event++;
       eh.ticks = head1;
 #ifdef DEBUG
-      std::cout << " " << debug::hex(head1) 
-        << " 5 MHz Ticks since Spill: " << head1
-        << " Time: " << head1/5e6 << "s" << std::endl;
+      std::cout << " " << debug::hex(head1)
+                << " 5 MHz Ticks since Spill: " << head1
+                << " Time: " << head1 / 5e6 << "s" << std::endl;
 #endif
-      reader >> head1; i_event++;
+      reader >> head1;
+      i_event++;
       eh.number = head1;
 #ifdef DEBUG
-      std::cout << " " << debug::hex(head1) 
-        << " Event Number: " << head1 << std::endl;
+      std::cout << " " << debug::hex(head1) << " Event Number: " << head1
+                << std::endl;
 #endif
-      reader >> head1; i_event++;
+      reader >> head1;
+      i_event++;
       eh.run = (head1 & 0xFFF);
-      eh.DD = (head1>>23)&0x1F;
-      eh.MM = (head1>>28)&0xF;
-      eh.hh = (head1>>18)&0x1F;
-      eh.mm = (head1>>12)&0x3F;
+      eh.DD = (head1 >> 23) & 0x1F;
+      eh.MM = (head1 >> 28) & 0xF;
+      eh.hh = (head1 >> 18) & 0x1F;
+      eh.mm = (head1 >> 12) & 0x3F;
 #ifdef DEBUG
-      std::cout << " " << debug::hex(head1) 
-        << " Run: " << eh.run << " DD-MM hh:mm "
-        << eh.DD << "-" << eh.MM << " " << eh.hh << ":" << eh.mm
-        << std::endl;
+      std::cout << " " << debug::hex(head1) << " Run: " << eh.run
+                << " DD-MM hh:mm " << eh.DD << "-" << eh.MM << " " << eh.hh
+                << ":" << eh.mm << std::endl;
 #endif
     }
 
-    /** 
+    /**
      * Re-sort the data from grouped by bunch to by channel
      *
      * The readout chip streams the data off of it, so it doesn't
@@ -283,9 +287,11 @@ class HcalRawDecoder : public framework::Producer {
     std::size_t i_sample{0};
     while (i_event < eventlen) {
 #ifdef DEBUG
-      std::cout << "Decoding sample " << i_sample << " on word " << i_event << std::endl;
+      std::cout << "Decoding sample " << i_sample << " on word " << i_event
+                << std::endl;
 #endif
-      reader >> head1 >> head2; i_event += 2;
+      reader >> head1 >> head2;
+      i_event += 2;
       /** Decode Bunch Header
        * We have a few words of header material before the actual data.
        * This header material is assumed to be encoded as in Table 3
@@ -313,42 +319,48 @@ class HcalRawDecoder : public framework::Producer {
       uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
       uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
       uint32_t len = head1 & packing::utility::mask<12>;
-  
+
 #ifdef DEBUG
-      std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks << ", len: " << len << std::endl;
+      std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks
+                << ", len: " << len << std::endl;
 #endif
       fpga_crc << head2;
 #ifdef DEBUG
       std::cout << debug::hex(head2) << " : ";
 #endif
-  
+
       uint32_t bx_id = (head2 >> 20) & packing::utility::mask<12>;
       uint32_t rreq = (head2 >> 10) & packing::utility::mask<10>;
       uint32_t orbit = head2 & packing::utility::mask<10>;
-  
+
 #ifdef DEBUG
-      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq << ", orbit: " << orbit << std::endl;
+      std::cout << "bx_id: " << bx_id << ", rreq: " << rreq
+                << ", orbit: " << orbit << std::endl;
 #endif
-  
+
       std::vector<uint32_t> length_per_link(nlinks, 0);
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
         if (i_link % 4 == 0) {
-          i_event++; reader >> w;
+          i_event++;
+          reader >> w;
           fpga_crc << w;
 #ifdef DEBUG
           std::cout << debug::hex(w) << " : Four Link Pack " << std::endl;
 #endif
         }
         uint32_t shift_in_word = 8 * (i_link % 4);
-        bool rid_ok = (w >> (shift_in_word + 7)) & packing::utility::mask<1> == 1;
-        bool cdc_ok = (w >> (shift_in_word + 6)) & packing::utility::mask<1> == 1;
+        bool rid_ok =
+            (w >> (shift_in_word + 7)) & packing::utility::mask<1> == 1;
+        bool cdc_ok =
+            (w >> (shift_in_word + 6)) & packing::utility::mask<1> == 1;
         length_per_link[i_link] =
             (w >> shift_in_word) & packing::utility::mask<6>;
 #ifdef DEBUG
-        std::cout << "  Link " << i_link << " readout " << length_per_link.at(i_link) << " channels" << std::endl;
+        std::cout << "  Link " << i_link << " readout "
+                  << length_per_link.at(i_link) << " channels" << std::endl;
 #endif
       }
-  
+
       /** Decode Each Link in Sequence
        * Now we should be decoding each link serially
        * where each link was encoded as in Table 4 of
@@ -357,7 +369,7 @@ class HcalRawDecoder : public framework::Producer {
        * ROC_ID (16) | CRC ok (1) | 0 (7) | RO Map (8)
        * RO Map (32)
        */
-  
+
       for (uint32_t i_link{0}; i_link < nlinks; i_link++) {
 #ifdef DEBUG
         std::cout << "RO Link " << i_link << std::endl;
@@ -374,46 +386,52 @@ class HcalRawDecoder : public framework::Producer {
         }
         // move on from last word counting links or previous link
         packing::utility::CRC link_crc;
-        i_event++; reader >> w;
+        i_event++;
+        reader >> w;
         fpga_crc << w;
         link_crc << w;
         uint32_t roc_id = (w >> 16) & packing::utility::mask<16>;
         bool crc_ok = (w >> 15) & packing::utility::mask<1> == 1;
 #ifdef DEBUG
-        std::cout << debug::hex(w) << " : roc_id " << roc_id << ", crc_ok (v2 always false) " << std::boolalpha << crc_ok << std::endl;
+        std::cout << debug::hex(w) << " : roc_id " << roc_id
+                  << ", crc_ok (v2 always false) " << std::boolalpha << crc_ok
+                  << std::endl;
 #endif
-  
+
         // get readout map from the last 8 bits of this word
         // and the entire next word
         std::bitset<40> ro_map = w & packing::utility::mask<8>;
         ro_map <<= 32;
-        i_event++; reader >> w;
+        i_event++;
+        reader >> w;
         fpga_crc << w;
         link_crc << w;
         ro_map |= w;
 #ifdef DEBUG
         std::cout << debug::hex(w) << " : lower 32 bits of RO map" << std::endl;
-        std::cout << "Start looping through " << length_per_link.at(i_link) 
-          << " words for this link" << std::endl;
+        std::cout << "Start looping through " << length_per_link.at(i_link)
+                  << " words for this link" << std::endl;
 #endif
         // loop through channels on this link,
         //  since some channels may have been suppressed because of low
         //  amplitude the channel ID is not the same as the index it
         //  is listed in.
         int j{-1};
-        for (uint32_t i_word{2}; i_word < length_per_link.at(i_link); i_word++) {
+        for (uint32_t i_word{2}; i_word < length_per_link.at(i_link);
+             i_word++) {
           // skip zero-suppressed channel IDs
           do {
             j++;
           } while (j < 40 and not ro_map.test(j));
-  
+
           // next word is this channel
-          i_event++; reader >> w;
+          i_event++;
+          reader >> w;
           fpga_crc << w;
 #ifdef DEBUG
           std::cout << debug::hex(w) << " " << j;
 #endif
-  
+
           if (j == 0) {
             /** Special "Header" Word from ROC
              *
@@ -453,7 +471,8 @@ class HcalRawDecoder : public framework::Producer {
             if (roc_version_ == 2) {
               std::cout << " : Idle";
             } else {
-              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get()) << " =? " << debug::hex(w);
+              std::cout << " : CRC checksum  : " << debug::hex(link_crc.get())
+                        << " =? " << debug::hex(w);
             }
 #endif
             /*
@@ -465,26 +484,31 @@ class HcalRawDecoder : public framework::Producer {
             */
           } else {
             /// DAQ Channels
-  
+
             link_crc << w;
             /**
-             * The HGC ROC has some odd behavior in terms of reading out the different channels.
+             * The HGC ROC has some odd behavior in terms of reading out the
+             * different channels.
              * - extra header word in row j = 0
-             * - common mode channel in row (j) number 19 or 1 (depending on the version)
+             * - common mode channel in row (j) number 19 or 1 (depending on the
+             * version)
              * - calib channel in row j = 20
-             * This introduces a special shift for the channel number to "align" 
+             * This introduces a special shift for the channel number to "align"
              * with the range 0-35 per link.
              *
              *  polarfire fpga = fpga readout
              *  roc = i_link / 2 // integer division
-             *  channel = j - 1 - (j > common_mode_channel)*1 - (j > calib_channel)*1
+             *  channel = j - 1 - (j > common_mode_channel)*1 - (j >
+             * calib_channel)*1
              */
             ldmx::HcalElectronicsID eid(fpga, i_link,
-                j - 1 - 1*(j > common_mode_channel) - 1*(j > calib_channel));
+                                        j - 1 - 1 * (j > common_mode_channel) -
+                                            1 * (j > calib_channel));
 #ifdef DEBUG
             std::cout << " : DAQ Channel ";
-            std::cout << "EID(" << eid.fiber() << "," << eid.elink() << "," << eid.channel() << ") ";
-#endif 
+            std::cout << "EID(" << eid.fiber() << "," << eid.elink() << ","
+                      << eid.channel() << ") ";
+#endif
             // copy data into EID->sample map
             eid_to_samples[eid].emplace_back(w);
           }  // type of channel
@@ -497,14 +521,16 @@ class HcalRawDecoder : public framework::Producer {
 #endif
       }  // loop over links
 
-  
       // another CRC checksum from FPGA
-      i_event++; reader >> w;
+      i_event++;
+      reader >> w;
       uint32_t crc = w;
 #ifdef DEBUG
       std::cout << "Done with sample " << i_sample << std::endl;
-      std::cout << "FPGA Checksum : " << debug::hex(fpga_crc.get()) << " =? " << debug::hex(crc) << std::endl;
-      std::cout << " N Sample Words : " << length_per_sample.at(i_sample) << std::endl;
+      std::cout << "FPGA Checksum : " << debug::hex(fpga_crc.get()) << " =? "
+                << debug::hex(crc) << std::endl;
+      std::cout << " N Sample Words : " << length_per_sample.at(i_sample)
+                << std::endl;
 #endif
       /* TODO
        *  fix calculation of FPGA checksum
@@ -518,9 +544,11 @@ class HcalRawDecoder : public framework::Producer {
       */
       // padding to reach 64-bit boundary in version 2
       if (eh.version == 2u and length_per_sample.at(i_sample) % 2 == 1) {
-        i_event++; reader >> head1;
+        i_event++;
+        reader >> head1;
 #ifdef DEBUG
-        std::cout << "Padding to reach 64-bit boundary: " << debug::hex(head1) << std::endl;
+        std::cout << "Padding to reach 64-bit boundary: " << debug::hex(head1)
+                  << std::endl;
 #endif
       }
       i_sample++;
@@ -551,6 +579,7 @@ class HcalRawDecoder : public framework::Producer {
   bool translate_eid_;
   /// is the input_name a file or an event object
   bool read_from_file_;
+
  private:
   /// the file reader (if we are doing that)
   packing::utility::Reader file_reader_;
@@ -558,7 +587,7 @@ class HcalRawDecoder : public framework::Producer {
 
 void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   input_file_ = ps.getParameter<std::string>("input_file");
-  input_names_ = ps.getParameter<std::vector<std::string>>("input_names",{});
+  input_names_ = ps.getParameter<std::vector<std::string>>("input_names", {});
   input_pass_ = ps.getParameter<std::string>("input_pass");
   output_name_ = ps.getParameter<std::string>("output_name");
   roc_version_ = ps.getParameter<int>("roc_version");
@@ -567,7 +596,7 @@ void HcalRawDecoder::configure(framework::config::Parameters& ps) {
   detector_name_ = ps.getParameter<std::string>("detector_name");
   if (read_from_file_) {
     file_reader_.open(input_file_);
-  } 
+  }
 }
 
 void HcalRawDecoder::beforeNewRun(ldmx::RunHeader& rh) {
@@ -578,24 +607,24 @@ void HcalRawDecoder::beforeNewRun(ldmx::RunHeader& rh) {
 }
 
 void HcalRawDecoder::produce(framework::Event& event) {
-
   std::map<ldmx::HcalElectronicsID,
            std::vector<ldmx::HgcrocDigiCollection::Sample>>
       eid_to_samples;
   PolarfireEventHeader eh;
   if (read_from_file_) {
     if (!file_reader_ or file_reader_.eof()) return;
-    eid_to_samples = this->read(file_reader_,eh);
+    eid_to_samples = this->read(file_reader_, eh);
   } else {
     for (const auto& name : input_names_) {
-      hcal::utility::Reader bus_reader(event.getCollection<uint8_t>(name, input_pass_));
-      auto single_pf_samples = this->read(bus_reader,eh);
+      hcal::utility::Reader bus_reader(
+          event.getCollection<uint8_t>(name, input_pass_));
+      auto single_pf_samples = this->read(bus_reader, eh);
       for (const auto& [id, samples] : single_pf_samples) {
         eid_to_samples[id] = samples;
       }
     }
   }
-  
+
   eh.board(event, output_name_);
 
   ldmx::HgcrocDigiCollection digis;
@@ -612,7 +641,8 @@ void HcalRawDecoder::produce(framework::Event& event) {
      * to translate electronic IDs into detector IDs.
      */
 #ifdef DEBUG
-    std::cout << "Translating EIDs into DetIDs. Printing skipped EIDs..." << std::endl;
+    std::cout << "Translating EIDs into DetIDs. Printing skipped EIDs..."
+              << std::endl;
 #endif
     auto detmap{
         getCondition<HcalDetectorMap>(HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
@@ -632,7 +662,8 @@ void HcalRawDecoder::produce(framework::Event& event) {
          *  being readout.
          */
 #ifdef DEBUG
-        std::cout << "EID(" << eid.fiber() << "," << eid.elink() << "," << eid.channel() << ") ";
+        std::cout << "EID(" << eid.fiber() << "," << eid.elink() << ","
+                  << eid.channel() << ") ";
         for (auto& s : digi) std::cout << debug::hex(s.raw()) << " ";
         std::cout << std::endl;
 #endif
@@ -652,7 +683,9 @@ void HcalRawDecoder::produce(framework::Event& event) {
   }
 
 #ifdef DEBUG
-  std::cout << "adding " << digis.getNumDigis() << " digis each with " << digis.getNumSamplesPerDigi() << " samples to event bus" << std::endl;
+  std::cout << "adding " << digis.getNumDigis() << " digis each with "
+            << digis.getNumSamplesPerDigi() << " samples to event bus"
+            << std::endl;
 #endif
   event.add(output_name_, digis);
   return;
