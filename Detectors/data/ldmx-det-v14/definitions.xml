@@ -1,4 +1,9 @@
 <defines>
+
+  <!--
+    Note: All values are in mm.
+  -->
+
   <!-- Constant defining the clearance between volumes -->
   <var name="clearance" value="0.001"/>
   
@@ -13,7 +18,7 @@
   -->
   <!-- position -->
   <var name="target_z" value="0.0"/>
-  <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+  <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 = 0.3504 mm -->
   <var name="target_thickness" value="0.3504"/>
   <!-- Target dimensions -->
   <var name="target_dim_x" value="40"/>
@@ -25,7 +30,7 @@
   <var name="trig_scint_thickness" value="4.5"/>
   <!--
     Midpoint position of the upstream trigger scintillator.
-    Position = −2.0748 mm
+    Position = −2.4252 mm
   -->
   <var name="trig_scint_up_mid_z" value="target_z - target_thickness/2 - trig_scint_thickness/2"/>
 
@@ -62,13 +67,16 @@
   -->
   <var name="tagger_env_dz" value="625"/>
 
-  <!-- Position to the front face of the Tagger envelope -->
-  <var name="tagger_env_front_face" value="trig_scint_up_mid_z - trig_scint_thickness/2" />
-  <!--
-    Tagger tracker parent volume position relative to the target.
-    Position = -316.8248 mm
+  <!-- 
+    Position to the downstream face of the Tagger envelope.
+    z = -4.6752 mm.
   -->
-  <var name="tagger_env_mid_z" value="tagger_env_front_face - tagger_env_dz/2"/>
+  <var name="tagger_env_down_face" value="trig_scint_up_mid_z - trig_scint_thickness/2" />
+  <!--
+    Tagger tracker parent volume midpoint position relative to the target.
+    z = -317.1752 mm
+  -->
+  <var name="tagger_env_mid_z" value="tagger_env_down_face - tagger_env_dz/2"/>
 
   <!-- 
   Tagger tracker distances relative to envelope volume face closest to 
@@ -86,6 +94,10 @@
   -->
   <var name="tagger_layer_delta" value="100"/>
   <var name="tagger_l7_mid_z_global" value="-10" />
+  <!--
+    Position of the layer 7 relative to the Tagger envelope midpoint.
+    z = 307.1752 mm
+  --> 
   <var name="tagger_l7_mid_z" value="-1*(tagger_env_mid_z - tagger_l7_mid_z_global)" />
   <var name="tagger_l6_mid_z" value="tagger_l7_mid_z - tagger_layer_delta" />
   <var name="tagger_l5_mid_z" value="tagger_l6_mid_z - tagger_layer_delta" />
