@@ -152,6 +152,42 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
         self.input_name = input_name
         self.input_pass = ''
 
+class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
+    def __init__(self,input_name, pedestal_table = None, input_pass = '', 
+            using_eid = None, already_aligned = False,
+            name = 'ntuplizehgcroc') :
+        super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
+        self.input_name = input_name
+        self.input_pass = input_pass
+
+        if using_eid is None :
+            # deduce if using eid based on presence of HcalDetectorMap in conditions system
+            from LDMX.Framework import ldmxcfg
+            from LDMX.Hcal.DetectorMap import HcalDetectorMap
+            using_eid = True
+            for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
+                if isinstance(cop,HcalDetectorMap) :
+                    using_eid = False
+                    break
+        self.using_eid = using_eid
+        self.already_aligned = already_aligned
+
+        from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
+        if pedestal_table is None :
+            self.pedestal_table = 'NO_PEDESTALS'
+            t = SimpleCSVIntegerTableProvider('NO_PEDESTALS',["PEDESTAL"])
+            t.validForAllRows([0])
+        else :
+            self.pedestal_table = pedestal_table
+            t = SimpleCSVIntegerTableProvider(pedestal_table,["PEDESTAL"])
+            t.validForever(f'file://{pedestal_table}')
+
+class NtuplizeTrigScintQIEDigis(ldmxcfg.Analyzer) :
+    def __init__(self,input_name, input_pass = '', name = 'ts') :
+        super().__init__(name,'dqm::NtuplizeTrigScintQIEDigis','DQM')
+        self.input_name = input_name
+        self.input_pass = input_pass
+
 class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     """Configured PhotoNuclearDQM python object
     
