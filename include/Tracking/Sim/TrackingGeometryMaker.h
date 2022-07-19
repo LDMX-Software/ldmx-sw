@@ -225,6 +225,11 @@ class TrackingGeometryMaker : public framework::Producer {
 
   //Processing time counter
   double processing_time_{0.};
+
+  //time profiling
+  std::map<std::string, double> profiling_map_;
+  
+  
     
   //--- Smearing ---//
 

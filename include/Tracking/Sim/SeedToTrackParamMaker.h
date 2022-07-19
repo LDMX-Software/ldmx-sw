@@ -7,6 +7,8 @@
 #include "Acts/Utilities/Helpers.hpp"
 
 
+#include <optional>
+
 namespace tracking{
 namespace sim{
 
