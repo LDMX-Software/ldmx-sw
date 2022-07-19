@@ -22,6 +22,7 @@ class HcalAlignPolarfires : public framework::Producer {
   std::string output_name_;
   /// number of 5MHz ticks difference to consider polarfires aligned
   static int max_tick_diff_;
+
  public:
   struct PolarfireQueueEntry {
     /// the i'th spill
@@ -29,17 +30,19 @@ class HcalAlignPolarfires : public framework::Producer {
     /// ticks since spill
     int ticks;
     ldmx::HgcrocDigiCollection digis;
-    PolarfireQueueEntry(const framework::Event& event, 
-        const std::string& input_name, const std::string& input_pass, 
-        std::pair<int,int>& spill_counter) {
-      int spilln = event.getObject<int>(input_name+"Spill", input_pass);
+    PolarfireQueueEntry(const framework::Event& event,
+                        const std::string& input_name,
+                        const std::string& input_pass,
+                        std::pair<int, int>& spill_counter) {
+      int spilln = event.getObject<int>(input_name + "Spill", input_pass);
       if (spilln != spill_counter.second) {
         spill_counter.first++;
         spill_counter.second = spilln;
       }
       spill = spill_counter.first;
-      ticks = event.getObject<int>(input_name+"Ticks", input_pass);
-      digis = event.getObject<ldmx::HgcrocDigiCollection>(input_name,input_pass);
+      ticks = event.getObject<int>(input_name + "Ticks", input_pass);
+      digis =
+          event.getObject<ldmx::HgcrocDigiCollection>(input_name, input_pass);
     }
     bool same_event(const PolarfireQueueEntry& rhs) {
       return (spill == rhs.spill and abs(ticks - rhs.ticks) < max_tick_diff_);
@@ -49,13 +52,14 @@ class HcalAlignPolarfires : public framework::Producer {
       return spill < rhs.spill;
     }
   };
-  /// queue of unmatched digis 
+  /// queue of unmatched digis
   std::queue<PolarfireQueueEntry> pf0_queue, pf1_queue;
   /// spill counter
-  std::pair<int,int> pf0_spill_counter{0,-1}, pf1_spill_counter{0,-1};
+  std::pair<int, int> pf0_spill_counter{0, -1}, pf1_spill_counter{0, -1};
+
  public:
   HcalAlignPolarfires(const std::string& n, framework::Process& p)
-    : framework::Producer(n,p) {}
+      : framework::Producer(n, p) {}
   virtual ~HcalAlignPolarfires() = default;
   virtual void configure(framework::config::Parameters& ps) final override;
   virtual void produce(framework::Event& event) final override;
@@ -68,7 +72,7 @@ void HcalAlignPolarfires::configure(framework::config::Parameters& ps) {
   input_pass_ = ps.getParameter<std::string>("input_pass");
   output_name_ = ps.getParameter<std::string>("output_name");
   max_tick_diff_ = ps.getParameter<int>("max_tick_diff");
-} // configure
+}  // configure
 
 void HcalAlignPolarfires::produce(framework::Event& event) {
   // put next package of decoding into the queues
@@ -76,8 +80,10 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
   pf1_queue.emplace(event, input_names_[1], input_pass_, pf1_spill_counter);
 
   // remove empty events from front of queues for end-of-file condition
-  while (pf0_queue.size() > 0 and pf0_queue.front().digis.getNumDigis() == 0) pf0_queue.pop();
-  while (pf1_queue.size() > 0 and pf1_queue.front().digis.getNumDigis() == 0) pf1_queue.pop();
+  while (pf0_queue.size() > 0 and pf0_queue.front().digis.getNumDigis() == 0)
+    pf0_queue.pop();
+  while (pf1_queue.size() > 0 and pf1_queue.front().digis.getNumDigis() == 0)
+    pf1_queue.pop();
 
   bool aligned{false};
   ldmx::HgcrocDigiCollection merged;
@@ -113,25 +119,25 @@ void HcalAlignPolarfires::produce(framework::Event& event) {
     }
   } else if (pf0_queue.size() > 0) {
     // only pf0 has non-empty events left
-      // should add pf0 but signal event is unmerged
-      merged = pf0_queue.front().digis;
-      pf0_queue.pop();
-      setStorageHint(framework::hint_shouldDrop);
+    // should add pf0 but signal event is unmerged
+    merged = pf0_queue.front().digis;
+    pf0_queue.pop();
+    setStorageHint(framework::hint_shouldDrop);
   } else if (pf1_queue.size() > 0) {
     // only pf1 has non-empty events left
-      // should add pf1 but signal event is unmerged
-      merged = pf1_queue.front().digis;
-      pf1_queue.pop();
-      setStorageHint(framework::hint_shouldDrop);
+    // should add pf1 but signal event is unmerged
+    merged = pf1_queue.front().digis;
+    pf1_queue.pop();
+    setStorageHint(framework::hint_shouldDrop);
   } else {
     // no more events, both decoders are returning empty events
     abortEvent();
   }
 
-  event.add(output_name_,merged);
-  event.add(output_name_+"Aligned",aligned);
-} // produce
+  event.add(output_name_, merged);
+  event.add(output_name_ + "Aligned", aligned);
+}  // produce
 
-}
+}  // namespace hcal
 
 DECLARE_PRODUCER_NS(hcal, HcalAlignPolarfires);
