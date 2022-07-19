@@ -230,7 +230,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     ldmx::Track trk = ldmx::Track();
 
     trk.setPerigeeLocation(g_pos(0), g_pos(1), g_pos(2));
-    trk.setChi2(-1);
+    trk.setChi2(0.);
     trk.setNhits(3);
     trk.setNdf(0);
     trk.setNsharedHits(0);
@@ -244,15 +244,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     tracking::sim::utils::flatCov(Acts::BoundSymMatrix::Identity(), v_seed_cov);
     trk.setPerigeeParameters(v_seed_params);
     trk.setPerigeeCov(v_seed_cov);
-
-    
-    //std::cout<<(*params)[Acts::eBoundLoc0]<<" "
-    //         <<(*params)[Acts::eBoundLoc1]<<" "
-    //         <<(*params)[Acts::eBoundPhi]<< " "
-    //         <<(*params)[Acts::eBoundTheta]<<" "
-    //         <<(*params)[Acts::eBoundQOverP]<< " "
-    //         <<(*params)[Acts::eBoundTime]
-    //         <<std::endl;
 
     //Get momentum and position - TODO
     seed_tracks.push_back(trk);
