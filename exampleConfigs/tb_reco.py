@@ -14,6 +14,7 @@ arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('')
+p.maxEvents = arg.max_events
 p.termLogLevel = 0
 p.logFrequency = 1000
 
