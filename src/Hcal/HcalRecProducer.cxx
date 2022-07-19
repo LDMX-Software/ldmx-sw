@@ -254,7 +254,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
       // set position along the bar
-      if ((id_posend.layer() % 2) == 1) {
+      if (hcalGeometry.layerIsHorizontal(id_posend.layer())) {
         position.SetX(position_bar);
       } else {
         position.SetY(position_bar);
