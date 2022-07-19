@@ -154,9 +154,9 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     // reconstructed Hit
     ldmx::HcalHit recHit;
     recHit.setID(id.raw());
-    recHit.setXPos(0);
-    recHit.setYPos(0);
-    recHit.setZPos(0);
+    recHit.setXPos(position.X());
+    recHit.setYPos(position.Y());
+    recHit.setZPos(position.Z());
     recHit.setSection(id.section());
     recHit.setStrip(id.strip());
     recHit.setLayer(id.layer());
