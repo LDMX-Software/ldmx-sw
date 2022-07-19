@@ -32,6 +32,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   track_id_            = parameters.getParameter<int>("track_id",-999);
   pz_cut_              = parameters.getParameter<double>("pz_cut",-9999); //MeV
   p_cut_               = parameters.getParameter<double>("p_cut", 0.);
+  p_cutMax_            = parameters.getParameter<double>("p_cutMax", 100000.); //MeV
   k0_sel_              = parameters.getParameter<bool>("k0_sel",false);
   p_cutEcal_           = parameters.getParameter<double>("p_cutEcal",-1.); //MeV
 }
@@ -167,6 +168,10 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     
     //p cut
     if (p_cut_ >= 0. && t_sp_p.norm() < p_cut_)
+      continue;
+
+    //p cut Max
+    if (p_cut_ < 100000. && t_sp_p.norm() >  p_cutMax_)
       continue;
 
     //pz cut
