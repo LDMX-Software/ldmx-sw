@@ -20,10 +20,12 @@
 
 namespace simcore {
 
-HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID)
+HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID,
+               ConditionsInterface& ci)
     : CalorimeterSD(name, collectionName),
       birksc1_(1.29e-2),
-      birksc2_(9.59e-6) {}
+      birksc2_(9.59e-6),
+      conditionsIntf_(ci) {}
 
 HcalSD::~HcalSD() {}
 
