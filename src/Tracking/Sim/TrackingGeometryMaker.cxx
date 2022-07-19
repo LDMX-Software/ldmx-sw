@@ -27,6 +27,15 @@ TrackingGeometryMaker::~TrackingGeometryMaker() {}
 
 void TrackingGeometryMaker::onProcessStart() {
 
+
+  profiling_map_["setup"]        = 0.;
+  profiling_map_["hits"]         = 0.;
+  profiling_map_["seeds"]        = 0.;
+  profiling_map_["ckf_setup"]    = 0.;
+  profiling_map_["ckf_run"]      = 0.;
+  profiling_map_["result_loop"]  = 0.;
+  
+
   detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
@@ -366,6 +375,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   //std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   //a) Loop over the sim Hits
 
+  auto setup = std::chrono::high_resolution_clock::now();
+  profiling_map_["setup"] += std::chrono::duration<double,std::milli>(setup-start).count();
+  
+  
   const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
     
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
@@ -511,6 +524,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
     
   }
+
+  auto hits = std::chrono::high_resolution_clock::now();
+  profiling_map_["hits"] += std::chrono::duration<double,std::milli>(hits-setup).count();
       
   // ============   Setup the CKF  ============
   Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
@@ -565,7 +581,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
   
   if (startParameters.size() != 1 ) {
     std::vector<ldmx::Track> empty;
-    event.add(out_trk_collection_,empty); return;
+    event.add(out_trk_collection_,empty);
+    return;
   }
    
 
@@ -580,6 +597,9 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     h_theta_truth_ ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>());
     h_qop_truth_   ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundQOverP>());
   }
+
+  auto seeds = std::chrono::high_resolution_clock::now();
+  profiling_map_["seeds"] += std::chrono::duration<double,std::milli>(seeds-hits).count();
   
   Acts::GainMatrixUpdater kfUpdater;
   Acts::GainMatrixSmoother kfSmoother;
@@ -645,8 +665,14 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
+
+  auto ckf_setup = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_setup"] += std::chrono::duration<double,std::milli>(ckf_setup-seeds).count();
   
   auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions);
+
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_run"] += std::chrono::duration<double,std::milli>(ckf_run - ckf_setup).count();
 
   //std::cout<<"StartParameters size::"<<startParameters.size()<<std::endl;
   //std::cout<<"results size::"<<results.size()<<std::endl;
@@ -842,7 +868,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
     tracks.push_back(trk);
     ntracks_++;
 
-    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 )
+    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 && false)
       //Write the event display for the recoil
       WriteEvent(event,
 		 ckf_result.fittedParameters.begin()->second,
@@ -964,8 +990,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
           Acts::LoggerWrapper{*gsfLogger},
           propagator_options,
           &(*extr_surface),
-          4,
           true,
+          4,
           false};
         
         
@@ -999,6 +1025,10 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
       } // do refit GSF
       
   } // loop on CKF Results
+
+
+  auto result_loop = std::chrono::high_resolution_clock::now();
+  profiling_map_["result_loop"] += std::chrono::duration<double,std::milli>(result_loop - ckf_run).count();
   
   if (debug_) 
     std::cout<<"Found "<<GoodResult<< " tracks" <<std::endl;  
@@ -1016,8 +1046,8 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 
 
 void TrackingGeometryMaker::onProcessEnd() {
-
-
+  
+  
   std::cout<<"Producer " << getName() << " found " << ntracks_ <<" tracks  / " << nseeds_ << " nseeds"<<std::endl;
   
   
@@ -1075,7 +1105,14 @@ void TrackingGeometryMaker::onProcessEnd() {
   delete outfile_;
 
   std::cout<<"PROCESSOR:: "<<this->getName()<<"   AVG Time/Event: " <<processing_time_ / nevents_ << " ms"<<std::endl;
-  
+
+  std::cout<<"Breakdown::"<<std::endl;
+  std::cout<<"setup       Avg Time/Event = "<<profiling_map_["setup"]       / nevents_ << " ms"<<std::endl;
+  std::cout<<"hits        Avg Time/Event = "<<profiling_map_["hits"]        / nevents_ << " ms"<<std::endl;
+  std::cout<<"seeds       Avg Time/Event = "<<profiling_map_["seeds"]       / nevents_ << " ms"<<std::endl;
+  std::cout<<"cf_setup    Avg Time/Event = "<<profiling_map_["ckf_setup"]   / nevents_ << " ms"<<std::endl;
+  std::cout<<"ckf_run     Avg Time/Event = "<<profiling_map_["ckf_run"]     / nevents_ << " ms"<<std::endl;
+  std::cout<<"result_loop Avg Time/Event = "<<profiling_map_["result_loop"] / nevents_ << " ms"<<std::endl;
   
 }
 
