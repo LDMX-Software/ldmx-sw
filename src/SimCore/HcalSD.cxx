@@ -30,6 +30,9 @@ HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID,
 HcalSD::~HcalSD() {}
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
+  const ldmx::HcalGeometry& hcalGeometry =
+      conditionsIntf_.getCondition<ldmx::HcalGeometry>(
+          ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   // Determine if current particle of this step is a Geantino.
   G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
   bool isGeantino = false;
