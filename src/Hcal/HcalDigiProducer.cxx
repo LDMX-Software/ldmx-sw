@@ -140,7 +140,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
        * Define two pulses: with positive and negative ends.
        * For this we need to:
        * (1) Find the position along the bar:
-       *     For back Hcal: x (y) for even (odd) layers.
+       *     For back Hcal: x (y) for horizontal (vertical) layers.
        *     For side Hcal: x (top,bottom) and y (left,right).
        *
        * (2) Define the end of the bar:
@@ -168,7 +168,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
       float distance_close, distance_far;
       int end_close;
       if (section == ldmx::HcalID::HcalSection::BACK) {
-        distance_along_bar = (layer % 2) ? position[0] : position[1];
+        distance_along_bar =
+            hcalGeometry.layerIsHorizontal(layer) ? position[0] : position[1];
         end_close = (distance_along_bar > 0) ? 0 : 1;
         distance_close = half_total_width;
         distance_far = half_total_width;
