@@ -114,7 +114,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // get the reconstruction parameters
-  const auto& the_conditions{getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
+  const auto& the_conditions{
+      getCondition<HcalReconConditions>(HcalReconConditions::CONDITIONS_NAME)};
 
   std::vector<ldmx::HcalHit> hcalRecHits;
   auto hcalDigis =
@@ -135,7 +136,8 @@ void HcalRecProducer::produce(framework::Event& event) {
 
     // position from ID
     auto position = hcalGeometry.getStripCenterPosition(id);
-    double half_total_width = hcalGeometry.getHalfTotalWidth(id.section(),id.layer());
+    double half_total_width =
+        hcalGeometry.getHalfTotalWidth(id.section(), id.layer());
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
@@ -175,11 +177,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       double amplT_posend_copy, amplT_negend_copy;
       if (digi_posend.isTOT()) {
         voltage_posend =
-            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
-            the_conditions.totGain(id_posend);
+            (digi_posend.tot() - the_conditions.totCalib(id_posend, 0)) *
+            the_conditions.totCalib(id_posend, 1);
         voltage_negend =
-            (digi_negend.tot() - the_conditions.totPedestal(id_negend)) *
-            the_conditions.totGain(id_negend);
+            (digi_negend.tot() - the_conditions.totCalib(id_negend, 0)) *
+            the_conditions.totCalib(id_negend, 1);
       } else {
         amplT_posend =
             digi_posend.soi().adc_t() - the_conditions.adcPedestal(id_posend);
@@ -252,7 +254,7 @@ void HcalRecProducer::produce(framework::Event& event) {
       amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
       // set position along the bar
-      if ((id_posend.layer() % 2) == 1) {
+      if (hcalGeometry.layerIsHorizontal(id_posend.layer())) {
         position.SetX(position_bar);
       } else {
         position.SetY(position_bar);
@@ -277,9 +279,8 @@ void HcalRecProducer::produce(framework::Event& event) {
         // convert the time over threshold into a total energy deposited in the
         // bar (time over threshold [ns] - pedestal) * gain
 
-        voltage_i =
-            (digi_posend.tot() - the_conditions.totPedestal(id_posend)) *
-            the_conditions.totGain(id_posend);
+        voltage_i = (digi_posend.tot() - the_conditions.totCalib(id_posend)) *
+                    the_conditions.totCalib(id_posend);
 
       } else {
         // ADC mode of readout

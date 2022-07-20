@@ -22,7 +22,7 @@ void HcalClusterProducer::configure(framework::config::Parameters& parameters) {
   deltaR_ = parameters.getParameter<double>("deltaR");
   EminCluster_ = parameters.getParameter<double>("EminCluster");
   cutOff_ = parameters.getParameter<double>("cutOff");
-  
+
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 }
 

@@ -11,9 +11,7 @@ from LDMX.Framework import ldmxcfg
 class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     """The HcalReconConditions object packages the reconstructing conditions tables together
     
-    This makes the processor using the recon conditions less dependent on the underlying structure,
-    and (for example) a user can have very specific ADC pedestals provided by a per-channel table
-    while keeping the TOT pedestal as an estimated constant.
+    This makes the processor using the recon conditions less dependent on the underlying structure.
 
     Parameters
     ----------
@@ -21,10 +19,8 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
         provider for the HCal ADC pedestals
     adc_gain : framework::ConditionsObjectProvider
         provider for the HCal ADC gains
-    tot_ped : framework::ConditionsObjectProvider
-        provider for the HCal TOT pedestals
-    tot_gain : framework::ConditionsObjectProvider
-        provider for the HCal TOT gains
+    tot_calib : framework::ConditionsObjectProvider
+        provider for the HCal TOT calibrations
 
     Examples
     --------
@@ -32,13 +28,12 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     wrapped here are constant for all runs and all channels.
     """
 
-    def __init__(self,adc_ped,adc_gain,tot_ped,tot_gain) :
+    def __init__(self,adc_ped,adc_gain,tot_calib) :
         super().__init__("HcalReconConditions","hcal::HcalReconConditionsProvider","Hcal")
 
         # our COP only needs the object names but providing the full parent COPs
         #   ensures that they exist
         self.adc_ped = adc_ped.objectName
         self.adc_gain = adc_gain.objectName
-        self.tot_ped = tot_ped.objectName
-        self.tot_gain = tot_gain.objectName
+        self.tot_calib = tot_calib.objectName
 
