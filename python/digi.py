@@ -174,7 +174,7 @@ class HcalSingleEndRecProducer(Producer) :
        Name of rechit collection
     """
 
-    def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits') :
+    def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits', rec_pass_name = '') :
         super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
 
         self.mip_energy = mipEnergy
@@ -184,3 +184,35 @@ class HcalSingleEndRecProducer(Producer) :
         self.coll_name = coll_name
         self.pass_name = pass_name
         self.rec_coll_name = rec_coll_name
+        self.rec_pass_name = rec_pass_name
+
+class HcalDoubleEndRecProducer(Producer) :
+    """ Configuration for the double ended Hcal Rec Producer
+    
+    Attributes
+    ----------
+    -  mip_energy : float
+       Copied from module-wide mipEnergy [MeV]
+    -  clock_cycle : float
+       Time for one DAQ clock cycle to pass [ns]
+    -  pe_per_mip: float
+       number of photo-electrons per MIP
+    -  pass_name: str
+       Name of digi pass
+    -  coll_name: str
+       Name of digi collection
+    -  rec_coll_name: str
+       Name of rechit collection
+    """
+
+    def __init__(self, instance_name = 'hcalDoubleRecon', pass_name = '', coll_name = 'HcalRecHits', rec_coll_name = 'HcalDoubleEndRecHits', rec_pass_name = '') :
+        super().__init__(instance_name , 'hcal::HcalDoubleEndRecProducer','Hcal')
+
+        self.mip_energy = mipEnergy
+        self.clock_cycle = 25.
+        self.pe_per_mip = nPEPerMIP
+
+        self.coll_name = coll_name
+        self.pass_name = pass_name
+        self.rec_coll_name = rec_coll_name
+        self.rec_pass_name = rec_pass_name
