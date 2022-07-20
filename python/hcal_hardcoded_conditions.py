@@ -24,15 +24,12 @@ adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
 adc_gain.validForAllRows([1.2]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
 
-tot_pedestal = SimpleCSVDoubleTableProvider("hcal_tot_pedestal",["pedestal"])
-tot_pedestal.validForAllRows([1.]) # dummy value since TOT is not implemented
-
-tot_gain = SimpleCSVDoubleTableProvider("hcal_tot_gain",["gain"])
-tot_gain.validForAllRows([2.5]) # dummy value - conversion to estimated charge deposited in TOT mode
+tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",["pedestal"])
+tot_calib.validForAllRows([1.]) # dummy value since TOT is not implemented
 
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
-HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_pedestal, tot_gain)
+HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
             "PEDESTAL",
