@@ -61,32 +61,32 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Get the section for this hit.
    * @return section number
    */
-  int getSection() const { return section_;}
+  int getSection() const { return section_; }
 
   /**
    * Get the layer for this hit.
    * @return layer number
    */
-  int getLayer() const { return layer_;}
+  int getLayer() const { return layer_; }
 
   /**
    * Get the strip for this hit.
    * @return strip number
    */
-  int getStrip() const { return strip_;}
+  int getStrip() const { return strip_; }
 
   /**
    * Get end for this hit.
    * @return end
    */
-  int getEnd() const {return end_;}
+  int getEnd() const { return end_; }
 
   /**
    * Get if hit was reconstructed using ADC.
    * @return isADC
    */
-  int getIsADC() const { return isADC_;}
-  
+  int getIsADC() const { return isADC_; }
+
   /**
    * Set the number of photoelectrons estimated for this hit.
    * @param pe Number of photoelectrons, including noise which affects the
@@ -126,11 +126,11 @@ class HcalHit : public ldmx::CalorimeterHit {
   void setEnd(int end) { end_ = end; }
 
   /**
-   * Set if the hit is reconstructed using ADC 
+   * Set if the hit is reconstructed using ADC
    * @param isADC int
    */
   void setIsADC(int isADC) { isADC_ = isADC; }
-  
+
  private:
   /** The number of PE estimated for this hit. */
   float pe_{0};
@@ -147,7 +147,7 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   /// isADC
   int isADC_;
-  
+
   /**
    * The ROOT class definition.
    */

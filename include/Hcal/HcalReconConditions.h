@@ -17,26 +17,26 @@ namespace hcal {
 class HcalReconConditions : public framework::ConditionsObject {
  public:
   /// index of m_adc_i in tot_calib table
-  static const unsigned int i_m_adc_i       = 0;
+  static const unsigned int i_m_adc_i = 0;
   /// index of cut_point_tot in tot_calib table
   static const unsigned int i_cut_point_tot = 1;
   /// index of high_slope in tot_calib table
-  static const unsigned int i_high_slope    = 2;
+  static const unsigned int i_high_slope = 2;
   /// index of high_offset in tot_calib table
-  static const unsigned int i_high_offset   = 3;
+  static const unsigned int i_high_offset = 3;
   /// index of low_slope in tot_calib table
-  static const unsigned int i_low_slope     = 4;
+  static const unsigned int i_low_slope = 4;
   /// index of low_power in tot_calib table
-  static const unsigned int i_low_power     = 5;
+  static const unsigned int i_low_power = 5;
   /// index of lower_offset in tot_calib table
-  static const unsigned int i_lower_offset  = 6;
+  static const unsigned int i_lower_offset = 6;
   /// index of tot_not in tot_calib table
-  static const unsigned int i_tot_not       = 7;
+  static const unsigned int i_tot_not = 7;
   /// index of channel in tot_calib table
-  static const unsigned int i_channel       = 8;
+  static const unsigned int i_channel = 8;
   /// index of flagged in tot_calib table
-  static const unsigned int i_flagged       = 9;
-  /// the name of the HcalReconConditions table 
+  static const unsigned int i_flagged = 9;
+  /// the name of the HcalReconConditions table
   /// (must match python registration name)
   static const std::string CONDITIONS_NAME;
 
@@ -47,10 +47,10 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] adc_gain double table of ADC gains
    * @param[in] tot_ped double table of TOT calibrations
    */
-  HcalReconConditions(const conditions::DoubleTableCondition& adc_ped, 
-      const conditions::DoubleTableCondition& adc_gain,
-      const conditions::DoubleTableCondition& tot_calib);
-  
+  HcalReconConditions(const conditions::DoubleTableCondition& adc_ped,
+                      const conditions::DoubleTableCondition& adc_gain,
+                      const conditions::DoubleTableCondition& tot_calib);
+
   /**
    * get the ADC pedestal
    *
@@ -58,7 +58,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] index of column in condition file
    * @returns the ADC pedestal for that chip in counts
    */
-  double adcPedestal(const ldmx::HcalDigiID& id, int idx=0) const {
+  double adcPedestal(const ldmx::HcalDigiID& id, int idx = 0) const {
     return adc_pedestals_.get(id.raw(), idx);
   }
 
@@ -72,7 +72,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] id raw ID for specific chip
    * @returns the ADC threshold for that chip in fC/counts
    */
-  double adcGain(const ldmx::HcalDigiID& id, int idx=0) const {
+  double adcGain(const ldmx::HcalDigiID& id, int idx = 0) const {
     return adc_gains_.get(id.raw(), idx);
   }
 
@@ -108,7 +108,7 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] index of column in condition file
    * @returns the TOT calibration for that i
    */
-  double totCalib(const ldmx::HcalDigiID& id, int idx=0) const {
+  double totCalib(const ldmx::HcalDigiID& id, int idx = 0) const {
     return tot_calibs_.get(id.raw(), idx);
   }
 

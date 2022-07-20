@@ -84,10 +84,8 @@ class HcalCluster {
     centroidY_ = y;
     centroidZ_ = z;
   }
-  
-  void setTime(double x){
-    time_ = x;
-  }
+
+  void setTime(double x) { time_ = x; }
 
   double getEnergy() const { return energy_; }
 
@@ -98,7 +96,7 @@ class HcalCluster {
   double getCentroidY() const { return centroidY_; }
 
   double getCentroidZ() const { return centroidZ_; }
-  
+
   double getTime() const { return time_; }
 
   const std::vector<unsigned int>& getHitIDs() const { return hitIDs_; }
