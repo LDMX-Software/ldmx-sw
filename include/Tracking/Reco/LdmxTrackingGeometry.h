@@ -53,6 +53,11 @@ class LdmxTrackingGeometry {
   
   
   std::shared_ptr<const Acts::TrackingGeometry> getTG(){return tGeometry_;};
+
+  void dumpGeometry(const std::string& outputDir );
+  void getSurfaces(std::vector<const Acts::Surface*>& surfaces,
+                   std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
+  
   
  private:
 
@@ -85,9 +90,7 @@ class LdmxTrackingGeometry {
       const dd4hep::DetElement& detElement) const ;
   Acts::Transform3 convertTransform(
       const TGeoMatrix* tGeoTrans) const;
-  void getSurfaces(std::vector<const Acts::Surface*>& surfaces,
-                   std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
-  
+    
   Acts::CuboidVolumeBuilder::VolumeConfig volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel);
     
 
