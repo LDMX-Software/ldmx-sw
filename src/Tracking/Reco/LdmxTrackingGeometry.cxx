@@ -1,27 +1,33 @@
 #include "Tracking/Reco/LdmxTrackingGeometry.h"
 
+#include <boost/filesystem.hpp>
+
 namespace tracking{
 namespace reco {
 LdmxTrackingGeometry::LdmxTrackingGeometry(dd4hep::Detector* detector,
                                            Acts::GeometryContext* gctx) {
-
+  
   detector_ = detector;
   gctx_  = gctx;
-
-
+  
+  // Get the world detector element
   dd4hep::DetElement world{detector_->world()};
   Acts::CuboidVolumeBuilder cvb;
   std::vector<dd4hep::DetElement> subdetectors;
 
+  //Get the ACTS Logger
+  
   auto loggingLevel = Acts::Logging::INFO;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("DD4hepConversion", loggingLevel));
   
+  //The subdetectors should be the TaggerTracker and the Recoil Tracker
+  
   collectSubDetectors_dd4hep(world,subdetectors);
-
   if (debug_)
-    std::cout<<__PRETTY_FUNCTION__<<" size of subdetectors::"<<subdetectors.size()<<std::endl;
-
-
+    std::cout<<"PF::DEBUG::"<<__PRETTY_FUNCTION__<<" size  of subdetectors::"<<subdetectors.size()<<std::endl;
+  
+  //loop over the subDetectors to gather all the configurations
+  
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs;
   for (auto& subDetector : subdetectors) {
     if (debug_)
@@ -37,7 +43,7 @@ LdmxTrackingGeometry::LdmxTrackingGeometry(dd4hep::Detector* detector,
   config.volumeCfg = volBuilderConfigs;
   
   cvb.setConfig(config);
-    
+  
   Acts::TrackingGeometryBuilder::Config tgbCfg;
   tgbCfg.trackingVolumeBuilders.push_back(
       [=](const auto& cxt, const auto& inner, const auto&) {
@@ -45,10 +51,8 @@ LdmxTrackingGeometry::LdmxTrackingGeometry(dd4hep::Detector* detector,
       });
   
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
+  tGeometry_ = tgb.trackingGeometry(*gctx_);
   
-  tGeometry_ = 
-      tgb.trackingGeometry(*gctx_);
-
 }
 
 void LdmxTrackingGeometry::collectSensors_dd4hep(dd4hep::DetElement& detElement,
@@ -156,6 +160,8 @@ void LdmxTrackingGeometry::collectSubDetectors_dd4hep(dd4hep::DetElement& detEle
   }//children loop
 }
 
+
+
 void LdmxTrackingGeometry::resolveSensitive(
     const dd4hep::DetElement& detElement,
     std::vector<std::shared_ptr<const Acts::Surface>>& surfaces,bool force) const {
@@ -178,7 +184,6 @@ void LdmxTrackingGeometry::resolveSensitive(
   }
 }//resolve sensitive
 
-
 std::shared_ptr<const Acts::Surface>
 LdmxTrackingGeometry::createSensitiveSurface(
     const dd4hep::DetElement& detElement) const {
@@ -198,23 +203,17 @@ LdmxTrackingGeometry::createSensitiveSurface(
   dd4hep::Material de_mat = detElement.volume().material();
   //std::cout<<childDetElement.volume().material().toString()<<std::endl;
   //std::cout<<"Silicon density "<<de_mat.density()<<std::endl;
-  
-  /*
-    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength() * Acts::UnitConstants::mm,
-    de_mat.intLength() * Acts::UnitConstants::mm,
-    de_mat.A(),
-    de_mat.Z(),
-    de_mat.density() * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
-  */
+  //Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
+
   Acts::Material silicon = Acts::Material::fromMassDensity(95.7 * Acts::UnitConstants::mm,
                                                            465.2 * Acts::UnitConstants::mm,
                                                            28.03,
                                                            14.,
                                                            2.32 * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
-  
+        
   //Get the thickness. The bounding box gives back half of the size in z. I scaled of factor 10 to bring it in mm. The detElement stores in cm units
   double thickness = 2*Acts::UnitConstants::cm*detElement.volume().boundingBox().z();
-  
+        
   Acts::MaterialSlab silicon_slab(silicon,thickness); 
   std::shared_ptr<Acts::HomogeneousSurfaceMaterial> homogeneous_mat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
         
@@ -248,27 +247,31 @@ Acts::Transform3 LdmxTrackingGeometry::convertTransform(
 }
 
 
-void LdmxTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfaces,
-                                        std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
-  
-  const Acts::TrackingVolume* tVolume = trackingGeometry->highestTrackingVolume();
-  if (tVolume->confinedVolumes()) {
-    for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
-      if (volume->confinedLayers()) {
-        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
-          if (layer->layerType() == Acts::navigation) continue;
-          for (auto surface : layer->surfaceArray()->surfaces()) {
-            if (surface) {
 
-              surfaces.push_back(surface);
-                            
-            }// surface exists
-          } //surfaces
-        }//layers objects
-      }//confined layers
-    }//volumes objects
-  }//confined volumes
+//TODO Move everything in a base clasee to avoid duplication of code
+void LdmxTrackingGeometry::dumpGeometry(const std::string& outputDir ) {
+
+  //Should fail if already exists
+  boost::filesystem::create_directory(outputDir);
+    
+  double outputScalor = 1.0;
+  size_t outputPrecision = 6;
+
+  Acts::ObjVisualization3D objVis(outputPrecision, outputScalor);
+  Acts::ViewConfig containerView = Acts::ViewConfig({220, 220, 220});
+  Acts::ViewConfig volumeView = Acts::ViewConfig({220, 220, 0});
+  Acts::ViewConfig sensitiveView = Acts::ViewConfig({0, 180, 240});
+  Acts::ViewConfig passiveView = Acts::ViewConfig({240, 280, 0});
+  Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
+  
+
+  Acts::GeometryView3D::drawTrackingVolume(
+      objVis, *(tGeometry_->highestTrackingVolume()),
+      *gctx_, containerView,
+      volumeView, passiveView, sensitiveView, gridView,
+      true,"",".");
 }
+
 
 //A copy is not a good idea. TODO
 Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4hep(dd4hep::DetElement& subdetector,Acts::Logging::Level logLevel) {
@@ -443,7 +446,7 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     x_rot.col(0) = xPos2;
     x_rot.col(1) = yPos2;
     x_rot.col(2) = zPos2;
-    
+        
         
     cfg.position = position;
     //cfg.rotation = cfg.rotation*transform.rotation();
@@ -474,8 +477,21 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     // Material
         
     dd4hep::Material de_mat = sensor.volume().material();
-    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength(),de_mat.intLength(), de_mat.A(), de_mat.Z(), de_mat.density());
-    Acts::MaterialSlab silicon_slab(silicon,thickness); 
+
+    /*
+    Acts::Material silicon = Acts::Material::fromMassDensity(de_mat.radLength() * Acts::UnitConstants::mm,
+                                                             de_mat.intLength() * Acts::UnitConstants::mm,
+                                                             de_mat.A(),
+                                                             de_mat.Z(),
+                                                             de_mat.density() * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+    */
+    Acts::Material silicon = Acts::Material::fromMassDensity(95.7 * Acts::UnitConstants::mm,
+                                                             465.2 * Acts::UnitConstants::mm,
+                                                             28.03,
+                                                             14.,
+                                                             2.32 * Acts::UnitConstants::g / Acts::UnitConstants::cm3);
+    
+    Acts::MaterialSlab silicon_slab(silicon,thickness * Acts::UnitConstants::mm); 
     cfg.thickness = thickness;
     cfg.surMat = std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab);
 
@@ -486,7 +502,7 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     if (sensor_name == "tagger_tracker_layer_1" || sensor_name == "tagger_tracker_layer_2") {
       tracker_layout["tagger_tracker_layer_L1"].push_back(cfg);
     }
-    
+
     if (sensor_name == "tagger_tracker_layer_3" || sensor_name == "tagger_tracker_layer_4") {
       tracker_layout["tagger_tracker_layer_L2"].push_back(cfg);
     }
@@ -558,6 +574,8 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     }
         
   } // sensors loop
+
+  
   
   //if (debug_)
   //  std::cout<<"Formed " <<surfaceConfig.size()<< " Surface configs"<<std::endl;
@@ -626,20 +644,48 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     
   //Form the Homogeneous material for the tagger volume
   dd4hep::Material subde_mat = subdetector.volume().material();
-  Acts::Material subdet_mat = Acts::Material::fromMassDensity(subde_mat.radLength(),
-                                                              subde_mat.intLength(), subde_mat.A(), 
-                                                              subde_mat.Z(), subde_mat.density()); 
+  Acts::Material subdet_mat = Acts::Material::fromMassDensity(subde_mat.radLength() * Acts::UnitConstants::mm,
+                                                              subde_mat.intLength() * Acts::UnitConstants::mm,
+                                                              subde_mat.A(), 
+                                                              subde_mat.Z(),
+                                                              subde_mat.density() * Acts::UnitConstants::g / Acts::UnitConstants::cm3); 
   
   subDetVolumeConfig.volumeMaterial =
       std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
   
-  
+
   //Clear up the layout map to accept the new sub-detector
   tracker_layout.clear();
   
   return subDetVolumeConfig;
   
 }
+
+void LdmxTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfaces,
+                                        std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
+  
+  const Acts::TrackingVolume* tVolume = trackingGeometry->highestTrackingVolume();
+  if (tVolume->confinedVolumes()) {
+    for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
+      if (volume->confinedLayers()) {
+        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
+          if (layer->layerType() == Acts::navigation) continue;
+          for (auto surface : layer->surfaceArray()->surfaces()) {
+            if (surface) {
+
+              surfaces.push_back(surface);
+                            
+            }// surface exists
+          } //surfaces
+        }//layers objects
+      }//confined layers
+    }//volumes objects
+  }//confined volumes
+}
+
+  
+
+
 
 }
 }
