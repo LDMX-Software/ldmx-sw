@@ -185,8 +185,10 @@ class CKFProcessor : public framework::Producer {
   //time profiling
   std::map<std::string, double> profiling_map_;
   
+  //refitting of tracks
+  bool kfRefit_{false};
+  bool gsfRefit_{false};
   
-    
   //--- Smearing ---//
 
   std::default_random_engine generator_;
@@ -233,10 +235,6 @@ class CKFProcessor : public framework::Producer {
   double mass_{0.511};
   
 
-  //Refits
-  bool kfRefit_{false};
-  bool gsfRefit_{false};
-  
   //The seed track collection
   std::string seed_coll_name_{"seedTracks"};
   
