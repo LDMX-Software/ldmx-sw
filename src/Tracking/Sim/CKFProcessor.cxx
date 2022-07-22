@@ -1,4 +1,4 @@
-#include "Tracking/Sim/TrackingGeometryMaker.h"
+#include "Tracking/Sim/CKFProcessor.h"
 #include "Tracking/Sim/GeometryContainers.h"
 
 #include "SimCore/Event/SimParticle.h"
@@ -16,16 +16,16 @@
 namespace tracking {
 namespace sim {
     
-TrackingGeometryMaker::TrackingGeometryMaker(const std::string &name,
+CKFProcessor::CKFProcessor(const std::string &name,
                                              framework::Process &process)
     : framework::Producer(name, process) {
 
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 }
 
-TrackingGeometryMaker::~TrackingGeometryMaker() {}
+CKFProcessor::~CKFProcessor() {}
 
-void TrackingGeometryMaker::onProcessStart() {
+void CKFProcessor::onProcessStart() {
 
 
   profiling_map_["setup"]        = 0.;
@@ -239,7 +239,7 @@ void TrackingGeometryMaker::onProcessStart() {
   
 }
 
-void TrackingGeometryMaker::produce(framework::Event &event) {
+void CKFProcessor::produce(framework::Event &event) {
 
 
   //TODO use global variable instead and call clear;
@@ -978,7 +978,7 @@ void TrackingGeometryMaker::produce(framework::Event &event) {
 }
 
 
-void TrackingGeometryMaker::onProcessEnd() {
+void CKFProcessor::onProcessEnd() {
   
   
   std::cout<<"Producer " << getName() << " found " << ntracks_ <<" tracks  / " << nseeds_ << " nseeds"<<std::endl;
@@ -1049,7 +1049,7 @@ void TrackingGeometryMaker::onProcessEnd() {
   
 }
 
-void TrackingGeometryMaker::configure(framework::config::Parameters &parameters) {
+void CKFProcessor::configure(framework::config::Parameters &parameters) {
     
   dumpobj_            = parameters.getParameter<int>("dumpobj");
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
@@ -1100,7 +1100,7 @@ void TrackingGeometryMaker::configure(framework::config::Parameters &parameters)
   std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
 }
 
-void TrackingGeometryMaker::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
+void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
                                       const Acts::Vector3& eval_pos) {
 
   Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
@@ -1111,8 +1111,8 @@ void TrackingGeometryMaker::testField(const std::shared_ptr<Acts::MagneticFieldP
 
 
 
-void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
-                                                     const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) {
+void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
+                                            const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) {
   
   for (const auto& pair : map) {
     std::cout<<"GeometryID::"<<pair.first<<std::endl;
@@ -1126,7 +1126,7 @@ void TrackingGeometryMaker::testMeasurmentCalibrator(const LdmxMeasurementCalibr
 //Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
 //Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
 
-void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
+void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
   
   //loop over the tracking geometry to find all sensitive surfaces
   std::vector<const Acts::Surface*> surfaces;
@@ -1170,11 +1170,11 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
 
-  bool TrackingGeometryMaker::WriteEvent(framework::Event &event,
-					 const Acts::BoundTrackParameters& perigeeParameters,
-					 const Acts::MultiTrajectory& mj,
-					 const int &trackTip,
-					 const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
+  bool CKFProcessor::WriteEvent(framework::Event &event,
+                                const Acts::BoundTrackParameters& perigeeParameters,
+                                const Acts::MultiTrajectory& mj,
+                                const int &trackTip,
+                                const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
   //Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
@@ -1360,8 +1360,7 @@ void TrackingGeometryMaker::makeLayerSurfacesMap(std::shared_ptr<const Acts::Tra
 }
 
 
-
 } // namespace sim
 } // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::sim, TrackingGeometryMaker)
+DECLARE_PRODUCER_NS(tracking::sim, CKFProcessor)

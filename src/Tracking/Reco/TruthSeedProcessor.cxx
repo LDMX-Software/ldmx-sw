@@ -193,7 +193,7 @@ void TruthSeedProcessor::produce(framework::Event &event) {
             passEcalScoringPlane = false;
           
           //Skip the rest of the scoring plane hits since we already found the track we care about
-          continue;
+          break;
           
         }//check that the hit belongs to the inital particle from the target scoring plane hit
       }//loop on Ecal scoring plane hits

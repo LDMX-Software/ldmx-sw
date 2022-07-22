@@ -1,5 +1,5 @@
-#ifndef TRACKING_SIM_TRACKINGGEOMAKER_H_
-#define TRACKING_SIM_TRACKINGGEOMAKER_H_
+#ifndef TRACKING_SIM_CKFPROCESSOR_H_
+#define TRACKING_SIM_CKFPROCESSOR_H_
 
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
@@ -102,7 +102,7 @@ using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 namespace tracking {
 namespace sim {
 
-class TrackingGeometryMaker : public framework::Producer {
+class CKFProcessor : public framework::Producer {
 
  public:
   /**
@@ -111,10 +111,10 @@ class TrackingGeometryMaker : public framework::Producer {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  TrackingGeometryMaker(const std::string &name, framework::Process &process);
+  CKFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~TrackingGeometryMaker();
+  ~CKFProcessor();
   
   /**
    *
@@ -342,10 +342,10 @@ class TrackingGeometryMaker : public framework::Producer {
 
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry_;
   
-}; // TrackingGeometryMaker
+}; // CKFProcessor
     
 
 } // namespace sim
 } // namespace tracking
 
-#endif // TRACKING_SIM_TRACKINGGEOMAKER_H_
+#endif // CKFProcessor
