@@ -812,8 +812,8 @@ void CKFProcessor::produce(framework::Event &event) {
     
     //Refit the track with the KalmanFitter using backward propagation
 
-    bool kfRefit = false;
-    if (kfRefit) {
+    
+    if (kfRefit_) {
 
       std::cout<<"Preparing theKF refit"<<std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
@@ -1051,7 +1051,7 @@ void CKFProcessor::onProcessEnd() {
 
 void CKFProcessor::configure(framework::config::Parameters &parameters) {
     
-  dumpobj_            = parameters.getParameter<int>("dumpobj");
+  dumpobj_            = parameters.getParameter<int>("dumpobj", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
   trackID_            = parameters.getParameter<int>("trackID",-1);
   pdgID_              = parameters.getParameter<int>("pdgID",11);
@@ -1098,6 +1098,11 @@ void CKFProcessor::configure(framework::config::Parameters &parameters) {
   sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
     
   std::cout<<__PRETTY_FUNCTION__<<"  HitCollection::"<<hit_collection_<<std::endl;
+
+  kfRefit_  = parameters.getParameter<bool>("kfRefit", false);
+  gsfRefit_ = parameters.getParameter<bool>("gsfRefit" , false);
+
+  
 }
 
 void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
