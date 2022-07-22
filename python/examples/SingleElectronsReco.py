@@ -7,12 +7,10 @@ p.libraries.append("libTracking.so")
 
 p.detector = '/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12-dd4hep/detector.xml'
 
-from LDMX.Tracking import tracking_geo
-from LDMX.Tracking import tracking_vtx
-from LDMX.Tracking import tracking_truthseeder
+from LDMX.Tracking import Tracking
 
 #Truth seeder - electrons
-ts_ele                   = tracking_truthseeder.TruthSeedProcessor()
+ts_ele                   = Tracking.TruthSeedProcessor()
 ts_ele.debug             = False
 ts_ele.trk_coll_name     = "RecoilTruthSeeds"
 ts_ele.pdgIDs            = [11]
@@ -23,98 +21,75 @@ ts_ele.p_cut             = 3985. # In MeV
 ts_ele.pz_cut            = 0.
 ts_ele.p_cutEcal         = 3985. # In MeV
 
-
-
  
 uSmearing = 0.015  #mm
 vSmearing = 0.0    #mm
 
-geo  = tracking_geo.TrackingGeometryMaker("Recoil_TrackFinder")
-geo.dumpobj = 0
-
-#propagator tests
-#####
-geo.steps_file_path = "./recoil_evt_display.root"  #dropped
-geo.perigee_location = [-700.,-27.926,0.0] #Generated electrons origin  #dropped
-
-#####
+tracking_recoil  = Tracking.CKFProcessor("Recoil_TrackFinder")
+tracking_recoil.dumpobj = 0
 
 #General
 ####
-geo.debug = False
-geo.propagator_step_size = 1.  #mm
-geo.propagator_maxSteps = 2000
-geo.bfield = -0.75  #in T #From looking at the BField map
-geo.const_b_field = False
-geo.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
-#geo.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BMapConstant_1_5T.dat"
+tracking_recoil.debug = False
+tracking_recoil.propagator_step_size = 1.  #mm
+tracking_recoil.propagator_maxSteps = 2000
+tracking_recoil.bfield = -0.75  #in T #From looking at the BField map
+tracking_recoil.const_b_field = False
+tracking_recoil.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
 #####
 
 #CKF Options
-geo.hit_collection="RecoilSimHits"
-geo.out_trk_collection = "RecoilTracks"
+tracking_recoil.hit_collection="RecoilSimHits"
+tracking_recoil.out_trk_collection = "RecoilTracks"
+tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 
 #Target location for the CKF extrapolation
-geo.seed_coll_name = "RecoilTruthSeeds"
-
-geo.use_extrapolate_location = True  #false not supported anymore
-geo.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
-geo.use_seed_perigee = True #overrides previous options and uses the seed perigee (can be used to compare with truth)
+tracking_recoil.use_extrapolate_location = True  #false not supported anymore
+tracking_recoil.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
+tracking_recoil.use_seed_perigee = True #overrides previous options and uses the seed perigee (can be used to compare with truth)
 
 #smear the hits used for finding/fitting
-geo.do_smearing = True;
-geo.sigma_u = uSmearing
-geo.sigma_v = vSmearing
-geo.trackID = 1
-geo.pdgID = 11
-geo.removeStereo = False
-geo.minHits = 6
+tracking_recoil.do_smearing = True;
+tracking_recoil.sigma_u = uSmearing
+tracking_recoil.sigma_v = vSmearing
+tracking_recoil.trackID = 1
+tracking_recoil.pdgID = 11
+tracking_recoil.removeStereo = False
+tracking_recoil.minHits = 6
 
 
-geo_tagger  = tracking_geo.TrackingGeometryMaker("Tagger_TrackFinder")
-geo_tagger.dumpobj = 0
+tracking_tagger  = Tracking.CKFProcessor("Tagger_TrackFinder")
+tracking_tagger.dumpobj = 0
 
 #General
 ####
-geo_tagger.debug = False
-geo_tagger.propagator_step_size = 1000.  #mm
-geo_tagger.bfield = -1.5  #in T #From looking at the BField map
-geo_tagger.const_b_field = False
-geo_tagger.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
-#geo.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BMapConstant_1_5T.dat"
+tracking_tagger.debug = False
+tracking_tagger.propagator_step_size = 1000.  #mm
+tracking_tagger.bfield = -1.5  #in T #From looking at the BField map
+tracking_tagger.const_b_field = False
+tracking_tagger.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
 #####
-
-#propagator tests
-#####
-geo_tagger.ntests = 0#10  #dropped
-geo_tagger.phi_range   = [-0.99*math.pi, -1*math.pi]  #dropped
-geo_tagger.theta_range = [0.4 * math.pi, 0.6 * math.pi] #dropped
-geo_tagger.pt = 4. #dropped
-geo_tagger.d0sigma = 0.1  #dropped
-geo_tagger.z0sigma = 0.1  #dropped
-geo_tagger.steps_file_path = "./straight_propagator_states.root"  #dropped
-geo_tagger.perigee_location = [-700.,-27.926,0.0] #Generated electrons origin  #dropped
 
 #CKF Options
-geo_tagger.hit_collection="TaggerSimHits"
+tracking_tagger.hit_collection="TaggerSimHits"
 
 #Target location for the CKF extrapolation
-geo_tagger.seed_coll_name = "TaggerTruthSeeds"
-geo_tagger.use_extrapolate_location = True  
-geo_tagger.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
-geo_tagger.use_seed_perigee = True
-geo_tagger.out_trk_collection = "TaggerTracks"
+tracking_tagger.seed_coll_name = "TaggerTruthSeeds"
+tracking_tagger.use_extrapolate_location = True  
+tracking_tagger.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
+tracking_tagger.use_seed_perigee = True
+tracking_tagger.out_trk_collection = "TaggerTracks"
 
 #smear the hits used for finding/fitting
-geo_tagger.do_smearing = True
-geo_tagger.sigma_u = uSmearing  #mm
-geo_tagger.sigma_v = vSmearing    #mm
-geo_tagger.trackID = 1
-geo_tagger.pdgID = 11
+tracking_tagger.do_smearing = True
+tracking_tagger.sigma_u = uSmearing  #mm
+tracking_tagger.sigma_v = vSmearing    #mm
+tracking_tagger.trackID = 1
+tracking_tagger.pdgID = 11
 
 
 #Vertex the tracks in the tagger and in the recoil to obtain the beamspot information
-vtx = tracking_vtx.Vertexer()
+vtx = Tracking.Vertexer()
 vtx.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
 vtx.debug = False
 
@@ -122,9 +97,8 @@ vtx.debug = False
 #Match the recoil track to the tagger track and get the photon direction / momentum estimate
 
 
-#p.sequence = [ts_ele, geo, geo_tagger, vtx]  #Run all
-p.sequence = [ts_ele, geo]
-#p.sequence = [ts_ele, geo_tagger] #Run truth seeding in tagger and recoil, run tracking in the tagger
+p.sequence = [ts_ele, tracking_recoil, tracking_tagger]
+#p.sequence = [ts_ele, tracking_recoil, tracking_tagger, vtx] #Run truth seeding in tagger and recoil, run tracking in the tagger and vertexing
 
 print(p.sequence)
 
@@ -212,5 +186,5 @@ p.keep = [
 p.outputFiles = ['single_ele_tagger.root']
 
 p.termLogLevel=0
-p.maxEvents = 10000
+p.maxEvents = 1000
 
