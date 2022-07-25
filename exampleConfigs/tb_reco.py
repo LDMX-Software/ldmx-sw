@@ -34,11 +34,11 @@ p.outputFiles = [f'{dir_name}/reco_{base_name}.root']
 # sequence
 tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
 p.sequence = [
-    hcal_format.HcalRawDecoder(
-        input_names = ["Polarfire0Raw","Polarfire1Raw"],
-        connections_table = tbl,
-        output_name = 'HcalRawDigis'
-    ),
+    # hcal_format.HcalRawDecoder(
+    #     input_names = ["Polarfire0Raw","Polarfire1Raw"],
+    #     connections_table = tbl,
+    #     output_name = 'HcalRawDigis'
+    # ),
     hcal_digi.HcalSingleEndRecProducer(
       coll_name = 'HcalRawDigis',
       pass_name = ''
