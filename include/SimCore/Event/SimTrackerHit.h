@@ -273,6 +273,6 @@ class SimTrackerHit {
   ClassDef(SimTrackerHit, 3);
 
 };  // SimTrackerHit
-}  // namespace ldmx
+} // namespace ldmx
 
 #endif  // EVENT_SIMTRACKERHIT_H_
