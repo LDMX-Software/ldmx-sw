@@ -3,8 +3,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USTEPPINGACTION_H
-#define SIMCORE_USTEPPINGACTION_H
+#ifndef SIMCORE_G4USER_STEPPINGACTION_H
+#define SIMCORE_G4USER_STEPPINGACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -22,15 +22,16 @@
 #include "SimCore/UserAction.h"
 
 namespace simcore {
+namespace g4user {
 
 /**
- * @class USteppingAction
+ * @class SteppingAction
  * @brief Implements the Geant4 user stepping action.
  */
-class USteppingAction : public G4UserSteppingAction {
+class SteppingAction : public G4UserSteppingAction {
  public:
   /// Destructor
-  ~USteppingAction() final override { ; }
+  ~SteppingAction() final override {}
 
   /**
    * Callback used to process a step.
@@ -52,8 +53,9 @@ class USteppingAction : public G4UserSteppingAction {
   /// Collection of user stepping actions
   std::vector<UserAction*> steppingActions_;
 
-};  // USteppingAction
+};  // SteppingAction
 
+}  // namespace g4user
 }  // namespace simcore
 
-#endif  // SIMCORE_USTEPPINGACTION_H
+#endif  // SIMCORE_G4USER_STEPPINGACTION_H

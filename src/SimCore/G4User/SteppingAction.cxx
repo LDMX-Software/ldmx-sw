@@ -1,13 +1,8 @@
-/**
- * @file USteppingAction.cxx
- * @author Omar Moreno, SLAC National Accelerator Laboraty
- */
+#include "SimCore/G4User/SteppingAction.h"
 
-#include "SimCore/USteppingAction.h"
+namespace simcore::g4user {
 
-namespace simcore {
-
-void USteppingAction::UserSteppingAction(const G4Step* step) {
+void SteppingAction::UserSteppingAction(const G4Step* step) {
   auto event_info{static_cast<UserEventInformation*>(
       G4EventManager::GetEventManager()->GetUserInformation())};
 

@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/UserRunAction.h"
+#include "SimCore/G4User/RunAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -12,19 +12,21 @@
 #include "G4Run.hh"
 
 namespace simcore {
+namespace g4user {
 
-UserRunAction::UserRunAction() {}
+RunAction::RunAction() {}
 
-UserRunAction::~UserRunAction() {}
+RunAction::~RunAction() {}
 
-void UserRunAction::BeginOfRunAction(const G4Run* run) {
+void RunAction::BeginOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& runAction : runActions_) runAction->BeginOfRunAction(run);
 }
 
-void UserRunAction::EndOfRunAction(const G4Run* run) {
+void RunAction::EndOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& runAction : runActions_) runAction->EndOfRunAction(run);
 }
 
+}  // namespace g4user
 }  // namespace simcore

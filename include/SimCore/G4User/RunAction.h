@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USERRUNACTION_H
-#define SIMCORE_USERRUNACTION_H
+#ifndef SIMCORE_G4USER_RUNACTION_H
+#define SIMCORE_G4USER_RUNACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -26,22 +26,23 @@
 class G4Run;
 
 namespace simcore {
+namespace g4user {
 
 /**
- * @class UserRunAction
+ * @class RunAction
  * @brief Implementation of user run action hook
  */
-class UserRunAction : public G4UserRunAction {
+class RunAction : public G4UserRunAction {
  public:
   /**
    * Class constructor.
    */
-  UserRunAction();
+  RunAction();
 
   /**
    * Class destructor.
    */
-  virtual ~UserRunAction();
+  virtual ~RunAction();
 
   /**
    * Implementation of begin run hook.
@@ -67,8 +68,9 @@ class UserRunAction : public G4UserRunAction {
  private:
   std::vector<UserAction*> runActions_;
 
-};  // UserRunAction
+};  // RunAction
 
+}  // namespace g4user
 }  // namespace simcore
 
-#endif  // SIMCORE_USERRUNACTION_H
+#endif  // SIMCORE_G4USER_RUNACTION_H
