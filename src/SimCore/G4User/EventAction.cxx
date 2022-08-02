@@ -1,5 +1,5 @@
 
-#include "SimCore/UserEventAction.h"
+#include "SimCore/G4User/EventAction.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -11,7 +11,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/RunManager.h"
 #include "SimCore/TrackMap.h"
-#include "SimCore/UserTrackingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -20,19 +20,21 @@
 #include "G4RunManager.hh"
 
 namespace simcore {
+namespace g4user {
 
-void UserEventAction::BeginOfEventAction(const G4Event* event) {
+void EventAction::BeginOfEventAction(const G4Event* event) {
   // Clear the global track map.
-  UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
+  simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
   // Call user event actions
   for (auto& eventAction : eventActions_)
     eventAction->BeginOfEventAction(event);
 }
 
-void UserEventAction::EndOfEventAction(const G4Event* event) {
+void EventAction::EndOfEventAction(const G4Event* event) {
   // Call user event actions
   for (auto& eventAction : eventActions_) eventAction->EndOfEventAction(event);
 }
 
+}  // namespace g4user
 }  // namespace simcore

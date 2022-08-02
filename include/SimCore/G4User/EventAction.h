@@ -1,11 +1,11 @@
 /**
- * @file UserEventAction.h
+ * @file EventAction.h
  * @brief Class which implements the Geant4 user event action
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USEREVENTACTION_H
-#define SIMCORE_USEREVENTACTION_H
+#ifndef SIMCORE_G4USER_EVENTACTION_H
+#define SIMCORE_G4USER_EVENTACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -28,20 +28,30 @@ class G4Event;
 namespace simcore {
 
 /**
- * @class UserEventAction
+ * @namespace g4user
+ * This namespace is meant to contain
+ * all the standard user actions that allow
+ * a Geant4 user to interface with its internal simulation
+ * engine. We have modified how we interact with these
+ * places for our own software using UserAction.
+ */
+namespace g4user {
+
+/**
+ * @class EventAction
  * @brief Implementation of user event action hook
  */
-class UserEventAction : public G4UserEventAction {
+class EventAction : public G4UserEventAction {
  public:
   /**
    * Class constructor.
    */
-  UserEventAction() {}
+  EventAction() {}
 
   /**
    * Class destructor.
    */
-  virtual ~UserEventAction() {}
+  virtual ~EventAction() {}
 
   /**
    * Implementation of begin of event hook.
@@ -67,8 +77,9 @@ class UserEventAction : public G4UserEventAction {
  private:
   std::vector<UserAction*> eventActions_;
 
-};  // UserEventAction
+};  // EventAction
 
+}  // namespace g4user
 }  // namespace simcore
 
-#endif  // SIMCORE_USEREVENTACTION_H
+#endif  // SIMCORE_G4USER_EVENTACTION_H

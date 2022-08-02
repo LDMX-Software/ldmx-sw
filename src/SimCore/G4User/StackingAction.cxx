@@ -1,12 +1,13 @@
-#include "SimCore/UserStackingAction.h"
+#include "SimCore/G4User/StackingAction.h"
 
 namespace simcore {
+namespace g4user {
 
-UserStackingAction::UserStackingAction() {}
+StackingAction::StackingAction() {}
 
-UserStackingAction::~UserStackingAction() {}
+StackingAction::~StackingAction() {}
 
-G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack(
+G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(
     const G4Track* track) {
   // Default value of a track is fUrgent.
   G4ClassificationOfNewTrack currentTrackClass =
@@ -25,12 +26,14 @@ G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack(
   return currentTrackClass;
 }
 
-void UserStackingAction::NewStage() {
+void StackingAction::NewStage() {
   for (auto& stackingAction : stackingActions_) stackingAction->NewStage();
 }
 
-void UserStackingAction::PrepareNewEvent() {
+void StackingAction::PrepareNewEvent() {
   for (auto& stackingAction : stackingActions_)
     stackingAction->PrepareNewEvent();
 }
+
+}  // namespace g4user
 }  // namespace simcore

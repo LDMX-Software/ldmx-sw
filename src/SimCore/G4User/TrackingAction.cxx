@@ -1,4 +1,4 @@
-#include "SimCore/UserTrackingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 // LDMX
 #include "SimCore/TrackMap.h"
@@ -13,9 +13,9 @@
 // STL
 #include <iostream>
 
-namespace simcore {
+namespace simcore::g4user {
 
-void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
+void TrackingAction::PreUserTrackingAction(const G4Track* track) {
   if (not trackMap_.contains(track)) {
     // New Track
     
@@ -64,7 +64,7 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* track) {
     trackingAction->PreUserTrackingAction(track);
 }
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* track) {
+void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
   for (auto& trackingAction : trackingActions_)
     trackingAction->PostUserTrackingAction(track);

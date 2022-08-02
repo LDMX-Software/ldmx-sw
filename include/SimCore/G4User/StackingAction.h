@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USERSTACKINGACTION_H
-#define SIMCORE_USERSTACKINGACTION_H
+#ifndef SIMCORE_G4USER_STACKINGACTION_H
+#define SIMCORE_G4USER_STACKINGACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -23,18 +23,19 @@
 #include "SimCore/UserAction.h"
 
 namespace simcore {
+namespace g4user {
 
 /**
- * @class UserStackingAction
+ * @class StackingAction
  * @brief Class implementing a user stacking action.
  */
-class UserStackingAction : public G4UserStackingAction {
+class StackingAction : public G4UserStackingAction {
  public:
   /// Constructor
-  UserStackingAction();
+  StackingAction();
 
   /// Destructor
-  virtual ~UserStackingAction() final override;
+  virtual ~StackingAction() final override;
 
   /**
    * Classify a new track.
@@ -66,8 +67,9 @@ class UserStackingAction : public G4UserStackingAction {
   /// Collection of user stacking actions
   std::vector<UserAction*> stackingActions_;
 
-};  // UserStackingAction
+};  // StackingAction
 
+}  // namespace g4user
 }  // namespace simcore
 
-#endif  // SIMCORE_USERSTACKINGACTION_H
+#endif  // SIMCORE_G4USER_STACKINGACTION_H
