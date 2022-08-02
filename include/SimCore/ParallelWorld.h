@@ -27,8 +27,7 @@ namespace simcore {
 class ParallelWorld : public G4VUserParallelWorld {
  public:
   /** Constructor */
-  ParallelWorld(G4GDMLParser* parser, G4String worldName,
-                ConditionsInterface& ci);
+  ParallelWorld(G4GDMLParser* parser, G4String worldName);
 
   /** Destructor */
   ~ParallelWorld();
@@ -44,7 +43,7 @@ class ParallelWorld : public G4VUserParallelWorld {
   G4GDMLParser* parser_{nullptr};
 
   /** The auxiliary GDML info reader. */
-  simcore::geo::AuxInfoReader* auxInfoReader_{nullptr};
+  geo::AuxInfoReader* auxInfoReader_{nullptr};
 
 };  // ParallelWorld
 }  // namespace simcore
