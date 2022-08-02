@@ -34,8 +34,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, framework::config::Parameters ps,
-                ConditionsInterface &ci);
+  AuxInfoReader(G4GDMLParser *parser, const framework::config::Parameters& ps);
 
   /**
    * Class destructor.
@@ -59,14 +58,6 @@ class AuxInfoReader {
   ldmx::DetectorHeader *getDetectorHeader() { return detectorHeader_; }
 
  private:
-  /**
-   * Create a sensitive detector from GDML data.
-   * @param sdType The type of the sensitive detector.
-   * @param auxInfoList The aux info defining the sensitive detector.
-   */
-  void createSensitiveDetector(G4String sdType,
-                               const G4GDMLAuxListType *auxInfoList);
-
   /**
    * Create a magnetic field from GDML data.
    * @param name The name of the magnetic field.
@@ -113,10 +104,7 @@ class AuxInfoReader {
   ldmx::DetectorHeader *detectorHeader_{nullptr};
 
   /// Configuration parameters
-  framework::config::Parameters parameters_;
-
-  /// ConditionsInterface
-  ConditionsInterface &conditionsIntf_;
+  const framework::config::Parameters& parameters_;
 };
 
 }  // namespace simcore::geo

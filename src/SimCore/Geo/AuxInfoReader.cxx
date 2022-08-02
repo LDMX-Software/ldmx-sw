@@ -1,10 +1,13 @@
 #include "SimCore/Geo/AuxInfoReader.h"
 
-//---< C++ >---//
-#include <stdlib.h>
-#include <string>
+// LDMX
+#include "Framework/Exception/Exception.h"
+#include "SimCore/MagneticFieldMap3D.h"
+#include "SimCore/MagneticFieldStore.h"
+#include "SimCore/UserRegionInformation.h"
+#include "SimCore/VisAttributesStore.h"
 
-//---< Geant4 >---//
+// Geant4
 #include "G4FieldManager.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -14,30 +17,19 @@
 #include "G4SystemOfUnits.hh"
 #include "G4UniformMagField.hh"
 
-//---< Framework >---//
-#include "Framework/Exception/Exception.h"
+// STL
+#include <stdlib.h>
+#include <string>
 
-//---< SimCore >---//
-#include "SimCore/CalorimeterSD.h"
-#include "SimCore/EcalSD.h"
-#include "SimCore/HcalSD.h"
-#include "SimCore/MagneticFieldMap3D.h"
-#include "SimCore/MagneticFieldStore.h"
-#include "SimCore/ScoringPlaneSD.h"
-#include "SimCore/TrackerSD.h"
-#include "SimCore/TrigScintSD.h"
-#include "SimCore/UserRegionInformation.h"
-#include "SimCore/VisAttributesStore.h"
+using std::string;
 
 namespace simcore::geo {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
-                             framework::config::Parameters ps,
-                             ConditionsInterface& ci)
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, 
+                             const framework::config::Parameters& ps)
     : parser_(theParser),
       eval_(new G4GDMLEvaluator),
-      parameters_(ps),
-      conditionsIntf_(ci) {}
+      parameters_(ps) {}
 
 AuxInfoReader::~AuxInfoReader() {
   delete eval_;
@@ -54,7 +46,7 @@ void AuxInfoReader::readGlobalAuxInfo() {
     G4String auxUnit = iaux->unit;
 
     if (auxType == "SensDet") {
-      createSensitiveDetector(auxVal, iaux->auxList);
+      std::cerr << "[ WARN ] : Not defining SensDet in GDML anymore." << std::endl;
     } else if (auxType == "MagneticField") {
       createMagneticField(auxVal, iaux->auxList);
     } else if (auxType == "Region") {
@@ -66,87 +58,6 @@ void AuxInfoReader::readGlobalAuxInfo() {
     }
   }
   return;
-}
-
-void AuxInfoReader::createSensitiveDetector(
-    G4String theSensDetName, const G4GDMLAuxListType* auxInfoList) {
-  // G4cout << "Creating SensitiveDetector " << theSensDetName << G4endl;
-
-  G4String sdType("");
-  G4String hcName("");
-  G4String idName("");
-  int subdetID = -1;
-  int layerDepth = -1;
-  int verbose = 0;
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
-
-    // G4cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit:
-    // " << auxUnit << G4endl;
-
-    if (auxType == "SensDetType") {
-      sdType = auxVal;
-    } else if (auxType == "HitsCollection") {
-      hcName = auxVal;
-    } else if (auxType == "Verbose") {
-      verbose = atoi(auxVal.c_str());
-    } else if (auxType == "SubdetID") {
-      subdetID = atoi(auxVal.c_str());
-    } else if (auxType == "DetectorID") {
-      idName = auxVal;
-    } else if (auxType == "LayerDepth") {
-      layerDepth = atoi(auxVal.c_str());
-    }
-  }
-
-  if (sdType == "") {
-    EXCEPTION_RAISE("MissingInfo", "The SensDet is missing the SensDetType.");
-  }
-
-  if (hcName == "") {
-    EXCEPTION_RAISE("MissingInfo",
-                    "The SensDet is missing the HitsCollection.");
-  }
-
-  if (subdetID <= 0) {
-    EXCEPTION_RAISE("BadID", "The SubdetID '" + std::to_string(subdetID) +
-                                 "' is missing or invalid.");
-  }
-
-  /*
-   * Build the Sensitive Detector, and re-assign the detID if applicable
-   */
-  G4VSensitiveDetector* sd = 0;
-
-  if (sdType == "TrackerSD") {
-    sd = new TrackerSD(theSensDetName, hcName, subdetID);
-  } else if (sdType == "EcalSD") {
-    sd = new EcalSD(theSensDetName, hcName, subdetID, conditionsIntf_);
-  } else if (sdType == "HcalSD") {
-    sd = new HcalSD(theSensDetName, hcName, subdetID, conditionsIntf_);
-  } else if (sdType == "ScoringPlaneSD") {
-    sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID);
-  } else if (sdType == "TrigScintSD") {
-    sd = new TrigScintSD(theSensDetName, hcName, subdetID);
-  } else {
-    EXCEPTION_RAISE("DetType", "Unknown SensitiveDetector type: " + sdType);
-  }
-
-  /*
-   * Fix  layer depth if the Sensitive Detector is not the Tracker
-   */
-  if (sdType != "TrackerSD" && layerDepth != -1) {
-    ((CalorimeterSD*)sd)->setLayerDepth(layerDepth);
-  }
-  sd->SetVerboseLevel(verbose);
-
-  // G4cout << "Created " << sdType << " " << theSensDetName << " with hits
-  // collection " << hcName << " and verbose level " << verbose << G4endl <<
-  // G4endl;
 }
 
 void AuxInfoReader::assignAuxInfoToVolumes() {
@@ -165,20 +76,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
 
         G4LogicalVolume* lv = (*lvciter);
 
-        if (auxType == "SensDet") {
-          G4String sdName = auxVal;
-          G4VSensitiveDetector* sd =
-              G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
-          if (sd != NULL) {
-            lv->SetSensitiveDetector(sd);
-            // G4cout << "Assigned SD " << sd->GetName() << " to " <<
-            // lv->GetName() << G4endl;
-          } else {
-            EXCEPTION_RAISE("MissingInfo",
-                            "Unknown SensDet in volume's auxiliary info: " +
-                                std::string(sdName.data()));
-          }
-        } else if (auxType == "MagneticField") {
+        if (auxType == "MagneticField") {
           G4String magFieldName = auxVal;
           G4MagneticField* magField =
               MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
@@ -250,7 +148,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
 
   // Create a uniform mag field using the built-in Geant4 type.
   if (magFieldType == "G4UniformMagField") {
-	  std::string::size_type sz;
+    string::size_type sz;
     double bx, by, bz;
     bx = by = bz = 0.;
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
@@ -277,7 +175,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
 
     // Create a global 3D field map by reading from a data file.
   } else if (magFieldType == "MagneticFieldMap3D") {
-	  std::string fileName;
+    string fileName;
     double offsetX, offsetY, offsetZ;
 
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
@@ -449,8 +347,8 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
     }
   }
 
-  detectorHeader_ = new ldmx::DetectorHeader(detectorName, detectorVersion,
-                                             description, author);
+  detectorHeader_ =
+      new ldmx::DetectorHeader(detectorName, detectorVersion, description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;
@@ -461,4 +359,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace simcore::geo
+}  // namespace simcore
