@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_PRIMARYGENERATORACTION_H
-#define SIMCORE_PRIMARYGENERATORACTION_H
+#ifndef SIMCORE_G4USER_PRIMARYGENERATORACTION_H
+#define SIMCORE_G4USER_PRIMARYGENERATORACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -26,7 +26,7 @@
 // Forward declarations
 class G4Event;
 
-namespace simcore {
+namespace simcore::g4user {
 
 /**
  * @class PrimaryGeneratorAction
@@ -106,6 +106,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
 };  // PrimaryGeneratorAction
 
-}  // namespace simcore
+}  // namespace simcore::g4user
 
-#endif  // SIMCORE_PRIMARYGENERATORACTION_H
+#endif  // SIMCORE_G4USER_PRIMARYGENERATORACTION_H

@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/PrimaryGeneratorAction.h"
+#include "SimCore/G4User/PrimaryGeneratorAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -24,7 +24,7 @@
 /*~~~~~~~~~~*/
 #include "TRandom3.h"
 
-namespace simcore {
+namespace simcore::g4user {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
     const framework::config::Parameters& parameters)
@@ -145,4 +145,4 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         "No primary vertices were produced by any of the generators.");
   }
 }
-}  // namespace simcore
+}  // namespace simcore::g4user

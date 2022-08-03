@@ -15,8 +15,8 @@
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/XsecBiasingOperator.h"
-#include "SimCore/PrimaryGeneratorAction.h"
 
+#include "SimCore/G4User/PrimaryGeneratorAction.h"
 #include "SimCore/G4User/SteppingAction.h"
 #include "SimCore/G4User/EventAction.h"
 #include "SimCore/G4User/RunAction.h"
@@ -121,17 +121,15 @@ void RunManager::Initialize() {
   //  physics *after* any other processes that need to be able to be biased
   G4RunManager::Initialize();
 
-  // Instantiate the primary generator action
-  auto primaryGeneratorAction{new PrimaryGeneratorAction(parameters_)};
-  SetUserAction(primaryGeneratorAction);
-
   // create our G4User actions
-  auto run_action{new simcore::g4user::RunAction};
-  auto event_action{new simcore::g4user::EventAction};
-  auto tracking_action{new simcore::g4user::TrackingAction};
-  auto stepping_action{new simcore::g4user::SteppingAction};
-  auto stacking_action{new simcore::g4user::StackingAction};
+  auto primary_action{new g4user::PrimaryGeneratorAction(parameters_)};
+  auto run_action{new g4user::RunAction};
+  auto event_action{new g4user::EventAction};
+  auto tracking_action{new g4user::TrackingAction};
+  auto stepping_action{new g4user::SteppingAction};
+  auto stacking_action{new g4user::StackingAction};
   // ...and register them with G4
+  SetUserAction(primary_action);
   SetUserAction(run_action);
   SetUserAction(event_action);
   SetUserAction(tracking_action);
