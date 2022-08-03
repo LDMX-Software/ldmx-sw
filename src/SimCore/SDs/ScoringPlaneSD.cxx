@@ -87,4 +87,4 @@ void ScoringPlaneSD::saveHits(framework::Event& event) {
 
 }  // namespace simcore
 
-DECLARE_SENSITIVEDETECTOR(simcore, ScoringPlaneSD)
+DECLARE_SENSITIVEDETECTOR(simcore::ScoringPlaneSD)

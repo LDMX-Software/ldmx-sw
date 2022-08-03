@@ -6,7 +6,6 @@
 #include "G4Step.hh"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/PluginFactory.h"
 
 namespace simcore {
 
@@ -19,11 +18,6 @@ SensitiveDetector::SensitiveDetector(
 }
 
 SensitiveDetector::~SensitiveDetector() {}
-
-void SensitiveDetector::declare(const std::string& className,
-                                SensitiveDetectorBuilder* builder) {
-  PluginFactory::getInstance().registerSensitiveDetector(className, builder);
-}
 
 bool SensitiveDetector::isGeantino(const G4Step* step) const {
   auto particle_def{step->GetTrack()->GetDefinition()};

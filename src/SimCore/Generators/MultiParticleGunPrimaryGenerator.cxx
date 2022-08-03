@@ -13,8 +13,8 @@ namespace generators {
 MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(
     const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), random_(new TRandom) {
-  auto stlVertex{parameters_.getParameter<std::vector<double> >("vertex")};
-  auto stlMomentum{parameters_.getParameter<std::vector<double> >("momentum")};
+  auto stlVertex{parameters.getParameter<std::vector<double> >("vertex")};
+  auto stlMomentum{parameters.getParameter<std::vector<double> >("momentum")};
   mpgNParticles_ = parameters.getParameter<int>("nParticles");
   mpgPdgID_ = parameters.getParameter<int>("pdgID");
   mpgEnablePoisson_ = parameters.getParameter<bool>("enablePoisson");
@@ -76,4 +76,4 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 }  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore::generators, MultiParticleGunPrimaryGenerator)
+DECLARE_GENERATOR(simcore::generators::MultiParticleGunPrimaryGenerator)

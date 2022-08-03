@@ -24,7 +24,7 @@ GeneralParticleSource::GeneralParticleSource(const std::string& name,
                                              const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   auto initCommands{
-      parameters_.getParameter<std::vector<std::string> >("initCommands")};
+      parameters.getParameter<std::vector<std::string>>("initCommands")};
 
   for (const auto& cmd : initCommands) {
     int g4Ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
@@ -49,4 +49,4 @@ void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
 }  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore::generators, GeneralParticleSource)
+DECLARE_GENERATOR(simcore::generators::GeneralParticleSource)

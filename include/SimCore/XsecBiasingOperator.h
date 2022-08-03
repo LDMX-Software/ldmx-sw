@@ -4,6 +4,8 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
 
+#include "SimCore/Factory.h"
+
 //------------//
 //   Geant4   //
 //------------//
@@ -22,13 +24,6 @@
 #include "G4VBiasingOperator.hh"
 
 namespace simcore {
-
-/// Forward declaration for generic building function
-class XsecBiasingOperator;
-
-/// Define type of building fuction for biasing operators
-typedef XsecBiasingOperator* XsecBiasingOperatorBuilder(
-    const std::string& name, const framework::config::Parameters& parameters);
 
 /**
  * Our specialization of the biasing operator used with Geant4.
@@ -57,17 +52,15 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   XsecBiasingOperator(std::string name,
                       const framework::config::Parameters& parameters);
 
+  /**
+   * The BiasingOperator factory
+   */
+  using Factory = ::simcore::Factory<XsecBiasingOperator,
+                                     std::string,
+                                     const framework::config::Parameters&>;
+
   /** Destructor */
   virtual ~XsecBiasingOperator();
-
-  /**
-   * Method used to register an operator with the manager.
-   *
-   * @param className Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& className,
-                      XsecBiasingOperatorBuilder* builder);
 
   /**
    * Propose a biasing operation for the current track and calling process.
@@ -192,14 +185,9 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  * Defines a builder for the declared class
  * and then registers the class as a biasing operator.
  */
-#define DECLARE_XSECBIASINGOPERATOR(NS, CLASS)                              \
-  simcore::XsecBiasingOperator* CLASS##Builder(                             \
-      const std::string& name, const framework::config::Parameters& parameters) { \
-    return new NS::CLASS(name, parameters);                                 \
-  }                                                                         \
-  __attribute((constructor(205))) static void CLASS##Declare() {            \
-    simcore::XsecBiasingOperator::declare(                                  \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
+#define DECLARE_XSECBIASINGOPERATOR(CLASS)                                    \
+  namespace {                                                                 \
+    auto v = ::simcore::XsecBiasingOperator::Factory::get().declare<CLASS>(); \
   }
 
 #endif  // SIMCORE_XSECBIASINGOPERATOR_H_

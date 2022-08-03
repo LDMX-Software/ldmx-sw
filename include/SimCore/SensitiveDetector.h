@@ -4,6 +4,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
 
+#include "SimCore/Factory.h"
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/TrackMap.h"
@@ -15,16 +16,9 @@
 
 namespace simcore {
 
-/// Forward declaration for generic building function
-class SensitiveDetector;
-
-/// Define type of building fuction for biasing operators
-typedef SensitiveDetector* SensitiveDetectorBuilder(
-    const std::string& name, 
-    simcore::ConditionsInterface& ci,
-    const framework::config::Parameters& parameters);
-
 /**
+ * Dynamically loaded Geant4 SensitiveDetector for saving
+ * hits in specific volumes within the simulation
  */
 class SensitiveDetector : public G4VSensitiveDetector {
  public:
@@ -39,17 +33,16 @@ class SensitiveDetector : public G4VSensitiveDetector {
                     simcore::ConditionsInterface& ci, 
                     const framework::config::Parameters& parameters);
 
+  /**
+   * The SD Factory
+   */
+  using Factory = ::simcore::Factory<SensitiveDetector,
+                                     const std::string&,
+                                     simcore::ConditionsInterface&,
+                                     const framework::config::Parameters&>;
+
   /** Destructor */
   virtual ~SensitiveDetector();
-
-  /**
-   * Method used to register a detector with the manager.
-   *
-   * @param className Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& className,
-                      SensitiveDetectorBuilder* builder);
 
   /**
    * Here, we must determine if we should be attached to the 
@@ -132,16 +125,9 @@ class SensitiveDetector : public G4VSensitiveDetector {
  * Defines a builder for the declared class
  * and then registers the class as a possible sensitive detector
  */
-#define DECLARE_SENSITIVEDETECTOR(NS, CLASS)                             \
-  simcore::SensitiveDetector* CLASS##Builder(                            \
-      const std::string& name,                                           \
-      simcore::ConditionsInterface& ci,                                  \
-      const framework::config::Parameters& parameters) {                 \
-    return new NS::CLASS(name, ci, parameters);                          \
-  }                                                                      \
-  __attribute((constructor(205))) static void CLASS##Declare() {         \
-    simcore::SensitiveDetector::declare(                                 \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder); \
+#define DECLARE_SENSITIVEDETECTOR(CLASS)                                    \
+  namespace {                                                               \
+    auto v = ::simcore::SensitiveDetector::Factory::get().declare<CLASS>(); \
   }
 
 #endif  // SIMCORE_SENSITIVEDETECTOR_H_

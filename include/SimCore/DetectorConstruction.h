@@ -70,6 +70,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
   /// The set of parameters used to configure this class
   framework::config::Parameters parameters_;
+
+  /// interface to conditions to be passed to SDs
+  simcore::ConditionsInterface& conditions_interface_;
 };  // DetectorConstruction
 }  // namespace simcore
 

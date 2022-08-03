@@ -173,4 +173,4 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
 }  // namespace simcore
 
-DECLARE_SENSITIVEDETECTOR(simcore, HcalSD)
+DECLARE_SENSITIVEDETECTOR(simcore::HcalSD)

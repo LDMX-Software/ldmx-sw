@@ -34,4 +34,4 @@ G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, GammaToMuPair)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::GammaToMuPair)

@@ -21,7 +21,6 @@
 #include "SimCore/G4Session.h"
 #include "SimCore/Persist/RootPersistencyManager.h" 
 #include "SimCore/XsecBiasingOperator.h"
-#include "SimCore/PluginFactory.h"
 #include "SimCore/Geo/ParserFactory.h"
 
 /*~~~~~~~~~~~~~~*/
@@ -186,10 +185,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                    parameters_.getParameter<std::vector<std::string>>(
                        "postInitCommands", {}));
 
-  auto bops{simcore::PluginFactory::getInstance().getBiasingOperators()};
-  for (const simcore::XsecBiasingOperator* bop : bops ) {
-    bop->RecordConfig(header);
-  }
+  simcore::XsecBiasingOperator::Factory::get().apply([&header](auto bop) {
+      bop->RecordConfig(header);
+      });
 
   auto apMass{parameters_.getParameter<double>("APrimeMass")};
   if (apMass > 0) {

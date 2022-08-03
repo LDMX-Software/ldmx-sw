@@ -89,4 +89,4 @@ void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
 }  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore::generators, ParticleGun)
+DECLARE_GENERATOR(simcore::generators::ParticleGun)

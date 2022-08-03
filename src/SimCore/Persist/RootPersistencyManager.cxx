@@ -18,7 +18,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/DetectorConstruction.h"
-#include "SimCore/PluginFactory.h"
+#include "SimCore/SensitiveDetector.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/UserEventInformation.h"
@@ -65,9 +65,9 @@ G4bool RootPersistencyManager::Store(const G4Event *anEvent) {
   event_->add("SimParticles", tracks->getParticleMap());
 
   // Copy hit objects from SD hit collections into the output event.
-  for (auto& sd : simcore::PluginFactory::getInstance().getSensitiveDetectors()) {
-    sd->saveHits(*event_);
-  }
+  SensitiveDetector::Factory::get().apply([this](auto sd) {
+        sd->saveHits(*event_);
+      });
 
   return true;
 }

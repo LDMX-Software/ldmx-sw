@@ -18,11 +18,6 @@
 /*~~~~~~~~~~~~*/
 #include "G4VUserPrimaryGeneratorAction.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/PluginFactory.h"
-
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/

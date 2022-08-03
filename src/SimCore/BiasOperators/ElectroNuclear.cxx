@@ -54,4 +54,4 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, ElectroNuclear)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::ElectroNuclear)
