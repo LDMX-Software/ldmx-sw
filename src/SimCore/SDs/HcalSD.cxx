@@ -4,6 +4,7 @@
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
 #include "DetDescr/HcalID.h"
+#include "DetDescr/HcalGeometry.h"
 
 // STL
 #include <iostream>
@@ -122,15 +123,17 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //         top/bottom side hcal: segmented along y direction every 10 cm
 
   int stripID = -1;
-  // Odd layers have bars horizontal
-  // Even layers have bars vertical
   // 5cm wide bars are HARD-CODED
-  if (section == ldmx::HcalID::BACK && layer % 2 == 1)
-    stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-  else if (section == ldmx::HcalID::BACK && layer % 2 == 0)
-    stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
-  else
+  const auto& hcalGeometry{getCondition<ldmx::HcalGeometry>(ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME)};
+  if (section == ldmx::HcalID::BACK) {
+    if (hcalGeometry.layerIsHorizontal(layer)) {
+      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+    } else {
+      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+    }
+  } else {
     stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
+  }
 
   // std::cout << "---" << std::endl;
   // std::cout << "GetXHalfLength = " << scint->GetXHalfLength() << "\t
