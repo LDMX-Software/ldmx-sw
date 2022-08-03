@@ -66,6 +66,7 @@ class RootCompleteReSim : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent);
 
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
  private:
   /**
    * Name of SimParticles collection

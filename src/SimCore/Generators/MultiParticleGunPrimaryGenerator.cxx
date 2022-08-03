@@ -73,6 +73,19 @@ void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 }
 
+void MultiParticleGunPrimaryGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class", "simcore::generators::MultiParticleGunPrimaryGenerator");
+  rh.setIntParameter(id + " Poisson Enabled", mpgEnablePoisson_);
+  rh.setFloatParameter(id + " N Particles", mpgNParticles_);
+  rh.setIntParameter(id + " PDG ID", mpgPdgID_);
+  rh.setFloatParameter(id + " Vertex X [mm]", mpgVertex_.x());
+  rh.setFloatParameter(id + " Vertex Y [mm]", mpgVertex_.y());
+  rh.setFloatParameter(id + " Vertex Z [mm]", mpgVertex_.z());
+  rh.setFloatParameter(id + " Momentum X [MeV]", mpgMomentum_.x());
+  rh.setFloatParameter(id + " Momentum Y [MeV]", mpgMomentum_.y());
+  rh.setFloatParameter(id + " Momentum Z [MeV]", mpgMomentum_.z());
+}
+
 }  // namespace generators
 }  // namespace simcore
 

@@ -17,10 +17,12 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/Persist/RootPersistencyManager.h" 
 #include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/Geo/ParserFactory.h"
 
 /*~~~~~~~~~~~~~~*/
@@ -189,71 +191,36 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
       bop->RecordConfig(header);
       });
 
-  auto apMass{parameters_.getParameter<double>("APrimeMass")};
-  if (apMass > 0) {
-    header.setFloatParameter("A' Mass [MeV]", apMass);
-    header.setFloatParameter(
-        "Dark Brem Global Bias",
-        parameters_.getParameter<double>("darkbrem_globalxsecfactor"));
-    header.setStringParameter(
-        "Dark Brem Vertex Library Path",
-        parameters_.getParameter<std::string>("darkbrem_madgraphfilepath"));
-    header.setIntParameter("Dark Brem Interpretation Method",
-                           parameters_.getParameter<int>("darkbrem_method"));
-  }
+  auto dark_brem{
+    parameters_.getParameter<framework::config::Parameters>("dark_brem")};
+  if (dark_brem.getParameter<bool>("enable")) {
+    // the dark brem process is enabled, find it and then record its
+    // configuration
+    G4ProcessVector* electron_processes =
+      G4Electron::Electron()->GetProcessManager()->GetProcessList();
+    int n_electron_processes = electron_processes->size();
+    for (int i_process = 0; i_process < n_electron_processes; i_process++) {
+      G4VProcess* process = (*electron_processes)[i_process];
+      if (process->GetProcessName().contains(
+            darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
+        // reset process to wrapped process if it is biased
+        if (dynamic_cast<G4BiasingProcessInterface*>(process))
+          process = dynamic_cast<G4BiasingProcessInterface*>(process)
+            ->GetWrappedProcess();
+        // record the process configuration to the run header
+        dynamic_cast<darkbrem::G4eDarkBremsstrahlung*>(process)->RecordConfig(
+            header);
+        break;
+      }  // this process is the dark brem process
+    }    // loop through electron processes
+  }      // dark brem has been enabled
 
-  auto generators{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>("generators")};
+  // TODO check that this is working properly
   int counter = 0;
-  for (auto const& gen : generators) {
-    std::string genID = "Gen " + std::to_string(++counter);
-    auto className{gen.getParameter<std::string>("class_name")};
-    header.setStringParameter(genID + " Class", className);
-
-    if (className.find("ParticleGun") != std::string::npos) {
-      header.setFloatParameter(genID + " Time [ns]",
-                               gen.getParameter<double>("time"));
-      header.setFloatParameter(genID + " Energy [MeV]",
-                               gen.getParameter<double>("energy"));
-      header.setStringParameter(genID + " Particle",
-                                gen.getParameter<std::string>("particle"));
-      threeVectorDump(genID + " Position [mm]",
-                      gen.getParameter<std::vector<double>>("position"));
-      threeVectorDump(genID + " Direction",
-                      gen.getParameter<std::vector<double>>("direction"));
-    } else if (className.find("MultiParticleGunPrimaryGenerator") !=
-               std::string::npos) {
-      header.setIntParameter(genID + " Poisson Enabled",
-                             gen.getParameter<bool>("enablePoisson"));
-      header.setIntParameter(genID + " N Particles",
-                             gen.getParameter<int>("nParticles"));
-      header.setIntParameter(genID + " PDG ID", gen.getParameter<int>("pdgID"));
-      threeVectorDump(genID + " Vertex [mm]",
-                      gen.getParameter<std::vector<double>>("vertex"));
-      threeVectorDump(genID + " Momentum [MeV]",
-                      gen.getParameter<std::vector<double>>("momentum"));
-    } else if (className.find("LHEPrimaryGenerator") !=
-               std::string::npos) {
-      header.setStringParameter(genID + " LHE File",
-                                gen.getParameter<std::string>("filePath"));
-    } else if (className.find("RootCompleteReSim") != std::string::npos) {
-      header.setStringParameter(genID + " ROOT File",
-                                gen.getParameter<std::string>("filePath"));
-    } else if (className.find("RootSimFromEcalSP") != std::string::npos) {
-      header.setStringParameter(genID + " ROOT File",
-                                gen.getParameter<std::string>("filePath"));
-      header.setFloatParameter(genID + " Time Cutoff [ns]",
-                               gen.getParameter<double>("time_cutoff"));
-    } else if (className.find("GeneralParticleSource") !=
-               std::string::npos) {
-      stringVectorDump(
-          genID + " Init Cmd",
-          gen.getParameter<std::vector<std::string>>("initCommands"));
-    } else {
-      ldmx_log(warn) << "Unrecognized primary generator '" << className << "'. "
-                     << "Will not be saving details to RunHeader.";
-    }
-  }
+  PrimaryGenerator::Factory::get().apply([&header,&counter](auto gen) {
+        std::string gen_id = "Gen"+std::to_string(counter++);
+        gen->RecordConfig(gen_id, header);
+      });
 
   // Set a string parameter with the Geant4 SHA-1.
   if (G4RunManagerKernel::GetRunManagerKernel()) {

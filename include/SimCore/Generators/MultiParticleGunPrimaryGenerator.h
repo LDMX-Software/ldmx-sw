@@ -77,6 +77,7 @@ class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent);
 
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
  private:
   /** Random number generator. */
   TRandom* random_;
