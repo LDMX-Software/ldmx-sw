@@ -23,7 +23,10 @@
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
+#include "SimCore/RunManager.h"
+#include "SimCore/DetectorConstruction.h"
 #include "SimCore/ConditionsInterface.h"
+#include "SimCore/Persist/RootPersistencyManager.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -33,17 +36,6 @@ class G4GDMLMessenger;
 class G4CascadeParameters;
 
 namespace simcore {
-namespace persist {
-class RootPersistencyManager;
-}
-}  // namespace simcore
-
-namespace simcore {
-
-class EventFile;
-class ParameterSet;
-class RunManager;
-class DetectorConstruction;
 
 /**
  * @class Simulator

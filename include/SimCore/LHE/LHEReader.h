@@ -8,12 +8,12 @@
 #define SIMCORE_LHEREADER_H_
 
 // LDMX
-#include "SimCore/LHEEvent.h"
+#include "SimCore/LHE/LHEEvent.h"
 
 // STL
 #include <fstream>
 
-namespace simcore {
+namespace simcore::lhe {
 
 /**
  * @class LHEReader

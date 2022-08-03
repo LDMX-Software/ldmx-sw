@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace simcore {
+namespace simcore::lhe {
 
 /**
  * @class LHEParticle
