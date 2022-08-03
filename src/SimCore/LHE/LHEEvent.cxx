@@ -1,4 +1,4 @@
-#include "SimCore/LHEEvent.h"
+#include "SimCore/LHE/LHEEvent.h"
 #include "Framework/Exception/Exception.h"
 
 // Geant4
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace simcore {
+namespace simcore::lhe {
 
 LHEEvent::LHEEvent(std::string& line) {
   std::istringstream iss(line);

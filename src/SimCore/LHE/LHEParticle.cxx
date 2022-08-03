@@ -1,4 +1,4 @@
-#include "SimCore/LHEParticle.h"
+#include "SimCore/LHE/LHEParticle.h"
 #include "Framework/Exception/Exception.h"
 
 // STL
@@ -10,7 +10,7 @@
 // Geant4
 #include "globals.hh"
 
-namespace simcore {
+namespace simcore::lhe {
 
 LHEParticle::LHEParticle(std::string& line) {
   std::istringstream iss(line);

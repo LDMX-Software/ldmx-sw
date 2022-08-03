@@ -1,3 +1,10 @@
+/**
+ * @file Simulator.cxx
+ * @brief Producer that runs Geant4 simulation inside of ldmx-app
+ * @author Tom Eichlersmith, University of Minnesota
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimCore/Simulator.h"
 
 /*~~~~~~~~~~~~~~~*/
@@ -10,19 +17,21 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
-#include "SimCore/Geo/ParserFactory.h"
-#include "SimCore/Persist/RootPersistencyManager.h"
+#include "SimCore/Persist/RootPersistencyManager.h" 
+#include "SimCore/XsecBiasingOperator.h"
 #include "SimCore/PluginFactory.h"
-#include "SimCore/RunManager.h"
+#include "SimCore/Geo/ParserFactory.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
-#include "G4CascadeParameters.hh"
+#include "G4UIsession.hh"
+#include "G4UImanager.hh"
+#include "G4BiasingProcessInterface.hh"
 #include "G4Electron.hh"
+#include "G4CascadeParameters.hh"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4UImanager.hh"
@@ -74,9 +83,10 @@ void Simulator::configure(framework::config::Parameters& parameters) {
     uiManager_->SetCoutDestination(sessionHandle_.get());
 
   // Instantiate the run manager.
-  runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
+  runManager_ = std::make_unique<RunManager>(parameters_, conditionsIntf_);
 
-  // Instantiate the GDML parser
+  // Instantiate the GDML parser and corresponding messenger owned and
+  // managed by DetectorConstruction
   auto parser{simcore::geo::ParserFactory::getInstance().createParser(
       "gdml", parameters, conditionsIntf_)};
 
@@ -86,8 +96,15 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   // Set the DetectorConstruction instance used to build the detector
   // from the GDML description.
   runManager_->SetUserInitialization(
-      new DetectorConstruction(parser, parameters, conditionsIntf_));
+      new DetectorConstruction(parser, parameters_, conditionsIntf_));
 
+  // Parse the detector geometry and validate if specified.
+  auto detectorPath{parameters_.getParameter<std::string>("detector")};
+  auto validateGeometry{parameters_.getParameter<bool>("validate_detector")};
+  if (verbosity_ > 0) {
+    std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
+              << "'... " << std::flush;
+  }
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser->read();
   runManager_->DefineWorldVolume(parser->GetWorldVolume());
@@ -116,7 +133,7 @@ void Simulator::onFileOpen(framework::EventFile& file) {
   // Initialize persistency manager and connect it to the current EventFile
   persistencyManager_ =
       std::make_unique<simcore::persist::RootPersistencyManager>(
-          file, parameters_, this->getRunNumber(), conditionsIntf_);
+          file, parameters_, this->getRunNumber());
   persistencyManager_->Initialize();
 }
 
@@ -125,9 +142,6 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   DetectorConstruction* detector =
       static_cast<RunManager*>(RunManager::GetRunManager())
           ->getDetectorConstruction();
-
-  if (!detector)
-    EXCEPTION_RAISE("SimSetup", "Detector not constructed before run start.");
 
   header.setDetectorName(detector->getDetectorName());
   header.setDescription(parameters_.getParameter<std::string>("description"));
@@ -172,48 +186,36 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                    parameters_.getParameter<std::vector<std::string>>(
                        "postInitCommands", {}));
 
-  auto bops{PluginFactory::getInstance().getBiasingOperators()};
-  for (const XsecBiasingOperator* bop : bops) {
+  auto bops{simcore::PluginFactory::getInstance().getBiasingOperators()};
+  for (const simcore::XsecBiasingOperator* bop : bops ) {
     bop->RecordConfig(header);
   }
 
-  auto dark_brem{
-      parameters_.getParameter<framework::config::Parameters>("dark_brem")};
-  if (dark_brem.getParameter<bool>("enable")) {
-    // the dark brem process is enabled, find it and then record its
-    // configuration
-    G4ProcessVector* electron_processes =
-        G4Electron::Electron()->GetProcessManager()->GetProcessList();
-    int n_electron_processes = electron_processes->size();
-    for (int i_process = 0; i_process < n_electron_processes; i_process++) {
-      G4VProcess* process = (*electron_processes)[i_process];
-      if (process->GetProcessName().contains(
-              darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
-        // reset process to wrapped process if it is biased
-        if (dynamic_cast<G4BiasingProcessInterface*>(process))
-          process = dynamic_cast<G4BiasingProcessInterface*>(process)
-                        ->GetWrappedProcess();
-        // record the process configuration to the run header
-        dynamic_cast<darkbrem::G4eDarkBremsstrahlung*>(process)->RecordConfig(
-            header);
-        break;
-      }  // this process is the dark brem process
-    }    // loop through electron processes
-  }      // dark brem has been enabled
+  auto apMass{parameters_.getParameter<double>("APrimeMass")};
+  if (apMass > 0) {
+    header.setFloatParameter("A' Mass [MeV]", apMass);
+    header.setFloatParameter(
+        "Dark Brem Global Bias",
+        parameters_.getParameter<double>("darkbrem_globalxsecfactor"));
+    header.setStringParameter(
+        "Dark Brem Vertex Library Path",
+        parameters_.getParameter<std::string>("darkbrem_madgraphfilepath"));
+    header.setIntParameter("Dark Brem Interpretation Method",
+                           parameters_.getParameter<int>("darkbrem_method"));
+  }
 
   auto generators{
-      parameters_.getParameter<std::vector<framework::config::Parameters>>(
-          "generators")};
+      parameters_.getParameter<std::vector<framework::config::Parameters>>("generators")};
   int counter = 0;
   for (auto const& gen : generators) {
     std::string genID = "Gen " + std::to_string(++counter);
     auto className{gen.getParameter<std::string>("class_name")};
     header.setStringParameter(genID + " Class", className);
 
-    if (className.find("simcore::ParticleGun") != std::string::npos) {
+    if (className.find("ParticleGun") != std::string::npos) {
       header.setFloatParameter(genID + " Time [ns]",
                                gen.getParameter<double>("time"));
-      header.setFloatParameter(genID + " Energy [GeV]",
+      header.setFloatParameter(genID + " Energy [MeV]",
                                gen.getParameter<double>("energy"));
       header.setStringParameter(genID + " Particle",
                                 gen.getParameter<std::string>("particle"));
@@ -221,7 +223,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("position"));
       threeVectorDump(genID + " Direction",
                       gen.getParameter<std::vector<double>>("direction"));
-    } else if (className.find("simcore::MultiParticleGunPrimaryGenerator") !=
+    } else if (className.find("MultiParticleGunPrimaryGenerator") !=
                std::string::npos) {
       header.setIntParameter(genID + " Poisson Enabled",
                              gen.getParameter<bool>("enablePoisson"));
@@ -232,21 +234,19 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                       gen.getParameter<std::vector<double>>("vertex"));
       threeVectorDump(genID + " Momentum [MeV]",
                       gen.getParameter<std::vector<double>>("momentum"));
-    } else if (className.find("simcore::LHEPrimaryGenerator") !=
+    } else if (className.find("LHEPrimaryGenerator") !=
                std::string::npos) {
       header.setStringParameter(genID + " LHE File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootCompleteReSim") !=
-               std::string::npos) {
+    } else if (className.find("RootCompleteReSim") != std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
-    } else if (className.find("simcore::RootSimFromEcalSP") !=
-               std::string::npos) {
+    } else if (className.find("RootSimFromEcalSP") != std::string::npos) {
       header.setStringParameter(genID + " ROOT File",
                                 gen.getParameter<std::string>("filePath"));
       header.setFloatParameter(genID + " Time Cutoff [ns]",
                                gen.getParameter<double>("time_cutoff"));
-    } else if (className.find("simcore::GeneralParticleSource") !=
+    } else if (className.find("GeneralParticleSource") !=
                std::string::npos) {
       stringVectorDump(
           genID + " Init Cmd",
@@ -271,9 +271,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 }
 
 void Simulator::onNewRun(const ldmx::RunHeader&) {
-  const framework::RandomNumberSeedService& rseed =
-      getCondition<framework::RandomNumberSeedService>(
-          framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
@@ -295,15 +294,6 @@ void Simulator::produce(framework::Event& event) {
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();  // clean up event objects
     this->abortEvent();                // get out of processors loop
-  }
-
-  if (this->getLogFrequency() > 0 and
-      event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0) {
-    // print according to log frequency and verbosity
-    if (verbosity_ > 1) {
-      std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
-      event.Print();
-    }
   }
 
   // Terminate the event.  This checks if an event is to be stored or
