@@ -33,8 +33,7 @@
 class G4Event;
 
 namespace simcore {
-
-class Parameters;
+namespace generators {
 
 /**
  * @class RootSimFromEcalSP
@@ -57,8 +56,7 @@ class RootSimFromEcalSP : public PrimaryGenerator {
    * collection for Ecal Scoring Plane hits ecalSPHitsPassName : name of pass
    * for Ecal Scoring Plane hits
    */
-  RootSimFromEcalSP(const std::string& name,
-                    framework::config::Parameters& parameters);
+  RootSimFromEcalSP(const std::string& name, const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -101,6 +99,7 @@ class RootSimFromEcalSP : public PrimaryGenerator {
   framework::Event ievent_;
 };
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_ROOTSIMFROMECALSP_H

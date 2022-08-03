@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootCompleteReSim.h"
+#include "SimCore/Generators/RootCompleteReSim.h"
 
 //------------//
 //   Geant4   //
@@ -24,12 +24,15 @@
 #include "SimCore/Event/SimParticle.h"
 
 namespace simcore {
+namespace generators {
 
 RootCompleteReSim::RootCompleteReSim(const std::string& name,
-                                     framework::config::Parameters& parameters)
+                                     const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
+  framework::config::Parameters file_params;
+  file_params.addParameter<std::string>("tree_name","LDMX_Events");
   std::string filename = parameters_.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<framework::EventFile>(parameters, filename);
+  ifile_ = std::make_unique<framework::EventFile>(file_params,filename);
   ifile_->setupEvent(&ievent_);
 
   simParticleCollName_ =
@@ -51,8 +54,8 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
     anEvent->SetEventAborted();
   }
 
-  auto simParticles{ievent_.getMap<int, ldmx::SimParticle>(
-      simParticleCollName_, simParticlePassName_)};
+  auto simParticles{ievent_.getMap<int, ldmx::SimParticle>(simParticleCollName_,
+                                                     simParticlePassName_)};
   std::vector<G4PrimaryVertex*> vertices;  // vertices already put into Geant4
   for (const auto& [trackID, sp] : simParticles) {
     // check if particle has status 1
@@ -97,6 +100,7 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, RootCompleteReSim)
+DECLARE_GENERATOR(simcore::generators, RootCompleteReSim)

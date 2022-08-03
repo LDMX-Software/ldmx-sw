@@ -22,15 +22,13 @@
 class G4Event;
 
 namespace simcore {
-
-// Forward declarations
-class Parameters;
+namespace generators {
 
 /**
  * @class ParticleGun
  * @brief Class that extends the functionality of G4ParticleGun.
  */
-class ParticleGun : public PrimaryGenerator {
+class ParticleGun : public simcore::PrimaryGenerator {
  public:
   /**
    * Constructor.
@@ -45,8 +43,7 @@ class ParticleGun : public PrimaryGenerator {
    *  time     : time to shoot at (ns)
    *  direction: direction to shoot in (unitless three-vector)
    */
-  ParticleGun(const std::string& name,
-              framework::config::Parameters& parameters);
+  ParticleGun(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
   ~ParticleGun();
@@ -71,6 +68,7 @@ class ParticleGun : public PrimaryGenerator {
 
 };  // ParticleGun
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_PARTICLE_GUN_H

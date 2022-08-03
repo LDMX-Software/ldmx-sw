@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/RootSimFromEcalSP.h"
+#include "SimCore/Generators/RootSimFromEcalSP.h"
 
 //----------------//
 //   C++ StdLib   //
@@ -26,16 +26,18 @@
 //   ldmx-sw   //
 //-------------//
 #include "Framework/Configure/Parameters.h"
-#include "Recon/Event/EventConstants.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
 namespace simcore {
+namespace generators {
 
 RootSimFromEcalSP::RootSimFromEcalSP(const std::string& name,
-                                     framework::config::Parameters& parameters)
+                                     const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
+  framework::config::Parameters file_params;
+  file_params.addParameter<std::string>("tree_name","LDMX_Events");
   std::string filename = parameters_.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<framework::EventFile>(parameters, filename);
+  ifile_ = std::make_unique<framework::EventFile>(file_params,filename);
   ifile_->setupEvent(&ievent_);
 
   timeCutoff_ = parameters_.getParameter<double>("time_cutoff");
@@ -121,6 +123,7 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, RootSimFromEcalSP)
+DECLARE_GENERATOR(simcore::generators, RootSimFromEcalSP)
