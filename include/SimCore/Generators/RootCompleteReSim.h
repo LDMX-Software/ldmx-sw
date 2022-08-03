@@ -33,8 +33,7 @@
 class G4Event;
 
 namespace simcore {
-
-class Parameters;
+namespace generators {
 
 /**
  * @class RootCompleteReSim
@@ -42,7 +41,7 @@ class Parameters;
  * PrimaryGenerator that gets primaries and event seeds and
  * inputs them into current event as primaries with the exact same kinematics.
  */
-class RootCompleteReSim : public PrimaryGenerator {
+class RootCompleteReSim : public simcore::PrimaryGenerator {
  public:
   /**
    * Class constructor.
@@ -54,8 +53,7 @@ class RootCompleteReSim : public PrimaryGenerator {
    *   simParticleCollName : name of collection of SimParticles
    *   simParticlePassName : name of pass of SimParticles
    */
-  RootCompleteReSim(const std::string& name,
-                    framework::config::Parameters& parameters);
+  RootCompleteReSim(const std::string& name, const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -90,6 +88,7 @@ class RootCompleteReSim : public PrimaryGenerator {
   framework::Event ievent_;
 };
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_ROOTCOMPLETERESIM_H

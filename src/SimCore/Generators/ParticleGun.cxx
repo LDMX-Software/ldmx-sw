@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/ParticleGun.h"
+#include "SimCore/Generators/ParticleGun.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -26,9 +26,10 @@
 #include "Framework/Configure/Parameters.h"
 
 namespace simcore {
+namespace generators {
 
-ParticleGun::ParticleGun(const std::string& name,
-                         framework::config::Parameters& parameters)
+ParticleGun::ParticleGun(const std::string& name, 
+    const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   verbosity_ = parameters.getParameter<int>("verbosity");
 
@@ -85,6 +86,7 @@ void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   theGun_.GeneratePrimaryVertex(event);
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, ParticleGun)
+DECLARE_GENERATOR(simcore::generators, ParticleGun)

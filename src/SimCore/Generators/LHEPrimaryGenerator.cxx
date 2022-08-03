@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/LHEPrimaryGenerator.h"
+#include "SimCore/Generators/LHEPrimaryGenerator.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -20,33 +20,33 @@
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
+namespace generators {
 
-LHEPrimaryGenerator::LHEPrimaryGenerator(
-    const std::string& name, framework::config::Parameters& parameters)
+LHEPrimaryGenerator::LHEPrimaryGenerator(const std::string& name,
+                                         const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   std::string filePath = parameters_.getParameter<std::string>("filePath");
-  reader_ = new LHEReader(filePath);
+  reader_ = new simcore::lhe::LHEReader(filePath);
 }
 
 LHEPrimaryGenerator::~LHEPrimaryGenerator() { delete reader_; }
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
-  LHEEvent* lheEvent = reader_->readNextEvent();
+  simcore::lhe::LHEEvent* lheEvent = reader_->readNextEvent();
 
   if (lheEvent != NULL) {
     G4PrimaryVertex* vertex = new G4PrimaryVertex();
     vertex->SetPosition(lheEvent->getVertex()[0], lheEvent->getVertex()[1],
                         lheEvent->getVertex()[2]);
-    vertex->SetT0(lheEvent->getVertexTime());
     vertex->SetWeight(lheEvent->getXWGTUP());
 
-    std::map<LHEParticle*, G4PrimaryParticle*> particleMap;
+    std::map<simcore::lhe::LHEParticle*, G4PrimaryParticle*> particleMap;
 
     int particleIndex = 0;
-    const std::vector<LHEParticle*>& particles = lheEvent->getParticles();
-    for (std::vector<LHEParticle*>::const_iterator it = particles.begin();
+    const std::vector<simcore::lhe::LHEParticle*>& particles = lheEvent->getParticles();
+    for (auto it = particles.begin();
          it != particles.end(); it++) {
-      LHEParticle* particle = (*it);
+      simcore::lhe::LHEParticle* particle = (*it);
 
       if (particle->getISTUP() > 0) {
         G4PrimaryParticle* primary = new G4PrimaryParticle();
@@ -106,6 +106,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   delete lheEvent;
 }
 
+}  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore, LHEPrimaryGenerator)
+DECLARE_GENERATOR(simcore::generators, LHEPrimaryGenerator)

@@ -37,20 +37,19 @@
 //-------------//
 //   LDMX-SW   //
 //-------------//
-#include "Framework/Configure/Parameters.h"
 #include "Framework/EventHeader.h"
-#include "Recon/Event/EventConstants.h"
 #include "SimCore/PrimaryGenerator.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 namespace simcore {
+namespace generators {
 
 /**
  * @class MultiParticleGunPrimaryGenerator
  * @brief Generates a Geant4 event from particle gun, but can have many
  * particles
  */
-class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
+class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
  public:
   /**
    * Constructor
@@ -66,7 +65,7 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
    *  enablePoisson : whether to poisson distribute the number of particles
    */
   MultiParticleGunPrimaryGenerator(const std::string& name,
-                                   framework::config::Parameters& parameters);
+                                   const framework::config::Parameters& parameters);
 
   /** Destructor */
   virtual ~MultiParticleGunPrimaryGenerator();
@@ -102,6 +101,7 @@ class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
 
 };  // MultiParticleGunPrimaryGenerator
 
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_MULTIPARTICLEGUNPRIMARYGENERATOR_H_
