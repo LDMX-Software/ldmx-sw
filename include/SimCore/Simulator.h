@@ -26,7 +26,6 @@
 #include "SimCore/RunManager.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/ConditionsInterface.h"
-#include "SimCore/Persist/RootPersistencyManager.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -99,14 +98,6 @@ class Simulator : public framework::Producer {
   virtual void produce(framework::Event& event) final override;
 
   /**
-   *  Callback for the EventProcessor to take any necessary action
-   *  when a new file is opened.
-   *
-   *  @param eventFile  The input/output file.
-   */
-  void onFileOpen(framework::EventFile& eventFile) final override;
-
-  /**
    * Callback for the EventProcessor to take any necessary action
    * when a file is closed.
    *
@@ -152,9 +143,6 @@ class Simulator : public framework::Producer {
 
   /// User interface handle
   G4UImanager* uiManager_{nullptr};
-
-  /// PersistencyManager
-  std::unique_ptr<simcore::persist::RootPersistencyManager> persistencyManager_;
 
   /// Handle to the G4Session -> how to deal with G4cout and G4cerr
   std::unique_ptr<G4UIsession> sessionHandle_;
