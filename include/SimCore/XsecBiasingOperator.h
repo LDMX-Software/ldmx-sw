@@ -28,7 +28,7 @@ class XsecBiasingOperator;
 
 /// Define type of building fuction for biasing operators
 typedef XsecBiasingOperator* XsecBiasingOperatorBuilder(
-    const std::string& name, framework::config::Parameters& parameters);
+    const std::string& name, const framework::config::Parameters& parameters);
 
 /**
  * Our specialization of the biasing operator used with Geant4.
@@ -194,7 +194,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
  */
 #define DECLARE_XSECBIASINGOPERATOR(NS, CLASS)                              \
   simcore::XsecBiasingOperator* CLASS##Builder(                             \
-      const std::string& name, framework::config::Parameters& parameters) { \
+      const std::string& name, const framework::config::Parameters& parameters) { \
     return new NS::CLASS(name, parameters);                                 \
   }                                                                         \
   __attribute((constructor(205))) static void CLASS##Declare() {            \
