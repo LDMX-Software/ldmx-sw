@@ -10,8 +10,10 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "SimCore/CalorimeterSD.h"
-#include "SimCore/ConditionsInterface.h"
+#include "SimCore/SensitiveDetector.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/TrackMap.h"
 
 // ROOT
 #include "TMath.h"
@@ -25,16 +27,20 @@ namespace simcore {
  * @class EcalSD
  * @brief ECal sensitive detector that uses an EcalHexReadout to create the hits
  */
-class EcalSD : public CalorimeterSD {
+class EcalSD : public SensitiveDetector {
  public:
+  /// Name of output collection of hits
+  static const std::string COLLECTION_NAME;
+
   /**
    * Class constructor.
    * @param name The name of the sensitive detector.
    * @param theCollectionName The name of the hits collection.
    * @param subDetID The subdetector ID.
    */
-  EcalSD(G4String name, G4String theCollectionName, int subDetID,
-         ConditionsInterface& ci);
+  EcalSD(const std::string& name,
+         simcore::ConditionsInterface& ci,
+         const framework::config::Parameters& p);
 
   /**
    * Class destructor.
@@ -42,11 +48,32 @@ class EcalSD : public CalorimeterSD {
   virtual ~EcalSD();
 
   /**
+   * Should the input volume be consider apart of this sensitive detector?
+   *
+   * @note Dependent on names defined in GDML!
+   */
+  virtual bool isSensDet(G4LogicalVolume* vol) const final override {
+    auto region = vol->GetRegion();
+    if (region and region->GetName().contains("CalorimeterRegion")) {
+      return vol->GetName().contains("Si");
+    }
+    return false;
+  }
+
+  /**
    * Process steps to create hits.
    * @param aStep The step information.
    * @param ROhist The readout history.
    */
   G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+
+  /**
+   * Add our hits to the event bus.
+   */
+  virtual void saveHits(framework::Event& event) final override {
+    //event.add(COLLECTION_NAME, hits_);
+    hits_.clear();
+  }
 
  private:
   /**
@@ -70,8 +97,8 @@ class EcalSD : public CalorimeterSD {
    */
   std::map<G4VSolid*, G4Polyhedron*> polyMap_;
 
-  /// ConditionsInterface
-  ConditionsInterface& conditionsIntf_;
+  /// Collection of hits to add to the event
+  std::vector<ldmx::SimCalorimeterHit> hits_;
 };
 
 }  // namespace simcore

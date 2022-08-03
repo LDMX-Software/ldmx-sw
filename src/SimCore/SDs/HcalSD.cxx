@@ -1,4 +1,4 @@
-#include "SimCore/HcalSD.h"
+#include "SimCore/SDs/HcalSD.h"
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
@@ -10,42 +10,27 @@
 
 // Geant4
 #include "G4Box.hh"
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
-#include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
-#include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
 namespace simcore {
+ 
+const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
-HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID,
-               ConditionsInterface& ci)
-    : CalorimeterSD(name, collectionName),
-      birksc1_(1.29e-2),
-      birksc2_(9.59e-6),
-      conditionsIntf_(ci) {}
+HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
+               const framework::config::Parameters& p)
+    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {}
 
 HcalSD::~HcalSD() {}
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
-  const ldmx::HcalGeometry& hcalGeometry =
-      conditionsIntf_.getCondition<ldmx::HcalGeometry>(
-          ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
-  // Determine if current particle of this step is a Geantino.
-  G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
-  bool isGeantino = false;
-  if (pdef == G4Geantino::Definition() ||
-      pdef == G4ChargedGeantino::Definition()) {
-    isGeantino = true;
-  }
 
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // Skip steps with no energy dep which come from non-Geantino particles.
-  if (edep == 0.0 && !isGeantino) {
+  if (edep == 0.0 and not isGeantino(aStep)) {
     if (verboseLevel > 2) {
       std::cout << "CalorimeterSD skipping step with zero edep." << std::endl
                 << std::endl;
@@ -81,6 +66,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //              product of the step length (in cm) and the density
   //              of the scintillator:
 
+
   G4double birksFactor(1.0);
   G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
   // Do not apply Birks for gamma deposits!
@@ -96,11 +82,11 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
       birksFactor = 1.0;
   }
 
-  // Create a new cal hit.
-  G4CalorimeterHit* hit = new G4CalorimeterHit();
+  // update edep to include birksFactor
+  edep *= birksFactor;
 
-  // Set the edep.
-  hit->setEdep(edep * birksFactor);
+  // Create a new cal hit.
+  ldmx::SimCalorimeterHit& hit{hits_.emplace_back()};
 
   // Get the scintillator solid box
   G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()
@@ -119,16 +105,13 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
                                     ->GetHistory()
                                     ->GetTopTransform()
                                     .TransformPoint(position);
-  hit->setPosition(position[0], position[1], position[2]);
-
-  // Set the global time.
-  hit->setTime(aStep->GetTrack()->GetGlobalTime());
+  hit.setPosition(position[0], position[1], position[2]);
 
   // Create the ID for the hit.
   int copyNum = aStep->GetPreStepPoint()
                     ->GetTouchableHandle()
                     ->GetHistory()
-                    ->GetVolume(layerDepth_)
+                    ->GetVolume(2)
                     ->GetCopyNo();
   int section = copyNum / 1000;
   int layer = copyNum % 1000;
@@ -139,16 +122,15 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //         top/bottom side hcal: segmented along y direction every 10 cm
 
   int stripID = -1;
+  // Odd layers have bars horizontal
+  // Even layers have bars vertical
   // 5cm wide bars are HARD-CODED
-  if (section == ldmx::HcalID::BACK) {
-    if (hcalGeometry.layerIsHorizontal(layer)) {
-      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-    } else {
-      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
-    }
-  } else {
+  if (section == ldmx::HcalID::BACK && layer % 2 == 1)
+    stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+  else if (section == ldmx::HcalID::BACK && layer % 2 == 0)
+    stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+  else
     stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
-  }
 
   // std::cout << "---" << std::endl;
   // std::cout << "GetXHalfLength = " << scint->GetXHalfLength() << "\t
@@ -161,36 +143,34 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // << "\t strip = " << stripID << std::endl;
 
   ldmx::HcalID id(section, layer, stripID);
-  hit->setID(id.raw());
+  hit.setID(id.raw());
 
-  // Set the track ID on the hit.
-  hit->setTrackID(aStep->GetTrack()->GetTrackID());
-
-  // Set the PDG code from the track.
-  hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+  // add one contributor for this hit with
+  //  ID of ancestor incident on Cal-Region
+  //  ID of this track
+  //  PDG of this track
+  //  EDEP (including birks factor)
+  //  time of this hit
+  const G4Track* track = aStep->GetTrack();
+  int track_id = track->GetTrackID();
+  hit.addContrib(getTrackMap().findIncident(track_id), track_id,
+                 track->GetParticleDefinition()->GetPDGEncoding(),
+                 edep, track->GetGlobalTime());
 
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =
   // aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
   // if (section==ldmx::HcalID::BACK) hit->setPosition(position[0], position[1],
   // volumePosition.z()); elseif (section==ldmx::HcalID::TOP ||
-  // section==ldmx::HcalID::BOTTOM) hit->setPosition(position[0],
-  // volumePosition.y(), position[2]); elseif (section==ldmx::HcalID::LEFT ||
-  // section==ldmx::HcalID::RIGHT)
+  // section==ldmx::HcalID::BOTTOM) hit->setPosition(position[0], volumePosition.y(),
+  // position[2]); elseif (section==ldmx::HcalID::LEFT || section==ldmx::HcalID::RIGHT)
   // hit->setPosition(volumePosition.x(),position[1] , position[2]);
 
-  if (this->verboseLevel > 2) {
-    std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-              << " subdet ID <" << subdet_ << ">, layer <" << layer
-              << "> and section <" << section << ">, copynum <" << copyNum
-              << ">" << std::endl;
-    hit->Print();
-    std::cout << std::endl;
-  }
-
-  // Insert the hit into the hits collection.
-  hitsCollection_->insert(hit);
+  if (this->verboseLevel > 2) { hit.Print(); }
 
   return true;
 }
+
 }  // namespace simcore
+
+DECLARE_SENSITIVEDETECTOR(simcore, HcalSD)
