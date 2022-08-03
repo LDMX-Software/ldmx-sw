@@ -13,6 +13,7 @@
 #include "Framework/Process.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "Framework/Version.h"  //for LDMX_INSTALL path
+#include "Framework/EventFile.h"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -20,10 +21,12 @@
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
-#include "SimCore/Persist/RootPersistencyManager.h" 
 #include "SimCore/XsecBiasingOperator.h"
 #include "SimCore/PrimaryGenerator.h"
+#include "SimCore/SensitiveDetector.h"
 #include "SimCore/Geo/ParserFactory.h"
+#include "SimCore/UserEventInformation.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -128,14 +131,6 @@ void Simulator::configure(framework::config::Parameters& parameters) {
               "' is not allowed because another part of Simulator handles it.");
     }
   }
-}
-
-void Simulator::onFileOpen(framework::EventFile& file) {
-  // Initialize persistency manager and connect it to the current EventFile
-  persistencyManager_ =
-      std::make_unique<simcore::persist::RootPersistencyManager>(
-          file, parameters_, this->getRunNumber());
-  persistencyManager_->Initialize();
 }
 
 void Simulator::beforeNewRun(ldmx::RunHeader& header) {
@@ -245,10 +240,6 @@ void Simulator::onNewRun(const ldmx::RunHeader&) {
 }
 
 void Simulator::produce(framework::Event& event) {
-  // Pass the current LDMX event object to the persistency manager.  This
-  // is needed by the persistency manager to fill the current event.
-  persistencyManager_->setCurrentEvent(&event);
-
   // Generate and process a Geant4 event.
   numEventsBegan_++;
   runManager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
@@ -264,6 +255,34 @@ void Simulator::produce(framework::Event& event) {
   // Terminate the event.  This checks if an event is to be stored or
   // stacked for later.
   numEventsCompleted_++;
+
+  // store event-wide information in EventHeader
+  auto event_info = static_cast<UserEventInformation *>(
+      G4EventManager::GetEventManager()->GetUserInformation());
+  auto& event_header = event.getEventHeader();
+  event_header.setWeight(event_info->getWeight());
+  event_header.setFloatParameter("total_photonuclear_energy",
+                                event_info->getPNEnergy());
+  event_header.setFloatParameter("total_electronuclear_energy",
+                                event_info->getENEnergy());
+
+  // Save the state of the random engine to an output stream. A string
+  // is then extracted and saved to the event header.
+  std::ostringstream stream;
+  G4Random::saveFullState(stream);
+  // std::cout << stream.str() << std::endl;
+  event_header.setStringParameter("eventSeed", stream.str());
+
+  // track storage
+  TrackMap* tracks{g4user::TrackingAction::getUserTrackingAction()->getTrackMap()};
+  tracks->traceAncestry();
+  event.add("SimParticles", tracks->getParticleMap());
+
+  // Copy hit objects from SD hit collections into the output event.
+  SensitiveDetector::Factory::get().apply([&event](auto sd) {
+        sd->saveHits(event);
+      });
+
   runManager_->TerminateOneEvent();
 
   return;
@@ -305,24 +324,19 @@ void Simulator::onProcessStart() {
   return;
 }
 
-void Simulator::onFileClose(framework::EventFile&) {
+void Simulator::onFileClose(framework::EventFile& file) {
   // End the current run and print out some basic statistics if verbose
   // level > 0.
   runManager_->TerminateEventLoop();
 
   // Pass the **real** number of events to the persistency manager
-  persistencyManager_->setNumEvents(numEventsBegan_, numEventsCompleted_);
+  auto rh = file.getRunHeader(getRunNumber());
+  rh.setIntParameter("Event Count", numEventsCompleted_);
+  rh.setIntParameter("Events Began", numEventsBegan_);
 
   // Persist any remaining events, call the end of run action and
   // terminate the Geant4 kernel.
   runManager_->RunTermination();
-
-  // Cleanup persistency manager
-  //  Geant4 expects us to handle the persistency manager
-  //  In order to avoid segfaulting nonsense, I delete it here
-  //  so that it is deleted before the EventFile it references
-  //  is deleted
-  persistencyManager_.reset(nullptr);
 }
 
 void Simulator::onProcessEnd() {
