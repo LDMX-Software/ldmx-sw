@@ -100,6 +100,11 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+void RootCompleteReSim::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class", "simcore::generators::RootCompleteReSim");
+  rh.setStringParameter(id + " File Path", ifile_->getFileName());
+}
+
 }  // namespace generators
 }  // namespace simcore
 

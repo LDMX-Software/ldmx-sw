@@ -25,8 +25,8 @@ namespace generators {
 LHEPrimaryGenerator::LHEPrimaryGenerator(const std::string& name,
                                          const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  std::string filePath = parameters.getParameter<std::string>("filePath");
-  reader_ = new simcore::lhe::LHEReader(filePath);
+  file_path_ = parameters.getParameter<std::string>("filePath");
+  reader_ = new simcore::lhe::LHEReader(file_path_);
 }
 
 LHEPrimaryGenerator::~LHEPrimaryGenerator() { delete reader_; }
@@ -104,6 +104,11 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   }
 
   delete lheEvent;
+}
+
+void LHEPrimaryGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+  rh.setStringParameter(id+" Class", "simcore::generators::LHEPrimaryGenerator");
+  rh.setStringParameter(id+" LHE File", file_path_);
 }
 
 }  // namespace generators

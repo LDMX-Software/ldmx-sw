@@ -55,6 +55,8 @@ class ParticleGun : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* event) final override;
 
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
+
  private:
   /**
    * The actual Geant4 implementation of the ParticleGun

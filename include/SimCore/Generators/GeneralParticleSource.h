@@ -48,6 +48,7 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
    * @param event The Geant4 event.
    */
   void GeneratePrimaryVertex(G4Event* event) final override;
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
 
  private:
   /**
@@ -57,6 +58,9 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
    * commands to.
    */
   G4GeneralParticleSource theG4Source_;
+
+  /// storage of initialization commands (for config recording)
+  std::vector<std::string> init_commands_;
 
 };  // GeneralParticleSource
 

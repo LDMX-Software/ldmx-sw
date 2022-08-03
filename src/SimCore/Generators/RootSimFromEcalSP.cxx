@@ -123,6 +123,12 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
+void RootSimFromEcalSP::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class", "simcore::generators::RootSimFromEcalSP");
+  rh.setStringParameter(id + " File Path", ifile_->getFileName());
+  rh.setFloatParameter(id + " Time Cutoff [ns]", timeCutoff_);
+}
+
 }  // namespace generators
 }  // namespace simcore
 

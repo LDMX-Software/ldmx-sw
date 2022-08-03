@@ -40,11 +40,14 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent);
 
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
  private:
   /**
    * The LHE reader with the event data.
    */
   simcore::lhe::LHEReader* reader_;
+  /// path to LHE file
+  std::string file_path_;
 };
 
 }  // namespace generators

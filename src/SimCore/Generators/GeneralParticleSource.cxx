@@ -23,10 +23,8 @@ namespace generators {
 GeneralParticleSource::GeneralParticleSource(const std::string& name,
                                              const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  auto initCommands{
-      parameters.getParameter<std::vector<std::string>>("initCommands")};
-
-  for (const auto& cmd : initCommands) {
+  init_commands_ = parameters.getParameter<std::vector<std::string>>("initCommands");
+  for (const auto& cmd : init_commands_) {
     int g4Ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
     if (g4Ret > 0) {
       EXCEPTION_RAISE("InitCmd",
@@ -42,8 +40,15 @@ GeneralParticleSource::~GeneralParticleSource() {}
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
   theG4Source_.GeneratePrimaryVertex(event);
-
   return;
+}
+
+void GeneralParticleSource::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
+  rh.setStringParameter(id+" Class", "simcore::generators::GeneralParticleSource");
+  std::string init_prefix{id+" Init Cmd "};
+  for (std::size_t i{0}; i < init_commands_.size(); i++) {
+    rh.setStringParameter(init_prefix+std::to_string(i), init_commands_.at(i));
+  }
 }
 
 }  // namespace generators

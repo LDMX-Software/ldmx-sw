@@ -69,6 +69,7 @@ class RootSimFromEcalSP : public PrimaryGenerator {
    */
   void GeneratePrimaryVertex(G4Event* anEvent);
 
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
  private:
   /**
    * The cutoff time
