@@ -41,8 +41,16 @@ class HcalSD(simcfg.SensitiveDetector) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
 
 class EcalSD(simcfg.SensitiveDetector) :
+    """
+    enableHitContribs : bool, optional
+        Should the simulation save contributions to Ecal sim hits?
+    compressHitContribs : bool, optional
+        Should the simulation compress contributions to Ecal sim hits by PDG ID?
+    """
     def __init__(self) :
         super().__init__('ecal_sd', 'simcore::EcalSD','SimCore_SDs')
+        self.enableHitContribs = True
+        self.compressHitContribs = True
 
 class TrigScintSD(simcfg.SensitiveDetector) :
     def __init__(self) :

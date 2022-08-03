@@ -41,10 +41,6 @@ class simulator(Producer):
         2 (x,y) or 3 (x,y,z) widths to smear ALL primary vertices by [mm]
     time_shift_primaries : bool
         Should we shift the times of primaries so that z=0mm corresponds to t=0ns? 
-    enableHitContribs : bool, optional
-        Should the simulation save contributions to Ecal sim hits?
-    compressHitContribs : bool, optional
-        Should the simulation compress contributions to Ecal sim hits by PDG ID?
     preInitCommands : list of str, optional
         Geant4 commands to run before the run is initialized
     postInitCommands : list of str, optional
@@ -78,8 +74,6 @@ class simulator(Producer):
         self.scoringPlanes = ''
         self.beamSpotSmear = [ ]
         self.time_shift_primaries = True
-        self.enableHitContribs   = True
-        self.compressHitContribs = True
         self.preInitCommands = [ ]
         self.postInitCommands = [ ]
         self.actions = [ ]
@@ -106,11 +100,11 @@ class simulator(Producer):
         See Also
         --------
         @PYTHON_PACKAGE_NAME@.Detectors.makePath for definitions of the path making functions.
-        @PYTHON_PACKAGE_NAME@.SimCore.sensitive_detectors for configuring the SDs
+        sensitive_detectors for configuring the SDs
         """
 
         from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
-        from @PYTHON_PACKAGE_NAME@.SimCore import sensitive_detectors as sds
+        from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
         self.sensitive_detectors = [
                 sds.TrackerSD.tagger(),
