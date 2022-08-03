@@ -45,7 +45,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    * @param parameters The parameters used to configure the primary
    *                   generator action.
    */
-  PrimaryGeneratorAction(framework::config::Parameters& parameters);
+  PrimaryGeneratorAction(const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -86,12 +86,6 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   void GeneratePrimaries(G4Event* event) final override;
 
  private:
-  /// Manager of all generators used by the event
-  PluginFactory& manager_;
-
-  /// The parameters used to configure the primary generator of choice
-  framework::config::Parameters parameters_;
-
   /**
    * Flag denoting whether the vertex position of a particle
    * should be smeared.
