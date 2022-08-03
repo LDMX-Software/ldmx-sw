@@ -1,4 +1,4 @@
-#ifndef SIMCORE_PERSIST_ROOTPERSISTENCYMANAGER_H_
+#ifndef SIMCORE_PERSIST_ROOTPERSISTENCYMANAGER_H
 #define SIMCORE_PERSIST_ROOTPERSISTENCYMANAGER_H
 
 /*~~~~~~~~~~~~~~~~*/
@@ -13,13 +13,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/EcalHitIO.h"
-#include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/G4TrackerHit.h"
-
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
@@ -33,7 +26,7 @@ class G4Run;
 namespace framework {
 class Event;
 class RunHeader;
-}  // namespace framework
+} // namespace framework
 
 namespace simcore {
 namespace persist {
@@ -54,7 +47,7 @@ namespace persist {
  * output SimTrackerHit collections.
  */
 class RootPersistencyManager : public G4PersistencyManager {
- public:
+public:
   /**
    * Class constructor.
    *
@@ -63,8 +56,8 @@ class RootPersistencyManager : public G4PersistencyManager {
    * @param runNumber current run identifer from Process
    */
   RootPersistencyManager(framework::EventFile &file,
-                         framework::config::Parameters &parameters,
-                         const int &runNumber, ConditionsInterface &ci);
+                         const framework::config::Parameters &parameters,
+                         const int &runNumber);
 
   /// Destructor
   virtual ~RootPersistencyManager() {}
@@ -137,15 +130,7 @@ class RootPersistencyManager : public G4PersistencyManager {
     eventsCompleted_ = completed;
   }
 
- public:
-  /**
-   * Build an output event from the current Geant4 event.
-   *
-   * @param anEvent The Geant4 event.
-   * @param outputEvent The output event.
-   */
-  void buildEvent(const G4Event *anEvent);
-
+public:
   /**
    * Write header info into the output event from Geant4.
    *
@@ -153,35 +138,7 @@ class RootPersistencyManager : public G4PersistencyManager {
    */
   void writeHeader(const G4Event *anEvent);
 
-  /**
-   * Write hits collections from Geant4 into a ROOT event.
-   *
-   * @param anEvent The Geant4 event.
-   * @param outputEvent The output event.
-   */
-  void writeHitsCollections(const G4Event *anEvent,
-                            framework::Event *outputEvent);
-
-  /**
-   * Write a collection of tracker hits to an output collection.
-   *
-   * @param hc The collection of G4TrackerHits.
-   * @param outputColl The output collection of SimTrackerHits.
-   */
-  void writeTrackerHitsCollection(G4TrackerHitsCollection *hc,
-                                  std::vector<ldmx::SimTrackerHit> &outputColl);
-
-  /**
-   * Write a collection of tracker hits to an output collection.
-   *
-   * @param hc The collection of G4CalorimeterHits.
-   * @param outputColl The output collection of SimCalorimeterHits.
-   */
-  void writeCalorimeterHitsCollection(
-      G4CalorimeterHitsCollection *hc,
-      std::vector<ldmx::SimCalorimeterHit> &outputColl);
-
- private:
+private:
   /// Configuration parameters passed to Simulator
   framework::config::Parameters parameters_;
 
@@ -199,9 +156,6 @@ class RootPersistencyManager : public G4PersistencyManager {
 
   /// The event container used to manage the tree/branches/collections.
   framework::Event *event_{nullptr};
-
-  /// Handles ECal hit readout and IO.
-  EcalHitIO ecalHitIO_;
 };
 
 }  // namespace persist
