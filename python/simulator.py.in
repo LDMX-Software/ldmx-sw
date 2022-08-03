@@ -31,6 +31,8 @@ class simulator(Producer):
         Full path to detector description gdml (suggested to use setDetector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
+    sensitive_detectors : list[SensitiveDetector]
+        List of sensitive detectors to load
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
@@ -65,13 +67,14 @@ class simulator(Producer):
         super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
 
         #######################################################################
-        #Required Parameters
+        # Required Parameters
         self.generators = [ ]
         self.detector = ''
+        self.sensitive_detectors = [ ]
         self.description = ''
 
         #######################################################################
-        #Optional Parameters(with helpful defaults)
+        # Optional Parameters (with helpful defaults)
         self.scoringPlanes = ''
         self.beamSpotSmear = [ ]
         self.time_shift_primaries = True
@@ -103,9 +106,23 @@ class simulator(Producer):
         See Also
         --------
         @PYTHON_PACKAGE_NAME@.Detectors.makePath for definitions of the path making functions.
+        @PYTHON_PACKAGE_NAME@.SimCore.sensitive_detectors for configuring the SDs
         """
 
         from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
+        from @PYTHON_PACKAGE_NAME@.SimCore import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
+        self.sensitive_detectors = [
+                sds.TrackerSD.tagger(),
+                sds.TrackerSD.recoil(),
+                sds.HcalSD(),
+                sds.EcalSD(),
+                sds.TrigScintSD()]
         if include_scoring_planes :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
+            self.sensitive_detectors.extend([
+                sds.ScoringPlaneSD.ecal(),
+                sds.ScoringPlaneSD.hcal(),
+                sds.ScoringPlaneSD.target(),
+                sds.ScoringPlaneSD.magnet()
+                ])
