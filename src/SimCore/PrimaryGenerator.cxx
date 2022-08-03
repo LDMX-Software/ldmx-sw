@@ -7,18 +7,12 @@
 
 #include "SimCore/PrimaryGenerator.h"
 
-#include "SimCore/PluginFactory.h"
-
 namespace simcore {
 
 PrimaryGenerator::PrimaryGenerator(const std::string& name,
                                    const framework::config::Parameters& parameters) :
-  name_(name), parameters_(parameters) {}
+  name_(name) {}
 
 PrimaryGenerator::~PrimaryGenerator() {}
 
-void PrimaryGenerator::declare(const std::string& className,
-                               PrimaryGeneratorBuilder* builder) {
-  simcore::PluginFactory::getInstance().registerGenerator(className, builder);
-}
 }  // namespace simcore

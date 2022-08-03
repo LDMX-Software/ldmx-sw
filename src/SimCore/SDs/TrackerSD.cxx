@@ -97,4 +97,4 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
 }  // namespace simcore
 
-DECLARE_SENSITIVEDETECTOR(simcore, TrackerSD)
+DECLARE_SENSITIVEDETECTOR(simcore::TrackerSD)

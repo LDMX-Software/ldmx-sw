@@ -131,4 +131,4 @@ G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
 
 }  // namespace simcore
 
-DECLARE_SENSITIVEDETECTOR(simcore, EcalSD)
+DECLARE_SENSITIVEDETECTOR(simcore::EcalSD)

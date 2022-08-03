@@ -22,17 +22,12 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
 
+#include "SimCore/Factory.h"
+
 // Forward Declarations
 class G4Event;
 
 namespace simcore {
-
-// Forward declarations
-class PrimaryGenerator;
-
-typedef PrimaryGenerator* PrimaryGeneratorBuilder(
-    const std::string& name, 
-    const framework::config::Parameters& parameters);
 
 /**
  * @class PrimaryGenerator
@@ -51,17 +46,13 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
   PrimaryGenerator(const std::string& name,
                    const framework::config::Parameters& parameters);
 
+  /// Factory for primary generators
+  using Factory = ::simcore::Factory<PrimaryGenerator,
+                                     const std::string&,
+                                     const framework::config::Parameters&>;
+
   /// Destructor
   virtual ~PrimaryGenerator();
-
-  /**
-   * Method used to register a user action with the manager.
-   *
-   * @param className Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& className,
-                      PrimaryGeneratorBuilder* builder);
 
   /**
    * Generate a Primary Vertex
@@ -70,13 +61,17 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    */
   virtual void GeneratePrimaryVertex(G4Event*) = 0;
 
+  /**
+   * Record the configuration of the primary generator into the run header
+   *
+   * @note you must include the id number in each entry into the run header
+   * just in case there are other generators
+   */
+  //virtual void RecordConfig(const int id, ldmx::RunHeader& rh) = 0;
+
  protected:
   /// Name of the PrimaryGenerator
   std::string name_{""};
-
-  /// The set of parameters used to configure this class
-  const framework::config::Parameters& parameters_;
-
 };  // PrimaryGenerator
 
 }  // namespace simcore
@@ -86,17 +81,11 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  *
  * Defines a builder for the declared class
  * and then registers the class as a generator
- * with the PluginFactory
+ * with the Factory
  */
-#define DECLARE_GENERATOR(NS, CLASS)                                     \
-  simcore::PrimaryGenerator* CLASS##Builder(                             \
-      const std::string& name,                                           \
-      const framework::config::Parameters& parameters) {                 \
-    return new NS::CLASS(name, parameters);                              \
-  }                                                                      \
-  __attribute((constructor(305))) static void CLASS##Declare() {         \
-    simcore::PrimaryGenerator::declare(                                  \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder); \
+#define DECLARE_GENERATOR(CLASS)                                           \
+  namespace {                                                              \
+    auto v = ::simcore::PrimaryGenerator::Factory::get().declare<CLASS>(); \
   }
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

@@ -34,4 +34,4 @@ G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, NeutronInelastic)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::NeutronInelastic)

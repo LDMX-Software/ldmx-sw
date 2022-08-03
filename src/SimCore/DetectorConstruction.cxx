@@ -1,8 +1,8 @@
 #include "SimCore/DetectorConstruction.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/PluginFactory.h"
 #include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
@@ -117,21 +117,36 @@ typedef bool (*Test)(G4LogicalVolume*, const std::string&);
 DetectorConstruction::DetectorConstruction(
     simcore::geo::Parser* parser, framework::config::Parameters& parameters,
     ConditionsInterface& ci)
-    : parser_(parser) {
-  parameters_ = parameters;
-}
+    : parser_(parser), parameters_{parameters}, conditions_interface_{ci} {}
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
   return parser_->GetWorldVolume();
 }
 
 void DetectorConstruction::ConstructSDandField() {
+  auto sens_dets{parameters_.getParameter<std::vector<framework::config::Parameters>>(
+      "sensitive_detectors",{})};
+  for (auto& det : sens_dets) {
+    // create
+    auto sd = SensitiveDetector::Factory::get().make(
+        det.getParameter<std::string>("class_name"),
+        det.getParameter<std::string>("instance_name"),
+        conditions_interface_, det);
+    // attach to volumes
+    for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
+      if (sd->isSensDet(volume)) {
+        std::cout << "[ DetectorConstruction ] : "
+          << "Attaching " << sd->GetName()
+          << " to " << volume->GetName() << std::endl;
+        volume->SetSensitiveDetector(sd.get());
+      }
+    }
+  }
+
   // Biasing operators were created in RunManager::setupPhysics
   //  which is called before G4RunManager::Initialize
   //  which is where this method ends up being called.
-
-  auto bops{simcore::PluginFactory::getInstance().getBiasingOperators()};
-  for (simcore::XsecBiasingOperator* bop : bops) {
+  simcore::XsecBiasingOperator::Factory::get().apply([](auto bop) {
     logical_volume_tests::Test includeVolumeTest{nullptr};
     if (bop->getVolumeToBias().compare("ecal") == 0) {
       includeVolumeTest = &logical_volume_tests::isInEcal;
@@ -160,6 +175,6 @@ void DetectorConstruction::ConstructSDandField() {
                   << " to volume " << volume->GetName() << std::endl;
       }  // BOP attached to target or ecal
     }    // loop over volumes
-  }      // loop over biasing operators
+  });    // loop over biasing operators
 }
 }  // namespace simcore

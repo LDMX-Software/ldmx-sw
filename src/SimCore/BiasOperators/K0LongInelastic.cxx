@@ -34,4 +34,4 @@ G4VBiasingOperation* K0LongInelastic::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, K0LongInelastic)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::K0LongInelastic)

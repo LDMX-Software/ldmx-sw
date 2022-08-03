@@ -1,7 +1,6 @@
 #include "SimCore/XsecBiasingOperator.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/PluginFactory.h"
 
 namespace simcore {
 
@@ -57,11 +56,6 @@ bool XsecBiasingOperator::processIsBiased(std::string process) {
     }
   }
   return false;
-}
-
-void XsecBiasingOperator::declare(const std::string& className,
-                                  XsecBiasingOperatorBuilder* builder) {
-  PluginFactory::getInstance().registerBiasingOperator(className, builder);
 }
 
 }  // namespace simcore

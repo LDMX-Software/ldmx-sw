@@ -81,4 +81,4 @@ int TrigScintSD::getModuleID(G4LogicalVolume* vol) const {
 
 }  // namespace simcore
 
-DECLARE_SENSITIVEDETECTOR(simcore, TrigScintSD)
+DECLARE_SENSITIVEDETECTOR(simcore::TrigScintSD)

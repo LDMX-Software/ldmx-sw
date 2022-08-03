@@ -50,4 +50,4 @@ void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, DarkBrem)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::DarkBrem)

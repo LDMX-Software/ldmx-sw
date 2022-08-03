@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PluginFactory.h"
+#include "SimCore/PrimaryGenerator.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
@@ -50,7 +50,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 
   for (auto& generator : generators) {
-    PluginFactory::getInstance().createGenerator(
+    PrimaryGenerator::Factory::get().make(
         generator.getParameter<std::string>("class_name"),
         generator.getParameter<std::string>("instance_name"), generator);
   }
@@ -76,14 +76,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   auto event_info = new UserEventInformation;
   event->SetUserInformation(event_info);
 
-  /// Get the list of generators that will be used for this event
-  auto generators{PluginFactory::getInstance().getGenerators()};
-
-  // Generate the primary vertices using the generators
-  std::for_each(generators.begin(), generators.end(),
-                [event](const auto& generator) {
-                  generator->GeneratePrimaryVertex(event);
-                });
+  PrimaryGenerator::Factory::get().apply([event](const auto& generator) {
+        generator->GeneratePrimaryVertex(event);
+      });
 
   // smear all primary vertices (if activated)
   int nPV = event->GetNumberOfPrimaryVertex();

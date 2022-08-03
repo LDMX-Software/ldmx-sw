@@ -21,6 +21,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/UserEventInformation.h"
+#include "SimCore/Factory.h"
 
 // Forward Declarations
 class G4Event;
@@ -32,12 +33,6 @@ namespace simcore {
 
 /// Enum for each of the user action types.
 enum TYPE { RUN = 1, EVENT, TRACKING, STEPPING, STACKING, NONE };
-
-// Forward declarations
-class UserAction;
-
-typedef UserAction* UserActionBuilder(
-    const std::string& name, framework::config::Parameters& parameters);
 
 /**
  * @class UserAction
@@ -53,16 +48,13 @@ class UserAction {
   UserAction(const std::string& name,
              framework::config::Parameters& parameters);
 
+  /// factory for user actions
+  using Factory = ::simcore::Factory<UserAction,
+                                     const std::string&,
+                                     framework::config::Parameters&>;
+
   /// Destructor
   virtual ~UserAction();
-
-  /**
-   * Method used to register a user action with the manager.
-   *
-   * @param className Name of the class instance
-   * @param builder The builder used to create and instance of this class.
-   */
-  static void declare(const std::string& className, UserActionBuilder* builder);
 
   /**
    * Method called at the beginning of every event.
@@ -188,14 +180,9 @@ class UserAction {
 
 }  // namespace simcore
 
-#define DECLARE_ACTION(NS, CLASS)                                           \
-  simcore::UserAction* CLASS##Builder(                                      \
-      const std::string& name, framework::config::Parameters& parameters) { \
-    return new NS::CLASS(name, parameters);                                 \
-  }                                                                         \
-  __attribute((constructor(205))) static void CLASS##Declare() {            \
-    simcore::UserAction::declare(                                           \
-        std::string(#NS) + "::" + std::string(#CLASS), &CLASS##Builder);    \
+#define DECLARE_ACTION(NS, CLASS)                                        \
+  namespace {                                                            \
+    auto v = ::simcore::UserAction::Factory::get().declare<NS::CLASS>(); \
   }
 
 #endif  // SIMCORE_USERACTION_H

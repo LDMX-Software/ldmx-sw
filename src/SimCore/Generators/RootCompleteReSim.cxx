@@ -31,7 +31,7 @@ RootCompleteReSim::RootCompleteReSim(const std::string& name,
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
   framework::config::Parameters file_params;
   file_params.addParameter<std::string>("tree_name","LDMX_Events");
-  std::string filename = parameters_.getParameter<std::string>("filePath");
+  std::string filename = parameters.getParameter<std::string>("filePath");
   ifile_ = std::make_unique<framework::EventFile>(file_params,filename);
   ifile_->setupEvent(&ievent_);
 
@@ -103,4 +103,4 @@ void RootCompleteReSim::GeneratePrimaryVertex(G4Event* anEvent) {
 }  // namespace generators
 }  // namespace simcore
 
-DECLARE_GENERATOR(simcore::generators, RootCompleteReSim)
+DECLARE_GENERATOR(simcore::generators::RootCompleteReSim)

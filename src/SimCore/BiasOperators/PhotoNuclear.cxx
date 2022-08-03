@@ -97,4 +97,4 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 }  // namespace biasoperators
 }  // namespace simcore
 
-DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators, PhotoNuclear)
+DECLARE_XSECBIASINGOPERATOR(simcore::biasoperators::PhotoNuclear)

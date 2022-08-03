@@ -14,7 +14,7 @@
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
-#include "SimCore/PluginFactory.h"
+#include "SimCore/XsecBiasingOperator.h"
 #include "SimCore/PrimaryGeneratorAction.h"
 
 #include "SimCore/G4User/SteppingAction.h"
@@ -75,7 +75,7 @@ void RunManager::setupPhysics() {
 
     // create all the biasing operators that will be used
     for (framework::config::Parameters& bop : biasing_operators) {
-      simcore::PluginFactory::getInstance().createBiasingOperator(
+      simcore::XsecBiasingOperator::Factory::get().make(
           bop.getParameter<std::string>("class_name"),
           bop.getParameter<std::string>("instance_name"), bop);
     }
@@ -86,12 +86,11 @@ void RunManager::setupPhysics() {
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
-    for (const simcore::XsecBiasingOperator* bop :
-         simcore::PluginFactory::getInstance().getBiasingOperators()) {
+    simcore::XsecBiasingOperator::Factory::get().apply([biasingPhysics](auto bop) {
       std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
                 << "' set to bias " << bop->getParticleToBias() << std::endl;
       biasingPhysics->Bias(bop->getParticleToBias());
-    }
+    });
 
     // Register the physics constructor to the physics list:
     pList->RegisterPhysics(biasingPhysics);
@@ -126,23 +125,42 @@ void RunManager::Initialize() {
   auto primaryGeneratorAction{new PrimaryGeneratorAction(parameters_)};
   SetUserAction(primaryGeneratorAction);
 
-  // Get instances of all G4 actions
-  //      also create them in the factory
-  auto actions{PluginFactory::getInstance().getActions()};
+  // create our G4User actions
+  auto run_action{new simcore::g4user::RunAction};
+  auto event_action{new simcore::g4user::EventAction};
+  auto tracking_action{new simcore::g4user::TrackingAction};
+  auto stepping_action{new simcore::g4user::SteppingAction};
+  auto stacking_action{new simcore::g4user::StackingAction};
+  // ...and register them with G4
+  SetUserAction(run_action);
+  SetUserAction(event_action);
+  SetUserAction(tracking_action);
+  SetUserAction(stepping_action);
+  SetUserAction(stacking_action);
 
-  // Create all user actions
-  auto userActions{
+  // Create all user actions and attch them to the corresponding G4 actions
+  auto user_actions{
       parameters_.getParameter<std::vector<framework::config::Parameters>>(
           "actions", {})};
-  for (auto& userAction : userActions) {
-    PluginFactory::getInstance().createAction(
-        userAction.getParameter<std::string>("class_name"),
-        userAction.getParameter<std::string>("instance_name"), userAction);
-  }
-
-  // Register all actions with the G4 engine
-  for (const auto& [key, act] : actions) {
-    std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act);
+  for (auto& user_action : user_actions) {
+    auto ua = UserAction::Factory::get().make(
+        user_action.getParameter<std::string>("class_name"),
+        user_action.getParameter<std::string>("instance_name"), user_action);
+    for (auto& type : ua->getTypes()) {
+      if (type == simcore::TYPE::RUN) {
+        run_action->registerAction(ua.get());
+      } else if (type == simcore::TYPE::EVENT) {
+        event_action->registerAction(ua.get());
+      } else if (type == simcore::TYPE::TRACKING) {
+        tracking_action->registerAction(ua.get());
+      } else if (type == simcore::TYPE::STEPPING) {
+        stepping_action->registerAction(ua.get());
+      } else if (type == simcore::TYPE::STACKING) {
+        stacking_action->registerAction(ua.get());
+      } else {
+        EXCEPTION_RAISE("ActionType","Action type does not exist.");
+      }
+    }
   }
 }
 
