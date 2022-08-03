@@ -7,7 +7,7 @@ GDMLParser::GDMLParser(framework::config::Parameters &parameters,
                        simcore::ConditionsInterface &ci) {
   parser_ = std::make_unique<G4GDMLParser>();
   info_ =
-      std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters, ci);
+      std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters);
   parameters_ = parameters;
 }
 
