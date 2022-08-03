@@ -16,11 +16,12 @@
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/PluginFactory.h"
 #include "SimCore/PrimaryGeneratorAction.h"
-#include "SimCore/USteppingAction.h"
-#include "SimCore/UserEventAction.h"
-#include "SimCore/UserRunAction.h"
-#include "SimCore/UserStackingAction.h"
-#include "SimCore/UserTrackingAction.h"
+
+#include "SimCore/G4User/SteppingAction.h"
+#include "SimCore/G4User/EventAction.h"
+#include "SimCore/G4User/RunAction.h"
+#include "SimCore/G4User/StackingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 //------------//
 //   Geant4   //
@@ -112,7 +113,7 @@ void RunManager::Initialize() {
     G4GDMLParser* pwParser = new G4GDMLParser();
     pwParser->Read(parallelWorldPath_, validateGeometry_);
     this->getDetectorConstruction()->RegisterParallelWorld(
-        new ParallelWorld(pwParser, "ldmxParallelWorld", conditionsIntf_));
+        new ParallelWorld(pwParser, "ldmxParallelWorld"));
   }
 
   // This is where the physics lists are told to construct their particles and
