@@ -70,35 +70,15 @@ class EcalSD : public SensitiveDetector {
   /**
    * Add our hits to the event bus.
    */
-  virtual void saveHits(framework::Event& event) final override {
-    //event.add(COLLECTION_NAME, hits_);
-    hits_.clear();
-  }
+  virtual void saveHits(framework::Event& event) final override;
 
  private:
-  /**
-   * Return the hit position of a step.
-   * X and Y are computed from the midpoint of the step.
-   * Z corresponds to the volume's center.
-   * @return The hit position from the step.
-   * @todo This function is probably slow due to it inspecting the
-   * geometry to get the Z position so this should be sped up somehow.
-   */
-  G4ThreeVector getHitPosition(G4Step* aStep);
-
- private:
-  /**
-   * The hex readout defining the cell grid.
-   */
-  std::unique_ptr<ldmx::EcalHexReadout> hitMap_;
-
-  /**
-   * Map of polygonal layers for getting Z positions.
-   */
-  std::map<G4VSolid*, G4Polyhedron*> polyMap_;
-
-  /// Collection of hits to add to the event
-  std::vector<ldmx::SimCalorimeterHit> hits_;
+  /// map of hits to add to the event (will be squashed)
+  std::map<ldmx::EcalID,ldmx::SimCalorimeterHit> hits_;
+  /// enable hit contribs
+  bool enableHitContribs_;
+  /// compress hit contribs
+  bool compressHitContribs_;
 };
 
 }  // namespace simcore

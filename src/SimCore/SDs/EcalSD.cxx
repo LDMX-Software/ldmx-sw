@@ -17,12 +17,16 @@ const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
 
 EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
-    : SensitiveDetector(name, ci, p) {}
+    : SensitiveDetector(name, ci, p) {
+      enableHitContribs_ = p.getParameter<bool>("enableHitContribs");
+      compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
+    }
 
 EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  const ldmx::EcalHexReadout& hitMap = getCondition<ldmx::EcalHexReadout>(
+  static const int layer_depth = 2; // index depends on GDML implementation
+  const auto& hitMap = getCondition<ldmx::EcalHexReadout>(
       ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
   // Get the edep from the step.
@@ -37,96 +41,68 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     return false;
   }
 
-  // Create a new cal hit at back of list
-  ldmx::SimCalorimeterHit& hit{hits_.emplace_back()};
-
-  // Compute the hit position using the utility function.
-  G4ThreeVector hitPosition = getHitPosition(aStep);
-  hit.setPosition(hitPosition.x(), hitPosition.y(), hitPosition.z());
+  // Compute the hit position 
+  G4StepPoint* prePoint = aStep->GetPreStepPoint();
+  G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  G4ThreeVector position =
+      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
 
   // Create the ID for the hit.
   int cpynum = aStep->GetPreStepPoint()
                    ->GetTouchableHandle()
                    ->GetHistory()
-                   ->GetVolume(2)  // this index depends on GDML implementation
+                   ->GetVolume(layer_depth)
                    ->GetCopyNo();
   int layerNumber;
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
 
   ldmx::EcalID partialId =
-      hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
+      hitMap.getCellModuleID(position[0], position[1]);
   ldmx::EcalID id(layerNumber, module_position, partialId.cell());
-  hit.setID(id.raw());
 
-  // add one contributor for this hit with
-  //  ID of ancestor incident on Cal-Region
-  //  ID of this track
-  //  PDG of this track
-  //  EDEP 
-  //  time of this hit
-  const G4Track* track = aStep->GetTrack();
-  int track_id = track->GetTrackID();
-  hit.addContrib(getTrackMap().findIncident(track_id), track_id,
-                 track->GetParticleDefinition()->GetPDGEncoding(),
-                 edep, track->GetGlobalTime());
+  // hit variables
+  auto track = aStep->GetTrack();
+  auto time = track->GetGlobalTime();
+  auto track_id = track->GetTrackID();
+  auto pdg = track->GetParticleDefinition()->GetPDGEncoding();
 
-  if (this->verboseLevel > 2) {
-    G4cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-           << " with subdet ID " << id << " ...";
-    hit.Print();
-    G4cout << G4endl;
+  if (hits_.find(id) == hits_.end()) {
+    // hit in empty cell
+    auto& hit = hits_[id];
+    hit.setID(id.raw());
+    hit.setEdep(edep);
+    hit.setTime(aStep->GetTrack()->GetGlobalTime());
+    hit.setPosition(position.x(), position.y(), position.z());
+    hit.addContrib(getTrackMap().findIncident(track_id), track_id,
+                   pdg, edep, time);
+  } else if (enableHitContribs_) {
+    int contrib_i = hits_[id].findContribIndex(track_id, pdg);
+    if (compressHitContribs_ and contrib_i != -1) {
+      hits_[id].updateContrib(contrib_i, edep, time);
+    } else {
+      hits_[id].addContrib(getTrackMap().findIncident(track_id), track_id,
+                           pdg, edep, time);
+    }
+  } else {
+    // no hit contribs and hit already exists
+    hits_[id].setEdep(hits_[id].getEdep() + edep);
+    if (time < hits_[id].getTime() or hits_[id].getTime() == 0) {
+      hits_[id].setTime(time);
+    }
   }
 
   return true;
 }
 
-G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
-  /**
-   * Set initial hit position from midpoint of the step.
-   */
-  G4StepPoint* prePoint = aStep->GetPreStepPoint();
-  G4StepPoint* postPoint = aStep->GetPostStepPoint();
-  G4ThreeVector position =
-      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-
-  /*
-   * Get the volume position in global coordinates, which for the ECal is the
-   * center of the front face of the sensor.
-   */
-  G4ThreeVector volumePosition = aStep->GetPreStepPoint()
-                                     ->GetTouchableHandle()
-                                     ->GetHistory()
-                                     ->GetTopTransform()
-                                     .Inverse()
-                                     .TransformPoint(G4ThreeVector());
-
-  // Get the solid from this step.
-  G4VSolid* solid = prePoint->GetTouchableHandle()
-                        ->GetVolume()
-                        ->GetLogicalVolume()
-                        ->GetSolid();
-  auto it = polyMap_.find(solid);
-  G4Polyhedron* poly;
-  if (it == polyMap_.end()) {
-    poly = solid->CreatePolyhedron();
-    polyMap_[solid] = poly;
-  } else {
-    poly = polyMap_[solid];
-  }
-
-  /**
-   * Use facet info of the solid for setting Z to the sensor midpoint.
-   */
-  G4Point3D iNodes[4];
-  G4int n;
-  poly->GetFacet(1, n, iNodes);
-  G4double zstart = iNodes[1][2];
-  G4double zend = iNodes[0][2];
-  G4double zmid = (zstart - zend) / 2;
-  position.setZ(volumePosition.z() + zmid);
-
-  return position;
+void EcalSD::saveHits(framework::Event& event) {
+  // squash hits into list
+  std::vector<ldmx::SimCalorimeterHit> hits;
+  hits.reserve(hits_.size());
+  for (const auto& [ id, hit] : hits_) hits.push_back(hit);
+  event.add(COLLECTION_NAME, hits);
+  // clear last events hits
+  hits_.clear();
 }
 
 }  // namespace simcore
