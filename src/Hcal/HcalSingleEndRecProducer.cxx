@@ -40,7 +40,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * with C++17 structured bindings, this tuple return can be bound to separate
    * variables:
    * ```cpp
-   * auto [ toa, sum_adc, sum_tot ] = extract_measurments(digi,pedestal,isoi);
+   * auto [ toa, sum_adc, sum_tot ] = extract_measurements(digi,pedestal,isoi);
    * ```
    * giving us the dual benefit of separate variable names while only having to
    * loop over the samples within a single digi once
@@ -52,7 +52,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * @param[in] pedestal pedestal for this channel
    * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
    */
-  std::tuple<double, double, int> extract_measurments(
+  std::tuple<double, double, int> extract_measurements(
       const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal);
 
  public:
@@ -64,7 +64,7 @@ class HcalSingleEndRecProducer : public framework::Producer {
 
 };  // HcalSingleEndRecProducer
 
-std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurments(
+std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
     const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal) {
   // sum_adc = total of all but first in-time adc measurements
   double sum_adc{0};
@@ -133,7 +133,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     // amplitude/TOT reconstruction
     double num_mips_equivalent{0};
     auto [toa, sum_adc, sum_tot] =
-        extract_measurments(digi, conditions.adcPedestal(digi.id()));
+        extract_measurements(digi, conditions.adcPedestal(digi.id()));
     auto is_adc = conditions.is_adc(digi.id(), sum_tot);
     if (is_adc) {
       double adc_calib = sum_adc / conditions.adcGain(digi.id(), 0);

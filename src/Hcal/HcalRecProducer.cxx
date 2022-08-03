@@ -204,8 +204,8 @@ void HcalRecProducer::produce(framework::Event& event) {
         }
 
         // set voltage
-        voltage_posend = amplT_posend * the_conditions.adcGain(id_posend);
-        voltage_negend = amplT_negend * the_conditions.adcGain(id_negend);
+	voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
+        voltage_negend = amplT_negend * the_conditions.adcGain(id_negend, 0);
       }
 
       // get TOA
@@ -351,6 +351,9 @@ void HcalRecProducer::produce(framework::Event& event) {
     recHit.setXPos(position.X());
     recHit.setYPos(position.Y());
     recHit.setZPos(position.Z());
+    recHit.setSection(id.section());
+    recHit.setStrip(id.strip());
+    recHit.setLayer(id.layer());
     recHit.setPE(PEs);
     recHit.setMinPE(minPEs);
     recHit.setAmplitude((amplT / voltage_per_mip_) * mip_energy_);
