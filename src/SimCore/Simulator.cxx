@@ -141,11 +141,6 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   header.setDetectorName(detector->getDetectorName());
   header.setDescription(parameters_.getParameter<std::string>("description"));
-
-  header.setIntParameter("Save ECal Hit Contribs",
-                         parameters_.getParameter<bool>("enableHitContribs"));
-  header.setIntParameter("Compress ECal Hit Contribs",
-                         parameters_.getParameter<bool>("compressHitContribs"));
   header.setIntParameter(
       "Included Scoring Planes",
       !parameters_.getParameter<std::string>("scoringPlanes").empty());
