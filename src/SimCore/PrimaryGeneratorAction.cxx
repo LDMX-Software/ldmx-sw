@@ -27,11 +27,8 @@
 namespace simcore {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(
-    framework::config::Parameters& parameters)
-    : G4VUserPrimaryGeneratorAction(), manager_(PluginFactory::getInstance()) {
-  // The parameters used to configure the primary generator action
-  parameters_ = parameters;
-
+    const framework::config::Parameters& parameters)
+    : G4VUserPrimaryGeneratorAction() {
   // Check whether a beamspot should be used or not.
   auto beamSpot{
       parameters.getParameter<std::vector<double> >("beamSpotSmear", {})};
@@ -45,7 +42,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
 
   auto generators{
-      parameters_.getParameter<std::vector<framework::config::Parameters> >(
+      parameters.getParameter<std::vector<framework::config::Parameters> >(
           "generators", {})};
   if (generators.empty()) {
     EXCEPTION_RAISE("MissingGenerator",
@@ -53,7 +50,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 
   for (auto& generator : generators) {
-    manager_.createGenerator(
+    PluginFactory::getInstance().createGenerator(
         generator.getParameter<std::string>("class_name"),
         generator.getParameter<std::string>("instance_name"), generator);
   }
@@ -80,7 +77,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   event->SetUserInformation(event_info);
 
   /// Get the list of generators that will be used for this event
-  auto generators{manager_.getGenerators()};
+  auto generators{PluginFactory::getInstance().getGenerators()};
 
   // Generate the primary vertices using the generators
   std::for_each(generators.begin(), generators.end(),
