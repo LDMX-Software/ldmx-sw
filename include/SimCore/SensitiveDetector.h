@@ -37,6 +37,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * The SD Factory
    */
   using Factory = ::simcore::Factory<SensitiveDetector,
+                                     SensitiveDetector*,
                                      const std::string&,
                                      simcore::ConditionsInterface&,
                                      const framework::config::Parameters&>;

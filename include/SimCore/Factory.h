@@ -191,14 +191,10 @@ namespace simcore {
  * ```
  */
 template <typename Prototype,
+          typename PrototypePtr,
           typename... PrototypeConstructorArgs>
 class Factory {
  public:
-  /**
-   * Limit ourselfs to shared pointers because we will hold the main one
-   */
-  using PrototypePtr = std::shared_ptr<Prototype>;
-
   /**
    * the signature of a function that can be used by this factory
    * to dynamically create a new object.

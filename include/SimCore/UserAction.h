@@ -50,6 +50,7 @@ class UserAction {
 
   /// factory for user actions
   using Factory = ::simcore::Factory<UserAction,
+                                     std::shared_ptr<UserAction>,
                                      const std::string&,
                                      framework::config::Parameters&>;
 
