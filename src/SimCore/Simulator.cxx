@@ -212,6 +212,12 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
         gen->RecordConfig(gen_id, header);
       });
 
+  /**
+  SensitiveDetector::Factory::get().apply([&header](auto sd) {
+    sd->RecordConfig(header);
+  });
+   */
+
   // Set a string parameter with the Geant4 SHA-1.
   if (G4RunManagerKernel::GetRunManagerKernel()) {
     G4String g4Version{
@@ -225,13 +231,15 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const ldmx::RunHeader&) {
+void Simulator::onNewRun(const ldmx::RunHeader& rh) {
   const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
   setSeeds(seeds);
+
+  run_ = rh.getRunNumber();
 }
 
 void Simulator::produce(framework::Event& event) {
@@ -253,7 +261,8 @@ void Simulator::produce(framework::Event& event) {
 
   // store event-wide information in EventHeader
   auto event_info = static_cast<UserEventInformation *>(
-      G4EventManager::GetEventManager()->GetUserInformation());
+      runManager_->GetCurrentEvent()
+        ->GetUserInformation());
   auto& event_header = event.getEventHeader();
   event_header.setWeight(event_info->getWeight());
   event_header.setFloatParameter("total_photonuclear_energy",
@@ -325,7 +334,7 @@ void Simulator::onFileClose(framework::EventFile& file) {
   runManager_->TerminateEventLoop();
 
   // Pass the **real** number of events to the persistency manager
-  auto rh = file.getRunHeader(getRunNumber());
+  auto rh = file.getRunHeader(run_);
   rh.setIntParameter("Event Count", numEventsCompleted_);
   rh.setIntParameter("Events Began", numEventsBegan_);
 
