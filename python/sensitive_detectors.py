@@ -70,3 +70,7 @@ class TrigScintSD(simcfg.SensitiveDetector) :
 
     def down() :
         return TrigScintSD('Down')
+
+    def target() :
+        return TrigScintSD('Target')
+
