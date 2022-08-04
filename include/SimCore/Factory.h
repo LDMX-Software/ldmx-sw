@@ -20,6 +20,7 @@ namespace simcore {
  *
  * @tparam Prototype the type of object that this factory creates.
  *    This should be the base class that all types in this factory derive from.
+ * @tparam PrototypePtr the type of pointer that the factory creates
  * @tparam PrototypeConstructorArgs parameter pack of arguments to pass 
  *    to the object constructor.
  *
@@ -80,7 +81,7 @@ namespace simcore {
  * #ifndef LIBRARYENTRY_HPP
  * #define LIBRARYENTRY_HPP
  * // we need the factory template
- * #include "Factory/Factory.hpp"
+ * #include "Factory.h"
  * 
  * // this class is our prototype
  * class LibraryEntry {
