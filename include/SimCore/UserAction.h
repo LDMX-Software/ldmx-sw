@@ -21,6 +21,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/UserEventInformation.h"
+#include "SimCore/Event/SimParticle.h"
 #include "SimCore/Factory.h"
 
 // Forward Declarations
@@ -169,6 +170,15 @@ class UserAction {
     return static_cast<UserEventInformation*>(
         G4EventManager::GetEventManager()->GetUserInformation());
   }
+
+  /**
+   * Get the current particle map
+   *
+   * @note The current particle map will only have the particles
+   * already fully processed and chosen to be saved. The ancestry
+   * of the particles will not have been traced yet.
+   */
+  static const std::map<int,ldmx::SimParticle>& getCurrentParticleMap();
 
  protected:
   /// Name of the UserAction

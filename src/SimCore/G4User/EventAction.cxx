@@ -24,7 +24,7 @@ namespace g4user {
 
 void EventAction::BeginOfEventAction(const G4Event* event) {
   // Clear the global track map.
-  simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap()->clear();
+  simcore::g4user::TrackingAction::get()->getTrackMap().clear();
 
   // Call user event actions
   for (auto& eventAction : eventActions_)
