@@ -45,7 +45,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
   G4StepPoint* postPoint = aStep->GetPostStepPoint();
   G4ThreeVector position =
-      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
+    0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
 
   // Create the ID for the hit.
   int cpynum = aStep->GetPreStepPoint()
@@ -65,7 +65,9 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // hit in empty cell
     auto& hit = hits_[id];
     hit.setID(id.raw());
-    hit.setPosition(position.x(), position.y(), position.z());
+    double x, y, z;
+    hitMap.getCellAbsolutePosition(id, x, y, z);
+    hit.setPosition(x, y, z);
   }
 
   auto& hit = hits_[id];
