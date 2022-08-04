@@ -21,6 +21,11 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
     def magnet() :
         return ScoringPlaneSD('magnet')
 
+    def tracker() :
+        sp = ScoringPlaneSD('tracker')
+        sp.match_substr = 'sp_recoil'
+        return sp
+
 class TrackerSD(simcfg.SensitiveDetector) :
     def __init__(self,subsystem,subdet_id) :
         super().__init__(f'{subsystem}_TrackerSD','simcore::TrackerSD','SimCore_SDs')
