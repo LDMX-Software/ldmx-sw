@@ -61,34 +61,34 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       hitMap.getCellModuleID(position[0], position[1]);
   ldmx::EcalID id(layerNumber, module_position, partialId.cell());
 
+  if (hits_.find(id) == hits_.end()) {
+    // hit in empty cell
+    auto& hit = hits_[id];
+    hit.setID(id.raw());
+    hit.setPosition(position.x(), position.y(), position.z());
+  }
+
+  auto& hit = hits_[id];
+
   // hit variables
   auto track = aStep->GetTrack();
   auto time = track->GetGlobalTime();
   auto track_id = track->GetTrackID();
   auto pdg = track->GetParticleDefinition()->GetPDGEncoding();
 
-  if (hits_.find(id) == hits_.end()) {
-    // hit in empty cell
-    auto& hit = hits_[id];
-    hit.setID(id.raw());
-    hit.setEdep(edep);
-    hit.setTime(aStep->GetTrack()->GetGlobalTime());
-    hit.setPosition(position.x(), position.y(), position.z());
-    hit.addContrib(getTrackMap().findIncident(track_id), track_id,
-                   pdg, edep, time);
-  } else if (enableHitContribs_) {
-    int contrib_i = hits_[id].findContribIndex(track_id, pdg);
+  if (enableHitContribs_) {
+    int contrib_i = hit.findContribIndex(track_id, pdg);
     if (compressHitContribs_ and contrib_i != -1) {
-      hits_[id].updateContrib(contrib_i, edep, time);
+      hit.updateContrib(contrib_i, edep, time);
     } else {
-      hits_[id].addContrib(getTrackMap().findIncident(track_id), track_id,
-                           pdg, edep, time);
+      hit.addContrib(getTrackMap().findIncident(track_id), track_id,
+                     pdg, edep, time);
     }
   } else {
     // no hit contribs and hit already exists
-    hits_[id].setEdep(hits_[id].getEdep() + edep);
-    if (time < hits_[id].getTime() or hits_[id].getTime() == 0) {
-      hits_[id].setTime(time);
+    hit.setEdep(hit.getEdep() + edep);
+    if (time < hit.getTime() or hit.getTime() == 0) {
+      hit.setTime(time);
     }
   }
 
