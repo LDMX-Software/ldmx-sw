@@ -10,7 +10,8 @@ p.termLogLevel = 0
 # we also only have an output file
 p.outputFiles = [ "justSim_" + str(p.maxEvents) + "_events.root" ]
 from LDMX.SimCore import simulator as sim
-from LDMX.Ecal import EcalGeometry
+import LDMX.Ecal.EcalGeometry
+import LDMX.Hcal.HcalGeometry
 mySim = sim.simulator( "mySim" )
 mySim.setDetector( 'ldmx-det-v12' , True )
 # Get a pre-written generator
