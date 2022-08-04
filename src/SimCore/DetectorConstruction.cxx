@@ -138,7 +138,7 @@ void DetectorConstruction::ConstructSDandField() {
         std::cout << "[ DetectorConstruction ] : "
           << "Attaching " << sd->GetName()
           << " to " << volume->GetName() << std::endl;
-        volume->SetSensitiveDetector(sd.get());
+        volume->SetSensitiveDetector(sd);
       }
     }
   }
