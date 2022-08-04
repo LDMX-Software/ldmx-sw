@@ -18,13 +18,18 @@ TrigScintSD::TrigScintSD(const std::string& name,
                          const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
       auto which = p.getParameter<std::string>("which");
-      collection_name_ = "TriggerPad"+which+"SimHits"; // default collection name
+      collection_name_ = which+"SimHits"; // default collection name
+      if (which != "Target") {
+        collection_name_ = "TriggerPad"+collection_name_;
+      }
       collection_name_ = p.getParameter<std::string>("collection_name",collection_name_);
+
 
       static const std::map<std::string,std::string> which_to_vol = {
         {"Up", "trigger_pad_up_bar_volume"},
         {"Down", "trigger_pad_dn_bar_volume"},
-        {"Tagger", "trigger_pad_tag_bar_volume"}
+        {"Tagger", "trigger_pad_tag_bar_volume"},
+        {"Target", "target"}
       };
       try {
         vol_name_ = which_to_vol.at(which);
@@ -90,6 +95,7 @@ int TrigScintSD::getModuleID(G4LogicalVolume* vol) const {
   if (vol->GetName().contains("tag")) return 1;
   if (vol->GetName().contains("up" )) return 2;
   if (vol->GetName().contains("dn" )) return 3;
+  if (vol->GetName().contains("target")) return 4;
 }
 
 }  // namespace simcore

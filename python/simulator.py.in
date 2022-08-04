@@ -113,7 +113,8 @@ class simulator(Producer):
                 sds.EcalSD(),
                 sds.TrigScintSD.up(),
                 sds.TrigScintSD.down(),
-                sds.TrigScintSD.tag()
+                sds.TrigScintSD.tag(),
+                sds.TrigScintSD.target()
                 ]
         if include_scoring_planes :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
