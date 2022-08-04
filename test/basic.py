@@ -2,7 +2,10 @@ from LDMX.Framework import ldmxcfg
 # create my process object
 p = ldmxcfg.Process( "test" )
 # how many events to process?
+import sys
 p.maxEvents = 10
+if len(sys.argv) > 1 :
+    p.maxEvents = int(sys.argv[1])
 p.run = 9001
 # we want to see every event
 p.logFrequency = 1

@@ -35,6 +35,9 @@ class SensitiveDetector : public G4VSensitiveDetector {
 
   /**
    * The SD Factory
+   *
+   * We have the factory create raw pointers since the G4SDManager handles
+   * destruction of all of the registered SensitiveDetectors.
    */
   using Factory = ::simcore::Factory<SensitiveDetector,
                                      SensitiveDetector*,
@@ -68,13 +71,19 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * We are given the event bus here and we must decide
    * now what to persist into the event.
    *
+   * This function must perform three tasks.
+   * 1. End-of-event processing on the collected data (e.g. filtering
+   *    or merging events) before serilization.
+   * 2. Serialization of collected data with event.add
+   * 3. End-of-event methods for resetting the SD to a "new event"
+   *    state.
+   *
    * @param[in,out] event event bus to add thing(s) to
    */
   virtual void saveHits(framework::Event& event) = 0;
 
   /**
-   * Record the configuration of this
-   * detector into the run header.
+   * Record the configuration of this detector into the run header.
    *
    * @param[in,out] header RunHeader to write configuration to
    */
