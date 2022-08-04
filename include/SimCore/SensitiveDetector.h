@@ -110,7 +110,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * if you call this function before an event has started.
    */
   const TrackMap& getTrackMap() const {
-    return *(simcore::g4user::TrackingAction::getUserTrackingAction()->getTrackMap());
+    return simcore::g4user::TrackingAction::get()->getTrackMap();
   }
 
  private:

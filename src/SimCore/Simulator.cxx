@@ -278,9 +278,9 @@ void Simulator::produce(framework::Event& event) {
   event_header.setStringParameter("eventSeed", stream.str());
 
   // track storage
-  TrackMap* tracks{g4user::TrackingAction::getUserTrackingAction()->getTrackMap()};
-  tracks->traceAncestry();
-  event.add("SimParticles", tracks->getParticleMap());
+  TrackMap& tracks{g4user::TrackingAction::get()->getTrackMap()};
+  tracks.traceAncestry();
+  event.add("SimParticles", tracks.getParticleMap());
 
   // Copy hit objects from SD hit collections into the output event.
   SensitiveDetector::Factory::get().apply([&event](auto sd) {

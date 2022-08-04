@@ -104,16 +104,16 @@ class TrackingAction : public G4UserTrackingAction {
   void PostUserTrackingAction(const G4Track* aTrack);
 
   /**
-   * Get a pointer to the current TrackMap for the event.
+   * Get a handle to the current TrackMap for the event.
    * @return A pointer to the current TrackMap for the event.
    */
-  TrackMap* getTrackMap() { return &trackMap_; }
+  TrackMap& getTrackMap() { return trackMap_; }
 
   /**
    * Get a pointer to the current UserTrackingAction from the G4RunManager.
    * @return A pointer to the current UserTrackingAction.
    */
-  static TrackingAction* getUserTrackingAction() {
+  static TrackingAction* get() {
     return static_cast<TrackingAction*>(const_cast<G4UserTrackingAction*>(
         G4RunManager::GetRunManager()->GetUserTrackingAction()));
   }

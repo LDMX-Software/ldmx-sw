@@ -1,6 +1,8 @@
 
 #include "SimCore/UserAction.h"
 
+#include "SimCore/G4User/TrackingAction.h"
+
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
@@ -18,5 +20,9 @@ UserAction::UserAction(const std::string& name,
 }
 
 UserAction::~UserAction() {}
+
+static const std::map<int,ldmx::SimParticle>& getCurrentParticleMap() {
+  return g4user::TrackingAction::get()->getTrackMap().getParticleMap();
+}
 
 }  // namespace simcore
