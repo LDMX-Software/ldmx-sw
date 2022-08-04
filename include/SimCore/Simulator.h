@@ -157,6 +157,9 @@ class Simulator : public framework::Producer {
   /// Number of events completed
   int numEventsCompleted_{0};
 
+  /// the run number (for accessing the run header in onFileClose
+  int run_{-1};
+
   ///  Conditions interface
   ConditionsInterface conditionsIntf_;
 
