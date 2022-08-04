@@ -11,9 +11,6 @@ namespace simcore {
  */
 class TrigScintSD : public SensitiveDetector {
  public:
-  /// name of output hits collection
-  static const std::string COLLECTION_NAME;
-
   /**
    * Class constructor.
    *
@@ -35,7 +32,7 @@ class TrigScintSD : public SensitiveDetector {
    * @note Depends on names in GDML!
    */
   virtual bool isSensDet(G4LogicalVolume* vol) const final override {
-    return vol->GetName().contains("trigger_pad");
+    return vol->GetName().contains(vol_name_);
   }
 
   /**
@@ -50,7 +47,7 @@ class TrigScintSD : public SensitiveDetector {
    * Save our hits collection into the event bus and reset it.
    */
   virtual void saveHits(framework::Event& event) final override {
-    event.add(COLLECTION_NAME, hits_);
+    event.add(collection_name_, hits_);
     hits_.clear();
   }
 
@@ -72,6 +69,10 @@ class TrigScintSD : public SensitiveDetector {
  private:
   /// our collection of hits in this SD
   std::vector<ldmx::SimCalorimeterHit> hits_;
+  /// name of the hit collection for this SD
+  std::string collection_name_;
+  /// name of trigger pad volume this SD is capturing
+  std::string vol_name_;
 
 };
 

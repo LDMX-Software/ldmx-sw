@@ -13,12 +13,25 @@
 
 namespace simcore {
 
-const std::string TrigScintSD::COLLECTION_NAME = "TrigScintSimHits";
-
 TrigScintSD::TrigScintSD(const std::string& name,
                          simcore::ConditionsInterface& ci,
                          const framework::config::Parameters& p)
-    : SensitiveDetector(name, ci, p) {}
+    : SensitiveDetector(name, ci, p) {
+      auto which = p.getParameter<std::string>("which");
+      collection_name_ = "TriggerPad"+which+"SimHits"; // default collection name
+      collection_name_ = p.getParameter<std::string>("collection_name",collection_name_);
+
+      static const std::map<std::string,std::string> which_to_vol = {
+        {"Up", "trigger_pad_up_bar_volume"},
+        {"Down", "trigger_pad_dn_bar_volume"},
+        {"Tagger", "trigger_pad_tag_bar_volume"}
+      };
+      try {
+        vol_name_ = which_to_vol.at(which);
+      } catch (const std::out_of_range&) {
+        EXCEPTION_RAISE("SDConfig","Trigger Pad '"+which+"' not one of Up, Down, or Tagger");
+      }
+    }
 
 TrigScintSD::~TrigScintSD() {}
 

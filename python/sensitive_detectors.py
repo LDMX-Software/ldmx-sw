@@ -53,5 +53,15 @@ class EcalSD(simcfg.SensitiveDetector) :
         self.compressHitContribs = True
 
 class TrigScintSD(simcfg.SensitiveDetector) :
-    def __init__(self) :
-        super().__init__('trig_scint_sd', 'simcore::TrigScintSD','SimCore_SDs')
+    def __init__(self, which) :
+        super().__init__(f'trig_scint_{which}_sd', 'simcore::TrigScintSD','SimCore_SDs')
+        self.which = which
+
+    def up() :
+        return TrigScintSD('Up')
+
+    def tag() :
+        return TrigScintSD('Tagger')
+
+    def down() :
+        return TrigScintSD('Down')
