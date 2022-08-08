@@ -55,27 +55,14 @@ class TrigScintSD : public SensitiveDetector {
   }
 
  private:
-  /**
-   * Get the module ID for the input logical volume
-   *
-   * Assumes we are already in a volume where
-   * isSensDet is true.
-   *
-   * tag <-> 1
-   * up  <-> 2
-   * dn  <-> 3
-   *
-   * @note Depends on names in GDML!
-   */
-  int getModuleID(G4LogicalVolume* vol) const;
-
- private:
   /// our collection of hits in this SD
   std::vector<ldmx::SimCalorimeterHit> hits_;
   /// name of the hit collection for this SD
   std::string collection_name_;
   /// name of trigger pad volume this SD is capturing
   std::string vol_name_;
+  /// the ID number for the module we are gathering hits from
+  int module_id_;
 
 };
 
