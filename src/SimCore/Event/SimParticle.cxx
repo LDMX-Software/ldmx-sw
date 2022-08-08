@@ -31,7 +31,7 @@ SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
   /// gamma --> mu+ mu-
   procMap["GammaToMuPair"] = ProcessType::GammaToMuPair;
   /// e- Z --> e- Z A'
-  procMap["eDBrem"] = ProcessType::eDarkBrem;
+  procMap["eDarkBrem"] = ProcessType::eDarkBrem;
   return procMap;
 }
 
