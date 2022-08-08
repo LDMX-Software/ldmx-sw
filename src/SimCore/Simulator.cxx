@@ -69,6 +69,16 @@ void Simulator::configure(framework::config::Parameters& parameters) {
   // Set the verbosity level.  The default level  is 0.
   verbosity_ = parameters_.getParameter<int>("verbosity");
 
+  // in past versions of SimCore, the run number for the simulation was
+  // passed directly to the simulator class rather than pulled from central
+  // framework. This is here to prevent the user from accidentally using the
+  // old style.
+  if (parameters.exists("runNumber")) {
+    EXCEPTION_RAISE("InvalidParam",
+      "Remove old-style of setting the simulation run number (sim.runNumber)."
+      " Replace with using the Process object (p.run).");
+  }
+
   // If the verbosity level is set to 0,
   // If the verbosity level is > 1, log everything to a file. Otherwise,
   // dump the output. If a prefix has been specified, append it ot the
