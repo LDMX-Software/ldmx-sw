@@ -21,7 +21,12 @@ UserAction::UserAction(const std::string& name,
 
 UserAction::~UserAction() {}
 
-static const std::map<int,ldmx::SimParticle>& getCurrentParticleMap() {
+UserEventInformation* UserAction::getEventInfo() const {
+  return static_cast<UserEventInformation*>(
+      G4EventManager::GetEventManager()->GetUserInformation());
+}
+
+const std::map<int,ldmx::SimParticle>& UserAction::getCurrentParticleMap() const {
   return g4user::TrackingAction::get()->getTrackMap().getParticleMap();
 }
 

@@ -166,10 +166,7 @@ class UserAction {
    *
    * @returns pointer to the current event information
    */
-  static UserEventInformation* getEventInfo() {
-    return static_cast<UserEventInformation*>(
-        G4EventManager::GetEventManager()->GetUserInformation());
-  }
+  UserEventInformation* getEventInfo() const;
 
   /**
    * Get the current particle map
@@ -178,7 +175,7 @@ class UserAction {
    * already fully processed and chosen to be saved. The ancestry
    * of the particles will not have been traced yet.
    */
-  static const std::map<int,ldmx::SimParticle>& getCurrentParticleMap();
+  const std::map<int,ldmx::SimParticle>& getCurrentParticleMap() const;
 
  protected:
   /// Name of the UserAction
