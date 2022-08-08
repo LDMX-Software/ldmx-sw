@@ -205,7 +205,6 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     }    // loop through electron processes
   }      // dark brem has been enabled
 
-  // TODO check that this is working properly
   int counter = 0;
   PrimaryGenerator::Factory::get().apply([&header,&counter](auto gen) {
         std::string gen_id = "Gen"+std::to_string(counter++);
@@ -252,7 +251,7 @@ void Simulator::produce(framework::Event& event) {
   // the next event.
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();  // clean up event objects
-    SensitiveDetector::Factory::get().apply([&event](auto sd) {
+    SensitiveDetector::Factory::get().apply([](auto sd) {
         sd->EndOfEvent();
     });
     this->abortEvent();                // get out of processors loop
