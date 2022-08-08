@@ -103,8 +103,6 @@ void EcalSD::saveHits(framework::Event& event) {
   hits.reserve(hits_.size());
   for (const auto& [ id, hit] : hits_) hits.push_back(hit);
   event.add(COLLECTION_NAME, hits);
-  // clear last events hits
-  hits_.clear();
 }
 
 }  // namespace simcore

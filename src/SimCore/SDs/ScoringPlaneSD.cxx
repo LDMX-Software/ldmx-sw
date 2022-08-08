@@ -82,7 +82,6 @@ G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
 void ScoringPlaneSD::saveHits(framework::Event& event) {
   event.add(collection_name_, hits_);
-  hits_.clear();
 }
 
 }  // namespace simcore

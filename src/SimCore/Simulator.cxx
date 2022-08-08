@@ -252,6 +252,9 @@ void Simulator::produce(framework::Event& event) {
   // the next event.
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();  // clean up event objects
+    SensitiveDetector::Factory::get().apply([&event](auto sd) {
+        sd->EndOfEvent();
+    });
     this->abortEvent();                // get out of processors loop
   }
 
@@ -285,6 +288,7 @@ void Simulator::produce(framework::Event& event) {
   // Copy hit objects from SD hit collections into the output event.
   SensitiveDetector::Factory::get().apply([&event](auto sd) {
         sd->saveHits(event);
+        sd->EndOfEvent();
       });
 
   runManager_->TerminateOneEvent();

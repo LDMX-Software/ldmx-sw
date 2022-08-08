@@ -61,6 +61,9 @@ class HcalSD : public SensitiveDetector {
    */
   virtual void saveHits(framework::Event& event) final override {
     event.add(COLLECTION_NAME, hits_);
+  }
+
+  virtual void EndOfEvent() final override {
     hits_.clear();
   }
 

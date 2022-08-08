@@ -50,6 +50,9 @@ class TrackerSD : public SensitiveDetector {
    */
   virtual void saveHits(framework::Event& event) final override {
     event.add(collection_name_, hits_);
+  }
+
+  virtual void EndOfEvent() final override {
     hits_.clear();
   }
 

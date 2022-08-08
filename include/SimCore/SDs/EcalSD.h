@@ -72,6 +72,13 @@ class EcalSD : public SensitiveDetector {
    */
   virtual void saveHits(framework::Event& event) final override;
 
+  /**
+   * Clear the map of hits we have accumulated
+   */
+  virtual void EndOfEvent() final override {
+    hits_.clear();
+  }
+
  private:
   /// map of hits to add to the event (will be squashed)
   std::map<ldmx::EcalID,ldmx::SimCalorimeterHit> hits_;

@@ -71,16 +71,29 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * We are given the event bus here and we must decide
    * now what to persist into the event.
    *
-   * This function must perform three tasks.
+   * This function must perform two tasks.
    * 1. End-of-event processing on the collected data (e.g. filtering
    *    or merging events) before serilization.
    * 2. Serialization of collected data with event.add
-   * 3. End-of-event methods for resetting the SD to a "new event"
-   *    state.
    *
    * @param[in,out] event event bus to add thing(s) to
    */
   virtual void saveHits(framework::Event& event) = 0;
+
+  /**
+   * This is Geant4's handle to tell us the event is ending
+   *
+   * Since we are handling the Hit Collections (HC) directly,
+   * the input to this function is of no use to us. This is simply
+   * here to make sure that we can reset the SD to a new-event state
+   * whether or not a given event was serialized.
+   */
+  virtual void EndOfEvent(G4HCofThisEvent*) final override {}
+
+  /**
+   * Cleanup SD and prepare a new-event state
+   */
+  virtual void EndOfEvent() = 0;
 
   /**
    * Record the configuration of this detector into the run header.
