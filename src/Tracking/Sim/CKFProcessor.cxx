@@ -42,15 +42,9 @@ void CKFProcessor::onProcessStart() {
 
   //Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_, &gctx_);
-  tGeometry_ = ldmx_tg->getTG();
+  const auto tGeometry = ldmx_tg->getTG();
   
-  // Get the random seed service
-  //auto rseed{getCondition<framework::RandomNumberSeedService>(
-  //    framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
-    
-  // Create a seed and update the generator with it
-  //generator_.seed(rseed.getSeed(getName()));
-  //generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  // Seed the generator
   generator_.seed(1);
   
   //==> Move to a separate processor <== //
@@ -63,98 +57,62 @@ void CKFProcessor::onProcessStart() {
     std::cout<<"=========="<<std::endl;
     std::cout<<b_field / Acts::UnitConstants::T<<std::endl;
     std::cout<<"=========="<<std::endl;
+    std::cout<<"PF::BFIELDMAP"<<std::endl;
+    std::cout<<bfieldMap_<<std::endl;
   }
-  std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
+
+  // Setup a constant magnetic field
+  const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
 
   //TODO:: Move this to an external file
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] + bins[2]);  //xyz - field space
     //return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);    //zxy
-    
+
   };
 
-  if (debug_) {
-    std::cout<<"PF::BFIELDMAP"<<std::endl;
-    std::cout<<bfieldMap_<<std::endl;
-  }
-  
-  //CHECK:::Tests/IntegrationTests/PropagationTestsAtlasField.cpp
-  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
-                                                                   1. * Acts::UnitConstants::mm, //default scale for axes length
-                                                                   1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
-                                                                   false, //not symmetrical
-                                                                   true //rotate the axes to tracking frame
-                                                                   );
+  // Setup a interpolated bfield map
+  const auto map = std::make_shared<InterpolatedMagneticField3>(
+                     makeMagneticFieldMapXyzFromText(
+                       std::move(localToGlobalBin_xyz),
+                       bfieldMap_,
+                       1. * Acts::UnitConstants::mm, //default scale for axes length
+                       1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
+                       false, //not symmetrical
+                       true //rotate the axes to tracking frame
+                     )
+                   );
 
-  InterpolatedMagneticField3 map_copy = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
-                                                                        1. * Acts::UnitConstants::mm, //default scale for axes length
-                                                                        1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
-                                                                        false, //not symmetrical
-                                                                        true //rotate the axes to tracking frame
-                                                                        );
-  
-  sp_interpolated_bField_      = std::make_shared<InterpolatedMagneticField3>(std::move(map));
-  sp_interpolated_bField_copy_ = std::make_shared<InterpolatedMagneticField3>(std::move(map_copy));
-  
-  
-  //Setup the navigator for KF
-  Acts::Navigator::Config navCfg{tGeometry_};
+  // Setup the steppers
+  const auto stepper = Acts::EigenStepper<>{map};
+  const auto const_stepper = Acts::EigenStepper<>{constBField};
+  const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
+
+  // Setup the navigator
+  Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
   navCfg.resolvePassive    = true;
   navCfg.resolveSensitive  = true;
-  Acts::Navigator navigator(navCfg);
+  const Acts::Navigator navigator(navCfg);
 
-  //Setup the navigator for GSF
-  Acts::Navigator::Config gsf_navigator_cfg{tGeometry_};
-  gsf_navigator_cfg.resolvePassive = false;
-  gsf_navigator_cfg.resolveMaterial = true;
-  gsf_navigator_cfg.resolveSensitive = true;
-  Acts::Navigator gsf_navigator(gsf_navigator_cfg);
+  // Setup the propagators
+  propagator_ = const_b_field_ ? std::make_unique<CkfPropagator>(const_stepper, navigator) : std::make_unique<CkfPropagator>(stepper, navigator);
+  auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
-  
-  //Setup the stepper (do a straight line first)
-  //auto&& stepper = Acts::EigenStepper<>{std::move(bField)};
-  
+  // Setup the fitters
+  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
+  kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
+  gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(std::move(gsf_propagator));
 
-  auto&& stepper_const         = Acts::EigenStepper<>{std::move(bField)};
-  auto&& stepper_interpolated  = Acts::EigenStepper<>{std::move(sp_interpolated_bField_)};
-
-  auto&& gsf_stepper          = Acts::MultiEigenStepperLoop{std::move(sp_interpolated_bField_copy_)};
-  
-  //using Propagator = Acts::Propagator<Stepper, Acts::Navigator>;
-    
-  //Setup the propagator
-  if (const_b_field_) {
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    std::cout<<"Using constant b-field"<<std::endl;
-    propagator_ = std::make_shared<Propagator>(stepper_const, navigator);
-  }
-  else {
-    propagator_ = std::make_shared<Propagator>(stepper_interpolated, navigator);
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    std::cout<<"Using interpolated B-Field Map"<<std::endl;
-  }
-
-  //Only works with interpolated
-  Acts::Propagator gsf_propagator(std::move(gsf_stepper), std::move(gsf_navigator));
-
-  //Setup the GSF Fitter
-  //gsf_ = std::make_shared<Acts::GaussianSumFitter<Propagator> >(std::move(gsf_propagator));
-
-  //Acts::GaussianSumFitter<Propagator> gsf(std::move(gsf_propagator));
-  //Acts::GaussianSumFitter<decltype(gsf_propagator)> gsf(std::move(gsf_propagator));
-  gsf_ = std::make_shared< Acts::GaussianSumFitter<decltype(gsf_propagator)> >(std::move(gsf_propagator));
-  
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
   cfg.filePath = steps_outfile_path_;
 
-  writer_ = std::make_shared<PropagatorStepWriter>(cfg);
+  writer_ = std::make_unique<PropagatorStepWriter>(cfg);
 
-  
   //Create a mapping between the layers and the Acts::Surface
-  makeLayerSurfacesMap(tGeometry_);
+  makeLayerSurfacesMap(tGeometry);
 
 
   //Prepare histograms
@@ -181,62 +139,61 @@ void CKFProcessor::onProcessStart() {
 
   //Validation histograms
   
-  histo_p_      = new TH1F("p_res",    "p_res",200,-1,1);
-  histo_d0_     = new TH1F("d0_res",   "d0_res",200,-0.2,0.2);
-  histo_z0_     = new TH1F("z0_res",   "z0_res",200,-0.75,0.75);
-  histo_phi_    = new TH1F("phi_res",  "phi_res",200,-0.015,0.015);
-  histo_theta_  = new TH1F("theta_res","theta_res",200,-0.01,0.01);
-  histo_qop_    = new TH1F("qop_res","qop_res",200,-5,5);
+  histo_p_      = std::make_unique<TH1F>("p_res",    "p_res",200,-1,1);
+  histo_d0_     = std::make_unique<TH1F>("d0_res",   "d0_res",200,-0.2,0.2);
+  histo_z0_     = std::make_unique<TH1F>("z0_res",   "z0_res",200,-0.75,0.75);
+  histo_phi_    = std::make_unique<TH1F>("phi_res",  "phi_res",200,-0.015,0.015);
+  histo_theta_  = std::make_unique<TH1F>("theta_res","theta_res",200,-0.01,0.01);
+  histo_qop_    = std::make_unique<TH1F>("qop_res","qop_res",200,-5,5);
 
-  histo_p_pull_      = new TH1F("p_pull",    "p_pull",    200,-5,5);
-  histo_d0_pull_     = new TH1F("d0_pull",   "d0_pull",   200,-5,5);
-  histo_z0_pull_     = new TH1F("z0_pull",   "z0_pull",   200,-5,5);
-  histo_phi_pull_    = new TH1F("phi_pull",  "phi_pull",  200,-5,5);
-  histo_theta_pull_  = new TH1F("theta_pull","theta_pull",200,-5,5);
-  histo_qop_pull_    = new TH1F("qop_pull",  "qop_pull",  200,-5,5);
+  histo_p_pull_      = std::make_unique<TH1F>("p_pull",    "p_pull",    200,-5,5);
+  histo_d0_pull_     = std::make_unique<TH1F>("d0_pull",   "d0_pull",   200,-5,5);
+  histo_z0_pull_     = std::make_unique<TH1F>("z0_pull",   "z0_pull",   200,-5,5);
+  histo_phi_pull_    = std::make_unique<TH1F>("phi_pull",  "phi_pull",  200,-5,5);
+  histo_theta_pull_  = std::make_unique<TH1F>("theta_pull","theta_pull",200,-5,5);
+  histo_qop_pull_    = std::make_unique<TH1F>("qop_pull",  "qop_pull",  200,-5,5);
 
-  h_p_      = new TH1F("p",    "p",600,0,6);
-  h_d0_     = new TH1F("d0",   "d0",100,-20,20);
-  h_z0_     = new TH1F("z0",   "z0",100,-50,50);
-  h_phi_    = new TH1F("phi",  "phi",200,-0.5,0.5);
-  h_theta_  = new TH1F("theta","theta",200,0.8,2.2);
-  h_qop_    = new TH1F("qop","qop",200,-10,10);
-  h_nHits_  = new TH1F("nHits","nHits",15,0,15);
+  h_p_      = std::make_unique<TH1F>("p",    "p",600,0,6);
+  h_d0_     = std::make_unique<TH1F>("d0",   "d0",100,-20,20);
+  h_z0_     = std::make_unique<TH1F>("z0",   "z0",100,-50,50);
+  h_phi_    = std::make_unique<TH1F>("phi",  "phi",200,-0.5,0.5);
+  h_theta_  = std::make_unique<TH1F>("theta","theta",200,0.8,2.2);
+  h_qop_    = std::make_unique<TH1F>("qop","qop",200,-10,10);
+  h_nHits_  = std::make_unique<TH1F>("nHits","nHits",15,0,15);
 
-  h_p_err_      = new TH1F("p_err",    "p_err"    ,600,0,1);
-  h_d0_err_     = new TH1F("d0_err",   "d0_err"   ,100,0,0.05);
-  h_z0_err_     = new TH1F("z0_err",   "z0_err"   ,100,0,0.8);
-  h_phi_err_    = new TH1F("phi_err",  "phi_err"  ,200,0,0.002);
-  h_theta_err_  = new TH1F("theta_err","theta_err",200,0,0.02);
-  h_qop_err_    = new TH1F("qop_err",  "qop_err"  ,200,0,0.1);
+  h_p_err_      = std::make_unique<TH1F>("p_err",    "p_err"    ,600,0,1);
+  h_d0_err_     = std::make_unique<TH1F>("d0_err",   "d0_err"   ,100,0,0.05);
+  h_z0_err_     = std::make_unique<TH1F>("z0_err",   "z0_err"   ,100,0,0.8);
+  h_phi_err_    = std::make_unique<TH1F>("phi_err",  "phi_err"  ,200,0,0.002);
+  h_theta_err_  = std::make_unique<TH1F>("theta_err","theta_err",200,0,0.02);
+  h_qop_err_    = std::make_unique<TH1F>("qop_err",  "qop_err"  ,200,0,0.1);
 
-  h_p_refit_      = new TH1F("p_refit",     "p_refit",600,0,6);
-  h_d0_refit_     = new TH1F("d0_refit",    "d0_refit",100,-20,20);
-  h_z0_refit_     = new TH1F("z0_refit",    "z0_refit",100,-50,50);
-  h_phi_refit_    = new TH1F("phi_refit",   "phi_refit",200,-0.5,0.5);
-  h_theta_refit_  = new TH1F("theta_refit", "theta_refit",200,0.8,2.2);
+  h_p_refit_      = std::make_unique<TH1F>("p_refit",     "p_refit",600,0,6);
+  h_d0_refit_     = std::make_unique<TH1F>("d0_refit",    "d0_refit",100,-20,20);
+  h_z0_refit_     = std::make_unique<TH1F>("z0_refit",    "z0_refit",100,-50,50);
+  h_phi_refit_    = std::make_unique<TH1F>("phi_refit",   "phi_refit",200,-0.5,0.5);
+  h_theta_refit_  = std::make_unique<TH1F>("theta_refit", "theta_refit",200,0.8,2.2);
   
 
-  h_p_gsf_refit_      = new TH1F("p_gsf_refit",     "p_gsf_refit",600,0,6);
-  h_d0_gsf_refit_     = new TH1F("d0_gsf_refit",    "d0_gsf_refit",100,-20,20);
-  h_z0_gsf_refit_     = new TH1F("z0_gsf_refit",    "z0_gsf_refit",100,-50,50);
-  h_phi_gsf_refit_    = new TH1F("phi_gsf_refit",   "phi_gsf_refit",200,-0.5,0.5);
-  h_theta_gsf_refit_  = new TH1F("theta_gsf_refit", "theta_gsf_refit",200,0.8,2.2);
+  h_p_gsf_refit_      = std::make_unique<TH1F>("p_gsf_refit",     "p_gsf_refit",600,0,6);
+  h_d0_gsf_refit_     = std::make_unique<TH1F>("d0_gsf_refit",    "d0_gsf_refit",100,-20,20);
+  h_z0_gsf_refit_     = std::make_unique<TH1F>("z0_gsf_refit",    "z0_gsf_refit",100,-50,50);
+  h_phi_gsf_refit_    = std::make_unique<TH1F>("phi_gsf_refit",   "phi_gsf_refit",200,-0.5,0.5);
+  h_theta_gsf_refit_  = std::make_unique<TH1F>("theta_gsf_refit", "theta_gsf_refit",200,0.8,2.2);
 
-  h_p_gsf_refit_res_     = new TH1F("p_gsf_res", "p_gsf_res", 200,-1,1);
-  h_qop_gsf_refit_res_   = new TH1F("qop_gsf_res", "qop_gsf_res", 200,-5,5);
+  h_p_gsf_refit_res_     = std::make_unique<TH1F>("p_gsf_res", "p_gsf_res", 200,-1,1);
+  h_qop_gsf_refit_res_   = std::make_unique<TH1F>("qop_gsf_res", "qop_gsf_res", 200,-5,5);
   
 
-  h_p_truth_      = new TH1F("p_truth",      "p_truth",600,0,6);
-  h_d0_truth_     = new TH1F("d0_truth",     "d0_truth",100,-20,20);
-  h_z0_truth_     = new TH1F("z0_truth_",    "z0_truth",100,-50,50);
-  h_phi_truth_    = new TH1F("phi_truth",    "phi_truth",200,-0.5,0.5);
-  h_theta_truth_  = new TH1F("theta_truth`", "theta_truth",200,0.8,2.2);
-  h_qop_truth_    = new TH1F("qop_truth","qop_truth",200,-10,10);
+  h_p_truth_      = std::make_unique<TH1F>("p_truth",      "p_truth",600,0,6);
+  h_d0_truth_     = std::make_unique<TH1F>("d0_truth",     "d0_truth",100,-20,20);
+  h_z0_truth_     = std::make_unique<TH1F>("z0_truth_",    "z0_truth",100,-50,50);
+  h_phi_truth_    = std::make_unique<TH1F>("phi_truth",    "phi_truth",200,-0.5,0.5);
+  h_theta_truth_  = std::make_unique<TH1F>("theta_truth`", "theta_truth",200,0.8,2.2);
+  h_qop_truth_    = std::make_unique<TH1F>("qop_truth","qop_truth",200,-10,10);
 
-  h_tgt_scoring_x_y_      = new TH2F("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
-  h_tgt_scoring_z_        = new TH1F("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
-  
+  h_tgt_scoring_x_y_      = std::make_unique<TH2F>("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
+  h_tgt_scoring_z_        = std::make_unique<TH1F>("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
 }
 
 void CKFProcessor::produce(framework::Event &event) {
@@ -462,7 +419,6 @@ void CKFProcessor::produce(framework::Event &event) {
   profiling_map_["hits"] += std::chrono::duration<double,std::milli>(hits-setup).count();
       
   // ============   Setup the CKF  ============
-  Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
   
   //Retrieve the seeds
     
@@ -602,7 +558,7 @@ void CKFProcessor::produce(framework::Event &event) {
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] += std::chrono::duration<double,std::milli>(ckf_setup-seeds).count();
   
-  auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions);
+  auto results = ckf_->findTracks(geoId_sl_mmap_, startParameters, kfOptions);
 
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] += std::chrono::duration<double,std::milli>(ckf_run - ckf_setup).count();
@@ -852,7 +808,6 @@ void CKFProcessor::produce(framework::Event &event) {
       // create the Kalman Fitter
       if (debug_)
         std::cout<<"Make the KalmanFilter fitter object"<<std::endl;
-      Acts::KalmanFitter<Propagator> kf(*propagator_);
       
       if (debug_)
         std::cout<<"Refit"<<std::endl;
@@ -867,7 +822,7 @@ void CKFProcessor::produce(framework::Event &event) {
       //Acts::MagneticFieldProvider::Cache cache = sp_interpolated_bField_->makeCache(bctx_);
       //std::cout<<" BField::\n"<<sp_interpolated_bField_->getField(ckf_result.fittedParameters.begin()->second.position(gctx_),cache).value() / Acts::UnitConstants::T <<std::endl; 
       
-      auto kf_refit_result = kf.fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
+      auto kf_refit_result = kf_->fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
                                     ckf_result.fittedParameters.begin()->second,kfitter_options);
      
       if (!kf_refit_result.ok()) {
@@ -889,7 +844,7 @@ void CKFProcessor::produce(framework::Event &event) {
 
     //Refit track using the GSF
 
-    bool gsfRefit = false;
+    bool gsfRefit = true;
     
     if (gsfRefit) {
 
@@ -923,7 +878,7 @@ void CKFProcessor::produce(framework::Event &event) {
           Acts::LoggerWrapper{*gsfLogger},
           propagator_options,
           &(*extr_surface),
-          true,
+          false,
           4,
           false};
         
@@ -1174,12 +1129,11 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
 }
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
-
-  bool CKFProcessor::WriteEvent(framework::Event &event,
-                                const Acts::BoundTrackParameters& perigeeParameters,
-                                const Acts::MultiTrajectory& mj,
-                                const int &trackTip,
-                                const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
+bool CKFProcessor::WriteEvent(framework::Event &event,
+                              const Acts::BoundTrackParameters& perigeeParameters,
+                              const Acts::MultiTrajectory& mj,
+                              const int &trackTip,
+                              const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {
   //Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
@@ -1362,6 +1316,8 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
   writer_->WriteSteps(event,
                       propagationSteps,
                       ldmxsps);
+
+  return true;
 }
 
 

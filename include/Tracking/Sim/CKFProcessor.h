@@ -17,6 +17,7 @@
 
 //--- C++ ---//
 #include <random>
+#include <memory>
 
 //--- LDMX ---//
 #include "Tracking/Reco/LdmxTrackingGeometry.h"
@@ -93,7 +94,15 @@
 
 using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
-using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+
+using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+using GsfPropagator = Acts::Propagator<
+                        Acts::MultiEigenStepperLoop<
+                          Acts::StepperExtensionList<
+                            Acts::detail::GenericDefaultExtension<double> >,
+                          Acts::WeightedComponentReducerLoop,
+                          Acts::detail::VoidAuctioneer>,
+                        Acts::Navigator>;
 
 //?!
 //using PropagatorOptions =
@@ -237,27 +246,24 @@ class CKFProcessor : public framework::Producer {
 
   //The seed track collection
   std::string seed_coll_name_{"seedTracks"};
-  
+
   //The interpolated bfield
-  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
-  std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_copy_;
   std::string bfieldMap_;
-  
-  //The propagator
-  std::shared_ptr<Propagator> propagator_;
+
+  //The Propagators
+  std::unique_ptr<const CkfPropagator> propagator_;
+
+  //The CKF
+  std::unique_ptr<const Acts::CombinatorialKalmanFilter<CkfPropagator>> ckf_;
+
+  //The KF
+  std::unique_ptr<const Acts::KalmanFitter<CkfPropagator>> kf_;
 
   //The GSF Fitter
-  std::shared_ptr<Acts::GaussianSumFitter<
-                    Acts::Propagator<
-                      Acts::MultiEigenStepperLoop<
-                        Acts::StepperExtensionList<
-                          Acts::detail::GenericDefaultExtension<double> >,
-                        Acts::WeightedComponentReducerLoop,
-                        Acts::detail::VoidAuctioneer>,
-                      Acts::Navigator> > >  gsf_;
+  std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
   
   //The propagator steps writer
-  std::shared_ptr<PropagatorStepWriter> writer_;
+  std::unique_ptr<PropagatorStepWriter> writer_;
 
   //Outname of the propagator test
   std::string steps_outfile_path_{""};
@@ -265,65 +271,61 @@ class CKFProcessor : public framework::Producer {
   //This could be a vector
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
-
   
   //Some histograms
+  std::unique_ptr<TH1F> histo_p_;
+  std::unique_ptr<TH1F> histo_d0_;
+  std::unique_ptr<TH1F> histo_z0_;
+  std::unique_ptr<TH1F> histo_phi_;
+  std::unique_ptr<TH1F> histo_theta_;
+  std::unique_ptr<TH1F> histo_qop_;
 
-  TH1F* histo_p_;
-  TH1F* histo_d0_;
-  TH1F* histo_z0_;
-  TH1F* histo_phi_;
-  TH1F* histo_theta_;
-  TH1F* histo_qop_;
-
-
-  TH1F* histo_p_pull_;
-  TH1F* histo_d0_pull_;
-  TH1F* histo_z0_pull_;
-  TH1F* histo_phi_pull_;
-  TH1F* histo_theta_pull_;
-  TH1F* histo_qop_pull_;
+  std::unique_ptr<TH1F> histo_p_pull_;
+  std::unique_ptr<TH1F> histo_d0_pull_;
+  std::unique_ptr<TH1F> histo_z0_pull_;
+  std::unique_ptr<TH1F> histo_phi_pull_;
+  std::unique_ptr<TH1F> histo_theta_pull_;
+  std::unique_ptr<TH1F> histo_qop_pull_;
   
-  TH1F* h_p_;
-  TH1F* h_d0_;
-  TH1F* h_z0_;
-  TH1F* h_phi_;
-  TH1F* h_theta_;
-  TH1F* h_qop_;
-  TH1F* h_nHits_;
+  std::unique_ptr<TH1F> h_p_;
+  std::unique_ptr<TH1F> h_d0_;
+  std::unique_ptr<TH1F> h_z0_;
+  std::unique_ptr<TH1F> h_phi_;
+  std::unique_ptr<TH1F> h_theta_;
+  std::unique_ptr<TH1F> h_qop_;
+  std::unique_ptr<TH1F> h_nHits_;
 
-  TH1F* h_p_err_;
-  TH1F* h_d0_err_;
-  TH1F* h_z0_err_;
-  TH1F* h_phi_err_;
-  TH1F* h_theta_err_;
-  TH1F* h_qop_err_;
+  std::unique_ptr<TH1F> h_p_err_;
+  std::unique_ptr<TH1F> h_d0_err_;
+  std::unique_ptr<TH1F> h_z0_err_;
+  std::unique_ptr<TH1F> h_phi_err_;
+  std::unique_ptr<TH1F> h_theta_err_;
+  std::unique_ptr<TH1F> h_qop_err_;
 
-  TH1F* h_p_refit_;
-  TH1F* h_d0_refit_;
-  TH1F* h_z0_refit_;
-  TH1F* h_phi_refit_;
-  TH1F* h_theta_refit_;
-  TH1F* h_nHits_refit_;
+  std::unique_ptr<TH1F> h_p_refit_;
+  std::unique_ptr<TH1F> h_d0_refit_;
+  std::unique_ptr<TH1F> h_z0_refit_;
+  std::unique_ptr<TH1F> h_phi_refit_;
+  std::unique_ptr<TH1F> h_theta_refit_;
+  std::unique_ptr<TH1F> h_nHits_refit_;
 
-  TH1F* h_p_gsf_refit_;
-  TH1F* h_d0_gsf_refit_;
-  TH1F* h_z0_gsf_refit_;
-  TH1F* h_phi_gsf_refit_;
-  TH1F* h_theta_gsf_refit_;
-  TH1F* h_p_gsf_refit_res_;
-  TH1F* h_qop_gsf_refit_res_;
+  std::unique_ptr<TH1F> h_p_gsf_refit_;
+  std::unique_ptr<TH1F> h_d0_gsf_refit_;
+  std::unique_ptr<TH1F> h_z0_gsf_refit_;
+  std::unique_ptr<TH1F> h_phi_gsf_refit_;
+  std::unique_ptr<TH1F> h_theta_gsf_refit_;
+  std::unique_ptr<TH1F> h_p_gsf_refit_res_;
+  std::unique_ptr<TH1F> h_qop_gsf_refit_res_;
   
-  TH1F* h_p_truth_;
-  TH1F* h_d0_truth_;
-  TH1F* h_z0_truth_;
-  TH1F* h_phi_truth_;
-  TH1F* h_theta_truth_;
-  TH1F* h_qop_truth_;
+  std::unique_ptr<TH1F> h_p_truth_;
+  std::unique_ptr<TH1F> h_d0_truth_;
+  std::unique_ptr<TH1F> h_z0_truth_;
+  std::unique_ptr<TH1F> h_phi_truth_;
+  std::unique_ptr<TH1F> h_theta_truth_;
+  std::unique_ptr<TH1F> h_qop_truth_;
 
-  TH2F* h_tgt_scoring_x_y_;
-  TH1F* h_tgt_scoring_z_;
-
+  std::unique_ptr<TH2F> h_tgt_scoring_x_y_;
+  std::unique_ptr<TH1F> h_tgt_scoring_z_;
 
   /// do smearing
   bool do_smearing_{false};
@@ -337,8 +339,6 @@ class CKFProcessor : public framework::Producer {
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
-
-  std::shared_ptr<const Acts::TrackingGeometry> tGeometry_;
   
 }; // CKFProcessor
     
