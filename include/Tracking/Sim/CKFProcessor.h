@@ -111,7 +111,7 @@ using GsfPropagator = Acts::Propagator<
 namespace tracking {
 namespace sim {
 
-class CKFProcessor : public framework::Producer {
+class CKFProcessor final : public framework::Producer {
 
  public:
   /**
@@ -128,49 +128,52 @@ class CKFProcessor : public framework::Producer {
   /**
    *
    */
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
   /**
    *
    */
-  void onProcessEnd() final override;
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
-
-  //Forms the layer to acts map
-  void makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
-
+  void produce(framework::Event &event) override;
   
-  //Test the measurement calibrator (TODO::move it somewhere else)
+ private:
+  //Forms the layer to acts map
+  auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
 
+  //Make geoid -> source link map
+  auto makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint* > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
+
+  auto makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &sim_hits) -> std::vector<ldmx::LdmxSpacePoint* >;
+
+  //Test the measurement calibrator (TODO::move it somewhere else)
   void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
-                                const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map);
+                                const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const;
 
   //Test the magnetic field
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
-                 const Acts::Vector3& eval_pos);
-  
+                 const Acts::Vector3& eval_pos) const;
+
   // Make a simple event display
-  bool WriteEvent(framework::Event &event,
+  void writeEvent(framework::Event &event,
 		  const Acts::BoundTrackParameters& perigeeParameters,
 		  const Acts::MultiTrajectory& mj,
                   const int& trackTip,
                   const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
-  
- private:
+
   /// The detector
   dd4hep::Detector* detector_{nullptr};
   

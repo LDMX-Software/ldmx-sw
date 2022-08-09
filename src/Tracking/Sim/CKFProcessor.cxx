@@ -112,7 +112,7 @@ void CKFProcessor::onProcessStart() {
   writer_ = std::make_unique<PropagatorStepWriter>(cfg);
 
   //Create a mapping between the layers and the Acts::Surface
-  makeLayerSurfacesMap(tGeometry);
+  layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
 
 
   //Prepare histograms
@@ -269,151 +269,13 @@ void CKFProcessor::produce(framework::Event &event) {
   profiling_map_["setup"] += std::chrono::duration<double,std::milli>(setup-start).count();
   
   
-  const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
-    
-  std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+  const std::vector<ldmx::SimTrackerHit> sim_hits = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
+  const auto ldmxsps = makeLdmxSpacepoints(sim_hits);
 
-  if (debug_)
-    std::cout<<"Found:"<<sim_hits.size()<<" sim hits in the "<< hit_collection_<<std::endl;
-  
-  //Convert to ldmxsps
-  for (auto& simHit : sim_hits) {
-    
-    //Remove low energy deposit hits
-    if (simHit.getEdep() >  0.05) {
-      
-      //Only selects hits that have trackID==1
-      if (trackID_ > 0 && simHit.getTrackID() != trackID_)
-        continue;
-      
-      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_)
-        continue;
-
-      ldmx::LdmxSpacePoint* ldmxsp = utils::convertSimHitToLdmxSpacePoint(simHit);
-      
-      if (removeStereo_) {
-        unsigned int layerid = ldmxsp->layer();
-        if (layerid == 3101 || layerid == 3201 || layerid == 3301 || layerid == 3401 )
-          continue;
-      }
-
-      ldmxsps.push_back(ldmxsp);
-    }
-    
-  }
-  
-  if (debug_)
-    std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
-    
   //The mapping between the geometry identifier
   //and the IndexSourceLink that points to the hit
-  //std::unordered_map<Acts::GeometryIdentifier,
-  //                   std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
-  std::unordered_multimap<Acts::GeometryIdentifier,
-                          ActsExamples::IndexSourceLink> geoId_sl_mmap_;
-  
-  //Check the hits associated to the surfaces
-  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
+  const auto geoId_sl_map = makeGeoIdSourceLinkMap(ldmxsps);
 
-    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
-    unsigned int layerid = ldmxsp->layer();
-
-    const Acts::Surface* hit_surface = layer_surface_map_[layerid];
-    if (hit_surface) {
-      
-      //Transform the ldmx space point from global to local and store the information
-
-      
-      if (debug_ ) {
-        std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        hit_surface->toStream(gctx_,std::cout);
-        std::cout<<std::endl;
-        std::cout<<"TRANSFORM LOCAL TO GLOBAL"<<std::endl;
-        std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
-        std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
-      }
-      
-      
-      Acts::Vector3 dummy_momentum;
-      Acts::Vector2 local_pos;
-      try { 
-        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
-      } catch (const std::exception& e) {
-        std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        continue;
-      }
-
-      //Smear the local position
-      
-      if (do_smearing_) {
-        float smear_factor{(*normal_)(generator_)};
-
-        if (debug_) {
-          std::cout<<"Smearing factor for u="<<smear_factor<<std::endl;
-          std::cout<<"Local Pos before::"<<local_pos[0]<<std::endl;
-        }
-        local_pos[0] += smear_factor * sigma_u_;
-
-        if (debug_)
-          std::cout<<"Local Pos after::"<<local_pos[0]<<std::endl;
-        
-        smear_factor = (*normal_)(generator_);
-        if (debug_) {
-          std::cout<<"Smearing factor for v="<<smear_factor<<std::endl;
-          std::cout<<"Local Pos before::"<<local_pos[1]<<std::endl;
-        }
-        local_pos[1] += smear_factor * sigma_v_;
-        if (debug_)
-          std::cout<<"Local Pos after::"<<local_pos[1]<<std::endl;
-        
-        //update covariance
-        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-        
-        //update global position
-        if (debug_) {
-        std::cout<<"Before smearing"<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        }
-        
-        //cache the acts x coordinate 
-        double original_x = ldmxsp->global_pos_(0);
-
-        //transform to global
-        ldmxsp->global_pos_ = hit_surface->localToGlobal(gctx_,local_pos,dummy_momentum);
-
-        if (debug_) {
-          std::cout<<"The global position after the smearing"<<std::endl;
-          std::cout<<ldmxsp->global_pos_<<std::endl;
-        }
-        
-        
-        //update the acts x location 
-        ldmxsp->global_pos_(0) = original_x;
-
-        //if (debug_) {
-        //  std::cout<<"After smearing"<<std::endl;
-        //  std::cout<<ldmxsp->global_pos_<<std::endl;
-        //}
-      }
-      
-      ldmxsp->local_pos_ = local_pos;
-
-      if (debug_) {
-        std::cout<<"Local hit position::"<<std::endl;
-        std::cout<<ldmxsp->local_pos_<<std::endl;
-      }
-
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
-
-      geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
-            
-    }
-    else
-      std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
-    
-  }
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] += std::chrono::duration<double,std::milli>(hits-setup).count();
@@ -554,11 +416,10 @@ void CKFProcessor::produce(framework::Event &event) {
       propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
-
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] += std::chrono::duration<double,std::milli>(ckf_setup-seeds).count();
   
-  auto results = ckf_->findTracks(geoId_sl_mmap_, startParameters, kfOptions);
+  auto results = ckf_->findTracks(geoId_sl_map, startParameters, kfOptions);
 
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] += std::chrono::duration<double,std::milli>(ckf_run - ckf_setup).count();
@@ -757,20 +618,13 @@ void CKFProcessor::produce(framework::Event &event) {
     tracks.push_back(trk);
     ntracks_++;
 
-    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 && false)
-      //Write the event display for the recoil
-      WriteEvent(event,
-		 ckf_result.fittedParameters.begin()->second,
-                 mj,
-		 trackTip,
-                 ldmxsps);
-
+    //Write the event display for the recoil
+    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 && false) {
+      writeEvent(event, ckf_result.fittedParameters.begin()->second, mj, trackTip, ldmxsps);
+    }
     
     //Refit the track with the KalmanFitter using backward propagation
-
-    
     if (kfRefit_) {
-
       std::cout<<"Preparing theKF refit"<<std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
       mj.visitBackwards(trackTip, [&](const auto& state) {
@@ -789,12 +643,7 @@ void CKFProcessor::produce(framework::Event &event) {
       kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
       kfitter_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
-      //Rewrite all the stuff from scratch
-      
-
-
       //rFiltering is true, so it should run in reversed direction.
-      
       Acts::KalmanFitterOptions kfitter_options =
           Acts::KalmanFitterOptions(gctx_,bctx_,cctx_,
                                     kfitter_extensions,Acts::LoggerWrapper{*kfLogger},
@@ -803,14 +652,13 @@ void CKFProcessor::produce(framework::Event &event) {
       
 
 
-      std::cout<<"rFiltering =" << (int)kfitter_options.reversedFiltering <<std::endl;
+      std::cout<<"rFiltering =" << std::boolalpha << kfitter_options.reversedFiltering <<std::endl;
       
       // create the Kalman Fitter
-      if (debug_)
+      if (debug_) {
         std::cout<<"Make the KalmanFilter fitter object"<<std::endl;
-      
-      if (debug_)
         std::cout<<"Refit"<<std::endl;
+      }
 
       std::cout<<"Refit tracks with KF"<<std::endl;
       std::cout<<"Starting from "<<std::endl;
@@ -827,9 +675,7 @@ void CKFProcessor::produce(framework::Event &event) {
      
       if (!kf_refit_result.ok()) {
         std::cout<<"KF Refit failed"<<std::endl;
-      }
-      else {
-        
+      } else {
         auto kf_refit_value = kf_refit_result.value();
         auto kf_params = kf_refit_value.fittedParameters;
         h_p_refit_     ->Fill((*kf_params).absoluteMomentum());
@@ -847,10 +693,7 @@ void CKFProcessor::produce(framework::Event &event) {
     bool gsfRefit = true;
     
     if (gsfRefit) {
-
       try {
-
-        
         const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
         std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
         mj.visitBackwards(trackTip, [&](const auto& state) {
@@ -869,21 +712,17 @@ void CKFProcessor::produce(framework::Event &event) {
         gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
         gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
-
-        
         Acts::GsfOptions gsf_options{gctx_,
           bctx_,
           cctx_,
           gsf_extensions,
           Acts::LoggerWrapper{*gsfLogger},
           propagator_options,
-          &(*extr_surface),
-          false,
-          4,
-          false};
-        
-        
-        
+          &(*extr_surface)};
+
+        gsf_options.abortOnError = true;
+        gsf_options.maxComponents = 4;
+        gsf_options.disableAllMaterialHandling = false;
         
         auto gsf_refit_result = gsf_->fit(fit_trackSourceLinks.begin(),
                                           fit_trackSourceLinks.end(),
@@ -895,7 +734,6 @@ void CKFProcessor::produce(framework::Event &event) {
           std::cout<<"GSF Refit failed"<<std::endl;
         }
         else {
-          
           auto gsf_refit_value = gsf_refit_result.value();
           auto gsf_params = gsf_refit_value.fittedParameters;
           h_p_gsf_refit_     ->Fill((*gsf_params).absoluteMomentum());
@@ -906,12 +744,9 @@ void CKFProcessor::produce(framework::Event &event) {
         }
         
       } catch (...) {
-
         std::cout<<"ERROR:: GSF Refit failed"<<std::endl;
       }
-        
       } // do refit GSF
-      
   } // loop on CKF Results
 
 
@@ -921,7 +756,6 @@ void CKFProcessor::produce(framework::Event &event) {
   if (debug_) 
     std::cout<<"Found "<<GoodResult<< " tracks" <<std::endl;  
   
-  
   //Add the tracks to the event
   event.add(out_trk_collection_, tracks);
   
@@ -929,7 +763,6 @@ void CKFProcessor::produce(framework::Event &event) {
   //long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
   auto diff = end-start;
   processing_time_ += std::chrono::duration <double, std::milli> (diff).count();
-    
 }
 
 
@@ -1061,7 +894,7 @@ void CKFProcessor::configure(framework::config::Parameters &parameters) {
 }
 
 void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
-                                      const Acts::Vector3& eval_pos) {
+                                      const Acts::Vector3& eval_pos) const {
 
   Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
   std::cout<<"Pos::\n"<<eval_pos<<std::endl;
@@ -1072,7 +905,7 @@ void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> 
 
 
 void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
-                                            const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) {
+                                            const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const {
   
   for (const auto& pair : map) {
     std::cout<<"GeometryID::"<<pair.first<<std::endl;
@@ -1086,8 +919,9 @@ void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& cal
 //Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
 //Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
 
-void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
-  
+auto CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*> {
+  auto layer_surface_map = decltype(layer_surface_map_){};
+
   //loop over the tracking geometry to find all sensitive surfaces
   std::vector<const Acts::Surface*> surfaces;
   ldmx_tg->getSurfaces(surfaces, trackingGeometry);
@@ -1109,7 +943,7 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
     
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
     
-    layer_surface_map_[surfaceId] = surface;
+    layer_surface_map[surfaceId] = surface;
     
   }// surfaces loop
 
@@ -1118,7 +952,7 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
     
     std::cout<<__PRETTY_FUNCTION__<<std::endl;
     
-    for (auto const& surfaceId : layer_surface_map_) {
+    for (auto const& surfaceId : layer_surface_map) {
       std::cout<<getName()<<" "<< surfaceId.first<<std::endl;
       std::cout<<getName()<<" Check the surface"<<std::endl;
       surfaceId.second->toStream(gctx_,std::cout);
@@ -1126,10 +960,12 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
       std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
     }
   }
+
+  return layer_surface_map;
 }
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
-bool CKFProcessor::WriteEvent(framework::Event &event,
+void CKFProcessor::writeEvent(framework::Event &event,
                               const Acts::BoundTrackParameters& perigeeParameters,
                               const Acts::MultiTrajectory& mj,
                               const int &trackTip,
@@ -1316,8 +1152,155 @@ bool CKFProcessor::WriteEvent(framework::Event &event,
   writer_->WriteSteps(event,
                       propagationSteps,
                       ldmxsps);
+}
 
-  return true;
+auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint* > &ldmxsps)
+  -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> {
+  std::unordered_multimap<Acts::GeometryIdentifier,
+                          ActsExamples::IndexSourceLink> geoId_sl_map;
+
+  //Check the hits associated to the surfaces
+  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
+
+    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
+    unsigned int layerid = ldmxsp->layer();
+
+    const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+    if (hit_surface) {
+
+      //Transform the ldmx space point from global to local and store the information
+
+
+      if (debug_ ) {
+        std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        hit_surface->toStream(gctx_,std::cout);
+        std::cout<<std::endl;
+        std::cout<<"TRANSFORM LOCAL TO GLOBAL"<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
+      }
+
+
+      Acts::Vector3 dummy_momentum;
+      Acts::Vector2 local_pos;
+      try {
+        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
+      } catch (const std::exception& e) {
+        std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        continue;
+      }
+
+      //Smear the local position
+
+      if (do_smearing_) {
+        float smear_factor{(*normal_)(generator_)};
+
+        if (debug_) {
+          std::cout<<"Smearing factor for u="<<smear_factor<<std::endl;
+          std::cout<<"Local Pos before::"<<local_pos[0]<<std::endl;
+        }
+        local_pos[0] += smear_factor * sigma_u_;
+
+        if (debug_)
+          std::cout<<"Local Pos after::"<<local_pos[0]<<std::endl;
+
+        smear_factor = (*normal_)(generator_);
+        if (debug_) {
+          std::cout<<"Smearing factor for v="<<smear_factor<<std::endl;
+          std::cout<<"Local Pos before::"<<local_pos[1]<<std::endl;
+        }
+        local_pos[1] += smear_factor * sigma_v_;
+        if (debug_)
+          std::cout<<"Local Pos after::"<<local_pos[1]<<std::endl;
+
+        //update covariance
+        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
+
+        //update global position
+        if (debug_) {
+        std::cout<<"Before smearing"<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        }
+
+        //cache the acts x coordinate
+        double original_x = ldmxsp->global_pos_(0);
+
+        //transform to global
+        ldmxsp->global_pos_ = hit_surface->localToGlobal(gctx_,local_pos,dummy_momentum);
+
+        if (debug_) {
+          std::cout<<"The global position after the smearing"<<std::endl;
+          std::cout<<ldmxsp->global_pos_<<std::endl;
+        }
+
+
+        //update the acts x location
+        ldmxsp->global_pos_(0) = original_x;
+
+        //if (debug_) {
+        //  std::cout<<"After smearing"<<std::endl;
+        //  std::cout<<ldmxsp->global_pos_<<std::endl;
+        //}
+      }
+
+      ldmxsp->local_pos_ = local_pos;
+
+      if (debug_) {
+        std::cout<<"Local hit position::"<<std::endl;
+        std::cout<<ldmxsp->local_pos_<<std::endl;
+      }
+
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
+
+      geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
+
+    }
+    else
+      std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
+  }
+
+  return geoId_sl_map;
+}
+
+auto CKFProcessor::makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &sim_hits)
+  -> std::vector<ldmx::LdmxSpacePoint*> {
+      std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+
+  if (debug_)
+    std::cout<<"Found:"<<sim_hits.size()<<" sim hits in the "<< hit_collection_<<std::endl;
+
+  //Convert to ldmxsps
+  for (auto& simHit : sim_hits) {
+
+    //Remove low energy deposit hits
+    if (simHit.getEdep() >  0.05) {
+
+      //Only selects hits that have trackID==1
+      if (trackID_ > 0 && simHit.getTrackID() != trackID_)
+        continue;
+
+      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_)
+        continue;
+
+      ldmx::LdmxSpacePoint* ldmxsp = utils::convertSimHitToLdmxSpacePoint(simHit);
+
+      if (removeStereo_) {
+        unsigned int layerid = ldmxsp->layer();
+        if (layerid == 3101 || layerid == 3201 || layerid == 3301 || layerid == 3401 )
+          continue;
+      }
+
+      ldmxsps.push_back(ldmxsp);
+    }
+
+  }
+
+  if (debug_)
+    std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
+
+  return ldmxsps;
 }
 
 
