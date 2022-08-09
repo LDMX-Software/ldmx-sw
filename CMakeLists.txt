@@ -47,9 +47,11 @@ endif()
 #   here we 'set' some CMake variables that we would have passed to 'cmake' on
 #   the command line with '-D' if we were building ACTS directly.
 set(ACTS_BUILD_PLUGIN_DD4HEP ON) # representing geometry with DD4hep right now
+set(ACTS_BUILD_PLUGIN_TGEO ON) # representing geometry with DD4hep right now
 set(ACTS_BUILD_EXAMPLES OFF)     # don't waste time building examples
 set(CMAKE_CXX_STANDARD 17)       # set C++ standard we use within ldmx-sw
 add_subdirectory(acts)           # now build acts
+#add_subdirectory(acts-dd4hep)
 # luckily for us, adding ACTS as a subdirectory produces the same CMake targets
 #   as find_package, so we don't need to do anything else from here on out
 
@@ -70,7 +72,9 @@ setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
                            ActsCore
+                           ActsDD4hep
                            ActsPluginDD4hep
+                           ActsPluginTGeo
                            Geant4::Interface
                            DD4hep::DDCore
               sources ${SRC_FILES})
