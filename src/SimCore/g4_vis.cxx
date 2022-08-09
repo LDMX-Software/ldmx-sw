@@ -33,17 +33,19 @@ int main(int argc, char* argv[]) {
   }
 
   framework::EventProcessor* null_processor{nullptr};
-  framework::config::Parameters empty_parameters;
   simcore::ConditionsInterface empty_interface(null_processor);
+  framework::config::Parameters parser_parameters;
+  parser_parameters.addParameter("validate_detector",true);
+  parser_parameters.addParameter<std::string>("detector", the_arg);
 
   // RunManager
   G4RunManager* runManager = new G4RunManager;
 
   // Detector components
   auto parser{simcore::geo::ParserFactory::getInstance().createParser(
-      "gdml", empty_parameters, empty_interface)};
+      "gdml", parser_parameters, empty_interface)};
   runManager->SetUserInitialization(new simcore::DetectorConstruction(
-      parser, empty_parameters, empty_interface));
+      parser, parser_parameters, empty_interface));
   G4GeometryManager::GetInstance()->OpenGeometry();
   parser->read();
   runManager->DefineWorldVolume(parser->GetWorldVolume());
