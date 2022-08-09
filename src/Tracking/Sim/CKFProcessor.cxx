@@ -26,8 +26,6 @@ CKFProcessor::CKFProcessor(const std::string &name,
 CKFProcessor::~CKFProcessor() {}
 
 void CKFProcessor::onProcessStart() {
-
-
   profiling_map_["setup"]        = 0.;
   profiling_map_["hits"]         = 0.;
   profiling_map_["seeds"]        = 0.;
@@ -377,10 +375,30 @@ void CKFProcessor::produce(framework::Event &event) {
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
     
-  using LdmxSourceLinkAccessor = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
-  
-  //not supported anymore
-  //auto extr_surface = &(*gen_surface);
+  // Create source link accessor and connect delegate
+  struct SourceLinkAccIt {
+    using BaseIt = decltype(geoId_sl_map.begin());
+    BaseIt it;
+
+    using difference_type = typename BaseIt::difference_type;
+    using iterator_category = typename BaseIt::iterator_category;
+    using value_type = typename BaseIt::value_type::second_type;
+    using pointer = typename BaseIt::pointer;
+    using reference = value_type &;
+
+    SourceLinkAccIt& operator++() { ++it; return *this; }
+    bool operator==(const SourceLinkAccIt& other) const { return it == other.it; }
+    bool operator!=(const SourceLinkAccIt& other) const { return !(*this == other); }
+    const value_type& operator*() const { return it->second; }
+  };
+
+  auto sourceLinkAccessor = [&](const Acts::Surface &surface) -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
+    auto [begin, end] = geoId_sl_map.equal_range(surface.geometryId());
+    return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
+  };
+
+  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> sourceLinkAccessorDelegate;
+  sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(), decltype(sourceLinkAccessor)>(&sourceLinkAccessor);
 
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
@@ -410,16 +428,16 @@ void CKFProcessor::produce(framework::Event &event) {
   if (debug_)
     ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
-  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions(
       gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{*ckflogger},
+      sourceLinkAccessorDelegate, ckf_extensions, Acts::LoggerWrapper{*ckflogger},
       propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] += std::chrono::duration<double,std::milli>(ckf_setup-seeds).count();
   
-  auto results = ckf_->findTracks(geoId_sl_map, startParameters, kfOptions);
+  auto results = ckf_->findTracks(startParameters, ckfOptions);
 
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] += std::chrono::duration<double,std::milli>(ckf_run - ckf_setup).count();
@@ -707,10 +725,9 @@ void CKFProcessor::produce(framework::Event &event) {
 
         
         //Same extensions of the KF
-        Acts::KalmanFitterExtensions gsf_extensions;
+        Acts::GsfExtensions gsf_extensions;
         gsf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
         gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
-        gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
         Acts::GsfOptions gsf_options{gctx_,
           bctx_,
