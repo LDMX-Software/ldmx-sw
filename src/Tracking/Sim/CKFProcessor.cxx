@@ -737,7 +737,7 @@ void CKFProcessor::produce(framework::Event &event) {
           propagator_options,
           &(*extr_surface)};
 
-        gsf_options.abortOnError = true;
+        gsf_options.abortOnError = false;
         gsf_options.maxComponents = 4;
         gsf_options.disableAllMaterialHandling = false;
         
