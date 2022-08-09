@@ -3,6 +3,7 @@ p = ldmxcfg.Process('target_en')
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
 import LDMX.Ecal.EcalGeometry
+import LDMX.Hcal.HcalGeometry
 p.sequence = [
     target.electro_nuclear( 
         'ldmx-det-v12' , 
@@ -10,4 +11,5 @@ p.sequence = [
         )
     ]
 p.maxEvents = 1000
-p.outputFiles = [ '/tmp/target_en.root' ]
+p.maxTriesPerEvent = 1000
+p.outputFiles = [ 'target_en.root' ]
