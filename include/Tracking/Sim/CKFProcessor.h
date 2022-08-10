@@ -84,7 +84,6 @@
 //--- Tracking ---//
 #include "Tracking/Sim/TrackingUtils.h"
 #include "Tracking/Sim/IndexSourceLink.h"
-#include "Tracking/Sim/LdmxSourceLinkAccessor.h"
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Event/Track.h"
 
