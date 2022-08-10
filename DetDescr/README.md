@@ -38,7 +38,10 @@ from libDetDescr import HcalID, HcalDigiID
 rawHcalDigiID = 411042050 # Presumably from an HcalDigis collection somewhere
 digiID = HcalDigiID(rawHcalDigiID) 
 hcalID = HcalID(section=digiID.section(), layer=digiID.layer(), strip=digiID.strip())
-print(f"HcalDigiID [raw, section, layer, strip, end]  ({digiID.raw()}, {digiID.section()}, {digiID.layer()}, {digiID.strip()}, {digiID.end()}) \n\t->HcalID [raw, section, layer, strip] ({hcalID.raw()}, {hcalID.section()}, {hcalID.layer()}, {hcalID.strip()})")
+print(f"HcalDigiID [raw, section, layer, strip, end]  \
+({digiID.raw()}, {digiID.section()}, {digiID.layer()}, {digiID.strip()}, {digiID.end()})\
+\n\t->HcalID [raw, section, layer, strip] \
+({hcalID.raw()}, {hcalID.section()}, {hcalID.layer()}, {hcalID.strip()})")
 ```
 This would tell us that 
 
