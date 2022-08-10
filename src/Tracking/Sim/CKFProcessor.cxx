@@ -715,10 +715,10 @@ void CKFProcessor::produce(framework::Event &event) {
         const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
         std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
         mj.visitBackwards(trackTip, [&](const auto& state) {
-          const auto& sourceLink =
-              static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
           auto typeFlags = state.typeFlags();
           if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+            const auto& sourceLink =
+                static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
             fit_trackSourceLinks.push_back(std::cref(sourceLink));
           }
         });
