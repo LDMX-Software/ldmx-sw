@@ -52,8 +52,8 @@
 <constant name="trigger_pad_down_z"    
           value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
 
-<!-- 
-    Recoil tracker.
+<!--
+  Tracker common variables 
 -->
 
 <!-- Stereo Angle = 100 mrad = 5.72 degrees -->
@@ -61,8 +61,15 @@
 
 <!-- module and sensor dimensions -->
 <variable name="si_sensor_thickness" value="0.32*mm"/>
-<variable name="carbon_fiber_thickness" value="0.2*mm"/>
-<variable name="half_module_thickness" value="si_sensor_thickness + carbon_fiber_thickness"/>
+<variable name="si_sensor_dx" value="38.3399*mm" />
+<variable name="si_sensor_dy" value="98.33*mm" />
+<variable name="trk_module_dx" value="40.34*mm" />
+<varibale name="trk_module_dy" value="100.0*mm" />
+<!-- <variable name="half_module_thickness" value="si_sensor_thickness + carbon_fiber_thickness"/> --> 
+
+<!-- 
+    Recoil tracker.
+-->
 
 <!-- 
   Recoil tracker parent volume dimensions. In x/y, these are set 5 mm smaller 
