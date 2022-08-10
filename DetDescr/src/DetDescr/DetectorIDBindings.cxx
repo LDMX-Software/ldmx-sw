@@ -69,33 +69,33 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .value("EID_HCAL", SubdetectorIDType::EID_HCAL)
       .export_values();
 
-  class_<DetectorID>("DetectorID", init<>());
-  class_<HcalAbstractID>("HcalAbstractID", init<>());
-  class_<EcalAbstractID>("EcalAbstractID", init<>());
+  class_<DetectorID>("DetectorID", init<>(args("self")));
+  class_<HcalAbstractID>("HcalAbstractID", init<>(args("self")));
+  class_<EcalAbstractID>("EcalAbstractID", init<>(args("self")));
   class_<EcalID>("EcalID",
                  "Extension of DetectorID providing access to ECal layers and "
                  "cell numbers in a hex grid",
-                 init<>("Empty ECAL id (but not null!)"))
-      .def(init<RawValue>(args("rawid"), "Create from raw number"))
+                 init<>(args("self"), "Empty ECAL id (but not null!)"))
+      .def(init<RawValue>(args("self", "rawid"), "Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
-          args("layer", "module", "cell"), "Create from pieces"))
+          args("self", "layer", "module", "cell"), "Create from pieces"))
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
-          args("layer", "module", "u", "v"),
+          args("self", "layer", "module", "u", "v"),
           "Create from pieces including u/v cell"))
       .def(init<unsigned int, unsigned int,
                 std::pair<unsigned int, unsigned int>>(
-          args("layer", "module", "uv"),
+          args("self", "layer", "module", "uv"),
           "Create from pieces including u/v cell"))
       .def("module", &EcalID::module,
-           "Get the value of the module field from the ID.")
+           "Get the value of the module field from the ID.", args("self"))
       .def("layer", &EcalID::layer,
-           "Get the value of the layer field from the ID.")
+           "Get the value of the layer field from the ID.", args("self"))
       .def("cell", &EcalID::cell,
-           "Get the value of the cell field from the ID.")
+           "Get the value of the cell field from the ID.", args("self"))
       //  Requires defining a translator for pair
       // .def("getCellUV", &EcalID::getCellUV, "Get the cell u,v index assuming
       // a CMS-standard 432-cell sensor" )
-      .def("raw", &EcalID::raw, "The raw value");
+      .def("raw", &EcalID::raw, "The raw value", args("self"));
   class_<EcalElectronicsID>(
       "EcalElectronicsID",
       "Identifies a location in the Ecal readout chain\n"
@@ -106,52 +106,55 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       "For transient use only i.e. we use this ID to\n"
       "help translate the digitized data coming off the detector\n"
       "into spatially-important EcalIDs.",
-      init<>("Empty EcalElectronics id (but not null!)"))
+      init<>(args("self"), "Empty EcalElectronics id (but not null!)"))
       .def(init<RawValue>(
           "Create from raw number\n\n Importantly, this is NOT the PackedIndex "
           "value, it is the entire raw value including the subsystem ID.",
-          args("rawid")))
+          args("self", "rawid")))
       .def(init<unsigned int, unsigned int, unsigned int>(
-          args("fiber", "elink", "channel"), "Create from pieces"))
+          args("self", "fiber", "elink", "channel"), "Create from pieces"))
       .def("fiber", &EcalElectronicsID::fiber,
-           "Get the value of the fiber from the ID.")
+           "Get the value of the fiber from the ID.", args("self"))
       .def("elink", &EcalElectronicsID::elink,
-           "Get the value of the elink from the ID.")
+           "Get the value of the elink from the ID.", args("self"))
       .def("channel", &EcalElectronicsID::channel,
-           "Get the value of the channel from the ID.")
-      .def("index", &EcalElectronicsID::index, "Get the compact index value")
+           "Get the value of the channel from the ID.", args("self"))
+      .def("index", &EcalElectronicsID::index, "Get the compact index value",
+           args("self"))
       .def("idFromIndex", &EcalElectronicsID::idFromIndex, args("index"),
            "Construct an electronics id from an index")
-      .def("raw", &EcalElectronicsID::raw, "The raw value")
+      .def("raw", &EcalElectronicsID::raw, "The raw value", args("self"))
       .staticmethod("idFromIndex");
-  class_<EcalTriggerID>("EcalTriggerID",
-                        "Extension of DetectorID providing access to ECal "
-                        "trigger cell information",
-                        init<>("Empty EcALTrigger id (but not null!)"))
-      .def(init<RawValue>(args("rawid"), "Create from raw number"))
+  class_<EcalTriggerID>(
+      "EcalTriggerID",
+      "Extension of DetectorID providing access to ECal "
+      "trigger cell information",
+      init<>(args("self"), "Empty EcALTrigger id (but not null!)"))
+      .def(init<RawValue>(args("self", "rawid"), "Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
-          args("layer", "module", "cell"), "Create from pieces"))
+          args("self", "layer", "module", "cell"), "Create from pieces"))
       .def("module", &EcalTriggerID::module,
-           "Get the value of the module field from the ID.")
+           "Get the value of the module field from the ID.", args("self"))
       .def("layer", &EcalTriggerID::layer,
-           "Get the value of the layer field from the ID.")
+           "Get the value of the layer field from the ID.", args("self"))
       .def("triggercell", &EcalTriggerID::triggercell,
-           "Get the value of the trigger cell field from the ID.")
-      .def("raw", &EcalTriggerID::raw, "The raw value");
+           "Get the value of the trigger cell field from the ID.", args("self"))
+      .def("raw", &EcalTriggerID::raw, "The raw value", args("self"));
   //  Currently not actually defined
   // .def("getCellUV", &EcalTriggerID::getCellUV);
   class_<HcalID>("HcalID", "Implements detector ids for Hcal subdetector",
-                 init<>("Empty HcalID (but not null)"))
-      .def(init<RawValue>(args("rawid"), "Create from raw number"))
+                 init<>(args("self"), "Empty HcalID (but not null)"))
+      .def(init<RawValue>(args("self", "rawid"), "Create from raw number"))
       .def(init<unsigned int, unsigned int, unsigned int>(
-          args("section", "layer", "strip"), "Create from pieces"))
+          args("self", "section", "layer", "strip"), "Create from pieces"))
       .def("section", &HcalID::section,
-           "Get the value of the 'section' field from the ID.")
+           "Get the value of the 'section' field from the ID.", args("self"))
       .def("layer", &HcalID::layer,
-           "Get the value of the layer field from the ID.")
+           "Get the value of the layer field from the ID.", args("self"))
       .def("strip", &HcalID::strip,
-           "Get the value of the 'strip' (bar) field from the ID.")
-      .def("raw", &HcalID::raw, "The raw value");
+           "Get the value of the 'strip' (bar) field from the ID.",
+           args("self"))
+      .def("raw", &HcalID::raw, "The raw value", args("self"));
   class_<HcalElectronicsID>(
       "HcalElectronicsID",
 
@@ -163,90 +166,97 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       "For transient use only i.e. we use this ID to help translate the "
       "digitized data coming off the detector into spatially-important "
       "HcalDigiIDs.",
-      init<>("Empty HCAL id (but not null!)"))
-      .def(init<RawValue>("Create from raw number", args("rawid")))
+      init<>(args("self"), "Empty HCAL id (but not null!)"))
+      .def(init<RawValue>("Create from raw number", args("self", "rawid")))
       .def(init<unsigned int, unsigned int, unsigned int>(
-          "Create from pieces", args("fiber", "elink", "channel")))
+          "Create from pieces", args("self", "fiber", "elink", "channel")))
       .def("fiber", &HcalElectronicsID::fiber,
-           "Get the value of the fiber from the ID.")
+           "Get the value of the fiber from the ID.", args("self"))
       .def("elink", &HcalElectronicsID::elink,
-           "Get the value of the elink from the ID.")
+           "Get the value of the elink from the ID.", args("self"))
       .def("channel", &HcalElectronicsID::channel,
-           "Get the value of the channel from the ID.")
-      .def("index", &HcalElectronicsID::index, "Get the compact index value")
+           "Get the value of the channel from the ID.", args("self"))
+      .def("index", &HcalElectronicsID::index, "Get the compact index value",
+           args("self"))
       .def("idFromIndex", &HcalElectronicsID::idFromIndex, args("index"),
            "Create an electronics ID from an index")
-      .def("raw", &HcalElectronicsID::raw, "The raw value")
+      .def("raw", &HcalElectronicsID::raw, "The raw value", args("self"))
       .staticmethod("idFromIndex");
   class_<HcalDigiID>("HcalDigiID",
                      "Extension of HcalAbstractID providing access to HCal "
                      "digi information",
-                     init<>("Empty HcalDigiID (but not null)"))
-      .def(init<RawValue>("Create from raw number", args("rawid")))
+                     init<>(args("self"), "Empty HcalDigiID (but not null)"))
+      .def(init<RawValue>("Create from raw number", args("self", "rawid")))
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
-          "Create from pieces", args("section", "layer", "strip", "end")))
+          "Create from pieces",
+          args("self", "section", "layer", "strip", "end")))
       .def("section", &HcalDigiID::section,
-           "Get the value of the 'section' field from the ID.")
+           "Get the value of the 'section' field from the ID.", args("self"))
       .def("layer", &HcalDigiID::layer,
-           "Get the value of the 'layer' field from the ID.")
+           "Get the value of the 'layer' field from the ID.", args("self"))
       .def("strip", &HcalDigiID::strip,
-           "Get the value of the 'strip' (bar) field from the ID.")
+           "Get the value of the 'strip' (bar) field from the ID.",
+           args("self"))
       .def("end", &HcalDigiID::end,
-           "Get the value of the 'end' (positive/negative) field from the ID.")
+           "Get the value of the 'end' (positive/negative) field from the ID.",
+           args("self"))
       .def("isNegativeEnd", &HcalDigiID::isNegativeEnd,
-           "Get whether the 'end' field from the ID is negative.")
-      .def("raw", &HcalElectronicsID::raw, "The raw value");
+           "Get whether the 'end' field from the ID is negative.", args("self"))
+      .def("raw", &HcalElectronicsID::raw, "The raw value", args("self"));
   class_<HcalTriggerID>(
       "HcalTriggerID",
       "Extension of DetectorID providing access to HCal trigger cell",
-      init<>("Empty HCAL trigger id (but not null!)"))
-      .def(init<RawValue>("Create from raw number", args("rawid")))
+      init<>(args("self"), "Empty HCAL trigger id (but not null!)"))
+      .def(init<RawValue>("Create from raw number", args("self", "rawid")))
       .def(init<unsigned int, unsigned int, unsigned int, unsigned int>(
-          "Create from pieces", args("section", "layer", "superstrip", "end")))
+          "Create from pieces",
+          args("self", "section", "layer", "superstrip", "end")))
       .def("section", &HcalTriggerID::section,
-           "Get the value of the 'section' field from the ID.")
+           "Get the value of the 'section' field from the ID.", args("self"))
       .def("layer", &HcalTriggerID::layer,
-           "Get the value of the 'layer' field from the ID.")
+           "Get the value of the 'layer' field from the ID.", args("self"))
       .def("superstrip", &HcalTriggerID::superstrip,
-           "Get the value of the 'superstrip' field from the ID.")
+           "Get the value of the 'superstrip' field from the ID.", args("self"))
       .def("end", &HcalTriggerID::end,
-           "Get the value of the 'end' field from the ID.")
+           "Get the value of the 'end' field from the ID.", args("self"))
       .def("isNegativeEnd", &HcalTriggerID::isNegativeEnd,
-           "Get whether the 'end' field from the ID is negative.")
+           "Get whether the 'end' field from the ID is negative.", args("self"))
       .def("isComposite", &HcalTriggerID::isComposite,
-           "Get whether the ID is the composite of two bar ends.")
-      .def("raw", &HcalTriggerID::raw, "The raw value");
+           "Get whether the ID is the composite of two bar ends.", args("self"))
+      .def("raw", &HcalTriggerID::raw, "The raw value", args("self"));
   class_<SimSpecialID>("SimSpecialID",
                        "Implements detector ids for special simulation-derived "
                        "hits like scoring planes",
-                       init<>("Empty id (but not null!)"))
-      .def(init<RawValue>("Create from raw number", args("rawid")))
+                       init<>(args("self"), "Empty id (but not null!)"))
+      .def(init<RawValue>("Create from raw number", args("self", "rawid")))
       .def("ScoringPlaneID", &SimSpecialID::ScoringPlaneID,
            "Create a scoring id from pieces", args("plane"))
       .staticmethod("ScoringPlaneID")
       .def("plane", &SimSpecialID::plane,
            "Get the value of the plane field from the ID, if it is a scoring "
-           "plane. Otherwise, return -1")
+           "plane. Otherwise, return -1",
+           args("self"))
       .def("subtypePayload", &SimSpecialID::subtypePayload,
-           "Get the raw payload contents")
-      .def("raw", &SimSpecialID::raw, "The raw value");
+           "Get the raw payload contents", args("self"))
+      .def("raw", &SimSpecialID::raw, "The raw value", args("self"));
   class_<TrackerID>("TrackerID",
                     "Extension of DetectorID providing access to layer and "
                     "module number for tracker IDs")
-      .def(init<RawValue>("Create from a raw id, but check", args("rawid")))
+      .def(init<RawValue>("Create from a raw id, but check",
+                          args("self", "rawid")))
       .def(init<SubdetectorIDType, unsigned int, unsigned int>(
-          "Create from pieces", args("system", "layer", "module")))
+          "Create from pieces", args("self", "system", "layer", "module")))
       .def("module", &TrackerID::module,
-           "Get the value of the module field from the ID")
+           "Get the value of the module field from the ID", args("self"))
       .def("layer", &TrackerID::layer,
-           "Get the value of the layer field from the ID")
+           "Get the value of the layer field from the ID", args("self"))
       .def("raw", &TrackerID::raw, "The raw value");
   class_<TrigScintID>(
       "TrigScintID",
       "Class that defines the detector ID of the trigger scintillator.",
-      init<>("Default constructor"))
-      .def(init<RawValue>("Constructor with raw id", args("rawid")))
+      init<>(args("self"), "Default constructor"))
+      .def(init<RawValue>("Constructor with raw id", args("self", "rawid")))
       .def(init<unsigned int, unsigned int>("Create from pieces",
-                                            args("module", "bar")));
+                                            args("self", "module", "bar")));
 }
 #endif
