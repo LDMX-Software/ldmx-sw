@@ -146,29 +146,22 @@
 <!-- Width and height of the envelope for the side and back HCal 
      Must be the maximum of back hcal dx and side hcal dx 
 --> 
-<variable name="hcal_envelope_dx" value="3100."/>
-<variable name="hcal_envelope_dy" value="3100."/>   
+<variable name="hcal_envelope_dx" value="2000."/>
+<variable name="hcal_envelope_dy" value="2000."/>   
 
 <!-- Common HCal components --> 
 <variable name="air_thick"   value="2."/>
 <variable name="scint_thick" value="20."/>
+<variable name="scint_width" value="50."/>
 
 <!-- Back HCal Layer component -->
-<!-- layer 1 has no absorber, layers 2 and 3 have absorber of different thickness -->
-<variable name="hcal_back_dx"      value="3100."/>
-<variable name="hcal_back_dy"      value="3100."/>   
-<variable name="back_numLayers1"   value="0"/>        
-<variable name="back_numLayers2"   value="100"/>        
-<variable name="back_numLayers3"   value="0"/>        
-<variable name="back_abso2_thick"  value="25"/>
-<variable name="back_abso3_thick"  value="50"/>
-<variable name="back_layer1_thick" value="scint_thick + air_thick"/>
-<variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
-<variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
-<variable name="hcal_back_dz1"     value="back_numLayers1*back_layer1_thick"/>
-<variable name="hcal_back_dz2"     value="back_numLayers2*back_layer2_thick"/>
-<variable name="hcal_back_dz3"     value="back_numLayers3*back_layer3_thick"/>
-<variable name="hcal_back_dz"      value="hcal_back_dz1 + hcal_back_dz2 + hcal_back_dz3"/>
+<variable name="hcal_back_dx"      value="2000."/>
+<variable name="hcal_back_dy"      value="2000."/>   
+<variable name="hcal_back_numLayers"    value="96"/>
+<variable name="hcal_back_numScint"     value="50"/>
+<variable name="hcal_back_abso_thick"   value="25"/>
+<variable name="hcal_back_layer_thick"  value="hcal_back_abso_thick + scint_thick + 2.0*air_thick"/>
+<variable name="hcal_back_dz"      value="hcal_back_numLayers*hcal_back_layer_thick"/>
 
 <!-- Side HCal Layer component -->
 <variable name="sideTB_layers"     value="28"/>
@@ -182,7 +175,10 @@
 <constant name="hcal_dz" value="hcal_back_dz + hcal_side_dz" />
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> first commit separating scintillator bars
 <!--
     ECal 
 --> 
@@ -283,8 +279,13 @@
 <variable name="Hex_radius" value="85."/>
 
 <!-- ECal width and height -->
+<<<<<<< HEAD
 <variable name="ECal_dx" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
 <variable name="ECal_dy" value="Hex_radius*6. + hexagon_gap*2."/>
+=======
+<variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
+<variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
+>>>>>>> first commit separating scintillator bars
 
 <!-- 
     Distance from target to the ECal parent volume.  The calorimeter 
@@ -301,5 +302,9 @@
 --> 
 <constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
 <constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
+<<<<<<< HEAD
 <constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
 
+=======
+<constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
+>>>>>>> first commit separating scintillator bars
