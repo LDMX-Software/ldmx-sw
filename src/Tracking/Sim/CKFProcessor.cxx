@@ -707,10 +707,7 @@ void CKFProcessor::produce(framework::Event &event) {
 
 
     //Refit track using the GSF
-
-    bool gsfRefit = true;
-    
-    if (gsfRefit) {
+    if (gsfRefit_) {
       try {
         const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
         std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
