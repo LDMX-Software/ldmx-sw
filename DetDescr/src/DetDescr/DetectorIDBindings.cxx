@@ -1,5 +1,19 @@
-#include "DetDescr/DetectorIDBindings.h"
 #if DETECTORID_BINDINGS_ENABLED
+#include <boost/python.hpp>
+
+#include "DetDescr/DetectorID.h"
+#include "DetDescr/EcalAbstractID.h"
+#include "DetDescr/EcalElectronicsID.h"
+#include "DetDescr/EcalID.h"
+#include "DetDescr/EcalTriggerID.h"
+#include "DetDescr/HcalAbstractID.h"
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalElectronicsID.h"
+#include "DetDescr/HcalID.h"
+#include "DetDescr/HcalTriggerID.h"
+#include "DetDescr/SimSpecialID.h"
+#include "DetDescr/TrackerID.h"
+#include "DetDescr/TrigScintID.h"
 
 BOOST_PYTHON_MODULE(libDetDescr) {
   // init<Ts...>(...) defines constructors.
