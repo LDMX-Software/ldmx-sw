@@ -49,3 +49,77 @@ This would tell us that
 HcalDigiID [raw, section, layer, strip, end]  (411042050, 0, 1, 2, 0) 
         ->HcalID [raw, section, layer, strip] (402654210, 0, 1, 2)
 ```
+
+## Getting documentation from within a Python session
+``` python
+```
+
+Boost.Python will automatically generate some documentation for each kind of
+DetectorID that you can access through the built-in help system in Python.
+
+``` python
+# For documentation of the whole module, try 
+help(libDetDescr)
+# or for a particular type of ID 
+help(EcalID)
+```
+
+When you describe a module or object, you'll get a brief description of each of the available methods including their documentation and corresponding C++ signatures. This documentation might look a little bit silly at first glance, since most methods will contain an additional first argument. This is the implicit `this`/`self` parameter and you can ignore it when using the DetectorID functionality.
+
+As an example, the `Cell()` member function of the EcalID class is described as. 
+
+``` 
+|  cell(...)
+|      cell( (EcalID)self) -> int :
+|          Get the value of the cell field from the ID.
+|      
+|          C++ signature :
+|              int cell(ldmx::EcalID {lvalue})
+```
+
+The ways you can construct a given DetectorID type is documented by the `__init__` function. Since C++ supports overloading constructors while python doesn't, the signature will list the different versions one after another inside a wrapper `__init__(...)` function. 
+
+For EcalID, this would give us 
+
+``` 
+ |  __init__(...)
+ |      __init__( (object)self) -> None :
+ |          Empty ECAL id (but not null!)
+ |      
+ |          C++ signature :
+ |              void __init__(_object*)
+ |      
+ |      __init__( (object)self, (int)rawid) -> None :
+ |          Create from raw number
+ |      
+ |          C++ signature :
+ |              void __init__(_object*,unsigned int)
+ |      
+ |      __init__( (object)self, (int)layer, (int)module, (int)cell) -> None :
+ |          Create from pieces
+ |      
+ |          C++ signature :
+ |              void __init__(_object*,unsigned int,unsigned int,unsigned int)
+ |      
+ |      __init__( (object)self, (int)layer, (int)module, (int)u, (int)v) -> None :
+ |          Create from pieces including u/v cell
+ |      
+ |          C++ signature :
+ |              void __init__(_object*,unsigned int,unsigned int,unsigned int,unsigned int)
+ |      
+ |      __init__( (object)self, (int)layer, (int)module, (object)uv) -> None :
+ |          Create from pieces including u/v cell
+ |      
+ |          C++ signature :
+ |              void __init__(_object*,unsigned int,unsigned int,std::pair<unsigned int, unsigned int>)
+
+```
+
+This tells us that we can construct an EcalID from 
+- Nothing 
+- A raw value 
+- A layer, a module, and a cell value 
+- A layer, a module, a u, and a v value 
+- A layer, a module, and a u/v pair object
+
+
