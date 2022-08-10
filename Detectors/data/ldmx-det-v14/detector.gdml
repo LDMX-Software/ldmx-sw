@@ -141,10 +141,10 @@
     <userinfo>
 
         <!-- detector version -->
-        <auxiliary auxtype="DetectorVersion" auxvalue="12">
-            <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v12"/>
+        <auxiliary auxtype="DetectorVersion" auxvalue="14">
+            <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v14"/>
             <auxiliary auxtype="Description" 
-                        auxvalue="The v12 detector: ECal has motherboards inserted and HCal has made room for this extra space, Trigger Pads inserted."/>
+                        auxvalue="The v14 detector: Ecal is not rotated 90 degrees. Hcal has split scintillator bars."/>
         </auxiliary>
 
         <!-- define sensitive detectors -->
