@@ -1,5 +1,8 @@
 #include "Tracking/Reco/LdmxTrackingGeometry.h"
 
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/Plugins/DD4hep/DD4hepDetectorElement.hpp"
+
 #include <boost/filesystem.hpp>
 
 namespace tracking{
