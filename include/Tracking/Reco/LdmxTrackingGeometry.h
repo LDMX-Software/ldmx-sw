@@ -12,10 +12,7 @@
 
 //--- ACTS ---//
 //dd4hep
-#include "Acts/Plugins/DD4hep/ActsExtension.hpp"
-#include "Acts/Plugins/DD4hep/DD4hepLayerBuilder.hpp"      //needed?
-#include "Acts/Plugins/DD4hep/DD4hepDetectorElement.hpp"   //needed?
-
+#include "ActsDD4hep/ActsExtension.hpp"
 
 //geometry
 #include "Acts/Plugins/TGeo/TGeoPrimitivesHelper.hpp"

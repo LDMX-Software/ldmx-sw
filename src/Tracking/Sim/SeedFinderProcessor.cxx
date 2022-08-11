@@ -70,7 +70,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   grid_conf_.deltaRMax       = config_.deltaRMax;
   grid_conf_.cotThetaMax     = config_.cotThetaMax;
   grid_conf_.impactMax       = config_.impactMax;
-  grid_conf_.numPhiNeighbors = 1.;
+  grid_conf_.phiBinDeflectionCoverage = 1.; // renamed from numPhiNeighbors
   
 
 

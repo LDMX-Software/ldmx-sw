@@ -26,8 +26,6 @@ CKFProcessor::CKFProcessor(const std::string &name,
 CKFProcessor::~CKFProcessor() {}
 
 void CKFProcessor::onProcessStart() {
-
-
   profiling_map_["setup"]        = 0.;
   profiling_map_["hits"]         = 0.;
   profiling_map_["seeds"]        = 0.;
@@ -42,15 +40,9 @@ void CKFProcessor::onProcessStart() {
 
   //Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_, &gctx_);
-  tGeometry_ = ldmx_tg->getTG();
+  const auto tGeometry = ldmx_tg->getTG();
   
-  // Get the random seed service
-  //auto rseed{getCondition<framework::RandomNumberSeedService>(
-  //    framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME)};
-    
-  // Create a seed and update the generator with it
-  //generator_.seed(rseed.getSeed(getName()));
-  //generator_.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  // Seed the generator
   generator_.seed(1);
   
   //==> Move to a separate processor <== //
@@ -63,98 +55,62 @@ void CKFProcessor::onProcessStart() {
     std::cout<<"=========="<<std::endl;
     std::cout<<b_field / Acts::UnitConstants::T<<std::endl;
     std::cout<<"=========="<<std::endl;
+    std::cout<<"PF::BFIELDMAP"<<std::endl;
+    std::cout<<bfieldMap_<<std::endl;
   }
-  std::shared_ptr<Acts::ConstantBField> bField = std::make_shared<Acts::ConstantBField>(b_field);
+
+  // Setup a constant magnetic field
+  const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
 
   //TODO:: Move this to an external file
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] + bins[2]);  //xyz - field space
     //return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);    //zxy
-    
+
   };
 
-  if (debug_) {
-    std::cout<<"PF::BFIELDMAP"<<std::endl;
-    std::cout<<bfieldMap_<<std::endl;
-  }
-  
-  //CHECK:::Tests/IntegrationTests/PropagationTestsAtlasField.cpp
-  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
-                                                                   1. * Acts::UnitConstants::mm, //default scale for axes length
-                                                                   1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
-                                                                   false, //not symmetrical
-                                                                   true //rotate the axes to tracking frame
-                                                                   );
+  // Setup a interpolated bfield map
+  const auto map = std::make_shared<InterpolatedMagneticField3>(
+                     makeMagneticFieldMapXyzFromText(
+                       std::move(localToGlobalBin_xyz),
+                       bfieldMap_,
+                       1. * Acts::UnitConstants::mm, //default scale for axes length
+                       1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
+                       false, //not symmetrical
+                       true //rotate the axes to tracking frame
+                     )
+                   );
 
-  InterpolatedMagneticField3 map_copy = makeMagneticFieldMapXyzFromText(std::move(localToGlobalBin_xyz), bfieldMap_,
-                                                                        1. * Acts::UnitConstants::mm, //default scale for axes length
-                                                                        1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
-                                                                        false, //not symmetrical
-                                                                        true //rotate the axes to tracking frame
-                                                                        );
-  
-  sp_interpolated_bField_      = std::make_shared<InterpolatedMagneticField3>(std::move(map));
-  sp_interpolated_bField_copy_ = std::make_shared<InterpolatedMagneticField3>(std::move(map_copy));
-  
-  
-  //Setup the navigator for KF
-  Acts::Navigator::Config navCfg{tGeometry_};
+  // Setup the steppers
+  const auto stepper = Acts::EigenStepper<>{map};
+  const auto const_stepper = Acts::EigenStepper<>{constBField};
+  const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
+
+  // Setup the navigator
+  Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
   navCfg.resolvePassive    = true;
   navCfg.resolveSensitive  = true;
-  Acts::Navigator navigator(navCfg);
+  const Acts::Navigator navigator(navCfg);
 
-  //Setup the navigator for GSF
-  Acts::Navigator::Config gsf_navigator_cfg{tGeometry_};
-  gsf_navigator_cfg.resolvePassive = false;
-  gsf_navigator_cfg.resolveMaterial = true;
-  gsf_navigator_cfg.resolveSensitive = true;
-  Acts::Navigator gsf_navigator(gsf_navigator_cfg);
+  // Setup the propagators
+  propagator_ = const_b_field_ ? std::make_unique<CkfPropagator>(const_stepper, navigator) : std::make_unique<CkfPropagator>(stepper, navigator);
+  auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
-  
-  //Setup the stepper (do a straight line first)
-  //auto&& stepper = Acts::EigenStepper<>{std::move(bField)};
-  
+  // Setup the fitters
+  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
+  kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
+  gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(std::move(gsf_propagator));
 
-  auto&& stepper_const         = Acts::EigenStepper<>{std::move(bField)};
-  auto&& stepper_interpolated  = Acts::EigenStepper<>{std::move(sp_interpolated_bField_)};
-
-  auto&& gsf_stepper          = Acts::MultiEigenStepperLoop{std::move(sp_interpolated_bField_copy_)};
-  
-  //using Propagator = Acts::Propagator<Stepper, Acts::Navigator>;
-    
-  //Setup the propagator
-  if (const_b_field_) {
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    std::cout<<"Using constant b-field"<<std::endl;
-    propagator_ = std::make_shared<Propagator>(stepper_const, navigator);
-  }
-  else {
-    propagator_ = std::make_shared<Propagator>(stepper_interpolated, navigator);
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    std::cout<<"Using interpolated B-Field Map"<<std::endl;
-  }
-
-  //Only works with interpolated
-  Acts::Propagator gsf_propagator(std::move(gsf_stepper), std::move(gsf_navigator));
-
-  //Setup the GSF Fitter
-  //gsf_ = std::make_shared<Acts::GaussianSumFitter<Propagator> >(std::move(gsf_propagator));
-
-  //Acts::GaussianSumFitter<Propagator> gsf(std::move(gsf_propagator));
-  //Acts::GaussianSumFitter<decltype(gsf_propagator)> gsf(std::move(gsf_propagator));
-  gsf_ = std::make_shared< Acts::GaussianSumFitter<decltype(gsf_propagator)> >(std::move(gsf_propagator));
-  
   //Setup the propagator steps writer
   PropagatorStepWriter::Config cfg;
   cfg.filePath = steps_outfile_path_;
 
-  writer_ = std::make_shared<PropagatorStepWriter>(cfg);
+  writer_ = std::make_unique<PropagatorStepWriter>(cfg);
 
-  
   //Create a mapping between the layers and the Acts::Surface
-  makeLayerSurfacesMap(tGeometry_);
+  layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
 
 
   //Prepare histograms
@@ -181,62 +137,61 @@ void CKFProcessor::onProcessStart() {
 
   //Validation histograms
   
-  histo_p_      = new TH1F("p_res",    "p_res",200,-1,1);
-  histo_d0_     = new TH1F("d0_res",   "d0_res",200,-0.2,0.2);
-  histo_z0_     = new TH1F("z0_res",   "z0_res",200,-0.75,0.75);
-  histo_phi_    = new TH1F("phi_res",  "phi_res",200,-0.015,0.015);
-  histo_theta_  = new TH1F("theta_res","theta_res",200,-0.01,0.01);
-  histo_qop_    = new TH1F("qop_res","qop_res",200,-5,5);
+  histo_p_      = std::make_unique<TH1F>("p_res",    "p_res",200,-1,1);
+  histo_d0_     = std::make_unique<TH1F>("d0_res",   "d0_res",200,-0.2,0.2);
+  histo_z0_     = std::make_unique<TH1F>("z0_res",   "z0_res",200,-0.75,0.75);
+  histo_phi_    = std::make_unique<TH1F>("phi_res",  "phi_res",200,-0.015,0.015);
+  histo_theta_  = std::make_unique<TH1F>("theta_res","theta_res",200,-0.01,0.01);
+  histo_qop_    = std::make_unique<TH1F>("qop_res","qop_res",200,-5,5);
 
-  histo_p_pull_      = new TH1F("p_pull",    "p_pull",    200,-5,5);
-  histo_d0_pull_     = new TH1F("d0_pull",   "d0_pull",   200,-5,5);
-  histo_z0_pull_     = new TH1F("z0_pull",   "z0_pull",   200,-5,5);
-  histo_phi_pull_    = new TH1F("phi_pull",  "phi_pull",  200,-5,5);
-  histo_theta_pull_  = new TH1F("theta_pull","theta_pull",200,-5,5);
-  histo_qop_pull_    = new TH1F("qop_pull",  "qop_pull",  200,-5,5);
+  histo_p_pull_      = std::make_unique<TH1F>("p_pull",    "p_pull",    200,-5,5);
+  histo_d0_pull_     = std::make_unique<TH1F>("d0_pull",   "d0_pull",   200,-5,5);
+  histo_z0_pull_     = std::make_unique<TH1F>("z0_pull",   "z0_pull",   200,-5,5);
+  histo_phi_pull_    = std::make_unique<TH1F>("phi_pull",  "phi_pull",  200,-5,5);
+  histo_theta_pull_  = std::make_unique<TH1F>("theta_pull","theta_pull",200,-5,5);
+  histo_qop_pull_    = std::make_unique<TH1F>("qop_pull",  "qop_pull",  200,-5,5);
 
-  h_p_      = new TH1F("p",    "p",600,0,6);
-  h_d0_     = new TH1F("d0",   "d0",100,-20,20);
-  h_z0_     = new TH1F("z0",   "z0",100,-50,50);
-  h_phi_    = new TH1F("phi",  "phi",200,-0.5,0.5);
-  h_theta_  = new TH1F("theta","theta",200,0.8,2.2);
-  h_qop_    = new TH1F("qop","qop",200,-10,10);
-  h_nHits_  = new TH1F("nHits","nHits",15,0,15);
+  h_p_      = std::make_unique<TH1F>("p",    "p",600,0,6);
+  h_d0_     = std::make_unique<TH1F>("d0",   "d0",100,-20,20);
+  h_z0_     = std::make_unique<TH1F>("z0",   "z0",100,-50,50);
+  h_phi_    = std::make_unique<TH1F>("phi",  "phi",200,-0.5,0.5);
+  h_theta_  = std::make_unique<TH1F>("theta","theta",200,0.8,2.2);
+  h_qop_    = std::make_unique<TH1F>("qop","qop",200,-10,10);
+  h_nHits_  = std::make_unique<TH1F>("nHits","nHits",15,0,15);
 
-  h_p_err_      = new TH1F("p_err",    "p_err"    ,600,0,1);
-  h_d0_err_     = new TH1F("d0_err",   "d0_err"   ,100,0,0.05);
-  h_z0_err_     = new TH1F("z0_err",   "z0_err"   ,100,0,0.8);
-  h_phi_err_    = new TH1F("phi_err",  "phi_err"  ,200,0,0.002);
-  h_theta_err_  = new TH1F("theta_err","theta_err",200,0,0.02);
-  h_qop_err_    = new TH1F("qop_err",  "qop_err"  ,200,0,0.1);
+  h_p_err_      = std::make_unique<TH1F>("p_err",    "p_err"    ,600,0,1);
+  h_d0_err_     = std::make_unique<TH1F>("d0_err",   "d0_err"   ,100,0,0.05);
+  h_z0_err_     = std::make_unique<TH1F>("z0_err",   "z0_err"   ,100,0,0.8);
+  h_phi_err_    = std::make_unique<TH1F>("phi_err",  "phi_err"  ,200,0,0.002);
+  h_theta_err_  = std::make_unique<TH1F>("theta_err","theta_err",200,0,0.02);
+  h_qop_err_    = std::make_unique<TH1F>("qop_err",  "qop_err"  ,200,0,0.1);
 
-  h_p_refit_      = new TH1F("p_refit",     "p_refit",600,0,6);
-  h_d0_refit_     = new TH1F("d0_refit",    "d0_refit",100,-20,20);
-  h_z0_refit_     = new TH1F("z0_refit",    "z0_refit",100,-50,50);
-  h_phi_refit_    = new TH1F("phi_refit",   "phi_refit",200,-0.5,0.5);
-  h_theta_refit_  = new TH1F("theta_refit", "theta_refit",200,0.8,2.2);
+  h_p_refit_      = std::make_unique<TH1F>("p_refit",     "p_refit",600,0,6);
+  h_d0_refit_     = std::make_unique<TH1F>("d0_refit",    "d0_refit",100,-20,20);
+  h_z0_refit_     = std::make_unique<TH1F>("z0_refit",    "z0_refit",100,-50,50);
+  h_phi_refit_    = std::make_unique<TH1F>("phi_refit",   "phi_refit",200,-0.5,0.5);
+  h_theta_refit_  = std::make_unique<TH1F>("theta_refit", "theta_refit",200,0.8,2.2);
   
 
-  h_p_gsf_refit_      = new TH1F("p_gsf_refit",     "p_gsf_refit",600,0,6);
-  h_d0_gsf_refit_     = new TH1F("d0_gsf_refit",    "d0_gsf_refit",100,-20,20);
-  h_z0_gsf_refit_     = new TH1F("z0_gsf_refit",    "z0_gsf_refit",100,-50,50);
-  h_phi_gsf_refit_    = new TH1F("phi_gsf_refit",   "phi_gsf_refit",200,-0.5,0.5);
-  h_theta_gsf_refit_  = new TH1F("theta_gsf_refit", "theta_gsf_refit",200,0.8,2.2);
+  h_p_gsf_refit_      = std::make_unique<TH1F>("p_gsf_refit",     "p_gsf_refit",600,0,6);
+  h_d0_gsf_refit_     = std::make_unique<TH1F>("d0_gsf_refit",    "d0_gsf_refit",100,-20,20);
+  h_z0_gsf_refit_     = std::make_unique<TH1F>("z0_gsf_refit",    "z0_gsf_refit",100,-50,50);
+  h_phi_gsf_refit_    = std::make_unique<TH1F>("phi_gsf_refit",   "phi_gsf_refit",200,-0.5,0.5);
+  h_theta_gsf_refit_  = std::make_unique<TH1F>("theta_gsf_refit", "theta_gsf_refit",200,0.8,2.2);
 
-  h_p_gsf_refit_res_     = new TH1F("p_gsf_res", "p_gsf_res", 200,-1,1);
-  h_qop_gsf_refit_res_   = new TH1F("qop_gsf_res", "qop_gsf_res", 200,-5,5);
+  h_p_gsf_refit_res_     = std::make_unique<TH1F>("p_gsf_res", "p_gsf_res", 200,-1,1);
+  h_qop_gsf_refit_res_   = std::make_unique<TH1F>("qop_gsf_res", "qop_gsf_res", 200,-5,5);
   
 
-  h_p_truth_      = new TH1F("p_truth",      "p_truth",600,0,6);
-  h_d0_truth_     = new TH1F("d0_truth",     "d0_truth",100,-20,20);
-  h_z0_truth_     = new TH1F("z0_truth_",    "z0_truth",100,-50,50);
-  h_phi_truth_    = new TH1F("phi_truth",    "phi_truth",200,-0.5,0.5);
-  h_theta_truth_  = new TH1F("theta_truth`", "theta_truth",200,0.8,2.2);
-  h_qop_truth_    = new TH1F("qop_truth","qop_truth",200,-10,10);
+  h_p_truth_      = std::make_unique<TH1F>("p_truth",      "p_truth",600,0,6);
+  h_d0_truth_     = std::make_unique<TH1F>("d0_truth",     "d0_truth",100,-20,20);
+  h_z0_truth_     = std::make_unique<TH1F>("z0_truth_",    "z0_truth",100,-50,50);
+  h_phi_truth_    = std::make_unique<TH1F>("phi_truth",    "phi_truth",200,-0.5,0.5);
+  h_theta_truth_  = std::make_unique<TH1F>("theta_truth`", "theta_truth",200,0.8,2.2);
+  h_qop_truth_    = std::make_unique<TH1F>("qop_truth","qop_truth",200,-10,10);
 
-  h_tgt_scoring_x_y_      = new TH2F("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
-  h_tgt_scoring_z_        = new TH1F("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
-  
+  h_tgt_scoring_x_y_      = std::make_unique<TH2F>("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
+  h_tgt_scoring_z_        = std::make_unique<TH1F>("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
 }
 
 void CKFProcessor::produce(framework::Event &event) {
@@ -312,157 +267,18 @@ void CKFProcessor::produce(framework::Event &event) {
   profiling_map_["setup"] += std::chrono::duration<double,std::milli>(setup-start).count();
   
   
-  const std::vector<ldmx::SimTrackerHit> sim_hits  = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
-    
-  std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+  const std::vector<ldmx::SimTrackerHit> sim_hits = event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
+  const auto ldmxsps = makeLdmxSpacepoints(sim_hits);
 
-  if (debug_)
-    std::cout<<"Found:"<<sim_hits.size()<<" sim hits in the "<< hit_collection_<<std::endl;
-  
-  //Convert to ldmxsps
-  for (auto& simHit : sim_hits) {
-    
-    //Remove low energy deposit hits
-    if (simHit.getEdep() >  0.05) {
-      
-      //Only selects hits that have trackID==1
-      if (trackID_ > 0 && simHit.getTrackID() != trackID_)
-        continue;
-      
-      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_)
-        continue;
-
-      ldmx::LdmxSpacePoint* ldmxsp = utils::convertSimHitToLdmxSpacePoint(simHit);
-      
-      if (removeStereo_) {
-        unsigned int layerid = ldmxsp->layer();
-        if (layerid == 3101 || layerid == 3201 || layerid == 3301 || layerid == 3401 )
-          continue;
-      }
-
-      ldmxsps.push_back(ldmxsp);
-    }
-    
-  }
-  
-  if (debug_)
-    std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
-    
   //The mapping between the geometry identifier
   //and the IndexSourceLink that points to the hit
-  //std::unordered_map<Acts::GeometryIdentifier,
-  //                   std::vector< ActsExamples::IndexSourceLink> > geoId_sl_map_;
-  std::unordered_multimap<Acts::GeometryIdentifier,
-                          ActsExamples::IndexSourceLink> geoId_sl_mmap_;
-  
-  //Check the hits associated to the surfaces
-  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
+  const auto geoId_sl_map = makeGeoIdSourceLinkMap(ldmxsps);
 
-    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
-    unsigned int layerid = ldmxsp->layer();
-
-    const Acts::Surface* hit_surface = layer_surface_map_[layerid];
-    if (hit_surface) {
-      
-      //Transform the ldmx space point from global to local and store the information
-
-      
-      if (debug_ ) {
-        std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        hit_surface->toStream(gctx_,std::cout);
-        std::cout<<std::endl;
-        std::cout<<"TRANSFORM LOCAL TO GLOBAL"<<std::endl;
-        std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
-        std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
-      }
-      
-      
-      Acts::Vector3 dummy_momentum;
-      Acts::Vector2 local_pos;
-      try { 
-        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
-      } catch (const std::exception& e) {
-        std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        continue;
-      }
-
-      //Smear the local position
-      
-      if (do_smearing_) {
-        float smear_factor{(*normal_)(generator_)};
-
-        if (debug_) {
-          std::cout<<"Smearing factor for u="<<smear_factor<<std::endl;
-          std::cout<<"Local Pos before::"<<local_pos[0]<<std::endl;
-        }
-        local_pos[0] += smear_factor * sigma_u_;
-
-        if (debug_)
-          std::cout<<"Local Pos after::"<<local_pos[0]<<std::endl;
-        
-        smear_factor = (*normal_)(generator_);
-        if (debug_) {
-          std::cout<<"Smearing factor for v="<<smear_factor<<std::endl;
-          std::cout<<"Local Pos before::"<<local_pos[1]<<std::endl;
-        }
-        local_pos[1] += smear_factor * sigma_v_;
-        if (debug_)
-          std::cout<<"Local Pos after::"<<local_pos[1]<<std::endl;
-        
-        //update covariance
-        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-        
-        //update global position
-        if (debug_) {
-        std::cout<<"Before smearing"<<std::endl;
-        std::cout<<ldmxsp->global_pos_<<std::endl;
-        }
-        
-        //cache the acts x coordinate 
-        double original_x = ldmxsp->global_pos_(0);
-
-        //transform to global
-        ldmxsp->global_pos_ = hit_surface->localToGlobal(gctx_,local_pos,dummy_momentum);
-
-        if (debug_) {
-          std::cout<<"The global position after the smearing"<<std::endl;
-          std::cout<<ldmxsp->global_pos_<<std::endl;
-        }
-        
-        
-        //update the acts x location 
-        ldmxsp->global_pos_(0) = original_x;
-
-        //if (debug_) {
-        //  std::cout<<"After smearing"<<std::endl;
-        //  std::cout<<ldmxsp->global_pos_<<std::endl;
-        //}
-      }
-      
-      ldmxsp->local_pos_ = local_pos;
-
-      if (debug_) {
-        std::cout<<"Local hit position::"<<std::endl;
-        std::cout<<ldmxsp->local_pos_<<std::endl;
-      }
-
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
-
-      geoId_sl_mmap_.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
-            
-    }
-    else
-      std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
-    
-  }
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] += std::chrono::duration<double,std::milli>(hits-setup).count();
       
   // ============   Setup the CKF  ============
-  Acts::CombinatorialKalmanFilter<Propagator> ckf(*propagator_);  //Acts::Propagagtor<Acts::EigenStepper<>, Acts::Navigator>
   
   //Retrieve the seeds
     
@@ -559,10 +375,30 @@ void CKFProcessor::produce(framework::Event &event) {
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
   ckf_extensions.measurementSelector.connect<&Acts::MeasurementSelector::select>(&measSel);
     
-  using LdmxSourceLinkAccessor = GeneralContainerAccessor<std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> >  ;
-  
-  //not supported anymore
-  //auto extr_surface = &(*gen_surface);
+  // Create source link accessor and connect delegate
+  struct SourceLinkAccIt {
+    using BaseIt = decltype(geoId_sl_map.begin());
+    BaseIt it;
+
+    using difference_type = typename BaseIt::difference_type;
+    using iterator_category = typename BaseIt::iterator_category;
+    using value_type = typename BaseIt::value_type::second_type;
+    using pointer = typename BaseIt::pointer;
+    using reference = value_type &;
+
+    SourceLinkAccIt& operator++() { ++it; return *this; }
+    bool operator==(const SourceLinkAccIt& other) const { return it == other.it; }
+    bool operator!=(const SourceLinkAccIt& other) const { return !(*this == other); }
+    const value_type& operator*() const { return it->second; }
+  };
+
+  auto sourceLinkAccessor = [&](const Acts::Surface &surface) -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
+    auto [begin, end] = geoId_sl_map.equal_range(surface.geometryId());
+    return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
+  };
+
+  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> sourceLinkAccessorDelegate;
+  sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(), decltype(sourceLinkAccessor)>(&sourceLinkAccessor);
 
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
@@ -592,17 +428,16 @@ void CKFProcessor::produce(framework::Event &event) {
   if (debug_)
     ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
-  Acts::CombinatorialKalmanFilterOptions<LdmxSourceLinkAccessor> kfOptions(
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions(
       gctx_,bctx_,cctx_,
-      LdmxSourceLinkAccessor(), ckf_extensions, Acts::LoggerWrapper{*ckflogger},
+      sourceLinkAccessorDelegate, ckf_extensions, Acts::LoggerWrapper{*ckflogger},
       propagator_options,&(*extr_surface));
   
   // run the CKF for all initial track states
-
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] += std::chrono::duration<double,std::milli>(ckf_setup-seeds).count();
   
-  auto results = ckf.findTracks(geoId_sl_mmap_, startParameters, kfOptions);
+  auto results = ckf_->findTracks(startParameters, ckfOptions);
 
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] += std::chrono::duration<double,std::milli>(ckf_run - ckf_setup).count();
@@ -801,20 +636,13 @@ void CKFProcessor::produce(framework::Event &event) {
     tracks.push_back(trk);
     ntracks_++;
 
-    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 && false)
-      //Write the event display for the recoil
-      WriteEvent(event,
-		 ckf_result.fittedParameters.begin()->second,
-                 mj,
-		 trackTip,
-                 ldmxsps);
-
+    //Write the event display for the recoil
+    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 && false) {
+      writeEvent(event, ckf_result.fittedParameters.begin()->second, mj, trackTip, ldmxsps);
+    }
     
     //Refit the track with the KalmanFitter using backward propagation
-
-    
     if (kfRefit_) {
-
       std::cout<<"Preparing theKF refit"<<std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
       mj.visitBackwards(trackTip, [&](const auto& state) {
@@ -833,12 +661,7 @@ void CKFProcessor::produce(framework::Event &event) {
       kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
       kfitter_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
-      //Rewrite all the stuff from scratch
-      
-
-
       //rFiltering is true, so it should run in reversed direction.
-      
       Acts::KalmanFitterOptions kfitter_options =
           Acts::KalmanFitterOptions(gctx_,bctx_,cctx_,
                                     kfitter_extensions,Acts::LoggerWrapper{*kfLogger},
@@ -847,15 +670,13 @@ void CKFProcessor::produce(framework::Event &event) {
       
 
 
-      std::cout<<"rFiltering =" << (int)kfitter_options.reversedFiltering <<std::endl;
+      std::cout<<"rFiltering =" << std::boolalpha << kfitter_options.reversedFiltering <<std::endl;
       
       // create the Kalman Fitter
-      if (debug_)
+      if (debug_) {
         std::cout<<"Make the KalmanFilter fitter object"<<std::endl;
-      Acts::KalmanFitter<Propagator> kf(*propagator_);
-      
-      if (debug_)
         std::cout<<"Refit"<<std::endl;
+      }
 
       std::cout<<"Refit tracks with KF"<<std::endl;
       std::cout<<"Starting from "<<std::endl;
@@ -867,14 +688,12 @@ void CKFProcessor::produce(framework::Event &event) {
       //Acts::MagneticFieldProvider::Cache cache = sp_interpolated_bField_->makeCache(bctx_);
       //std::cout<<" BField::\n"<<sp_interpolated_bField_->getField(ckf_result.fittedParameters.begin()->second.position(gctx_),cache).value() / Acts::UnitConstants::T <<std::endl; 
       
-      auto kf_refit_result = kf.fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
+      auto kf_refit_result = kf_->fit(fit_trackSourceLinks.begin(),fit_trackSourceLinks.end(),
                                     ckf_result.fittedParameters.begin()->second,kfitter_options);
      
       if (!kf_refit_result.ok()) {
         std::cout<<"KF Refit failed"<<std::endl;
-      }
-      else {
-        
+      } else {
         auto kf_refit_value = kf_refit_result.value();
         auto kf_params = kf_refit_value.fittedParameters;
         h_p_refit_     ->Fill((*kf_params).absoluteMomentum());
@@ -888,47 +707,36 @@ void CKFProcessor::produce(framework::Event &event) {
 
 
     //Refit track using the GSF
-
-    bool gsfRefit = false;
-    
-    if (gsfRefit) {
-
+    if (gsfRefit_) {
       try {
-
-        
         const auto gsfLogger = Acts::getDefaultLogger("GSF",Acts::Logging::INFO);
         std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>> fit_trackSourceLinks;
         mj.visitBackwards(trackTip, [&](const auto& state) {
-          const auto& sourceLink =
-              static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
           auto typeFlags = state.typeFlags();
           if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+            const auto& sourceLink =
+                static_cast<const ActsExamples::IndexSourceLink&>(state.uncalibrated());
             fit_trackSourceLinks.push_back(std::cref(sourceLink));
           }
         });
 
         
         //Same extensions of the KF
-        Acts::KalmanFitterExtensions gsf_extensions;
+        Acts::GsfExtensions gsf_extensions;
         gsf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
         gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(&kfUpdater);
-        gsf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
 
-
-        
         Acts::GsfOptions gsf_options{gctx_,
           bctx_,
           cctx_,
           gsf_extensions,
           Acts::LoggerWrapper{*gsfLogger},
           propagator_options,
-          &(*extr_surface),
-          true,
-          4,
-          false};
-        
-        
-        
+          &(*extr_surface)};
+
+        gsf_options.abortOnError = false;
+        gsf_options.maxComponents = 4;
+        gsf_options.disableAllMaterialHandling = false;
         
         auto gsf_refit_result = gsf_->fit(fit_trackSourceLinks.begin(),
                                           fit_trackSourceLinks.end(),
@@ -940,7 +748,6 @@ void CKFProcessor::produce(framework::Event &event) {
           std::cout<<"GSF Refit failed"<<std::endl;
         }
         else {
-          
           auto gsf_refit_value = gsf_refit_result.value();
           auto gsf_params = gsf_refit_value.fittedParameters;
           h_p_gsf_refit_     ->Fill((*gsf_params).absoluteMomentum());
@@ -951,12 +758,9 @@ void CKFProcessor::produce(framework::Event &event) {
         }
         
       } catch (...) {
-
         std::cout<<"ERROR:: GSF Refit failed"<<std::endl;
       }
-        
       } // do refit GSF
-      
   } // loop on CKF Results
 
 
@@ -966,7 +770,6 @@ void CKFProcessor::produce(framework::Event &event) {
   if (debug_) 
     std::cout<<"Found "<<GoodResult<< " tracks" <<std::endl;  
   
-  
   //Add the tracks to the event
   event.add(out_trk_collection_, tracks);
   
@@ -974,7 +777,6 @@ void CKFProcessor::produce(framework::Event &event) {
   //long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();
   auto diff = end-start;
   processing_time_ += std::chrono::duration <double, std::milli> (diff).count();
-    
 }
 
 
@@ -1106,7 +908,7 @@ void CKFProcessor::configure(framework::config::Parameters &parameters) {
 }
 
 void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
-                                      const Acts::Vector3& eval_pos) {
+                                      const Acts::Vector3& eval_pos) const {
 
   Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
   std::cout<<"Pos::\n"<<eval_pos<<std::endl;
@@ -1117,7 +919,7 @@ void CKFProcessor::testField(const std::shared_ptr<Acts::MagneticFieldProvider> 
 
 
 void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
-                                            const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) {
+                                            const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const {
   
   for (const auto& pair : map) {
     std::cout<<"GeometryID::"<<pair.first<<std::endl;
@@ -1131,8 +933,9 @@ void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& cal
 //Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
 //Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
 
-void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
-  
+auto CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*> {
+  auto layer_surface_map = decltype(layer_surface_map_){};
+
   //loop over the tracking geometry to find all sensitive surfaces
   std::vector<const Acts::Surface*> surfaces;
   ldmx_tg->getSurfaces(surfaces, trackingGeometry);
@@ -1154,7 +957,7 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
     
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
     
-    layer_surface_map_[surfaceId] = surface;
+    layer_surface_map[surfaceId] = surface;
     
   }// surfaces loop
 
@@ -1163,7 +966,7 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
     
     std::cout<<__PRETTY_FUNCTION__<<std::endl;
     
-    for (auto const& surfaceId : layer_surface_map_) {
+    for (auto const& surfaceId : layer_surface_map) {
       std::cout<<getName()<<" "<< surfaceId.first<<std::endl;
       std::cout<<getName()<<" Check the surface"<<std::endl;
       surfaceId.second->toStream(gctx_,std::cout);
@@ -1171,15 +974,16 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
       std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
     }
   }
+
+  return layer_surface_map;
 }
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
-
-  bool CKFProcessor::WriteEvent(framework::Event &event,
-                                const Acts::BoundTrackParameters& perigeeParameters,
-                                const Acts::MultiTrajectory& mj,
-                                const int &trackTip,
-                                const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {  
+void CKFProcessor::writeEvent(framework::Event &event,
+                              const Acts::BoundTrackParameters& perigeeParameters,
+                              const Acts::MultiTrajectory& mj,
+                              const int &trackTip,
+                              const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {
   //Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
@@ -1362,6 +1166,155 @@ void CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
   writer_->WriteSteps(event,
                       propagationSteps,
                       ldmxsps);
+}
+
+auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint* > &ldmxsps)
+  -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink> {
+  std::unordered_multimap<Acts::GeometryIdentifier,
+                          ActsExamples::IndexSourceLink> geoId_sl_map;
+
+  //Check the hits associated to the surfaces
+  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
+
+    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
+    unsigned int layerid = ldmxsp->layer();
+
+    const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+    if (hit_surface) {
+
+      //Transform the ldmx space point from global to local and store the information
+
+
+      if (debug_ ) {
+        std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        hit_surface->toStream(gctx_,std::cout);
+        std::cout<<std::endl;
+        std::cout<<"TRANSFORM LOCAL TO GLOBAL"<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
+        std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
+      }
+
+
+      Acts::Vector3 dummy_momentum;
+      Acts::Vector2 local_pos;
+      try {
+        local_pos = hit_surface->globalToLocal(gctx_,ldmxsp->global_pos_,dummy_momentum, 0.320).value();
+      } catch (const std::exception& e) {
+        std::cout<<"WARNING:: hit not on surface.. Skipping."<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        continue;
+      }
+
+      //Smear the local position
+
+      if (do_smearing_) {
+        float smear_factor{(*normal_)(generator_)};
+
+        if (debug_) {
+          std::cout<<"Smearing factor for u="<<smear_factor<<std::endl;
+          std::cout<<"Local Pos before::"<<local_pos[0]<<std::endl;
+        }
+        local_pos[0] += smear_factor * sigma_u_;
+
+        if (debug_)
+          std::cout<<"Local Pos after::"<<local_pos[0]<<std::endl;
+
+        smear_factor = (*normal_)(generator_);
+        if (debug_) {
+          std::cout<<"Smearing factor for v="<<smear_factor<<std::endl;
+          std::cout<<"Local Pos before::"<<local_pos[1]<<std::endl;
+        }
+        local_pos[1] += smear_factor * sigma_v_;
+        if (debug_)
+          std::cout<<"Local Pos after::"<<local_pos[1]<<std::endl;
+
+        //update covariance
+        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
+
+        //update global position
+        if (debug_) {
+        std::cout<<"Before smearing"<<std::endl;
+        std::cout<<ldmxsp->global_pos_<<std::endl;
+        }
+
+        //cache the acts x coordinate
+        double original_x = ldmxsp->global_pos_(0);
+
+        //transform to global
+        ldmxsp->global_pos_ = hit_surface->localToGlobal(gctx_,local_pos,dummy_momentum);
+
+        if (debug_) {
+          std::cout<<"The global position after the smearing"<<std::endl;
+          std::cout<<ldmxsp->global_pos_<<std::endl;
+        }
+
+
+        //update the acts x location
+        ldmxsp->global_pos_(0) = original_x;
+
+        //if (debug_) {
+        //  std::cout<<"After smearing"<<std::endl;
+        //  std::cout<<ldmxsp->global_pos_<<std::endl;
+        //}
+      }
+
+      ldmxsp->local_pos_ = local_pos;
+
+      if (debug_) {
+        std::cout<<"Local hit position::"<<std::endl;
+        std::cout<<ldmxsp->local_pos_<<std::endl;
+      }
+
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),i_ldmx_hit);
+
+      geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
+
+    }
+    else
+      std::cout<<getName()<<"::HIT "<<i_ldmx_hit<<" at layer"<<(ldmxsps.at(i_ldmx_hit))->layer()<<" is not associated to any surface?!"<<std::endl;
+  }
+
+  return geoId_sl_map;
+}
+
+auto CKFProcessor::makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &sim_hits)
+  -> std::vector<ldmx::LdmxSpacePoint*> {
+      std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
+
+  if (debug_)
+    std::cout<<"Found:"<<sim_hits.size()<<" sim hits in the "<< hit_collection_<<std::endl;
+
+  //Convert to ldmxsps
+  for (auto& simHit : sim_hits) {
+
+    //Remove low energy deposit hits
+    if (simHit.getEdep() >  0.05) {
+
+      //Only selects hits that have trackID==1
+      if (trackID_ > 0 && simHit.getTrackID() != trackID_)
+        continue;
+
+      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_)
+        continue;
+
+      ldmx::LdmxSpacePoint* ldmxsp = utils::convertSimHitToLdmxSpacePoint(simHit);
+
+      if (removeStereo_) {
+        unsigned int layerid = ldmxsp->layer();
+        if (layerid == 3101 || layerid == 3201 || layerid == 3301 || layerid == 3401 )
+          continue;
+      }
+
+      ldmxsps.push_back(ldmxsp);
+    }
+
+  }
+
+  if (debug_)
+    std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
+
+  return ldmxsps;
 }
 
 
