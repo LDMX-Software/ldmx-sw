@@ -1,6 +1,7 @@
 
 #include "DetDescr/HcalElectronicsID.h"
 #include "DetDescr/HcalDigiID.h"
+#include "Hcal/HcalDetectorMap.h"
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Conditions/SimpleTableCondition.h"
@@ -15,6 +16,7 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
   int section_, layer_, strip_, end_;
   bool tot_prog_, tot_comp_, aligned_;
   bool using_eid_, already_aligned_;
+  bool good_link_;
   TTree* flat_tree_;
 
  public:
@@ -39,11 +41,10 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
     flat_tree_->Branch("adc", &adc_);
     flat_tree_->Branch("tot", &tot_);
     flat_tree_->Branch("toa", &toa_);
+    flat_tree_->Branch("good_link", &good_link_);
     flat_tree_->Branch("raw_adc", &raw_adc_);
     flat_tree_->Branch("i_sample", &i_sample_);
     flat_tree_->Branch("ldmxsw_event", &ldmxsw_event_);
-    flat_tree_->Branch("pf_event", &pf_event_);
-    flat_tree_->Branch("pf_ticks", &pf_ticks_);
     if (not already_aligned_) {
       flat_tree_->Branch("pf_event", &pf_event_);
       flat_tree_->Branch("pf_spill", &pf_spill_);
@@ -71,6 +72,7 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
 void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
   // get the reconstruction parameters 
   auto pedestal_table{getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
+  auto detmap{getCondition<hcal::HcalDetectorMap>(hcal::HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
 
   ldmxsw_event_ = event.getEventNumber();
   if (already_aligned_) {
@@ -83,6 +85,9 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
     pf_spill_ = event.getObject<int>(input_name_+"Spill", input_pass_);
   }
 
+  const auto& good_bxheader{event.getCollection<bool>(input_name_+"GoodLinkHeader", input_pass_)};
+  const auto& good_trailer{event.getCollection<bool>(input_name_+"GoodLinkTrailer", input_pass_)};
+
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
   for (std::size_t i_digi{0}; i_digi < digis.size(); i_digi++) {
@@ -90,12 +95,17 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
     raw_id_ = static_cast<int>(d.id());
     if (using_eid_) {
       ldmx::HcalElectronicsID eid(d.id());
+      ldmx::HcalDigiID detid = detmap.get(eid);
       fpga_ = eid.fiber();
       link_ = eid.elink();
+      good_link_ = (good_bxheader.at(link_) and good_trailer.at(link_));
       channel_ = eid.channel();
       index_ = eid.index();
     } else {
       ldmx::HcalDigiID detid(d.id());
+      ldmx::HcalElectronicsID eid = detmap.get(detid);
+      int link = eid.elink();
+      good_link_ = (good_bxheader.at(link) and good_trailer.at(link));
       section_ = detid.section();
       layer_ = detid.layer();
       strip_ = detid.strip();
