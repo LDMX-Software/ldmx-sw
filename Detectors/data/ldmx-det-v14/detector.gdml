@@ -100,7 +100,7 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-            
+
             <physvol copynumber="1">
                 <file name="tagger.gdml"/>
                 <positionref ref="tagger_pos"/>
@@ -123,17 +123,20 @@
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol>  
+	    </physvol>
+
             <physvol copynumber="7"> 
                 <file name="hcal.gdml"/> 
                 <positionref ref="hadron_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol>  
+            </physvol>
+
             <physvol>
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol> 
+	    </physvol>
+
             <auxiliary auxtype="DetElem" auxvalue="Top"/>
         </volume>
     </structure>

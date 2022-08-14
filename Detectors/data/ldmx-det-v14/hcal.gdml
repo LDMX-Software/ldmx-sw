@@ -36,11 +36,11 @@
         the hcal mother volume, put absorber first.
     -->        
     <variable name="sideTB_hcal_x0"       value="(sideTB_dx-side_Ecal_dx)/2.0"/>
-    <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + side_abso_thick/2.0"/>
-    <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
+    <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + hcal_side_abso_thick/2.0"/>
+    <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + hcal_side_abso_thick + scint_thick/2.0"/>
     <variable name="sideLR_hcal_y0"       value="(sideLR_dy-side_Ecal_dy)/2.0"/>
-    <variable name="sideLR_hcal_abso_x0"  value="side_Ecal_dx/2.0 + air_thick + side_abso_thick/2.0"/>
-    <variable name="sideLR_hcal_scint_x0" value="side_Ecal_dx/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
+    <variable name="sideLR_hcal_abso_x0"  value="side_Ecal_dx/2.0 + air_thick + hcal_side_abso_thick/2.0"/>
+    <variable name="sideLR_hcal_scint_x0" value="side_Ecal_dx/2.0 + 2.0*air_thick + hcal_side_abso_thick + scint_thick/2.0"/>
 
   </define>
 
@@ -168,11 +168,11 @@
     <box lunit="mm" name="back_hcal_ScintHBox"   x="hcal_back_dx"     y="scint_width"      z="scint_thick"/>
     <box lunit="mm" name="back_hcal_ScintVBox"   x="scint_width"      y="hcal_back_dy"     z="scint_thick"/>
 
-    <box lunit="mm" name="sideTB_hcal_absoBox"   x="sideTB_dx"        y="side_abso_thick"  z="hcal_side_dz"/>
+    <box lunit="mm" name="sideTB_hcal_absoBox"   x="sideTB_dx"        y="hcal_side_abso_thick"  z="hcal_side_dz"/>
     <box lunit="mm" name="sideTB_hcal_AirBox"    x="sideTB_dx"        y="air_thick"        z="hcal_side_dz"/>
     <box lunit="mm" name="sideTB_hcal_ScintBox"  x="sideTB_dx"        y="scint_thick"      z="hcal_side_dz"/>
     
-    <box lunit="mm" name="sideLR_hcal_absoBox"   x="side_abso_thick"  y="sideLR_dy"        z="hcal_side_dz"/>
+    <box lunit="mm" name="sideLR_hcal_absoBox"   x="hcal_side_abso_thick"  y="sideLR_dy"        z="hcal_side_dz"/>
     <box lunit="mm" name="sideLR_hcal_AirBox"    x="air_thick"        y="sideLR_dy"        z="hcal_side_dz"/>
     <box lunit="mm" name="sideLR_hcal_ScintBox"  x="scint_thick"      y="sideLR_dy"        z="hcal_side_dz"/>
 
@@ -202,6 +202,7 @@
           <solidref    ref="back_hcal_ScintVBox"/>
           <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
+
 
       <volume name="back_hcal_ScintHBox_volume">
           <materialref ref="Scintillator"/>
@@ -247,30 +248,28 @@
           </physvol>
 
 	  <loop for="ybS" to="hcal_back_numScint" step="1">
-            <physvol name="back_hcal_scint_physvol" copynumber="100*hcal_back_numLayers*hcal_back_numScint + 100*xb + ybS">
+            <physvol name="back_hcal_scintH_physvol" copynumber="100*hcal_back_numLayers*hcal_back_numScint + 100*xb + ybS">
               <volumeref ref="back_hcal_ScintHBox_volume"/>
-              <position name="back_hcal_scint_pos" unit="mm" x="0" y="back_starty_scint + (ybS-1)*scint_width" z="back_start_scint+(xb-1)*hcal_back_layer_thick"/>
+              <position name="back_hcal_scintH_pos" unit="mm" x="0" y="back_starty_scint + (ybS-1)*scint_width" z="back_start_scint+(xb-1)*hcal_back_layer_thick"/>
             </physvol>
           </loop>
 
-	  <!-- vertical  -->
-	  <physvol name="back_hcal_abso_physvol">
+	  <physvol name="back_hcal_abso_physvol_alt">
             <volumeref ref="back_hcal_abso_volume"/>
-            <position name="back_hcal_abso_pos" unit="mm" x="0" y="0" z="back_start_abso+(xb)*hcal_back_layer_thick"/>
+            <position name="back_hcal_abso_pos_alt" unit="mm" x="0" y="0" z="back_start_abso+(xb)*hcal_back_layer_thick"/>
           </physvol>
 
 	  <loop for="xbS" to="hcal_back_numScint" step="1">
-            <physvol name="back_hcal_scint_physvol" copynumber="200*hcal_back_numLayers*hcal_back_numScint + 100*xb+1 + xbS">
+            <physvol name="back_hcal_scintV_physvol" copynumber="200*hcal_back_numLayers*hcal_back_numScint + 100*xb+1 + xbS">
               <volumeref ref="back_hcal_ScintVBox_volume"/>
-              <position name="back_hcal_scint_pos" unit="mm" x="back_startx_scint + (xbS-1)*scint_width" y="0" z="back_start_scint+(xb)*hcal_back_layer_thick"/>
+              <position name="back_hcal_scintV_pos" unit="mm" x="back_startx_scint + (xbS-1)*scint_width" y="0" z="back_start_scint+(xb)*hcal_back_layer_thick"/>
             </physvol>
 	  </loop>
   
 	</loop>
 
-        <!-- SIDE HCAL  -->
-        <loop for="xsTB" to="sideTB_layers" step="1">          
-	   <!-- top  -->          
+        <!-- SIDE HCAL -->
+        <loop for="xsTB" to="hcal_sideTB_layers" step="1">          
            <physvol     name="sideT_hcal_absoBox_physvol">
               <volumeref ref="sideTB_hcal_absoBox_volume"/>
               <position name="sideT_hcal_abso_pos"     unit="mm" x="sideTB_hcal_x0" y="sideTB_hcal_abso_y0 + (xsTB-1)*side_layer_thick" z="-hcal_back_dz/2.0 "/>
@@ -279,7 +278,6 @@
               <volumeref ref="sideTB_hcal_ScintBox_volume"/>
               <position name="sideT_hcal_ScintBox_pos" unit="mm" x="sideTB_hcal_x0" y="sideTB_hcal_scint_y0 + (xsTB-1)*side_layer_thick" z="-hcal_back_dz/2.0 "/>
            </physvol>
-	   <!-- bottom  -->          
 	   <physvol     name="sideB_hcal_absoBox_physvol">
               <volumeref ref="sideTB_hcal_absoBox_volume"/>
               <position name="sideB_hcal_abso_pos"     unit="mm" x="-sideTB_hcal_x0" y="-sideTB_hcal_abso_y0 - (xsTB-1)*side_layer_thick" z="-hcal_back_dz/2.0 "/>
@@ -290,8 +288,7 @@
            </physvol>
 	</loop>
        
-        <loop for="xsLR" to="sideLR_layers" step="1">          
-	   <!-- left  -->          
+        <loop for="xsLR" to="hcal_sideLR_layers" step="1">          
 	   <physvol     name="sideL_hcal_absoBox_physvol">
               <volumeref ref="sideLR_hcal_absoBox_volume"/>
               <position name="sideL_hcal_abso_pos" unit="mm" x="-sideLR_hcal_abso_x0 - (xsLR-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-hcal_back_dz/2.0 "/>
@@ -300,7 +297,6 @@
               <volumeref ref="sideLR_hcal_ScintBox_volume"/>
               <position name="sideL_hcal_ScintBox_pos" unit="mm"  x="-sideLR_hcal_scint_x0 - (xsLR-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-hcal_back_dz/2.0 "/>
            </physvol>
-	   <!-- right  -->          
 	   <physvol     name="sideR_hcal_absoBox_physvol">
               <volumeref ref="sideLR_hcal_absoBox_volume"/>
               <position name="sideR_hcal_abso_pos" unit="mm" x="sideLR_hcal_abso_x0 + (xsLR-1)*side_layer_thick" y="-sideLR_hcal_y0"  z="-hcal_back_dz/2.0 "/>
@@ -314,7 +310,6 @@
 	<auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 	<auxiliary auxtype="DetElem" auxvalue="Hcal"/>
-
      </volume>
   </structure>
 
