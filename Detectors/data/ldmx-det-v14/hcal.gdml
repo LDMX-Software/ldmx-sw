@@ -20,20 +20,20 @@
     <variable name="side_layer_thick"     value="hcal_side_abso_thick + scint_thick + 2.0*air_thick"/>
     <variable name="sideTB_dx"            value="hcal_sideLR_layers*side_layer_thick + side_Ecal_dx"/>
     <variable name="sideLR_dy"            value="hcal_sideTB_layers*side_layer_thick + side_Ecal_dy"/>
- 
+
     <!-- 
         Starting positions of steel / scintillator of the back HCal w.r.t 
-        center of the HCal mother volume, put absorber first if present.
+        center of the HCal mother volume, put absorber first.
     -->        
     <variable name="back_start"           value="hcal_side_dz/2.0 - hcal_back_dz/2.0"/>
     <variable name="back_start_abso"      value="back_start + air_thick + hcal_back_abso_thick/2.0"/>
-    <variable name="back_start_scint"     value="back_start + air_thick + hcal_back_abso_thick + air_thick + scint_thick/2.0 "/>
+    <variable name="back_start_scint"     value="back_start + air_thick + hcal_back_abso_thick + air_thick + scint_thick/2.0"/>
     <variable name="back_startx_scint"    value="-hcal_back_dx/2.0"/>
     <variable name="back_starty_scint"    value="-hcal_back_dy/2.0"/>
     
     <!-- 
         Starting positions of steel / scintillator of side HCal w.r.t center of
-        the hcal mother volume, put absorber first if present.
+        the hcal mother volume, put absorber first.
     -->        
     <variable name="sideTB_hcal_x0"       value="(sideTB_dx-side_Ecal_dx)/2.0"/>
     <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + side_abso_thick/2.0"/>
@@ -177,7 +177,7 @@
     <box lunit="mm" name="sideLR_hcal_ScintBox"  x="scint_thick"      y="sideLR_dy"        z="hcal_side_dz"/>
 
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->     
-    <box lunit="mm" name="back_hadron_calorimeter_Box" x="hcal_envelope_dx" y="hcal_envelope_dx" z="hcal_back_dz+hcal_side_dz"/>
+    <box lunit="mm" name="back_hadron_calorimeter_Box" x="hcal_envelope_dx" y="hcal_envelope_dy" z="hcal_back_dz+hcal_side_dz"/>
     <box lunit="mm" name="ecal_Box"                    x="side_Ecal_dx"     y="side_Ecal_dy"     z="hcal_side_dz"/>
     
     <subtraction name="hadron_calorimeter_Box">
@@ -199,16 +199,16 @@
 
       <volume name="back_hcal_ScintVBox_volume">
           <materialref ref="Scintillator"/>
-          <solidref    ref="back_hcal_ScintVerticalBox"/>
+          <solidref    ref="back_hcal_ScintVBox"/>
           <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
 
       <volume name="back_hcal_ScintHBox_volume">
           <materialref ref="Scintillator"/>
-          <solidref    ref="back_hcal_ScintHorizontalBox"/>
+          <solidref    ref="back_hcal_ScintHBox"/>
           <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
-      
+
       <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->      
       <volume name="sideTB_hcal_absoBox_volume">
 	  <materialref ref="Steel"/>
