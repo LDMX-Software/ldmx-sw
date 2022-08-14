@@ -158,15 +158,15 @@
 <variable name="hcal_back_dx"      value="2000."/>
 <variable name="hcal_back_dy"      value="2000."/>   
 <variable name="hcal_back_numLayers"    value="96"/>
-<variable name="hcal_back_numScint"     value="50"/>
+<variable name="hcal_back_numScint"     value="40"/>
 <variable name="hcal_back_abso_thick"   value="25"/>
 <variable name="hcal_back_layer_thick"  value="hcal_back_abso_thick + scint_thick + 2.0*air_thick"/>
 <variable name="hcal_back_dz"      value="hcal_back_numLayers*hcal_back_layer_thick"/>
 
 <!-- Side HCal Layer component -->
-<variable name="sideTB_layers"     value="28"/>
-<variable name="sideLR_layers"     value="26"/>
-<variable name="side_abso_thick"   value="20."/>
+<variable name="hcal_sideTB_layers"     value="28"/>
+<variable name="hcal_sideLR_layers"     value="26"/>
+<variable name="hcal_side_abso_thick"   value="20."/>
 
 <!-- side_dz has to be greater than side_Ecal_dz -->
 <variable name="hcal_side_dz" value="600"/>        
@@ -174,11 +174,6 @@
 <!-- Total calorimeter thickness -->         
 <constant name="hcal_dz" value="hcal_back_dz + hcal_side_dz" />
 
-
-<<<<<<< HEAD
-
-=======
->>>>>>> first commit separating scintillator bars
 <!--
     ECal 
 --> 
@@ -279,13 +274,8 @@
 <variable name="Hex_radius" value="85."/>
 
 <!-- ECal width and height -->
-<<<<<<< HEAD
 <variable name="ECal_dx" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
 <variable name="ECal_dy" value="Hex_radius*6. + hexagon_gap*2."/>
-=======
-<variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
-<variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
->>>>>>> first commit separating scintillator bars
 
 <!-- 
     Distance from target to the ECal parent volume.  The calorimeter 
@@ -302,9 +292,4 @@
 --> 
 <constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
 <constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
-<<<<<<< HEAD
-<constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
-
-=======
-<constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
->>>>>>> first commit separating scintillator bars
+<constant name="ecal_envelope_z" value="ECal_dz + 1" />
