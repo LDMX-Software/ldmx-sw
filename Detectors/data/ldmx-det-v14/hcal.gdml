@@ -246,10 +246,10 @@
             <position name="back_hcal_abso_pos" unit="mm" x="0" y="0" z="back_start_abso+(xb-1)*hcal_back_layer_thick"/>
           </physvol>
 
-          <loop for="xbS" to="hcal_back_numScint" step="1">
-            <physvol name="back_hcal_scint_physvol" copynumber="10*hcal_back_numLayers + xb + xbS">
-              <volumeref ref="back_hcal_ScintVBox_volume"/>
-              <position name="back_hcal_scint_pos" unit="mm" x="back_startx_scint + (xbS-1)*scint_width" y="0" z="back_start_scint+(xb-1)*hcal_back_layer_thick"/>
+	  <loop for="ybS" to="hcal_back_numScint" step="1">
+            <physvol name="back_hcal_scint_physvol" copynumber="100*hcal_back_numLayers*hcal_back_numScint + 100*xb + ybS">
+              <volumeref ref="back_hcal_ScintHBox_volume"/>
+              <position name="back_hcal_scint_pos" unit="mm" x="0" y="back_starty_scint + (ybS-1)*scint_width" z="back_start_scint+(xb-1)*hcal_back_layer_thick"/>
             </physvol>
           </loop>
 
@@ -259,13 +259,13 @@
             <position name="back_hcal_abso_pos" unit="mm" x="0" y="0" z="back_start_abso+(xb)*hcal_back_layer_thick"/>
           </physvol>
 
-          <loop for="ybS" to="hcal_back_numScint" step="1">
-            <physvol name="back_hcal_scint_physvol" copynumber="20*hcal_back_numLayers + xb+1 + ybS">
-              <volumeref ref="back_hcal_ScintHBox_volume"/>
-              <position name="back_hcal_scint_pos" unit="mm" x="0" y="back_starty_scint + (ybS-1)*scint_width" z="back_start_scint+(xb-1)*hcal_back_layer_thick"/>
+	  <loop for="xbS" to="hcal_back_numScint" step="1">
+            <physvol name="back_hcal_scint_physvol" copynumber="200*hcal_back_numLayers*hcal_back_numScint + 100*xb+1 + xbS">
+              <volumeref ref="back_hcal_ScintVBox_volume"/>
+              <position name="back_hcal_scint_pos" unit="mm" x="back_startx_scint + (xbS-1)*scint_width" y="0" z="back_start_scint+(xb)*hcal_back_layer_thick"/>
             </physvol>
-          </loop>
-		    
+	  </loop>
+  
 	</loop>
 
         <!-- SIDE HCAL  -->
