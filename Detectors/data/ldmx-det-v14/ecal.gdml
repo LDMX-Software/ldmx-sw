@@ -313,7 +313,7 @@
             <zplane rmax="Hex_radius" rmin="0" z="Al_dz"/>
         </polyhedra>
 
-        <box lunit="mm" name="ECal_box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_dz+1."/>
+        <box lunit="mm" name="ECal_box" x="ECal_dx+shift_x+1." y="ECal_dy+shift_y+1." z="ECal_dz+1."/>
 
     </solids>
 
@@ -473,52 +473,52 @@
 
             <physvol name="C_physvol_PS_center2">
                 <volumeref ref="C_volume"/>
-                <position name="C_physvol_PS_center2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+C_dz"/>
+                <position name="C_physvol_PS_center2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+C_dz"/>
             </physvol>
 
             <physvol name="CFMixThick_physvol_PS_center2">
                 <volumeref ref="CFMixThick_volume"/>
-                <position name="CFMixThick_physvol_PS_center2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz"/>
+                <position name="CFMixThick_physvol_PS_center2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz"/>
             </physvol>
 
             <physvol name="Si_physvol_PS_center2" copynumber="7">
                 <volumeref ref="Si_volume"/>
-                <position name="Si_physvol_PS_center2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz"/>
+                <position name="Si_physvol_PS_center2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz"/>
             </physvol>
 
             <physvol name="CFMix_physvol_PS_center2">
                 <volumeref ref="CFMix_volume"/>
-                <position name="CFMix_physvol_PS_center2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz"/>
+                <position name="CFMix_physvol_PS_center2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz"/>
             </physvol>
 
             <physvol name="PCB_physvol_PS_center2">
                 <volumeref ref="PCB_volume"/>
-                <position name="PCB_physvol_PS_center2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                <position name="PCB_physvol_PS_center2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
             </physvol>
 
             <physvol name="Readout2_PS_TopRight">
                 <volumeref ref="Readout_volume"/>
-                <position name="Readout_PS_TopRight_pos" unit="mm" x="RO_Right_x" y="RO_Top_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                <position name="Readout_PS_TopRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Top_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
             </physvol>
 
             <physvol name="Readout2_PS_TopLeft">
                 <volumeref ref="Readout_volume"/>
-                <position name="Readout_PS_TopLeft_pos" unit="mm" x="RO_Left_x" y="RO_Top_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                <position name="Readout_PS_TopLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Top_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
             </physvol>
 
             <physvol name="Readout2_PS_BotRight">
                 <volumeref ref="Readout_volume"/>
-                <position name="Readout_PS_BotRight_pos" unit="mm" x="RO_Right_x" y="RO_Bot_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                <position name="Readout_PS_BotRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Bot_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
             </physvol>
 
             <physvol name="Readout2_PS_BotLeft">
                 <volumeref ref="Readout_volume"/>
-                <position name="Readout_PS_BotLeft_pos" unit="mm" x="RO_Left_x" y="RO_Bot_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                <position name="Readout_PS_BotLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Bot_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
             </physvol>
 
             <physvol name="PCB_physvol_PS_motherboard2">
                 <volumeref ref="PCB_motherboard_volume"/>
-                <position name="PCB_physvol_PS_motherboard2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
+                <position name="PCB_physvol_PS_motherboard2_pos" unit="mm" x="shift_x" y="shift_y" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
             </physvol>
 
             <!-- preshower ring -->
@@ -555,27 +555,27 @@
 
                 <physvol name="C_physvol_PS2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_physvol_PS2_pos" unit="mm" x="cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+C_dz"/>
+                    <position name="C_physvol_PS2_pos" unit="mm" x="shift_x+cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_physvol_PS2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_physvol_PS2_pos" unit="mm" x="cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz"/>
+                    <position name="CFMixThick_physvol_PS2_pos" unit="mm" x="shift_x+cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz"/>
                 </physvol>
 
                 <physvol name="Si_physvol_PS2" copynumber="h_ps+7">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_physvol_PS2_pos" unit="mm" x="cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz"/>
+                    <position name="Si_physvol_PS2_pos" unit="mm" x="shift_x+cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_physvol_PS2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_physvol_PS2_pos" unit="mm" x="cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_physvol_PS2_pos" unit="mm" x="shift_x+cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_physvol_PS2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_physvol_PS2_pos" unit="mm" x="cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_physvol_PS2_pos" unit="mm" x="shift_x+cos(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin(pi/3*(1-h_ps))*(2.0*Hex_radius+hexagon_gap)" z="ECal_start_pos+Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
             </loop>
 
@@ -644,57 +644,57 @@
 
                 <physvol name="C_a_center_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_center_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_center_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_center_physvol2" copynumber="(a-1)*14+21">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_center_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_center_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_center_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_a_TopRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_a_TopRight_pos" unit="mm" x="RO_Right_x" y="RO_Top_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_a_TopRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Top_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_a_TopLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_a_TopLeft_pos" unit="mm" x="RO_Left_x" y="RO_Top_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_a_TopLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Top_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_a_BotRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_a_BotRight_pos" unit="mm" x="RO_Right_x" y="RO_Bot_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_a_BotRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Bot_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_a_BotLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_a_BotLeft_pos" unit="mm" x="RO_Left_x" y="RO_Bot_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_a_BotLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Bot_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="PCB_physvol2_a_motherboard">
                     <volumeref ref="PCB_motherboard_volume"/>
-                    <position name="PCB_physvol_a_motherboard_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
+                    <position name="PCB_physvol_a_motherboard_pos" unit="mm" x="shift_x" y="shift_y" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
                 </physvol>
 
                 <!-- A1 stack of ring -->
@@ -735,32 +735,32 @@
 
                 <physvol name="C_a_ring1_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring1_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring1_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring1_physvol2" copynumber="(a-1)*14+22">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring1_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring1_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- A2 stack of ring -->
@@ -801,32 +801,32 @@
 
                 <physvol name="C_a_ring2_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring2_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring2_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring2_physvol2" copynumber="(a-1)*14+23">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring2_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring2_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- A3 stack of ring -->
@@ -867,32 +867,32 @@
 
                 <physvol name="C_a_ring3_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring3_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring3_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring3_physvol2" copynumber="(a-1)*14+24">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring3_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring3_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- A4 stack of ring -->
@@ -933,32 +933,32 @@
 
                 <physvol name="C_a_ring4_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring4_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring4_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring4_physvol2" copynumber="(a-1)*14+25">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring4_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring4_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- A5 stack of ring -->
@@ -999,32 +999,32 @@
 
                 <physvol name="C_a_ring5_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring5_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring5_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring5_physvol2" copynumber="(a-1)*14+26">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring5_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring5_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- A6 stack of ring -->
@@ -1065,32 +1065,32 @@
 
                 <physvol name="C_a_ring6_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_a_ring6_physvol2">
                     <volumeref ref="W_A_volume"/>
-                    <position name="W_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_a_ring6_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
+                    <position name="CFMixThick_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz"/>
                 </physvol>
 
                 <physvol name="Si_a_ring6_physvol2" copynumber="(a-1)*14+27">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
+                    <position name="Si_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_a_ring6_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_a_ring6_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_a_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_a_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
             </loop>
             <!-- SECTION B -->
@@ -1158,57 +1158,57 @@
 
                 <physvol name="C_b_center_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_center_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_center_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_center_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+21">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_center_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_center_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_center_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_b_TopRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_b_TopRight_pos" unit="mm" x="RO_Right_x" y="RO_Top_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_b_TopRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Top_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_b_TopLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_b_TopLeft_pos" unit="mm" x="RO_Left_x" y="RO_Top_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_b_TopLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Top_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_b_BotRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_b_BotRight_pos" unit="mm" x="RO_Right_x" y="RO_Bot_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_b_BotRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Bot_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_b_BotLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_b_BotLeft_pos" unit="mm" x="RO_Left_x" y="RO_Bot_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_b_BotLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Bot_y" z="(b-1)*layer_B_Thickness+layer_A_Start_pos+Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_motherboard_physvol2">
                     <volumeref ref="PCB_motherboard_volume"/>
-                    <position name="PCB_b_motherboard_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
+                    <position name="PCB_b_motherboard_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
                 </physvol>
 
                 <!-- B1 stack of ring -->
@@ -1249,32 +1249,32 @@
 
                 <physvol name="C_b_ring1_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring1_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring1_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring1_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+22">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring1_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring1_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- B2 stack of ring -->
@@ -1315,32 +1315,32 @@
 
                 <physvol name="C_b_ring2_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring2_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring2_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring2_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+23">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring2_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring2_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- B3 stack of ring -->
@@ -1381,32 +1381,32 @@
 
                 <physvol name="C_b_ring3_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring3_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring3_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring3_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+24">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring3_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring3_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- B4 stack of ring -->
@@ -1447,32 +1447,32 @@
 
                 <physvol name="C_b_ring4_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring4_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring4_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring4_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+25">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring4_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring4_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- B5 stack of ring -->
@@ -1513,32 +1513,32 @@
 
                 <physvol name="C_b_ring5_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring5_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring5_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring5_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+26">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring5_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring5_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- B6 stack of ring -->
@@ -1579,32 +1579,32 @@
 
                 <physvol name="C_b_ring6_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_b_ring6_physvol2">
                     <volumeref ref="W_B_volume"/>
-                    <position name="W_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_b_ring6_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
+                    <position name="CFMixThick_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz"/>
                 </physvol>
 
                 <physvol name="Si_b_ring6_physvol2" copynumber="(b-1)*14+2*ecal_A_layers*7+27">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
+                    <position name="Si_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_b_ring6_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_b_ring6_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_b_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_b_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
             </loop>
 
@@ -1673,57 +1673,57 @@
 
                 <physvol name="C_c_center_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_center_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_center_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_center_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+21">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_center_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_center_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_center_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_c_TopRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_c_TopRight_pos" unit="mm" x="RO_Right_x" y="RO_Top_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_c_TopRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Top_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_c_TopLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_c_TopLeft_pos" unit="mm" x="RO_Left_x" y="RO_Top_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_c_TopLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Top_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_c_BotRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_c_BotRight_pos" unit="mm" x="RO_Right_x" y="RO_Bot_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_c_BotRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Bot_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_c_BotLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_c_BotLeft_pos" unit="mm" x="RO_Left_x" y="RO_Bot_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_c_BotLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Bot_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_motherboard_physvol2">
                     <volumeref ref="PCB_motherboard_volume"/>
-                    <position name="PCB_c_motherboard_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
+                    <position name="PCB_c_motherboard_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
                 </physvol>
 
                 <!-- C1 stack of ring -->
@@ -1763,32 +1763,32 @@
 
                 <physvol name="C_c_ring1_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_ring1_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring1_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring1_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+22">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring1_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring1_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- C2 stack of ring -->
@@ -1828,32 +1828,32 @@
 
                 <physvol name="C_c_ring2_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_ring2_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring2_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring2_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+23">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring2_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring2_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- C3 stack of ring -->
@@ -1893,32 +1893,32 @@
 
                 <physvol name="C_c_ring3_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+shift_y"/>
                 </physvol>
 
                 <physvol name="W_c_ring3_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring3_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring3_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+24">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring3_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring3_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- C4 stack of ring -->
@@ -1958,32 +1958,32 @@
 
                 <physvol name="C_c_ring4_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_ring4_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring4_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring4_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+25">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring4_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring4_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- C5 stack of ring -->
@@ -2023,32 +2023,32 @@
 
                 <physvol name="C_c_ring5_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_ring5_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring5_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring5_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+26">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring5_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring5_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- C6 stack of ring -->
@@ -2088,32 +2088,32 @@
 
                 <physvol name="C_c_ring6_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_c_ring6_physvol2">
                     <volumeref ref="W_C_volume"/>
-                    <position name="W_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_c_ring6_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
+                    <position name="CFMixThick_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz"/>
                 </physvol>
 
                 <physvol name="Si_c_ring6_physvol2" copynumber="(c-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+27">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
+                    <position name="Si_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_c_ring6_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_c_ring6_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_c_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_c_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
             </loop>
 
@@ -2181,57 +2181,57 @@
 
                 <physvol name="C_d_center_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_center_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_center_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_center_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+21">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_center_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_center_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_center_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_center_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_d_TopRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_d_TopRight_pos" unit="mm" x="RO_Right_x" y="RO_Top_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_d_TopRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Top_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_d_TopLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_d_TopLeft_pos" unit="mm" x="RO_Left_x" y="RO_Top_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_d_TopLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Top_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_d_BotRight">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_d_BotRight_pos" unit="mm" x="RO_Right_x" y="RO_Bot_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_d_BotRight_pos" unit="mm" x="shift_x+RO_Right_x" y="shift_y+RO_Bot_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="Readout2_d_BotLeft">
                     <volumeref ref="Readout_volume"/>
-                    <position name="Readout_d_BotLeft_pos" unit="mm" x="RO_Left_x" y="RO_Bot_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
+                    <position name="Readout_d_BotLeft_pos" unit="mm" x="shift_x+RO_Left_x" y="shift_y+RO_Bot_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+(-0.5)*Readout_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_motherboard_physvol2">
                     <volumeref ref="PCB_motherboard_volume"/>
-                    <position name="PCB_d_motherboard_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
+                    <position name="PCB_d_motherboard_physvol2_pos" unit="mm" x="shift_x" y="shift_y" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz/2.0"/>
                 </physvol>
 
                 <!-- D1 stack of ring -->
@@ -2272,32 +2272,32 @@
 
                 <physvol name="C_d_ring1_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring1_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring1_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring1_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+22">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring1_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring1_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring1_physvol2_pos" unit="mm" x="cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring1_physvol2_pos" unit="mm" x="shift_x+cos((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((0)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- D2 stack of ring -->
@@ -2338,32 +2338,32 @@
 
                 <physvol name="C_d_ring2_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring2_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring2_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring2_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+23">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring2_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring2_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring2_physvol2_pos" unit="mm" x="cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring2_physvol2_pos" unit="mm" x="shift_x+cos((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-1)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- D3 stack of ring -->
@@ -2404,32 +2404,32 @@
 
                 <physvol name="C_d_ring3_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring3_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring3_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring3_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+24">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring3_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring3_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring3_physvol2_pos" unit="mm" x="cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring3_physvol2_pos" unit="mm" x="shift_x+cos((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-2)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- D4 stack of ring -->
@@ -2470,32 +2470,32 @@
 
                 <physvol name="C_d_ring4_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring4_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring4_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring4_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+25">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring4_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring4_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring4_physvol2_pos" unit="mm" x="cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring4_physvol2_pos" unit="mm" x="shift_x+cos((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-3)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- D5 stack of ring -->
@@ -2536,32 +2536,32 @@
 
                 <physvol name="C_d_ring5_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring5_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring5_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring5_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+26">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring5_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring5_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring5_physvol2_pos" unit="mm" x="cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring5_physvol2_pos" unit="mm" x="shift_x+cos((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-4)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
 
                 <!-- D6 stack of ring -->
@@ -2602,32 +2602,32 @@
 
                 <physvol name="C_d_ring6_physvol2">
                     <volumeref ref="C_volume"/>
-                    <position name="C_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
+                    <position name="C_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap"/>
                 </physvol>
 
                 <physvol name="W_d_ring6_physvol2">
                     <volumeref ref="W_D_volume"/>
-                    <position name="W_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
+                    <position name="W_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz"/>
                 </physvol>
 
                 <physvol name="CFMixThick_d_ring6_physvol2">
                     <volumeref ref="CFMixThick_volume"/>
-                    <position name="CFMixThick_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
+                    <position name="CFMixThick_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz"/>
                 </physvol>
 
                 <physvol name="Si_d_ring6_physvol2" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+27">
                     <volumeref ref="Si_volume"/>
-                    <position name="Si_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
+                    <position name="Si_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz"/>
                 </physvol>
 
                 <physvol name="CFMix_d_ring6_physvol2">
                     <volumeref ref="CFMix_volume"/>
-                    <position name="CFMix_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
+                    <position name="CFMix_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
                 </physvol>
 
                 <physvol name="PCB_d_ring6_physvol2">
                     <volumeref ref="PCB_volume"/>
-                    <position name="PCB_d_ring6_physvol2_pos" unit="mm" x="cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+                    <position name="PCB_d_ring6_physvol2_pos" unit="mm" x="shift_x+cos((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" y="shift_y+sin((-5)*pi/3)*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
                 </physvol>
             </loop>
             <!-- END SECTION D -->
