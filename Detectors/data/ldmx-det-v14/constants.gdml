@@ -282,6 +282,10 @@
 <variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
+<variable name="n_cellR_height" value="35."/>
+<variable name="shift_x" value="2*Hex_radius/n_cellR_height"/>
+<variable name="shift_y" value="0."/>
+
 <!-- ECal width and height -->
 <variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
 <variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
@@ -292,8 +296,8 @@
 -->
 <constant name="ecal_front_z" value="24.0*cm"/>
 
-<variable name="side_Ecal_dx" value="800."/>
-<variable name="side_Ecal_dy" value="600."/>
+<variable name="side_Ecal_dx" value="800. + shift_x"/>
+<variable name="side_Ecal_dy" value="600. + shift_y"/>
 
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
