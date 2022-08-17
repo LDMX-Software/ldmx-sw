@@ -75,6 +75,9 @@ class HcalSD(simcfg.SensitiveDetector) :
         considered sensitive. Any volume name containing at least one of these
         identifiers will have a sensitive detector attached.
 
+        The current defaults match the mainline LDMX Hcal (ScintBox) and
+        prototype Hcal (scint_box) scintillator geometries.
+
     """
     def __init__(self, gdml_identifiers = ['ScintBox', 'scint_box']) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
