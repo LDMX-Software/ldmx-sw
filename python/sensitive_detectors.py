@@ -68,8 +68,9 @@ class HcalSD(simcfg.SensitiveDetector) :
     estimate. No other parameters
     
     """
-    def __init__(self) :
+    def __init__(self, gdml_identifiers = ['ScintBox', 'scint_box']) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
+        self.gdml_identifiers = gdml_identifiers
 
 class EcalSD(simcfg.SensitiveDetector) :
     """SD for the ECal

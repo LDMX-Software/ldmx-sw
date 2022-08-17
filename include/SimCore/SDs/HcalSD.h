@@ -63,11 +63,10 @@ class HcalSD : public SensitiveDetector {
     event.add(COLLECTION_NAME, hits_);
   }
 
-  virtual void EndOfEvent() final override {
-    hits_.clear();
-  }
+  virtual void EndOfEvent() final override { hits_.clear(); }
 
  private:
+  std::vector<std::string> gdmlIdentifiers_;
   // TODO: document!
   double birksc1_;
 
