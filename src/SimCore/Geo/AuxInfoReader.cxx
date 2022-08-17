@@ -46,7 +46,10 @@ void AuxInfoReader::readGlobalAuxInfo() {
     G4String auxUnit = iaux->unit;
 
     if (auxType == "SensDet") {
-      std::cerr << "[ WARN ] : Not defining SensDet in GDML anymore." << std::endl;
+      std::cerr
+          << "[ WARN ] : Not defining SensDet in GDML since v1.0 of SimCore. "
+             "See https://github.com/LDMX-Software/SimCore/issues/39"
+          << std::endl;
     } else if (auxType == "MagneticField") {
       createMagneticField(auxVal, iaux->auxList);
     } else if (auxType == "Region") {
