@@ -65,8 +65,16 @@ class HcalSD(simcfg.SensitiveDetector) :
     """SD for the HCal
 
     Separate from the other calorimeters since it includes a Birks law
-    estimate. No other parameters
-    
+    estimate.
+
+    Parameters
+    ----------
+    gdml_identifiers : list[str]
+
+        A list of strings used to determine which volumes in the Hcal are
+        considered sensitive. Any volume name containing at least one of these
+        identifiers will have a sensitive detector attached.
+
     """
     def __init__(self, gdml_identifiers = ['ScintBox', 'scint_box']) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
