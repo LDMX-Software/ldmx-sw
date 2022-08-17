@@ -40,7 +40,9 @@ class HcalSD : public SensitiveDetector {
    * Check if the input logical volume is a part of the hcal sensitive
    * volumes.
    *
-   * @note Depends on the volume names defined in the GDML!
+   * @note This will match if a) the volume has the auxiliary tag "Region" set
+   * to contain to "CalorimeterRegion" and b) the volume name contains one of
+   * the identifiers in the gdml_identifiers parameter
    */
   bool isSensDet(G4LogicalVolume* volume) const final override {
     auto region = volume->GetRegion();
@@ -75,6 +77,11 @@ class HcalSD : public SensitiveDetector {
   virtual void EndOfEvent() final override { hits_.clear(); }
 
  private:
+  // A list of identifiers used to find out whether or not a given logical
+  // volume is one of the Hcal sensitive detector volumes. Any volume that is
+  // part of the CalorimeterRegion region and has a name which contains at least
+  // one of the identifiers in here will be considered a sensitive detector in
+  // the Hcal.
   std::vector<std::string> gdmlIdentifiers_;
   // TODO: document!
   double birksc1_;
