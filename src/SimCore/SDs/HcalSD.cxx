@@ -3,8 +3,8 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "DetDescr/HcalID.h"
 #include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
 
 // STL
 #include <iostream>
@@ -16,17 +16,19 @@
 #include "G4StepPoint.hh"
 
 namespace simcore {
- 
+
 const std::string HcalSD::COLLECTION_NAME = "HcalSimHits";
 
 HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
-    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {}
+    : SensitiveDetector(name, ci, p), birksc1_(1.29e-2), birksc2_(9.59e-6) {
+  gdmlIdentifiers_ = {
+      p.getParameter<std::vector<std::string>>("gdml_identifiers")};
+}
 
 HcalSD::~HcalSD() {}
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
-
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 
@@ -66,7 +68,6 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //              we have to divide the energy deposit in MeV by the
   //              product of the step length (in cm) and the density
   //              of the scintillator:
-
 
   G4double birksFactor(1.0);
   G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
