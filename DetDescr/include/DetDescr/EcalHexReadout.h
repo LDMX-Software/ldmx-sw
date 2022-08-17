@@ -1,5 +1,5 @@
 /**
- * @file EcalHexReadout.h
+ * @file EcalGeometry.h
  * @brief Class that translates raw positions of ECal module hits into cells in
  * a hexagonal readout
  * @author Owen Colegro, UCSB
@@ -8,10 +8,11 @@
  *           modified TH2Poly::Honeycomb routine
  * @author Patterson, UCSB
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Hongyin Liu, UCSB
  */
 
-#ifndef DETDESCR_ECALHEXREADOUT_H_
-#define DETDESCR_ECALHEXREADOUT_H_
+#ifndef DETDESCR_ECALGEOMETRY_H_
+#define DETDESCR_ECALGEOMETRY_H_
 
 // LDMX
 #include "DetDescr/EcalID.h"
@@ -32,8 +33,8 @@ class EcalGeometryProvider;
 namespace ldmx {
 
 /**
- * @class EcalHexReadout
- * @brief Implementation of ECal hexagonal cell readout
+ * Translation between real-space positions and cell IDs within
+ * the ECal.
  *
  * This is the object that does the extra geometry *not* implemented in the
  * gdml. In order to save time during the simulation, the individual cells in
@@ -41,20 +42,51 @@ namespace ldmx {
  * we have to have a translation between position and cell ID which is
  * accomplished by this class.
  *
+ * Moreover, downstream processors sometimes need access to the cell position
+ * when they only know the cell ID. This class can also do this conversion.
+ *
  * ## ORIENTATION ASSUMPTIONS:
- * - modules are oriented flat side down.
- * - cells are oriented corner side down.
+ * - modules and cells have opposite orientation. i.e. if modules are corner-side
+ *   down, then cells are flat-side down.
  *
  * ## SOME GEOMETRY:
  * - hexagons have two radii:
  *   - r (half of flat-to-flat width) and R (half of corner-to-corner width).
  *   - r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
- * - for seven ecal modules oriented flat-side-down, maximum x and y extents
- * are:
+ * - for seven ecal modules oriented flat-side-down, 
+ *   maximum x and y extents are:
  *   - deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
  *   - deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
- *   - where g is uniform gap width between modules, and primed variables
- * correspond to modules.
+ *   - where g is uniform gap width between modules, 
+ *     and primed variables correspond to modules.
+ *
+ * Since the whole hexagon flower has changed orientation since previous versions
+ * of the detector (which we wish to still support), I am defining an extra set of 
+ * axes with respect to the flower itself. Below I have drawn the ECal hexagon i
+ * flower and defined two axes: p (through the "pointy sides") and q (through the 
+ * "flat sides"). In some versions of the ECal flower, p == x and q == y while
+ * in others p == -y and q == x.
+ *
+ *          ^
+ *          | q axis
+ *         __
+ *      __/1 \__
+ *     /6 \__/2 \
+ *     \__/0 \__/ __ p axis __>
+ *     /5 \__/3 \
+ *     \__/4 \__/
+ *        \__/
+ *
+ * Now we can define a process for determining the cellular IDs.
+ * - Define a mapping of cell IDs within a module (center of module is the origin)
+ *   - Use TH2Poly to do the Hexagon tiling in p,q space
+ * - Define center of modules with respect to center of layer in p,q space
+ *   - currently this is assumed to be the same within all layers BUT will
+ *     depend on geometry parameters like the gap between modules
+ * - Define center of layers (INCLUDING x,y position)
+ *   - some versions of the geometry shift layers off the z axis to 
+ *     cover the gaps between modules
+ *   - Will need to handle the conversion between x,y and p,q axes
  *
  * ## THIS GRID:
  * - column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
@@ -64,16 +96,36 @@ namespace ldmx {
  * radii that span the module height. This count can have fractional counts to
  * account for the fractions of cell radii at the module edges.
  */
-class EcalHexReadout : public framework::ConditionsObject {
+class EcalGeometry : public framework::ConditionsObject {
  public:
-  static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalHexReadout"};
+  static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalGeometry"};
 
   /**
    * Class destructor.
    *
    * Does nothing because the stl containers clean up automatically.
    */
-  virtual ~EcalHexReadout() {}
+  virtual ~EcalGeometry() = default;
+
+  /**
+   * Get a cell's ID number from its position
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] z global z position [mm]
+   */
+  EcalID getID(double x, double y, double z) const;
+
+  /**
+   * Get a cell's position from its ID number
+   *
+   * std::tuple is useful here because you can use C++17's pattern
+   * matching to use code like the following
+   * ```cpp
+   * auto [x,y,z] = geometry.getPosition(id);
+   * ```
+   */
+  std::tuple<double,double,double> getPosition(EcalID id) const;
 
   /**
    * Get entire real space position for the cell with the input raw ID
@@ -89,12 +141,7 @@ class EcalHexReadout : public framework::ConditionsObject {
    */
   void getCellAbsolutePosition(EcalID id, double& x, double& y,
                                double& z) const {
-    std::pair<double, double> xy =
-        this->getCellCenterAbsolute(EcalID(0, id.module(), id.cell()));
-    x = xy.first;
-    y = xy.second;
-    z = getZPosition(id.layer());
-
+    [x,y,z] = cell_global_pos_.at(id);
     return;
   }
 
@@ -105,7 +152,7 @@ class EcalHexReadout : public framework::ConditionsObject {
    * @return z-coordinate of the input sensitive layer
    */
   double getZPosition(int layer) const {
-    return ecalFrontZ_ + layerZPositions_.at(layer);
+    return std::get<2>(layer_pos_xy_.at(layer));
   }
 
   /**
@@ -113,7 +160,7 @@ class EcalHexReadout : public framework::ConditionsObject {
    *
    * @returns number fo layers in geometry
    */
-  int getNumLayers() const { return layerZPositions_.size(); }
+  int getNumLayers() const { return layer_pos_xy_.size(); }
 
   /**
    * Get a module center position relative to the ecal center [mm]
@@ -176,10 +223,10 @@ class EcalHexReadout : public framework::ConditionsObject {
               1;  // NB FindBin indices starts from 1, our maps start from 0
     if (bin < 0) {
       TString error_msg = TString(
-                              "[EcalHexReadout::getCellIDRelative] Relative "
+                              "[EcalGeometry::getCellIDRelative] Relative "
                               "coordinates are outside module hexagon!") +
                           TString::Format(
-                              " Is the gap used by EcalHexReadout (%.2f mm) "
+                              " Is the gap used by EcalGeometry (%.2f mm) "
                               "and the minimum module radius (%.2f mm)",
                               gap_, moduler_) +
                           TString::Format(
@@ -395,18 +442,23 @@ class EcalHexReadout : public framework::ConditionsObject {
    */
   TH2Poly* getCellPolyMap() const { return &ecalMap_; }
 
-  static EcalHexReadout* debugMake(const framework::config::Parameters& p) {
-    return new EcalHexReadout(p);
+  static EcalGeometry* debugMake(const framework::config::Parameters& p) {
+    return new EcalGeometry(p);
   }
 
  private:
   /**
    * Class constructor, for use only by the provider
    *
-   * @param ps Parameters to configure the EcalHexReadout
+   * @param ps Parameters to configure the EcalGeometry
    */
-  EcalHexReadout(const framework::config::Parameters& ps);
+  EcalGeometry(const framework::config::Parameters& ps);
   friend class ecal::EcalGeometryProvider;
+
+  /**
+   * Constructs the positions of the layers in world coordinates
+   */
+  void buildLayerMap();
 
   /**
    * Constructs the positions of the seven modules (moduleID) relative to the
@@ -506,9 +558,6 @@ class EcalHexReadout : public framework::ConditionsObject {
   void buildTriggerGroup();
 
  private:
-  /// verbosity, not configurable but helpful if developing
-  int verbose_{2};
-
   /// Gap between module flat sides [mm]
   double gap_;
 
@@ -524,8 +573,44 @@ class EcalHexReadout : public framework::ConditionsObject {
   /// Center-to-Corner Radius of module hexagon [mm]
   double moduleR_{0};
 
-  /// indicator of geometry orientation -- if true, flower shape's corners side (ie: side with two modules) is at the top
+  /**
+   * indicator of geometry orientation 
+   * if true, flower shape's corners side (ie: side with two modules) is at the top
+   */
   bool cornersSideUp_;
+
+  /**
+   * shift of layers in the x-direction [mm]
+   */
+  double layer_shift_x_;
+
+  /**
+   * shift of layers in the y-direction [mm]
+   */
+  double layer_shift_y_;
+
+  /**
+   * shift odd layers
+   *
+   * odd layers are the high-z layer in each bi-layer
+   *
+   * i.e. We will shift if layer_id_ % 2 == 1
+   */
+  bool layer_shift_odd_;
+
+  /**
+   * shift odd bi layers
+   *
+   * NOT IMPLEMENTED IN GDML
+   *
+   * This shifts the bi-layer grouping of two sensitive
+   * layers together.
+   *
+   * i.e. We will shift if (layer_id_ / 2) % 2 == 1
+   *
+   * where it is integer division.
+   */
+  bool layer_shift_odd_bilayer_;
 
   /**
    * Number of cell center-to-corner radii (one side of the cell)
@@ -542,34 +627,67 @@ class EcalHexReadout : public framework::ConditionsObject {
   /// The layer Z postions are with respect to the front of the ECal [mm]
   std::vector<double> layerZPositions_;
 
-  /// Postion of module centers relative to world geometry (uses module ID as
-  /// key)
-  std::map<int, std::pair<double, double>> modulePositionMap_;
+ private:
+  /// verbosity, not configurable but helpful if developing
+  int verbose_{3};
 
-  /// Position of cell centers relative to module (uses cell ID as key)
-  std::map<int, std::pair<double, double>> cellPositionMap_;
+  /**
+   * Position of layer centers in world coordinates
+   * (uses layer ID as key)
+   */
+  std::map<int, std::tuple<double,double,double>> layer_pos_xy_;
 
-  /// Position of cell centers relative to world geometry (uses ID with real
-  /// cell and module and layer as zero for key)
-  std::map<EcalID, std::pair<double, double>> cellModulePositionMap_;
+  /**
+   * Postion of module centers relative to the p,q axes ("flower" axes) 
+   * (uses module ID as key)
+   */
+  std::map<int, std::pair<double, double>> module_pos_pq_;
 
-  /// Map of cell ID to neighboring cells (uses ID with real cell and module and
-  /// layer as zero for key)
+  /**
+   * Position of cell centers relative to center of module in
+   * p,q space.
+   *
+   * use cell ID as key
+   */
+  std::map<int, std::pair<double, double>> cell_pos_in_module_;
+
+  /**
+   * Position of cell centers relative to world geometry 
+   *
+   * This is where we convert p,q (flower) space into x,y (world) space
+   * by calculating the z-location as well as including rotations and
+   * shifts when converting from p,q to x,y.
+   *
+   * The key is the full EcalID and the value is the x,y,z tuple.
+   */
+  std::map<EcalID, std::tuple<double,double, double>> cell_global_pos_;
+
+  /**
+   * Map of cell ID to neighboring cells (uses ID with real cell and module and
+   * layer as zero for key)
+   */
   std::map<EcalID, std::vector<EcalID>> NNMap_;
 
-  /// Map of cell ID to neighbors of neighbor cells (uses ID with real cell and
-  /// module and layer as zero for key)
+  /**
+   * Map of cell ID to neighbors of neighbor cells (uses ID with real cell and 
+   * module and layer as zero for key)
+   */
   std::map<EcalID, std::vector<EcalID>> NNNMap_;
 
-  /// List of Trigger Group IDs (index is cell ID)
+  /**
+   * List of Trigger Group IDs (index is cell ID)
+   */
   std::vector<int> triggerGroups_;
 
   /**
    * Honeycomb Binning from ROOT
    *
    * Needs to be mutable because ROOT doesn't have good const handling
+   *
+   * Lookup a cell ID using its position relative to the center of
+   * the module in p,q space.
    */
-  mutable TH2Poly ecalMap_;
+  mutable TH2Poly cell_id_in_module_;
 };
 
 }  // namespace ldmx
