@@ -4,9 +4,13 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "SimCore/SensitiveDetector.h"
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/SensitiveDetector.h"
 #include "SimCore/TrackMap.h"
 
 namespace simcore {
@@ -41,10 +45,15 @@ class HcalSD : public SensitiveDetector {
   bool isSensDet(G4LogicalVolume* volume) const final override {
     auto region = volume->GetRegion();
     if (region and region->GetName().contains("CalorimeterRegion")) {
-      return volume->GetName().contains("ScintBox");
+      const auto name{volume->GetName()};
+      return std::find_if(std::begin(gdmlIdentifiers_),
+                          std::end(gdmlIdentifiers_),
+                          [&name](const auto& identifier) {
+                            return name.contains(identifier);
+                          }) != std::end(gdmlIdentifiers_);
     }
     return false;
-  }
+  }  // namespace simcore
 
   /**
    * Create a hit out of the energy deposition deposited during a
@@ -75,7 +84,6 @@ class HcalSD : public SensitiveDetector {
 
   // collection of hits to write to event bus
   std::vector<ldmx::SimCalorimeterHit> hits_;
-
 };  // HcalSD
 
 }  // namespace simcore
