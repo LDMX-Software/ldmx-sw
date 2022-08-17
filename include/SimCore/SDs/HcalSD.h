@@ -55,7 +55,7 @@ class HcalSD : public SensitiveDetector {
                           }) != std::end(gdmlIdentifiers_);
     }
     return false;
-  }  // namespace simcore
+  }
 
   /**
    * Create a hit out of the energy deposition deposited during a
