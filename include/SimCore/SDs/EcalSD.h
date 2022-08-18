@@ -9,7 +9,7 @@
 #define SIMCORE_ECALSD_H_
 
 // LDMX
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalID.h"
 #include "SimCore/SensitiveDetector.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4User/TrackingAction.h"
