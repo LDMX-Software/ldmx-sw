@@ -282,7 +282,7 @@
 <variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
-<variable name="n_cellR_height" value="35."/>
+<variable name="n_cellR_height" value="35.3"/>
 <variable name="shift_x" value="2*Hex_radius/n_cellR_height"/>
 <variable name="shift_y" value="0."/>
 
