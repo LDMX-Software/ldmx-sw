@@ -31,16 +31,18 @@ int main() {
       171.450, 180.550, 196.250, 205.350, 221.050, 230.150, 245.850,
       254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350,
       362.550, 375.150, 394.350, 406.950, 426.150, 438.750};
-
-  std::map<std::string, std::any> ps;
-  ps["layerZPositions"] = ecalSensLayersZ;
-  ps["ecalFrontZ"] = 220.;
-  ps["moduleMinR"] = 85.0;
-  ps["gap"] = 1.0;
-  ps["nCellRHeight"] = 35.3;
-  ps["verbose"] = 2;
   framework::config::Parameters params;
-  params.setParameters(ps);
+  params.addParameter("layerZPositions", ecalSensLayersZ);
+  params.addParameter("ecalFrontZ", 220.);
+  params.addParameter("moduleMinR", 85.0);
+  params.addParameter("nCellRHeight", 35.3);
+  params.addParameter("gap", 1.5);
+  params.addParameter("cornersSideUp", false);
+  params.addParameter("layer_shift_x", 0.);
+  params.addParameter("layer_shift_y", 0.);
+  params.addParameter("layer_shift_odd", false);
+  params.addParameter("layer_shift_odd_bilayer", false);
+  params.addParameter("verbose", 1);
 
   ldmx::EcalGeometry* geometry_ptr = ldmx::EcalGeometry::debugMake(params);
   ldmx::EcalGeometry& geometry(*geometry_ptr);
@@ -61,17 +63,17 @@ int main() {
 
   double hexCornerRadius = 85.0 * (2 / sqrt(3));
   std::vector<std::pair<double, double> > hexCorners = {
-      std::make_pair<double, double>(0., +1. * hexCornerRadius),
-      std::make_pair<double, double>(+1. * hexCornerRadius * sin(M_PI / 3),
-                                     +1. * hexCornerRadius * cos(M_PI / 3)),
-      std::make_pair<double, double>(+1. * hexCornerRadius * sin(M_PI / 3),
-                                     -1. * hexCornerRadius * cos(M_PI / 3)),
-      std::make_pair<double, double>(0., -1. * hexCornerRadius),
-      std::make_pair<double, double>(-1. * hexCornerRadius * sin(M_PI / 3),
-                                     -1. * hexCornerRadius * cos(M_PI / 3)),
-      std::make_pair<double, double>(-1. * hexCornerRadius * sin(M_PI / 3),
-                                     +1. * hexCornerRadius * cos(M_PI / 3)),
-      std::make_pair<double, double>(0., +1. * hexCornerRadius)};
+      std::make_pair(+1. * hexCornerRadius, 0.),
+      std::make_pair(+1. * hexCornerRadius * cos(M_PI / 3),
+                     +1. * hexCornerRadius * sin(M_PI / 3)),
+      std::make_pair(-1. * hexCornerRadius * cos(M_PI / 3),
+                     +1. * hexCornerRadius * sin(M_PI / 3)),
+      std::make_pair(-1. * hexCornerRadius, 0.),
+      std::make_pair(-1. * hexCornerRadius * cos(M_PI / 3),
+                     -1. * hexCornerRadius * sin(M_PI / 3)),
+      std::make_pair(+1. * hexCornerRadius * cos(M_PI / 3),
+                     -1. * hexCornerRadius * sin(M_PI / 3)),
+      std::make_pair(+1. * hexCornerRadius, 0.)};
   TLine moduleHexBorder;
   moduleHexBorder.SetLineColorAlpha(kRed, 0.5);
   moduleHexBorder.SetLineWidth(2);
