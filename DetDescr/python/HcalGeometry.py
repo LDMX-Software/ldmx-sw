@@ -63,7 +63,6 @@ class HcalGeometry() :
         self.make_v1_prototype()
         self.make_v2_prototype()
 
-
     def make_v13(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
@@ -90,7 +89,7 @@ class HcalGeometry() :
                                    (self.v13.NumLayers[4]*self.v13.LayerThickness[4]+self.v13.EcalDx)/2,
                                    (self.v13.NumLayers[1]*self.v13.LayerThickness[1]+self.v13.EcalDy)/2,
                                    (self.v13.NumLayers[2]*self.v13.LayerThickness[2]+self.v13.EcalDy)/2,]
-        self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        self.v13.detectors_valid = ['ldmx-det-v14',"ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
         # Layers with odd parity (1) are horizontal (scintillator bar length
         # along the x-axis)
         self.v13.horizontal_parity = 1
