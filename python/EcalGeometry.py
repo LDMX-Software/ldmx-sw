@@ -39,7 +39,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         else:
             super().__init__("EcalGeometryProvider","ecal::EcalGeometryProvider","Ecal")
             from LDMX.DetDescr import EcalGeometry
-            self.EcalGeometry = EcalGeometry.EcalGeometry()
+            self.geometries = EcalGeometry.geometries()
             EcalGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition

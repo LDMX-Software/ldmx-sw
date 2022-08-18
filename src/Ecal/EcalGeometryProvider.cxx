@@ -61,8 +61,8 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   }
 
  private:
-  /** Handle to the parameters, needed for future use during get condition */
-  framework::config::Parameters params_;
+  /** parameters for the various geometry versions we can support */
+  std::vector<framework::config::Parameters> geometries_;
   /** Geometry as last used */
   std::string detectorGeometry_;
   ldmx::EcalGeometry* ecalGeometry_;
@@ -74,8 +74,8 @@ EcalGeometryProvider::EcalGeometryProvider(
     framework::Process& process)
     : framework::
           ConditionsObjectProvider{ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME,
-                                   tagname, parameters, process},
-      params_{parameters} {
+                                   tagname, parameters, process} {
+  geometries_ = parameters.getParameter<std::vector<framework::config::Parameters>>("geometries");
   ecalGeometry_ = 0;
 }
 
@@ -89,25 +89,17 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
   static const std::string KEYNAME("detectors_valid");
 
   if (!ecalGeometry_) {
-    framework::config::Parameters phex =
-        (params_.exists("EcalGeometry"))
-            ? (params_.getParameter<framework::config::Parameters>(
-                  "EcalGeometry"))
-            : (params_);
-
     // search through the subtrees
-    for (auto key : phex.keys()) {
-      framework::config::Parameters pver =
-          phex.getParameter<framework::config::Parameters>(key);
-
+    for (auto pver : geometries_) {
       if (!pver.exists(KEYNAME)) {
-        ldmx_log(warn) << "No parameter " << KEYNAME << " found in " << key;
+        ldmx_log(warn) << "No parameter " << KEYNAME 
+          << " found one of the detector vesrsions.";
         // log strange situation and continue
         continue;
       }
 
       std::vector<std::string> dets_valid =
-          pver.getParameter<std::vector<std::string> >(KEYNAME);
+          pver.getParameter<std::vector<std::string>>(KEYNAME);
       for (auto detregex : dets_valid) {
         std::string regex(detregex);
         if (regex.empty()) continue;  // no empty regex allowed
