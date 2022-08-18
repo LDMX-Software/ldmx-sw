@@ -19,7 +19,7 @@
 //   LDMX   //
 //----------//
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/ClusterAlgoResult.h"
 #include "Ecal/Event/EcalCluster.h"

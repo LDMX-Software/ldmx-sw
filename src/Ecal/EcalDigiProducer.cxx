@@ -6,6 +6,7 @@
  */
 
 #include "Ecal/EcalDigiProducer.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Framework/RandomNumberSeedService.h"
 
 namespace ecal {
@@ -157,11 +158,11 @@ void EcalDigiProducer::produce(framework::Event& event) {
     // geometry constants
     //  These are used in the noise generation so that we can randomly
     //  distribute the noise uniformly throughout the ECal channels.
-    const auto& hexGeom = getCondition<ldmx::EcalHexReadout>(
-        ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
-    int nEcalLayers = hexGeom.getNumLayers();
-    int nModulesPerLayer = hexGeom.getNumModulesPerLayer();
-    int nCellsPerModule = hexGeom.getNumCellsPerModule();
+    const auto& geom = getCondition<ldmx::EcalGeometry>(
+        ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
+    int nEcalLayers = geom.getNumLayers();
+    int nModulesPerLayer = geom.getNumModulesPerLayer();
+    int nCellsPerModule = geom.getNumCellsPerModule();
     int numEmptyChannels = nEcalLayers * nModulesPerLayer * nCellsPerModule -
                            ecalDigis.getNumDigis();
 

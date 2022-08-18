@@ -18,7 +18,7 @@
 #include <vector>
 
 namespace ldmx {
-class EcalHexReadout;
+class EcalGeometry;
 }
 
 namespace ecal {
@@ -32,7 +32,7 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
  public:
   static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalTriggerGeometry"};
 
-  EcalTriggerGeometry(int symmetry, const ldmx::EcalHexReadout* ecalGeom = 0);
+  EcalTriggerGeometry(int symmetry, const ldmx::EcalGeometry* ecalGeom = 0);
 
   /**
    * Returns the set of precision (full-granularity/DAQ) cells which are
@@ -53,13 +53,25 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
    */
   ldmx::EcalTriggerID belongsTo(ldmx::EcalID precisionCell) const;
 
-  /** Returns the center of the given trigger cell, depends on Ecal Geometry
-   * (ldmx::EcalHexReadout) */
-  std::pair<double, double> globalPosition(
+  /** 
+   * Returns the center of the given trigger cell in world coordinates
+   *
+   * depends on Ecal Geometry (ldmx::EcalGeometry) 
+   *
+   * C++17's structured bindings is helpful here
+   * ```cpp
+   * auto [x,y,z] = trig_geom.globalPosition(triggerCell);
+   * // x,y,z are the world coordinates of the center of the trigger cell
+   * ```
+   */
+  std::tuple<double, double,double> globalPosition(
       ldmx::EcalTriggerID triggerCell) const;
 
-  /** Returns the local (within module) center of the given trigger cell,
-   * depends on Ecal Geometry (ldmx::EcalHexReadout) */
+  /** 
+   * Returns the local (within module) center of the given trigger cell
+   *
+   * depends on Ecal Geometry (ldmx::EcalGeometry) 
+   */
   std::pair<double, double> localPosition(
       ldmx::EcalTriggerID triggerCell) const;
 
@@ -70,7 +82,7 @@ class EcalTriggerGeometry : public framework::ConditionsObject {
   */
   int symmetry_;
   /** Reference to the Ecal geometry used for trigger geometry information */
-  const ldmx::EcalHexReadout* ecalGeometry_;
+  const ldmx::EcalGeometry* ecalGeometry_;
   /** Map of precision cells to trigger cells, under symmetry assumptions
    */
   std::map<ldmx::EcalID, ldmx::EcalTriggerID> precision2trigger_;

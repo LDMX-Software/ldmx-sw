@@ -9,9 +9,9 @@
 #define EVENTPROC_DNNECALVETOPROCESSOR_H_
 
 // LDMX
-#include "DetDescr/EcalHexReadout.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -36,7 +36,7 @@ class DNNEcalVetoProcessor : public framework::Producer {
    * Make inputs to the DNN from ECAL RecHits.
    * @param ecalRecHits The EcalHit collection.
    */
-  void make_inputs(const ldmx::EcalHexReadout& geom,
+  void make_inputs(const ldmx::EcalGeometry& geom,
                    const std::vector<ldmx::EcalHit>& ecalRecHits);
 
  private:

@@ -8,19 +8,16 @@
 namespace ecal {
 
 WorkingCluster::WorkingCluster(const ldmx::EcalHit* eh,
-                               const ldmx::EcalHexReadout& hex) {
+                               const ldmx::EcalGeometry& hex) {
   add(eh, hex);
 }
 
 void WorkingCluster::add(const ldmx::EcalHit* eh,
-                         const ldmx::EcalHexReadout& hex) {
+                         const ldmx::EcalGeometry& hex) {
   double hitE = eh->getEnergy();
 
-  double hitX, hitY, hitZ;
-  hex.getCellAbsolutePosition(
-      eh->getID()  // this ID integer is converted into an EcalID
-      ,
-      hitX, hitY, hitZ);
+  /// The ID number is implicitly converted to EcalID
+  auto [hitX, hitY, hitZ] = hex.getPosition(eh->getID());
 
   double newE = hitE + centroid_.E();
   double newCentroidX = (centroid_.Px() * centroid_.E() + hitE * hitX) / newE;

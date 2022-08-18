@@ -17,7 +17,7 @@ template <class WeightClass>
 
 class TemplatedClusterFinder {
  public:
-  void add(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& hex) {
+  void add(const ldmx::EcalHit* eh, const ldmx::EcalGeometry& hex) {
     clusters_.push_back(WorkingCluster(eh, hex));
   }
 

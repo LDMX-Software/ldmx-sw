@@ -1,5 +1,5 @@
 
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalTriggerID.h"
 #include "Ecal/EcalTriggerGeometry.h"
@@ -42,22 +42,19 @@ int main() {
   framework::config::Parameters params;
   params.setParameters(ps);
 
-  ldmx::EcalHexReadout* phexReadout = ldmx::EcalHexReadout::debugMake(params);
-  ldmx::EcalHexReadout& hexReadout(*phexReadout);
+  ldmx::EcalGeometry* geometry_ptr = ldmx::EcalGeometry::debugMake(params);
+  ldmx::EcalGeometry& geometry(*geometry_ptr);
 
-  auto polyMap = hexReadout.getCellPolyMap();
-
-  // fill poly map with IDs
-  for (auto const& [cellID, cellCenter] : hexReadout.getCellPositionMap()) {
-    polyMap->Fill(cellCenter.first, cellCenter.second, cellID);
-  }
+  /// fills the poly map with the corresponding IDs and then returns a handle to it
+  auto polyMap = geometry.getCellPolyMap();
 
   TCanvas* c = new TCanvas("c", "c", 900, 900);  // make square canvas
   c->SetMargin(0.15, 0.05, 0.1, 0.1);
   gStyle->SetOptStat(0);  // no stat box
   polyMap->SetTitle(
-      "Local Cell ID to Local Cell Position Map;X Position Relative to Module "
-      "[mm];Y Position Relative to Module [mm]");
+      "Local Cell ID to Local Cell Position Map;"
+      "P Position Relative to Module [mm];"
+      "Q Position Relative to Module [mm]");
   polyMap->GetXaxis()->SetTickLength(0.);
   polyMap->GetYaxis()->SetTickLength(0.);
   polyMap->Draw("TEXT");  // print with bin context labeled as text
@@ -98,7 +95,7 @@ int main() {
 
   for (int icell = 0; icell < 432; icell++) {
     ldmx::EcalID id(0, 0, icell);
-    std::pair<double, double> pt = hexReadout.getCellCenterRelative(icell);
+    std::pair<double, double> pt = geometry.getPositionInModule(icell);
     char text[100];
     std::pair<unsigned int, unsigned int> uv = id.getCellUV();
     sprintf(text, "(%d,%d)", uv.first, uv.second);
@@ -112,10 +109,11 @@ int main() {
   c->SaveAs("Cell_UV_Cell_Position_Map.pdf");
 
   // and now for triggers
-  ecal::EcalTriggerGeometry trigG(0x100, &hexReadout);
+  ecal::EcalTriggerGeometry trigG(0x100, geometry_ptr);
   polyMap->SetTitle(
-      "Trigger Cell Summing Map; X Position Relative to Module [mm];Y Position "
-      "Relative to Module [mm]");
+      "Trigger Cell Summing Map;"
+      "P Position Relative to Module [mm];"
+      "Q Position Relative to Module [mm]");
   polyMap->GetXaxis()->SetTickLength(0.);
   polyMap->GetYaxis()->SetTickLength(0.);
   polyMap->SetMaximum(4);

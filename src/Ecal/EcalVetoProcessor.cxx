@@ -148,8 +148,6 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
     }
   }
 
-  hexReadout_ = 0;  // load during event processing
-
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
 
   bdtCutVal_ = parameters.getParameter<double>("disc_cut");
@@ -193,9 +191,8 @@ void EcalVetoProcessor::clearProcessor() {
 
 void EcalVetoProcessor::produce(framework::Event &event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout &hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
-  hexReadout_ = &hexReadout;
+  geometry_ = &getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   ldmx::EcalVetoResult result;
 
@@ -332,7 +329,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     // Layer-wise quantities
-    ldmx::EcalID id = hitID(hit);
+    ldmx::EcalID id(hit.getID());
     ecalLayerEdepRaw_[id.layer()] =
         ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
     if (id.layer() >= 20) ecalBackEnergy_ += hit.getEnergy();
@@ -341,14 +338,15 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       nReadoutHits_++;
       ecalLayerEdepReadout_[id.layer()] += hit.getEnergy();
       ecalLayerTime_[id.layer()] += (hit.getEnergy()) * hit.getTime();
-      xMean += getCellCentroidXYPair(id).first * hit.getEnergy();
-      yMean += getCellCentroidXYPair(id).second * hit.getEnergy();
+      auto [x,y,z] = geometry_->getPosition(id);
+      xMean += x * hit.getEnergy();
+      yMean += y * hit.getEnergy();
       avgLayerHit_ += id.layer();
       wavgLayerHit += id.layer() * hit.getEnergy();
       if (deepestLayerHit_ < id.layer()) {
         deepestLayerHit_ = id.layer();
       }
-      XYCoords xy_pair = getCellCentroidXYPair(id);
+      XYCoords xy_pair = std::make_pair(x,y);
       float distance_ele_trajectory =
           ele_trajectory.size()
               ? sqrt(
@@ -386,7 +384,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       // If inside e- RoC or if etraj is missing, use the hit for tracking:
       if(distance_ele_trajectory >= ele_radii[id.layer()] || distance_ele_trajectory == -1.0) {
         HitData hd;
-        hd.pos = TVector3(xy_pair.first, xy_pair.second, hexReadout.getZPosition(id.layer())); //LAYER_Z_POSITIONS[id.layer()]);
+        hd.pos = TVector3(xy_pair.first, xy_pair.second, geometry_->getZPosition(id.layer()));
         hd.layer = id.layer();
         trackingHitList.push_back(hd);
       }
@@ -425,15 +423,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Loop over hits a second time to find the standard deviations.
   for (const ldmx::EcalHit &hit : ecalRecHits) {
-    ldmx::EcalID id = hitID(hit);
+    ldmx::EcalID id(hit.getID());
+    auto [x,y,z] = geometry_->getPosition(id);
     if (hit.getEnergy() > 0) {
-      xStd_ +=
-          pow((getCellCentroidXYPair(id).first - xMean), 2) * hit.getEnergy();
-      yStd_ +=
-          pow((getCellCentroidXYPair(id).second - yMean), 2) * hit.getEnergy();
+      xStd_ += pow((x - xMean), 2) * hit.getEnergy();
+      yStd_ += pow((y - yMean), 2) * hit.getEnergy();
       stdLayerHit_ += pow((id.layer() - wavgLayerHit), 2) * hit.getEnergy();
     }
-    XYCoords xy_pair = getCellCentroidXYPair(id);
+    XYCoords xy_pair = std::make_pair(x,y);
     float distance_ele_trajectory =
         ele_trajectory.size()
             ? sqrt(pow((xy_pair.first - ele_trajectory[id.layer()].first), 2) +
@@ -551,10 +548,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   TVector3 p_traj_end;
   if(ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
     // Create TVector3s marking the start and endpoints of each projected trajectory
-    e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,   hexReadout.getZPosition(0)); // LAYER_Z_POSITIONS.front());
-    e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second, hexReadout.getZPosition(33)); //   LAYER_Z_POSITIONS.back());
-    p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, hexReadout.getZPosition(0)); //LAYER_Z_POSITIONS.front());
-    p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, hexReadout.getZPosition(33));  //LAYER_Z_POSITIONS.back());
+    e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,   geometry_->getZPosition(0));
+    e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second, geometry_->getZPosition(33));
+    p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, geometry_->getZPosition(0));
+    p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, geometry_->getZPosition(33));
 
     TVector3 evec   = e_traj_end - e_traj_start;
     TVector3 e_norm = evec.Unit();
@@ -569,10 +566,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   } else {
     // Electron trajectory is missing, so all hits in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place them far outside the ECal).
-    e_traj_start = TVector3(999,999,hexReadout.getZPosition(0)); //0);
-    e_traj_end = TVector3(999,999,hexReadout.getZPosition(33)); // 999);
-    p_traj_start = TVector3(1000,1000,hexReadout.getZPosition(0)); //0);
-    p_traj_end = TVector3(1000,1000,hexReadout.getZPosition(33)); //1000);
+    e_traj_start = TVector3(999,999,geometry_->getZPosition(0)); //0);
+    e_traj_end = TVector3(999,999,geometry_->getZPosition(33)); // 999);
+    p_traj_start = TVector3(1000,1000,geometry_->getZPosition(0)); //0);
+    p_traj_end = TVector3(1000,1000,geometry_->getZPosition(33)); //1000);
     epAng_ = 3.0 + 1.0;  /*ensures event will not be vetoed by angle/separation cut  */
     epSep_ = 10.0 + 1.0;
   }
@@ -580,7 +577,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Near photon step:  Find the first layer of the ECal where a hit near the projected
   // photon trajectory is found
   // Currently unusued pending further study; performance has dropped between v9 and v12.
-  firstNearPhLayer_ = hexReadout.getZPosition(33);
+  firstNearPhLayer_ = geometry_->getZPosition(33);
 
   if(photon_trajectory.size() != 0) {  //If no photon trajectory, leave this at the default (ECal back)
     for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
@@ -831,7 +828,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     setStorageHint(framework::hint_shouldDrop);
   }
   event.add(collectionName_, result);
-  hexReadout_ = 0;
 }
 
 /* Function to calculate the energy weighted shower centroid */
@@ -843,9 +839,10 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
 
   // Calculate Energy Weighted Centroid
   for (const ldmx::EcalHit &hit : ecalRecHits) {
-    ldmx::EcalID id = hitID(hit);
+    ldmx::EcalID id(hit.getID());
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
-    XYCoords centroidCoords = getCellCentroidXYPair(id);
+    auto [x,y,z] = geometry_->getPosition(id);
+    XYCoords centroidCoords = std::make_pair(x,y);
     wgtCentroidCoords.first = wgtCentroidCoords.first +
                               centroidCoords.first * cell_energy_pair.second;
     wgtCentroidCoords.second = wgtCentroidCoords.second +
@@ -860,7 +857,8 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
   // Find Nearest Cell to Centroid
   float maxDist = 1e6;
   for (const ldmx::EcalHit &hit : ecalRecHits) {
-    XYCoords centroidCoords = getCellCentroidXYPair(hitID(hit));
+    auto [x,y,z] = geometry_->getPosition(hit.getID());
+    XYCoords centroidCoords = std::make_pair(x,y);
 
     float deltaR =
         pow(pow((centroidCoords.first - wgtCentroidCoords.first), 2) +
@@ -869,7 +867,7 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     showerRMS += deltaR * hit.getEnergy();
     if (deltaR < maxDist) {
       maxDist = deltaR;
-      returnCellId = hitID(hit);
+      returnCellId = ldmx::EcalID(hit.getID());
     }
   }
   if (sumEdep > 0) showerRMS = showerRMS / sumEdep;
@@ -884,7 +882,7 @@ void EcalVetoProcessor::fillHitMap(
     const std::vector<ldmx::EcalHit> &ecalRecHits,
     std::map<ldmx::EcalID, float> &cellMap_) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
-    ldmx::EcalID id = hitID(hit);
+    ldmx::EcalID id(hit.getID());
     cellMap_.emplace(id, hit.getEnergy());
   }
 }
@@ -895,14 +893,13 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     std::map<ldmx::EcalID, float> &cellMapIso_, bool doTight) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     auto isolatedHit = std::make_pair(true, ldmx::EcalID());
-    ldmx::EcalID id = hitID(hit);
-    ldmx::EcalID flatid(0, id.module(), id.cell());
+    ldmx::EcalID id(hit.getID());
     if (doTight) {
       // Disregard hits that are on the centroid.
-      if (flatid == globalCentroid) continue;
+      if (id == globalCentroid) continue;
 
       // Skip hits that are on centroid inner ring
-      if (isInShowerInnerRing(globalCentroid, flatid)) {
+      if (geometry_->isNN(globalCentroid, id)) {
         continue;
       }
     }
@@ -911,7 +908,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     // Get neighboring cell id's and try to look them up in the full cell map
     // (constant speed algo.)
     //  these ideas are only cell/module (must ignore layer)
-    std::vector<ldmx::EcalID> cellNbrIds = getInnerRingCellIds(id);
+    std::vector<ldmx::EcalID> cellNbrIds = geometry_->getNN(id);
 
     for (int k = 0; k < 6; k++) {
       // update neighbor ID to the current layer
@@ -939,10 +936,10 @@ std::vector<std::pair<float, float> > EcalVetoProcessor::getTrajectory(
   for (int iLayer = 0; iLayer < nEcalLayers_; iLayer++) {
     float posX =
         position[0] + (momentum[0] / momentum[2]) *
-                          (hexReadout_->getZPosition(iLayer) - position[2]);
+                          (geometry_->getZPosition(iLayer) - position[2]);
     float posY =
         position[1] + (momentum[1] / momentum[2]) *
-                          (hexReadout_->getZPosition(iLayer) - position[2]);
+                          (geometry_->getZPosition(iLayer) - position[2]);
     positions.push_back(std::make_pair(posX, posY));
   }
   return positions;
