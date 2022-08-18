@@ -1,8 +1,8 @@
-"""ConditionsProvider for EcalHexReadout and other Ecal geometry-related aspects"""
+"""ConditionsProvider for EcalGeometry and other Ecal geometry-related aspects"""
 from LDMX.Framework import ldmxcfg
 
 class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
-    """Provider that provides access to Ecal geometry (ecal::EcalHexReadout)
+    """Provider that provides access to Ecal geometry (ecal::EcalGeometry)
 
     Parameters
     ----------
@@ -11,7 +11,7 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
     Attributes
     ----------
-    EcalHexReadout : EcalHexReadout
+    EcalGeometry : EcalGeometry
         Actual class providing precision cellular layout in Ecal
     __instance : EcalGeometryProvider
         Singleton instance of this object
@@ -38,15 +38,15 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalGeometryProvider","ecal::EcalGeometryProvider","Ecal")
-            from LDMX.DetDescr import EcalHexReadout
-            self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
+            from LDMX.DetDescr import EcalGeometry
+            self.EcalGeometry = EcalGeometry.EcalGeometry()
             EcalGeometryProvider.__instance = self
 
 # make sure global instance is created, this registers the condition
 EcalGeometryProvider.getInstance()
 
 class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
-    """Provider that provides access to Ecal geometry (ldmx::EcalHexReadout)
+    """Provider that provides access to Ecal geometry (ldmx::EcalGeometry)
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
 
     Attributes
     ----------
-    EcalHexReadout : EcalHexReadout
+    EcalGeometry : EcalGeometry
         Actual class providing precision cellular layout in Ecal
     __instance : EcalTriggerGeometryProvider
         Singleton instance of this object
@@ -82,8 +82,8 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             raise Exception('EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
             super().__init__("EcalTriggerGeometry","ecal::EcalTriggerGeometryProvider","Ecal")
-            from LDMX.DetDescr import EcalHexReadout
-            self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
+            from LDMX.DetDescr import EcalGeometry
+            self.EcalGeometry = EcalGeometry.EcalGeometry()
             EcalTriggerGeometryProvider.__instance = self 
 
 # make sure global instance is created, this registers the condition

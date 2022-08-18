@@ -5,7 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Ecal/EcalReconConditions.h"
 
 namespace ecal {
@@ -35,8 +35,8 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
 
 void EcalRecProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const auto& geometry = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the reconstruction parameters
   EcalReconConditions the_conditions(
@@ -54,8 +54,7 @@ void EcalRecProducer::produce(framework::Event& event) {
     ldmx::EcalID id(digi.id());
 
     // ID to real space position
-    double x, y, z;
-    hexReadout.getCellAbsolutePosition(id, x, y, z);
+    auto [x,y,z] = geometry.getPosition(id);
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?

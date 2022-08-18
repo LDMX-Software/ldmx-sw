@@ -1,13 +1,13 @@
 #include <regex.h>
 #include <sys/types.h>
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 #include "Framework/RunHeader.h"
 
 /**
  * @file EcalGeometryProvider.cxx
- * @brief Class that creates EcalHexReadout object based on python specification
+ * @brief Class that creates EcalGeometry object based on python specification
  * @author Jeremiah Mans, UMN
  */
 
@@ -17,8 +17,8 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
  public:
   /**
    * Class constructor
-   * @param parameters -- uses the "EcalHexReadout" section to configure the
-   * EcalHexReadout
+   * @param parameters -- uses the "EcalGeometry" section to configure the
+   * EcalGeometry
    */
   EcalGeometryProvider(const std::string& name, const std::string& tagname,
                        const framework::config::Parameters& parameters,
@@ -28,7 +28,7 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   virtual ~EcalGeometryProvider();
 
   /**
-   * Provides access to the EcalHexReadout or EcalTriggerGeometry
+   * Provides access to the EcalGeometry or EcalTriggerGeometry
    * @note Currently, these are assumed to be valid for all time, but this
    * behavior could be changed.  Users should not cache the pointer between
    * events
@@ -65,7 +65,7 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   framework::config::Parameters params_;
   /** Geometry as last used */
   std::string detectorGeometry_;
-  ldmx::EcalHexReadout* ecalGeometry_;
+  ldmx::EcalGeometry* ecalGeometry_;
 };
 
 EcalGeometryProvider::EcalGeometryProvider(
@@ -73,7 +73,7 @@ EcalGeometryProvider::EcalGeometryProvider(
     const framework::config::Parameters& parameters,
     framework::Process& process)
     : framework::
-          ConditionsObjectProvider{ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME,
+          ConditionsObjectProvider{ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME,
                                    tagname, parameters, process},
       params_{parameters} {
   ecalGeometry_ = 0;
@@ -90,9 +90,9 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
 
   if (!ecalGeometry_) {
     framework::config::Parameters phex =
-        (params_.exists("EcalHexReadout"))
+        (params_.exists("EcalGeometry"))
             ? (params_.getParameter<framework::config::Parameters>(
-                  "EcalHexReadout"))
+                  "EcalGeometry"))
             : (params_);
 
     // search through the subtrees
@@ -127,14 +127,14 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
         int nmatch = regexec(&reg, detectorGeometry_.c_str(), 0, 0, 0);
         regfree(&reg);
         if (!nmatch) {
-          ecalGeometry_ = new ldmx::EcalHexReadout(pver);
+          ecalGeometry_ = new ldmx::EcalGeometry(pver);
           break;
         }
       }
       if (ecalGeometry_) break;
     }
     if (!ecalGeometry_) {
-      EXCEPTION_RAISE("GeometryException", "Unable to create EcalHexReadout");
+      EXCEPTION_RAISE("GeometryException", "Unable to create EcalGeometry");
     }
   }
 

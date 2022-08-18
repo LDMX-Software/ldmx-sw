@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <vector>
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "TLorentzVector.h"
 
@@ -14,11 +14,11 @@ namespace ecal {
 
 class WorkingCluster {
  public:
-  WorkingCluster(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& geom);
+  WorkingCluster(const ldmx::EcalHit* eh, const ldmx::EcalGeometry& geom);
 
   ~WorkingCluster(){};
 
-  void add(const ldmx::EcalHit* eh, const ldmx::EcalHexReadout& geom);
+  void add(const ldmx::EcalHit* eh, const ldmx::EcalGeometry& geom);
 
   void add(const WorkingCluster& wc);
 

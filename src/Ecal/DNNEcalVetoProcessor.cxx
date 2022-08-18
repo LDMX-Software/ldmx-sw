@@ -37,8 +37,8 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
   ldmx::EcalVetoResult result;
 
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const auto& ecal_geometry = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the collection of digitized Ecal hits from the event.
   const auto ecalRecHits = event.getCollection<ldmx::EcalHit>("EcalRecHits");
@@ -48,7 +48,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
 
   if (nhits < max_num_hits_) {
     // make inputs
-    make_inputs(hexReadout, ecalRecHits);
+    make_inputs(ecal_geometry, ecalRecHits);
     // run the DNN
     auto outputs = rt_->run(input_names_, data_)[0];
     result.setDiscValue(outputs.at(1));
@@ -73,7 +73,7 @@ void DNNEcalVetoProcessor::produce(framework::Event& event) {
 }
 
 void DNNEcalVetoProcessor::make_inputs(
-    const ldmx::EcalHexReadout& geom,
+    const ldmx::EcalGeometry& geom,
     const std::vector<ldmx::EcalHit>& ecalRecHits) {
   // clear data
   for (auto& v : data_) {
@@ -83,14 +83,13 @@ void DNNEcalVetoProcessor::make_inputs(
   unsigned idx = 0;
   for (const auto& hit : ecalRecHits) {
     if (hit.getEnergy() <= 0) continue;
-    double x = 0, y = 0, z = 0;
-    geom.getCellAbsolutePosition(hit.getID(), x, y, z);
+    ldmx::EcalID id(hit.getID());
+    auto [x,y,z] = geom.getPosition(id);
 
     data_[0].at(coordinate_x_offset_ + idx) = x;
     data_[0].at(coordinate_y_offset_ + idx) = y;
     data_[0].at(coordinate_z_offset_ + idx) = z;
 
-    ldmx::EcalID id(hit.getID());
     data_[1].at(feature_x_offset_ + idx) = x;
     data_[1].at(feature_y_offset_ + idx) = y;
     data_[1].at(feature_z_offset_ + idx) = z;

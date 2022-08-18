@@ -54,7 +54,7 @@ class EcalRecProducer : public framework::Producer {
    *
    * This function unfolds the digi samples taken by the HGC ROC
    * and reconstructs their energy using knowledge of how
-   * the chip operates and the position using EcalHexReadout.
+   * the chip operates and the position using EcalGeometry.
    */
   virtual void produce(framework::Event& event);
 

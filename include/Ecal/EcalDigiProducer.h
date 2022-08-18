@@ -19,7 +19,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalID.h"
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/EventConstants.h"

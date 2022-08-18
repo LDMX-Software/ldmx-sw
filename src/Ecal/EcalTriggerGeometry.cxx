@@ -1,7 +1,7 @@
 #include "Ecal/EcalTriggerGeometry.h"
 #include <iostream>
 #include <sstream>
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 
@@ -15,7 +15,7 @@ static const int MODULES_MASK = 0xFF00;
 static const int INPLANE_IDENTICAL = 0x0100;
 
 EcalTriggerGeometry::EcalTriggerGeometry(int symmetry,
-                                         const ldmx::EcalHexReadout* ecalGeom)
+                                         const ldmx::EcalGeometry* ecalGeom)
     : ConditionsObject(CONDITIONS_OBJECT_NAME),
       symmetry_{symmetry},
       ecalGeometry_{ecalGeom} {
@@ -130,18 +130,18 @@ ldmx::EcalTriggerID EcalTriggerGeometry::belongsTo(
 }
 
 // as it happens, the fifth precision cell in the list is the center cell
-std::pair<double, double> EcalTriggerGeometry::globalPosition(
+std::tuple<double, double, double> EcalTriggerGeometry::globalPosition(
     ldmx::EcalTriggerID triggerCell) const {
-  if (!ecalGeometry_) return std::pair<double, double>(0, 0);
+  if (!ecalGeometry_) return std::make_tuple(0,0,0);
   ldmx::EcalID pid = centerInTriggerCell(triggerCell);
-  return ecalGeometry_->getCellCenterAbsolute(pid);
+  return ecalGeometry_->getPosition(pid);
 }
 
 std::pair<double, double> EcalTriggerGeometry::localPosition(
     ldmx::EcalTriggerID triggerCell) const {
-  if (!ecalGeometry_) return std::pair<double, double>(0, 0);
+  if (!ecalGeometry_) return std::make_pair(0,0);
   ldmx::EcalID pid = centerInTriggerCell(triggerCell);
-  return ecalGeometry_->getCellCenterRelative(pid.cell());
+  return ecalGeometry_->getPositionInModule(pid.cell());
 }
 
 class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
@@ -164,7 +164,7 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
   }
 
   /**
-   * Provides access to the EcalHexReadout or EcalTriggerGeometry
+   * Provides access to the EcalGeometry or EcalTriggerGeometry
    * @note Currently, these are assumed to be valid for all time, but this
    * behavior could be changed.  Users should not cache the pointer between
    * events
@@ -175,9 +175,9 @@ class EcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
     if (ecalTriggerGeometry_ == nullptr) {
       std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
           cond_ecal_geom = requestParentCondition(
-              ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME, context);
-      const ldmx::EcalHexReadout* ecalgeom =
-          dynamic_cast<const ldmx::EcalHexReadout*>(cond_ecal_geom.first);
+              ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME, context);
+      const ldmx::EcalGeometry* ecalgeom =
+          dynamic_cast<const ldmx::EcalGeometry*>(cond_ecal_geom.first);
       ecalTriggerGeometry_ = new EcalTriggerGeometry(
           INPLANE_IDENTICAL | LAYERS_IDENTICAL, ecalgeom);
     }

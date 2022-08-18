@@ -25,8 +25,8 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 
 void EcalClusterProducer::produce(framework::Event& event) {
   // Get the Ecal Geometry
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const auto& geometry = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   TemplatedClusterFinder<MyClusterWeight> cf;
 
@@ -45,7 +45,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       continue;
     }
 
-    cf.add(&hit, hexReadout);
+    cf.add(&hit, geometry);
   }
 
   cf.cluster(seedThreshold_, cutoff_);

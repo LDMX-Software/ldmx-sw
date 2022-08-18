@@ -8,7 +8,7 @@
 #define EVENTPROC_ECALVETOPROCESSOR_H_
 
 // LDMX
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
@@ -57,31 +57,7 @@ class EcalVetoProcessor : public framework::Producer {
   };
 
  private:
-  /** Wrappers for ecalHexReadout functions. See hitToPair().
-   *  Necessary to easily combine cellID with moduleID to get unique ID of
-   *  hit in layer. In future: combine celID+moduleID+layerID.
-   */
-  bool isInShowerInnerRing(ldmx::EcalID centroidID, ldmx::EcalID probeID) {
-    return hexReadout_->isNN(centroidID, probeID);
-  }
-  bool isInShowerOuterRing(ldmx::EcalID centroidID, ldmx::EcalID probeID) {
-    return hexReadout_->isNNN(centroidID, probeID);
-  }
-  std::pair<double, double> getCellCentroidXYPair(ldmx::EcalID centroidID) {
-    return hexReadout_->getCellCenterAbsolute(centroidID);
-  }
-  std::vector<ldmx::EcalID> getInnerRingCellIds(ldmx::EcalID id) {
-    return hexReadout_->getNN(id);
-  }
-  std::vector<ldmx::EcalID> getOuterRingCellIds(ldmx::EcalID id) {
-    return hexReadout_->getNNN(id);
-  }
-
   void clearProcessor();
-
-  ldmx::EcalID hitID(const ldmx::EcalHit& hit) const {
-    return ldmx::EcalID(hit.getID());
-  }
 
   /* Function to calculate the energy weighted shower centroid */
   ldmx::EcalID GetShowerCentroidIDAndRMS(
@@ -167,8 +143,6 @@ class EcalVetoProcessor : public framework::Producer {
   bool verbose_{false};
   bool doesPassVeto_{false};
 
-  const ldmx::EcalHexReadout* hexReadout_;
-
   std::string bdtFileName_;
   std::string cellFileNamexy_;
   std::vector<float> bdtFeatures_;
@@ -180,6 +154,9 @@ class EcalVetoProcessor : public framework::Producer {
   std::string collectionName_{"EcalVeto"};
 
   std::unique_ptr<ldmx::Ort::ONNXRuntime> rt_;
+
+  /// handle to current geometry (to share with member functions)
+  const ldmx::EcalGeometry* geometry_;
 };
 
 }  // namespace ecal
