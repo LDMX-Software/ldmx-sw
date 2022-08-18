@@ -132,7 +132,8 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   
   if (cell_id < 0) {
     EXCEPTION_RAISE("BadConf",
-        "Relative cell coordinates are outside module hexagon");
+        TString::Format("Relative cell coordinates (%.2f, %.2f) mm are outside module hexagon",
+          p,q).Data());
   }
 
   return EcalID(layer_id,module_id,cell_id);

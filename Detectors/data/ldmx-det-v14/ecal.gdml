@@ -327,49 +327,49 @@
         <volume name="Wthick_A_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="Wthick_A_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="W_A_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="W_A_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="Wthick_B_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="Wthick_B_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="W_B_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="W_B_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="Wthick_C_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="Wthick_C_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="W_C_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="W_C_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="Wthick_D_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="Wthick_D_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="W_D_volume">
             <materialref ref="G4_W0x270bda0"/>
             <solidref ref="W_D_hexagon"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="PCB_volume">
@@ -385,7 +385,7 @@
         <volume name="Readout_volume">
             <materialref ref="G4_Si0x271c1c0"/>
             <solidref ref="Readout"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueWireFrame"/>-->
         </volume>
 
         <volume name="CFMixThick_volume">
@@ -407,7 +407,7 @@
             <materialref ref="G4_Si0x271c1c0"/>
             <solidref ref="Si_hexagon"/>
             <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
         </volume>
 
         <volume name="em_calorimeters">
@@ -2633,13 +2633,13 @@
             <!-- END SECTION D -->
 
             <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>
+                  <!--<auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>-->
             <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
         </volume>
     </structure>
 
     <userinfo>
-        <!-- define vis attributes -->
+        <!-- define vis attributes
         <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame">
             <auxiliary auxtype="R" auxvalue="0.6"/>
             <auxiliary auxtype="G" auxvalue="0.6"/>
@@ -2679,7 +2679,7 @@
             <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
             <auxiliary auxtype="Visible" auxvalue="false"/>
             <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-        </auxiliary>
+        </auxiliary> -->
     </userinfo>  
 
     <setup name="Default" version="1.0">
