@@ -65,9 +65,7 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   buildCellModuleMap();
   buildNeighborMaps();
 
-  if (verbose_ > 0) {
-    std::cout << std::endl;
-  }
+  if (verbose_ > 0) std::cout << "[EcalGeometry] : fully constructed" << std::endl;
 }
 
 EcalID EcalGeometry::getID(double x, double y, double z) const {
@@ -145,7 +143,7 @@ std::tuple<double,double,double> EcalGeometry::getPosition(EcalID id) const {
 }
 
 std::pair<double,double> EcalGeometry::getPositionInModule(int cell_id) const {
-  auto pq = module_pos_pq_.at(cell_id);
+  auto pq = cell_pos_in_module_.at(cell_id);
   if (cornersSideUp_) {
     // need to do a 90deg rotation
     //   x = q
@@ -210,7 +208,6 @@ void EcalGeometry::buildModuleMap() {
       std::cout << "    Module " << id << " is centered at (p,q) = "
         << "(" << p << ", " << q << ") mm" << std::endl;
   }
-  if (verbose_ > 0) std::cout << std::endl;
 }
 
 void EcalGeometry::buildCellMap() {
@@ -260,9 +257,10 @@ void EcalGeometry::buildCellMap() {
   gridMap.Honeycomb(gridMinP, gridMinQ, cellR_, numPCells, numQCells);
   
   if (verbose_ > 0) {
-    std::cout << std::endl;
-    std::cout << std::setprecision(2) << "[buildCellMap] cell rmin: " << cellr_
-      << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
+    std::cout << std::setprecision(2) 
+      << "[EcalGeometry::buildCellMap] cell rmin: " << cellr_
+      << " cell rmax: " << cellR_ 
+      << " (gridMinP,gridMinQ) = ("
       << gridMinP << "," << gridMinQ << ")"
       << " (numPCells,numQCells) = (" << numPCells << "," << numQCells
       << ")" << std::endl;
@@ -429,54 +427,61 @@ void EcalGeometry::buildCellMap() {
       ++cell_id; // incrememnt cell ID
     } // if num vertices inside is > 1
   }   // loop over larger grid spanning module hexagon
-  
-  if (verbose_ > 0) std::cout << std::endl;
   return;
 }
 
 void EcalGeometry::buildCellModuleMap() {
   if (verbose_ > 0)
-    std::cout << std::endl
-              << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
+    std::cout << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
               << std::endl;
-  for (auto const& [layer_id, layer_xyz] : layer_pos_xy_) {
-    for (auto const& [module_id, module_pq] : module_pos_pq_) {
-      for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
-        // calculate cell's pq relative to entire layer center
-        auto cell_rel_to_layer = std::make_pair(
-            module_pq.first + cell_pq.first,
-            module_pq.second + cell_pq.second
-            );
-        // now convert from (p,q) to (x,y) space
-        if (cornersSideUp_) {
-          /**
-           * 90deg rotation
-           *  x = q
-           *  y = -p
-           * Basically a swap action to be able to reinterpret
-           * first,second as x,y instead of p,q
-           */
-          double x;
-          x = cell_rel_to_layer.second;
-          cell_rel_to_layer.second = -1.*cell_rel_to_layer.first;
-          cell_rel_to_layer.first = x;
-        }
-        // when the corners are not up, x = p and y = q
-        // so no transformation needs to be done
-
-        // now add the layer-center values to get the global position
-        // of the cell
-        cell_global_pos_[EcalID(layer_id, module_id, cell_id)]
-          = std::make_tuple(
-              cell_rel_to_layer.first + std::get<0>(layer_xyz),
-              cell_rel_to_layer.second + std::get<1>(layer_xyz),
-              std::get<2>(layer_xyz));
+  /// construct map of cell centers relative to layer center
+  for (auto const& [module_id, module_pq] : module_pos_pq_) {
+    for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
+      // calculate cell's pq relative to entire layer center
+      auto cell_rel_to_layer = std::make_pair(
+          module_pq.first + cell_pq.first,
+          module_pq.second + cell_pq.second
+          );
+      // now convert from (p,q) to (x,y) space
+      if (cornersSideUp_) {
+        /**
+         * 90deg rotation
+         *  x = q
+         *  y = -p
+         * Basically a swap action to be able to reinterpret
+         * first,second as x,y instead of p,q
+         */
+        double x;
+        x = cell_rel_to_layer.second;
+        cell_rel_to_layer.second = -1.*cell_rel_to_layer.first;
+        cell_rel_to_layer.first = x;
       }
+      // when the corners are not up, x = p and y = q
+      // so no transformation needs to be done
+
+      // now add the layer-center values to get the global position
+      // of the cell
+      cell_pos_in_layer_[EcalID(0, module_id, cell_id)] = cell_rel_to_layer;
     }
   }
+
+  /// construct map of global cell centers relative to target center
+  for (auto const& [layer_id, layer_xyz] : layer_pos_xy_) {
+    for (auto const& [flat_id, rel_to_layer] : cell_pos_in_layer_) {
+      // now add the layer-center values to get the global position
+      // of the cell
+      cell_global_pos_[EcalID(layer_id, flat_id.module(), flat_id.cell())]
+        = std::make_tuple(
+            rel_to_layer.first + std::get<0>(layer_xyz),
+            rel_to_layer.second + std::get<1>(layer_xyz),
+            std::get<2>(layer_xyz));
+    }
+  }
+
   if (verbose_ > 0)
     std::cout << "  contained " << cell_global_pos_.size() << " entries. "
               << std::endl;
+  return;
 }
 
 void EcalGeometry::buildNeighborMaps() {
@@ -493,14 +498,15 @@ void EcalGeometry::buildNeighborMaps() {
    * case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_
    * (NNN).
    */
+  if (verbose_ > 0)
+    std::cout << "[EcalGeometry::buildNeighborMaps] : "
+      << "Building Nearest and Next-Nearest Neighbor maps"
+      << std::endl;
 
   NNMap_.clear();
   NNNMap_.clear();
-  for (auto const& [center_id, center_xyz] : cell_global_pos_) {
-    for (auto const& [probe_id, probe_xyz] : cell_global_pos_) {
-      /// skip cells in different layers
-      if (probe_id.layer() != center_id.layer()) continue;
-      
+  for (auto const& [center_id, center_xyz] : cell_pos_in_layer_) {
+    for (auto const& [probe_id, probe_xyz] : cell_pos_in_layer_) {
       /// do distance calculation
       double dist = distance(probe_xyz, center_xyz);
       if (dist > 1 * cellr_ && dist <= 3. * cellr_) {
@@ -548,7 +554,6 @@ void EcalGeometry::buildNeighborMaps() {
               << std::endl;
   }
   */
-  if (verbose_ > 0) std::cout << std::endl;
   return;
 }
 
