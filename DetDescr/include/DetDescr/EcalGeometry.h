@@ -194,7 +194,7 @@ class EcalGeometry : public framework::ConditionsObject {
    */
   std::vector<EcalID> getNN(EcalID id) const {
     auto list = NNMap_.at(EcalID(0, id.module(), id.cell()));
-    for (auto& flat : list) id = EcalID(id.layer(), flat.module(), flat.cell());
+    for (auto& flat : list) flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
   }
 
@@ -220,7 +220,7 @@ class EcalGeometry : public framework::ConditionsObject {
    */
   std::vector<EcalID> getNNN(EcalID id) const {
     auto list = NNNMap_.at(EcalID(0, id.module(), id.cell()));
-    for (auto& flat : list) id = EcalID(id.layer(), flat.module(), flat.cell());
+    for (auto& flat : list) flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
   }
 
@@ -390,18 +390,6 @@ class EcalGeometry : public framework::ConditionsObject {
   void buildNeighborMaps();
 
   /**
-   * Constructs list of trigger groups.
-   *
-   * The list of trigger groups uses the index as the cell ID and the value as
-   * the ID of the trigger group.
-   *
-   * For the ECal, cells are grouped into 3x3 "squares" and integrated over for
-   * the trigger. This function builds a list for finding which trigger group a
-   * cell is in.
-   */
-  void buildTriggerGroup();
-
-  /**
    * Distance to module edge, and whether cell is on edge of module.
    *
    * @TODO Use getNN()/getNNN() + isEdgeCell() to expand functionality.
@@ -508,8 +496,8 @@ class EcalGeometry : public framework::ConditionsObject {
   std::vector<double> layerZPositions_;
 
  private:
-  /// verbosity, not configurable but helpful if developing
-  int verbose_{3};
+  /// verbosity
+  int verbose_;
 
   /**
    * Position of layer centers in world coordinates
@@ -532,6 +520,17 @@ class EcalGeometry : public framework::ConditionsObject {
   std::map<int, std::pair<double, double>> cell_pos_in_module_;
 
   /**
+   * Position of cell centers relative to center of layer in world
+   * coordinates.
+   *
+   * @note Layer shifts are NOT included in this map since they depend
+   * on the layer number!!
+   *
+   * Uses EcalID with layer set to zero as key.
+   */
+  std::map<EcalID, std::pair<double,double>> cell_pos_in_layer_;
+
+  /**
    * Position of cell centers relative to world geometry 
    *
    * This is where we convert p,q (flower) space into x,y (world) space
@@ -543,21 +542,18 @@ class EcalGeometry : public framework::ConditionsObject {
   std::map<EcalID, std::tuple<double,double, double>> cell_global_pos_;
 
   /**
-   * Map of cell ID to neighboring cells (uses ID with real cell and module and
-   * layer as zero for key)
+   * Map of cell ID to neighboring cells 
+   *
+   * The EcalID's in this map all have layer ID set to zero.
    */
   std::map<EcalID, std::vector<EcalID>> NNMap_;
 
   /**
-   * Map of cell ID to neighbors of neighbor cells (uses ID with real cell and 
-   * module and layer as zero for key)
+   * Map of cell ID to neighbors of neighbor cells
+   *
+   * The EcalID's in this map all have layer ID set to zero.
    */
   std::map<EcalID, std::vector<EcalID>> NNNMap_;
-
-  /**
-   * List of Trigger Group IDs (index is cell ID)
-   */
-  std::vector<int> triggerGroups_;
 
   /**
    * Honeycomb Binning from ROOT

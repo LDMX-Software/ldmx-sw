@@ -46,7 +46,7 @@ class EcalGeometry() :
 
         # parameters that must align with the geometry
         self.layerZPositions = layerZPositions
-        self.ecalFrontZ ecalFrontZ
+        self.ecalFrontZ = ecalFrontZ
         self.gap = gap
         self.cornersSideUp = cornersSideUp
         self.layer_shift_x = layer_shift_x
@@ -95,7 +95,7 @@ class EcalGeometry() :
                 )
 
     def v13() :
-        EcalGeometry(detectors_valid = ["ldmx-det-v13","ldmx-det-v13[.].*"],
+        return EcalGeometry(detectors_valid = ["ldmx-det-v13","ldmx-det-v13[.].*"],
                 gap = 1.5,
                 layerZPositions = [
                       7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050, 106.150,
@@ -108,7 +108,7 @@ class EcalGeometry() :
                 )
 
     def v14() :
-        EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14[.].*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-det-v14","ldmx-det-v14[.].*"],
                 gap = 1.5,
                 layerZPositions = [
                       7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050, 106.150,
@@ -118,10 +118,11 @@ class EcalGeometry() :
                       ],
                 ecalFrontZ = 240.5,
                 cornersSideUp = True,
-                layer_shift_x = 0.,
-                layer_shift_y = 0.,
                 layer_shift_odd = True,
                 )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
 
     def geometries() :
         return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14()]
