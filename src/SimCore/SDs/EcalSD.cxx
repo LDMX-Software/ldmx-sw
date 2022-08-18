@@ -10,6 +10,7 @@
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
 #include "DetDescr/EcalID.h"
+#include "DetDescr/EcalGeometry.h"
 
 namespace simcore {
 
@@ -26,8 +27,8 @@ EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   static const int layer_depth = 2; // index depends on GDML implementation
-  const auto& hitMap = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const auto& geometry = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -57,16 +58,31 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
 
-  ldmx::EcalID partialId =
-      hitMap.getCellModuleID(position[0], position[1]);
-  ldmx::EcalID id(layerNumber, module_position, partialId.cell());
+  // fastest? but need to trust module number between GDML and EcalGeometry match
+  //    NOT IMPLEMENTED in EcalGeometry at this time
+  //ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber, module_position);
+
+  // medium, only need to trust z-layer positions in GDML and EcalGeometry match
+  ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber);
+
+  // slowest, completely trust EcalGeometry
+  //ldmx::EcalID id = geometry.getID(position[0], position[1], position[2]);
+
 
   if (hits_.find(id) == hits_.end()) {
     // hit in empty cell
     auto& hit = hits_[id];
     hit.setID(id.raw());
-    double x, y, z;
-    hitMap.getCellAbsolutePosition(id, x, y, z);
+    /**
+     * convert position to center of cell position
+     *
+     * This is the behavior that has been done in the past,
+     * although it is completely redundant with the ID information
+     * already deduced. It would probably help us more if we
+     * persisted the actual simulated position of the hit rather
+     * than the cell center; however, that is up for more discussion.
+     */
+    auto [x,y,z] = geometry.getPosition(id);
     hit.setPosition(x, y, z);
   }
 
@@ -101,7 +117,7 @@ void EcalSD::saveHits(framework::Event& event) {
   // squash hits into list
   std::vector<ldmx::SimCalorimeterHit> hits;
   hits.reserve(hits_.size());
-  for (const auto& [ id, hit] : hits_) hits.push_back(hit);
+  for (const auto& [id, hit] : hits_) hits.push_back(hit);
   event.add(COLLECTION_NAME, hits);
 }
 
