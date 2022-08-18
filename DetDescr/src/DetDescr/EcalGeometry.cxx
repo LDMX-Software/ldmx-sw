@@ -12,6 +12,20 @@
 
 namespace ldmx {
 
+static double distance(const std::pair<double,double>& p1, const std::pair<double,double>& p2) {
+  return sqrt( (p1.first-p2.first)*(p1.first-p2.first) 
+      + (p1.second-p2.second)*(p1.second-p2.second));
+}
+
+static double distance(const std::tuple<double,double,double>& p1, 
+                       const std::tuple<double,double,double>& p2) {
+  return sqrt(
+      (std::get<0>(p1)-std::get<0>(p2))*(std::get<0>(p1)-std::get<0>(p2))
+      +(std::get<1>(p1)-std::get<1>(p2))*(std::get<1>(p1)-std::get<1>(p2))
+      +(std::get<2>(p1)-std::get<2>(p2))*(std::get<2>(p1)-std::get<2>(p2))
+      );
+}
+
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
   layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
@@ -59,7 +73,7 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
 EcalID EcalGeometry::getID(double x, double y, double z) const {
   static const double tolerance = 1.; // thickness of Si
   int layer_id{-1};
-  for (const auto& [lid, layzer_xyz] : layer_pos_xy_) {
+  for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
     if (abs(std::get<2>(layer_xyz)-z) < tolerance) {
       layer_id = lid;
       break;
@@ -70,11 +84,15 @@ EcalID EcalGeometry::getID(double x, double y, double z) const {
         "z = "+std::to_string(z)+" mm is not within any"
         " of the configured layers.");
   }
+  return getID(x,y,layer_id);
+}
+
+EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   // now assume we know the layer
   // shift to center of layer
   // and convert to flower coordinates
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)}, 
-         q{y - std::get<1>(layer_pos_xy_.at(layer_id)};
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id))}, 
+         q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
   if (cornersSideUp_) {
     // need to rotate
     double tmp{p};
@@ -91,15 +109,14 @@ EcalID EcalGeometry::getID(double x, double y, double z) const {
   int module_id{-1};
   double closest = 1e6;
   for (auto const& [mid, module_pq] : module_pos_pq_) {
-    double dist = sqrt((p - module_pq.first)*(p-module_pq.first) +
-        (q - module_pq.second)*(q-module_pq.second));
+    double dist = distance(std::make_pair(p,q), module_pq);
     if (dist < moduler_) {
       module_id = mid;
       break;
     }
     if (dist < closest) {
       module_id = mid;
-      closests = dist;
+      closest = dist;
     }
   }
 
@@ -123,8 +140,21 @@ EcalID EcalGeometry::getID(double x, double y, double z) const {
   return EcalID(layer_id,module_id,cell_id);
 }
 
-std::tuple<double,double,double> getPosition(EcalID id) const {
+std::tuple<double,double,double> EcalGeometry::getPosition(EcalID id) const {
   return cell_global_pos_.at(id);
+}
+
+std::pair<double,double> EcalGeometry::getPositionInModule(int cell_id) const {
+  auto pq = module_pos_pq_.at(cell_id);
+  if (cornersSideUp_) {
+    // need to do a 90deg rotation
+    //   x = q
+    //   y = -p
+    double tmp = pq.second;
+    pq.second = -pq.first;
+    pq.first  = tmp;
+  }
+  return pq;
 }
 
 void EcalGeometry::buildLayerMap() {
@@ -149,7 +179,7 @@ void EcalGeometry::buildLayerMap() {
     if (layer_shift_odd_ and (i_layer % 2 == 1)) {
       x += layer_shift_x_;
       y += layer_shift_y_;
-    } else if (layer_shift_odd_bilayer_ and ((i_layer_/2) % 2 == 1)) {
+    } else if (layer_shift_odd_bilayer_ and ((i_layer/2) % 2 == 1)) {
       x += layer_shift_x_;
       y += layer_shift_y_;
     }
@@ -277,7 +307,7 @@ void EcalGeometry::buildCellMap() {
         // and is NOT cleanly cut by module edge
       
         if (verbose_ > 1) {
-          std::cout << "    Polygon " << ecalMapID
+          std::cout << "    Polygon " << cell_id
             << " has vertices poking out of module hexagon."
             << std::endl;
         }
@@ -413,7 +443,7 @@ void EcalGeometry::buildCellModuleMap() {
     for (auto const& [module_id, module_pq] : module_pos_pq_) {
       for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
         // calculate cell's pq relative to entire layer center
-        double cell_rel_to_layer = std::make_pair(
+        auto cell_rel_to_layer = std::make_pair(
             module_pq.first + cell_pq.first,
             module_pq.second + cell_pq.second
             );
@@ -451,6 +481,7 @@ void EcalGeometry::buildCellModuleMap() {
 
 void EcalGeometry::buildNeighborMaps() {
   /** STRATEGY
+   *
    * Neighbors may include from other modules. All this is precomputed. So we
    * can be wasteful here. Gaps may be nonzero, so we simply apply an anulus
    * requirement (r < point <= r+dr) using total x,y positions relative to the
@@ -465,30 +496,27 @@ void EcalGeometry::buildNeighborMaps() {
 
   NNMap_.clear();
   NNNMap_.clear();
-  for (auto const& centerChannel : cellModulePositionMap_) {
-    EcalID centerID = centerChannel.first;
-    double centerX = centerChannel.second.first;
-    double centerY = centerChannel.second.second;
-    for (auto const& probeChannel : cellModulePositionMap_) {
-      EcalID probeID = probeChannel.first;
-      double probeX = probeChannel.second.first;
-      double probeY = probeChannel.second.second;
-      double dist = sqrt((probeX - centerX) * (probeX - centerX) +
-                         (probeY - centerY) * (probeY - centerY));
+  for (auto const& [center_id, center_xyz] : cell_global_pos_) {
+    for (auto const& [probe_id, probe_xyz] : cell_global_pos_) {
+      /// skip cells in different layers
+      if (probe_id.layer() != center_id.layer()) continue;
+      
+      /// do distance calculation
+      double dist = distance(probe_xyz, center_xyz);
       if (dist > 1 * cellr_ && dist <= 3. * cellr_) {
-        NNMap_[centerID].push_back(probeID);
+        NNMap_[center_id].push_back(probe_id);
       } else if (dist > 3. * cellr_ && dist <= 4.5 * cellr_) {
-        NNNMap_[centerID].push_back(probeID);
+        NNNMap_[center_id].push_back(probe_id);
       }
     }
     if (verbose_ > 1)
-      std::cout << TString::Format("Found %d NN and %d NNN for cellModuleID ",
-                                   int(NNMap_[centerID].size()),
-                                   int(NNNMap_[centerID].size()))
-                << centerID
-                << TString::Format(" with x,y (%.2f,%.2f)", centerX, centerY)
-                << std::endl;
+      std::cout << "  Found " << NNMap_[center_id].size() << " NN and "
+        << NNNMap_[center_id].size() << " NNN for cell " << center_id
+        << std::endl;
   }
+  /*
+   * DEBUG CHECK HERE
+   *  this is double checking that NN and NNN can cross modules
   if (verbose_ > 2) {
     double specialX =
         0.5 * moduleR_ - 0.5 * cellr_;  // center of cell which is upper-right
@@ -519,14 +547,14 @@ void EcalGeometry::buildNeighborMaps() {
                      isEdgeCell(specialCellModuleID))
               << std::endl;
   }
+  */
   if (verbose_ > 0) std::cout << std::endl;
   return;
 }
 
-double EcalGeometry::distanceToEdge(EcalID cellModuleID) const {
+double EcalGeometry::distanceToEdge(EcalID id) const {
   // https://math.stackexchange.com/questions/1210572/find-the-distance-to-the-edge-of-a-hexagon
-  int cellID = cellModuleID.cell();
-  std::pair<double, double> cellLocation = getCellCenterRelative(cellID);
+  std::pair<double, double> cellLocation = cell_pos_in_module_.at(id.cell());
   double x = fabs(cellLocation.first);  // bring to first quadrant
   double y = fabs(cellLocation.second);
   double r = sqrt(x * x + y * y);

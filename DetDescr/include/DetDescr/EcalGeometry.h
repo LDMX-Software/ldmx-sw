@@ -103,7 +103,8 @@ class EcalGeometry : public framework::ConditionsObject {
   /**
    * Class destructor.
    *
-   * Does nothing because the stl containers clean up automatically.
+   * Does nothing because the member variables clean up
+   * themselves.
    */
   virtual ~EcalGeometry() = default;
 
@@ -113,8 +114,22 @@ class EcalGeometry : public framework::ConditionsObject {
    * @param[in] x global x position [mm]
    * @param[in] y global y position [mm]
    * @param[in] z global z position [mm]
+   * @return EcalID of the cell
    */
   EcalID getID(double x, double y, double z) const;
+
+  /**
+   * Get a cell's ID from its x,y global position and layer number
+   *
+   * This is faster as long as we trust that the layer positions between
+   * GDML and the configured parameters of this class match.
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] layer_id integer ID of the layer the hit is in
+   * @return EcalID of the cell
+   */
+  EcalID getID(double x, double y, int layer_id) const;
 
   /**
    * Get a cell's position from its ID number
@@ -128,22 +143,9 @@ class EcalGeometry : public framework::ConditionsObject {
   std::tuple<double,double,double> getPosition(EcalID id) const;
 
   /**
-   * Get entire real space position for the cell with the input raw ID
-   *
-   * Inputs x,y,z will be set to the calculated position
-   *
-   * @sa getCellCenterAbsolute and getZPosition
-   *
-   * @param[in] id EcalID for the cell we want the position of
-   * @param[out] x set to x-coordinate of cell center
-   * @param[out] y set to y-coordinate of cell center
-   * @param[out] z set to z-coordinate of cell center
+   * Get a cell's position within a module
    */
-  void getCellAbsolutePosition(EcalID id, double& x, double& y,
-                               double& z) const {
-    [x,y,z] = cell_global_pos_.at(id);
-    return;
-  }
+  std::pair<double,double> getPositionInModule(int cell_id) const;
 
   /**
    * Get the z-coordinate given the layer id
@@ -163,177 +165,26 @@ class EcalGeometry : public framework::ConditionsObject {
   int getNumLayers() const { return layer_pos_xy_.size(); }
 
   /**
-   * Get a module center position relative to the ecal center [mm]
-   *
-   * @param[in] moduleID id of the module
-   * @return (x,y) coordinate pair for center of module
-   */
-  std::pair<double, double> getModuleCenter(int moduleID) const {
-    return modulePositionMap_.at(moduleID);
-  }
-
-  /**
    * Get the number of modules in the Ecal flower
+   *
+   * @note This number is hard-coded to reflect the fact
+   * that it is also hard-coded in the buildModuleMap function.
+   * If a future geometry adds more modules (perhaps "triangles"
+   * to fill in rectangular block in the HCal that the ECal is
+   * in), then buildModuleMap and this function will need to
+   * be modified.
    *
    * @returns number of modules
    */
-  int getNumModulesPerLayer() const { return modulePositionMap_.size(); }
+  int getNumModulesPerLayer() const { return 7; }
 
   /**
-   * Get a module ID from an XY position relative to the ecal center [mm]
+   * Get the number of cells in each module of the Ecal Geometry
    *
-   * @param[in] x x-coordinate for test position
-   * @param[in] y y-coordinate for test position
-   * @return module ID that coordinate (x,y) is in
+   * @note This assumes that all modules are the full high-density
+   * hexagons from CMS (no triangles!)
    */
-  int getModuleID(double x, double y) const {
-    int bestID = -1;
-    double bestDist = 1E6;
-    for (auto const& module : modulePositionMap_) {
-      int mID = module.first;
-      double mX = module.second.first;
-      double mY = module.second.second;
-      double dist = sqrt((x - mX) * (x - mX) + (y - mY) * (y - mY));
-      if (dist < moduler_) return mID;
-      if (dist < bestDist) {
-        bestID = mID;
-        bestDist = dist;
-      }
-    }
-    return bestID;
-  }
-
-  /**
-   * Get a cell ID from an XY position relative to module center.
-   *
-   * This is where invalid (x,y) from external calls will end up failing and
-   * need error handling.
-   *
-   * @note One option for assigning dead material is to do it here.
-   * If the input (x,y) relative to the module is close enough to the edge (for
-   * example), we could return a special cell ID (-1 for example) that signals
-   * that this hit is in a dead region.
-   *
-   * @param x Any X position [mm]
-   * @param y Any Y position [mm]
-   * @return local cell ID to the module
-   */
-  int getCellIDRelative(double x, double y) const {
-    int bin = ecalMap_.FindBin(x, y) -
-              1;  // NB FindBin indices starts from 1, our maps start from 0
-    if (bin < 0) {
-      TString error_msg = TString(
-                              "[EcalGeometry::getCellIDRelative] Relative "
-                              "coordinates are outside module hexagon!") +
-                          TString::Format(
-                              " Is the gap used by EcalGeometry (%.2f mm) "
-                              "and the minimum module radius (%.2f mm)",
-                              gap_, moduler_) +
-                          TString::Format(
-                              " the same as hexagon_gap and Hex_radius in "
-                              "ecal.gdml? Received (x,y) = (%.2f,%.2f).",
-                              x, y);
-      EXCEPTION_RAISE("InvalidArg", error_msg.Data());
-    }
-    return bin;
-  }
-
-  /**
-   * Get the number of cells in an ecal module
-   *
-   * @returns number of cells in the ecal module
-   */
-  int getNumCellsPerModule() const { return ecalMap_.GetNumberOfBins(); }
-
-  /**
-   * Get a cell center XY position relative to module center from a cell ID.
-   *
-   * @throw Exception if invalid cell ID is input.
-   *
-   * @param cellID The cell ID.
-   * @return The (x,y) position of the center of the cell.
-   */
-  std::pair<double, double> getCellCenterRelative(int cellID) const {
-    // this map search is probably just as fine as the TList search for the cell
-    // in ecalMap.
-    //   wonder why TH2Poly->GetBin(ID) doesn't exist. plus the map is useful by
-    //   itself.
-    auto search = cellPositionMap_.find(cellID);
-    if (search == cellPositionMap_.end()) {
-      EXCEPTION_RAISE("InvalidCellID",
-                      "Cell " + std::to_string(cellID) + " is not valid.");
-    }
-    return search->second;
-  }
-
-  /**
-   * Get a combined cellModule ID from an XY position relative to ecal center.
-   *
-   * @sa getCellIDRelative and getModuleID
-   *
-   * @param x Any X position [mm]
-   * @param y Any Y position [mm]
-   * @return an EcalID that has the correct module and cell information while
-   * layer is set to zero
-   */
-  EcalID getCellModuleID(double x, double y) const {
-    int moduleID = getModuleID(x, y);
-    double relX = x - modulePositionMap_.at(moduleID).first;
-    double relY = y - modulePositionMap_.at(moduleID).second;
-    int cellID = getCellIDRelative(relX, relY);
-    return EcalID(0, moduleID, cellID);
-  }
-
-  /**
-   * Get a cell center XY position relative to ecal center from a combined
-   * cellModuleID.
-   *
-   * @throw std::out_of_range if EcalID isn't created with valid cell or module
-   * IDs.
-   *
-   * @param cellModuleID EcalID where all we care about is module and cell
-   * @return The XY position of the center of the cell.
-   */
-  std::pair<double, double> getCellCenterAbsolute(EcalID cellModuleID) const {
-    return cellModulePositionMap_.at(
-        EcalID(0, cellModuleID.module(), cellModuleID.cell()));
-  }
-
-  /**
-   * Distance to module edge, and whether cell is on edge of module.
-   *
-   * @TODO Use getNN()/getNNN() + isEdgeCell() to expand functionality.
-   *
-   * @param[in] cellModuleID EcalId where all we care about is module and cell
-   * @return distance to edge of the module
-   */
-  double distanceToEdge(EcalID cellModuleID) const;
-
-  /**
-   * Check if input cell is on the edge of a module.
-   *
-   * @sa distanceToEdge
-   *
-   * @param[in] cellModuleID EcalId where all we care about is module and cell
-   * return true if distance to edge is less than max cell radius
-   */
-  bool isEdgeCell(EcalID cellModuleID) const {
-    return (distanceToEdge(cellModuleID) < cellR_);
-  }
-
-  /**
-   * Determines if point (x,y), already normed to max hexagon radius, lies
-   * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not
-   * "<=".
-   *
-   * @param[in] normX X-coordinate relative to module hexagon divided by maximum
-   * hexagon radius
-   * @param[in] normY Y-coordinate relative to module hexagon divided by maximum
-   * hexagon radius
-   * @return true if (normX,normY) is within the hexagon centered at the origin
-   * with maximum radius 1.
-   */
-  bool isInside(double normX, double normY) const;
+  int getNumCellsPerModule() const { return cell_id_in_module_.GetNumberOfBins(); }
 
   /**
    * Get the Nearest Neighbors of the input ID
@@ -417,30 +268,20 @@ class EcalGeometry : public framework::ConditionsObject {
   double getCellMaxR() const { return cellR_; }
 
   /**
-   * Get a const reference to the cell center position map.
-   */
-  const std::map<int, std::pair<double, double>>& getCellPositionMap() const {
-    return cellPositionMap_;
-  }
-
-  /**
-   * Get a const reference to the full cell-module position map.
-   */
-  const std::map<EcalID, std::pair<double, double>>& getCellModulePositionMap()
-      const {
-    return cellModulePositionMap_;
-  }
-
-  /**
    * Get a reference to the TH2Poly used for Cell IDs.
    *
    * @note This is only helpful in the use case
    * where you want to print the cell ID <-> cell position
    * map. DO NOT USE THIS OTHERWISE.
    *
-   * @return pointer to member variable ecalMap_
+   * @return pointer to member variable cell_id_in_module_
    */
-  TH2Poly* getCellPolyMap() const { return &ecalMap_; }
+  TH2Poly* getCellPolyMap() const { 
+    for (auto const& [cell_id, cell_center] : cell_pos_in_module_) {
+      cell_id_in_module_.Fill(cell_center.first, cell_center.second, cell_id);
+    }
+    return &cell_id_in_module_; 
+  }
 
   static EcalGeometry* debugMake(const framework::config::Parameters& p) {
     return new EcalGeometry(p);
@@ -536,6 +377,9 @@ class EcalGeometry : public framework::ConditionsObject {
    * neighbors by seeing which cells are within multiples of the cellular radius
    * of each other.
    *
+   * @note We require two cells to be in the same layer in order to be nearest 
+   * neighbors or next-nearest neighbors.
+   *
    * @param[in] cellModulePostionMap_ map of cells to cell centers relative to
    * ecal
    * @param[out] NNMap_ map of cell IDs to list of cell IDs that are its nearest
@@ -556,6 +400,42 @@ class EcalGeometry : public framework::ConditionsObject {
    * cell is in.
    */
   void buildTriggerGroup();
+
+  /**
+   * Distance to module edge, and whether cell is on edge of module.
+   *
+   * @TODO Use getNN()/getNNN() + isEdgeCell() to expand functionality.
+   *
+   * @param[in] cellModuleID EcalId where all we care about is module and cell
+   * @return distance to edge of the module
+   */
+  double distanceToEdge(EcalID id) const;
+
+  /**
+   * Check if input cell is on the edge of a module.
+   *
+   * @sa distanceToEdge
+   *
+   * @param[in] cellModuleID EcalId where all we care about is module and cell
+   * return true if distance to edge is less than max cell radius
+   */
+  bool isEdgeCell(EcalID cellModuleID) const {
+    return (distanceToEdge(cellModuleID) < cellR_);
+  }
+
+  /**
+   * Determines if point (x,y), already normed to max hexagon radius, lies
+   * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not
+   * "<=".
+   *
+   * @param[in] normX X-coordinate relative to module hexagon divided by maximum
+   * hexagon radius
+   * @param[in] normY Y-coordinate relative to module hexagon divided by maximum
+   * hexagon radius
+   * @return true if (normX,normY) is within the hexagon centered at the origin
+   * with maximum radius 1.
+   */
+  bool isInside(double normX, double normY) const;
 
  private:
   /// Gap between module flat sides [mm]
