@@ -188,20 +188,16 @@
 --> 
 
 <!-- ECal layer thicknesses --> 
-<variable name="Wthick_A_dz" value="0.75"/>
-<variable name="W_A_dz" value="0.75"/>
-<variable name="Wthick_B_dz" value="2.25"/>
-<variable name="W_B_dz" value="1.5"/>
-<variable name="Wthick_C_dz" value="3.5"/>
-<variable name="W_C_dz" value="1.75"/>
-<variable name="Wthick_D_dz" value="7.0"/>
-<variable name="W_D_dz" value="3.5"/>
-<variable name="CFMix_dz" value="0.05"/>
-<variable name="CFMixThick_dz" value="0.2"/>
+<variable name="W_A_dz" value="1."/>
+<variable name="W_B_dz" value="2"/>
+<variable name="W_C_dz" value="3.5"/>
+<variable name="W_D_dz" value="7.0"/>
+
+<variable name="Glue_dz" value="0.1"/>
+<variable name="GlueThick_dz" value="0.2"/>
 <variable name="PCB_dz" value="1.5"/>
 <variable name="Si_dz" value="0.5"/>
 <variable name="C_dz" value="0.5"/>
-<variable name="Al_dz" value="2.0"/>
 
 <!-- 
     Air separating sheets of Al or W with PCB motherboard, limited by 
@@ -213,48 +209,48 @@
 <variable name="BackTolerance" value="0.5"/> 
 
 <!-- Air separting PCBs from PCB MotherBoards -->
-<variable name="PCB_Motherboard_Gap" value="2.3"/>
+<variable name="PCB_Motherboard_Gap" value="3.5"/>
 
 <!-- Air separating Carbon sheets in the middle of a layer-->
-<variable name="CoolingAirGap" value="4.0"/>
+<variable name="CoolingAirGap" value="5.7"/>
 
 <!-- Preshower thickness is 20.1 mm --> 
 <variable name="preshower_Thickness" 
           value="Al_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + CoolingAirGap 
-                + 2.*C_dz + CFMixThick_dz + Si_dz + CFMix_dz + PCB_dz 
+                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + CoolingAirGap 
+                + 2.*C_dz + GlueThick_dz + Si_dz + Glue_dz + PCB_dz 
                 + PCB_Motherboard_Gap + PCB_dz + BackTolerance" />
 
 <!-- Layer A thickness is 20.35 mm --> 
 <variable name="layer_A_Thickness" 
-          value="Wthick_A_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_A_dz + C_dz 
-                + CoolingAirGap + C_dz + W_A_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+          value="W_A_dz + W_A_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_A_dz + C_dz 
+                + CoolingAirGap + C_dz + W_A_dz + GlueThick_dz + Si_dz 
+                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
                 + BackTolerance"/>
 
 <!-- Layer B thickness is 22.35 mm --> 
 <variable name="layer_B_Thickness" 
-          value="Wthick_B_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                 + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_B_dz + C_dz 
-                 + CoolingAirGap + C_dz + W_B_dz + CFMixThick_dz + Si_dz 
-                 + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+          value="W_B_dz + W_B_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                 + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_B_dz + C_dz 
+                 + CoolingAirGap + C_dz + W_B_dz + GlueThick_dz + Si_dz 
+                 + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
                  + BackTolerance"/>
 
 <!-- Layer C thickness is 25.1 mm --> 
 <variable name="layer_C_Thickness" 
-          value="Wthick_C_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_C_dz + C_dz 
-                + CoolingAirGap + C_dz + W_C_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+          value="W_C_dz + W_C_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_C_dz + C_dz 
+                + CoolingAirGap + C_dz + W_C_dz + GlueThick_dz + Si_dz 
+                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
                 + BackTolerance"/>
 
 <!-- Layer D thickness is 32.1 mm --> 
 <variable name="layer_D_Thickness" 
-          value="Wthick_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_D_dz + C_dz 
-                + CoolingAirGap + C_dz + W_D_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+          value="W_D_dz + W_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_D_dz + C_dz 
+                + CoolingAirGap + C_dz + W_D_dz + GlueThick_dz + Si_dz 
+                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
                 + BackTolerance"/>
 
 <!-- Number of layers --> 
@@ -271,7 +267,6 @@
                 + layer_C_Thickness*ecal_C_layers
                 + layer_D_Thickness*ecal_D_layers" />
 
-
 <!-- constants -->
 <variable name="sqrt3" value="1.73205080757"/>
 
@@ -282,22 +277,47 @@
 <variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
+<!--
+  This value was manually tweaked in order to get the correct
+  number and size of cells according to the CMS HGCal High Density
+  Hexaboard design. It should only be changed very carefully.
+-->
 <variable name="n_cellR_height" value="35.3"/>
+
+<!--
+  This geometry simply shifts the odd sensitive layers[1] by one
+  cell flat-to-flat diameter horizontally.
+
+  [1] i.e. The high-z flower half of each bilayer.
+-->
 <variable name="shift_x" value="2*Hex_radius/n_cellR_height"/>
 <variable name="shift_y" value="0."/>
 
-<!-- ECal width and height -->
+<!-- 
+  ECal width and height 
+
+  This is calculated from the hexagon size and gaps between them
+  and is helpful for surrounding the ecal with scoring planes.
+-->
 <variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
 <variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
 
 <!-- 
-    Distance from target to the ECal parent volume.  The calorimeter 
-    is an additional .5 mm downstream at 220.5 mm.
+    Distance from target to the ECal parent volume.
+    The calorimeter is an additional .5 mm downstream at 240.5 mm.
 -->
 <constant name="ecal_front_z" value="24.0*cm"/>
 
-<variable name="side_Ecal_dx" value="800. + shift_x"/>
-<variable name="side_Ecal_dy" value="600. + shift_y"/>
+<!--
+  The cavern the ecal is in is larger than the actual ECal
+  to accomodate the support infrastructure.
+
+  These variables are used for defining geometry objects
+  that need to be separate from the ECal cavern (like the
+  side HCal).
+-->
+<variable name="side_Ecal_dx" value="800."/>
+<variable name="side_Ecal_dy" value="600."/>
 
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
