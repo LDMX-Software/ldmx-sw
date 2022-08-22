@@ -43,13 +43,18 @@
     <variable name="Readout_dx" value="10.0"/>
     <variable name="Readout_dy" value="10.0"/>
     <variable name="Readout_dz" value="Si_dz"/>
-    <variable name="RO_dist_from_edge" value="10.0"/> <!-- distance from edge of Readout PCB to edge of MB -->
+    <!-- distance from edge of Readout PCB to edge of MB -->
+    <variable name="RO_dist_from_edge" value="10.0"/> 
 
     <!-- Calculate variables -->
     <variable name="RO_Top_y" value="(0.5)*ECal_dy+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dy"/>
     <variable name="RO_Bot_y" value="(-0.5)*ECal_dy+RO_dist_from_edge+(0.5)*Readout_dy"/>
     <variable name="RO_Right_x" value="(0.5)*ECal_dx+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dx"/>
     <variable name="RO_Left_x" value="(-0.5)*ECal_dx+RO_dist_from_edge+(0.5)*Readout_dx"/>
+
+    <!-- inside the ecal parent volume, the coordinate system is relative to it,
+    so we need to subtract away half of its depth -->
+    <variable name="bilayer_start" value="-ecal_envelope_z/2."/>
   </define>
 
   <materials>
@@ -361,7 +366,7 @@
       <materialref ref="G4_Si0x271c1c0"/>
       <solidref ref="Si_hexagon"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
-    <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
+      <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
     </volume>
   
     <volume name="GlueThick_volume">
@@ -377,27 +382,50 @@
       </volume>
     </loop>
 
-    <assembly name="Flower">
-      <!-- center stack -->
+    <assembly name="EvenHexaboard">
       <physvol>
         <volumeref ref="PCB_volume"/>
-        <position name="PCB_volume_rel_to_flower" x="0" y="0" z="0" />
+        <position name="PCB_volume_rel_to_hexaboard" x="0" y="0" 
+          z="0" />
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
-        <position name="Glue_volume_rel_to_flower" x="0" y="0" z="PCB_dz" />
+        <position name="Glue_volume_rel_to_hexaboard" x="0" y="0" 
+          z="PCB_dz" />
       </physvol>
       <physvol>
         <volumeref ref="Si_volume"/>
-        <position name="Si_volume_rel_to_flower" x="0" y="0" z="PCB_dz+Glue_dz" />
+        <position name="Si_volume_rel_to_hexaboard" x="0" y="0" 
+          z="PCB_dz+Glue_dz" />
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
-        <position name="GlueThick_volume_rel_to_flower" x="0" y="0" z="PCB_dz+Glue_dz+Si_dz" />
+        <position name="GlueThick_volume_rel_to_hexaboard" x="0" y="0" 
+          z="PCB_dz+Glue_dz+Si_dz" />
       </physvol>
-      <!-- flower petals
-      <loop for="module" to="7">
-      </loop> -->
+    </assembly>
+
+    <assembly name="OddHexaboard">
+      <physvol>
+        <volumeref ref="GlueThick_volume"/>
+        <position name="GlueThick_volume_rel_to_hexaboard" x="0" y="0" 
+          z="0" />
+      </physvol>
+      <physvol>
+        <volumeref ref="Si_volume"/>
+        <position name="Si_volume_rel_to_hexaboard" x="0" y="0" 
+          z="GlueThick_dz" />
+      </physvol>
+      <physvol>
+        <volumeref ref="Glue_volume"/>
+        <position name="Glue_volume_rel_to_hexaboard" x="0" y="0" 
+          z="GlueThick_dz+Si_dz" />
+      </physvol>
+      <physvol>
+        <volumeref ref="PCB_volume"/>
+        <position name="PCB_volume_rel_to_hexaboard" x="0" y="0" 
+          z="GlueThick_dz+Si_dz+Glue_dz" />
+      </physvol>
     </assembly>
 
     <!--
@@ -444,7 +472,7 @@
     <volume name="em_calorimeters">
       <materialref ref="G4_AIR"/>
       <solidref ref="ECal_box"/>
-      <position name="ECal_box_pos" unit="mm" x="0" y="0" z="ecal_envelope_z/2."/>
+      <position name="ECal_box_pos" unit="mm" x="0" y="0" z="0" />
 
       <!--
         PRE-SHOWER LAYER
@@ -455,36 +483,54 @@
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <position name="PCB_PS_motherboard_physvol0_pos" unit="mm" x="0" y="0" 
-          z="0"/>
+          z="bilayer_start + FrontTolerance + PCB_dz/2."/>
       </physvol>
 
-      <physvol copynumber="0">
-        <volumeref ref="Flower"/>
+      <physvol copynumber="7*0+0">
+        <volumeref ref="EvenHexaboard"/>
         <position name="PS_flower_pos0" unit="mm" x="0" y="0" 
-          z="PCB_dz+PCB_Motherboard_Gap"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
       </physvol>
-
-      <!-- absorber omitted -->
+      <loop for="module" from="1" to="7" step="1">
+        <physvol copynumber="7*0+module">
+          <volumeref ref="EvenHexaboard"/>
+          <position name="PS_flower[module]" unit="mm"
+            x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+            y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap" />
+        </physvol>
+      </loop>
 
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
         <position name="PS_carbon_pos" unit="mm" x="0" y="0" 
-          z="PCB_dz+PCB_Motherboard_Gap+Flower_dz"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + CarbonCoolingPlane_dz/2."/>
       </physvol>
 
-      <!-- absorber omitted -->
-
-      <physvol copynumber="1">
-        <volumeref ref="Flower"/>
+      <physvol copynumber="7*1+0">
+        <volumeref ref="OddHexaboard"/>
         <position name="PS_flower_pos1" unit="mm" x="shift_x" y="shift_y" 
-          z="PCB_dz+PCB_Motherboard_Gap+Flower_dz+CarbonCoolingPlane_dz"/>
-        <rotationref ref="flip"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + CarbonCoolingPlane_dz"/>
       </physvol>
+      <loop for="module" from="1" to="7" step="1">
+        <physvol copynumber="7*1+module">
+          <volumeref ref="OddHexaboard"/>
+          <position name="PS_flower[module]" unit="mm"
+            x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+            y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+              + CarbonCoolingPlane_dz"/>
+          <rotationref ref="flip"/>
+        </physvol>
+      </loop>
 
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="0" 
-          z="PCB_dz+PCB_Motherboard_Gap+Flower_dz+CarbonCoolingPlane_dz+Flower_dz+PCB_Motherboard_Gap"/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+            + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + PCB_dz/2."/>
       </physvol>
 
       <!-- 
@@ -498,75 +544,127 @@
         <physvol>
           <volumeref ref="W_volume[bilayer]"/>
           <position name="W_volume_pos0_[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]"/>
+            z="bilayer_start 
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance"/>
         </physvol>
 
         <physvol>
           <volumeref ref="W_volume[bilayer]"/>
           <position name="W_volume_pos1_[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
               + W_dz[bilayer]"/>
         </physvol>
 
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
           <position name="PCB_motherboard_pos0[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance"/>
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz/2."/>
         </physvol>
 
-        <physvol copynumber="2*bilayer">
-          <volumeref ref="Flower"/>
-          <position name="flower_pos0[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
-          <rotationref ref="identity"/>
+        <physvol copynumber="14*bilayer+0">
+          <volumeref ref="EvenHexaboard"/>
+          <position name="PS_flower_pos0" unit="mm" x="0" y="0" 
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer 
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
         </physvol>
+        <loop for="module" from="1" to="7" step="1">
+          <physvol copynumber="14*bilayer+module">
+            <volumeref ref="EvenHexaboard"/>
+            <position name="PS_flower[module]" unit="mm"
+              x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+              y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+              z="bilayer_start
+                + bilayer_noabsorber_thickness*bilayer 
+                + bilayer_absorber_cumulative[bilayer]
+                + BackTolerance
+                + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
+          </physvol>
+        </loop>
 
         <physvol>
           <volumeref ref="W_volume[bilayer]"/>
           <position name="W_volume_pos2_[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz"/>
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz"/>
         </physvol>
 
         <physvol>
           <volumeref ref="C_volume_CarbonCoolingPlane"/>
           <position name="carbon_pos[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer]"/>
-          <rotationref ref="identity"/>
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + W_dz[bilayer] + CarbonCoolingPlane_dz/2."/>
         </physvol>
   
         <physvol>
           <volumeref ref="W_volume[bilayer]"/>
           <position name="W_volume_pos3_[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer 
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + W_dz[bilayer] + CarbonCoolingPlane_dz"/>
         </physvol>
   
-        <physvol copynumber="2*bilayer+1">
-          <volumeref ref="Flower"/>
+        <physvol copynumber="14*bilayer+1+0">
+          <volumeref ref="OddHexaboard"/>
           <position name="flower_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer]"/>
-          <rotationref ref="flip"/>
         </physvol>
+        <loop for="module" from="1" to="7" step="1">
+          <physvol copynumber="14*bilayer+1+module">
+            <volumeref ref="OddHexaboard"/>
+            <position name="flower_pos1[bilayer][module]" unit="mm"
+              x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+              y="shift_y - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+              z="bilayer_start 
+                + bilayer_noabsorber_thickness*bilayer
+                + bilayer_absorber_cumulative[bilayer]
+                + BackTolerance
+                + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+                + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer]"/>
+          </physvol>
+        </loop>
   
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
           <position name="PCB_motherboard_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_noabsorber_thickness*bilayer+bilayer_absorber_cumulative[bilayer]
-              + W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer] + PCB_Motherboard_Gap"/>
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer] + Flower_dz
+              + PCB_Motherboard_Gap + PCB_dz/2."/>
         </physvol>
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-        <!--<auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>-->
+      <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>
       <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>
@@ -577,6 +675,7 @@
 
   <userinfo>
     <!-- define vis attributes
+    -->
     <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame">
       <auxiliary auxtype="R" auxvalue="0.6"/>
       <auxiliary auxtype="G" auxvalue="0.6"/>
@@ -616,7 +715,7 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
       <auxiliary auxtype="Visible" auxvalue="false"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
-    </auxiliary> -->
+    </auxiliary> 
   </userinfo>  
 
 </gdml>
