@@ -187,85 +187,90 @@
     ECal 
 --> 
 
-<!-- ECal layer thicknesses --> 
-<variable name="W_A_dz" value="1."/>
-<variable name="W_B_dz" value="2"/>
-<variable name="W_C_dz" value="3.5"/>
-<variable name="W_D_dz" value="7.0"/>
+<constant name="num_bilayers" value="17"/>
 
-<variable name="Glue_dz" value="0.1"/>
-<variable name="GlueThick_dz" value="0.2"/>
+<!-- ECal absorbing layer thicknesses -->
+<matrix name="W_dz" coldim="1" values="1.
+                                       2.
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       3.5
+                                       7.0
+                                       7.0
+                                       7.0
+                                       7.0
+                                       7.0" />
+
+<!-- 
+cumulative sum of bilayer absorber thicknesses
+  this is necessary for calculating positions relative
+  to the front of the ECal. Unfortunately, I can't
+  insert a GDML loop when defining variables, so this
+  must be done manually.
+-->
+<matrix name="bilayer_absorber_cumulative" coldim="1"
+        values="0.0
+                1.0
+                3.0
+                6.5
+                10.0
+                13.5
+                17.0
+                20.5
+                24.0
+                27.5
+                31.0
+                34.5
+                41.5
+                48.5
+                55.5
+                62.5" />
+
+<!--
+  Thickness of various components in the ECal layer stack
+    all values in mm
+-->
 <variable name="PCB_dz" value="1.5"/>
+<variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.5"/>
-<variable name="C_dz" value="0.5"/>
+<variable name="GlueThick_dz" value="0.2"/>
+<!-- the carbon cooling plane is 3/16 inch thick -->
+<variable name="CarbonCoolingPlane_dz" value="4.7625"/>
+
+<!--
+  The thickness of the "flower" of sensitive hexagons 
+  In GDML-land, this is defined to be the hexagon PCB, glue,
+  sensitive silicon, and the thicker glue mounting it to the
+  absorber (or carbon cooling plane in the pre-shower case)
+-->
+<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz"/>
 
 <!-- 
     Air separating sheets of Al or W with PCB motherboard, limited by 
     construction abilities 
 -->
 <variable name="FrontTolerance" value="0.5"/> 
-
-<!-- Gap between layers -->
 <variable name="BackTolerance" value="0.5"/> 
 
 <!-- Air separting PCBs from PCB MotherBoards -->
 <variable name="PCB_Motherboard_Gap" value="3.5"/>
 
-<!-- Air separating Carbon sheets in the middle of a layer-->
-<variable name="CoolingAirGap" value="5.7"/>
+<!--
+Thickness of the ECal bilayer stack NOT including the tungsten
+absorber layers which change thickness throughout the ECal
 
-<!-- Preshower thickness is 20.1 mm --> 
-<variable name="preshower_Thickness" 
-          value="Al_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + CoolingAirGap 
-                + 2.*C_dz + GlueThick_dz + Si_dz + Glue_dz + PCB_dz 
-                + PCB_Motherboard_Gap + PCB_dz + BackTolerance" />
-
-<!-- Layer A thickness is 20.35 mm --> 
-<variable name="layer_A_Thickness" 
-          value="W_A_dz + W_A_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_A_dz + C_dz 
-                + CoolingAirGap + C_dz + W_A_dz + GlueThick_dz + Si_dz 
-                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Layer B thickness is 22.35 mm --> 
-<variable name="layer_B_Thickness" 
-          value="W_B_dz + W_B_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                 + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_B_dz + C_dz 
-                 + CoolingAirGap + C_dz + W_B_dz + GlueThick_dz + Si_dz 
-                 + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                 + BackTolerance"/>
-
-<!-- Layer C thickness is 25.1 mm --> 
-<variable name="layer_C_Thickness" 
-          value="W_C_dz + W_C_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_C_dz + C_dz 
-                + CoolingAirGap + C_dz + W_C_dz + GlueThick_dz + Si_dz 
-                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Layer D thickness is 32.1 mm --> 
-<variable name="layer_D_Thickness" 
-          value="W_D_dz + W_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + Glue_dz + Si_dz + GlueThick_dz + W_D_dz + C_dz 
-                + CoolingAirGap + C_dz + W_D_dz + GlueThick_dz + Si_dz 
-                + Glue_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Number of layers --> 
-<variable name="ecal_A_layers" value="1"/>
-<variable name="ecal_B_layers" value="1"/>
-<variable name="ecal_C_layers" value="9"/>
-<variable name="ecal_D_layers" value="5"/>    
-
-<!-- ECal thickness is 449.2 mm -->  
-<variable name="ECal_dz" 
-         value="preshower_Thickness 
-                + layer_A_Thickness*ecal_A_layers
-                + layer_B_Thickness*ecal_B_layers 
-                + layer_C_Thickness*ecal_C_layers
-                + layer_D_Thickness*ecal_D_layers" />
+This value is in mm
+-->
+<variable name="bilayer_noabsorber_thickness"
+          value="FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + Flower_dz + CarbonCoolingPlane_dz + Flower_dz
+                + PCB_Motherboard_Gap + PCB_dz + BackTolerance"/>
 
 <!-- constants -->
 <variable name="sqrt3" value="1.73205080757"/>
@@ -325,5 +330,5 @@
 --> 
 <constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
 <constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
-<constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
+<constant name="ecal_envelope_z" value="600.0" /> 
 

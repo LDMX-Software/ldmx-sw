@@ -26,7 +26,7 @@
         <variable name="recoil_pos_z" value="trigger_pad_down_z + trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
 
         <!-- Position of the ECal and HCal parent volumes -->
-        <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
+        <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
         <!-- Magnet is position such that the field center is at -40 cm. -->
