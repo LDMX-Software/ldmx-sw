@@ -25,8 +25,8 @@
 --> 
 
 <!-- Magnet gap dimensions --> 
-<constant name="magnet_gap_x" value="430*mm"/>
-<constant name="magnet_gap_y" value="350*mm"/>
+<constant name="magnet_gap_dx" value="430*mm"/>
+<constant name="magnet_gap_dy" value="350*mm"/>
 
 <!--
     Trigger Scintillator 
@@ -61,11 +61,10 @@
 
 <!-- module and sensor dimensions -->
 <variable name="si_sensor_thickness" value="0.32*mm"/>
-<variable name="si_sensor_dx" value="38.3399*mm" />
-<variable name="si_sensor_dy" value="98.33*mm" />
-<variable name="trk_module_dx" value="40.34*mm" />
-<varibale name="trk_module_dy" value="100.0*mm" />
-<!-- <variable name="half_module_thickness" value="si_sensor_thickness + carbon_fiber_thickness"/> --> 
+<variable name="si_active_sensor_dx" value="38.3399*mm" />
+<variable name="si_active_sensor_dy" value="98.33*mm" />
+<variable name="si_sensor_dx" value="40.34*mm" />
+<varibale name="si_sensor_dy" value="100.0*mm" />
 
 <!-- 
     Recoil tracker.
@@ -76,8 +75,8 @@
   than the magnet gap defined in magnet.gdml in order to avoid overlaps. The 
   magnet gaps were extracted from the drawing of the magnet obtained from JLab.
 -->
-<constant name="recoil_envelope_x" value="magnet_gap_x - 5" />
-<constant name="recoil_envelope_y" value="magnet_gap_y - 5" />
+<constant name="recoil_envelope_x" value="magnet_gap_dx - 5" />
+<constant name="recoil_envelope_y" value="magnet_gap_dy - 5" />
 <constant name="recoil_envelope_z" value="200*mm" />
 
 <!-- Recoil tracker z positions relative to the parent volume --> 
@@ -130,21 +129,31 @@
     Layer 6: 510 mm
     Layer 7: 610 mm
  --> 
-<constant name="tagger_delta_layer" value="100" />
+<constant name="tagger_layer_delta" value="100" />
 <variable name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
-<variable name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_delta_layer"/>
-<variable name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_delta_layer"/>
-<variable name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_delta_layer"/>
-<variable name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_delta_layer"/>
-<variable name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_delta_layer"/>
-<variable name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_layer_delta"/>
+<variable name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_layer_delta"/>
+<variable name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_layer_delta"/>
+<variable name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_layer_delta"/>
+<variable name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_layer_delta"/>
+<variable name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_layer_delta"/>
 
 <!-- offset in Z between stereo sensors -->
 <variable name="tagger_layer_offset" value="3.0*mm"/>
 
-<variable name="tagger_envelope_x" value="425*mm" />
-<variable name="tagger_envelope_y" value="345*mm" />
-<variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance + trigger_pad_thickness + clearance + 5" />
+<!-- 
+  Clearance between the first/last sensor in the tagger tracker and the 
+  upstream/downstream faces of the tagger envelope.
+-->
+<variable name="tagger_envelope_clearance" value="2.5*mm" />
+<variable name="tagger_envelope_dx" value="magnet_gap_dx" />
+<variable name="tagger_envelope_dy" value="magnet_gap_dy" />
+<!-- 
+  The total length in z of the tagger envelope leaves 2.5 mm of clearance on
+  either side 
+-->
+<variable name="tagger_envelope_dz" 
+    value="tagger_envelope_clearance*2 + tagger_layer_offset*6" />
 
 <!--
     HCal 
