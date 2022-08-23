@@ -10,7 +10,6 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
-#include "SimCore/UserTrackingAction.h"
 
 namespace biasing {
 namespace utility {
@@ -24,8 +23,7 @@ DecayChildrenKeeper::DecayChildrenKeeper(const std::string& name,
 DecayChildrenKeeper::~DecayChildrenKeeper() {}
 
 void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
-  const auto& particle_map{
-    simcore::UserTrackingAction::getUserTrackingAction()->getTrackMap()->getParticleMap()};
+  const auto& particle_map{getCurrentParticleMap()};
   if (particle_map.find(track->GetParentID()) != particle_map.end()) {
     const int& parent_pdg{particle_map.at(track->GetParentID()).getPdgID()};
     for (const int& parent : parents_) {
