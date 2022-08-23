@@ -102,6 +102,8 @@ class EcalTriggerID : public EcalAbstractID {
    */
   int getTriggerCellID() const { return (id_ >> CELL_SHIFT) & CELL_MASK; }
 
+  // Note: When this function is implemented, it can be added to
+  // DetectorIDBindings
   /**
    * Get the cell u,v index assuming a CMS-standard 432-cell sensor
    * @return Pair providing a U/V index

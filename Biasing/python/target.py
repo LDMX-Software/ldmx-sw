@@ -45,7 +45,6 @@ def electro_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.runNumber = 0
     sim.description = "Target electron-nuclear, xsec bias 1e8"
     sim.beamSpotSmear = [20., 80., 0.] #mm
 
@@ -101,7 +100,6 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
     sim.beamSpotSmear = [20., 80., 0.]
 
@@ -157,7 +155,6 @@ def gamma_mumu( detector, generator ) :
     sim.setDetector( detector , True )
 
     # Set run parameters
-    sim.runNumber = 0
     sim.description = "gamma -> mu+ mu-, xsec bias 10e9"
     sim.beamSpotSmear = [20., 80., 0.]
 

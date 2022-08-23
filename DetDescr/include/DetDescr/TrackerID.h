@@ -58,8 +58,8 @@ class TrackerID : public DetectorID {
   int module() const { return (id_ >> MODULE_SHIFT) & MODULE_MASK; }
 
   /**
-   * Get the value of the module field from the ID.
-   * @return The value of the module field.
+   * Get the value of the layer field from the ID.
+   * @return The value of the layer field.
    */
   int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
