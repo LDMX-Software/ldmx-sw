@@ -16,9 +16,6 @@
 
     &constants;
 
-    <!-- flipping means rotating around y by 180 degrees -->
-    <rotation name="flip" y="180" unit="deg"/>
-
     <!--
       The center-to-flat radius of the octagonal tungsten absorbing layers 
 
@@ -291,9 +288,13 @@
       The octagons are oriented so that the middle of a flat side is bisected by the x and y axes.
     -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
-      <polyhedra name="W_octagon[bilayer]" aunit="deg" deltaphi="360" lunit="mm" numsides="8" startphi="22.5">
+      <polyhedra name="W_front_octagon[bilayer]" aunit="deg" deltaphi="360" lunit="mm" numsides="8" startphi="22.5">
         <zplane rmax="octagon_radius" rmin="0" z="0"/>
-        <zplane rmax="octagon_radius" rmin="0" z="W_dz[bilayer]"/>
+        <zplane rmax="octagon_radius" rmin="0" z="front_tungsten_dz[bilayer]"/>
+      </polyhedra>
+      <polyhedra name="W_cooling_octagon[bilayer]" aunit="deg" deltaphi="360" lunit="mm" numsides="8" startphi="22.5">
+        <zplane rmax="octagon_radius" rmin="0" z="0"/>
+        <zplane rmax="octagon_radius" rmin="0" z="cooling_tungsten_dz[bilayer]"/>
       </polyhedra>
     </loop>
 
@@ -376,9 +377,13 @@
 
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
-      <volume name="W_volume[bilayer]">
+      <volume name="W_front_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
-        <solidref ref="W_octagon[bilayer]"/>
+        <solidref ref="W_front_octagon[bilayer]"/>
+      </volume>
+      <volume name="W_cooling_volume[bilayer]">
+        <materialref ref="G4_W0x270bda0"/>
+        <solidref ref="W_cooling_octagon[bilayer]"/>
       </volume>
     </loop>
 
@@ -443,21 +448,20 @@
       changing between different sections of the ECal is the thickness
       of the absorber.
 
-                          Absorber
-                          Absorber
+                          Front Absorber
                           Front Tolerance Gap
                           Motherboard
                           Motherboard Gap
                       - - Hex PCB
             Flower    |   Thin Glue
-                      |   Sensitive Silicon
+            (even)    |   Sensitive Silicon
                       - - Thick Glue
-                          Absorber
+                          Cooling Absorber
                           Carbon Cooling Plane
-                          Absorber
+                          Cooling Absorber
                       - - Thick Glue
             Flower    |   Sensitive Silicon
-            (flipped) |   Thin Glue
+            (odd)     |   Thin Glue
                       - - Hex PCB
                           Motherboard Gap
                           Motherboard
@@ -522,7 +526,6 @@
             y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
               + CarbonCoolingPlane_dz"/>
-          <rotationref ref="flip"/>
         </physvol>
       </loop>
 
@@ -542,22 +545,12 @@
       -->
       <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
         <physvol>
-          <volumeref ref="W_volume[bilayer]"/>
-          <position name="W_volume_pos0_[bilayer]" unit="mm" x="0" y="0" 
+          <volumeref ref="W_front_volume[bilayer]"/>
+          <position name="W_front_volume[bilayer]" unit="mm" x="0" y="0" 
             z="bilayer_start 
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance"/>
-        </physvol>
-
-        <physvol>
-          <volumeref ref="W_volume[bilayer]"/>
-          <position name="W_volume_pos1_[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_start
-              + bilayer_noabsorber_thickness*bilayer
-              + bilayer_absorber_cumulative[bilayer]
-              + BackTolerance
-              + W_dz[bilayer]"/>
         </physvol>
 
         <physvol>
@@ -567,7 +560,8 @@
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz/2."/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz/2."/>
         </physvol>
 
         <physvol copynumber="14*bilayer+0">
@@ -577,7 +571,8 @@
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap"/>
         </physvol>
         <loop for="module" from="1" to="7" step="1">
           <physvol copynumber="14*bilayer+module">
@@ -589,18 +584,20 @@
                 + bilayer_noabsorber_thickness*bilayer 
                 + bilayer_absorber_cumulative[bilayer]
                 + BackTolerance
-                + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
+                + front_tungsten_dz[bilayer] + FrontTolerance 
+                + PCB_dz + PCB_Motherboard_Gap"/>
           </physvol>
         </loop>
 
         <physvol>
-          <volumeref ref="W_volume[bilayer]"/>
-          <position name="W_volume_pos2_[bilayer]" unit="mm" x="0" y="0" 
+          <volumeref ref="W_cooling_volume[bilayer]"/>
+          <position name="W_cooling_volume_pos0[bilayer]" unit="mm" x="0" y="0" 
             z="bilayer_start
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz"/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz"/>
         </physvol>
 
         <physvol>
@@ -610,19 +607,21 @@
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer] + CarbonCoolingPlane_dz/2."/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz/2."/>
         </physvol>
   
         <physvol>
-          <volumeref ref="W_volume[bilayer]"/>
-          <position name="W_volume_pos3_[bilayer]" unit="mm" x="shift_x" y="shift_y" 
+          <volumeref ref="W_cooling_volume[bilayer]"/>
+          <position name="W_cooling_volume_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
             z="bilayer_start
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer] + CarbonCoolingPlane_dz"/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz"/>
         </physvol>
   
         <physvol copynumber="14*bilayer+1+0">
@@ -632,8 +631,9 @@
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer]"/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]"/>
         </physvol>
         <loop for="module" from="1" to="7" step="1">
           <physvol copynumber="14*bilayer+1+module">
@@ -645,8 +645,9 @@
                 + bilayer_noabsorber_thickness*bilayer
                 + bilayer_absorber_cumulative[bilayer]
                 + BackTolerance
-                + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-                + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer]"/>
+                + front_tungsten_dz[bilayer] + FrontTolerance 
+                + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+                + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]"/>
           </physvol>
         </loop>
   
@@ -657,9 +658,10 @@
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
-              + 2*W_dz[bilayer] + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + W_dz[bilayer] + CarbonCoolingPlane_dz + W_dz[bilayer] + Flower_dz
-              + PCB_Motherboard_Gap + PCB_dz/2."/>
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer] 
+              + Flower_dz + PCB_Motherboard_Gap + PCB_dz/2."/>
         </physvol>
       </loop>
 
