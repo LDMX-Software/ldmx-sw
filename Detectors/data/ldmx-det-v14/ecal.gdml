@@ -566,6 +566,12 @@
       <solidref ref="ECal_box"/>
       <position name="ECal_box_pos" unit="mm" x="0" y="0" z="0" />
 
+      <physvol>
+        <file name="ecal_support_box.gdml"/>
+        <position name="support_box_pos" unit="mm" 
+          x="-880.6815/2." y="-577.85/2." z="-300-102.616"/>
+      </physvol>
+
       <!--
         PRE-SHOWER LAYER
 

@@ -386,7 +386,7 @@ This value is in mm
   that need to be separate from the ECal cavern (like the
   side HCal).
 -->
-<variable name="side_Ecal_dx" value="800."/>
+<variable name="side_Ecal_dx" value="840."/>
 <variable name="side_Ecal_dy" value="600."/>
 
 <!-- 
