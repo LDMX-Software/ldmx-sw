@@ -39,7 +39,7 @@
         -->
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-        <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
+        <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z+ecal_envelope_z/2"/>
         <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
         <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />         
 
