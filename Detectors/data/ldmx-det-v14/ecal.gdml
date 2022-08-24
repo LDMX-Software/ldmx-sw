@@ -17,13 +17,28 @@
     &constants;
 
     <!--
-      The center-to-flat radius of the octagonal tungsten absorbing layers 
-
-      This is calculated from the hexagon's radius and the gap between hexagons.
+      The x,y vertices of the tungsten absorber polygon
     -->
-    <variable name="octagon_radius" value="3*Hex_radius+hexagon_gap"/>
-
-    <!-- longitudinal definitions -->
+    <matrix name="absorber_polygon"
+              coldim="2"
+              values="82.55 245.63
+                      171.45 194.31
+                      188.58 108.87
+                      254.00 51.33
+                      254.00 -51.33
+                      172.63 -99.67
+                      171.45 -194.31
+                      82.55 -245.63
+                      0.00 -217.75
+                      -82.55 -245.63
+                      -171.45 -194.31
+                      -172.63 -99.67
+                      -254.00 -51.33
+                      -254.00 51.33
+                      -188.58 108.87
+                      -171.45 194.31
+                      -82.55 245.63
+                      0.00 199.34"/>
 
     <!-- 
     loop variables for bilayers and modules
@@ -280,22 +295,61 @@
       The absorber layers have an interesting shape which basically outlines the ECal flower
       with some areas of extra material for mounting onto the Carbon cooling layer
 
-      Without exporting the CAD drawing of this outline, we simply draw octagonal prisms which
-      all have the same shape transverse to the beam but have varying thicknesses. Additionally,
-      I have removed the 'Wthick_{A,B,C,D}' layers because they are really just expected to be
-      two of the W_{A,B,C,D} layers right next to each other.
+      We construct this shape using an eXTRUded solid (xtru) where we draw the transverse
+      shape by provided the corners of the polygon in order around the solid and then defining
+      a single extrusion wich is NOT offset from the original z=0 plane.
+
+      The corners of the polygon are manually pulled from a CAD drawing of the engineering
+      design using some python nonsense to help filter out the unique points and sort them.
+      There are 18 corners.
 
       The octagons are oriented so that the middle of a flat side is bisected by the x and y axes.
     -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
-      <polyhedra name="W_front_octagon[bilayer]" aunit="deg" deltaphi="360" lunit="mm" numsides="8" startphi="22.5">
-        <zplane rmax="octagon_radius" rmin="0" z="0"/>
-        <zplane rmax="octagon_radius" rmin="0" z="front_tungsten_dz[bilayer]"/>
-      </polyhedra>
-      <polyhedra name="W_cooling_octagon[bilayer]" aunit="deg" deltaphi="360" lunit="mm" numsides="8" startphi="22.5">
-        <zplane rmax="octagon_radius" rmin="0" z="0"/>
-        <zplane rmax="octagon_radius" rmin="0" z="cooling_tungsten_dz[bilayer]"/>
-      </polyhedra>
+      <xtru name="W_front_absorber[bilayer]" lunit="mm">
+        <twoDimVertex x="absorber_polygon[1,1]" y="absorber_polygon[1,2]"/>
+        <twoDimVertex x="absorber_polygon[2,1]" y="absorber_polygon[2,2]"/>
+        <twoDimVertex x="absorber_polygon[3,1]" y="absorber_polygon[3,2]"/>
+        <twoDimVertex x="absorber_polygon[4,1]" y="absorber_polygon[4,2]"/>
+        <twoDimVertex x="absorber_polygon[5,1]" y="absorber_polygon[5,2]"/>
+        <twoDimVertex x="absorber_polygon[6,1]" y="absorber_polygon[6,2]"/>
+        <twoDimVertex x="absorber_polygon[7,1]" y="absorber_polygon[7,2]"/>
+        <twoDimVertex x="absorber_polygon[8,1]" y="absorber_polygon[8,2]"/>
+        <twoDimVertex x="absorber_polygon[9,1]" y="absorber_polygon[9,2]"/>
+        <twoDimVertex x="absorber_polygon[10,1]" y="absorber_polygon[10,2]"/>
+        <twoDimVertex x="absorber_polygon[11,1]" y="absorber_polygon[11,2]"/>
+        <twoDimVertex x="absorber_polygon[12,1]" y="absorber_polygon[12,2]"/>
+        <twoDimVertex x="absorber_polygon[13,1]" y="absorber_polygon[13,2]"/>
+        <twoDimVertex x="absorber_polygon[14,1]" y="absorber_polygon[14,2]"/>
+        <twoDimVertex x="absorber_polygon[15,1]" y="absorber_polygon[15,2]"/>
+        <twoDimVertex x="absorber_polygon[16,1]" y="absorber_polygon[16,2]"/>
+        <twoDimVertex x="absorber_polygon[17,1]" y="absorber_polygon[17,2]"/>
+        <twoDimVertex x="absorber_polygon[18,1]" y="absorber_polygon[18,2]"/>
+        <section zOrder="0" zPosition="0"/>
+        <section zOrder="1" zPosition="front_tungsten_dz[bilayer]"/>
+      </xtru>
+      <xtru name="W_cooling_absorber[bilayer]" lunit="mm">
+        <twoDimVertex x="absorber_polygon[1,1]" y="absorber_polygon[1,2]"/>
+        <twoDimVertex x="absorber_polygon[2,1]" y="absorber_polygon[2,2]"/>
+        <twoDimVertex x="absorber_polygon[3,1]" y="absorber_polygon[3,2]"/>
+        <twoDimVertex x="absorber_polygon[4,1]" y="absorber_polygon[4,2]"/>
+        <twoDimVertex x="absorber_polygon[5,1]" y="absorber_polygon[5,2]"/>
+        <twoDimVertex x="absorber_polygon[6,1]" y="absorber_polygon[6,2]"/>
+        <twoDimVertex x="absorber_polygon[7,1]" y="absorber_polygon[7,2]"/>
+        <twoDimVertex x="absorber_polygon[8,1]" y="absorber_polygon[8,2]"/>
+        <twoDimVertex x="absorber_polygon[9,1]" y="absorber_polygon[9,2]"/>
+        <twoDimVertex x="absorber_polygon[10,1]" y="absorber_polygon[10,2]"/>
+        <twoDimVertex x="absorber_polygon[11,1]" y="absorber_polygon[11,2]"/>
+        <twoDimVertex x="absorber_polygon[12,1]" y="absorber_polygon[12,2]"/>
+        <twoDimVertex x="absorber_polygon[13,1]" y="absorber_polygon[13,2]"/>
+        <twoDimVertex x="absorber_polygon[14,1]" y="absorber_polygon[14,2]"/>
+        <twoDimVertex x="absorber_polygon[15,1]" y="absorber_polygon[15,2]"/>
+        <twoDimVertex x="absorber_polygon[16,1]" y="absorber_polygon[16,2]"/>
+        <twoDimVertex x="absorber_polygon[17,1]" y="absorber_polygon[17,2]"/>
+        <twoDimVertex x="absorber_polygon[18,1]" y="absorber_polygon[18,2]"/>
+        <section zOrder="0" zPosition="0"/>
+        <section zOrder="1" zPosition="cooling_tungsten_dz[bilayer]"/>
+      </xtru>
     </loop>
 
     <!--
@@ -367,7 +421,6 @@
       <materialref ref="G4_Si0x271c1c0"/>
       <solidref ref="Si_hexagon"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
     </volume>
   
     <volume name="GlueThick_volume">
@@ -379,11 +432,13 @@
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <volume name="W_front_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
-        <solidref ref="W_front_octagon[bilayer]"/>
+        <solidref ref="W_front_absorber[bilayer]"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
       </volume>
       <volume name="W_cooling_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
-        <solidref ref="W_cooling_octagon[bilayer]"/>
+        <solidref ref="W_cooling_absorber[bilayer]"/>
+        <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
       </volume>
     </loop>
 
