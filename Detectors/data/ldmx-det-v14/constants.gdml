@@ -268,6 +268,32 @@ when defining GDML variables, so this needs to be precomputed.
                 141.9"/>
 
 <!--
+The thickness of the strongback aluminum bar holding up the bilayer
+
+there are only two thicknesses but since it varies _at all_ across
+bilayers, we need to list them all explicitly so we can just reference
+them in the bilayer loop
+-->
+<matrix name="bilayer_strongback_thickness"
+        coldim="1"
+        values="12.7
+                12.7
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4" />
+
+<!--
   Thickness of various components in the ECal layer stack
     all values in mm
 -->
@@ -275,8 +301,12 @@ when defining GDML variables, so this needs to be precomputed.
 <variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.5"/>
 <variable name="GlueThick_dz" value="0.2"/>
-<!-- the carbon cooling plane is 3/16 inch thick -->
-<variable name="CarbonCoolingPlane_dz" value="4.7625"/>
+<!-- the carbon cooling plane is 1mm+3/16 inch thick (about) -->
+<variable name="CarbonCoolingPlane_dz" value="5.7"/>
+<variable name="CarbonCoolingPlane_dy" value="495.3"/>
+<variable name="CarbonCoolingPlane_dx" value="673.1"/>
+<!-- vertical dimension of the strong back bar -->
+<variable name="strongback_bar_dy" value="25.4"/>
 
 <!--
   The thickness of the "flower" of sensitive hexagons 
