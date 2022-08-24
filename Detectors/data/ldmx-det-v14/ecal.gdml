@@ -292,6 +292,35 @@
     <box name="Readout" x="Readout_dx" y="Readout_dy" z="Readout_dz" lunit="mm" />
 
     <!--
+      Strongback Parts
+
+      The strong back consists of a bar of alimunum with "fins" hanging down from it
+      on either end to attach to the carbon cooling plane.
+
+      Not currently implementing the "fins" hanging down because its complicated
+    <box name="strongback_fin_rect" lunit="mm"
+         x="101.6-76.2" y="50.8" z="3.175" />
+    <xtru name="strongback_fin_triangle_left" lunit="mm">
+      <twoDimVertex x="0" y="0" />
+      <twoDimVertex x="0" y="-50.8" />
+      <twoDimVertex x="162.4-76.2" y="0" />
+      <section zOrder="0" zPosition="0" />
+      <section zOrder="1" zPosition="3.175" />
+    </xtru>
+    <xtru name="strongback_fin_triangle_right" lunit="mm">
+      <twoDimVertex x="0" y="0" />
+      <twoDimVertex x="0" y="-50.8" />
+      <twoDimVertex x="76.2-162.4" y="0" />
+      <section zOrder="0" zPosition="0" />
+      <section zOrder="1" zPosition="3.175" />
+    </xtru>
+    -->
+    <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
+      <box name="strongback_bar[bilayer]" lunit="mm"
+           x="ecal_envelope_x" y="strongback_bar_dy" z="bilayer_strongback_thickness[bilayer]" />
+    </loop>
+        
+    <!--
       The absorber layers have an interesting shape which basically outlines the ECal flower
       with some areas of extra material for mounting onto the Carbon cooling layer
 
@@ -357,7 +386,7 @@
       bi-layer. Right now, the CarbonCoolingPlane is modeled by a large rectangle filled with
       a carbon+epoxy composite material.
     -->
-    <box name="CarbonCoolingPlane" x="ECal_dx" y="ECal_dy" z="CarbonCoolingPlane_dz" lunit="mm" />
+    <box name="CarbonCoolingPlane" x="673.1" y="495.3" z="CarbonCoolingPlane_dz" lunit="mm" />
 
     <!--
       The sensitive hexagons stack
@@ -430,6 +459,10 @@
 
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
+      <volume name="strongback_bar_volume[bilayer]">
+        <materialref ref="G4_Al0x2705780" />
+        <solidref ref="strongback_bar[bilayer]" />
+      </volume>
       <volume name="W_front_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
         <solidref ref="W_front_absorber[bilayer]"/>
@@ -560,6 +593,20 @@
         </physvol>
       </loop>
 
+      <!-- 
+       center strong back bar over the center of the carbon cooling plane
+        and put it just above the carbon cooling plane
+       assume PreShower layer uses the same strongback as the first bilayer
+        with absorber
+      --> 
+      <physvol>
+        <volumeref ref="strongback_bar_volume_0"/>
+        <position name="strongback_bar_volume_PSpos" unit="mm" x="0"
+          y="CarbonCoolingPlane_dy/2. + strongback_bar_dy/2."
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + CarbonCoolingPlane_dz/2."/>
+      </physvol>
+      
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
         <position name="PS_carbon_pos" unit="mm" x="0" y="0" 
@@ -653,6 +700,23 @@
               + BackTolerance
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz"/>
+        </physvol>
+
+        <!-- 
+         center strong back bar over the center of the carbon cooling plane
+          and put it just above the carbon cooling plane
+        --> 
+        <physvol>
+          <volumeref ref="strongback_bar_volume[bilayer]"/>
+          <position name="strongback_bar_volume_pos[bilayer]" unit="mm" x="0"
+            y="CarbonCoolingPlane_dy/2. + strongback_bar_dy/2."
+            z="bilayer_start
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz/2."/>
         </physvol>
 
         <physvol>
