@@ -189,49 +189,83 @@
 
 <constant name="num_bilayers" value="17"/>
 
-<!-- ECal absorbing layer thicknesses -->
-<matrix name="W_dz" coldim="1" values="1.
-                                       2.
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       3.5
-                                       7.0
-                                       7.0
-                                       7.0
-                                       7.0
-                                       7.0" />
-
 <!-- 
-cumulative sum of bilayer absorber thicknesses
-  this is necessary for calculating positions relative
-  to the front of the ECal. Unfortunately, I can't
-  insert a GDML loop when defining variables, so this
-  must be done manually.
+  ECal absorbing layer thicknesses 
+
+  The ECal is separated into five "sections" each of
+  which has a certain thickness for the tungsten at
+  the front of each bilayer and the tungsten next
+  to the cooling plane.
+
+  Section   | bilayers | Front | Cooling
+  Pre-Shower|        1 |   0.0 |     0.0
+  Section A |        1 |   1.0 |     1.0
+  Section B |        1 |   2.0 |     1.5
+  Section C |        9 |   3.5 |     1.8
+  Section D |        5 |   7.0 |     3.5
 -->
-<matrix name="bilayer_absorber_cumulative" coldim="1"
+<matrix name="cooling_tungsten_dz"
+        coldim="1"
+        values="1.0
+                1.5
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5"/>
+<matrix name="front_tungsten_dz"
+        coldim="1"
+        values="1.0
+                2.0
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                7.0
+                7.0
+                7.0
+                7.0
+                7.0"/>
+<!--
+The cumulative amount of absorber in front of the n'th bilayer.
+
+This is necessary for determining the z-positions of the layers
+within the placement loop. Unfortunately, one cannot use loops
+when defining GDML variables, so this needs to be precomputed.
+-->
+<matrix name="bilayer_absorber_cumulative"
+        coldim="1"
         values="0.0
-                4.0
-                11.0
-                25.0
-                39.0
-                53.0
-                67.0
-                81.0
-                95.0
-                109.0
-                123.0
-                137.0
-                165.0
-                193.0
-                221.0
-                249.0
-                277.0" />
+                3.0
+                8.0
+                15.1
+                22.2
+                29.3
+                36.4
+                43.5
+                50.6
+                57.7
+                64.8
+                71.9
+                85.9
+                99.9
+                113.9
+                127.9
+                141.9"/>
 
 <!--
   Thickness of various components in the ECal layer stack
@@ -331,5 +365,5 @@ This value is in mm
 --> 
 <constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
 <constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
-<constant name="ecal_envelope_z" value="800.0" /> 
+<constant name="ecal_envelope_z" value="600.0" /> 
 
