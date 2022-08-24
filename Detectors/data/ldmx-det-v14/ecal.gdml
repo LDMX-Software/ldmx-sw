@@ -198,18 +198,36 @@
       <fraction n="1" ref="Si0x271c2c0"/>
     </material>
 
-    <!-- carbon+epoxy composite material for cooling plane -->
-    <material name="G4_C0x2721460" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="81"/>
-      <D unit="g/cm3" value="2"/>
-      <fraction n="1" ref="C0x271db90"/>
-    </material>
+    <!-- 
+    carbon+epoxy composite material for cooling plane 
+    
+    - taking the Epoxy mixture from the PDG values for
+      Epotek-301
+      https://pdg.lbl.gov/2022/AtomicNuclearProperties/HTML/Epotek-301-1.html
+    - the MEE value is pretty much made up at this point,
+      assuming it is the same as pure carbon which seems
+      to be an ok assumption since a majority of the epoxy
+      is carbon as well
+    - the epoxy to C-fiber ratio is 0.955 _by weight_
+
+    Fractions calculated by doing
+      C = 1+PDGFrac / 1.955
+      H = PDGFrac / 1.955
+      O = PDGFrac / 1.955
+      N = PDGFrac / 1.955
+    where PDGFrac is that material's mass fraction in the PDG
+    material linked above which we convert to molar fraction
+    by converting each fraction to moles individually and then
+    dividing by the sum.
+    -->
     <material name="CarbonEpoxyComposite" state="solid">
       <T unit="K" value="293.15"/>
       <MEE unit="eV" value="81"/>
-      <D unit="g/cm3" value="2"/>
-      <fraction n="1" ref="C0x271db90"/>
+      <D unit="g/cm3" value="1.439"/>
+      <fraction n="0.624883102" ref="C0x271db90"/>
+      <fraction n="0.308001109" ref="H0x271f530"/>
+      <fraction n="0.064281977" ref="O0x271e1a0"/>
+      <fraction n="0.002833811" ref="N140x271e0d0"/>
     </material>
 
     <!-- air for gaps -->
