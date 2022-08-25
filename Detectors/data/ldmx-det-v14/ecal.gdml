@@ -623,7 +623,6 @@
     <volume name="em_calorimeters">
       <materialref ref="G4_AIR"/>
       <solidref ref="ECal_box"/>
-      <position name="ECal_box_pos" unit="mm" x="0" y="0" z="0" />
 
       <!--
         the support box is not symmetric in the vertical direction but
