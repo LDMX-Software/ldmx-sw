@@ -40,6 +40,33 @@
                       -82.55 245.63
                       0.00 199.34"/>
 
+    <!--
+      The rotations and shifts putting the motherboards from their CAD exported coordinates into
+      ECal coordinates with the origin at the center of the layer.
+
+      The shifts are done _after_ the rotations.
+
+      The x-shift is done by finding the x-cooridnate of the top hexagonal point
+      of the motherboard and then lining that up with the top hexagonal point of the
+      flower.
+
+      The y-shift is found to center the hexagonal part of the motherboards on the flower.
+
+      The z-shift is just making sure that we are moving the whole volume centered on
+      itself.
+    -->
+    <rotation name="motherboard5_rotation" unit="deg" x="90" y="0" z="0"/>
+    <position name="motherboard5_position_rel_to_layer" unit="mm" 
+      x="-(Hex_radius+hexagon_gap)-(247.8682)"
+      y="-408.2065/2" 
+      z="MotherBoardAssembly_dz/2"/>
+
+    <rotation name="motherboard6_rotation" unit="deg" x="90" y="180" z="0"/>
+    <position name="motherboard6_position_rel_to_layer" unit="mm" 
+      x="(Hex_radius+hexagon_gap)+(255.2361)"
+      y="242.1649" 
+      z="MotherBoardAssembly_dz/2"/>
+
     <!-- 
     loop variables for bilayers and modules
     -->
@@ -425,8 +452,14 @@
 
     <assembly name="PCB_motherboard_volume">
       <physvol>
-        <file name="ecal_motherboards.gdml"/>
-        <positionref ref="center"/>
+        <file name="ecal_motherboard5_assembly.gdml" />
+        <positionref ref="motherboard5_position_rel_to_layer" />
+        <rotationref ref="motherboard5_rotation" />
+      </physvol>
+      <physvol>
+        <file name="ecal_motherboard6_assembly.gdml" />
+        <positionref ref="motherboard6_position_rel_to_layer" />
+        <rotationref ref="motherboard6_rotation" />
       </physvol>
     </assembly>
 
@@ -575,7 +608,7 @@
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <position name="PCB_PS_motherboard_physvol0_pos" unit="mm" x="0" y="0" 
-          z="bilayer_start + FrontTolerance + PCB_dz/2."/>
+          z="bilayer_start + FrontTolerance + MotherBoardAssembly_dz/2."/>
       </physvol>
 
       <physvol copynumber="7*0+0">
@@ -636,7 +669,7 @@
         <rotationref ref="flip"/>
         <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="0" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-            + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + PCB_dz/2."/>
+            + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + MotherBoardAssembly_dz/2."/>
       </physvol>
 
       <!-- 
@@ -664,7 +697,7 @@
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
               + front_tungsten_dz[bilayer] + FrontTolerance 
-              + PCB_dz/2."/>
+              + MotherBoardAssembly_dz/2."/>
         </physvol>
 
         <physvol copynumber="14*bilayer+0">
@@ -782,7 +815,7 @@
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer] 
-              + Flower_dz + PCB_Motherboard_Gap + PCB_dz/2."/>
+              + Flower_dz + PCB_Motherboard_Gap + MotherBoardAssembly_dz/2."/>
         </physvol>
       </loop>
 
