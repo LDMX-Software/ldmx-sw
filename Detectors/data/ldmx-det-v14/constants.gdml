@@ -312,7 +312,7 @@ them in the bilayer loop
 <variable name="CarbonCoolingPlane_dx" value="673.1"/>
 <!-- vertical dimension of the strong back bar -->
 <variable name="strongback_bar_dy" value="25.4"/>
-<variable name="strongback_bar_dx" value="840.0"/>
+<variable name="strongback_bar_dx" value="838.2-0.6815"/>
 
 <!--
   The thickness of the "flower" of sensitive hexagons 

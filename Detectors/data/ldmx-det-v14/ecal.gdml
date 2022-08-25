@@ -41,6 +41,29 @@
                       0.00 199.34"/>
 
     <!--
+      The position of the support box
+
+      the support box is not symmetric in the vertical direction so
+      center on the central cavern with
+        y="-12.7-(520.7-12.7)/2."
+    -->
+    <position name="support_box_pos" unit="mm" 
+      x="-880.6815/2." 
+      y="-12.7-(520.7-12.7)/2."
+      z="-300-102.616"/>
+
+    <!--
+      The transverse position of the strongbacks.
+
+      The x-coordinate is centered with respect to the ecal envelope
+      while the y-coordinate is shifted 12.7mm above the cooling plane
+      which is how thick the shelf that they rest on is.
+    -->
+    <variable name="strongback_pos_x" value="1.8 + 0.6815/2." />
+    <variable name="strongback_pos_y" 
+      value="CarbonCoolingPlane_dy/2. + 12.7 + 12.7/2. + strongback_bar_dy/2."/>
+
+    <!--
       The rotations and shifts putting the motherboards from their CAD exported coordinates into
       ECal coordinates with the origin at the center of the layer.
 
@@ -76,6 +99,15 @@
     <!-- inside the ecal parent volume, the coordinate system is relative to it,
     so we need to subtract away half of its depth -->
     <variable name="bilayer_start" value="-ecal_envelope_z/2."/>
+
+    <!-- extra air in pre-shower layer to make sure there is enough room between motehrboards
+    and cooling plane for the backplane boards -->
+    <variable name="preshower_extra_air" value="0.5"/>
+    <!-- additional offset for start of sampling sections because pre-shower
+              value="preshower_extra_air + 2*(MotherBoardAssembly_dz - PCB_dz)"/>
+        has extra air -->
+    <variable name="sampling_section_offset" 
+              value="2*preshower_extra_air"/>
 
     <!-- flip over y-axis for odd-side of bilayer sandwich -->
     <rotation name="flip" unit="deg" x="0" y="180" z="0"/>
@@ -593,10 +625,16 @@
       <solidref ref="ECal_box"/>
       <position name="ECal_box_pos" unit="mm" x="0" y="0" z="0" />
 
+      <!--
+        the support box is not symmetric in the vertical direction but
+        we center it at half its max y-coordinate because why not
+
+        Instead we could center on the central cavern with
+          y="-12.7-(520.7-12.7)/2."
+      -->
       <physvol>
         <file name="ecal_support_box.gdml"/>
-        <position name="support_box_pos" unit="mm" 
-          x="-880.6815/2." y="-577.85/2." z="-300-102.616"/>
+        <positionref ref="support_box_pos"/>
       </physvol>
 
       <!--
@@ -634,33 +672,40 @@
       --> 
       <physvol>
         <volumeref ref="strongback_bar_volume_0"/>
-        <position name="strongback_bar_volume_PSpos" unit="mm" x="0"
-          y="CarbonCoolingPlane_dy/2. + strongback_bar_dy/2."
+        <position name="strongback_bar_volume_PSpos" unit="mm" 
+          x="strongback_pos_x"
+          y="strongback_pos_y"
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
             + CarbonCoolingPlane_dz/2."/>
       </physvol>
       
+      <!--
+      Without the additional tungsten layer to allow for more longitudinal space,
+        the cooling plane is too close to the motherboard to allow room for the 
+        backplane boards and their connectors. Therefore, we need to move the cooling
+        plane in this pre-shower layer back by an additional 1.5mm.
+      -->
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
         <position name="PS_carbon_pos" unit="mm" x="0" y="0" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + CarbonCoolingPlane_dz/2."/>
+            + preshower_extra_air + CarbonCoolingPlane_dz/2."/>
       </physvol>
 
       <physvol copynumber="7*1+0">
         <volumeref ref="OddHexaboard"/>
         <position name="PS_flower_pos1" unit="mm" x="shift_x" y="shift_y" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + CarbonCoolingPlane_dz"/>
+            + preshower_extra_air + CarbonCoolingPlane_dz"/>
       </physvol>
       <loop for="module" from="1" to="7" step="1">
         <physvol copynumber="7*1+module">
           <volumeref ref="OddHexaboard"/>
           <position name="PS_flower[module]" unit="mm"
-            x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
-            y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+            y="shift_y - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-              + CarbonCoolingPlane_dz"/>
+              + preshower_extra_air + CarbonCoolingPlane_dz"/>
         </physvol>
       </loop>
 
@@ -668,8 +713,9 @@
         <volumeref ref="PCB_motherboard_volume"/>
         <rotationref ref="flip"/>
         <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="0" 
-          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-            + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + MotherBoardAssembly_dz/2."/>
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap 
+            + preshower_extra_air + PCB_dz - MotherBoardAssembly_dz/2."/>
       </physvol>
 
       <!-- 
@@ -683,7 +729,7 @@
         <physvol>
           <volumeref ref="W_front_volume[bilayer]"/>
           <position name="W_front_volume[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_start 
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance"/>
@@ -692,18 +738,17 @@
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
           <position name="PCB_motherboard_pos0[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_start
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
-              + BackTolerance
-              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + BackTolerance + front_tungsten_dz[bilayer] + FrontTolerance
               + MotherBoardAssembly_dz/2."/>
         </physvol>
 
         <physvol copynumber="14*bilayer+0">
           <volumeref ref="EvenHexaboard"/>
-          <position name="PS_flower_pos0" unit="mm" x="0" y="0" 
-            z="bilayer_start
+          <position name="flower_center[bilayer]" unit="mm" x="0" y="0" 
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -713,10 +758,10 @@
         <loop for="module" from="1" to="7" step="1">
           <physvol copynumber="14*bilayer+module">
             <volumeref ref="EvenHexaboard"/>
-            <position name="PS_flower[module]" unit="mm"
+            <position name="flower_petal[bilayer][module]" unit="mm"
               x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
               y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
-              z="bilayer_start
+              z="bilayer_start + sampling_section_offset
                 + bilayer_noabsorber_thickness*bilayer 
                 + bilayer_absorber_cumulative[bilayer]
                 + BackTolerance
@@ -728,7 +773,7 @@
         <physvol>
           <volumeref ref="W_cooling_volume[bilayer]"/>
           <position name="W_cooling_volume_pos0[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_start
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -742,9 +787,10 @@
         --> 
         <physvol>
           <volumeref ref="strongback_bar_volume[bilayer]"/>
-          <position name="strongback_bar_volume_pos[bilayer]" unit="mm" x="0"
-            y="CarbonCoolingPlane_dy/2. + strongback_bar_dy/2."
-            z="bilayer_start
+          <position name="strongback_bar_volume_pos[bilayer]" unit="mm"
+            x="strongback_pos_x"
+            y="strongback_pos_y"
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -756,7 +802,7 @@
         <physvol>
           <volumeref ref="C_volume_CarbonCoolingPlane"/>
           <position name="carbon_pos[bilayer]" unit="mm" x="0" y="0" 
-            z="bilayer_start
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -768,7 +814,7 @@
         <physvol>
           <volumeref ref="W_cooling_volume[bilayer]"/>
           <position name="W_cooling_volume_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_start
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -779,8 +825,9 @@
   
         <physvol copynumber="14*bilayer+1+0">
           <volumeref ref="OddHexaboard"/>
-          <position name="flower_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_start
+          <position name="odd_flower_center[bilayer]" unit="mm" 
+            x="shift_x" y="shift_y" 
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
@@ -791,10 +838,10 @@
         <loop for="module" from="1" to="7" step="1">
           <physvol copynumber="14*bilayer+1+module">
             <volumeref ref="OddHexaboard"/>
-            <position name="flower_pos1[bilayer][module]" unit="mm"
+            <position name="odd_flower_petal[bilayer][module]" unit="mm"
               x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
               y="shift_y - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
-              z="bilayer_start 
+              z="bilayer_start + sampling_section_offset 
                 + bilayer_noabsorber_thickness*bilayer
                 + bilayer_absorber_cumulative[bilayer]
                 + BackTolerance
@@ -808,14 +855,14 @@
           <volumeref ref="PCB_motherboard_volume"/>
           <rotationref ref="flip"/>
           <position name="PCB_motherboard_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
-            z="bilayer_start
+            z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
               + BackTolerance
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer] 
-              + Flower_dz + PCB_Motherboard_Gap + MotherBoardAssembly_dz/2."/>
+              + Flower_dz + PCB_Motherboard_Gap +PCB_dz - MotherBoardAssembly_dz/2."/>
         </physvol>
       </loop>
 
