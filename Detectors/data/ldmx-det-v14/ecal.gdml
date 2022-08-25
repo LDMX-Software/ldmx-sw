@@ -46,27 +46,12 @@
     <variable name="bilayer" value="1"/>
     <variable name="module" value="1"/>
 
-    <!--
-     Size of FPGA Readout Chip
-        Readout Chip is assumed to have the same thickness as the Silicon layer (Si_dz)
-        Positioned in all four corners until a construction corner is chosen
-            Corner Labes: TopRight, TopLeft, BotRight, BotLeft (as seen from target)
-    -->
-    <variable name="Readout_dx" value="10.0"/>
-    <variable name="Readout_dy" value="10.0"/>
-    <variable name="Readout_dz" value="Si_dz"/>
-    <!-- distance from edge of Readout PCB to edge of MB -->
-    <variable name="RO_dist_from_edge" value="10.0"/> 
-
-    <!-- Calculate variables -->
-    <variable name="RO_Top_y" value="(0.5)*ECal_dy+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dy"/>
-    <variable name="RO_Bot_y" value="(-0.5)*ECal_dy+RO_dist_from_edge+(0.5)*Readout_dy"/>
-    <variable name="RO_Right_x" value="(0.5)*ECal_dx+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dx"/>
-    <variable name="RO_Left_x" value="(-0.5)*ECal_dx+RO_dist_from_edge+(0.5)*Readout_dx"/>
-
     <!-- inside the ecal parent volume, the coordinate system is relative to it,
     so we need to subtract away half of its depth -->
     <variable name="bilayer_start" value="-ecal_envelope_z/2."/>
+
+    <!-- flip over y-axis for odd-side of bilayer sandwich -->
+    <rotation name="flip" unit="deg" x="0" y="180" z="0"/>
   </define>
 
   <materials>
@@ -227,7 +212,7 @@
       <fraction n="0.624883102" ref="C0x271db90"/>
       <fraction n="0.308001109" ref="H0x271f530"/>
       <fraction n="0.064281977" ref="O0x271e1a0"/>
-      <fraction n="0.002833811" ref="N140x271e0d0"/>
+      <fraction n="0.002833811" ref="G4_AIR0x271da60"/><!--ref="N140x271e0d0"/>-->
     </material>
 
     <!-- air for gaps -->
@@ -299,17 +284,6 @@
 
   <solids>
     <!--
-      The PCB_motherboard solid is a complicated shape that *should* be exported from CAD
-    -->
-    <box name="PCB_motherboard" x="ECal_dx" y="ECal_dy" z="PCB_dz" lunit="mm" />
-
-    <!--
-      The Readout solid is a complicated shape that *should* be exported from CAD
-        Right now, we are just creating little squares.
-    -->
-    <box name="Readout" x="Readout_dx" y="Readout_dy" z="Readout_dz" lunit="mm" />
-
-    <!--
       Strongback Parts
 
       The strong back consists of a bar of alimunum with "fins" hanging down from it
@@ -335,7 +309,7 @@
     -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <box name="strongback_bar[bilayer]" lunit="mm"
-           x="ecal_envelope_x" y="strongback_bar_dy" z="bilayer_strongback_thickness[bilayer]" />
+           x="strongback_bar_dx" y="strongback_bar_dy" z="bilayer_strongback_thickness[bilayer]" />
     </loop>
         
     <!--
@@ -449,10 +423,12 @@
       <solidref ref="CarbonCoolingPlane"/>
     </volume>
 
-    <volume name="PCB_motherboard_volume">
-      <materialref ref="FR40x27264f0"/>
-      <solidref ref="PCB_motherboard"/>
-    </volume>
+    <assembly name="PCB_motherboard_volume">
+      <physvol>
+        <file name="ecal_motherboards.gdml"/>
+        <positionref ref="center"/>
+      </physvol>
+    </assembly>
 
     <volume name="PCB_volume">
       <materialref ref="FR40x27264f0"/>
@@ -657,6 +633,7 @@
 
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
+        <rotationref ref="flip"/>
         <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="0" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
             + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + PCB_dz/2."/>
@@ -796,6 +773,7 @@
   
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
+          <rotationref ref="flip"/>
           <position name="PCB_motherboard_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
             z="bilayer_start
               + bilayer_noabsorber_thickness*bilayer

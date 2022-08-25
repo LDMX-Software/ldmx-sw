@@ -296,8 +296,11 @@ them in the bilayer loop
 <!--
   Thickness of various components in the ECal layer stack
     all values in mm
+
+  PCB_dz - needs to match the thickness of the PCB in the motherboards
+  extracted from CAD drawings
 -->
-<variable name="PCB_dz" value="1.5"/>
+<variable name="PCB_dz" value="1.666"/>
 <variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.5"/>
 <variable name="GlueThick_dz" value="0.2"/>
@@ -307,6 +310,7 @@ them in the bilayer loop
 <variable name="CarbonCoolingPlane_dx" value="673.1"/>
 <!-- vertical dimension of the strong back bar -->
 <variable name="strongback_bar_dy" value="25.4"/>
+<variable name="strongback_bar_dx" value="840.0"/>
 
 <!--
   The thickness of the "flower" of sensitive hexagons 
@@ -386,7 +390,7 @@ This value is in mm
   that need to be separate from the ECal cavern (like the
   side HCal).
 -->
-<variable name="side_Ecal_dx" value="840."/>
+<variable name="side_Ecal_dx" value="880.6815"/>
 <variable name="side_Ecal_dy" value="600."/>
 
 <!-- 
