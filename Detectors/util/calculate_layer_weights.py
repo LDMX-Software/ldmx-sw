@@ -11,7 +11,7 @@
 #       Back corresponds to all material after the last sensitive detector layer
 #
 #   Review material properties to make sure they fit your situation.
-#   Right now, the properties for Air are used for PCB and CFMix because these layers are 
+#   Right now, the properties for Air are used for PCB and Glue because these layers are 
 #   complicated but thin.
 
 import argparse
@@ -39,7 +39,7 @@ dEdx = {
     'Si'     : (2.329 * 1.664) / 10,
     'W'      : (19.3  * 1.145) / 10,
     'Carbon' : (1.742 * 2.210) / 10,
-    'CFMix'  : (1.815 * 1.205) / 10
+    'Glue'   : (1.815 * 1.205) / 10
 }
 
 # Units: mm
@@ -51,7 +51,7 @@ X0 = {
     'Si'     : ( 21.82 / 2.329 ) * 10,
     'W'      : ( 6.76  / 19.3  ) * 10,
     'Carbon' : ( 42.70 / 2.210 ) * 10,
-    'CFMix'  : ( 36.62 / 1.205 ) * 10
+    'Glue'   : ( 36.62 / 1.205 ) * 10
 }
 
 # Units: mm
@@ -63,7 +63,7 @@ nuclen = {
     'Si'     : ( 108.4 / 2.329 ) * 10,
     'W'      : ( 191.9 / 19.3  ) * 10,
     'Carbon' : ( 85.8  / 2.210 ) * 10,
-    'CFMix'  : ( 90.1  / 1.205 ) * 10
+    'Glue'   : ( 90.1  / 1.205 ) * 10
 }
 
 # sensitive detector layer and thickness
