@@ -190,12 +190,6 @@
             <auxiliary auxtype="SubdetID" auxvalue="4"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
         </auxiliary>
-        <auxiliary auxtype="SensDet" auxvalue="EcalSD">
-            <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
-            <auxiliary auxtype="SubdetID" auxvalue="5"/>
-            <auxiliary auxtype="Verbose" auxvalue="0"/>
-        </auxiliary>
         <auxiliary auxtype="SensDet" auxvalue="HcalSD">
             <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
             <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>

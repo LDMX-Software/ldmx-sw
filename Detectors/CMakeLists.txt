@@ -20,7 +20,7 @@ function(install_gdml)
       # replace relative paths with absolute path
       string(REPLACE "\"" "" gdml_name ${gdml_match})
       set(gdml_full_path 
-        ${CMAKE_INSTALL_PREFIX}/Detectors/data/${install_gdml_detector_name}/${gdml_name})
+        ${CMAKE_INSTALL_PREFIX}/data/detectors/${install_gdml_detector_name}/${gdml_name})
       string(REPLACE ${gdml_name} ${gdml_full_path} file_contents "${file_contents}")
     endforeach()
     # get match(es) to the magnetic field map

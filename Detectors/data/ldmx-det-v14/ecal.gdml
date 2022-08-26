@@ -508,7 +508,6 @@
     <volume name="Si_volume">
       <materialref ref="G4_Si0x271c1c0"/>
       <solidref ref="Si_hexagon"/>
-      <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
     </volume>
   
     <volume name="GlueThick_volume">
