@@ -524,12 +524,12 @@
       <volume name="W_front_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
         <solidref ref="W_front_absorber[bilayer]"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
+        <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
       </volume>
       <volume name="W_cooling_volume[bilayer]">
         <materialref ref="G4_W0x270bda0"/>
         <solidref ref="W_cooling_absorber[bilayer]"/>
-        <auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>
+        <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid"/>-->
       </volume>
     </loop>
 
@@ -865,7 +865,7 @@
       </loop>
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>
+          <!--<auxiliary auxtype="VisAttributes" auxvalue="GrayWireFrame"/>-->
       <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>

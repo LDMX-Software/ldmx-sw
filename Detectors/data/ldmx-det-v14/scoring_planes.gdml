@@ -24,13 +24,20 @@
         <constant name="sp_thickness" value="0.001*mm"/>
 
         <!-- Surround the ecal with scoring planes -->
-        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2 + clearance" /> 
-        <variable name="sp_ecal_back_z"  value="ecal_front_z + ECal_dz + (ecal_envelope_z - ECal_dz)/2 + sp_thickness/2" />
-        <variable name="sp_ecal_top_y"   value="ECal_dy/2 + sp_thickness/2" />
-        <variable name="sp_ecal_bot_y"   value="-ECal_dy/2 - sp_thickness/2" />
-        <variable name="sp_ecal_left_x"  value="-ECal_dx/2 - sp_thickness/2" />
-        <variable name="sp_ecal_right_x" value="ECal_dx/2 + sp_thickness/2" />
-        <variable name="sp_ecal_mid_z"   value="ecal_front_z + ECal_dz/2 + (ecal_envelope_z - ECal_dz)/2" />
+        <variable name="sp_ecal_front_z" 
+          value="ecal_front_z - sp_thickness/2 - clearance" /> 
+        <variable name="sp_ecal_back_z"  
+          value="ecal_front_z + ecal_envelope_z + sp_thickness/2" />
+        <variable name="sp_ecal_top_y"   
+          value="ecal_envelope_y/2. + sp_thickness/2" />
+        <variable name="sp_ecal_bot_y"   
+          value="-ecal_envelope_y/2 - sp_thickness/2" />
+        <variable name="sp_ecal_left_x"  
+          value="-ecal_envelope_x/2 - sp_thickness/2" />
+        <variable name="sp_ecal_right_x" 
+          value="ecal_envelope_x/2 + sp_thickness/2" />
+        <variable name="sp_ecal_mid_z"   
+          value="ecal_front_z + ecal_envelope_z/2." />
         
         <matrix name="sp_ecal_pos" coldim="3" values="0 0 sp_ecal_front_z
                                                       0 0 sp_ecal_back_z
@@ -39,9 +46,9 @@
                                                       sp_ecal_left_x 0 sp_ecal_mid_z
                                                       sp_ecal_right_x 0 sp_ecal_mid_z" />   
 
-        <matrix name="ecal_box_dim" coldim="3" values="ECal_dx ECal_dy sp_thickness
-                                                       ECal_dx sp_thickness ECal_dz
-                                                       sp_thickness ECal_dy ECal_dz" /> 
+        <matrix name="ecal_box_dim" coldim="3" values="ecal_envelope_x ecal_envelope_y sp_thickness
+                                                       ecal_envelope_x sp_thickness ecal_envelope_z
+                                                       sp_thickness ecal_envelope_y ecal_envelope_z" /> 
 
         <!-- Magnet gap dimensions -->
         <variable name="magnet_gap_dx"         value="430*mm"  />
