@@ -1,129 +1,88 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
-<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    &constants;  
 
-    <define>
+    <variable name="i" value="0" />                                                       
 
-        &constants;   
+    <!-- layer positions in x assuming a 1.5 T field. -->
+    <matrix name="tagger_layer_x" coldim="1" value=" -20.955*mm
+                                                     -14.643*mm
+                                                     -9.461*mm
+                                                     -5.407*mm
+                                                     -2.481*mm
+                                                     -0.681*mm
+                                                     -0.006*mm " />
+                                                     
+                                                              
+                                                        
+    <!-- Position of the downstream face of the tagger envelope. -->
+    <variable name="tagger_envelope_down_face_z" value="tagger_envelope_z/2"/>
 
-        <variable name="x" value="1"/>
-
-        <!-- layer X positions assuming a 1.5 T field. -->
-        <variable name="tagger_l1_x" value="-20.955*mm"/>
-        <variable name="tagger_l2_x" value="-14.643*mm"/>
-        <variable name="tagger_l3_x" value="-9.461*mm"/>
-        <variable name="tagger_l4_x" value="-5.407*mm"/>
-        <variable name="tagger_l5_x" value="-2.481*mm"/>
-        <variable name="tagger_l6_x" value="-0.681*mm"/>
-        <variable name="tagger_l7_x" value="-0.006*mm"/>
-
-        <!-- Position of the downstream face of the tagger envelope. -->
-        <variable name="tagger_envelope_down_face_z" value="tagger_envelope_z/2"/>
-
-        <!-- Positions in z of each sensor --> 
-        <variable name="tagger_l7_mid_z" 
-          value="tagger_envelope_down_face_z - tagger_envelope_clearance" />
-        <variable name="tagger_l7_down_z" 
-          value="tagger_l7_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l7_up_z" 
-          value="tagger_l7_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l6_mid_z" 
-          value="tagger_l7_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l6_down_z" 
-          value="tagger_l6_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l6_up_z" 
-          value="tagger_l6_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l5_mid_z" 
-          value="tagger_l6_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l5_down_z" 
-          value="tagger_l5_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l5_up_z" 
-          value="tagger_l5_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l4_mid_z" 
-          value="tagger_l5_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l4_down_z" 
-          value="tagger_l4_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l4_up_z" 
-          value="tagger_l4_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l3_mid_z" 
-          value="tagger_l4_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l3_down_z" 
-          value="tagger_l3_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l3_up_z" 
-          value="tagger_l3_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l2_mid_z" 
-          value="tagger_l3_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l2_down_z" 
-          value="tagger_l2_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l2_up_z" 
-          value="tagger_l2_mid_z - tagger_layer_offset/2" />
-
-        <variable name="tagger_l1_mid_z" 
-          value="tagger_l2_mid_z - tagger_layer_delta" />
-        <variable name="tagger_l1_down_z" 
-          value="tagger_l1_mid_z + tagger_layer_offset/2" />
-        <variable name="tagger_l1_up_z" 
-          value="tagger_l1_mid_z - tagger_layer_offset/2" />
-
-    </define>
-
-    <solids>
-      <box lunit="mm" name="tagger_active_sensor_box" 
-           x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/> 
-       <box lunit="mm" name="tagger_sensor_box" 
-           x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness" />
-      <box lunit="mm" name="tagger_box" 
-           x="tagger_envelope_dx" y="tagger_envelope_dy" z="tagger_envelope_dz"/> 
-    </solids>
-
-    <structure>
-
- 	<!-- define tagger volumes --> 
-	<volume name="tagger_active_sensor_vol">
-	  <materialref ref="Silicon" />
-	  <solidref ref="tagger_active_sensor_box" />
+    <!-- Positions in z of each sensor -->
+    <variable name="tagger_l7_mid_z" value="tagger_envelope_down_face_z - tagger_envelope_clearance"/>
+    <variable name="tagger_l7_down_z" value="tagger_l7_mid_z + tagger_layer_offset/2"/>
+    <variable name="tagger_l7_up_z" value="tagger_l7_mid_z - tagger_layer_offset/2"/>
+    <loop for="i" to="5" step="1">
+      <variable name="tagger_l[6-i]_mid_z" value="tagger_l[7-i]_mid_z - tagger_layer_delta"/>
+      <variable name="tagger_l[6-i]_down_z" value="tagger_l[6-i]_mid_z + tagger_layer_offset/2" />
+      <variable name="tagger_l[6-i]_up_z" value="tagger_l[6-i]_mid_z - tagger_layer_offset/2" />
+    </loop>
+  </define>
+  
+  <solids>
+    <box lunit="mm" name="tagger_active_sensor_box" x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="tagger_sensor_box" x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="tagger_box" x="tagger_envelope_dx" y="tagger_envelope_dy" z="tagger_envelope_dz"/>
+  </solids>
+  <structure>
+    <!-- define tagger volumes -->
+    <volume name="tagger_active_sensor_vol">
+      <materialref ref="Silicon"/>
+      <solidref ref="tagger_active_sensor_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TaggerSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="tagger_sensor_vol">
-      <materialref ref="Silicon" />
-      <solidref ref="tagger_sensor_box" />
+      <materialref ref="Silicon"/>
+      <solidref ref="tagger_sensor_box"/>
       <physvol name="tagger_active_sensor">
-        <volumeref ref="tagger_active_sensor_vol" />
-        <position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0" />
+        <volumeref ref="tagger_active_sensor_vol"/>
+        <position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
       </physvol>
     </volume>
-    <!-- <rotation name="tagger_down_sensor_rot" unit="deg" x="0" y="0" z="stereo_angle"/> --> 
-
+    
     <!-- define tagger physical volumes inside envelope volume -->
     <volume name="tagger">
-        <materialref ref="Air"/>
-        <solidref ref="tagger_box"/>
-
-        <!-- layer 1 -->
-        <!-- <physvol name="tagger_l1_sensor_up">
-	      <volumeref ref="tagger_module_pos_rot_vol" />
-	      <position  name="tagger_l1_module_pos" unit="mm" x="tagger_l1_x" y="0" z="tagger_l1_z" />
-        </physvol> --> 
-
-            <auxiliary auxtype="Region" auxvalue="tagger" />
-            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-            <auxiliary auxtype="DetElem" auxvalue="tagger"/>
-        </volume>       
-
-    </structure>
-
-    <setup name="Default" version="1.0">
-        <world ref="tagger"/>
-    </setup>
-
+      <materialref ref="Air"/>
+      <solidref ref="tagger_box"/>
+      <loop for="i" to="7" step="1">
+        <physvol name="tagger_l[i+1]_sensor_up">
+          <volumeref ref="tagger_sensor_vol" />
+          <position name="tagger_l[i+1]_sensor_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" z="tagger_l[i+1]_up_z" />
+        </physvol>
+      </loop>
+      <loop for="i" to="7" step="2">
+        <physvol name="tagger_l[i+1]_sensor_up">
+          <volumeref ref="tagger_sensor_vol" />
+          <position name="tagger_l[i+1]_sensor_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" z="tagger_l[i+1]_down_z" />
+          <rotation name="tagger_l[i+1]_sensor_rot" unit="deg" x="0.0" y="0.0" z="stereo_angle" />
+        </physvol>
+        <phyvol name="tagger_l[i+2]_sensor_down">
+          <volumeref ref="tagger_sensor_vol" />
+          <position name="tagger_l[i+2]_sensor_pos" unit="mm" x="tagger_layer_x[i+1]" y="0.0" z="tagger_l[i+2]_down_z" />
+          <rotation name="tagger_l[i+2]_sensor_rot" unit="deg" x="0.0" y="0.0" z="-stereo_angle" />
+        </physvol>
+      </loop>
+      <auxiliary auxtype="Region" auxvalue="tagger"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="tagger"/>
+    </volume>
+  </structure>
+  <setup name="Default" version="1.0">
+    <world ref="tagger"/>
+  </setup>
 </gdml>
