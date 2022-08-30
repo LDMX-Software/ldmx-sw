@@ -39,6 +39,8 @@ hadron_calorimeter_parent_Box_pos = -hcal_back_dz/2.0
 back_start_scint_x = -hcal_back_dx/2.
 back_start_scint_y = -hcal_back_dy/2.
 
+version = 14
+
 # Solids
 back_hcal_absoBox = {"width": hcal_back_dx,
                      "height": hcal_back_dy,
@@ -74,32 +76,38 @@ vertical_scint_physvols = []
 distance_to_subsequent_absorber_layer = hcal_back_layer_thick
 distance_to_subsequent_scint_layer = 2*hcal_back_layer_thick
 
-for i in range(1, hcal_back_numLayers + 1, 2):
+for i in range(1, int((hcal_back_numLayers)/2)+1):
     # absorbers
     absorber_physvols.append(physical_volume(position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i-1)],
 				             name="back_hcal_abso_physvol",
                                              CopyNumber=i))
 
     # scintillators (horizontal parity = 1 - layers with odd parity (1) have horizontal strips)
-    for j in range(1, hcal_back_numScint + 1, 1):
+    for j in range(0, hcal_back_numScint, 1):
         horizontal_scint_physvols.append(physical_volume(position=[ 0,
-                                                                    back_starty_scint + (j-1)*scint_width,
+                                                                    back_starty_scint + (j)*scint_width,
                                                                     back_start_scint + (i-1)*hcal_back_layer_thick],
                                                          name="back_hcal_scint_physvol",
-                                                         CopyNumber=100*hcal_back_numLayers*hcal_back_numScint + 100*i + j))
-
-    absorber_physvols.append(physical_volume(position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i)],
+                                                         #CopyNumber=40*(i-1) + j)
+                                                         CopyNumber=version*256*256*256 + 0*256*256 + (i)*256 + j
+                                                         )
+                                         )
+        
+        absorber_physvols.append(physical_volume(position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i)],
 				             name="absorber_physvol",
                                              CopyNumber=i+1))
 
-    for j in range(1, hcal_back_numScint + 1, 1):
-        vertical_scint_physvols.append(physical_volume(position=[ back_startx_scint + (j-1)*scint_width,
+    for j in range(0, hcal_back_numScint, 1):
+        vertical_scint_physvols.append(physical_volume(position=[ back_startx_scint + (j)*scint_width,
                                                                   0,
                                                                   back_start_scint + (i-1)*hcal_back_layer_thick],
                                                        name="back_hcal_scint_physvol",
-                                                       CopyNumber=200*hcal_back_numLayers*hcal_back_numScint + 100*i + j))
-    
-    
+                                                       #CopyNumber=2000+40*(i-1) + j)
+                                                       CopyNumber=version*256*256*256 + 0*256*256 + (i+1)*256 +	(j+100)
+                                                       )
+                                                       
+                                       )
+
 def absorber_copynumbers():
     return [absorber_physvols[i].CopyNumber
             for i in range(0, hcal_back_numLayers)]
@@ -126,10 +134,10 @@ def horizontal_scint_copynumbers():
         copy_num.append(copy_num_layer)
     return copy_num
 
-print('Copy numbers')
-print('Absorber: ',absorber_copynumbers())
-print('Horizontal scintillator: ',horizontal_scint_copynumbers())
-print('Vertical scintillator: ',vertical_scint_copynumbers())
+#print('Copy numbers')
+#print('Absorber: ',absorber_copynumbers())
+#print('Horizontal scintillator: ',horizontal_scint_copynumbers())
+#print('Vertical scintillator: ',vertical_scint_copynumbers())
 
 # check that values are not repeated
 horizontal = np.array(horizontal_scint_copynumbers())
