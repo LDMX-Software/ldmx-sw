@@ -59,93 +59,55 @@
 <!-- Stereo Angle = 100 mrad = 5.72 degrees -->
 <variable name="stereo_angle" value="5.72957795130823"/>
 
-<!-- module and sensor dimensions -->
+<!-- HPS module and sensor dimensions -->
 <variable name="si_sensor_thickness" value="0.32*mm"/>
 <variable name="si_active_sensor_dx" value="38.3399*mm" />
 <variable name="si_active_sensor_dy" value="98.33*mm" />
 <variable name="si_sensor_dx" value="40.34*mm" />
 <varibale name="si_sensor_dy" value="100.0*mm" />
 
-<!-- 
-    Recoil tracker.
--->
-
-<!-- 
-  Recoil tracker parent volume dimensions. In x/y, these are set 5 mm smaller 
-  than the magnet gap defined in magnet.gdml in order to avoid overlaps. The 
-  magnet gaps were extracted from the drawing of the magnet obtained from JLab.
--->
-<constant name="recoil_envelope_x" value="magnet_gap_dx - 5" />
-<constant name="recoil_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="recoil_envelope_z" value="200*mm" />
-
-<!-- Recoil tracker z positions relative to the parent volume --> 
-<!-- Layer distance from target: 
-    1: 7 mm
-    2: 13 mm
-    3: 22 mm
-    4: 28 mm
-    5: 37 mm
-    6: 43 mm
-    7: 52 mm
-    8: 58 mm
-    9: 92 mm
-   10: 182 mm
--->
-<constant name="recoil_delta_l1_l4" value="15" />
-<constant name="recoil_delta_l4_l5" value="37" />
-<constant name="recoil_delta_l5_l6" value="90" />
-<variable name="recoil_l1_mid_z" value="5.5   - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l2_mid_z" value="recoil_l1_mid_z + recoil_delta_l1_l4"  />  
-<variable name="recoil_l3_mid_z" value="recoil_l2_mid_z + recoil_delta_l1_l4"  />  
-<variable name="recoil_l4_mid_z" value="recoil_l3_mid_z + recoil_delta_l1_l4" />  
-<variable name="recoil_l5_mid_z" value="recoil_l4_mid_z + recoil_delta_l4_l5" />  
-<variable name="recoil_l6_mid_z" value="recoil_l5_mid_z + recoil_delta_l5_l6" />  
-
-<matrix name="recoil_layer_pos" coldim="1" values="recoil_l1_mid_z
-                                                   recoil_l2_mid_z
-                                                   recoil_l3_mid_z
-                                                   recoil_l4_mid_z
-                                                   recoil_l5_mid_z
-                                                   recoil_l6_mid_z" />
-
-<!-- Separation between sensors in a layer -->
-<variable name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
-<variable name="recoil_sensor_l5_6_sep" value="1.0*mm"/>
-
-<!--
-    Tagger Tracker 
--->
-
-<!-- Tracker tracker distances relative to the parent volume -->
-<!-- 
-    20 cm between recoil l1 mid and tagget l7 mid
-    Distance from target to mid point of a module. 
-    Layer 1: 10 mm
-    Layer 2: 110 mm
-    Layer 3: 210 mm
-    Layer 4: 310 mm
-    Layer 5: 410 mm
-    Layer 6: 510 mm
-    Layer 7: 610 mm
- --> 
-<constant name="tagger_layer_delta" value="100" />
-<variable name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
-<variable name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_layer_delta"/>
-<variable name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_layer_delta"/>
-<variable name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_layer_delta"/>
-<variable name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_layer_delta"/>
-<variable name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_layer_delta"/>
-<variable name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_layer_delta"/>
-
-<!-- offset in Z between stereo sensors -->
-<variable name="tagger_layer_offset" value="3.0*mm"/>
+<!-- Large module and sensor dimensions --> 
+<variable name="si_large_active_sensor_dx" value="48*mm" />
+<variable name="si_large_active_sensor_dy" value="78*mm" />
+<variable name="si_large_sensor_dx" value="50*mm" />
+<varibale name="si_large_sensor_dy" value="80*mm" />
 
 <!-- 
   Clearance between the first/last sensor in the tagger tracker and the 
   upstream/downstream faces of the tagger envelope.
 -->
-<variable name="tagger_envelope_clearance" value="2.5*mm" />
+<variable name="tracker_envelope_clearance" value="2.5*mm" />
+
+<!-- 
+    Recoil tracker.
+-->
+
+<!-- Separation between sensors in a layer -->
+<constant name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
+<constant name="recoil_sensor_l5_6_sep" value="1.0*mm"/>
+
+<!-- Seperation between layers --> 
+<constant name="recoil_delta_l1_l4" value="15*mm" />
+<constant name="recoil_delta_l4_l5" value="37*mm" />
+<constant name="recoil_delta_l5_l6" value="90*mm" />
+
+<!-- Recoil envelope dimensions --> 
+<constant name="recoil_envelope_dx" value="magnet_gap_dx" />
+<constant name="recoil_envelope_dy" value="magnet_gap_dy" />
+<variable name="recoil_envelope_dz" 
+    value="tracker_envelope_clearance*2 + recoil_delta_l1_l4*3 + recoil_delta_l4_l5 + recoil_delta_l5_l6" />
+
+<!--
+    Tagger Tracker 
+-->
+
+<!-- Seperation between sensors in a layer -->
+<variable name="tagger_layer_offset" value="3.0*mm"/>
+
+<!-- Seperation between layers --> 
+<variable name="tagger_layer_delta" value="100*mm" /> 
+
+<!-- Tagger envelope dimensions --> 
 <variable name="tagger_envelope_dx" value="magnet_gap_dx" />
 <variable name="tagger_envelope_dy" value="magnet_gap_dy" />
 <!-- 
@@ -153,7 +115,7 @@
   either side 
 -->
 <variable name="tagger_envelope_dz" 
-    value="tagger_envelope_clearance*2 + tagger_layer_offset*6" />
+    value="tracker_envelope_clearance*2 + tagger_layer_delta*6" />
 
 <!--
     HCal 
