@@ -28,6 +28,34 @@ HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
 
 HcalSD::~HcalSD() {}
 
+ldmx::HcalID decodeCopyNumber(const std::uint32_t copyNumber,
+                              const G4ThreeVector& localPosition,
+                              const G4Box* scint) {
+  const int version{copyNumber / 0x01000000};
+  if (version != 0) {
+    PackedIndex<256, 256, 256> index{copyNumber};
+    return ldmx::HcalID{index.field2(), index.field1(), index.field0()};
+  } else {
+    const auto& hcalGeometry{getCondition<ldmx::HcalGeometry>(
+                                                              ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME)};
+    int stripID{-1};
+
+    const int section = copyNumber / 1000;
+    const int layer = copyNumber % 1000;
+    // 5cm wide bars are HARD-CODED
+    if (section == ldmx::HcalID::BACK) {
+      if (hcalGeometry.layerIsHorizontal(layer)) {
+        stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+      } else {
+        stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+      }
+    } else {
+      stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
+    }
+    return ldmx::HcalID{section, layer, stripID};
+  }
+}
+  
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -115,38 +143,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
                     ->GetHistory()
                     ->GetVolume(2)
                     ->GetCopyNo();
-  int section = copyNum / 1000;
-  int layer = copyNum % 1000;
-
-  // stripID: back Hcal, segmented along y direction for now every 10 cm --
-  // alternate x-y in the future?
-  //         left/right side hcal: segmented along x direction every 10 cm
-  //         top/bottom side hcal: segmented along y direction every 10 cm
-
-  int stripID = -1;
-  // 5cm wide bars are HARD-CODED
-  const auto& hcalGeometry{getCondition<ldmx::HcalGeometry>(ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME)};
-  if (section == ldmx::HcalID::BACK) {
-    if (hcalGeometry.layerIsHorizontal(layer)) {
-      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-    } else {
-      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
-    }
-  } else {
-    stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
-  }
-
-  // std::cout << "---" << std::endl;
-  // std::cout << "GetXHalfLength = " << scint->GetXHalfLength() << "\t
-  // GetYHalfLength = " << scint->GetYHalfLength() << "\t GetZHalfLength = " <<
-  // scint->GetZHalfLength() << std::endl; std::cout << "xpos = " <<
-  // localPosition.x() << "\t ypos = " << localPosition.y() << "\t zpos = " <<
-  // localPosition.z() << std::endl; std::cout << "xpos_g = " << position.x() <<
-  // "\t ypos_g = " << position.y() << "\t zpos_g = " << position.z() <<
-  // std::endl; std::cout << "Layer = " << layer << "\t section = " << section
-  // << "\t strip = " << stripID << std::endl;
-
-  ldmx::HcalID id(section, layer, stripID);
+  ldmx::HcalID id = decodeCopyNumber(copyNum, localPosition, scint);
   hit.setID(id.raw());
 
   // add one contributor for this hit with
