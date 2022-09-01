@@ -3,7 +3,6 @@
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
       xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
   <define>      
     &constants;
@@ -11,18 +10,26 @@
     <variable name="i" value="1" /> 
 
     <!-- layering start position in envelope volume -->
-    <variable name="recoil_envelope_up_face_z" value="-(recoil_envelope_z/2)" />
+    <variable name="recoil_envelope_up_face_z" value="-(recoil_envelope_dz/2)" />
 
     <!-- Position in z of each sensor in the local coordinates of the envelope volume --> 
     <variable name="recoil_l1_z"  value="recoil_envelope_up_face_z + tracker_envelope_clearance"/>
+    <matrix name="recoil_layer_z" coldim="1" values=" recoil_l1_z
+                                                      (recoil_l1_z+recoil_delta_l1_l4)
+                                                      (recoil_l1_z+2*recoil_delta_l1_l4)
+                                                      (recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l4_l5)
+                                                      (recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l5_l6+recoil_delta_l5_l6)" /> 
+
+ 
+    <!--  
     <variable name="recoil_l1_down_z"  value="recoil_l1_z + recoil_sensor_l1_4_sep/2" />
     <variable name="recoil_l1_up_z"  value="recoil_l1_z - recoil_sensor_l1_4_sep/2" />
-    
+
     <loop for="i" to="3" step="1">
       <variable name="recoil_l[i+1]_z" value="recoil_l[i]_z + recoil_delta_l1_l4" />
       <variable name="recoil_l[i+1]_down_z" value="recoil_l[i+1]_z + recoil_sensor_l1_4_sep/2" /> 
       <variable name="recoil_l[i+1]_up_z" value="recoil_l[i+1]_z - recoil_sensor_l1_4_sep/2" /> 
-    </loop> 
+    </loop>  
     
     <variable name="recoil_l5_z"  value="recoil_l4_z + recoil_delta_l4_l5"/>
     <variable name="recoil_l5_down_z"  value="recoil_l5_z + recoil_sensor_l5_6_sep/2" />
@@ -30,7 +37,7 @@
 
     <variable name="recoil_l6_z"  value="recoil_l5_z + recoil_delta_l5_l6"/>
     <variable name="recoil_l6_down_z"  value="recoil_l6_z + recoil_sensor_l5_6_sep/2" />
-    <variable name="recoil_l6_up_z"  value="recoil_l6_z - recoil_sensor_l5_6_sep/2" />
+    <variable name="recoil_l6_up_z"  value="recoil_l6_z - recoil_sensor_l5_6_sep/2" /> --> 
 
     <matrix name="recoil_l56_xy" coldim="2" values=" 96.0  40.0
                                                     48.0  40.0
@@ -54,6 +61,7 @@
   </solids>
 
   <structure>
+    <!-- 
     <volume name="recoil_l1_l4_active_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l1_l4_active_sensor_box"/>
@@ -124,7 +132,7 @@
 
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      
-    </volume>    
+    </volume> -->    
   </structure>
 
   <setup name="Default" version="1.0">
