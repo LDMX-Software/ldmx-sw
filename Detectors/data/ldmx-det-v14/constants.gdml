@@ -170,9 +170,18 @@
 <variable name="hcal_back_dz3"     value="back_numLayers3*back_layer3_thick"/>
 <variable name="hcal_back_dz"      value="hcal_back_dz1 + hcal_back_dz2 + hcal_back_dz3"/>
 
-<!-- Side HCal Layer component -->
+<!-- 
+  Side HCal Layer component 
+
+  The number of side layers is determined by the overall envelope
+  we are using, the thickness of each layer, and the transverse
+  dimensions of the ECal.
+
+  With envelope set to 3100mm, ECal (dy,dx) set to (880,600), and thickness
+  of each layer set to 44mm, we get 25 LR layers and 28 TB layers.
+-->
 <variable name="sideTB_layers"     value="28"/>
-<variable name="sideLR_layers"     value="26"/>
+<variable name="sideLR_layers"     value="25"/>
 <variable name="side_abso_thick"   value="20."/>
 
 <!-- side_dz has to be greater than side_Ecal_dz -->
