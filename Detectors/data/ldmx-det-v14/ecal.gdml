@@ -45,11 +45,11 @@
 
       the support box is not symmetric in the vertical direction so
       center on the central cavern with
-        y="-12.7-(520.7-12.7)/2."
+        y="-520.7/2.-support_box_shift"
     -->
     <position name="support_box_pos" unit="mm" 
       x="-880.6815/2." 
-      y="-12.7-(520.7-12.7)/2."
+      y="-520.7/2.-support_box_shift"
       z="-300-102.616"/>
 
     <!--
@@ -61,7 +61,7 @@
     -->
     <variable name="strongback_pos_x" value="1.8 + 0.6815/2." />
     <variable name="strongback_pos_y" 
-      value="CarbonCoolingPlane_dy/2. + 12.7 + 12.7/2. + strongback_bar_dy/2."/>
+      value="CarbonCoolingPlane_dy/2. + strongback_bar_dy/2. + 12.7/2."/>
 
     <!--
       The rotations and shifts putting the motherboards from their CAD exported coordinates into
@@ -81,13 +81,13 @@
     <rotation name="motherboard5_rotation" unit="deg" x="90" y="0" z="0"/>
     <position name="motherboard5_position_rel_to_layer" unit="mm" 
       x="-(Hex_radius+hexagon_gap)-(247.8682)"
-      y="-408.2065/2" 
+      y="-408.2065/2"
       z="MotherBoardAssembly_dz/2"/>
 
     <rotation name="motherboard6_rotation" unit="deg" x="90" y="180" z="0"/>
     <position name="motherboard6_position_rel_to_layer" unit="mm" 
       x="(Hex_radius+hexagon_gap)+(255.2361)"
-      y="242.1649" 
+      y="242.1649"
       z="MotherBoardAssembly_dz/2"/>
 
     <!-- 
@@ -643,13 +643,13 @@
       -->
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
-        <position name="PCB_PS_motherboard_physvol0_pos" unit="mm" x="0" y="0" 
+        <position name="PCB_PS_motherboard_physvol0_pos" unit="mm" x="0" y="-support_box_shift" 
           z="bilayer_start + FrontTolerance + MotherBoardAssembly_dz/2."/>
       </physvol>
 
       <physvol copynumber="7*0+0">
         <volumeref ref="EvenHexaboard"/>
-        <position name="PS_flower_pos0" unit="mm" x="0" y="0" 
+        <position name="PS_flower_pos0" unit="mm" x="0" y="-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap"/>
       </physvol>
       <loop for="module" from="1" to="7" step="1">
@@ -657,7 +657,7 @@
           <volumeref ref="EvenHexaboard"/>
           <position name="PS_flower[module]" unit="mm"
             x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
-            y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            y="- support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap" />
         </physvol>
       </loop>
@@ -685,14 +685,14 @@
       -->
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
-        <position name="PS_carbon_pos" unit="mm" x="0" y="0" 
+        <position name="PS_carbon_pos" unit="mm" x="0" y="-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
             + preshower_extra_air + CarbonCoolingPlane_dz/2."/>
       </physvol>
 
       <physvol copynumber="7*1+0">
         <volumeref ref="OddHexaboard"/>
-        <position name="PS_flower_pos1" unit="mm" x="shift_x" y="shift_y" 
+        <position name="PS_flower_pos1" unit="mm" x="shift_x" y="shift_y-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
             + preshower_extra_air + CarbonCoolingPlane_dz"/>
       </physvol>
@@ -701,7 +701,7 @@
           <volumeref ref="OddHexaboard"/>
           <position name="PS_flower[module]" unit="mm"
             x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
-            y="shift_y - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
               + preshower_extra_air + CarbonCoolingPlane_dz"/>
         </physvol>
@@ -710,7 +710,7 @@
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
         <rotationref ref="flip"/>
-        <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="0" 
+        <position name="PCB_PS_motherboard_pos1" unit="mm" x="0" y="-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
             + preshower_extra_air + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap 
             + preshower_extra_air + PCB_dz - MotherBoardAssembly_dz/2."/>
@@ -726,7 +726,7 @@
       <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
         <physvol>
           <volumeref ref="W_front_volume[bilayer]"/>
-          <position name="W_front_volume[bilayer]" unit="mm" x="0" y="0" 
+          <position name="W_front_volume[bilayer]" unit="mm" x="0" y="-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
@@ -735,7 +735,7 @@
 
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
-          <position name="PCB_motherboard_pos0[bilayer]" unit="mm" x="0" y="0" 
+          <position name="PCB_motherboard_pos0[bilayer]" unit="mm" x="0" y="-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
@@ -745,7 +745,7 @@
 
         <physvol copynumber="14*bilayer+0">
           <volumeref ref="EvenHexaboard"/>
-          <position name="flower_center[bilayer]" unit="mm" x="0" y="0" 
+          <position name="flower_center[bilayer]" unit="mm" x="0" y="-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
@@ -758,7 +758,7 @@
             <volumeref ref="EvenHexaboard"/>
             <position name="flower_petal[bilayer][module]" unit="mm"
               x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
-              y="- (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+              y="- support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
               z="bilayer_start + sampling_section_offset
                 + bilayer_noabsorber_thickness*bilayer 
                 + bilayer_absorber_cumulative[bilayer]
@@ -770,7 +770,7 @@
 
         <physvol>
           <volumeref ref="W_cooling_volume[bilayer]"/>
-          <position name="W_cooling_volume_pos0[bilayer]" unit="mm" x="0" y="0" 
+          <position name="W_cooling_volume_pos0[bilayer]" unit="mm" x="0" y="-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
@@ -799,7 +799,7 @@
 
         <physvol>
           <volumeref ref="C_volume_CarbonCoolingPlane"/>
-          <position name="carbon_pos[bilayer]" unit="mm" x="0" y="0" 
+          <position name="carbon_pos[bilayer]" unit="mm" x="0" y="-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
@@ -811,7 +811,8 @@
   
         <physvol>
           <volumeref ref="W_cooling_volume[bilayer]"/>
-          <position name="W_cooling_volume_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
+          <position name="W_cooling_volume_pos1[bilayer]" unit="mm" 
+            x="shift_x" y="shift_y-support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer 
               + bilayer_absorber_cumulative[bilayer]
@@ -824,7 +825,7 @@
         <physvol copynumber="14*bilayer+1+0">
           <volumeref ref="OddHexaboard"/>
           <position name="odd_flower_center[bilayer]" unit="mm" 
-            x="shift_x" y="shift_y" 
+            x="shift_x" y="shift_y - support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
@@ -838,7 +839,7 @@
             <volumeref ref="OddHexaboard"/>
             <position name="odd_flower_petal[bilayer][module]" unit="mm"
               x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
-              y="shift_y - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+              y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
               z="bilayer_start + sampling_section_offset 
                 + bilayer_noabsorber_thickness*bilayer
                 + bilayer_absorber_cumulative[bilayer]
@@ -852,7 +853,8 @@
         <physvol>
           <volumeref ref="PCB_motherboard_volume"/>
           <rotationref ref="flip"/>
-          <position name="PCB_motherboard_pos1[bilayer]" unit="mm" x="shift_x" y="shift_y" 
+          <position name="PCB_motherboard_pos1[bilayer]" unit="mm" 
+            x="shift_x" y="shift_y - support_box_shift" 
             z="bilayer_start + sampling_section_offset
               + bilayer_noabsorber_thickness*bilayer
               + bilayer_absorber_cumulative[bilayer]
