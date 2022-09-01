@@ -369,6 +369,13 @@ This value is in mm
 <variable name="shift_x" value="2*Hex_radius/n_cellR_height"/>
 <variable name="shift_y" value="0."/>
 
+<!--
+  The support box is assymetric in the y-direction so everything
+  inside it needs to be shifted down by this amount and everything
+  outside of it needs to be shifted up by this amount.
+-->
+<variable name="support_box_shift" value="12.7*1.5" />
+
 <!-- 
   ECal width and height 
 
