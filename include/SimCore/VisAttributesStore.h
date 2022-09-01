@@ -50,7 +50,12 @@ class VisAttributesStore {
    * @return The vis attributes or <i>nullptr</i> if does not exist.
    */
   G4VisAttributes* getVisAttributes(const std::string& name) {
-    return visAttributesMap_.at(name);
+    try {
+      return visAttributesMap_.at(name);
+    } catch (const std::out_of_range& oor) {
+      G4cout << "[ WARN ] : VisAttribute '" << name 
+        << "' not recognized. Ignoring." << G4endl;
+    }
   }
 
   /**
