@@ -612,12 +612,6 @@
                           Motherboard Gap
                           Motherboard
                           Back Tolerance Gap
-
-      TODO Questions:
-        - Is there an aluminum pre-shower absorbing layer? Or is the first bilayer
-          simply "bare front" without the double absorber?
-        ANSWER: The aluminum at the front is part of the support box. There is a first
-          bilayer without any absorber.
     -->
     <volume name="em_calorimeters">
       <materialref ref="G4_AIR"/>
