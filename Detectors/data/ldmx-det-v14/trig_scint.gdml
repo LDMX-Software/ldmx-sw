@@ -94,7 +94,7 @@
 
             <auxiliary auxtype="Region" auxvalue="trig_scint" />
             <auxiliary auxtype="VisAttributes" auxvalue="VisibleShowDau"/>
-            <auxiliary auxtype="DetElem" auxvalue="trig_scint"/>
+            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 
         </volume>
 
