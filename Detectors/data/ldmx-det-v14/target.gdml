@@ -31,6 +31,12 @@
 
     <materials>
 
+      	<material name="Vacuum" state="gas">
+          <MEE unit="eV" value="19.2"/>
+          <D unit="g/cm3" value="9.99999473841014e-09"/>
+          <fraction n="1" ref="H"/>
+        </material>
+      
         <!-- Target --> 
         <material name="Tungsten" state="solid">
             <MEE unit="eV" value="727"/>
@@ -91,20 +97,6 @@
                     <position name="trigger_pad_up_bar_layer2_pos" unit="mm" x="0" 
                               y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
                               z="trigger_pad_up_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity" />
-                </physvol>
-                <physvol copynumber="2*x-2">
-                    <volumeref ref="trigger_pad_dn_bar_volume" />
-                    <position name="trigger_pad_dn_bar_layer1_pos" unit="mm" x="0" 
-                              y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                              z="trigger_pad_down_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity" />
-                </physvol>
-                <physvol copynumber="2*x - 1">
-                    <volumeref ref="trigger_pad_dn_bar_volume"/>
-                    <position name="trigger_pad_dn_bar_layer2_pos" unit="mm" x="0" 
-                              y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                              z="trigger_pad_down_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
                     <rotationref ref="identity" />
                 </physvol>
             </loop>
