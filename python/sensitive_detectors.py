@@ -138,10 +138,10 @@ class TrigScintSD(simcfg.SensitiveDetector) :
         return TrigScintSD(2,'Up','trigger_pad_up_bar_volume')
 
     def tag() :
-        return TrigScintSD(1,'Tagger','trigger_pad_tag_bar_volume')
+        return TrigScintSD(1,'TaggerA','trigger_pad_taggerA_bar_volume')
 
     def down() :
-        return TrigScintSD(3,'Down','trigger_pad_dn_bar_volume')
+        return TrigScintSD(3,'TaggerB','trigger_pad_taggerB_bar_volume')
 
     def target() :
         return TrigScintSD(4,'Target','target')
