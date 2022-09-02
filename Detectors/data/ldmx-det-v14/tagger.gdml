@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
@@ -60,10 +60,6 @@
         <variable name="tagger_l7_z1" value="tagger_l7_z - tagger_layer_offset"/>
         <variable name="tagger_l7_z2" value="tagger_l7_z + tagger_layer_offset"/>
 
-        <!-- Position of parent volume of trigger pad upstream of tagger tracker. --> 
-        <variable name="trigger_pad_tag_z"    
-                  value="tagger_l1_z1 - clearance - trigger_pad_thickness/2 - 3" />
-
     </define>
 
     <materials>
@@ -74,6 +70,23 @@
             <composite n="27" ref="C"/>
             <composite n="30" ref="H"/>
         </material>
+	<!-- tracker -->
+	<material name="Silicon" state="solid">
+          <MEE unit="eV" value="173"/>
+          <D unit="g/cm3" value="2.32999877404956"/>
+          <fraction n="1" ref="Si"/>
+        </material>
+	<material name="Carbon" state="solid">
+          <MEE unit="eV" value="81"/>
+          <D unit="g/cm3" value="1.99999894768203"/>
+          <fraction n="1" ref="C"/>
+        </material>
+	<material name="Vacuum" state="gas">
+          <MEE unit="eV" value="19.2"/>
+          <D unit="g/cm3" value="9.99999473841014e-09"/>
+          <fraction n="1" ref="H"/>
+        </material>
+
 
     </materials>
 
@@ -84,10 +97,6 @@
         <box lunit="mm" name="LDMXTaggerModuleBox" x="tagger_module_x" y="tagger_module_y" z="half_module_thickness"/>            
         <box lunit="mm" name="tagger_box" x="tagger_envelope_x" y="tagger_envelope_y" z="tagger_envelope_z"/> 
     
-        <!-- Trigger scintillator --> 
-        <box lunit="mm" name="trigger_pad_tag_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>  
-        <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
-
     </solids>
 
     <structure>
@@ -126,14 +135,6 @@
             <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis"/>
         </volume>
         
-        <volume name="trigger_pad_tag_bar_volume">
-            <materialref ref="Polyvinyltoluene"/>
-            <solidref ref="trigger_bar_box"/>
-            <auxiliary auxtype="SensDet" auxvalue="TriggerPadTaggerSD"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
-            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
-        </volume>  
-
         <!-- define tagger physical volumes inside envelope volume -->
         <volume name="tagger">
             <materialref ref="Vacuum"/>
@@ -209,23 +210,6 @@
                 <position name="LDMXTaggerModuleVolume_physvol14_pos" unit="mm" x="tagger_l7_x" y="0" z="tagger_l7_z2"/>
                 <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
             </physvol>
-
-            <loop for="x" to="number_of_bars" step="1">
-                <physvol copynumber="2*x-2">
-                    <volumeref ref="trigger_pad_tag_bar_volume"/>
-                    <position name="trigger_pad_tag_bar_layer1_pos" unit="mm" x="-21.318" 
-                              y="-target_dim_y/2 + trigger_bar_dy*(x-0.5) + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
-                              z="trigger_pad_tag_z-trigger_pad_bar_thickness/2-trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity"/>
-                </physvol>
-                <physvol copynumber="2*x - 1">
-                    <volumeref ref="trigger_pad_tag_bar_volume"/>
-                    <position name="trigger_pad_tag_bar_layer2_pos" unit="mm" x="-21.318" 
-                              y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
-                              z="trigger_pad_tag_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity"/>
-                </physvol>
-            </loop> 
 
             <auxiliary auxtype="Region" auxvalue="tagger" />
             <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
