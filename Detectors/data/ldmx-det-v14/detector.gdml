@@ -9,6 +9,14 @@
         &constants;   
 
         <!-- 
+            Trigger scintillator parent volume position relative to the target 
+            ???? mm. The end of the parent volume relative to the target
+            is at ?????. This gives a ???? mm clearance between the upstream.
+	    There are now two TS modules upstream of the tagger tracker.  
+	--> 
+        <variable name="trig_scint_pos_z" value="-trig_scint_area_envelope_z/2 - tagger_envelope_z - clearance" /> 
+	
+	<!-- 
             Tagger tracker parent volume position relative to the target 
             -433.1772 mm. The end of the parent volume relative to the target
             is at -4.6772. This gives a 0.001 mm clearance between the upstream
@@ -23,8 +31,7 @@
             downstream trigger scintillator and the recoil tracker parent 
             volume.
         -->
-        <variable name="recoil_pos_z" value="trigger_pad_down_z + trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
-
+        <variable name="recoil_pos_z" value="trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
         <!-- Position of the ECal and HCal parent volumes -->
         <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
@@ -37,6 +44,7 @@
              Note: The position of the target is defined at the center i.e. 
              x = y = z = 0 mm.     
         -->
+	<position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
         <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
@@ -100,18 +108,18 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-            
+
             <physvol copynumber="1">
                 <file name="tagger.gdml"/>
                 <positionref ref="tagger_pos"/>
                 <rotationref ref="identity"/>
             </physvol> 
 
-            <physvol copynumber="2">
-                <file name="target.gdml"  />
-                <positionref ref="center" />
-                <rotationref ref="identity"   /> 
-            </physvol>
+            <!-- <physvol copynumber="2"> -->
+            <!--     <file name="target.gdml"  /> -->
+            <!--     <positionref ref="center" /> -->
+            <!--     <rotationref ref="identity"   /> -->
+            <!-- </physvol> -->
 
             <physvol copynumber="5">
                 <file name="recoil.gdml"/>
@@ -128,7 +136,12 @@
                 <file name="hcal.gdml"/> 
                 <positionref ref="hadron_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol>  
+            </physvol>
+	    <physvol copynumber="8">
+	      <file name="trig_scint.gdml"/>
+	      <positionref ref="trig_scint_pos"/>
+	      <rotationref ref="identity"/>
+	    </physvol>
             <physvol>
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 

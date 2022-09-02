@@ -40,7 +40,26 @@
 
     </define>
 
-    <materials/>
+    <materials>
+
+	<!-- tracker -->
+	<material name="Silicon" state="solid">
+          <MEE unit="eV" value="173"/>
+          <D unit="g/cm3" value="2.32999877404956"/>
+          <fraction n="1" ref="Si"/>
+        </material>
+	<material name="Carbon" state="solid">
+          <MEE unit="eV" value="81"/>
+          <D unit="g/cm3" value="1.99999894768203"/>
+          <fraction n="1" ref="C"/>
+        </material>
+	<material name="Vacuum" state="gas">
+          <MEE unit="eV" value="19.2"/>
+          <D unit="g/cm3" value="9.99999473841014e-09"/>
+          <fraction n="1" ref="H"/>
+        </material>
+
+    </materials>
 
     <solids>
         <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32"/>
