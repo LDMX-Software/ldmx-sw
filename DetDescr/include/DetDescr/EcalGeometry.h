@@ -132,6 +132,22 @@ class EcalGeometry : public framework::ConditionsObject {
   EcalID getID(double x, double y, int layer_id) const;
 
   /**
+   * Get a cell's ID from its x,y global position and layer/module numbers
+   * as deduced from GDML copy numbers.
+   *
+   * This is the fastest option but we need to carefully validated that the
+   * layer and module positions between the GDML and the configured parameters
+   * of this class match.
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] layer_id integer ID of the layer the hit is in
+   * @param[in] module_id integer ID of the module the hit is in
+   * @return EcalID of the cell
+   */
+  EcalID getID(double x, double y, int layer_id, int module_id) const;
+
+  /**
    * Get a cell's position from its ID number
    *
    * std::tuple is useful here because you can use C++17's pattern
@@ -506,10 +522,12 @@ class EcalGeometry : public framework::ConditionsObject {
   std::map<int, std::tuple<double,double,double>> layer_pos_xy_;
 
   /**
-   * Postion of module centers relative to the p,q axes ("flower" axes) 
+   * Postion of module centers relative to the center of the layer
+   * in world coordinates
+   *
    * (uses module ID as key)
    */
-  std::map<int, std::pair<double, double>> module_pos_pq_;
+  std::map<int, std::pair<double, double>> module_pos_xy_;
 
   /**
    * Position of cell centers relative to center of module in
