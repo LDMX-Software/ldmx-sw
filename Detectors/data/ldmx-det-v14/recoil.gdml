@@ -14,12 +14,23 @@
 
     <!-- Position in z of each sensor in the local coordinates of the envelope volume --> 
     <variable name="recoil_l1_z"  value="recoil_envelope_up_face_z + tracker_envelope_clearance"/>
-    <matrix name="recoil_layer_z" coldim="1" values=" recoil_l1_z
-                                                      (recoil_l1_z+recoil_delta_l1_l4)
-                                                      (recoil_l1_z+2*recoil_delta_l1_l4)
-                                                      (recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l4_l5)
-                                                      (recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l5_l6+recoil_delta_l5_l6)" /> 
+    <matrix name="recoil_layer_z" coldim="1" 
+            values=" recoil_l1_z
+                     recoil_l1_z+recoil_delta_l1_l4
+                     recoil_l1_z+2*recoil_delta_l1_l4
+                     recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l4_l5
+                     recoil_l1_z+2*recoil_delta_l1_l4+recoil_delta_l5_l6+recoil_delta_l5_l6" /> 
 
+    <matrix name="recoil_l56_xy" coldim="2" values=" 96.0  40.0
+                                                     48.0  40.0
+                                                     0.0   40.0
+                                                    -48.0  40.0
+                                                    -96.0  40.0
+                                                     96.0 -40.0
+                                                     48.0 -40.0
+                                                     0.0  -40.0
+                                                    -48.0 -40.0
+                                                    -96.0 -40.0" /> 
  
     <!--  
     <variable name="recoil_l1_down_z"  value="recoil_l1_z + recoil_sensor_l1_4_sep/2" />
@@ -39,25 +50,21 @@
     <variable name="recoil_l6_down_z"  value="recoil_l6_z + recoil_sensor_l5_6_sep/2" />
     <variable name="recoil_l6_up_z"  value="recoil_l6_z - recoil_sensor_l5_6_sep/2" /> --> 
 
-    <matrix name="recoil_l56_xy" coldim="2" values=" 96.0  40.0
-                                                    48.0  40.0
-                                                     0.0  40.0
-                                                   -48.0  40.0
-                                                   -96.0  40.0
-                                                    96.0 -40.0
-                                                    48.0 -40.0
-                                                     0.0 -40.0
-                                                   -48.0 -40.0
-                                                   -96.0 -40.0" /> 
   </define>
 
   <solids>
-    <box lunit="mm" name="recoil_l1_l4_active_sensor_box" x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
-    <box lunit="mm" name="recoil_l1_l4_sensor_box" x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
-    <box lunit="mm" name="recoil_l5_l6_active_sensor_box" x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
-    <box lunit="mm" name="recoil_l5_l6_sensor_box" x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
-    <box lunit="mm" name="recoil_box" x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_envelope_dz"/>
-    <box lunit="mm" name="recoil_box" x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_envelope_dz"/>
+    <box lunit="mm" name="recoil_l14_active_sensor_box" 
+         x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="recoil_l14_sensor_box" 
+         x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
+     
+    <box lunit="mm" name="recoil_l56_active_sensor_box" 
+         x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="recoil_l56_sensor_box" 
+         x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
+     
+    <box lunit="mm" name="recoil_box" 
+         x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_envelope_dz"/>
   </solids>
 
   <structure>
