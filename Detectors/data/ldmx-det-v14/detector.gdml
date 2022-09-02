@@ -174,9 +174,9 @@
             <auxiliary auxtype="LayerDepth" auxvalue="1"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
         </auxiliary>    
-        <auxiliary auxtype="SensDet" auxvalue="TriggerPadTaggerSD">
+        <auxiliary auxtype="SensDet" auxvalue="TriggerPadTaggerASD">
             <auxiliary auxtype="SensDetType" auxvalue="TrigScintSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadTaggerSimHits"/>
+            <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadTaggerASimHits"/>
             <auxiliary auxtype="SubdetID" auxvalue="1"/>
             <auxiliary auxtype="LayerDepth" auxvalue="1"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
@@ -188,9 +188,9 @@
             <auxiliary auxtype="LayerDepth" auxvalue="1"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
         </auxiliary>    
-        <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD">
+        <auxiliary auxtype="SensDet" auxvalue="TriggerPadTaggerBSD">
             <auxiliary auxtype="SensDetType" auxvalue="TrigScintSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadDownSimHits"/>
+            <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadTaggerBSimHits"/>
             <auxiliary auxtype="SubdetID" auxvalue="3"/>
             <auxiliary auxtype="LayerDepth" auxvalue="1"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
@@ -229,8 +229,11 @@
         </auxiliary>   
         <auxiliary auxtype="Region" auxvalue="MagnetRegion">
             <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
-        </auxiliary>
+        </auxiliary
         <auxiliary auxtype="Region" auxvalue="tagger" >
+            <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+        </auxiliary>
+	<auxiliary auxtype="Region" auxvalue="trig_scint" >
             <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
         </auxiliary>
         <auxiliary auxtype="Region" auxvalue="target" >
