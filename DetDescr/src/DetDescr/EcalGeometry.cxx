@@ -26,6 +26,24 @@ static double distance(const std::tuple<double,double,double>& p1,
       );
 }
 
+/**
+ * Rotation from (x,y) to (p,q)
+ */
+static void rotate(double& p, double& q) {
+  double tmp{p};
+  p = -q;
+  q = tmp;
+}
+
+/**
+ * Rotation from (p,q) to (x,y)
+ */
+static void unrotate(double& p, double& q) {
+  double tmp{p};
+  p = q;
+  q = -tmp;
+}
+
 EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
   layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
@@ -91,12 +109,6 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   // and convert to flower coordinates
   double p{x - std::get<0>(layer_pos_xy_.at(layer_id))}, 
          q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
-  if (cornersSideUp_) {
-    // need to rotate
-    double tmp{p};
-    p = q;
-    q = -tmp;
-  }
 
   // deduce module ID
   //  the hexagon center we are closest to is the module we are in
@@ -105,39 +117,48 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   //  another hexagon
 
   int module_id{-1};
-  double closest = 1e6;
-  for (auto const& [mid, module_pq] : module_pos_pq_) {
-    double dist = distance(std::make_pair(p,q), module_pq);
-    if (dist < moduler_) {
+  for (auto const& [mid, module_xy] : module_pos_xy_) {
+    if (isInside((p-module_xy.first)/moduleR_, (q-module_xy.second)/moduleR_)) {
       module_id = mid;
       break;
     }
-    if (dist < closest) {
-      module_id = mid;
-      closest = dist;
-    }
   }
+
 
   if (module_id < 0) {
     EXCEPTION_RAISE("BadConf",
-        "Unable to deduce module relative to layer");
+        TString::Format("Coordinates relative to layer (p,q) = (%.2f, %.2f) mm "
+          "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+          "are not inside any module.",
+          p,q,x,y,layer_id).Data());
   }
 
-  // shift to center of deduced module
-  p -= module_pos_pq_.at(module_id).first;
-  q -= module_pos_pq_.at(module_id).second;
+  return getID(x,y,layer_id, module_id);
+}
+
+EcalID EcalGeometry::getID(double x, double y, int layer_id, int module_id) const {
+  // now assume we know the layer and module
+  // shift to center of layer and then center of module
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) - module_pos_xy_.at(module_id).first}, 
+         q{y - std::get<1>(layer_pos_xy_.at(layer_id)) - module_pos_xy_.at(module_id).second};
+
+  // need to rotate
+  if (cornersSideUp_) rotate(p,q);
 
   // deduce cell ID
   int cell_id = cell_id_in_module_.FindBin(p,q) - 1;
   
   if (cell_id < 0) {
     EXCEPTION_RAISE("BadConf",
-        TString::Format("Relative cell coordinates (%.2f, %.2f) mm are outside module hexagon",
-          p,q).Data());
+        TString::Format("Relative cell coordinates (%.2f, %.2f) mm "
+          "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+          "and module = %d are outside module hexagon",
+          p,q,x,y,layer_id,module_id).Data());
   }
 
   return EcalID(layer_id,module_id,cell_id);
 }
+
 
 std::tuple<double,double,double> EcalGeometry::getPosition(EcalID id) const {
   return cell_global_pos_.at(id);
@@ -145,14 +166,10 @@ std::tuple<double,double,double> EcalGeometry::getPosition(EcalID id) const {
 
 std::pair<double,double> EcalGeometry::getPositionInModule(int cell_id) const {
   auto pq = cell_pos_in_module_.at(cell_id);
-  if (cornersSideUp_) {
-    // need to do a 90deg rotation
-    //   x = q
-    //   y = -p
-    double tmp = pq.second;
-    pq.second = -pq.first;
-    pq.first  = tmp;
-  }
+
+  // going from (p,q) to (x,y) is a unrotate
+  if (cornersSideUp_) unrotate(pq.first, pq.second);
+
   return pq;
 }
 
@@ -192,22 +209,35 @@ void EcalGeometry::buildLayerMap() {
 }
 
 void EcalGeometry::buildModuleMap() {
+  static double C_PI = 3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
   if (verbose_ > 0) {
     std::cout << "[EcalGeometry::buildModuleMap] "
       << "Building module position map for module min r of "
       << moduler_ << " and gap of " << gap_ << std::endl;
   }
 
-  double C_PI = 3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
-  // module IDs are 0 for ecal center, 1 at right, and counterclockwise till 6 at 11 o'clock
-  module_pos_pq_[0] = std::pair<double, double>(0., 0.);
+  // the center module (module_id == 0) has always been (and will always be?)
+  //  centered with respect to the layer position
+  module_pos_xy_[0] = std::pair<double, double>(0., 0.);
+
+  // for flat-side-up designs (v12 and earlier), the modules are numbered 1 on
+  // positive y-axis and then counter-clockwise until 6
+  //
+  // for corner-side-up designes (v13 and later), the modules are numbered 1 on
+  // positive x-axis and then counter-clockwise until 6.
   for (unsigned id = 1; id < 7; id++) {
-    double p = (2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
-    double q = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
-    module_pos_pq_[id] = std::pair<double, double>(p, q);
+    // flat-side-up
+    double x = (2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
+    double y = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
+    if (cornersSideUp_) {
+      // re-calculating to make sure centers match GDML
+      x = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
+      y = - (2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
+    }
+    module_pos_xy_[id] = std::pair<double, double>(x, y);
     if (verbose_ > 2)
-      std::cout << "    Module " << id << " is centered at (p,q) = "
-        << "(" << p << ", " << q << ") mm" << std::endl;
+      std::cout << "    Module " << id << " is centered at (x,y) = "
+        << "(" << x << ", " << y << ") mm" << std::endl;
   }
 }
 
@@ -436,29 +466,19 @@ void EcalGeometry::buildCellModuleMap() {
     std::cout << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
               << std::endl;
   /// construct map of cell centers relative to layer center
-  for (auto const& [module_id, module_pq] : module_pos_pq_) {
+  for (auto const& [module_id, module_xy] : module_pos_xy_) {
     for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
-      // calculate cell's pq relative to entire layer center
-      auto cell_rel_to_layer = std::make_pair(
-          module_pq.first + cell_pq.first,
-          module_pq.second + cell_pq.second
-          );
-      // now convert from (p,q) to (x,y) space
-      if (cornersSideUp_) {
-        /**
-         * 90deg rotation
-         *  x = q
-         *  y = -p
-         * Basically a swap action to be able to reinterpret
-         * first,second as x,y instead of p,q
-         */
-        double x;
-        x = cell_rel_to_layer.second;
-        cell_rel_to_layer.second = -1.*cell_rel_to_layer.first;
-        cell_rel_to_layer.first = x;
-      }
+      double cell_x{cell_pq.first}, cell_y{cell_pq.second};
+      // convert from (p,q) to (x,y) space
       // when the corners are not up, x = p and y = q
       // so no transformation needs to be done
+      if (cornersSideUp_) unrotate(cell_x, cell_y);
+      
+      // calculate cell's pq relative to entire layer center
+      auto cell_rel_to_layer = std::make_pair(
+          module_xy.first + cell_x,
+          module_xy.second + cell_y
+          );
 
       // now add the layer-center values to get the global position
       // of the cell
