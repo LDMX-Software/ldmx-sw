@@ -68,6 +68,9 @@ class Layer :
         self.x0 = Layer.X0[self.name]
         self.dEdx = Layer.dEdx[self.name]
 
+    def __str__(self) :
+        return f'{self.thickness:.2f} mm {self.name}'
+
     def air(t) :
         return Layer('Air',t)
 
@@ -94,10 +97,11 @@ class Layer :
                 if front > 0 :
                     layers.append(Layer.tungsten(front))
                     layers.append(Layer.air(0.5))
-                layers.append(Layer.pcb())
+                layers.append(Layer.pcb()) # Motherboard
                 if cooling == 0 :
                     layers.append(Layer.air(0.5))
                 layers.append(Layer.air(3.5))
+                layers.append(Layer.pcb())
                 layers.append(Layer.glue(0.1))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.2))
@@ -109,6 +113,7 @@ class Layer :
                 layers.append(Layer.glue(0.2))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.1))
+                layers.append(Layer.pcb())
                 layers.append(Layer.air(3.5))
                 if cooling == 0 :
                     layers.append(Layer.air(0.5))
@@ -123,10 +128,6 @@ def average(raw_weights) :
         averaged.append(0.5*(raw_weights[i_layer] + raw_weights[i_layer+1]))
     averaged.append(raw_weights[-1])
     return averaged
-
-def normlize(weights) :
-    norm = len(weights)/sum(weights)
-    return [ norm*w for w in weights ]
 
 def materials_between_sensdet(layer_stack) :
     mbs = []
