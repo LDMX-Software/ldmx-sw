@@ -57,16 +57,24 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   int layerNumber;
   layerNumber = int(cpynum / 7);
   int module_position = cpynum % 7;
+  std::cout 
+    << "(" << position[0] << ", " << position[1] << ", " << position[2] << ") "
+    << cpynum << " -> layer " << layerNumber 
+    << " module " << module_position;
 
-  // fastest? but need to trust module number between GDML and EcalGeometry match
-  //    NOT IMPLEMENTED in EcalGeometry at this time
+  // fastest, but need to trust module number between GDML and EcalGeometry match
   //ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber, module_position);
 
   // medium, only need to trust z-layer positions in GDML and EcalGeometry match
-  ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber);
+  //    helpful for debugging any issues where transverse position is not matching
+  //    between the GDML and EcalGeometry
+  //ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber);
 
-  // slowest, completely trust EcalGeometry
-  //ldmx::EcalID id = geometry.getID(position[0], position[1], position[2]);
+  // slowest, completely rely on EcalGeometry
+  //    this is helpful for validating the EcalGeometry implementation and
+  //    configuration since this will be called with any hit position that
+  //    is inside of the configured SD volumes from Geant4's point of view
+  ldmx::EcalID id = geometry.getID(position[0], position[1], position[2]);
 
 
   if (hits_.find(id) == hits_.end()) {
