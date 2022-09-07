@@ -432,6 +432,9 @@ class EcalGeometry : public framework::ConditionsObject {
    * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not
    * "<=".
    *
+   * @note This function is in p,q space so any rotations need to be performed
+   * before calling this function.
+   *
    * @param[in] normX X-coordinate relative to module hexagon divided by maximum
    * hexagon radius
    * @param[in] normY Y-coordinate relative to module hexagon divided by maximum

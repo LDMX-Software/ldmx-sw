@@ -111,14 +111,14 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
          q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
 
   // deduce module ID
-  //  the hexagon center we are closest to is the module we are in
-  //  additionally we can shorten this loop because if we are within 
-  //  a small radius of the hexagon center, there is no way we are in
-  //  another hexagon
+  //    there are only 7 modules so we just loop through them
+  //    all and pick out the module ID that we are inside of
 
   int module_id{-1};
   for (auto const& [mid, module_xy] : module_pos_xy_) {
-    if (isInside((p-module_xy.first)/moduleR_, (q-module_xy.second)/moduleR_)) {
+    double probe_x{p-module_xy.first}, probe_y{q-module_xy.second};
+    if (cornersSideUp_) rotate(probe_x, probe_y);
+    if (isInside(probe_x/moduleR_, probe_y/moduleR_)) {
       module_id = mid;
       break;
     }
