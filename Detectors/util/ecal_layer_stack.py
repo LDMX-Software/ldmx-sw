@@ -117,6 +117,7 @@ class Layer :
                 layers.append(Layer.air(3.5))
                 if cooling == 0 :
                     layers.append(Layer.air(0.5))
+                    layers.append(Layer.air(0.75))
                 layers.append(Layer.pcb())
     
         return layers
@@ -150,9 +151,14 @@ def calc_weights(layers_partitioned_by_sensdet) :
     # Does include sensitive detector layers
     Zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        [dE_section, X0_section, L_section, Zdepth_section] = list(map(sum,
-            zip(*[(l.thickness*l.dEdx, l.thickness / l.x0, l.thickness / l.nuclen, l.thickness)
-                    for l in section ])))
+        print('section')
+        dE_section, X0_section, L_section, Zdepth_section = 0., 0., 0., 0.
+        for l in section :
+            print(' ',l)
+            dE_section += l.thickness * l.dEdx
+            X0_section += l.thickness / l.x0
+            L_section  += l.thickness / l.nuclen
+            Zdepth_section += l.thickness
         dE_between_sensdet.append(dE_section)
         X0_between_sensdet.append(X0_section)
         L_between_sensdet.append(L_section)
