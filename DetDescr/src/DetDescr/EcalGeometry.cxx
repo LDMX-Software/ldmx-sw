@@ -87,7 +87,7 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
 }
 
 EcalID EcalGeometry::getID(double x, double y, double z) const {
-  static const double tolerance = 1.; // thickness of Si
+  static const double tolerance = 0.5; // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
     if (abs(std::get<2>(layer_xyz)-z) < tolerance) {
