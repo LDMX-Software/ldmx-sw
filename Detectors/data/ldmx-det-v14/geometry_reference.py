@@ -76,37 +76,43 @@ vertical_scint_physvols = []
 distance_to_subsequent_absorber_layer = hcal_back_layer_thick
 distance_to_subsequent_scint_layer = 2*hcal_back_layer_thick
 
-for i in range(1, int((hcal_back_numLayers)/2)+1):
+for i in range(1, hcal_back_numLayers, 2):
     # absorbers
-    absorber_physvols.append(physical_volume(position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i-1)],
-				             name="back_hcal_abso_physvol",
-                                             CopyNumber=i))
-
+    absorber_physvols.append(
+        physical_volume(
+            position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i-1)],
+	    name="back_hcal_abso_physvol",
+            CopyNumber=i)
+    )
+    
     # scintillators (horizontal parity = 1 - layers with odd parity (1) have horizontal strips)
     for j in range(0, hcal_back_numScint, 1):
-        horizontal_scint_physvols.append(physical_volume(position=[ 0,
-                                                                    back_starty_scint + (j)*scint_width,
-                                                                    back_start_scint + (i-1)*hcal_back_layer_thick],
-                                                         name="back_hcal_scint_physvol",
-                                                         #CopyNumber=40*(i-1) + j)
-                                                         CopyNumber=version*256*256*256 + 0*256*256 + (i)*256 + j
-                                                         )
-                                         )
+        horizontal_scint_physvols.append(
+            physical_volume(
+                position=[ 0,
+                           back_starty_scint + (j)*scint_width,
+                           back_start_scint + (i-1)*hcal_back_layer_thick],
+                name="back_hcal_scint_physvol",
+                CopyNumber=version*256*256*256 + 0*256*256 + (i)*256 + j
+            )
+        )
         
-        absorber_physvols.append(physical_volume(position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i)],
-				             name="absorber_physvol",
-                                             CopyNumber=i+1))
+    absorber_physvols.append(
+        physical_volume(
+            position=[0,0,back_start_abso + distance_to_subsequent_absorber_layer * (i)],
+	    name="absorber_physvol",
+            CopyNumber=i+1)
+    )
 
     for j in range(0, hcal_back_numScint, 1):
-        vertical_scint_physvols.append(physical_volume(position=[ back_startx_scint + (j)*scint_width,
-                                                                  0,
-                                                                  back_start_scint + (i-1)*hcal_back_layer_thick],
-                                                       name="back_hcal_scint_physvol",
-                                                       #CopyNumber=2000+40*(i-1) + j)
-                                                       CopyNumber=version*256*256*256 + 0*256*256 + (i+1)*256 +	(j+100)
-                                                       )
-                                                       
-                                       )
+        vertical_scint_physvols.append(
+            physical_volume(position=[ back_startx_scint + (j)*scint_width,
+                                       0,
+                                       back_start_scint + (i-1)*hcal_back_layer_thick],
+                            name="back_hcal_scint_physvol",
+                            CopyNumber=version*256*256*256 + 0*256*256 + (i+1)*256 + j
+                            )
+        )
 
 def absorber_copynumbers():
     return [absorber_physvols[i].CopyNumber
@@ -115,6 +121,7 @@ def absorber_copynumbers():
 def vertical_scint_copynumbers():
     #print('Vertical ',len(vertical_scint_physvols))
     copy_num = []
+    # loop over even layers
     for il,i in enumerate(range(2, hcal_back_numLayers+1, 2)):
         copy_num_layer = []
         for j in range(0, hcal_back_numScint):
@@ -124,24 +131,29 @@ def vertical_scint_copynumbers():
     return copy_num
 
 def horizontal_scint_copynumbers():
-    #print('Horizontal ',len(horizontal_scint_physvols))
+    print(f'Number of Horizontal Volumes {len(horizontal_scint_physvols)}')
     copy_num = []
+    # loop over odd layers
     for il,i in enumerate(range(1, hcal_back_numLayers+1, 2)):
         copy_num_layer = []
         for j in range(0, hcal_back_numScint):
-            #print(hcal_back_numScint*il+j)
+            print(f'Index for scint {j}, layer {i} is {hcal_back_numScint*il+j}')
             copy_num_layer.append(horizontal_scint_physvols[hcal_back_numScint*il+j].CopyNumber)
         copy_num.append(copy_num_layer)
     return copy_num
 
-#print('Copy numbers')
-#print('Absorber: ',absorber_copynumbers())
-#print('Horizontal scintillator: ',horizontal_scint_copynumbers())
-#print('Vertical scintillator: ',vertical_scint_copynumbers())
+absorber_copy_numbers = absorber_copynumbers()
+horizontal_copy_numbers = horizontal_scint_copynumbers()
+vertical_copy_numbers = vertical_scint_copynumbers()
+
+print('Copy numbers')  
+print('Absorber: ',absorber_copy_numbers)
+print('Horizontal scintillator: ',horizontal_copy_numbers)
+print('Vertical scintillator: ',vertical_copy_numbers)
 
 # check that values are not repeated
-horizontal = np.array(horizontal_scint_copynumbers())
-vertical = np.array(vertical_scint_copynumbers())
+horizontal = np.array(horizontal_copy_numbers)
+vertical = np.array(vertical_copy_numbers)
 all_scint = np.concatenate((horizontal, vertical), axis=None)
 
 _, horizontal_counts = np.unique(horizontal, return_counts=True)
