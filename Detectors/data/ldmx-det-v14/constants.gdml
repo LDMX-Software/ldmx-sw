@@ -1,6 +1,3 @@
-<!-- Version number -->
-<constant name="version" value="14"/>
-
 <!-- Constant defining the clearance between volumes --> 
 <constant name="clearance" value="0.001*mm" />
 
