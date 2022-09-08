@@ -28,23 +28,23 @@ HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
 
 HcalSD::~HcalSD() {}
 
-ldmx::HcalID decodeCopyNumber(const std::uint32_t copyNumber,
-                              const G4ThreeVector& localPosition,
-                              const G4Box* scint) {
-  const int version{copyNumber / 0x01000000};
+ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
+				      const G4ThreeVector& localPosition,
+				      const G4Box* scint) {
+  const unsigned int version{copyNumber / 0x01000000};
   if (version != 0) {
-    PackedIndex<256, 256, 256> index{copyNumber};
-    return ldmx::HcalID{index.field2(), index.field1(), index.field0()};
+    typedef ldmx::PackedIndex<256, 256, 256> Index;
+    return ldmx::HcalID{Index(copyNumber).field2(), Index(copyNumber).field1(), Index(copyNumber).field0()};
   } else {
-    const auto& hcalGeometry{getCondition<ldmx::HcalGeometry>(
-                                                              ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME)};
-    int stripID{-1};
-
-    const int section = copyNumber / 1000;
-    const int layer = copyNumber % 1000;
+    const auto& geometry = getCondition<ldmx::HcalGeometry>(
+							    ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+    unsigned int stripID = 0;
+    const unsigned int section = copyNumber / 1000;
+    const unsigned int layer = copyNumber % 1000;
+    
     // 5cm wide bars are HARD-CODED
     if (section == ldmx::HcalID::BACK) {
-      if (hcalGeometry.layerIsHorizontal(layer)) {
+      if (geometry.layerIsHorizontal(layer)) {
         stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
       } else {
         stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
