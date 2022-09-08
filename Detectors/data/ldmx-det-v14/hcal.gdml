@@ -246,7 +246,7 @@
           </physvol>
 
 	  <loop for="bstripH" from="0" to="hcal_back_numScint" step="1">
-            <physvol name="back_hcal_scintH_physvol" copynumber="version*256*256*256 + 0*256*256 + (blayer)*256 + bstripH">
+            <physvol name="back_hcal_scintH_physvol" copynumber="1*256*256*256 + 0*256*256 + (blayer)*256 + bstripH">
               <volumeref ref="back_hcal_ScintHBox_volume"/>
               <position name="back_hcal_scintH_pos" unit="mm" x="0" y="back_starty_scint + (bstripH)*scint_width" z="back_start_scint+(blayer-1)*hcal_back_layer_thick"/>
             </physvol>
@@ -258,7 +258,7 @@
           </physvol>
 	   
 	  <loop for="bstripV" from="0" to="hcal_back_numScint" step="1">
-	    <physvol name="back_hcal_scintV_physvol" copynumber="version*256*256*256 + 0*256*256 + (blayer+1)*256 + (bstripV+100)">
+	    <physvol name="back_hcal_scintV_physvol" copynumber="1*256*256*256 + 0*256*256 + (blayer+1)*256 + (bstripV+100)">
               <volumeref ref="back_hcal_ScintVBox_volume"/>
               <position name="back_hcal_scintV_pos" unit="mm" x="back_startx_scint + (bstripV)*scint_width" y="0" z="back_start_scint+(blayer)*hcal_back_layer_thick"/>
             </physvol>
