@@ -7,6 +7,36 @@ class HcalReadoutGeometry() :
     ----------
     detectors_valid : array of strings
         Regular expressions identifying which detectors are valid for this geometry
+    ThicknessScint: Scintillator thickness (in z).
+        @param gdml: `scint_thickness`
+    WidthScint: Scintillator width (in x).                                                                                                          
+        @param gdml see: `scint_bar_width`
+    ZeroLayer: Position of the first scintillator layer
+        Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
+        @param gdml see: `dz`, `air_thickness`, `absorber_thickness`
+    ZeroStrip: Position of the first strip.
+        For back Hcal: NumStrips * scint_bar_width / 2 (in x/y)
+        @param gdml see: `num_bars_front`, `num_bars_back`, `scint_bar_width`
+    HalfTotalWidth: Half length of a bar.
+        Equal to ZeroStrip for the prototype geometry.
+    LayerThickness:
+        Layer thickness (in z)
+        Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
+        @param gdml see: `layer_thickness`
+    NumLayers:
+        Number of layers per section.
+        @param gdml see: `num_layers`
+    NumStrips:
+        Number of strips per layer.
+        @param gdml see: `num_bars_front`, `num_bars_back`, `num_layers_front`,
+        and `num_layers_back`
+    NumSections:
+        Set to 1 for the prototype geometry since the prototype only has the
+        Back Hcal.
+    EcalDx/EcalDy:
+        Used in the regular geometry to describe the dimensions of the Ecal.
+        Since there is no Ecal in the prototype geometry, these are both set to
+        0.
     """
 
     def __init__(self) :
@@ -54,97 +84,20 @@ class HcalReadoutGeometry() :
 
 class HcalGeometry() :
     """Container for the various geometries
-
+    
+      Only sets parameters that must align with the Hcal gdml constants.
     """
 
     def __init__(self):
         self.make_v12()
-        self.make_v13()
+        self.make_v14()
         self.make_v1_prototype()
         self.make_v2_prototype()
 
-
-    def make_v13(self) :
-        """Create the HcalGeometry with the v12 geometry parameters
-
-        Only sets parameters that must align with the Hcal gdml constants.
-
-        Nothing has changed in v13 for the HCal
-        """
-        self.v13=HcalReadoutGeometry()
-
-        self.v13.ThicknessScint = 20.0
-        self.v13.WidthScint = 50.0
-        self.v13.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
-        self.v13.ZeroStrip = [3100./2,220.,220.,220.,220.]
-        self.v13.LayerThickness = [25. + self.v13.ThicknessScint + 2*2.,
-                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.,
-                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.]
-        self.v13.NumSections = 5
-        self.v13.NumLayers = [100,28,28,26,26]
-        self.v13.NumStrips = [62,12,12,12,12]
-        self.v13.EcalDx = 800.0
-        self.v13.EcalDy = 600.0
-        self.v13.HalfTotalWidth = [(self.v13.NumStrips[0]*self.v13.WidthScint)/2,
-                                   (self.v13.NumLayers[3]*self.v13.LayerThickness[3]+self.v13.EcalDx)/2,
-                                   (self.v13.NumLayers[4]*self.v13.LayerThickness[4]+self.v13.EcalDx)/2,
-                                   (self.v13.NumLayers[1]*self.v13.LayerThickness[1]+self.v13.EcalDy)/2,
-                                   (self.v13.NumLayers[2]*self.v13.LayerThickness[2]+self.v13.EcalDy)/2,]
-        self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
-        # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v13.horizontal_parity = 1
-
-
-
     def make_v1_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters
-
-        Only sets parameters that must align with the Hcal gdml constants.
-
-        - ThicknessScint: Scintillator thickness (in z).
-            @param gdml see: `scint_thickness`.
-
-        - WidthScint: Scintillator width (in x).
-            @param gdml see: `scint_bar_width`
-
-        - ZeroLayer: Position of the first scintillator layer
-            Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
-            @param gdml see: `dz`, `air_thickness`, `absorber_thickness`
-
-        - ZeroStrip: Position of the first strip.
-            For back Hcal: NumStrips * scint_bar_width / 2 (in x/y)
-            @param gdml see: `num_bars_front`, `num_bars_back`, `scint_bar_width`
-
-        - HalfTotalWidth: Half length of a bar.
-            Equal to ZeroStrip for the prototype geometry.
-
-        - LayerThickness:
-            Layer thickness (in z)
-            Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
-            @param gdml see: `layer_thickness`
-
-        - NumLayers:
-            Number of layers per section.
-            @param gdml see: `num_layers`
-
-        - NumStrips:
-            Number of strips per layer.
-            @param gdml see: `num_bars_front`, `num_bars_back`, `num_layers_front`,
-            and `num_layers_back`
-
-        - NumSections:
-
-            Set to 1 for the prototype geometry since the prototype only has the
-            Back Hcal.
-
-        - EcalDx/EcalDy:
-
-            Used in the regular geometry to describe the dimensions of the Ecal.
-            Since there is no Ecal in the prototype geometry, these are both set to
-            0.
-
         """
+
         self.v1_prototype=HcalReadoutGeometry()
         # GDML-parameters
         air_thickness = 2.
@@ -191,51 +144,6 @@ class HcalGeometry() :
 
     def make_v2_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters
-
-        Only sets parameters that must align with the Hcal gdml constants.
-
-        - ThicknessScint: Scintillator thickness (in z).
-            @param gdml see: `scint_thickness`.
-
-        - WidthScint: Scintillator width (in x).
-            @param gdml see: `scint_bar_width`
-
-        - ZeroLayer: Position of the first scintillator layer
-            Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
-            @param gdml see: `dz`, `air_thickness`, `absorber_thickness`
-
-        - ZeroStrip: Position of the first strip.
-            For back Hcal: NumStrips * scint_bar_width / 2 (in x/y)
-            @param gdml see: `num_bars_front`, `num_bars_back`, `scint_bar_width`
-
-        - HalfTotalWidth: Half length of a bar.
-            Equal to ZeroStrip for the prototype geometry.
-
-        - LayerThickness:
-            Layer thickness (in z)
-            Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
-            @param gdml see: `layer_thickness`
-
-        - NumLayers:
-            Number of layers per section.
-            @param gdml see: `num_layers`
-
-        - NumStrips:
-            Number of strips per layer.
-            @param gdml see: `num_bars_front`, `num_bars_back`, `num_layers_front`,
-            and `num_layers_back`
-
-        - NumSections:
-
-            Set to 1 for the prototype geometry since the prototype only has the
-            Back Hcal.
-
-        - EcalDx/EcalDy:
-
-            Used in the regular geometry to describe the dimensions of the Ecal.
-            Since there is no Ecal in the prototype geometry, these are both set to
-            0.
-
         """
         self.v2_prototype=HcalReadoutGeometry()
         # GDML-parameters
@@ -262,7 +170,6 @@ class HcalGeometry() :
         num_bars_back = 12
         dz = num_layers * layer_thickness
         # End GDML-parameters
-
 
         self.v2_prototype.ThicknessScint = scint_thickness
         self.v2_prototype.WidthScint = scint_bar_width
@@ -293,50 +200,7 @@ class HcalGeometry() :
     def make_v12(self) :
         """Create the HcalGeometry with the v12 geometry parameters
 
-        Only sets parameters that must align with the Hcal gdml constants.
-
-        - ThicknessScint: Scintillator thickness (in z).
-          @param gdml see: `scint_thick`.
-
-        - WidthScint: Scintillator width (in x).
-          Can be obtained by: hcal_length/n_strips.
-
-        - ZeroLayer: Position of the first layer
-          Back Hcal first layer (in z) starts after Ecal+Side-Hcal_z
-          Side Hcal first layer (in x or y) starts after Ecal_x/y / 2
-          For back Hcal: ecal_front_z + hcal_side_dz (in z)
-          For side Hcal: hcal_side_dz/2 (in x/y)
-          @param gdml see: `ecal_front_z` and `hcal_side_dz`
-
-        - ZeroStrip: Position of the first strip.
-
-          For side Hcal: ecal_front_z (in z)
-          @param gdml see: `hcal_back_dx` and `ecal_front_z`
-
-        - LayerThickness:
-          Layer thickness (in z)
-          Can be obtained by: absorber_thickness + scint_thickness + 2.0*air_thickness
-          @param gdml see: `side_abso_thick` and `back_abso2_thick` and `air_thick`
-
-        - NumLayers:
-          Number of layers per section.
-
-        - NumStrips:
-          Number of strips per layer.
-
-        - NumSections:
-          Number of sections.
-          Encoded in HcalID.
-          Back, Top, Left, Right, Bottom.
-
-        - EcalDx/EcalDy:
-          Length of Ecal needed for side Hcal dimensions.
-
-        - HalfTotalWidth:
-          Half length of a bar
-          For back Hcal: nstrips * scint_width / 2 (in x/y)
-          For side Hcal: (nlayers_otherside * layer_thick + Ecal_dx(y))/2
-          @param gdml see: sideTB_dx, sideTB_dy
+        Nothing changed for Hcal on v13.
         """
         self.v12=HcalReadoutGeometry()
 
@@ -357,7 +221,70 @@ class HcalGeometry() :
                                    (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+self.v12.EcalDx)/2,
                                    (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+self.v12.EcalDy)/2,
                                    (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+self.v12.EcalDy)/2,]
-        self.v12.detectors_valid = ["ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        self.v12.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
         # Layers with odd parity (1) are horizontal (scintillator bar length
         # along the x-axis)
         self.v12.horizontal_parity = 1
+
+    def make_v14(self) :
+        self.v14 = HcalReadoutGeometry()
+        
+        # GDML-parameters
+        air_thick = 2.
+        scint_thick = 20.
+        scint_width = 50.
+        hcal_back_dx = 2000.
+        hcal_back_dy = 2000.
+        hcal_back_numLayers = 96
+        hcal_back_numScint = 40
+        hcal_back_abso_thick = 25
+        hcal_back_layer_thick = hcal_back_abso_thick + scint_thick + 2.0*air_thick
+        hcal_back_dz = hcal_back_numLayers*hcal_back_layer_thick
+        ecal_front_z = 24.0*10
+        hcal_side_dz = 600.
+        hcal_dz = hcal_back_dz + hcal_side_dz
+        side_Ecal_dx = 800.
+        side_Ecal_dy = 600.
+        
+        self.v14.ThicknessScint = scint_thick
+        self.v14.WidthScint = scint_width
+        self.v14.ZeroLayer = [ ecal_front_z + hcal_side_dz,
+                               hcal_side_dz/2,
+                               hcal_side_dz/2,
+                               hcal_side_dz/2,
+                               hcal_side_dz/2
+                              ]
+        self.v14.ZeroStrip = [hcal_back_dy/2,
+                              ecal_front_z,
+                              ecal_front_z,
+                              ecal_front_z,
+                              ecal_front_z
+                              ]
+        self.v14.LayerThickness = [
+            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
+            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
+            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
+            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
+            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick
+        ]
+        self.v14.NumSections = 5
+        self.v14.NumLayers = [
+            hcal_back_numLayers,
+            28,28,26,26
+        ]
+        self.v14.NumStrips = [
+            hcal_back_numScint,
+            12,12,12,12
+        ]
+        self.v14.EcalDx = side_Ecal_dx
+        self.v14.EcalDy = side_Ecal_dy
+        self.v14.HalfTotalWidth = [(self.v14.NumStrips[0]*self.v14.WidthScint)/2,
+                                   (self.v14.NumLayers[3]*self.v14.LayerThickness[3]+self.v14.EcalDx)/2,
+                                   (self.v14.NumLayers[4]*self.v14.LayerThickness[4]+self.v14.EcalDx)/2,
+                                   (self.v14.NumLayers[1]*self.v14.LayerThickness[1]+self.v14.EcalDy)/2,
+                                   (self.v14.NumLayers[2]*self.v14.LayerThickness[2]+self.v14.EcalDy)/2,]
+        self.v14.detectors_valid = ["ldmx-det-v14"]
+        
+        # Layers with odd parity (1) are horizontal on the x-axis
+        self.v14.horizontal_parity = 1
+
