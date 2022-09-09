@@ -37,12 +37,8 @@
     <!-- 
         Starting positions of steel / scintillator of side HCal w.r.t center of
         the hcal mother volume, put absorber first if present.
-
-        We need to handle the asymetry of the ECal support box below because the ECal (and therefore HCal)
-        will *not* be centered on y=0 anymore. They will need to be centered on y=-support_box_shift to 
-        accomodate the asymetry.
     -->        
-    <variable name="hcal_y0"              value="-support_box_shift"/>
+    <variable name="hcal_y0"              value="0"/>
     <variable name="sideTB_hcal_x0"       value="(sideTB_dx-side_Ecal_dx)/2.0"/>
     <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + side_abso_thick/2.0"/>
     <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
