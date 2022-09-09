@@ -138,6 +138,10 @@
                 <positionref ref="magnet_pos"/> 
                 <rotationref ref="identity"/> 
             </physvol> 
+
+            <physvol>
+              <file name="scoring_planes.gdml"/>
+            </physvol>
             <auxiliary auxtype="DetElem" auxvalue="Top"/>
         </volume>
     </structure>
