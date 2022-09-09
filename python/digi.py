@@ -193,3 +193,17 @@ class EcalRecProducer(Producer) :
             17.364, 8.990
             ]
 
+    def v14(self) :
+        """Generated for the v14 geometry
+
+        The secondOrderEnergyCorrection has not been calculated yet so it is set to the
+        suspicious value of 1.
+        """
+
+        self.secondOrderEnergyCorrection = 1.;
+        self.layerWeights = [ 
+                2.008, 4.008, 6.218, 7.186, 8.291, 9.948, 10.611, 10.611, 10.611, 10.611, 10.611, 
+                10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 
+                10.611, 10.611, 14.479, 18.235, 18.235, 18.235, 18.235, 18.235, 18.235, 18.235, 
+                18.235, 18.235, 9.633
+                ]
