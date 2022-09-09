@@ -467,6 +467,22 @@
       <zplane rmax="Hex_radius" rmin="0" z="GlueThick_dz"/>
     </polyhedra>
 
+    <!--
+      The ECal parent volume
+
+      We have a big box enclosing the ecal envelope and then we could add
+      some extra trapezoids that can cover the two "fins" of the support box.
+
+      For now, we are leaving the fins poking out of the ecal parent volume.
+      WARNING: This means they will be ignored by overlap checking.
+
+      <trd name="support_box_fin" x1= x2= y1= y2= z= />
+
+      <union name="support_box">
+        <first ref="ECal_box"/>
+        <second ref="support_box_fin"/>
+      </union>
+    -->
     <box lunit="mm" name="ECal_box" x="ecal_envelope_x" y="ecal_envelope_y" z="ecal_envelope_z"/>
   </solids>
 
