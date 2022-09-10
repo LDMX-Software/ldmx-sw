@@ -162,9 +162,18 @@
 <variable name="hcal_back_layer_thick"  value="hcal_back_abso_thick + scint_thick + 2.0*air_thick"/>
 <variable name="hcal_back_dz"      value="hcal_back_numLayers*hcal_back_layer_thick"/>
 
-<!-- Side HCal Layer component -->
+<!-- 
+  Side HCal Layer component 
+
+  The number of side layers is determined by the overall envelope
+  we are using, the thickness of each layer, and the transverse
+  dimensions of the ECal.
+
+  With envelope set to 3100mm, ECal (dy,dx) set to (880,600), and thickness
+  of each layer set to 44mm, we get 25 LR layers and 28 TB layers.
+-->
 <variable name="hcal_sideTB_layers"     value="28"/>
-<variable name="hcal_sideLR_layers"     value="26"/>
+<variable name="hcal_sideLR_layers"     value="25"/>
 <variable name="hcal_side_abso_thick"   value="20."/>
 
 <!-- side_dz has to be greater than side_Ecal_dz -->
@@ -177,90 +186,161 @@
     ECal 
 --> 
 
-<!-- ECal layer thicknesses --> 
-<variable name="Wthick_A_dz" value="0.75"/>
-<variable name="W_A_dz" value="0.75"/>
-<variable name="Wthick_B_dz" value="2.25"/>
-<variable name="W_B_dz" value="1.5"/>
-<variable name="Wthick_C_dz" value="3.5"/>
-<variable name="W_C_dz" value="1.75"/>
-<variable name="Wthick_D_dz" value="7.0"/>
-<variable name="W_D_dz" value="3.5"/>
-<variable name="CFMix_dz" value="0.05"/>
-<variable name="CFMixThick_dz" value="0.2"/>
-<variable name="PCB_dz" value="1.5"/>
+<constant name="num_bilayers" value="17"/>
+
+<!-- 
+  ECal absorbing layer thicknesses 
+
+  The ECal is separated into five "sections" each of
+  which has a certain thickness for the tungsten at
+  the front of each bilayer and the tungsten next
+  to the cooling plane.
+
+  Section   | bilayers | Front | Cooling
+  Pre-Shower|        1 |   0.0 |     0.0
+  Section A |        1 |   1.0 |     1.0
+  Section B |        1 |   2.0 |     1.5
+  Section C |        9 |   3.5 |     1.8
+  Section D |        5 |   7.0 |     3.5
+-->
+<matrix name="cooling_tungsten_dz"
+        coldim="1"
+        values="1.0
+                1.5
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                1.8
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5"/>
+<matrix name="front_tungsten_dz"
+        coldim="1"
+        values="1.0
+                2.0
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                3.5
+                7.0
+                7.0
+                7.0
+                7.0
+                7.0"/>
+<!--
+The cumulative amount of absorber in front of the n'th bilayer.
+
+This is necessary for determining the z-positions of the layers
+within the placement loop. Unfortunately, one cannot use loops
+when defining GDML variables, so this needs to be precomputed.
+-->
+<matrix name="bilayer_absorber_cumulative"
+        coldim="1"
+        values="0.0
+                3.0
+                8.0
+                15.1
+                22.2
+                29.3
+                36.4
+                43.5
+                50.6
+                57.7
+                64.8
+                71.9
+                85.9
+                99.9
+                113.9
+                127.9
+                141.9"/>
+
+<!--
+The thickness of the strongback aluminum bar holding up the bilayer
+
+there are only two thicknesses but since it varies _at all_ across
+bilayers, we need to list them all explicitly so we can just reference
+them in the bilayer loop
+-->
+<matrix name="bilayer_strongback_thickness"
+        coldim="1"
+        values="12.7
+                12.7
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4
+                25.4" />
+
+<!--
+  Thickness of various components in the ECal layer stack
+    all values in mm
+
+  PCB_dz - needs to match the thickness of the PCB in the motherboards
+  extracted from CAD drawings
+-->
+<variable name="PCB_dz" value="1.666"/>
+<variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.5"/>
-<variable name="C_dz" value="0.5"/>
-<variable name="Al_dz" value="2.0"/>
+<variable name="GlueThick_dz" value="0.2"/>
+<!-- thickness of motherboard assembly, must match what is extracted -->
+<variable name="MotherBoardAssembly_dz" value="8.166"/>
+<!-- the carbon cooling plane is 1mm+3/16 inch thick (about) -->
+<variable name="CarbonCoolingPlane_dz" value="5.7"/>
+<variable name="CarbonCoolingPlane_dy" value="495.3"/>
+<variable name="CarbonCoolingPlane_dx" value="673.1"/>
+<!-- vertical dimension of the strong back bar -->
+<variable name="strongback_bar_dy" value="25.4"/>
+<variable name="strongback_bar_dx" value="838.2-0.6815"/>
+
+<!--
+  The thickness of the "flower" of sensitive hexagons 
+  In GDML-land, this is defined to be the hexagon PCB, glue,
+  sensitive silicon, and the thicker glue mounting it to the
+  absorber (or carbon cooling plane in the pre-shower case)
+-->
+<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz"/>
 
 <!-- 
     Air separating sheets of Al or W with PCB motherboard, limited by 
     construction abilities 
 -->
 <variable name="FrontTolerance" value="0.5"/> 
-
-<!-- Gap between layers -->
 <variable name="BackTolerance" value="0.5"/> 
 
 <!-- Air separting PCBs from PCB MotherBoards -->
-<variable name="PCB_Motherboard_Gap" value="2.3"/>
+<variable name="PCB_Motherboard_Gap" value="3.5"/>
 
-<!-- Air separating Carbon sheets in the middle of a layer-->
-<variable name="CoolingAirGap" value="4.0"/>
+<!--
+Thickness of the ECal bilayer stack NOT including the tungsten
+absorber layers which change thickness throughout the ECal
 
-<!-- Preshower thickness is 20.1 mm --> 
-<variable name="preshower_Thickness" 
-          value="Al_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + CoolingAirGap 
-                + 2.*C_dz + CFMixThick_dz + Si_dz + CFMix_dz + PCB_dz 
-                + PCB_Motherboard_Gap + PCB_dz + BackTolerance" />
-
-<!-- Layer A thickness is 20.35 mm --> 
-<variable name="layer_A_Thickness" 
-          value="Wthick_A_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_A_dz + C_dz 
-                + CoolingAirGap + C_dz + W_A_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Layer B thickness is 22.35 mm --> 
-<variable name="layer_B_Thickness" 
-          value="Wthick_B_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                 + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_B_dz + C_dz 
-                 + CoolingAirGap + C_dz + W_B_dz + CFMixThick_dz + Si_dz 
-                 + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                 + BackTolerance"/>
-
-<!-- Layer C thickness is 25.1 mm --> 
-<variable name="layer_C_Thickness" 
-          value="Wthick_C_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_C_dz + C_dz 
-                + CoolingAirGap + C_dz + W_C_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Layer D thickness is 32.1 mm --> 
-<variable name="layer_D_Thickness" 
-          value="Wthick_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
-                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_D_dz + C_dz 
-                + CoolingAirGap + C_dz + W_D_dz + CFMixThick_dz + Si_dz 
-                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
-                + BackTolerance"/>
-
-<!-- Number of layers --> 
-<variable name="ecal_A_layers" value="1"/>
-<variable name="ecal_B_layers" value="1"/>
-<variable name="ecal_C_layers" value="9"/>
-<variable name="ecal_D_layers" value="5"/>    
-
-<!-- ECal thickness is 449.2 mm -->  
-<variable name="ECal_dz" 
-         value="preshower_Thickness 
-                + layer_A_Thickness*ecal_A_layers
-                + layer_B_Thickness*ecal_B_layers 
-                + layer_C_Thickness*ecal_C_layers
-                + layer_D_Thickness*ecal_D_layers" />
-
+This value is in mm
+-->
+<variable name="bilayer_noabsorber_thickness"
+          value="FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + Flower_dz + CarbonCoolingPlane_dz + Flower_dz
+                + PCB_Motherboard_Gap + PCB_dz + BackTolerance"/>
 
 <!-- constants -->
 <variable name="sqrt3" value="1.73205080757"/>
@@ -272,17 +352,53 @@
 <variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
-<!-- ECal width and height -->
-<variable name="ECal_dx" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
-<variable name="ECal_dy" value="Hex_radius*6. + hexagon_gap*2."/>
+<!--
+  This value was manually tweaked in order to get the correct
+  number and size of cells according to the CMS HGCal High Density
+  Hexaboard design. It should only be changed very carefully.
+-->
+<variable name="n_cellR_height" value="35.3"/>
+
+<!--
+  This geometry simply shifts the odd sensitive layers[1] by one
+  cell flat-to-flat diameter horizontally.
+
+  [1] i.e. The high-z flower half of each bilayer.
+-->
+<variable name="shift_x" value="2*Hex_radius/n_cellR_height"/>
+<variable name="shift_y" value="0."/>
+
+<!--
+  The support box is assymetric in the y-direction so everything
+  inside it needs to be shifted down by this amount and everything
+  outside of it needs to be shifted up by this amount.
+-->
+<variable name="support_box_shift" value="12.7*1.5" />
 
 <!-- 
-    Distance from target to the ECal parent volume.  The calorimeter 
-    is an additional .5 mm downstream at 220.5 mm.
+  ECal width and height 
+
+  This is calculated from the hexagon size and gaps between them
+  and is helpful for surrounding the ecal with scoring planes.
+-->
+<variable name="ECal_dx" value="Hex_radius*6. + hexagon_gap*2."/>
+<variable name="ECal_dy" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
+
+<!-- 
+    Distance from target to the ECal parent volume.
+    The calorimeter is an additional .5 mm downstream at 240.5 mm.
 -->
 <constant name="ecal_front_z" value="24.0*cm"/>
 
-<variable name="side_Ecal_dx" value="800."/>
+<!--
+  The cavern the ecal is in is larger than the actual ECal
+  to accomodate the support infrastructure.
+
+  These variables are used for defining geometry objects
+  that need to be separate from the ECal cavern (like the
+  side HCal).
+-->
+<variable name="side_Ecal_dx" value="880.6815"/>
 <variable name="side_Ecal_dy" value="600."/>
 
 <!-- 
@@ -291,4 +407,4 @@
 --> 
 <constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
 <constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
-<constant name="ecal_envelope_z" value="ECal_dz + 1" />
+<constant name="ecal_envelope_z" value="600.0" /> 

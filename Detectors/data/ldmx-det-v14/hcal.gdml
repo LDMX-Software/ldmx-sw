@@ -35,6 +35,7 @@
         Starting positions of steel / scintillator of side HCal w.r.t center of
         the hcal mother volume, put absorber first.
     -->        
+    <variable name="hcal_y0"              value="0"/>
     <variable name="sideTB_hcal_x0"       value="(sideTB_dx-side_Ecal_dx)/2.0"/>
     <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + hcal_side_abso_thick/2.0"/>
     <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + hcal_side_abso_thick + scint_thick/2.0"/>
@@ -214,7 +215,7 @@
       <volume name="hadronic_calorimeter">
 	<materialref ref="G4_AIR"/>
 	<solidref    ref="hadron_calorimeter_Box"/>
-	
+
 	<!-- BACK HCAL  -->                 	
         <loop for="blayer" from="1" to="hcal_back_numLayers" step="2">
 	  <physvol name="back_hcal_abso_physvol">
@@ -240,9 +241,8 @@
               <position name="back_hcal_scintV_pos" unit="mm" x="back_startx_scint + (bstripV)*scint_width" y="0" z="back_start_scint+(blayer)*hcal_back_layer_thick"/>
             </physvol>
 	  </loop>
+	  
 	</loop>
-
-        <!-- SIDE HCAL -->
 
 	<auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>

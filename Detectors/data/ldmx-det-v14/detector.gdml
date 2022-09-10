@@ -26,7 +26,7 @@
         <variable name="recoil_pos_z" value="trigger_pad_down_z + trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
 
         <!-- Position of the ECal and HCal parent volumes -->
-        <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
+        <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
         <!-- Magnet is position such that the field center is at -40 cm. -->
@@ -39,8 +39,12 @@
         -->
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-        <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
-        <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
+        <position name="em_calorimeter_pos" x="0.0" 
+          y="support_box_shift" z="em_calorimeter_pos_z+ecal_envelope_z/2"/>
+        <!-- the ecal support box is asymmetric in the vertical direction causing an additional
+        shift relative to the origin at the target -->
+        <position name="hadron_calorimeter_pos" x="0.0" 
+          y="support_box_shift" z="hadron_calorimeter_pos_z"/>
         <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />         
 
     </define>
@@ -147,7 +151,7 @@
         <auxiliary auxtype="DetectorVersion" auxvalue="14">
             <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v14"/>
             <auxiliary auxtype="Description" 
-                       auxvalue="The v14 detector: Ecal is not rotated 90 degrees. Hcal has split scintillator bars."/>
+                       auxvalue="The Late 2022 Design Report Geometry."/>
         </auxiliary>
 
         <!-- define sensitive detectors -->
@@ -189,12 +193,6 @@
             <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
             <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
             <auxiliary auxtype="SubdetID" auxvalue="4"/>
-            <auxiliary auxtype="Verbose" auxvalue="0"/>
-        </auxiliary>
-        <auxiliary auxtype="SensDet" auxvalue="EcalSD">
-            <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
-            <auxiliary auxtype="SubdetID" auxvalue="5"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
         </auxiliary>
         <auxiliary auxtype="SensDet" auxvalue="HcalSD">
