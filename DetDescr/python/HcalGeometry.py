@@ -89,10 +89,41 @@ class HcalGeometry() :
     """
 
     def __init__(self):
-        self.make_v12()
+        self.make_v13()
         self.make_v14()
         self.make_v1_prototype()
         self.make_v2_prototype()
+
+    def make_v13(self) :
+        """Create the HcalGeometry with the v12 geometry parameters
+
+        Only sets parameters that must align with the Hcal gdml constants.
+
+        Nothing has changed in v13 for the HCal
+        """
+        self.v13=HcalReadoutGeometry()
+
+        self.v13.ThicknessScint = 20.0
+        self.v13.WidthScint = 50.0
+        self.v13.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
+        self.v13.ZeroStrip = [3100./2,220.,220.,220.,220.]
+        self.v13.LayerThickness = [25. + self.v13.ThicknessScint + 2*2.,
+                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.,
+                                   20. + self.v13.ThicknessScint + 2*2., 20. + self.v13.ThicknessScint + 2*2.]
+        self.v13.NumSections = 5
+        self.v13.NumLayers = [100,28,28,26,26]
+        self.v13.NumStrips = [62,12,12,12,12]
+        self.v13.EcalDx = 800.0
+        self.v13.EcalDy = 600.0
+        self.v13.HalfTotalWidth = [(self.v13.NumStrips[0]*self.v13.WidthScint)/2,
+                                   (self.v13.NumLayers[3]*self.v13.LayerThickness[3]+self.v13.EcalDx)/2,
+                                   (self.v13.NumLayers[4]*self.v13.LayerThickness[4]+self.v13.EcalDx)/2,
+                                   (self.v13.NumLayers[1]*self.v13.LayerThickness[1]+self.v13.EcalDy)/2,
+                                   (self.v13.NumLayers[2]*self.v13.LayerThickness[2]+self.v13.EcalDy)/2,]
+        self.v13.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
+        # Layers with odd parity (1) are horizontal (scintillator bar length
+        # along the x-axis)
+        self.v13.horizontal_parity = 1
 
     def make_v1_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters
@@ -195,36 +226,6 @@ class HcalGeometry() :
         # Layers with even parity (0) are horizontal (scintillator bar length
         # along the x-axis)
         self.v2_prototype.horizontal_parity = 0
-
-
-    def make_v12(self) :
-        """Create the HcalGeometry with the v12 geometry parameters
-
-        Nothing changed for Hcal on v13.
-        """
-        self.v12=HcalReadoutGeometry()
-
-        self.v12.ThicknessScint = 20.0
-        self.v12.WidthScint = 50.0
-        self.v12.ZeroLayer = [220.+600.,600./2,600./2,600./2,600./2]
-        self.v12.ZeroStrip = [3100./2,220.,220.,220.,220.]
-        self.v12.LayerThickness = [25. + self.v12.ThicknessScint + 2*2.,
-                                   20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.,
-                                   20. + self.v12.ThicknessScint + 2*2., 20. + self.v12.ThicknessScint + 2*2.]
-        self.v12.NumSections = 5
-        self.v12.NumLayers = [100,28,28,26,26]
-        self.v12.NumStrips = [62,12,12,12,12]
-        self.v12.EcalDx = 800.0
-        self.v12.EcalDy = 600.0
-        self.v12.HalfTotalWidth = [(self.v12.NumStrips[0]*self.v12.WidthScint)/2,
-                                   (self.v12.NumLayers[3]*self.v12.LayerThickness[3]+self.v12.EcalDx)/2,
-                                   (self.v12.NumLayers[4]*self.v12.LayerThickness[4]+self.v12.EcalDx)/2,
-                                   (self.v12.NumLayers[1]*self.v12.LayerThickness[1]+self.v12.EcalDy)/2,
-                                   (self.v12.NumLayers[2]*self.v12.LayerThickness[2]+self.v12.EcalDy)/2,]
-        self.v12.detectors_valid = ["ldmx-det-v13","ldmx-det-v12","ldmx-det-v12[.].*","ldmx-det-v9","ldmx-det-v10","ldmx-det-v11"]
-        # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v12.horizontal_parity = 1
 
     def make_v14(self) :
         self.v14 = HcalReadoutGeometry()
