@@ -6,6 +6,8 @@ p = ldmxcfg.Process( 'test_hcal_geometry' )
 # Set the maximum number of events
 p.maxEvents = 1
 
+# Set the run number
+p.run = 0
 # Import the Hcal conditions 
 from LDMX.Hcal import digi
 
@@ -32,7 +34,6 @@ from LDMX.SimCore import generators
 
 sim = simulator.simulator("single_neutron")
 sim.setDetector( 'ldmx-det-v12' , True )
-sim.runNumber = 0
 sim.description = "HCal muon"
 sim.beamSpotSmear = [20., 80., 0.] #mm
 

@@ -22,7 +22,7 @@ adc_pedestal.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/pedest
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["MIPMPV_ADC"])
 adc_gain.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
-adc_gain.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/index_v1_0_0.csv'
+adc_gain.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/index_v1_1_0.csv'
 
 # the TOT linearization parameters are very stable so we use the same set for all runs
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
