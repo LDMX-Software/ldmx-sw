@@ -91,6 +91,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
       if(!digi_id.isNegativeEnd() && indices.first==-1) {
 	indices.first = iHit;
       }
+      iHit++;
     }
     indicesByID[id] = indices;
   }
@@ -103,7 +104,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     auto position = hcalGeometry.getStripCenterPosition(id);
 
     // skip non-double-ended layers
-    if (id.layer() != ldmx::HcalID::HcalSection::BACK)
+    if (id.section() != ldmx::HcalID::HcalSection::BACK)
       continue;
 
     // get two hits to reconstruct
