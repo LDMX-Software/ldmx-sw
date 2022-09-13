@@ -64,13 +64,13 @@
 <variable name="si_active_sensor_dx" value="38.3399*mm" />
 <variable name="si_active_sensor_dy" value="98.33*mm" />
 <variable name="si_sensor_dx" value="40.34*mm" />
-<varibale name="si_sensor_dy" value="100.0*mm" />
+<variable name="si_sensor_dy" value="100.0*mm" />
 
 <!-- Large module and sensor dimensions --> 
 <variable name="si_large_active_sensor_dx" value="48*mm" />
 <variable name="si_large_active_sensor_dy" value="78*mm" />
 <variable name="si_large_sensor_dx" value="50*mm" />
-<varibale name="si_large_sensor_dy" value="80*mm" />
+<variable name="si_large_sensor_dy" value="80*mm" />
 
 <!-- 
   Clearance between the first/last sensor in the tagger tracker and the 
