@@ -83,8 +83,8 @@
 -->
 
 <!-- Separation between sensors in a layer -->
-<constant name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
-<constant name="recoil_sensor_l5_6_sep" value="1.0*mm"/>
+<constant name="recoil_l14_sensor_sep" value="3.0*mm"/>
+<constant name="recoil_l56_sensor_sep" value="1.0*mm"/>
 
 <!-- Seperation between layers --> 
 <constant name="recoil_delta_l1_l4" value="15*mm" />
