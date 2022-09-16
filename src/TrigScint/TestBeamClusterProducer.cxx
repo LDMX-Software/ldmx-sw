@@ -14,6 +14,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
   input_collection_ = ps.getParameter<std::string>("input_collection");
   passName_ = ps.getParameter<std::string>("input_pass_name");
   output_collection_ = ps.getParameter<std::string>("output_collection");
+  doCleanHits_  = ps.getParameter< bool >("doCleanHits");
   verbose_ = ps.getParameter<int>("verbosity");
 
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
@@ -25,6 +26,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
                    << "\nMax cluster width: " << maxWidth_
                    << "\nExpected pad hit time: " << padTime_
                    << "\nMax hit time delay: " << timeTolerance_
+				   << "\n\t doCleanHits = " << doCleanHits_
                    << "\nInput collection:     " << input_collection_
                    << "\nInput pass name:     " << passName_
                    << "\nOutput collection:    " << output_collection_
@@ -112,6 +114,12 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
     // map the index of the digi to the channel index
 	ldmx_log(debug) << "Digi has PE count " << digi.getPE() 
 					<< " and energy " << digi.getEnergy();
+
+	if (doCleanHits_ && digi.getQualityFlag() ) {
+	  ldmx_log(debug) << "Skipping hit with non-zero quality flag  " << digi.getQualityFlag();
+	  continue;
+	}
+	
     if (digi.getPE() >
         minThr_) {  // cut on a min threshold (for a non-seeding hit to be added
                     // to seeded clusters) already here
