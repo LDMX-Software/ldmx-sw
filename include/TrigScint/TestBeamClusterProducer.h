@@ -94,7 +94,11 @@ class TestBeamClusterProducer : public framework::Producer {
 
   // fraction of cluster energy deposition associated with beam electron sim
   // hits
+  // -- could convert this to instead be a "cleanb frac"; fraction of cluster energy coming from clean hits 
   float beamE_{0.};
+
+  /// boolean indicating whether we want to apply quality criteria from hit reconstruction
+  bool doCleanHits_{false};
 
   // cluster time (energy weighted based on hit time)
   float time_{0.};

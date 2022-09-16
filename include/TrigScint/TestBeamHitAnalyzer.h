@@ -57,7 +57,10 @@ namespace trigscint {
     int nChannels{16};
     int nTrkMax{100};
 	TH2F* hEvDisp;
+	TH2F* hEvDispPE;
 
+	int fillNb{0};
+	
 	//match nev, nchan above
 	TH1F* hOut[200][16];;
 	TH1F* hPE[16];

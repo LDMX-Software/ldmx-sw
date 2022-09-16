@@ -18,6 +18,7 @@ namespace trigscint {
     inputCol_  = parameters.getParameter< std::string >("inputCollection");
     outputCollection_  = parameters.getParameter< std::string >("outputCollection");
     inputPassName_  = parameters.getParameter< std::string >("inputPassName");
+    MIPresponse_  = parameters.getParameter< std::vector<double> >("MIPresponse");
     peds_  = parameters.getParameter< std::vector<double> >("pedestals");
     gain_  = parameters.getParameter< std::vector<double> >("gain");  //to do: vector
     startSample_  = parameters.getParameter< int >("startSample");
@@ -33,10 +34,11 @@ namespace trigscint {
 	      << "\n\t startSample = " << startSample_
 	      << "\n\t pulseWidth = " << pulseWidth_
 	      << "\n\t pulseWidthLYSO = " << pulseWidthLYSO_
-			  << "\n\t gain[0] = " << gain_[0] // TODO: vector 
+			  << "\n\t gain[0] = " << gain_[0] 
 	      << "\n\t nInstrumentedChannels = " << nInstrumentedChannels_
 	      << "\n\t doCleanHits = " << doCleanHits_
 	      << "\n\t pedestals[0] = " << peds_[0]
+	      << "\n\t MIPresponse[0] = " << MIPresponse_[0]
 	      << "\t." << std::endl;
 
     return;
@@ -102,7 +104,7 @@ namespace trigscint {
 	  int isClean=0; //false;
 	  float threshold =fabs(ped); // 2*fabs(peds_[ bar ]); // or sth
 	  if (doCleanHits_)
-		threshold = 10*fabs(ped); // stricter cut
+		threshold = 7*fabs(ped); // stricter cut
 
 	  int startT = startSample_ + chan.getTimeOffset();
 	  float maxQ = -999.;
@@ -134,23 +136,25 @@ namespace trigscint {
 	  // first check that hit passes any quality cuts
 	  uint flag = chan.getQualityFlag();
 	  if (doCleanHits_) {
-		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr > width + 2);
-		  flag += 4*isLongPulse;
-
-		if (//chan.getQualityFlag() == 0 && //maxQ/totSubtrQ < 2./3.) // skip "unnaturally" narrow hits 
-			//if ( fabs(chan.getPedestal()) < 15 //threshold //   //skip events that have strange plateaus
-			   //			   && (chan.getAvgQ()/chan.getPedestal()<0.8)  //skip events that have strange oscillations
-			// 1 < nSampAboveThr && nSampAboveThr < 10 ) // skip one-time sample flips and long weird pulses
-			flag == 0 )
+		//		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr > width + 2);
+		int isLongPulse=( nSampAboveThr > width );  //the short ones we'll have to single out otherwise (like spike flag or low Q) or live with
+		flag += 4*isLongPulse;
+		  if ( maxQ > 2e3 && nSampAboveThr < 3 && flag%2==0 ) //this was not flagged as a spike but is eerily narrow and with highQ; flag it as a spike. 
+			flag +=1;
+		if ( flag == 0 )
 			isClean=1;
 	  }
 
+	  float PE=totSubtrQ*6250./gain_[bar];
+	  if (PE > 20 ) // dont't want to intercalibrate the shot noise
+		PE*=MIPresponse_[bar];
+	  
 	  // set pulse properties like PE and amplitude
 	  hit.setSampAbovePed(nSampAbovePed);
 	  hit.setSampAboveThr(nSampAboveThr);
 	  hit.setQ(totSubtrQ);
 	  hit.setAmplitude(maxQ);
-	  hit.setPE( totSubtrQ*6250./gain_[bar] );
+	  hit.setPE( PE );
 	  hit.setHitQuality( isClean );	  
 	  hit.setQualityFlag( flag );	  
 	  // set bar id. set moduleNB = 0
