@@ -115,11 +115,17 @@
                 <rotationref ref="identity"/>
             </physvol> 
 
-            <!-- <physvol copynumber="2"> -->
-            <!--     <file name="target.gdml"  /> -->
-            <!--     <positionref ref="center" /> -->
-            <!--     <rotationref ref="identity"   /> -->
-            <!-- </physvol> -->
+            <physvol copynumber="2">
+                <file name="target.gdml"  />
+                <positionref ref="center" />
+                <rotationref ref="identity"   />
+            </physvol>
+
+	    <physvol copynumber="3">
+	      <file name="trig_scint.gdml"/>
+	      <positionref ref="trig_scint_pos"/>
+	      <rotationref ref="identity"/>
+	    </physvol>
 
             <physvol copynumber="5">
                 <file name="recoil.gdml"/>
@@ -137,11 +143,6 @@
                 <positionref ref="hadron_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
             </physvol>
-	    <physvol copynumber="8">
-	      <file name="trig_scint.gdml"/>
-	      <positionref ref="trig_scint_pos"/>
-	      <rotationref ref="identity"/>
-	    </physvol>
             <physvol>
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 
