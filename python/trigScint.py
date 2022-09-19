@@ -365,3 +365,17 @@ class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
             1.3   #1.6     # #15 -- uninstrumented
         ]
                  
+
+class TestBeamClusterAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamClusterAnalyzer','TrigScint')
+
+        self.inputCollection="TestBeamClustersUpClean"
+        self.inputPassName=""   #take any pass                                                                                         
+        self.inputHitCollection="testBeamHitsUp"
+        self.inputHitPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
+        self.deadChannels=[ 8 ]
+                 

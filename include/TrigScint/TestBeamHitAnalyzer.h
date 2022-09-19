@@ -64,6 +64,7 @@ namespace trigscint {
 	//match nev, nchan above
 	TH1F* hOut[200][16];;
 	TH1F* hPE[16];
+	TH1F* hPEinClusters[16];
 	TH2F* hPEVsDelta[16];
 	TH2F* hDeltaPEVsDelta[16];
 	TH2F* hPEmaxVsDelta;

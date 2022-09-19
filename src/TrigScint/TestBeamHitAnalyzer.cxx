@@ -115,6 +115,7 @@ namespace trigscint {
 	
 	for (int iB = 0; iB<nChannels; iB++) {
 	  hPE[iB]=new TH1F(Form("hPE_chan%i", iB), Form(";PE, chan%i", iB),nPEbins,0,PEmax);
+	  hPEinClusters[iB]=new TH1F(Form("hPEinClusters_chan%i", iB), Form(";PE, chan%i", iB),nPEbins,0,PEmax);
 	  hPEVsDelta[iB]=new TH2F(Form("hPEVsDelta_chan%i", iB), Form(";#Delta_{barID};PE, chan%i has max PE", iB),nChannels+1,-nChannels/2-0.5,nChannels/2+0.5, nPEbins,0,PEmax);
 	  hDeltaPEVsDelta[iB]=new TH2F(Form("hDeltaPEVsDelta_chan%i", iB), Form(";#Delta_{barID};#Delta_PE, chan%i has max PE", iB),nChannels+1,-nChannels/2-0.5,nChannels/2+0.5, nPEbins,0,PEmax);
 	}

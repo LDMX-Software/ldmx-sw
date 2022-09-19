@@ -156,7 +156,7 @@ class TrigScintCluster {
 
   // hit centroid in units of channel nb: energy weighted average of the IDs of
   // the hits forming the cluster
-  double centroid_{0};
+  double centroid_{-1};
 
   // hit centroid in x [mm] (not implemented)
   double centroidX_{0};
