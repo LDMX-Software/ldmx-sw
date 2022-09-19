@@ -77,7 +77,8 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.elec_noise = 1.5    # Electronic noise (in fC)
         self.sipm_gain = 1.e6    # SiPM Gain
         self.qie_sf = 40.        # QIE sampling frequency in MHz
-
+        self.zeroSupp_in_pe = 1. # min nPE in integrated pulse to keep hit  
+        
         import time
         self.verbose = False
 
@@ -103,7 +104,83 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         return digi
 
 
+class EventReadoutProducer(ldmxcfg.Producer) :
+    """Configuration for rechit producer for Trigger Scintillators"""
 
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::EventReadoutProducer','TrigScint')
+
+        self.input_collection="decodedQIEUp"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="QIEsamplesUp"
+        self.number_pedestal_samples=5
+        self.time_shift=5
+        self.fiber_to_shift=0
+        self.verbose = False
+        
+class TestBeamHitProducer(ldmxcfg.Producer) :
+    """Configuration for testbeam hit producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamHitProducer','TrigScint')
+
+        self.inputCollection="QIEsamplesUp"
+        self.inputPassName=""   #take any pass
+        self.outputCollection="testBeamHitsUp"
+        self.verbose = False
+        self.doCleanHits = False   #whether to apply quality criteria in hit reconstruction
+        self.nInstrumentedChannels=12 #number of channels 
+        self.startSample=10   # Sample where pulse is expected to start (triggered mode)
+        self.pulseWidth=5     # Number of consecutive samples to include in the pulse
+        self.pulseWidthLYSO=8 # as above, for LYSO 
+        self.gain = [2.e6]*12      # SiPM Gain
+        self.MIPresponse = [1.]*12      # channel MIP response correction factor 
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
+        ]
+
+                                
+class TestBeamClusterProducer(ldmxcfg.Producer) :
+    """Configuration for cluster producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamClusterProducer','TrigScint')
+
+        self.max_cluster_width = 2
+        self.max_channel_nb = 11
+        self.clustering_threshold = 40.  #to add in neighboring channels
+        self.seed_threshold = 60.
+        self.pad_time = -999.
+        self.time_tolerance = 50.
+        self.input_collection="testBeamHitsUp"
+        self.input_pass_name="" #take any pass
+        self.output_collection="TestBeamClustersUp"
+        self.doCleanHits = False   #whether to apply quality criteria from hit reconstruction
+        self.verbosity = 0
+
+    def up() :
+        """Get the cluster producer for the trigger pad upstream of target"""
+        cluster = TestBeamClusterProducer( 'testBeamClustersUp' )
+        cluster.input_collection = 'testBeamHitsUp'
+        cluster.output_collection= 'TeastBeamClustersUp'
+        cluster.pad_time= -999.
+        return cluster
+        
 class TrigScintRecHitProducer(ldmxcfg.Producer) :
     """Configuration for rechit producer for Trigger Scintillators"""
 
@@ -184,8 +261,6 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         return cluster
 
 
-from LDMX.Framework import ldmxcfg
-
 class TrigScintTrackProducer(ldmxcfg.Producer) :
     """Configuration for track producer for Trigger Scintillators"""
 
@@ -212,3 +287,92 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
+class QIEAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
+
+        self.inputCollection="QIEsamplesUp"
+        self.inputPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
+        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
+        ]
+
+        
+class QualityFlagAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::QualityFlagAnalyzer','TrigScint')
+
+        self.inputEventCollection="QIEsamplesUp"
+        self.inputEventPassName=""   #take any pass                                                                                         
+        self.inputHitCollection="testBeamHitsUp"
+        self.inputHitPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
+        self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
+        ]
+
+class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
+    """Configuration for linearized QIE analyzer for Trigger Scintillators"""
+    
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
+
+        self.inputCollection="testBeamHitsUp"
+        self.inputPassName=""   #take any pass                                                                                         
+        self.startSample=2      #first time sample included in reformatting 
+        self.pedestals=[
+            -4.6, #0.6,
+            -2.6, #4.4,
+            -0.6, #-1.25,
+            4.5,  #3.9, 	 # #3
+            1.9,  #10000., # #4: (used to be) dead channel during test beam
+            -2.2, #-2.1,   # #5 
+            0.9,  #2.9,    # #6
+            -1.2, #-2,     # #7
+            4.8,  #-0.4,   # #8
+            -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
+            -0.1, #1.5,    # #10
+            -1.7, #2.0,    # #11
+            3.3,  #3.7,    # #12 -- uninstrumented
+            -0.3, #2.8,    # #13 -- uninstrumented
+            1.3,  #-1.5,   # #14 -- uninstrumented
+            1.3   #1.6     # #15 -- uninstrumented
+        ]
+                 

@@ -127,6 +127,9 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   /// QIE sampling frequency [in MHz]
   float s_freq_;
 
+  /// Zero-suppression: discard any integrated pulses with PE < this number
+  float zeroSuppCut_{1.};
+
   /// SimQIE pointer
   SimQIE* smq_{nullptr};
 };

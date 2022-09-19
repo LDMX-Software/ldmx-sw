@@ -106,7 +106,7 @@ class SimQIE {
    * @param pulse pointer to the pulse we want to analyze
    * @note ideally, checks if the amplitude is above some threshold.
    */
-  bool PulseCut(QIEInputPulse* pulse);
+  bool PulseCut(QIEInputPulse* pulse, float cut);
 
  private:
   /// Indices of first bin of each subrange
