@@ -53,6 +53,16 @@ class TrigScintHit : public ldmx::HcalHit {
   /// Get the bar ID
   int getBarID() const { return barID_; }
 
+    /**
+   * Set hit pe.
+   *
+   * @param PE The photoelectron count of the hit.
+   */
+  void setPE(const float PE) { pe_ = PE; };
+
+  /// Get the hit pe 
+  float getPE() const { return pe_; }
+
   /**
    * Set hit module ID.
    *
@@ -82,6 +92,7 @@ class TrigScintHit : public ldmx::HcalHit {
   /// The fraction of energy associated with beam electrons.
   float beamEfrac_{0};
 
+  float pe_{0};
   ClassDef(TrigScintHit, 2);
 
 };  // TrigScintHit
