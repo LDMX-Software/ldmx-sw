@@ -45,6 +45,11 @@ class TrigScintQIEDigis {
   int getChanID() const { return chanID_; }
 
   /**
+   * Get electronics ID
+   */
+  int getElecID() const { return elecID_; }
+
+  /**
    * Get ADCs of all time samples
    */
   std::vector<int> getADC() const { return adcs_; }
@@ -59,11 +64,30 @@ class TrigScintQIEDigis {
    */
   std::vector<int> getCID() const { return cids_; }
 
+  
+  /**      
+   * Store the event time since spill counter
+   */
+  void setTimeSinceSpill(const uint32_t timeSpill) { timeSinceSpillCounter_ = timeSpill; }
+  //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ = timeSpill; }
+
+  /**      
+   * Store the event time since spill counter
+   */
+  uint32_t getTimeSinceSpill() const { return timeSinceSpillCounter_; }
+  
+
   /**
    * Store the channel ID
    */
   void setChanID(const int chanid) { chanID_ = chanid; }
 
+  /**
+   * Store the electronics ID
+   */
+  void setElecID(const int elecid) { elecID_ = elecid; }
+
+  
   /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
@@ -82,16 +106,23 @@ class TrigScintQIEDigis {
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
- private:
+protected:
   /// channel ID
   int chanID_;
+  /// channel ID
+  int elecID_{-1};
 
   /// analog to digital counts
   std::vector<int> adcs_;
   
   /// Time to Digital counts
   std::vector<int> tdcs_;
-  
+
+  /// Time since spill (a counter, to be divided by 125e6 or so)
+  uint32_t timeSinceSpillCounter_;
+
+
+ private:
   /// capacitor IDs
   std::vector<int> cids_;
 

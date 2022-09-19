@@ -129,16 +129,20 @@ std::vector<int> SimQIE::CapID(QIEInputPulse* pp) {
   return OP;
 }
 
-bool SimQIE::PulseCut(QIEInputPulse* pulse) {
+  bool SimQIE::PulseCut(QIEInputPulse* pulse, float cut) {
   if (pulse->GetNPulses() == 0) return false;
 
-  // Only keep the pulse if it produces 1 PE
-  // in atleast one of the time samples
-  float thr_in_pes = 1.0;
+  //  float thr_in_pes = 1.0; instead make configurable 
 
+  // Only keep the pulse if it produces 1 PE (or whatever the cutoff is set to)
+  //integrate over entire pulse so we catch also single-PE pulses 
+  float integral=0;
   for (int i = 0; i < maxts_; i++) {
-    if (pulse->Integrate(i * tau_, i * tau_ + tau_) >= thr_in_pes) return true;
+	//    if (pulse->Integrate(i * tau_, i * tau_ + tau_) >= thr_in_pes) return true;
+	integral+= pulse->Integrate(i * tau_, i * tau_ + tau_);
   }
+  if ( integral >= cut) return true;
+  
   return false;
 }
 }  // namespace trigscint

@@ -9,6 +9,7 @@
 // ldmx-sw
 #include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintHit.h"
+#include "TrigScint/Event/TestBeamHit.h"
 
 namespace ldmx {
 
@@ -47,7 +48,7 @@ class TrigScintCluster {
    */
 
   void addHit(uint idx, const ldmx::TrigScintHit *hit);
-
+  
   /**
    * @param idx The digi collection index of the hit seeding the cluster
    */
@@ -63,7 +64,7 @@ class TrigScintCluster {
    *Set the cluster photoelectron count (PE)
    * @param PE The cluster photoelectron count
    */
-  void setPE(int PE) { PE_ = PE; }
+  void setPE(float PE) { PE_ = PE; }
 
   /**
    *The number of hits forming the cluster
@@ -148,7 +149,7 @@ class TrigScintCluster {
   int nHits_{0};
 
   // total cluster photoelectron count
-  int PE_{0};
+  float PE_{0};
 
   // index of cluster seeding hit
   int seed_{-1};
