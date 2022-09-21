@@ -72,14 +72,6 @@
             <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
 
-        <volume name="trigger_pad_dn_bar_volume">
-            <materialref ref="Polyvinyltoluene"/>
-            <solidref ref="trigger_bar_box"/>
-            <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
-            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
-        </volume>
-
         <volume name="trig_scint">
             <materialref ref="Vacuum"/>
             <solidref ref="target_area_box" />
@@ -108,7 +100,7 @@
             </physvol>
 
             <auxiliary auxtype="Region" auxvalue="target" />
-            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+            <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
             <auxiliary auxtype="DetElem" auxvalue="target"/>
 
         </volume>
