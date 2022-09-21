@@ -230,7 +230,7 @@
         </auxiliary>   
         <auxiliary auxtype="Region" auxvalue="MagnetRegion">
             <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
-        </auxiliary
+        </auxiliary>
         <auxiliary auxtype="Region" auxvalue="tagger" >
             <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
         </auxiliary>
