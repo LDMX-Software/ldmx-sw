@@ -213,7 +213,7 @@ def single_4gev_e_upstream_tagger() :
     """
     particle_gun = gun('single_4gev_e_upstream_tagger')
     particle_gun.particle = 'e-'
-    particle_gun.position = [ -27.926 , 0 , -700 ] # mm
+    particle_gun.position = [ -27.926 , 0 , -800 ] # mm
     import math
     theta = math.radians(4.5)
     particle_gun.direction = [ math.sin(theta) , 0, math.cos(theta) ] #unitless
