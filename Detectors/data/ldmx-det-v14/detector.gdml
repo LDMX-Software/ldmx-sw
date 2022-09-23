@@ -115,11 +115,11 @@
                 <rotationref ref="identity"/>
             </physvol> 
 
-            <physvol copynumber="2">
-                <file name="target.gdml"  />
-                <positionref ref="center" />
-                <rotationref ref="identity"   />
-            </physvol>
+            <!-- <physvol copynumber="2"> -->
+            <!--     <file name="target.gdml"  /> -->
+            <!--     <positionref ref="center" /> -->
+            <!--     <rotationref ref="identity"   /> -->
+            <!-- </physvol> -->
 
 	    <physvol copynumber="3">
 	      <file name="trig_scint.gdml"/>
@@ -155,8 +155,8 @@
     <userinfo>
 
         <!-- detector version -->
-        <auxiliary auxtype="DetectorVersion" auxvalue="12">
-            <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v12"/>
+        <auxiliary auxtype="DetectorVersion" auxvalue="14">
+            <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v14"/>
             <auxiliary auxtype="Description" 
                         auxvalue="The v12 detector: ECal has motherboards inserted and HCal has made room for this extra space, Trigger Pads inserted."/>
         </auxiliary>
