@@ -139,48 +139,73 @@
 <variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance + trigger_pad_thickness + clearance + 5" />
 
 <!--
-    HCal 
+   HCal
+  TODO:
+  - add Hcal case
+  - do airBoxes need to be added?
 --> 
-
-<!-- Width and height of the envelope for the side and back HCal 
-     Must be the maximum of back hcal dx and side hcal dx 
---> 
-<variable name="hcal_envelope_dx" value="2000."/>
-<variable name="hcal_envelope_dy" value="2000."/>   
 
 <!-- Common HCal components --> 
-<variable name="air_thick"   value="2."/>
-<variable name="scint_thick" value="20."/>
-<variable name="scint_width" value="50."/>
+<variable name="hcal_airThick" value="2."/>
+<variable name="hcal_scintThick" value="20."/> (z in back hcal, y/x in side hcal)
+<variable name="hcal_scintWidth" value="50."/> (x,y in back hcal)
 
 <!-- Back HCal Layer component -->
-<variable name="hcal_back_dx"      value="2000."/>
-<variable name="hcal_back_dy"      value="2000."/>   
-<variable name="hcal_back_numLayers"    value="96"/>
-<variable name="hcal_back_numScint"     value="40"/>
-<variable name="hcal_back_abso_thick"   value="25"/>
-<variable name="hcal_back_layer_thick"  value="hcal_back_abso_thick + scint_thick + 2.0*air_thick"/>
-<variable name="hcal_back_dz"      value="hcal_back_numLayers*hcal_back_layer_thick"/>
+<variable name="back_hcal_numLayers" value="96"/>
+<variable name="back_hcal_numScint" value="40"/>
+<variable name="back_hcal_absoThick" value="25"/>
+<variable name="back_hcal_layerThick" value="back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick"/>
 
-<!-- 
-  Side HCal Layer component 
-
-  The number of side layers is determined by the overall envelope
-  we are using, the thickness of each layer, and the transverse
-  dimensions of the ECal.
-
-  With envelope set to 3100mm, ECal (dy,dx) set to (880,600), and thickness
-  of each layer set to 44mm, we get 25 LR layers and 28 TB layers.
+<!--
+  The back Hcal is 4704.mm long in z
 -->
-<variable name="hcal_sideTB_layers"     value="28"/>
-<variable name="hcal_sideLR_layers"     value="25"/>
-<variable name="hcal_side_abso_thick"   value="20."/>
+<variable name="back_hcal_dx" value="2000."/>
+<variable name="back_hcal_dy" value="2000."/>
+<variable name="back_hcal_dz" value="back_hcal_numLayers*back_hcal_layerThick"/>
 
-<!-- side_dz has to be greater than side_Ecal_dz -->
-<variable name="hcal_side_dz" value="600"/>        
+<!--
+  Side HCal Layer component 
+  Bars oriented in z: length 600
+  Bars oriented in x or y: 1200-1800
+  Side Hcal dz has to be greater than side Ecal dz
+-->
+<variable name="side_hcal_lengthA" value="1800."/>
+<variable name="side_hcal_lengthB" value="1600."/>
+<variable name="side_hcal_lengthC" value="1400."/>
+<variable name="side_hcal_lengthD" value="1200."/>
 
-<!-- Total calorimeter thickness -->         
-<constant name="hcal_dz" value="hcal_back_dz + hcal_side_dz" />
+<!--
+  num bars per module:
+  oriented in z: 4*1800/50. + 3*1600/50.+2*1400/50. + 3*1200/50. = 368
+  oriented in x or y: 12
+  num of bars oriented in z: varies by number
+-->
+<variable name="side_hcal_numLayersA" value="4"/>
+<variable name="side_hcal_numLayersB" value="3"/>
+<variable name="side_hcal_numLayersC" value="2"/>
+<variable name="side_hcal_numLayersD" value="3"/>
+
+<variable name="side_hcal_numScintA" value="side_hcal_lengthA/hcal_scintWidth"/>
+<variable name="side_hcal_numScintB" value="side_hcal_lengthB/hcal_scintWidth"/>
+<variable name="side_hcal_numScintC" value="side_hcal_lengthC/hcal_scintWidth"/>
+<variable name="side_hcal_numScintD" value="side_hcal_lengthD/hcal_scintWidth"/>
+<variable name="side_hcal_numScintZ" value="side_hcal_dz/hcal_scintWidth"/>
+
+<variable name="side_hcal_absoThick" value="20."/>
+<variable name="side_hcal_numLayers" value="(side_hcal_numLayersA+side_hcal_numLayersB+side_hcal_numLayersC+side_hcal_numLayersD)*2"/>
+<variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
+<variable name="side_hcal_moduleWidth" value="side_hcal_numLayers*side_hcal_layerThick"/>
+<variable name="side_hcal_moduleLength" value="side_hcal_lengthA"/>
+<variable name="side_hcal_dz" value="600."/>
+
+<!--
+  Total calorimeter envelope
+  Width and height of the envelope for the side and back Hcal
+  Must be the maximum of back hcal dx and side hcal dx
+-->
+<variable name="hcal_envelope_dx" value="3000."/>
+<variable name="hcal_envelope_dy" value="3000."/>
+<constant name="hcal_envelope_dz" value="back_hcal_dz + side_hcal_dz" />
 
 <!--
     ECal 
@@ -398,13 +423,13 @@ This value is in mm
   that need to be separate from the ECal cavern (like the
   side HCal).
 -->
-<variable name="side_Ecal_dx" value="880.6815"/>
-<variable name="side_Ecal_dy" value="600."/>
+<variable name="ecal_side_dx" value="880.6815"/>
+<variable name="ecal_side_dy" value="600."/>
 
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
     the thickness of the ECal calculated above.
 --> 
-<constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
-<constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
+<constant name="ecal_envelope_x" value="ecal_side_dx" /> 
+<constant name="ecal_envelope_y" value="ecal_side_dy" /> 
 <constant name="ecal_envelope_z" value="600.0" /> 
