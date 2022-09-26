@@ -219,7 +219,7 @@ class SimCalorimeterHit {
   /**
    * The true path length.
    */
-  float stepLength_{0};
+  float pathLength_{0};
 
   float preStepX_{0};
   float preStepY_{0};
