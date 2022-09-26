@@ -146,22 +146,22 @@
 --> 
 
 <!-- Common HCal components --> 
-<variable name="hcal_airThick" value="2."/>
-<variable name="hcal_scintThick" value="20."/> (z in back hcal, y/x in side hcal)
-<variable name="hcal_scintWidth" value="50."/> (x,y in back hcal)
+<constant name="hcal_airThick" value="2."/>
+<constant name="hcal_scintThick" value="20."/> (z in back hcal, y/x in side hcal)
+<constant name="hcal_scintWidth" value="50."/> (x,y in back hcal)
 
 <!-- Back HCal Layer component -->
-<variable name="back_hcal_numLayers" value="96"/>
-<variable name="back_hcal_numScint" value="40"/>
-<variable name="back_hcal_absoThick" value="25"/>
-<variable name="back_hcal_layerThick" value="back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick"/>
+<constant name="back_hcal_numLayers" value="96"/>
+<constant name="back_hcal_numScint" value="40"/>
+<constant name="back_hcal_absoThick" value="25"/>
+<constant name="back_hcal_layerThick" value="back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick"/>
 
 <!--
   The back Hcal is 4704.mm long in z
 -->
-<variable name="back_hcal_dx" value="2000."/>
-<variable name="back_hcal_dy" value="2000."/>
-<variable name="back_hcal_dz" value="back_hcal_numLayers*back_hcal_layerThick"/>
+<constant name="back_hcal_dx" value="2000."/>
+<constant name="back_hcal_dy" value="2000."/>
+<constant name="back_hcal_dz" value="back_hcal_numLayers*back_hcal_layerThick"/>
 
 <!--
   Side HCal Layer component 
@@ -171,17 +171,17 @@
   Length of bars oriented in z: side_hcal_dz
   Side Hcal dz has to be greater than side Ecal dz
 -->
-<variable name="side_hcal_dz" value="600."/>
+<constant name="side_hcal_dz" value="600."/>
 
 <--
   Bars oriented in x (top or bottom)
                 in y (left or right)
   Length varies.
 -->
-<variable name="side_hcal_lengthA" value="1800."/>
-<variable name="side_hcal_lengthB" value="1600."/>
-<variable name="side_hcal_lengthC" value="1400."/>
-<variable name="side_hcal_lengthD" value="1200."/>
+<constant name="side_hcal_lengthA" value="1800."/>
+<constant name="side_hcal_lengthB" value="1600."/>
+<constant name="side_hcal_lengthC" value="1400."/>
+<constant name="side_hcal_lengthD" value="1200."/>
 
 <!--
   num bars per module:
@@ -189,10 +189,10 @@
   oriented in x or y: 12
   num of bars oriented in z: varies by number
 -->
-<variable name="side_hcal_numLayersA" value="4"/>
-<variable name="side_hcal_numLayersB" value="3"/>
-<variable name="side_hcal_numLayersC" value="2"/>
-<variable name="side_hcal_numLayersD" value="3"/>
+<constant name="side_hcal_numLayersA" value="4"/>
+<constant name="side_hcal_numLayersB" value="3"/>
+<constant name="side_hcal_numLayersC" value="2"/>
+<constant name="side_hcal_numLayersD" value="3"/>
 
 <variable name="side_hcal_numScintA" value="side_hcal_lengthA/hcal_scintWidth"/>
 <variable name="side_hcal_numScintB" value="side_hcal_lengthB/hcal_scintWidth"/>
@@ -211,9 +211,10 @@
   Width and height of the envelope for the side and back Hcal
   Must be the maximum of back hcal dx and side hcal dx
 -->
-<variable name="hcal_envelope_dx" value="3000."/>
-<variable name="hcal_envelope_dy" value="3000."/>
-<constant name="hcal_envelope_dz" value="back_hcal_dz + side_hcal_dz" />
+<constant name="hcal_envelope_dx" value="3000."/>
+<constant name="hcal_envelope_dy" value="3000."/>
+<constant name="hcal_envelope_dz" value="back_hcal_dz + side_hcal_dz"/>
+<constant name="hcal_dz" value="back_hcal_dz + side_hcal_dz"/>
 
 <!--
     ECal 
