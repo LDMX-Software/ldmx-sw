@@ -178,8 +178,9 @@
     <box lunit="mm" name="side_hcal_scintXDBox" x="side_hcal_lengthD" y="hcal_scintThick" z="hcal_scintWidth"/>
 
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->     
-    <box lunit="mm" name="back_hcal_Box" x="hcal_envelope_dx" y="hcal_envelope_dy" z="back_hcal_dz+side_hcal_dz"/>
-    <box lunit="mm" name="ecal_Box" x="ecal_side_dx" y="ecal_side_dy" z="side_hcal_dz"/>  
+    <box lunit="mm" name="back_hcal_Box" x="hcal_envelope_dx" y="hcal_envelope_dy" z="hcal_dz"/>
+    <box lunit="mm" name="ecal_Box" x="ecal_side_dx" y="ecal_side_dy" z="side_hcal_dz"/>
+    <!-- The second solid is placed with given position, in the coordinates of the first solid -->
     <subtraction name="hadron_calorimeter_Box">
       <first ref="back_hcal_Box"/>
       <second ref="ecal_Box"/>

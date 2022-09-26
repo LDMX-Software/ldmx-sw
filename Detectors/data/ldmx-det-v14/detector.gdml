@@ -39,14 +39,18 @@
         -->
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-        <position name="em_calorimeter_pos" x="0.0" 
-          y="support_box_shift" z="em_calorimeter_pos_z+ecal_envelope_z/2"/>
+        <position name="em_calorimeter_pos"
+		  x="0.0" 
+		  y="support_box_shift"
+		  z="em_calorimeter_pos_z + ecal_envelope_z/2"/>
         <!-- the ecal support box is asymmetric in the vertical direction causing an additional
         shift relative to the origin at the target -->
-        <position name="hadron_calorimeter_pos" x="0.0" 
-          y="support_box_shift" z="hadron_calorimeter_pos_z"/>
-        <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />         
-
+        <position name="hadron_calorimeter_pos"
+		  x="0.0" 
+		  y="support_box_shift"
+		  z="hadron_calorimeter_pos_z"/>
+        <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
+	
     </define>
 
     <materials>
