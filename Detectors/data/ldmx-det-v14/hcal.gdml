@@ -9,19 +9,11 @@
     &constants; 
 
     <!-- loop variables - must be defined here -->
-    <!-- Back layer (bl) and strip (bs) -->
-    <variable name="bl" value="1"/>
-    <variable name="bs_y" value="1"/>
-    <variable name="bs_x" value="1"/>
-    <!-- Side module (sm), layer (sl) and strip (ss) -->
-    <variable name="sm" value="1"/>
-    <variable name="sl_A" value="1"/>
-    <variable name="sl_B" value="1"/>
-    <variable name="sl_C" value="1"/>
-    <variable name="sl_D" value="1"/>
-    <variable name="ss_Z" value="1"/>
-    <variable name="ss_XY" value="1"/>
-    
+    <variable name="layer" value="1"/>
+    <variable name="strip" value="1"/>
+    <variable name="module" value="1"/>
+    <variable name="section" value="1"/>
+
     <!-- 
         Starting positions of steel / scintillator of the back HCal w.r.t 
         center of the HCal mother volume, put absorber first.
@@ -165,17 +157,13 @@
     <box lunit="mm" name="back_hcal_scintXBox" x="back_hcal_dx" y="hcal_scintWidth" z="hcal_scintThick"/>
     <box lunit="mm" name="back_hcal_scintYBox" x="hcal_scintWidth" y="back_hcal_dy" z="hcal_scintThick"/>
 
-    <box lunit="mm" name="side_hcal_absoABox" x="side_hcal_lengthA" y="side_hcal_absoThick" z="side_hcal_dz"/>
-    <box lunit="mm" name="side_hcal_absoBBox" x="side_hcal_lengthB" y="side_hcal_absoThick" z="side_hcal_dz"/>
-    <box lunit="mm" name="side_hcal_absoCBox" x="side_hcal_lengthC" y="side_hcal_absoThick" z="side_hcal_dz"/>
-    <box lunit="mm" name="side_hcal_absoDBox" x="side_hcal_lengthD" y="side_hcal_absoThick" z="side_hcal_dz"/>
-
-    <box lunit="mm" name="side_hcal_scintZBox" x="hcal_scintWidth" y="hcal_scintThick" z="side_hcal_dz"/>
-    
-    <box lunit="mm" name="side_hcal_scintXABox" x="side_hcal_lengthA" y="hcal_scintThick" z="hcal_scintWidth"/>
-    <box lunit="mm" name="side_hcal_scintXBBox" x="side_hcal_lengthB" y="hcal_scintThick" z="hcal_scintWidth"/>
-    <box lunit="mm" name="side_hcal_scintXCBox" x="side_hcal_lengthC" y="hcal_scintThick" z="hcal_scintWidth"/>
-    <box lunit="mm" name="side_hcal_scintXDBox" x="side_hcal_lengthD" y="hcal_scintThick" z="hcal_scintWidth"/>
+    <loop for="module" from="1" to="side_hcal_numModules" step="1">
+      <box name="side_hcal_abso[module]Box" lunit="mm"
+	   x="side_hcal_length[module]" y="side_hcal_absoThick" z="side_hcal_dz"/>
+      <box name="side_hcal_scint[module]Box" lunit="mm"
+	   x="side_hcal_length[module]" y="hcal_scintThick" z="hcal_scintWidth"/>
+    </loop>
+    <box lunit="mm" name="side_hcal_scintZBox" x="hcal_scintWidth" y="hcal_scintThick" z="side_hcal_dz"/>    
 
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->     
     <box lunit="mm" name="back_hcal_Box" x="hcal_envelope_dx" y="hcal_envelope_dy" z="hcal_dz"/>
@@ -207,44 +195,21 @@
         <solidref ref="back_hcal_scintXBox"/>
       </volume>
       
-      <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->      
-      <volume name="side_hcal_absoAVolume">
-        <materialref ref="Steel"/>
-        <solidref ref="side_hcal_absoABox"/>
-      </volume>
-      <volume name="side_hcal_absoBVolume">
-        <materialref ref="Steel"/>
-        <solidref ref="side_hcal_absoBBox"/>
-      </volume>
-      <volume name="side_hcal_absoCVolume">
-	<materialref ref="Steel"/>
-        <solidref ref="side_hcal_absoCBox"/>
-      </volume>
-      <volume name="side_hcal_absoDVolume">
-	<materialref ref="Steel"/>
-        <solidref ref="side_hcal_absoDBox"/>
-      </volume>
+      <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->
+      <loop for="smod_j" from="1" to="side_hcal_numModules" step="1">
+	<volume name="side_hcal_abso[smod_j]Volume">
+          <materialref ref="Steel"/>
+          <solidref ref="side_hcal_abso[smod_j]Box"/>
+	</volume>
+	<volume name="side_hcal_scintX[smod_j]Volume">
+          <materialref ref="Scintillator"/>
+          <solidref ref="side_hcal_scintX[smod_j]Box"/>
+	</volume>
+      </loop>
 
       <volume name="side_hcal_scintZVolume">
         <materialref ref="Scintillator"/>
         <solidref ref="side_hcal_scintZBox"/>
-      </volume>
-      
-      <volume name="side_hcal_scintXAVolume">
-	<materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintXABox"/>
-      </volume>
-      <volume name="side_hcal_scintXBVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintXBBox"/>
-      </volume>
-      <volume name="side_hcal_scintXCVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintXCBox"/>
-      </volume>
-      <volume name="side_hcal_scintXDVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintXDBox"/>
       </volume>
       
       <!-- - - - - - - - -  FULL HCAL STRUCTURES - - - - - - - -  -->
@@ -253,17 +218,17 @@
 	<solidref    ref="hadron_calorimeter_Box"/>
 
 	<!-- BACK HCAL  -->                 	
-        <loop for="bl" from="1" to="back_hcal_numLayers" step="2">
+        <loop for="layer" from="1" to="back_hcal_numLayers" step="2">
 	  <physvol name="back_hcal_absoPhysvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_absoPos" unit="mm"
 		      x="0"
 		      y="0"
-		      z="back_hcal_startZAbso + (bl-1)*back_hcal_layerThick"/>
+		      z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
 	  
-	  <loop for="bs_X" from="0" to="back_hcal_numScint" step="1">
-            <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (bl)*256 + bs_X">
+	  <loop for="strip" from="0" to="back_hcal_numScint" step="1">
+            <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer)*256 + strip">
               <volumeref ref="back_hcal_scintXVolume"/>
               <position name="back_hcal_scintXPos" unit="mm"
 			x="0"
@@ -280,61 +245,67 @@
 		      z="back_hcal_startZAbso + (bl)*back_hcal_layerThick"/>
           </physvol>
 	   
-	  <loop for="bs_Y" from="0" to="back_hcal_numScint" step="1">
-	    <physvol name="back_hcal_scintYPhysvol" copynumber="1*256*256*256 + 0*256*256 + (bl+1)*256 + bs_Y">
+	  <loop for="strip" from="0" to="back_hcal_numScint" step="1">
+	    <physvol name="back_hcal_scintYPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer+1)*256 + strip">
               <volumeref ref="back_hcal_scintYVolume"/>
               <position name="back_hcal_scintYPos" unit="mm"
-			x="back_hcal_startXScint + (bs_Y)*hcal_scintWidth"
+			x="back_hcal_startXScint + (strip)*hcal_scintWidth"
 			y="0"
-			z="back_hcal_startZScint + (bl)*back_hcal_layerThick"/>
+			z="back_hcal_startZScint + (layer)*back_hcal_layerThick"/>
             </physvol>
 	  </loop>
 	</loop>
 
 	<!-- SIDE HCAL -->
-	<loop for="sm" from="1" to="1" step="1">
-          <loop for="sl_A" from="1" to="side_hcal_numLayersA" step="1">
+	<loop for="section" from="1" to="1" step="1">
+	  
+	  <loop for="module" from="1" to="side_hcal_numModules" step="1">
 
-	    <physvol name="side_hcal_absoPhysvol">
-	      <volumeref ref="side_hcal_absoVolume"/>
-	      <position name="side_hcal_absoPos" unit="mm"
-			x="side_hcal_startX"
-			y="side_hcal_startYAbso + (sl_A-1)*side_hcal_layerThick"
-			z="-hcal_back_dz/2.0"/>
-            </physvol>
-	    
-	    <!-- Strips oriented in z -->
-	    <loop for="ss_Z" from="1" to="side_hcal_numScintA" step="1">
-	      <physvol name="side_hcal_scintZPhysvol" copynumber="1*256*256*256 + 1*256*256 + (sl_A)*256 + (ss_Z)">
-		<volumeref ref="side_hcal_scintZVolume"/>
-		<position name="side_hcal_scintZPos" unit="mm"
-			  x="side_hcal_startX + (ststripZ-1)*hcal_scintWidth"
-			  y="side_hcal_startYScint + (sl_A-1)*side_hcal_layerThick"
-			  z="-hcal_back_dz/2.0"/>
-	      </physvol>
-	    </loop>
-	    
-	    <physvol name="side_hcal_absoPhysvol">
-              <volumeref ref="side_hcal_absoVolume"/>
-              <position name="side_hcal_absoPos" unit="mm"
-			x="side_hcal_startX"
-			y="side_hcal_startYAbso + (sl_A)*side_hcal_layerThick"
-			z="-hcal_back_dz/2.0"/>
-            </physvol>
-	    
-	    <!-- Strips oriented in x -->
-	    <loop for="ss_X" from="1" to="side_hcal_numScintZ" step="1">
-              <physvol name="side_hcal_scintZPhysvol" copynumber="1*256*256*256 + 1*256*256 + (sl_A)*256 + (ss_Z+20)">
-		<volumeref ref="side_hcal_scintZVolume"/>
-		<position name="side_hcal_scintZPos" unit="mm"
+            <loop for="layer" from="1" to="side_hcal_numLayers[module]" step="1">
+	      
+	      <physvol name="side_hcal_absoPhysvol">
+		<volumeref ref="side_hcal_absoVolume"/>
+		<position name="side_hcal_absoPos" unit="mm"
 			  x="side_hcal_startX"
-			  y="side_hcal_startYScint + (sl_A-1)*side_hcal_layerThick"
-			  z="-hcal_back_dz/2.0 + (sTstripX-1)*hcal_scintWidth"/>
+			  y="side_hcal_startYAbso + (layer-1)*side_hcal_layerThick"
+			  z="-hcal_back_dz/2.0"/>
               </physvol>
-            </loop>
+	      
+	      <!-- Strips oriented in z -->
+	      <loop for="strip" from="1" to="side_hcal_numScint[module]" step="1">
+		<physvol name="side_hcal_scintZPhysvol" copynumber="1*256*256*256 + 1*256*256 + (layer)*256 + (strip)">
+		  <volumeref ref="side_hcal_scintZVolume"/>
+		  <position name="side_hcal_scintZPos" unit="mm"
+			    x="side_hcal_startX + (strip-1)*hcal_scintWidth"
+			    y="side_hcal_startYScint + (layer-1)*side_hcal_layerThick"
+			    z="-hcal_back_dz/2.0"/>
+		</physvol>
+	      </loop>
+	      
+	      <physvol name="side_hcal_absoPhysvol">
+		<volumeref ref="side_hcal_absoVolume"/>
+		<position name="side_hcal_absoPos" unit="mm"
+			  x="side_hcal_startX"
+			  y="side_hcal_startYAbso + (strip)*side_hcal_layerThick"
+			  z="-hcal_back_dz/2.0"/>
+              </physvol>
+	      
+	      <!-- Strips oriented in x -->
+	      <loop for="strip" from="1" to="side_hcal_numScintZ" step="1">
+		<physvol name="side_hcal_scintZPhysvol" copynumber="1*256*256*256 + 1*256*256 + (layer)*256 + (strip+20)">
+		  <volumeref ref="side_hcal_scintZVolume"/>
+		  <position name="side_hcal_scintZPos" unit="mm"
+			    x="side_hcal_startX"
+			    y="side_hcal_startYScint + (layer-1)*side_hcal_layerThick"
+			    z="-hcal_back_dz/2.0 + (strip-1)*hcal_scintWidth"/>
+		</physvol>
+              </loop>
+	      
+	    </loop> <!-- End loop over layers -->
 	    
-	  </loop>
-	</loop>                                                                                                                                                                                           
+	  </loop> <!-- End loop over modules -->
+	  
+	</loop> <!-- End loop over sections -->
 	
 	<auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
