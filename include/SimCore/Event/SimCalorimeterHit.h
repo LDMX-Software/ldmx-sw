@@ -217,6 +217,22 @@ class SimCalorimeterHit {
   float z_{0};
 
   /**
+   * The true path length.
+   */
+  float stepLength_{0};
+
+  float preStepX_{0};
+  float preStepY_{0};
+  float preStepZ_{0};
+  float preStepTime_{0};
+  float postStepX_{0};
+  float postStepY_{0};
+  float postStepZ_{0};
+  float postStepTime_{0};
+  float velocity_{0};
+
+
+  /**
    * The global time of the hit.
    */
   float time_{0};
