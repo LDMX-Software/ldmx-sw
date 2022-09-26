@@ -165,9 +165,18 @@
 
 <!--
   Side HCal Layer component 
-  Bars oriented in z: length 600
-  Bars oriented in x or y: 1200-1800
+-->
+
+<--
+  Length of bars oriented in z: side_hcal_dz
   Side Hcal dz has to be greater than side Ecal dz
+-->
+<variable name="side_hcal_dz" value="600."/>
+
+<--
+  Bars oriented in x (top or bottom)
+                in y (left or right)
+  Length varies.
 -->
 <variable name="side_hcal_lengthA" value="1800."/>
 <variable name="side_hcal_lengthB" value="1600."/>
@@ -196,7 +205,6 @@
 <variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
 <variable name="side_hcal_moduleWidth" value="side_hcal_numLayers*side_hcal_layerThick"/>
 <variable name="side_hcal_moduleLength" value="side_hcal_lengthA"/>
-<variable name="side_hcal_dz" value="600."/>
 
 <!--
   Total calorimeter envelope
