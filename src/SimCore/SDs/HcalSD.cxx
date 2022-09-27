@@ -128,6 +128,17 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Set the step mid-point as the hit position.
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
   G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  // A Geant4 "touchable" is a way to uniquely identify a particular volume,
+  // short for touchable detector element. See the detector definition and
+  // response section of the Geant4 application developers manual for details.
+  //
+  // The TouchableHandle is just a reference counted pointer to a
+  // G4TouchableHistory object, which is a concrete implementation of a
+  // G4Touchable interface.
+  //
+  auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
+  // Affine transform for converting between local and global coordinates
+  auto topTransform{touchableHistory->GetTopTransform()};
   G4ThreeVector position =
       0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
   G4ThreeVector localPosition = aStep->GetPreStepPoint()
