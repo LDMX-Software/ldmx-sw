@@ -141,19 +141,11 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   auto topTransform{touchableHistory->GetTopTransform()};
   G4ThreeVector position =
       0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-  G4ThreeVector localPosition = aStep->GetPreStepPoint()
-                                    ->GetTouchableHandle()
-                                    ->GetHistory()
-                                    ->GetTopTransform()
-                                    .TransformPoint(position);
+  G4ThreeVector localPosition = topTransform.TransformPoint(position);
   hit.setPosition(position[0], position[1], position[2]);
 
   // Create the ID for the hit.
-  int copyNum = aStep->GetPreStepPoint()
-                    ->GetTouchableHandle()
-                    ->GetHistory()
-                    ->GetVolume(2)
-                    ->GetCopyNo();
+  int copyNum = touchableHistory->GetVolume(2)->GetCopyNo();
   ldmx::HcalID id = decodeCopyNumber(copyNum, localPosition, scint);
   hit.setID(id.raw());
 
@@ -173,17 +165,12 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // TODO: Units
 
   hit.setVelocity(track->GetVelocity());
-  auto localPreStepPoint{prePoint->GetTouchableHandle()
-                             ->GetHistory()
-                             ->GetTopTransform()
-                             .TransformPoint(prePoint->GetPosition())};
+  auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
   hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
                          localPreStepPoint[2]);
   hit.setPreStepTime(prePoint->GetGlobalTime());
-  auto localPostStepPoint{postPoint->GetTouchableHandle()
-                              ->GetHistory()
-                              ->GetTopTransform()
-                              .TransformPoint(postPoint->GetPosition())};
+  auto localPostStepPoint{
+      topTransform.TransformPoint(postPoint->GetPosition())};
   hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
                           localPostStepPoint[2]);
   hit.setPostStepTime(postPoint->GetGlobalTime());
