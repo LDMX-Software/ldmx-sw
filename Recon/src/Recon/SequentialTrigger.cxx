@@ -18,12 +18,12 @@ void SequentialTrigger::produce(framework::Event& event) {
   bool keepTrack = false;
   int  maskValue = 0; 
   for (int i = 0; i<trigger_list_.size(); i++){
-    if (!event.exists(trigger_list_[i],trigger_passNames_[i])) {
-      ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
-                      << trigger_list_[i] << "_" << trigger_passNames_[i]
-                      << " to skim! Exiting.";
-      return;
-    }
+    //if (!event.exists(trigger_list_[i],trigger_passNames_[i])) {
+    //  ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
+    //                  << trigger_list_[i] << "_" << trigger_passNames_[i]
+    //                  << " to skim! Exiting.";
+    //  return;
+    //}
     if (doAND_ and doOR_){
       ldmx_log(fatal) << "Can't do both doAND and doOR. Exiting.";
       return;
@@ -47,7 +47,7 @@ void SequentialTrigger::produce(framework::Event& event) {
   }
   //Used to validate if code was working
 
-  event.add("validation_check", hasPassed);
+  event.add("validation", hasPassed);
   
   // mark the event
   if (hasPassed)
@@ -56,6 +56,6 @@ void SequentialTrigger::produce(framework::Event& event) {
     setStorageHint(framework::hint_shouldDrop);
 }
 
-}  // namespace dqm
+}
 
 DECLARE_ANALYZER_NS(recon,SequentialTrigger);
