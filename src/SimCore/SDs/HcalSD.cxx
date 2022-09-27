@@ -157,6 +157,25 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   hit.addContrib(getTrackMap().findIncident(track_id), track_id,
                  track->GetParticleDefinition()->GetPDGEncoding(),
                  edep, track->GetGlobalTime());
+  //
+  // Pre/post step details for scintillator response simulation
+  // TODO: Units
+
+  hit.setVelocity(track->GetVelocity());
+  auto localPreStepPoint{prePoint->GetTouchableHandle()
+                             ->GetHistory()
+                             ->GetTopTransform()
+                             .TransformPoint(prePoint->GetPosition())};
+  hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
+                         localPreStepPoint[2]);
+  hit.setPreStepTime(prePoint->GetGlobalTime());
+  auto localPostStepPoint{postPoint->GetTouchableHandle()
+                              ->GetHistory()
+                              ->GetTopTransform()
+                              .TransformPoint(postPoint->GetPosition())};
+  hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
+                          localPostStepPoint[2]);
+  hit.setPostStepTime(postPoint->GetGlobalTime());
 
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =
