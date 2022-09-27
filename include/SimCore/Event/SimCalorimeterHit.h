@@ -118,6 +118,16 @@ class SimCalorimeterHit {
   std::vector<float> getPosition() const { return {x_, y_, z_}; }
 
   /**
+   * Get the XYZ pre-step position of the hit [mm].
+   * @return The XYZ position of the hit.
+   */
+  std::vector<float> getPreStepPosition() const { return {preStepX_, preStepY_, preStepZ_}; }
+  /**
+   * Get the XYZ post-step position of the hit [mm].
+   * @return The XYZ position of the hit.
+   */
+  std::vector<float> getPostStepPosition() const { return {postStepX_, postStepY_, postStepZ_}; }
+  /**
    * Set the XYZ position of the hit [mm].
    * @param x The X position.
    * @param y The Y position.
@@ -128,12 +138,62 @@ class SimCalorimeterHit {
     this->y_ = y;
     this->z_ = z;
   }
+  /**
+   * Set the XYZ pre-step position of the hit [mm].
+   * @param x The X position.
+   * @param y The Y position.
+   * @param z The Z position.
+   */
+  void setPreStepPosition(const float x, const float y, const float z) {
+    preStepX_ = x;
+    preStepY_ = y;
+    preStepZ_ = z;
+  }
+  /**
+   * Set the XYZ post-step position of the hit [mm].
+   * @param x The X position.
+   * @param y The Y position.
+   * @param z The Z position.
+   */
+  void setPostStepPosition(const float x, const float y, const float z) {
+    postStepX_ = x;
+    postStepY_ = y;
+    postStepZ_ = z;
+  }
+
+  void setPathLength(const float length) {
+    pathLength_ = length;
+  }
+  void setPreStepTime(const float time) {
+    preStepTime_ = time;
+  }
+  void setPostStepTime(const float time) {
+    postStepTime_ = time;
+  }
+
+  void setVelocity(float velocity) {
+    velocity_ = velocity;
+  }
+
 
   /**
    * Get the global time of the hit [ns].
    * @return The global time of the hit.
    */
   float getTime() const { return time_; }
+  /**
+   * Get the pre-step time of the hit [ns].
+   * @return The global time of the hit.
+   */
+  float getPreStepTime() const { return preStepTime_; }
+  /**
+   * Get the post-step time of the hit [ns].
+   * @return The global time of the hit.
+   */
+  float getPostStepTime() const { return postStepTime_; }
+
+  float getVelocity() const {return velocity_;}
+
 
   /**
    * Set the time of the hit [ns].
@@ -230,6 +290,7 @@ class SimCalorimeterHit {
   float postStepZ_{0};
   float postStepTime_{0};
   float velocity_{0};
+
 
 
   /**
