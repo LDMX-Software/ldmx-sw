@@ -311,7 +311,7 @@ them in the bilayer loop
 -->
 <variable name="PCB_dz" value="1.666"/>
 <variable name="Glue_dz" value="0.1"/>
-<variable name="Si_dz" value="0.5"/>
+<variable name="Si_dz" value="0.3"/>
 <variable name="GlueThick_dz" value="0.2"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->
 <variable name="MotherBoardAssembly_dz" value="8.166"/>
