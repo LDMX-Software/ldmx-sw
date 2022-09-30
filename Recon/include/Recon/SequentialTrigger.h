@@ -1,6 +1,6 @@
 /**
- * @file TriggerProcessor.h
- * @brief Class that provides a trigger decision for recon using a TriggerResult
+ * @file SequentialTrigger.h
+ * @brief Class that provides a trigger skimming decision from multiple Triggers based on either AND or OR.
  * object
  * @author Rory O'Dwyer, Stanford University
  * @author Lene Kristian Bryngemark, Stanford University
@@ -18,16 +18,17 @@
 namespace recon {
 
 /**
- * @class TriggerProcessor
- * @brief Provides a trigger decision for recon using a TriggerResult object.
- *
+ * @class SeqeuntialTrigger
+ * @brief Class that provides a trigger skimming decision from multiple Triggers based on either AND or OR.
+ * *
  * @note
- * TriggerProcessor takes in a set of parameters to be used in defining
- * the trigger algorithm. An event is passed to the processor and the relevant
- * algorithms are then run on the event (ECAL layer sum). A trigger decision is
- * executed and the decision along with the algorithm name and relevant
- * variables are stored in a TriggerResult object which is added to the
- * collection.
+ * TriggerProcessor takes in a set of parameters to determine whether, upon an
+ * input collection of triggers, an OR or AND descision will be made. Each
+ * trigger layer is obtained after TriggerProcessor is run, and then running
+ * through the array the first pass returns true for doOR_ and the first fail
+ * false for doAND_. Once at worst all triggers are run through, we set the
+ * keep event flag to the resultant doOR or doAND result. If doVAL is set to
+ * true, we produce and output collection with this boolean value.
  */
 class SequentialTrigger : public framework::Producer {
  public:
@@ -50,11 +51,10 @@ class SequentialTrigger : public framework::Producer {
   void configure(framework::config::Parameters& parameters) final override;
 
   /**
-   * Run the trigger algorithm and create a TriggerResult
-   * object to contain info about the trigger decision
-   * such as pass/fail, number of saved variables,
-   * etc.
-   * param event The event to run trigger algorithm on.
+   * Run the doOR or doAND check and create a SequentialTrigger
+   * object to contain the pass boolean value. Also sets the 
+   * Storage Hint.
+   * param event The event to run skimmer on.
    */
   virtual void produce(framework::Event& event);
 
@@ -62,16 +62,18 @@ class SequentialTrigger : public framework::Producer {
   /** The name of the input collection of triggers */
   std::vector<std::string> trigger_list_;
 
-  /** pass name of the triggers, should be uniform */
+  /** pass name of the triggers */
   std::vector<std::string> trigger_passNames_;
-
-  /** integer list corresponding to decimal values of binary masks which lead
-   * to a pass */
-  std::vector<int> pass_masks_;
   
-  /** options to run without masks*/
+  /** options to enable OR or AND skimming*/
   bool doOR_;
   bool doAND_;
+
+  /** 
+   * enables a output collection with the keep tag for the purposes of
+   * validation 
+   * */
+  bool doVAL_;
 };
 
 }  // namespace recon
