@@ -21,8 +21,8 @@
     <variable name="back_hcal_startZ" value="side_hcal_dz/2.0 - back_hcal_dz/2.0"/>
     <variable name="back_hcal_startZAbso" value="back_hcal_startZ + hcal_airThick + back_hcal_absoThick/2.0"/>
     <variable name="back_hcal_startZScint" value="back_hcal_startZ + hcal_airThick + back_hcal_absoThick + hcal_airThick + hcal_scintThick/2.0"/>
-    <variable name="back_hcal_startXScint" value="-hcal_envelope_dx/2.0"/>
-    <variable name="back_hcal_startYScint" value="-hcal_envelope_dy/2.0"/>
+    <variable name="back_hcal_startXScint" value="-back_hcal_dx/2.0"/>
+    <variable name="back_hcal_startYScint" value="-back_hcal_dy/2.0"/>
     
     <!-- 
         Starting positions of steel / scintillator of the side HCal w.r.t
@@ -243,7 +243,7 @@
 		      y="0"
 		      z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
-	  
+
 	  <loop for="strip" from="0" to="back_hcal_numScint" step="1">
             <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer)*256 + strip">
               <volumeref ref="back_hcal_scintXVolume"/>
