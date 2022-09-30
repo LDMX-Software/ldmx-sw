@@ -80,8 +80,7 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
 
   // Step details
-  // TODO: Units
-  hit.setPathLength(step->GetStepLength() / CLHEP::cm);
+  hit.setPathLength(step->GetStepLength());
   hit.setVelocity(track->GetVelocity());
   // Convert pre/post step position from global coordinates to coordinates
   // within the scintillator bar
