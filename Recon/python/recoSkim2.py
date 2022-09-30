@@ -29,14 +29,6 @@ from LDMX.Hcal import HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 hgeom = HcalGeometry.HcalGeometryProvider.getInstance()
 
-#from LDMX.Ecal import digi as eDigi
-#from LDMX.Ecal import vetos
-#from LDMX.Hcal import digi as hDigi
-                                                                                                      
-#from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-#from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-#from LDMX.TrigScint.trigScint import trigScintTrack
-
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
 #from LDMX.Recon.simpleTrigger import simpleTrigger as simpleTrig2
@@ -77,12 +69,6 @@ simpleSeqTrigger.pass_mask = ANDList
 #p.sequence = [ecalReDigi, ecalReReco, ecalRerecoVeto, tsDigisTag, tsDigisUp, tsDigisDown, tsClustersTag, tsClustersUp, tsClustersDown, trigScintTrack, eCount, simpleTrig1, simpleTrig2, simpleSeqTrigger, hcalReDigi, hcalReReco] 
 p.sequence = [eCount, simpleTrig1, simpleTrig2]
 p.outputFiles= [ "simoutput.root" ]
-
-#drop some scoring plane hits to make space, and old ecal digi+reco; only the veto and trigger results remain from the pure PN hits. also, keep sim hits for now, to be able to rerun reco/overlay if needed. 
-#p.keep = [ "drop MagnetScoringPlaneHits", "drop TrackerScoringPlaneHits", "drop HcalScoringPlaneHits", "drop EcalDigis_"+simPassName,  "drop EcalRecHits_"+simPassName,  "drop HcalRecHits_"+simPassName  ] 
-#p.keep = [ "drop MagnetScoringPlaneHits", "drop TrackerScoringPlaneHits", "drop HcalScoringPlaneHits", 
-#p.keep = ["drop EcalDigis_v12",  "drop EcalRecHits_"+simPassName,  "drop HcalRecHits_"+simPassName, "drop trigScintDigisTag_"+simPassName, "drop trigScintDigisUp_"+simPassName, "drop trigScintDigisDn_"+simPassName, "drop TriggerPadTaggerClusters_"+simPassName, "drop TriggerPadUpClusters_"+simPassName, "drop TriggerPadDownClusters_"+simPassName, "drop EcalVeto_"+simPassName  ] 
-
 p.termLogLevel = 0  # default is 2 (WARNING); but then logFrequency is ignored. level 1 = INFO.                                                            
 #print this many events to stdout (independent on number of events, edge case: round-off effects when not divisible. so can go up by a factor 2 or so)    
 logEvents=20

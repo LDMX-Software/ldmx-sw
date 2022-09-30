@@ -34,12 +34,10 @@ p.run = 1
 p.inputFiles =[ "simoutput.root" ]
 
 simpleSeqTrigger.trigger_list = ["Trigger","Trigger2"]
-ORList = [i for i in range(1,2**(len(simpleSeqTrigger.trigger_list)+1))]
-ANDList = [sum([2**i for i in range(len(simpleSeqTrigger.trigger_list))])]
-simpleSeqTrigger.trigger_passName = thisPassName
-simpleSeqTrigger.pass_mask = ORList
+simpleSeqTrigger.trigger_passNames = [thisPassName,thisPassName]
 simpleSeqTrigger.doOR = False
 simpleSeqTrigger.doAND = True
+simpleSeqTrigger.doVal = True
 
 #BDT seems to crash
 #p.sequence = [ecalReDigi, ecalReReco, ecalRerecoVeto, tsDigisTag, tsDigisUp, tsDigisDown, tsClustersTag, tsClustersUp, tsClustersDown, trigScintTrack, eCount, simpleTrig1, simpleTrig2, simpleSeqTrigger, hcalReDigi, hcalReReco] 
