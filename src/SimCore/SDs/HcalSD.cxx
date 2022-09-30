@@ -165,7 +165,6 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
                  edep, track->GetGlobalTime());
   //
   // Pre/post step details for scintillator response simulation
-  // TODO: Units
 
   // Convert back to mm
   hit.setPathLength(stepLength * CLHEP::cm / CLHEP::mm);
