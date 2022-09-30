@@ -29,6 +29,7 @@
 	center of the HCal mother volume, put absorber first.
     -->
     <!-- Side HCal sections: 1,2,3,4 are Top, Bottom, Left, Right -->
+    <!--
     <matrix name="side_hcal_startX" coldim="1" values="side_hcal_moduleWidth + ecal_side_dx/2.0
 						      -(side_hcal_moduleWidth + ecal_side_dx/2.0)
 						      side_hcal_moduleWidth + ecal_side_dx
@@ -46,7 +47,7 @@
 							   ecal_side_dy/2.0 + 2.0*hcal_airThick + side_hcal_absoThick + hcal_scintThick/2.0
 							   ecal_side_dy/2.0 + 2.0*hcal_airThick + side_hcal_absoThick + hcal_scintThick/2.0
 							   ecal_side_dy/2.0 + 2.0*hcal_airThick + side_hcal_absoThick + hcal_scintThick/2.0"/>
-
+    -->
   </define>
     
   <materials>
@@ -208,8 +209,9 @@
         <materialref ref="Scintillator"/>
         <solidref ref="back_hcal_scintXBox"/>
       </volume>
-      
+
       <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->
+      <!--
       <loop for="module" from="1" to="side_hcal_numModules" step="1">
 	<volume name="side_hcal_abso[module]Volume">
           <materialref ref="Steel"/>
@@ -225,6 +227,7 @@
         <materialref ref="Scintillator"/>
         <solidref ref="side_hcal_scintZBox"/>
       </volume>
+      -->
       
       <!-- - - - - - - - -  FULL HCAL STRUCTURES - - - - - - - -  -->
       <volume name="hadronic_calorimeter">
@@ -246,8 +249,8 @@
               <volumeref ref="back_hcal_scintXVolume"/>
               <position name="back_hcal_scintXPos" unit="mm"
 			x="0"
-			y="back_hcal_startYScint + (bs_X)*hcal_scintWidth"
-			z="back_hcal_startZScint + (bl-1)*back_hcal_layerThick"/>
+			y="back_hcal_startYScint + (strip)*hcal_scintWidth"
+			z="back_hcal_startZScint + (layer-1)*back_hcal_layerThick"/>
             </physvol>
           </loop>
 	  
@@ -256,7 +259,7 @@
             <position name="back_hcal_abso2Pos" unit="mm"
 		      x="0"
 		      y="0"
-		      z="back_hcal_startZAbso + (bl)*back_hcal_layerThick"/>
+		      z="back_hcal_startZAbso + (layer)*back_hcal_layerThick"/>
           </physvol>
 	   
 	  <loop for="strip" from="0" to="back_hcal_numScint" step="1">
@@ -271,6 +274,7 @@
 	</loop>
 
 	<!-- SIDE HCAL -->
+	<!--
 	<loop for="section" from="1" to="side_hcal_numSections" step="1">
 	  
 	  <loop for="module" from="1" to="side_hcal_numModules" step="1">
@@ -285,7 +289,6 @@
 			  z="-hcal_back_dz/2.0"/>
               </physvol>
 
-	      <!--
 	      <loop for="strip" from="1" to="side_hcal_numScint[module]" step="1">
 		<physvol name="side_hcal_scintZPhysvol" copynumber="1*256*256*256 + 1*256*256 + (layer)*256 + (strip)">
 		  <volumeref ref="side_hcal_scintZVolume"/>
@@ -313,12 +316,13 @@
 			    z="-hcal_back_dz/2.0 + (strip-1)*hcal_scintWidth"/>
 		</physvol>
               </loop>
-	      -->
-	    </loop> <!-- End loop over layers -->
+
+	    </loop> 
 	    
-	  </loop> <!-- End loop over modules -->
+	  </loop> 
 	  
-	</loop> <!-- End loop over sections -->
+	</loop> 
+	-->
 	
 	<auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
