@@ -145,10 +145,14 @@
   - do airBoxes need to be added?
 --> 
 
-<!-- Common HCal components --> 
+<!-- Common HCal components
+- Scintillator Thickness: oriented in z in back Hcal, y/x in side hcal
+- Scintillator Width: oriented in x/y in back Hcal
+-->
+
 <constant name="hcal_airThick" value="2."/>
-<constant name="hcal_scintThick" value="20."/> (z in back hcal, y/x in side hcal)
-<constant name="hcal_scintWidth" value="50."/> (x,y in back hcal)
+<constant name="hcal_scintThick" value="20."/> 
+<constant name="hcal_scintWidth" value="50."/> 
 
 <!-- Back HCal Layer component -->
 <constant name="back_hcal_numLayers" value="96"/>
@@ -166,19 +170,21 @@
 <!--
   Side HCal Layer component 
 -->
+<constant name="side_hcal_numSections" value="4"/>
+<constant name="side_hcal_absoThick" value="20."/>
 
-<--
+<!--
   Length of bars oriented in z: side_hcal_dz
   Side Hcal dz has to be greater than side Ecal dz
 -->
 <constant name="side_hcal_dz" value="600."/>
 
-<--
+<!--
   Bars oriented in x (top or bottom)
                 in y (left or right)
   Length varies.
 -->
-<variable name="side_hcal_numModules" value="4"/>
+<variable name="side_hcal_numModules" value="2"/>
 <matrix name="side_hcal_length" coldim="1" values="1800.
                                                    1600.
                                                    1400.
@@ -196,9 +202,7 @@
 						     side_hcal_length[3]/hcal_scintWidth
 						     side_hcal_length[4]/hcal_scintWidth"/>
 <variable name="side_hcal_numScintZ" value="side_hcal_dz/hcal_scintWidth"/>
-
-<variable name="side_hcal_absoThick" value="20."/>
-<variable name="side_hcal_numLayers" value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
+<variable name="side_hcal_numTotalLayers" value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
 <variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
 <variable name="side_hcal_moduleWidth" value="side_hcal_numLayers*side_hcal_layerThick"/>
 <variable name="side_hcal_moduleLength" value="side_hcal_length[1]"/>
