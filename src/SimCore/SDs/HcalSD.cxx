@@ -169,12 +169,14 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
   hit.setPathLength(stepLength);
   hit.setVelocity(track->GetVelocity());
-  auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
+  // Convert pre/post step position from global coordinates to coordinates within the
+  // scintillator bar
+  const auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
+  const auto localPostStepPoint{
+      topTransform.TransformPoint(postPoint->GetPosition())};
   hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
                          localPreStepPoint[2]);
   hit.setPreStepTime(prePoint->GetGlobalTime());
-  auto localPostStepPoint{
-      topTransform.TransformPoint(postPoint->GetPosition())};
   hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
                           localPostStepPoint[2]);
   hit.setPostStepTime(postPoint->GetGlobalTime());
