@@ -164,6 +164,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Pre/post step details for scintillator response simulation
   // TODO: Units
 
+  hit.setPathLength(stepLength);
   hit.setVelocity(track->GetVelocity());
   auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
   hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
