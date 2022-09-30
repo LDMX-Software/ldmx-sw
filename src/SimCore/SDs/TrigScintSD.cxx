@@ -77,6 +77,28 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
                  track->GetParticleDefinition()->GetPDGEncoding(), energy,
                  track->GetGlobalTime());
 
+
+
+  // Step details
+  // TODO: Units
+  hit.setPathLength(step->GetStepLength() / CLHEP::cm);
+  hit.setVelocity(track->GetVelocity());
+  // Convert pre/post step position from global coordinates to coordinates
+  // within the scintillator bar
+  const auto localPreStepPoint{
+      topTransform.TransformPoint(prePoint->GetPosition())};
+  const auto localPostStepPoint{
+      topTransform.TransformPoint(postPoint->GetPosition())};
+  hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
+                         localPreStepPoint[2]);
+
+  hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
+                         localPostStepPoint[2]);
+
+  hit.setPreStepTime(prePoint->GetGlobalTime());
+  hit.setPostStepTime(postPoint->GetGlobalTime());
+  
+
   return true;
 }
 
