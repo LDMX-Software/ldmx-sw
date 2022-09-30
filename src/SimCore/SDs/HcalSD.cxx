@@ -144,7 +144,10 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   G4ThreeVector localPosition = topTransform.TransformPoint(position);
   hit.setPosition(position[0], position[1], position[2]);
 
-  // Create the ID for the hit.
+  // Create the ID for the hit. Note 2 here corresponds to the "depth" of the
+  // geometry tree. If this changes in the GDML, this would have to be updated
+  // here. Currently, 0 corresponds to the world volume, 1 corresponds to the
+  // Hcal, and 2 to the bars/absorbers
   int copyNum = touchableHistory->GetVolume(2)->GetCopyNo();
   ldmx::HcalID id = decodeCopyNumber(copyNum, localPosition, scint);
   hit.setID(id.raw());
