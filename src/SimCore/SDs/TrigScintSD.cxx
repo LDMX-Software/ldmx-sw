@@ -37,6 +37,8 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   //  and we should keep that reference so that we are editing the correct hit
   ldmx::SimCalorimeterHit& hit = hits_.emplace_back();
 
+  G4StepPoint* prePoint = step->GetPreStepPoint();
+  G4StepPoint* postPoint = step->GetPostStepPoint();
   // Set the hit position
   auto position{0.5 * (step->GetPreStepPoint()->GetPosition() +
                        step->GetPostStepPoint()->GetPosition())};
@@ -46,6 +48,8 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
                           ->GetTopTransform()
                           .Inverse()
                           .TransformPoint(G4ThreeVector())};
+  auto position{0.5 * (prePoint->GetPosition() +
+                       postPoint->GetPosition())};
   hit.setPosition(position[0], position[1], volumePosition.z());
 
   // Get the track associated with this step
