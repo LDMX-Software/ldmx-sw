@@ -275,6 +275,10 @@ class SimCalorimeterHit {
   }
 
  private:
+
+  /**
+   * Member variables used in all calorimeter types
+   */
   /**
    * The detector ID.
    */
@@ -299,6 +303,47 @@ class SimCalorimeterHit {
    * The Z position.
    */
   float z_{0};
+
+
+  /**
+   * The global time of the hit.
+   */
+  float time_{0};
+
+  /**
+   * The list of track IDs contributing to the hit.
+   */
+  std::vector<int> trackIDContribs_;
+
+  /**
+   * The list of incident IDs contributing to the hit
+   */
+  std::vector<int> incidentIDContribs_;
+
+  /**
+   * The list of PDG codes contributing to the hit.
+   */
+  std::vector<int> pdgCodeContribs_;
+
+  /**
+   * The list of energy depositions contributing to the hit.
+   */
+  std::vector<float> edepContribs_;
+
+  /**
+   * The list of times contributing to the hit.
+   */
+  std::vector<float> timeContribs_;
+
+  /**
+   * The number of hit contributions.
+   */
+  unsigned nContribs_{0};
+
+  /*
+   * Parameters used only for hits corresponding to a single interactions
+   * (currently Hcal and TS).
+   */
 
   /**
    * The true path length [mm]. Can in general differ from the distance between
@@ -336,41 +381,6 @@ class SimCalorimeterHit {
   float velocity_{0};
 
 
-
-  /**
-   * The global time of the hit.
-   */
-  float time_{0};
-
-  /**
-   * The list of track IDs contributing to the hit.
-   */
-  std::vector<int> trackIDContribs_;
-
-  /**
-   * The list of incident IDs contributing to the hit
-   */
-  std::vector<int> incidentIDContribs_;
-
-  /**
-   * The list of PDG codes contributing to the hit.
-   */
-  std::vector<int> pdgCodeContribs_;
-
-  /**
-   * The list of energy depositions contributing to the hit.
-   */
-  std::vector<float> edepContribs_;
-
-  /**
-   * The list of times contributing to the hit.
-   */
-  std::vector<float> timeContribs_;
-
-  /**
-   * The number of hit contributions.
-   */
-  unsigned nContribs_{0};
 
   /**
    * ROOT class definition.
