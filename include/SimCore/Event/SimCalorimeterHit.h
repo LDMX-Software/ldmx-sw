@@ -349,7 +349,7 @@ class SimCalorimeterHit {
    * The true path length [mm]. Can in general differ from the distance between
    * the pre and post step position.
    */
-  float pathLength_{0};
+  float pathLength_{-1};
 
 
   /**
@@ -378,7 +378,7 @@ class SimCalorimeterHit {
   /**
    * The track velocity [mm/ns].
    */
-  float velocity_{0};
+  float velocity_{-1};
 
 
 
