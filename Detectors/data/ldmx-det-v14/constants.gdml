@@ -204,7 +204,7 @@
 <variable name="side_hcal_numScintZ" value="side_hcal_dz/hcal_scintWidth"/>
 <variable name="side_hcal_numTotalLayers" value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
 <variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
-<variable name="side_hcal_moduleWidth" value="side_hcal_numLayers*side_hcal_layerThick"/>
+<variable name="side_hcal_moduleWidth" value="side_hcal_numTotalLayers*side_hcal_layerThick"/>
 <variable name="side_hcal_moduleLength" value="side_hcal_length[1]"/>
 
 <!--
