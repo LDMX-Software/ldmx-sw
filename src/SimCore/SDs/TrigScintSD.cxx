@@ -52,14 +52,11 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // Affine transform for converting between local and global coordinates
   auto topTransform{touchableHistory->GetTopTransform()};
   // Set the hit position
-  auto volumePosition{step->GetPreStepPoint()
-                          ->GetTouchableHandle()
-                          ->GetHistory()
-                          ->GetTopTransform()
-                          .Inverse()
-                          .TransformPoint(G4ThreeVector())};
   auto position{0.5 * (prePoint->GetPosition() +
                        postPoint->GetPosition())};
+
+  // Convert the center of the bar to its corresponding global position
+  auto volumePosition{topTransform.Inverse().TransformPoint(G4ThreeVector())};
   hit.setPosition(position[0], position[1], volumePosition.z());
 
   // Get the track associated with this step
