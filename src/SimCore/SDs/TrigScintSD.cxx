@@ -40,8 +40,6 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   G4StepPoint* prePoint = step->GetPreStepPoint();
   G4StepPoint* postPoint = step->GetPostStepPoint();
   // Set the hit position
-  auto position{0.5 * (step->GetPreStepPoint()->GetPosition() +
-                       step->GetPostStepPoint()->GetPosition())};
   auto volumePosition{step->GetPreStepPoint()
                           ->GetTouchableHandle()
                           ->GetHistory()
