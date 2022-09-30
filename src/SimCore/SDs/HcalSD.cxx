@@ -98,7 +98,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   //              of the scintillator:
 
   G4double birksFactor(1.0);
-  G4double stepLength = aStep->GetStepLength();
+  G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
   // Do not apply Birks for gamma deposits!
   if (stepLength > 1.0e-6)  // Check, cut if necessary.
   {
