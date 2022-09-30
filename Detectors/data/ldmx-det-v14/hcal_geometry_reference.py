@@ -102,9 +102,6 @@ absorber_physvols = []
 horizontal_scint_physvols = []
 vertical_scint_physvols = []
 
-distance_to_subsequent_absorber_layer = back_hcal_layerThick
-distance_to_subsequent_scint_layer = 2*back_hcal_layerThick
-
 for i in range(1, back_hcal_numLayers, 2):
     # absorbers
     absorber_physvols.append(
@@ -171,23 +168,31 @@ def horizontal_scint_copynumbers():
         copy_num.append(copy_num_layer)
     return copy_num
 
-absorber_copy_numbers = absorber_copynumbers()
-horizontal_copy_numbers = horizontal_scint_copynumbers()
-vertical_copy_numbers = vertical_scint_copynumbers()
+def ref_back_hcal():
+    absorber_copy_numbers = absorber_copynumbers()
+    horizontal_copy_numbers = horizontal_scint_copynumbers()
+    vertical_copy_numbers = vertical_scint_copynumbers()
+    
+    print('Copy numbers')  
+    print('Absorber: ',absorber_copy_numbers)
+    print('Horizontal scintillator: ',horizontal_copy_numbers)
+    print('Vertical scintillator: ',vertical_copy_numbers)
 
-#print('Copy numbers')  
-#print('Absorber: ',absorber_copy_numbers)
-#print('Horizontal scintillator: ',horizontal_copy_numbers)
-#print('Vertical scintillator: ',vertical_copy_numbers)
+    # check that values are not repeated
+    horizontal = np.array(horizontal_copy_numbers)
+    vertical = np.array(vertical_copy_numbers)
+    all_scint = np.concatenate((horizontal, vertical), axis=None)
+    
+    _, horizontal_counts = np.unique(horizontal, return_counts=True)
+    assert( np.all(horizontal_counts == 1))
+    _, vertical_counts = np.unique(vertical, return_counts=True)
+    assert( np.all(vertical_counts == 1))
+    _, all_counts = np.unique(all_scint, return_counts=True)
+    assert( np.all(all_counts == 1))
 
-# check that values are not repeated
-horizontal = np.array(horizontal_copy_numbers)
-vertical = np.array(vertical_copy_numbers)
-all_scint = np.concatenate((horizontal, vertical), axis=None)
+    
+def ref_side_hcal():
+    absorber_copy_numbers = absorber_copynumbers()
 
-_, horizontal_counts = np.unique(horizontal, return_counts=True)
-assert( np.all(horizontal_counts == 1))
-_, vertical_counts = np.unique(vertical, return_counts=True)
-assert( np.all(vertical_counts == 1))
-_, all_counts = np.unique(all_scint, return_counts=True)
-assert( np.all(all_counts == 1))
+
+ref_side_hcal()
