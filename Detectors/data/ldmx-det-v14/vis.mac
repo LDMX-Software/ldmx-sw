@@ -4,7 +4,10 @@
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
 /vis/viewer/set/autoRefresh false
+/vis/list all
 /vis/verbose errors
+
+#/vis/viewer/set/background white
 
 # Draw geometry:
 /vis/drawVolume
@@ -14,18 +17,37 @@
 /vis/viewer/set/viewpointThetaPhi 140 160
 
 # Specify zoom value:
-/vis/viewer/zoom 4
+/vis/viewer/zoom 3
 
 # Specify style (surface or wireframe):
+#/vis/viewer/set/style surface
 /vis/viewer/set/style wireframe
 
 # Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0 0 0 -1 m
 
-/vis/geometry/set/colour back_hcal_abso_volume -1 0.71 0.25 0.05 1
+#/vis/geometry/set/colour back_hcal_absoVolume 0 green
+#/vis/geometry/set/colour back_hcal_scintYVolume 0 blue
+#/vis/geometry/set/colour back_hcal_scintXVolume 0 red
 
-/vis/geometry/set/colour back_hcal_ScintVBox_volume -1 1.00 0. 0. 1
-/vis/geometry/set/colour back_hcal_ScintHBox_volume -1 0.29 0.31 0.33 1
+/vis/geometry/set/colour side_hcal_scintZYVolume 0 red
+/vis/geometry/set/colour side_hcal_scintZXVolume 0 blue
+/vis/geometry/set/colour side_hcal_absoX_1Volume 0 green
+/vis/geometry/set/colour side_hcal_absoX_2Volume 0 green
+/vis/geometry/set/colour side_hcal_absoX_3Volume 0 green
+/vis/geometry/set/colour side_hcal_absoX_4Volume 0 green
+/vis/geometry/set/colour side_hcal_absoY_1Volume 0 cyan
+/vis/geometry/set/colour side_hcal_absoY_2Volume 0 cyan
+/vis/geometry/set/colour side_hcal_absoY_3Volume 0 cyan
+/vis/geometry/set/colour side_hcal_absoY_4Volume 0 cyan
+/vis/geometry/set/colour side_hcal_scintY_0Volume 0 magenta
+/vis/geometry/set/colour side_hcal_scintY_1Volume 0 magenta
+/vis/geometry/set/colour side_hcal_scintY_2Volume 0 magenta
+/vis/geometry/set/colour side_hcal_scintY_3Volume 0 magenta
+/vis/geometry/set/colour side_hcal_scintX_0Volume 0 gray
+/vis/geometry/set/colour side_hcal_scintX_1Volume 0 gray
+/vis/geometry/set/colour side_hcal_scintX_2Volume 0 gray
+/vis/geometry/set/colour side_hcal_scintX_3Volume 0 gray
 
 /vis/viewer/set/autoRefresh true
 /vis/verbose warnings

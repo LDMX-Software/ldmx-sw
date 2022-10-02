@@ -95,7 +95,7 @@ class HcalGeometry() :
         self.make_v2_prototype()
 
     def make_v13(self) :
-        """Create the HcalGeometry with the v12 geometry parameters
+        """Create the HcalGeometry with the v13 geometry parameters
 
         Only sets parameters that must align with the Hcal gdml constants.
 
@@ -231,50 +231,70 @@ class HcalGeometry() :
         self.v14 = HcalReadoutGeometry()
         
         # GDML-parameters
-        air_thick = 2.
-        scint_thick = 20.
-        scint_width = 50.
-        hcal_back_dx = 2000.
-        hcal_back_dy = 2000.
-        hcal_back_numLayers = 96
-        hcal_back_numScint = 40
-        hcal_back_abso_thick = 25
-        hcal_back_layer_thick = hcal_back_abso_thick + scint_thick + 2.0*air_thick
-        hcal_back_dz = hcal_back_numLayers*hcal_back_layer_thick
-        ecal_front_z = 24.0*10
-        hcal_side_dz = 600.
-        hcal_dz = hcal_back_dz + hcal_side_dz
-        side_Ecal_dx = 800.
-        side_Ecal_dy = 600.
+        hcal_airThick = 2.
+        hcal_scintThick = 20.
+        hcal_scintWidth = 50.
         
-        self.v14.ThicknessScint = scint_thick
-        self.v14.WidthScint = scint_width
-        self.v14.ZeroLayer = [ ecal_front_z + hcal_side_dz,
-                               hcal_side_dz/2,
-                               hcal_side_dz/2,
-                               hcal_side_dz/2,
-                               hcal_side_dz/2
-                              ]
-        self.v14.ZeroStrip = [hcal_back_dy/2,
-                              ecal_front_z,
-                              ecal_front_z,
-                              ecal_front_z,
-                              ecal_front_z
-                              ]
+        back_hcal_numLayers = 96
+        back_hcal_numScint = 40
+        back_hcal_absoThick = 25
+        back_hcal_layerThick = back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick
+        back_hcal_dx = 2000.
+        back_hcal_dy = 2000.
+        back_hcal_dz = back_hcal_numLayers*back_hcal_layerThick
+
+        side_hcal_numSections = 4
+        side_hcal_absoThick = 20.
+        side_hcal_dz = 600.
+        side_hcal_length = [1800.,1600.,1400.,1200.]
+        side_hcal_numLayers = [4 3 2 3]
+        side_hcal_numScintZ = [l/hcal_scintWidth for l in side_hcal_length]
+        side_hcal_numScintXY = side_hcal_dz/hcal_scintWidth
+        side_hcal_numTotalLayers = (side_hcal_numLayers[0]+side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3])*2
+        side_hcal_layerThick = side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick
+        side_hcal_moduleWidth = side_hcal_numLayers*side_hcal_layerThick
+        side_hcal_moduleLength = side_hcal_length[0]
+
+        hcal_envelope_dx = 3000.
+        hcal_envelope_dy = 3000.
+        hcal_envelope_dz = back_hcal_dz + side_hcal_dz
+        hcal_dz = hcal_back_dz + hcal_side_dz
+
+        ecal_side_dx = 880.6815
+        ecal_side_dy = 600.
+        ecal_front_z = 24.0*10
+        hcal_dz = hcal_back_dz + hcal_side_dz
+        
+        self.v14.ThicknessScint = hcal_scintThick
+        self.v14.WidthScint = hcal_scintWidth
+        self.v14.ZeroLayer = [
+            ecal_front_z + side_hcal_dz,
+            hcal_side_dz/2,
+            hcal_side_dz/2,
+            hcal_side_dz/2,
+            hcal_side_dz/2
+        ]
+        self.v14.ZeroStrip = [
+            hcal_back_dy/2,
+            ecal_front_z,
+            ecal_front_z,
+            ecal_front_z,
+            ecal_front_z
+        ]
         self.v14.LayerThickness = [
-            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
-            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
-            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
-            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick,
-            hcal_back_abso_thick + self.v14.ThicknessScint + 2*air_thick
+            back_hcal_absoThick + self.v14.ThicknessScint + 2*hcal_airThick,
+            back_hcal_absoThick + self.v14.ThicknessScint + 2*hcal_airThick,
+            back_hcal_absoThick + self.v14.ThicknessScint + 2*hcal_airThick,
+            back_hcal_absoThick + self.v14.ThicknessScint + 2*hcal_airThick,
+            back_hcal_absoThick + self.v14.ThicknessScint + 2*hcal_airThick
         ]
         self.v14.NumSections = 5
         self.v14.NumLayers = [
-            hcal_back_numLayers,
+            back_hcal_numLayers,
             28,28,26,26
         ]
         self.v14.NumStrips = [
-            hcal_back_numScint,
+            back_hcal_numScint,
             12,12,12,12
         ]
         self.v14.EcalDx = side_Ecal_dx

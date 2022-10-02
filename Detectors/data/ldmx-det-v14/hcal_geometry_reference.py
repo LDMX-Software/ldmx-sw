@@ -190,9 +190,7 @@ def ref_back_hcal():
     _, all_counts = np.unique(all_scint, return_counts=True)
     assert( np.all(all_counts == 1))
 
-    
 def ref_side_hcal():
-    absorber_copy_numbers = absorber_copynumbers()
-
-
+    horizontal_copy_numbers = horizontal_scint_copynumbers()
+    
 ref_side_hcal()
