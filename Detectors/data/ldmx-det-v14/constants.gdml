@@ -184,7 +184,7 @@
                 in y (left or right)
   Length varies.
 -->
-<variable name="side_hcal_numModules" value="2"/>
+<variable name="side_hcal_numModules" value="4"/>
 <matrix name="side_hcal_length" coldim="1" values="1800.
                                                    1600.
                                                    1400.
@@ -197,16 +197,16 @@
   num of bars oriented in z: varies by number
 -->
 <matrix name="side_hcal_numLayers" coldim="1" values="4 3 2 3"/>
-<matrix name="side_hcal_numScint" coldim="1" values="side_hcal_length[1]/hcal_scintWidth
-             			                     side_hcal_length[2]/hcal_scintWidth
-						     side_hcal_length[3]/hcal_scintWidth
-						     side_hcal_length[4]/hcal_scintWidth"/>
-<variable name="side_hcal_numScintZ" value="side_hcal_dz/hcal_scintWidth"/>
+<matrix name="side_hcal_numPrevLayers" coldim="1" values="0 4 7 9"/>
+<matrix name="side_hcal_numScintZ" coldim="1" values="side_hcal_length[1]/hcal_scintWidth
+                                                      side_hcal_length[2]/hcal_scintWidth
+						      side_hcal_length[3]/hcal_scintWidth
+						      side_hcal_length[4]/hcal_scintWidth"/>
+<variable name="side_hcal_numScintXY" value="side_hcal_dz/hcal_scintWidth"/>
 <variable name="side_hcal_numTotalLayers" value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
 <variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
 <variable name="side_hcal_moduleWidth" value="side_hcal_numTotalLayers*side_hcal_layerThick"/>
 <variable name="side_hcal_moduleLength" value="side_hcal_length[1]"/>
-
 <!--
   Total calorimeter envelope
   Width and height of the envelope for the side and back Hcal
