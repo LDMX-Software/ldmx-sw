@@ -367,7 +367,7 @@
                   <volumeref ref="side_hcal_scintY[module]Volume"/>
                   <position name="side_hcal_scintY[section][module][strip]Pos" unit="mm"
                             x="side_hcal_startXScint[section]*-1 + (side_hcal_signScint[section])*( 2*(layer-1)*side_hcal_layerThick + side_hcal_layerThick*2*side_hcal_numPrevLayers[module])"
-                            y="(side_hcal_signScint[section])*(ecal_side_dy+hcal_airThick+side_hcal_absoThick/2.0) + (side_hcal_signScint[section])*( side_hcal_length[module]-side_hcal_length[1] )/2."
+                            y="(side_hcal_signScint[section])*(ecal_side_dy+hcal_airThick+side_hcal_absoThick/2.0+hcal_scintThick/2.0) + (side_hcal_signScint[section])*( side_hcal_length[module]-side_hcal_length[1] )/2."
                             z="-back_hcal_dz/2.0 - side_hcal_dz/2.0 + (strip-1)*hcal_scintWidth"/>
                 </physvol>
 	      </loop>
