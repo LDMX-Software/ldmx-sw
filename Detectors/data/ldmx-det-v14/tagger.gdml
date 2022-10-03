@@ -12,13 +12,13 @@
     <variable name="i" value="1" />                                                       
 
     <!-- layer positions in x assuming a 1.5 T field. -->
-    <matrix name="tagger_layer_x" coldim="1" values=" -20.955*mm
-                                                      -14.643*mm
-                                                      -9.461*mm
-                                                      -5.407*mm
-                                                      -2.481*mm
+    <matrix name="tagger_layer_x" coldim="1" values=" -0.006*mm
                                                       -0.681*mm
-                                                      -0.006*mm " />
+                                                      -2.481*mm
+                                                      -5.407*mm
+                                                      -9.461*mm
+                                                      -14.643*mm
+                                                      -20.955*mm" />
                                                      
                                                               
     <!-- Position of the downstream face of the tagger envelope. -->
@@ -33,6 +33,17 @@
                                                       tagger_l7_mid_z-4*tagger_layer_delta
                                                       tagger_l7_mid_z-5*tagger_layer_delta
                                                       tagger_l7_mid_z-6*tagger_layer_delta" />
+
+    <!-- Rotation of stereo layer. -->
+    <matrix name="tagger_rot" coldim="1" values=" stereo_angle
+                                                  -stereo_angle
+                                                  stereo_angle
+                                                  -stereo_angle
+                                                  stereo_angle
+                                                  -stereo_angle
+                                                  stereo_angle" />
+
+
   </define>
   <materials> 
     &materials;
@@ -66,34 +77,19 @@
     <volume name="tagger">
       <materialref ref="Air"/>
       <solidref ref="tagger_box"/>
-      <!-- Layer 1 - stereo -->
-      <physvol>
-        <volumeref ref="tagger_sensor_vol" />
-        <position name="tagger_l1_stereo_pos" unit="mm" x="0" y="0.0" 
-                  z="tagger_layer_z[7] + tagger_layer_offset/2" />
-        <rotation name="tagger_l1_stereo_rot" unit="deg" x="0.0" y="0.0" z="stereo_angle" />
-      </physvol>
-      <!-- Axial layers -->
       <loop for="i" from="1" to="7" step="1">
+        <!-- Axial Layers -->
         <physvol>
           <volumeref ref="tagger_sensor_vol" />
-          <position name="tagger_axial_pos" unit="mm" x="0" y="0.0" 
-                    z="tagger_layer_z[i] - tagger_layer_offset/2"/>  
+          <position name="tagger_axial_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" 
+                    z="tagger_layer_z[i] - tagger_layer_offset"/>  
         </physvol>
-      </loop>
-      <!-- Stereo layers --> 
-      <loop for="i" from="1" to="6" step="2">
+        <!-- Stereo Layers --> 
         <physvol>
           <volumeref ref="tagger_sensor_vol" />
-          <position name="tagger_pstereo_pos" unit="mm" x="0" y="0.0" 
-                    z="tagger_layer_z[i] + tagger_layer_offset/2" />
-          <rotation name="tagger_pstereo_rot" unit="deg" x="0.0" y="0.0" z="stereo_angle" />
-        </physvol>
-        <physvol>
-          <volumeref ref="tagger_sensor_vol" />
-          <position name="tagger_nstereo_pos" unit="mm" x="0" y="0.0" 
-                    z="tagger_layer_z[i+1] + tagger_layer_offset/2" />
-          <rotation name="tagger_nstereo_rot" unit="deg" x="0.0" y="0.0" z="-stereo_angle" />
+          <position name="tagger_stereo_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" 
+                    z="tagger_layer_z[i] + tagger_layer_offset" />
+          <rotation name="tagger_stereo_rot" unit="deg" x="0.0" y="0.0" z="tagger_rot[i]" />
         </physvol>
       </loop>
     </volume>
