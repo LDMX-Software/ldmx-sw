@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
@@ -8,9 +9,13 @@
 
         &constants;   
 
-        <variable name="tagger_pos_z" value="-10*mm" /> 
-
-        <variable name="recoil_pos_z" value="10*mm"/>
+       <!--
+          Position of the tagger and recoil tracker envelopes with respect to
+          target.  The 9 mm offset was chosen such that the midpoints of the 
+          last (first) layer of the tagger (recoil) tracker are 25 mm apart.
+        -->
+        <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
+        <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
 
         <!-- Position of the ECal and HCal parent volumes -->
         <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
@@ -33,25 +38,7 @@
     </define>
 
     <materials>
-        <element Z="74" formula="W" name="W">
-            <atom type="A" unit="g/mol" value="183.842"/>
-        </element>           
-        <element Z="6" formula="C" name="C">
-            <atom type="A" unit="g/mol" value="12.0107"/>
-        </element>
-        <material name="Carbon" state="solid">
-            <MEE unit="eV" value="81"/>
-            <D unit="g/cm3" value="1.99999894768203"/>
-            <fraction n="1" ref="C"/>
-        </material>
-        <element Z="1" formula="H" name="H">
-            <atom type="A" unit="g/mol" value="1.00794"/>
-        </element>
-        <material name="Vacuum" state="gas">
-            <MEE unit="eV" value="19.2"/>
-            <D unit="g/cm3" value="9.99999473841014e-09"/>
-            <fraction n="1" ref="H"/>
-        </material>
+      &materials;
     </materials>
 
     <solids>
@@ -69,19 +56,17 @@
                 <positionref ref="tagger_pos"/>
                 <rotationref ref="identity"/>
             </physvol> 
-
             <physvol copynumber="2">
                 <file name="target.gdml"  />
                 <positionref ref="center" />
                 <rotationref ref="identity"   /> 
-            </physvol>
+            </physvol> 
 
             <physvol copynumber="5">
                 <file name="recoil.gdml"/>
                 <positionref ref="recoil_pos"/>
                 <rotationref ref="identity"/>
             </physvol>
-
             <physvol copynumber="6"> 
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
@@ -171,7 +156,7 @@
             <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
             <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
             <auxiliary auxtype="OffsetZ" auxvalue="-400.0" auxunit="mm"/>
-        </auxiliary>    
+        </auxiliary>
 
         <!-- define regions -->
         <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">

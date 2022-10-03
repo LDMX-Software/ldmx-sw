@@ -1,4 +1,10 @@
 
+<element Z="1" formula="H" name="H">
+  <atom type="A" unit="g/mol" value="1.00794"/>
+</element>
+<element Z="6" formula="C" name="C">
+  <atom type="A" unit="g/mol" value="12.0107"/>
+</element>
 <element Z="7" formula="N" name="N">
   <atom type="A" unit="g/mol" value="14.0068"/>
 </element>
@@ -8,12 +14,21 @@
 <element Z="18" formula="Ar" name="Ar">
   <atom type="A" unit="g/mol" value="39.9477"/>
 </element>
+<element Z="74" formula="W" name="W">
+  <atom type="A" unit="g/mol" value="183.842"/>
+</element>           
+
 <material name="Air" state="gas">
   <MEE unit="eV" value="85.643664635028"/>
   <D unit="g/cm3" value="0.00119999936860922"/>
   <fraction n="0.754" ref="N"/>
   <fraction n="0.234" ref="O"/>
   <fraction n="0.012" ref="Ar"/>
+</material>
+<material name="Carbon" state="solid">
+  <MEE unit="eV" value="81"/>
+  <D unit="g/cm3" value="1.99999894768203"/>
+  <fraction n="1" ref="C"/>
 </material>
 <element Z="14" formula="Si" name="Si">
   <atom type="A" unit="g/mol" value="28.0854"/>
@@ -22,4 +37,9 @@
   <MEE unit="eV" value="173"/>
   <D unit="g/cm3" value="2.32999877404956"/>
   <fraction n="1" ref="Si"/>
+</material>
+<material name="Vacuum" state="gas">
+  <MEE unit="eV" value="19.2"/>
+  <D unit="g/cm3" value="9.99999473841014e-09"/>
+  <fraction n="1" ref="H"/>
 </material>
