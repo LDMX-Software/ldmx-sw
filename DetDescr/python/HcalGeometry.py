@@ -247,18 +247,18 @@ class HcalGeometry() :
         side_hcal_absoThick = 20.
         side_hcal_dz = 600.
         side_hcal_length = [1800.,1600.,1400.,1200.]
-        side_hcal_numLayers = [4 3 2 3]
+        side_hcal_numLayers = [4,3,2,3]
         side_hcal_numScintZ = [l/hcal_scintWidth for l in side_hcal_length]
         side_hcal_numScintXY = side_hcal_dz/hcal_scintWidth
         side_hcal_numTotalLayers = (side_hcal_numLayers[0]+side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3])*2
         side_hcal_layerThick = side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick
-        side_hcal_moduleWidth = side_hcal_numLayers*side_hcal_layerThick
+        side_hcal_moduleWidth = side_hcal_numTotalLayers*side_hcal_layerThick
         side_hcal_moduleLength = side_hcal_length[0]
 
         hcal_envelope_dx = 3000.
         hcal_envelope_dy = 3000.
         hcal_envelope_dz = back_hcal_dz + side_hcal_dz
-        hcal_dz = hcal_back_dz + hcal_side_dz
+        hcal_dz = back_hcal_dz + side_hcal_dz
 
         ecal_side_dx = 880.6815
         ecal_side_dy = 600.
@@ -297,8 +297,8 @@ class HcalGeometry() :
             back_hcal_numScint,
             12,12,12,12
         ]
-        self.v14.EcalDx = side_Ecal_dx
-        self.v14.EcalDy = side_Ecal_dy
+        self.v14.EcalDx = ecal_side_dx
+        self.v14.EcalDy = ecal_side_dy
         self.v14.HalfTotalWidth = [(self.v14.NumStrips[0]*self.v14.WidthScint)/2,
                                    (self.v14.NumLayers[3]*self.v14.LayerThickness[3]+self.v14.EcalDx)/2,
                                    (self.v14.NumLayers[4]*self.v14.LayerThickness[4]+self.v14.EcalDx)/2,

@@ -32,14 +32,14 @@
 
 /vis/geometry/set/colour side_hcal_scintZYVolume 0 red
 /vis/geometry/set/colour side_hcal_scintZXVolume 0 blue
+/vis/geometry/set/colour side_hcal_absoX_0Volume 0 green
 /vis/geometry/set/colour side_hcal_absoX_1Volume 0 green
 /vis/geometry/set/colour side_hcal_absoX_2Volume 0 green
 /vis/geometry/set/colour side_hcal_absoX_3Volume 0 green
-/vis/geometry/set/colour side_hcal_absoX_4Volume 0 green
+/vis/geometry/set/colour side_hcal_absoY_0Volume 0 cyan
 /vis/geometry/set/colour side_hcal_absoY_1Volume 0 cyan
 /vis/geometry/set/colour side_hcal_absoY_2Volume 0 cyan
 /vis/geometry/set/colour side_hcal_absoY_3Volume 0 cyan
-/vis/geometry/set/colour side_hcal_absoY_4Volume 0 cyan
 /vis/geometry/set/colour side_hcal_scintY_0Volume 0 magenta
 /vis/geometry/set/colour side_hcal_scintY_1Volume 0 magenta
 /vis/geometry/set/colour side_hcal_scintY_2Volume 0 magenta
