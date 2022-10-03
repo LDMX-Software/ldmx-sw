@@ -26,18 +26,18 @@
 
     <!-- Side HCal sections: 1,2,3,4 are Top, Bottom, Left, Right -->
     <matrix name="side_hcal_sign" coldim="1" values="-1 1 -1 1"/>
-    <matrix name="side_hcal_startXAbso" coldim="1" values="-ecal_side_dx/2.0
-							   ecal_side_dx/2.0
+    <matrix name="side_hcal_startXAbso" coldim="1" values="-(ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick)
+							   ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick
 							   -(ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick/2.0)
 							   ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick/2.0"/>
-    <matrix name="side_hcal_startXScint" coldim="1" values="ecal_side_dx/2.0
-							    -ecal_side_dx/2.0
+    <matrix name="side_hcal_startXScint" coldim="1" values="ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick
+							    -(ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick)
 							    ecal_side_dx/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0
 							    -(ecal_side_dx/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0)"/>
     <matrix name="side_hcal_startYAbso" coldim="1" values="ecal_side_dy/2.0+hcal_airThick+side_hcal_absoThick/2.0
 							   -(ecal_side_dy/2.0+hcal_airThick+side_hcal_absoThick/2.0)
-							   -(ecal_side_dy+hcal_airThick+side_hcal_absoThick/2.0)
-							   (ecal_side_dy+hcal_airThick+side_hcal_absoThick/2.0)"/>
+							   -(ecal_side_dy)
+							   (ecal_side_dy)"/>
     <matrix name="side_hcal_startYScint" coldim="1" values="ecal_side_dy/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0
 							    -(ecal_side_dy/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0)
 							    -(ecal_side_dy/2.0-hcal_scintWidth/2.0)
@@ -243,8 +243,8 @@
 	<materialref ref="G4_AIR"/>
 	<solidref    ref="hadron_calorimeter_Box"/>
 
-	<!-- BACK HCAL  -->                 	
-        <loop for="layer" from="1" to="back_hcal_numLayers" step="2">
+	<!-- BACK HCAL  -->
+        <loop for="layer" from="1" to="2" step="2">
 	  <physvol name="back_hcal_abso1Physvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso1Pos" unit="mm"
@@ -253,6 +253,7 @@
 		      z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
 
+	  <!--
 	  <loop for="strip" from="0" to="back_hcal_numScint" step="1">
             <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer)*256 + strip">
               <volumeref ref="back_hcal_scintXVolume"/>
@@ -278,48 +279,49 @@
 			x="back_hcal_startXScint + (strip)*hcal_scintWidth"
 			y="0"
 			z="back_hcal_startZScint + (layer)*back_hcal_layerThick"/>
-            </physvol>
-	  </loop>
+			</physvol>
+			</loop>
+	  -->
 	</loop>
 
-	<!-- SIDE HCAL layers oriented in x 
+	<!-- SIDE HCAL layers oriented in x -->
 	<loop for="section" from="1" to="2" step="1">
 	  <loop for="module" from="1" to="side_hcal_numModules" step="1">
-
 	    <loop for="layer" from="1" to="side_hcal_numLayers[module]*2" step="2">
-
+	      <!--
 		  Absorber plates oriented in x
 		  x (start): ecal_side_dx/2.0
 		  y (start): ecal_side_dy/2.0+hcal_airThick+side_hcal_absoThick/2.0
-
+	      -->
 	      <physvol name="side_hcal_absoX1[section][module][layer]Physvol">
 		<volumeref ref="side_hcal_absoX[module]Volume"/>
 		<position name="side_hcal_absoX1[section][module][layer]Pos" unit="mm"
 			  x="side_hcal_startXAbso[section] + side_hcal_sign[section]*( side_hcal_length[module]-side_hcal_length[1] )/2."
 			  y="side_hcal_startYAbso[section] - side_hcal_sign[section]*( (layer-1)*side_hcal_layerThick + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module] )"
 			  z="-back_hcal_dz/2.0"/>
-              </physvol>
+			  </physvol>
 
+	      <!--
 		  Short strips oriented in z
 		  x (start): ecal_side_dx/2.0 (similar to absorber but with different sign)
 		  y (start): ecal_side_dy/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0
-
+	      -->
 	      <loop for="strip" from="1" to="side_hcal_numScintZ[module]" step="1">
 		<physvol name="side_hcal_scintZX[section][module][strip]Physvol" copynumber="1*256*256*256 + (section)*256*256 + (layer+2*side_hcal_numPrevLayers[module])*256 + (strip)">
 		  <volumeref ref="side_hcal_scintZXVolume"/>
 		  <position name="side_hcal_scintZX[section][module][strip]Pos" unit="mm"
-			    x="side_hcal_startXScint[section] + side_hcal_sign[section]*(strip-1)*hcal_scintWidth"
+			    x="-side_hcal_sign[section]*(ecal_side_dx/2.0-hcal_scintWidth/2.0) + side_hcal_sign[section]*(strip-1)*hcal_scintWidth"
 			    y="side_hcal_startYScint[section] - side_hcal_sign[section]*( (layer-1)*side_hcal_layerThick + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module])" 
 			    z="-back_hcal_dz/2.0"/>
 		</physvol>
 	      </loop>
 	      
-
+	      <!--
 		  Absorber plates oriented in x
 		  x (start): ecal_side_dx/2.0
 		  y (start): ecal_side_dy/2.0+hcal_airThick+side_hcal_absoThick/2.0
 		  + (x distance accounting for different layers) + (layer)*side_hcal_layerThick (to account for previous layer)
-
+	      -->
 	      <physvol name="side_hcal_absoX2[section][module]Physvol">
 		<volumeref ref="side_hcal_absoX[module]Volume"/>
 		<position name="side_hcal_absoX2[section][module]Pos" unit="mm"
@@ -328,13 +330,14 @@
 			  z="-back_hcal_dz/2.0"/>
 	      </physvol>
 
+	      <!--
 		  Long strips oriented in x
 		  x (start): ecal_side_dx/2.0 * -1 (to be centered)
 		  y (start): ecal_side_dy/2.0+2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0
 		  + (x distance accounting for different layers) + (layer)*side_hcal_layerThick (to account for previous layer)
 		  z (start): -back_hcal_dz/2.0 - side_hcal_dz/2.0
 		  + hcal_scintWidth/2.0 ( so that is centered)
-
+	      -->
 	      <loop for="strip" from="1" to="side_hcal_numScintXY" step="1">
 		<physvol name="side_hcal_scintX[section][module][strip]Physvol" copynumber="1*256*256*256 + (section)*256*256 + (layer+1+2*side_hcal_numPrevLayers[module])*256 + (strip+20)">
 		  <volumeref ref="side_hcal_scintX[module]Volume"/>
@@ -346,41 +349,31 @@
 	      </loop>
 
             </loop>
-
 	  </loop>
 	</loop>
-	-->
-	<!-- SIDE HCAL layers oriented in y -->
-	<physvol name="side_hcal_absoY1Physvol">
-	  <volumeref ref="side_hcal_absoY_0Volume"/>
-	  <position name="side_hcal_absoY1Pos" unit="mm"
-		    x="-(ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick/2.0)"
-                    y="-(ecal_side_dy)"
-                    z="-back_hcal_dz/2.0"/>
-        </physvol>
 
-	<!--
+	<!-- SIDE HCAL layers oriented in y 
 	<loop for="section" from="3" to="4" step="1">
           <loop for="module" from="1" to="2" step="1">
+            <loop for="layer" from="1" to="2*2" step="2">
 
-            <loop for="layer" from="1" to="2" step="1">
 
 		  Absorber plates oriented in y
 		  x (start): ecal_side_dx/2.0 + (hcal_airThick+side_hcal_absoThick/2.0)
 		             + (x distance accounting for different layers)
-                  y (start): ecal_side_dy ( if its ecal_side_dy/2.0, the absorber plates are not centered, use ecal_side_dy to get them centered)
+	          y (start): ecal_side_dy ( if its ecal_side_dy/2.0, the absorber plates are not centered, use ecal_side_dy to get them centered)
 		             + (side_hcal_length[module]-side_hcal_length[1])/2.0 (to account for length difference of other modules w.r.t the longest)
 
 	      <physvol name="side_hcal_absoY1[section][module][layer]Physvol">
                 <volumeref ref="side_hcal_absoY[module]Volume"/>
                 <position name="side_hcal_absoY1[section][module][layer]Pos" unit="mm"
-                          x="-(ecal_side_dx/2.0+hcal_airThick+side_hcal_absoThick/2.0)"
-                          y="-(ecal_side_dy+hcal_airThick+side_hcal_absoThick/2.0)"
+                          x="side_hcal_startXAbso[section] + side_hcal_sign[section]*( (layer-1)*side_hcal_layerThick + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module] )"
+                          y="side_hcal_startYAbso[section] + side_hcal_sign[section]*( side_hcal_length[module]-side_hcal_length[1] )/2."
                           z="-back_hcal_dz/2.0"/>
               </physvol>
 
 
-                  Short strips oriented in z
+		  Short strips oriented in z
 		  x (start): ecal_side_dx/2.0 + (2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0)
 		             + (layer-1)*side_hcal_layerThick ( to account for different x positions between layers of the same module)
 		             + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module] (to account for different x positions from  previous layers of different modules)
@@ -396,7 +389,7 @@
                             z="-back_hcal_dz/2.0"/>
                 </physvol>
 	      </loop>
-
+	      
 
 		  Absorber plates oriented in y
 		  x (start): ecal_side_dx/2.0 + (hcal_airThick+side_hcal_absoThick/2.0)
@@ -408,7 +401,7 @@
                           x="side_hcal_startXAbso[section] + side_hcal_sign[section]*( (layer)*side_hcal_layerThick + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module] )"
                           y="side_hcal_startYAbso[section] + side_hcal_sign[section]*( side_hcal_length[module]-side_hcal_length[1] )/2."
                           z="-back_hcal_dz/2.0"/>
-              </physvol>
+	      </physvol>
 
 
 		  Long strips oriented in y (each strip increases in x)
@@ -424,16 +417,15 @@
                   <volumeref ref="side_hcal_scintY[module]Volume"/>
                   <position name="side_hcal_scintY[section][module][strip]Pos" unit="mm"
                             x="side_hcal_startXScint[section] - side_hcal_sign[section]*( (layer)*side_hcal_layerThick + 2*side_hcal_layerThick*side_hcal_numPrevLayers[module] )"
-                            y=" -side_hcal_sign[section]*ecal_side_dy - side_hcal_sign[section]*( side_hcal_length[module]-side_hcal_length[1] )/2."
-                            z="-back_hcal_dz/2.0 - side_hcal_dz/2.0 + (strip-1)*hcal_scintWidth"/>
+                            y="-side_hcal_sign[section]*ecal_side_dy - side_hcal_sign[section]*( side_hcal_length[module]-side_hcal_length[1] )/2."
+                            z="-back_hcal_dz/2.0 - side_hcal_dz/2.0 + hcal_scintWidth/2.0 + (strip-1)*hcal_scintWidth"/>
                 </physvol>
-		</loop>
+	      </loop>
 
             </loop>
           </loop>
         </loop>  
 	-->
-	
 	<auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
 	<auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
 	<auxiliary auxtype="DetElem" auxvalue="Hcal"/>
