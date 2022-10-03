@@ -16,23 +16,50 @@
     <!-- Position in z of each sensor in the local coordinates of the envelope volume --> 
     <variable name="recoil_l1_z"  
               value="recoil_envelope_up_face_z + tracker_envelope_clearance"/>
-    <matrix name="recoil_layer_z" coldim="1" 
+    <matrix name="recoil_l14_z" coldim="1" 
             values=" recoil_l1_z
-                     recoil_l1_z+recoil_delta_l1_l4
-                     recoil_l1_z+2*recoil_delta_l1_l4
-                     recoil_l1_z+3*recoil_delta_l1_l4
-                     recoil_l1_z+3*recoil_delta_l1_l4+recoil_delta_l4_l5
-                     recoil_l1_z+3*recoil_delta_l1_l4+recoil_delta_l5_l6+recoil_delta_l5_l6" /> 
-    <matrix name="recoil_l56_xy" coldim="2" values=" 96.0  40.0
-                                                     48.0  40.0
+                     recoil_l1_z+recoil_delta_l14
+                     recoil_l1_z+2*recoil_delta_l14
+                     recoil_l1_z+3*recoil_delta_l14" />
+
+    <variable name="recoil_l5_mid_z" 
+              value="recoil_l1_z+3*recoil_delta_l14+recoil_delta_l45" />
+    <matrix name="recoil_l5_z" coldim="1" 
+      values="recoil_l5_mid_z+recoil_l56_sensor_sep
+              recoil_l5_mid_z-recoil_l56_sensor_sep
+              recoil_l5_mid_z+recoil_l56_sensor_sep
+              recoil_l5_mid_z-recoil_l56_sensor_sep
+              recoil_l5_mid_z+recoil_l56_sensor_sep
+              recoil_l5_mid_z+recoil_l56_sensor_sep
+              recoil_l5_mid_z-recoil_l56_sensor_sep
+              recoil_l5_mid_z+recoil_l56_sensor_sep
+              recoil_l5_mid_z-recoil_l56_sensor_sep
+              recoil_l5_mid_z+recoil_l56_sensor_sep" />
+   
+    <variable name="recoil_l6_mid_z" value="recoil_l5_mid_z+recoil_delta_l56" /> 
+    <matrix name="recoil_l6_z" coldim="1" 
+      values="recoil_l6_mid_z+recoil_l56_sensor_sep
+              recoil_l6_mid_z-recoil_l56_sensor_sep
+              recoil_l6_mid_z+recoil_l56_sensor_sep
+              recoil_l6_mid_z-recoil_l56_sensor_sep
+              recoil_l6_mid_z+recoil_l56_sensor_sep
+              recoil_l6_mid_z+recoil_l56_sensor_sep
+              recoil_l6_mid_z-recoil_l56_sensor_sep
+              recoil_l6_mid_z+recoil_l56_sensor_sep
+              recoil_l6_mid_z-recoil_l56_sensor_sep
+              recoil_l6_mid_z+recoil_l56_sensor_sep" />
+    
+    <matrix name="recoil_l56_xy" coldim="2" values=" 96.0  40.0 
+                                                     48.0  40.0 
                                                      0.0   40.0
                                                     -48.0  40.0
-                                                    -96.0  40.0
-                                                     96.0 -40.0
-                                                     48.0 -40.0
-                                                     0.0  -40.0
-                                                    -48.0 -40.0
+                                                    -96.0  40.0 
+                                                     96.0 -40.0 
+                                                     48.0 -40.0 
+                                                     0.0  -40.0 
+                                                    -48.0 -40.0 
                                                     -96.0 -40.0" />
+    
     <matrix name="recoil_l14_rot" coldim="1" values=" stereo_angle
                                                      -stereo_angle
                                                       stereo_angle
@@ -88,43 +115,36 @@
       <materialref ref="Air"/>
       <solidref ref="recoil_box"/>
       <loop for="i" from="1" to="4" step="1"> 
+        <!-- Axial sensors --> 
         <physvol> 
           <volumeref ref="recoil_l14_sensor_vol"/> 
           <position name="recoil_l14_axial_pos" unit="mm" x="0.0" y="0.0" 
-                    z="recoil_layer_z[i] - recoil_l14_sensor_sep/2" /> 
+                    z="recoil_l14_z[i] - recoil_l14_sensor_sep" /> 
         </physvol>
+        <!-- Stereo sensors -->
         <physvol> 
           <volumeref ref="recoil_l14_sensor_vol"/> 
           <position name="recoil_l14_stereo_pos" unit="mm" x="0.0" y="0.0" 
-                    z="recoil_layer_z[i] + recoil_l14_sensor_sep/2" /> 
+                    z="recoil_l14_z[i] + recoil_l14_sensor_sep" /> 
           <rotation name="recoil_l14_stereo_rot" unit="deg" x="0" y="0" z="recoil_l14_rot[i]"/>
         </physvol>
       </loop>
-      <loop for="i" from="1" to="9" step="2"> 
+      <!-- Axial layer only sensors --> 
+      <loop for="i" from="1" to="10" step="1"> 
         <physvol>
           <volumeref ref="recoil_l56_sensor_vol"/> 
-          <position name="recoil_l5_sensor_dpos" unit="mm" x="recoil_l56_xy[i, 1]" y="recoil_l56_xy[i, 2]"
-                    z="recoil_layer_z[5] + recoil_l56_sensor_sep/2" />  
-        </physvol> 
+          <position name="recoil_l5_sensor_pos" unit="mm" x="recoil_l56_xy[i, 1]" y="recoil_l56_xy[i, 2]"
+                    z="recoil_l5_z[i]" />  
+        </physvol>  
         <physvol>
           <volumeref ref="recoil_l56_sensor_vol"/> 
-          <position name="recoil_l5_sensor_upos" unit="mm" x="recoil_l56_xy[i+1, 1]"  y="recoil_l56_xy[i+1, 2]" 
-                    z="recoil_layer_z[5] - recoil_l56_sensor_sep/2" />  
+          <position name="recoil_l6_sensor_pos" unit="mm" x="recoil_l56_xy[i, 1]"  y="recoil_l56_xy[i, 2]" 
+                    z="recoil_l6_z[i]" />  
         </physvol>
-        <physvol>
-          <volumeref ref="recoil_l56_sensor_vol"/> 
-          <position name="recoil_l6_sensor_dpos" unit="mm" x="recoil_l56_xy[i, 1]" y="recoil_l56_xy[i, 2]" 
-            z="86*mm"/> <!-- + recoil_l56_sensor_sep/2" -->
-        </physvol> 
-        <physvol>
-          <volumeref ref="recoil_l56_sensor_vol"/> 
-          <position name="recoil_l6_sensor_upos" unit="mm" x="recoil_l56_xy[i+1, 1]" y="recoil_l56_xy[i+1, 2]"
-          z="86*mm" /> <!-- - recoil_l56_sensor_sep/2" -->  
-        </physvol> 
       </loop> 
     </volume>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-      <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      
+    <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+    <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      --> 
   </structure>
 
   <setup name="Default" version="1.0">

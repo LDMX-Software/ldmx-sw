@@ -76,7 +76,7 @@
   Clearance between the first/last sensor in the tagger tracker and the 
   upstream/downstream faces of the tagger envelope.
 -->
-<variable name="tracker_envelope_clearance" value="2.5*mm" />
+<variable name="tracker_envelope_clearance" value="3.5*mm" />
 
 <!-- 
     Recoil tracker.
@@ -87,15 +87,15 @@
 <constant name="recoil_l56_sensor_sep" value="1.0*mm"/>
 
 <!-- Seperation between layers --> 
-<constant name="recoil_delta_l1_l4" value="15*mm" />
-<constant name="recoil_delta_l4_l5" value="37*mm" />
-<constant name="recoil_delta_l5_l6" value="90*mm" />
+<constant name="recoil_delta_l14" value="15*mm" />
+<constant name="recoil_delta_l45" value="37*mm" />
+<constant name="recoil_delta_l56" value="90*mm" />
 
 <!-- Recoil envelope dimensions --> 
 <constant name="recoil_envelope_dx" value="magnet_gap_dx" />
 <constant name="recoil_envelope_dy" value="magnet_gap_dy" />
 <variable name="recoil_envelope_dz" 
-    value="tracker_envelope_clearance*2 + recoil_delta_l1_l4*3 + recoil_delta_l4_l5 + recoil_delta_l5_l6" />
+    value="tracker_envelope_clearance*2 + recoil_delta_l14*3 + recoil_delta_l45 + recoil_delta_l56" />
 
 <!--
     Tagger Tracker 
