@@ -143,8 +143,8 @@
         </physvol>
       </loop> 
     </volume>
-    <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      --> 
+    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+    <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>  
   </structure>
 
   <setup name="Default" version="1.0">
