@@ -247,7 +247,8 @@
         <loop for="layer" from="1" to="back_hcal_numLayers" step="2">
 
           <!-- Back Hcal Absorbers -->
-          <physvol name="back_hcal_abso1Physvol">
+          <!-- Note: Placing two volumes at once since we are stepping two layers at a time  -->
+          <physvol name="back_hcal_absoPhysvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso1Pos" unit="mm"
                       x="0"
@@ -255,7 +256,7 @@
                       z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
 
-          <physvol name="back_hcal_abso2Physvol">
+          <physvol name="back_hcal_absoPhysvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso2Pos" unit="mm"
                       x="0"
