@@ -239,49 +239,47 @@
     </volume>
       
       <!-- - - - - - - - -  FULL HCAL STRUCTURES - - - - - - - -  -->
-      <volume name="hadronic_calorimeter">
-  <materialref ref="G4_AIR"/>
-  <solidref    ref="hadron_calorimeter_Box"/>
-
-  <!-- BACK HCAL  -->
+    <volume name="hadronic_calorimeter">
+      <materialref ref="G4_AIR" />
+      <solidref ref="hadron_calorimeter_Box" />
+      <!-- BACK HCAL  -->
         <loop for="layer" from="1" to="back_hcal_numLayers" step="2">
-    <physvol name="back_hcal_abso1Physvol">
+          <physvol name="back_hcal_abso1Physvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso1Pos" unit="mm"
-          x="0"
-          y="0"
-          z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
+                      x="0"
+                      y="0"
+                      z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
 
-    <loop for="strip" from="0" to="back_hcal_numScint" step="1">
+          <loop for="strip" from="0" to="back_hcal_numScint" step="1">
             <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer)*256 + strip">
               <volumeref ref="back_hcal_scintXVolume"/>
               <position name="back_hcal_scintXPos" unit="mm"
-      x="0"
-      y="back_hcal_startYScint + (strip)*hcal_scintWidth"
-      z="back_hcal_startZScint + (layer-1)*back_hcal_layerThick"/>
+                        x="0"
+                        y="back_hcal_startYScint + (strip)*hcal_scintWidth"
+                        z="back_hcal_startZScint + (layer-1)*back_hcal_layerThick"/>
             </physvol>
           </loop>
 
-    <physvol name="back_hcal_abso2Physvol">
+          <physvol name="back_hcal_abso2Physvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso2Pos" unit="mm"
-          x="0"
-          y="0"
-          z="back_hcal_startZAbso + (layer)*back_hcal_layerThick"/>
+                      x="0"
+                      y="0"
+                      z="back_hcal_startZAbso + (layer)*back_hcal_layerThick"/>
           </physvol>
 
-    <loop for="strip" from="0" to="back_hcal_numScint" step="1">
-      <physvol name="back_hcal_scintYPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer+1)*256 + strip">
+          <loop for="strip" from="0" to="back_hcal_numScint" step="1">
+            <physvol name="back_hcal_scintYPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer+1)*256 + strip">
               <volumeref ref="back_hcal_scintYVolume"/>
               <position name="back_hcal_scintYPos" unit="mm"
-      x="back_hcal_startXScint + (strip)*hcal_scintWidth"
-      y="0"
-      z="back_hcal_startZScint + (layer)*back_hcal_layerThick"/>
-      </physvol>
-    </loop>
-
-  </loop>
+                        x="back_hcal_startXScint + (strip)*hcal_scintWidth"
+                        y="0"
+                        z="back_hcal_startZScint + (layer)*back_hcal_layerThick"/>
+            </physvol>
+          </loop>
+        </loop> <!-- Layer  -->
 
   <!-- SIDE HCAL layers oriented in x -->
   <!--
