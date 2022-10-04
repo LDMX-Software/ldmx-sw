@@ -243,7 +243,10 @@
       <materialref ref="G4_AIR" />
       <solidref ref="hadron_calorimeter_Box" />
       <!-- BACK HCAL  -->
+        <!-- Note the step size of 2  -->
         <loop for="layer" from="1" to="back_hcal_numLayers" step="2">
+
+          <!-- Back Hcal Absorbers -->
           <physvol name="back_hcal_abso1Physvol">
             <volumeref ref="back_hcal_absoVolume"/>
             <position name="back_hcal_abso1Pos" unit="mm"
@@ -252,6 +255,15 @@
                       z="back_hcal_startZAbso + (layer-1)*back_hcal_layerThick"/>
           </physvol>
 
+          <physvol name="back_hcal_abso2Physvol">
+            <volumeref ref="back_hcal_absoVolume"/>
+            <position name="back_hcal_abso2Pos" unit="mm"
+                      x="0"
+                      y="0"
+                      z="back_hcal_startZAbso + (layer)*back_hcal_layerThick"/>
+          </physvol>
+
+          <!-- Back Hcal Strips oriented along X-axis  -->
           <loop for="strip" from="0" to="back_hcal_numScint" step="1">
             <physvol name="back_hcal_scintXPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer)*256 + strip">
               <volumeref ref="back_hcal_scintXVolume"/>
@@ -262,14 +274,7 @@
             </physvol>
           </loop>
 
-          <physvol name="back_hcal_abso2Physvol">
-            <volumeref ref="back_hcal_absoVolume"/>
-            <position name="back_hcal_abso2Pos" unit="mm"
-                      x="0"
-                      y="0"
-                      z="back_hcal_startZAbso + (layer)*back_hcal_layerThick"/>
-          </physvol>
-
+          <!-- Back Hcal Strips oriented along Y-axis  -->
           <loop for="strip" from="0" to="back_hcal_numScint" step="1">
             <physvol name="back_hcal_scintYPhysvol" copynumber="1*256*256*256 + 0*256*256 + (layer+1)*256 + strip">
               <volumeref ref="back_hcal_scintYVolume"/>
@@ -279,7 +284,7 @@
                         z="back_hcal_startZScint + (layer)*back_hcal_layerThick"/>
             </physvol>
           </loop>
-        </loop> <!-- Layer  -->
+        </loop> <!-- Back Hcal layer  -->
 
   <!-- SIDE HCAL layers oriented in x -->
   <!--
