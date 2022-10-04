@@ -193,50 +193,50 @@
   
   <structure>      
     
-      <!-- - - - - - - - -  BACK HCAL STRUCTURES - - - - - - - -  -->
-      <volume name="back_hcal_absoVolume">
-        <materialref ref="Steel"/>
-        <solidref ref="back_hcal_absoBox"/>
-      </volume>
-      
-      <volume name="back_hcal_scintYVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="back_hcal_scintYBox"/>
-      </volume>
-      
-      <volume name="back_hcal_scintXVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="back_hcal_scintXBox"/>
-      </volume>
+    <!-- - - - - - - - -  BACK HCAL STRUCTURES - - - - - - - -  -->
+    <volume name="back_hcal_absoVolume">
+      <materialref ref="Steel" />
+      <solidref ref="back_hcal_absoBox" />
+    </volume>
 
-      <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->
-      <loop for="module" from="1" to="side_hcal_numModules" step="1">
-  <volume name="side_hcal_absoX[module]Volume">
-          <materialref ref="Steel"/>
-          <solidref ref="side_hcal_absoX[module]Box"/>
-  </volume>
-  <volume name="side_hcal_absoY[module]Volume">
-          <materialref ref="Steel"/>
-          <solidref ref="side_hcal_absoY[module]Box"/>
-        </volume>
-  <volume name="side_hcal_scintX[module]Volume">
-          <materialref ref="Scintillator"/>
-          <solidref ref="side_hcal_scintX[module]Box"/>
-  </volume>
-  <volume name="side_hcal_scintY[module]Volume">
-          <materialref ref="Scintillator"/>
-          <solidref ref="side_hcal_scintY[module]Box"/>
-        </volume>
-      </loop>
+    <volume name="back_hcal_scintYVolume">
+      <materialref ref="Scintillator" />
+      <solidref ref="back_hcal_scintYBox" />
+    </volume>
 
-      <volume name="side_hcal_scintZXVolume">
-        <materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintZXBox"/>
+    <volume name="back_hcal_scintXVolume">
+      <materialref ref="Scintillator" />
+      <solidref ref="back_hcal_scintXBox" />
+    </volume>
+
+    <!-- - - - - - - - -  SIDE HCAL STRUCTURES - - - - - - - -  -->
+    <loop for="module" from="1" to="side_hcal_numModules" step="1">
+      <volume name="side_hcal_absoX[module]Volume">
+        <materialref ref="Steel" />
+        <solidref ref="side_hcal_absoX[module]Box" />
       </volume>
-      <volume name="side_hcal_scintZYVolume">
-  <materialref ref="Scintillator"/>
-        <solidref ref="side_hcal_scintZYBox"/>
-      </volume> 
+      <volume name="side_hcal_absoY[module]Volume">
+        <materialref ref="Steel" />
+        <solidref ref="side_hcal_absoY[module]Box" />
+      </volume>
+      <volume name="side_hcal_scintX[module]Volume">
+        <materialref ref="Scintillator" />
+        <solidref ref="side_hcal_scintX[module]Box" />
+      </volume>
+      <volume name="side_hcal_scintY[module]Volume">
+        <materialref ref="Scintillator" />
+        <solidref ref="side_hcal_scintY[module]Box" />
+      </volume>
+    </loop>
+
+    <volume name="side_hcal_scintZXVolume">
+      <materialref ref="Scintillator" />
+      <solidref ref="side_hcal_scintZXBox" />
+    </volume>
+    <volume name="side_hcal_scintZYVolume">
+      <materialref ref="Scintillator" />
+      <solidref ref="side_hcal_scintZYBox" />
+    </volume>
       
       <!-- - - - - - - - -  FULL HCAL STRUCTURES - - - - - - - -  -->
       <volume name="hadronic_calorimeter">
