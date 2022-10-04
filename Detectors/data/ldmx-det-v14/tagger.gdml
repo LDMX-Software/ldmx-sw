@@ -79,13 +79,13 @@
       <solidref ref="tagger_box"/>
       <loop for="i" from="1" to="7" step="1">
         <!-- Axial Layers -->
-        <physvol>
+        <physvol copynumber="20*i-10">
           <volumeref ref="tagger_sensor_vol" />
           <position name="tagger_axial_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" 
                     z="tagger_layer_z[i] - tagger_layer_offset"/>  
         </physvol>
         <!-- Stereo Layers --> 
-        <physvol>
+        <physvol copynumber="20*i">
           <volumeref ref="tagger_sensor_vol" />
           <position name="tagger_stereo_pos" unit="mm" x="tagger_layer_x[i]" y="0.0" 
                     z="tagger_layer_z[i] + tagger_layer_offset" />
@@ -95,7 +95,7 @@
     </volume>
     <auxiliary auxtype="Region" auxvalue="tagger"/>
     <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="tagger"/> 
+    <auxiliary auxtype="DetElem" auxvalue="tagger"/>
   </structure>
   <setup name="Default" version="1.0">
     <world ref="tagger"/>
