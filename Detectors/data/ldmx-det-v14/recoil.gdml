@@ -116,13 +116,13 @@
       <solidref ref="recoil_box"/>
       <loop for="i" from="1" to="4" step="1"> 
         <!-- Axial sensors --> 
-        <physvol> 
+        <physvol copynumber="20*i-10"> 
           <volumeref ref="recoil_l14_sensor_vol"/> 
           <position name="recoil_l14_axial_pos" unit="mm" x="0.0" y="0.0" 
                     z="recoil_l14_z[i] - recoil_l14_sensor_sep" /> 
         </physvol>
         <!-- Stereo sensors -->
-        <physvol> 
+        <physvol copynumber="20*i"> 
           <volumeref ref="recoil_l14_sensor_vol"/> 
           <position name="recoil_l14_stereo_pos" unit="mm" x="0.0" y="0.0" 
                     z="recoil_l14_z[i] + recoil_l14_sensor_sep" /> 
@@ -131,12 +131,12 @@
       </loop>
       <!-- Axial layer only sensors --> 
       <loop for="i" from="1" to="10" step="1"> 
-        <physvol>
+        <physvol copynumber="89+i">
           <volumeref ref="recoil_l56_sensor_vol"/> 
           <position name="recoil_l5_sensor_pos" unit="mm" x="recoil_l56_xy[i, 1]" y="recoil_l56_xy[i, 2]"
                     z="recoil_l5_z[i]" />  
         </physvol>  
-        <physvol>
+        <physvol copynumber="99+i">
           <volumeref ref="recoil_l56_sensor_vol"/> 
           <position name="recoil_l6_sensor_pos" unit="mm" x="recoil_l56_xy[i, 1]"  y="recoil_l56_xy[i, 2]" 
                     z="recoil_l6_z[i]" />  
@@ -144,7 +144,7 @@
       </loop> 
     </volume>
     <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>  
+    <auxiliary auxtype="DetElem" auxvalue="recoil"/>
   </structure>
 
   <setup name="Default" version="1.0">
