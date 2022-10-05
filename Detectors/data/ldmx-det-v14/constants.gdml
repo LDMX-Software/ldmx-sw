@@ -170,7 +170,6 @@
 <!--
   Side HCal Layer component 
 -->
-<constant name="side_hcal_numSections" value="4"/>
 <constant name="side_hcal_absoThick" value="20."/>
 
 <!--
