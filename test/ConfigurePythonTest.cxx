@@ -77,6 +77,19 @@ class TestConfig : public framework::Producer {
     REQUIRE(test_string_vec.size() == string_vec.size());
     for (std::size_t i{0}; i < test_string_vec.size(); i++)
       CHECK(test_string_vec.at(i) == string_vec.at(i));
+
+    // check 2d vector
+    std::vector<std::vector<int>> twod_vec{
+      {11,12,13},{21,22},{31,32,33,34}
+    };
+    auto test_2d_vec{parameters.getParameter<std::vector<std::vector<int>>>("test_2dlist")};
+    REQUIRE(test_2d_vec.size() == twod_vec.size());
+    for (std::size_t i{0}; i < twod_vec.size(); i++) {
+      REQUIRE(test_2d_vec.at(i).size() == twod_vec.at(i).size());
+      for(std::size_t j{0}; j < twod_vec.at(i).size(); j++) {
+        CHECK(test_2d_vec.at(i).at(j) == twod_vec.at(i).at(j));
+      }
+    }
   }
 
   // I don't do anything.

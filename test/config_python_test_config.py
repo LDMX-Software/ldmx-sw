@@ -32,6 +32,7 @@ class TestProcessor(ldmxcfg.Producer):
     self.test_dict = { 'one' : 1, 'two' : 2.0 }
     self.test_double_vec = [ 0.1 , 0.2 , 0.3 ]
     self.test_string_vec = [ 'first' , 'second' , 'third' ]
+    self.test_2dlist = [ [ 11, 12, 13], [21, 22], [31,32,33,34]]
 
 
 # Create a process
