@@ -97,8 +97,8 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
       params[skey] = PyFloat_AsDouble(value);
     } else if (PyUnicode_Check(value)) {
       params[skey] = getPyString(value);
-    } else if (PyList_Check(
-                   value)) {  // assume everything is same value as first value
+    } else if (PyList_Check(value)) {
+      // assume everything is same value as first value
       if (PyList_Size(value) > 0) {
         auto vec0{PyList_GetItem(value, 0)};
 
@@ -126,7 +126,61 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
           }
 
           params[skey] = vals;
-
+        } else if (PyList_Check(vec0)) {
+          // a list in a list ??? oof-dah
+          if (PyList_Size(vec0) > 0) {
+            auto vecvec0{PyList_GetItem(vec0, 0)};
+            if (PyLong_Check(vecvec0)) {
+              std::vector<std::vector<int>> vals;
+              for (auto j{0}; j < PyList_Size(value); j++) {
+                auto subvec{PyList_GetItem(value, j)};
+                std::vector<int> subvals;
+                for (auto k{0}; k < PyList_Size(subvec); k++) {
+                  subvals.push_back(PyLong_AsLong(PyList_GetItem(subvec, k)));
+                }
+                vals.push_back(subvals);
+              }
+              params[skey] = vals;
+            } else if (PyFloat_Check(vecvec0)) {
+              std::vector<std::vector<double>> vals;
+              for (auto j{0}; j < PyList_Size(value); j++) {
+                auto subvec{PyList_GetItem(value, j)};
+                std::vector<double> subvals;
+                for (auto k{0}; k < PyList_Size(subvec); k++) {
+                  subvals.push_back(PyFloat_AsDouble(PyList_GetItem(subvec, k)));
+                }
+                vals.push_back(subvals);
+              }
+              params[skey] = vals;
+            } else if (PyUnicode_Check(vecvec0)) {
+              std::vector<std::vector<std::string>> vals;
+              for (auto j{0}; j < PyList_Size(value); j++) {
+                auto subvec{PyList_GetItem(value, j)};
+                std::vector<std::string> subvals;
+                for (auto k{0}; k < PyList_Size(subvec); k++) {
+                  subvals.push_back(getPyString(PyList_GetItem(subvec, k)));
+                }
+                vals.push_back(subvals);
+              }
+              params[skey] = vals;
+            } else if (PyList_Check(vecvec0)) {
+              EXCEPTION_RAISE("BadConf",
+                  "A python list with dimension greater than 2 is not supported.");
+            } else {
+              // RECURSION zoinks!
+              std::vector<std::vector<framework::config::Parameters>> vals;
+              for (auto j{0}; j < PyList_Size(value); j++) {
+                auto subvec{PyList_GetItem(value, j)};
+                std::vector<framework::config::Parameters> subvals;
+                for (auto k{0}; k < PyList_Size(subvec); k++) {
+                  subvals.emplace_back();
+                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k)));
+                }
+                vals.push_back(subvals);
+              }
+              params[skey] = vals;
+            }
+          } // non-zero size
         } else {
           // RECURSION zoinks!
           // If the objects stored in the list doesn't
@@ -140,7 +194,6 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
             vals.back().setParameters(getMembers(elem));
           }
           params[skey] = vals;
-
         }  // type of object in python list
       }    // python list has non-zero size
     } else {
