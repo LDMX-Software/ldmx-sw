@@ -28,6 +28,34 @@ HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
 
 HcalSD::~HcalSD() {}
 
+ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
+				      const G4ThreeVector& localPosition,
+				      const G4Box* scint) {
+  const unsigned int version{copyNumber / 0x01000000};
+  if (version != 0) {
+    typedef ldmx::PackedIndex<256, 256, 256> Index;
+    return ldmx::HcalID{Index(copyNumber).field2(), Index(copyNumber).field1(), Index(copyNumber).field0()};
+  } else {
+    const auto& geometry = getCondition<ldmx::HcalGeometry>(
+							    ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+    unsigned int stripID = 0;
+    const unsigned int section = copyNumber / 1000;
+    const unsigned int layer = copyNumber % 1000;
+    
+    // 5cm wide bars are HARD-CODED
+    if (section == ldmx::HcalID::BACK) {
+      if (geometry.layerIsHorizontal(layer)) {
+        stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+      } else {
+        stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+      }
+    } else {
+      stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
+    }
+    return ldmx::HcalID{section, layer, stripID};
+  }
+}
+  
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
@@ -100,53 +128,28 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   // Set the step mid-point as the hit position.
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
   G4StepPoint* postPoint = aStep->GetPostStepPoint();
+  // A Geant4 "touchable" is a way to uniquely identify a particular volume,
+  // short for touchable detector element. See the detector definition and
+  // response section of the Geant4 application developers manual for details.
+  //
+  // The TouchableHandle is just a reference counted pointer to a
+  // G4TouchableHistory object, which is a concrete implementation of a
+  // G4Touchable interface.
+  //
+  auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
+  // Affine transform for converting between local and global coordinates
+  auto topTransform{touchableHistory->GetTopTransform()};
   G4ThreeVector position =
       0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-  G4ThreeVector localPosition = aStep->GetPreStepPoint()
-                                    ->GetTouchableHandle()
-                                    ->GetHistory()
-                                    ->GetTopTransform()
-                                    .TransformPoint(position);
+  G4ThreeVector localPosition = topTransform.TransformPoint(position);
   hit.setPosition(position[0], position[1], position[2]);
 
-  // Create the ID for the hit.
-  int copyNum = aStep->GetPreStepPoint()
-                    ->GetTouchableHandle()
-                    ->GetHistory()
-                    ->GetVolume(2)
-                    ->GetCopyNo();
-  int section = copyNum / 1000;
-  int layer = copyNum % 1000;
-
-  // stripID: back Hcal, segmented along y direction for now every 10 cm --
-  // alternate x-y in the future?
-  //         left/right side hcal: segmented along x direction every 10 cm
-  //         top/bottom side hcal: segmented along y direction every 10 cm
-
-  int stripID = -1;
-  // 5cm wide bars are HARD-CODED
-  const auto& hcalGeometry{getCondition<ldmx::HcalGeometry>(ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME)};
-  if (section == ldmx::HcalID::BACK) {
-    if (hcalGeometry.layerIsHorizontal(layer)) {
-      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-    } else {
-      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
-    }
-  } else {
-    stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
-  }
-
-  // std::cout << "---" << std::endl;
-  // std::cout << "GetXHalfLength = " << scint->GetXHalfLength() << "\t
-  // GetYHalfLength = " << scint->GetYHalfLength() << "\t GetZHalfLength = " <<
-  // scint->GetZHalfLength() << std::endl; std::cout << "xpos = " <<
-  // localPosition.x() << "\t ypos = " << localPosition.y() << "\t zpos = " <<
-  // localPosition.z() << std::endl; std::cout << "xpos_g = " << position.x() <<
-  // "\t ypos_g = " << position.y() << "\t zpos_g = " << position.z() <<
-  // std::endl; std::cout << "Layer = " << layer << "\t section = " << section
-  // << "\t strip = " << stripID << std::endl;
-
-  ldmx::HcalID id(section, layer, stripID);
+  // Create the ID for the hit. Note 2 here corresponds to the "depth" of the
+  // geometry tree. If this changes in the GDML, this would have to be updated
+  // here. Currently, 0 corresponds to the world volume, 1 corresponds to the
+  // Hcal, and 2 to the bars/absorbers
+  int copyNum = touchableHistory->GetVolume(2)->GetCopyNo();
+  ldmx::HcalID id = decodeCopyNumber(copyNum, localPosition, scint);
   hit.setID(id.raw());
 
   // add one contributor for this hit with
@@ -160,6 +163,23 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   hit.addContrib(getTrackMap().findIncident(track_id), track_id,
                  track->GetParticleDefinition()->GetPDGEncoding(),
                  edep, track->GetGlobalTime());
+  //
+  // Pre/post step details for scintillator response simulation
+
+  // Convert back to mm
+  hit.setPathLength(stepLength * CLHEP::cm / CLHEP::mm);
+  hit.setVelocity(track->GetVelocity());
+  // Convert pre/post step position from global coordinates to coordinates within the
+  // scintillator bar
+  const auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
+  const auto localPostStepPoint{
+      topTransform.TransformPoint(postPoint->GetPosition())};
+  hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
+                         localPreStepPoint[2]);
+  hit.setPreStepTime(prePoint->GetGlobalTime());
+  hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
+                          localPostStepPoint[2]);
+  hit.setPostStepTime(postPoint->GetGlobalTime());
 
   // do we want to set the hit coordinate in the middle of the absorber?
   // G4ThreeVector volumePosition =

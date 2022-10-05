@@ -37,15 +37,26 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   //  and we should keep that reference so that we are editing the correct hit
   ldmx::SimCalorimeterHit& hit = hits_.emplace_back();
 
+  G4StepPoint* prePoint = step->GetPreStepPoint();
+  G4StepPoint* postPoint = step->GetPostStepPoint();
+
+  // A Geant4 "touchable" is a way to uniquely identify a particular volume,
+  // short for touchable detector element. See the detector definition and
+  // response section of the Geant4 application developers manual for details.
+  //
+  // The TouchableHandle is just a reference counted pointer to a
+  // G4TouchableHistory object, which is a concrete implementation of a
+  // G4Touchable interface.
+  //
+  auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
+  // Affine transform for converting between local and global coordinates
+  auto topTransform{touchableHistory->GetTopTransform()};
   // Set the hit position
-  auto position{0.5 * (step->GetPreStepPoint()->GetPosition() +
-                       step->GetPostStepPoint()->GetPosition())};
-  auto volumePosition{step->GetPreStepPoint()
-                          ->GetTouchableHandle()
-                          ->GetHistory()
-                          ->GetTopTransform()
-                          .Inverse()
-                          .TransformPoint(G4ThreeVector())};
+  auto position{0.5 * (prePoint->GetPosition() +
+                       postPoint->GetPosition())};
+
+  // Convert the center of the bar to its corresponding global position
+  auto volumePosition{topTransform.Inverse().TransformPoint(G4ThreeVector())};
   hit.setPosition(position[0], position[1], volumePosition.z());
 
   // Get the track associated with this step
@@ -65,6 +76,27 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   hit.addContrib(track->GetTrackID(), track->GetTrackID(),
                  track->GetParticleDefinition()->GetPDGEncoding(), energy,
                  track->GetGlobalTime());
+
+
+
+  // Step details
+  hit.setPathLength(step->GetStepLength());
+  hit.setVelocity(track->GetVelocity());
+  // Convert pre/post step position from global coordinates to coordinates
+  // within the scintillator bar
+  const auto localPreStepPoint{
+      topTransform.TransformPoint(prePoint->GetPosition())};
+  const auto localPostStepPoint{
+      topTransform.TransformPoint(postPoint->GetPosition())};
+  hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1],
+                         localPreStepPoint[2]);
+
+  hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
+                         localPostStepPoint[2]);
+
+  hit.setPreStepTime(prePoint->GetGlobalTime());
+  hit.setPostStepTime(postPoint->GetGlobalTime());
+  
 
   return true;
 }
