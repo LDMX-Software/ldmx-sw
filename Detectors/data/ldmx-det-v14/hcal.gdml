@@ -143,18 +143,18 @@
       <fraction n="0.00282" ref="Fe58"/>
     </element>
     <material name="Steel" state="solid">
-      <T unit="K" value="293.15"/>
-      <D unit="g/cm3" value="7.87"/>
-      <fraction n="0.9843" ref="Fe"/>
-      <fraction n="0.014" ref="Mn"/>
-      <fraction n="0.0017" ref="C"/>
-    </material> 
+       <T unit="K" value="293.15"/>
+       <D unit="g/cm3" value="7.87"/>
+       <fraction n="0.9843" ref="G4_Fe"/>
+       <fraction n="0.014" ref="G4_Mn"/>
+       <fraction n="0.0017" ref="G4_C"/>
+    </material>
     <material name="Scintillator" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="64.7494480275643"/>
-      <D unit="g/cm3" value="1.032"/>
-      <fraction n="0.91512109" ref="C"/>
-      <fraction n="0.084878906" ref="H"/>
+       <T unit="K" value="293.15"/>
+       <!-- <MEE unit="eV" value="64.7494480275643"/> -->
+       <D unit="g/cm3" value="1.032"/>
+       <fraction n="0.91512109"  ref="G4_C"/>
+       <fraction n="0.084878906" ref="G4_H"/>
     </material>
   </materials>
 
