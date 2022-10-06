@@ -79,10 +79,11 @@ class HcalSD(simcfg.SensitiveDetector) :
         prototype Hcal (scint_box) scintillator geometries.
 
     """
-    def __init__(self, gdml_identifiers = ['scintYBox', 'scintXBox',
-                                           'scintX_0Box', 'scintX_1Box', 'scintX_2Box', 'scintX_3Box',
-                                           'scintY_0Box', 'scintY_1Box', 'scintY_2Box',	'scintY_3Box',
-                                           'scintZXBox', 'scintZYBox',
+    def __init__(self, gdml_identifiers = ['scintYVolume', 'scintXVolume',
+                                           'scintX_0Volume', 'scintX_1Volume', 'scintX_2Volume', 'scintX_3Volume',
+                                           'scintY_0Volume', 'scintY_1Volume', 'scintY_2Volume', 'scintY_3Volume',
+                                           'scintZXVolume', 'scintZYVolume',
+                                           'ScintBox',
                                            'scint_box']) :
         super().__init__('hcal_sd', 'simcore::HcalSD','SimCore_SDs')
         self.gdml_identifiers = gdml_identifiers
