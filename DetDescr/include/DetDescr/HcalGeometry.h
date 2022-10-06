@@ -114,7 +114,7 @@ class HcalGeometry : public framework::ConditionsObject {
   int getZeroStrip(int isection, int layer = 1) const {
     auto layer_index = layer - 1;
     return zero_strip_.at(isection).at(layer_index);
-    }
+  }
 
 
   /**
@@ -179,23 +179,7 @@ class HcalGeometry : public framework::ConditionsObject {
      }
      return result;
    }
-
-  template <typename T>
-  std::vector<std::vector<T>> makeOddEvenLayeredParameter(const std::vector<T>& parameter_odd, const std::vector<T>& parameter_even) {
-    std::vector<std::vector<T>> result;
-    for(auto section = 0; section < parameter_odd.size(); ++section) {
-      std::vector<T> nested_result;
-      for(auto layer = 0; layer = num_layers_[section]; ++layer) {
-	// keep in mind that in gdml layers are indexed from 1
-	if((layer+1)%2 ==0 ) {
-	  nested_result.push_back(parameter_odd[section]);
-	}
-	else {
-	  nested_result.push_back(parameter_even[section]);
-	}
-      }
-    }
-  }
+  
 
 private:
   /// Parameters that apply to all types of geometries

@@ -47,14 +47,9 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     half_total_width_ = {half_total_width_prototype_};
   }
   else if (side_3d_readout_) {
-    auto zero_strip_odd_ = ps.getParameter<std::vector<double>>("zero_strip_odd", {});
-    auto zero_strip_even_ = ps.getParameter<std::vector<double>>("zero_strip_odd", {});
-    auto num_strips_odd_ = ps.getParameter<std::vector<int>>("num_strips_odd", {});
-    auto num_strips_even_ = ps.getParameter<std::vector<int>>("num_strips_even", {});
-    num_strips_ = makeOddEvenLayeredParameter(num_strips_odd_, num_strips_even_);
-    zero_strip_ = makeOddEvenLayeredParameter(zero_strip_odd_, zero_strip_even_);
-    
-    half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width_", {});
+    num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips", {});
+    half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width", {});
+    zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip", {});
   }
   else {
     auto zero_strip_v12_ = ps.getParameter<std::vector<double>>("zero_strip", {});
@@ -65,7 +60,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     num_strips_ = makeCanonicalLayeredParameter(num_strips_v12_);
     half_total_width_ = makeCanonicalLayeredParameter(half_total_width_v12_);
   }
-  
+
   buildStripPositionMap();
 }
 void HcalGeometry::printPositionMap(int section) const {
@@ -116,7 +111,7 @@ void HcalGeometry::buildStripPositionMap() {
             to the center of detector. Strips enumeration starts from -y(-x)
             stripcenter will be large for +y(+x) and the half width of the strip
             needs to be subtracted The halfwidth of the scintillator is given by
-            zero_strip_.
+            half_total_width_.
 	    The x(y) position is set to the center of the strip (0).
           */
           if (layerIsHorizontal(layer)) {
@@ -126,6 +121,8 @@ void HcalGeometry::buildStripPositionMap() {
             x = stripcenter - getZeroStrip(section, layer);
             y = 0;
           }
+	  // std::cout << "back (section,layer,strip)" << section << " " << layer << " " << strip;
+	  // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl;
         } else {
 	  /**
 	     For side Hcal
@@ -167,6 +164,9 @@ void HcalGeometry::buildStripPositionMap() {
               y *= -1;
             }
           }
+
+	  // std::cout << "side (section,layer,strip)" << section << " " << layer << " " << strip;
+          // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl; 
         }
         TVector3 pos;
         pos.SetXYZ(x, y, z);
