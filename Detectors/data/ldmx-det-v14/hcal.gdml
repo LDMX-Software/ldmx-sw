@@ -323,7 +323,7 @@
             y (start): ecal_side_dy/2.0
                        +2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0 ( to account for air,absober and so that scintillator is centered)
               -->
-              <loop for="strip" from="1" to="side_hcal_numScintZ[module]" step="1">
+              <loop for="strip" from="0" to="side_hcal_numScintZ[module]" step="1">
                 <physvol name="side_hcal_scintZX[section][module][strip]Physvol"
                          copynumber="1*256*256*256 + (section)*256*256 + (layer+2*side_hcal_numPrevLayers[module])*256 + (strip)">
                   <volumeref ref="side_hcal_scintZXVolume"/>
@@ -354,7 +354,7 @@
             z (start): -back_hcal_dz/2.0 - side_hcal_dz/2.0
                                    + hcal_scintWidth/2.0 ( so that is centered)
               -->
-              <loop for="strip" from="1" to="side_hcal_numScintXY" step="1">
+              <loop for="strip" from="0" to="side_hcal_numScintXY" step="1">
                 <physvol name="side_hcal_scintX[section][module][strip]Physvol"
                          copynumber="1*256*256*256 + (section)*256*256 + (layer+1+2*side_hcal_numPrevLayers[module])*256 + (strip)">
                   <volumeref ref="side_hcal_scintX[module]Volume"/>
@@ -391,7 +391,7 @@
             x (start): ecal_side_dx/2.0 + (2.0*hcal_airThick+side_hcal_absoThick+hcal_scintThick/2.0)
             y (start): ecal_side_dy/2.0 - hcal_scintWidth/2.0
               -->
-              <loop for="strip" from="1" to="side_hcal_numScintZ[module]" step="1">
+              <loop for="strip" from="0" to="side_hcal_numScintZ[module]" step="1">
                 <physvol name="side_hcal_scintZY[section][module][strip]Physvol"
                          copynumber="1*256*256*256 + (section)*256*256 + (layer+2*side_hcal_numPrevLayers[module])*256 + (strip)">
                   <volumeref ref="side_hcal_scintZYVolume"/>
@@ -422,7 +422,7 @@
             z (start): -back_hcal_dz/2.0 - side_hcal_dz/2.0
                        + (strip-1)*hcal_scintWidth ( to account for different strips)
               -->
-              <loop for="strip" from="1" to="side_hcal_numScintXY" step="1">
+              <loop for="strip" from="0" to="side_hcal_numScintXY" step="1">
                 <physvol name="side_hcal_scintY[section][module][strip]Physvol"
                          copynumber="1*256*256*256 + (section)*256*256 + (layer+1+2*side_hcal_numPrevLayers[module])*256 + (strip)">
                   <volumeref ref="side_hcal_scintY[module]Volume"/>
