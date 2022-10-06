@@ -272,6 +272,7 @@ class HcalGeometry:
         # Layers with even parity (0) are horizontal (scintillator bar length
         # along the x-axis)
         self.v2_prototype.horizontal_parity = 0
+        self.v2_prototype.side_3d_readout = 0
 
     def make_v14(self):
         self.v14 = HcalReadoutGeometry()
@@ -371,10 +372,10 @@ class HcalGeometry:
             for l in range(side_hcal_numLayers[m] * 2):
                 if (l + 1) % 2 == 0:
                     half_total_width_side.append(side_hcal_dz / 2)
-                    num_strips_side.append(side_hcal_numScintXY)
+                    num_strips_side.append(int(side_hcal_numScintXY))
                 else:
                     half_total_width_side.append(side_hcal_length[m] / 2)
-                    num_strips_side.append(side_hcal_numScintZ[m])
+                    num_strips_side.append(int(side_hcal_numScintZ[m]))
 
         zero_strip_side = []
         for s in range(side_hcal_numSections):
