@@ -58,7 +58,7 @@ class Layer :
         'Glue'   : ( 90.1  / 1.205 ) * 10
     }
 
-    SensDetThickness = 0.5
+    SensDetThickness = 0.3
 
     def __init__(self, name, thickness, sensitive = False) :
         self.name = name
