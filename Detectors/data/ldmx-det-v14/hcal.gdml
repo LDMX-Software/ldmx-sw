@@ -304,7 +304,7 @@
               <!--
             Absorber plates oriented in x
             x (start): ecal_side_dx/2.0
-                       +hcal_airThick+side_hcal_absoThick ( to account for absorber in y)
+                       +hcal_airThick+side_hcal_absoThick ( to account for absorber in y from the other sections )
             y (start): ecal_side_dy/2.0
                        +hcal_airThick+side_hcal_absoThick/2.0 ( to account for air and so that absorber is centered)
               -->
