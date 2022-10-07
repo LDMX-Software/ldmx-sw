@@ -366,6 +366,10 @@ class HcalGeometry:
         ]
 
         # side properties
+        # num strips
+        #  for layer 1: side_hcal_numScintZ (odd layers have strips oriented in z)
+        #  for layer 2: side_hcal_numScintXY
+        #  [side_hcal_numScintZ[m],side_hcal_numScintXY,etc]
         half_total_width_side = []
         num_strips_side = []
         for m in range(self.v14.side_num_modules):
