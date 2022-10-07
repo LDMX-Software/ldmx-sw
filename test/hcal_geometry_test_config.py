@@ -4,7 +4,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process( 'test_hcal_geometry' )
 
 # Set the maximum number of events
-p.maxEvents = 1
+p.maxEvents = 10
 
 # Set the run number
 p.run = 0
