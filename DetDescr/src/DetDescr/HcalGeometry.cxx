@@ -46,7 +46,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     num_strips_ = {num_strips_prototype_};
     half_total_width_ = {half_total_width_prototype_};
   }
-  else if (side_3d_readout_) {
+  else if (side_3d_readout_==1) {
     num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips", {});
     half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width", {});
     zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip", {});
