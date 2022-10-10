@@ -13,6 +13,12 @@ void SequentialTrigger::configure(framework::config::Parameters &ps) {
   doAND_ = ps.getParameter<bool>("doAND");
   doOR_ = ps.getParameter<bool>("doOR");
   doVAL_ = ps.getParameter<bool>("doVAL");
+  //Returns an error if some bad combination of doOR and doAND is enabled.
+  if (doAND_ == doOR_){
+    ldmx_log(fatal) << "Either tried to do both or neither of  doAND and doOR. Exiting.";
+    throw std::invalid_argument("Either tried to do both or neither of doAND and doOR. Exiting.");
+    return;
+  }
   return;
 }
 
@@ -27,29 +33,23 @@ void SequentialTrigger::configure(framework::config::Parameters &ps) {
 void SequentialTrigger::produce(framework::Event& event) {
   bool hasPassed = false;
   bool keepTrack = false;
-  //Returns an error if some bad combination of doOR and doAND is enabled.
-  if (doAND_ and doOR_){
-    ldmx_log(fatal) << "Can't do both doAND and doOR. Exiting.";
-    return;
-  }
-  if (not(doAND_) and not(doOR_)){
-    ldmx_log(fatal) << "Must do one of doAND and doOR. Exiting.";
-    return;
-  }
+  
   for (int i = 0; i<trigger_list_.size(); i++){
     //Returns an error is a trigger collection DNE
-    if (!event.exists(trigger_list_[i],trigger_passNames_[i])) {
-      ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
-                      << trigger_list_[i] << "_" << trigger_passNames_[i]
-                      << " to skim! Exiting.";
-      return;
-    }
-    auto trigResult{event.getObject<ldmx::TriggerResult>(trigger_list_[i],trigger_passNames_[i])};
+    try{
+        auto trigResult{event.getObject<ldmx::TriggerResult>(trigger_list_[i],trigger_passNames_[i])};
+    
     //Returns true should any trigger pass and doOR_ enabled, and sets keepTrack to true and breaks if doAND_ and any fail
-    if(trigResult.passed()){
-        if(doOR_){hasPassed=true;break;}
-    }else{
-        if(doAND_){keepTrack=true;break;}
+        if(trigResult.passed()){
+            if(doOR_){hasPassed=true;break;}
+        }else{
+            if(doAND_){keepTrack=true;break;}
+        }
+    }catch(...){
+        ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
+                      << trigger_list_[i] << "_" << trigger_passNames_[i]
+                      << " to skim! Exiting.";    
+        return;
     }
   }
   //In the event we have doAND_ set, this will run and only return true if all are true
