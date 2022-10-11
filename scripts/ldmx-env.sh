@@ -48,31 +48,6 @@ if ! __ldmx_has_required_engine; then
 fi
 
 
-###############################################################################                                                                    
-# __ldmx_setenv
-#   Tell us to pass an environment variable to the container when we run
-#   By default, we set the LDMX_BASE and DISPLAY variables where they are defined,
-#   so none of these need to (or should be) specified.
-#   NOTE that this function then needs defining before those are set.
-###############################################################################
-
-export LDMX_CONTAINER_ENVS=()
-__ldmx_setenv() {
-  local _env_to_set="$1"
-
-  if [[ $_env_to_set != *"="* ]]; then
-    echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
-	echo "Not setting container environment variable $_env_to_set."
-    return 1
-  fi
-
-  LDMX_CONTAINER_ENVS+="$_env_to_set "
-  export LDMX_CONTAINER_ENVS
-  echo "Added container environment variable $_env_to_set"
-  return 0
-}
-
-
 
 ###############################################################################
 # __ldmx_which_os
@@ -103,8 +78,6 @@ __ldmx_which_os() {
 if ! __ldmx_which_os; then
   echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}' or '$(uname -a)'"
   echo "    You will *not* be able to run display-connected programs."
-#else
-#	__ldmx_setenv "LDMX_CONTAINER_DISPLAY=${LDMX_CONTAINER_DISPLAY}"
 fi
 
 ###############################################################################
@@ -181,9 +154,10 @@ if hash docker &> /dev/null; then
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
 	local _envs=""
-    for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
+    for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
       _envs="$_envs -e ${env_to_set}"
     done
+	local env_list
     local interactive=""
     tty -s && interactive="-it"
     docker run --rm ${interactive} \
@@ -194,9 +168,6 @@ if hash docker &> /dev/null; then
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
       $LDMX_DOCKER_TAG "$@"
-#these first two could be added to env list when they are set, just like base is mounted
-#		   -e LDMX_BASE \
-#      -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
     return $?
   }
 elif hash singularity &> /dev/null; then
@@ -267,16 +238,11 @@ elif hash singularity &> /dev/null; then
     done
 	local env_length=${LDMX_CONTAINER_ENVS[@]}
 	local env_list=""
-	# this whole setup is really just to avoid ending list with a comma
-#	if [[ ${env_length} -gt 0 ]] #check that there is at least a first element 
-#	then env_list="${LDMX_CONTAINER_ENVS[0]}" #initialize list
-#	fi
     for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
-#    for (( i=1; i<env_length;i++)); do 
       env_list="${env_list},${env_to_set}" #"${LDMX_CONTAINER_ENVS[$i]},$env_list"
     done
     singularity run --no-home --cleanenv \
-      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 ${env_list} \ #LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \ 
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
@@ -407,9 +373,33 @@ __ldmx_base() {
 
   export LDMX_BASE=$(cd $_new_base; pwd -P)
   __ldmx_mount $LDMX_BASE
-#  __ldmx_setenv "LDMX_BASE=${LDMX_BASE}"
   return $?
 }
+
+###############################################################################                                                                    
+# __ldmx_setenv
+#   Tell us to pass an environment variable to the container when we run
+#   By default, we pass the LDMX_BASE and DISPLAY variables explicitly, 
+#   because their syntax is too different between docker and singularity,
+#   so none of these need to (or should be) specified.
+###############################################################################
+
+export LDMX_CONTAINER_ENVS=()
+__ldmx_setenv() {
+  local _env_to_set="$1"
+
+  if [[ $_env_to_set != *"="* ]]; then
+    echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
+	echo "Not setting container environment variable $_env_to_set."
+    return 1
+  fi
+
+  LDMX_CONTAINER_ENVS+="$_env_to_set "
+  export LDMX_CONTAINER_ENVS
+  echo "Added container environment variable $_env_to_set"
+  return 0
+}
+
 
 ###############################################################################
 # __ldmx_clean
