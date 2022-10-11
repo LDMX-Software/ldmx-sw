@@ -47,8 +47,6 @@ if ! __ldmx_has_required_engine; then
   return 1
 fi
 
-
-
 ###############################################################################
 # __ldmx_which_os
 #   Check what OS we are hosting the container on.
@@ -153,7 +151,7 @@ if hash docker &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
-	local _envs=""
+    local _envs=""
     for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
       _envs="$_envs -e ${env_to_set}"
     done
@@ -161,7 +159,7 @@ if hash docker &> /dev/null; then
     local interactive=""
     tty -s && interactive="-it"
     docker run --rm ${interactive} \
-	-e LDMX_BASE \
+    -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       $_envs \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -238,7 +236,7 @@ elif hash singularity &> /dev/null; then
     done
 	local env_list=""
     for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
-      env_list="${env_list},${env_to_set}" #"${LDMX_CONTAINER_ENVS[$i]},$env_list"
+      env_list="${env_list},${env_to_set}" 
     done
     singularity run --no-home --cleanenv \
       --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \ 
@@ -400,7 +398,7 @@ __ldmx_setenv() {
 		echo "Already set a variable called $(echo $_already_set | cut -d= -f1);"
 		echo "Try a different name or use 'ldmx clean env' \
 (or re-source the setup script) to clean it."
-		return 0
+		return 1
     fi
   done
   LDMX_CONTAINER_ENVS+="$_env_to_set "
