@@ -47,6 +47,33 @@ if ! __ldmx_has_required_engine; then
   return 1
 fi
 
+
+###############################################################################                                                                    
+# __ldmx_setenv
+#   Tell us to pass an environment variable to the container when we run
+#   By default, we set the LDMX_BASE and DISPLAY variables where they are defined,
+#   so none of these need to (or should be) specified.
+#   NOTE that this function then needs defining before those are set.
+###############################################################################
+
+export LDMX_CONTAINER_ENVS=()
+__ldmx_setenv() {
+  local _env_to_set="$1"
+
+  if [[ $_env_to_set != *"="* ]]; then
+    echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
+	echo "Not setting container environment variable $_env_to_set."
+    return 1
+  fi
+
+  LDMX_CONTAINER_ENVS+="$_env_to_set "
+  export LDMX_CONTAINER_ENVS
+  echo "Added container environment variable $_env_to_set"
+  return 0
+}
+
+
+
 ###############################################################################
 # __ldmx_which_os
 #   Check what OS we are hosting the container on.
@@ -76,6 +103,8 @@ __ldmx_which_os() {
 if ! __ldmx_which_os; then
   echo "[ldmx-env.sh] [WARN] Unable to detect OS Type from '${OSTYPE}' or '$(uname -a)'"
   echo "    You will *not* be able to run display-connected programs."
+#else
+#	__ldmx_setenv "LDMX_CONTAINER_DISPLAY=${LDMX_CONTAINER_DISPLAY}"
 fi
 
 ###############################################################################
@@ -90,6 +119,7 @@ fi
 #         - Three arguments: <repo> <tag> <pull_no_matter_what>
 #     - __ldmx_run : give all arguments to container's entrypoint script
 #         - mounts all directories in bash array LDMX_CONTAINER_MOUNTS
+#         - sets all environment variables in bash array LDMX_CONTAINER_ENVS
 #     - __ldmx_container_clean : remove all containers and images on this machine
 #     - __ldmx_container_config : print configuration of container
 ###############################################################################
@@ -150,15 +180,23 @@ if hash docker &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
+	local _envs=""
+    for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
+      _envs="$_envs -e ${env_to_set}"
+    done
     local interactive=""
     tty -s && interactive="-it"
     docker run --rm ${interactive} \
-      -e LDMX_BASE \
+	  -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+      $_envs \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
       $LDMX_DOCKER_TAG "$@"
+#these first two could be added to env list when they are set, just like base is mounted
+#		   -e LDMX_BASE \
+#      -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
     return $?
   }
 elif hash singularity &> /dev/null; then
@@ -227,8 +265,18 @@ elif hash singularity &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
+	local env_length=${LDMX_CONTAINER_ENVS[@]}
+	local env_list=""
+	# this whole setup is really just to avoid ending list with a comma
+#	if [[ ${env_length} -gt 0 ]] #check that there is at least a first element 
+#	then env_list="${LDMX_CONTAINER_ENVS[0]}" #initialize list
+#	fi
+    for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
+#    for (( i=1; i<env_length;i++)); do 
+      env_list="${env_list},${env_to_set}" #"${LDMX_CONTAINER_ENVS[$i]},$env_list"
+    done
     singularity run --no-home --cleanenv \
-      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 ${env_list} \ #LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
@@ -275,6 +323,7 @@ __ldmx_config() {
   echo "Bash version: ${BASH_VERSION}"
   echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
+  echo "Container Environments: ${LDMX_CONTAINER_ENVS[@]}"
   __ldmx_container_config
   return $?
 }
@@ -343,6 +392,7 @@ __ldmx_mount() {
   return 0
 }
 
+
 ###############################################################################
 # __ldmx_base
 #   Define the base directory of ldmx software
@@ -357,6 +407,7 @@ __ldmx_base() {
 
   export LDMX_BASE=$(cd $_new_base; pwd -P)
   __ldmx_mount $LDMX_BASE
+#  __ldmx_setenv "LDMX_BASE=${LDMX_BASE}"
   return $?
 }
 
@@ -394,6 +445,7 @@ __ldmx_clean() {
     unset LDMX_BASE
     unset LDMX_CONTAINER_MOUNTS
     unset LDMX_CONTAINER_DISPLAY
+    unset LDMX_CONTAINER_ENVS
     cleaned_something=true
   fi
 
@@ -508,6 +560,8 @@ __ldmx_help() {
       ldmx pull (dev | pro | local) <tag>
     mount   : Attach the input directory to the container when running
       ldmx mount <dir>
+    setenv   : Set an environment variable in the container when running
+      ldmx setenv <environmentVariableName=value>
     run     : Run a command at an input location in the container
       ldmx run <directory> <sub-command> [<argument> ...]
     source  : Run the commands in the provided file through ldmx
@@ -546,7 +600,7 @@ ldmx() {
       __ldmx_${1}
       return $?
       ;;
-    list|base|clean|mount|source)
+    list|base|clean|mount|setenv|source)
       if [[ "$#" != "2" ]]; then
         __ldmx_help
         echo "ERROR: ldmx ${1} takes one argument."
