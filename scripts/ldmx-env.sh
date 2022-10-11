@@ -392,7 +392,6 @@ __ldmx_setenv() {
   fi
 
   local envName=$(echo $_env_to_set | cut -d= -f1)
-  echo $envName
   for _already_set in ${LDMX_CONTAINER_ENVS[@]}; do
     if [[ $(echo $_already_set | cut -d= -f1) = $envName ]]; then
 		echo "Already set a variable called $(echo $_already_set | cut -d= -f1);"
