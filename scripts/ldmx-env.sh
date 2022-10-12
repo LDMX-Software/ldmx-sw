@@ -238,7 +238,7 @@ elif hash singularity &> /dev/null; then
       env_list="${env_list},${env_to_set}" 
     done
     singularity run --no-home --cleanenv \
-      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \ 
+      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
