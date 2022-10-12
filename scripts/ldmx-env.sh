@@ -762,12 +762,12 @@ __ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    __ldmx_complete_command "list clean config checkout pull use run mount base source"
+    __ldmx_complete_command "list clean config checkout pull use run mount setenv base source"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
-      config)
+      config setenv)
         # no more arguments
         __ldmx_dont_complete
         ;;
@@ -795,7 +795,7 @@ __ldmx_complete() {
     # three or more arguments
     #   check base argument to see if we should continue
     case "${COMP_WORDS[1]}" in
-      list|base|clean|config|pull|use|mount|source)
+      list|base|clean|config|pull|use|mount|setenv|source)
         # these commands shouldn't have tab complete for the third argument 
         #   (or shouldn't have the third argument at all)
         __ldmx_dont_complete
