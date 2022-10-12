@@ -386,7 +386,7 @@ __ldmx_setenv() {
 
   if [[ $_env_to_set != *"="* ]]; then
     echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
-	echo "Not setting container environment variable $_env_to_set."
+	  echo "Not setting container environment variable $_env_to_set."
     return 1
   fi
 
