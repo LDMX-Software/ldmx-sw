@@ -233,7 +233,7 @@ elif hash singularity &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
-	local env_list
+    local env_list
     for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
       env_list="${env_list},${env_to_set}" 
     done
