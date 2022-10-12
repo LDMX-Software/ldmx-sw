@@ -4,7 +4,7 @@
 namespace recon {
 
 /**
- *Instantiates the variables used in this processor. We take trigger_list_ and tigger_passNames_ to obtain trigger collections, a doOR_ and doAND_ option to check if one of or all events pass, and doVAL_ to output a validation collection
+ *Instantiates the variables used in this processor. We take trigger_list_ and trigger_passNames_ to obtain trigger collections, a doOR_ and doAND_ option to check if one of or all events pass, and doVAL_ to output a validation collection
  * */
 
 void SequentialTrigger::configure(framework::config::Parameters &ps) {
@@ -31,19 +31,18 @@ void SequentialTrigger::configure(framework::config::Parameters &ps) {
  * */
 
 void SequentialTrigger::produce(framework::Event& event) {
-  bool hasPassed = false;
-  bool keepTrack = false;
+  bool hasPassed = not(doOR_)or(doAND_);
   
   for (int i = 0; i<trigger_list_.size(); i++){
     //Returns an error is a trigger collection DNE
     try{
         auto trigResult{event.getObject<ldmx::TriggerResult>(trigger_list_[i],trigger_passNames_[i])};
     
-    //Returns true should any trigger pass and doOR_ enabled, and sets keepTrack to true and breaks if doAND_ and any fail
+    //Returns true should any trigger pass and doOR_ enabled, and returns false if doAND_ and any fail
         if(trigResult.passed()){
             if(doOR_){hasPassed=true;break;}
         }else{
-            if(doAND_){keepTrack=true;break;}
+            if(doAND_){hasPassed=false;break;}
         }
     }catch(...){
         ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
@@ -52,12 +51,10 @@ void SequentialTrigger::produce(framework::Event& event) {
         return;
     }
   }
-  //In the event we have doAND_ set, this will run and only return true if all are true
-  if(doAND_){hasPassed=not(keepTrack);}
-  
+    
   //Used to validate if code was working
   if(doVAL_){
-  event.add("validation", hasPassed);
+    event.add("validation", hasPassed);
   }
   // mark the event
   if (hasPassed)
