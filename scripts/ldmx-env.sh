@@ -155,7 +155,7 @@ if hash docker &> /dev/null; then
     for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
       _envs="$_envs -e ${env_to_set}"
     done
-    local interactive=""
+	local interactive=""
     tty -s && interactive="-it"
     docker run --rm ${interactive} \
       -e LDMX_BASE \
@@ -234,7 +234,7 @@ elif hash singularity &> /dev/null; then
       csv_list="$dir_to_mount,$csv_list"
     done
     local env_list
-    for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
+    for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
       env_list="${env_list},${env_to_set}" 
     done
     singularity run --no-home --cleanenv \
