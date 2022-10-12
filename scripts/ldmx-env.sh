@@ -767,7 +767,7 @@ __ldmx_complete() {
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
-      config setenv)
+      config|setenv)
         # no more arguments
         __ldmx_dont_complete
         ;;
