@@ -395,8 +395,7 @@ __ldmx_setenv() {
   for _already_set in ${LDMX_CONTAINER_ENVS[@]}; do
     if [[ $(echo $_already_set | cut -d= -f1) = $envName ]]; then
 		echo "Already set a variable called $(echo $_already_set | cut -d= -f1);"
-		echo "Try a different name or use 'ldmx clean env' \
-(or re-source the setup script) to clean it."
+		echo "Try a different name or re-source the setup script to clean your list."
 		return 1
     fi
   done
