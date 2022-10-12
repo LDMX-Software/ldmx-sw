@@ -233,7 +233,7 @@ elif hash singularity &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
-	local env_list
+    local env_list
     for env_to_set in "${LDMX_CONTAINER_ENVS[@]}"; do
       env_list="${env_list},${env_to_set}" 
     done
@@ -386,7 +386,7 @@ __ldmx_setenv() {
 
   if [[ $_env_to_set != *"="* ]]; then
     echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
-	echo "Not setting container environment variable $_env_to_set."
+	  echo "Not setting container environment variable $_env_to_set."
     return 1
   fi
 
