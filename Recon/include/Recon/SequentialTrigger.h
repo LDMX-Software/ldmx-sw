@@ -10,7 +10,6 @@
 #define RECON_TRIGGER_SEQUENTIALTRIGGER_H_
 
 // LDMX
-#include "Ecal/Event/EcalHit.h"
 #include "Event/TriggerResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
@@ -18,7 +17,7 @@
 namespace recon {
 
 /**
- * @class SeqeuntialTrigger
+ * @class SequentialTrigger
  * @brief Class that provides a trigger skimming decision from multiple Triggers based on either AND or OR.
  * *
  * @note
