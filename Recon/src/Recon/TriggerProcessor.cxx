@@ -1,6 +1,8 @@
 
 #include "Recon/TriggerProcessor.h"
 
+#include "DetDescr/EcalID.h"
+
 namespace recon {
 
 void TriggerProcessor::configure(framework::config::Parameters& parameters) {
