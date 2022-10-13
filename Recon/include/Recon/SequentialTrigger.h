@@ -1,6 +1,7 @@
 /**
  * @file SequentialTrigger.h
- * @brief Class that provides a trigger skimming decision from multiple Triggers based on either AND or OR.
+ * @brief Class that provides a trigger skimming decision from multiple Triggers
+ * based on either AND or OR.
  * object
  * @author Rory O'Dwyer, Stanford University
  * @author Lene Kristian Bryngemark, Stanford University
@@ -18,7 +19,8 @@ namespace recon {
 
 /**
  * @class SequentialTrigger
- * @brief Class that provides a trigger skimming decision from multiple Triggers based on either AND or OR.
+ * @brief Class that provides a trigger skimming decision from multiple Triggers
+ * based on either AND or OR.
  * *
  * @note
  * TriggerProcessor takes in a set of parameters to determine whether, upon an
@@ -51,26 +53,26 @@ class SequentialTrigger : public framework::Producer {
 
   /**
    * Run the doOR or doAND check and create a SequentialTrigger
-   * object to contain the pass boolean value. Also sets the 
+   * object to contain the pass boolean value. Also sets the
    * Storage Hint.
    * param event The event to run skimmer on.
    */
   virtual void produce(framework::Event& event);
 
- private:  
+ private:
   /** The name of the input collection of triggers */
   std::vector<std::string> trigger_list_;
 
   /** pass name of the triggers */
   std::vector<std::string> trigger_passNames_;
-  
+
   /** options to enable OR or AND skimming*/
   bool doOR_;
   bool doAND_;
 
-  /** 
+  /**
    * enables a output collection with the keep tag for the purposes of
-   * validation 
+   * validation
    * */
   bool doVAL_;
 };
