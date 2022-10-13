@@ -57,7 +57,7 @@
             <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
 
-        <volume name="trig_scint">
+        <volume name="trig_scint_tagger">
             <materialref ref="Vacuum"/>
             <solidref ref="trigger_pad_box" />
             <loop for="x" to="number_of_bars" step="1">
