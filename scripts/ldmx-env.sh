@@ -90,6 +90,7 @@ fi
 #         - Three arguments: <repo> <tag> <pull_no_matter_what>
 #     - __ldmx_run : give all arguments to container's entrypoint script
 #         - mounts all directories in bash array LDMX_CONTAINER_MOUNTS
+#         - sets all environment variables in bash array LDMX_CONTAINER_ENVS
 #     - __ldmx_container_clean : remove all containers and images on this machine
 #     - __ldmx_container_config : print configuration of container
 ###############################################################################
@@ -150,11 +151,16 @@ if hash docker &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       _mounts="$_mounts -v $dir_to_mount:$dir_to_mount"
     done
-    local interactive=""
+    local _envs=""
+    for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
+      _envs="$_envs -e ${env_to_set}"
+    done
+	local interactive=""
     tty -s && interactive="-it"
     docker run --rm ${interactive} \
       -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+      $_envs \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
@@ -227,8 +233,12 @@ elif hash singularity &> /dev/null; then
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
+    local env_list
+    for env_to_set in ${LDMX_CONTAINER_ENVS[@]}; do
+      env_list="${env_list},${env_to_set}" 
+    done
     singularity run --no-home --cleanenv \
-      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+      --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \
       --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
@@ -275,6 +285,7 @@ __ldmx_config() {
   echo "Bash version: ${BASH_VERSION}"
   echo "Display Port: ${LDMX_CONTAINER_DISPLAY}"
   echo "Container Mounts: ${LDMX_CONTAINER_MOUNTS[@]}"
+  echo "Container Environments: ${LDMX_CONTAINER_ENVS[@]}"
   __ldmx_container_config
   return $?
 }
@@ -343,6 +354,7 @@ __ldmx_mount() {
   return 0
 }
 
+
 ###############################################################################
 # __ldmx_base
 #   Define the base directory of ldmx software
@@ -359,6 +371,40 @@ __ldmx_base() {
   __ldmx_mount $LDMX_BASE
   return $?
 }
+
+###############################################################################                                                                    
+# __ldmx_setenv
+#   Tell us to pass an environment variable to the container when we run
+#   By default, we pass the LDMX_BASE and DISPLAY variables explicitly, 
+#   because their syntax is too different between docker and singularity,
+#   so none of these need to (or should be) specified.
+###############################################################################
+
+export LDMX_CONTAINER_ENVS=()
+__ldmx_setenv() {
+  local _env_to_set="$1"
+
+  if [[ $_env_to_set != *"="* ]]; then
+    echo "$_env_to_set doesn't follow the required syntax myEnv=someValue!"
+	  echo "Not setting container environment variable $_env_to_set."
+    return 1
+  fi
+
+  local envName=$(echo $_env_to_set | cut -d= -f1)
+
+  for _already_set in ${LDMX_CONTAINER_ENVS[@]}; do
+    if [[ $(echo $_already_set | cut -d= -f1) = $envName ]]; then
+		echo "Already set a variable called $(echo $_already_set | cut -d= -f1);"
+		echo "Try a different name or re-source the setup script to clean your list."
+		return 1
+    fi
+  done
+  LDMX_CONTAINER_ENVS+="$_env_to_set "
+  export LDMX_CONTAINER_ENVS
+  echo "Added container environment variable $_env_to_set"
+  return 0
+}
+
 
 ###############################################################################
 # __ldmx_clean
@@ -394,6 +440,7 @@ __ldmx_clean() {
     unset LDMX_BASE
     unset LDMX_CONTAINER_MOUNTS
     unset LDMX_CONTAINER_DISPLAY
+    unset LDMX_CONTAINER_ENVS
     cleaned_something=true
   fi
 
@@ -508,6 +555,8 @@ __ldmx_help() {
       ldmx pull (dev | pro | local) <tag>
     mount   : Attach the input directory to the container when running
       ldmx mount <dir>
+    setenv   : Set an environment variable in the container when running
+      ldmx setenv <environmentVariableName=value>
     run     : Run a command at an input location in the container
       ldmx run <directory> <sub-command> [<argument> ...]
     source  : Run the commands in the provided file through ldmx
@@ -546,7 +595,7 @@ ldmx() {
       __ldmx_${1}
       return $?
       ;;
-    list|base|clean|mount|source)
+    list|base|clean|mount|setenv|source)
       if [[ "$#" != "2" ]]; then
         __ldmx_help
         echo "ERROR: ldmx ${1} takes one argument."
@@ -713,12 +762,12 @@ __ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    __ldmx_complete_command "list clean config checkout pull use run mount base source"
+    __ldmx_complete_command "list clean config checkout pull use run mount setenv base source"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
-      config)
+      config|setenv)
         # no more arguments
         __ldmx_dont_complete
         ;;
@@ -746,7 +795,7 @@ __ldmx_complete() {
     # three or more arguments
     #   check base argument to see if we should continue
     case "${COMP_WORDS[1]}" in
-      list|base|clean|config|pull|use|mount|source)
+      list|base|clean|config|pull|use|mount|setenv|source)
         # these commands shouldn't have tab complete for the third argument 
         #   (or shouldn't have the third argument at all)
         __ldmx_dont_complete
