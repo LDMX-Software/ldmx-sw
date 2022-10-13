@@ -37,13 +37,22 @@
             <D unit="g/cm3" value="19.2999898451316"/>
             <fraction n="1" ref="W"/>
         </material>
-
-        
+     
         <!-- Scintillator -->
         <material name="Polyvinyltoluene">
             <D type="density" value="1.023" unit="g/cm3"/>
             <composite n="27" ref="C"/>
             <composite n="30" ref="H"/>
+        </material>
+
+        <!-- LYSO -->
+        <material name="LYSO">
+            <D type="density" value="7.4" unit="g/cm3"/>
+            <composite n="9" ref="Lu"/>
+            <composite n="1" ref="Y"/>
+            <composite n="5" ref="Si"/>
+            <composite n="25" ref="O"/>
+            <composite n="0" ref="Ce"/>
         </material>
 
     </materials>
@@ -73,6 +82,16 @@
             <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
             <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
+        
+		<!-- define LYSO volumes -->
+        <volume name="lyso_pad_tag_bar_volume">
+            <materialref ref="LYSO"/>
+            <solidref ref="lyso_bar_box"/>
+            <auxiliary auxtype="SensDet" auxvalue="lysoPadTaggerSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="LysoPadVis"/>
+            <auxiliary auxtype="DetElem" auxvalue="LysoPad"/>
+        </volume>  
+		<!-- end of define LYSO volumes -->
 
         <volume name="trig_scint">
             <materialref ref="Vacuum"/>
@@ -108,6 +127,25 @@
                     <rotationref ref="identity" />
                 </physvol>
             </loop>
+
+			<!-- LYSO layers -->
+            <loop for="x" to="number_of_lyso" step="1">
+                <physvol copynumber="2*x-2">
+                    <volumeref ref="lyso_pad_tag_bar_volume"/>
+                    <position name="lyso_pad_tag_bar_layer1_pos" unit="mm" x="-21.318" 
+                              y="-target_dim_y/2 + lyso_bar_dy*(x-0.5) + lyso_pad_bar_gap*(x-1) + lyso_pad_offset" 
+                              z="lyso_pad_tag_z - lyso_pad_bar_thickness/2 - lyso_pad_bar_gap" />
+                    <rotationref ref="identity"/>
+                </physvol>
+                <physvol copynumber="2*x-1">
+                    <volumeref ref="lyso_pad_tag_bar_volume"/>
+                    <position name="lyso_pad_tag_bar_layer2_pos" unit="mm" x="-21.318" 
+                              y="-target_dim_y/2 + lyso_bar_dy*x + lyso_pad_bar_gap*(x-1) + lyso_pad_offset" 
+                              z="lyso_pad_tag_z + lyso_pad_bar_thickness/2 + lyso_pad_bar_gap" />
+                    <rotationref ref="identity"/>
+                </physvol>
+            </loop> 
+			<!-- end of LYSO layers loop -->
 
             <physvol copynumber="3">
                 <volumeref ref="target"/>
