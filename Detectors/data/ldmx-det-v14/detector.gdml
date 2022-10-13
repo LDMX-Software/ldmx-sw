@@ -9,13 +9,6 @@
 
         &constants;   
 
-        <!-- 
-            Trigger scintillator parent volume position relative to the target 
-            ???? mm. The end of the parent volume relative to the target
-            is at ?????. This gives a ???? mm clearance between the upstream.
-	    There are now two TS modules upstream of the tagger tracker.  
-	--> 
-        <variable name="trig_scint_pos_z" value="-trig_scint_area_envelope_z/2 - tagger_envelope_z - clearance" /> 
 	
 	<!-- 
             Tagger tracker parent volume position relative to the target 
@@ -23,7 +16,7 @@
             is at -4.6772. This gives a 0.001 mm clearance between the upstream
             trigger scintillator and the tagger tracker parent volume. 
         --> 
-        <variable name="tagger_pos_z" value="trigger_pad_up_z - trigger_pad_thickness/2 - tagger_envelope_z/2 - clearance" /> 
+        <variable name="tagger_pos_z" value="trigger_pad_up_z - trigger_pad_thickness/2 - tagger_envelope_dz/2 - clearance" /> 
 
         <!-- 
             Recoil tracker parent volume position relative to the target is at
@@ -32,11 +25,21 @@
             downstream trigger scintillator and the recoil tracker parent 
             volume.
         -->
-        <variable name="recoil_pos_z" value="trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
+        <variable name="recoil_pos_z" value="trigger_pad_thickness/2 + recoil_envelope_dz/2 + clearance"/>
         <!-- Position of the ECal and HCal parent volumes -->
         <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
+
+	<!-- 
+            Trigger scintillator parent volume position relative to the target 
+            ???? mm. The end of the parent volume relative to the target
+            is at ?????. This gives a ???? mm clearance between the upstream.
+	    There are now two TS modules upstream of the tagger tracker.  
+	--> 
+        <variable name="trig_scint_pos_z" value="tagger_pos_z-trig_scint_area_envelope_z/2 -tagger_envelope_dz/2- clearance - 200" /> 
+
+	
         <!-- Magnet is position such that the field center is at -40 cm. -->
         <constant name="magnet_pos_z" value="-40*cm" />
 
@@ -71,17 +74,17 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-            <physvol copynumber="1">
-                <file name="tagger.gdml"/>
-                <positionref ref="tagger_pos"/>
-                <rotationref ref="identity"/>
-            </physvol> 
+            <!-- <physvol copynumber="1"> -->
+            <!--     <file name="tagger.gdml"/> -->
+            <!--     <positionref ref="tagger_pos"/> -->
+            <!--     <rotationref ref="identity"/> -->
+            <!-- </physvol>  -->
 
-            <!-- <physvol copynumber="2"> -->
-            <!--     <file name="target.gdml"  /> -->
-            <!--     <positionref ref="center" /> -->
-            <!--     <rotationref ref="identity"   /> -->
-            <!-- </physvol> -->
+            <physvol copynumber="2">
+                <file name="target.gdml"  />
+                <positionref ref="center" />
+                <rotationref ref="identity"   />
+            </physvol>
 
 	    <physvol copynumber="3">
 	      <file name="trig_scint.gdml"/>
@@ -89,11 +92,11 @@
 	      <rotationref ref="identity"/>
 	    </physvol>
 
-            <physvol copynumber="5">
-                <file name="recoil.gdml"/>
-                <positionref ref="recoil_pos"/>
-                <rotationref ref="identity"/>
-            </physvol>
+            <!-- <physvol copynumber="5"> -->
+            <!--     <file name="recoil.gdml"/> -->
+            <!--     <positionref ref="recoil_pos"/> -->
+            <!--     <rotationref ref="identity"/> -->
+            <!-- </physvol> -->
             <physvol copynumber="6"> 
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 

@@ -60,8 +60,8 @@
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
 
 <!-- Parent volume dimensions --> 
-<constant name="trig_scint_area_envelope_x" value="magnet_gap_x - 5" />
-<constant name="trig_scint_area_envelope_y" value="magnet_gap_y - 5" />
+<constant name="trig_scint_area_envelope_x" value="magnet_gap_dx - 5" />
+<constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
 <constant name="trig_scint_area_envelope_z" value="-trigger_pad_taggerB_z + trigger_pad_thickness + 2*clearance"/>
 
 <!--
