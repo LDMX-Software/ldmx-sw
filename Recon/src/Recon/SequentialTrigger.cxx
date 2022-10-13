@@ -15,9 +15,7 @@ void SequentialTrigger::configure(framework::config::Parameters &ps) {
   doVAL_ = ps.getParameter<bool>("doVAL");
   //Returns an error if some bad combination of doOR and doAND is enabled.
   if (doAND_ == doOR_){
-    ldmx_log(fatal) << "Either tried to do both or neither of  doAND and doOR. Exiting.";
-    throw std::invalid_argument("Either tried to do both or neither of doAND and doOR. Exiting.");
-    return;
+    EXCEPTION_RAISE("InvalidArg","Either tried to do both or neither of doAND and doOR. Exactly one should be true.");
   }
   return;
 }
@@ -45,9 +43,10 @@ void SequentialTrigger::produce(framework::Event& event) {
             if(doAND_){hasPassed=false;break;}
         }
     }catch(...){
-        ldmx_log(fatal) << "Attemping to use non-existing trigger collection "
-                      << trigger_list_[i] << "_" << trigger_passNames_[i]
-                      << " to skim! Exiting.";    
+        std::string errorMessage = "Attemping to use non-existing trigger collection "
+                                    +trigger_list_[i]+"_"+trigger_passNames_[i]
+                                    +" to skim! Exiting.";
+        EXCEPTION_RAISE("InvalidArg",errorMessage.data());    
         return;
     }
   }
