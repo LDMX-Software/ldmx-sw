@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
@@ -33,7 +34,7 @@
         -->
         <variable name="recoil_pos_z" value="trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
         <!-- Position of the ECal and HCal parent volumes -->
-        <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
+        <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
         <!-- Magnet is position such that the field center is at -40 cm. -->
@@ -47,56 +48,18 @@
 	<position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-        <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
-        <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
+        <position name="em_calorimeter_pos" x="0.0" 
+          y="support_box_shift" z="em_calorimeter_pos_z+ecal_envelope_z/2"/>
+        <!-- the ecal support box is asymmetric in the vertical direction causing an additional
+        shift relative to the origin at the target -->
+        <position name="hadron_calorimeter_pos" x="0.0" 
+          y="support_box_shift" z="hadron_calorimeter_pos_z"/>
         <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />         
 
     </define>
 
     <materials>
-        <element Z="7" formula="N" name="N">
-            <atom type="A" unit="g/mol" value="14.0068"/>
-        </element>
-        <element Z="8" formula="O" name="O">
-            <atom type="A" unit="g/mol" value="15.9994"/>
-        </element>
-        <element Z="18" formula="Ar" name="Ar">
-            <atom type="A" unit="g/mol" value="39.9477"/>
-        </element>
-        <material name="Air" state="gas">
-            <MEE unit="eV" value="85.643664635028"/>
-            <D unit="g/cm3" value="0.00119999936860922"/>
-            <fraction n="0.754" ref="N"/>
-            <fraction n="0.234" ref="O"/>
-            <fraction n="0.012" ref="Ar"/>
-        </material>
-        <element Z="74" formula="W" name="W">
-            <atom type="A" unit="g/mol" value="183.842"/>
-        </element>           
-        <element Z="14" formula="Si" name="Si">
-            <atom type="A" unit="g/mol" value="28.0854"/>
-        </element>
-        <material name="Silicon" state="solid">
-            <MEE unit="eV" value="173"/>
-            <D unit="g/cm3" value="2.32999877404956"/>
-            <fraction n="1" ref="Si"/>
-        </material>
-        <element Z="6" formula="C" name="C">
-            <atom type="A" unit="g/mol" value="12.0107"/>
-        </element>
-        <material name="Carbon" state="solid">
-            <MEE unit="eV" value="81"/>
-            <D unit="g/cm3" value="1.99999894768203"/>
-            <fraction n="1" ref="C"/>
-        </material>
-        <element Z="1" formula="H" name="H">
-            <atom type="A" unit="g/mol" value="1.00794"/>
-        </element>
-        <material name="Vacuum" state="gas">
-            <MEE unit="eV" value="19.2"/>
-            <D unit="g/cm3" value="9.99999473841014e-09"/>
-            <fraction n="1" ref="H"/>
-        </material>
+      &materials;
     </materials>
 
     <solids>
@@ -108,7 +71,6 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-
             <physvol copynumber="1">
                 <file name="tagger.gdml"/>
                 <positionref ref="tagger_pos"/>
@@ -132,7 +94,6 @@
                 <positionref ref="recoil_pos"/>
                 <rotationref ref="identity"/>
             </physvol>
-
             <physvol copynumber="6"> 
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
@@ -158,7 +119,7 @@
         <auxiliary auxtype="DetectorVersion" auxvalue="14">
             <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v14"/>
             <auxiliary auxtype="Description" 
-                        auxvalue="The v12 detector: ECal has motherboards inserted and HCal has made room for this extra space, Trigger Pads inserted."/>
+                       auxvalue="The Late 2022 Design Report Geometry."/>
         </auxiliary>
 
         <!-- define sensitive detectors -->
@@ -202,12 +163,6 @@
             <auxiliary auxtype="SubdetID" auxvalue="4"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
         </auxiliary>
-        <auxiliary auxtype="SensDet" auxvalue="EcalSD">
-            <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
-            <auxiliary auxtype="SubdetID" auxvalue="5"/>
-            <auxiliary auxtype="Verbose" auxvalue="0"/>
-        </auxiliary>
         <auxiliary auxtype="SensDet" auxvalue="HcalSD">
             <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
             <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
@@ -222,7 +177,7 @@
             <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
             <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
             <auxiliary auxtype="OffsetZ" auxvalue="-400.0" auxunit="mm"/>
-        </auxiliary>    
+        </auxiliary>
 
         <!-- define regions -->
         <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">

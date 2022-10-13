@@ -143,7 +143,7 @@ class HgcrocDigiCollection {
      */
     int tot() const {
       if (version_ == 2) {
-        return first();
+        return 0xfff & (word_ >> FIRSTMEAS_POS);
       }
 
       int meas = secon();

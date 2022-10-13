@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+    <position name="motherboard5_assembly_v0" unit="mm" x="197.0682" y="8.166" z="380.9181"/>
+    <position name="motherboard5_assembly_v1" unit="mm" x="97.69203" y="8.166" z="437.1063"/>
+    <position name="motherboard5_assembly_v2" unit="mm" x="197.0682" y="6.666" z="380.9181"/>
+    <position name="motherboard5_assembly_v3" unit="mm" x="97.69203" y="6.666" z="437.1063"/>
+    <position name="motherboard5_assembly_v4" unit="mm" x="247.8682" y="8.166" z="410.2475"/>
+    <position name="motherboard5_assembly_v5" unit="mm" x="247.8682" y="6.666" z="410.2475"/>
+    <position name="motherboard5_assembly_v6" unit="mm" x="298.6682" y="8.166" z="380.9181"/>
+    <position name="motherboard5_assembly_v7" unit="mm" x="298.6682" y="6.666" z="380.9181"/>
+    <position name="motherboard5_assembly_v8" unit="mm" x="298.6682" y="8.166" z="322.2594"/>
+    <position name="motherboard5_assembly_v9" unit="mm" x="298.6682" y="6.666" z="322.2594"/>
+    <position name="motherboard5_assembly_v10" unit="mm" x="247.8682" y="8.166" z="292.93"/>
+    <position name="motherboard5_assembly_v11" unit="mm" x="247.8682" y="6.666" z="292.93"/>
+    <position name="motherboard5_assembly_v12" unit="mm" x="214.6958" y="8.166" z="235.4737"/>
+    <position name="motherboard5_assembly_v13" unit="mm" x="214.6958" y="6.666" z="235.4737"/>
+    <position name="motherboard5_assembly_v14" unit="mm" x="214.6958" y="8.166" z="176.8149"/>
+    <position name="motherboard5_assembly_v15" unit="mm" x="214.6958" y="6.666" z="176.8149"/>
+    <position name="motherboard5_assembly_v16" unit="mm" x="247.8682" y="8.166" z="119.3586"/>
+    <position name="motherboard5_assembly_v17" unit="mm" x="247.8682" y="6.666" z="119.3586"/>
+    <position name="motherboard5_assembly_v18" unit="mm" x="298.6682" y="8.166" z="90.02922"/>
+    <position name="motherboard5_assembly_v19" unit="mm" x="298.6682" y="6.666" z="90.02922"/>
+    <position name="motherboard5_assembly_v20" unit="mm" x="298.6682" y="8.166" z="31.37043"/>
+    <position name="motherboard5_assembly_v21" unit="mm" x="298.6682" y="6.666" z="31.37043"/>
+    <position name="motherboard5_assembly_v22" unit="mm" x="247.8682" y="8.166" z="2.041042"/>
+    <position name="motherboard5_assembly_v23" unit="mm" x="247.8682" y="6.666" z="2.041042"/>
+    <position name="motherboard5_assembly_v24" unit="mm" x="197.0682" y="8.166" z="31.37043"/>
+    <position name="motherboard5_assembly_v25" unit="mm" x="197.0682" y="6.666" z="31.37043"/>
+    <position name="motherboard5_assembly_v26" unit="mm" x="197.0682" y="8.166" z="90.02922"/>
+    <position name="motherboard5_assembly_v27" unit="mm" x="197.0682" y="6.666" z="90.02922"/>
+    <position name="motherboard5_assembly_v28" unit="mm" x="163.8958" y="8.166" z="147.4855"/>
+    <position name="motherboard5_assembly_v29" unit="mm" x="163.8958" y="6.666" z="147.4855"/>
+    <position name="motherboard5_assembly_v30" unit="mm" x="113.0958" y="8.166" z="176.8149"/>
+    <position name="motherboard5_assembly_v31" unit="mm" x="113.0958" y="6.666" z="176.8149"/>
+    <position name="motherboard5_assembly_v32" unit="mm" x="113.0958" y="8.166" z="235.4737"/>
+    <position name="motherboard5_assembly_v33" unit="mm" x="113.0958" y="6.666" z="235.4737"/>
+    <position name="motherboard5_assembly_v34" unit="mm" x="15.03572" y="8.166" z="290.9177"/>
+    <position name="motherboard5_assembly_v35" unit="mm" x="15.03572" y="6.666" z="290.9177"/>
+    <position name="motherboard5_assembly_v36" unit="mm" x="162.6396" y="8.166" z="309.3318"/>
+    <position name="motherboard5_assembly_v37" unit="mm" x="162.4949" y="8.166" z="307.6778"/>
+    <position name="motherboard5_assembly_v38" unit="mm" x="162.0651" y="8.166" z="306.074"/>
+    <position name="motherboard5_assembly_v39" unit="mm" x="143.7343" y="8.166" z="310.9858"/>
+    <position name="motherboard5_assembly_v40" unit="mm" x="143.5896" y="8.166" z="309.3318"/>
+    <position name="motherboard5_assembly_v41" unit="mm" x="143.7343" y="8.166" z="307.6778"/>
+    <position name="motherboard5_assembly_v42" unit="mm" x="160.4111" y="8.166" z="303.2092"/>
+    <position name="motherboard5_assembly_v43" unit="mm" x="161.3635" y="8.166" z="304.5693"/>
+    <position name="motherboard5_assembly_v44" unit="mm" x="148.3521" y="8.166" z="301.0829"/>
+    <position name="motherboard5_assembly_v45" unit="mm" x="149.8568" y="8.166" z="300.3812"/>
+    <position name="motherboard5_assembly_v46" unit="mm" x="162.4949" y="8.166" z="310.9858"/>
+    <position name="motherboard5_assembly_v47" unit="mm" x="162.0651" y="8.166" z="312.5895"/>
+    <position name="motherboard5_assembly_v48" unit="mm" x="161.3635" y="8.166" z="314.0943"/>
+    <position name="motherboard5_assembly_v49" unit="mm" x="160.4111" y="8.166" z="315.4543"/>
+    <position name="motherboard5_assembly_v50" unit="mm" x="159.2371" y="8.166" z="316.6284"/>
+    <position name="motherboard5_assembly_v51" unit="mm" x="157.8771" y="8.166" z="317.5807"/>
+    <position name="motherboard5_assembly_v52" unit="mm" x="153.1146" y="8.166" z="318.8568"/>
+    <position name="motherboard5_assembly_v53" unit="mm" x="154.7686" y="8.166" z="318.7121"/>
+    <position name="motherboard5_assembly_v54" unit="mm" x="156.3723" y="8.166" z="318.2824"/>
+    <position name="motherboard5_assembly_v55" unit="mm" x="151.4606" y="8.166" z="318.7121"/>
+    <position name="motherboard5_assembly_v56" unit="mm" x="149.8568" y="8.166" z="318.2824"/>
+    <position name="motherboard5_assembly_v57" unit="mm" x="148.3521" y="8.166" z="317.5807"/>
+    <position name="motherboard5_assembly_v58" unit="mm" x="144.8657" y="8.166" z="314.0943"/>
+    <position name="motherboard5_assembly_v59" unit="mm" x="144.164" y="8.166" z="312.5895"/>
+    <position name="motherboard5_assembly_v60" unit="mm" x="146.992" y="8.166" z="316.6284"/>
+    <position name="motherboard5_assembly_v61" unit="mm" x="145.818" y="8.166" z="315.4543"/>
+    <position name="motherboard5_assembly_v62" unit="mm" x="146.992" y="8.166" z="302.0352"/>
+    <position name="motherboard5_assembly_v63" unit="mm" x="144.164" y="8.166" z="306.074"/>
+    <position name="motherboard5_assembly_v64" unit="mm" x="144.8657" y="8.166" z="304.5693"/>
+    <position name="motherboard5_assembly_v65" unit="mm" x="145.818" y="8.166" z="303.2092"/>
+    <position name="motherboard5_assembly_v66" unit="mm" x="151.4606" y="8.166" z="299.9515"/>
+    <position name="motherboard5_assembly_v67" unit="mm" x="153.1146" y="8.166" z="299.8068"/>
+    <position name="motherboard5_assembly_v68" unit="mm" x="154.7686" y="8.166" z="299.9515"/>
+    <position name="motherboard5_assembly_v69" unit="mm" x="156.3723" y="8.166" z="300.3812"/>
+    <position name="motherboard5_assembly_v70" unit="mm" x="157.8771" y="8.166" z="301.0829"/>
+    <position name="motherboard5_assembly_v71" unit="mm" x="159.2371" y="8.166" z="302.0352"/>
+    <position name="motherboard5_assembly_v72" unit="mm" x="143.7343" y="6.666" z="307.6778"/>
+    <position name="motherboard5_assembly_v73" unit="mm" x="143.5896" y="6.666" z="309.3318"/>
+    <position name="motherboard5_assembly_v74" unit="mm" x="144.164" y="6.666" z="306.074"/>
+    <position name="motherboard5_assembly_v75" unit="mm" x="149.8568" y="6.666" z="300.3812"/>
+    <position name="motherboard5_assembly_v76" unit="mm" x="148.3521" y="6.666" z="301.0829"/>
+    <position name="motherboard5_assembly_v77" unit="mm" x="162.6396" y="6.666" z="309.3318"/>
+    <position name="motherboard5_assembly_v78" unit="mm" x="162.4949" y="6.666" z="307.6778"/>
+    <position name="motherboard5_assembly_v79" unit="mm" x="162.0651" y="6.666" z="306.074"/>
+    <position name="motherboard5_assembly_v80" unit="mm" x="161.3635" y="6.666" z="304.5693"/>
+    <position name="motherboard5_assembly_v81" unit="mm" x="146.992" y="6.666" z="302.0352"/>
+    <position name="motherboard5_assembly_v82" unit="mm" x="145.818" y="6.666" z="303.2092"/>
+    <position name="motherboard5_assembly_v83" unit="mm" x="144.8657" y="6.666" z="304.5693"/>
+    <position name="motherboard5_assembly_v84" unit="mm" x="143.7343" y="6.666" z="310.9858"/>
+    <position name="motherboard5_assembly_v85" unit="mm" x="144.164" y="6.666" z="312.5895"/>
+    <position name="motherboard5_assembly_v86" unit="mm" x="144.8657" y="6.666" z="314.0943"/>
+    <position name="motherboard5_assembly_v87" unit="mm" x="145.818" y="6.666" z="315.4543"/>
+    <position name="motherboard5_assembly_v88" unit="mm" x="160.4111" y="6.666" z="303.2092"/>
+    <position name="motherboard5_assembly_v89" unit="mm" x="159.2371" y="6.666" z="302.0352"/>
+    <position name="motherboard5_assembly_v90" unit="mm" x="157.8771" y="6.666" z="301.0829"/>
+    <position name="motherboard5_assembly_v91" unit="mm" x="156.3723" y="6.666" z="300.3812"/>
+    <position name="motherboard5_assembly_v92" unit="mm" x="154.7686" y="6.666" z="299.9515"/>
+    <position name="motherboard5_assembly_v93" unit="mm" x="153.1146" y="6.666" z="299.8068"/>
+    <position name="motherboard5_assembly_v94" unit="mm" x="151.4606" y="6.666" z="299.9515"/>
+    <position name="motherboard5_assembly_v95" unit="mm" x="146.992" y="6.666" z="316.6284"/>
+    <position name="motherboard5_assembly_v96" unit="mm" x="148.3521" y="6.666" z="317.5807"/>
+    <position name="motherboard5_assembly_v97" unit="mm" x="149.8568" y="6.666" z="318.2824"/>
+    <position name="motherboard5_assembly_v98" unit="mm" x="156.3723" y="6.666" z="318.2824"/>
+    <position name="motherboard5_assembly_v99" unit="mm" x="157.8771" y="6.666" z="317.5807"/>
+    <position name="motherboard5_assembly_v100" unit="mm" x="161.3635" y="6.666" z="314.0943"/>
+    <position name="motherboard5_assembly_v101" unit="mm" x="162.0651" y="6.666" z="312.5895"/>
+    <position name="motherboard5_assembly_v102" unit="mm" x="162.4949" y="6.666" z="310.9858"/>
+    <position name="motherboard5_assembly_v103" unit="mm" x="159.2371" y="6.666" z="316.6284"/>
+    <position name="motherboard5_assembly_v104" unit="mm" x="160.4111" y="6.666" z="315.4543"/>
+    <position name="motherboard5_assembly_v105" unit="mm" x="151.4606" y="6.666" z="318.7121"/>
+    <position name="motherboard5_assembly_v106" unit="mm" x="153.1146" y="6.666" z="318.8568"/>
+    <position name="motherboard5_assembly_v107" unit="mm" x="154.7686" y="6.666" z="318.7121"/>
+    <position name="motherboard5_assembly_v108" unit="mm" x="47.04064" y="1.666" z="371.9038"/>
+    <position name="motherboard5_assembly_v109" unit="mm" x="116.68" y="1.666" z="332.5291"/>
+    <position name="motherboard5_assembly_v110" unit="mm" x="47.04064" y="0.066" z="371.9038"/>
+    <position name="motherboard5_assembly_v111" unit="mm" x="116.68" y="0.066" z="332.5291"/>
+    <position name="motherboard5_assembly_v112" unit="mm" x="86.41532" y="1.666" z="441.5431"/>
+    <position name="motherboard5_assembly_v113" unit="mm" x="86.41532" y="0.066" z="441.5431"/>
+    <position name="motherboard5_assembly_v114" unit="mm" x="156.0546" y="1.666" z="402.1684"/>
+    <position name="motherboard5_assembly_v115" unit="mm" x="156.0546" y="0.066" z="402.1684"/>
+    <position name="motherboard5_assembly_v116" unit="mm" x="103.6998" y="6.666" z="350.2072"/>
+    <position name="motherboard5_assembly_v117" unit="mm" x="110.6637" y="6.666" z="346.2697"/>
+    <position name="motherboard5_assembly_v118" unit="mm" x="103.6998" y="1.666" z="350.2072"/>
+    <position name="motherboard5_assembly_v119" unit="mm" x="110.6637" y="1.666" z="346.2697"/>
+    <position name="motherboard5_assembly_v120" unit="mm" x="134.2152" y="6.666" z="404.1777"/>
+    <position name="motherboard5_assembly_v121" unit="mm" x="134.2152" y="1.666" z="404.1777"/>
+    <position name="motherboard5_assembly_v122" unit="mm" x="141.1791" y="6.666" z="400.2402"/>
+    <position name="motherboard5_assembly_v123" unit="mm" x="141.1791" y="1.666" z="400.2402"/>
+    <position name="motherboard5_assembly_v124" unit="mm" x="85.87688" y="4.666" z="382.6856"/>
+    <position name="motherboard5_assembly_v125" unit="mm" x="105.8982" y="4.666" z="371.3653"/>
+    <position name="motherboard5_assembly_v126" unit="mm" x="85.87688" y="1.666" z="382.6856"/>
+    <position name="motherboard5_assembly_v127" unit="mm" x="105.8982" y="1.666" z="371.3653"/>
+    <position name="motherboard5_assembly_v128" unit="mm" x="97.1971" y="4.666" z="402.7069"/>
+    <position name="motherboard5_assembly_v129" unit="mm" x="97.1971" y="1.666" z="402.7069"/>
+    <position name="motherboard5_assembly_v130" unit="mm" x="117.2184" y="4.666" z="391.3866"/>
+    <position name="motherboard5_assembly_v131" unit="mm" x="117.2184" y="1.666" z="391.3866"/>
+    <position name="motherboard5_assembly_v132" unit="mm" x="61.91619" y="6.666" z="373.832"/>
+    <position name="motherboard5_assembly_v133" unit="mm" x="68.88013" y="6.666" z="369.8945"/>
+    <position name="motherboard5_assembly_v134" unit="mm" x="61.91619" y="1.666" z="373.832"/>
+    <position name="motherboard5_assembly_v135" unit="mm" x="68.88013" y="1.666" z="369.8945"/>
+    <position name="motherboard5_assembly_v136" unit="mm" x="92.43157" y="6.666" z="427.8025"/>
+    <position name="motherboard5_assembly_v137" unit="mm" x="92.43157" y="1.666" z="427.8025"/>
+    <position name="motherboard5_assembly_v138" unit="mm" x="99.3955" y="6.666" z="423.865"/>
+    <position name="motherboard5_assembly_v139" unit="mm" x="99.3955" y="1.666" z="423.865"/>
+    <position name="motherboard5_assembly_v140" unit="mm" x="3.285533" y="1.666" z="294.5171"/>
+    <position name="motherboard5_assembly_v141" unit="mm" x="72.92485" y="1.666" z="255.1424"/>
+    <position name="motherboard5_assembly_v142" unit="mm" x="3.285533" y="0.066" z="294.5171"/>
+    <position name="motherboard5_assembly_v143" unit="mm" x="72.92485" y="0.066" z="255.1424"/>
+    <position name="motherboard5_assembly_v144" unit="mm" x="42.66021" y="1.666" z="364.1564"/>
+    <position name="motherboard5_assembly_v145" unit="mm" x="42.66021" y="0.066" z="364.1564"/>
+    <position name="motherboard5_assembly_v146" unit="mm" x="112.2995" y="1.666" z="324.7817"/>
+    <position name="motherboard5_assembly_v147" unit="mm" x="112.2995" y="0.066" z="324.7817"/>
+    <position name="motherboard5_assembly_v148" unit="mm" x="59.94467" y="6.666" z="272.8205"/>
+    <position name="motherboard5_assembly_v149" unit="mm" x="66.90861" y="6.666" z="268.883"/>
+    <position name="motherboard5_assembly_v150" unit="mm" x="59.94467" y="1.666" z="272.8205"/>
+    <position name="motherboard5_assembly_v151" unit="mm" x="66.90861" y="1.666" z="268.883"/>
+    <position name="motherboard5_assembly_v152" unit="mm" x="90.46005" y="6.666" z="326.791"/>
+    <position name="motherboard5_assembly_v153" unit="mm" x="90.46005" y="1.666" z="326.791"/>
+    <position name="motherboard5_assembly_v154" unit="mm" x="97.42398" y="6.666" z="322.8535"/>
+    <position name="motherboard5_assembly_v155" unit="mm" x="97.42398" y="1.666" z="322.8535"/>
+    <position name="motherboard5_assembly_v156" unit="mm" x="42.12177" y="4.666" z="305.2989"/>
+    <position name="motherboard5_assembly_v157" unit="mm" x="62.14307" y="4.666" z="293.9787"/>
+    <position name="motherboard5_assembly_v158" unit="mm" x="42.12177" y="1.666" z="305.2989"/>
+    <position name="motherboard5_assembly_v159" unit="mm" x="62.14307" y="1.666" z="293.9787"/>
+    <position name="motherboard5_assembly_v160" unit="mm" x="53.44199" y="4.666" z="325.3202"/>
+    <position name="motherboard5_assembly_v161" unit="mm" x="53.44199" y="1.666" z="325.3202"/>
+    <position name="motherboard5_assembly_v162" unit="mm" x="73.46329" y="4.666" z="314.0"/>
+    <position name="motherboard5_assembly_v163" unit="mm" x="73.46329" y="1.666" z="314.0"/>
+    <position name="motherboard5_assembly_v164" unit="mm" x="18.16108" y="6.666" z="296.4453"/>
+    <position name="motherboard5_assembly_v165" unit="mm" x="25.12501" y="6.666" z="292.5078"/>
+    <position name="motherboard5_assembly_v166" unit="mm" x="18.16108" y="1.666" z="296.4453"/>
+    <position name="motherboard5_assembly_v167" unit="mm" x="25.12501" y="1.666" z="292.5078"/>
+    <position name="motherboard5_assembly_v168" unit="mm" x="48.67646" y="6.666" z="350.4158"/>
+    <position name="motherboard5_assembly_v169" unit="mm" x="48.67646" y="1.666" z="350.4158"/>
+    <position name="motherboard5_assembly_v170" unit="mm" x="55.64039" y="6.666" z="346.4783"/>
+    <position name="motherboard5_assembly_v171" unit="mm" x="55.64039" y="1.666" z="346.4783"/>
+  </define>
+
+  <solids>
+    <tessellated aunit="deg" lunit="mm" name="motherboard5_assembly-SOL">
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v1" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v1" vertex3="motherboard5_assembly_v3"/>
+       <triangular vertex1="motherboard5_assembly_v4" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v5"/>
+       <triangular vertex1="motherboard5_assembly_v5" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v6" vertex2="motherboard5_assembly_v4" vertex3="motherboard5_assembly_v7"/>
+       <triangular vertex1="motherboard5_assembly_v7" vertex2="motherboard5_assembly_v4" vertex3="motherboard5_assembly_v5"/>
+       <triangular vertex1="motherboard5_assembly_v8" vertex2="motherboard5_assembly_v6" vertex3="motherboard5_assembly_v9"/>
+       <triangular vertex1="motherboard5_assembly_v9" vertex2="motherboard5_assembly_v6" vertex3="motherboard5_assembly_v7"/>
+       <triangular vertex1="motherboard5_assembly_v10" vertex2="motherboard5_assembly_v8" vertex3="motherboard5_assembly_v11"/>
+       <triangular vertex1="motherboard5_assembly_v11" vertex2="motherboard5_assembly_v8" vertex3="motherboard5_assembly_v9"/>
+       <triangular vertex1="motherboard5_assembly_v12" vertex2="motherboard5_assembly_v10" vertex3="motherboard5_assembly_v13"/>
+       <triangular vertex1="motherboard5_assembly_v13" vertex2="motherboard5_assembly_v10" vertex3="motherboard5_assembly_v11"/>
+       <triangular vertex1="motherboard5_assembly_v14" vertex2="motherboard5_assembly_v12" vertex3="motherboard5_assembly_v15"/>
+       <triangular vertex1="motherboard5_assembly_v15" vertex2="motherboard5_assembly_v12" vertex3="motherboard5_assembly_v13"/>
+       <triangular vertex1="motherboard5_assembly_v16" vertex2="motherboard5_assembly_v14" vertex3="motherboard5_assembly_v17"/>
+       <triangular vertex1="motherboard5_assembly_v17" vertex2="motherboard5_assembly_v14" vertex3="motherboard5_assembly_v15"/>
+       <triangular vertex1="motherboard5_assembly_v18" vertex2="motherboard5_assembly_v16" vertex3="motherboard5_assembly_v19"/>
+       <triangular vertex1="motherboard5_assembly_v19" vertex2="motherboard5_assembly_v16" vertex3="motherboard5_assembly_v17"/>
+       <triangular vertex1="motherboard5_assembly_v20" vertex2="motherboard5_assembly_v18" vertex3="motherboard5_assembly_v21"/>
+       <triangular vertex1="motherboard5_assembly_v21" vertex2="motherboard5_assembly_v18" vertex3="motherboard5_assembly_v19"/>
+       <triangular vertex1="motherboard5_assembly_v22" vertex2="motherboard5_assembly_v20" vertex3="motherboard5_assembly_v23"/>
+       <triangular vertex1="motherboard5_assembly_v23" vertex2="motherboard5_assembly_v20" vertex3="motherboard5_assembly_v21"/>
+       <triangular vertex1="motherboard5_assembly_v24" vertex2="motherboard5_assembly_v22" vertex3="motherboard5_assembly_v25"/>
+       <triangular vertex1="motherboard5_assembly_v25" vertex2="motherboard5_assembly_v22" vertex3="motherboard5_assembly_v23"/>
+       <triangular vertex1="motherboard5_assembly_v26" vertex2="motherboard5_assembly_v24" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v24" vertex3="motherboard5_assembly_v25"/>
+       <triangular vertex1="motherboard5_assembly_v28" vertex2="motherboard5_assembly_v26" vertex3="motherboard5_assembly_v29"/>
+       <triangular vertex1="motherboard5_assembly_v29" vertex2="motherboard5_assembly_v26" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v30" vertex2="motherboard5_assembly_v28" vertex3="motherboard5_assembly_v31"/>
+       <triangular vertex1="motherboard5_assembly_v31" vertex2="motherboard5_assembly_v28" vertex3="motherboard5_assembly_v29"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v30" vertex3="motherboard5_assembly_v33"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v30" vertex3="motherboard5_assembly_v31"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v32" vertex3="motherboard5_assembly_v35"/>
+       <triangular vertex1="motherboard5_assembly_v35" vertex2="motherboard5_assembly_v32" vertex3="motherboard5_assembly_v33"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v34" vertex3="motherboard5_assembly_v3"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v34" vertex3="motherboard5_assembly_v35"/>
+       <triangular vertex1="motherboard5_assembly_v20" vertex2="motherboard5_assembly_v22" vertex3="motherboard5_assembly_v24"/>
+       <triangular vertex1="motherboard5_assembly_v16" vertex2="motherboard5_assembly_v18" vertex3="motherboard5_assembly_v20"/>
+       <triangular vertex1="motherboard5_assembly_v36" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v37"/>
+       <triangular vertex1="motherboard5_assembly_v37" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v38"/>
+       <triangular vertex1="motherboard5_assembly_v39" vertex2="motherboard5_assembly_v40" vertex3="motherboard5_assembly_v34"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v40" vertex3="motherboard5_assembly_v41"/>
+       <triangular vertex1="motherboard5_assembly_v42" vertex2="motherboard5_assembly_v43" vertex3="motherboard5_assembly_v8"/>
+       <triangular vertex1="motherboard5_assembly_v44" vertex2="motherboard5_assembly_v45" vertex3="motherboard5_assembly_v32"/>
+       <triangular vertex1="motherboard5_assembly_v14" vertex2="motherboard5_assembly_v30" vertex3="motherboard5_assembly_v12"/>
+       <triangular vertex1="motherboard5_assembly_v12" vertex2="motherboard5_assembly_v30" vertex3="motherboard5_assembly_v32"/>
+       <triangular vertex1="motherboard5_assembly_v12" vertex2="motherboard5_assembly_v32" vertex3="motherboard5_assembly_v10"/>
+       <triangular vertex1="motherboard5_assembly_v10" vertex2="motherboard5_assembly_v32" vertex3="motherboard5_assembly_v8"/>
+       <triangular vertex1="motherboard5_assembly_v20" vertex2="motherboard5_assembly_v24" vertex3="motherboard5_assembly_v16"/>
+       <triangular vertex1="motherboard5_assembly_v16" vertex2="motherboard5_assembly_v24" vertex3="motherboard5_assembly_v26"/>
+       <triangular vertex1="motherboard5_assembly_v16" vertex2="motherboard5_assembly_v26" vertex3="motherboard5_assembly_v14"/>
+       <triangular vertex1="motherboard5_assembly_v14" vertex2="motherboard5_assembly_v26" vertex3="motherboard5_assembly_v28"/>
+       <triangular vertex1="motherboard5_assembly_v14" vertex2="motherboard5_assembly_v28" vertex3="motherboard5_assembly_v30"/>
+       <triangular vertex1="motherboard5_assembly_v36" vertex2="motherboard5_assembly_v46" vertex3="motherboard5_assembly_v0"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v46" vertex3="motherboard5_assembly_v47"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v47" vertex3="motherboard5_assembly_v48"/>
+       <triangular vertex1="motherboard5_assembly_v48" vertex2="motherboard5_assembly_v49" vertex3="motherboard5_assembly_v0"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v49" vertex3="motherboard5_assembly_v50"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v50" vertex3="motherboard5_assembly_v51"/>
+       <triangular vertex1="motherboard5_assembly_v52" vertex2="motherboard5_assembly_v1" vertex3="motherboard5_assembly_v53"/>
+       <triangular vertex1="motherboard5_assembly_v53" vertex2="motherboard5_assembly_v1" vertex3="motherboard5_assembly_v0"/>
+       <triangular vertex1="motherboard5_assembly_v53" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v54"/>
+       <triangular vertex1="motherboard5_assembly_v54" vertex2="motherboard5_assembly_v0" vertex3="motherboard5_assembly_v51"/>
+       <triangular vertex1="motherboard5_assembly_v52" vertex2="motherboard5_assembly_v55" vertex3="motherboard5_assembly_v1"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v55" vertex3="motherboard5_assembly_v56"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v56" vertex3="motherboard5_assembly_v57"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v58" vertex3="motherboard5_assembly_v34"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v58" vertex3="motherboard5_assembly_v59"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v59" vertex3="motherboard5_assembly_v39"/>
+       <triangular vertex1="motherboard5_assembly_v57" vertex2="motherboard5_assembly_v60" vertex3="motherboard5_assembly_v1"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v60" vertex3="motherboard5_assembly_v61"/>
+       <triangular vertex1="motherboard5_assembly_v1" vertex2="motherboard5_assembly_v61" vertex3="motherboard5_assembly_v58"/>
+       <triangular vertex1="motherboard5_assembly_v44" vertex2="motherboard5_assembly_v32" vertex3="motherboard5_assembly_v62"/>
+       <triangular vertex1="motherboard5_assembly_v4" vertex2="motherboard5_assembly_v6" vertex3="motherboard5_assembly_v0"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v6" vertex3="motherboard5_assembly_v8"/>
+       <triangular vertex1="motherboard5_assembly_v0" vertex2="motherboard5_assembly_v8" vertex3="motherboard5_assembly_v38"/>
+       <triangular vertex1="motherboard5_assembly_v38" vertex2="motherboard5_assembly_v8" vertex3="motherboard5_assembly_v43"/>
+       <triangular vertex1="motherboard5_assembly_v41" vertex2="motherboard5_assembly_v63" vertex3="motherboard5_assembly_v34"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v63" vertex3="motherboard5_assembly_v64"/>
+       <triangular vertex1="motherboard5_assembly_v34" vertex2="motherboard5_assembly_v64" vertex3="motherboard5_assembly_v32"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v64" vertex3="motherboard5_assembly_v65"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v65" vertex3="motherboard5_assembly_v62"/>
+       <triangular vertex1="motherboard5_assembly_v45" vertex2="motherboard5_assembly_v66" vertex3="motherboard5_assembly_v32"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v66" vertex3="motherboard5_assembly_v67"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v67" vertex3="motherboard5_assembly_v68"/>
+       <triangular vertex1="motherboard5_assembly_v68" vertex2="motherboard5_assembly_v69" vertex3="motherboard5_assembly_v32"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v69" vertex3="motherboard5_assembly_v70"/>
+       <triangular vertex1="motherboard5_assembly_v32" vertex2="motherboard5_assembly_v70" vertex3="motherboard5_assembly_v8"/>
+       <triangular vertex1="motherboard5_assembly_v8" vertex2="motherboard5_assembly_v70" vertex3="motherboard5_assembly_v71"/>
+       <triangular vertex1="motherboard5_assembly_v8" vertex2="motherboard5_assembly_v71" vertex3="motherboard5_assembly_v42"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v31" vertex3="motherboard5_assembly_v29"/>
+       <triangular vertex1="motherboard5_assembly_v72" vertex2="motherboard5_assembly_v73" vertex3="motherboard5_assembly_v35"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v25" vertex3="motherboard5_assembly_v17"/>
+       <triangular vertex1="motherboard5_assembly_v25" vertex2="motherboard5_assembly_v23" vertex3="motherboard5_assembly_v17"/>
+       <triangular vertex1="motherboard5_assembly_v17" vertex2="motherboard5_assembly_v23" vertex3="motherboard5_assembly_v21"/>
+       <triangular vertex1="motherboard5_assembly_v17" vertex2="motherboard5_assembly_v21" vertex3="motherboard5_assembly_v19"/>
+       <triangular vertex1="motherboard5_assembly_v72" vertex2="motherboard5_assembly_v35" vertex3="motherboard5_assembly_v74"/>
+       <triangular vertex1="motherboard5_assembly_v11" vertex2="motherboard5_assembly_v9" vertex3="motherboard5_assembly_v7"/>
+       <triangular vertex1="motherboard5_assembly_v17" vertex2="motherboard5_assembly_v15" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v15" vertex3="motherboard5_assembly_v13"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v13" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v13" vertex3="motherboard5_assembly_v11"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v11" vertex3="motherboard5_assembly_v5"/>
+       <triangular vertex1="motherboard5_assembly_v5" vertex2="motherboard5_assembly_v11" vertex3="motherboard5_assembly_v7"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v75" vertex3="motherboard5_assembly_v76"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v77" vertex3="motherboard5_assembly_v78"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v78" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v78" vertex3="motherboard5_assembly_v79"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v79" vertex3="motherboard5_assembly_v80"/>
+       <triangular vertex1="motherboard5_assembly_v76" vertex2="motherboard5_assembly_v81" vertex3="motherboard5_assembly_v33"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v81" vertex3="motherboard5_assembly_v82"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v82" vertex3="motherboard5_assembly_v35"/>
+       <triangular vertex1="motherboard5_assembly_v35" vertex2="motherboard5_assembly_v82" vertex3="motherboard5_assembly_v83"/>
+       <triangular vertex1="motherboard5_assembly_v35" vertex2="motherboard5_assembly_v83" vertex3="motherboard5_assembly_v74"/>
+       <triangular vertex1="motherboard5_assembly_v73" vertex2="motherboard5_assembly_v84" vertex3="motherboard5_assembly_v35"/>
+       <triangular vertex1="motherboard5_assembly_v35" vertex2="motherboard5_assembly_v84" vertex3="motherboard5_assembly_v85"/>
+       <triangular vertex1="motherboard5_assembly_v35" vertex2="motherboard5_assembly_v85" vertex3="motherboard5_assembly_v3"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v85" vertex3="motherboard5_assembly_v86"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v86" vertex3="motherboard5_assembly_v87"/>
+       <triangular vertex1="motherboard5_assembly_v80" vertex2="motherboard5_assembly_v88" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v88" vertex3="motherboard5_assembly_v89"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v89" vertex3="motherboard5_assembly_v90"/>
+       <triangular vertex1="motherboard5_assembly_v90" vertex2="motherboard5_assembly_v91" vertex3="motherboard5_assembly_v27"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v91" vertex3="motherboard5_assembly_v92"/>
+       <triangular vertex1="motherboard5_assembly_v27" vertex2="motherboard5_assembly_v92" vertex3="motherboard5_assembly_v29"/>
+       <triangular vertex1="motherboard5_assembly_v29" vertex2="motherboard5_assembly_v92" vertex3="motherboard5_assembly_v93"/>
+       <triangular vertex1="motherboard5_assembly_v29" vertex2="motherboard5_assembly_v93" vertex3="motherboard5_assembly_v33"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v93" vertex3="motherboard5_assembly_v94"/>
+       <triangular vertex1="motherboard5_assembly_v33" vertex2="motherboard5_assembly_v94" vertex3="motherboard5_assembly_v75"/>
+       <triangular vertex1="motherboard5_assembly_v87" vertex2="motherboard5_assembly_v95" vertex3="motherboard5_assembly_v3"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v95" vertex3="motherboard5_assembly_v96"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v96" vertex3="motherboard5_assembly_v97"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v98" vertex3="motherboard5_assembly_v99"/>
+       <triangular vertex1="motherboard5_assembly_v100" vertex2="motherboard5_assembly_v101" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v101" vertex3="motherboard5_assembly_v102"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v102" vertex3="motherboard5_assembly_v77"/>
+       <triangular vertex1="motherboard5_assembly_v99" vertex2="motherboard5_assembly_v103" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v103" vertex3="motherboard5_assembly_v104"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v104" vertex3="motherboard5_assembly_v100"/>
+       <triangular vertex1="motherboard5_assembly_v97" vertex2="motherboard5_assembly_v105" vertex3="motherboard5_assembly_v3"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v105" vertex3="motherboard5_assembly_v106"/>
+       <triangular vertex1="motherboard5_assembly_v3" vertex2="motherboard5_assembly_v106" vertex3="motherboard5_assembly_v2"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v106" vertex3="motherboard5_assembly_v107"/>
+       <triangular vertex1="motherboard5_assembly_v2" vertex2="motherboard5_assembly_v107" vertex3="motherboard5_assembly_v98"/>
+       <triangular vertex1="motherboard5_assembly_v106" vertex2="motherboard5_assembly_v52" vertex3="motherboard5_assembly_v107"/>
+       <triangular vertex1="motherboard5_assembly_v107" vertex2="motherboard5_assembly_v52" vertex3="motherboard5_assembly_v53"/>
+       <triangular vertex1="motherboard5_assembly_v107" vertex2="motherboard5_assembly_v53" vertex3="motherboard5_assembly_v98"/>
+       <triangular vertex1="motherboard5_assembly_v98" vertex2="motherboard5_assembly_v53" vertex3="motherboard5_assembly_v54"/>
+       <triangular vertex1="motherboard5_assembly_v98" vertex2="motherboard5_assembly_v54" vertex3="motherboard5_assembly_v99"/>
+       <triangular vertex1="motherboard5_assembly_v99" vertex2="motherboard5_assembly_v54" vertex3="motherboard5_assembly_v51"/>
+       <triangular vertex1="motherboard5_assembly_v99" vertex2="motherboard5_assembly_v51" vertex3="motherboard5_assembly_v103"/>
+       <triangular vertex1="motherboard5_assembly_v103" vertex2="motherboard5_assembly_v51" vertex3="motherboard5_assembly_v50"/>
+       <triangular vertex1="motherboard5_assembly_v103" vertex2="motherboard5_assembly_v50" vertex3="motherboard5_assembly_v104"/>
+       <triangular vertex1="motherboard5_assembly_v104" vertex2="motherboard5_assembly_v50" vertex3="motherboard5_assembly_v49"/>
+       <triangular vertex1="motherboard5_assembly_v104" vertex2="motherboard5_assembly_v49" vertex3="motherboard5_assembly_v100"/>
+       <triangular vertex1="motherboard5_assembly_v100" vertex2="motherboard5_assembly_v49" vertex3="motherboard5_assembly_v48"/>
+       <triangular vertex1="motherboard5_assembly_v100" vertex2="motherboard5_assembly_v48" vertex3="motherboard5_assembly_v101"/>
+       <triangular vertex1="motherboard5_assembly_v101" vertex2="motherboard5_assembly_v48" vertex3="motherboard5_assembly_v47"/>
+       <triangular vertex1="motherboard5_assembly_v101" vertex2="motherboard5_assembly_v47" vertex3="motherboard5_assembly_v102"/>
+       <triangular vertex1="motherboard5_assembly_v102" vertex2="motherboard5_assembly_v47" vertex3="motherboard5_assembly_v46"/>
+       <triangular vertex1="motherboard5_assembly_v102" vertex2="motherboard5_assembly_v46" vertex3="motherboard5_assembly_v77"/>
+       <triangular vertex1="motherboard5_assembly_v77" vertex2="motherboard5_assembly_v46" vertex3="motherboard5_assembly_v36"/>
+       <triangular vertex1="motherboard5_assembly_v77" vertex2="motherboard5_assembly_v36" vertex3="motherboard5_assembly_v78"/>
+       <triangular vertex1="motherboard5_assembly_v78" vertex2="motherboard5_assembly_v36" vertex3="motherboard5_assembly_v37"/>
+       <triangular vertex1="motherboard5_assembly_v78" vertex2="motherboard5_assembly_v37" vertex3="motherboard5_assembly_v79"/>
+       <triangular vertex1="motherboard5_assembly_v79" vertex2="motherboard5_assembly_v37" vertex3="motherboard5_assembly_v38"/>
+       <triangular vertex1="motherboard5_assembly_v79" vertex2="motherboard5_assembly_v38" vertex3="motherboard5_assembly_v80"/>
+       <triangular vertex1="motherboard5_assembly_v80" vertex2="motherboard5_assembly_v38" vertex3="motherboard5_assembly_v43"/>
+       <triangular vertex1="motherboard5_assembly_v80" vertex2="motherboard5_assembly_v43" vertex3="motherboard5_assembly_v88"/>
+       <triangular vertex1="motherboard5_assembly_v88" vertex2="motherboard5_assembly_v43" vertex3="motherboard5_assembly_v42"/>
+       <triangular vertex1="motherboard5_assembly_v88" vertex2="motherboard5_assembly_v42" vertex3="motherboard5_assembly_v89"/>
+       <triangular vertex1="motherboard5_assembly_v89" vertex2="motherboard5_assembly_v42" vertex3="motherboard5_assembly_v71"/>
+       <triangular vertex1="motherboard5_assembly_v89" vertex2="motherboard5_assembly_v71" vertex3="motherboard5_assembly_v90"/>
+       <triangular vertex1="motherboard5_assembly_v90" vertex2="motherboard5_assembly_v71" vertex3="motherboard5_assembly_v70"/>
+       <triangular vertex1="motherboard5_assembly_v90" vertex2="motherboard5_assembly_v70" vertex3="motherboard5_assembly_v91"/>
+       <triangular vertex1="motherboard5_assembly_v91" vertex2="motherboard5_assembly_v70" vertex3="motherboard5_assembly_v69"/>
+       <triangular vertex1="motherboard5_assembly_v91" vertex2="motherboard5_assembly_v69" vertex3="motherboard5_assembly_v92"/>
+       <triangular vertex1="motherboard5_assembly_v92" vertex2="motherboard5_assembly_v69" vertex3="motherboard5_assembly_v68"/>
+       <triangular vertex1="motherboard5_assembly_v92" vertex2="motherboard5_assembly_v68" vertex3="motherboard5_assembly_v93"/>
+       <triangular vertex1="motherboard5_assembly_v93" vertex2="motherboard5_assembly_v68" vertex3="motherboard5_assembly_v67"/>
+       <triangular vertex1="motherboard5_assembly_v93" vertex2="motherboard5_assembly_v67" vertex3="motherboard5_assembly_v94"/>
+       <triangular vertex1="motherboard5_assembly_v94" vertex2="motherboard5_assembly_v67" vertex3="motherboard5_assembly_v66"/>
+       <triangular vertex1="motherboard5_assembly_v94" vertex2="motherboard5_assembly_v66" vertex3="motherboard5_assembly_v75"/>
+       <triangular vertex1="motherboard5_assembly_v75" vertex2="motherboard5_assembly_v66" vertex3="motherboard5_assembly_v45"/>
+       <triangular vertex1="motherboard5_assembly_v75" vertex2="motherboard5_assembly_v45" vertex3="motherboard5_assembly_v76"/>
+       <triangular vertex1="motherboard5_assembly_v76" vertex2="motherboard5_assembly_v45" vertex3="motherboard5_assembly_v44"/>
+       <triangular vertex1="motherboard5_assembly_v76" vertex2="motherboard5_assembly_v44" vertex3="motherboard5_assembly_v81"/>
+       <triangular vertex1="motherboard5_assembly_v81" vertex2="motherboard5_assembly_v44" vertex3="motherboard5_assembly_v62"/>
+       <triangular vertex1="motherboard5_assembly_v81" vertex2="motherboard5_assembly_v62" vertex3="motherboard5_assembly_v82"/>
+       <triangular vertex1="motherboard5_assembly_v82" vertex2="motherboard5_assembly_v62" vertex3="motherboard5_assembly_v65"/>
+       <triangular vertex1="motherboard5_assembly_v82" vertex2="motherboard5_assembly_v65" vertex3="motherboard5_assembly_v83"/>
+       <triangular vertex1="motherboard5_assembly_v83" vertex2="motherboard5_assembly_v65" vertex3="motherboard5_assembly_v64"/>
+       <triangular vertex1="motherboard5_assembly_v83" vertex2="motherboard5_assembly_v64" vertex3="motherboard5_assembly_v74"/>
+       <triangular vertex1="motherboard5_assembly_v74" vertex2="motherboard5_assembly_v64" vertex3="motherboard5_assembly_v63"/>
+       <triangular vertex1="motherboard5_assembly_v74" vertex2="motherboard5_assembly_v63" vertex3="motherboard5_assembly_v72"/>
+       <triangular vertex1="motherboard5_assembly_v72" vertex2="motherboard5_assembly_v63" vertex3="motherboard5_assembly_v41"/>
+       <triangular vertex1="motherboard5_assembly_v72" vertex2="motherboard5_assembly_v41" vertex3="motherboard5_assembly_v73"/>
+       <triangular vertex1="motherboard5_assembly_v73" vertex2="motherboard5_assembly_v41" vertex3="motherboard5_assembly_v40"/>
+       <triangular vertex1="motherboard5_assembly_v73" vertex2="motherboard5_assembly_v40" vertex3="motherboard5_assembly_v84"/>
+       <triangular vertex1="motherboard5_assembly_v84" vertex2="motherboard5_assembly_v40" vertex3="motherboard5_assembly_v39"/>
+       <triangular vertex1="motherboard5_assembly_v84" vertex2="motherboard5_assembly_v39" vertex3="motherboard5_assembly_v85"/>
+       <triangular vertex1="motherboard5_assembly_v85" vertex2="motherboard5_assembly_v39" vertex3="motherboard5_assembly_v59"/>
+       <triangular vertex1="motherboard5_assembly_v85" vertex2="motherboard5_assembly_v59" vertex3="motherboard5_assembly_v86"/>
+       <triangular vertex1="motherboard5_assembly_v86" vertex2="motherboard5_assembly_v59" vertex3="motherboard5_assembly_v58"/>
+       <triangular vertex1="motherboard5_assembly_v86" vertex2="motherboard5_assembly_v58" vertex3="motherboard5_assembly_v87"/>
+       <triangular vertex1="motherboard5_assembly_v87" vertex2="motherboard5_assembly_v58" vertex3="motherboard5_assembly_v61"/>
+       <triangular vertex1="motherboard5_assembly_v87" vertex2="motherboard5_assembly_v61" vertex3="motherboard5_assembly_v95"/>
+       <triangular vertex1="motherboard5_assembly_v95" vertex2="motherboard5_assembly_v61" vertex3="motherboard5_assembly_v60"/>
+       <triangular vertex1="motherboard5_assembly_v95" vertex2="motherboard5_assembly_v60" vertex3="motherboard5_assembly_v96"/>
+       <triangular vertex1="motherboard5_assembly_v96" vertex2="motherboard5_assembly_v60" vertex3="motherboard5_assembly_v57"/>
+       <triangular vertex1="motherboard5_assembly_v96" vertex2="motherboard5_assembly_v57" vertex3="motherboard5_assembly_v97"/>
+       <triangular vertex1="motherboard5_assembly_v97" vertex2="motherboard5_assembly_v57" vertex3="motherboard5_assembly_v56"/>
+       <triangular vertex1="motherboard5_assembly_v97" vertex2="motherboard5_assembly_v56" vertex3="motherboard5_assembly_v105"/>
+       <triangular vertex1="motherboard5_assembly_v105" vertex2="motherboard5_assembly_v56" vertex3="motherboard5_assembly_v55"/>
+       <triangular vertex1="motherboard5_assembly_v105" vertex2="motherboard5_assembly_v55" vertex3="motherboard5_assembly_v106"/>
+       <triangular vertex1="motherboard5_assembly_v106" vertex2="motherboard5_assembly_v55" vertex3="motherboard5_assembly_v52"/>
+       <triangular vertex1="motherboard5_assembly_v108" vertex2="motherboard5_assembly_v109" vertex3="motherboard5_assembly_v110"/>
+       <triangular vertex1="motherboard5_assembly_v110" vertex2="motherboard5_assembly_v109" vertex3="motherboard5_assembly_v111"/>
+       <triangular vertex1="motherboard5_assembly_v112" vertex2="motherboard5_assembly_v108" vertex3="motherboard5_assembly_v113"/>
+       <triangular vertex1="motherboard5_assembly_v113" vertex2="motherboard5_assembly_v108" vertex3="motherboard5_assembly_v110"/>
+       <triangular vertex1="motherboard5_assembly_v114" vertex2="motherboard5_assembly_v112" vertex3="motherboard5_assembly_v115"/>
+       <triangular vertex1="motherboard5_assembly_v115" vertex2="motherboard5_assembly_v112" vertex3="motherboard5_assembly_v113"/>
+       <triangular vertex1="motherboard5_assembly_v109" vertex2="motherboard5_assembly_v114" vertex3="motherboard5_assembly_v111"/>
+       <triangular vertex1="motherboard5_assembly_v111" vertex2="motherboard5_assembly_v114" vertex3="motherboard5_assembly_v115"/>
+       <triangular vertex1="motherboard5_assembly_v112" vertex2="motherboard5_assembly_v114" vertex3="motherboard5_assembly_v108"/>
+       <triangular vertex1="motherboard5_assembly_v108" vertex2="motherboard5_assembly_v114" vertex3="motherboard5_assembly_v109"/>
+       <triangular vertex1="motherboard5_assembly_v115" vertex2="motherboard5_assembly_v113" vertex3="motherboard5_assembly_v111"/>
+       <triangular vertex1="motherboard5_assembly_v111" vertex2="motherboard5_assembly_v113" vertex3="motherboard5_assembly_v110"/>
+       <triangular vertex1="motherboard5_assembly_v116" vertex2="motherboard5_assembly_v117" vertex3="motherboard5_assembly_v118"/>
+       <triangular vertex1="motherboard5_assembly_v118" vertex2="motherboard5_assembly_v117" vertex3="motherboard5_assembly_v119"/>
+       <triangular vertex1="motherboard5_assembly_v120" vertex2="motherboard5_assembly_v116" vertex3="motherboard5_assembly_v121"/>
+       <triangular vertex1="motherboard5_assembly_v121" vertex2="motherboard5_assembly_v116" vertex3="motherboard5_assembly_v118"/>
+       <triangular vertex1="motherboard5_assembly_v122" vertex2="motherboard5_assembly_v120" vertex3="motherboard5_assembly_v123"/>
+       <triangular vertex1="motherboard5_assembly_v123" vertex2="motherboard5_assembly_v120" vertex3="motherboard5_assembly_v121"/>
+       <triangular vertex1="motherboard5_assembly_v117" vertex2="motherboard5_assembly_v122" vertex3="motherboard5_assembly_v119"/>
+       <triangular vertex1="motherboard5_assembly_v119" vertex2="motherboard5_assembly_v122" vertex3="motherboard5_assembly_v123"/>
+       <triangular vertex1="motherboard5_assembly_v120" vertex2="motherboard5_assembly_v122" vertex3="motherboard5_assembly_v116"/>
+       <triangular vertex1="motherboard5_assembly_v116" vertex2="motherboard5_assembly_v122" vertex3="motherboard5_assembly_v117"/>
+       <triangular vertex1="motherboard5_assembly_v123" vertex2="motherboard5_assembly_v121" vertex3="motherboard5_assembly_v119"/>
+       <triangular vertex1="motherboard5_assembly_v119" vertex2="motherboard5_assembly_v121" vertex3="motherboard5_assembly_v118"/>
+       <triangular vertex1="motherboard5_assembly_v124" vertex2="motherboard5_assembly_v125" vertex3="motherboard5_assembly_v126"/>
+       <triangular vertex1="motherboard5_assembly_v126" vertex2="motherboard5_assembly_v125" vertex3="motherboard5_assembly_v127"/>
+       <triangular vertex1="motherboard5_assembly_v128" vertex2="motherboard5_assembly_v124" vertex3="motherboard5_assembly_v129"/>
+       <triangular vertex1="motherboard5_assembly_v129" vertex2="motherboard5_assembly_v124" vertex3="motherboard5_assembly_v126"/>
+       <triangular vertex1="motherboard5_assembly_v130" vertex2="motherboard5_assembly_v128" vertex3="motherboard5_assembly_v131"/>
+       <triangular vertex1="motherboard5_assembly_v131" vertex2="motherboard5_assembly_v128" vertex3="motherboard5_assembly_v129"/>
+       <triangular vertex1="motherboard5_assembly_v125" vertex2="motherboard5_assembly_v130" vertex3="motherboard5_assembly_v127"/>
+       <triangular vertex1="motherboard5_assembly_v127" vertex2="motherboard5_assembly_v130" vertex3="motherboard5_assembly_v131"/>
+       <triangular vertex1="motherboard5_assembly_v128" vertex2="motherboard5_assembly_v130" vertex3="motherboard5_assembly_v124"/>
+       <triangular vertex1="motherboard5_assembly_v124" vertex2="motherboard5_assembly_v130" vertex3="motherboard5_assembly_v125"/>
+       <triangular vertex1="motherboard5_assembly_v131" vertex2="motherboard5_assembly_v129" vertex3="motherboard5_assembly_v127"/>
+       <triangular vertex1="motherboard5_assembly_v127" vertex2="motherboard5_assembly_v129" vertex3="motherboard5_assembly_v126"/>
+       <triangular vertex1="motherboard5_assembly_v132" vertex2="motherboard5_assembly_v133" vertex3="motherboard5_assembly_v134"/>
+       <triangular vertex1="motherboard5_assembly_v134" vertex2="motherboard5_assembly_v133" vertex3="motherboard5_assembly_v135"/>
+       <triangular vertex1="motherboard5_assembly_v136" vertex2="motherboard5_assembly_v132" vertex3="motherboard5_assembly_v137"/>
+       <triangular vertex1="motherboard5_assembly_v137" vertex2="motherboard5_assembly_v132" vertex3="motherboard5_assembly_v134"/>
+       <triangular vertex1="motherboard5_assembly_v138" vertex2="motherboard5_assembly_v136" vertex3="motherboard5_assembly_v139"/>
+       <triangular vertex1="motherboard5_assembly_v139" vertex2="motherboard5_assembly_v136" vertex3="motherboard5_assembly_v137"/>
+       <triangular vertex1="motherboard5_assembly_v133" vertex2="motherboard5_assembly_v138" vertex3="motherboard5_assembly_v135"/>
+       <triangular vertex1="motherboard5_assembly_v135" vertex2="motherboard5_assembly_v138" vertex3="motherboard5_assembly_v139"/>
+       <triangular vertex1="motherboard5_assembly_v136" vertex2="motherboard5_assembly_v138" vertex3="motherboard5_assembly_v132"/>
+       <triangular vertex1="motherboard5_assembly_v132" vertex2="motherboard5_assembly_v138" vertex3="motherboard5_assembly_v133"/>
+       <triangular vertex1="motherboard5_assembly_v139" vertex2="motherboard5_assembly_v137" vertex3="motherboard5_assembly_v135"/>
+       <triangular vertex1="motherboard5_assembly_v135" vertex2="motherboard5_assembly_v137" vertex3="motherboard5_assembly_v134"/>
+       <triangular vertex1="motherboard5_assembly_v140" vertex2="motherboard5_assembly_v141" vertex3="motherboard5_assembly_v142"/>
+       <triangular vertex1="motherboard5_assembly_v142" vertex2="motherboard5_assembly_v141" vertex3="motherboard5_assembly_v143"/>
+       <triangular vertex1="motherboard5_assembly_v144" vertex2="motherboard5_assembly_v140" vertex3="motherboard5_assembly_v145"/>
+       <triangular vertex1="motherboard5_assembly_v145" vertex2="motherboard5_assembly_v140" vertex3="motherboard5_assembly_v142"/>
+       <triangular vertex1="motherboard5_assembly_v146" vertex2="motherboard5_assembly_v144" vertex3="motherboard5_assembly_v147"/>
+       <triangular vertex1="motherboard5_assembly_v147" vertex2="motherboard5_assembly_v144" vertex3="motherboard5_assembly_v145"/>
+       <triangular vertex1="motherboard5_assembly_v141" vertex2="motherboard5_assembly_v146" vertex3="motherboard5_assembly_v143"/>
+       <triangular vertex1="motherboard5_assembly_v143" vertex2="motherboard5_assembly_v146" vertex3="motherboard5_assembly_v147"/>
+       <triangular vertex1="motherboard5_assembly_v144" vertex2="motherboard5_assembly_v146" vertex3="motherboard5_assembly_v140"/>
+       <triangular vertex1="motherboard5_assembly_v140" vertex2="motherboard5_assembly_v146" vertex3="motherboard5_assembly_v141"/>
+       <triangular vertex1="motherboard5_assembly_v147" vertex2="motherboard5_assembly_v145" vertex3="motherboard5_assembly_v143"/>
+       <triangular vertex1="motherboard5_assembly_v143" vertex2="motherboard5_assembly_v145" vertex3="motherboard5_assembly_v142"/>
+       <triangular vertex1="motherboard5_assembly_v148" vertex2="motherboard5_assembly_v149" vertex3="motherboard5_assembly_v150"/>
+       <triangular vertex1="motherboard5_assembly_v150" vertex2="motherboard5_assembly_v149" vertex3="motherboard5_assembly_v151"/>
+       <triangular vertex1="motherboard5_assembly_v152" vertex2="motherboard5_assembly_v148" vertex3="motherboard5_assembly_v153"/>
+       <triangular vertex1="motherboard5_assembly_v153" vertex2="motherboard5_assembly_v148" vertex3="motherboard5_assembly_v150"/>
+       <triangular vertex1="motherboard5_assembly_v154" vertex2="motherboard5_assembly_v152" vertex3="motherboard5_assembly_v155"/>
+       <triangular vertex1="motherboard5_assembly_v155" vertex2="motherboard5_assembly_v152" vertex3="motherboard5_assembly_v153"/>
+       <triangular vertex1="motherboard5_assembly_v149" vertex2="motherboard5_assembly_v154" vertex3="motherboard5_assembly_v151"/>
+       <triangular vertex1="motherboard5_assembly_v151" vertex2="motherboard5_assembly_v154" vertex3="motherboard5_assembly_v155"/>
+       <triangular vertex1="motherboard5_assembly_v152" vertex2="motherboard5_assembly_v154" vertex3="motherboard5_assembly_v148"/>
+       <triangular vertex1="motherboard5_assembly_v148" vertex2="motherboard5_assembly_v154" vertex3="motherboard5_assembly_v149"/>
+       <triangular vertex1="motherboard5_assembly_v155" vertex2="motherboard5_assembly_v153" vertex3="motherboard5_assembly_v151"/>
+       <triangular vertex1="motherboard5_assembly_v151" vertex2="motherboard5_assembly_v153" vertex3="motherboard5_assembly_v150"/>
+       <triangular vertex1="motherboard5_assembly_v156" vertex2="motherboard5_assembly_v157" vertex3="motherboard5_assembly_v158"/>
+       <triangular vertex1="motherboard5_assembly_v158" vertex2="motherboard5_assembly_v157" vertex3="motherboard5_assembly_v159"/>
+       <triangular vertex1="motherboard5_assembly_v160" vertex2="motherboard5_assembly_v156" vertex3="motherboard5_assembly_v161"/>
+       <triangular vertex1="motherboard5_assembly_v161" vertex2="motherboard5_assembly_v156" vertex3="motherboard5_assembly_v158"/>
+       <triangular vertex1="motherboard5_assembly_v162" vertex2="motherboard5_assembly_v160" vertex3="motherboard5_assembly_v163"/>
+       <triangular vertex1="motherboard5_assembly_v163" vertex2="motherboard5_assembly_v160" vertex3="motherboard5_assembly_v161"/>
+       <triangular vertex1="motherboard5_assembly_v157" vertex2="motherboard5_assembly_v162" vertex3="motherboard5_assembly_v159"/>
+       <triangular vertex1="motherboard5_assembly_v159" vertex2="motherboard5_assembly_v162" vertex3="motherboard5_assembly_v163"/>
+       <triangular vertex1="motherboard5_assembly_v160" vertex2="motherboard5_assembly_v162" vertex3="motherboard5_assembly_v156"/>
+       <triangular vertex1="motherboard5_assembly_v156" vertex2="motherboard5_assembly_v162" vertex3="motherboard5_assembly_v157"/>
+       <triangular vertex1="motherboard5_assembly_v163" vertex2="motherboard5_assembly_v161" vertex3="motherboard5_assembly_v159"/>
+       <triangular vertex1="motherboard5_assembly_v159" vertex2="motherboard5_assembly_v161" vertex3="motherboard5_assembly_v158"/>
+       <triangular vertex1="motherboard5_assembly_v164" vertex2="motherboard5_assembly_v165" vertex3="motherboard5_assembly_v166"/>
+       <triangular vertex1="motherboard5_assembly_v166" vertex2="motherboard5_assembly_v165" vertex3="motherboard5_assembly_v167"/>
+       <triangular vertex1="motherboard5_assembly_v168" vertex2="motherboard5_assembly_v164" vertex3="motherboard5_assembly_v169"/>
+       <triangular vertex1="motherboard5_assembly_v169" vertex2="motherboard5_assembly_v164" vertex3="motherboard5_assembly_v166"/>
+       <triangular vertex1="motherboard5_assembly_v170" vertex2="motherboard5_assembly_v168" vertex3="motherboard5_assembly_v171"/>
+       <triangular vertex1="motherboard5_assembly_v171" vertex2="motherboard5_assembly_v168" vertex3="motherboard5_assembly_v169"/>
+       <triangular vertex1="motherboard5_assembly_v165" vertex2="motherboard5_assembly_v170" vertex3="motherboard5_assembly_v167"/>
+       <triangular vertex1="motherboard5_assembly_v167" vertex2="motherboard5_assembly_v170" vertex3="motherboard5_assembly_v171"/>
+       <triangular vertex1="motherboard5_assembly_v168" vertex2="motherboard5_assembly_v170" vertex3="motherboard5_assembly_v164"/>
+       <triangular vertex1="motherboard5_assembly_v164" vertex2="motherboard5_assembly_v170" vertex3="motherboard5_assembly_v165"/>
+       <triangular vertex1="motherboard5_assembly_v171" vertex2="motherboard5_assembly_v169" vertex3="motherboard5_assembly_v167"/>
+       <triangular vertex1="motherboard5_assembly_v167" vertex2="motherboard5_assembly_v169" vertex3="motherboard5_assembly_v166"/>
+    </tessellated>
+  </solids>
+
+  <structure>
+    <volume name="motherboard5_assembly">
+      <materialref ref="FR40x27264f0"/>
+      <solidref ref="motherboard5_assembly-SOL"/>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="motherboard5_assembly"/>
+  </setup>
+</gdml>
