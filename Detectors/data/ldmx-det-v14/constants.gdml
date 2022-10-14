@@ -26,6 +26,7 @@
 <!-- Magnet gap dimensions --> 
 <constant name="magnet_gap_dx" value="430*mm"/>
 <constant name="magnet_gap_dy" value="350*mm"/>
+<constant name="magnet_gap_dz" value="1068*mm"/>
 
 <!--
     Trigger Scintillator 
