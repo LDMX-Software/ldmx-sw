@@ -57,15 +57,22 @@ class HcalGeometry : public framework::ConditionsObject {
    * @return A TVector3 with the X, Y and Z position of the center of the bar.
    */
   TVector3 getStripCenterPosition(ldmx::HcalID id) const {
-    return stripPositionMap_.at(id);
+    return strip_position_map_.at(id);
+  }
+
+  /**
+   * Get the strip position map
+   */
+  std::map<ldmx::HcalID, TVector3> getStripPositionMap() const {
+    return strip_position_map_;
   }
 
   /** Check whether a given layer corresponds to a horizontal (scintillator
-   * length along the x-axis) or vertical layer. See the horizontalParity_
+   * length along the x-axis) or vertical layer. See the horizontal_parity_
    * member for details.
    */
   bool layerIsHorizontal(const int layer) const {
-    return layer % 2 == horizontalParity_;
+    return layer % 2 == horizontal_parity_;
   }
   /**
    * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
@@ -75,25 +82,30 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   double getHalfTotalWidth(int isection, int layer = 1) const {
     auto layer_index = layer - 1;
-    return HalfTotalWidth_.at(isection).at(layer_index);
+    return half_total_width_.at(isection).at(layer_index);
   }
+
+  /**
+   * Get the scitillator width
+   */
+  double getScintillatorWidth() const { return scint_width_; }
 
   /**
    * Get the number of sections.
    */
-  int getNumSections() const { return NumSections_; }
+  int getNumSections() const { return num_sections_; }
 
   /**
    * Get the number of layers for that section.
    */
-  int getNumLayers(int isection) const { return NumLayers_.at(isection); }
+  int getNumLayers(int isection) const { return num_layers_.at(isection); }
 
   /**
    * Get the number of strips per layer for that section and layer.
    */
   int getNumStrips(int isection, int layer = 1) const {
     auto layer_index = layer - 1;
-    return NumStrips_.at(isection).at(layer_index);
+    return num_strips_.at(isection).at(layer_index);
   }
 
   /**
@@ -101,19 +113,19 @@ class HcalGeometry : public framework::ConditionsObject {
    * */
   int getZeroStrip(int isection, int layer = 1) const {
     auto layer_index = layer - 1;
-    return ZeroStrip_.at(isection).at(layer_index);
-    }
+    return zero_strip_.at(isection).at(layer_index);
+  }
 
 
   /**
    * Get the length of the Ecal in (x) for the side Hcal.
    */
-  double getEcalDx() const { return EcalDx_; }
+  double getEcalDx() const { return ecal_dx_; }
 
   /**
    * Get the length of the Ecal in (y) for the side Hcal
    */
-  double getEcalDy() const { return EcalDy_; }
+  double getEcalDy() const { return ecal_dy_; }
 
  private:
   /**
@@ -137,19 +149,19 @@ class HcalGeometry : public framework::ConditionsObject {
   void buildStripPositionMap();
   /**
    * Debugging utility, prints out the HcalID and corresponding value of all
-   * entries in the stripPositionMap_ for a given section.
+   * entries in the strip_position_map_ for a given section.
    *
    * @param section The section number to print, see HcalID for details.
    */
     void printPositionMap(int section) const;
   /**
    * Debugging utility, prints out the HcalID and corresponding value of all
-   * entries in the stripPositionMap_. For printing only one of the sections,
+   * entries in the strip_position_map_. For printing only one of the sections,
    * see the overloaded version of this function taking a section parameter.
    *
    */
     void printPositionMap() const {
-      for (int section = 0; section < NumSections_ ; ++section) {
+      for (int section = 0; section < num_sections_ ; ++section) {
         printPositionMap(section);
       }
     }
@@ -163,10 +175,11 @@ class HcalGeometry : public framework::ConditionsObject {
    std::vector<std::vector<T>> makeCanonicalLayeredParameter(const std::vector<T>& parameter) {
      std::vector<std::vector<T>> result;
      for(auto section = 0; section < parameter.size(); ++section) {
-       result.push_back(std::vector<T>(NumLayers_[section], parameter[section]));
+       result.push_back(std::vector<T>(num_layers_[section], parameter[section]));
      }
      return result;
    }
+  
 
 private:
   /// Parameters that apply to all types of geometries
@@ -174,47 +187,50 @@ private:
   int verbose_{0};
 
   /// Thickness of scintillator
-  double ThicknessScint_;
+  double scint_thickness_;
 
   /// Width of Scintillator Strip [mm]
-  double WidthScint_;
+  double scint_width_;
 
   /// Front of HCal relative to world geometry for each section [mm]
-  std::vector<double> ZeroLayer_;
+  std::vector<double> zero_layer_;
 
   /// Thickness of the layers in each section [mm]
-  std::vector<double> LayerThickness_;
+  std::vector<double> layer_thickness_;
 
   /// Number of layers in each section
-  std::vector<int> NumLayers_;
-
+  std::vector<int> num_layers_;
 
   /// Number of sections
-  int NumSections_;
+  int num_sections_;
 
   /// Lenght of the Ecal (in x and y)
-  double EcalDx_;
-  double EcalDy_;
+  double ecal_dx_;
+  double ecal_dy_;
 
   // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
   // geometry that corresponds to a horizontal layer (scintillator bar length
   // along the x-axis).
-  int horizontalParity_{};
+  int horizontal_parity_{};
 
+  // 3D readout for side Hcal
+  int side_3d_readout_{};
+  
   /// Canonical layered version of parameters that differ between geometry
   /// versions.
 
   /// Number of strips per layer in each section and each layer
-  std::vector<std::vector<int>> NumStrips_;
+  std::vector<std::vector<int>> num_strips_;
   /// The plane of the zero'th strip of each section [mm]
-  std::vector<std::vector<double>> ZeroStrip_;
+  std::vector<std::vector<double>> zero_strip_;
   /// Half Total Width of Strips [mm]
-  std::vector<std::vector<double>> HalfTotalWidth_;
+  std::vector<std::vector<double>> half_total_width_;
+  
   /**
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().
    */
-  std::map<ldmx::HcalID, TVector3> stripPositionMap_;
+  std::map<ldmx::HcalID, TVector3> strip_position_map_;
 };
 
 }  // namespace ldmx

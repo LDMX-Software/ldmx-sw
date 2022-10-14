@@ -142,9 +142,9 @@
                     z="recoil_l6_z[i]" />  
         </physvol>
       </loop> 
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="recoil"/>
     </volume>
-    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="recoil"/>
   </structure>
 
   <setup name="Default" version="1.0">
