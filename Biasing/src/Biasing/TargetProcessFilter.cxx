@@ -68,7 +68,15 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   // processing the rest of the event if the particle is exiting the
   // target region.
   if (secondaries->size() == 0) {
-    // Check if the electron will be exiting the target
+    /**
+     * Check if the electron will be exiting the target
+     *
+     * The 'recoil_PV' volume name is automatically constructed by Geant4's
+     * GDML parser and was found by inspecting the geometry using a 
+     * visualization. This Physical Volume (PV) is associated with the
+     * recoil parent volume and so it will break if the recoil parent volume
+     * changes its name.
+     */
     if (auto volume{track->GetNextVolume()->GetName()};
         volume.compareTo("recoil_PV") == 0) {
       if (secondaries->size() != 0) {
