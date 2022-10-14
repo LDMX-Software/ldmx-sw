@@ -15,7 +15,6 @@
           last (first) layer of the tagger (recoil) tracker are 25 mm apart.
         -->
         <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
-        <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
 
         <!-- Position of the ECal and HCal parent volumes -->
         <constant name="em_calorimeter_pos_z" value="ecal_front_z" />

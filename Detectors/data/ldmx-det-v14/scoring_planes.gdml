@@ -99,7 +99,7 @@
         <variable name="sp_trigger_pad_up_l1_z" 
                   value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_up_l2_z" 
-                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+                  value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
 
         <!-- Matrix with target area positions --> 
         <matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
@@ -109,36 +109,27 @@
                                                         0 0 sp_trigger_pad_up_l1_z  
                                                         0 0 sp_trigger_pad_up_l2_z" />  
 
-
               
         <!-- Place scoring planes at each of the recoil tracker layers -->
-	<!--
-        <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
+        <variable name="recoil_z_start" value="recoil_pos_z - recoil_envelope_dz/2" />
         <variable name="sp_recoil_l1_z" 
-            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep 
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="recoil_z_start + tracker_envelope_clearance" /> 
         <variable name="sp_recoil_l2_z" 
-            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep 
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="sp_recoil_l1_z+recoil_delta_l14" /> 
         <variable name="sp_recoil_l3_z" 
-            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="sp_recoil_l1_z+2*recoil_delta_l14" /> 
         <variable name="sp_recoil_l4_z" 
-            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="sp_recoil_l1_z+3*recoil_delta_l14" /> 
         <variable name="sp_recoil_l5_z" 
-            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep 
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="sp_recoil_l4_z+recoil_delta_l45" /> 
         <variable name="sp_recoil_l6_z" 
-            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep 
-                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+                  value="sp_recoil_l5_z+recoil_delta_l56" /> 
         <matrix name="sp_recoil_layer_z" coldim="1" values="sp_recoil_l1_z
                                                             sp_recoil_l2_z
                                                             sp_recoil_l3_z
                                                             sp_recoil_l4_z
                                                             sp_recoil_l5_z
                                                             sp_recoil_l6_z" />
-	-->
         <!-- Dimensions of recoil box -->
         <variable name="recoil_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
         <variable name="recoil_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
@@ -183,7 +174,6 @@
             </volume> 
         </loop>
 
-	<!--
         <loop for="x4" to="5" step="1" > 
             <volume name="sp_recoil"> 
                 <materialref ref="Vacuum" />
@@ -192,8 +182,6 @@
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume> 
         </loop> 
-	-->
-	
         <loop for="x11" to="2" step="1" > 
             <volume name="sp_magnet_gap_top_bot"> 
                 <materialref ref="Vacuum" />
@@ -319,12 +307,11 @@
                     <rotationref ref="identity" />
                 </physvol> 
             </loop> 
-
         </volume>
     </structure>
 
     <userinfo>
-        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" >
+      <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" >
             <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
             <auxiliary auxtype="HitsCollection" auxvalue="MagnetScoringPlaneHits" />
             <auxiliary auxtype="SubdetID"       auxvalue="7" />
@@ -364,8 +351,7 @@
             <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
             <auxiliary auxtype="Visible" auxvalue="true"/>
             <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
-        </auxiliary>
-
+      </auxiliary> 
     </userinfo>
 
     <setup name="Default" version="1.0">

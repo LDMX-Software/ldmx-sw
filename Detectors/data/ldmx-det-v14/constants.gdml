@@ -98,6 +98,13 @@
     value="tracker_envelope_clearance*2 + recoil_delta_l14*3 + recoil_delta_l45 + recoil_delta_l56" />
 
 <!--
+  Position of the tagger and recoil tracker envelopes with respect to
+  target.  The 9 mm offset was chosen such that the midpoints of the 
+  last (first) layer of the tagger (recoil) tracker are 25 mm apart.
+-->
+<variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
+
+<!--
     Tagger Tracker 
 -->
 
