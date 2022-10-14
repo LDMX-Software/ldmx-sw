@@ -9,8 +9,8 @@
 
         &constants;   
 
-	
-	<!-- 
+  
+  <!-- 
             Tagger tracker parent volume position relative to the target 
             -433.1772 mm. The end of the parent volume relative to the target
             is at -4.6772. This gives a 0.001 mm clearance between the upstream
@@ -31,15 +31,15 @@
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
 
-	<!-- 
+  <!-- 
             Trigger scintillator parent volume position relative to the target 
             ???? mm. The end of the parent volume relative to the target
             is at ?????. This gives a ???? mm clearance between the upstream.
-	    There are now two TS modules upstream of the tagger tracker.  
-	--> 
+      There are now two TS modules upstream of the tagger tracker.  
+  --> 
         <variable name="trig_scint_pos_z" value="tagger_pos_z-trig_scint_area_envelope_z/2 -tagger_envelope_dz/2- clearance - 200" /> 
 
-	
+  
         <!-- Magnet is position such that the field center is at -40 cm. -->
         <constant name="magnet_pos_z" value="-40*cm" />
 
@@ -48,21 +48,21 @@
              Note: The position of the target is defined at the center i.e. 
              x = y = z = 0 mm.     
         -->
-	<position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
+  <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
         <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
         <position name="em_calorimeter_pos"
-		  x="0.0" 
-		  y="support_box_shift"
-		  z="em_calorimeter_pos_z + ecal_envelope_z/2"/>
+      x="0.0" 
+      y="support_box_shift"
+      z="em_calorimeter_pos_z + ecal_envelope_z/2"/>
         <!-- the ecal support box is asymmetric in the vertical direction causing an additional
         shift relative to the origin at the target -->
         <position name="hadron_calorimeter_pos"
-		  x="0.0" 
-		  y="support_box_shift"
-		  z="hadron_calorimeter_pos_z"/>
+      x="0.0" 
+      y="support_box_shift"
+      z="hadron_calorimeter_pos_z"/>
         <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
-	
+  
     </define>
 
     <materials>
@@ -78,11 +78,11 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-            <!-- <physvol copynumber="1"> -->
-            <!--     <file name="tagger.gdml"/> -->
-            <!--     <positionref ref="tagger_pos"/> -->
-            <!--     <rotationref ref="identity"/> -->
-            <!-- </physvol>  -->
+            <physvol copynumber="1">
+                <file name="tagger.gdml"/>
+                <positionref ref="tagger_pos"/>
+                <rotationref ref="identity"/>
+            </physvol>
 
             <physvol copynumber="2">
                 <file name="target.gdml"  />
@@ -90,22 +90,22 @@
                 <rotationref ref="identity"   />
             </physvol>
 
-	    <physvol copynumber="3">
-	      <file name="trig_scint.gdml"/>
-	      <positionref ref="trig_scint_pos"/>
-	      <rotationref ref="identity"/>
-	    </physvol>
+      <physvol copynumber="3">
+        <file name="trig_scint.gdml"/>
+        <positionref ref="trig_scint_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
 
-            <!-- <physvol copynumber="5"> -->
-            <!--     <file name="recoil.gdml"/> -->
-            <!--     <positionref ref="recoil_pos"/> -->
-            <!--     <rotationref ref="identity"/> -->
-            <!-- </physvol> -->
+            <physvol copynumber="5">
+                <file name="recoil.gdml"/>
+                <positionref ref="recoil_pos"/>
+                <rotationref ref="identity"/>
+            </physvol> -->
             <physvol copynumber="6"> 
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-	    </physvol>
+      </physvol>
 
             <physvol copynumber="7"> 
                 <file name="hcal.gdml"/> 
@@ -116,7 +116,7 @@
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 
                 <rotationref ref="identity"/> 
-	    </physvol>
+      </physvol>
 
             <auxiliary auxtype="DetElem" auxvalue="Top"/>
         </volume>
@@ -198,7 +198,7 @@
         <auxiliary auxtype="Region" auxvalue="tagger" >
             <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
         </auxiliary>
-	<auxiliary auxtype="Region" auxvalue="trig_scint" >
+  <auxiliary auxtype="Region" auxvalue="trig_scint" >
             <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
         </auxiliary>
         <auxiliary auxtype="Region" auxvalue="target" >
