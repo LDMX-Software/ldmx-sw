@@ -124,6 +124,8 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   TGraphErrors* gGains = new TGraphErrors(nChannels);
   TGraphErrors* gPeds = new TGraphErrors(nChannels);
   float scaleFac=6250.; //conversion from fC to e
+  int nChanToWrite = 0;
+  vector <int> skippedGraphs;
   for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	if (iH == deadChannel)
 	  continue;
@@ -131,6 +133,12 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	std::cout<< "----> Fitting gain for channel " << iH << std::endl;
 	//	TGraphErrors * g= findAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim); 
 	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim, nSamples); 
+	if (!g) { //null pointer reutrned --> didn't get enough peaks to fit; skip this channel
+	  std::cout<< "----> No gain curve for channel " << iH << std::endl;
+	  skippedGraphs.push_back(iH);
+	  continue;
+	}
+	nChanToWrite++;
 	g->Draw("ap");
 	g->SetTitle(";Peak nb;Total charge [fC]");
 	g->SetName(Form("g_gainChan%i", iH));
@@ -162,15 +170,16 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   fOut->cd();
   fOut->ls();
   std::cout << "Got " << v_hOut.size() << " histograms" << std::endl;
-  int nChanToWrite = deadChannel > -1 ? nChannels - 1 : nChannels; //adjust for if we have a dead channel in this run
-   for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
+  //  int nChanToWrite = deadChannel > -1 ? nChannels - 1 : nChannels; //adjust for if we have a dead channel in this run
+  for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	v_hOut[iH]->Write();
 	if (iH < nChanToWrite) 
 	  v_g[iH]->Write();
   }
-  if (deadChannel > -1 ) { //if there in fact is one (TODO: allow for list?)
-	gGains->RemovePoint(deadChannel);
-	gPeds->RemovePoint(deadChannel);
+  int startN=gGains->GetN()-1;
+  for (uint iP=startN; iP>startN-skippedGraphs.size(); iP--) { // if (deadChannel > -1 ) { //if there in fact is one (TODO: allow for list?)
+	gGains->RemovePoint(skippedGraphs[iP]);
+	gPeds->RemovePoint(skippedGraphs[iP]);
   }
   gGains->SetTitle(";channel ID;Gain");
   gGains->Write("gGainVsChanID");
@@ -301,6 +310,14 @@ TGraphErrors* isolateAndFitPeaks( TH1F * hIn, float width, bool verbose, bool is
    
   } 
   const int nPoints = vPtrs.size();
+
+  if (nPoints < 3 ) {// this is too few to fit. probably there was a problem with this channel
+    std::cout<<"\tOnly got " << nPoints << " peaks for this channel . Breaking"
+	                <<  std::endl;
+	return NULL;
+  }
+ 
+	
   double x[(const int) nPoints];
   double ex[(const int) nPoints];
   double y[(const int) nPoints];
