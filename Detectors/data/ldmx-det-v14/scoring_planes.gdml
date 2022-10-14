@@ -51,9 +51,6 @@
                                                        sp_thickness ecal_envelope_y ecal_envelope_z" /> 
 
         <!-- Magnet gap dimensions -->
-        <variable name="magnet_gap_dx"         value="430*mm"  />
-        <variable name="magnet_gap_dy"         value="350*mm"  />
-        <variable name="magnet_gap_dz"         value="1068*mm" />
         <variable name="sp_magnet_gap_top_y"   value="magnet_gap_dy/2 + sp_thickness/2" />
         <variable name="sp_magnet_gap_bot_y"   value="-magnet_gap_dy/2 - sp_thickness/2" />
         <variable name="sp_magnet_gap_left_x"  value="-magnet_gap_dx/2 - sp_thickness/2" />
