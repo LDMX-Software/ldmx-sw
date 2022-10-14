@@ -33,9 +33,8 @@ from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
 
 sim = simulator.simulator("single_neutron")
-sim.setDetector( 'ldmx-det-v14' , True )
+sim.setDetector( 'ldmx-det-v14' , False )
 sim.description = "HCal muon"
-sim.beamSpotSmear = [20., 80., 0.] #mm
 
 # shoot muon with a general Particle source
 nPart=1
