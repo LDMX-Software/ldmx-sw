@@ -51,8 +51,6 @@
                                                        sp_thickness ecal_envelope_y ecal_envelope_z" /> 
 
         <!-- Magnet gap dimensions -->
-        <variable name="magnet_gap_dx"         value="430*mm"  />
-        <variable name="magnet_gap_dy"         value="350*mm"  />
         <variable name="magnet_gap_dz"         value="1068*mm" />
         <variable name="sp_magnet_gap_top_y"   value="magnet_gap_dy/2 + sp_thickness/2" />
         <variable name="sp_magnet_gap_bot_y"   value="-magnet_gap_dy/2 - sp_thickness/2" />
@@ -115,6 +113,7 @@
 
               
         <!-- Place scoring planes at each of the recoil tracker layers -->
+	<!--
         <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
         <variable name="sp_recoil_l1_z" 
             value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep 
@@ -140,7 +139,7 @@
                                                             sp_recoil_l4_z
                                                             sp_recoil_l5_z
                                                             sp_recoil_l6_z" />
-
+	-->
         <!-- Dimensions of recoil box -->
         <variable name="recoil_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
         <variable name="recoil_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
@@ -185,6 +184,7 @@
             </volume> 
         </loop>
 
+	<!--
         <loop for="x4" to="5" step="1" > 
             <volume name="sp_recoil"> 
                 <materialref ref="Vacuum" />
@@ -193,7 +193,8 @@
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume> 
         </loop> 
-
+	-->
+	
         <loop for="x11" to="2" step="1" > 
             <volume name="sp_magnet_gap_top_bot"> 
                 <materialref ref="Vacuum" />

@@ -141,10 +141,10 @@
           <position name="recoil_l6_sensor_pos" unit="mm" x="recoil_l56_xy[i, 1]"  y="recoil_l56_xy[i, 2]" 
                     z="recoil_l6_z[i]" />  
         </physvol>
-      </loop> 
+      </loop>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="recoil"/>
     </volume>
-    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="recoil"/>
   </structure>
 
   <setup name="Default" version="1.0">
