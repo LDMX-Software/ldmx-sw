@@ -14,7 +14,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   passName_ = ps.getParameter<std::string>("input_pass_name");
   output_collection_ = ps.getParameter<std::string>("output_collection");
   verbose_ = ps.getParameter<int>("verbosity");
-
+  vertBarStartIdx_ = ps.getParameter<int>("vertical_bar_start_index");
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
   if (verbose_) {
@@ -24,6 +24,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
                    << "\nMax cluster width: " << maxWidth_
                    << "\nExpected pad hit time: " << padTime_
                    << "\nMax hit time delay: " << timeTolerance_
+                   << "\nVertical bar start index:     " << vertBarStartIdx_
                    << "\nInput collection:     " << input_collection_
                    << "\nInput pass name:     " << passName_
                    << "\nOutput collection:    " << output_collection_
@@ -37,9 +38,9 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
   // parameters.
   // a cluster seeding threshold
   // a clustering threshold -- a lower boundary for being added at all (zero
-  // suppression) -- tentative a maximum cluster width
+  // suppression)
+  // a maximum cluster width
   //
-
   // steps.
   // 1. get an input collection of digi hits. at most one entry per channel.
   // 2. access them by channel number
@@ -409,6 +410,16 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       cluster.setIDs(v_addedIndices_);
       cluster.setNHits(v_addedIndices_.size());
       cluster.setCentroid(centroid_);
+	  float cx;
+	  float cy = centroid_;
+	  float cz = -99999;  //set to nonsense for now. could be set to module nb
+	  if (centroid_ < vertBarStartIdx_) //then in horizontal bars --> we don't know X
+		cx = -1;  //set to nonsense in barID space. could translate to x=0 mm 
+	  else { 
+		cx = (int)((centroid_- vertBarStartIdx_)/4); //start at 0 
+		cy = (int)centroid_%4;
+	  }
+	  cluster.setCentroidXYZ(cx, cy, cz);
       cluster.setEnergy(valE_);
       cluster.setPE(val_);
       cluster.setTime(time_ / val_);
@@ -419,6 +430,8 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       if (verbose_) cluster.Print();
 
       centroid_ = 0;
+      centroidX_ = -1;
+      centroidY_ = -1;
       val_ = 0;
       valE_ = 0;
       beamE_ = 0;

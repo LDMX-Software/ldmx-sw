@@ -74,8 +74,17 @@ class TrigScintClusterProducer : public framework::Producer {
   // specific pass name to use for track making
   std::string passName_{""};
 
+  // vertical bar start index 
+  int vertBarStartIdx_{52};
+
   // cluster channel nb centroid (will be content weighted)
   float centroid_{0.};
+
+  // cluster channel nb horizontal centroid (will be content weighted)
+  float centroidX_{-1};
+
+  // cluster channel nb vertical centroid (will be content weighted)
+  float centroidY_{-1};
 
   // energy (edep), PE, or sth
   float val_{0.};
