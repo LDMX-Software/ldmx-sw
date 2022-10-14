@@ -45,8 +45,8 @@ gpsCmds=[ "/gps/particle mu-",
           "/gps/ene/mono 4 GeV", # fixed energy
           "/gps/pos/shape Square",
           "/gps/pos/centre 0 0 220. mm", # start at side hcal
-          "/gps/pos/halfx 1500 mm",
-          "/gps/pos/halfy 1500 mm",
+          "/gps/pos/halfx 1000 mm",
+          "/gps/pos/halfy 1000 mm",
           "/gps/number "+str(nPart),
           ]
 if nPart>1:
