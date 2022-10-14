@@ -65,11 +65,11 @@
 
         <!-- Surround the Hcal with scoring planes -->
         <variable name="sp_hcal_front_z"  value="ecal_front_z - sp_thickness/2 + clearance" />
-        <variable name="sp_hcal_back_z"   value="ecal_front_z + hcal_back_dz + hcal_side_dz + sp_thickness/2" />
-        <variable name="sp_hcal_top_y"    value="hcal_back_dy/2 + sp_thickness/2" /> 
-        <variable name="sp_hcal_bot_y"    value="-hcal_back_dy/2 - sp_thickness/2" /> 
-        <variable name="sp_hcal_left_x"   value="-hcal_back_dx/2 - sp_thickness/2" />
-        <variable name="sp_hcal_right_x"  value="hcal_back_dx/2 + sp_thickness/2" />
+        <variable name="sp_hcal_back_z"   value="ecal_front_z + back_hcal_dz + side_hcal_dz + sp_thickness/2" />
+        <variable name="sp_hcal_top_y"    value="back_hcal_dy/2 + sp_thickness/2" /> 
+        <variable name="sp_hcal_bot_y"    value="-back_hcal_dy/2 - sp_thickness/2" /> 
+        <variable name="sp_hcal_left_x"   value="-back_hcal_dy/2 - sp_thickness/2" />
+        <variable name="sp_hcal_right_x"  value="back_hcal_dx/2 + sp_thickness/2" />
         <variable name="sp_hcal_mid_z"    value="ecal_front_z + hcal_dz/2" />
 
         <matrix name="sp_hcal_pos" coldim="3" values="0 support_box_shift sp_hcal_front_z
@@ -79,9 +79,9 @@
                                                       sp_hcal_left_x support_box_shift sp_hcal_mid_z
                                                       sp_hcal_right_x support_box_shift sp_hcal_mid_z" />   
 
-        <matrix name="hcal_box_dim" coldim="3" values="hcal_back_dx hcal_back_dy sp_thickness
-                                                       hcal_back_dx sp_thickness hcal_dz
-                                                       sp_thickness hcal_back_dy hcal_dz" /> 
+        <matrix name="hcal_box_dim" coldim="3" values="back_hcal_dx back_hcal_dy sp_thickness
+                                                       back_hcal_dx sp_thickness hcal_dz
+                                                       sp_thickness back_hcal_dy hcal_dz" /> 
 
         <!-- Dimensions of target box -->
         <variable name="target_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
@@ -112,6 +112,7 @@
 
               
         <!-- Place scoring planes at each of the recoil tracker layers -->
+	<!--
         <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
         <variable name="sp_recoil_l1_z" 
             value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep 
@@ -137,7 +138,7 @@
                                                             sp_recoil_l4_z
                                                             sp_recoil_l5_z
                                                             sp_recoil_l6_z" />
-
+	-->
         <!-- Dimensions of recoil box -->
         <variable name="recoil_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
         <variable name="recoil_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
@@ -182,6 +183,7 @@
             </volume> 
         </loop>
 
+	<!--
         <loop for="x4" to="5" step="1" > 
             <volume name="sp_recoil"> 
                 <materialref ref="Vacuum" />
@@ -190,7 +192,8 @@
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume> 
         </loop> 
-
+	-->
+	
         <loop for="x11" to="2" step="1" > 
             <volume name="sp_magnet_gap_top_bot"> 
                 <materialref ref="Vacuum" />
