@@ -211,7 +211,6 @@
       <volume name="back_hcal_ScintBox_volume">
 	  <materialref ref="Scintillator"/>
 	  <solidref    ref="back_hcal_ScintBox"/>
-	  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
 
 
@@ -229,13 +228,11 @@
       <volume name="sideTB_hcal_ScintBox_volume">
 	  <materialref ref="Scintillator"/>
 	  <solidref    ref="sideTB_hcal_ScintBox"/>
-	  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
 
       <volume name="sideLR_hcal_ScintBox_volume">
 	  <materialref ref="Scintillator"/>
 	  <solidref    ref="sideLR_hcal_ScintBox"/>
-	  <auxiliary   auxtype="SensDet" auxvalue="HcalSD"/>
       </volume>
 
 

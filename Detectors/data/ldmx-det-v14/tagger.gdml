@@ -93,10 +93,10 @@
           <rotation name="tagger_stereo_rot" unit="deg" x="0.0" y="0.0" z="tagger_rot[i]" />
         </physvol>
       </loop>
+      <auxiliary auxtype="Region" auxvalue="tagger"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="tagger"/>
     </volume>
-    <auxiliary auxtype="Region" auxvalue="tagger"/>
-    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-    <auxiliary auxtype="DetElem" auxvalue="tagger"/>
   </structure>
   <setup name="Default" version="1.0">
     <world ref="tagger"/>

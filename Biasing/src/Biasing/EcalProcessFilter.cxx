@@ -98,7 +98,15 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // If the particle doesn't interact, then move on to the next step.
   if (secondaries->size() == 0) {
-    // Check if the photon will be exiting the ecal
+    /**
+     * Check if the photon will be exiting the ecal
+     *
+     * The 'hcal_PV' volume name is automatically constructed by Geant4's
+     * GDML parser and was found by inspecting the geometry using a 
+     * visualization. This Physical Volume (PV) is associated with the
+     * hcal parent volume and so it will break if the hcal parent volume
+     * changes its name.
+     */
     if (auto volume{track->GetNextVolume()->GetName()};
         volume.compareTo("hcal_PV") == 0) {
       /*
