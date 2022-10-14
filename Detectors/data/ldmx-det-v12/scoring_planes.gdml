@@ -24,7 +24,7 @@
         <constant name="sp_thickness" value="0.001*mm"/>
 
         <!-- Surround the ecal with scoring planes -->
-        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2 + clearance" /> 
+        <variable name="sp_ecal_front_z" value="ecal_front_z - sp_thickness/2 + clearance" /> 
         <variable name="sp_ecal_back_z"  value="ecal_front_z + ECal_dz + (ecal_envelope_z - ECal_dz)/2 + sp_thickness/2" />
         <variable name="sp_ecal_top_y"   value="ECal_dy/2 + sp_thickness/2" />
         <variable name="sp_ecal_bot_y"   value="-ECal_dy/2 - sp_thickness/2" />
