@@ -134,13 +134,20 @@ void extractResponse(string inFile, int deadChannel=-1, string passName = "TBrec
 
   float fitRangeWidth=125.; // take this window to either side of mean to catch peak 
   TGraphErrors* gMPVs = new TGraphErrors(nChannels);
+  vector <int> skippedGraphs;
+
   for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	if (iH == deadChannel)
 	  continue;
 	//do the actual peak fitting 
 	std::cout<< "----> Fitting response for channel " << iH << std::endl;
 	TFitResultPtr fResult = v_hOut.at(iH)->Fit("landau", "QS");
-	std::cout << "For channel " << iH << ", got MPV \t" << fResult->Parameter(1) << std::endl;
+    if (fResult) { //returns NULL if successful...
+      std::cout<< "----> No Landau fit for channel " << iH << std::endl;
+      skippedGraphs.push_back(iH);
+      continue;
+    }
+ 	std::cout << "For channel " << iH << ", got MPV \t" << fResult->Parameter(1) << std::endl;
 	gMPVs->SetPoint( iH, iH, fResult->Parameter(1));
 	gMPVs->SetPointError( iH, 0, fResult->ParError(1));
   }
@@ -159,7 +166,8 @@ void extractResponse(string inFile, int deadChannel=-1, string passName = "TBrec
    for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	v_hOut[iH]->Write();
   }
-  if (deadChannel > -1 ) { //if there in fact is one (TODO: allow for list?)
+   int startN=gMPVs->GetN()-1;
+   for (uint iP=startN; iP>startN-skippedGraphs.size(); iP--) { // if (deadChannel > -1 ) { //if there in fact is one (TODO: allow for list?)
 	gMPVs->RemovePoint(deadChannel);
   }
   gMPVs->SetTitle(";channel ID;MIP peak fit MPV");
@@ -175,7 +183,10 @@ void extractResponse(string inFile, int deadChannel=-1, string passName = "TBrec
   for (int iP = 0; iP < gMPVs->GetN(); iP++) {
 	double x, MPV;
     gMPVs->GetPoint(iP, x, MPV);
-	fResponse << x << "," << avgResponse/MPV << "\n";
+	if (MPV > 0)
+		fResponse << x << "," << avgResponse/MPV << "\n";
+	else  //this is a dead channel so it has neither x nor MPV set
+		fResponse << iP << ",1\n";
   }
   fResponse.close();
     //Done.
