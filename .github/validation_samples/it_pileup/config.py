@@ -26,7 +26,9 @@ overlay.nEarlierBunchesToSample = 0
 overlay.bunchSpacing = 26.9      #ns = 1000./37.2 ; 5.4 = 1000./186.
 overlay.timeSpread = 0.       # <-- realistically, 30 ps; 
 overlay.timeMean   = 0.       # <-- here set the in-bunch average pu time offset to no time shift whatsoever; useful for validation though
-overlay.overlayCaloHitCollections=[ "TriggerPadTaggerSimHits", "TriggerPadUpSimHits", "TriggerPadDownSimHits", "TargetSimHits", "EcalSimHits", "HcalSimHits"]
+overlay.overlayCaloHitCollections=[ 
+        #"TriggerPadTaggerSimHits", "TriggerPadUpSimHits", "TriggerPadDownSimHits", "TargetSimHits", 
+        "EcalSimHits", "HcalSimHits"]
 overlay.overlayTrackerHitCollections=[ "TaggerSimHits", "RecoilSimHits" ]
 overlay.verbosity=0 #1 #3 #
 
