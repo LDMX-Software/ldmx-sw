@@ -4,7 +4,7 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
 mySim.description = 'Hcal Muons and Neutrons'
-mySim.setDetector( 'ldmx-det-v12' )
+mySim.setDetector( 'ldmx-det-v14' )
 from LDMX.SimCore import generators as gen
 
 # flat distribution of energy from 1GeV to 4GeV
