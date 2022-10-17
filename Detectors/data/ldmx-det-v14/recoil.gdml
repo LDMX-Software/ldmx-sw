@@ -86,7 +86,6 @@
     <volume name="recoil_l14_active_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_active_sensor_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l14_sensor_vol">
@@ -100,7 +99,6 @@
     <volume name="recoil_l56_active_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_active_sensor_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l56_sensor_vol">
