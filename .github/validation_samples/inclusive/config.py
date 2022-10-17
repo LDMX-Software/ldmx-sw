@@ -58,7 +58,7 @@ p.sequence.extend([
         ecal_vetos.EcalVetoProcessor(),
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
-        tsDigisUp, tsDigisTag, tsDigisDown,
-        clTag, clUp, clDown, trigScintTrack,
-        count, TriggerProcessor('trigger')
+#        tsDigisUp, tsDigisTag, tsDigisDown,
+#        clTag, clUp, clDown, trigScintTrack,
+#        count, TriggerProcessor('trigger')
         ] + dqm.all_dqm)
