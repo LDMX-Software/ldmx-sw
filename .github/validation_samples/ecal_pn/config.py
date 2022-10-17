@@ -5,7 +5,7 @@ p.maxTriesPerEvent = 1000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
-mySim = ecal.photo_nuclear('ldmx-det-v12',gen.single_4gev_e_upstream_tagger())
+mySim = ecal.photo_nuclear('ldmx-det-v14',gen.single_4gev_e_upstream_tagger())
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'ECal PN Test Simulation'
 
