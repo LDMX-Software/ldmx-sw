@@ -91,11 +91,7 @@
 		<variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2 + clearance" />
 		<variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2 - clearance" />
 		
-		<!-- Place scoring planes downstream of each trigger scintillator array --> 
-		<variable name="sp_trigger_pad_down_l1_z" 
-				  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
-		<variable name="sp_trigger_pad_down_l2_z" 
-				  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+		<!-- Place scoring planes downstream of each trigger scintillator array -->
 		<variable name="sp_trigger_pad_up_l1_z" 
 				  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
 		<variable name="sp_trigger_pad_up_l2_z" 
@@ -104,8 +100,6 @@
 		<!-- Matrix with target area positions --> 
 		<matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
 														0 0 sp_target_up_z 
-														0 0 sp_trigger_pad_down_l1_z  
-														0 0 sp_trigger_pad_down_l2_z  
 														0 0 sp_trigger_pad_up_l1_z  
 														0 0 sp_trigger_pad_up_l2_z" />  
 
@@ -245,7 +239,7 @@
 			<materialref ref="Vacuum" />
 			<solidref ref="world_box" />
 			
-			<loop for="x2" to="6" step="1">
+			<loop for="x2" to="4" step="1">
 				<physvol copynumber="x2">
 					<volumeref ref="sp_target" />
 					<position x="sp_target_pos[x2, 1]" y="sp_target_pos[x2, 2]" z="sp_target_pos[x2, 3]" /> 
@@ -253,6 +247,7 @@
 				</physvol>
 			</loop>
 
+      <!--
 			<loop for="x5" to="6" step="1">
 				<physvol copynumber="20 + x5">
 					<volumeref ref="sp_recoil" />
@@ -260,6 +255,7 @@
 					<rotationref ref="identity" />
 				</physvol>
 			</loop>
+      -->
 
 			<loop for="x12" to="2" step="1" > 
 				<physvol copynumber="50 + x8">
