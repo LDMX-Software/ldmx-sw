@@ -83,15 +83,15 @@ count.input_pass_name = ''
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-    tsDigisUp, tsDigisTag, tsDigisDown, 
-    TrigScintClusterProducer.tagger(),
-    TrigScintClusterProducer.up(),
-    TrigScintClusterProducer.down(),
-    trigScintTrack,
-    count, TriggerProcessor('trigger'),
+#    tsDigisUp, tsDigisTag, tsDigisDown, 
+#    TrigScintClusterProducer.tagger(),
+#    TrigScintClusterProducer.up(),
+#    TrigScintClusterProducer.down(),
+#    trigScintTrack,
+#    count, TriggerProcessor('trigger'),
     dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures(), 
-    dqm.HCalDQM()]+dqm.recoil_dqm+dqm.trigger_dqm)
+    dqm.HCalDQM()]+dqm.recoil_dqm) #+dqm.trigger_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
