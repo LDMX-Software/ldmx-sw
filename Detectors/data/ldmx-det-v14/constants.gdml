@@ -14,22 +14,65 @@
 --> 
 <!-- position -->
 <constant name="target_z" value="0.0*mm" />
-<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
-<constant name="target_thickness" value="0.3504*mm" />
+
 <!-- Target dimensions -->
-<constant name="target_dim_x" value="4.0*cm"  />
-<constant name="target_dim_y" value="10.0*cm" />
+<constant name="target_dim_x"			value="40.0*mm"  />
+<constant name="target_dim_y"			value="110.0*mm" />
+<constant name="target_dim_z"			value="1.8*mm" />
+<constant name="target_thickness"		value="target_dim_z" />
+<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+
+<!-- 
+    Tungsten Target
+--> 
+<constant name="tungsten_plate_dx"		value="40.0*mm"/>
+<constant name="tungsten_plate_dy"		value="100.0*mm"/>		
+<constant name="tungsten_plate_dz"		value="0.3504*mm" />
 
 <!-- 
     LYSO Target
 --> 
 <!-- position -->
-<constant name="target_z" value="0.0*mm" />
+<constant name="lyso_target_z0"			value="0.0*mm" />
 <!-- LYSO X0 = 1.2 cm.  Target thickeness = .1X0 + 0.1mm ESR around LYSO layers -->
-<constant name="target_thickness" value="1.6*mm" />
-<!-- Target dimensions -->
-<constant name="target_dim_x" value="4.0*cm"  />
-<constant name="target_dim_y" value="10.0*cm" />
+
+<!-- LYSO target dimensions --> 
+<constant name="num_lyso_bar"			value="32"/>
+<constant name="num_lyso_layer"			value="2"/>
+<constant name="lyso_bar_esr"			value="0.2*mm"/>
+<constant name="lyso_bar_dx"			value="30.0*mm"/>
+<constant name="lyso_bar_dy"			value="3.0*mm"/>		
+<constant name="lyso_bar_dz"			value="0.6*mm" />
+<constant name="lyso_bar_height"		value="lyso_bar_dy+lyso_bar_esr"/>
+<constant name="lyso_array_dx"			value="lyso_bar_dx"/>
+<constant name="lyso_array_dy"			value="num_lyso_bar*lyso_bar_height"/>		
+<constant name="lyso_array_dz"			value="lyso_bar_dz+lyso_bar_esr"/>
+<constant name="lyso_target_dx"			value="lyso_array_dx"/>
+<constant name="lyso_target_dy"			value="lyso_array_dy+lyso_bar_height/2+lyso_bar_esr"/>		
+<constant name="lyso_target_dz"			value="num_lyso_layer*lyso_array_dz+lyso_bar_esr"/>
+
+<!--
+    Trigger Scintillator 
+--> 
+<!-- position -->
+<position name="trigger_scin_pos" unit="mm"  x="0" y="0" z="-4.2"/>
+<constant name="scin_trigger_z0"		 value="-4.2*mm"/>
+
+<!-- Trigger scintillator dimensions --> 
+<constant name="num_scin_bar"			 value="25"/>
+<constant name="num_scin_layer"			 value="2"/>
+<constant name="scin_bar_esr"            value="0.1*mm"/>
+<constant name="scin_bar_dx"             value="30.0*mm"/>
+<constant name="scin_bar_dy"             value="3.0*mm"/>		
+<constant name="scin_bar_dz"			 value="2.0*mm" />
+<constant name="scin_bar_height"         value="scin_bar_dy+scin_bar_esr"/>
+<constant name="scin_array_dx"           value="scin_bar_dx"/>
+<constant name="scin_array_dy"           value="num_scin_bar*scin_bar_height"/>		
+<constant name="scin_array_dz"			 value="scin_bar_dz+scin_bar_esr"/>
+<constant name="scin_array_gap"			 value="0.3*mm"/>
+<constant name="scin_trigger_dx"         value="scin_array_dx"/>
+<constant name="scin_trigger_dy"         value="scin_array_dy+scin_bar_height/2+scin_bar_esr"/>		
+<constant name="scin_trigger_dz"		 value="num_scin_layer*scin_array_dz+scin_bar_esr+scin_array_gap"/>
 
 <!-- 
     Magnet
@@ -39,11 +82,7 @@
 <constant name="magnet_gap_dx" value="430*mm"/>
 <constant name="magnet_gap_dy" value="350*mm"/>
 
-<!--
-    Trigger Scintillator 
---> 
-
-<!-- Trigger scintillator positions --> 
+<!-- Trigger scintillator dimensions --> 
 <constant name="trigger_pad_thickness"      value="4.5*mm" />
 <constant name="trigger_pad_bar_thickness"  value="2*mm" />
 <constant name="trigger_pad_bar_gap"        value="0.3*mm" />
@@ -62,30 +101,6 @@
 <!-- trigger pad distance from the target is 2.4262 mm --> 
 <constant name="trigger_pad_down_z"    
           value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
-
-<!-- 
-	LYSO Scintillator
---> 
-
-<!-- LYSO scintillator positions --> 
-<constant name="lyso_pad_thickness"      value="1.6*mm" />
-<constant name="lyso_pad_bar_thickness"  value="0.6*mm" />
-<constant name="lyso_pad_bar_gap"        value="0.1*mm" />
-<constant name="lyso_pad_dim_x"          value="target_dim_x" />
-<constant name="lyso_pad_dim_y"          value="target_dim_y" />
-<constant name="lyso_bar_dx"             value="30.0*mm"/>
-<constant name="lyso_bar_dy"             value="3.0*mm"/>		
-<constant name="number_of_lyso"          value="33"/>
-
-<constant name="lyso_pad_offset"    
-          value="(target_dim_y - (number_of_lyso*lyso_bar_dy + (number_of_lyso - 1)*lyso_pad_bar_gap))/2" />
-
-<!-- LYSO #1 pad distance from the target is -0.4 mm --> 
-<constant name="lyso_pad_up_z"      
-          value="-0.4" />
-<!-- LYSO #2 pad distance from the target is 0.4 mm --> 
-<constant name="lyso_pad_down_z"    
-          value="0.4" />
 
 <!--
   Tracker common variables 
