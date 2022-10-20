@@ -69,7 +69,7 @@
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
-    <volume name="trig_scint">
+    <volume name="target_area">
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
@@ -105,6 +105,6 @@
   </structure> 
 
   <setup name="Default" version="1.0">
-    <world ref="target"/>
+    <world ref="target_area"/>
   </setup>
 </gdml>

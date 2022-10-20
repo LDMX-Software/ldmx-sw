@@ -61,14 +61,14 @@
       <loop for="x" to="number_of_bars" step="1">
         <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad_taggerA_bar_volume" />
-          <position name="trigger_pad_taggerA_bar_layer1_pos" unit="mm" x="-22" 
+          <position name="trigger_pad_taggerA_bar_layer1_pos" unit="mm" x="-22*mm" 
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
                 z="trig_scint_area_envelope_z/2 + trigger_pad_taggerA_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad_taggerA_bar_volume" />
-          <position name="trigger_pad_taggerA_bar_layer2_pos" unit="mm" x="-22"
+          <position name="trigger_pad_taggerA_bar_layer2_pos" unit="mm" x="-22*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad_taggerA_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -76,14 +76,14 @@
 
         <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad_taggerB_bar_volume" />
-          <position name="trigger_pad_taggerB_bar_layer1_pos" unit="mm" x="-27"
+          <position name="trigger_pad_taggerB_bar_layer1_pos" unit="mm" x="-27*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad_taggerB_bar_volume" />
-          <position name="trigger_pad_taggerB_bar_layer2_pos" unit="mm" x="-27"
+          <position name="trigger_pad_taggerB_bar_layer2_pos" unit="mm" x="-27*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -99,7 +99,7 @@
   </structure> 
 
   <setup name="Default" version="1.0">
-    <world ref="trig_scint"/>
+    <world ref="trig_scint_tagger"/>
   </setup>
 
 </gdml>
