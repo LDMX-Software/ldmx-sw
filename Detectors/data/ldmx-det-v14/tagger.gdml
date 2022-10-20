@@ -59,7 +59,7 @@
   </solids>
   <structure>
     <!-- define tagger sensor as a active box inside an inactive box -->  
-    <volume name="tagger_active_sensor_vol">
+    <volume name="Tagger_active_Sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="tagger_active_sensor_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
@@ -68,7 +68,7 @@
       <materialref ref="Silicon"/>
       <solidref ref="tagger_sensor_box"/>
       <physvol name="tagger_active_sensor">
-      <volumeref ref="tagger_active_sensor_vol"/>
+      <volumeref ref="Tagger_active_Sensor_vol"/>
       <position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
       </physvol>
     </volume>
