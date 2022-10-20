@@ -75,8 +75,11 @@ class GDMLParser : public Parser {
   /// The auxiliary info reader
   std::unique_ptr<simcore::geo::AuxInfoReader> info_;
 
-  /// The parameters used to configure this parser
-  framework::config::Parameters parameters_;
+  /// path to the detector GDML
+  std::string detector_;
+
+  /// should we take the time to validate
+  bool validate_;
 
   /// The name of the parsed detector
   std::string detector_name_{""};

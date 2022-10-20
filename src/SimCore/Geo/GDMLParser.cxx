@@ -5,10 +5,12 @@ namespace geo {
 
 GDMLParser::GDMLParser(framework::config::Parameters &parameters,
                        simcore::ConditionsInterface &ci) {
+  detector_ = parameters.getParameter<std::string>("detector");
+  validate_ = parameters.getParameter<bool>("validate_detector");
   parser_ = std::make_unique<G4GDMLParser>();
+  parser_->SetOverlapCheck(validate_);
   info_ =
       std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters);
-  parameters_ = parameters;
 }
 
 G4VPhysicalVolume *GDMLParser::GetWorldVolume() {
@@ -16,8 +18,7 @@ G4VPhysicalVolume *GDMLParser::GetWorldVolume() {
 }
 
 void GDMLParser::read() {
-  parser_->Read(parameters_.getParameter<std::string>("detector"),
-                parameters_.getParameter<bool>("validate_detector"));
+  parser_->Read(detector_, validate_);
   info_->readGlobalAuxInfo();
   info_->assignAuxInfoToVolumes();
   detector_name_ = info_->getDetectorHeader()->getName();
