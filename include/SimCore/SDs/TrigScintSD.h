@@ -41,7 +41,7 @@ class TrigScintSD : public SensitiveDetector {
    * @param[in] step The step information.
    * @param[in] history The readout history.
    */
-  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
+  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) final override;
 
   /**
    * Save our hits collection into the event bus and reset it.
