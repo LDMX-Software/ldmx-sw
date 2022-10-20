@@ -10,10 +10,6 @@
   <define>
 
    		&constants;
-   		
-		<constant name="target_area_envelope_x" value="magnet_gap_dx-5.0" />
-		<constant name="target_area_envelope_y" value="magnet_gap_dy-5.0" />
-		<constant name="target_area_envelope_z" value="2*(target_thickness/2 + 2*clearance + trigger_pad_thickness)" />
 
   </define>
 
@@ -56,7 +52,8 @@
     <box lunit="mm" name="SCIN_array" x="scin_array_dx" y="scin_array_dy" z="scin_array_dz"/>
     <box lunit="mm" name="SCIN_trigger" x="scin_trigger_dx" y="scin_trigger_dy" z="scin_trigger_dz"/>
 
-    <box lunit="mm" name="WorldBox" x="50" y="100" z="10"/>
+    <box lunit="mm" name="TargetBox" x="target_dim_x" y="target_dim_y" z="target_dim_z"/> 
+    <box lunit="mm" name="WorldBox" x="50" y="110" z="100"/>
     
   </solids>
 
@@ -67,8 +64,8 @@
       <materialref ref="LYSO"/>
       <solidref ref="LYSO_bar"/>
       <auxiliary auxtype="SensDet" auxvalue="lysoTargetSD"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="LysoPadVis"/>
-      <auxiliary auxtype="DetElem" auxvalue="LysoPad"/>      
+      <auxiliary auxtype="VisAttributes" auxvalue="lysoPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="lysoPad"/>      
     </volume>    
     <volume name="lvLYSOarray">
       <materialref ref="Vacuum"/>
@@ -108,8 +105,8 @@
       <materialref ref="SCIN"/>
       <solidref ref="SCIN_bar"/>
       <auxiliary auxtype="SensDet" auxvalue="scinTargetSD"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="LysoPadVis"/>
-      <auxiliary auxtype="DetElem" auxvalue="LysoPad"/>      
+      <auxiliary auxtype="VisAttributes" auxvalue="scinPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="scinPad"/>      
     </volume>    
     <volume name="lvSCINarray">
       <materialref ref="Vacuum"/>
@@ -143,18 +140,27 @@
         	<rotationref ref="identity" />
         </physvol>     
     </volume>
-    
-    <volume name="TOP">
+
+    <volume name="lvTarget">
       <materialref ref="Vacuum"/>
-      <solidref ref="WorldBox"/>
+      <solidref ref="TargetBox"/>
       <physvol name="lvLYSOtarget_phys">
         <volumeref ref="lvLYSOtarget"/>
-        <positionref ref="center"/>
+        <positionref ref="lyso_target_pos"/>
       </physvol>
       <physvol name="lvSCINtrigger_phys">
         <volumeref ref="lvSCINtrigger"/>
         <positionref ref="trigger_scin_pos"/>
       </physvol>
+    </volume>
+ 
+    <volume name="TOP">
+      <materialref ref="Vacuum"/>
+      <solidref ref="WorldBox"/>      
+      <physvol name="lvTarget_phys">
+        <volumeref ref="lvTarget"/>
+		<positionref ref="center"/>
+      </physvol>      
     </volume>
  
   </structure>
