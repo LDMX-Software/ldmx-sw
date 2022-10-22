@@ -130,18 +130,18 @@ class TrigScintSD(simcfg.SensitiveDetector) :
 
         coll = name+'SimHits'
         if name != 'Target' :
-            coll = 'TriggerPad'+coll
+            coll = 'Trigger'+coll
 
         self.collection_name = coll
 
-    def up() :
-        return TrigScintSD(3,'Up','trigger_pad_up_bar_volume')
+    def pad3() :
+        return TrigScintSD(3,'Pad3','trigger_pad3_bar_volume')
 
-    def tag() :
-        return TrigScintSD(1,'TaggerA','trigger_pad_taggerA_bar_volume')
+    def pad2() :
+        return TrigScintSD(1,'Pad2','trigger_pad2_bar_volume')
 
-    def down() :
-        return TrigScintSD(2,'TaggerB','trigger_pad_taggerB_bar_volume')
+    def pad1() :
+        return TrigScintSD(2,'Pad1','trigger_pad1_bar_volume')
 
     def target() :
         return TrigScintSD(4,'Target','target')
