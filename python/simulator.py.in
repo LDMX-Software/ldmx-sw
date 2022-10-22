@@ -111,9 +111,9 @@ class simulator(Producer):
                 sds.TrackerSD.recoil(),
                 sds.HcalSD(),
                 sds.EcalSD(),
-                sds.TrigScintSD.up(),
-                sds.TrigScintSD.down(),
-                sds.TrigScintSD.tag(),
+                sds.TrigScintSD.pad1(),
+                sds.TrigScintSD.pad2(),
+                sds.TrigScintSD.pad3(),
                 sds.TrigScintSD.target()
                 ]
         if include_scoring_planes :
