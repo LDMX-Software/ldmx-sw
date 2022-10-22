@@ -33,9 +33,9 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
 
     def pad1() :
         """Get the digitizer for the trigger pad most upstream of tagger"""
-        digi = TrigScintDigiProducer( 'trigScintDigisPad1()' )
-        digi.input_collection = 'TriggerPad1()SimHits'
-        digi.output_collection= 'trigScintDigisPad1()'
+        digi = TrigScintDigiProducer( 'trigScintDigisPad1' )
+        digi.input_collection = 'TriggerPad1SimHits'
+        digi.output_collection= 'trigScintDigisPad1'
         return digi
 
     def pad2() :
@@ -91,9 +91,9 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
 
     def pad1() :
         """Get the digitizer for the first trigger pad """
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad1()' )
-        digi.input_collection = 'TriggerPad1()SimHits'
-        digi.output_collection= 'trigScintQIEDigisPad1()'
+        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad1' )
+        digi.input_collection = 'TriggerPad1SimHits'
+        digi.output_collection= 'trigScintQIEDigisPad1'
         return digi
 
     def pad2() :
@@ -200,9 +200,9 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
 
     def pad1() : 
         """Get the rechit producer for first pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad1()' )
-        rechit.input_collection  = 'trigScintQIEDigisPad1()'
-        rechit.output_collection = 'trigScintRecHitsPad1()'
+        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad1' )
+        rechit.input_collection  = 'trigScintQIEDigisPad1'
+        rechit.output_collection = 'trigScintRecHitsPad1'
         return rechit
 
     def pad2() : 
@@ -238,9 +238,9 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
 
     def pad1() :
         """Get the cluster producer for the trigger pad downstream of target"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersPad1()' )
-        cluster.input_collection = 'trigScintDigisPad1()'
-        cluster.output_collection= 'TriggerPad1()Clusters'
+        cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
+        cluster.input_collection = 'trigScintDigisPad1'
+        cluster.output_collection= 'TriggerPad1Clusters'
         cluster.pad_time= 0.
         return cluster
 
