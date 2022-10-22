@@ -41,14 +41,14 @@
 
   <structure>
 
-    <volume name="trigger_pad_taggerA_bar_volume">
+    <volume name="trigger_pad2_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
-    <volume name="trigger_pad_taggerB_bar_volume">
+    <volume name="trigger_pad1_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
@@ -60,32 +60,32 @@
       <solidref ref="trigger_pad_box" />
       <loop for="x" to="number_of_bars" step="1">
         <physvol copynumber="2*x-2">
-          <volumeref ref="trigger_pad_taggerA_bar_volume" />
-          <position name="trigger_pad_taggerA_bar_layer1_pos" unit="mm" x="-38*mm" 
+          <volumeref ref="trigger_pad2_bar_volume" />
+          <position name="trigger_pad2_bar_layer1_pos" unit="mm" x="-38*mm" 
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trig_scint_area_envelope_z/2 + trigger_pad_taggerA_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+                z="trig_scint_area_envelope_z/2 + trigger_pad2_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
-          <volumeref ref="trigger_pad_taggerA_bar_volume" />
-          <position name="trigger_pad_taggerA_bar_layer2_pos" unit="mm" x="-38*mm"
+          <volumeref ref="trigger_pad2_bar_volume" />
+          <position name="trigger_pad2_bar_layer2_pos" unit="mm" x="-38*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                z="trig_scint_area_envelope_z/2+trigger_pad_taggerA_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                z="trig_scint_area_envelope_z/2+trigger_pad2_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
 
         <physvol copynumber="2*x-2">
-          <volumeref ref="trigger_pad_taggerB_bar_volume" />
-          <position name="trigger_pad_taggerB_bar_layer1_pos" unit="mm" x="-43*mm"
+          <volumeref ref="trigger_pad1_bar_volume" />
+          <position name="trigger_pad1_bar_layer1_pos" unit="mm" x="-43*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+                z="trig_scint_area_envelope_z/2+trigger_pad1_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
-          <volumeref ref="trigger_pad_taggerB_bar_volume" />
-          <position name="trigger_pad_taggerB_bar_layer2_pos" unit="mm" x="-43*mm"
+          <volumeref ref="trigger_pad1_bar_volume" />
+          <position name="trigger_pad1_bar_layer2_pos" unit="mm" x="-43*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
-                z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                z="trig_scint_area_envelope_z/2+trigger_pad1_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
       </loop>
