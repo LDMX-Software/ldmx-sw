@@ -15,7 +15,7 @@
       is at -4.6772. This gives a 0.001 mm clearance between the upstream
       trigger scintillator and the tagger tracker parent volume. 
     --> 
-    <variable name="tagger_pos_z" value="trigger_pad_up_z - trigger_pad_thickness/2 - tagger_envelope_dz/2 - clearance" /> 
+    <variable name="tagger_pos_z" value="trigger_pad3_z - trigger_pad_thickness/2 - tagger_envelope_dz/2 - clearance" /> 
 
     <!-- 
       Recoil tracker parent volume position relative to the target is at
