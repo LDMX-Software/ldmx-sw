@@ -2,6 +2,9 @@
 #define TRACKING_SIM_SEEDFINDERPROCESSOR_H_
 
 
+//---  DD4hep ---//
+#include "DD4hep/Detector.h"
+
 //---< Framework >---//
 #include "Framework/Event.h"
 #include "Framework/Configure/Parameters.h"
@@ -20,6 +23,10 @@
 #include <iostream>
 
 //---< ACTS >---//
+#include "Acts/MagneticField/MagneticFieldContext.hpp"
+#include "Acts/Utilities/CalibrationContext.hpp"
+
+#include "Acts/Definitions/Algebra.hpp"
 
 #include "Acts/Seeding/SpacePointGrid.hpp"
 #include "Acts/Seeding/Seedfinder.hpp"
@@ -30,10 +37,17 @@
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 
 
+//--- LDMX ---//
+#include "Tracking/Event/Measurement.h"
+#include "Tracking/Reco/LdmxTrackingGeometry.h"
+
+#include "TFile.h"
+#include "TTree.h"
+
 namespace tracking {
   namespace sim {
 
-    class SeedFinderProcessor : public framework::Producer {
+  class SeedFinderProcessor : public framework::Producer {
 
     public:
       /**
@@ -72,33 +86,75 @@ namespace tracking {
        * @param event The event to process.
        */
       void produce(framework::Event &event);
-      
-     private:
-      Acts::SpacePointGridConfig grid_conf_;
-      Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> config_;
-      Acts::SeedFilterConfig seed_filter_cfg_;
-      Acts::Vector3 bField_;
-
-      //Acts::Seedfinder::State state_;
-      
-      std::shared_ptr<Acts::Seedfinder<ldmx::LdmxSpacePoint> > seed_finder_;
-      std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  bottom_bin_finder_;
-      std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  top_bin_finder_;
-
-      /* This is a temporary (working) solution to estimate the track parameters out of the seeds
-       * Eventually we should move to what is in ACTS (I'm not happy with what they did regarding this part atm)
-       */
-
-      std::shared_ptr<tracking::sim::SeedToTrackParamMaker> seed_to_track_maker_;
-      
-      double processing_time_{0.};
-      long nevents_{0};
-      bool debug_{false};
-      std::string out_seed_collection_{"SeedTracks"};
-      
-    }; // SeedFinderProcessor
     
+   private:
+    
+    ldmx::Track SeedTracker(const std::vector<ldmx::Measurement>& vmeas,
+                            double xOrigin,
+                            const Acts::Vector3& perigee_location);
 
+    void LineParabolaToHelix(const Acts::ActsVector<5> parameters, Acts::ActsVector<5>& helix_parameters, Acts::Vector3 ref);
+    
+    /// The detector
+    dd4hep::Detector* detector_{nullptr};
+    
+    /// The tracking geometry
+    std::shared_ptr<tracking::reco::LdmxTrackingGeometry> ldmx_tg;
+    
+    /// The contexts
+    Acts::GeometryContext gctx_;
+    Acts::MagneticFieldContext bctx_;
+    Acts::CalibrationContext cctx_;
+    
+    
+    Acts::SpacePointGridConfig grid_conf_;
+    Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> config_;
+    Acts::SeedFilterConfig seed_filter_cfg_;
+    Acts::Vector3 bField_;
+    
+    //Acts::Seedfinder::State state_;
+    
+    std::shared_ptr<Acts::Seedfinder<ldmx::LdmxSpacePoint> > seed_finder_;
+    std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  bottom_bin_finder_;
+    std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint> >  top_bin_finder_;
+    
+    /* This is a temporary (working) solution to estimate the track parameters out of the seeds
+     * Eventually we should move to what is in ACTS (I'm not happy with what they did regarding this part atm)
+     */
+    
+    std::shared_ptr<tracking::sim::SeedToTrackParamMaker> seed_to_track_maker_;
+    
+    double processing_time_{0.};
+    long nevents_{0};
+    unsigned int  ntracks_{0};
+    bool debug_{false};
+    std::string out_seed_collection_{"SeedTracks"};
+    std::string input_hits_collection_{"TaggerSimHits"};
+
+    double pmin_{0.05};
+    double pmax_{8};
+    double d0max_{20.};
+    double d0min_{20.};
+    double z0max_{60.};
+    
+    
+    TFile* outputFile_;
+    TTree* outputTree_;
+    
+    std::vector<float> xhit_;
+    std::vector<float> yhit_;
+    std::vector<float> zhit_;
+
+    std::vector<float> b0_;
+    std::vector<float> b1_;
+    std::vector<float> b2_;
+    std::vector<float> b3_;
+    std::vector<float> b4_;
+    
+    
+  }; // SeedFinderProcessor
+  
+  
   } // namespace sim
 } // namespace tracking
 

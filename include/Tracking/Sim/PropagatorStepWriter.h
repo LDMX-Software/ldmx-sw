@@ -48,7 +48,8 @@ class PropagatorStepWriter{
   
   bool WriteSteps(framework::Event &event,
                   const std::vector<PropagationSteps>& stepCollection,
-                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
+                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps,
+                  const Acts::Vector3 & start_pos, const Acts::Vector3& start_mom);
                                  
  protected:
       
@@ -77,6 +78,8 @@ class PropagatorStepWriter{
   std::vector<float> m_hit_x;      ///< hit location X
   std::vector<float> m_hit_y;      ///< hit location Y
   std::vector<float> m_hit_z;      ///< hit location Z
+  std::vector<float> m_start_pos;  ///< start position of the particle propagated
+  std::vector<float> m_start_mom;  ///< start momentum of the particle propagated
         
 };
 }

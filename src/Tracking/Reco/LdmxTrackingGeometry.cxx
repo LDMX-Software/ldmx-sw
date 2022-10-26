@@ -41,8 +41,8 @@ LdmxTrackingGeometry::LdmxTrackingGeometry(dd4hep::Detector* detector,
   
   //Create the builder
   Acts::CuboidVolumeBuilder::Config config;
-  config.position = {0., 0., 0.};
-  config.length = {2000, 2000, 2000};
+  config.position = {-200, 0., 0.};
+  config.length = {900, 480, 240};
   config.volumeCfg = volBuilderConfigs;
   
   cvb.setConfig(config);
@@ -55,6 +55,12 @@ LdmxTrackingGeometry::LdmxTrackingGeometry(dd4hep::Detector* detector,
   
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
   tGeometry_ = tgb.trackingGeometry(*gctx_);
+
+  
+  //Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2];
+  //Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10];
+                        
+  makeLayerSurfacesMap();
   
 }
 
@@ -601,6 +607,9 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
     lcfg.surfaceCfg = x.second;
     //lcfg.rotation = Acts::RotationMatrix3::Identity();
     double clearance = 0.01; //0.001
+    //if (x.first.find("recoil_tracker_layer_L5") != std::string::npos) {
+    //  clearance = 5;
+    //}
     lcfg.envelopeX = std::pair<double,double>{x.second.front().thickness / 2. + clearance, x.second.front().thickness / 2. + clearance};
     layerConfig.push_back(lcfg);
     lcfg.active = true;
@@ -629,16 +638,26 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
   //Rotate..Z->X, X->Y, Y->Z
   //Add 1mm to not make it sit on the first layer surface
   Acts::Vector3 sub_det_position = {subDet_transform.translation()[2]-1, subDet_transform.translation()[0], subDet_transform.translation()[1]};
-  
+
+  //TODO:: Is this correct???!
   double x_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z()+1;
-  double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
-  double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
+  //double y_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().x();
+
+  double y_length = 480; 
+  
+  //The bField is defined only between -70, 70 along ACTS Z Axis (-130,130 in the extended version)
+  //double z_length = 2*Acts::UnitConstants::cm*subdetector.volume().boundingBox().y();
+  //I use 190 here
+  double z_length = 240;
 
   //Larger volume to check propagation in the recoil area
   //x_length = 7*Acts::UnitConstants::cm*subdetector.volume().boundingBox().z()+1;
   
-  if (debug_)
-    std::cout<<"x "<<x_length<<" y "<<y_length<<" z "<<z_length<<std::endl;
+  //if (debug_)
+  std::cout<<subdetector.name()<<std::endl;
+  std::cout<<"position"<<std::endl;
+  std::cout<<sub_det_position<<std::endl;
+  std::cout<<"x_length "<<x_length<<" y_length "<<y_length<<" z_length "<<z_length<<std::endl;
 
   subDetVolumeConfig.position = sub_det_position;
   subDetVolumeConfig.length = {x_length, y_length, z_length};
@@ -664,10 +683,9 @@ Acts::CuboidVolumeBuilder::VolumeConfig LdmxTrackingGeometry::volumeBuilder_dd4h
   
 }
 
-void LdmxTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfaces,
-                                        std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) {
+void LdmxTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfaces) {
   
-  const Acts::TrackingVolume* tVolume = trackingGeometry->highestTrackingVolume();
+  const Acts::TrackingVolume* tVolume = tGeometry_->highestTrackingVolume();
   if (tVolume->confinedVolumes()) {
     for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
       if (volume->confinedLayers()) {
@@ -686,9 +704,47 @@ void LdmxTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfac
   }//confined volumes
 }
 
+void LdmxTrackingGeometry::makeLayerSurfacesMap() {
   
+  std::vector<const Acts::Surface*> surfaces;
+  getSurfaces(surfaces);
+  
+  for (auto& surface : surfaces) {
+    //std::cout<<"Check the surfaces"<<std::endl;
+    //surface->toStream(gctx_,std::cout);
+    //std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
+    //std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
+    
+    //Layers from 1 to 14 - for the tagger 
+    //unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1 sensor per layer
 
+    unsigned int volumeId = surface->geometryId().volume();
+    unsigned int layerId  = (surface->geometryId().layer() / 2); // set layer ID  from 1 to 7 for the tagger and from 1 to 6 for the recoil
+    unsigned int sensorId = surface->geometryId().sensitive() - 1;   // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the axial sensors in the back layers of the recoil
 
+    //surface ID = vol * 1000 + ly * 100 + sensor
+    
+    unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
+    
+    layer_surface_map_[surfaceId] = surface;
+    
+  }// surfaces loop
 
+  
+  if (debug_) {
+    
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    
+    for (auto const& surfaceId : layer_surface_map_) {
+      std::cout<<" "<< surfaceId.first<<std::endl;
+      std::cout<<" Check the surface"<<std::endl;
+      surfaceId.second->toStream(*gctx_,std::cout);
+      std::cout<<" GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
+      std::cout<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
+    }
+  }
+  
 }
-}
+}//reco
+}//tracking
+

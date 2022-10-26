@@ -149,6 +149,13 @@ class CKFProcessor final : public framework::Producer {
   void produce(framework::Event &event) override;
   
  private:
+
+
+  //TODO move it away
+
+  void propagateENstates(framework::Event &event,std::string inputFile, std::string outFile);
+
+  
   //Forms the layer to acts map
   auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
 
@@ -186,6 +193,8 @@ class CKFProcessor final : public framework::Producer {
 
   //If we want to dump the tracking geometry
   int dumpobj_ {0};
+
+  int pionstates_{10};
 
   bool debug_{false};
   int nevents_{0};
@@ -276,6 +285,19 @@ class CKFProcessor final : public framework::Producer {
   
   //Some histograms
   std::unique_ptr<TH1F> histo_p_;
+  std::unique_ptr<TH1F> histo_px_;
+  std::unique_ptr<TH1F> histo_py_;
+  std::unique_ptr<TH1F> histo_pz_;
+  std::unique_ptr<TH1F> histo_pt_;
+
+  std::unique_ptr<TH2F> histo_py_vs_p_;
+  std::unique_ptr<TH2F> histo_py_vs_py_;
+  std::unique_ptr<TH2F> histo_pz_vs_p_;
+  std::unique_ptr<TH2F> histo_pz_vs_pz_;
+  std::unique_ptr<TH2F> histo_pt_vs_pt_;
+  std::unique_ptr<TH2F> histo_pt_vs_p_;
+  
+  
   std::unique_ptr<TH1F> histo_d0_;
   std::unique_ptr<TH1F> histo_z0_;
   std::unique_ptr<TH1F> histo_phi_;
@@ -290,6 +312,11 @@ class CKFProcessor final : public framework::Producer {
   std::unique_ptr<TH1F> histo_qop_pull_;
   
   std::unique_ptr<TH1F> h_p_;
+  std::unique_ptr<TH1F> h_px_;
+  std::unique_ptr<TH1F> h_py_;
+  std::unique_ptr<TH1F> h_pz_;
+  std::unique_ptr<TH1F> h_pt_;
+  
   std::unique_ptr<TH1F> h_d0_;
   std::unique_ptr<TH1F> h_z0_;
   std::unique_ptr<TH1F> h_phi_;
@@ -320,6 +347,10 @@ class CKFProcessor final : public framework::Producer {
   std::unique_ptr<TH1F> h_qop_gsf_refit_res_;
   
   std::unique_ptr<TH1F> h_p_truth_;
+  std::unique_ptr<TH1F> h_px_truth_;
+  std::unique_ptr<TH1F> h_py_truth_;
+  std::unique_ptr<TH1F> h_pz_truth_;
+  std::unique_ptr<TH1F> h_pt_truth_;
   std::unique_ptr<TH1F> h_d0_truth_;
   std::unique_ptr<TH1F> h_z0_truth_;
   std::unique_ptr<TH1F> h_phi_truth_;

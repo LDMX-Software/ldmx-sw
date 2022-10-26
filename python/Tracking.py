@@ -1,5 +1,10 @@
 from LDMX.Framework.ldmxcfg import Producer
 
+
+class DigitizationProcessor(Producer) :
+    def __init__(self, instance_name = "DigitizationProcessor"):
+        super().__init__(instance_name, 'tracking::reco::DigitizationProcessor','Tracking')
+
 class SeedFinderProcessor(Producer) :
     def __init__(self, instance_name = "SeedFinderProcessor"):
         super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor','Tracking')

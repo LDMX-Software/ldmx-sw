@@ -27,6 +27,11 @@ if(BUILD_EVENT_ONLY)
                     namespace "ldmx" 
                     class "Track" type "collection")
 
+
+    register_event_object(module_path "Tracking/Event"
+ 		    namespace "ldmx"
+		    class "Measurement" type "collection")
+
       
 
     # Get all of the event sources that will be included in this library

@@ -1,5 +1,4 @@
 #include "Tracking/Event/Track.h"
-
 #include <iostream>
 
 ClassImp(ldmx::Track)
