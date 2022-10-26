@@ -65,7 +65,8 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
   //TODO!! FIX THIS HARDCODE!
   if (sim_hit_pos[2] > 0)
     vol = 3;
-  
+
+  //Rotate position
   float ldmxsp_x = sim_hit_pos[2];
   float ldmxsp_y = sim_hit_pos[0];
   float ldmxsp_z = sim_hit_pos[1];
@@ -169,7 +170,7 @@ inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos, Acts::Vector3 mom, A
   free_params[Acts::eFreeDir0]   = mom(0) / mom.norm();
   free_params[Acts::eFreeDir1]   = mom(1) / mom.norm();
   free_params[Acts::eFreeDir2]   = mom(2) / mom.norm();
-  free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : (1 / p);
+  free_params[Acts::eFreeQOverP] = (q != Acts::ActsScalar(0)) ? (q / p) : 0.; //1. / p instead? 
 
   return free_params;
 }

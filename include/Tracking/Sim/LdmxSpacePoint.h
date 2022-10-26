@@ -53,23 +53,6 @@ class LdmxSpacePoint  {
     initialize();
   }
 
-  /*
-    LdmxSpacePoint(Acts::Vector3D gp, float t, int layer,
-    Acts::Vector3D cv, int id) {
-    m_x = gp(0);
-    m_y = gp(1);
-    m_z = gp(2);
-    m_t = t;
-    m_r = std::sqrt(m_x*m_x + m_y*m_y);
-    m_layer = layer;
-    m_id = id;
-    m_varianceR = cv(0);
-    m_varianceZ = cv(1);
-                        
-    }
-  */
-
-        
   LdmxSpacePoint(const std::vector<float>& gp, float t, int layer,
                  const std::vector<float>& cv, int id) {
 

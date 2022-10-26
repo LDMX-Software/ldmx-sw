@@ -13,6 +13,10 @@
 #include <iostream>
 #include <algorithm> //std::vector reverse
 
+//eN files
+#include <fstream>
+
+
 namespace tracking {
 namespace sim {
     
@@ -41,6 +45,10 @@ void CKFProcessor::onProcessStart() {
   //Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_, &gctx_);
   const auto tGeometry = ldmx_tg->getTG();
+
+  if (dumpobj_)
+    ldmx_tg->dumpGeometry("./");
+  
   
   // Seed the generator
   generator_.seed(1);
@@ -72,21 +80,20 @@ void CKFProcessor::onProcessStart() {
 
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
-                     makeMagneticFieldMapXyzFromText(
-                       std::move(localToGlobalBin_xyz),
-                       bfieldMap_,
-                       1. * Acts::UnitConstants::mm, //default scale for axes length
-                       1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
-                       false, //not symmetrical
-                       true //rotate the axes to tracking frame
-                     )
-                   );
-
+      makeMagneticFieldMapXyzFromText(
+          std::move(localToGlobalBin_xyz),
+          bfieldMap_,
+          1. * Acts::UnitConstants::mm, //default scale for axes length
+          1000. * Acts::UnitConstants::T, //The map is in kT, so scale it to T
+          false, //not symmetrical
+          true //rotate the axes to tracking frame
+                                      ));
+  
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
   const auto const_stepper = Acts::EigenStepper<>{constBField};
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
-
+  
   // Setup the navigator
   Acts::Navigator::Config navCfg{tGeometry};
   navCfg.resolveMaterial   = true;
@@ -110,8 +117,7 @@ void CKFProcessor::onProcessStart() {
   writer_ = std::make_unique<PropagatorStepWriter>(cfg);
 
   //Create a mapping between the layers and the Acts::Surface
-  layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
-
+  //layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
 
   //Prepare histograms
 
@@ -136,22 +142,41 @@ void CKFProcessor::onProcessStart() {
   //histograms_.create("t_res","t",100,-0.1,0.1);
 
   //Validation histograms
+  double ptlim = 0.1;
+  histo_p_      = std::make_unique<TH1F>("p_res",     "p_res",200,-1,1);
   
-  histo_p_      = std::make_unique<TH1F>("p_res",    "p_res",200,-1,1);
+  histo_px_     = std::make_unique<TH1F>("px_res",    "px_res",200,-1,1);
+  histo_py_     = std::make_unique<TH1F>("py_res",    "py_res",200,-ptlim,ptlim);
+  histo_pz_     = std::make_unique<TH1F>("pz_res",    "pz_res",200,-ptlim,ptlim);
+  histo_pt_     = std::make_unique<TH1F>("pt_res",    "pt_res",200,-ptlim,ptlim);
+    
   histo_d0_     = std::make_unique<TH1F>("d0_res",   "d0_res",200,-0.2,0.2);
   histo_z0_     = std::make_unique<TH1F>("z0_res",   "z0_res",200,-0.75,0.75);
   histo_phi_    = std::make_unique<TH1F>("phi_res",  "phi_res",200,-0.015,0.015);
   histo_theta_  = std::make_unique<TH1F>("theta_res","theta_res",200,-0.01,0.01);
   histo_qop_    = std::make_unique<TH1F>("qop_res","qop_res",200,-5,5);
 
+
+  histo_py_vs_p_  = std::make_unique<TH2F>("py_vs_p","py_vs_p"  ,200,0,6,200,-ptlim,ptlim);
+  histo_py_vs_py_ = std::make_unique<TH2F>("py_vs_py","py_vs_py",200,0,2,200,-ptlim,ptlim);
+  histo_pz_vs_p_  = std::make_unique<TH2F>("pz_vs_p","pz_vs_p"  ,200,0,6,200,-ptlim,ptlim);
+  histo_pz_vs_pz_ = std::make_unique<TH2F>("pz_vs_pz","pz_vs_pz",200,0,2,200,-ptlim,ptlim);
+  histo_pt_vs_p_  = std::make_unique<TH2F>("pt_vs_p" ,"pt_vs_p" ,200,0,2,200,-ptlim,ptlim);
+  histo_pt_vs_pt_ = std::make_unique<TH2F>("pt_vs_pt","pt_vs_pt",200,0,2,200,-ptlim,ptlim);
+  
   histo_p_pull_      = std::make_unique<TH1F>("p_pull",    "p_pull",    200,-5,5);
   histo_d0_pull_     = std::make_unique<TH1F>("d0_pull",   "d0_pull",   200,-5,5);
   histo_z0_pull_     = std::make_unique<TH1F>("z0_pull",   "z0_pull",   200,-5,5);
   histo_phi_pull_    = std::make_unique<TH1F>("phi_pull",  "phi_pull",  200,-5,5);
   histo_theta_pull_  = std::make_unique<TH1F>("theta_pull","theta_pull",200,-5,5);
   histo_qop_pull_    = std::make_unique<TH1F>("qop_pull",  "qop_pull",  200,-5,5);
-
-  h_p_      = std::make_unique<TH1F>("p",    "p",600,0,6);
+    
+  h_p_       = std::make_unique<TH1F>("p",     "p" ,600,0,6);
+  h_px_      = std::make_unique<TH1F>("px",    "px",600,0,6);
+  h_py_      = std::make_unique<TH1F>("py",    "py",200,-ptlim,ptlim);
+  h_pz_      = std::make_unique<TH1F>("pz",    "pz",200,-ptlim,ptlim);
+  h_pt_      = std::make_unique<TH1F>("pt",    "pt",200,0,ptlim);
+  
   h_d0_     = std::make_unique<TH1F>("d0",   "d0",100,-20,20);
   h_z0_     = std::make_unique<TH1F>("z0",   "z0",100,-50,50);
   h_phi_    = std::make_unique<TH1F>("phi",  "phi",200,-0.5,0.5);
@@ -183,7 +208,13 @@ void CKFProcessor::onProcessStart() {
   h_qop_gsf_refit_res_   = std::make_unique<TH1F>("qop_gsf_res", "qop_gsf_res", 200,-5,5);
   
 
-  h_p_truth_      = std::make_unique<TH1F>("p_truth",      "p_truth",600,0,6);
+  h_p_truth_      = std::make_unique<TH1F>("p_truth",     "p_truth", 600, 0 ,6);
+  h_pt_truth_     = std::make_unique<TH1F>("pt_truth",    "pt_truth",200, 0.,ptlim);
+  h_px_truth_     = std::make_unique<TH1F>("px_truth",    "px_truth",600,-6 ,6);
+  h_py_truth_     = std::make_unique<TH1F>("py_truth",    "py_truth",200,-ptlim, ptlim);
+  h_pz_truth_     = std::make_unique<TH1F>("pz_truth",    "pz_truth",200,-ptlim, ptlim);
+  
+  
   h_d0_truth_     = std::make_unique<TH1F>("d0_truth",     "d0_truth",100,-20,20);
   h_z0_truth_     = std::make_unique<TH1F>("z0_truth_",    "z0_truth",100,-50,50);
   h_phi_truth_    = std::make_unique<TH1F>("phi_truth",    "phi_truth",200,-0.5,0.5);
@@ -192,11 +223,21 @@ void CKFProcessor::onProcessStart() {
 
   h_tgt_scoring_x_y_      = std::make_unique<TH2F>("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
   h_tgt_scoring_z_        = std::make_unique<TH1F>("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
+
+
+
 }
 
 void CKFProcessor::produce(framework::Event &event) {
-
-
+  
+  //int counter=0 
+  //if (counter==0) {
+  //propagateENstates(event,
+  //                  "hadron_vars_piminus_1e6.txt",
+  //                  "hadron_vars_piminus_1e6_out.root");
+  //counter+=1;
+  //}
+  
   //TODO use global variable instead and call clear;
   std::vector<ldmx::Track> tracks;
   
@@ -211,21 +252,11 @@ void CKFProcessor::produce(framework::Event &event) {
     std::cout<<"Processing event "<<&event<<std::endl;
   }
 
-  //1) Setup the actions and the abort list. For debugging add the Stepping Logger
-  //2) Create the propagator options from them. If the magneticField context is empty it won't be used.
-  //2a) If I want to pass a constant Field then use the Constant BField Class (inherits from the provider)
-  
-  //options_ = TestPropagatorOptions();
-  
-  //3) Get the steps vector and pass it to the root Writer -> in the event processor
-
-  //Setup the starting point 
-
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1), perigee_location_.at(2)));
-
-  //Get the ACTS Logger -  Very annoying to have to define it in order to run this test.
+  
+  
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
   
@@ -340,6 +371,16 @@ void CKFProcessor::produce(framework::Event &event) {
   for (auto & startParameter : startParameters) {
     //Already fill the plots with the truth information
     h_p_truth_     ->Fill(startParameters.at(0).absoluteMomentum());
+    h_px_truth_    ->Fill(startParameters.at(0).momentum()(0));
+    h_py_truth_    ->Fill(startParameters.at(0).momentum()(1));
+    h_pz_truth_    ->Fill(startParameters.at(0).momentum()(2));
+
+    double py_truth = startParameters.at(0).momentum()(1);
+    double pz_truth = startParameters.at(0).momentum()(2);
+    double pt_truth = sqrt(py_truth*py_truth + pz_truth*pz_truth);
+
+    h_pt_truth_ -> Fill(pt_truth);
+    
     h_d0_truth_    ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
     h_z0_truth_    ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
     h_phi_truth_   ->Fill(startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>());
@@ -515,20 +556,57 @@ void CKFProcessor::produce(framework::Event &event) {
         
     for (const auto& pair : ckf_result.fittedParameters) {
       //std::cout<<"Number of hits-on-track::" << (int) pair.first << std::endl;
+      
+      if (debug_)
+        std::cout<<getName()<<" Filling histograms"<<std::endl;
+      double p = pair.second.absoluteMomentum();
 
+      double px = pair.second.momentum()(0);
+      double py = pair.second.momentum()(1);
+      double pz = pair.second.momentum()(2);
+      double pt = sqrt(py*py+pz*pz);
 
+      double truth_pt = sqrt(startParameters.at(0).momentum()(1)*startParameters.at(0).momentum()(1) + startParameters.at(0).momentum()(2)*startParameters.at(0).momentum()(2)); 
+      
+      
       double resp     = pair.second.absoluteMomentum() - startParameters.at(0).absoluteMomentum();
+
+      double respx    = px - startParameters.at(0).momentum()(0);
+      double respy    = py - startParameters.at(0).momentum()(1);
+      double respz    = pz - startParameters.at(0).momentum()(2);
+
+      double respt    = pt - truth_pt;
+            
       double resd0    = pair.second.get<Acts::BoundIndices::eBoundLoc0>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>();
       double resz0    = pair.second.get<Acts::BoundIndices::eBoundLoc1>() - startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>();
       double resphi   = pair.second.get<Acts::BoundIndices::eBoundPhi>() - startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>();
       double restheta = pair.second.get<Acts::BoundIndices::eBoundTheta>() - startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>();
+
+
       histo_p_    ->Fill(resp);
+      histo_px_   ->Fill(respx);
+      histo_py_   ->Fill(respy);
+      histo_pz_   ->Fill(respz);
+      histo_pt_   ->Fill(respt);
+      
+      histo_py_vs_p_  -> Fill(p,respy);
+      histo_py_vs_py_ -> Fill(abs(py),respy);
+      histo_pz_vs_p_  -> Fill(p,respz);
+      histo_pz_vs_pz_ -> Fill(abs(pz),respz);
+      histo_pt_vs_pt_ -> Fill(pt,respt);
+      histo_pt_vs_p_  -> Fill(p,respt);
+      
       histo_d0_   ->Fill(resd0);
       histo_z0_   ->Fill(resz0);
       histo_phi_  ->Fill(resphi);
       histo_theta_->Fill(restheta);
-      
-      h_p_    ->Fill(pair.second.absoluteMomentum());
+
+      h_p_    ->Fill(p);
+      h_px_    ->Fill(px);
+      h_py_    ->Fill(py);
+      h_pz_    ->Fill(pz);
+      h_pt_    ->Fill(pt);
+            
       h_d0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>());
       h_z0_   ->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>());
       h_phi_  ->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>());
@@ -564,6 +642,10 @@ void CKFProcessor::produce(framework::Event &event) {
             
     }
 
+
+    if (debug_)
+      std::cout<<getName()<<" creating track object"<<std::endl; 
+    
     //Create a track object
 
     ldmx::Track trk = ldmx::Track();
@@ -790,6 +872,11 @@ void CKFProcessor::onProcessEnd() {
   outfile_->cd();
 
   histo_p_->Write();
+  histo_px_->Write();
+  histo_py_->Write();
+  histo_pz_->Write();
+  histo_pt_->Write();
+  
   histo_d0_->Write();
   histo_z0_->Write();
   histo_phi_->Write();
@@ -802,6 +889,18 @@ void CKFProcessor::onProcessEnd() {
   histo_theta_pull_->Write();
 
   h_p_->Write();
+  h_px_->Write();
+  h_py_->Write();
+  h_pz_->Write();
+  h_pt_->Write();
+
+  histo_py_vs_p_  ->Write(); 
+  histo_py_vs_py_ ->Write(); 
+  histo_pz_vs_p_  ->Write(); 
+  histo_pz_vs_pz_ ->Write(); 
+  histo_pt_vs_pt_ ->Write();
+  histo_pt_vs_p_ ->Write();
+  
   h_d0_->Write();
   h_z0_->Write();
   h_phi_->Write();
@@ -830,6 +929,11 @@ void CKFProcessor::onProcessEnd() {
   //h_nHits_gsf_refit_->Write();
 
   h_p_truth_->Write();
+  h_px_truth_->Write();
+  h_py_truth_->Write();
+  h_pz_truth_->Write();
+  h_pt_truth_->Write();
+  
   h_d0_truth_->Write();
   h_z0_truth_->Write();
   h_phi_truth_->Write();
@@ -854,6 +958,7 @@ void CKFProcessor::onProcessEnd() {
 void CKFProcessor::configure(framework::config::Parameters &parameters) {
     
   dumpobj_            = parameters.getParameter<int>("dumpobj", 0);
+  pionstates_         = parameters.getParameter<int>("pionstates", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>("steps_file_path","propagation_steps.root");
   trackID_            = parameters.getParameter<int>("trackID",-1);
   pdgID_              = parameters.getParameter<int>("pdgID",11);
@@ -938,7 +1043,7 @@ auto CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeom
 
   //loop over the tracking geometry to find all sensitive surfaces
   std::vector<const Acts::Surface*> surfaces;
-  ldmx_tg->getSurfaces(surfaces, trackingGeometry);
+  ldmx_tg->getSurfaces(surfaces);
 
   for (auto& surface : surfaces) {
     //std::cout<<"Check the surfaces"<<std::endl;
@@ -1097,7 +1202,6 @@ void CKFProcessor::writeEvent(framework::Event &event,
   }
 
   //follow now the trajectory
-    
   
   for (int i_params = 0; i_params < prop_parameters.size(); i_params++) {
 
@@ -1161,11 +1265,12 @@ void CKFProcessor::writeEvent(framework::Event &event,
   */
   
   propagationSteps.push_back(steps);
-  
-  
+  Acts::Vector3 gen_pos(0.,0.,0.);
+  Acts::Vector3 gen_mom(0.,0.,0.);
   writer_->WriteSteps(event,
                       propagationSteps,
-                      ldmxsps);
+                      ldmxsps,
+                      gen_pos, gen_mom);
 }
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint* > &ldmxsps)
@@ -1178,12 +1283,15 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint
 
     ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
     unsigned int layerid = ldmxsp->layer();
-
-    const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+    
+    //const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+    
+    const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
+    
     if (hit_surface) {
-
+      
       //Transform the ldmx space point from global to local and store the information
-
+      
 
       if (debug_ ) {
         std::cout<<"Global hit position on layer::"<< ldmxsp->layer()<<std::endl;
@@ -1194,8 +1302,8 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint
         std::cout<<hit_surface->transform(gctx_).rotation()<<std::endl;
         std::cout<<hit_surface->transform(gctx_).translation()<<std::endl;
       }
-
-
+      
+      
       Acts::Vector3 dummy_momentum;
       Acts::Vector2 local_pos;
       try {
@@ -1207,7 +1315,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint
       }
 
       //Smear the local position
-
+      
       if (do_smearing_) {
         float smear_factor{(*normal_)(generator_)};
 
@@ -1315,6 +1423,178 @@ auto CKFProcessor::makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &s
     std::cout<<"Hits for fitting:"<<ldmxsps.size()<<std::endl;
 
   return ldmxsps;
+}
+
+// This is used to propagate the initial eN states through the detector
+
+void CKFProcessor::propagateENstates(
+    framework::Event &event,
+    std::string inputFile,
+    std::string outFile) {
+
+  std::ifstream inFile(inputFile);
+  if (!inFile.is_open()) {
+    std::cout<<__PRETTY_FUNCTION__<<" could not read input file "<<inputFile<<std::endl;
+    return;
+  }
+
+  //skip first line
+  std::string spdg, smass, sE, spx, spy, spz, sp;
+  int pdg;
+  float mass, E, px, py, pz, p;
+  std::getline(inFile,spdg);
+
+  Acts::Vector3 gen_pos{0.,0.,0.};
+  Acts::Vector3 gen_mom{0.,0.,0.};
+
+
+  int total   = 0;
+  int pzCut   = 0;
+  int pCut    = 0;
+  int success = 0;
+  int fail    = 0;
+  
+  std::default_random_engine generator;
+  std::uniform_real_distribution<double> bY(-40,40);
+  std::uniform_real_distribution<double> bX(-10,10);
+
+  //Generate uniform pions
+  
+  std::uniform_real_distribution<double> PX(-4,4);
+  std::uniform_real_distribution<double> PY(-4,4);
+  std::uniform_real_distribution<double> PZ(0.0,4);
+
+  std::uniform_real_distribution<double> P(0.05,4);
+  std::uniform_real_distribution<double> THETA(0,1.57079632679);
+  std::uniform_real_distribution<double> PHI(0.0,6.28318530718);
+  
+
+  //Loop
+  //while(inFile>>pdg >> mass >> E >> px >> py >> pz >> p) {
+  for (int i_pion = 0; i_pion < pionstates_; i_pion++) {
+    
+    p = P(generator);
+    double theta = THETA(generator);
+    double phi   = PHI(generator);
+    //px = PX(generator);
+    //py = PY(generator);
+    //pz = PZ(generator);
+    //p = sqrt(px*px + py*py + pz*pz);
+
+    px = p * cos(theta);
+    py = p * sin(theta)*cos(phi);
+    pz = p * sin(theta)*sin(phi);
+        
+        
+    total+=1;
+    std::vector<std::vector<Acts::detail::Step>> propagationSteps;
+
+    //randomize beamspot
+    //global Y
+    double by = bY(generator);
+    
+    //global X
+    double bx = bX(generator);
+
+    //Already rotated in tracking frame
+    gen_pos(0) = 0.;
+    gen_pos(1) = bx;
+    gen_pos(2) = by;
+    
+    //Skip particles that are not propagated in the forward direction from the target.
+    if (px < 0 ) {
+      pzCut++;
+      continue;
+    }
+
+    //Skip particles with a momentum too low to be reconstructed
+
+    if ( p < 0.05) {
+      pCut++;
+      continue;
+    }
+        
+    //std::cout<<pdg <<" " << mass <<" " << E <<" " << px <<" " <<py<<" " <<pz<<" " <<p<<std::endl;
+
+    //Transform to MeV because that's what TrackUtils assumes
+    gen_mom(0) = px  / Acts::UnitConstants::MeV;
+    gen_mom(1) = py  / Acts::UnitConstants::MeV;
+    gen_mom(2) = pz  / Acts::UnitConstants::MeV;
+    //gen_pos = tracking::sim::utils::Ldmx2Acts(gen_pos);
+    //gen_mom = tracking::sim::utils::Ldmx2Acts(gen_mom);
+    
+    Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
+    
+    if (pdg == 211 || pdg == 2212)
+      q = +1 * Acts::UnitConstants::e;
+
+    Acts::FreeVector part_free = tracking::sim::utils::toFreeParameters(gen_pos, gen_mom, q);
+
+    //perigee on the track
+    std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
+        Acts::Surface::makeShared<Acts::PerigeeSurface>(
+            Acts::Vector3(part_free[Acts::eFreePos0],
+                          part_free[Acts::eFreePos1],
+                          part_free[Acts::eFreePos2]));
+
+    //std::cout<<"gen_free"<<std::endl;
+    //std::cout<<part_free<<std::endl;
+    
+    
+    //Transform the free parameters to the bound parameters
+    auto bound_params =
+        Acts::detail::transformFreeToBoundParameters(part_free, *gen_surface, gctx_).value();
+
+
+    using RecordedMaterial = Acts::MaterialInteractor::result_type;
+    using RecordedMaterialTrack =
+        std::pair<std::pair<Acts::Vector3, Acts::Vector3>, RecordedMaterial>;
+    using PropagationOutput =
+        std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
+
+    PropagationOutput pOutput;
+    const auto eNLogger = Acts::getDefaultLogger("eN", Acts::Logging::INFO);
+
+        
+    Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_, Acts::LoggerWrapper{*eNLogger});
+    propagator_options.pathLimit = std::numeric_limits<double>::max();
+    propagator_options.loopProtection = false;
+    auto& mInteractor = propagator_options.actionList.get<Acts::MaterialInteractor>();
+    mInteractor.multipleScattering = true;
+    mInteractor.energyLoss         = true;
+    mInteractor.recordInteractions = false;
+
+    auto& sLogger = propagator_options.actionList.get<Acts::detail::SteppingLogger>();
+    sLogger.sterile = false;
+    propagator_options.maxStepSize = 5 * Acts::UnitConstants::mm;
+    propagator_options.maxSteps    = 2000; 
+
+    Acts::BoundTrackParameters startParameters(gen_surface, std::move(bound_params), std::move(std::nullopt));
+    auto result   = propagator_->propagate(startParameters,propagator_options);
+
+    
+    if (result.ok()) {
+      const auto& resultValue = result.value();
+      auto steppingResults =
+          resultValue.template get<Acts::detail::SteppingLogger::result_type>();
+      pOutput.first = std::move(steppingResults.steps);
+      propagationSteps.push_back(std::move(pOutput.first));
+
+      success+=1;
+    }
+    else {
+      //std::cout<<"PF::ERROR::PROPAGATION RESULTS ARE NOT OK!!"<<std::endl;
+      fail+=1;
+    }
+
+    //empty
+    std::vector<ldmx::LdmxSpacePoint*> hits{};
+    writer_->WriteSteps(event,propagationSteps,hits,gen_pos, gen_mom);
+    
+  } //loop on inputs
+  std::cout<<"Total="<<total<<" success="<<success<<" fail="<<fail<<" pzCut="<<pzCut<<" pCut="<<pCut<<std::endl;
+
+
 }
 
 

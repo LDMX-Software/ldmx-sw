@@ -52,9 +52,12 @@ class LdmxTrackingGeometry {
   std::shared_ptr<const Acts::TrackingGeometry> getTG(){return tGeometry_;};
 
   void dumpGeometry(const std::string& outputDir );
-  void getSurfaces(std::vector<const Acts::Surface*>& surfaces,
-                   std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry);
+  void getSurfaces(std::vector<const Acts::Surface*>& surfaces);
+               
   
+  const Acts::Surface* getSurface(int layerid)  {
+    return layer_surface_map_.at(layerid);
+  }
   
  private:
 
@@ -73,7 +76,12 @@ class LdmxTrackingGeometry {
   //In this way we can pass multiple surfaces to the same layer to the builder.
   
   std::map<std::string, std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig > > tracker_layout;
+  
+  //This could be a vector
+  //The mapping between layers and Acts::Surface
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
+  void makeLayerSurfacesMap();
   
   void collectSensors_dd4hep(dd4hep::DetElement& detElement,
                                                    std::vector<dd4hep::DetElement>& sensors);
