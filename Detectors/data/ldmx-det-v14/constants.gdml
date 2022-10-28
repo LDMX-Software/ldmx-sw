@@ -23,6 +23,9 @@
     Magnet
 --> 
 
+<!-- Magnet is position such that the field center is at -40 cm. -->
+<constant name="magnet_pos_z" value="-40*cm" />
+
 <!-- Magnet gap dimensions --> 
 <constant name="magnet_gap_dx" value="430*mm"/>
 <constant name="magnet_gap_dy" value="350*mm"/>
@@ -96,14 +99,7 @@
 <constant name="recoil_envelope_dy" value="magnet_gap_dy" />
 <variable name="recoil_envelope_dz" 
     value="tracker_envelope_clearance*2 + recoil_delta_l14*3 + recoil_delta_l45 + recoil_delta_l56" />
-
-<!--
-  Position of the tagger and recoil tracker envelopes with respect to
-  target.  The 9 mm offset was chosen such that the midpoints of the 
-  last (first) layer of the tagger (recoil) tracker are 25 mm apart.
--->
-<variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
-
+ 
 <!--
     Tagger Tracker 
 -->
