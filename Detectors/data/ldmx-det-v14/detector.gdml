@@ -15,13 +15,11 @@
           last (first) layer of the tagger (recoil) tracker are 25 mm apart.
         -->
         <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
+        <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
 
         <!-- Position of the ECal and HCal parent volumes -->
         <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
         <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
-
-        <!-- Magnet is position such that the field center is at -40 cm. -->
-        <constant name="magnet_pos_z" value="-40*cm" />
 
         <!-- 
              Define all subdetector positions relative to the target.  
@@ -76,8 +74,7 @@
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-	    </physvol>
-
+	          </physvol>
             <physvol copynumber="7"> 
                 <file name="hcal.gdml"/> 
                 <positionref ref="hadron_calorimeter_pos"/> 
@@ -88,7 +85,7 @@
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 
                 <rotationref ref="identity"/> 
-	    </physvol>
+             </physvol>
 
             <auxiliary auxtype="DetElem" auxvalue="Top"/>
         </volume>
