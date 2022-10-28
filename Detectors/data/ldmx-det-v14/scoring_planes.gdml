@@ -57,10 +57,10 @@
         <variable name="sp_magnet_gap_right_x" value="magnet_gap_dx/2 - sp_thickness/2" />
         <variable name="sp_magnet_gap_mid_z"   value="-400*mm" />
 
-        <matrix name="sp_magnet_gap_pos" coldim="3" values="0 sp_magnet_gap_top_y sp_magnet_gap_mid_z
-                                                        0 sp_magnet_gap_bot_y sp_magnet_gap_mid_z
-                                                        sp_magnet_gap_left_x 0 sp_magnet_gap_mid_z
-                                                        sp_magnet_gap_right_x 0 sp_magnet_gap_mid_z" />
+        <matrix name="sp_magnet_gap_pos" coldim="2" values="0 sp_magnet_gap_top_y
+                                                            0 sp_magnet_gap_bot_y 
+                                                            sp_magnet_gap_left_x 0 
+                                                            sp_magnet_gap_right_x 0" />
                 
 
         <!-- Surround the Hcal with scoring planes -->
@@ -111,9 +111,8 @@
 
               
         <!-- Place scoring planes at each of the recoil tracker layers -->
-        <variable name="recoil_z_start" value="recoil_pos_z - recoil_envelope_dz/2" />
         <variable name="sp_recoil_l1_z" 
-                  value="recoil_z_start + tracker_envelope_clearance" /> 
+                  value="9*mm + tracker_envelope_clearance" /> 
         <variable name="sp_recoil_l2_z" 
                   value="sp_recoil_l1_z+recoil_delta_l14" /> 
         <variable name="sp_recoil_l3_z" 
@@ -164,7 +163,7 @@
 
     <structure>
 
-        <!-- Define the target and scoring plane volumes --> 
+        <!-- Define the target and scoring plane volumes -->
         <loop for="x" to="6" step="1" >
             <volume name="sp_target">
                 <materialref ref="Vacuum" />
@@ -195,7 +194,7 @@
                 <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume> 
-        </loop> 
+        </loop>
 
         <loop for="x7" to="2" step="1" > 
             <volume name="sp_ecal_front_back"> 
@@ -242,7 +241,7 @@
         <volume name="SP_World">
             <materialref ref="Vacuum" />
             <solidref ref="world_box" />
-            
+
             <loop for="x2" to="6" step="1">
                 <physvol copynumber="x2">
                     <volumeref ref="sp_target" />
@@ -250,7 +249,6 @@
                     <rotationref ref="identity" />
                 </physvol>
             </loop>
-
             <loop for="x5" to="6" step="1">
                 <physvol copynumber="20 + x5">
                     <volumeref ref="sp_recoil" />
@@ -262,15 +260,15 @@
             <loop for="x12" to="2" step="1" > 
                 <physvol copynumber="50 + x8">
                     <volumeref ref="sp_magnet_gap_top_bot" />
-                    <position x="sp_magnet_gap_pos[x12, 1]" y="sp_magnet_gap_pos[x12, 2]" z="sp_magnet_gap_pos[x12, 3]" />
+                    <position x="sp_magnet_gap_pos[x12, 1]" y="sp_magnet_gap_pos[x12, 2]" z="magnet_pos_z" />
                     <rotationref ref="identity" />
                 </physvol>
                 <physvol copynumber="52 + x8">
                     <volumeref ref="sp_magnet_gap_left_right" />
-                    <position x="sp_magnet_gap_pos[x12 + 2, 1]" y="sp_magnet_gap_pos[x12 + 2, 2]" z="sp_magnet_gap_pos[x12 + 2, 3]" />
+                    <position x="sp_magnet_gap_pos[x12 + 2, 1]" y="sp_magnet_gap_pos[x12 + 2, 2]" z="magnet_pos_z" />
                     <rotationref ref="identity" />
                 </physvol> 
-            </loop> 
+            </loop>
 
             <loop for="x8" to="2" step="1" > 
                 <physvol copynumber="30 + x8">
@@ -341,7 +339,6 @@
             <auxiliary auxtype="SubdetID"       auxvalue="11" />
             <auxiliary auxtype="Verbose"        auxvalue="0" />
         </auxiliary>
-        
         <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
             <auxiliary auxtype="R" auxvalue="0.0"/>
             <auxiliary auxtype="G" auxvalue="0.0"/>
@@ -351,7 +348,7 @@
             <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
             <auxiliary auxtype="Visible" auxvalue="true"/>
             <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
-      </auxiliary> 
+        </auxiliary>  
     </userinfo>
 
     <setup name="Default" version="1.0">
