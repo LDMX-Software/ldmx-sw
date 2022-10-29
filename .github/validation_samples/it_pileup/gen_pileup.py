@@ -8,7 +8,7 @@ p.maxEvents = int(int(os.environ['LDMX_NUM_EVENTS'])*0.95)
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v12' )
+mySim.setDetector( 'ldmx-det-v14' )
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]

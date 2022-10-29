@@ -83,31 +83,29 @@
 
   <structure>
     <!-- Define a recoil sensor as a active box inside an inactive box -->  
-    <volume name="recoil_l14_active_sensor_vol">
+    <volume name="Recoil_l14_active_Sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_active_sensor_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l14_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_sensor_box"/>
       <physvol name="recoil_l14_active_sensor">
-        <volumeref ref="recoil_l14_active_sensor_vol"/>
+        <volumeref ref="Recoil_l14_active_Sensor_vol"/>
         <position name="recoil_l14_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
       </physvol>
     </volume>
-    <volume name="recoil_l56_active_sensor_vol">
+    <volume name="Recoil_l56_active_Sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_active_sensor_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l56_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_sensor_box"/>
       <physvol name="recoil_l56_active_sensor">
-        <volumeref ref="recoil_l56_active_sensor_vol"/>
+        <volumeref ref="Recoil_l56_active_Sensor_vol"/>
         <position name="recoil_l56_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
       </physvol>
     </volume>

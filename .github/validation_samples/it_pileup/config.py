@@ -26,7 +26,9 @@ overlay.nEarlierBunchesToSample = 0
 overlay.bunchSpacing = 26.9      #ns = 1000./37.2 ; 5.4 = 1000./186.
 overlay.timeSpread = 0.       # <-- realistically, 30 ps; 
 overlay.timeMean   = 0.       # <-- here set the in-bunch average pu time offset to no time shift whatsoever; useful for validation though
-overlay.overlayCaloHitCollections=[ "TriggerPadTaggerSimHits", "TriggerPadUpSimHits", "TriggerPadDownSimHits", "TargetSimHits", "EcalSimHits", "HcalSimHits"]
+overlay.overlayCaloHitCollections=[ 
+        #"TriggerPadTaggerSimHits", "TriggerPadUpSimHits", "TriggerPadDownSimHits", "TargetSimHits", 
+        "EcalSimHits", "HcalSimHits"]
 overlay.overlayTrackerHitCollections=[ "TaggerSimHits", "RecoilSimHits" ]
 overlay.verbosity=0 #1 #3 #
 
@@ -83,15 +85,15 @@ count.input_pass_name = ''
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-    tsDigisUp, tsDigisTag, tsDigisDown, 
-    TrigScintClusterProducer.tagger(),
-    TrigScintClusterProducer.up(),
-    TrigScintClusterProducer.down(),
-    trigScintTrack,
-    count, TriggerProcessor('trigger'),
+#    tsDigisUp, tsDigisTag, tsDigisDown, 
+#    TrigScintClusterProducer.tagger(),
+#    TrigScintClusterProducer.up(),
+#    TrigScintClusterProducer.down(),
+#    trigScintTrack,
+#    count, TriggerProcessor('trigger'),
     dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures(), 
-    dqm.HCalDQM()]+dqm.recoil_dqm+dqm.trigger_dqm)
+    dqm.HCalDQM()]+dqm.recoil_dqm) #+dqm.trigger_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']

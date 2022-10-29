@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+
+  <define>
+
+    &constants;   
+    
+    <variable name="x" value="1"/>
+
+  
+  </define>
+
+  <solids>
+
+    <box lunit="mm" name="trigger_pad_box" x="trig_scint_area_envelope_x" y="trig_scint_area_envelope_y" z="trig_scint_area_envelope_z"/>
+    <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+  
+  </solids>
+
+  <materials>
+
+      <material name="Vacuum" state="gas">
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="9.99999473841014e-09"/>
+      <fraction n="1" ref="H"/>
+    </material>
+    
+    <!-- Scintillator -->
+    <material name="Polyvinyltoluene">
+      <D type="density" value="1.023" unit="g/cm3"/>
+      <composite n="27" ref="C"/>
+      <composite n="30" ref="H"/>
+    </material>
+
+  </materials>
+
+  <structure>
+
+    <volume name="trigger_pad_taggerA_bar_volume">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
+
+    <volume name="trigger_pad_taggerB_bar_volume">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
+
+    <volume name="trig_scint_tagger">
+      <materialref ref="Vacuum"/>
+      <solidref ref="trigger_pad_box" />
+      <loop for="x" to="number_of_bars" step="1">
+        <physvol copynumber="2*x-2">
+          <volumeref ref="trigger_pad_taggerA_bar_volume" />
+          <position name="trigger_pad_taggerA_bar_layer1_pos" unit="mm" x="-22" 
+                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
+                z="trig_scint_area_envelope_z/2 + trigger_pad_taggerA_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+        <physvol copynumber="2*x - 1">
+          <volumeref ref="trigger_pad_taggerA_bar_volume" />
+          <position name="trigger_pad_taggerA_bar_layer2_pos" unit="mm" x="-22"
+                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                z="trig_scint_area_envelope_z/2+trigger_pad_taggerA_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+
+        <physvol copynumber="2*x-2">
+          <volumeref ref="trigger_pad_taggerB_bar_volume" />
+          <position name="trigger_pad_taggerB_bar_layer1_pos" unit="mm" x="-27"
+                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+        <physvol copynumber="2*x - 1">
+          <volumeref ref="trigger_pad_taggerB_bar_volume" />
+          <position name="trigger_pad_taggerB_bar_layer2_pos" unit="mm" x="-27"
+                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
+                z="trig_scint_area_envelope_z/2+trigger_pad_taggerB_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+          <rotationref ref="identity" />
+        </physvol>
+      </loop>
+
+      <auxiliary auxtype="Region" auxvalue="trig_scint" />
+      <!-- <auxiliary auxtype="VisAttributes" auxvalue="VisibleShowDau"/> -->
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+
+    </volume>
+
+  </structure> 
+
+  <setup name="Default" version="1.0">
+    <world ref="trig_scint"/>
+  </setup>
+
+</gdml>
