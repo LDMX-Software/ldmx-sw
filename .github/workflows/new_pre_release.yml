@@ -42,9 +42,9 @@ jobs:
 
     - name: Generate Job Matrix
       id: gen-mat
-      uses: ./github/actions/generate-matrix
+      uses: ./.github/actions/generate-matrix
       with:
-        num_jobs_per_sample: 5
+        num_runs_per_sample: 5
 
   generate-samples:
     needs: compile-ldmx-sw
