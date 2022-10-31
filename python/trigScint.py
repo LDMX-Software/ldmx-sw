@@ -5,9 +5,9 @@ Sets all parameters to reasonable defaults.
 Examples
 --------
     from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-    p.sequence.extend([ TrigScintDigiProducer.up() , TrigScintDigiProducer.down() , TrigScintDigiProducer.tagger() ])
+    p.sequence.extend([ TrigScintDigiProducer.pad1() , TrigScintDigiProducer.pad2() , TrigScintDigiProducer.pad3() ])
     from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-    p.sequence.extend([ TrigScintClusterProducer.up() , TrigScintClusterProducer.down() , TrigScintClusterProducer.tagger() ])
+    p.sequence.extend([ TrigScintClusterProducer.pad1() , TrigScintClusterProducer.pad2(), TrigScintClusterProducer.pad3() ]) 
 
 """
 
@@ -24,32 +24,32 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.number_of_arrays = 1
         self.mev_per_mip = 0.4
         self.pe_per_mip = 100.
-        self.input_collection="TriggerPadUpSimHits"
+        self.input_collection="TriggerPad3SimHits"
         self.input_pass_name="" #take any pass
-        self.output_collection="trigScintDigisUp"
+        self.output_collection="trigScintDigisPad3"
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
 
-    def up() :
+    def pad1() :
+        """Get the digitizer for the trigger pad most upstream of tagger"""
+        digi = TrigScintDigiProducer( 'trigScintDigisPad1' )
+        digi.input_collection = 'TriggerPad1SimHits'
+        digi.output_collection= 'trigScintDigisPad1'
+        return digi
+
+    def pad2() :
+        """Get the digitizer for the trigger pad just upstream of tagger"""
+        digi = TrigScintDigiProducer( 'trigScintDigisPad2' )
+        digi.input_collection = 'TriggerPad2SimHits'
+        digi.output_collection= 'trigScintDigisPad2'
+        return digi
+
+    def pad3() :
         """Get the digitizer for the trigger pad upstream of target"""
-        digi = TrigScintDigiProducer( 'trigScintDigisUp' )
-        digi.input_collection = 'TriggerPadUpSimHits'
-        digi.output_collection= 'trigScintDigisUp'
-        return digi
-
-    def down() :
-        """Get the digitizer for the trigger pad downstream of target"""
-        digi = TrigScintDigiProducer( 'trigScintDigisDn' )
-        digi.input_collection = 'TriggerPadDownSimHits'
-        digi.output_collection= 'trigScintDigisDn'
-        return digi
-
-    def tagger() :
-        """Get the digitizer for the trigger pad upstream of tagger"""
-        digi = TrigScintDigiProducer( 'trigScintDigisTag' )
-        digi.input_collection = 'TriggerPadTaggerSimHits'
-        digi.output_collection= 'trigScintDigisTag'
+        digi = TrigScintDigiProducer( 'trigScintDigisPad3' )
+        digi.input_collection = 'TriggerPad3SimHits'
+        digi.output_collection= 'trigScintDigisPad3'
         return digi
 
 
@@ -64,9 +64,9 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.number_of_arrays = 1
         self.mev_per_mip = 0.4
         self.pe_per_mip = 100.
-        self.input_collection="TriggerPadUpSimHits"
+        self.input_collection="TriggerPad3SimHits"
         self.input_pass_name="" #take any pass
-        self.output_collection="trigScintQIEDigisUp"
+        self.output_collection="trigScintQIEDigisPad3"
         self.input_pulse_shape="Expo" # Name of the input pulse class
         self.expo_k=0.1          # Inverse of decay time of piece-wise exponential 
         self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
@@ -82,25 +82,25 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         import time
         self.verbose = False
 
-    def up() :
+    def pad3() :
         """Get the digitizer for the trigger pad upstream of target"""
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisUp' )
-        digi.input_collection = 'TriggerPadUpSimHits'
-        digi.output_collection= 'trigScintQIEDigisUp'
+        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad3' )
+        digi.input_collection = 'TriggerPad3SimHits'
+        digi.output_collection= 'trigScintQIEDigisPad3'
         return digi
 
-    def down() :
-        """Get the digitizer for the trigger pad downstream of target"""
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisDn' )
-        digi.input_collection = 'TriggerPadDownSimHits'
-        digi.output_collection= 'trigScintQIEDigisDn'
+    def pad1() :
+        """Get the digitizer for the first trigger pad """
+        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad1' )
+        digi.input_collection = 'TriggerPad1SimHits'
+        digi.output_collection= 'trigScintQIEDigisPad1'
         return digi
 
-    def tagger() :
-        """Get the digitizer for the trigger pad upstream of tagger"""
-        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisTag' )
-        digi.input_collection = 'TriggerPadTaggerSimHits'
-        digi.output_collection= 'trigScintQIEDigisTag'
+    def pad2() :
+        """Get the digitizer for the second trigger pad """
+        digi = TrigScintQIEDigiProducer( 'trigScintQIEDigisPad2' )
+        digi.input_collection = 'TriggerPad2SimHits'
+        digi.output_collection= 'trigScintQIEDigisPad2'
         return digi
 
 
@@ -110,9 +110,9 @@ class EventReadoutProducer(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::EventReadoutProducer','TrigScint')
 
-        self.input_collection="decodedQIEUp"
+        self.input_collection="decodedQIEPad1"
         self.input_pass_name=""   #take any pass
-        self.output_collection="QIEsamplesUp"
+        self.output_collection="QIEsamplesPad1"
         self.number_pedestal_samples=5
         self.time_shift=5
         self.fiber_to_shift=0
@@ -124,9 +124,9 @@ class TestBeamHitProducer(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamHitProducer','TrigScint')
 
-        self.inputCollection="QIEsamplesUp"
+        self.inputCollection="QIEsamplesPad1"
         self.inputPassName=""   #take any pass
-        self.outputCollection="testBeamHitsUp"
+        self.outputCollection="testBeamHitsPad1"
         self.verbose = False
         self.doCleanHits = False   #whether to apply quality criteria in hit reconstruction
         self.nInstrumentedChannels=12 #number of channels 
@@ -167,17 +167,17 @@ class TestBeamClusterProducer(ldmxcfg.Producer) :
         self.seed_threshold = 60.
         self.pad_time = -999.
         self.time_tolerance = 50.
-        self.input_collection="testBeamHitsUp"
+        self.input_collection="testBeamHitsPad1"
         self.input_pass_name="" #take any pass
-        self.output_collection="TestBeamClustersUp"
+        self.output_collection="TestBeamClustersPad1"
         self.doCleanHits = False   #whether to apply quality criteria from hit reconstruction
         self.verbosity = 0
 
-    def up() :
-        """Get the cluster producer for the trigger pad upstream of target"""
-        cluster = TestBeamClusterProducer( 'testBeamClustersUp' )
-        cluster.input_collection = 'testBeamHitsUp'
-        cluster.output_collection= 'TeastBeamClustersUp'
+    def pad1() :
+        """Get the cluster producer for the trigger pad upstream of hcal """
+        cluster = TestBeamClusterProducer( 'testBeamClustersPad1' )
+        cluster.input_collection = 'testBeamHitsPad1'
+        cluster.output_collection= 'TeastBeamClustersPad1'
         cluster.pad_time= -999.
         return cluster
         
@@ -192,31 +192,31 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         self.pe_per_mip = 100.    #/
         self.pedestal= 6.0        # QIE pedestal value (in fC)
         self.gain = 1.e6      # SiPM Gain
-        self.input_collection="trigScintQIEDigisUp"
+        self.input_collection="trigScintQIEDigisPad3"
         self.input_pass_name=""   #take any pass
-        self.output_collection="trigScintRecHitsUp"
+        self.output_collection="trigScintRecHitsPad3"
         self.verbose = False
         self.sample_of_interest=2 # Sample of interest. Range 0 to 3
 
-    def up() : 
-        """Get the rechit producer for upstream pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsUp' )
-        rechit.input_collection  = 'trigScintQIEDigisUp'
-        rechit.output_collection = 'trigScintRecHitsUp'
+    def pad1() : 
+        """Get the rechit producer for first pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad1' )
+        rechit.input_collection  = 'trigScintQIEDigisPad1'
+        rechit.output_collection = 'trigScintRecHitsPad1'
         return rechit
 
-    def down() : 
-        """Get the rechit producer for downstream pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsDown' )
-        rechit.input_collection  = 'trigScintQIEDigisDn'
-        rechit.output_collection = 'trigScintRecHitsDn'
+    def pad2() : 
+        """Get the rechit producer for second pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad2' )
+        rechit.input_collection  = 'trigScintQIEDigisPad2'
+        rechit.output_collection = 'trigScintRecHitsPad2'
         return rechit
 
-    def tagger() : 
-        """Get the rechit producer for tagger pad"""
-        rechit = TrigScintRecHitProducer( 'trigScintRecHitsTag' )
-        rechit.input_collection  = 'trigScintQIEDigisTag'
-        rechit.output_collection = 'trigScintRecHitsTag'
+    def pad3() : 
+        """Get the rechit producer for third pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintRecHitsPad3' )
+        rechit.input_collection  = 'trigScintQIEDigisPad3'
+        rechit.output_collection = 'trigScintRecHitsPad3'
         return rechit
 
 class TrigScintClusterProducer(ldmxcfg.Producer) :
@@ -231,33 +231,33 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.pad_time = 0.
         self.time_tolerance = 0.5
         self.vertical_bar_start_index = 52
-        self.input_collection="trigScintDigisTag"
+        self.input_collection="trigScintDigisPad1"
         self.input_pass_name="" #take any pass
-        self.output_collection="TriggerPadTaggerClusters"
+        self.output_collection="TriggerPad1Clusters"
         self.verbosity = 0
 
-    def up() :
-        """Get the cluster producer for the trigger pad upstream of target"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersUp' )
-        cluster.input_collection = 'trigScintDigisUp'
-        cluster.output_collection= 'TriggerPadUpClusters'
-        cluster.pad_time= 0.
-        return cluster
-
-    def down() :
+    def pad1() :
         """Get the cluster producer for the trigger pad downstream of target"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersDown' )
-        cluster.input_collection = 'trigScintDigisDn'
-        cluster.output_collection= 'TriggerPadDownClusters'
+        cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
+        cluster.input_collection = 'trigScintDigisPad1'
+        cluster.output_collection= 'TriggerPad1Clusters'
         cluster.pad_time= 0.
         return cluster
 
-    def tagger() :
-        """Get the cluster producer for the trigger pad upstream of tagger"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersTag' )
-        cluster.input_collection = 'trigScintDigisTag'
-        cluster.output_collection= 'TriggerPadTaggerClusters'
+    def pad2() :
+        """Get the cluster producer for the trigger pad just upstream of tagger"""
+        cluster = TrigScintClusterProducer( 'trigScintClustersPad2' )
+        cluster.input_collection = 'trigScintDigisPad2'
+        cluster.output_collection= 'TriggerPad2Clusters'
         cluster.pad_time= -2.
+        return cluster
+
+    def pad3() :
+        """Get the cluster producer for the trigger pad most upstream of tagger"""
+        cluster = TrigScintClusterProducer( 'trigScintClustersPad3' )
+        cluster.input_collection = 'trigScintDigisPad3'
+        cluster.output_collection= 'TriggerPad3Clusters'
+        cluster.pad_time= 0.
         return cluster
 
 
@@ -269,8 +269,8 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
 
         self.delta_max = 0.75
         self.tracking_threshold = 0.  #to add in neighboring channels
-        self.seeding_collection = "TriggerPadTaggerClusters"
-        self.further_input_collections = ["TriggerPadUpClusters","TriggerPadDownClusters"]
+        self.seeding_collection = "TriggerPad1Clusters"
+        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
         self.vertical_bar_start_index = 52
         self.number_horizontal_bars = 16
@@ -279,8 +279,6 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.horizontal_bar_gap = 0.3
         self.vertical_bar_width = 3.
         self.vertical_bar_gap = 0.3
-
-                
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
@@ -293,7 +291,7 @@ class QIEAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::QIEAnalyzer','TrigScint')
 
-        self.inputCollection="QIEsamplesUp"
+        self.inputCollection="QIEsamplesPad1"
         self.inputPassName=""   #take any pass                                                                                         
         self.startSample=2      #first time sample included in reformatting 
         self.gain = [2.e6]*16      # SiPM Gain  //TODO: vector 
@@ -354,7 +352,7 @@ class TestBeamHitAnalyzer(ldmxcfg.Analyzer) :
     def __init__(self,name) :
         super().__init__(name,'trigscint::TestBeamHitAnalyzer','TrigScint')
 
-        self.inputCollection="testBeamHitsUp"
+        self.inputCollection="testBeamHitsPad1"
         self.inputPassName=""   #take any pass                                                                                         
         self.startSample=2      #first time sample included in reformatting 
         self.pedestals=[
