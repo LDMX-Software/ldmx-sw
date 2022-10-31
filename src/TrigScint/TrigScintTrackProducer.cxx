@@ -103,10 +103,11 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
   if (!event.exists(input_collections_.at(1), passName_)) {
     ldmx_log(info) << "No collection called " << input_collections_.at(1)
-                   << ";  skipping event";
-	//                   << "; still, not skipping event";
-
-	return;
+	  //                   << "; still, not skipping event";
+                   << "; skipping event";
+    std::vector<ldmx::TrigScintTrack> empty{};
+    event.add(output_collection_, empty);
+	  return;
   }
 
   const auto clusters_pad2{event.getCollection<ldmx::TrigScintCluster>(
@@ -290,7 +291,9 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
       if (verbose_) {
         ldmx_log(debug) << "No tracks found!";
       }
-	  return;
+      std::vector<ldmx::TrigScintTrack> empty{};
+      event.add(output_collection_, empty);
+      return;
     }
     // now, if there are multiple seeds sharing the same downstream hits, this
     // should also be remedied with a selection on min residual.
