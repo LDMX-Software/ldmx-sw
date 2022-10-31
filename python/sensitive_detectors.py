@@ -134,6 +134,15 @@ class TrigScintSD(simcfg.SensitiveDetector) :
 
         self.collection_name = coll
 
+    def up() :
+        return TrigScintSD(3, 'PadUp', 'trigger_pad_up_bar_volume')
+
+    def tag() :
+        return TrigScintSD(1, 'PadTag', 'trigger_pad_tag_bar_volume')
+
+    def down() :
+        return TrigScintSD(2, 'PadDn', 'trigger_pad_dn_bar_volume')
+
     def pad3() :
         return TrigScintSD(3,'Pad3','trigger_pad3_bar_volume')
 
