@@ -42,6 +42,7 @@ void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
 }
 
 void TrigScintClusterDQM::analyze(const framework::Event &event) {
+  if (not event.exists(clusterCollectionName_, passName_)) return;
   // Get the collection of TrigScintCluster digitized clusters if the exists
   const std::vector<ldmx::TrigScintCluster> TrigScintClusters =
       event.getCollection<ldmx::TrigScintCluster>(clusterCollectionName_,
