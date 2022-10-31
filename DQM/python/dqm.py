@@ -425,15 +425,15 @@ recoil_dqm = [
         ]
 
 trigScint_dqm = [
-    TrigScintSimDQM('TrigScintSimTag','TriggerPadTaggerSimHits','tag'),
-    TrigScintSimDQM('TrigScintSimUp','TriggerPadUpSimHits','up'),
-    TrigScintSimDQM('TrigScintSimDn','TriggerPadDownSimHits','dn'),
-    TrigScintDigiDQM('TrigScintDigiTag','trigScintDigisTag','tag'),
-    TrigScintDigiDQM('TrigScintDigiUp','trigScintDigisUp','up'),
-    TrigScintDigiDQM('TrigScintDigiDn','trigScintDigisDn','dn'),
-    TrigScintClusterDQM('TrigScintClusterTag','TriggerPadTaggerClusters','tag'),
-    TrigScintClusterDQM('TrigScintClusterUp','TriggerPadUpClusters','up'),
-    TrigScintClusterDQM('TrigScintClusterDn','TriggerPadDownClusters','dn'),
+    TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
+    TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
+    TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
+    TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
+    TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
+    TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
+    TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
+    TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
     TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
@@ -443,4 +443,4 @@ trigger_dqm = [
         ]
 
 
-all_dqm = ecal_dqm + hcal_dqm + recoil_dqm #+ trigScint_dqm + trigger_dqm
+all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm + trigger_dqm
