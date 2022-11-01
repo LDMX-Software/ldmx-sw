@@ -50,22 +50,22 @@
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
 <!-- trigger pad distance from the target XXX mm -->
-<constant name="trig_scint_upstream_separation"
+<constant name="trig_scint_pad3_separation"
 	  value="60"/>
-<constant name="trigger_pad_taggerA_z"    
+<constant name="trigger_pad2_z"    
 	  value="-(trigger_pad_thickness/2) - clearance" />
 
-<constant name="trigger_pad_taggerB_z"
-	  value="- trig_scint_upstream_separation - trigger_pad_thickness/2 - clearance" />
+<constant name="trigger_pad1_z"
+	  value="- trig_scint_pad3_separation - trigger_pad_thickness/2 - clearance" />
 
 <!-- Trigger pad distance from the target is -2.4262 --> 
-<constant name="trigger_pad_up_z"      
+<constant name="trigger_pad3_z"      
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
 
 <!-- Parent volume dimensions --> 
 <constant name="trig_scint_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="trig_scint_area_envelope_z" value="-trigger_pad_taggerB_z + trigger_pad_thickness + 2*clearance"/>
+<constant name="trig_scint_area_envelope_z" value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
 
 <!--
   Tracker common variables 

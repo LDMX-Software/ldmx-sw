@@ -92,10 +92,10 @@
 		<variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2 - clearance" />
 		
 		<!-- Place scoring planes downstream of each trigger scintillator array -->
-		<variable name="sp_trigger_pad_up_l1_z" 
-				  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
-		<variable name="sp_trigger_pad_up_l2_z" 
-				 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+		<variable name="sp_trigger_pad3_l1_z" 
+				  value="trigger_pad3_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
+		<variable name="sp_trigger_pad3_l2_z" 
+				 value="trigger_pad3_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
 
 		<!-- Matrix with target area positions --> 
 		<matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
