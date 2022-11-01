@@ -100,8 +100,8 @@
 		<!-- Matrix with target area positions --> 
 		<matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
 														0 0 sp_target_up_z 
-														0 0 sp_trigger_pad_up_l1_z  
-														0 0 sp_trigger_pad_up_l2_z" />  
+														0 0 sp_trigger_pad3_l1_z  
+														0 0 sp_trigger_pad3_l2_z" />  
               
     <!-- Place scoring planes at each of the recoil tracker layers -->
     <variable name="sp_recoil_l1_z" 
