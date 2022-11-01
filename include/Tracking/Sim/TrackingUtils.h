@@ -44,6 +44,57 @@ namespace tracking{
 namespace sim{
 namespace utils {
 
+
+//This method returns the sensor ID 
+inline int getSensorID(const ldmx::SimTrackerHit& hit) {
+
+  bool debug = false;
+
+  int vol = 2;
+  
+  //TODO!! FIX THIS HARDCODE!
+  if (hit.getPosition()[2] > 0)
+    vol = 3;
+
+  unsigned int sensorId = 0;
+  unsigned int layerId  = 0;
+  
+  //tagger numbering scheme for surfaces mapping
+  //Layers from 1 to 14  => transform to 0->13
+  if (vol == 2) {
+    sensorId = (hit.getLayerID() + 1) % 2; //0,1,0,1 ...
+    layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7    
+  }
+  
+  //recoil numbering scheme for surfaces mapping 
+  if (vol == 3) {
+    
+    //For axial-stereo modules use the same numbering scheme as the tagger
+    if (hit.getLayerID() < 9 ) {
+      sensorId = (hit.getLayerID() + 1 ) % 2;
+      layerId  = (hit.getLayerID() + 1 ) / 2;
+    }
+
+    //For the axial only modules 
+    else {
+      sensorId = hit.getModuleID();
+      layerId  = (hit.getLayerID() + 2 ) / 2;  //9->11 /2 = 5 10->12 / 2 = 6
+    }
+       
+  }
+  
+  //vol * 1000 + ly * 100 + sensor
+  unsigned int index  = vol * 1000 + layerId * 100 + sensorId;
+  
+  if (debug) {
+    std::cout<<"LdmxSpacePointConverter::Check index::"<<vol<<"--"<<layerId<<"--"<<sensorId<<"==>"<<index<<std::endl;
+    std::cout<<vol<<"==="<<hit.getLayerID()<<"==="<<hit.getModuleID()<<std::endl;
+  }
+  
+  return index;
+  
+}
+
 //This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
 // (1) Rotate the coordinates into acts::seedFinder coordinates defined by B-Field along z axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts]
 // (2) Saves the error information. At the moment the errors are fixed. They should be obtained from the digitized hits.
@@ -59,54 +110,12 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(const ldmx::SimTracke
   
   bool debug = false;
   
-  std::vector<float> sim_hit_pos = hit.getPosition();
+  unsigned int index = getSensorID(hit);
   
-  //check that if the coordinate along the beam is positive, then it's a recoil hit
-  //TODO!! FIX THIS HARDCODE!
-  if (sim_hit_pos[2] > 0)
-    vol = 3;
-
   //Rotate position
-  float ldmxsp_x = sim_hit_pos[2];
-  float ldmxsp_y = sim_hit_pos[0];
-  float ldmxsp_z = sim_hit_pos[1];
-
-  unsigned int sensorId = 0;
-  unsigned int layerId  = 0;
-  
-  //tagger numbering scheme for surfaces mapping
-  //Layers from 1 to 14  => transform to 0->13
-  if (vol == 2) {
-    sensorId = (hit.getLayerID() + 1) % 2; //0,1,0,1 ...
-    layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7    
-  }
-
-  //recoil numbering scheme for surfaces mapping 
-  if (vol == 3) {
-
-    //For axial-stereo modules use the same numbering scheme as the tagger
-    if (hit.getLayerID() < 9 ) {
-      sensorId = (hit.getLayerID() + 1 ) % 2;
-      layerId  = (hit.getLayerID() + 1 ) / 2;
-    }
-
-    //For the axial only modules 
-    else {
-      sensorId = hit.getModuleID();
-      layerId  = (hit.getLayerID() + 2 ) / 2;  //9->11 /2 = 5 10->12 / 2 = 6
-    }
-    
-    
-  }
-
-  //vol * 1000 + ly * 100 + sensor
-  unsigned int index  = vol * 1000 + layerId * 100 + sensorId;
-
-  if (debug) {
-    std::cout<<"LdmxSpacePointConverter::Check index::"<<vol<<"--"<<layerId<<"--"<<sensorId<<"==>"<<index<<std::endl;
-    std::cout<<vol<<"==="<<hit.getLayerID()<<"==="<<hit.getModuleID()<<std::endl;
-    std::cout<<"("<<ldmxsp_x<<","<<ldmxsp_y<<","<<ldmxsp_z<<")"<<std::endl;
-  }
+  float ldmxsp_x = hit.getPosition()[2];
+  float ldmxsp_y = hit.getPosition()[0];
+  float ldmxsp_z = hit.getPosition()[1];
 
   return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y,ldmxsp_z,
                                   hit.getTime(), index, hit.getEdep(), 
