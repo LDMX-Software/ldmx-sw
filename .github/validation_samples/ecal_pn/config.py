@@ -1,7 +1,7 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('test')
 
-p.maxTriesPerEvent = 1000
+p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
@@ -34,15 +34,13 @@ import LDMX.Hcal.digi as hcal_digi
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
-tsDigisUp   = TrigScintDigiProducer.up()
-tsDigisTag  = TrigScintDigiProducer.tagger()
-tsDigisDown = TrigScintDigiProducer.down()
-tsDigisUp.randomSeed = 1
-tsDigisTag.randomSeed = 1
-tsDigisDown.randomSeed = 1
-clTag=TrigScintClusterProducer.tagger()
-clUp=TrigScintClusterProducer.up()
-clDown=TrigScintClusterProducer.down()
+ts_digis = [
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+        ]
+for d in ts_digis :
+    d.randomSeed = 1
 
 from LDMX.Recon.electronCounter import ElectronCounter
 from LDMX.Recon.simpleTrigger import TriggerProcessor
@@ -58,7 +56,10 @@ p.sequence.extend([
         ecal_vetos.EcalVetoProcessor(),
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
-        #tsDigisUp, tsDigisTag, tsDigisDown,
-        #clTag, clUp, clDown, trigScintTrack, 
-        #count, TriggerProcessor('trigger')
+        *ts_digis,
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        trigScintTrack, 
+        count, TriggerProcessor('trigger')
         ] + dqm.all_dqm)

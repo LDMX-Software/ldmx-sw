@@ -27,7 +27,7 @@ overlay.bunchSpacing = 26.9      #ns = 1000./37.2 ; 5.4 = 1000./186.
 overlay.timeSpread = 0.       # <-- realistically, 30 ps; 
 overlay.timeMean   = 0.       # <-- here set the in-bunch average pu time offset to no time shift whatsoever; useful for validation though
 overlay.overlayCaloHitCollections=[ 
-        #"TriggerPadTaggerSimHits", "TriggerPadUpSimHits", "TriggerPadDownSimHits", "TargetSimHits", 
+        "TriggerPad1SimHits", "TriggerPad2SimHits", "TriggerPad3SimHits", "TargetSimHits", 
         "EcalSimHits", "HcalSimHits"]
 overlay.overlayTrackerHitCollections=[ "TaggerSimHits", "RecoilSimHits" ]
 overlay.verbosity=0 #1 #3 #
@@ -45,19 +45,22 @@ import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.Ecal import digi as eDigi
 from LDMX.Ecal import vetos
 from LDMX.Hcal import digi as hDigi
+
+overlayStr="Overlay"
+
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
+ts_digis = [
+        TrigScintDigiProducer.pad1(),
+        TrigScintDigiProducer.pad2(),
+        TrigScintDigiProducer.pad3(),
+        ]
+for d in ts_digis :
+    d.randomSeed = 1
+    d.input_collection += overlayStr
 
-overlayStr="Overlay"
                                                             
-tsDigisTag  =TrigScintDigiProducer.tagger()
-tsDigisTag.input_collection = tsDigisTag.input_collection+overlayStr
-tsDigisUp  =TrigScintDigiProducer.up()
-tsDigisUp.input_collection = tsDigisUp.input_collection+overlayStr
-tsDigisDown  =TrigScintDigiProducer.down()
-tsDigisDown.input_collection = tsDigisDown.input_collection+overlayStr
-
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
@@ -85,15 +88,15 @@ count.input_pass_name = ''
 p.sequence.extend([
     ecalDigi, ecalReco, ecalVeto,
     hcalDigi, hcalReco,
-#    tsDigisUp, tsDigisTag, tsDigisDown, 
-#    TrigScintClusterProducer.tagger(),
-#    TrigScintClusterProducer.up(),
-#    TrigScintClusterProducer.down(),
-#    trigScintTrack,
-#    count, TriggerProcessor('trigger'),
+    *ts_digis,
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+    trigScintTrack,
+    count, TriggerProcessor('trigger'),
     dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures(), 
-    dqm.HCalDQM()]+dqm.recoil_dqm) #+dqm.trigger_dqm)
+    dqm.HCalDQM()]+dqm.recoil_dqm+dqm.trigger_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
