@@ -47,6 +47,10 @@ class DigitizationProcessor : public framework::Producer {
   Acts::GeometryContext gctx_;
 
   void digitizeHits(const std::vector<ldmx::SimTrackerHit> &sim_hits, std::vector<ldmx::LdmxSpacePoint*>& ldmxsps);
+
+  //TODO avoid copies and use references
+  bool mergeSimHits(const std::vector<ldmx::SimTrackerHit>& sim_hits, std::vector<ldmx::SimTrackerHit>& merged_hits);
+  bool mergeHits(const std::vector<ldmx::SimTrackerHit>& sihits, std::vector<ldmx::SimTrackerHit>& mergedHits);
   
  private:
 
@@ -56,6 +60,7 @@ class DigitizationProcessor : public framework::Producer {
   std::string out_collection_;
   float minEdep_; // minimum deposited energy cut
   int trackID_;   // select a particular track ID
+  bool mergeHits_; // run sim hit merging before running digitization
   bool debug_{false};
   bool do_smearing_{true};
   /// u-direction sigma
