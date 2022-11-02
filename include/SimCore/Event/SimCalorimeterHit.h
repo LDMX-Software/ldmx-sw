@@ -173,6 +173,11 @@ class SimCalorimeterHit {
     pathLength_ = length;
   }
   /**
+   * Get the physical path length for the interaction [mm].
+   * @return physical path length
+   */
+  float getPathLength() const { return pathLength_; }
+  /**
    * Set global pre-step time of the hit [ns].
    * @param time The time before the step
    */
