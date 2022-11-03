@@ -174,23 +174,19 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   const auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
   const auto localPostStepPoint{topTransform.TransformPoint(postPoint->GetPosition())};
 
-  switch (id.getSection())  //set coordinates assuming all layers are even
+  switch (id.getSection())  //set coordinates for even layer numbers
   {
-    case ldmx::HcalID::BACK : hit.setPreStepPosition(localPreStepPoint[2], localPreStepPoint[0], localPreStepPoint[1]);
-                              hit.setPostStepPosition(localPostStepPoint[2], localPostStepPoint[0], localPostStepPoint[1]);
-                              break;
-    case ldmx::HcalID::TOP : hit.setPreStepPosition(localPreStepPoint[1], localPreStepPoint[2], localPreStepPoint[0]);
-                             hit.setPostStepPosition(localPostStepPoint[1], localPostStepPoint[2], localPostStepPoint[0]);
-                             break;
-    case ldmx::HcalID::BOTTOM : hit.setPreStepPosition(-localPreStepPoint[1], -localPreStepPoint[2], -localPreStepPoint[0]);
-                                hit.setPostStepPosition(-localPostStepPoint[1], -localPostStepPoint[2], -localPostStepPoint[0]);
+    case ldmx::HcalID::BACK   : hit.setPreStepPosition(localPreStepPoint[2], localPreStepPoint[0], localPreStepPoint[1]);
+                                hit.setPostStepPosition(localPostStepPoint[2], localPostStepPoint[0], localPostStepPoint[1]);
                                 break;
-    case ldmx::HcalID::RIGHT : hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[2], localPreStepPoint[1]);
-                               hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[2], localPostStepPoint[1]);
-                               break;
-    case ldmx::HcalID::LEFT : hit.setPreStepPosition(-localPreStepPoint[0], -localPreStepPoint[2], -localPreStepPoint[1]);
-                              hit.setPostStepPosition(-localPostStepPoint[0], -localPostStepPoint[2], -localPostStepPoint[1]);
-                              break;
+    case ldmx::HcalID::TOP    :
+    case ldmx::HcalID::BOTTOM : hit.setPreStepPosition(localPreStepPoint[1], localPreStepPoint[2], localPreStepPoint[0]);
+                                hit.setPostStepPosition(localPostStepPoint[1], localPostStepPoint[2], localPostStepPoint[0]);
+                                break;
+    case ldmx::HcalID::RIGHT  : 
+    case ldmx::HcalID::LEFT   : hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[2], localPreStepPoint[1]);
+                                hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[2], localPostStepPoint[1]);
+                                break;
     default : throw std::runtime_error("HcalSD::ProcessHits: Found an unknown HCal section");
   }
   if(id.layer()%2==1) //swap x and y for odd layer numbers
