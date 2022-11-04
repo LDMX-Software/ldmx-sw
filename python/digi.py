@@ -51,6 +51,11 @@ def EcalHgcrocEmulator() :
 class EcalDigiProducer(Producer) :
     """Configuration for EcalDigiProducer
 
+    Parameters
+    ----------
+    si_thickness : float
+        thickness of silicon sensitive layers in mm
+
     Attributes
     ----------
     hgcroc : HgcrocEmulator
@@ -71,7 +76,7 @@ class EcalDigiProducer(Producer) :
         Output name of digis put into event bus
     """
 
-    def __init__(self, instance_name = 'ecalDigis') :
+    def __init__(self, instance_name = 'ecalDigis', si_thickness = 0.3) :
         super().__init__(instance_name , 'ecal::EcalDigiProducer','Ecal')
 
         self.hgcroc = EcalHgcrocEmulator()
@@ -80,7 +85,7 @@ class EcalDigiProducer(Producer) :
         #   energy [MeV] (thousand electrons per MIP) (charge per thousand electrons fC) 
         #        (avg pad capacitance pF) ( 1 MIP / energy [MeV] ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = charge_per_mip/20./mip_si_energy
+        self.MeV = charge_per_mip/20./(mip_si_energy*si_thickness/0.5)
 
         # these averages are for configuring the noise generator
         #   _only_ and are not meant to be propated to a chip-by-chip basis
