@@ -19,11 +19,6 @@ class HgcrocEmulator() :
         Number of voltage samples to measure for one DIGI
     iSOI : int
         Index for sample of interest within multi-sample DIGI
-    noiseRMS : float
-        Average noise within chip [mV]
-        Calculated using the average readout pad capacitance (20pF),
-        noise at zero capacitance (700 electrons), and noise increase
-        per capacitance increase (25 electrons per pF).
     noise : bool
         False to turn off all noise generation
     rateUpSlope : float
@@ -47,7 +42,6 @@ class HgcrocEmulator() :
         self.timePeak     = 77.732
         self.clockCycle   = 25.0 #ns
         self.timingJitter = self.clockCycle / 100. #ns - pretty arbitrarily chosen
-        self.noiseRMS     = (700. + 25.*20.)*(0.162/1000.)*(1./20.) #mV
         self.nADCs        = 10 
         self.iSOI         = 2
 
