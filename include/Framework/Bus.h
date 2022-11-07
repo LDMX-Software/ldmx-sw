@@ -437,14 +437,28 @@ class Bus {
                     bool can_create) {
       TBranch* branch = tree->GetBranch(branch_name.c_str());
       if (branch) {
-        // branch already exists
-        //  set the object the branch should read/write from/to
+        /**
+         * If the branch already exists, we need to explicitly remind ROOT
+         * that we own the object we are going to pass and it shouldn't
+         * try to delete it. Then we set the branch object to our baggage_.
+         *
+         * Idk why this is necessary. The docs say that you can tell ROOT
+         * you own an object by using a non-null pointer passed to SetObject
+         * (or its descendent SetAddress); however, in the implementation
+         * of TBranchElement::SetAddressImpl, the kDeleteObject status bit
+         * is merely tested and the validity of the passed reference is 
+         * never checked. This means the bits value is leftover from however
+         * the branch was initialized which when reading is ROOT-owned objects.
+         */
         if (dynamic_cast<TBranchElement*>(branch)) {
           branch->SetBit(TBranchElement::EStatusBits::kDeleteObject, false);
         }
         branch->SetObject(baggage_);
       } else if (can_create) {
-        // branch doesnt exist and we are allowed to make a new one
+        /**
+         * If the branch doesn't already exist and we are allowed to make
+         * one, we make a new one passing our baggage.
+         */
         branch = tree->Branch(branch_name.c_str(), baggage_, 100000, 3);
       }
       return branch;
