@@ -178,15 +178,11 @@ class HgcrocEmulator {
   /**
    * Get random noise amplitdue for input channel [mV]
    *
-   * Currently, we don't have the noise separated by channel,
-   * but since this is a possibility in the future, I've put
-   * in the (required but unused) parameter.
-   *
-   * @param[in] channelID - UNUSED
+   * @param[in] channelID
    * @return electronic noise amplitude [mV] above pedestal
    */
   double noise(const int& channelID) const {
-    return noiseInjector_->Gaus(0,noiseRMS_); 
+    return noiseInjector_->Gaus(0,getCondition(channelID, "NOISE")*gain(channelID)); 
   }; 
 
   /// Gain for input channel
@@ -368,9 +364,6 @@ class HgcrocEmulator {
 
   /// Index for the Sample Of Interest in the list of digi samples
   int iSOI_;
-
-  /// Noise RMS [mV]
-  double noiseRMS_;
 
   /// Time interval for chip clock [ns]
   double clockCycle_;
