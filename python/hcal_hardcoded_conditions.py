@@ -40,6 +40,7 @@ HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
             "PEDESTAL",
+            "NOISE",
             "MEAS_TIME",
             "PAD_CAPACITANCE",
             "TOT_MAX",
@@ -52,6 +53,7 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
 
 HcalHgcrocConditionsHardcode.validForAllRows([
     1. , #PEDESTAL 
+    2.0, #NOISE
     12.5, #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
     20., #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode

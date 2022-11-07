@@ -54,8 +54,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   double gain = ps.getParameter<double>("avgGain");
   double pedestal = ps.getParameter<double>("avgPedestal");
   // rms noise in mV
-  noiseGenerator_->setNoise(
-      hgcrocParams.getParameter<double>("noiseRMS"));  // rms noise in mV
+  noiseGenerator_->setNoise(gain*ps.getParameter<double>("avgNoiseRMS"));
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
   noiseGenerator_->setPedestal(gain * pedestal);
   // threshold for readout in mV
