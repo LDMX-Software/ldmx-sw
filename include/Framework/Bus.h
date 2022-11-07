@@ -439,6 +439,9 @@ class Bus {
       if (branch) {
         // branch already exists
         //  set the object the branch should read/write from/to
+        if (dynamic_cast<TBranchElement*>(branch)) {
+          branch->SetBit(TBranchElement::EStatusBits::kDeleteObject, false);
+        }
         branch->SetObject(baggage_);
       } else if (can_create) {
         // branch doesnt exist and we are allowed to make a new one
