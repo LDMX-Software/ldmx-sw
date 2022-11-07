@@ -26,10 +26,6 @@ def EcalHgcrocEmulator() :
     to a test readout of an ECal module and then thresholds to the
     default construction using 37k electrons as the number of
     electrons per MIP.
-
-    Noise RMS is calculated using the average readout pad capacitance (20pF),
-    noise at zero capacitance (700 electrons), and noise increase
-    per capacitance increase (25 electrons per pF).
     """
 
     from LDMX.Tools import HgcrocEmulator
@@ -42,7 +38,6 @@ def EcalHgcrocEmulator() :
     hgcroc.timeDnSlope = 87.7649
     hgcroc.timePeak    = 77.732
 
-    hgcroc.noiseRMS     = (700. + 25.*20.)*(0.1602/1000.)*(1./20.) #mV
     hgcroc.nADCs        = 10 
     hgcroc.iSOI         = 2
 
@@ -92,6 +87,7 @@ class EcalDigiProducer(Producer) :
         avgGain = 0.3125/20.
         self.avgReadoutThreshold = 53.*avgGain
         self.avgPedestal = 50.*avgGain
+        self.avgNoiseRMS = 2.0*avgGain
 
         # Should we suppress noise "hits" below readout threshold?
         self.zero_suppression = True
