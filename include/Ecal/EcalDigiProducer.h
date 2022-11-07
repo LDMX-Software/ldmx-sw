@@ -98,9 +98,6 @@ class EcalDigiProducer : public framework::Producer {
    */
   bool zero_suppression_;
 
-  /// Store Average Noise RMS for no-zero-suppresion noise emulation mode
-  double avgNoiseRMS_;
-
   ///////////////////////////////////////////////////////////////////////////////////////
   // Other member variables
 

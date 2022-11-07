@@ -30,6 +30,7 @@ EcalReconConditionsHardcode.validForAllRows([
 
 EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions", [
             "PEDESTAL",
+            "NOISE",
             "MEAS_TIME",
             "PAD_CAPACITANCE",
             "TOT_MAX",
@@ -42,6 +43,7 @@ EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions"
 
 EcalHgcrocConditionsHardcode.validForAllRows([
     50. , #PEDESTAL 
+    2.0, #NOISE
     0.0, #MEAS_TIME - ns
     20., #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode
