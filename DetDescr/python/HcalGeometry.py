@@ -48,6 +48,7 @@ class HcalReadoutGeometry:
         self.detectors_valid = []
         self.scint_thickness = 0.0
         self.scint_width = 0.0
+        self.scint_length = [[]]
         self.zero_layer = []
         self.zero_strip = [[]]
         self.layer_thickness = []
@@ -74,6 +75,7 @@ class HcalReadoutGeometry:
                 Half total width of layers: {} [mm]
                 Number of strips per layer: {}
                 Location of zero-th strip per layer: {} [mm]
+                Scintillator length: {} [mm]
             }},
             Ecal DX, DY: {}, {} [mm],
             Valid detector regexps: {}
@@ -88,6 +90,7 @@ class HcalReadoutGeometry:
             self.half_total_width,
             self.num_strips,
             self.zero_strip,
+            self.scint_length,
             self.ecal_dx,
             self.ecal_dy,
             self.detectors_valid,
