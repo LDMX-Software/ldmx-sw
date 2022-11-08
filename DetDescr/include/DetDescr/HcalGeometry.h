@@ -72,7 +72,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * member for details.
    */
   bool layerIsHorizontal(const int layer) const {
-    return layer % 2 == horizontal_parity_;
+    return layer % 2 == back_horizontal_parity_;
   }
   /**
    * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
@@ -211,7 +211,7 @@ private:
   // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
   // geometry that corresponds to a horizontal layer (scintillator bar length
   // along the x-axis).
-  int horizontal_parity_{};
+  int back_horizontal_parity_{};
 
   // 3D readout for side Hcal
   int side_3d_readout_{};

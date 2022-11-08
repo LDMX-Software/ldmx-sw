@@ -19,7 +19,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   ecal_dx_ = ps.getParameter<double>("ecal_dx");
   ecal_dy_ = ps.getParameter<double>("ecal_dy");
   verbose_ = ps.getParameter<int>("verbose");
-  horizontal_parity_ = ps.getParameter<int>("horizontal_parity");
+  back_horizontal_parity_ = ps.getParameter<int>("horizontal_parity");
   side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
   
   auto detectors_valid =
@@ -101,7 +101,7 @@ void HcalGeometry::buildStripPositionMap() {
 	     For back Hcal:
 	     - layers in z
 	     - strips occupy thickness of scintillator in z (e.g. 20mm)
-	     - strips orientation is in x(y) depending on horizontal parity
+	     - strips orientation is in x(y) depending on back_horizontal parity
 	  */
           // z position: zero-layer(z) + layer_z + scint_thickness / 2
           z = zero_layer_.at(section) + layercenter;
