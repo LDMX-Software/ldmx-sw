@@ -30,9 +30,13 @@ class TrigScintSD : public SensitiveDetector {
    * in this sensitive detector?
    *
    * @note Depends on names in GDML!
+   *
+   * In order to avoid attaching to both 'target' and 'sp_target',
+   * we intentionally exclude volumes with the string 'sp_' in 
+   * their names.
    */
   virtual bool isSensDet(G4LogicalVolume* vol) const final override {
-    return vol->GetName().contains(vol_name_);
+    return vol->GetName().contains(vol_name_) and not vol->GetName().contains("sp_");
   }
 
   /**
