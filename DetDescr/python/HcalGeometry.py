@@ -307,8 +307,9 @@ class HcalGeometry:
         back_hcal_layerThick = (
             back_hcal_absoThick + hcal_scintThick + 2.0 * hcal_airThick
         )
-        back_hcal_dx = 2000.0
-        back_hcal_dy = 2000.0
+        back_hcal_scint_length = 2000.0
+        back_hcal_dx = back_hcal_scint_length
+        back_hcal_dy = back_hcal_scint_length
         back_hcal_dz = back_hcal_numLayers * back_hcal_layerThick
 
         side_hcal_absoThick = 20.0
