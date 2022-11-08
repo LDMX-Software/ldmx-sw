@@ -106,16 +106,17 @@ class simulator(Producer):
         from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
         from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
+        if 'v12' in det_name :
+            trigscint = [ sds.TrigScintSD.up(), sds.TrigScintSD.tag(), sds.TrigScintSD.down() ]
+        else :
+            trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3() ]
         self.sensitive_detectors = [
                 sds.TrackerSD.tagger(),
                 sds.TrackerSD.recoil(),
                 sds.HcalSD(),
                 sds.EcalSD(),
-                sds.TrigScintSD.pad1(),
-                sds.TrigScintSD.pad2(),
-                sds.TrigScintSD.pad3(),
                 sds.TrigScintSD.target()
-                ]
+                ] + trigscint
         if include_scoring_planes :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
             self.sensitive_detectors.extend([
