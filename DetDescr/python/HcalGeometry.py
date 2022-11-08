@@ -412,10 +412,12 @@ class HcalGeometry:
         for m in range(self.v14.side_num_modules):
             for l in range(side_hcal_numLayers[m] * 2):
                 if (l + 1) % 2 == 0:
+                    # Layer number is even
                     half_total_width_side.append(side_hcal_dz / 2)
                     num_strips_side.append(int(side_hcal_numScintXY))
                 else:
-                    half_total_width_side.append(side_hcal_length[m] / 2)
+                    # Layer number is odd
+                    half_total_width_side.append(side_hcal_scint_length[m] / 2)
                     num_strips_side.append(int(side_hcal_numScintZ[m]))
 
         zero_strip_side = []
