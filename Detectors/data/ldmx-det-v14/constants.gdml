@@ -49,16 +49,13 @@
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
-<!-- trigger pad distance from the target XXX mm -->
-<constant name="trig_scint_pad3_separation"
+<!-- Trigger pad distance from the target is -2.4262 --> 
+<constant name="trig_scint_pad12_separation"
 	  value="60"/>
+<constant name="trigger_pad1_z"
+	  value="- trig_scint_pad12_separation - trigger_pad_thickness/2 - clearance" />
 <constant name="trigger_pad2_z"    
 	  value="-(trigger_pad_thickness/2) - clearance" />
-
-<constant name="trigger_pad1_z"
-	  value="- trig_scint_pad3_separation - trigger_pad_thickness/2 - clearance" />
-
-<!-- Trigger pad distance from the target is -2.4262 --> 
 <constant name="trigger_pad3_z"      
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
 
@@ -131,6 +128,19 @@
 -->
 <variable name="tagger_envelope_dz" 
     value="tracker_envelope_clearance*2 + tagger_layer_delta*6" />
+
+
+<!--
+	Location of TS pads relative to target
+-->
+<variable name="ts_center_z"
+		  value="-9 -tagger_envelope_dz -trig_scint_area_envelope_z/2 - clearance - 200" />
+<constant name="trigger_pad1_actual_z"
+	  value="ts_center_z - (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2) + trigger_pad_thickness/2" />
+	  <!-- somehow the pad thickness is double counted in the positioning of pad1, this accounts for that)
+<constant name="trigger_pad2_actual_z"
+	  value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
+
 
 <!--
    HCal

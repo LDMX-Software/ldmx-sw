@@ -11,6 +11,8 @@
 
 		<variable name="x"  value="0" /> 
 		<variable name="x2" value="1" />
+		<variable name="xTS1" value="1" />
+		<variable name="xTS" value="1" />
 		<variable name="x4" value="0" />
 		<variable name="x5" value="1" /> 
 		<variable name="x7" value="1" />
@@ -91,18 +93,40 @@
 		<variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2 + clearance" />
 		<variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2 - clearance" />
 		
-		<!-- Place scoring planes downstream of each trigger scintillator array -->
-		<variable name="sp_trigger_pad3_l1_z" 
-				  value="trigger_pad3_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
-		<variable name="sp_trigger_pad3_l2_z" 
-				 value="trigger_pad3_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+		<!-- Place scoring planes up- and downstream of each trigger scintillator array -->
+		<variable name="sp_trigger_pad1_l1_z" 
+				  value="trigger_pad1_actual_z -(trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness)" /> 
+		<variable name="sp_trigger_pad1_l2_z" 
+				  value="trigger_pad1_actual_z + trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness" /> 
 
+		<variable name="sp_trigger_pad2_l1_z" 
+				  value="trigger_pad2_actual_z -(trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness)" /> 
+		<variable name="sp_trigger_pad2_l2_z" 
+				  value="trigger_pad2_actual_z + trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness" /> 
+
+		<variable name="sp_trigger_pad3_l1_z" 
+				  value="trigger_pad3_z -(trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness)" /> 
+		<variable name="sp_trigger_pad3_l2_z" 
+				  value="trigger_pad3_z + trigger_pad_thickness/2 + sp_thickness/2 + clearance + trigger_pad_bar_thickness" />
+
+		<!-- Dimensions of trigger scintillator box -->
+		<variable name="trigscint_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
+		<variable name="trigscint_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
+		
+		
 		<!-- Matrix with target area positions --> 
 		<matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
-														0 0 sp_target_up_z 
+														0 0 sp_target_up_z" />
+
+		<!-- Matrix with trigscint  positions -->
+		<matrix name="sp_trigscint_pos" coldim="3" values="0 0 sp_trigger_pad1_l1_z  
+														0 0 sp_trigger_pad1_l2_z
+														0 0 sp_trigger_pad2_l1_z  
+														0 0 sp_trigger_pad2_l2_z
 														0 0 sp_trigger_pad3_l1_z  
-														0 0 sp_trigger_pad3_l2_z" />  
-              
+														0 0 sp_trigger_pad3_l2_z" />
+		
+        
     <!-- Place scoring planes at each of the recoil tracker layers -->
     <variable name="sp_recoil_l1_z" 
               value="9*mm + tracker_envelope_clearance" /> 
@@ -152,19 +176,32 @@
 		<box name="sp_target_box" x="target_box_x" y="target_box_y" z="sp_thickness" />
 
 		<box name="sp_recoil_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
+
+		<box name="sp_trigscint_box" x="trigscint_box_x" y="trigscint_box_y" z="sp_thickness" />
+
 	</solids>
 
 	<structure>
     
     <!-- Define the target and scoring plane volumes --> 
-		<loop for="x" to="6" step="1" >
+		<loop for="x" to="2" step="1" >
 			<volume name="sp_target">
 			  <materialref ref="Vacuum" />
 				<solidref ref="sp_target_box" />
 				<auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
 			</volume> 
 		</loop>
-    
+
+
+		<loop for="xTS1" to="6" step="1" >
+			<volume name="sp_trigscint">
+			  <materialref ref="Vacuum" />
+				<solidref ref="sp_trigscint_box" />
+				<auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+			</volume> 
+		</loop>
+
+		
     <loop for="x4" to="5" step="1" > 
       <volume name="sp_recoil"> 
         <materialref ref="Vacuum" />
@@ -226,13 +263,22 @@
 	    <materialref ref="Vacuum" />
 			<solidref ref="world_box" />
 			
-			<loop for="x2" to="4" step="1">
+			<loop for="x2" to="2" step="1">
 				<physvol copynumber="x2">
 					<volumeref ref="sp_target" />
 					<position x="sp_target_pos[x2, 1]" y="sp_target_pos[x2, 2]" z="sp_target_pos[x2, 3]" /> 
 					<rotationref ref="identity" />
 				</physvol>
       </loop>
+
+	  <loop for="xTS" to="6" step="1">
+		<physvol copynumber="xTS+4">
+		  <volumeref ref="sp_trigscint" />
+		  <position x="sp_trigscint_pos[xTS, 1]" y="sp_trigscint_pos[xTS, 2]" z="sp_trigscint_pos[xTS, 3]" /> 
+		  <rotationref ref="identity" />
+		</physvol>
+      </loop>
+
 
       <loop for="x5" to="6" step="1">
         <physvol copynumber="20 + x5">
