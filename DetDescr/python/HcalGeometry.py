@@ -115,6 +115,8 @@ class HcalGeometry:
         Nothing has changed in v13 for the HCal
         """
         self.v13 = HcalReadoutGeometry()
+        self.v13.num_sections = 5
+        self.v13.num_layers = [100, 28, 28, 26, 26]
 
         self.v13.scint_thickness = 20.0
         self.v13.scint_width = 50.0
@@ -133,8 +135,6 @@ class HcalGeometry:
             20.0 + self.v13.scint_thickness + 2 * 2.0,
             20.0 + self.v13.scint_thickness + 2 * 2.0,
         ]
-        self.v13.num_sections = 5
-        self.v13.num_layers = [100, 28, 28, 26, 26]
         self.v13.num_strips = [62, 12, 12, 12, 12]
         self.v13.ecal_dx = 800.0
         self.v13.ecal_dy = 600.0
