@@ -39,6 +39,9 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   scint_length_ = ps.getParameter<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
+  if (verbose_ > 0) {
+    printPositionMap();
+  }
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
