@@ -442,10 +442,12 @@
     <!--
       The sensitive hexagons stack
 
-      We model the hexaboards with three-layers:
-      1. The sensitive Silicon 
-      2. The glue holding the silicon to the hosting board
-      3. The hosting board made out of PCB
+      We model the hexaboards with five-layers:
+      1. The readout board made of PCB
+      2. Glue
+      3. The sensitive Silicon 
+      4. The glue holding the silicon to the hosting board
+      5. carbon fiber base plate
     -->
     <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="PCB_hexagon" numsides="6" startphi="90">
       <zplane rmax="Hex_radius" rmin="0" z="0"/>
@@ -465,6 +467,11 @@
     <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="GlueThick_hexagon" numsides="6" startphi="90">
       <zplane rmax="Hex_radius" rmin="0" z="0"/>
       <zplane rmax="Hex_radius" rmin="0" z="GlueThick_dz"/>
+    </polyhedra>
+
+    <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="CarbonBasePlate_hexagon" numsides="6" startphi="90">
+      <zplane rmax="Hex_radius" rmin="0" z="0"/>
+      <zplane rmax="Hex_radius" rmin="0" z="CarbonBasePlate_dz"/>
     </polyhedra>
 
     <!--
@@ -531,6 +538,12 @@
       <solidref ref="GlueThick_hexagon"/>
     </volume>
 
+    <volume name="CarbonBasePlate_volume">
+      <materialref ref="CarbonEpoxyComposite"/>
+      <solidref ref="CarbonBasePlate_hexagon"/>
+      <!--<auxiliary auxtype="VisAttributes" auxvalue="BlueSolid" />-->
+    </volume>
+
     <!-- define the tungsten absorber volume corresponding to the correct-thickness solid -->
     <loop for="bilayer" from="1" to="num_bilayers-1" step="1">
       <volume name="strongback_bar_volume[bilayer]">
@@ -571,11 +584,13 @@
                       - - Hex PCB
             Flower    |   Thin Glue
             (even)    |   Sensitive Silicon
-                      - - Thick Glue
+                      |   Thick Glue
+                      - - Carbon Base Plate
                           Cooling Absorber
                           Carbon Cooling Plane
                           Cooling Absorber
-                      - - Thick Glue
+                      - - Carbon Base Plate
+                      |   Thick Glue
             Flower    |   Sensitive Silicon
             (odd)     |   Thin Glue
                       - - Hex PCB
@@ -636,6 +651,12 @@
           x="0" y="-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
       </physvol>
+      <physvol>
+        <volumeref ref="CarbonBasePlate_volume"/>
+        <position name="CarbonBasePlate_volume_rel_to_hexaboard"
+          x="0" y="-support_box_shift"
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
+      </physvol>
       <loop for="module" from="1" to="6" step="1">
         <physvol>
           <volumeref ref="PCB_volume"/>
@@ -664,6 +685,13 @@
             x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
             y="- support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
+        </physvol>
+        <physvol>
+          <volumeref ref="CarbonBasePlate_volume"/>
+          <position name="CarbonBasePlate_volume_rel_to_hexaboard"
+            x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+            y="- support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
         </physvol>
       </loop>
 
@@ -696,41 +724,56 @@
       </physvol>
 
       <physvol>
+        <volumeref ref="CarbonBasePlate_volume"/>
+        <position name="CarbonBasePlate_volume_PS_pos1_0"
+          x="shift_x" y="shift_y-support_box_shift" 
+          z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+            + preshower_extra_air + CarbonCoolingPlane_dz"/>
+      </physvol>
+      <physvol>
         <volumeref ref="GlueThick_volume"/>
         <position name="GlueThick_volume_PS_pos1_0"
           x="shift_x" y="shift_y-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + CarbonCoolingPlane_dz"/>
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz"/>
       </physvol>
       <physvol copynumber="7*1 + 0">
         <volumeref ref="Si_volume"/>
         <position name="Si_volume_rel_to_hexaboard"
           x="shift_x" y="shift_y-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz"/>
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
         <position name="Glue_volume_rel_to_hexaboard"
           x="shift_x" y="shift_y-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz + Si_dz"/>
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
         <position name="PS_flower_pos1"
           x="shift_x" y="shift_y-support_box_shift" 
           z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-            + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz + Si_dz + Glue_dz"/>
+            + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
       </physvol>
       <loop for="module" from="1" to="6" step="1">
+        <physvol>
+          <volumeref ref="CarbonBasePlate_volume"/>
+          <position name="CarbonBasePlate_volume_PS_pos1_0"
+            x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+            y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+              + preshower_extra_air + CarbonCoolingPlane_dz"/>
+        </physvol>
         <physvol>
           <volumeref ref="GlueThick_volume"/>
           <position name="GlueThick_volume_PS_pos1_0"
             x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
             y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-              + preshower_extra_air + CarbonCoolingPlane_dz"/>
+              + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz"/>
         </physvol>
         <physvol copynumber="7*1 + module">
           <volumeref ref="Si_volume"/>
@@ -738,7 +781,7 @@
             x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
             y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-              + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz"/>
+              + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz"/>
         </physvol>
         <physvol>
           <volumeref ref="Glue_volume"/>
@@ -746,7 +789,7 @@
             x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
             y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-              + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz + Si_dz"/>
+              + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz"/>
         </physvol>
         <physvol>
           <volumeref ref="PCB_volume"/>
@@ -754,7 +797,7 @@
             x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
             y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
             z="bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
-              + preshower_extra_air + CarbonCoolingPlane_dz + GlueThick_dz + Si_dz + Glue_dz"/>
+              + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
         </physvol>
       </loop>
 
@@ -838,6 +881,17 @@
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
         </physvol>
+        <physvol>
+          <volumeref ref="CarbonBasePlate_volume"/>
+          <position name="CarbonBasePlate_volume_rel_to_hexaboard"
+            x="0" y="-support_box_shift" 
+            z="bilayer_start + sampling_section_offset
+              + bilayer_noabsorber_thickness*bilayer 
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
+        </physvol>
         <loop for="module" from="1" to="6" step="1">
           <physvol>
             <volumeref ref="PCB_volume"/>
@@ -886,6 +940,18 @@
               + BackTolerance
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
+          </physvol>
+          <physvol>
+            <volumeref ref="CarbonBasePlate_volume"/>
+            <position name="CarbonBasePlate_volume_even_pos[bilayer][module]"
+              x="(2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+              y="- support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+            z="bilayer_start + sampling_section_offset
+              + bilayer_noabsorber_thickness*bilayer 
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz + GlueThick_dz"/>
           </physvol>
         </loop>
 
@@ -944,6 +1010,18 @@
         </physvol>
   
         <physvol>
+          <volumeref ref="CarbonBasePlate_volume"/>
+          <position name="CarbonBasePlate_volume_odd_pos0[bilayer]"
+            x="shift_x" y="shift_y-support_box_shift" 
+            z="bilayer_start + sampling_section_offset
+              + bilayer_noabsorber_thickness*bilayer
+              + bilayer_absorber_cumulative[bilayer]
+              + BackTolerance
+              + front_tungsten_dz[bilayer] + FrontTolerance 
+              + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]"/>
+        </physvol>
+        <physvol>
           <volumeref ref="GlueThick_volume"/>
           <position name="GlueThick_volume_odd_pos0[bilayer]"
             x="shift_x" y="shift_y-support_box_shift" 
@@ -953,7 +1031,8 @@
               + BackTolerance
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]"/>
+              + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
+              + CarbonBasePlate_dz"/>
         </physvol>
         <physvol copynumber="7*(2*bilayer + 1) + 0">
           <volumeref ref="Si_volume"/>
@@ -966,7 +1045,7 @@
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-              + GlueThick_dz"/>
+              + CarbonBasePlate_dz + GlueThick_dz"/>
         </physvol>
         <physvol>
           <volumeref ref="Glue_volume"/>
@@ -979,7 +1058,7 @@
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-              + GlueThick_dz + Si_dz"/>
+              + CarbonBasePlate_dz + GlueThick_dz + Si_dz"/>
         </physvol>
         <physvol>
           <volumeref ref="PCB_volume"/>
@@ -992,9 +1071,22 @@
               + front_tungsten_dz[bilayer] + FrontTolerance 
               + PCB_dz + PCB_Motherboard_Gap + Flower_dz
               + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-              + GlueThick_dz + Si_dz + Glue_dz"/>
+              + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
         </physvol>
         <loop for="module" from="1" to="6" step="1">
+          <physvol>
+            <volumeref ref="CarbonBasePlate_volume"/>
+            <position name="CarbonBasePlate_volume_odd[bilayer][module]"
+              x="shift_x + (2.*Hex_radius + hexagon_gap) * cos((module-1)*pi/3)" 
+              y="shift_y - support_box_shift - (2.*Hex_radius + hexagon_gap) * sin((module-1)*pi/3)" 
+              z="bilayer_start + sampling_section_offset
+                + bilayer_noabsorber_thickness*bilayer
+                + bilayer_absorber_cumulative[bilayer]
+                + BackTolerance
+                + front_tungsten_dz[bilayer] + FrontTolerance 
+                + PCB_dz + PCB_Motherboard_Gap + Flower_dz
+                + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]" />
+          </physvol>
           <physvol>
             <volumeref ref="GlueThick_volume"/>
             <position name="GlueThick_volume_odd[bilayer][module]"
@@ -1006,7 +1098,8 @@
                 + BackTolerance
                 + front_tungsten_dz[bilayer] + FrontTolerance 
                 + PCB_dz + PCB_Motherboard_Gap + Flower_dz
-                + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]" />
+                + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
+                + CarbonBasePlate_dz"/>
           </physvol>
           <physvol copynumber="7*(2*bilayer + 1) + module">
             <volumeref ref="Si_volume"/>
@@ -1020,7 +1113,7 @@
                 + front_tungsten_dz[bilayer] + FrontTolerance 
                 + PCB_dz + PCB_Motherboard_Gap + Flower_dz
                 + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-                + GlueThick_dz" />
+                + CarbonBasePlate_dz + GlueThick_dz" />
           </physvol>
           <physvol>
             <volumeref ref="Glue_volume"/>
@@ -1034,7 +1127,7 @@
                 + front_tungsten_dz[bilayer] + FrontTolerance 
                 + PCB_dz + PCB_Motherboard_Gap + Flower_dz
                 + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-                + GlueThick_dz + Si_dz" />
+                + CarbonBasePlate_dz + GlueThick_dz + Si_dz" />
           </physvol>
           <physvol>
             <volumeref ref="PCB_volume"/>
@@ -1048,7 +1141,7 @@
                 + front_tungsten_dz[bilayer] + FrontTolerance 
                 + PCB_dz + PCB_Motherboard_Gap + Flower_dz
                 + cooling_tungsten_dz[bilayer] + CarbonCoolingPlane_dz + cooling_tungsten_dz[bilayer]
-                + GlueThick_dz + Si_dz + Glue_dz"/>
+                + CarbonBasePlate_dz + GlueThick_dz + Si_dz + Glue_dz"/>
           </physvol>
         </loop>
   

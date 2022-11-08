@@ -333,6 +333,7 @@ them in the bilayer loop
 <variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.3"/>
 <variable name="GlueThick_dz" value="0.2"/>
+<variable name="CarbonBasePlate_dz" value="0.79"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->
 <variable name="MotherBoardAssembly_dz" value="8.166"/>
 <!-- the carbon cooling plane is 1mm+3/16 inch thick (about) -->
@@ -349,7 +350,7 @@ them in the bilayer loop
   sensitive silicon, and the thicker glue mounting it to the
   absorber (or carbon cooling plane in the pre-shower case)
 -->
-<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz"/>
+<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz+CarbonBasePlate_dz"/>
 
 <!-- 
     Air separating sheets of Al or W with PCB motherboard, limited by 

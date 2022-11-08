@@ -86,8 +86,8 @@ class Layer :
     def silicon() :
         return Layer('Si',Layer.SensDetThickness,sensitive=True)
 
-    def carbon() :
-        return Layer('Carbon',5.7)
+    def carbon(t) :
+        return Layer('Carbon',t)
 
     def enumerate_full_stack(sections) :
         layers = []
@@ -105,11 +105,13 @@ class Layer :
                 layers.append(Layer.glue(0.1))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.2))
+                layers.append(Layer.carbon(0.79))
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon())
+                layers.append(Layer.carbon(5.7))
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
+                layers.append(Layer.carbon(0.79))
                 layers.append(Layer.glue(0.2))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.1))
