@@ -203,9 +203,6 @@ private:
   // 3D readout for side Hcal
   int side_3d_readout_{};
   
-  /// Canonical layered version of parameters that differ between geometry
-  /// versions.
-
   /// Number of strips per layer in each section and each layer
   std::vector<std::vector<int>> num_strips_;
   /// The plane of the zero'th strip of each section [mm]
