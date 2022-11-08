@@ -345,7 +345,9 @@ them in the bilayer loop
     all values in mm
 
   PCB_dz - needs to match the thickness of the PCB in the motherboards
-  extracted from CAD drawings
+  extracted from CAD drawings. Leave it **larger** than the design
+  specifications by O(10)s of um for tolerance. This mismatch is
+  **on purpose**.
 -->
 <variable name="PCB_dz" value="1.666"/>
 <variable name="Glue_dz" value="0.1"/>
