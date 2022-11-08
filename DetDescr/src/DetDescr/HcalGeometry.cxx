@@ -36,6 +36,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips");
   half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width");
   zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip");
+  scint_length_ = ps.getParameter<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
 }
