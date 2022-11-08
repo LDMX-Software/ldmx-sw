@@ -385,6 +385,11 @@ class HcalGeometry:
             ecal_side_dy / 2.0,
         ]
 
+        self.v14.scint_length = [[back_hcal_scint_length for layer in range(back_hcal_numLayers)],
+                                 [0.] * side_hcal_numTotalLayers, # Filled below
+                                 [0.] * side_hcal_numTotalLayers,
+                                 [0.] * side_hcal_numTotalLayers,
+                                 [0.] * side_hcal_numTotalLayers]
         # side properties
         # num strips
         #  for layer 1: side_hcal_numScintZ (odd layers have strips oriented in z)
