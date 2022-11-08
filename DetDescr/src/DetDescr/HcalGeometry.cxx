@@ -103,7 +103,7 @@ void HcalGeometry::buildStripPositionMap() {
 	     - strips occupy thickness of scintillator in z (e.g. 20mm)
 	     - strips orientation is in x(y) depending on horizontal parity
 	  */
-          // z position: zero-layer(z) + layer_z + scint_thickness
+          // z position: zero-layer(z) + layer_z + scint_thickness / 2
           z = zero_layer_.at(section) + layercenter;
 
           /**
