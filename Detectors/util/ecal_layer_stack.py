@@ -153,10 +153,8 @@ def calc_weights(layers_partitioned_by_sensdet) :
     # Does include sensitive detector layers
     Zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        print('section')
         dE_section, X0_section, L_section, Zdepth_section = 0., 0., 0., 0.
         for l in section :
-            print(' ',l)
             dE_section += l.thickness * l.dEdx
             X0_section += l.thickness / l.x0
             L_section  += l.thickness / l.nuclen
@@ -208,6 +206,9 @@ def main() :
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
     print_weights(*weights)
+
+    for l in layers :
+        print(l)
 
 if __name__ == '__main__' :
     main()
