@@ -209,6 +209,8 @@ private:
   std::vector<std::vector<double>> zero_strip_;
   /// Half Total Width of Strips [mm]
   std::vector<std::vector<double>> half_total_width_;
+  /// Length of strips [mm]
+  std::vector<std::vector<double>> scint_length_;
 
   bool is_prototype_{};
   
