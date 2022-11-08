@@ -22,7 +22,7 @@ from LDMX.Ecal import EcalGeometry
 geom = EcalGeometry.EcalGeometryProvider.getInstance()
 
 # ECal digi
-ecalDigis = digi.EcalDigiProducer()
+ecalDigis = digi.EcalDigiProducer(si_thickness = 0.5)
 
 # Turn of noise hits
 ecalDigis.hgcroc.noise = False
