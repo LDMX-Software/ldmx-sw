@@ -127,7 +127,11 @@ class HcalGeometry:
             800.0 / 2 + 20.0 + 2 * 2.0,
             800.0 / 2 + 20.0 + 2 * 2.0,
         ]
-        self.v13.zero_strip = [3100.0 / 2, 220.0, 220.0, 220.0, 220.0]
+        self.v13.zero_strip = [[3100.0 / 2 for layer in range(self.v13.num_layers[0])],
+                               [220.0 for layer in range(self.v13.num_layers[1])],
+                               [220.0 for layer in range(self.v13.num_layers[2])],
+                               [220.0 for layer in range(self.v13.num_layers[3])],
+                               [220.0 for layer in range(self.v13.num_layers[4])]]
         self.v13.layer_thickness = [
             25.0 + self.v13.scint_thickness + 2 * 2.0,
             20.0 + self.v13.scint_thickness + 2 * 2.0,
@@ -135,19 +139,27 @@ class HcalGeometry:
             20.0 + self.v13.scint_thickness + 2 * 2.0,
             20.0 + self.v13.scint_thickness + 2 * 2.0,
         ]
-        self.v13.num_strips = [62, 12, 12, 12, 12]
+        self.v13.num_strips = [[62 for layer in range(self.v13.num_layers[0])],
+                               [12 for layer in range(self.v13.num_layers[1])],
+                               [12 for layer in range(self.v13.num_layers[2])],
+                               [12 for layer in range(self.v13.num_layers[3])],
+                               [12 for layer in range(self.v13.num_layers[4])]]
         self.v13.ecal_dx = 800.0
         self.v13.ecal_dy = 600.0
         self.v13.half_total_width = [
-            (self.v13.num_strips[0] * self.v13.scint_width) / 2,
-            (self.v13.num_layers[1] * self.v13.layer_thickness[1] + self.v13.ecal_dx)
-            / 2,
-            (self.v13.num_layers[2] * self.v13.layer_thickness[2] + self.v13.ecal_dx)
-            / 2,
-            (self.v13.num_layers[3] * self.v13.layer_thickness[3] + self.v13.ecal_dy)
-            / 2,
-            (self.v13.num_layers[4] * self.v13.layer_thickness[4] + self.v13.ecal_dy)
-            / 2,
+            [(self.v13.num_strips[0][layer] * self.v13.scint_width) / 2 for layer in range(self.v13.num_layers[0])],
+            [(self.v13.num_layers[1] * self.v13.layer_thickness[1] + self.v13.ecal_dx)
+            / 2
+             for layer in range(self.v13.num_layers[1])],
+            [(self.v13.num_layers[2] * self.v13.layer_thickness[2] + self.v13.ecal_dx)
+            / 2
+             for layer in range(self.v13.num_layers[2])],
+            [(self.v13.num_layers[3] * self.v13.layer_thickness[3] + self.v13.ecal_dy)
+            / 2
+             for layer in range(self.v13.num_layers[3])],
+            [(self.v13.num_layers[4] * self.v13.layer_thickness[4] + self.v13.ecal_dy)
+            / 2
+             for layer in range(self.v13.num_layers[4])],
         ]
         self.v13.detectors_valid = [
             "ldmx-det-v13",
