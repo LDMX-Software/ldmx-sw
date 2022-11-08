@@ -49,11 +49,11 @@ class HcalReadoutGeometry:
         self.scint_thickness = 0.0
         self.scint_width = 0.0
         self.zero_layer = []
-        self.zero_strip = []
+        self.zero_strip = [[]]
         self.layer_thickness = []
         self.num_layers = []
-        self.num_strips = []
-        self.half_total_width = []
+        self.num_strips = [[]]
+        self.half_total_width = [[]]
         self.ecal_dx = 0.0
         self.ecal_dy = 0.0
         self.num_sections = 0
