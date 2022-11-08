@@ -270,11 +270,12 @@ class HcalGeometry:
         self.v2_prototype.num_layers = [num_layers]
         num_strips_front = [num_bars_front for i in range(num_layers_front)]
         num_strips_back = [num_bars_back for i in range(num_layers_back)]
-        self.v2_prototype.num_strips = num_strips_front + num_strips_back
+        num_strips_total = num_strips_front + num_strips_back
+        self.v2_prototype.num_strips = [num_strips_total]
         # zero_strip and half_total_width are identical
-        self.v2_prototype.zero_strip = [
-            N * scint_bar_width / 2 for N in self.v2_prototype.num_strips
-        ]
+        self.v2_prototype.zero_strip = [[
+            N * scint_bar_width / 2 for N in num_strips_total
+        ]]
         self.v2_prototype.half_total_width = self.v2_prototype.zero_strip
         self.v2_prototype.ecal_dx = 0.0
         self.v2_prototype.ecal_dy = 0.0
