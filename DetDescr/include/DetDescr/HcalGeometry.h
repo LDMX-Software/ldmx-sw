@@ -86,6 +86,14 @@ class HcalGeometry : public framework::ConditionsObject {
   }
 
   /**
+   * Get the length of a scintillator bar
+   * @param id The HcalID of the bar
+   * @return The length of the bar with ID `id` [mm]
+   */
+  double getScintillatorLength(ldmx::HcalID id) const {
+    return scint_length_.at(id.section()).at(id.layer()-1);
+  }
+  /**
    * Get the scitillator width
    */
   double getScintillatorWidth() const { return scint_width_; }
