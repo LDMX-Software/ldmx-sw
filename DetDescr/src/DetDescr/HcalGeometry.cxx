@@ -124,49 +124,48 @@ void HcalGeometry::buildStripPositionMap() {
 	  // std::cout << "back (section,layer,strip)" << section << " " << layer << " " << strip;
 	  // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl;
         } else {
-	  /**
-	     For side Hcal
-	     - layers in y(x)
-	     - all layers have strips in x(y) for top-bottom (left-right) sections
-	     - all layers have strips occupying width of scintillator in z (e.g. 50mm)
-	     For 3D readout:
-	     - odd layers have strips in z
-	     - even layers have strips in x(y) for top-bottom (left-right) sections
-	     - odd layers have strips occupying width of scintillator in x(y)
-	     - even layers have strips occupying width of scintillator in z
-	  */
-	  if(side_3d_readout_ && (layer%2==1)){
-	    // z position: zero-strip + half-width (center_strip) of strip
-	    z = getZeroStrip(section, layer) + getHalfTotalWidth(section, layer);
-	  }
-	  else {
-	    // z position: zero-strip(z) + strip_center(z)
-	    z = getZeroStrip(section, layer) + stripcenter;
-	  }
-	  
+          /**
+          For side Hcal
+          - layers in y(x)
+          - all layers have strips in x(y) for top-bottom (left-right) sections
+          - all layers have strips occupying width of scintillator in z (e.g. 50mm)
+          For 3D readout:
+          - odd layers have strips in z
+          - even layers have strips in x(y) for top-bottom (left-right) sections
+          - odd layers have strips occupying width of scintillator in x(y)
+          - even layers have strips occupying width of scintillator in z
+          */
+          if (side_3d_readout_ && (layer % 2 == 1)) {
+            // z position: zero-strip + half-width (center_strip) of strip
+            z = getZeroStrip(section, layer) + getHalfTotalWidth(section, layer);
+          } else {
+            // z position: zero-strip(z) + strip_center(z)
+            z = getZeroStrip(section, layer) + stripcenter;
+          }
+
           if (hcalsection == ldmx::HcalID::HcalSection::TOP or
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-	    y = zero_layer_.at(section) + layercenter;
-	    x = getHalfTotalWidth(section, layer);
-	    if(side_3d_readout_ && layer%2==1)
-	      x = getZeroStrip(section, layer) + stripcenter;
-	    if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-	      y *= -1;
-	      x *= -1;
-	    }
+            y = zero_layer_.at(section) + layercenter;
+            x = getHalfTotalWidth(section, layer);
+            if (side_3d_readout_ && layer % 2 == 1)
+              x = getZeroStrip(section, layer) + stripcenter;
+            if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
+              y *= -1;
+              x *= -1;
+            }
           } else {
             x = zero_layer_.at(section) + layercenter;
             y = getHalfTotalWidth(section, layer);
-	    if(side_3d_readout_ && layer%2==1)
-	      y = getZeroStrip(section, layer) + stripcenter;
+            if (side_3d_readout_ && layer % 2 == 1)
+              y = getZeroStrip(section, layer) + stripcenter;
             if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
               x *= -1;
               y *= -1;
             }
           }
-
-	  // std::cout << "side (section,layer,strip)" << section << " " << layer << " " << strip;
-          // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl; 
+          // std::cout << "side (section,layer,strip)" << section << " " << layer << " "
+          // << strip; std::cout << " (x,y,z) " << x << " " << y << " " << z <<
+          // std::endl;
         }
         TVector3 pos;
         pos.SetXYZ(x, y, z);
