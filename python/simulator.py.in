@@ -122,6 +122,7 @@ class simulator(Producer):
                 sds.ScoringPlaneSD.ecal(),
                 sds.ScoringPlaneSD.hcal(),
                 sds.ScoringPlaneSD.target(),
+                sds.ScoringPlaneSD.trigscint(),
                 sds.ScoringPlaneSD.tracker(),
                 sds.ScoringPlaneSD.magnet()
                 ])
