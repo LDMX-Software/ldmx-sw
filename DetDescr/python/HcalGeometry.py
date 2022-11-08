@@ -203,6 +203,7 @@ class HcalGeometry:
 
         self.v1_prototype.scint_thickness = scint_thickness
         self.v1_prototype.scint_width = scint_bar_width
+        self.v1_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
 
         # Note that this seems to be location of the first scintillator layer
         self.v1_prototype.zero_layer = [-dz / 2 + air_thickness + absorber_thickness]
@@ -261,6 +262,7 @@ class HcalGeometry:
 
         self.v2_prototype.scint_thickness = scint_thickness
         self.v2_prototype.scint_width = scint_bar_width
+        self.v2_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
 
         self.v2_prototype.zero_layer = [
             -dz / 2
