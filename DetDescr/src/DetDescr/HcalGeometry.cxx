@@ -26,7 +26,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
       ps.getParameter<std::vector<std::string>>("detectors_valid");
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
   // use prototype geometry initialization
-  auto is_prototype =
+  is_prototype_ =
       std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
                    [](const auto detector) {
                      return detector.find("ldmx-hcal-prototype") !=
