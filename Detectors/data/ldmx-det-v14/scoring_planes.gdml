@@ -68,10 +68,10 @@
 		<!-- Surround the Hcal with scoring planes -->
 		<variable name="sp_hcal_front_z"  value="ecal_front_z - sp_thickness/2 + clearance" />
 		<variable name="sp_hcal_back_z"   value="ecal_front_z + back_hcal_dz + side_hcal_dz + sp_thickness/2" />
-		<variable name="sp_hcal_top_y"	value="back_hcal_dy/2 + sp_thickness/2" /> 
-		<variable name="sp_hcal_bot_y"	value="-back_hcal_dy/2 - sp_thickness/2" /> 
-		<variable name="sp_hcal_left_x"   value="-back_hcal_dy/2 - sp_thickness/2" />
-		<variable name="sp_hcal_right_x"  value="back_hcal_dx/2 + sp_thickness/2" />
+		<variable name="sp_hcal_top_y"	value="hcal_envelope_dy/2 + sp_thickness/2" />
+		<variable name="sp_hcal_bot_y"	value="-hcal_envelope_dy/2 - sp_thickness/2" />
+		<variable name="sp_hcal_left_x"   value="-hcal_envelope_dy/2 - sp_thickness/2" />
+		<variable name="sp_hcal_right_x"  value="hcal_envelope_dx/2 + sp_thickness/2" />
 		<variable name="sp_hcal_mid_z"	value="ecal_front_z + hcal_dz/2" />
 
 		<matrix name="sp_hcal_pos" coldim="3" values="0 support_box_shift sp_hcal_front_z
@@ -81,9 +81,9 @@
 													  sp_hcal_left_x support_box_shift sp_hcal_mid_z
 													  sp_hcal_right_x support_box_shift sp_hcal_mid_z" />   
 
-		<matrix name="hcal_box_dim" coldim="3" values="back_hcal_dx back_hcal_dy sp_thickness
-													   back_hcal_dx sp_thickness hcal_dz
-													   sp_thickness back_hcal_dy hcal_dz" /> 
+		<matrix name="hcal_box_dim" coldim="3" values="hcal_envelope_dx hcal_envelope_dy sp_thickness
+													   hcal_envelope_dx sp_thickness hcal_dz
+													   sp_thickness hcal_envelope_dy hcal_dz" />
 
 		<!-- Dimensions of target box -->
 		<variable name="target_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
