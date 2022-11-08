@@ -399,6 +399,9 @@ class HcalGeometry:
                     if layer % 2 == 0:
                         # Layer number is even, length is along X/Y
                         self.v14.scint_length[section_index][layer_index] = side_hcal_scint_length[m]
+                    else:
+                        # Layer number is odd, length is along Z
+                        self.v14.scint_length[section_index][layer_index] = side_hcal_dz
         # side properties
         # num strips
         #  for layer 1: side_hcal_numScintZ (odd layers have strips oriented in z)
