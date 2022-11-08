@@ -225,6 +225,8 @@ private:
   std::vector<std::vector<double>> zero_strip_;
   /// Half Total Width of Strips [mm]
   std::vector<std::vector<double>> half_total_width_;
+
+  bool is_prototype_{};
   
   /**
    Map of the HcalID position of strip centers relative to world geometry.
