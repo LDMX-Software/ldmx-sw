@@ -315,10 +315,10 @@ class HcalGeometry:
         side_hcal_dz = 600.0
         side_hcal_numModules = 4
         side_hcal_numSections = 4
-        side_hcal_length = [1800.0, 1600.0, 1400.0, 1200.0]
+        side_hcal_scint_length = [1800.0, 1600.0, 1400.0, 1200.0]
         side_hcal_numLayers = [4, 3, 2, 3]
         side_hcal_numPrevLayers = [0, 4, 7, 9]
-        side_hcal_numScintZ = [m / hcal_scintWidth for m in side_hcal_length]
+        side_hcal_numScintZ = [m / hcal_scintWidth for m in side_hcal_scint_length]
         side_hcal_numScintXY = side_hcal_dz / hcal_scintWidth
         # Number of layers oriented in x,y. Multiply by 2 to get the total number of layers
         side_hcal_numTotalLayers = (
@@ -331,7 +331,7 @@ class HcalGeometry:
             side_hcal_absoThick + 2.0 * hcal_airThick + hcal_scintThick
         )
         side_hcal_moduleWidth = side_hcal_numTotalLayers * side_hcal_layerThick
-        side_hcal_moduleLength = side_hcal_length[0]
+        side_hcal_moduleLength = side_hcal_scint_length[0]
 
         hcal_envelope_dx = 3000.0
         hcal_envelope_dy = 3000.0
