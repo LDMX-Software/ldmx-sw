@@ -17,7 +17,7 @@ from LDMX.SimCore import simulator as sim
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v12' , True )
+mySim.setDetector( 'ldmx-det-v14' , True )
 # Get a pre-written generator
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
