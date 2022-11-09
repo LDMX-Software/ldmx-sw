@@ -137,7 +137,7 @@
 		  value="-9 -tagger_envelope_dz -trig_scint_area_envelope_z/2 - clearance - 200" />
 <constant name="trigger_pad1_actual_z"
 	  value="ts_center_z - (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2) + trigger_pad_thickness/2" />
-	  <!-- somehow the pad thickness is double counted in the positioning of pad1, this accounts for that)
+<!-- somehow the pad thickness is double counted in the positioning of pad1, this accounts for that) -->
 <constant name="trigger_pad2_actual_z"
 	  value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
 
