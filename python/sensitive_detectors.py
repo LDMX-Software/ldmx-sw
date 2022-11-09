@@ -30,7 +30,7 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
         return ScoringPlaneSD('target')
 
     def trigscint() :
-        return ScoringPlaneSD('trigscint')
+        return ScoringPlaneSD('trigScint')
 
     def magnet() :
         return ScoringPlaneSD('magnet')
