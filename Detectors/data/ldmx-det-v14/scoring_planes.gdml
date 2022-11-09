@@ -193,13 +193,17 @@
 		</loop>
 
 
-		<loop for="xTS1" to="6" step="1" >
-			<volume name="sp_trigscint">
-			  <materialref ref="Vacuum" />
-				<solidref ref="sp_trigscint_box" />
-				<auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-			</volume> 
-		</loop>
+    <loop for="xTS1" to="6" step="1" >
+      <!-- 
+        we capitalize the S here so that the ScoringPlaneSD configuration code
+        doesn't need to change lmao 
+      -->
+      <volume name="sp_trigScint">
+        <materialref ref="Vacuum" />
+        <solidref ref="sp_trigscint_box" />
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+      </volume> 
+    </loop>
 
 		
     <loop for="x4" to="5" step="1" > 
@@ -273,7 +277,7 @@
 
 	  <loop for="xTS" to="6" step="1">
 		<physvol copynumber="xTS+4">
-		  <volumeref ref="sp_trigscint" />
+		  <volumeref ref="sp_trigScint" />
 		  <position x="sp_trigscint_pos[xTS, 1]" y="sp_trigscint_pos[xTS, 2]" z="sp_trigscint_pos[xTS, 3]" /> 
 		  <rotationref ref="identity" />
 		</physvol>
