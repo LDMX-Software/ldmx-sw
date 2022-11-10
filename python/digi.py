@@ -87,7 +87,8 @@ class EcalDigiProducer(Producer) :
         avgGain = 0.3125/20.
         self.avgReadoutThreshold = 53.*avgGain
         self.avgPedestal = 50.*avgGain
-        self.avgNoiseRMS = 2.0*avgGain
+        # noise is too optimistic, but need to mimic old noise model
+        self.avgNoiseRMS = 0.6*avgGain
 
         # Should we suppress noise "hits" below readout threshold?
         self.zero_suppression = True
@@ -147,7 +148,7 @@ class EcalRecProducer(Producer) :
         # use helper functions to set these
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
-        self.v12()
+        self.v14()
 
     def v2(self) :
         """These layerWeights and energy correction were calculated at least before v3 geometry.
@@ -203,8 +204,8 @@ class EcalRecProducer(Producer) :
 
         self.secondOrderEnergyCorrection = 1.;
         self.layerWeights = [ 
-                2.008, 4.008, 6.218, 7.186, 8.291, 9.948, 10.611, 10.611, 10.611, 10.611, 10.611, 
-                10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 10.611, 
-                10.611, 10.611, 14.479, 18.235, 18.235, 18.235, 18.235, 18.235, 18.235, 18.235, 
-                18.235, 18.235, 9.633
+                2.312, 4.312, 6.522, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
+                10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
+                10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
+                18.539, 18.539, 9.938
                 ]
