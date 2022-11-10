@@ -42,8 +42,8 @@ EcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("EcalHgcrocConditions"
         ])
 
 EcalHgcrocConditionsHardcode.validForAllRows([
-    50. , #PEDESTAL 
-    2.0, #NOISE
+    50. , #PEDESTAL - ADC
+    0.6, #NOISE - ADC, almost certainly too optimistic, but want to mimic previous noise model
     0.0, #MEAS_TIME - ns
     20., #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode
