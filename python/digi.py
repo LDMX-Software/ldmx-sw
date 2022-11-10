@@ -91,7 +91,8 @@ class HcalDigiProducer(Producer) :
         self.avgReadoutThreshold = 4. #ADCs - noise config only
         self.avgGain = 1.2 #noise config only
         self.avgPedestal = 1. #noise config only
-        self.avgNoiseRMS = 2. #noise config only
+        # avg noise set to 0.02PE
+        self.avgNoiseRMS = self.hgcroc.calculateVoltageHcal(0.02)/self.avgGain
         
         # input and output collection name parameters
         self.inputCollName = 'HcalSimHits'
