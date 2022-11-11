@@ -6,8 +6,11 @@ import re
 from _differ import Differ
 
 import matplotlib.pyplot as plt
-import mplhep
-plt.style.use(mplhep.style.ROOT)
+#import mplhep
+#plt.style.use(mplhep.style.ROOT)
+
+from systems.ecal import Ecal_plots
+from systems.trigscint import TrigScint_plots
 
 def extract_parameters(fn) :
     l = fn.replace('.root','').split('_')
@@ -28,13 +31,19 @@ if __name__ == '__main__' :
     parser.add_argument('dev',help='directory of event and histogram files from new developments')
     parser.add_argument('--label',help='label for developments, defaults to dev directory name')
     parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data dev dir')
+    parser.add_argument('--systems',help='csv list of systems for which to make plots [options are ecal, trigscint]')
 
     arg = parser.parse_args()
 
+    if arg.systems is None :
+        print("Must specify which system's plots to make (use --systems 'ecal, ...') \nExiting")
+        exit()
+
+    print("Making plots for "+arg.systems)
     dev = arg.dev
     if dev.endswith('/') :
         dev = dev[:-1]
-    print(dev)
+    print("Using data in "+dev)
 
     label = os.path.basename(dev)
     if arg.label is not None :
@@ -52,21 +61,16 @@ if __name__ == '__main__' :
     histo_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'histos' ]
     hd = Differ(label, *histo_files)
 
-    shower_feats = [
-        ('EcalShowerFeatures/EcalShowerFeatures_deepest_layer_hit', 'Deepest Layer Hit'),
-        ('EcalShowerFeatures/EcalShowerFeatures_num_readout_hits', 'N Readout Hits'),
-        ('EcalShowerFeatures/EcalShowerFeatures_summed_det', 'Total Rec Energy [MeV]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_summed_iso', 'Total Isolated Energy [MeV]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_summed_back', 'Total Back Energy [MeV]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_max_cell_dep', 'Max Cell Dep [MeV]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_shower_rms', 'Shower RMS [mm]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_x_std', 'X Standard Deviation [mm]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_y_std', 'Y Standard Deviation [mm]'),
-        ('EcalShowerFeatures/EcalShowerFeatures_avg_layer_hit', 'Avg Layer Hit'),
-        ('EcalShowerFeatures/EcalShowerFeatures_std_layer_hit', 'Std Dev Layer Hit')
-        ]
+    shower_feats = TrigScint_plots.feats()
+    if "trigscint" in (syst.lower() for syst in arg.systems) :
+        shower_feats += TrigScint_plots.feats()
+    if "ecal" in (syst.lower() for syst in arg.systems) :
+        shower_feats += Ecal_plots.feats()
+
     for path, name in shower_feats :
-          hd.plot1d(path, name, 
+        print(path)
+        print(name)
+        hd.plot1d(path, name, 
                     file_name = re.sub(r'^.*/','',path),
                     out_dir = out_dir)
 
