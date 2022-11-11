@@ -19,6 +19,4 @@ class Ecal_plots :
         ]
         return features
 
-    feats()
-
     
