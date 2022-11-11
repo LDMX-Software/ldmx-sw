@@ -16,6 +16,17 @@ def extract_parameters(fn) :
     l = fn.replace('.root','').split('_')
     return l[0], { l[i] : l[i+1] for i in range((len(l)-1)) if i%2 == 1 }
 
+def make_system_dqm_plots(plotter) :
+    shower_feats=plotter.feats()
+    print("in make_system_dqm_plots()")
+    for path, name in shower_feats :
+        print(path+", "+name)
+        hd.plot1d(path, name, 
+                    file_name = re.sub(r'^.*/','',path),
+                    out_dir = out_dir)
+
+    return 
+
 # guard incase someone imports this somehow
 if __name__ == '__main__' :
     parser = argparse.ArgumentParser(
@@ -60,20 +71,17 @@ if __name__ == '__main__' :
 
     histo_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'histos' ]
     hd = Differ(label, *histo_files)
-
-    shower_feats = TrigScint_plots.feats()
-    if "trigscint" in (syst.lower() for syst in arg.systems) :
-        shower_feats += TrigScint_plots.feats()
-    if "ecal" in (syst.lower() for syst in arg.systems) :
-        shower_feats += Ecal_plots.feats()
-
-    for path, name in shower_feats :
-        print(path)
-        print(name)
-        hd.plot1d(path, name, 
-                    file_name = re.sub(r'^.*/','',path),
-                    out_dir = out_dir)
-
+   
+    for syst in arg.systems.split(',') :
+        print(syst)
+    if "trigscint" in (syst.lower() for syst in arg.systems.split(',') ) :
+        print("adding trigscint plots")
+        plotter=TrigScint_plots 
+        make_system_dqm_plots(plotter)
+    if "ecal" in (syst.lower() for syst in arg.systems.split(',')) :
+        print("adding ecal plots")
+        make_system_dqm_plots(Ecal_plots)
+    
     event_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'events' ]
     ed = Differ(arg.label, *event_files)
     ed.plot1d('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.edep_',

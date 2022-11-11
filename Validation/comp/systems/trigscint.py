@@ -43,6 +43,3 @@ class TrigScint_plots :
 
         return features
 
-    feats()
-
-    
