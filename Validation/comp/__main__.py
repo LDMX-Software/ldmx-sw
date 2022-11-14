@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 from systems.ecal import Ecal_plots
 from systems.trigscint import TrigScint_plots
+from systems.test import Test_plots
 
 def extract_parameters(fn) :
     l = fn.replace('.root','').split('_')
@@ -18,7 +19,7 @@ def extract_parameters(fn) :
 
 def make_system_dqm_plots(plotter) :
     shower_feats=plotter.feats()
-    print("in make_system_dqm_plots()")
+
     for path, name in shower_feats :
         print(path+", "+name)
         hd.plot1d(path, name, 
@@ -47,10 +48,10 @@ if __name__ == '__main__' :
     arg = parser.parse_args()
 
     if arg.systems is None :
-        print("Must specify which system's plots to make (use --systems 'ecal, ...') \nExiting")
+        print("Must specify which system's plots to make (use --systems 'ecal,...') \nExiting")
         exit()
-
     print("Making plots for "+arg.systems)
+
     dev = arg.dev
     if dev.endswith('/') :
         dev = dev[:-1]
@@ -72,16 +73,17 @@ if __name__ == '__main__' :
     histo_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'histos' ]
     hd = Differ(label, *histo_files)
    
-    for syst in arg.systems.split(',') :
-        print(syst)
     if "trigscint" in (syst.lower() for syst in arg.systems.split(',') ) :
         print("adding trigscint plots")
-        plotter=TrigScint_plots 
-        make_system_dqm_plots(plotter)
+        make_system_dqm_plots(TrigScint_plots)
     if "ecal" in (syst.lower() for syst in arg.systems.split(',')) :
         print("adding ecal plots")
         make_system_dqm_plots(Ecal_plots)
-    
+    if "test" in (syst.lower() for syst in arg.systems.split(',')) :
+        print("adding multi-system small set of test plots")
+        make_system_dqm_plots(Test_plots)
+
+        
     event_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'events' ]
     ed = Differ(arg.label, *event_files)
     ed.plot1d('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.edep_',
