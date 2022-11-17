@@ -2,6 +2,7 @@
 
 # standard modules
 import os
+import re
 
 # external dependencies
 import matplotlib.pyplot as plt
@@ -77,7 +78,7 @@ class Differ :
         if out_dir is None :
             plt.show()
         else :
-            fn = column
+            fn = re.sub(r'^.*/','',column)
             if file_name is not None :
                 fn = file_name
             fig.savefig(os.path.join(out_dir,fn)+'.pdf', bbox_inches='tight')
