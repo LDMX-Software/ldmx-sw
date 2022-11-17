@@ -2,22 +2,18 @@
 
 from ._differ import Differ
 
-def plot(hd : Differ, ed : Differ, out_dir = None) :
+def plot_hists(d : Differ, out_dir = None) :
     """Plot TrigScint-related validation plots
 
     Parameters
     ----------
-    hd : Differ
+    d : Differ
         Differ containing files that are not event files (presumably histogram files)
-    ed : Differ
-        Differ containing files that are event files
     """
 
     collections=["Sim", "Digi", "Cluster"]
     pads = ["Pad1", "Pad2", "Pad3"] 
     tColl="TrigScintTracks"
-    features = [
-    ]
 
     for member, name in [
         ('centroid', 'Track centroid [in channel nb]'),
@@ -28,16 +24,14 @@ def plot(hd : Differ, ed : Differ, out_dir = None) :
         ('x', 'Track x [mm]'),
         ('y', 'Track y [mm]')
         ] :
-        hd.plot1d(f'{tColl}/{tColl}_{member}', name,
-                  file_name = re.sub(r'^.*/','',path),
-                  out_dir = out_dir)
+        d.plot1d(f'{tColl}/{tColl}_{member}', name,
+                 out_dir = out_dir)
                   
     for pad in pads :
         for coll in collections :
             for member, name in [ ('x', 'x [mm]'), ('y', 'y [mm]'), ('z', 'z [mm]'), ('n_hits', 'Hit multiplicity') ] :
-                hd.plot1d(f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_{member}', f'{coll} {name}',
-                          file_name = re.sub(r'^.*/','',path),
-                          out_dir = out_dir)
+                d.plot1d(f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_{member}', f'{coll} {name}',
+                         out_dir = out_dir)
         for member, name in [(f'TrigScintSim{pad}/TrigScintSim{pad}_hit_time', 'Simhit time [ns]'),
                              (f'TrigScintDigi{pad}/TrigScintDigi{pad}_total_pe', 'Total PE in event'),
                              (f'TrigScintDigi{pad}/TrigScintDigi{pad}_pe', 'Total PE in bars'),
@@ -56,7 +50,6 @@ def plot(hd : Differ, ed : Differ, out_dir = None) :
                              # not implemented but should be
                              #(f'TrigScintDigi{pad}/TrigScintDigi{pad}_beamEfrac', 'Beam electron energy fraction') 
                              ] :
-            hd.plot1d(member, name,
-                      file_name = re.sub(r'^.*/','',path),
-                      out_dir = out_dir)
+            d.plot1d(member, name,
+                     out_dir = out_dir)
 
