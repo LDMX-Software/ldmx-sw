@@ -6,27 +6,22 @@ import os
 import re
 
 # external
+import matplotlib
+# this line allows us to run without an X server connected
+#    basically telling MPL that it will not open a window
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 #import mplhep
 #plt.style.use(mplhep.style.ROOT)
 
 # us
 from ._differ import Differ
+from ._file import File
 
 def extract_parameters(fn) :
     l = fn.replace('.root','').split('_')
     return l[0], { l[i] : l[i+1] for i in range((len(l)-1)) if i%2 == 1 }
-
-def make_system_dqm_plots(plotter) :
-    dqmPlotList=plotter.dqm()
-
-    for path, name in dqmPlotList :
-        print(path+", "+name)
-        hd.plot1d(path, name, 
-                    file_name = re.sub(r'^.*/','',path),
-                    out_dir = out_dir)
-
-    return 
 
 def deduce_modules() :
     import inspect
@@ -83,5 +78,9 @@ if __name__ == '__main__' :
     ed = Differ(label, *[f for f in root_files if f.is_events()])
 
     for syst in arg.systems :
-        runnable_modules[syst].plot(hd,ed, out_dir = out_dir)
+        m = runnable_modules[syst]
+        if 'plot_hists' in dir(m) :
+            m.plot_hists(hd, out_dir = out_dir)
+        if 'plot_events' in dir(m) :
+            m.plot_events(ed, out_dir = out_dir)
 
