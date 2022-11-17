@@ -18,13 +18,21 @@ def extract_parameters(fn) :
     return l[0], { l[i] : l[i+1] for i in range((len(l)-1)) if i%2 == 1 }
 
 def make_system_dqm_plots(plotter) :
-    shower_feats=plotter.feats()
+    dqmPlotList=plotter.dqm()
 
-    for path, name in shower_feats :
+    for path, name in dqmPlotList :
         print(path+", "+name)
         hd.plot1d(path, name, 
                     file_name = re.sub(r'^.*/','',path),
                     out_dir = out_dir)
+
+    return 
+
+def make_system_branch_plots(plotter) :
+
+    plots=Test_plots.branchPlots()
+    for plot in plots :  #ok this implementation is awful                                                                                          
+        ed.plot1d(plot[0], plot[1], bins=plot[2], range=(plot[3],plot[4]), file_name=plot[5], out_dir = out_dir)
 
     return 
 
@@ -72,23 +80,32 @@ if __name__ == '__main__' :
 
     histo_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'histos' ]
     hd = Differ(label, *histo_files)
-   
+       
+    event_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'events' ]
+    ed = Differ(arg.label, *event_files)
+
     if "trigscint" in (syst.lower() for syst in arg.systems.split(',') ) :
         print("adding trigscint plots")
         make_system_dqm_plots(TrigScint_plots)
+        make_system_branch_plots(TrigScint_plots)        
     if "ecal" in (syst.lower() for syst in arg.systems.split(',')) :
         print("adding ecal plots")
         make_system_dqm_plots(Ecal_plots)
+        make_system_branch_plots(Ecal_plots)
     if "test" in (syst.lower() for syst in arg.systems.split(',')) :
         print("adding multi-system small set of test plots")
         make_system_dqm_plots(Test_plots)
+        make_system_branch_plots(Test_plots)
 
+
+    
+    #plots=Test_plots.branchPlots()
+    #for plot in plots :  #ok this implementation is awful 
+    #    ed.plot1d(plot[0], plot[1], bins=plot[2], range=(plot[3],plot[4]), file_name=plot[5], out_dir = out_dir)
         
-    event_files = [ (fp, params['geometry']) for fp, (t, params) in root_files if t == 'events' ]
-    ed = Differ(arg.label, *event_files)
-    ed.plot1d('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.edep_',
-              'Sim Energy Dep [MeV]',
-              bins=50, range=(0,30),
-              file_name = 'edep',
-              out_dir = out_dir)
+        #    ed.plot1d('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.edep_',
+        #              'Sim Energy Dep [MeV]',
+        #              bins=50, range=(0,30),
+        #              file_name = 'edep',
+        #              out_dir = out_dir)
 
