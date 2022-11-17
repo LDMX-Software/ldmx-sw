@@ -1,13 +1,13 @@
-features = []
+plots = []
 
 class TrigScint_plots :
     
-    def feats() :
+    def dqm() :
 
         collections=["Sim", "Digi", "Cluster"]
         pads = ["Pad1", "Pad2", "Pad3"] 
         tColl="TrigScintTracks"
-        features = [(f'{tColl}/{tColl}_centroid', 'Track centroid [in channel nb]'),
+        plots = [(f'{tColl}/{tColl}_centroid', 'Track centroid [in channel nb]'),
                     (f'{tColl}/{tColl}_n_tracks', 'Track multiplicity'),
                     (f'{tColl}/{tColl}_n_clusters', 'Track cluster multiplicity'),
                     (f'{tColl}/{tColl}_beamEfrac', 'Beam electron energy fraction'),
@@ -17,13 +17,13 @@ class TrigScint_plots :
         ]                         
         for pad in pads :
             for coll in collections :
-                features +=[
+                plots +=[
                     (f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_x', f'{coll} x [mm]'),
                     (f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_y', f'{coll} y [mm]'),
                     (f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_z', f'{coll} z [mm]'),
                     (f'TrigScint{coll}{pad}/TrigScint{coll}{pad}_n_hits', 'Hit multiplicity'),
                 ]
-            features += [(f'TrigScintSim{pad}/TrigScintSim{pad}_hit_time', 'Simhit time [ns]'),
+            plots += [(f'TrigScintSim{pad}/TrigScintSim{pad}_hit_time', 'Simhit time [ns]'),
                          (f'TrigScintDigi{pad}/TrigScintDigi{pad}_total_pe', 'Total PE in event'),
                          (f'TrigScintDigi{pad}/TrigScintDigi{pad}_pe', 'Total PE in bars'),
                          (f'TrigScintSim{pad}/TrigScintSim{pad}_id', 'Channel ID'),
@@ -41,5 +41,5 @@ class TrigScint_plots :
                          #(f'TrigScintDigi{pad}/TrigScintDigi{pad}_beamEfrac', 'Beam electron energy fraction') #not implemented, should be though
             ]
 
-        return features
+        return plots
 
