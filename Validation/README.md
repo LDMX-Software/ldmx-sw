@@ -14,7 +14,8 @@ python3 -m pip install Validation/
 
 Other helpful options
 - Outside container: `--user` may need to be required
-- Both: `--editable` may be helpful if developing Validation
+- Both: `--editable` may be helpful if developing Validation which should be provided _before_ the path to Validation
+  e.g. `python3 -m pip install --editable Validation/ --user`
 
 ## Usage
 _Cannot_ run from ldmx-sw directory. `import Validation` prefers
