@@ -1,8 +1,13 @@
-"""Hold the two files we are comparing together in one class"""
+"""Hold the two or more files we are comparing together in one class"""
 
-import uproot
-import matplotlib.pyplot as plt
+# standard modules
 import os
+
+# external dependencies
+import matplotlib.pyplot as plt
+
+# us
+from ._file import File
 
 class Differ :
     """Differ allowing easy comparison of "similar" files
@@ -40,48 +45,28 @@ class Differ :
     """
 
     def __init__(self, grp_name, *args) :
+        def open_file(arg) :
+            if isinstance(arg, (list,tuple)) :
+                return File(*arg)
+            elif isinstance(arg, File) :
+                return arg
+            else :
+                raise KeyError(f'Argument provided {arg} is not a differ.File or a tuple of arguments for its constructor')
+                
         self.grp_name = grp_name
-        self.files = [
-                (uproot.open(path), name) for path, name in args
-                ]
-
-    def __plt_hist(ax, uproot_obj, **kwargs) :
-        """Plot the input uproot object as a histogram on the input axes
-
-        If the uproot_obj is already a histogram we import its values and use
-        them directly. If the uproot_obj is a TBranch, then we pull its values
-        into memory and fill the histogram.
-        """
-
-        if issubclass(type(uproot_obj), uproot.behaviors.TH1.Histogram) :
-            edges = uproot_obj.axis('x').edges()
-            dim = len(edges.shape)
-            if dim > 1 :
-                raise KeyError(f'Attempted to do a 1D plot of a {dim} dimension histogram.')
-            return ax.hist((edges[1:]+edges[:-1])/2, bins=edges, weights=uproot_obj.values(), **kwargs)
-        else :
-            return ax.hist(uproot_obj.array(library='pd').values, **kwargs)
-        
-    def fig(self) :
-        """Get the figure we are drawing on"""
-        return self.__fig
+        self.files = list(map(open_file, args))
 
     def plot1d(self, column, xlabel, 
-              ylabel = 'Hit Count',
+              ylabel = 'Count',
               yscale = 'log',
               ylim = (None,None),
               out_dir = None, file_name = None,
               **hist_kwargs) :
         fig = plt.figure('differ',figsize=(11,8))
         ax = fig.subplots()
-        
-        if 'histtype' not in hist_kwargs :
-            hist_kwargs['histtype'] = 'step'
-        if 'linewidth' not in hist_kwargs :
-            hist_kwargs['linewidth'] = 2
 
-        for f, name in self.files :
-            Differ.__plt_hist(ax, f[column], label=name, **hist_kwargs)
+        for f in self.files :
+            f.plot1d(ax, column, **hist_kwargs)
 
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
@@ -97,3 +82,17 @@ class Differ :
                 fn = file_name
             fig.savefig(os.path.join(out_dir,fn)+'.pdf', bbox_inches='tight')
             fig.clf()
+
+    def load(self, **kwargs) :
+        """Load all of the event data frames into memory
+        
+        The key-word arguments are used in each FileEntry's events call
+        to specify which branches (if not all of them) should be loaded
+        into memory and what manipulation (if any) to do.
+        """
+        for f in self.files :
+            f.load(**kwargs)
+            
+    def manipulate(self, manipulation) :
+        for f in self.files :
+            f.manipulate(manipulation)

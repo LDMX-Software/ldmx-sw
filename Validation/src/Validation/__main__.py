@@ -3,7 +3,7 @@
 import argparse
 import os
 import re
-from _differ import Differ
+from Validation import Differ
 
 import matplotlib.pyplot as plt
 #import mplhep
