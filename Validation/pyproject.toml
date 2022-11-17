@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Validation"
+version = "0.0.1"
+description = "LDMX Data Validation"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+  "mplhep",
+  "matplotlib",
+  "pandas",
+  "uproot"
+]
