@@ -1,55 +1,24 @@
-# LDMX ECal Simulated Geometry Validation
+# Validation
 
-This repository is focused on storing configuration scripts for `fire` and python-based analyses
-related to validating the simulated geometry of the ECal.
+Python package forcused on comparing two or more "similar" LDMX event data files.
 
-## Running the Simulation
-The simulation is run via `ldmx fire` with the [config script](simulation.py) in this repository.
-Generally, you want to simulate both the v12 and v14 geometries, which would require two runs.
+## Installation
+Inside container...
 ```
-ldmx fire simulation.py --geometry 12 --n-events <n-events> --out-dir <out-dir>
-ldmx fire simulation.py --geometry 14 --n-events <n-events> --out-dir <out-dir>
+ldmx python3 -m pip install Validation/ --target install/python/LDMX/ --no-deps --no-cache
 ```
-In order to roughly parallelize this, a [bash script](run.sh) was written to be run within the container.
+Outside container
 ```
-ldmx ./run.sh -o <out-dir> -N <n-events>
+python3 -m pip install Validation/
 ```
 
-### Full Procedure
-This is a reference on the procedure for getting the simulation up and running.
-We assume that ldmx-sw has already be `git clone`d onto your computer.
+Other helpful options
+- Outside container: `--user` may need to be required
+- Both: `--editable` may be helpful if developing Validation
 
-Enter the ldmx-sw environment
-```
-source ldmx-sw/scripts/ldmx-env.sh
-```
+## Usage
+_Cannot_ run from ldmx-sw directory. `import Validation` prefers
+the local directory instead of the installed path so it tries to
+load from the `ldmx-sw/Validation` directory.
 
-**Only if needed**, recompile ldmx-sw. This is only necessary if you `git pull`d
-changes to the ldmx-sw source code.
-```
-cd ldmx-sw/build
-ldmx make install
-```
-
-Determine the version of ldmx-sw you are running.
-```
-cd ldmx-sw
-git describe --tags
-```
-
-Create a directory for the simulated data pertaining to the version of the
-simulation you are running.
-```
-cd ecal-validation
-mkdir -p data/<specific-version-name>
-```
-
-Run the simulation.
-```
-ldmx ./run.sh -o data/<specific-version-name> -N <n-events>
-```
-
-## Running the Analysis
-The analysis code largely consists of filling and drawing histograms.
-As a first step, use [the testing notebook](test.ipynb) as an example for
-using the `comp` package.
+Could fix this by renaming the package inside Validation.
