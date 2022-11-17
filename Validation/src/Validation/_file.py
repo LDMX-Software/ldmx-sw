@@ -46,6 +46,10 @@ class File :
         what to plot within a notebook
         """
         return self.__file.keys(*args, **kwargs)
+
+    def is_events(self) :
+        """Check if this file is an Events file"""
+        return 'LDMX_Events' in self.__file
     
     def events(self, **kwargs) :
         """Callback for retrieving a full in-memory data frame of the events
@@ -96,7 +100,7 @@ class File :
         The input 'obj_name' is transformed by __colmod if that member is set.
         """
 
-        for k, v in self.__hist_kwargs :
+        for k, v in self.__hist_kwargs.items() :
             if k not in hist_kwargs :
                 hist_kwargs[k] = v
               
