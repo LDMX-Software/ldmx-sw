@@ -2,15 +2,13 @@
 
 from ._differ import Differ
 
-def plot(hd : Differ, ed : Differ, out_dir = None) :
+def plot_hists(d : Differ, out_dir = None) :
     """Plot ECal-related validation plots
 
     Parameters
     ----------
-    hd : Differ
+    d : Differ
         Differ containing files that are not event files (presumably histogram files)
-    ed : Differ
-        Differ containing files that are event files
     """
 
     features = [
@@ -27,8 +25,19 @@ def plot(hd : Differ, ed : Differ, out_dir = None) :
         ('EcalShowerFeatures/EcalShowerFeatures_std_layer_hit', 'Std Dev Layer Hit')
     ]
     for col, name in features :
-        hd.plot1d(col, name,
-                  file_name = re.sub(r'^.*/','',path),
-                  out_dir = out_dir)
+        d.plot1d(col, name, out_dir = out_dir)
 
-    
+def plot_events(d : Differ, out_dir = None) :
+    """Plot ECal-related validation plots
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are event files
+    """
+
+    branches = [
+        ('EcalSimHits_valid/EcalSimHits_valid.edep_', 'Sim Energy Dep [MeV]')
+        ]
+    for col, name in branches :
+        d.plot1d(f'LDMX_Events/{col}', name, out_dir = out_dir)
