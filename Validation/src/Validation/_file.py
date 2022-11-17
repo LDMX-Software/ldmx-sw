@@ -118,6 +118,9 @@ class File :
             dim = len(edges.shape)
             if dim > 1 :
                 raise KeyError(f'Attempted to do a 1D plot of a {dim} dimension histogram.')
-            return ax.hist((edges[1:]+edges[:-1])/2, bins=edges, weights=obj.values(), **hist_kwargs)
+            # overwrite bins and weights with what the serialized histogram has
+            hist_kwargs['bins'] = edges
+            hist_kwargs['weights'] = obj.values()
+            return ax.hist((edges[1:]+edges[:-1])/2, **hist_kwargs)
         else :
-            return ax.hist(obj.array(library='pd').values, **hist_kwargs)        
+            return ax.hist(obj.array(library='pd').values, **hist_kwargs)
