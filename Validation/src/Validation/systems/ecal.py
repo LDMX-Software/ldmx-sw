@@ -1,10 +1,11 @@
-features = []
+plots = []
 
 class Ecal_plots :
     
-    def feats() :
-        
-        features = [
+    def dqm() :
+        # these are just the veto feature plots. could have separate functions for these and
+        # other Ecal DQM plots, and call them all from here
+        plots = [
             ('EcalShowerFeatures/EcalShowerFeatures_deepest_layer_hit', 'Deepest Layer Hit'),
             ('EcalShowerFeatures/EcalShowerFeatures_num_readout_hits', 'N Readout Hits'),
             ('EcalShowerFeatures/EcalShowerFeatures_summed_det', 'Total Rec Energy [MeV]'),
@@ -17,6 +18,6 @@ class Ecal_plots :
             ('EcalShowerFeatures/EcalShowerFeatures_avg_layer_hit', 'Avg Layer Hit'),
             ('EcalShowerFeatures/EcalShowerFeatures_std_layer_hit', 'Std Dev Layer Hit')
         ]
-        return features
+        return plots
 
     
