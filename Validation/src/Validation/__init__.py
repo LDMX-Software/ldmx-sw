@@ -1,3 +1,4 @@
+"""LDMX Validation plotting and inspection"""
 
 from ._file import File
 from ._differ import Differ
