@@ -1,9 +1,11 @@
 """Plotting of ECal-related validation plots"""
 
 from ._differ import Differ
+from ._plotter import plotter
 
-def plot_hists(d : Differ, out_dir = None) :
-    """Plot ECal-related validation plots
+@plotter(hist=True,event=False)
+def shower_feats(d : Differ, out_dir = None) :
+    """Plot ECal shower features from the already created DQM histograms
 
     Parameters
     ----------
@@ -27,7 +29,8 @@ def plot_hists(d : Differ, out_dir = None) :
     for col, name in features :
         d.plot1d(col, name, out_dir = out_dir)
 
-def plot_events(d : Differ, out_dir = None) :
+@plotter(hist=False,event=True)
+def sim_hits(d : Differ, out_dir = None) :
     """Plot ECal-related validation plots
 
     Parameters
