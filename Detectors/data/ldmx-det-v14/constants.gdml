@@ -43,8 +43,8 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3"/>   
-<constant name="number_of_bars"             value="25"/>
+<constant name="trigger_bar_dy"             value="3.05"/>   
+<constant name="number_of_bars"             value="24"/>
 
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
