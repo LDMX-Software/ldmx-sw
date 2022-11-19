@@ -108,6 +108,8 @@ class simulator(Producer):
         self.detector = mP.makeDetectorPath( det_name )
         if 'v12' in det_name :
             trigscint = [ sds.TrigScintSD.up(), sds.TrigScintSD.tag(), sds.TrigScintSD.down() ]
+        elif 'hcal-prototype' in det_name :
+            trigscint = [ sds.TrigScintSD.testbeam() ]
         else :
             trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3() ]
         self.sensitive_detectors = [
