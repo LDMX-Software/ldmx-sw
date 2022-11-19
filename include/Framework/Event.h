@@ -512,7 +512,7 @@ class Event {
   TTree *inputTree_{nullptr};
 
   /// The total number of electrons in the event
-  int electronCount_{-1}; 
+  int electronCount_{1}; 
 
   /**
    * The Bus
