@@ -117,6 +117,9 @@ class File :
         All the kwargs are simply provided to events for selecting
         the branches of LDMX_Events to load into memory.
         """
+        if not self.is_events() :
+            raise AttributeError('File is not an Events file and so the data cannot be loaded into an in-memory data frame')
+
         self.__df = self.events(**kwargs)
         if manipulation is not None :
             manipulation(self.__df)
@@ -150,7 +153,8 @@ class File :
         Now, if the uproot object is a subclass of uproot's Histogram class,
         we retrieve the bin edges from it, check that its dimension is one,
         and plot the histogram using its values as the entry weights and the
-        loaded bin edges.
+        loaded bin edges (the key-word arguments 'bins' and 'weights' are 
+        overwritten by the values read in from the file).
 
         If the uproot object is not a subclass of uproot's Histogram,
         then we assume that it is a branch and we extract a flattened
@@ -162,6 +166,8 @@ class File :
             axes on which to plot the histogram
         obj : str or function
             object to plot
+        hist_kwargs : dict
+            All other key-word arguments are passed to plt.hist
         """
 
         for k, v in self.__hist_kwargs.items() :
