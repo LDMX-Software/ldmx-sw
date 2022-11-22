@@ -5,7 +5,7 @@ Python package forcused on comparing two or more "similar" LDMX event data files
 ## Installation
 Inside container...
 ```
-ldmx python3 -m pip install Validation/ --target install/python/LDMX/ --no-deps --no-cache
+ldmx python3 -m pip install Validation/ --target install/python/ --no-deps --no-cache
 ```
 Outside container
 ```
