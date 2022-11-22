@@ -23,3 +23,22 @@ the local directory instead of the installed path so it tries to
 load from the `ldmx-sw/Validation` directory.
 
 Could fix this by renaming the package inside Validation.
+
+### CLI
+The Validation module is constructed to do some common tasks quickly on the command line.
+Printing out its help message shows how to run it and gives you the details on what
+parameters to provide.
+```
+python3 -m Validation -h
+```
+which should be run with `ldmx` if the module was installed in the container.
+
+### In Script
+Similar to the CLI, you can develop your own python script using Validation.
+Simply `import Validation` where you want to be using it.
+**Remember**: The plotting functions assume the user is in an interactive notebook
+unless the `out_dir` parameter is provided.
+
+### In Notebook
+Again, accessing this module post-installation is the same as other modules `import Validation`.
+This can help you develop plots that don't come pre-made within the Validation module.
