@@ -9,14 +9,7 @@ needs...
    so that the function is imported when the parent module is
    imported
 2. to be decorated by the 'plotter' decorator below.
-
-Attributes
-----------
-PLOTTERS : dict
-    dictionary of plotters within Validation
 """
-
-PLOTTERS = dict()
 
 def plotter(hist = False, event = True) :
     """decorator for registering plotters
@@ -28,7 +21,7 @@ def plotter(hist = False, event = True) :
     3. Plots from both at the same time
 
     (1) and (2) have the same function signature but will
-    be given a histogram-file or event-file Differ file (respectively).
+    be given a histogram-file or event-file Differ (respectively).
 
     (3) has a longer signature for accepting both histogram- and event-
     file Differ objects at once.
@@ -53,11 +46,17 @@ def plotter(hist = False, event = True) :
         def plots_both(hd, ed, out_dir = None) :
             # hd will be histogram-files and ed will be event-files
 
+    Attributes
+    ----------
+    __registry__ : dict
+        Dictionary of registered plotters
     """
     if not hist and not event :
         raise ArgumentError('Need to plot one or both hist or event')
     def plotter_decorator(func) :
         func_name = func.__module__.replace('Validation.','')+'.'+func.__name__
-        PLOTTERS[func_name] = (hist, event, func)
+        plotter.__registry__[func_name] = (hist, event, func)
         return func
     return plotter_decorator
+
+plotter.__registry__ = dict()
