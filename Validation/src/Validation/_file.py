@@ -71,7 +71,7 @@ class File :
             key-name to use in legend-label for this File
         """
         l = os.path.basename(filepath).replace('.root','').split('_')
-        file_params =  { l[i] : l[i+1] for i in range(len(l)) if i%2 == 0 }
+        file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
         File.log.debug(f'Deduced File Parameters: {file_params}')
         
         if legendlabel_parameter is None :
