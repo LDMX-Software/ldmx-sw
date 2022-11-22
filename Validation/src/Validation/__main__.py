@@ -19,7 +19,7 @@ plt.style.use(mplhep.style.ROOT)
 # us
 from ._differ import Differ
 from ._file import File
-from ._plotter import PLOTTERS
+from ._plotter import plotter
 
 # guard incase someone imports this somehow
 if __name__ == '__main__' :
@@ -39,7 +39,7 @@ if __name__ == '__main__' :
     parser.add_argument('--log',help='logging level',choices=['info','debug','warn','error'], default='warn')
     parser.add_argument('--label',help='label for grouping of data, defaults to data directory name')
     parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data directory')
-    parser.add_argument('--systems',required=True, choices=PLOTTERS.keys(), nargs='+',
+    parser.add_argument('--systems',required=True, choices=plotter.__registry__.keys(), nargs='+',
         help='list of plotters to run')
     parser.add_argument('--param',help='parameter in filename to use as file labels')
 
@@ -81,7 +81,7 @@ if __name__ == '__main__' :
 
     for syst in arg.systems :
         logging.info(f'running {syst}')
-        h, e, plot = PLOTTERS[syst]
+        h, e, plot = plotter.__registry__[syst]
         if h and e :
             logging.debug('both hist and event plotter')
             plot(hd, ed, out_dir = out_dir)
