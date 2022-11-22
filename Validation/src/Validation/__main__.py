@@ -4,6 +4,7 @@
 import argparse
 import os
 import re
+import logging
 
 # external
 import matplotlib
@@ -35,6 +36,7 @@ if __name__ == '__main__' :
         )
 
     parser.add_argument('data',help='directory of event and histogram files')
+    parser.add_argument('--log',help='logging level',choices=['info','debug','warn','error'], default='warn')
     parser.add_argument('--label',help='label for grouping of data, defaults to data directory name')
     parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data directory')
     parser.add_argument('--systems',required=True, choices=PLOTTERS.keys(), nargs='+',
@@ -42,6 +44,15 @@ if __name__ == '__main__' :
     parser.add_argument('--param',help='parameter in filename to use as file labels')
 
     arg = parser.parse_args()
+
+    numeric_level = getattr(logging, arg.log.upper(), None)
+    if not isinstance(numeric_level, int) :
+        raise ValueError(f'Invalid log level: {arg.log}')
+    logging.basicConfig(level=numeric_level)
+
+    logging.getLogger('matplotlib').setLevel(logging.ERROR)
+
+    logging.debug(f'Parsed Arguments: {arg}')
 
     data = arg.data
     if data.endswith('/') :
@@ -55,20 +66,31 @@ if __name__ == '__main__' :
     if arg.out_dir is not None :
         out_dir = arg.out_dir
 
-    root_files = [ File.from_path(os.path.join(data,f)) for f in os.listdir(data) if f.endswith('.root') ]
+    logging.debug(f'Deduced Args: label = {label} out_dir = {out_dir}')
+
+    root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param) 
+        for f in os.listdir(data) if f.endswith('.root') ]
+
+    logging.debug(f'ROOT Files: {root_files}')
 
     hd = Differ(label, *[f for f in root_files if not f.is_events()])
     ed = Differ(label, *[f for f in root_files if f.is_events()])
 
+    logging.debug(f'histogram differ = {hd}')
+    logging.debug(f'event differ = {ed}')
+
     for syst in arg.systems :
+        logging.info(f'running {syst}')
         h, e, plot = PLOTTERS[syst]
         if h and e :
+            logging.debug('both hist and event plotter')
             plot(hd, ed, out_dir = out_dir)
         elif h :
+            logging.debug('both hist-only plotter')
             plot(hd, out_dir = out_dir)
         elif e :
+            logging.debug('both event-only plotter')
             plot(ed, out_dir = out_dir)
         else :
-            print(f'WARN: Not running {syst} since it was not registered properly.')
-            print('      I have no idea how this happened.')
+            logging.warn(f'Not running {syst} since it was not registered properly.')
 

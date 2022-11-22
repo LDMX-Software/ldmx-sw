@@ -2,6 +2,7 @@
 
 import uproot
 import os
+import logging
 
 class File :
     """File entry in Differ object
@@ -21,10 +22,10 @@ class File :
     open_kwargs : dict
         all other key-word arguments are passed to uproot.open
     """
+    log = logging.getLogger('File')
 
-    def __init__(self, filepath, legendlabel, colmod = None, hist_kwargs = dict(), **open_kwargs) :
+    def __init__(self, filepath, colmod = None, hist_kwargs = dict(), **open_kwargs) :
         self.__file = uproot.open(filepath, **open_kwargs)
-        self.__legendlabel = legendlabel
         self.__colmod = colmod
         self.__df = None
 
@@ -32,12 +33,17 @@ class File :
             hist_kwargs['histtype'] = 'step'
         if 'linewidth' not in hist_kwargs :
             hist_kwargs['linewidth'] = 2
-        if 'label' not in hist_kwargs :
-            hist_kwargs['label'] = self.__legendlabel
         if 'bins' not in hist_kwargs :
             hist_kwargs['bins'] = 'auto'
             
         self.__hist_kwargs = hist_kwargs
+
+    def __repr__(self) :
+        """Represent this File in a short form"""
+        event = 'Events'
+        if not self.is_events() :
+            event = 'Histos' 
+        return 'File { '+event+' labeled '+self.__hist_kwargs['label']+' }'
 
     def from_path(filepath, legendlabel_parameter = None) :
         """Extract the legend-label for histograms from this file using the filepath
@@ -66,15 +72,18 @@ class File :
         """
         l = os.path.basename(filepath).replace('.root','').split('_')
         file_params =  { l[i] : l[i+1] for i in range(len(l)) if i%2 == 0 }
+        File.log.debug(f'Deduced File Parameters: {file_params}')
         
-        legendlabel = next(iter(file_params))
-        if legendlabel_parameter is not None :
-            if legendlabel_parameter in file_params :
-                file_params[legendlabel_parameter]
-            else :
-                raise KeyError(f'{legendlabel_parameter} not in deduced file parameters\n{file_params}')
+        if legendlabel_parameter is None :
+            legendlabel_parameter = next(iter(file_params))
 
-        return File(filepath, legendlabel)
+        if legendlabel_parameter in file_params :
+            ll  = file_params[legendlabel_parameter]
+        else :
+            raise KeyError(f'{legendlabel_parameter} not in deduced file parameters\n{file_params}')
+
+        File.log.debug(f'Deduced File Label: {ll}')
+        return File(filepath, hist_kwargs=dict(label=ll))
 
     def keys(self, *args, **kwargs) :
         """Callback into uproot keys
