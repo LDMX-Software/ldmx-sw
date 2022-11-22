@@ -55,6 +55,10 @@ class Differ :
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
 
+    def __repr__(self) :
+        """Short form representation of a Differ"""
+        return f'Differ ({self.grp_name}) {self.files}'
+
     def plot1d(self, column, xlabel, 
               ylabel = 'Count',
               yscale = 'log',
