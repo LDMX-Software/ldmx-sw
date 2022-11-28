@@ -5,7 +5,7 @@ Python package forcused on comparing two or more "similar" LDMX event data files
 ## Installation
 Inside container...
 ```
-ldmx python3 -m pip install Validation/ --target install/python/ --no-deps --no-cache
+ldmx python3 -m pip install Validation/ --target install/python/ --no-cache
 ```
 Outside container
 ```
@@ -42,3 +42,6 @@ unless the `out_dir` parameter is provided.
 ### In Notebook
 Again, accessing this module post-installation is the same as other modules `import Validation`.
 This can help you develop plots that don't come pre-made within the Validation module.
+**If you are developing Validation and testing within a notebook**, you will need to reboot
+the python kernel anytime you wish to test changes to the Validation module. This is necessary
+because Python keeps modules cached in memory during normal running.
