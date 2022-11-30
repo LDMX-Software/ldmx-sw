@@ -60,7 +60,8 @@ if __name__ == '__main__' :
 
     label = os.path.basename(data)
     if arg.label is not None :
-        label = arg.label
+        # update the raw string literal to intrepret new lines
+        label = arg.label.replace(r'\n','\n')
 
     out_dir = data
     if arg.out_dir is not None :
