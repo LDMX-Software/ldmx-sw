@@ -237,11 +237,11 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.verbosity = 0
 
     def pad1() :
-        """Get the cluster producer for the trigger pad downstream of target"""
+        """Get the cluster producer for the trigger pad most upstream of tagger"""
         cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
         cluster.input_collection = 'trigScintDigisPad1'
         cluster.output_collection= 'TriggerPad1Clusters'
-        cluster.pad_time= 0.
+        cluster.pad_time= -2.9
         return cluster
 
     def pad2() :
@@ -249,11 +249,11 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster = TrigScintClusterProducer( 'trigScintClustersPad2' )
         cluster.input_collection = 'trigScintDigisPad2'
         cluster.output_collection= 'TriggerPad2Clusters'
-        cluster.pad_time= -2.
+        cluster.pad_time= -2.7
         return cluster
 
     def pad3() :
-        """Get the cluster producer for the trigger pad most upstream of tagger"""
+        """Get the cluster producer for the trigger pad just upstream of target"""
         cluster = TrigScintClusterProducer( 'trigScintClustersPad3' )
         cluster.input_collection = 'trigScintDigisPad3'
         cluster.output_collection= 'TriggerPad3Clusters'
