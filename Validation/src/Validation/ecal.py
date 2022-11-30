@@ -2,6 +2,9 @@
 
 from ._differ import Differ
 from ._plotter import plotter
+import logging
+
+log = logging.getLogger('ecal')
 
 @plotter(hist=True,event=False)
 def shower_feats(d : Differ, out_dir = None) :
@@ -27,6 +30,7 @@ def shower_feats(d : Differ, out_dir = None) :
         ('EcalShowerFeatures/EcalShowerFeatures_std_layer_hit', 'Std Dev Layer Hit')
     ]
     for col, name in features :
+        log.info(f'plotting {col}')
         d.plot1d(col, name, out_dir = out_dir)
 
 @plotter(hist=False,event=True)
@@ -39,8 +43,29 @@ def sim_hits(d : Differ, out_dir = None) :
         Differ containing files that are event files
     """
 
+    # loading just the IDs into memory so that we can calculate the layer
+    #   the hits are in and count how many sim hits there were per event
+    def rename_columns_and_calc_layer(data) :
+        data.rename(inplace=True,columns=lambda cn : cn.replace('EcalSimHits_valid.','').replace('_',''))
+        data['layer'] = (data['id'].values >> 17) & 0x3f
+    d.load(manipulation = rename_columns_and_calc_layer, filter_name = 'EcalSimHits_valid/EcalSimHits_valid.id_')
+
+    # plot number of sim hits
+    log.info('plotting num sim hits')
+    d.plot1d(lambda data : data.reset_index(level=1).index.value_counts(), 'Num Sim Hits', 
+            ylabel='Events', range=(50,200), file_name = 'ecal_num_sim_hits', out_dir = out_dir)
     branches = [
-        ('EcalSimHits_valid/EcalSimHits_valid.edep_', 'Sim Energy Dep [MeV]')
+        ('layer', 'Sim Layer Hit', 
+            dict(bins=34, density=True)),
+        ('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.edep_', 'Sim Energy Dep [MeV]',
+            dict(range=(0,50),bins=50, density=True)),
+        ('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.time_', 'Sim Hit Time [ns]',
+            dict(range=(0,100000),bins=100,density=True)),
+        ('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.x_', 'Sim Hit x [mm]',
+            dict(range=(-300,300),bins=60, density=True)),
+        ('LDMX_Events/EcalSimHits_valid/EcalSimHits_valid.y_', 'Sim Hit y [mm]',
+            dict(range=(-300,300),bins=60, density=True)),
         ]
-    for col, name in branches :
-        d.plot1d(f'LDMX_Events/{col}', name, out_dir = out_dir)
+    for col, name, kw in branches :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, ylabel = 'Fraction Sim Hits', out_dir = out_dir, **kw)
