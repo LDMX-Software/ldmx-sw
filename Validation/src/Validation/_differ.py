@@ -111,10 +111,14 @@ class Differ :
         if out_dir is None :
             plt.show()
         else :
-            fn = re.sub(r'^.*/','',column)
-            if file_name is not None :
-                fn = file_name
-            fig.savefig(os.path.join(out_dir,fn)+'.pdf', bbox_inches='tight')
+            if file_name is None :
+                if isinstance(column, str) :
+                    file_name = re.sub(r'^.*/','',column)
+                else :
+                    # assume column is a function meaning the '__name__'
+                    #   parameter is defined by Python for us
+                    file_name = column.__name__
+            fig.savefig(os.path.join(out_dir,file_name)+'.pdf', bbox_inches='tight')
             fig.clf()
 
     def load(self, **kwargs) :
