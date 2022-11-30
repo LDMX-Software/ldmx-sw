@@ -7,10 +7,22 @@ Inside container...
 ```
 ldmx python3 -m pip install Validation/ --target install/python/ --no-cache
 ```
-Outside container
+Outside container it is helpful to put the Validation module inside a virtual environment.
+This makes it easier to keep track of what you are doing.
+Below, I make two different virtual environments. `valid` has the Validation module files are copied
+over (so it can be used even if ldmx-sw switches to a branch without the Validation files).
+`valid-ed` has an "editable" install of Validation so you can develop the Validation module.
 ```
+python3 -m venv .venv/valid --prompt valid
+source .venv/valid/bin/activate
 python3 -m pip install Validation/
+# in new terminal
+python3 -m venv .venv/valid-ed --prompt valid-ed
+source .venv/valid-ed/bin/activate
+python3 -m pip install -e Validation/
 ```
+Then if you are developing Validation you would `source <full-path>/ldmx-sw/.venv/valid-ed/bin/activate`
+and if not `source <full-path>/ldmx-sw/.venv/valid/bin/activate`.
 
 Other helpful options
 - Outside container: `--user` may need to be required
