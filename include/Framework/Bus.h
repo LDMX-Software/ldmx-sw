@@ -409,6 +409,25 @@ class Bus {
 
    private:  // specializations of attach
     /**
+     * Empty class to access protected status bit
+     *
+     * We inherit from TBranchElement so we can access the status
+     * bits enum which is protected instead of public for some
+     * reason.
+     *
+     * This class should never be used so we delete any ability
+     * to create it.
+     */
+    class DeleteObjectStatus : public TBranchElement {
+      DeleteObjectStatus() = delete;
+      DeleteObjectStatus(const DeleteObjectStatus&) = delete;
+     public:
+      static int bit() {
+        return TBranchElement::EStatusBits::kDeleteObject;
+      }
+    };
+
+    /**
      * Attach to a (potentially) new branch on the input tree.
      *
      * This is the attachment mechanism used for all non-basic types.
@@ -451,7 +470,7 @@ class Bus {
          * the branch was initialized which when reading is ROOT-owned objects.
          */
         if (dynamic_cast<TBranchElement*>(branch)) {
-          branch->SetBit(TBranchElement::EStatusBits::kDeleteObject, false);
+          branch->SetBit(DeleteObjectStatus::bit(), false);
         }
         branch->SetObject(baggage_);
       } else if (can_create) {
