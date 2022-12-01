@@ -70,7 +70,10 @@ class File :
         legendlabel_parameter : str, optional
             key-name to use in legend-label for this File
         """
-        l = os.path.basename(filepath).replace('.root','').split('_')
+        fn = os.path.basename(filepath).replace('.root','')
+        l = fn.split('_')
+        if len(l)%2 != 0 :
+            raise ValueError(f'The filename provided {fn} cannot be split into key_val pairs.')
         file_params =  { l[i] : l[i+1] for i in range(len(l)-1) if i%2 == 0 }
         File.log.debug(f'Deduced File Parameters: {file_params}')
         
