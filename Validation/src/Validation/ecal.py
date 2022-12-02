@@ -16,8 +16,11 @@ def shower_feats(d : Differ, out_dir = None) :
         Differ containing files that are not event files (presumably histogram files)
     """
 
+    col, name = 'EcalShowerFeatures/EcalShowerFeatures_deepest_layer_hit', 'Deepest Layer Hit'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
     features = [
-        ('EcalShowerFeatures/EcalShowerFeatures_deepest_layer_hit', 'Deepest Layer Hit'),
         ('EcalShowerFeatures/EcalShowerFeatures_num_readout_hits', 'N Readout Hits'),
         ('EcalShowerFeatures/EcalShowerFeatures_summed_det', 'Total Rec Energy [MeV]'),
         ('EcalShowerFeatures/EcalShowerFeatures_summed_iso', 'Total Isolated Energy [MeV]'),
@@ -53,7 +56,7 @@ def sim_hits(d : Differ, out_dir = None) :
     # plot number of sim hits
     log.info('plotting num sim hits')
     d.plot1d(lambda data : data.reset_index(level=1).index.value_counts(), 'Num Sim Hits', 
-            ylabel='Events', range=(50,200), file_name = 'ecal_num_sim_hits', out_dir = out_dir)
+            ylabel='Events', range=(0,200), file_name = 'ecal_num_sim_hits', out_dir = out_dir)
     branches = [
         ('layer', 'Sim Layer Hit', 
             dict(bins=34, density=True)),
