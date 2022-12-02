@@ -174,27 +174,56 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   const auto localPreStepPoint{topTransform.TransformPoint(prePoint->GetPosition())};
   const auto localPostStepPoint{topTransform.TransformPoint(postPoint->GetPosition())};
 
-  switch (id.getSection())  //set coordinates for even layer numbers
-  {
-    case ldmx::HcalID::BACK   : hit.setPreStepPosition(localPreStepPoint[2], localPreStepPoint[0], localPreStepPoint[1]);
-                                hit.setPostStepPosition(localPostStepPoint[2], localPostStepPoint[0], localPostStepPoint[1]);
-                                break;
+  /**
+   * topTransform translates to the local bar but does not do the rotation
+   * (this is because we don't do a rotation when placing the bars in the GDML)
+   *
+   * the logic below does the rotation to the local coordiates where 
+   *  x : short transverse side of bar
+   *  y : long transverse side of bar
+   *  z : along length of bar
+   *
+   * a lot of this logic could (and should) probably be moved into the geometry
+   * condition for the HCal so that it is more easily maintainable
+   *
+   * @note This logic only applies to the v14 and prototype detector; however,
+   * support for v12 is not broken because no studies using these pre/post step
+   * positions have been (or should be) done with the v12 detector.
+   */
+  const auto& geometry = getCondition<ldmx::HcalGeometry>(
+      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+  switch (id.getSection()) {
+    case ldmx::HcalID::BACK   : 
+      if (geometry.layerIsHorizontal(id.layer())) {
+        hit.setPreStepPosition(localPreStepPoint[2], localPreStepPoint[1], localPreStepPoint[0]);
+        hit.setPostStepPosition(localPostStepPoint[2], localPostStepPoint[1], localPostStepPoint[0]);
+      } else {
+        hit.setPreStepPosition(localPreStepPoint[2], localPreStepPoint[0], localPreStepPoint[1]);
+        hit.setPostStepPosition(localPostStepPoint[2], localPostStepPoint[0], localPostStepPoint[1]);
+      }
+      break;
     case ldmx::HcalID::TOP    :
-    case ldmx::HcalID::BOTTOM : hit.setPreStepPosition(localPreStepPoint[1], localPreStepPoint[2], localPreStepPoint[0]);
-                                hit.setPostStepPosition(localPostStepPoint[1], localPostStepPoint[2], localPostStepPoint[0]);
-                                break;
+    case ldmx::HcalID::BOTTOM : 
+      if (id.layer() % 2 == 0) {
+        hit.setPreStepPosition(localPreStepPoint[1], localPreStepPoint[2], localPreStepPoint[0]);
+        hit.setPostStepPosition(localPostStepPoint[1], localPostStepPoint[2], localPostStepPoint[0]);
+      } else {
+        hit.setPreStepPosition(localPreStepPoint[1], localPreStepPoint[0], localPreStepPoint[2]);
+        hit.setPostStepPosition(localPostStepPoint[1], localPostStepPoint[0], localPostStepPoint[2]);
+      }
+      break;
     case ldmx::HcalID::RIGHT  : 
-    case ldmx::HcalID::LEFT   : hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[2], localPreStepPoint[1]);
-                                hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[2], localPostStepPoint[1]);
-                                break;
-    default : EXCEPTION_RAISE("HcalSDHit","Found an unknown HCal section");
-  }
-  if(id.layer()%2==1) //swap x and y for odd layer numbers
-  {
-    auto preStepPos  = hit.getPreStepPosition();
-    auto postStepPos = hit.getPostStepPosition();
-    hit.setPreStepPosition(preStepPos[0],preStepPos[2],preStepPos[1]);
-    hit.setPostStepPosition(postStepPos[0],postStepPos[2],postStepPos[1]);
+    case ldmx::HcalID::LEFT   : 
+      if (id.layer() % 2 == 0) {
+        hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[2], localPreStepPoint[1]);
+        hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[2], localPostStepPoint[1]);
+      } else {
+        hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[1], localPreStepPoint[2]);
+        hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1], localPostStepPoint[2]);
+      }
+      break;
+    default : 
+      EXCEPTION_RAISE("HcalSDHit","Found an unknown HCal section");
   }
   hit.setPreStepTime(prePoint->GetGlobalTime());
   hit.setPostStepTime(postPoint->GetGlobalTime());
