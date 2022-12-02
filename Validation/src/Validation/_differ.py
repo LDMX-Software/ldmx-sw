@@ -64,6 +64,7 @@ class Differ :
               yscale = 'log',
               ylim = (None,None),
               out_dir = None, file_name = None,
+              legend_kw = dict(),
               **hist_kwargs) :
         """Plot a 1D histogram, overlaying the File entries
 
@@ -106,7 +107,11 @@ class Differ :
         ax.set_ylabel(ylabel)
         ax.set_yscale(yscale)
         ax.set_ylim(*ylim)
-        ax.legend(title=self.grp_name)
+
+        if 'title' not in legend_kw :
+            legend_kw['title'] = self.grp_name
+
+        ax.legend(**legend_kw)
 
         if out_dir is None :
             plt.show()
