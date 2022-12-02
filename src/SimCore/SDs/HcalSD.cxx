@@ -187,7 +187,7 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     case ldmx::HcalID::LEFT   : hit.setPreStepPosition(localPreStepPoint[0], localPreStepPoint[2], localPreStepPoint[1]);
                                 hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[2], localPostStepPoint[1]);
                                 break;
-    default : throw std::runtime_error("HcalSD::ProcessHits: Found an unknown HCal section");
+    default : EXCEPTION_RAISE("HcalSDHit","Found an unknown HCal section");
   }
   if(id.layer()%2==1) //swap x and y for odd layer numbers
   {
