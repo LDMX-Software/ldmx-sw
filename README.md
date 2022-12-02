@@ -4,7 +4,7 @@ Installation of ldmx-sw from docker with acts
 Baseline installation
 
     0. Start docker deamon 
-     
+```   
 git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git -b tracking_dev
 cd ldmx-sw
 cd Tracking
@@ -18,6 +18,7 @@ ldmx pull dev sha-995b3239
 cd ldmx-sw; mkdir build; cd build;
 ldmx cmake ..
 ldmx make install -j2
+```
 
 Due to an issue with DD4Hep (which I plan to remove soon), the compilation will probably fail with an error similar to:
 /bin/sh: 1: LD_LIBRARY_PATH=/Users/pbutti/sw/ldmxtest/ldmx-sw/build/Detectors:/deps/dd4hep/lib:/Users/pbutti/sw/ldmxtest/ldmx-sw/install/lib:/deps/dd4hep/lib:/deps/cernroot/lib:/deps/acts/lib:/deps/geant4/lib:/deps/xerces-c/lib:/Users/pbutti/sw/ldmxtest/ldmx-sw/install/external/*/lib: not found
