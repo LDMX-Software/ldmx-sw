@@ -65,6 +65,12 @@ void TargetBremFilter::stepping(const G4Step* step) {
       region.compareTo("target") != 0)
     return;
 
+  /*
+  std::cout << "[TargetBremFilter] : Stepping primary electron in 'target' region into " 
+    << track->GetNextVolume()->GetName()
+    << std::endl;
+   */
+
   /**
    * Check if the electron will be exiting the target
    *
@@ -73,9 +79,13 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * visualization. This Physical Volume (PV) is associated with the
    * recoil parent volume and so it will break if the recoil parent volume
    * changes its name.
+   *
+   * We also check if the next volume is World_PV because in some geometries
+   * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
   if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0) {
+      volume.compareTo("recoil_PV") == 0
+      or volume.compareTo("World_PV") == 0) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -111,6 +121,10 @@ void TargetBremFilter::stepping(const G4Step* step) {
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
+
+    /*
+    std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
+     */
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.

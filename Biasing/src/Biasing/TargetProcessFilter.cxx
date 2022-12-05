@@ -76,9 +76,13 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * visualization. This Physical Volume (PV) is associated with the
      * recoil parent volume and so it will break if the recoil parent volume
      * changes its name.
+     *
+     * We also check for 'World_PV' because in later geometries, there is
+     * an air gap between the target region and the recoil tracker.
      */
     if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("recoil_PV") == 0) {
+        volume.compareTo("recoil_PV") == 0 or 
+        volume.compareTo("World_PV") == 0) {
       if (secondaries->size() != 0) {
         if (getEventInfo()->bremCandidateCount() == 1) {
           track->SetTrackStatus(fKillTrackAndSecondaries);
