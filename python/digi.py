@@ -198,11 +198,13 @@ class EcalRecProducer(Producer) :
     def v14(self) :
         """Generated for the v14 geometry
 
-        The secondOrderEnergyCorrection has not been calculated yet so it is set to the
-        suspicious value of 1.
+        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV
+        electron events shot directly into the front of the ECal from immediately upstream.
+        The mean of the resulting total recon energy is found by fitting a two-sided normal
+        distribution (one mean, a low and high deviation) to the histogram.
         """
 
-        self.secondOrderEnergyCorrection = 1.;
+        self.secondOrderEnergyCorrection = 4000. / 3940.5;
         self.layerWeights = [ 
                 2.312, 4.312, 6.522, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
                 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
