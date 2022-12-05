@@ -135,6 +135,20 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   double getEcalDy() const { return ecal_dy_; }
 
+  /**
+   * Does the Side Hcal have 3D readout?
+   *
+   * In other words, does the side hcal layers alter in scintillator direction
+   * (z vs x/y).
+   */
+  bool hasSide3DReadout() const { return side_3d_readout_; }
+
+  /*
+   * Is the hcal geometry one of the geometries used for the CERN testbeam
+   * activities?
+   */
+  bool isPrototype() const { return is_prototype_; }
+
  private:
   /**
    * Class constructor, for use only by the provider
