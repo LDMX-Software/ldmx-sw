@@ -119,6 +119,11 @@ class HcalGeometry:
         """
         self.v13 = HcalReadoutGeometry()
 
+        self.v13.num_sections = 5
+        self.v13.num_layers = [100, 28, 28, 26, 26]
+        self.v13.scint_thickness = 20.0
+        self.v13.scint_width = 50.0
+
         back_scint_length = 3100.0
         side_TB_scint_length = back_scint_length - 600. #TODO/FIXME Dummy value
         side_LR_scint_length = back_scint_length - 800. #TODO/FIXME Dummy value
@@ -128,11 +133,7 @@ class HcalGeometry:
                                  [side_LR_scint_length for layer in range(self.v13.num_layers[3])],
                                  [side_LR_scint_length for layer in range(self.v13.num_layers[4])],
                                  ]
-        self.v13.num_sections = 5
-        self.v13.num_layers = [100, 28, 28, 26, 26]
 
-        self.v13.scint_thickness = 20.0
-        self.v13.scint_width = 50.0
         self.v13.zero_layer = [
             220.0 + 600.0 + 25.0 + 2 * 2.0,
             600.0 / 2 + 20.0 + 2 * 2.0,
