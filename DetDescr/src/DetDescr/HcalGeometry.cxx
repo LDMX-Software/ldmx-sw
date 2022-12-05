@@ -101,8 +101,6 @@ void HcalGeometry::buildStripPositionMap() {
             x = stripcenter - getZeroStrip(section, layer);
             y = 0;
           }
-	  // std::cout << "back (section,layer,strip)" << section << " " << layer << " " << strip;
-	  // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl;
         } else {
           /**
           For side Hcal
@@ -143,9 +141,6 @@ void HcalGeometry::buildStripPositionMap() {
               y *= -1;
             }
           }
-          // std::cout << "side (section,layer,strip)" << section << " " << layer << " "
-          // << strip; std::cout << " (x,y,z) " << x << " " << y << " " << z <<
-          // std::endl;
         }
         TVector3 pos;
         pos.SetXYZ(x, y, z);
