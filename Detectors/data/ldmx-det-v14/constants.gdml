@@ -43,29 +43,27 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3"/>		
-<constant name="number_of_bars"             value="25"/>
+<constant name="trigger_bar_dy"             value="3.05"/>   
+<constant name="number_of_bars"             value="24"/>
 
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
-<!-- trigger pad distance from the target XXX mm -->
-<constant name="trig_scint_pad3_separation"
-	  value="60"/>
-<constant name="trigger_pad2_z"    
-	  value="-(trigger_pad_thickness/2) - clearance" />
-
-<constant name="trigger_pad1_z"
-	  value="- trig_scint_pad3_separation - trigger_pad_thickness/2 - clearance" />
-
 <!-- Trigger pad distance from the target is -2.4262 --> 
+<constant name="trig_scint_pad12_separation"
+          value="60"/>
+<constant name="trigger_pad1_z"
+          value="- trig_scint_pad12_separation - trigger_pad_thickness/2 - clearance" />
+<constant name="trigger_pad2_z"    
+          value="-(trigger_pad_thickness/2) - clearance" />
 <constant name="trigger_pad3_z"      
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
 
 <!-- Parent volume dimensions --> 
 <constant name="trig_scint_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="trig_scint_area_envelope_z" value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
+<constant name="trig_scint_area_envelope_z" 
+          value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
 
 <!--
   Tracker common variables 
@@ -110,7 +108,8 @@
 <constant name="recoil_envelope_dx" value="magnet_gap_dx" />
 <constant name="recoil_envelope_dy" value="magnet_gap_dy" />
 <variable name="recoil_envelope_dz" 
-    value="tracker_envelope_clearance*2 + recoil_delta_l14*3 + recoil_delta_l45 + recoil_delta_l56" />
+          value="tracker_envelope_clearance*2 + recoil_delta_l14*3 
+                 + recoil_delta_l45 + recoil_delta_l56" />
  
 <!--
     Tagger Tracker 
@@ -132,6 +131,23 @@
 <variable name="tagger_envelope_dz" 
     value="tracker_envelope_clearance*2 + tagger_layer_delta*6" />
 
+
+<!--
+  Location of TS pads relative to target
+-->
+<variable name="ts_center_z"
+      value="-9 -tagger_envelope_dz -trig_scint_area_envelope_z/2 - clearance - 200" />
+<constant name="trigger_pad1_actual_z"
+    value="ts_center_z - (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2) 
+            + trigger_pad_thickness/2" />
+<!-- 
+  somehow the pad thickness is double counted in the 
+  positioning of pad1, this accounts for that 
+-->
+<constant name="trigger_pad2_actual_z"
+    value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
+
+
 <!--
    HCal
   TODO:
@@ -152,7 +168,8 @@
 <constant name="back_hcal_numLayers" value="96"/>
 <constant name="back_hcal_numScint" value="40"/>
 <constant name="back_hcal_absoThick" value="25"/>
-<constant name="back_hcal_layerThick" value="back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick"/>
+<constant name="back_hcal_layerThick" 
+          value="back_hcal_absoThick + hcal_scintThick + 2.0*hcal_airThick"/>
 
 <!--
   The back Hcal is 4704.mm long in z
@@ -181,7 +198,7 @@
 <matrix name="side_hcal_length" coldim="1" values="1800.
                                                    1600.
                                                    1400.
-						   1200."/>
+               1200."/>
 
 <!--
   num bars per module:
@@ -193,11 +210,14 @@
 <matrix name="side_hcal_numPrevLayers" coldim="1" values="0 4 7 9"/>
 <matrix name="side_hcal_numScintZ" coldim="1" values="side_hcal_length[1]/hcal_scintWidth
                                                       side_hcal_length[2]/hcal_scintWidth
-						      side_hcal_length[3]/hcal_scintWidth
-						      side_hcal_length[4]/hcal_scintWidth"/>
+                                                      side_hcal_length[3]/hcal_scintWidth
+                                                      side_hcal_length[4]/hcal_scintWidth"/>
 <variable name="side_hcal_numScintXY" value="side_hcal_dz/hcal_scintWidth"/>
-<variable name="side_hcal_numTotalLayers" value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]+side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
-<variable name="side_hcal_layerThick" value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
+<variable name="side_hcal_numTotalLayers" 
+          value="(side_hcal_numLayers[1]+side_hcal_numLayers[2]
+                  +side_hcal_numLayers[3]+side_hcal_numLayers[4])*2"/>
+<variable name="side_hcal_layerThick" 
+          value="side_hcal_absoThick + 2.*hcal_airThick + hcal_scintThick"/>
 <variable name="side_hcal_moduleWidth" value="side_hcal_numTotalLayers*side_hcal_layerThick"/>
 <variable name="side_hcal_moduleLength" value="side_hcal_length[1]"/>
 <!--
@@ -325,12 +345,15 @@ them in the bilayer loop
     all values in mm
 
   PCB_dz - needs to match the thickness of the PCB in the motherboards
-  extracted from CAD drawings
+  extracted from CAD drawings. Leave it **larger** than the design
+  specifications by O(10)s of um for tolerance. This mismatch is
+  **on purpose**.
 -->
 <variable name="PCB_dz" value="1.666"/>
 <variable name="Glue_dz" value="0.1"/>
 <variable name="Si_dz" value="0.3"/>
 <variable name="GlueThick_dz" value="0.2"/>
+<variable name="CarbonBasePlate_dz" value="0.79"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->
 <variable name="MotherBoardAssembly_dz" value="8.166"/>
 <!-- the carbon cooling plane is 1mm+3/16 inch thick (about) -->
@@ -347,7 +370,7 @@ them in the bilayer loop
   sensitive silicon, and the thicker glue mounting it to the
   absorber (or carbon cooling plane in the pre-shower case)
 -->
-<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz"/>
+<variable name="Flower_dz" value="PCB_dz+Glue_dz+Si_dz+GlueThick_dz+CarbonBasePlate_dz"/>
 
 <!-- 
     Air separating sheets of Al or W with PCB motherboard, limited by 

@@ -86,8 +86,8 @@ class Layer :
     def silicon() :
         return Layer('Si',Layer.SensDetThickness,sensitive=True)
 
-    def carbon() :
-        return Layer('Carbon',5.7)
+    def carbon(t) :
+        return Layer('Carbon',t)
 
     def enumerate_full_stack(sections) :
         layers = []
@@ -105,11 +105,13 @@ class Layer :
                 layers.append(Layer.glue(0.1))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.2))
+                layers.append(Layer.carbon(0.79))
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
-                layers.append(Layer.carbon())
+                layers.append(Layer.carbon(5.7))
                 if cooling > 0 :
                     layers.append(Layer.tungsten(cooling))
+                layers.append(Layer.carbon(0.79))
                 layers.append(Layer.glue(0.2))
                 layers.append(Layer.silicon())
                 layers.append(Layer.glue(0.1))
@@ -151,10 +153,8 @@ def calc_weights(layers_partitioned_by_sensdet) :
     # Does include sensitive detector layers
     Zpos_layer = [ ]
     for section in layers_partitioned_by_sensdet :
-        print('section')
         dE_section, X0_section, L_section, Zdepth_section = 0., 0., 0., 0.
         for l in section :
-            print(' ',l)
             dE_section += l.thickness * l.dEdx
             X0_section += l.thickness / l.x0
             L_section  += l.thickness / l.nuclen
@@ -206,6 +206,9 @@ def main() :
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
     print_weights(*weights)
+
+    for l in layers :
+        print(l)
 
 if __name__ == '__main__' :
     main()

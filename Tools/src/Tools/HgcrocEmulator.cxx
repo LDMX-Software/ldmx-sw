@@ -7,7 +7,6 @@ HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
   noise_ = ps.getParameter<bool>("noise");
-  noiseRMS_ = ps.getParameter<double>("noiseRMS");
   timingJitter_ = ps.getParameter<double>("timingJitter");
   rateUpSlope_ = ps.getParameter<double>("rateUpSlope");
   timeUpSlope_ = ps.getParameter<double>("timeUpSlope");
