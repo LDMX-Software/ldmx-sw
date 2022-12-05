@@ -118,6 +118,16 @@ class HcalGeometry:
         Nothing has changed in v13 for the HCal
         """
         self.v13 = HcalReadoutGeometry()
+
+        back_scint_length = 3100.0
+        side_TB_scint_length = back_scint_length - 600. #TODO/FIXME Dummy value
+        side_LR_scint_length = back_scint_length - 800. #TODO/FIXME Dummy value
+        self.v13.scint_length = [[back_scint_length for layer in range(self.v13.num_layers[0])],
+                                 [side_TB_scint_length for layer in range(self.v13.num_layers[1])],
+                                 [side_TB_scint_length for layer in range(self.v13.num_layers[2])],
+                                 [side_LR_scint_length for layer in range(self.v13.num_layers[3])],
+                                 [side_LR_scint_length for layer in range(self.v13.num_layers[4])],
+                                 ]
         self.v13.num_sections = 5
         self.v13.num_layers = [100, 28, 28, 26, 26]
 
@@ -130,7 +140,7 @@ class HcalGeometry:
             800.0 / 2 + 20.0 + 2 * 2.0,
             800.0 / 2 + 20.0 + 2 * 2.0,
         ]
-        self.v13.zero_strip = [[3100.0 / 2 for layer in range(self.v13.num_layers[0])],
+        self.v13.zero_strip = [[back_scint_length / 2 for layer in range(self.v13.num_layers[0])],
                                [220.0 for layer in range(self.v13.num_layers[1])],
                                [220.0 for layer in range(self.v13.num_layers[2])],
                                [220.0 for layer in range(self.v13.num_layers[3])],
