@@ -1,10 +1,9 @@
 
 #include "DQM/HCalDQM.h"
 
+#include "DetDescr/HcalID.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/Event/HcalVetoResult.h"
-
-#include "DetDescr/HcalID.h"
 
 namespace dqm {
 
@@ -21,7 +20,8 @@ void HCalDQM::analyze(const framework::Event& event) {
   static const float pe_veto_threshold{5.};
 
   // Get the collection of HCalDQM digitized hits if the exists
-  const auto& hcalHits{event.getCollection<ldmx::HcalHit>(rec_coll_name_,rec_pass_name_)};
+  const auto& hcalHits{
+      event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 
   float totalPE{0}, total_back_pe{0}, minTime{999}, minTimePE{-1};
   float maxPE{-1}, maxPETime{-1};
@@ -41,15 +41,16 @@ void HCalDQM::analyze(const framework::Event& event) {
       total_back_pe += hit.getPE();
     }
 
-    histograms_.fill(section+"_pe:layer", hit.getPE(), id.layer());
-    histograms_.fill(section+"_layer:strip", id.layer(), id.strip());
+    histograms_.fill(section + "_pe:layer", hit.getPE(), id.layer());
+    histograms_.fill(section + "_layer:strip", id.layer(), id.strip());
 
     /**
      * Get earliest (min time) non-noise (time > -999.ns) hit
      * above the PE veto threshold.
      */
-    if (hit.getTime() > -999. and hit.getPE() > pe_veto_threshold and hit.getTime() < minTime) {
-      minTime   = hit.getTime();
+    if (hit.getTime() > -999. and hit.getPE() > pe_veto_threshold and
+        hit.getTime() < minTime) {
+      minTime = hit.getTime();
       minTimePE = hit.getPE();
     }
 
@@ -72,7 +73,6 @@ void HCalDQM::analyze(const framework::Event& event) {
   histograms_.fill("max_pe:time", maxPE, maxPETime);
   histograms_.fill("min_time_hit_above_thresh", minTime);
   histograms_.fill("min_time_hit_above_thresh:pe", minTimePE, minTime);
-
 }
 
 }  // namespace dqm
