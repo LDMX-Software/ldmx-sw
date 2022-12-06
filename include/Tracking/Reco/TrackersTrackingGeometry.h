@@ -1,0 +1,74 @@
+#ifndef TRACKING_RECO_TRACKERSTRACKINGGEOMETRY_H_
+#define TRACKING_RECO_TRACKERSTRACKINGGEOMETRY_H_
+
+
+//Acts
+
+//geometry
+#include <Acts/Geometry/TrackingGeometry.hpp>
+#include "Acts/Geometry/CuboidVolumeBuilder.hpp"
+#include "Acts/Geometry/GeometryContext.hpp"
+#include "Acts/Geometry/TrackingVolume.hpp"
+#include "Acts/Geometry/TrackingGeometryBuilder.hpp"
+#include <Acts/Geometry/TrackingGeometry.hpp>
+#include "Acts/Surfaces/RectangleBounds.hpp"
+
+//Material
+#include "Acts/Material/Material.hpp"
+#include "Acts/Material/MaterialSlab.hpp"
+#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
+
+///Visualization
+#include <Acts/Visualization/ObjVisualization3D.hpp>
+#include <Acts/Visualization/GeometryView3D.hpp>
+#include <Acts/Visualization/ViewConfig.hpp>
+
+//G4
+#include <G4GDMLParser.hh>
+#include <G4VPhysicalVolume.hh>
+#include <G4LogicalVolume.hh>
+#include <G4Types.hh>
+#include <G4Polyhedra.hh>
+#include <G4Material.hh>
+
+//Tracking
+#include "Tracking/Reco/BaseTrackingGeometry.h"
+
+#include <string>
+#include <boost/filesystem.hpp>
+
+namespace tracking {
+namespace reco {
+
+class TrackersTrackingGeometry : BaseTrackingGeometry {
+  
+ public:
+  
+  TrackersTrackingGeometry(std::string gdmlfile,
+                           Acts::GeometryContext* gctx, bool debug = false);
+
+  void BuildLayoutMap(G4VPhysicalVolume* pvol,
+                      std::string surfacename);
+  
+ private:
+  G4VPhysicalVolume* Tagger_;
+  G4VPhysicalVolume* Recoil_;
+
+  // I store the layout as a map to distinguish layers/sides
+  // They are not too many modules, so it should be ok to use this data structure
+
+  //Tracker mapping.
+  //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer
+  //In this way we can pass multiple surfaces to the same layer to the builder.
+  std::map<std::string, std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig > > tracker_layout;
+  
+  
+  
+      
+};
+
+
+} //tracking
+}//reco
+
+#endif
