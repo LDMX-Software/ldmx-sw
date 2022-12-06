@@ -17,7 +17,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-
 #include "Tools/AnalysisUtils.h"
 
 namespace dqm {
