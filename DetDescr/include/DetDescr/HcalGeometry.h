@@ -46,7 +46,7 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    * Does nothing because the stl containers clean up automatically.
    */
-  ~HcalGeometry() = default; 
+  ~HcalGeometry() = default;
 
   /**
    * Get a strip center position from a combined hcal ID.
@@ -75,7 +75,8 @@ class HcalGeometry : public framework::ConditionsObject {
     return layer % 2 == back_horizontal_parity_;
   }
   /**
-   * Get the half total width of a layer for a given section(strip) for back(side) Hcal.
+   * Get the half total width of a layer for a given section(strip) for
+   * back(side) Hcal.
    * @param section
    * @param layer
    * @return half total width [mm]
@@ -91,7 +92,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * @return The length of the bar with ID `id` [mm]
    */
   double getScintillatorLength(ldmx::HcalID id) const {
-    return scint_length_.at(id.section()).at(id.layer()-1);
+    return scint_length_.at(id.section()).at(id.layer() - 1);
   }
   /**
    * Get the scitillator width
@@ -123,7 +124,6 @@ class HcalGeometry : public framework::ConditionsObject {
     auto layer_index = layer - 1;
     return zero_strip_.at(isection).at(layer_index);
   }
-
 
   /**
    * Get the length of the Ecal in (x) for the side Hcal.
@@ -175,22 +175,20 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    * @param section The section number to print, see HcalID for details.
    */
-    void printPositionMap(int section) const;
+  void printPositionMap(int section) const;
   /**
    * Debugging utility, prints out the HcalID and corresponding value of all
    * entries in the strip_position_map_. For printing only one of the sections,
    * see the overloaded version of this function taking a section parameter.
    *
    */
-    void printPositionMap() const {
-      for (int section = 0; section < num_sections_ ; ++section) {
-        printPositionMap(section);
-      }
+  void printPositionMap() const {
+    for (int section = 0; section < num_sections_; ++section) {
+      printPositionMap(section);
     }
+  }
 
-
-
-private:
+ private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
@@ -224,7 +222,7 @@ private:
 
   // 3D readout for side Hcal
   int side_3d_readout_{};
-  
+
   /// Number of strips per layer in each section and each layer
   std::vector<std::vector<int>> num_strips_;
   /// The plane of the zero'th strip of each section [mm]
@@ -235,7 +233,7 @@ private:
   std::vector<std::vector<double>> scint_length_;
 
   bool is_prototype_{};
-  
+
   /**
    Map of the HcalID position of strip centers relative to world geometry.
    The map is not configurable and is calculated by buildStripPositionMap().
