@@ -90,26 +90,6 @@ set_target_properties(SimCore
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 
-# Unpack the example dark brem vertex library (or libraries)
-file(GLOB vertex_libraries data/*.tar.gz)
-
-option(INSTALL_EXAMPLE_DB_LIBRARIES 
-  "Unpack and install the example dark brem event libraries." ON)
-if(INSTALL_EXAMPLE_DB_LIBRARIES)
-  # set installation location of dark brem vertex libraries
-  #   also used when configuring the makePath.py module
-  set(DB_VERTEX_LIB_INSTALL ${CMAKE_INSTALL_PREFIX}/data/db_vertex_libraries)
-  if(NOT EXISTS ${DB_VERTEX_LIB_INSTALL})
-    #assume new build ==> unpack vertex libraries
-    message(STATUS "Unpacking example dark brem vertex libraries.")
-    file(MAKE_DIRECTORY ${DB_VERTEX_LIB_INSTALL})
-    foreach(library_path ${vertex_libraries})
-      execute_process(COMMAND 
-        tar -C ${DB_VERTEX_LIB_INSTALL} --skip-old-files -zxf ${library_path})
-    endforeach()
-  endif()
-endif()
-
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
 
 # add visualization executable
