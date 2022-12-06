@@ -23,13 +23,18 @@ class DarkBremModel() :
         string += ' }'
         return string
 
-class VertexLibraryModel(DarkBremModel) :
-    """Configuration for the vertex library dark brem model
+class G4DarkBreMModel(DarkBremModel) :
+    """Configuration for the event library dark brem model
+
+    This model uses G4DarkBreM's library model. The library
+    can be a directory of LHE files, gzip-compressed LHE files,
+    a CSV processed by G4DarkBreM, or a gzip-compressed CSV
+    processed by G4DarkBreM.
 
     Parameters
     ----------
     library_path : str
-        Path to directory of LHE files containing dark brem vertices
+        Path to library holding the dark brem kinematics
 
     Attributes
     ----------
@@ -42,11 +47,14 @@ class VertexLibraryModel(DarkBremModel) :
     """
 
     def __init__(self, library_path) :
-        super().__init__('vertex_library')
+        super().__init__('g4db')
         self.library_path = library_path
         self.method       = 'forward_only'
         self.threshold    = 2.0 #GeV
         self.epsilon      = 0.01
+
+# for legacy reasons, we define another name for the G4DB model
+VertexLibraryModel = G4DarkBreMModel
 
 class DarkBrem:
     """Storage for parameters of dark brem process
