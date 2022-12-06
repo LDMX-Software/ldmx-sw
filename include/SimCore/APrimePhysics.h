@@ -13,19 +13,9 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "G4DarkBreM/G4DarkBremsstrahlung.h"
 
 namespace simcore {
-
-/**
- * @namespace darkbrem
- *
- * Extending Geant4 to dark bremsstrahlung
- *
- * In here we contain all of our framework for simulating
- * the dark bremsstrahlung process in Geant4.
- */
-namespace darkbrem {
 
 /**
  * @class APrimePhysics
@@ -35,12 +25,12 @@ namespace darkbrem {
  * electron.
  *
  * @see G4APrime
- * @see G4eDarkBremsstrahlung
+ * @see G4DarkBremsstrahlung in G4DarkBreM
  *
  * @note
  * This class basically does not do anything except
  * register the custom particle (G4APrime) and custom
- * process (G4eDarkBremsstrahlung).
+ * process (G4DarkBremsstrahlung).
  */
 class APrimePhysics : public G4VPhysicsConstructor {
  public:
@@ -90,7 +80,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
    * G4ProcessManager registers and cleans up any created processes,
    * so we can forget about it after creating it.
    *
-   * @see G4eDarkBremsstrahlung
+   * @see G4DarkBremsstrahlung in G4DarkBreM
    */
   void ConstructProcess();
 
@@ -111,7 +101,6 @@ class APrimePhysics : public G4VPhysicsConstructor {
   framework::config::Parameters parameters_;
 };
 
-}  // namespace darkbrem
 }  // namespace simcore
 
 #endif

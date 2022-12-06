@@ -37,6 +37,9 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+# include dark brem simulation
+add_subdirectory(G4DarkBreM)
+
 # Set the LHE Reading Library
 setup_library(module SimCore 
               name LHE
@@ -49,14 +52,6 @@ setup_library(module SimCore
               dependencies Framework::Framework
                            Geant4::Interface)
 
-setup_library(module SimCore
-              name DarkBrem
-              dependencies Geant4::Interface
-                           ROOT::Physics
-                           Framework::Configure
-                           Framework::Framework
-                           Boost::log)
-
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
@@ -67,8 +62,8 @@ setup_library(module SimCore
                            ROOT::Physics
                            Framework::Configure
                            Framework::Framework
-                           SimCore::DarkBrem
                            SimCore::G4User
+                           G4DarkBreM
                            DetDescr::DetDescr
                            Boost::log
                            "${registered_targets}"
@@ -113,27 +108,6 @@ if(INSTALL_EXAMPLE_DB_LIBRARIES)
         tar -C ${DB_VERTEX_LIB_INSTALL} --skip-old-files -zxf ${library_path})
     endforeach()
   endif()
-
-  # Add compiled tests
-  configure_file(${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx.in 
-    ${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx)
-  setup_test(dependencies SimCore::SimCore Geant4::Interface)
-
-  # Configure the executable so it knows the installation path of the db vertex libraries
-  configure_file(${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/print_dark_brem_xsec_table.cxx.in
-    ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
-  add_executable(print-dark-brem-xsec-table 
-    ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
-
-  # Link to the Framework library
-  target_link_libraries(print-dark-brem-xsec-table 
-    PRIVATE Geant4::Interface 
-    SimCore::SimCore 
-    Framework::Framework)
-
-  # Install the fire executable
-  install(TARGETS print-dark-brem-xsec-table 
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
