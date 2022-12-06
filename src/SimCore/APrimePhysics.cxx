@@ -47,15 +47,15 @@ void APrimePhysics::ConstructProcess() {
               model.getParameter<double>("threshold"),
               model.getParameter<double>("epsilon"),
               model.getParameter<std::string>("library_path"),
-              false /* dark brem off muons instead of electrons */),
+              false /* dark brem off muons instead of electrons - we always DB off electrons here */),
           parameters_.getParameter<bool>("only_one_per_event"),
-          parameters_.getParameter<double>("global_bias"),
-          parameters_.getParameter<bool>("cache_xsec", true));
+          1., /* global bias - should use bias operator instead */
+          parameters_.getParameter<bool>("cache_xsec"));
     } else {
       EXCEPTION_RAISE("BadConf",
           "Unrecognized model name '"+model_name+"'.");
     }
-    G4cout << "[ APrimePhysics ] : Initialization complete" << G4endl;
+    G4cout << "[ APrimePhysics ] : Initialization of dark brem complete" << G4endl;
   }
 }
 
