@@ -123,19 +123,15 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
-    db_model = dark_brem.VertexLibraryModel( lhe )
+    db_model = dark_brem.G4DarkBreMModel( lhe )
     db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
     #Biasing dark brem up inside of the ecal volumes
-    from math import log10
-    #need a higher power for the higher mass A'
-    mass_power = max(log10(sim.dark_brem.ap_mass),2.)
-
     from LDMX.SimCore import bias_operators
     sim.biasing_operators = [ 
-            bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
+            bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**2 / db_model.epsilon**2)
             ]
     
     sim.actions = [
