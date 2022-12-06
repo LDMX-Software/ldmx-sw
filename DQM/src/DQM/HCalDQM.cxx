@@ -13,12 +13,10 @@ HCalDQM::HCalDQM(const std::string& name, framework::Process& process)
 void HCalDQM::configure(framework::config::Parameters& ps) {
   rec_coll_name_ = ps.getParameter<std::string>("rec_coll_name");
   rec_pass_name_ = ps.getParameter<std::string>("rec_pass_name");
+  pe_veto_threshold = ps.getParameter<double>("pe_threshold");
 }
 
 void HCalDQM::analyze(const framework::Event& event) {
-  // hard-code PE threshold because I'm lazy
-  static const float pe_veto_threshold{5.};
-
   // Get the collection of HCalDQM digitized hits if the exists
   const auto& hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
