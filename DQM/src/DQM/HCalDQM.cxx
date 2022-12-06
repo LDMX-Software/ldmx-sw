@@ -50,7 +50,9 @@ void HCalDQM::analyze(const framework::Event& event) {
     }
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
+    histograms_.fill("layer", id.layer()); 
     histograms_.fill(section + "_pe", hit.getPE());
+    histograms_.fill(section + "_layer", id.layer());
 
     totalPE += hit.getPE();
     total_section_pe[id.section()] += hit.getPE();
