@@ -106,6 +106,12 @@ class HCalDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HCalDQM() )
     """
 
+    def build_submodule_histograms(self, name, xlabel, nbins, xmin, xmax):
+        for section in self.section_names:
+            self.build1DHistogram(f'{section}_{name}', xlabel.format(section),
+                                  nbins, xmin, xmax)
+
+
     def __init__(self,name="hcal_dqm", pe_threshold=5) :
         super().__init__(name,'dqm::HCalDQM','DQM')
 
