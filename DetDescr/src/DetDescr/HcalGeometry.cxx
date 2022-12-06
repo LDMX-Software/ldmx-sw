@@ -69,6 +69,14 @@ HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
                    ? ScintillatorOrientation::horizontal
                    : ScintillatorOrientation::vertical;
     }  // V14 or later detector
+    if (isPrototype()) {
+      // The prototype only has the back section. However, the orientation
+      // depends on the configuration so we delegate to the
+      // back_horizontal_parity parameter
+      return id.layer() % 2 == back_horizontal_parity_
+                 ? ScintillatorOrientation::horizontal
+                 : ScintillatorOrientation::vertical;
+    }  // Prototype detector
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
