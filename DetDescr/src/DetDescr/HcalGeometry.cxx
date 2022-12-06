@@ -44,6 +44,10 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     printPositionMap();
   }
 }
+
+HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
+    const ldmx::HcalID id) const {
+}
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
   for (int layer = 1; layer <= num_layers_[section]; ++layer) {
