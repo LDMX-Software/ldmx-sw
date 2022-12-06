@@ -6,9 +6,9 @@ from LDMX.Ecal import EcalGeometry
 from LDMX.Hcal import HcalGeometry
 p.sequence = [
     eat.dark_brem( 
-        10., #MeV - mass of A'
-        makePath.makeLHEPath(10.), #str - full path to directory containing LHE vertex files
-        'ldmx-det-v12' , #name of geometry to use
+        100., #MeV - mass of A'
+        'SimCore/G4DarkBreM/data/electron_tungsten_MaxE_4.0_MinE_0.2_RelEStep_0.1_UndecayedAP_mA_0.1_run_3000.csv.gz',
+        'ldmx-det-v14' , #name of geometry to use
         )
     ]
 p.maxTriesPerEvent = 1000
