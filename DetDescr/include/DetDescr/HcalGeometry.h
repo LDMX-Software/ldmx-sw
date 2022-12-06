@@ -42,6 +42,18 @@ class HcalGeometry : public framework::ConditionsObject {
   static constexpr const char* CONDITIONS_OBJECT_NAME{"HcalGeometry"};
 
   /**
+   * Encodes the orientation of a bar.
+   *  horizontal : The length of the bar is along the x-axis
+   *  vertical   : The length of the bar is along the y-axis
+   *  depth      : The length of the bar is along the z-axis
+   */
+  enum class ScintillatorOrientation {
+    horizontal = 0,
+    vertical = 1,
+    depth = 2
+  };
+
+  /**
    * Class destructor.
    *
    * Does nothing because the stl containers clean up automatically.
