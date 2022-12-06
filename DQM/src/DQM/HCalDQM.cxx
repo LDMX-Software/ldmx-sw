@@ -23,24 +23,39 @@ void HCalDQM::analyze(const framework::Event& event) {
 
   float totalPE{0}, total_back_pe{0}, minTime{999}, minTimePE{-1};
   float maxPE{-1}, maxPETime{-1};
-
+  std::vector<float> total_section_pe(5);
   // Loop through all HCal hits in the event
   // Get non-noise generated hits into new vector for sorting
   for (const ldmx::HcalHit& hit : hcalHits) {
     ldmx::HcalID id(hit.getID());
 
-    histograms_.fill("pe", hit.getPE());
-    histograms_.fill("hit_time", hit.getTime());
-    totalPE += hit.getPE();
 
     std::string section{"side"};
-    if (id.section() == ldmx::HcalID::HcalSection::BACK) {
-      section = "back";
-      total_back_pe += hit.getPE();
+    switch (id.section()) {
+      case ldmx::HcalID::HcalSection::BACK:
+        section = "back";
+        break;
+      case ldmx::HcalID::HcalSection::TOP:
+        section = "top";
+        break;
+      case ldmx::HcalID::HcalSection::BOTTOM:
+        section = "bottom";
+        break;
+      case ldmx::HcalID::HcalSection::LEFT:
+        section = "left";
+        break;
+      case ldmx::HcalID::HcalSection::RIGHT:
+        section = "right";
+        break;
     }
+    histograms_.fill("pe", hit.getPE());
+    histograms_.fill("hit_time", hit.getTime());
+    histograms_.fill(section + "_pe", hit.getPE());
 
-    histograms_.fill(section + "_pe:layer", hit.getPE(), id.layer());
-    histograms_.fill(section + "_layer:strip", id.layer(), id.strip());
+    totalPE += hit.getPE();
+    total_section_pe[id.section()] += hit.getPE();
+    // histograms_.fill(section + "_pe:layer", hit.getPE(), id.layer());
+    // histograms_.fill(section + "_layer:strip", id.layer(), id.strip());
 
     /**
      * Get earliest (min time) non-noise (time > -999.ns) hit
@@ -65,7 +80,11 @@ void HCalDQM::analyze(const framework::Event& event) {
   // let's fill our once-per-event histograms
   histograms_.fill("n_hits", hcalHits.size());
   histograms_.fill("total_pe", totalPE);
-  histograms_.fill("back_total_pe", total_back_pe);
+  histograms_.fill("back_total_pe", total_section_pe[0]);
+  histograms_.fill("top_total_pe", total_section_pe[1]);
+  histograms_.fill("bottom_total_pe", total_section_pe[2]);
+  histograms_.fill("left_total_pe", total_section_pe[3]);
+  histograms_.fill("right_total_pe", total_section_pe[4]);
   histograms_.fill("max_pe", maxPE);
   histograms_.fill("hit_time_max_pe", maxPETime);
   histograms_.fill("max_pe:time", maxPE, maxPETime);

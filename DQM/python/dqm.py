@@ -121,7 +121,10 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.rec_pass_name = ''
         
         # every hit in hcal
-        self.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
+        self.build1DHistogram("pe", "Photoelectrons in a the HCal", 1500, 0, 1500)
+        self.build_submodule_histograms('pe', 'Photoelectrons in the {} section of the Hcal',
+                                        1500, 0, 1500)
+
         self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
         self.build2DHistogram("back_pe:layer",
                 "Photoelectrons in a Back HCal Layer",10,0,10,
@@ -139,8 +142,9 @@ class HCalDQM(ldmxcfg.Analyzer) :
         # once per event
         self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
         self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
-        self.build1DHistogram("back_total_pe", "Total Photoelectrons in Back", 3000, 0, 3000)
-        self.build1DHistogram("max_pe", 
+        self.build_submodule_histograms('total_pe', 'Total Photoelectrons in the {} section of the Hcal',
+                                        3000, 0, 3000)
+        self.build1DHistogram("max_pe",
                 "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
         self.build1DHistogram("hit_time_max_pe", 
                 "Max PE hit time (ns)", 1600, -100, 1500)
