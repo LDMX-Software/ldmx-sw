@@ -55,6 +55,9 @@ class HCalDQM : public framework::Analyzer {
 
   /// Hcal Veto pass name
   std::string veto_pass_;
+
+  // Veto threshold for photo-electrons
+  float pe_veto_threshold;
 };
 
 }  // namespace dqm
