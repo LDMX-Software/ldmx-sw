@@ -125,6 +125,10 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build_submodule_histograms('pe', 'Photoelectrons in the {} section of the Hcal',
                                         1500, 0, 1500)
 
+
+        self.build1DHistogram('layer', 'Layer number', 100, 0, 100)
+        self.build_submodule_histograms('layer', 'Layer number in {} section', 100, 0, 100)
+
         self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
         self.build2DHistogram("back_pe:layer",
                 "Photoelectrons in a Back HCal Layer",10,0,10,
