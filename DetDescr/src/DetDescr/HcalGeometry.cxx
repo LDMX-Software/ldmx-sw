@@ -47,6 +47,28 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
 
 HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
     const ldmx::HcalID id) const {
+  if (hasSide3DReadout()) {
+    // v14 or later detector
+    switch (id.section()) {
+      case ldmx::HcalID::HcalSection::TOP:
+      case ldmx::HcalID::HcalSection::BOTTOM:
+        // Odd layers are in z/depth direction, even are in the x/horizontal
+        // direction
+        return id.layer() % 2 == 0 ? ScintillatorOrientation::horizontal
+                                   : ScintillatorOrientation::depth;
+
+      case ldmx::HcalID::HcalSection::LEFT:
+      case ldmx::HcalID::HcalSection::RIGHT:
+        // Odd layers are in the z/depth direction, even are in the y/vertical
+        // direction
+        return id.layer() % 2 == 0 ? ScintillatorOrientation::vertical
+                                   : ScintillatorOrientation::depth;
+      case ldmx::HcalID::HcalSection::BACK:
+        // Configurable
+        return id.layer() % 2 == back_horizontal_parity_
+                   ? ScintillatorOrientation::horizontal
+                   : ScintillatorOrientation::vertical;
+    }  // V14 or later detector
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
