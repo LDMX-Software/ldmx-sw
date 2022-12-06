@@ -106,9 +106,10 @@ class HCalDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HCalDQM() )
     """
 
-    def __init__(self,name="hcal_dqm") :
+    def __init__(self,name="hcal_dqm", pe_threshold=5) :
         super().__init__(name,'dqm::HCalDQM','DQM')
 
+        self.pe_threshold = float(pe_threshold)
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
         
@@ -140,10 +141,10 @@ class HCalDQM(ldmxcfg.Analyzer) :
                 "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
                 "HCal max PE hit time (ns)", 1500, 0, 1500)
         self.build1DHistogram("min_time_hit_above_thresh", 
-                "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+                f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
         self.build2DHistogram("min_time_hit_above_thresh:pe", 
                            "Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+                           f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
     def __init__(self, input_name) :
