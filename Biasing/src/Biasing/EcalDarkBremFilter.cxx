@@ -10,8 +10,8 @@
 #include "Biasing/EcalDarkBremFilter.h"
 
 #include "G4LogicalVolumeStore.hh"      //for the store
-#include "SimCore/DarkBrem/G4APrime.h"  //checking if particles match A'
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //checking for dark brem secondaries
+#include "G4DarkBreM/G4APrime.h"  //checking if particles match A'
+#include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
 #include "SimCore/UserTrackInformation.h"            //make sure A' is saved
 
 namespace biasing {
@@ -60,7 +60,7 @@ void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
 
 G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(
     const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
-  if (aTrack->GetParticleDefinition() == simcore::darkbrem::G4APrime::APrime()) {
+  if (aTrack->GetParticleDefinition() == G4APrime::APrime()) {
     // there is an A'! Yay!
     /* Debug message
     std::cout << "[ EcalDarkBremFilter ]: "
@@ -98,12 +98,12 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
 
   const G4VProcess* creator = track->GetCreatorProcess();
   if (creator and creator->GetProcessName().contains(
-                      simcore::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
+                      G4DarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
     simcore::UserTrackInformation* userInfo = simcore::UserTrackInformation::get(track);
     // make sure A' is persisted into output file
     userInfo->setSaveFlag(true);
-    if (track->GetParticleDefinition() == simcore::darkbrem::G4APrime::APrime()) {
+    if (track->GetParticleDefinition() == G4APrime::APrime()) {
       // check if A' was made in the desired volume and has the minimum energy
       if (not inDesiredVolume(track)) {
         AbortEvent("A' wasn't produced inside of the requested volume.");
