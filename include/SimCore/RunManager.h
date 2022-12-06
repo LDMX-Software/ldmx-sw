@@ -64,7 +64,7 @@ class RunManager : public G4RunManager {
    * Called at the end of each event.
    *
    * Runs parent process G4RunManager::TerminateOneEvent() and
-   * resets the activation for the G4eDarkBremsstrahlung process
+   * resets the activation for the G4DarkBremsstrahlung process
    * (if dark brem is possible)
    */
   void TerminateOneEvent();
