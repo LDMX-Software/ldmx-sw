@@ -21,22 +21,23 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   verbose_ = ps.getParameter<int>("verbose");
   back_horizontal_parity_ = ps.getParameter<int>("horizontal_parity");
   side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
-  
+
   auto detectors_valid =
       ps.getParameter<std::vector<std::string>>("detectors_valid");
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
   // use prototype geometry initialization
-  is_prototype_ =
-      std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
-                   [](const auto detector) {
-                     return detector.find("ldmx-hcal-prototype") !=
-                            std::string::npos;
-                   }) != detectors_valid.cend();
+  is_prototype_ = std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
+                               [](const auto detector) {
+                                 return detector.find("ldmx-hcal-prototype") !=
+                                        std::string::npos;
+                               }) != detectors_valid.cend();
 
   num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips");
-  half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width");
+  half_total_width_ =
+      ps.getParameter<std::vector<std::vector<double>>>("half_total_width");
   zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip");
-  scint_length_ = ps.getParameter<std::vector<std::vector<double>>>("scint_length");
+  scint_length_ =
+      ps.getParameter<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
   if (verbose_ > 0) {
@@ -69,7 +70,8 @@ void HcalGeometry::buildStripPositionMap() {
         ldmx::HcalID::HcalSection hcalsection =
             (ldmx::HcalID::HcalSection)section;
 
-        // the center of a layer: (layer-1) * (layer_thickness) + scint_thickness/2
+        // the center of a layer: (layer-1) * (layer_thickness) +
+        // scint_thickness/2
         double layercenter =
             (layer - 1) * layer_thickness_.at(section) + 0.5 * scint_thickness_;
 
@@ -77,12 +79,12 @@ void HcalGeometry::buildStripPositionMap() {
         double stripcenter = (strip + 0.5) * scint_width_;
 
         if (hcalsection == ldmx::HcalID::HcalSection::BACK) {
-	  /**
-	     For back Hcal:
-	     - layers in z
-	     - strips occupy thickness of scintillator in z (e.g. 20mm)
-	     - strips orientation is in x(y) depending on back_horizontal parity
-	  */
+          /**
+             For back Hcal:
+             - layers in z
+             - strips occupy thickness of scintillator in z (e.g. 20mm)
+             - strips orientation is in x(y) depending on back_horizontal parity
+          */
           // z position: zero-layer(z) + layer_z + scint_thickness / 2
           z = zero_layer_.at(section) + layercenter;
 
@@ -92,7 +94,7 @@ void HcalGeometry::buildStripPositionMap() {
             stripcenter will be large for +y(+x) and the half width of the strip
             needs to be subtracted The halfwidth of the scintillator is given by
             half_total_width_.
-	    The x(y) position is set to the center of the strip (0).
+            The x(y) position is set to the center of the strip (0).
           */
           if (layerIsHorizontal(layer)) {
             y = stripcenter - getZeroStrip(section, layer);
@@ -106,8 +108,8 @@ void HcalGeometry::buildStripPositionMap() {
           For side Hcal
           - layers in y(x)
           - all layers have strips in x(y) for top-bottom (left-right) sections
-          - all layers have strips occupying width of scintillator in z (e.g. 50mm)
-          For 3D readout:
+          - all layers have strips occupying width of scintillator in z (e.g.
+          50mm) For 3D readout:
           - odd layers have strips in z
           - even layers have strips in x(y) for top-bottom (left-right) sections
           - odd layers have strips occupying width of scintillator in x(y)
@@ -115,7 +117,8 @@ void HcalGeometry::buildStripPositionMap() {
           */
           if (side_3d_readout_ && (layer % 2 == 1)) {
             // z position: zero-strip + half-width (center_strip) of strip
-            z = getZeroStrip(section, layer) + getHalfTotalWidth(section, layer);
+            z = getZeroStrip(section, layer) +
+                getHalfTotalWidth(section, layer);
           } else {
             // z position: zero-strip(z) + strip_center(z)
             z = getZeroStrip(section, layer) + stripcenter;
