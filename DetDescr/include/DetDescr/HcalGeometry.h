@@ -60,6 +60,9 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   ~HcalGeometry() = default;
 
+  ScintillatorOrientation getScintillatorOrientation(
+      const ldmx::HcalID id) const;
+
   /**
    * Get a strip center position from a combined hcal ID.
    *
