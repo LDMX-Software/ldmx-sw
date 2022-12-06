@@ -77,6 +77,23 @@ HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
                  ? ScintillatorOrientation::horizontal
                  : ScintillatorOrientation::vertical;
     }  // Prototype detector
+    // v13/v12
+    switch (id.section()) {
+      // For the v13 side hcal, the bars in each section have the same
+      // orientation
+      case ldmx::HcalID::HcalSection::TOP:
+      case ldmx::HcalID::HcalSection::BOTTOM:
+        return ScintillatorOrientation::horizontal;
+      case ldmx::HcalID::HcalSection::LEFT:
+      case ldmx::HcalID::HcalSection::RIGHT:
+        return ScintillatorOrientation::vertical;
+      case ldmx::HcalID::HcalSection::BACK:
+        // Configurable
+        return id.layer() % 2 == back_horizontal_parity_
+                   ? ScintillatorOrientation::horizontal
+                   : ScintillatorOrientation::vertical;
+    }  // v13/v12 detector
+  }
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
