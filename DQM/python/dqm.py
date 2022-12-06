@@ -115,6 +115,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
     def __init__(self,name="hcal_dqm", pe_threshold=5) :
         super().__init__(name,'dqm::HCalDQM','DQM')
 
+        self.section_names = ['back', 'top', 'bottom', 'left', 'right']
         self.pe_threshold = float(pe_threshold)
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
