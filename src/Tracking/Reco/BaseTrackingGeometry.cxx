@@ -130,19 +130,44 @@ void BaseTrackingGeometry::dumpGeometry(const std::string& outputDir ) {
 
 
 //This method gets the transform from the physical volume to the tracking frame
-Acts::Transform3 BaseTrackingGeometry::GetTransform(const G4VPhysicalVolume& phex) {
-
-  Acts::Vector3 pos(phex.GetTranslation().z(), phex.GetTranslation().x(), phex.GetTranslation().y());
+Acts::Transform3 BaseTrackingGeometry::GetTransform(const G4VPhysicalVolume& phex,
+                                                    bool toTrackingFrame) {
+  
+  Acts::Vector3 pos(phex.GetTranslation().x(), phex.GetTranslation().y(), phex.GetTranslation().z());
+  
+  if (toTrackingFrame) {
+    pos(0) = phex.GetTranslation().z();
+    pos(1) = phex.GetTranslation().x();
+    pos(2) = phex.GetTranslation().y();
+  }
+    
   Acts::RotationMatrix3 rotation;
-
+  
   ConvertG4Rot(phex.GetObjectRotationValue(),rotation);
-
+  
   //rotate to the tracking frame
+  if (toTrackingFrame)
+    rotation = x_rot_ * y_rot_ * rotation;
+  
+  Acts::Translation3 translation(pos);
+  Acts::Transform3 transform(translation * rotation);
+
+  return transform;
+  
+}
+
+//This method returns the transformation to the tracker coordinates z->x x->y y->z
+Acts::Transform3 BaseTrackingGeometry::toTracker(const Acts::Transform3& trans) {
+
+  Acts::Vector3 pos{trans.translation()(2), trans.translation()(0),trans.translation()(1)};
+
+  Acts::RotationMatrix3 rotation = trans.rotation();
   rotation = x_rot_ * y_rot_ * rotation;
 
   Acts::Translation3 translation(pos);
   Acts::Transform3 transform(translation * rotation);
-     
+
+  return transform;
 }
 
 

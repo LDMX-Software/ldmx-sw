@@ -10,6 +10,8 @@
 #include <Acts/Geometry/CuboidVolumeBuilder.hpp>
 #include <Acts/Geometry/TrackingGeometryBuilder.hpp>
 #include "Acts/Definitions/Units.hpp"
+#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
+#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 
 
 //Visualization
@@ -23,6 +25,7 @@
 #include <G4VPhysicalVolume.hh>
 #include <G4LogicalVolume.hh>
 #include <G4Types.hh>
+#include <G4Box.hh>
 #include <G4Polyhedra.hh>
 #include <G4Material.hh>
 
@@ -54,15 +57,18 @@ class BaseTrackingGeometry {
   
   std::shared_ptr<const Acts::TrackingGeometry> getTG() {return tGeometry_;};
 
-  Acts::Transform3 GetTransform(const G4VPhysicalVolume& phex);
+  Acts::Transform3 GetTransform(const G4VPhysicalVolume& phex,
+                                bool toTrackingFrame = false);
 
+  Acts::Transform3 toTracker(const Acts::Transform3& trans);
+  
  protected:
 
   //The rotation matrices to go from global to tracking frame.
   Acts::RotationMatrix3 x_rot_, y_rot_;
   Acts::GeometryContext* gctx_;
   bool debug_;
-  std::shared_ptr<Acts::TrackingGeometry> tGeometry_{nullptr};
+  std::shared_ptr<const Acts::TrackingGeometry> tGeometry_{nullptr};
   std::string gdml_{""};
   G4VPhysicalVolume* fWorldPhysVol_{nullptr};
   
