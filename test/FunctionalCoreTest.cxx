@@ -1,4 +1,6 @@
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include <cstdio>         //for remove
 #include "TFile.h"        //to open and check root files
@@ -13,6 +15,8 @@
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/Event/HcalVetoResult.h"
 #include "Recon/Event/CalorimeterHit.h"
+
+using Catch::Approx;
 
 namespace framework {
 namespace test {
@@ -168,7 +172,7 @@ class TestAnalyzer : public Analyzer {
  * - The directory has the histogram "test_hist_"
  * - The histogram has the correct number of entries
  */
-class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
+class isGoodHistogramFile : public Catch::Matchers::MatcherBase<std::string> {
  private:
   /// Correct number of entries
   int correctGetEntries_;
@@ -230,7 +234,7 @@ class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
  * - Run tree has correct number of entries
  * - RunHeaders in RunTree have matching RunNumbers and EventCounts
  */
-class isGoodEventFile : public Catch::MatcherBase<std::string> {
+class isGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
  private:
   /// pass name to check the collection and/or object for
   std::string pass_;

@@ -5,7 +5,9 @@
  * @author Tom Eichlersmith, University of Minnesota
  *  
  */
-#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "TFile.h" //to open and check root files
 #include "TTreeReader.h" //to check output event files
