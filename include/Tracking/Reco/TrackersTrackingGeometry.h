@@ -49,13 +49,16 @@ class TrackersTrackingGeometry : BaseTrackingGeometry {
 
   void BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
                             std::string surfacename);
+
+  void BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
+                            std::string surfacename);
   
   // Provided a physical volume, extract a silicon rectangular plane surface
   std::shared_ptr<Acts::PlaneSurface> GetSurface(G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans);
 
   
   Acts::CuboidVolumeBuilder::VolumeConfig buildTrackerVolume();
-  Acts::CuboidVolumeBuilder::VolumeConfig buildRecoilVolume() {};
+  Acts::CuboidVolumeBuilder::VolumeConfig buildRecoilVolume();
 
   //TODO Implement these
   Acts::CuboidVolumeBuilder::VolumeConfig buildTSVolume(){};
@@ -74,7 +77,8 @@ class TrackersTrackingGeometry : BaseTrackingGeometry {
   std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>> tagger_layout;
   std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>> recoil_layout;
   
-  
+  float TrackerYLength_{480.};
+  float TrackerZLength_{240.};
   
       
 };

@@ -11,22 +11,16 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
   if (debug_)
     std::cout<<"Looking for Tagger and Recoil volumes"<<std::endl;
 
-  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs;
-
   Tagger_ = findDaughterByName(fWorldPhysVol_, "tagger_PV");
-
-  //Get the layout layers-sensors and accumulate all the sensitive surfaces
   BuildTaggerLayoutMap(Tagger_,"LDMXTaggerModuleVolume_physvol");
-
-  //Prepare the volume configuration for the tagger tracker
   Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg = buildTrackerVolume();
-  
-  
-  Recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
-  //  BuildLayoutMap(Recoil_,"recoil");
-  
 
-  volBuilderConfigs.push_back(tagger_volume_cfg);
+  Recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
+  BuildRecoilLayoutMap(Recoil_,"recoil");
+  Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg = buildRecoilVolume();
+
+  
+  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs{tagger_volume_cfg,recoil_volume_cfg};
   
   //Create the builder
   Acts::CuboidVolumeBuilder cvb;
@@ -51,6 +45,86 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
         
 }
 
+// This is basically a copy of the Tagger. TODO:: Make a single method!
+Acts::CuboidVolumeBuilder::VolumeConfig TrackersTrackingGeometry::buildRecoilVolume() {
+
+  Acts::CuboidVolumeBuilder::VolumeConfig subDetVolumeConfig;
+  Acts::Transform3 subDet_transform = GetTransform(*Recoil_,true);
+  if (debug_) {
+    std::cout<<subDet_transform.translation()<<std::endl;
+    std::cout<<subDet_transform.rotation()<<std::endl;
+  }
+
+  //Add 1mm to not make it sit on the first layer surface  -  Ask Omar if it's OK
+  Acts::Vector3 sub_det_position = {subDet_transform.translation()(0) - 1,
+    subDet_transform.translation()(1),
+    subDet_transform.translation()(2),
+  };
+  
+  //Get the size of the volume
+  G4Box* subDetBox = (G4Box*)(Recoil_->GetLogicalVolume()->GetSolid());
+  
+  //In tracker coordinates. I add 1mm so that it compensates with the 1mm movement of above 
+  double x_length  = 2*(subDetBox->GetZHalfLength()+1 ) * Acts::UnitConstants::mm;
+  
+  //double y_length  = 2*subDetBox->GetXHalfLength() * Acts::UnitConstants::mm;
+  //double z_length  = 2*subDetBox->GetYHalfLength() * Acts::UnitConstants::mm;
+
+  //The bField is defined only between -70, 70 along ACTS Z Axis (-130,130 in the extended version)
+  double y_length = TrackerYLength_;
+  double z_length = TrackerZLength_;
+
+  if (debug_) {
+    std::cout<<Recoil_->GetName()<<std::endl;
+    std::cout<<"position"<<std::endl;
+    std::cout<<sub_det_position<<std::endl;
+    std::cout<<"x_length "<<x_length<<" y_length "<<y_length<<" z_length "<<z_length<<std::endl;
+  }
+
+  subDetVolumeConfig.position = sub_det_position;
+  subDetVolumeConfig.length = {x_length, y_length, z_length};
+  subDetVolumeConfig.name = "Recoil";
+
+
+  //Vacuum material
+  Acts::Material subdet_mat = Acts::Material();
+  subDetVolumeConfig.volumeMaterial =
+      std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
+  
+  std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layerConfig;
+
+
+  //Prepare the layers
+  for (auto& layer : recoil_layout) {
+
+    if (debug_) {
+      std::cout<< layer.first
+               <<" : surfaces==>"
+               << layer.second.size()
+               << std::endl;
+    }
+    
+    Acts::CuboidVolumeBuilder::LayerConfig lcfg;
+    lcfg.surfaces = layer.second;
+    //Get the surface thickness
+    double clearance = 0.01;
+    double thickness = layer.second.front()->surfaceMaterial()->materialSlab(Acts::Vector2{0.,0.}).thickness();
+
+    //std::cout<<"Sensor Thickness from Material slab "<< thickness<<std::endl;
+    
+    lcfg.envelopeX = std::pair<double,double>{thickness / 2. + clearance,
+      thickness / 2. + clearance};
+    lcfg.active = true;
+    layerConfig.push_back(lcfg);
+  }
+
+  subDetVolumeConfig.layerCfg = layerConfig;
+  
+  
+  return subDetVolumeConfig;
+}
+
+
 
 Acts::CuboidVolumeBuilder::VolumeConfig TrackersTrackingGeometry::buildTrackerVolume() {
   
@@ -58,7 +132,7 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackersTrackingGeometry::buildTrackerVo
 
   //Get the transform wrt the world volume in tracker frame
   Acts::Transform3 subDet_transform = GetTransform(*Tagger_,true);
-
+  
   if (debug_) {
     std::cout<<subDet_transform.translation()<<std::endl;
     std::cout<<subDet_transform.rotation()<<std::endl;
@@ -80,10 +154,10 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackersTrackingGeometry::buildTrackerVo
   //double z_length  = 2*subDetBox->GetYHalfLength() * Acts::UnitConstants::mm;
 
   //The bField is defined only between -70, 70 along ACTS Z Axis (-130,130 in the extended version)
-  double y_length = 480;
-  double z_length = 240;
+  double y_length = TrackerYLength_;
+  double z_length = TrackerZLength_;
 
-
+  
   if (debug_) {
     std::cout<<Tagger_->GetName()<<std::endl;
     std::cout<<"position"<<std::endl;
@@ -132,6 +206,107 @@ Acts::CuboidVolumeBuilder::VolumeConfig TrackersTrackingGeometry::buildTrackerVo
   return subDetVolumeConfig;
   
 }
+
+
+void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
+                                                    std::string surfacename) {
+
+  if (debug_)
+    std::cout<<"Building layout for the "<<pvol->GetName()<<" tracker"<<std::endl;
+
+  //Get the global transform
+  Acts::Transform3 tracker_transform = GetTransform(*pvol); 
+  
+  G4LogicalVolume* l_vol = pvol -> GetLogicalVolume();
+  for (G4int i=0; i<l_vol->GetNoDaughters(); i++) {
+
+    std::string sln = l_vol->GetDaughter(i)->GetName();
+    std::cout<<"Checking ..." << sln<<std::endl;
+    if (sln.find(surfacename) != std::string::npos) {
+      
+      getAllDaughters(l_vol->GetDaughter(i));
+
+      G4VPhysicalVolume* _Component0Volume{nullptr};
+      G4VPhysicalVolume* _ActiveSensor{nullptr};
+      Acts::Transform3 ref1_transform = GetTransform(*(l_vol->GetDaughter(i)));
+      
+
+      //recoil_l1(4)_axial(stereo)->LDMXRecoilL14ModuleVolume_component0_physvol
+
+      if (sln.find("axial") != std::string::npos || sln.find("stereo") != std::string::npos) {
+        _Component0Volume = findDaughterByName(l_vol->GetDaughter(i),"LDMXRecoilL14ModuleVolume_component0_physvol");
+        if (!_Component0Volume)
+          throw std::runtime_error("Could not find component0 volume for L14 Recoil");
+        _ActiveSensor  = findDaughterByName(_Component0Volume,"LDMXRecoilL14ModuleVolume_component0Sensor0_physvol");
+        
+      }
+
+      //recoil_l5_sensorX->LDMXRecoilL56ModuleVolume_component0_physvol
+      
+      else if (sln.find("l5") != std::string::npos || sln.find("l6") != std::string::npos) {
+        _Component0Volume = findDaughterByName(l_vol->GetDaughter(i),"LDMXRecoilL56ModuleVolume_component0_physvol");
+        if (!_Component0Volume)
+          throw std::runtime_error("Could not find component0 volume for L56 Recoil");
+        _ActiveSensor  = findDaughterByName(_Component0Volume,"LDMXRecoilL56ModuleVolume_component0Sensor0_physvol");
+      }
+      
+      else
+        throw std::runtime_error("Could not build recoil layout");
+
+      if (!_ActiveSensor) 
+        throw std::runtime_error("Could not find ActiveSensor for recoil volume");
+
+
+      Acts::Transform3 ref2_transform = GetTransform(*(_Component0Volume));
+      std::shared_ptr<Acts::PlaneSurface> sensorSurface = GetSurface(_ActiveSensor,
+                                                                     tracker_transform*ref1_transform*ref2_transform);
+      
+
+      //Build the layout
+      if (sln == "recoil_l1_axial" ||
+          sln == "recoil_l1_stereo")
+        recoil_layout["recoil_tracker_L1"].push_back(sensorSurface);
+
+      if (sln == "recoil_l2_axial" ||
+          sln == "recoil_l2_stereo")
+        recoil_layout["recoil_tracker_L2"].push_back(sensorSurface);
+
+      if (sln == "recoil_l3_axial" ||
+          sln == "recoil_l3_stereo")
+        recoil_layout["recoil_tracker_L3"].push_back(sensorSurface);
+
+      if (sln == "recoil_l4_axial" ||
+          sln == "recoil_l4_stereo")
+        recoil_layout["recoil_tracker_L4"].push_back(sensorSurface);
+
+      if (sln == "recoil_l5_sensor1" ||
+          sln == "recoil_l5_sensor2" ||
+          sln == "recoil_l5_sensor3" ||
+          sln == "recoil_l5_sensor4" ||
+          sln == "recoil_l5_sensor5" ||
+          sln == "recoil_l5_sensor6" ||
+          sln == "recoil_l5_sensor7" ||
+          sln == "recoil_l5_sensor8" ||
+          sln == "recoil_l5_sensor9" ||
+          sln == "recoil_l5_sensor10")
+        recoil_layout["recoil_tracker_L5"].push_back(sensorSurface);
+
+      if (sln == "recoil_l6_sensor1" ||
+          sln == "recoil_l6_sensor2" ||
+          sln == "recoil_l6_sensor3" ||
+          sln == "recoil_l6_sensor4" ||
+          sln == "recoil_l6_sensor5" ||
+          sln == "recoil_l6_sensor6" ||
+          sln == "recoil_l6_sensor7" ||
+          sln == "recoil_l6_sensor8" ||
+          sln == "recoil_l6_sensor9" ||
+          sln == "recoil_l6_sensor10")
+        recoil_layout["recoil_tracker_L6"].push_back(sensorSurface);
+      
+    }//found the daughter
+  }//loop on daughters
+}//BuildRecoilLayoutMap
+
 
 //This function gets the surfaces from the trackers and orders them in ascending z.
 
