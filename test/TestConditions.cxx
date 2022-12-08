@@ -1,4 +1,5 @@
-#include "Framework/catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <stdlib.h>
 #include <fstream>
@@ -50,7 +51,7 @@ void matchesAll(const conditions::IntegerTableCondition& a,
     REQUIRE(a.getRow(i) == b.getRow(i));
 }
 
-using Catch::Matchers::Contains;
+using Catch::Matchers::ContainsSubstring;
 
 /**
  * Test for various items related to conditions
@@ -96,10 +97,10 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     REQUIRE(itable.get(id.raw(), 1) == 10);
 
     REQUIRE_THROWS_WITH(itable.add(2, std::vector<int>(2)),
-                        Contains("columns into a table"));
+                        ContainsSubstring("columns into a table"));
 
     REQUIRE_THROWS_WITH(itable.add(id.raw(), std::vector<int>(3)),
-                        Contains("existing id"));
+                        ContainsSubstring("existing id"));
 
     std::pair<unsigned int, std::vector<int>> row = itable.getRow(4);
 
@@ -142,7 +143,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     std::stringstream ss_read2(image2);
     REQUIRE_THROWS_WITH(
         conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read2),
-        Contains("Malformed CSV file with no DetId or subdetector column"));
+        ContainsSubstring("Malformed CSV file with no DetId or subdetector column"));
 
     // missing column example
     std::string image3(
@@ -153,7 +154,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     std::stringstream ss_read3(image3);
     REQUIRE_THROWS_WITH(
         conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read3),
-        Contains("Missing column"));
+        ContainsSubstring("Missing column"));
 
     // varying line lengths example
     std::string image4(
@@ -162,7 +163,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
     std::stringstream ss_read4(image4);
     REQUIRE_THROWS_WITH(
         conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read4),
-        Contains("Mismatched number of columns (3!=4) on line 3"));
+        ContainsSubstring("Mismatched number of columns (3!=4) on line 3"));
   }
 
   SECTION("Testing python static") {
