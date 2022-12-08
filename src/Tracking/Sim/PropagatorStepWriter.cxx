@@ -6,22 +6,20 @@
 #include <Acts/Propagator/ConstrainedStep.hpp>
 #include <Acts/Surfaces/Surface.hpp>
 
-#include "Acts/Plugins/Identification/Identifier.hpp"
-#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 #include "Acts/Geometry/DetectorElementBase.hpp"
+#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
+#include "Acts/Plugins/Identification/Identifier.hpp"
 
-
-
-namespace tracking{
+namespace tracking {
 namespace sim {
 
-PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWriter::Config& cfg) :
-    m_cfg(cfg),
-    m_outputFile(cfg.rootFile) {
+PropagatorStepWriter::PropagatorStepWriter(
+    const tracking::sim::PropagatorStepWriter::Config& cfg)
+    : m_cfg(cfg), m_outputFile(cfg.rootFile) {
   if (m_cfg.treeName.empty()) {
     throw std::invalid_argument("Missing tree name");
   }
-  
+
   // Setup ROOT I/O
   if (m_outputFile == nullptr) {
     m_outputFile = TFile::Open(m_cfg.filePath.c_str(), m_cfg.fileMode.c_str());
@@ -33,9 +31,8 @@ PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWr
 
   m_outputTree = new TTree(m_cfg.treeName.c_str(),
                            "TTree from RootPropagationStepsWriter");
-  if (m_outputTree == nullptr)
-    throw std::bad_alloc();
-  
+  if (m_outputTree == nullptr) throw std::bad_alloc();
+
   // Set the branches
   m_outputTree->Branch("event_nr", &m_eventNr);
   m_outputTree->Branch("volume_id", &m_volumeID);
@@ -54,13 +51,13 @@ PropagatorStepWriter::PropagatorStepWriter(const tracking::sim::PropagatorStepWr
   m_outputTree->Branch("step_act", &m_step_act);
   m_outputTree->Branch("step_abt", &m_step_abt);
   m_outputTree->Branch("step_usr", &m_step_usr);
-  m_outputTree->Branch("hit_x",&m_hit_x);
-  m_outputTree->Branch("hit_y",&m_hit_y);
-  m_outputTree->Branch("hit_z",&m_hit_z);
-  m_outputTree->Branch("start_pos",&m_start_pos);
-  m_outputTree->Branch("start_mom",&m_start_mom);
-    
-} // constructor
+  m_outputTree->Branch("hit_x", &m_hit_x);
+  m_outputTree->Branch("hit_y", &m_hit_y);
+  m_outputTree->Branch("hit_z", &m_hit_z);
+  m_outputTree->Branch("start_pos", &m_start_pos);
+  m_outputTree->Branch("start_mom", &m_start_mom);
+
+}  // constructor
 
 PropagatorStepWriter::~PropagatorStepWriter() {
   /// Close the file if it's yours
@@ -69,15 +66,13 @@ PropagatorStepWriter::~PropagatorStepWriter() {
     m_outputTree->Write();
     m_outputFile->Close();
   }
-} // destructor
+}  // destructor
 
-
-
-bool PropagatorStepWriter::WriteSteps(framework::Event &event,
-                                      const std::vector<PropagationSteps>& stepCollection,
-                                      const std::vector<ldmx::LdmxSpacePoint*> ldmxsps,
-                                      const Acts::Vector3& start_pos, const Acts::Vector3& start_mom) {
-  
+bool PropagatorStepWriter::WriteSteps(
+    framework::Event& event,
+    const std::vector<PropagationSteps>& stepCollection,
+    const std::vector<ldmx::LdmxSpacePoint*> ldmxsps,
+    const Acts::Vector3& start_pos, const Acts::Vector3& start_mom) {
   // Exclusive access to the tree while writing
   std::lock_guard<std::mutex> lock(m_writeMutex);
 
@@ -85,31 +80,30 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
 
   // we get the event number
   m_eventNr = event.getEventNumber();
-  
-  //fill the hits
+
+  // fill the hits
   m_hit_x.clear();
   m_hit_y.clear();
   m_hit_z.clear();
-  //m_hit_erru.clear();
-  //m_hit_errv.clear();
+  // m_hit_erru.clear();
+  // m_hit_errv.clear();
 
   m_start_pos.clear();
   m_start_mom.clear();
-  
+
   for (auto& ldmxsp : ldmxsps) {
     m_hit_x.push_back(ldmxsp->x());
     m_hit_y.push_back(ldmxsp->y());
     m_hit_z.push_back(ldmxsp->z());
   }
 
-  for (unsigned int i=0; i<3; i++) {
+  for (unsigned int i = 0; i < 3; i++) {
     m_start_pos.push_back(start_pos(i));
     m_start_mom.push_back(start_mom(i));
   }
-  
+
   // loop over the step vector of each test propagation in this
   for (auto& steps : stepCollection) {
-
     // clear the vectors for each collection
     m_volumeID.clear();
     m_boundaryID.clear();
@@ -130,7 +124,6 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
 
     // loop over single steps
     for (auto& step : steps) {
-      
       // the identification of the step
       Acts::GeometryIdentifier::Value volumeID = 0;
       Acts::GeometryIdentifier::Value boundaryID = 0;
@@ -145,7 +138,6 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
         layerID = geoID.layer();
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
-
       }
       // a current volume overwrites the surface tagged one
       if (step.volume) {
@@ -197,6 +189,5 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
   }
   return true;
 }
-}//namespace sim
-}//namespace tracking
-
+}  // namespace sim
+}  // namespace tracking
