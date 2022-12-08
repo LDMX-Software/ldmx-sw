@@ -39,7 +39,7 @@
 
 //--- LDMX ---//
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Reco/LdmxTrackingGeometry.h"
+#include "Tracking/Reco/TrackersTrackingGeometry.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -99,7 +99,7 @@ namespace tracking {
     dd4hep::Detector* detector_{nullptr};
     
     /// The tracking geometry
-    std::shared_ptr<tracking::reco::LdmxTrackingGeometry> ldmx_tg;
+    std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
     
     /// The contexts
     Acts::GeometryContext gctx_;
@@ -131,11 +131,13 @@ namespace tracking {
     std::string out_seed_collection_{"SeedTracks"};
     std::string input_hits_collection_{"TaggerSimHits"};
 
+    std::vector<double> perigee_location_{-700.,0.,0};
     double pmin_{0.05};
     double pmax_{8};
     double d0max_{20.};
     double d0min_{20.};
     double z0max_{60.};
+    std::vector<std::string> strategies_{};
     
     
     TFile* outputFile_;
@@ -150,6 +152,19 @@ namespace tracking {
     std::vector<float> b2_;
     std::vector<float> b3_;
     std::vector<float> b4_;
+
+    //Check failures
+    long ndoubles_{0};
+    long nmissing_{0};
+    long nfailpmin_{0};
+    long nfailpmax_{0};
+    long nfaild0min_{0};
+    long nfaild0max_{0};
+    long nfailz0max_{0};
+    
+    
+    
+    
     
     
   }; // SeedFinderProcessor

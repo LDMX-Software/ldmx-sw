@@ -2,7 +2,6 @@
 #include "Tracking/Sim/TrackingUtils.h"
 #include <chrono>
 
-
 #include "Tracking/Event/Measurement.h"
 
 using namespace framework;
@@ -26,7 +25,10 @@ void DigitizationProcessor::onProcessStart() {
   std::cout<<"Loading the tracking geometry"<<std::endl;
 
   //Load the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_,&gctx_);
+  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>("/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+                                                             &gctx_, debug_);
+
+
   
   //Module Bounds => Take them from the tracking geometry TODO
   auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(20.17 * Acts::UnitConstants::mm,
@@ -64,7 +66,9 @@ void DigitizationProcessor::onProcessStart() {
 
   // Seed the generator
   generator_.seed(1);
+
   
+    
 }
 
 void DigitizationProcessor::configure(framework::config::Parameters &parameters) {

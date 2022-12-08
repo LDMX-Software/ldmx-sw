@@ -40,7 +40,7 @@
 namespace tracking {
 namespace reco {
 
-class TrackersTrackingGeometry : BaseTrackingGeometry {
+class TrackersTrackingGeometry : public BaseTrackingGeometry {
   
  public:
   

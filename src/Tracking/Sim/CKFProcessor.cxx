@@ -43,7 +43,11 @@ void CKFProcessor::onProcessStart() {
   bctx_ = Acts::MagneticFieldContext();
 
   //Build the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_, &gctx_);
+  ldmx_tg =
+      std::make_shared<tracking::reco::TrackersTrackingGeometry>(
+          "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+          &gctx_,
+          debug_);
   const auto tGeometry = ldmx_tg->getTG();
 
   if (dumpobj_)
@@ -224,8 +228,6 @@ void CKFProcessor::onProcessStart() {
   h_tgt_scoring_x_y_      = std::make_unique<TH2F>("tgt_scoring_x_y",    "tgt_scoring_x_y",100,-40,40,100,-40,40);
   h_tgt_scoring_z_        = std::make_unique<TH1F>("tgt_scoring_z",      "tgt_scoring_z"  ,100,0,10);
 
-
-
 }
 
 void CKFProcessor::produce(framework::Event &event) {
@@ -333,8 +335,8 @@ void CKFProcessor::produce(framework::Event &event) {
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(seed.getPerigeeX(),
                                                                       seed.getPerigeeY(),
                                                                       seed.getPerigeeZ()));
-
     
+
     Acts::BoundVector paramVec;
     paramVec <<
         seed.getD0(),
@@ -346,9 +348,15 @@ void CKFProcessor::produce(framework::Event &event) {
 
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
-        
-    if (debug_) 
-      std::cout<<"q"<<std::endl;
+
+
+    if (debug_) {
+      std::cout<<"perigee"<<std::endl;
+      std::cout<<seed.getPerigeeX()<<" "<<seed.getPerigeeY()<<" " << seed.getPerigeeZ()<<std::endl;
+      std::cout<<"start Parameters"<<std::endl;
+      std::cout<<paramVec<<std::endl;
+    }
+    
     Acts::ActsScalar q = seed.getQoP() < 0 ?
                          -1 * Acts::UnitConstants::e :
                          Acts::UnitConstants::e;
@@ -1035,53 +1043,7 @@ void CKFProcessor::testMeasurmentCalibrator(const LdmxMeasurementCalibrator& cal
 }
 
 
-//Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
-//Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
 
-auto CKFProcessor::makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*> {
-  auto layer_surface_map = decltype(layer_surface_map_){};
-
-  //loop over the tracking geometry to find all sensitive surfaces
-  std::vector<const Acts::Surface*> surfaces;
-  ldmx_tg->getSurfaces(surfaces);
-
-  for (auto& surface : surfaces) {
-    //std::cout<<"Check the surfaces"<<std::endl;
-    //surface->toStream(gctx_,std::cout);
-    //std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
-    //std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
-    
-    //Layers from 1 to 14 - for the tagger 
-    //unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1 sensor per layer
-
-    unsigned int volumeId = surface->geometryId().volume();
-    unsigned int layerId  = (surface->geometryId().layer() / 2); // set layer ID  from 1 to 7 for the tagger and from 1 to 6 for the recoil
-    unsigned int sensorId = surface->geometryId().sensitive() - 1;   // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the axial sensors in the back layers of the recoil
-
-    //surface ID = vol * 1000 + ly * 100 + sensor
-    
-    unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
-    
-    layer_surface_map[surfaceId] = surface;
-    
-  }// surfaces loop
-
-  
-  if (debug_) {
-    
-    std::cout<<__PRETTY_FUNCTION__<<std::endl;
-    
-    for (auto const& surfaceId : layer_surface_map) {
-      std::cout<<getName()<<" "<< surfaceId.first<<std::endl;
-      std::cout<<getName()<<" Check the surface"<<std::endl;
-      surfaceId.second->toStream(gctx_,std::cout);
-      std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
-      std::cout<<getName()<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
-    }
-  }
-
-  return layer_surface_map;
-}
 
 // This functioon takes the input parameters and makes the propagation for a simple event display
 void CKFProcessor::writeEvent(framework::Event &event,
