@@ -47,8 +47,19 @@ class TrackersTrackingGeometry : BaseTrackingGeometry {
   TrackersTrackingGeometry(std::string gdmlfile,
                            Acts::GeometryContext* gctx, bool debug = false);
 
-  void BuildLayoutMap(G4VPhysicalVolume* pvol,
-                      std::string surfacename);
+  void BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
+                            std::string surfacename);
+  
+  // Provided a physical volume, extract a silicon rectangular plane surface
+  std::shared_ptr<Acts::PlaneSurface> GetSurface(G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans);
+
+  
+  Acts::CuboidVolumeBuilder::VolumeConfig buildTrackerVolume();
+  Acts::CuboidVolumeBuilder::VolumeConfig buildRecoilVolume() {};
+
+  //TODO Implement these
+  Acts::CuboidVolumeBuilder::VolumeConfig buildTSVolume(){};
+  Acts::CuboidVolumeBuilder::VolumeConfig buildTargetVolume(){};
   
  private:
   G4VPhysicalVolume* Tagger_;
@@ -60,7 +71,8 @@ class TrackersTrackingGeometry : BaseTrackingGeometry {
   //Tracker mapping.
   //Each key represent the layer index and each entry is the vector of surfaces that one wants to add to the same layer
   //In this way we can pass multiple surfaces to the same layer to the builder.
-  std::map<std::string, std::vector<Acts::CuboidVolumeBuilder::SurfaceConfig > > tracker_layout;
+  std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>> tagger_layout;
+  std::map<std::string, std::vector<std::shared_ptr<const Acts::Surface>>> recoil_layout;
   
   
   

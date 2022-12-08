@@ -52,7 +52,6 @@ class EcalTrackingGeometry {
   void dumpGeometry(const std::string& outputDir );
   
  private:
-  TGeoManager* _geo{nullptr};
   bool _debug{false};
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry_;
   
