@@ -6,9 +6,6 @@
 //--- ACTS ---//
 #include "Acts/Plugins/TGeo/TGeoPrimitivesHelper.hpp"
 
-//--- DD4Hep ---//
-#include "DD4hep/DetElement.h"
-
 //--- C++ StdLib ---//
 #include <iostream>
 #include <algorithm> //std::vector reverse
@@ -38,7 +35,6 @@ void CKFProcessor::onProcessStart() {
   profiling_map_["result_loop"]  = 0.;
   
 
-  detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 

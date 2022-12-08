@@ -2,8 +2,6 @@
 #define TRACKING_SIM_SEEDFINDERPROCESSOR_H_
 
 
-//---  DD4hep ---//
-#include "DD4hep/Detector.h"
 
 //---< Framework >---//
 #include "Framework/Event.h"
@@ -95,9 +93,7 @@ namespace tracking {
 
     void LineParabolaToHelix(const Acts::ActsVector<5> parameters, Acts::ActsVector<5>& helix_parameters, Acts::Vector3 ref);
     
-    /// The detector
-    dd4hep::Detector* detector_{nullptr};
-    
+        
     /// The tracking geometry
     std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
     

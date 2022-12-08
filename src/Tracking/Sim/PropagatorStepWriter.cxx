@@ -10,7 +10,6 @@
 #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 #include "Acts/Geometry/DetectorElementBase.hpp"
 #include "Acts/Plugins/TGeo/TGeoDetectorElement.hpp"
-#include "Acts/Plugins/DD4hep/DD4hepDetectorElement.hpp"
 
 
 namespace tracking{
@@ -147,26 +146,6 @@ bool PropagatorStepWriter::WriteSteps(framework::Event &event,
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
 
-        /*
-        std::cout<<__PRETTY_FUNCTION__<<std::endl;
-        std::cout<<"PF::DEBUG::IDENTIFIER"<<std::endl;
-        Acts::DD4hepDetectorElement* id_det_el = (Acts::DD4hepDetectorElement*)(step.surface->associatedDetectorElement());
-        if (step.surface->associatedDetectorElement() != nullptr) {
-          std::cout<<step.surface->associatedDetectorElement()<<std::endl;
-          }
-        else {
-          std::cout<<"PF:: id_det_el is a nullptr"<<std::endl;
-          std::cout<<step.surface->associatedDetectorElement()<<std::endl;
-          std::cout<<"volume="<<volumeID<<std::endl;
-          std::cout<<"layer="<<layerID<<std::endl;
-          std::cout<<"approach="<<approachID<<std::endl;
-          std::cout<<"boundary="<<boundaryID<<std::endl;
-          std::cout<<"sensitive="<<sensitiveID<<std::endl;
-          
-        }
-        */
-
-        
       }
       // a current volume overwrites the surface tagged one
       if (step.volume) {

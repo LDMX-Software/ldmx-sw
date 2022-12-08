@@ -14,9 +14,6 @@
 #include "Acts/Surfaces/Surface.hpp"
 #include "Acts/Definitions/Units.hpp"
 
-//---  DD4hep ---//
-#include "DD4hep/Detector.h"
-
 //--- LDMX ---//
 #include "Tracking/Reco/TrackersTrackingGeometry.h"
 #include "Tracking/Sim/TrackingUtils.h"
@@ -46,7 +43,6 @@ class DigitizationProcessor : public framework::Producer {
   void produce(framework::Event &event);
 
   /// The detector
-  dd4hep::Detector* detector_{nullptr};
   Acts::GeometryContext gctx_;
 
   void digitizeHits(const std::vector<ldmx::SimTrackerHit> &sim_hits, std::vector<ldmx::LdmxSpacePoint*>& ldmxsps);

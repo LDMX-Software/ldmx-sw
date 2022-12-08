@@ -1,4 +1,4 @@
-Installation of ldmx-sw from docker with acts
+Setting up Track reconstruction
 ---------------------------------------------
 
 Baseline installation

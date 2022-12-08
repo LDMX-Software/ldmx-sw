@@ -6,9 +6,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/RandomNumberSeedService.h"
 
-//---  DD4hep ---//
-#include "DD4hep/Detector.h"
-
 //--- ROOT ---//
 #include "TGeoMatrix.h"
 
@@ -180,8 +177,6 @@ class CKFProcessor final : public framework::Producer {
                   const int& trackTip,
                   const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
 
-  /// The detector
-  dd4hep::Detector* detector_{nullptr};
   
   /// The tracking geometry
   std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
