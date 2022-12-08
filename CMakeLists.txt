@@ -62,8 +62,6 @@ add_subdirectory(acts)           # now build acts
 
 find_package(Eigen3 CONFIG REQUIRED)
 
-setup_dd4hep_target()
-
 setup_geant4_target()
 
 

@@ -18,7 +18,6 @@ DigitizationProcessor::~DigitizationProcessor() {}
 
 void DigitizationProcessor::onProcessStart() {
 
-  detector_ = &detector();
   gctx_ = Acts::GeometryContext();
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
   

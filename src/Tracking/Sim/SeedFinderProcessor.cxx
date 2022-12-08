@@ -55,7 +55,6 @@ SeedFinderProcessor::~SeedFinderProcessor() {}
 void SeedFinderProcessor::onProcessStart() {
 
 
-  detector_ = &detector();
   //Build the tracking geometry
   ldmx_tg =
       std::make_shared<tracking::reco::TrackersTrackingGeometry>(
