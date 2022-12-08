@@ -1,7 +1,6 @@
+#include <catch2/catch_test_macros.hpp>
 
 #include "TTree.h"
-
-#include "Framework/catch.hpp"
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
