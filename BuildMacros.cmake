@@ -373,24 +373,23 @@ macro(build_test)
 
   # If test have been enabled, attempt to find catch.  If catch hasn't found, it
   # will be downloaded locally.
-  find_package(Catch2 2.13.0)
+  find_package(Catch2 QUIET)
 
-  # Create the Catch2 main exectuable if it doesn't exist
-  if(NOT EXISTS ${CMAKE_BINARY_DIR}/test/run_test.cxx)
-
-    file(WRITE ${CMAKE_BINARY_DIR}/test/run_test.cxx
-         "#define CATCH_CONFIG_MAIN\n#include \"catch.hpp\"")
-
-    message(
-      STATUS "Writing Catch2 main to: ${CMAKE_BINARY_DIR}/test/run_test.cxx")
+  if (NOT Catch2_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        Catch2
+        URL https://github.com/catchorg/Catch2.git
+        GIT_TAG        v3.2.0
+    )
+    FetchContent_MakeAvailable(Catch2)
   endif()
 
   # Add the executable to run all test.  test_sources is a cached variable that
   # contains the test from the different modules.  Each of the modules needs to
   # setup the test they want to run.
-  add_executable(run_test ${CMAKE_BINARY_DIR}/test/run_test.cxx ${test_sources})
-  target_include_directories(run_test PRIVATE ${CATCH2_INCLUDE_DIR})
-  target_link_libraries(run_test PRIVATE Catch2::Interface ${test_dep})
+  add_executable(run_test ${test_sources})
+  target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep})
 
   # Install the run_test  executable
   foreach(entry ${test_modules})
