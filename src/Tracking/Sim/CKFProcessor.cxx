@@ -3,9 +3,6 @@
 
 #include "SimCore/Event/SimParticle.h"
 
-//--- ACTS ---//
-#include "Acts/Plugins/TGeo/TGeoPrimitivesHelper.hpp"
-
 //--- C++ StdLib ---//
 #include <iostream>
 #include <algorithm> //std::vector reverse
