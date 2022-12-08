@@ -203,6 +203,74 @@ Acts::Vector3 BaseTrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) {
   return trans;
 }
 
+void BaseTrackingGeometry::getSurfaces(std::vector<const Acts::Surface*>& surfaces) {
+
+  if (!tGeometry_)
+    throw std::runtime_error("BaseTrackingGeometry::getSurfaces tGeometry is null");
+    
+  const Acts::TrackingVolume* tVolume = tGeometry_->highestTrackingVolume();
+  if (tVolume->confinedVolumes()) {
+    for (auto volume : tVolume->confinedVolumes()->arrayObjects()) {
+      if (volume->confinedLayers()) {
+        for (const auto& layer : volume->confinedLayers()->arrayObjects()) {
+          if (layer->layerType() == Acts::navigation) continue;
+          for (auto surface : layer->surfaceArray()->surfaces()) {
+            if (surface) {
+
+              surfaces.push_back(surface);
+                            
+            }// surface exists
+          } //surfaces
+        }//layers objects
+      }//confined layers
+    }//volumes objects
+  }//confined volumes
+}
+
+
+void BaseTrackingGeometry::makeLayerSurfacesMap() {
+  
+  std::vector<const Acts::Surface*> surfaces;
+  getSurfaces(surfaces);
+  
+  for (auto& surface : surfaces) {
+    //std::cout<<"Check the surfaces"<<std::endl;
+    //surface->toStream(gctx_,std::cout);
+    //std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
+    //std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
+    
+    //Layers from 1 to 14 - for the tagger 
+    //unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1 sensor per layer
+
+    unsigned int volumeId = surface->geometryId().volume();
+    unsigned int layerId  = (surface->geometryId().layer() / 2); // set layer ID  from 1 to 7 for the tagger and from 1 to 6 for the recoil
+    unsigned int sensorId = surface->geometryId().sensitive() - 1;   // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the axial sensors in the back layers of the recoil
+
+    //surface ID = vol * 1000 + ly * 100 + sensor
+    
+    unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
+    
+    layer_surface_map_[surfaceId] = surface;
+    
+  }// surfaces loop
+
+  
+  if (debug_) {
+    
+    std::cout<<__PRETTY_FUNCTION__<<std::endl;
+    
+    for (auto const& surfaceId : layer_surface_map_) {
+      std::cout<<" "<< surfaceId.first<<std::endl;
+      std::cout<<" Check the surface"<<std::endl;
+      surfaceId.second->toStream(*gctx_,std::cout);
+      std::cout<<" GeometryID::"<<surfaceId.second->geometryId()<<std::endl;
+      std::cout<<" GeometryID::"<<surfaceId.second->geometryId().value()<<std::endl;
+    }
+  }
+  
+}
+
+
 
 } //tracking
 }//reco 

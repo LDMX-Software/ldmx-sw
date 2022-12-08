@@ -61,6 +61,18 @@ class BaseTrackingGeometry {
                                 bool toTrackingFrame = false);
 
   Acts::Transform3 toTracker(const Acts::Transform3& trans);
+
+  //Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
+  //Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],    sensor=[1,2,3,4,5,6,7,8,9,10]
+  void makeLayerSurfacesMap();
+  
+  void getSurfaces(std::vector<const Acts::Surface*>& surfaces);
+
+  const Acts::Surface* getSurface(int layerid)  {
+    return layer_surface_map_.at(layerid);
+  }
+  
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
   
  protected:
 

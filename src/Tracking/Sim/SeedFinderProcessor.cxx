@@ -2,10 +2,7 @@
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 
-
 #include "Eigen/Dense"
-
-
 
 /* This processor takes in input a set of 3D space points and builds seedTracks using the ACTS algorithm
  * which is based on the ATLAS 3-space point conformal fit.
@@ -39,7 +36,7 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string &name,
 
   outputFile_  = new TFile("seeder.root","RECREATE");
   outputTree_  = new TTree("seeder","seeder");
-
+  
   outputTree_->Branch("nevents",&nevents_);
   outputTree_->Branch("xhit",&xhit_);
   outputTree_->Branch("yhit",&yhit_);
@@ -60,7 +57,11 @@ void SeedFinderProcessor::onProcessStart() {
 
   detector_ = &detector();
   //Build the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::LdmxTrackingGeometry>(detector_, &gctx_);
+  ldmx_tg =
+      std::make_shared<tracking::reco::TrackersTrackingGeometry>(
+          "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+          &gctx_,
+          debug_);
   
 }
         
@@ -119,14 +120,16 @@ void SeedFinderProcessor::configure(framework::config::Parameters &parameters) {
   bField_(1)=0.;
   bField_(2)=config_.bFieldInZ;
 
-  debug_ = parameters.getParameter<bool>("debug",false);
-  out_seed_collection_ = parameters.getParameter<std::string>("out_seed_collection",getName()+"SeedTracks");
+  debug_                 = parameters.getParameter<bool>("debug",false);
+  out_seed_collection_   = parameters.getParameter<std::string>("out_seed_collection",getName()+"SeedTracks");
   input_hits_collection_ = parameters.getParameter<std::string>("input_hits_collection","TaggerSimHits");
-  pmin_  = parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
-  pmax_  = parameters.getParameter<double>("pmax",8 * Acts::UnitConstants::GeV);
-  d0max_ = parameters.getParameter<double>("d0max",-15. * Acts::UnitConstants::mm);
-  d0min_ = parameters.getParameter<double>("d0max",-45. * Acts::UnitConstants::mm);
-  z0max_ = parameters.getParameter<double>("z0max",60. * Acts::UnitConstants::mm);
+  perigee_location_      = parameters.getParameter<std::vector<double> >("perigee_location", {-700,0.,0.});
+  pmin_                  = parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
+  pmax_                  = parameters.getParameter<double>("pmax",8 * Acts::UnitConstants::GeV);
+  d0max_                 = parameters.getParameter<double>("d0max",-15. * Acts::UnitConstants::mm);
+  d0min_                 = parameters.getParameter<double>("d0min",-45. * Acts::UnitConstants::mm);
+  z0max_                 = parameters.getParameter<double>("z0max",60. * Acts::UnitConstants::mm);
+  strategies_            = parameters.getParameter<std::vector<std::string>>("strategies",{"0,1,2,3,4"});
 }
         
 void SeedFinderProcessor::produce(framework::Event &event) {
@@ -135,11 +138,9 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   std::vector<ldmx::Track> seed_tracks;
   
   nevents_++;
-            
+  
   //Read in the Sim hits -- TODO choose which collection from config
-            
   const std::vector<ldmx::SimTrackerHit> sim_hits = event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
-
   std::vector<ldmx::LdmxSpacePoint* > ldmxsps;
             
   //Only convert simHits that have at least 0.05 edep
@@ -219,7 +220,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   int numSeeds = seeds.size();
 
   */
-
   /*
   
   for (auto& seed : seeds) {
@@ -283,7 +283,7 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   const std::vector<ldmx::Measurement> measurements = event.getCollection<ldmx::Measurement>(input_hits_collection_);
   
   std::vector<ldmx::Measurement> meas_for_seeds;
-
+  
   for (auto meas : measurements) {
 
     int lyID = (meas.getLayer() / 100) % 10;
@@ -295,27 +295,45 @@ void SeedFinderProcessor::produce(framework::Event &event) {
     }
   }
   
-  if (meas_for_seeds.size() < 5)
+  if (meas_for_seeds.size() < 5) {
+    nmissing_++;
     return;
+  }
+  if (meas_for_seeds.size() > 5) {
+    ndoubles_++;
+    return;
+  }
+    
   
-  
-  Acts::Vector3 perigee_location{-700 - meas_for_seeds.at(3).getGlobalPosition()[0],0,0};
-  
-
   //TODO remove the copying
   ldmx::Track seedTrack = SeedTracker(meas_for_seeds,
                                       meas_for_seeds.at(3).getGlobalPosition()[0],
-                                      perigee_location);
+                                      Acts::Vector3(perigee_location_[0],
+                                                    perigee_location_[1],
+                                                    perigee_location_[2]));
   
-
   //Remove failed fits
-  if ((1./abs(seedTrack.getQoP()) < pmin_) ||
-      (1./abs(seedTrack.getQoP()) > pmax_) ||
-      (abs(seedTrack.getZ0()) > z0max_)    ||
-      (seedTrack.getD0() < d0min_)         ||
-      (seedTrack.getD0() > d0max_))
+  if (1./abs(seedTrack.getQoP()) < pmin_) {
+    nfailpmin_++;
     return;
-  
+  }
+  if (1./abs(seedTrack.getQoP()) > pmax_) {
+    nfailpmax_++;
+    return;
+  }
+  if (abs(seedTrack.getZ0()) > z0max_){
+    nfailz0max_++;
+    return;
+  }
+  if (seedTrack.getD0() < d0min_) {
+    nfaild0min_++;
+    return;
+  }
+  if (seedTrack.getD0() > d0max_) {
+    nfaild0max_++;
+    return;
+  }
+
   seed_tracks.push_back(seedTrack);
   event.add(out_seed_collection_, seed_tracks);
   ntracks_+=seed_tracks.size();
@@ -337,8 +355,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   // - sim hits in MC
   //Step 0: Get the sim hits and project them on the surfaces to mimic 2d hits
   //Step 1: Smear the hits and associate an uncertainty to those measurements.
-
-  
   
   xhit_.clear();
   yhit_.clear();
@@ -349,8 +365,6 @@ void SeedFinderProcessor::produce(framework::Event &event) {
   b2_.clear();
   b3_.clear();
   b4_.clear();
-  
-  
   
 }//produce
 
@@ -379,12 +393,12 @@ ldmx::Track SeedFinderProcessor::SeedTracker(const std::vector<ldmx::Measurement
   Acts::ActsVector<5> Y = Acts::ActsVector<5>::Zero();
   
   for (auto meas : vmeas) {
-
+    
     double xmeas = meas.getGlobalPosition()[0] - xOrigin;
     
     //Get the surface
     const Acts::Surface* hit_surface = ldmx_tg->getSurface(meas.getLayer());
-
+    
     //Get the global to local transformation
     auto rot = hit_surface->transform(gctx_).rotation();
     auto tr  = hit_surface->transform(gctx_).translation();
@@ -435,7 +449,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(const std::vector<ldmx::Measurement
 
   Acts::ActsVector<5> B;
   B = A.inverse() * Y;
-  
+    
   b0_.push_back(B(0));
   b1_.push_back(B(1));
   b2_.push_back(B(2));
@@ -448,13 +462,15 @@ ldmx::Track SeedFinderProcessor::SeedTracker(const std::vector<ldmx::Measurement
   Acts::ActsVector<3> ref{0.,0.,0.};
   LineParabolaToHelix(B, hlx, ref);
 
+  double relativePerigeeX = perigee_location(0) - xOrigin;
+  
   std::shared_ptr<const Acts::PerigeeSurface> seed_perigee =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_location);
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(relativePerigeeX, perigee_location(1), perigee_location(2)));
   
   //in mm
-  Acts::Vector3 seed_pos{perigee_location(0), B(0) + B(1) * perigee_location(0) + B(2)*perigee_location(0)*perigee_location(0), B(3) + B(4)*perigee_location(0)};
-
-  Acts::Vector3 dir{1, B(1) + 2*B(2)*perigee_location(0), B(4)};
+  Acts::Vector3 seed_pos{relativePerigeeX, B(0) + B(1) * relativePerigeeX + B(2)*relativePerigeeX*relativePerigeeX, B(3) + B(4)*relativePerigeeX};
+  Acts::Vector3 dir{1, B(1) + 2*B(2)*relativePerigeeX, B(4)};
   dir /= dir.norm();
   
   //Momentum at xmeas
@@ -469,8 +485,10 @@ ldmx::Track SeedFinderProcessor::SeedTracker(const std::vector<ldmx::Measurement
   auto bound_params =
       Acts::detail::transformFreeToBoundParameters(seed_free, *seed_perigee, gctx_).value();
 
-  //std::cout<<"bound parameters at perigee location"<<std::endl;
-  //std::cout<<bound_params<<std::endl;
+  if (debug_) {
+    std::cout<<"bound parameters at perigee location"<<std::endl;
+    std::cout<<bound_params<<std::endl;
+  }
 
   
   Acts::BoundVector stddev;
@@ -526,18 +544,24 @@ void SeedFinderProcessor::LineParabolaToHelix(const Acts::ActsVector<5> paramete
   double qOp = factor / (0.3 * 1.5 * R * 0.001);
   
   //std::cout<<d0<<" "<<z0<<" "<<phi0<<" "<<theta<<" "<<qOp<<std::endl;
-    
+  
 }
 
 
 void SeedFinderProcessor::onProcessEnd() { 
-
   outputFile_->cd();
   outputTree_->Write();
   outputFile_->Close();
-
   std::cout<<"PROCESSOR:: "<<this->getName()<<"   AVG Time/Event: " <<processing_time_ / nevents_ << " ms"<<std::endl;
   std::cout<<"PROCESSOR:: "<<this->getName()<<"   Total Seeds/Events: "    << ntracks_<<"/"<<nevents_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   Seeds discarded due to multiple hits on layers "   << ndoubles_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   not enough seed points "   << nmissing_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   nfailpmin="   << nfailpmin_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   nfailpmax="   << nfailpmax_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   nfaild0max="   << nfaild0max_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   nfaild0min="   << nfaild0min_<<std::endl;
+  std::cout<<"PROCESSOR:: "<<this->getName()<<"   nfailz0max="   << nfailz0max_<<std::endl;
+  
 }
 
   
@@ -546,3 +570,4 @@ void SeedFinderProcessor::onProcessEnd() {
 
 
 DECLARE_PRODUCER_NS(tracking::sim, SeedFinderProcessor)
+

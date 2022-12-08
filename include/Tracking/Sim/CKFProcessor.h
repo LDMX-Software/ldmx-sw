@@ -20,7 +20,7 @@
 #include <memory>
 
 //--- LDMX ---//
-#include "Tracking/Reco/LdmxTrackingGeometry.h"
+#include "Tracking/Reco/TrackersTrackingGeometry.h"
 
 //--- ACTS ---//
 
@@ -184,7 +184,7 @@ class CKFProcessor final : public framework::Producer {
   dd4hep::Detector* detector_{nullptr};
   
   /// The tracking geometry
-  std::shared_ptr<tracking::reco::LdmxTrackingGeometry> ldmx_tg;
+  std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
   
   /// The contexts
   Acts::GeometryContext gctx_;

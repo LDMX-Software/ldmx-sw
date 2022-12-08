@@ -41,7 +41,8 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
   tGeometry_ = tgb.trackingGeometry(*gctx_);
 
-  dumpGeometry("./");
+  //dumpGeometry("./");
+  makeLayerSurfacesMap();
         
 }
 

@@ -18,7 +18,7 @@
 #include "DD4hep/Detector.h"
 
 //--- LDMX ---//
-#include "Tracking/Reco/LdmxTrackingGeometry.h"
+#include "Tracking/Reco/TrackersTrackingGeometry.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
 //--- ACTS ---//
@@ -26,6 +26,9 @@
 
 //--- C++ ---//
 #include <random>
+
+#include "Tracking/Reco/TrackersTrackingGeometry.h"
+
 
 namespace tracking {
 namespace reco {
@@ -55,7 +58,7 @@ class DigitizationProcessor : public framework::Producer {
  private:
 
   
-  std::shared_ptr<tracking::reco::LdmxTrackingGeometry> ldmx_tg;
+  std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
   std::string hit_collection_;
   std::string out_collection_;
   float minEdep_; // minimum deposited energy cut

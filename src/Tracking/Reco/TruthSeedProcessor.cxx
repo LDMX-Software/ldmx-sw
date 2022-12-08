@@ -101,6 +101,20 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   auto tagger_bound_params =
       Acts::detail::transformFreeToBoundParameters(tagger_free_params, *tagger_gen_surface, gctx_).value();
 
+
+  //Check the parameters at the perigee
+  std::shared_ptr<const Acts::PerigeeSurface> tagger_per_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(-700, 0., 0.));
+
+  auto tagger_bound_params_perigee =
+      Acts::detail::transformFreeToBoundParameters(tagger_free_params, *tagger_per_surface, gctx_).value();
+
+  if (debug_) {
+    std::cout<<"(TRUTH) Tagger bound params to the -700,0.,0. surface"<<std::endl;
+    std::cout<<tagger_bound_params_perigee<<std::endl;
+  }
+  
   //Try something reasonable
   Acts::BoundVector stddev;
   stddev[Acts::eBoundLoc0]   = 500 * Acts::UnitConstants::um;
