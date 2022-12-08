@@ -1,5 +1,6 @@
-
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/catch_approx.hpp>
 
 #include "DetDescr/EcalID.h"  //creating unique cell IDs
 #include "Framework/ConfigurePython.h"
@@ -10,6 +11,8 @@
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Ecal/Event/EcalHit.h"
+
+using Catch::Approx;
 
 namespace ecal {
 namespace test {
@@ -96,7 +99,7 @@ static const bool NTUPLIZE_ENERGIES = true;
  * the input energy is "close enough" to the truth
  * energy.
  */
-class isCloseEnough : public Catch::MatcherBase<double> {
+class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
  private:
   /// correct (sim-level) energy [MeV]
   double truth_;
