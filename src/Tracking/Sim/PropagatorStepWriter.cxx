@@ -9,7 +9,7 @@
 #include "Acts/Plugins/Identification/Identifier.hpp"
 #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 #include "Acts/Geometry/DetectorElementBase.hpp"
-#include "Acts/Plugins/TGeo/TGeoDetectorElement.hpp"
+
 
 
 namespace tracking{
