@@ -1,11 +1,14 @@
 
 #include <fstream>  // ifstream, ofstream
 
-#include "catch.hpp"  // Catch2 Macros, TEST_CASE, REQUIRE
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
+
+using Catch::Approx;
 
 namespace framework {
 namespace test {
