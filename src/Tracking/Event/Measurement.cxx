@@ -2,5 +2,4 @@
 
 ClassImp(ldmx::Measurement)
 
-namespace ldmx{
-}
+    namespace ldmx {}
