@@ -1,7 +1,6 @@
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('target_db')
 from LDMX.Biasing import target
-from LDMX.SimCore import makePath
 import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 p.sequence = [
