@@ -21,4 +21,4 @@ std::ostream &operator<<(std::ostream &output, const RawSiStripHit &hit) {
   return output;
 }
 
-} // namespace ldmx
+}  // namespace ldmx
