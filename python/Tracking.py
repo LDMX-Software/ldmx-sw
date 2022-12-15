@@ -80,32 +80,6 @@ class TruthSeedProcessor(Producer) :
     def __init__(self, instance_name = "TruthSeedProcessor"):
         super().__init__(instance_name, 'tracking::reco::TruthSeedProcessor','Tracking')
 
-class VertexProcessor(Producer) :
-    """ Producer to form vertices from a track collection. It could be used for K0 analysis and EN scattering.
-    No vertex finding is in place, only vertex fitting. This producer is not fully validated and still work
-    in progress. 
-
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this instance.
-    """
-
-    def __init__(self, instance_name = "VertexProcessor"):
-        super().__init__(instance_name, 'tracking::reco::VertexProcessor','Tracking')
-
-#This class is to produce vertices between two track collections, i.e. for tagger/recoil matching for example.
-class Vertexer(Producer) :
-    """ Producer that form vertices betwen two different track collections. It could be used for
-    matching tagger/recoil tracks.
-
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this instance.
-    """
-    def __init__(self, instance_name = "Vertexer"):
-        super().__init__(instance_name,'tracking::reco::Vertexer','Tracking')
 
 
 

@@ -58,7 +58,7 @@ void Vertexer::onProcessStart() {
   };
 
   InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), bfieldMap_,
+      std::move(localToGlobalBin_xyz), field_map_,
       1. * Acts::UnitConstants::mm,    // default scale for axes length
       1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
       false,                           // not symmetrical
@@ -91,10 +91,7 @@ void Vertexer::configure(framework::config::Parameters& parameters) {
   debug_ = parameters.getParameter<bool>("debug", false);
 
   // TODO:: the bfield map should be taken automatically
-  bfieldMap_ = parameters.getParameter<std::string>(
-      "bfieldMap_",
-      "/Users/pbutti/sw/data_ldmx/"
-      "BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
+  field_map_ = parameters.getParameter<std::string>("field_map");
 
   trk_c_name_1 =
       parameters.getParameter<std::string>("trk_c_name_1", "TaggerTracks");
