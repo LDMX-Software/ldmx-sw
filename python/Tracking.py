@@ -49,9 +49,37 @@ class SeedFinderProcessor(Producer) :
     ----------
     instance_name : str
         Unique name for this instance.
+
+    Attributes
+    ----------
+
+    debug : bool
+        Activate the debug print-out.
+    perigee_location : List[float]
+        3D location of the perigee for the helix track parameters definition.
+    pmin : float
+        Minimum cut on the momentum of the seeds.
+    pmax : float
+        Maximum cut on the momentum of the seeds.
+    d0min : float
+        Minimum d0 allowed for the seeds. Computed at the perigee.
+    d0max : float
+        Maximum d0 allowed for the seeds. Computed at the perigee.
+    z0max : float
+        Maximum z0 allowed for the seeds. Computed at the perigee.
+    strategies : List[string] -- WORK IN PROGRESS AND NOT ACTIVE --- 
+        List of 5 hits (3 axial and 2 stereo) for seed finding.
+    input_hits_collection : string
+        The name of the input collection of hits to be used for seed finding.
+    out_seed_collection : string
+        The name of the ouput collection of seeds to be stored.
     """
     def __init__(self, instance_name = "SeedFinderProcessor"):
         super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor','Tracking')
+        self.debug = False
+        self.pmax = 8.
+        
+        
 
 class CKFProcessor(Producer) :
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.

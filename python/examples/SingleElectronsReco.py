@@ -17,12 +17,12 @@ ts_ele.pdgIDs            = [11]
 ts_ele.scoring_hits      = "TargetScoringPlaneHits"
 ts_ele.z_min             = 4.4
 ts_ele.track_id          = 1
-ts_ele.p_cut             = 3985. # In MeV
+ts_ele.p_cut             = 0. # In MeV
 ts_ele.pz_cut            = 0.
-ts_ele.p_cutEcal         = 3985. # In MeV
+ts_ele.p_cutEcal         = 0. # In MeV
 
  
-uSmearing = 0.015  #mm
+uSmearing = 0.006  #mm
 vSmearing = 0.0    #mm
 
 tracking_recoil  = Tracking.CKFProcessor("Recoil_TrackFinder")
@@ -57,6 +57,76 @@ tracking_recoil.pdgID = 11
 tracking_recoil.removeStereo = False
 tracking_recoil.minHits = 6
 
+#SMEARING 0.015
+
+tr15  = Tracking.CKFProcessor("Recoil_TrackFinder_15um")
+tr15.dumpobj = 0
+
+#General
+####
+tr15.debug = False
+tr15.propagator_step_size = 1.  #mm
+tr15.propagator_maxSteps = 2000
+tr15.bfield = -0.75  #in T #From looking at the BField map
+tr15.const_b_field = False
+tr15.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
+#####
+
+#CKF Options
+tr15.hit_collection="RecoilSimHits"
+tr15.out_trk_collection = "RecoilTracks15"
+tr15.seed_coll_name = "RecoilTruthSeeds"
+
+#Target location for the CKF extrapolation
+tr15.use_extrapolate_location = True  #false not supported anymore
+tr15.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
+tr15.use_seed_perigee = True #overrides previous options and uses the seed perigee (can be used to compare with truth)
+
+#smear the hits used for finding/fitting
+tr15.do_smearing = True;
+tr15.sigma_u = 0.015
+tr15.sigma_v = vSmearing
+tr15.trackID = 1
+tr15.pdgID = 11
+tr15.removeStereo = False
+tr15.minHits = 6
+
+#SMEARING 0.010
+
+tr10  = Tracking.CKFProcessor("Recoil_TrackFinder_10um")
+tr10.dumpobj = 0
+
+#General
+####
+tr10.debug = False
+tr10.propagator_step_size = 1.  #mm
+tr10.propagator_maxSteps = 2000
+tr10.bfield = -0.75  #in T #From looking at the BField map
+tr10.const_b_field = False
+tr10.bfieldMap_ = "/Users/pbutti/sw/data_ldmx/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"
+#####
+
+#CKF Options
+tr10.hit_collection="RecoilSimHits"
+tr10.out_trk_collection = "RecoilTracks10"
+tr10.seed_coll_name = "RecoilTruthSeeds"
+
+#Target location for the CKF extrapolation
+tr10.use_extrapolate_location = True  #false not supported anymore
+tr10.extrapolate_location  = [0.,0.,0.]  #ignored if use_extrapolate_location is False
+tr10.use_seed_perigee = True #overrides previous options and uses the seed perigee (can be used to compare with truth)
+
+#smear the hits used for finding/fitting
+tr10.do_smearing = True;
+tr10.sigma_u = 0.010
+tr10.sigma_v = vSmearing
+tr10.trackID = 1
+tr10.pdgID = 11
+tr10.removeStereo = False
+tr10.minHits = 6
+
+
+
 
 tracking_tagger  = Tracking.CKFProcessor("Tagger_TrackFinder")
 tracking_tagger.dumpobj = 0
@@ -84,8 +154,8 @@ tracking_tagger.out_trk_collection = "TaggerTracks"
 tracking_tagger.do_smearing = True
 tracking_tagger.sigma_u = uSmearing  #mm
 tracking_tagger.sigma_v = vSmearing    #mm
-tracking_tagger.trackID = 1
-tracking_tagger.pdgID = 11
+tracking_tagger.trackID = -1 #1
+tracking_tagger.pdgID = -9999 #11
 
 
 #Vertex the tracks in the tagger and in the recoil to obtain the beamspot information
@@ -97,21 +167,23 @@ vtx.debug = False
 #Match the recoil track to the tagger track and get the photon direction / momentum estimate
 
 
-p.sequence = [ts_ele, tracking_recoil, tracking_tagger]
+p.sequence  = [ts_ele, tracking_tagger, tracking_recoil]
 #p.sequence = [ts_ele, tracking_recoil, tracking_tagger, vtx] #Run truth seeding in tagger and recoil, run tracking in the tagger and vertexing
 
 print(p.sequence)
 
-p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673834.root"]  #single ele
-#p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673834.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673835.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636674259.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673832.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673834.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673863.root",
-#                os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10003_t1636673742.root",
-#]
-
+#p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673834.root"]  #single ele
+p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673834.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636673835.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10001_t1636674259.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673832.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673834.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10002_t1636673863.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10003_t1636673742.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10003_t1636673823.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10003_t1636673852.root",
+               # os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10004_t1636673732.root",
+]
 
 '''
 
@@ -166,8 +238,8 @@ p.inputFiles = [os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-incl
                 os.environ["LDMX_BASE"]+"/data_ldmx/single_e/mc_v12-4GeV-1e-inclusive_run10018_t1636673889.root",
                 ]
 
-
 '''
+
 
 print(p.inputFiles)
 
@@ -186,5 +258,5 @@ p.keep = [
 p.outputFiles = ['single_ele_tagger.root']
 
 p.termLogLevel=0
-p.maxEvents = 1000
+p.maxEvents = 10000
 
