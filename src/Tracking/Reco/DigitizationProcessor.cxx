@@ -256,7 +256,7 @@ void DigitizationProcessor::digitizeHits(
   // Convert to ldmxsps
 
   for (auto& simHit : sim_hits) {
-    // Remove low OAenergy deposit hits
+    // Remove low energy deposit hits
     if (simHit.getEdep() > minEdep_) {
       if (trackID_ > 0 && simHit.getTrackID() != trackID_) continue;
 
