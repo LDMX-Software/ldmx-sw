@@ -39,9 +39,6 @@ namespace tracking::reco {
     //TODO::Address the geometry context properly
     Acts::GeometryContext gctx_;
     
-    //Debug flag
-    bool debug_{false};
-    
     //Event counter
     int nevents_{0};
 
