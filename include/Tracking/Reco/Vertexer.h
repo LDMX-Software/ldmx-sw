@@ -72,7 +72,6 @@ class Vertexer : public framework::Producer {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
 
-  bool debug_{false};
   int nevents_{0};
   int nvertices_{0};
   int nreconstructable_{0};
