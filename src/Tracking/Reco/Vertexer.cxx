@@ -82,14 +82,12 @@ void Vertexer::onProcessStart() {
   // Set up propagator with void navigator
 
   // propagator_ = std::make_shared<VoidPropagator>(stepper);
-
-  if (debug_) std::cout << "Constant field propagator.." << std::endl;
+  
   propagator_ = std::make_shared<VoidPropagator>(stepper_const);
 }
 
 void Vertexer::configure(framework::config::Parameters& parameters) {
-  debug_ = parameters.getParameter<bool>("debug", false);
-
+  
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.getParameter<std::string>("field_map");
 
@@ -109,11 +107,7 @@ void Vertexer::produce(framework::Event& event) {
   Linearizer::Config linearizerConfig(bField_, propagator_);
   Linearizer linearizer(linearizerConfig);
 
-  if (debug_)
-    std::cout << "Vertexing processor for event::" << nevents_ << std::endl;
-
-  if (debug_) std::cout << "Setup Billoir Vertex fitter" << std::endl;
-
+  
   // Set up Billoir Vertex Fitter
   using VertexFitter =
       Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
@@ -122,12 +116,10 @@ void Vertexer::produce(framework::Event& event) {
   // using VertexFitter =
   //  Acts::FullBilloirVertexFitter<tracking::sim::utils::boundTrackParameters,Linearizer>;
 
-  if (debug_) std::cout << "Setup Billoir Vertex config" << std::endl;
-
+  
   VertexFitter::Config vertexFitterCfg;
   VertexFitter billoirFitter(vertexFitterCfg);
 
-  if (debug_) std::cout << "Vertex fitter state" << std::endl;
   VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
@@ -135,24 +127,20 @@ void Vertexer::produce(framework::Event& event) {
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  if (debug_) std::cout << "Setup Billoir Vertex options" << std::endl;
   Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
 
   // Retrive the two track collections
-
-  if (debug_) std::cout << trk_c_name_1 << std::endl;
 
   const std::vector<ldmx::Track> tracks_1 =
       event.getCollection<ldmx::Track>(trk_c_name_1);
   const std::vector<ldmx::Track> tracks_2 =
       event.getCollection<ldmx::Track>(trk_c_name_2);
 
-  if (debug_) {
-    std::cout << "Retrieved track collections" << std::endl;
-    std::cout << "Track 1 size:" << tracks_1.size() << std::endl;
-    std::cout << "Track 2 size:" << tracks_2.size() << std::endl;
-  }
-
+  ldmx_log(debug) 
+      << "Retrieved track collections" << std::endl
+      << "Track 1 size:" << tracks_1.size() << std::endl
+      << "Track 2 size:" << tracks_2.size() << std::endl;
+  
   if (tracks_1.size() < 1 || tracks_2.size() < 1) return;
 
   std::vector<Acts::BoundTrackParameters> billoir_tracks_1, billoir_tracks_2;
@@ -183,29 +171,26 @@ void Vertexer::produce(framework::Event& event) {
 
   std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
 
-  if (debug_) std::cout << "Looping on billoir tracks.." << std::endl;
-
+  
   for (auto& b_trk_1 : billoir_tracks_1) {
     std::vector<const Acts::BoundTrackParameters*> fit_tracks_ptr;
 
     for (auto& b_trk_2 : billoir_tracks_2) {
       fit_tracks_ptr.push_back(&b_trk_1);
       fit_tracks_ptr.push_back(&b_trk_2);
-
-      if (debug_) {
-        std::cout << "Calling vertex fitter" << std::endl;
-
-        std::cout << "Track 1 parameters" << std::endl;
-        std::cout << b_trk_1 << std::endl;
-
-        std::cout << "Track 2 parameters" << std::endl;
-        std::cout << b_trk_2 << std::endl;
-
-        std::cout << "Perigee Surface" << std::endl;
-        perigeeSurface->toStream(gctx_, std::cout);
-        std::cout << std::endl;
-      }
-
+      
+      ldmx_log(debug) 
+          << "Calling vertex fitter" << std::endl
+          << "Track 1 parameters" << std::endl
+          << b_trk_1 << std::endl
+          << "Track 2 parameters" << std::endl
+          << b_trk_2 << std::endl;
+      
+      //  std::cout << "Perigee Surface" << std::endl;
+      //  perigeeSurface->toStream(gctx_, std::cout);
+      //  std::cout << std::endl;
+      
+      
     }  // loop on second set of tracks
 
     nreconstructable_++;
@@ -217,22 +202,22 @@ void Vertexer::produce(framework::Event& event) {
       nvertices_++;
 
     } catch (...) {
-      if (debug_) std::cout << "Fit failed!" << std::endl;
+      ldmx_log(warn) << "Vertex fit failed"<< std::endl;
     }
-
+    
   }  // loop on first set
-
+  
   // Convert the vertices in the ldmx EDM and store them
 }
 
 void Vertexer::onProcessEnd() {
-  std::cout << "Reconstructed " << nvertices_ << " vertices over "
-            << nreconstructable_ << " reconstructable" << std::endl;
-  std::cout << "PROCESSOR::" << this->getName() << " done." << std::endl;
-
+  ldmx_log(info) << "Reconstructed " << nvertices_ << " vertices over "
+                 << nreconstructable_ << " reconstructable" << std::endl;
+  
+  
   TFile* outfile_ = new TFile((getName() + ".root").c_str(), "RECREATE");
   outfile_->cd();
-
+  
   h_delta_d0->Write();
   h_delta_z0->Write();
   h_delta_p->Write();
