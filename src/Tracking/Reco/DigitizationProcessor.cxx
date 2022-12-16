@@ -4,7 +4,6 @@
 
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
-#include "Tracking/Reco/TestTracker.h"
 
 using namespace framework;
 
