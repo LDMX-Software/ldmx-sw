@@ -4,6 +4,7 @@
 
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Reco/TestTracker.h"
 
 using namespace framework;
 
@@ -26,6 +27,9 @@ void DigitizationProcessor::onProcessStart() {
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
       "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
       &gctx_, debug_);
+
+  TestTracker tt("/Users/pbutti/sw/ldmx-sw/digi/testPlanes.gdml", &gctx_, true);
+  
 
   // Module Bounds => Take them from the tracking geometry TODO
   auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
@@ -72,7 +76,7 @@ void DigitizationProcessor::configure(
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "OutputMeasuements");
-  minEdep_ = parameters.getParameter<float>("minEdep", 0.05);
+  minEdep_ = parameters.getParameter<double>("minEdep", 0.05);
   trackID_ = parameters.getParameter<int>("trackID", -1);
   do_smearing_ = parameters.getParameter<bool>("do_smearing", true);
   sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
