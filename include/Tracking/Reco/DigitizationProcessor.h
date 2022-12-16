@@ -57,7 +57,7 @@ class DigitizationProcessor : public framework::Producer {
   std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
   std::string hit_collection_;
   std::string out_collection_;
-  float minEdep_; // minimum deposited energy cut
+  double minEdep_; // minimum deposited energy cut
   int trackID_;   // select a particular track ID
   bool mergeHits_; // run sim hit merging before running digitization
   bool debug_{false};
