@@ -60,7 +60,6 @@ class DigitizationProcessor : public framework::Producer {
   double minEdep_; // minimum deposited energy cut
   int trackID_;   // select a particular track ID
   bool mergeHits_; // run sim hit merging before running digitization
-  bool debug_{false};
   bool do_smearing_{true};
   /// u-direction sigma
   double sigma_u_{0};
