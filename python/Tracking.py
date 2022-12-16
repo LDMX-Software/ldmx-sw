@@ -116,8 +116,8 @@ class CKFProcessor(Producer) :
         Maximum number of steps for the propagator
     
     """
-  def __init__(self, instance_name = 'CKFProcessor'): 
-    super().__init__(instance_name, 'tracking::sim::CKFProcessor', 'Tracking')
+    def __init__(self, instance_name = 'CKFProcessor'): 
+        super().__init__(instance_name, 'tracking::sim::CKFProcessor', 'Tracking')
 
 class TruthSeedProcessor(Producer) :
     """ Producer that returns truth seeds to feed the KF based track finding.
