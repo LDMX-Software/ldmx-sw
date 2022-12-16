@@ -78,7 +78,10 @@ class Vertexer : public framework::Producer {
   int nreconstructable_{0};
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
   std::shared_ptr<Acts::ConstantBField> bField_;  
-  std::string bfieldMap_;
+  
+  /// Path to the magnetic field map.
+  std::string field_map_;
+  
   std::string trk_c_name_1{"TaggerTracks"};
   std::string trk_c_name_2{"RecoilTracks"};
   std::shared_ptr<VoidPropagator> propagator_;

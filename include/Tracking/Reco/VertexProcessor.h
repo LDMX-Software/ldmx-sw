@@ -97,7 +97,9 @@ class VertexProcessor : public framework::Producer {
   
   //The interpolated bfield
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
-  std::string bfieldMap_;
+  
+  /// Path to the magnetic field map.
+  std::string field_map_{""};
 
   //Track collection name
 
