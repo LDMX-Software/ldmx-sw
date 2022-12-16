@@ -259,11 +259,13 @@ void CKFProcessor::produce(framework::Event& event) {
     std::cout << "Processing event " << &event << std::endl;
   }
 
+  /*
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1),
                         perigee_location_.at(2)));
-
+  */
+                        
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
