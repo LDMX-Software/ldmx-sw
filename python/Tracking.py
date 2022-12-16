@@ -88,6 +88,33 @@ class CKFProcessor(Producer) :
     ----------
     instance_name : str
         Unique name for this instance.
+
+    Arguments
+    ---------
+
+    dumpobj : bool
+        Activate dump of the tracking geometry into obj/mtl files for visualization purposes.
+        The files can be opened via an open source application as mesh lab <functionality to be moved>
+    pionstates : int
+        Can be used to define the number of pion states generated with uniform distributions to be
+        propagated through the tracking geometry for debugging purposes. <functionality to be moved>
+    steps_output_file_path_ : string
+        DEPRECATED TO BE REMOVED
+    trackID : int
+        Only keep the simulated hits with that particular track ID <functionality to be removed>
+    pdgID : int
+        Only keep the simulated hits with that particular pdg ID <functionality to be removed>
+    bfield : float
+        If using a constant bfield, this is the BZ component <functionality to be removed>
+    const_b_field : bool
+        Activate the usage of constant bField <functionality to be removed>
+    bfieldMap_ : string
+        Path to the location of the magnetic field map
+    propagator_step_size : float
+        Size of each RK propagator step
+    propagator_maxSteps : int
+        Maximum number of steps for the propagator
+    
     """
   def __init__(self, instance_name = 'CKFProcessor'): 
     super().__init__(instance_name, 'tracking::sim::CKFProcessor', 'Tracking')
