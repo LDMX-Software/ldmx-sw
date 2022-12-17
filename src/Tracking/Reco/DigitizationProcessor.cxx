@@ -72,16 +72,12 @@ void DigitizationProcessor::configure(
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "OutputMeasuements");
-  minEdep_ = parameters.getParameter<double>("minEdep", 0.05);
-  trackID_ = parameters.getParameter<int>("trackID", -1);
+  min_e_dep_ = parameters.getParameter<double>("min_e_dep", 0.05);
+  track_id_ = parameters.getParameter<int>("track_id", -1);
   do_smearing_ = parameters.getParameter<bool>("do_smearing", true);
   sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
   sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
-  mergeHits_ = parameters.getParameter<bool>("mergeHits", false);
-
-  std::cout << "hit_collection_::" << hit_collection_ << std::endl;
-  std::cout << "out_collection_::" << out_collection_ << std::endl;
-  std::cout << "minEdep_::" << minEdep_ << std::endl;
+  merge_hits_ = parameters.getParameter<bool>("merge_hits", false);
 }
 
 void DigitizationProcessor::produce(framework::Event& event) {
@@ -101,7 +97,7 @@ void DigitizationProcessor::produce(framework::Event& event) {
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
 
-  if (mergeHits_) {
+  if (merge_hits_) {
     mergeSimHits(sim_hits, merged_hits);
     digitizeHits(merged_hits, digitized_hits);
   }
@@ -131,7 +127,7 @@ void DigitizationProcessor::produce(framework::Event& event) {
 }
 
 void DigitizationProcessor::onProcessEnd() {}
-// This method merges hits that have the same trackID on the same layer.
+// This method merges hits that have the same track_id on the same layer.
 // The energy of the merged hit is the sum of the energy of the single sub-hits
 // The position/momentum of the merged hit is the energy-weighted average
 // sihits = vector of hits to merge
@@ -174,7 +170,7 @@ bool DigitizationProcessor::mergeHits(
     path += edep_hit * hit.getPathLength();
 
     if (hit.getPdgID() != pdgID) {
-      std::cout << "ERROR:: Found hits with compatible sensorID and trackID "
+      std::cout << "ERROR:: Found hits with compatible sensorID and track_id "
                    "but different PDGID"
                 << std::endl;
       std::cout << "TRACKID ==" << hit.getTrackID() << " vs "
@@ -202,7 +198,7 @@ bool DigitizationProcessor::mergeSimHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits,
     std::vector<ldmx::SimTrackerHit>& merged_hits) {
   // The first key is the index of the sensitive element ID, second key is the
-  // trackID
+  // track_id
   std::map<int, std::map<int, std::vector<ldmx::SimTrackerHit>>> hitmap;
 
   for (auto hit : sim_hits) {
@@ -245,8 +241,8 @@ void DigitizationProcessor::digitizeHits(
 
   for (auto& simHit : sim_hits) {
     // Remove low energy deposit hits
-    if (simHit.getEdep() > minEdep_) {
-      if (trackID_ > 0 && simHit.getTrackID() != trackID_) continue;
+    if (simHit.getEdep() > min_e_dep_) {
+      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
 
       ldmx::LdmxSpacePoint* ldmxsp =
           tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit);

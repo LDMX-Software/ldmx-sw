@@ -123,16 +123,23 @@ namespace tracking {
     double processing_time_{0.};
     long nevents_{0};
     unsigned int  ntracks_{0};
-    bool debug_{false};
+    /// The name of the output collection of seeds to be stored.
     std::string out_seed_collection_{"SeedTracks"};
+    /// The name of the input hits collection to use in finding seeds..
     std::string input_hits_collection_{"TaggerSimHits"};
-
+    /// Location of the perigee for the helix track parameters.
     std::vector<double> perigee_location_{-700.,0.,0};
+    /// Minimum cut on the momentum of the seeds.
     double pmin_{0.05};
+    /// Maximum cut on the momentum of the seeds.
     double pmax_{8};
+    /// Max d0 allowed for the seeds.
     double d0max_{20.};
+    /// Min d0 allowed for the seeds.
     double d0min_{20.};
+    /// Max z0 allowed for the seeds.
     double z0max_{60.};
+    /// List of stragies for seed finding.
     std::vector<std::string> strategies_{};
     
     
