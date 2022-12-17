@@ -55,15 +55,21 @@ class DigitizationProcessor : public framework::Producer {
 
   
   std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
+
+  /// Input hit collection to smear.
   std::string hit_collection_;
+  /// Output hit collection name.
   std::string out_collection_;
-  double minEdep_; // minimum deposited energy cut
-  int trackID_;   // select a particular track ID
-  bool mergeHits_; // run sim hit merging before running digitization
+  /// Minimum energy deposition cut.
+  double min_e_dep_; 
+  /// Select a particular track ID
+  int track_id_;   
+  /// Merge the sim hits before digitizing.
+  bool merge_hits_{false};
+  /// Flag to enable/disable smearing. 
   bool do_smearing_{true};
   /// u-direction sigma
   double sigma_u_{0};
-
   /// v-direction sigma
   double sigma_v_{0};
 

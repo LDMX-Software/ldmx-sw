@@ -12,20 +12,19 @@ class DigitizationProcessor(Producer):
 
     Attributes
     ----------
-    mergeHits : bool
-        Activate merging of all hits that have the same trackID on the same layer.
+    merge_hits : bool
+        Activate merging of all hits that have the same track ID on the same
+        layer.
     do_smearing : bool
         Activate the smearing.
     sigma_u : float
         Smearing sigma in the sensitive direction
     sigma_v : float
         Smearing sigma in the un-sensitive direction
-    trackID : int
-        If trackID>0, retain only hits with that particular trackID and discard the rest.
-    minEdep : float
+    track_id : int
+        If track_id > 0, retain only hits with that particular track_id and discard the rest.
+    min_e_dep : float
         Minimum energy deposited by G4 to consider the hit
-    debug : bool
-        Activate debug print-outs
     hit_collection : string
         Input hit collection to be smeared
     out_collection : string
@@ -34,13 +33,14 @@ class DigitizationProcessor(Producer):
 
     def __init__(self, instance_name="DigitizationProcessor"):
         super().__init__(instance_name, 'tracking::reco::DigitizationProcessor', 'Tracking')
-        self.mergeHits = True
+        self.merge_hits = True
         self.do_smearing = True
         self.sigma_u = 0.06
         self.sigma_v = 0.0
-        self.trackID = -1
-        self.debug = False
-        self.minEdep = 0.05
+        self.track_id = -1
+        self.min_e_dep = 0.05
+        self.hit_collection = 'TaggerSimHits'
+        self.out_collection = 'OutputMeasurements'
 
 
 class SeedFinderProcessor(Producer):
@@ -53,9 +53,6 @@ class SeedFinderProcessor(Producer):
 
     Attributes
     ----------
-
-    debug : bool
-        Activate the debug print-out.
     perigee_location : List[float]
         3D location of the perigee for the helix track parameters definition.
     pmin : float
@@ -78,10 +75,16 @@ class SeedFinderProcessor(Producer):
 
     def __init__(self, instance_name = "SeedFinderProcessor"):
         super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor','Tracking')
-        self.debug = False
+        self.perigee_location = []
+        self.pmin = 0.05
         self.pmax = 8.
-        
-        
+        self.d0min = 20.
+        self.d0max = 20.
+        self.z0max = 60.
+        self.strategies = []
+        self.input_hits_collection = 'TaggerSimHits'
+        self.out_seed_collection = 'SeedTracks'
+
 class CKFProcessor(Producer):
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.
 
