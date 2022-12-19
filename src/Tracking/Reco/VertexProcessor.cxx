@@ -48,8 +48,7 @@ void VertexProcessor::onProcessStart() {
 }
 
 void VertexProcessor::configure(framework::config::Parameters &parameters) {
-  debug_ = parameters.getParameter<bool>("debug", false);
-
+  
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.getParameter<std::string>("field_map");
 
@@ -72,9 +71,6 @@ void VertexProcessor::produce(framework::Event &event) {
   using Linearizer = Acts::HelicalTrackLinearizer<VoidPropagator>;
   Linearizer::Config linearizerConfig(sp_interpolated_bField_, propagator_);
   Linearizer linearizer(linearizerConfig);
-
-  if (debug_)
-    std::cout << "Vertexing processor for event::" << nevents_ << std::endl;
 
   // Set up Billoir Vertex Fitter
   using VertexFitter =
