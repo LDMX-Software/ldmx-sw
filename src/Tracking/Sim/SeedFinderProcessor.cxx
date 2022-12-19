@@ -116,7 +116,6 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   bField_(1) = 0.;
   bField_(2) = config_.bFieldInZ;
 
-  debug_ = parameters.getParameter<bool>("debug", false);
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "SeedTracks");
   input_hits_collection_ = parameters.getParameter<std::string>(
