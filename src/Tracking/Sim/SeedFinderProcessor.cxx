@@ -55,7 +55,7 @@ void SeedFinderProcessor::onProcessStart() {
   // Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
       "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
-      &gctx_, debug_);
+      &gctx_, false);
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
@@ -501,10 +501,10 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                           seed_free, *seed_perigee, gctx_)
                           .value();
 
-  if (debug_) {
-    std::cout << "bound parameters at perigee location" << std::endl;
-    std::cout << bound_params << std::endl;
-  }
+  ldmx_log(debug)
+    << "bound parameters at perigee location" << std::endl
+    << bound_params;
+  
 
   Acts::BoundVector stddev;
   double sigma_p = 0.75 * p * Acts::UnitConstants::GeV;
