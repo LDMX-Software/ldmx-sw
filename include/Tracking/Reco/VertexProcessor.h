@@ -90,8 +90,6 @@ class VertexProcessor : public framework::Producer {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
   
-  bool debug_{false};
-
   //Event counter
   int nevents_{0};
   

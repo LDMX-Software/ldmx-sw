@@ -197,8 +197,7 @@ void Vertexer::produce(framework::Event& event) {
     try {
       // Acts::Vertex<Acts::BoundTrackParameters> fitVtx =
       // billoirFitter.fit(fit_tracks_ptr, linearizer, vfOptions,
-      // state).value(); fit_vertices.push_back(fitVtx); if (debug_)
-      //   std::cout<<fitVtx.position()<<std::endl;
+      // state).value(); fit_vertices.push_back(fitVtx);
       nvertices_++;
 
     } catch (...) {
