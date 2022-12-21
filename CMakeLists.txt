@@ -90,6 +90,7 @@ add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
 add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
 add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
+add_subdirectory(BeamInstrumentation ${CMAKE_BINARY_DIR}/BeamInstrumentationEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -134,6 +135,8 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # This module contains trigger algorithms.
     add_subdirectory(Trigger/Algo)
 
+    # This module concerns data from beam instrumentation 
+    add_subdirectory(BeamInstrumentation)
 endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)
