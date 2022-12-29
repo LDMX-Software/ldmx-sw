@@ -11,36 +11,20 @@
 <!-- 
     Target
 --> 
-<!-- position -->
-<constant name="target_z" value="0.0*mm" />
 
 <!-- Target dimensions -->
 <constant name="target_dim_x"			value="40.0*mm"  />
-<constant name="target_dim_y"			value="110.0*mm" />
-<constant name="target_dim_z"			value="20.0*mm" />
+<constant name="target_dim_y"			value="105.0*mm" />
+<constant name="target_dim_z"			value="2.0*mm" />
+<!-- <constant name="target_dim_z"		value="10.0*mm" />    when including trigger SCIN -->
 <constant name="target_thickness"		value="target_dim_z" />
-
-<!-- 
-    Tungsten Target
---> 
 <!-- position -->
-<constant name="tungsten_target_z0"		value="0.0*mm" />
-<position name="tungsten_target_pos" unit="mm"  x="0" y="0" z="tungsten_target_z0"/>
-<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
-
-<!-- Tungsten target dimensions --> 
-<constant name="tungsten_plate_dx"		value="40.0*mm"/>
-<constant name="tungsten_plate_dy"		value="100.0*mm"/>		
-<constant name="tungsten_plate_dz"		value="0.3504*mm" />
+<constant name="target_z"				value="0.0*mm" />
 
 <!-- 
     LYSO Target
 --> 
-<!-- position -->
-<constant name="lyso_target_z0"			value="0.0*mm" />
-<position name="lyso_target_pos" unit="mm"  x="0" y="0" z="lyso_target_z0"/>
 <!-- LYSO X0 = 1.2 cm.  Target thickeness = .1X0 + 0.1mm ESR around LYSO layers -->
-
 <!-- LYSO target dimensions --> 
 <constant name="num_lyso_bar"			value="32"/>
 <constant name="num_lyso_layer"			value="2"/>
@@ -52,32 +36,37 @@
 <constant name="lyso_array_dx"			value="lyso_bar_dx"/>
 <constant name="lyso_array_dy"			value="num_lyso_bar*lyso_bar_height"/>		
 <constant name="lyso_array_dz"			value="lyso_bar_dz+lyso_bar_esr"/>
+<constant name="lyso_array_gap"			value="0.0*mm"/>
 <constant name="lyso_target_dx"			value="lyso_array_dx"/>
 <constant name="lyso_target_dy"			value="lyso_array_dy+lyso_bar_height/2+lyso_bar_esr"/>		
 <constant name="lyso_target_dz"			value="num_lyso_layer*lyso_array_dz+lyso_bar_esr"/>
-
-<!--
-    Trigger Scintillator 
---> 
+<constant name="lyso_target_shift_z"	value="0.0*mm"/>
+<!-- <constant name="lyso_target_shift_z"	value="(target_dim_z-lyso_target_dz)/2-1.0"/>     when including trigger SCIN -->
+<constant name="lyso_array1_shift_y"	value="-lyso_bar_height/4"/>
+<constant name="lyso_array1_shift_z"	value="-(lyso_array_dz+lyso_array_gap)/2"/>
+<constant name="lyso_array2_shift_y"	value="lyso_bar_height/4"/>
+<constant name="lyso_array2_shift_z"	value="(lyso_array_dz+lyso_array_gap)/2"/>
 <!-- position -->
-<constant name="trigger_scin_z0"		value="-4.2+lyso_target_z0*mm"/>
-<position name="trigger_scin_pos" unit="mm"  x="0" y="0" z="trigger_scin_z0"/>
+<constant name="lyso_target_z0"			value="lyso_target_shift_z" />
+<position name="lyso_target_pos" unit="mm"  x="0" y="0" z="lyso_target_z0"/>
+<position name="lyso_layer1_pos" unit="mm" x="0" y="lyso_array1_shift_y" z="lyso_array1_shift_z"/>
+<position name="lyso_layer2_pos" unit="mm" x="0" y="lyso_array2_shift_y" z="lyso_array2_shift_z"/>
 
-<!-- Trigger scintillator dimensions --> 
-<constant name="num_scin_bar"			 value="25"/>
-<constant name="num_scin_layer"			 value="2"/>
-<constant name="scin_bar_esr"            value="0.1*mm"/>
-<constant name="scin_bar_dx"             value="30.0*mm"/>
-<constant name="scin_bar_dy"             value="3.0*mm"/>		
-<constant name="scin_bar_dz"			 value="2.0*mm" />
-<constant name="scin_bar_height"         value="scin_bar_dy+scin_bar_esr"/>
-<constant name="scin_array_dx"           value="scin_bar_dx"/>
-<constant name="scin_array_dy"           value="num_scin_bar*scin_bar_height"/>		
-<constant name="scin_array_dz"			 value="scin_bar_dz+scin_bar_esr"/>
-<constant name="scin_array_gap"			 value="0.3*mm"/>
-<constant name="scin_trigger_dx"         value="scin_array_dx"/>
-<constant name="scin_trigger_dy"         value="scin_array_dy+scin_bar_height/2+scin_bar_esr"/>		
-<constant name="scin_trigger_dz"		 value="num_scin_layer*scin_array_dz+scin_bar_esr+scin_array_gap"/>
+<!-- Target Box position -->
+<constant name="targetBox_z0"			value="-lyso_target_shift_z"/>	
+<position name="targetBox_pos" 			unit="mm"  x="0" y="0" z="targetBox_z0"/>
+
+<!-- 
+    Tungsten Target
+--> 
+<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+<!-- Tungsten target dimensions --> 
+<constant name="tungsten_plate_dx"		value="40.0*mm"/>
+<constant name="tungsten_plate_dy"		value="100.0*mm"/>		
+<constant name="tungsten_plate_dz"		value="0.3504*mm" />
+<constant name="tungsten_plate_shift_z"	value="lyso_target_shift_z"/>
+<constant name="tungsten_target_z0"		value="lyso_target_z0"/>
+<position name="tungsten_target_pos" 	unit="mm"  x="0" y="0" z="tungsten_target_z0"/>
 
 <!-- 
     Magnet
