@@ -48,8 +48,8 @@ namespace tracking::reco {
     //Processing time counter
     double processing_time_{0.};
 
-    //pdgIDs of the particles we want to select for the seeds
-    std::vector<int> pdgIDs_{11};
+    //pdg_ids of the particles we want to select for the seeds
+    std::vector<int> pdg_ids_{11};
 
     //Which scoring plane hits to use for the truth seeds generation
     std::string scoring_hits_{"TargetScoringPlaneHits"};
