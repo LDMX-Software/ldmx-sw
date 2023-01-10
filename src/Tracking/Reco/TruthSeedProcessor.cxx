@@ -19,19 +19,19 @@ void TruthSeedProcessor::onProcessStart() { gctx_ = Acts::GeometryContext(); }
 
 void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   out_trk_coll_name_ =
-      parameters.getParameter<std::string>("trk_coll_name", "TruthSeeds");
-  pdgIDs_ = parameters.getParameter<std::vector<int> >("pdgIDs", {11});
+      parameters.getParameter<std::string>("trk_coll_name", "RecoilTruthSeeds");
+  pdg_ids_ = parameters.getParameter<std::vector<int> >("pdg_ids", {11});
   scoring_hits_ = parameters.getParameter<std::string>(
-      "scoring_hits", "TargetScoringPlaneHits_sim");
+      "scoring_hits", "TargetScoringPlaneHits");
   sim_hits_ = parameters.getParameter<std::string>("sim_hits", "RecoilSimHits");
   n_min_hits_ = parameters.getParameter<int>("n_min_hits", 7);
-  z_min_ = parameters.getParameter<double>("z_min", -999);  // mm
-  track_id_ = parameters.getParameter<int>("track_id", -999);
+  z_min_ = parameters.getParameter<double>("z_min", -9999);  // mm
+  track_id_ = parameters.getParameter<int>("track_id", -9999);
   pz_cut_ = parameters.getParameter<double>("pz_cut", -9999);  // MeV
   p_cut_ = parameters.getParameter<double>("p_cut", 0.);
   p_cutMax_ = parameters.getParameter<double>("p_cutMax", 100000.);  // MeV
-  k0_sel_ = parameters.getParameter<bool>("k0_sel", false);
-  p_cutEcal_ = parameters.getParameter<double>("p_cutEcal", -1.);  // MeV
+  //k0_sel_ = parameters.getParameter<bool>("k0_sel", false);
+  p_cutEcal_ = parameters.getParameter<double>("p_cut_ecal", -1.);  // MeV
 }
 
 // Look at the scoring planes trackID
@@ -173,8 +173,8 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     if (track_id_ > 0 && t_sp_hit.getTrackID() != track_id_) continue;
 
     // Check if we are requesting particular particles
-    if (std::find(pdgIDs_.begin(), pdgIDs_.end(), t_sp_hit.getPdgID()) ==
-        pdgIDs_.end())
+    if (std::find(pdg_ids_.begin(), pdg_ids_.end(), t_sp_hit.getPdgID()) ==
+        pdg_ids_.end())
       continue;
 
     Acts::Vector3 t_sp_p{t_sp_hit.getMomentum()[0], t_sp_hit.getMomentum()[1],

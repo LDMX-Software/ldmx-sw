@@ -62,7 +62,7 @@ void CKFProcessor::onProcessStart() {
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
       makeMagneticFieldMapXyzFromText(
-          std::move(localToGlobalBin_xyz), bfieldMap_,
+          std::move(localToGlobalBin_xyz), field_map_,
           1. * Acts::UnitConstants::mm,    // default scale for axes length
           1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
           false,                           // not symmetrical
@@ -563,7 +563,7 @@ void CKFProcessor::produce(framework::Event& event) {
     }
 
     // Cut on number of hits?
-    if (trajState.nMeasurements < minHits_) continue;
+    if (trajState.nMeasurements < min_hits_) continue;
 
     h_nHits_->Fill(trajState.nMeasurements);
 
@@ -730,7 +730,7 @@ void CKFProcessor::produce(framework::Event& event) {
     }
 
     // Refit the track with the KalmanFitter using backward propagation
-    if (kfRefit_) {
+    if (kf_refit_) {
       std::cout << "Preparing theKF refit" << std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
           fit_trackSourceLinks;
@@ -786,7 +786,7 @@ void CKFProcessor::produce(framework::Event& event) {
     }  // Run the refit
 
     // Refit track using the GSF
-    if (gsfRefit_) {
+    if (gsf_refit_) {
       try {
         const auto gsfLogger =
             Acts::getDefaultLogger("GSF", Acts::Logging::INFO);
@@ -960,32 +960,28 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
-  dumpobj_ = parameters.getParameter<int>("dumpobj", 0);
+  dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>(
       "steps_file_path", "propagation_steps.root");
-  trackID_ = parameters.getParameter<int>("trackID", -1);
-  pdgID_ = parameters.getParameter<int>("pdgID", 11);
+  track_id_ = parameters.getParameter<int>("track_id", -1);
+  pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
 
   bfield_ = parameters.getParameter<double>("bfield", 0.);
   const_b_field_ = parameters.getParameter<bool>("const_b_field", true);
-  bfieldMap_ = parameters.getParameter<std::string>(
-      "bfieldMap_",
-      "/Users/pbutti/sw/data_ldmx/"
-      "BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
+  field_map_ = parameters.getParameter<std::string>("field_map");
   propagator_step_size_ =
       parameters.getParameter<double>("propagator_step_size", 200.);
   propagator_maxSteps_ =
       parameters.getParameter<int>("propagator_maxSteps", 10000);
   perigee_location_ = parameters.getParameter<std::vector<double>>(
       "perigee_location", {0., 0., 0.});
-  debug_ = parameters.getParameter<bool>("debug", false);
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
 
-  removeStereo_ = parameters.getParameter<bool>("removeStereo", false);
-  if (removeStereo_)
-    std::cout << "CONFIGURE::removeStereo=" << (int)removeStereo_ << std::endl;
+  remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
+  if (remove_stereo_)
+    std::cout << "CONFIGURE::remove_stereo=" << (int)remove_stereo_ << std::endl;
 
   use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
 
@@ -993,9 +989,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
     std::cout << "CONFIGURE::use1Dmeasurements=" << (int)use1Dmeasurements_
               << std::endl;
 
-  minHits_ = parameters.getParameter<int>("minHits", 7);
+  min_hits_ = parameters.getParameter<int>("min_hits", 7);
 
-  std::cout << "CONFIGURE::minHits=" << minHits_ << std::endl;
+  std::cout << "CONFIGURE::min_hits=" << min_hits_ << std::endl;
 
   // Ckf specific options
   use_extrapolate_location_ =
@@ -1021,8 +1017,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   std::cout << __PRETTY_FUNCTION__ << "  HitCollection::" << hit_collection_
             << std::endl;
 
-  kfRefit_ = parameters.getParameter<bool>("kfRefit", false);
-  gsfRefit_ = parameters.getParameter<bool>("gsfRefit", false);
+  kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
+  gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
 }
 
 void CKFProcessor::testField(
@@ -1311,15 +1307,15 @@ auto CKFProcessor::makeLdmxSpacepoints(
   for (auto& simHit : sim_hits) {
     // Remove low energy deposit hits
     if (simHit.getEdep() > 0.05) {
-      // Only selects hits that have trackID==1
-      if (trackID_ > 0 && simHit.getTrackID() != trackID_) continue;
+      // Only selects hits that have track_id==1
+      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
 
-      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_) continue;
+      if (pdg_id_ != -9999 && abs(simHit.getPdgID()) != pdg_id_) continue;
 
       ldmx::LdmxSpacePoint* ldmxsp =
           utils::convertSimHitToLdmxSpacePoint(simHit);
 
-      if (removeStereo_) {
+      if (remove_stereo_) {
         unsigned int layerid = ldmxsp->layer();
         if (layerid == 3101 || layerid == 3201 || layerid == 3301 ||
             layerid == 3401)

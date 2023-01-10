@@ -187,11 +187,10 @@ class CKFProcessor final : public framework::Producer {
   Acts::CalibrationContext cctx_;
 
   //If we want to dump the tracking geometry
-  int dumpobj_ {0};
+  bool dumpobj_ {false};
 
   int pionstates_{10};
 
-  bool debug_{false};
   int nevents_{0};
 
   //Processing time counter
@@ -201,9 +200,12 @@ class CKFProcessor final : public framework::Producer {
   std::map<std::string, double> profiling_map_;
   
   //refitting of tracks
-  bool kfRefit_{false};
-  bool gsfRefit_{false};
-  
+  bool kf_refit_{false};
+  bool gsf_refit_{false};
+
+  bool debug_{false};
+
+
   //--- Smearing ---//
 
   std::default_random_engine generator_;
@@ -215,13 +217,13 @@ class CKFProcessor final : public framework::Producer {
   bool const_b_field_{true};
 
   //Remove stereo measurements
-  bool removeStereo_{false};
+  bool remove_stereo_{false};
 
   //Use 2d measurements instead of 1D
   bool use1Dmeasurements_{true};
   
   //Minimum number of hits on tracks
-  int minHits_{7};
+  int min_hits_{7};
   
   //Stepping size (in mm)
   double propagator_step_size_{200.};
@@ -241,10 +243,10 @@ class CKFProcessor final : public framework::Producer {
   //The output track collection
   std::string out_trk_collection_{"Tracks"};
 
-  //Select the hits using TrackID and pdgID_
+  //Select the hits using TrackID and pdg_id__
   
-  int trackID_{-1};
-  int pdgID_{11};
+  int track_id_{-1};
+  int pdg_id_{11};
 
   //Mass for the propagator hypothesis in MeV
   double mass_{0.511};
@@ -254,7 +256,7 @@ class CKFProcessor final : public framework::Producer {
   std::string seed_coll_name_{"seedTracks"};
 
   //The interpolated bfield
-  std::string bfieldMap_;
+  std::string field_map_{""};
 
   //The Propagators
   std::unique_ptr<const CkfPropagator> propagator_;
