@@ -5,17 +5,34 @@ from LDMX.Tracking import vertexing
 
 def single_e_track_recon(sigma_u: float = 0.006, 
                          sigma_v: float = 0.00) -> ldmxcfg.Process:
-    """ Setup a process to run track reconstruction.
+    """ Setup a process to run electron track reconstruction in the Tagger and
+    Recoil trackers.  Currently, this is using truth information to find seeds.
+
+    Parameters
+    ----------
+    sigma_u : float 
+        Smearing in the u direction.
+    sigma_v : float
+        Smearing in the v direction.
     """
 
     p = ldmxcfg.Process('TrackerReco')
 
-    # Truth seeder - electrons
-    ts = tracking.TruthSeedProcessor()
-    ts.z_min = 4.4
-    ts.track_id = 1
-    ts.pz_cut = 0.
-    ts.p_cut_ecal = 0.
+    # Truth seeder - Recoil electrons
+    ts_recoil = tracking.TruthSeedProcessor()
+    ts_recoil.z_min = 4.4
+    ts_recoil.track_id = 1
+    ts_recoil.pz_cut = 0.
+    ts_recoil.p_cut_ecal = 0.
+
+    # Truth seeder - Tagger electrons
+    ts_tagger = tracking.TruthSeedProcessor()
+    ts_tagger.z_min = 4.4
+    ts_tagger.track_id = 1
+    ts_tagger.pz_cut = 0.
+    ts_tagger.p_cut_ecal = 0.
+    ts_tagger.out_trk_coll_name = 'TaggerTruthSeeds'
+    ts_tagger.sim_hits = 'TaggerSimHits'
 
     # Recoil track finding
     trk_recoil = tracking.CKFProcessor('RecoilTracking')
@@ -47,7 +64,7 @@ def single_e_track_recon(sigma_u: float = 0.006,
 
     vtx = tracking.Vertexer()
 
-    p.sequence = [ts, trk_recoil, trk_tagger]
+    p.sequence = [ts_recoil, ts_tagger, trk_recoil, trk_tagger]
 
     return p
 
