@@ -47,15 +47,6 @@ void CKFProcessor::onProcessStart() {
   // Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
-  if (debug_) {
-    std::cout << "PF::DEBUG::BFIELD" << std::endl;
-    std::cout << "==========" << std::endl;
-    std::cout << b_field / Acts::UnitConstants::T << std::endl;
-    std::cout << "==========" << std::endl;
-    std::cout << "PF::BFIELDMAP" << std::endl;
-    std::cout << bfieldMap_ << std::endl;
-  }
-
   // Setup a constant magnetic field
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
 
@@ -71,7 +62,7 @@ void CKFProcessor::onProcessStart() {
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
       makeMagneticFieldMapXyzFromText(
-          std::move(localToGlobalBin_xyz), bfieldMap_,
+          std::move(localToGlobalBin_xyz), field_map_,
           1. * Acts::UnitConstants::mm,    // default scale for axes length
           1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
           false,                           // not symmetrical
@@ -252,18 +243,15 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nevents_++;
   if (nevents_ % 1000 == 0)
-    std::cout << "events processed:" << nevents_ << std::endl;
+    ldmx_log(info) << "events processed:" << nevents_;
 
-  if (debug_) {
-    std::cout << "PF ::DEBUG:: " << __PRETTY_FUNCTION__ << std::endl;
-    std::cout << "Processing event " << &event << std::endl;
-  }
-
+  /*
   std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1),
                         perigee_location_.at(2)));
-
+  */
+                        
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
@@ -327,9 +315,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Retrieve the seeds
 
-  if (debug_) {
-    std::cout << "Retrieve the seeds::" << seed_coll_name_ << std::endl;
-  }
+  ldmx_log(debug) << "Retrieve the seeds::" << seed_coll_name_;
+  
 
   const std::vector<ldmx::Track> seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_);
@@ -337,10 +324,6 @@ void CKFProcessor::produce(framework::Event& event) {
   // Run the CKF on each seed and produce a track candidate
   std::vector<Acts::BoundTrackParameters> startParameters;
   for (auto& seed : seed_tracks) {
-    if (debug_) {
-      std::cout << "Seed conversion to track." << std::endl;
-      std::cout << "perigeeSurface" << std::endl;
-    }
 
     // Transform the seed track to bound parameters
     std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
@@ -354,14 +337,13 @@ void CKFProcessor::produce(framework::Event& event) {
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
-    if (debug_) {
-      std::cout << "perigee" << std::endl;
-      std::cout << seed.getPerigeeX() << " " << seed.getPerigeeY() << " "
-                << seed.getPerigeeZ() << std::endl;
-      std::cout << "start Parameters" << std::endl;
-      std::cout << paramVec << std::endl;
-    }
-
+    ldmx_log(debug) 
+        << "perigee" << std::endl
+        << seed.getPerigeeX() << " " << seed.getPerigeeY() << " "
+        << seed.getPerigeeZ() << std::endl
+        << "start Parameters" << std::endl
+        << paramVec;
+    
     Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
                                            : Acts::UnitConstants::e;
 
@@ -529,28 +511,27 @@ void CKFProcessor::produce(framework::Event& event) {
 
     auto ckf_result = result.value();
 
-    if (debug_) {
-      std::cout << "Track Index::" << GoodResult - 1 << std::endl;
-      std::cout << "===============" << std::endl;
-      std::cout << "ckf_result:: filtered " << ckf_result.filtered << std::endl;
-      std::cout << "ckf_result:: smoothed " << ckf_result.smoothed << std::endl;
-      std::cout << "ckf_result:: iSmoothed " << ckf_result.iSmoothed
-                << std::endl;
-      std::cout << "ckf_result:: finished " << ckf_result.finished << std::endl;
-      std::cout << "Size of the active Tips " << ckf_result.activeTips.size()
-                << std::endl;
-      std::cout << "Last Measurement indices "
-                << ckf_result.lastMeasurementIndices.size() << std::endl;
-      for (auto& lm : ckf_result.lastMeasurementIndices) {
-        std::cout << "LastMeasurementIndex=" << lm << std::endl;
-      }
-      std::cout << "Last Track indices " << ckf_result.lastTrackIndices.size()
-                << std::endl;
-      for (auto& lt : ckf_result.lastTrackIndices) {
-        std::cout << "LastTrackIndex=" << lt << std::endl;
-      }
+    
+    ldmx_log(debug) 
+        << "Track Index::" << GoodResult - 1 << std::endl
+        << "===============" << std::endl
+        << "ckf_result:: filtered " << ckf_result.filtered << std::endl
+        << "ckf_result:: smoothed " << ckf_result.smoothed << std::endl
+        << "ckf_result:: iSmoothed " << ckf_result.iSmoothed << std::endl
+        << "ckf_result:: finished " << ckf_result.finished << std::endl
+        << "Size of the active Tips " << ckf_result.activeTips.size() << std::endl
+        << "Last Measurement indices "
+        << ckf_result.lastMeasurementIndices.size();
+    for (auto& lm : ckf_result.lastMeasurementIndices) {
+      ldmx_log(debug)<< "LastMeasurementIndex=" << lm;
     }
-
+    ldmx_log(debug) << "Last Track indices " << ckf_result.lastTrackIndices.size();
+    
+    for (auto& lt : ckf_result.lastTrackIndices) {
+      ldmx_log(debug) << "LastTrackIndex=" << lt;
+    }
+    
+    
     // The track tips are the last measurement index
     Acts::MultiTrajectory mj = ckf_result.fittedStates;
 
@@ -565,28 +546,24 @@ void CKFProcessor::produce(framework::Event& event) {
 
     // Check some track info
 
-    if (debug_) {
-      std::cout << "nStates=" << trajState.nStates << std::endl;
-      std::cout << "nMeasurements=" << trajState.nMeasurements << std::endl;
-      std::cout << "nOutliers=" << trajState.nOutliers << std::endl;
-      std::cout << "nHoles=" << trajState.nHoles << std::endl;
-      std::cout << "chi2sum=" << trajState.chi2Sum << std::endl;
-      std::cout << "NDF=" << trajState.NDF << std::endl;
-      std::cout << "nsharedHits=" << trajState.nSharedHits << std::endl;
-      std::cout << "###########" << std::endl;
-    }
-
+    ldmx_log(debug)
+        << "nStates=" << trajState.nStates << std::endl
+        << "nMeasurements=" << trajState.nMeasurements << std::endl
+        << "nOutliers=" << trajState.nOutliers << std::endl
+        << "nHoles=" << trajState.nHoles << std::endl
+        << "chi2sum=" << trajState.chi2Sum << std::endl
+        << "NDF=" << trajState.NDF << std::endl
+        << "nsharedHits=" << trajState.nSharedHits;
+        
+        
     if (trajState.nStates !=
         trajState.nMeasurements + trajState.nOutliers + trajState.nHoles) {
-      if (debug_)
-        std::cout << "WARNING:: Found track with nStates inconsistent with "
-                     "expectation"
-                  << std::endl;
+      ldmx_log(warn)<<"Found track with nStates inconsistent with expectation";
       // continue;
     }
 
     // Cut on number of hits?
-    if (trajState.nMeasurements < minHits_) continue;
+    if (trajState.nMeasurements < min_hits_) continue;
 
     h_nHits_->Fill(trajState.nMeasurements);
 
@@ -594,7 +571,6 @@ void CKFProcessor::produce(framework::Event& event) {
       // std::cout<<"Number of hits-on-track::" << (int) pair.first <<
       // std::endl;
 
-      if (debug_) std::cout << getName() << " Filling histograms" << std::endl;
       double p = pair.second.absoluteMomentum();
 
       double px = pair.second.momentum()(0);
@@ -692,8 +668,6 @@ void CKFProcessor::produce(framework::Event& event) {
       histo_p_pull_->Fill(resp / sigma_p);
     }
 
-    if (debug_) std::cout << getName() << " creating track object" << std::endl;
-
     // Create a track object
 
     ldmx::Track trk = ldmx::Track();
@@ -716,7 +690,7 @@ void CKFProcessor::produce(framework::Event& event) {
         ckf_result.fittedParameters.begin()->second.covariance()
             ? ckf_result.fittedParameters.begin()->second.covariance().value()
             : Acts::BoundSymMatrix::Identity();
-
+    
     /*
     if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
       std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0.
@@ -730,14 +704,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
     }*/
 
-    if (debug_) {
-      std::cout << "Check parameters:" << std::endl;
-      std::cout << tgt_srf_pars << std::endl;
-
-      std::cout << "Check covariance:" << std::endl;
-      std::cout << tgt_srf_cov << std::endl;
-    }
-
     std::vector<double> v_tgt_srf_pars(
         tgt_srf_pars.data(),
         tgt_srf_pars.data() + tgt_srf_pars.rows() * tgt_srf_pars.cols());
@@ -747,20 +713,6 @@ void CKFProcessor::produce(framework::Event& event) {
         ckf_result.fittedParameters.begin()->second.momentum();
     Acts::Vector3 trk_position =
         ckf_result.fittedParameters.begin()->second.position(gctx_);
-
-    if (debug_) {
-      for (auto& p : v_tgt_srf_pars) {
-        std::cout << "par:" << p << std::endl;
-      }
-
-      for (auto& c : v_tgt_srf_cov_flat) {
-        std::cout << "cov flat:" << c << std::endl;
-      }
-    }
-
-    if (debug_) {
-      std::cout << "Filling the track Perigee par/cov" << std::endl;
-    }
 
     trk.setPerigeeParameters(v_tgt_srf_pars);
     trk.setPerigeeCov(v_tgt_srf_cov_flat);
@@ -778,7 +730,7 @@ void CKFProcessor::produce(framework::Event& event) {
     }
 
     // Refit the track with the KalmanFitter using backward propagation
-    if (kfRefit_) {
+    if (kf_refit_) {
       std::cout << "Preparing theKF refit" << std::endl;
       std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
           fit_trackSourceLinks;
@@ -809,24 +761,6 @@ void CKFProcessor::produce(framework::Event& event) {
           Acts::LoggerWrapper{*kfLogger}, propagator_options, &(*extr_surface),
           true, true, true);  // mScattering, exoLoss, rFiltering
 
-      std::cout << "rFiltering =" << std::boolalpha
-                << kfitter_options.reversedFiltering << std::endl;
-
-      // create the Kalman Fitter
-      if (debug_) {
-        std::cout << "Make the KalmanFilter fitter object" << std::endl;
-        std::cout << "Refit" << std::endl;
-      }
-
-      std::cout << "Refit tracks with KF" << std::endl;
-      std::cout << "Starting from " << std::endl;
-      std::cout << ckf_result.fittedParameters.begin()->second.position(gctx_)
-                << std::endl;
-      std::cout << "With momenutm" << std::endl;
-      std::cout << ckf_result.fittedParameters.begin()->second.momentum()
-                << std::endl;
-      std::cout << "And field" << std::endl;
-
       // Acts::MagneticFieldProvider::Cache cache =
       // sp_interpolated_bField_->makeCache(bctx_); std::cout<<"
       // BField::\n"<<sp_interpolated_bField_->getField(ckf_result.fittedParameters.begin()->second.position(gctx_),cache).value()
@@ -852,7 +786,7 @@ void CKFProcessor::produce(framework::Event& event) {
     }  // Run the refit
 
     // Refit track using the GSF
-    if (gsfRefit_) {
+    if (gsf_refit_) {
       try {
         const auto gsfLogger =
             Acts::getDefaultLogger("GSF", Acts::Logging::INFO);
@@ -916,9 +850,7 @@ void CKFProcessor::produce(framework::Event& event) {
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
-
-  if (debug_) std::cout << "Found " << GoodResult << " tracks" << std::endl;
-
+  
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
 
@@ -1028,32 +960,28 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
-  dumpobj_ = parameters.getParameter<int>("dumpobj", 0);
+  dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>(
       "steps_file_path", "propagation_steps.root");
-  trackID_ = parameters.getParameter<int>("trackID", -1);
-  pdgID_ = parameters.getParameter<int>("pdgID", 11);
+  track_id_ = parameters.getParameter<int>("track_id", -1);
+  pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
 
   bfield_ = parameters.getParameter<double>("bfield", 0.);
   const_b_field_ = parameters.getParameter<bool>("const_b_field", true);
-  bfieldMap_ = parameters.getParameter<std::string>(
-      "bfieldMap_",
-      "/Users/pbutti/sw/data_ldmx/"
-      "BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat");
+  field_map_ = parameters.getParameter<std::string>("field_map");
   propagator_step_size_ =
       parameters.getParameter<double>("propagator_step_size", 200.);
   propagator_maxSteps_ =
       parameters.getParameter<int>("propagator_maxSteps", 10000);
   perigee_location_ = parameters.getParameter<std::vector<double>>(
       "perigee_location", {0., 0., 0.});
-  debug_ = parameters.getParameter<bool>("debug", false);
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
 
-  removeStereo_ = parameters.getParameter<bool>("removeStereo", false);
-  if (removeStereo_)
-    std::cout << "CONFIGURE::removeStereo=" << (int)removeStereo_ << std::endl;
+  remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
+  if (remove_stereo_)
+    std::cout << "CONFIGURE::remove_stereo=" << (int)remove_stereo_ << std::endl;
 
   use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
 
@@ -1061,9 +989,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
     std::cout << "CONFIGURE::use1Dmeasurements=" << (int)use1Dmeasurements_
               << std::endl;
 
-  minHits_ = parameters.getParameter<int>("minHits", 7);
+  min_hits_ = parameters.getParameter<int>("min_hits", 7);
 
-  std::cout << "CONFIGURE::minHits=" << minHits_ << std::endl;
+  std::cout << "CONFIGURE::min_hits=" << min_hits_ << std::endl;
 
   // Ckf specific options
   use_extrapolate_location_ =
@@ -1089,8 +1017,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   std::cout << __PRETTY_FUNCTION__ << "  HitCollection::" << hit_collection_
             << std::endl;
 
-  kfRefit_ = parameters.getParameter<bool>("kfRefit", false);
-  gsfRefit_ = parameters.getParameter<bool>("gsfRefit", false);
+  kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
+  gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
 }
 
 void CKFProcessor::testField(
@@ -1203,14 +1131,7 @@ void CKFProcessor::writeEvent(
   std::vector<std::vector<Acts::detail::Step>> tmpSteps;
   tmpSteps.reserve(prop_parameters.size());
 
-  if (debug_) {
-    for (auto& params : prop_parameters) {
-      std::cout << getName() << "::DEBUG::" << std::endl;
-      std::cout << params.parameters() << std::endl;
-      std::cout << params.position(gctx_)(0) << std::endl;
-    }
-  }
-
+  
   // Start from the first parameters
   // Propagate to next surface
   // Grab the next parameters
@@ -1325,17 +1246,6 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // Transform the ldmx space point from global to local and store the
       // information
 
-      if (debug_) {
-        std::cout << "Global hit position on layer::" << ldmxsp->layer()
-                  << std::endl;
-        std::cout << ldmxsp->global_pos_ << std::endl;
-        hit_surface->toStream(gctx_, std::cout);
-        std::cout << std::endl;
-        std::cout << "TRANSFORM LOCAL TO GLOBAL" << std::endl;
-        std::cout << hit_surface->transform(gctx_).rotation() << std::endl;
-        std::cout << hit_surface->transform(gctx_).translation() << std::endl;
-      }
-
       Acts::Vector3 dummy_momentum;
       Acts::Vector2 local_pos;
       try {
@@ -1354,32 +1264,11 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       if (do_smearing_) {
         float smear_factor{(*normal_)(generator_)};
 
-        if (debug_) {
-          std::cout << "Smearing factor for u=" << smear_factor << std::endl;
-          std::cout << "Local Pos before::" << local_pos[0] << std::endl;
-        }
         local_pos[0] += smear_factor * sigma_u_;
-
-        if (debug_)
-          std::cout << "Local Pos after::" << local_pos[0] << std::endl;
-
         smear_factor = (*normal_)(generator_);
-        if (debug_) {
-          std::cout << "Smearing factor for v=" << smear_factor << std::endl;
-          std::cout << "Local Pos before::" << local_pos[1] << std::endl;
-        }
         local_pos[1] += smear_factor * sigma_v_;
-        if (debug_)
-          std::cout << "Local Pos after::" << local_pos[1] << std::endl;
-
         // update covariance
         ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-
-        // update global position
-        if (debug_) {
-          std::cout << "Before smearing" << std::endl;
-          std::cout << ldmxsp->global_pos_ << std::endl;
-        }
 
         // cache the acts x coordinate
         double original_x = ldmxsp->global_pos_(0);
@@ -1388,26 +1277,12 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
         ldmxsp->global_pos_ =
             hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum);
 
-        if (debug_) {
-          std::cout << "The global position after the smearing" << std::endl;
-          std::cout << ldmxsp->global_pos_ << std::endl;
-        }
-
         // update the acts x location
         ldmxsp->global_pos_(0) = original_x;
 
-        // if (debug_) {
-        //   std::cout<<"After smearing"<<std::endl;
-        //   std::cout<<ldmxsp->global_pos_<<std::endl;
-        // }
       }
 
       ldmxsp->local_pos_ = local_pos;
-
-      if (debug_) {
-        std::cout << "Local hit position::" << std::endl;
-        std::cout << ldmxsp->local_pos_ << std::endl;
-      }
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
                                            i_ldmx_hit);
@@ -1428,23 +1303,19 @@ auto CKFProcessor::makeLdmxSpacepoints(
     -> std::vector<ldmx::LdmxSpacePoint*> {
   std::vector<ldmx::LdmxSpacePoint*> ldmxsps;
 
-  if (debug_)
-    std::cout << "Found:" << sim_hits.size() << " sim hits in the "
-              << hit_collection_ << std::endl;
-
   // Convert to ldmxsps
   for (auto& simHit : sim_hits) {
     // Remove low energy deposit hits
     if (simHit.getEdep() > 0.05) {
-      // Only selects hits that have trackID==1
-      if (trackID_ > 0 && simHit.getTrackID() != trackID_) continue;
+      // Only selects hits that have track_id==1
+      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
 
-      if (pdgID_ != -9999 && abs(simHit.getPdgID()) != pdgID_) continue;
+      if (pdg_id_ != -9999 && abs(simHit.getPdgID()) != pdg_id_) continue;
 
       ldmx::LdmxSpacePoint* ldmxsp =
           utils::convertSimHitToLdmxSpacePoint(simHit);
 
-      if (removeStereo_) {
+      if (remove_stereo_) {
         unsigned int layerid = ldmxsp->layer();
         if (layerid == 3101 || layerid == 3201 || layerid == 3301 ||
             layerid == 3401)
@@ -1454,8 +1325,6 @@ auto CKFProcessor::makeLdmxSpacepoints(
       ldmxsps.push_back(ldmxsp);
     }
   }
-
-  if (debug_) std::cout << "Hits for fitting:" << ldmxsps.size() << std::endl;
 
   return ldmxsps;
 }

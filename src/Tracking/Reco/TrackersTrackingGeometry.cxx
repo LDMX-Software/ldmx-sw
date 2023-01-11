@@ -223,7 +223,6 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
   G4LogicalVolume* l_vol = pvol->GetLogicalVolume();
   for (G4int i = 0; i < l_vol->GetNoDaughters(); i++) {
     std::string sln = l_vol->GetDaughter(i)->GetName();
-    std::cout << "Checking ..." << sln << std::endl;
     if (sln.find(surfacename) != std::string::npos) {
       getAllDaughters(l_vol->GetDaughter(i));
 
