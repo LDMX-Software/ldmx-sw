@@ -3,7 +3,8 @@ from LDMX.Framework import ldmxcfg
 from LDMX.Tracking import tracking 
 from LDMX.Tracking import vertexing
 
-def single_e_track_recon():
+def single_e_track_recon(sigma_u: float = 0.006, 
+                         sigma_v: float = 0.00) -> ldmxcfg.Process:
     """ Setup a process to run track reconstruction.
     """
 
@@ -27,8 +28,8 @@ def single_e_track_recon():
     trk_recoil.seed_coll_name = 'RecoilTruthSeeds'
     trk_recoil.use-seed_perigee = True
     trk_recoil.do_smearing = True
-    trk_recoil.sigma_u = 0.006 # mm 
-    trk_recoil.sigma_v = 0.00 # mm 
+    trk_recoil.sigma_u = sigma_u # mm 
+    trk_recoil.sigma_v = sigma_v # mm 
     trk_recoil.track_id = 1 
      
     # Tagger track finding
@@ -41,8 +42,8 @@ def single_e_track_recon():
     trk_tagger.seed_coll_name = 'TaggerTruthSeeds'
     trk_tagger.use_seed_perigee = True
     trk_tagger.do_smearing = True
-    trk_tagger.sigma_u = 0.006 # mm
-    trk_tagger.sigma_v = 0.00 # mm
+    trk_tagger.sigma_u = sigma_u # mm
+    trk_tagger.sigma_v = sigma_v # mm
 
     vtx = tracking.Vertexer()
 
@@ -50,3 +51,8 @@ def single_e_track_recon():
 
     return p
 
+def single_e_track_recon_10um() -> ldmxcfg.Process: 
+    return single_e_track_recon(0.010, 0.00)
+
+def single_e_track_recon_15um() -> ldmxcfg.Process: 
+    return single_e_track_recon(0.015, 0.00)
