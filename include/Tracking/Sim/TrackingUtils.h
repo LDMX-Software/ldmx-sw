@@ -241,11 +241,6 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
   //pars = bound_params;
 
     
-  if (debug_){
-  std::cout<<"CHECK START PARAMETERS"<<std::endl;
-  std::cout<<pars<<std::endl;
-  }
-        
   Acts::Vector3 sPosition(0., 0., 0.);
   Acts::Vector3 sMomentum(0., 0., 0.);
     
@@ -259,9 +254,6 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
   sPosition = startParameters.position(gctx_);
   sMomentum = startParameters.momentum();
 
-  if (debug_)
-  std::cout<<startParameters<<std::endl;
-    
   //run the propagator
   PropagationOutput pOutput;
     

@@ -90,14 +90,14 @@ class VertexProcessor : public framework::Producer {
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
   
-  bool debug_{false};
-
   //Event counter
   int nevents_{0};
   
   //The interpolated bfield
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
-  std::string bfieldMap_;
+  
+  /// Path to the magnetic field map.
+  std::string field_map_{""};
 
   //Track collection name
 

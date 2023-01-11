@@ -18,21 +18,20 @@ TruthSeedProcessor::~TruthSeedProcessor() {}
 void TruthSeedProcessor::onProcessStart() { gctx_ = Acts::GeometryContext(); }
 
 void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
-  debug_ = parameters.getParameter<bool>("debug", false);
   out_trk_coll_name_ =
-      parameters.getParameter<std::string>("trk_coll_name", "TruthSeeds");
-  pdgIDs_ = parameters.getParameter<std::vector<int> >("pdgIDs", {11});
+      parameters.getParameter<std::string>("trk_coll_name", "RecoilTruthSeeds");
+  pdg_ids_ = parameters.getParameter<std::vector<int> >("pdg_ids", {11});
   scoring_hits_ = parameters.getParameter<std::string>(
-      "scoring_hits", "TargetScoringPlaneHits_sim");
+      "scoring_hits", "TargetScoringPlaneHits");
   sim_hits_ = parameters.getParameter<std::string>("sim_hits", "RecoilSimHits");
   n_min_hits_ = parameters.getParameter<int>("n_min_hits", 7);
-  z_min_ = parameters.getParameter<double>("z_min", -999);  // mm
-  track_id_ = parameters.getParameter<int>("track_id", -999);
+  z_min_ = parameters.getParameter<double>("z_min", -9999);  // mm
+  track_id_ = parameters.getParameter<int>("track_id", -9999);
   pz_cut_ = parameters.getParameter<double>("pz_cut", -9999);  // MeV
   p_cut_ = parameters.getParameter<double>("p_cut", 0.);
   p_cutMax_ = parameters.getParameter<double>("p_cutMax", 100000.);  // MeV
-  k0_sel_ = parameters.getParameter<bool>("k0_sel", false);
-  p_cutEcal_ = parameters.getParameter<double>("p_cutEcal", -1.);  // MeV
+  //k0_sel_ = parameters.getParameter<bool>("k0_sel", false);
+  p_cutEcal_ = parameters.getParameter<double>("p_cut_ecal", -1.);  // MeV
 }
 
 // Look at the scoring planes trackID
@@ -113,12 +112,10 @@ void TruthSeedProcessor::produce(framework::Event &event) {
                                                    *tagger_per_surface, gctx_)
           .value();
 
-  if (debug_) {
-    std::cout << "(TRUTH) Tagger bound params to the -700,0.,0. surface"
-              << std::endl;
-    std::cout << tagger_bound_params_perigee << std::endl;
-  }
-
+  ldmx_log(debug) << "(TRUTH) Tagger bound params to the -700,0.,0. surface"<<std::endl
+                  << tagger_bound_params_perigee;
+  
+      
   // Try something reasonable
   Acts::BoundVector stddev;
   stddev[Acts::eBoundLoc0] = 500 * Acts::UnitConstants::um;
@@ -176,8 +173,8 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     if (track_id_ > 0 && t_sp_hit.getTrackID() != track_id_) continue;
 
     // Check if we are requesting particular particles
-    if (std::find(pdgIDs_.begin(), pdgIDs_.end(), t_sp_hit.getPdgID()) ==
-        pdgIDs_.end())
+    if (std::find(pdg_ids_.begin(), pdg_ids_.end(), t_sp_hit.getPdgID()) ==
+        pdg_ids_.end())
       continue;
 
     Acts::Vector3 t_sp_p{t_sp_hit.getMomentum()[0], t_sp_hit.getMomentum()[1],
@@ -220,11 +217,10 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     // add the point
     selected_sp_hits.push_back(t_sp_hit);
   }
-
-  if (debug_)
-    std::cout << "Selected scoring hits::" << selected_sp_hits.size()
-              << std::endl;
-
+  
+  ldmx_log(debug) << "Selected scoring hits::" << selected_sp_hits.size();
+  
+  
   std::vector<ldmx::Track> truth_seeds_{};
 
   for (auto &sel_hit : selected_sp_hits) {
@@ -260,16 +256,13 @@ void TruthSeedProcessor::produce(framework::Event &event) {
                                  : -1 * Acts::UnitConstants::e;
     }
 
-    if (debug_) {
-      std::cout << "Preparing seed from hit:" << std::endl;
-      std::cout << sel_hit.getPdgID() << " " << sel_hit.getPosition()[0] << ","
-                << sel_hit.getPosition()[1] << "," << sel_hit.getPosition()[2]
-                << std::endl;
-      std::cout << q << " " << sel_hit.getMomentum()[0] << ","
-                << sel_hit.getMomentum()[1] << "," << sel_hit.getMomentum()[2]
-                << std::endl;
-    }
-
+    ldmx_log(debug) << "Preparing seed from hit:" << std::endl
+                    << sel_hit.getPdgID() << " " << sel_hit.getPosition()[0] << ","
+                    << sel_hit.getPosition()[1] << "," << sel_hit.getPosition()[2]
+                    << std::endl
+                    << q << " " << sel_hit.getMomentum()[0] << ","
+                    << sel_hit.getMomentum()[1] << "," << sel_hit.getMomentum()[2];
+    
     Acts::FreeVector free_params =
         tracking::sim::utils::toFreeParameters(gen_pos, gen_mom, q);
     std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
@@ -321,9 +314,6 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     truth_seeds_.push_back(seedTrack);
 
   }  // selected hits
-
-  if (debug_)
-    std::cout << "Adding " << out_trk_coll_name_ << " seeds" << std::endl;
 
   // Do the k0 selection.
   // std::vector<ldmx::Track> k0_decay_pions;
