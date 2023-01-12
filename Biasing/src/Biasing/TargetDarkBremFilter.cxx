@@ -21,6 +21,10 @@ TargetDarkBremFilter::TargetDarkBremFilter(const std::string& name,
   threshold_ = parameters.getParameter<double>("threshold");
 }
 
+void TargetDarkBremFilter::BeginOfEventAction(const G4Event*) {
+  found_aprime_ = false;
+}
+
 void TargetDarkBremFilter::stepping(const G4Step* step) {
   // don't process if event is already aborted
   if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
@@ -48,6 +52,8 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
        */
       if (isOutsideTargetRegion(track->GetLogicalVolumeAtVertex()))
         AbortEvent("A' was not created within target.");
+      // A' was found and originated in correct region
+      found_aprime_ = true;
     }  // first step of A'
     return;
   }
@@ -111,6 +117,12 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   // get here if we are the primary in the target region,
   //  but shouldn't check the secondaries yet
   return;
+}
+
+void TargetDarkBremFilter::EndOfEventAction(const G4Event* event) {
+  if (not event->IsAborted() and not found_aprime_) {
+    AbortEvent("Did not find an A' after entire event was simulated.");
+  }
 }
 
 void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
