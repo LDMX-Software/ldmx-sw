@@ -30,9 +30,10 @@ void APrimePhysics::ConstructParticle() {
    * For now we flag it as stable.
    *
    * Geant4 registers all instances derived from G4ParticleDefinition and
-   * deletes them at the end of the run.
+   * deletes them at the end of the run. We configure the A' to have
+   * the input mass and the PDG ID number of 622.
    */
-  G4APrime::Initialize(ap_mass_);
+  G4APrime::Initialize(ap_mass_, 622);
 }
 
 void APrimePhysics::ConstructProcess() {
