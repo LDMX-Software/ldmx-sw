@@ -17,7 +17,7 @@ jobs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -33,7 +33,7 @@ jobs:
       run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
@@ -52,7 +52,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -68,7 +68,7 @@ jobs:
         sample: ${{matrix.sample}}
 
     - name: Upload Validation Plots
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{matrix.sample}}-pr-validation
         path: ${{ steps.validation.outputs.plots }}
