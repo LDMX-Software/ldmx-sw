@@ -69,6 +69,7 @@ add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
 add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
 add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
+add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
