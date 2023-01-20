@@ -78,6 +78,8 @@ setup_library(module Tracking
                            ActsCore
 			   ActsPluginIdentification
                            Geant4::Interface
+                           ROOT::Physics
+                           Tracking::Event
               sources ${SRC_FILES})
 
 
