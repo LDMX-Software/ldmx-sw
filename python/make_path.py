@@ -17,7 +17,7 @@ def makeFieldMapPath() -> str:
     str
         Full path to the installed fieldmap.
     """
-    fieldmap_name = 'BmapCorrected3D_unfolded_scaled_1.15384615385.dat'
+    fieldmap_name = 'BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat'
     path = '@CMAKE_INSTALL_PREFIX@/data/fieldmap/%s' % fieldmap_name
     if not os.path.isfile(path): 
         print('ERROR: The file %s does not exist.' % path)
