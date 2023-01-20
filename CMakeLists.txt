@@ -76,7 +76,7 @@ setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
                            ActsCore
-			                     ActsPluginIdentification
+			   ActsPluginIdentification
                            Geant4::Interface
                            ROOT::Physics
                            Tracking::Event
