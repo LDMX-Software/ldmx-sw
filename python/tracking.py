@@ -246,4 +246,4 @@ class TruthSeedProcessor(Producer) :
         self.pz_cut = -9999. # MeV
         self.p_cut = 0. # MeV
         self.p_cut_max = 100000. # MeV
-        self.p_cut_ecal = -1 # MeV
+        self.p_cut_ecal = -1. # MeV
