@@ -1,4 +1,4 @@
-#include "Tracking/Sim/SeedFinderProcessor.h"
+#include "Tracking/Reco/SeedFinderProcessor.h"
 
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
@@ -14,7 +14,7 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 namespace tracking {
-namespace sim {
+namespace reco {
 
 SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
                                          framework::Process& process)
@@ -152,7 +152,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   for (auto& simHit : sim_hits) {
     // Remove low energy deposit hits
     if (simHit.getEdep() > 0.05) {
-      ldmxsps.push_back(utils::convertSimHitToLdmxSpacePoint(simHit));
+      ldmxsps.push_back(tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit));
     }
   }
 
@@ -597,7 +597,7 @@ void SeedFinderProcessor::onProcessEnd() {
             << "   nfailz0max=" << nfailz0max_ << std::endl;
 }
 
-}  // namespace sim
+}  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::sim, SeedFinderProcessor)
+DECLARE_PRODUCER_NS(tracking::reco, SeedFinderProcessor)

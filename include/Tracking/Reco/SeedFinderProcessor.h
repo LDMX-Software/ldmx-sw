@@ -1,5 +1,5 @@
-#ifndef TRACKING_SIM_SEEDFINDERPROCESSOR_H_
-#define TRACKING_SIM_SEEDFINDERPROCESSOR_H_
+#ifndef TRACKING_RECO_SEEDFINDERPROCESSOR_H_
+#define TRACKING_RECO_SEEDFINDERPROCESSOR_H_
 
 
 
@@ -43,7 +43,7 @@
 #include "TTree.h"
 
 namespace tracking {
-  namespace sim {
+  namespace reco {
 
   class SeedFinderProcessor : public framework::Producer {
 
@@ -173,7 +173,7 @@ namespace tracking {
   }; // SeedFinderProcessor
   
   
-  } // namespace sim
+  } // namespace reco
 } // namespace tracking
 
 #endif // TRACKING_SIM_SEEDFINDERPROCESSOR_H_

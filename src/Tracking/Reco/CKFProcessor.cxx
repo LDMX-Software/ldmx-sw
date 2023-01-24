@@ -1,4 +1,4 @@
-#include "Tracking/Sim/CKFProcessor.h"
+#include "Tracking/Reco/CKFProcessor.h"
 
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Sim/GeometryContainers.h"
@@ -11,7 +11,7 @@
 #include <fstream>
 
 namespace tracking {
-namespace sim {
+namespace reco {
 
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
     : framework::Producer(name, process) {
@@ -94,10 +94,10 @@ void CKFProcessor::onProcessStart() {
       std::move(gsf_propagator));
 
   // Setup the propagator steps writer
-  PropagatorStepWriter::Config cfg;
+  tracking::sim::PropagatorStepWriter::Config cfg;
   cfg.filePath = steps_outfile_path_;
 
-  writer_ = std::make_unique<PropagatorStepWriter>(cfg);
+  writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
 
   // Create a mapping between the layers and the Acts::Surface
   // layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
@@ -401,15 +401,15 @@ void CKFProcessor::produce(framework::Event& event) {
   };
 
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
-  LdmxMeasurementCalibrator calibrator{ldmxsps};
+  tracking::sim::LdmxMeasurementCalibrator calibrator{ldmxsps};
 
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
 
   if (use1Dmeasurements_)
-    ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate_1d>(
+    ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
         &calibrator);
   else
-    ckf_extensions.calibrator.connect<&LdmxMeasurementCalibrator::calibrate>(
+    ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate>(
         &calibrator);
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
       &kfUpdater);
@@ -749,7 +749,7 @@ void CKFProcessor::produce(framework::Event& event) {
           Acts::getDefaultLogger("KalmanFitter", Acts::Logging::INFO);
       Acts::KalmanFitterExtensions kfitter_extensions;
       kfitter_extensions.calibrator
-          .connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+          .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
       kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
           &kfUpdater);
       kfitter_extensions.smoother
@@ -805,7 +805,7 @@ void CKFProcessor::produce(framework::Event& event) {
         // Same extensions of the KF
         Acts::GsfExtensions gsf_extensions;
         gsf_extensions.calibrator
-            .connect<&LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+            .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
         gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
             &kfUpdater);
 
@@ -1033,7 +1033,7 @@ void CKFProcessor::testField(
 }
 
 void CKFProcessor::testMeasurmentCalibrator(
-    const LdmxMeasurementCalibrator& calibrator,
+    const tracking::sim::LdmxMeasurementCalibrator& calibrator,
     const std::unordered_map<Acts::GeometryIdentifier,
                              std::vector<ActsExamples::IndexSourceLink>>& map)
     const {
@@ -1313,7 +1313,7 @@ auto CKFProcessor::makeLdmxSpacepoints(
       if (pdg_id_ != -9999 && abs(simHit.getPdgID()) != pdg_id_) continue;
 
       ldmx::LdmxSpacePoint* ldmxsp =
-          utils::convertSimHitToLdmxSpacePoint(simHit);
+          tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit);
 
       if (remove_stereo_) {
         unsigned int layerid = ldmxsp->layer();
@@ -1421,9 +1421,7 @@ void CKFProcessor::propagateENstates(framework::Event& event,
     gen_mom(0) = px / Acts::UnitConstants::MeV;
     gen_mom(1) = py / Acts::UnitConstants::MeV;
     gen_mom(2) = pz / Acts::UnitConstants::MeV;
-    // gen_pos = tracking::sim::utils::Ldmx2Acts(gen_pos);
-    // gen_mom = tracking::sim::utils::Ldmx2Acts(gen_mom);
-
+    
     Acts::ActsScalar q = -1 * Acts::UnitConstants::e;
 
     if (pdg == 211 || pdg == 2212) q = +1 * Acts::UnitConstants::e;
@@ -1496,7 +1494,7 @@ void CKFProcessor::propagateENstates(framework::Event& event,
             << " pzCut=" << pzCut << " pCut=" << pCut << std::endl;
 }
 
-}  // namespace sim
+}  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::sim, CKFProcessor)
+DECLARE_PRODUCER_NS(tracking::reco, CKFProcessor)
