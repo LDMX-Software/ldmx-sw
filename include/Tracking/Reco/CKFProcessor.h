@@ -1,5 +1,5 @@
-#ifndef TRACKING_SIM_CKFPROCESSOR_H_
-#define TRACKING_SIM_CKFPROCESSOR_H_
+#ifndef TRACKING_RECO_CKFPROCESSOR_H_
+#define TRACKING_RECO_CKFPROCESSOR_H_
 
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
@@ -105,7 +105,7 @@ using GsfPropagator = Acts::Propagator<
 //    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
 
 namespace tracking {
-namespace sim {
+namespace reco {
 
 class CKFProcessor final : public framework::Producer {
 
@@ -162,7 +162,7 @@ class CKFProcessor final : public framework::Producer {
   auto makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &sim_hits) -> std::vector<ldmx::LdmxSpacePoint* >;
 
   //Test the measurement calibrator (TODO::move it somewhere else)
-  void testMeasurmentCalibrator(const LdmxMeasurementCalibrator& calibrator,
+  void testMeasurmentCalibrator(const tracking::sim::LdmxMeasurementCalibrator& calibrator,
                                 const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const;
 
   //Test the magnetic field
@@ -271,7 +271,7 @@ class CKFProcessor final : public framework::Producer {
   std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
   
   //The propagator steps writer
-  std::unique_ptr<PropagatorStepWriter> writer_;
+  std::unique_ptr<tracking::sim::PropagatorStepWriter> writer_;
 
   //Outname of the propagator test
   std::string steps_outfile_path_{""};
@@ -373,7 +373,7 @@ class CKFProcessor final : public framework::Producer {
 }; // CKFProcessor
     
 
-} // namespace sim
+} // namespace reco
 } // namespace tracking
 
 #endif // CKFProcessor

@@ -7,7 +7,6 @@
 #include "Acts/EventData/SourceLink.hpp"
 #include "Tracking/Sim/IndexSourceLink.h"
 
-
 /** The measurement calibrator can be a function or a class/struct able to retrieve the sim hits container.
  *  It gets by CKF passing the propagated TrackState. The measurement calibrator gets called for every propagation and a new track state is passed which contains the source link.
  *  The measurement calibrator unpacks the source link from the TrackState and casts to the implemented source link (in ldmx case we use an IndexSourceLink).
@@ -16,7 +15,8 @@
  //ts.calibrated().block<2>(0) = surface.globalToLocal(simHit.position)
  //ts.clabiratedCov = simHit cov
  //ts.data().measDim = 2 Matrix H = makeProj() ts.setProjector(H)   Where ts is the proxyTrackState  H Matrix projector (this is only for u and v) 
- //(1 0 0 0 0 0)  (0 1 0 0 0 0)
+ //(1 0 0 0 0 0)  
+ //(0 1 0 0 0 0)
  */
 
 /// Calibrator to convert an index source link to a measurement.
