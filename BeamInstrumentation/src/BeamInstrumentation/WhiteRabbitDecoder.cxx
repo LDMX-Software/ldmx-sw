@@ -2,14 +2,13 @@
 
 namespace beaminstrumentation {
   
-	void WhiteRabbitDecoder::configure(framework::config::Parameters &ps){
-		outputCollection_ = ps.getParameter<std::string>("output_collection");
-		inputCollection_ = ps.getParameter<std::string>("input_collection");
+  void WhiteRabbitDecoder::configure(framework::config::Parameters &ps){
+    outputCollection_ = ps.getParameter<std::string>("output_collection");
+    inputCollection_ = ps.getParameter<std::string>("input_collection");
     inputPassName_ = ps.getParameter<std::string>("input_pass_name");
-	}
+  }
 
-	void WhiteRabbitDecoder::produce(framework::Event &event){
-		//std::cout << "\nIn WhiteRabbitDecoder: " << event.getEventHeader().getEventNumber();
+  void WhiteRabbitDecoder::produce(framework::Event &event){
 
     const auto eventStream{event.getCollection<uint32_t>( inputCollection_, inputPassName_)}; 
    
@@ -30,34 +29,33 @@ namespace beaminstrumentation {
 
     WhiteRabbitResult out(deltaTTrigger, deltaTDownstreamHorizontal, deltaTDownstreamVertical, deltaTspillStart, spillNumber); 
 
-		event.add(outputCollection_, out);
-	}
+    event.add(outputCollection_, out);
+  }
 
   
-	void WhiteRabbitDecoder::onFileOpen() {
-		ldmx_log(debug) << "WhiteRabbitDecoder Opening file!";
+  void WhiteRabbitDecoder::onFileOpen() {
+    ldmx_log(debug) << "WhiteRabbitDecoder Opening file!";
 
-		return;
-	}	
+    return;
+  } 
 
-	void WhiteRabbitDecoder::onFileClose() {
-		ldmx_log(debug) << "WhiteRabbitDecoder Closing file!";
+  void WhiteRabbitDecoder::onFileClose() {
+    ldmx_log(debug) << "WhiteRabbitDecoder Closing file!";
 
-		return;
-	}
+    return;
+  }
 
-	void WhiteRabbitDecoder::onProcessStart() {
-		ldmx_log(debug) << "WhiteRabbitDecoder Process start!";
+  void WhiteRabbitDecoder::onProcessStart() {
+    ldmx_log(debug) << "WhiteRabbitDecoder Process start!";
 
-		return;
-	}
+    return;
+  }
 
-	void WhiteRabbitDecoder::onProcessEnd(){
-		ldmx_log(debug) << "WhiteRabbitDecoder Process ends!";
+  void WhiteRabbitDecoder::onProcessEnd(){
+    ldmx_log(debug) << "WhiteRabbitDecoder Process ends!";
 
-		return;
-	}
-  
+    return;
+  }
 
 } // namespace beaminstrumentation
 

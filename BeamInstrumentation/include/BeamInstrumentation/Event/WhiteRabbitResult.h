@@ -7,19 +7,19 @@
 #include "TObject.h"
 
 namespace beaminstrumentation {
-	class WhiteRabbitResult {
-	public:
-		WhiteRabbitResult() = default;
-		WhiteRabbitResult(uint32_t deltaTTrigger, uint32_t deltaTDownstreamHorizontal, uint32_t deltaTDownstreamVertical, uint64_t deltaTSpillStart, uint32_t spillNumber) : deltaTTrigger(deltaTTrigger), deltaTDownstreamHorizontal(deltaTDownstreamHorizontal), deltaTDownstreamVertical(deltaTDownstreamVertical), deltaTSpillStart(deltaTSpillStart), spillNumber(spillNumber) {};
-		~WhiteRabbitResult() = default;
+  class WhiteRabbitResult {
+  public:
+    WhiteRabbitResult() = default;
+    WhiteRabbitResult(uint32_t deltaTTrigger, uint32_t deltaTDownstreamHorizontal, uint32_t deltaTDownstreamVertical, uint64_t deltaTSpillStart, uint32_t spillNumber) : deltaTTrigger(deltaTTrigger), deltaTDownstreamHorizontal(deltaTDownstreamHorizontal), deltaTDownstreamVertical(deltaTDownstreamVertical), deltaTSpillStart(deltaTSpillStart), spillNumber(spillNumber) {};
+    ~WhiteRabbitResult() = default;
 
-		void Print(Option_t* option = "") const {};
-		void Clear(Option_t* option = "") {};
-		bool operator <(const WhiteRabbitResult &rhs) const {
-			return true;
-		}
+    void Print(Option_t* option = "") const {};
+    void Clear(Option_t* option = "") {};
+    bool operator <(const WhiteRabbitResult &rhs) const {
+      return true;
+    }
 
-	private:
+  private:
     uint32_t deltaTTrigger; //deltaT between TS event and scintillator plate trigger
     uint32_t deltaTDownstreamHorizontal; //deltaT between TS event and downstream horizontal fiber tracker
     uint32_t deltaTDownstreamVertical; //deltaT between TS event and downstream vertical fiber tracker
@@ -44,8 +44,10 @@ namespace beaminstrumentation {
     //Actual number of fiber tracker events in spill
     //Number of cherenkov hits etc. in spill
 
-		ClassDef(WhiteRabbitResult, 1);
-	};
+    ClassDef(WhiteRabbitResult, 1);
+
+  };
+
 } // namespace beaminstrumentation
 
 #endif //WHITE_RABBIT_RESULT_H

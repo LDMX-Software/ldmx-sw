@@ -8,33 +8,33 @@
 
 namespace beaminstrumentation {
 
-	class FiberTrackerDecoder : public framework::Producer{
-	public:
-		FiberTrackerDecoder(const std::string &name, framework::Process &process) : Producer(name, process) {};
+  class FiberTrackerDecoder : public framework::Producer{
+  public:
+    FiberTrackerDecoder(const std::string &name, framework::Process &process) : Producer(name, process) {};
 
-		~FiberTrackerDecoder() = default;
+    ~FiberTrackerDecoder() = default;
 
-		virtual void configure(framework::config::Parameters &ps);
+    virtual void configure(framework::config::Parameters &ps);
 
-		virtual void produce(framework::Event &event);
+    virtual void produce(framework::Event &event);
 
-		virtual void onFileOpen();
+    virtual void onFileOpen();
 
-		virtual void onFileClose();
+    virtual void onFileClose();
 
-		virtual void onProcessStart();
+    virtual void onProcessStart();
 
-		virtual void onProcessEnd();
-	
-	private:
-		std::string inputCollectionDownstreamHorizontal_; //FT50
-		std::string inputCollectionDownstreamVertical_; //FT51
-		std::string inputCollectionUpstreamHorizontal_; //FT41
-		std::string inputCollectionUpstreamVertical_; //FT42
-		std::string outputCollection_;
-		std::string inputPassName_;
-		
-	};
+    virtual void onProcessEnd();
+  
+  private:
+    std::string inputCollectionDownstreamHorizontal_; //FT50
+    std::string inputCollectionDownstreamVertical_; //FT51
+    std::string inputCollectionUpstreamHorizontal_; //FT41
+    std::string inputCollectionUpstreamVertical_; //FT42
+    std::string outputCollection_;
+    std::string inputPassName_;
+    
+  };
 
 } // namespace beaminstrumentation
 
