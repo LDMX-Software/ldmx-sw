@@ -2,16 +2,16 @@
 
 namespace beaminstrumentation {
 
-	void FiberTrackerDecoder::configure(framework::config::Parameters &ps){
-		outputCollection_ = ps.getParameter<std::string>("output_collection");
-		inputCollectionDownstreamHorizontal_ = ps.getParameter<std::string>("input_collection_downstream_horizontal");
-		inputCollectionDownstreamVertical_ = ps.getParameter<std::string>("input_collection_downstream_vertical");
-		inputCollectionUpstreamHorizontal_ = ps.getParameter<std::string>("input_collection_upstream_horizontal");
-		inputCollectionUpstreamVertical_ = ps.getParameter<std::string>("input_collection_upstream_vertical");
+  void FiberTrackerDecoder::configure(framework::config::Parameters &ps){
+    outputCollection_ = ps.getParameter<std::string>("output_collection");
+    inputCollectionDownstreamHorizontal_ = ps.getParameter<std::string>("input_collection_downstream_horizontal");
+    inputCollectionDownstreamVertical_ = ps.getParameter<std::string>("input_collection_downstream_vertical");
+    inputCollectionUpstreamHorizontal_ = ps.getParameter<std::string>("input_collection_upstream_horizontal");
+    inputCollectionUpstreamVertical_ = ps.getParameter<std::string>("input_collection_upstream_vertical");
     inputPassName_ = ps.getParameter<std::string>("input_pass_name");
-	}
+  }
 
-	void FiberTrackerDecoder::produce(framework::Event &event){
+  void FiberTrackerDecoder::produce(framework::Event &event){
 
     const auto eventStreamDownstreamHorizontal{event.getCollection<uint8_t>( inputCollectionDownstreamHorizontal_, inputPassName_)}; 
     const auto eventStreamDownstreamVertical{event.getCollection<uint8_t>( inputCollectionDownstreamVertical_, inputPassName_)}; 
@@ -45,32 +45,32 @@ namespace beaminstrumentation {
     
     FiberTracker out(hitsDownstreamHorizontal, hitsDownstreamVertical, emptyHits,  emptyHits); // Order  hitsDownstreamHorizontal, hitsDownstreamVertical, hitsUpstreamHorizontal, hitsUpstreamVertical)
 
-		event.add(outputCollection_, out);
-	}
+    event.add(outputCollection_, out);
+  }
 
-	void FiberTrackerDecoder::onFileOpen() {
-		ldmx_log(debug) << "FiberTrackerDecoder Opening file!";
+  void FiberTrackerDecoder::onFileOpen() {
+    ldmx_log(debug) << "FiberTrackerDecoder Opening file!";
 
-		return;
-	}	
+    return;
+  } 
 
-	void FiberTrackerDecoder::onFileClose() {
-		ldmx_log(debug) << "FiberTrackerDecoder Closing file!";
+  void FiberTrackerDecoder::onFileClose() {
+    ldmx_log(debug) << "FiberTrackerDecoder Closing file!";
 
-		return;
-	}
+    return;
+  }
 
-	void FiberTrackerDecoder::onProcessStart() {
-		ldmx_log(debug) << "FiberTrackerDecoder Process start!";
+  void FiberTrackerDecoder::onProcessStart() {
+    ldmx_log(debug) << "FiberTrackerDecoder Process start!";
 
-		return;
-	}
+    return;
+  }
 
-	void FiberTrackerDecoder::onProcessEnd(){
-		ldmx_log(debug) << "FiberTrackerDecoder Process ends!";
+  void FiberTrackerDecoder::onProcessEnd(){
+    ldmx_log(debug) << "FiberTrackerDecoder Process ends!";
 
-		return;
-	}
+    return;
+  }
 
 } // namespace beaminstrumentation
 

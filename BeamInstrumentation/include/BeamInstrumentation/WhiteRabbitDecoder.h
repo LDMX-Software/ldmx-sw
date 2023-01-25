@@ -7,33 +7,31 @@
 #include "BeamInstrumentation/Event/WhiteRabbitResult.h"
 
 namespace beaminstrumentation {
-
   
-	class WhiteRabbitDecoder : public framework::Producer{
-	public:
-		WhiteRabbitDecoder(const std::string &name, framework::Process &process) : Producer(name, process) {};
+  class WhiteRabbitDecoder : public framework::Producer{
+  public:
+    WhiteRabbitDecoder(const std::string &name, framework::Process &process) : Producer(name, process) {};
 
-		~WhiteRabbitDecoder() = default;
+    ~WhiteRabbitDecoder() = default;
 
-		virtual void configure(framework::config::Parameters &ps);
+    virtual void configure(framework::config::Parameters &ps);
 
-		virtual void produce(framework::Event &event);
+    virtual void produce(framework::Event &event);
 
-		virtual void onFileOpen();
+    virtual void onFileOpen();
 
-		virtual void onFileClose();
+    virtual void onFileClose();
 
-		virtual void onProcessStart();
+    virtual void onProcessStart();
 
-		virtual void onProcessEnd();
-	
-	private:
-		std::string inputCollection_;
-		std::string outputCollection_;
-		std::string inputPassName_;
-		
-	};
+    virtual void onProcessEnd();
   
+  private:
+    std::string inputCollection_;
+    std::string outputCollection_;
+    std::string inputPassName_;
+    
+  };
 
 } // namespace beaminstrumentation
 
