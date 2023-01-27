@@ -1,10 +1,11 @@
-#ifndef TRACKING_RECO_TRUTHSEEDPROCESSOR_H_
-#define TRACKING_RECO_TRUTHSEEDPROCESSOR_H_
+#pragma once
 
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
+
+#include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
 // --- Tracking --- //
@@ -19,71 +20,65 @@
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
 namespace tracking::reco {
+class TruthSeedProcessor : public framework::Producer {
+ public:
+  TruthSeedProcessor(const std::string &name, framework::Process &process);
 
-  class TruthSeedProcessor : public framework::Producer {
+  /// Destructor
+  ~TruthSeedProcessor() = default; 
 
- public :
-
-
-    TruthSeedProcessor(const std::string &name, framework::Process &process);
-
-    ~TruthSeedProcessor();
-
-    void onProcessStart() final override;
-    void onProcessEnd() final override;
-    void configure(framework::config::Parameters& parameters) final override;
-    void produce(framework::Event &event);
+  void onProcessStart() final override;
+  void onProcessEnd() final override;
+  void configure(framework::config::Parameters &parameters) final override;
+  void produce(framework::Event &event) final override;
 
  private:
 
-    //TODO::Address the geometry context properly
-    Acts::GeometryContext gctx_;
-    
-    //Event counter
-    int nevents_{0};
+  /**
+   */
+  ldmx::Track createSeed(const ldmx::SimParticle& particle);
 
-    //Output seed collection name
-    std::string out_trk_coll_name_{"TruthSeeds"};
-    
-    //Processing time counter
-    double processing_time_{0.};
+  // TODO::Address the geometry context properly
+  Acts::GeometryContext gctx_;
 
-    //pdg_ids of the particles we want to select for the seeds
-    std::vector<int> pdg_ids_{11};
+  // Event counter
+  //int nevents_{0};
 
-    //Which scoring plane hits to use for the truth seeds generation
-    std::string scoring_hits_{"TargetScoringPlaneHits"};
+  // Processing time counter
+  //double processing_time_{0.};
 
-    //Sim hits to check if the truth seed is findable
-    std::string sim_hits_{"RecoilSimHits"};
+  // pdg_ids of the particles we want to select for the seeds
+  std::vector<int> pdg_ids_{11};
 
-    //Minimum number of hits left in a tracker to consider the seed as findable
-    int n_min_hits_{7};
-    
-    //Min cut on the z of the scoring hit. It could be used to clean the scoring hits if wanted.
-    float z_min_{-999};
+  // Which scoring plane hits to use for the truth seeds generation
+  std::string scoring_hits_{"TargetScoringPlaneHits"};
 
-    //Only select a particular trackID
-    int track_id_{-999};
+  // Sim hits to check if the truth seed is findable
+  std::string sim_hits_{"RecoilSimHits"};
 
-    //Ask a minimum pz for the seeds
-    double pz_cut_{-9999};
+  // Minimum number of hits left in a tracker to consider the seed as findable
+  int n_min_hits_{7};
 
-    //Ask a minimum p for the seeds
-    double p_cut_{0.};
+  // Min cut on the z of the scoring hit. It could be used to clean the scoring
+  // hits if wanted.
+  float z_min_{-999};
 
-    //Ask a maximum p for the seeds
-    double p_cutMax_{100000.};
+  // Only select a particular trackID
+  int track_id_{-999};
 
-    //Ask a minimum p for the seeds at the ecal (from truth)
-    double p_cutEcal_{-1.};
-    
-    //Apply a dedicated k0 selection
-    double k0_sel_{false};
-    
-   
-  };
-}
+  // Ask a minimum pz for the seeds
+  double pz_cut_{-9999};
 
+  // Ask a minimum p for the seeds
+  double p_cut_{0.};
 
-#endif
+  // Ask a maximum p for the seeds
+  double p_cutMax_{100000.};
+
+  // Ask a minimum p for the seeds at the ecal (from truth)
+  double p_cutEcal_{-1.};
+
+  // Apply a dedicated k0 selection
+  double k0_sel_{false};
+};
+}  // namespace tracking::reco
