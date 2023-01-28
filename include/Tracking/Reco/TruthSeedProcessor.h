@@ -3,8 +3,6 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-
-
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
@@ -25,7 +23,7 @@ class TruthSeedProcessor : public framework::Producer {
   TruthSeedProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~TruthSeedProcessor() = default; 
+  ~TruthSeedProcessor() = default;
 
   void onProcessStart() final override;
   void onProcessEnd() final override;
@@ -33,19 +31,33 @@ class TruthSeedProcessor : public framework::Producer {
   void produce(framework::Event &event) final override;
 
  private:
+  /**
+   */
+  ldmx::Track createSeed(const ldmx::SimParticle &particle);
 
   /**
    */
-  ldmx::Track createSeed(const ldmx::SimParticle& particle);
+  ldmx::Track createSeed(const ldmx::SimTrackerHit &hit);
+
+  /**
+   */
+  ldmx::Track createSeed(const std::vector<double> &pos,
+                         const std::vector<double> &p, int pdg_id);
+
+  /**
+   */
+  bool scoringPlaneHitFilter(
+      const ldmx::SimTrackerHit &hit,
+      const std::vector<ldmx::SimTrackerHit> &ecal_sp_hits);
 
   // TODO::Address the geometry context properly
   Acts::GeometryContext gctx_;
 
   // Event counter
-  //int nevents_{0};
+  // int nevents_{0};
 
   // Processing time counter
-  //double processing_time_{0.};
+  // double processing_time_{0.};
 
   // pdg_ids of the particles we want to select for the seeds
   std::vector<int> pdg_ids_{11};
