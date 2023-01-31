@@ -37,12 +37,13 @@ class TruthSeedProcessor : public framework::Producer {
 
   /**
    */
-  ldmx::Track createSeed(const ldmx::SimTrackerHit &hit);
+  ldmx::Track createSeed(const ldmx::SimParticle &particle,
+                         const ldmx::SimTrackerHit &hit);
 
   /**
    */
   ldmx::Track createSeed(const std::vector<double> &pos,
-                         const std::vector<double> &p, int pdg_id);
+                         const std::vector<double> &p, int charge);
 
   /**
    */

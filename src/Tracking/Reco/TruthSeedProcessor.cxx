@@ -55,21 +55,22 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
 // In the case of Recoil tracking take only TrackID==1 and the generation
 // surface is the obtained from the TargetScoringPlane
 
-ldmx::Track TruthSeedProcessor::createSeed(const ldmx::SimTrackerHit &hit) {
+ldmx::Track TruthSeedProcessor::createSeed(const ldmx::SimParticle &particle,
+                                           const ldmx::SimTrackerHit &hit) {
   std::vector<double> pos{static_cast<double>(hit.getPosition()[0]),
                           static_cast<double>(hit.getPosition()[1]),
                           static_cast<double>(hit.getPosition()[2])};
-  return createSeed(pos, hit.getMomentum(), hit.getPdgID());
+  return createSeed(pos, hit.getMomentum(), particle.getCharge());
 }
 
 ldmx::Track TruthSeedProcessor::createSeed(const ldmx::SimParticle &particle) {
   return createSeed(particle.getVertex(), particle.getMomentum(),
-                    particle.getPdgID());
+                    particle.getCharge());
 }
 
 ldmx::Track TruthSeedProcessor::createSeed(const std::vector<double> &pos,
                                            const std::vector<double> &p,
-                                           int pdg_id) {
+                                           int charge) {
   // Get the position and momentum of the particle at the point of creation.
   // This only works for the incident electron when creating a tagger tracker
   // seed. For the recoil tracker, the scoring plane position will need to
@@ -87,7 +88,7 @@ ldmx::Track TruthSeedProcessor::createSeed(const std::vector<double> &pos,
 
   // Get the charge of the particle.
   // TODO: Add function that uses the PDG ID to calculate this.
-  double q{-1 * Acts::UnitConstants::e};
+  double q{charge * Acts::UnitConstants::e};
 
   // Transform the position, momentum and charge to free parameters.
   auto tagger_free_params{
@@ -259,7 +260,7 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   std::for_each(selected_sp_hits.begin(), selected_sp_hits.end(),
                 [&](const ldmx::SimTrackerHit &hit) {
                   if (hit_count_map[hit.getTrackID()] >= n_min_hits_)
-                    truth_seeds.push_back(createSeed(hit));
+                    truth_seeds.push_back(createSeed(particleMap[hit.getTrackID()], hit));
                 });
 
   event.add("RecoilTruthSeeds", truth_seeds);
