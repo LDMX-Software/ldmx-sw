@@ -294,7 +294,6 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   
 
   groups_map.clear();
-  std::cout<<"STRATEGY 1"<<std::endl;
   std::vector<int> strategy = {0,1,2,3,4};
   bool success = GroupStrips(measurements,strategy);
   if (success)
@@ -302,7 +301,6 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   /*
   groups_map.clear();
-  std::cout<<"STRATEGY 2"<<std::endl;
   strategy = {3,4,5,6,7};
   success = GroupStrips(measurements,strategy);
   if (success)
@@ -581,41 +579,20 @@ bool SeedFinderProcessor::GroupStrips(
   //std::cout<<std::endl;
   
   
-  std::cout<<"Total measurements "<<measurements.size()<<std::endl;
   
   int found = 0;
   
   for (auto& meas : measurements) {
-    
-    std::cout<<"Measurement found on layer "<<meas.getLyID()<<std::endl;
-    std::cout<<"Meas id "<<meas.getLayer()<<std::endl;
-    std::cout<<meas.getGlobalPosition()[0]<<","<<
-        meas.getGlobalPosition()[1]<<","<<
-        meas.getGlobalPosition()[2]<<std::endl;
-    
+
     if (std::find(strategy.begin(),
                   strategy.end(),
                   meas.getLyID()) != strategy.end()) {
-      std::cout<<"Found item:"<<meas.getLyID()<<std::endl;
       groups_map[meas.getLyID()].push_back(&meas);
       found++;
     }
     
   } // loop meas
 
-  std::cout<<"Dump Map"<<std::endl;
-  
-  for (auto& key : groups_map) {
-    std::cout<<"key:"<<key.first<<std::endl;
-    std::cout<<"vector size:"<<key.second.size()<<std::endl;
-    for (auto& ref : key.second) {
-      std::cout<<"Meas"<<ref->getLyID()<<std::endl;
-      std::cout<<ref->getGlobalPosition()[0]<<","<<
-          ref->getGlobalPosition()[1]<<","<<
-          ref->getGlobalPosition()[2]<<std::endl;
-    }
-  }
-  
   if (found < 5)
     return false;
   else
@@ -672,15 +649,6 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
               meas_for_seeds.end(),
               ldmx::Measurement::compareXLocation);
 
-    std::cout<<"Dump meas vector"<<std::endl;
-    for (int j=0; j<K; j++) {
-      
-      std::cout<<meas_for_seeds.at(j).getGlobalPosition()[0]<<","
-               <<meas_for_seeds.at(j).getGlobalPosition()[1]<<","
-               <<meas_for_seeds.at(j).getGlobalPosition()[2]<<","<<std::endl;
-      
-    }
-
     if (meas_for_seeds.size() < 5) {
       nmissing_++;
       return;
@@ -695,12 +663,6 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
     bool fail = false;
     // Remove failed fits
 
-    std::cout<<"Seed momentum "<<1. / abs(seedTrack.getQoP())<<std::endl;
-    std::cout<<pmax_<<" fail? "<<(1. / abs(seedTrack.getQoP()) > pmax_)<<std::endl;
-
-    std::cout<<"Z0:"<<seedTrack.getZ0()<<std::endl;
-    std::cout<<"D0:"<<seedTrack.getD0()<<std::endl;
-    
     if (1. / abs(seedTrack.getQoP()) < pmin_) {
       nfailpmin_++;
       fail=true;
