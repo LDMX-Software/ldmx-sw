@@ -63,7 +63,7 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
   //Layers from 1 to 14  => transform to 0->13
   if (vol == 2) {
     sensorId = (hit.getLayerID() + 1) % 2; //0,1,0,1 ...
-    std::cout<<"hit.getLayerID()="<<hit.getLayerID()<<std::endl;
+    
     //v12
     //layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7
     //v14
