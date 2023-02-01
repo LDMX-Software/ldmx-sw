@@ -10,18 +10,21 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
   if (debug_) std::cout << "Looking for Tagger and Recoil volumes" << std::endl;
 
   Tagger_ = findDaughterByName(fWorldPhysVol_, "tagger_PV");
-  BuildTaggerLayoutMap(Tagger_, "LDMXTaggerModuleVolume_physvol");
+  //v12
+  //BuildTaggerLayoutMap(Tagger_, "LDMXTaggerModuleVolume_physvol");
+  //v14
+  BuildTaggerLayoutMap(Tagger_, "tagger");
   Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg =
       buildTrackerVolume();
-
+  
   Recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
   BuildRecoilLayoutMap(Recoil_, "recoil");
   Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg =
       buildRecoilVolume();
-
+  
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs{
-      tagger_volume_cfg, recoil_volume_cfg};
-
+    tagger_volume_cfg, recoil_volume_cfg};
+  
   // Create the builder
   Acts::CuboidVolumeBuilder cvb;
 
@@ -187,6 +190,8 @@ TrackersTrackingGeometry::buildTrackerVolume() {
     if (debug_) {
       std::cout << layer.first << " : surfaces==>" << layer.second.size()
                 << std::endl;
+      for (auto& surface : layer.second)
+        surface->toStream(*gctx_,std::cout);
     }
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
@@ -213,9 +218,11 @@ TrackersTrackingGeometry::buildTrackerVolume() {
 
 void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
                                                     std::string surfacename) {
-  if (debug_)
+  if (debug_) {
     std::cout << "Building layout for the " << pvol->GetName() << " tracker"
               << std::endl;
+    getAllDaughters(pvol);
+  }
 
   // Get the global transform
   Acts::Transform3 tracker_transform = GetTransform(*pvol);
@@ -224,14 +231,14 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
   for (G4int i = 0; i < l_vol->GetNoDaughters(); i++) {
     std::string sln = l_vol->GetDaughter(i)->GetName();
     if (sln.find(surfacename) != std::string::npos) {
-      getAllDaughters(l_vol->GetDaughter(i));
-
+            
       G4VPhysicalVolume* _Component0Volume{nullptr};
       G4VPhysicalVolume* _ActiveSensor{nullptr};
       Acts::Transform3 ref1_transform = GetTransform(*(l_vol->GetDaughter(i)));
+      int SensorCopyNr = -999;
 
       // recoil_l1(4)_axial(stereo)->LDMXRecoilL14ModuleVolume_component0_physvol
-
+      //This works for v12
       if (sln.find("axial") != std::string::npos ||
           sln.find("stereo") != std::string::npos) {
         _Component0Volume =
@@ -247,9 +254,9 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
       }
 
       // recoil_l5_sensorX->LDMXRecoilL56ModuleVolume_component0_physvol
-
-      else if (sln.find("l5") != std::string::npos ||
-               sln.find("l6") != std::string::npos) {
+      //This works for v12
+      else if (sln.find("l5_sensor") != std::string::npos ||
+               sln.find("l6_sensor") != std::string::npos) {
         _Component0Volume =
             findDaughterByName(l_vol->GetDaughter(i),
                                "LDMXRecoilL56ModuleVolume_component0_physvol");
@@ -261,6 +268,14 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
             "LDMXRecoilL56ModuleVolume_component0Sensor0_physvol");
       }
 
+      //recoil_PV tracker->recoil_l14_sensor_vol_PV->recoil_l14_active_sensor
+      //This works for v14
+      else if (sln.find("sensor_vol")) {
+        _ActiveSensor = findDaughterByName(l_vol->GetDaughter(i),
+                                           "active_sensor");
+        SensorCopyNr = l_vol->GetDaughter(i)->GetCopyNo();
+      }
+      
       else
         throw std::runtime_error("Could not build recoil layout");
 
@@ -268,35 +283,47 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
         throw std::runtime_error(
             "Could not find ActiveSensor for recoil volume");
 
-      Acts::Transform3 ref2_transform = GetTransform(*(_Component0Volume));
+      Acts::Transform3 ref2_transform = Acts::Transform3::Identity();
+      
+
+      if (_Component0Volume)
+        ref2_transform = GetTransform(*(_Component0Volume)); 
+      
       std::shared_ptr<Acts::PlaneSurface> sensorSurface = GetSurface(
           _ActiveSensor, tracker_transform * ref1_transform * ref2_transform);
 
       // Build the layout
-      if (sln == "recoil_l1_axial" || sln == "recoil_l1_stereo")
+      if (sln == "recoil_l1_axial" || sln == "recoil_l1_stereo" ||
+          SensorCopyNr == 10 || SensorCopyNr == 20)
         recoil_layout["recoil_tracker_L1"].push_back(sensorSurface);
-
-      if (sln == "recoil_l2_axial" || sln == "recoil_l2_stereo")
+      
+      if (sln == "recoil_l2_axial" || sln == "recoil_l2_stereo" ||
+          SensorCopyNr == 30 || SensorCopyNr == 40) 
         recoil_layout["recoil_tracker_L2"].push_back(sensorSurface);
 
-      if (sln == "recoil_l3_axial" || sln == "recoil_l3_stereo")
+      if (sln == "recoil_l3_axial" || sln == "recoil_l3_stereo" ||
+          SensorCopyNr == 50 || SensorCopyNr == 60)
         recoil_layout["recoil_tracker_L3"].push_back(sensorSurface);
 
-      if (sln == "recoil_l4_axial" || sln == "recoil_l4_stereo")
+      if (sln == "recoil_l4_axial" || sln == "recoil_l4_stereo" ||
+          SensorCopyNr == 70 || SensorCopyNr == 80)
         recoil_layout["recoil_tracker_L4"].push_back(sensorSurface);
 
       if (sln == "recoil_l5_sensor1" || sln == "recoil_l5_sensor2" ||
           sln == "recoil_l5_sensor3" || sln == "recoil_l5_sensor4" ||
           sln == "recoil_l5_sensor5" || sln == "recoil_l5_sensor6" ||
           sln == "recoil_l5_sensor7" || sln == "recoil_l5_sensor8" ||
-          sln == "recoil_l5_sensor9" || sln == "recoil_l5_sensor10")
+          sln == "recoil_l5_sensor9" || sln == "recoil_l5_sensor10"||
+          (SensorCopyNr >= 90 && SensorCopyNr <= 99))
+        
         recoil_layout["recoil_tracker_L5"].push_back(sensorSurface);
-
+      
       if (sln == "recoil_l6_sensor1" || sln == "recoil_l6_sensor2" ||
           sln == "recoil_l6_sensor3" || sln == "recoil_l6_sensor4" ||
           sln == "recoil_l6_sensor5" || sln == "recoil_l6_sensor6" ||
           sln == "recoil_l6_sensor7" || sln == "recoil_l6_sensor8" ||
-          sln == "recoil_l6_sensor9" || sln == "recoil_l6_sensor10")
+          sln == "recoil_l6_sensor9" || sln == "recoil_l6_sensor10"||
+          (SensorCopyNr >=100  && SensorCopyNr <= 109))
         recoil_layout["recoil_tracker_L6"].push_back(sensorSurface);
 
     }  // found the daughter
@@ -308,10 +335,12 @@ void TrackersTrackingGeometry::BuildRecoilLayoutMap(G4VPhysicalVolume* pvol,
 
 void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
                                                     std::string surfacename) {
-  if (debug_)
+  if (debug_) {
     std::cout << "Building layout for the " << pvol->GetName() << " tracker"
               << std::endl;
-
+    getAllDaughters(pvol);
+  }
+  
   // Get the global transform
   Acts::Transform3 tracker_transform = GetTransform(*pvol);
 
@@ -321,6 +350,9 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
 
     // To distinguish which layers need to be selected
     if (sln.find(surfacename) != std::string::npos) {
+
+      //v12
+      
       // Box for the module (slightly bigger than the sensor)
       // LDMXTaggerModuleVolume_physvol -> LDMXTaggerModuleVolume_component0Box,
       // this is the sensor + inactive region
@@ -338,55 +370,78 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
       //   or I just hardcode it. S     transform1 * transform2 * transform3
       //   ....
 
+      //v14
+      //tagger_PV->tagger_sensor_vol_PV->tagger_active_sensor
+      //Then use the copyNumber.. 
+      
+      
       // Get the sensor volume placement
       Acts::Transform3 ref1_transform = GetTransform(*(l_vol->GetDaughter(i)));
 
       G4VPhysicalVolume* _Component0Volume = findDaughterByName(
           l_vol->GetDaughter(i), "LDMXTaggerModuleVolume_component0_physvol");
-      if (!_Component0Volume)
-        throw std::runtime_error("Missing component0_physvol from physvol");
-      // Get Component0 transform
-      Acts::Transform3 ref2_transform = GetTransform(*(_Component0Volume));
 
-      G4VPhysicalVolume* _ActiveSensor = findDaughterByName(
-          _Component0Volume,
-          "LDMXTaggerModuleVolume_component0Sensor0_physvol");
+      Acts::Transform3 ref2_transform = Acts::Transform3::Identity();
+      G4VPhysicalVolume* _ActiveSensor = nullptr;
+      int SensorCopyNr = -999;
+      
+      // Get Component0 transform. v12
+      if (_Component0Volume) {
+        ref2_transform = GetTransform(*(_Component0Volume));
+        _ActiveSensor = findDaughterByName(
+            _Component0Volume,
+            "LDMXTaggerModuleVolume_component0Sensor0_physvol");
+      }
+      //v14
+      else {
+        _ActiveSensor = findDaughterByName(l_vol->GetDaughter(i),"active_sensor");
+        SensorCopyNr = (l_vol->GetDaughter(i))->GetCopyNo();
+      }
+      
       if (!_ActiveSensor) {
         throw std::runtime_error(
             "Could not find the ActiveSensor from Component0Volume");
       }
-
+      
       // Get the surface
       std::shared_ptr<Acts::PlaneSurface> sensorSurface = GetSurface(
           _ActiveSensor, tracker_transform * ref1_transform * ref2_transform);
+
       if (sln == "LDMXTaggerModuleVolume_physvol1" ||
-          sln == "LDMXTaggerModuleVolume_physvol2")
+          sln == "LDMXTaggerModuleVolume_physvol2" ||
+          SensorCopyNr == 130 || SensorCopyNr == 140)
         tagger_layout["tagger_tracker_L1"].push_back(sensorSurface);
-
+      
       if (sln == "LDMXTaggerModuleVolume_physvol3" ||
-          sln == "LDMXTaggerModuleVolume_physvol4")
+          sln == "LDMXTaggerModuleVolume_physvol4" ||
+          SensorCopyNr == 110 || SensorCopyNr == 120)
         tagger_layout["tagger_tracker_L2"].push_back(sensorSurface);
-
+      
       if (sln == "LDMXTaggerModuleVolume_physvol5" ||
-          sln == "LDMXTaggerModuleVolume_physvol6")
+          sln == "LDMXTaggerModuleVolume_physvol6" ||
+          SensorCopyNr == 90 || SensorCopyNr == 100)
         tagger_layout["tagger_tracker_L3"].push_back(sensorSurface);
 
       if (sln == "LDMXTaggerModuleVolume_physvol7" ||
-          sln == "LDMXTaggerModuleVolume_physvol8")
+          sln == "LDMXTaggerModuleVolume_physvol8" ||
+          SensorCopyNr == 70 || SensorCopyNr == 80)
         tagger_layout["tagger_tracker_L4"].push_back(sensorSurface);
 
       if (sln == "LDMXTaggerModuleVolume_physvol9" ||
-          sln == "LDMXTaggerModuleVolume_physvol10")
+          sln == "LDMXTaggerModuleVolume_physvol10"||
+          SensorCopyNr == 50 || SensorCopyNr == 60)
         tagger_layout["tagger_tracker_L5"].push_back(sensorSurface);
 
       if (sln == "LDMXTaggerModuleVolume_physvol11" ||
-          sln == "LDMXTaggerModuleVolume_physvol12")
+          sln == "LDMXTaggerModuleVolume_physvol12" ||
+          SensorCopyNr == 30 || SensorCopyNr == 40)
         tagger_layout["tagger_tracker_L6"].push_back(sensorSurface);
-
+      
       if (sln == "LDMXTaggerModuleVolume_physvol13" ||
-          sln == "LDMXTaggerModuleVolume_physvol14")
+          sln == "LDMXTaggerModuleVolume_physvol14" ||
+          SensorCopyNr == 10 || SensorCopyNr == 20)
         tagger_layout["tagger_tracker_L7"].push_back(sensorSurface);
-
+      
     }  // found a silicon surface
   }    // loop on daughters
 }  // build the layout
