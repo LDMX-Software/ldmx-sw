@@ -85,6 +85,11 @@ namespace tracking {
        */
       void produce(framework::Event &event);
     
+    bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
+                     const std::vector<int> strategy);
+
+    void FindSeedsFromMap(std::vector<ldmx::Track>& seeds);
+
    private:
     
     ldmx::Track SeedTracker(const std::vector<ldmx::Measurement>& vmeas,
@@ -141,6 +146,7 @@ namespace tracking {
     double z0max_{60.};
     /// List of stragies for seed finding.
     std::vector<std::string> strategies_{};
+    double bfield_{1.5};
     
     
     TFile* outputFile_;
@@ -165,10 +171,10 @@ namespace tracking {
     long nfaild0max_{0};
     long nfailz0max_{0};
     
+    //The measurements groups
     
-    
-    
-    
+    std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
+    std::array<const ldmx::Measurement*,5> groups_array;
     
   }; // SeedFinderProcessor
   

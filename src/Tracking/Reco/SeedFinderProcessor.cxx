@@ -54,7 +54,8 @@ SeedFinderProcessor::~SeedFinderProcessor() {}
 void SeedFinderProcessor::onProcessStart() {
   // Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      //"/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      "detector.gdml",
       &gctx_, false);
 }
 
@@ -133,6 +134,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<double>("z0max", 60. * Acts::UnitConstants::mm);
   strategies_ = parameters.getParameter<std::vector<std::string>>(
       "strategies", {"0,1,2,3,4"});
+  bfield_ = parameters.getParameter<double>("bfield", 1.5);
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
@@ -289,58 +291,26 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   const std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(input_hits_collection_);
+  
 
-  std::vector<ldmx::Measurement> meas_for_seeds;
+  groups_map.clear();
+  std::cout<<"STRATEGY 1"<<std::endl;
+  std::vector<int> strategy = {0,1,2,3,4};
+  bool success = GroupStrips(measurements,strategy);
+  if (success)
+    FindSeedsFromMap(seed_tracks);
 
-  for (auto meas : measurements) {
-    int lyID = (meas.getLayer() / 100) % 10;
-    int sID = meas.getLayer() % 2;
-    int layerID = (lyID - 1) * 2 + sID;
+  /*
+  groups_map.clear();
+  std::cout<<"STRATEGY 2"<<std::endl;
+  strategy = {3,4,5,6,7};
+  success = GroupStrips(measurements,strategy);
+  if (success)
+    FindSeedsFromMap(seed_tracks);
 
-    if (layerID == 0 || layerID == 1 || layerID == 2 || layerID == 3 ||
-        layerID == 4) {
-      meas_for_seeds.push_back(meas);
-    }
-  }
-
-  if (meas_for_seeds.size() < 5) {
-    nmissing_++;
-    return;
-  }
-  if (meas_for_seeds.size() > 5) {
-    ndoubles_++;
-    return;
-  }
-
-  // TODO remove the copying
-  ldmx::Track seedTrack =
-      SeedTracker(meas_for_seeds, meas_for_seeds.at(3).getGlobalPosition()[0],
-                  Acts::Vector3(perigee_location_[0], perigee_location_[1],
-                                perigee_location_[2]));
-
-  // Remove failed fits
-  if (1. / abs(seedTrack.getQoP()) < pmin_) {
-    nfailpmin_++;
-    return;
-  }
-  if (1. / abs(seedTrack.getQoP()) > pmax_) {
-    nfailpmax_++;
-    return;
-  }
-  if (abs(seedTrack.getZ0()) > z0max_) {
-    nfailz0max_++;
-    return;
-  }
-  if (seedTrack.getD0() < d0min_) {
-    nfaild0min_++;
-    return;
-  }
-  if (seedTrack.getD0() > d0max_) {
-    nfaild0max_++;
-    return;
-  }
-
-  seed_tracks.push_back(seedTrack);
+  */
+  groups_map.clear();
+  outputTree_->Fill();
   event.add(out_seed_collection_, seed_tracks);
   ntracks_ += seed_tracks.size();
 
@@ -390,7 +360,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // TODO:: use the actual errors from the measurement.
 
   const int N = vmeas.size();
-  double uError = 0.06;
+  double uError = 0.006;
   double vError = 40. / sqrt(12);
 
   // Each measurement is treated as a 3D point, where the v direction is in the
@@ -465,7 +435,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   b3_.push_back(B(3));
   b4_.push_back(B(4));
 
-  outputTree_->Fill();
+  
 
   Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
   Acts::ActsVector<3> ref{0., 0., 0.};
@@ -487,7 +457,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
 
   // Momentum at xmeas
   double p =
-      0.3 * 1.5 * (1. / (2. * abs(B(2)))) * 0.001;  // R in meters, p in GeV
+      0.3 * bfield_ * (1. / (2. * abs(B(2)))) * 0.001;  // R in meters, p in GeV
   // std::cout<<"Momentum "<< p*dir << std::endl;
 
   // Convert it to MeV since that's what TrackUtils assumes
@@ -565,7 +535,7 @@ void SeedFinderProcessor::LineParabolaToHelix(
   double tanL = parameters(4) * cos(theta0);
   double theta = 1.57079632679 - atan(tanL);
   double z0 = parameters(3) + (d0 * tanL * tan(theta0));
-  double qOp = factor / (0.3 * 1.5 * R * 0.001);
+  double qOp = factor / (0.3 * bfield_ * R * 0.001);
 
   // std::cout<<d0<<" "<<z0<<" "<<phi0<<" "<<theta<<" "<<qOp<<std::endl;
 }
@@ -596,6 +566,177 @@ void SeedFinderProcessor::onProcessEnd() {
   std::cout << "PROCESSOR:: " << this->getName()
             << "   nfailz0max=" << nfailz0max_ << std::endl;
 }
+
+//Given a strategy, group the hits according to some options
+//Not a good algorithm. The best would be to organize all the hits in sensors *first* then only select the hits that we are interested into. TODO!
+
+bool SeedFinderProcessor::GroupStrips(
+    const std::vector<ldmx::Measurement>& measurements,
+    const std::vector<int> strategy) {
+
+  //std::cout<<"Using stratedy"<<std::endl;
+  //for (auto& e : strategy) {
+  //  std::cout<<e<<" ";
+  //}
+  //std::cout<<std::endl;
+  
+  
+  std::cout<<"Total measurements "<<measurements.size()<<std::endl;
+  
+  int found = 0;
+  
+  for (auto& meas : measurements) {
+    
+    std::cout<<"Measurement found on layer "<<meas.getLyID()<<std::endl;
+    std::cout<<"Meas id "<<meas.getLayer()<<std::endl;
+    std::cout<<meas.getGlobalPosition()[0]<<","<<
+        meas.getGlobalPosition()[1]<<","<<
+        meas.getGlobalPosition()[2]<<std::endl;
+    
+    if (std::find(strategy.begin(),
+                  strategy.end(),
+                  meas.getLyID()) != strategy.end()) {
+      std::cout<<"Found item:"<<meas.getLyID()<<std::endl;
+      groups_map[meas.getLyID()].push_back(&meas);
+      found++;
+    }
+    
+  } // loop meas
+
+  std::cout<<"Dump Map"<<std::endl;
+  
+  for (auto& key : groups_map) {
+    std::cout<<"key:"<<key.first<<std::endl;
+    std::cout<<"vector size:"<<key.second.size()<<std::endl;
+    for (auto& ref : key.second) {
+      std::cout<<"Meas"<<ref->getLyID()<<std::endl;
+      std::cout<<ref->getGlobalPosition()[0]<<","<<
+          ref->getGlobalPosition()[1]<<","<<
+          ref->getGlobalPosition()[2]<<std::endl;
+    }
+  }
+  
+  if (found < 5)
+    return false;
+  else
+    return true;
+}
+
+//For each strategy, form all the possible combinatorics and form a seedTrack for each of those
+//This will reshuffle all points. (issue?)
+//Will sort the meas_for_seed vector
+
+void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
+  
+  std::vector<ldmx::Measurement> meas_for_seeds;
+  meas_for_seeds.reserve(5);
+
+  std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter = groups_map.begin();
+  std::vector<const ldmx::Measurement*>::iterator meas_iter;
+
+  //Vector of iterators
+
+  constexpr size_t K=5;
+  std::vector<std::vector<const ldmx::Measurement*>::iterator> it;
+  it.reserve(K);
+
+  unsigned int ikey=0;
+  for (auto& key : groups_map) {
+    it[ikey] = key.second.begin();
+    ikey++;
+  }
+  
+  //K vectors in an array v[0],v[1].... v[K-1]
+  
+  while(it[0] != groups_iter->second.end()) {
+    // process the pointed-to elements
+
+    /*
+    for (int j=0; j<K; j++) {
+      const ldmx::Measurement* meas = (*(it[j]));
+      std::cout<<meas->getGlobalPosition()[0]<<","
+               <<meas->getGlobalPosition()[1]<<","
+               <<meas->getGlobalPosition()[2]<<","<<std::endl;
+               }
+    */
+
+    std::vector<ldmx::Measurement> meas_for_seeds;
+    meas_for_seeds.reserve(5); 
+    
+    for (int j=0; j<K; j++) {
+      const ldmx::Measurement* meas = (*(it[j]));
+      meas_for_seeds.push_back(*meas);
+    }
+    
+    std::sort(meas_for_seeds.begin(),
+              meas_for_seeds.end(),
+              ldmx::Measurement::compareXLocation);
+
+    std::cout<<"Dump meas vector"<<std::endl;
+    for (int j=0; j<K; j++) {
+      
+      std::cout<<meas_for_seeds.at(j).getGlobalPosition()[0]<<","
+               <<meas_for_seeds.at(j).getGlobalPosition()[1]<<","
+               <<meas_for_seeds.at(j).getGlobalPosition()[2]<<","<<std::endl;
+      
+    }
+
+    if (meas_for_seeds.size() < 5) {
+      nmissing_++;
+      return;
+    }
+    
+    
+    ldmx::Track seedTrack =
+        SeedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
+                    Acts::Vector3(perigee_location_[0], perigee_location_[1],
+                                  perigee_location_[2]));
+    
+    bool fail = false;
+    // Remove failed fits
+
+    std::cout<<"Seed momentum "<<1. / abs(seedTrack.getQoP())<<std::endl;
+    std::cout<<pmax_<<" fail? "<<(1. / abs(seedTrack.getQoP()) > pmax_)<<std::endl;
+
+    std::cout<<"Z0:"<<seedTrack.getZ0()<<std::endl;
+    std::cout<<"D0:"<<seedTrack.getD0()<<std::endl;
+    
+    if (1. / abs(seedTrack.getQoP()) < pmin_) {
+      nfailpmin_++;
+      fail=true;
+    } else if (1. / abs(seedTrack.getQoP()) > pmax_) {
+      nfailpmax_++;
+      fail=true;
+    } else if (abs(seedTrack.getZ0()) > z0max_) {
+      nfailz0max_++;
+      fail=true;
+    } else if (seedTrack.getD0() < d0min_) {
+      nfaild0min_++;
+      fail=true;
+    } else if (seedTrack.getD0() > d0max_) {
+      nfaild0max_++;
+      fail=true;
+    } 
+    
+    if (!fail)
+      seeds.push_back(seedTrack);
+    
+    else {
+      b0_.pop_back();
+      b1_.pop_back();
+      b2_.pop_back();
+      b3_.pop_back();
+      b4_.pop_back();
+    }
+        
+    //Go to next combination
+    ++it[K-1];
+    for (int i = K-1; (i > 0) && (it[i] == (std::next(groups_iter,i))->second.end()); --i) {
+      it[i] = std::next(groups_iter,i)->second.begin();
+      ++it[i-1];
+    }
+  }  
+} //find seeds
 
 }  // namespace reco
 }  // namespace tracking
