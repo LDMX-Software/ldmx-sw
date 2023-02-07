@@ -12,13 +12,15 @@ class ScoringPlaneSD(simcfg.SensitiveDetector) :
     ----------
     subsystem : str
         Name of subsystem to store scoring plane hits for
-        Names must match what is in gdml for <subsystem>_sp
+        Names must match what is in gdml for sp_<subsystem>
     """
     def __init__(self,subsystem) :
         super().__init__(f'{subsystem}_sp','simcore::ScoringPlaneSD','SimCore_SDs')
 
-        self.collection_name = f'{subsystem.capitalize()}ScoringPlaneHits'
-        self.match_substr = f'sp_{subsystem.lower()}' #depends on gdml
+        # we don't use the Python built-in str.capitalize since
+        #  that function changes all characters after the first one to lowercase
+        self.collection_name = f'{subsystem[0].upper()+subsystem[1:]}ScoringPlaneHits'
+        self.match_substr = f'sp_{subsystem}' #depends on gdml
 
     def ecal() :
         return ScoringPlaneSD('ecal')
