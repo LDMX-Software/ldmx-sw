@@ -79,11 +79,18 @@ int main(int argc, char* argv[]) {
                                    argc - ptrpy - 1);
     p = cfg.makeProcess();
   } catch (framework::exception::Exception& e) {
+    // Error message currently printed twice since the stack trace code
+    // sometimes crashes. Once this is fixed, the output above the stack trace
+    // can be removerd.
     std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
               << std::endl;
     std::cerr << "  at " << e.module() << ":" << e.line() << " in "
               << e.function() << std::endl;
     std::cerr << "Stack trace: " << std::endl << e.stackTrace();
+    std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
+              << std::endl;
+    std::cerr << "  at " << e.module() << ":" << e.line() << " in "
+              << e.function() << std::endl;
     return 1;
   }
 
