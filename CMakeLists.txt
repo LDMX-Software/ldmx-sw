@@ -69,6 +69,13 @@ add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
 add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
 add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
+
+
+option(BUILD_FLUKA_INTERFACE "Build the optional FLUKA interface" OFF)
+if (BUILD_FLUKA_INTERFACE)
+    message("Building the optional FLUKA interface")
+    add_subdirectory(LDMXFluka ${CMAKE_BINARY_DIR}/LDMXFluka)
+endif()
 add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
 
 # Once the event libraries have been built, turn off the global option. 
