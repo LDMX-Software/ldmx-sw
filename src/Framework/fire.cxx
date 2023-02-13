@@ -81,7 +81,8 @@ int main(int argc, char* argv[]) {
   } catch (framework::exception::Exception& e) {
     // Error message currently printed twice since the stack trace code
     // sometimes crashes. Once this is fixed, the output above the stack trace
-    // can be removerd.
+    // can be removed
+    // https://github.com/LDMX-Software/Framework/issues/50
     std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
               << std::endl;
     std::cerr << "  at " << e.module() << ":" << e.line() << " in "
