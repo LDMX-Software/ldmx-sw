@@ -43,3 +43,25 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
                 321  # K^+
         ]
         return particle_filter
+
+class NothingHardFilter(simcfg.UserAction) :
+    """ Configuration for keeping events with specific products of PN interactions
+
+    Parameters
+    ----------
+    name : str
+        Name for this filter
+
+    Attributes
+    ----------
+    pdg_ids : list of ints
+        List of PDG product IDs to look for in PN products
+    """
+
+    def __init__(self, nothing_hard_threshold = 200.) :
+        super().__init__('nothing_hard_filter','biasing::NothingHardFilter')
+
+        self.nothing_hard_threshold = nothing_hard_threshold
+        from LDMX.Biasing import include
+        include.library()
+
