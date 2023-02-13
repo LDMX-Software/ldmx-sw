@@ -42,6 +42,13 @@ void TaggerVetoFilter::stepping(const G4Step* step) {
       energy < threshold_) {
     track->SetTrackStatus(fKillTrackAndSecondaries);
     G4RunManager::GetRunManager()->AbortEvent();
+    /* debug printout
+    std::cout << "[ TaggerVetoFilter ]: ("
+      << G4EventManager::GetEventManager()
+           ->GetConstCurrentEvent()->GetEventID()
+      << ") Primary lost too much energy before the target. Aborting event."
+      << std::endl;
+     */
     return;
   }
 }

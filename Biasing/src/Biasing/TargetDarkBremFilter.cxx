@@ -10,7 +10,7 @@
 #include "Biasing/TargetDarkBremFilter.h"
 
 #include "G4Electron.hh"                   //to check if track is electron
-#include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
+#include "G4DarkBreM/G4APrime.h"     //checking if particles match A'
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
@@ -19,6 +19,10 @@ TargetDarkBremFilter::TargetDarkBremFilter(const std::string& name,
                                            framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
+}
+
+void TargetDarkBremFilter::BeginOfEventAction(const G4Event*) {
+  found_aprime_ = false;
 }
 
 void TargetDarkBremFilter::stepping(const G4Step* step) {
@@ -32,7 +36,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   // Leave if track is not an electron
   auto particle_def{track->GetParticleDefinition()};
   if (particle_def != G4Electron::Electron()) {
-    if (particle_def == simcore::darkbrem::G4APrime::APrime() and
+    if (particle_def == G4APrime::APrime() and
         track->GetCurrentStepNumber() == 1) {
       /** check on first step of A' to see if it originated in correct volume
        * this needs to be here because sometimes the
@@ -48,6 +52,8 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
        */
       if (isOutsideTargetRegion(track->GetLogicalVolumeAtVertex()))
         AbortEvent("A' was not created within target.");
+      // A' was found and originated in correct region
+      found_aprime_ = true;
     }  // first step of A'
     return;
   }
@@ -71,8 +77,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
     } else {
       // check secondaries to see if we made a dark brem
       for (auto& secondary_track : *secondaries) {
-        if (secondary_track->GetParticleDefinition() ==
-            simcore::darkbrem::G4APrime::APrime()) {
+        if (secondary_track->GetParticleDefinition() == G4APrime::APrime()) {
           // we found an A', woo-hoo!
 
           if (secondary_track->GetTotalEnergy() < threshold_) {
@@ -112,6 +117,12 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
   // get here if we are the primary in the target region,
   //  but shouldn't check the secondaries yet
   return;
+}
+
+void TargetDarkBremFilter::EndOfEventAction(const G4Event* event) {
+  if (not event->IsAborted() and not found_aprime_) {
+    AbortEvent("Did not find an A' after entire event was simulated.");
+  }
 }
 
 void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
