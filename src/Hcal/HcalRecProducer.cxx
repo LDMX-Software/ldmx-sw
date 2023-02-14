@@ -79,9 +79,38 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
   }
 }
 
+double HcalRecProducer::fixTOABX(const ldmx::HgcrocDigiCollection::HgcrocDigi digi, int bx_shift) {
+  /**
+   * Fix TOA BX association
+   **/
+
+  // loop over all time samples
+  std::cout << "nsamples " << digi.size() << std::endl;
+  double toaRelStartBX(0.0);
+  int bx_to_time(0), toaSample(0);
+  for (int i_sample{0}; i_sample < digi.size(); i_sample++) {
+    auto sample{digi.at(i_sample)};
+    std::cout << "isample " << i_sample << " toa " << sample.toa() << std::endl;
+    if (sample.toa() > 0) {
+      if (sample.toa() > bx_shift) {
+	bx_to_time = clock_cycle_ * i_sample; //ns
+	// 1023 or 1024?
+	toaSample = i_sample;
+      }
+      else {
+	bx_to_time = clock_cycle_ * (i_sample + 1); //ns
+      }
+      toaRelStartBX = (sample.toa() * (clock_cycle_ / 1024)) + bx_to_time;
+      std::cout << " rel-bx " << toaRelStartBX << " toaSample " << std::endl;
+    }
+  }
+  return toaRelStartBX;
+}
+  
 double HcalRecProducer::getTOA(
     const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double pedestal,
     unsigned int iSOI) {
+
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
   int toaSample(0), maxSample(0), iADC(0);
@@ -214,6 +243,8 @@ void HcalRecProducer::produce(framework::Event& event) {
       double TOA_negend =
           getTOA(digi_negend, the_conditions.adcPedestal(id_negend), iSOI);
 
+      double TOA_bxfix = fixTOABX(digi_posend, 0);
+      
       // get sign of position along the bar
       int position_bar_sign = (TOA_posend - TOA_negend) > 0 ? 1 : -1;
 
@@ -224,10 +255,10 @@ void HcalRecProducer::produce(framework::Event& event) {
       // amplitudes from both ends need to be above the boundary of the
       // correction otherwise, one TOA gets corrected and the other does not,
       // which results in a large TOA difference and an out-of-bounds position
-      if (amplT_posend > minAmpl_ && amplT_negend > minAmpl_) {
-        TOA_posend = correctionTOA_.Eval(amplT_posend) - TOA_posend;
-        TOA_negend = correctionTOA_.Eval(amplT_negend) - TOA_negend;
-      }
+      //if (amplT_posend > minAmpl_ && amplT_negend > minAmpl_) {
+      //  TOA_posend = correctionTOA_.Eval(amplT_posend) - TOA_posend;
+      //  TOA_negend = correctionTOA_.Eval(amplT_negend) - TOA_negend;
+      //}
 
       // get x(y) coordinate from TOA measurement = (dt*v/2)
       // if time_posend < time_negend: position is positive
