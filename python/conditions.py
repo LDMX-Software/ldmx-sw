@@ -21,6 +21,8 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
         provider for the HCal ADC gains
     tot_calib : framework::ConditionsObjectProvider
         provider for the HCal TOT calibrations
+    toa_calib : framework::ConditionsObjectProvider
+        provider for the HCal TOA calibrations
 
     Examples
     --------
@@ -28,7 +30,7 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
     wrapped here are constant for all runs and all channels.
     """
 
-    def __init__(self,adc_ped,adc_gain,tot_calib) :
+    def __init__(self,adc_ped,adc_gain,tot_calib,toa_calib) :
         super().__init__("HcalReconConditions","hcal::HcalReconConditionsProvider","Hcal")
 
         # our COP only needs the object names but providing the full parent COPs
@@ -36,4 +38,4 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
         self.adc_ped = adc_ped.objectName
         self.adc_gain = adc_gain.objectName
         self.tot_calib = tot_calib.objectName
-
+        self.toa_calib = toa_calib.objectName
