@@ -87,7 +87,6 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
 
     // toa logic
     if (digi.at(i_sample).toa() > 0) {
-      std::cout << "toa " << digi.at(i_sample).toa() << std::endl;
       if (digi.at(i_sample).toa() >= bx_shift) {
 	toa_sample = i_sample;
       }
@@ -95,10 +94,10 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
 	toa_sample = i_sample + 1;
       }
 
-      // ns
-      toa_startbx = digi.at(i_sample).toa() * (clock_cycle_ / 1024) + (clock_cycle_ * toa_sample);
-      std::cout << "toa startbx " << toa_startbx << std::endl;
+      // sum toa in given bx - given that multiple bx may be associated with the TOA measurement
+      toa_startbx += digi.at(i_sample).toa() * (clock_cycle_ / 1024) + (clock_cycle_ * toa_sample);
     }
+    
     if (digi.at(i_sample).adc_t() - pedestal > max_meas) {
       max_meas = digi.at(i_sample).adc_t() - pedestal;
       max_sample = i_sample;
@@ -106,7 +105,6 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
   }
   // get toa
   double toa = toa_startbx;
-  std::cout << "toa " << toa << std::endl;
   
   // get toa w.r.t the peak
   //double toa = (max_sample - toa_sample) * clock_cycle_ - toa_startbx;
@@ -165,11 +163,9 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
         num_mips_equivalent * pe_per_mip_ * mip_energy_;
 
     // time reconstruction
-    //    right now, just using the decoded TOA converted to ns (done above)
-    //    we could attempt to correct for time walk here
     double hitTime = toa;
 
-    // position single ended
+    // position single ended (taken directly from geometry)
     auto position = hcalGeometry.getStripCenterPosition(id);
 
     // reconstructed Hit

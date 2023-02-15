@@ -115,6 +115,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     double v =
       299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
     double hitTimeDiff = hitPosEnd.getTime() - hitNegEnd.getTime();
+
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;
     double position_bar =
       position_bar_sign * fabs(hitTimeDiff) * v / 2;
@@ -127,6 +128,9 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     // TODO: switch unique hit time for this pulse
     double hitTime = (hitPosEnd.getTime() + hitNegEnd.getTime());
 
+    std::cout << "hittime pos " << hitPosEnd.getTime() << " neg " << hitNegEnd.getTime() << " bar sign " << " diff " << hitTimeDiff << std::endl;
+    std::cout << "strip " << id.strip() << " layer " << id.layer() << " end " << id_digi.end() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
+    
     // amplitude and PEs
     double num_mips_equivalent = (hitPosEnd.getAmplitude() + hitNegEnd.getAmplitude());
     double PEs = (hitPosEnd.getPE() + hitNegEnd.getPE());
