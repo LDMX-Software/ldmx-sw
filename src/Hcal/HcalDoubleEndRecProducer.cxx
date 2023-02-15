@@ -128,6 +128,8 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     // TODO: switch unique hit time for this pulse
     double hitTime = (hitPosEnd.getTime() + hitNegEnd.getTime());
 
+    ldmx::HcalDigiID digi_id_pos(hitPosEnd.getSection(), hitPosEnd.getLayer(), hitPosEnd.getStrip(), hitPosEnd.getEnd());
+    std::cout << "meanshift " <<  conditions.toaCalib(digi_id_pos.id(), 1) << std::endl;
     std::cout << "hittime pos " << hitPosEnd.getTime() << " neg " << hitNegEnd.getTime() << " bar sign " << " diff " << hitTimeDiff << std::endl;
     std::cout << "strip " << id.strip() << " layer " << id.layer() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
     
