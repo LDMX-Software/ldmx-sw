@@ -57,8 +57,6 @@ class HcalRecProducer : public framework::Producer {
    */
   void configure(framework::config::Parameters&) final override;
 
-  double fixTOABX(const ldmx::HgcrocDigiCollection::HgcrocDigi digi, int bx_shift);
-  
   /**
    * Gets Time of Arrival with respect to the SOI.
    */
