@@ -75,7 +75,7 @@ class SeedFinderProcessor(Producer):
     """
 
     def __init__(self, instance_name = "SeedFinderProcessor"):
-        super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor','Tracking')
+        super().__init__(instance_name, 'tracking::reco::SeedFinderProcessor','Tracking')
         self.perigee_location = []
         self.pmin = 0.05
         self.pmax = 8.
@@ -166,7 +166,7 @@ class CKFProcessor(Producer):
         
     """
     def __init__(self, instance_name = 'CKFProcessor'): 
-        super().__init__(instance_name, 'tracking::sim::CKFProcessor', 'Tracking')
+        super().__init__(instance_name, 'tracking::reco::CKFProcessor', 'Tracking')
 
         self.dumpobj = False
         self.pionstates = 0

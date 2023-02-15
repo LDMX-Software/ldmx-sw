@@ -52,7 +52,9 @@ G4VPhysicalVolume* BaseTrackingGeometry::findDaughterByName(
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
     G4VPhysicalVolume* fDaughterPhysVol = lvol->GetDaughter(i);
-    if (fDaughterPhysVol->GetName() == name) return fDaughterPhysVol;
+    std::string dName  = fDaughterPhysVol->GetName();
+    if (dName.find(name) != std::string::npos) return fDaughterPhysVol;
+    //if (fDaughterPhysVol->GetName() == name) return fDaughterPhysVol;
   }
 
   return nullptr;
@@ -75,6 +77,9 @@ void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
                 << std::endl;
       std::cout << "replica::" << fDaughterPhysVol->IsReplicated() << std::endl;
       std::cout << "copyNR::" << fDaughterPhysVol->GetCopyNo() << std::endl;
+
+      getAllDaughters(fDaughterPhysVol);
+      
     }
   }
 }
@@ -214,10 +219,6 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
   getSurfaces(surfaces);
 
   for (auto& surface : surfaces) {
-    // std::cout<<"Check the surfaces"<<std::endl;
-    // surface->toStream(gctx_,std::cout);
-    // std::cout<<"GeometryID::"<<surface->geometryId()<<std::endl;
-    // std::cout<<"GeometryID::"<<surface->geometryId().value()<<std::endl;
 
     // Layers from 1 to 14 - for the tagger
     // unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1
@@ -231,6 +232,9 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
         surface->geometryId().sensitive() -
         1;  // set sensor ID from 0 to 1 for the tagger and from 0 to 9 for the
             // axial sensors in the back layers of the recoil
+
+    if (debug_)
+      std::cout<<"VolumeID "<<volumeId<<" LayerId "<<layerId<<" sensorId "<<sensorId<<std::endl; 
 
     // surface ID = vol * 1000 + ly * 100 + sensor
 
