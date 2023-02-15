@@ -129,7 +129,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     double hitTime = (hitPosEnd.getTime() + hitNegEnd.getTime());
 
     std::cout << "hittime pos " << hitPosEnd.getTime() << " neg " << hitNegEnd.getTime() << " bar sign " << " diff " << hitTimeDiff << std::endl;
-    std::cout << "strip " << id.strip() << " layer " << id.layer() << " end " << id_digi.end() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
+    std::cout << "strip " << id.strip() << " layer " << id.layer() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
     
     // amplitude and PEs
     double num_mips_equivalent = (hitPosEnd.getAmplitude() + hitNegEnd.getAmplitude());
