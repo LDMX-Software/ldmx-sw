@@ -131,6 +131,21 @@ class HcalHit : public ldmx::CalorimeterHit {
    */
   void setIsADC(int isADC) { isADC_ = isADC; }
 
+  /**
+   * Set time difference (uncorrected)
+   * @param time
+   */
+  void setTimeDiff(double timeDiff) { timeDiff_ = timeDiff; }
+
+  /**
+   * Set original position
+   */
+  void setPositionUnchanged(double position, int isX) { position_ = position; isX_ = isX; }
+
+  double getPosition() const { return position_;}
+  int getIsX() const { return isX_;}
+  double getTimeDiff() const { return timeDiff_;}
+
  private:
   /** The number of PE estimated for this hit. */
   float pe_{0};
@@ -147,6 +162,10 @@ class HcalHit : public ldmx::CalorimeterHit {
 
   /// isADC
   int isADC_;
+
+  double timeDiff_;
+  double position_;
+  double isX_;
 
   /**
    * The ROOT class definition.

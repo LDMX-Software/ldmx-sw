@@ -42,6 +42,9 @@ void HcalDoubleEndRecProducer::configure(framework::config::Parameters& p) {
   pass_name_ = p.getParameter("pass_name", pass_name_);
   coll_name_ = p.getParameter("coll_name", coll_name_);
 
+  rec_pass_name_ = p.getParameter("rec_pass_name", pass_name_);
+  rec_coll_name_ = p.getParameter("rec_coll_name", coll_name_);
+
   pe_per_mip_ = p.getParameter<double>("pe_per_mip");
   mip_energy_ = p.getParameter<double>("mip_energy");
   clock_cycle_ = p.getParameter<double>("clock_cycle");
@@ -111,28 +114,42 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     auto hitPosEnd = hcalBar.second.at(indicesByID[id].first);
     auto hitNegEnd = hcalBar.second.at(indicesByID[id].second);
 
+    // update TOA hit with negative end with mean shift
+    ldmx::HcalDigiID digi_id_pos(hitPosEnd.getSection(), hitPosEnd.getLayer(), hitPosEnd.getStrip(), hitPosEnd.getEnd());
+    ldmx::HcalDigiID digi_id_neg(hitNegEnd.getSection(), hitNegEnd.getLayer(), hitNegEnd.getStrip(), hitNegEnd.getEnd());
+    double mean_shift = conditions.toaCalib(digi_id_neg.raw(), 1);
+
+    double pos_time = hitPosEnd.getTime();
+    double neg_time = hitNegEnd.getTime() - mean_shift;
+
     // update position in strip according to time measurement
     double v =
       299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
-    double hitTimeDiff = hitPosEnd.getTime() - hitNegEnd.getTime();
+    double hitTimeDiff = pos_time - neg_time;
+
+    //std::cout << "\n new hit " << std::endl;
+    //std::cout << "strip " << id.strip() << " layer " << id.layer() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
+    //std::cout << "hittime pos " << pos_time << " neg " << neg_time << " bar sign " << " diff " << hitTimeDiff << std::endl;
 
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;
+    double position_unchanged = 0; int isX=0;
     double position_bar =
       position_bar_sign * fabs(hitTimeDiff) * v / 2;
     if (hcalGeometry.layerIsHorizontal(hitPosEnd.getLayer())) {
+      position_unchanged = position.X();
+      isX=1;
       position.SetX(position_bar);
     } else {
+      position_unchanged = position.Y();
+      isX=0;
       position.SetY(position_bar);
     }
+    //std::cout << "position unchanged " << position_unchanged << " isx " << isX << std::endl;
+    //std::cout << "newposition " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
 
     // TODO: switch unique hit time for this pulse
     double hitTime = (hitPosEnd.getTime() + hitNegEnd.getTime());
 
-    ldmx::HcalDigiID digi_id_pos(hitPosEnd.getSection(), hitPosEnd.getLayer(), hitPosEnd.getStrip(), hitPosEnd.getEnd());
-    std::cout << "meanshift " <<  conditions.toaCalib(digi_id_pos.id(), 1) << std::endl;
-    std::cout << "hittime pos " << hitPosEnd.getTime() << " neg " << hitNegEnd.getTime() << " bar sign " << " diff " << hitTimeDiff << std::endl;
-    std::cout << "strip " << id.strip() << " layer " << id.layer() << " center position " << position.X() << " " << position.Y() << " " << position.Z() << std::endl;
-    
     // amplitude and PEs
     double num_mips_equivalent = (hitPosEnd.getAmplitude() + hitNegEnd.getAmplitude());
     double PEs = (hitPosEnd.getPE() + hitNegEnd.getPE());
@@ -152,7 +169,9 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     recHit.setMinPE(std::min(hitPosEnd.getPE(),hitNegEnd.getPE()));
     recHit.setAmplitude(num_mips_equivalent);
     recHit.setEnergy(reconstructed_energy);
-    recHit.setTime(hitTime);
+    recHit.setTime(hitTimeDiff);
+    recHit.setTimeDiff(hitPosEnd.getTime() - hitNegEnd.getTime());
+    recHit.setPositionUnchanged(position_unchanged, isX);
     doubleHcalRecHits.push_back(recHit);
   }
 
