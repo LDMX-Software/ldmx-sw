@@ -146,8 +146,6 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
 
     // amplitude/TOT reconstruction
     double num_mips_equivalent{0};
-    std::cout << "digi id " << digi.id() << std::endl;
-    std::cout << "bx shift "<<  conditions.toaCalib(digi.id(), 0) << std::endl;
     auto [toa, sum_adc, sum_tot] =
       extract_measurements(digi, conditions.adcPedestal(digi.id()), conditions.toaCalib(digi.id(), 0));
     auto is_adc = conditions.is_adc(digi.id(), sum_tot);

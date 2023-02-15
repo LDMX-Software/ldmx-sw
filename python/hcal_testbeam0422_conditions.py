@@ -33,7 +33,7 @@ tot_calib.validForever(f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/t
 toa_calib = SimpleCSVDoubleTableProvider("hcal_toa_calibration",
                                          ["bx_shift", "mean_shift"])
 toa_calib.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
-toa_calib.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_calibration/index_v1_0_0'
+toa_calib.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_calibration/index_v1_0_0.csv'
 
 from .conditions import HcalReconConditionsProvider
 HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
