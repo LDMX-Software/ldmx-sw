@@ -1,5 +1,6 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
+from LDMX.Tracking.make_path import makeDetectorPath
 
 
 class DigitizationProcessor(Producer):
@@ -42,7 +43,7 @@ class DigitizationProcessor(Producer):
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
         self.out_collection = 'OutputMeasurements'
-
+        self.detector = makeDetectorPath('ldmx-det-v14')
 
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
