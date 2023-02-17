@@ -69,7 +69,7 @@ setup_geant4_target()
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
   ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
-  
+  ${PROJECT_SOURCE_DIR}/src/Tracking/dqm/[a-zA-z]*.cxx
 )
 
 setup_library(module Tracking
