@@ -37,7 +37,9 @@ G4ProcessManager* GammaPhysics::GetGammaProcessManager() const {
 
 void GammaPhysics::SetPhotonNuclearAsFirstProcess() const {
   auto processManager{GetGammaProcessManager()};
+  // Get the process list associated with the gamma.
   const auto processes{processManager->GetProcessList()};
+
   for (int i{0}; i < processes->size(); ++i) {
     const auto process{(*processes)[i]};
     const auto processName{process->GetProcessName()};
@@ -48,19 +50,16 @@ void GammaPhysics::SetPhotonNuclearAsFirstProcess() const {
   }
 }
 void GammaPhysics::ConstructProcess() {
-  G4ProcessManager* pmanager = GetGammaProcessManager();
-
-  // Get the process list associated with the gamma.
-  G4ProcessVector* vProcess = pmanager->GetProcessList();
+  G4ProcessManager* processManager = GetGammaProcessManager();
 
   auto pn = PhotonuclearModel::Factory::get().make(
       modelParameters.getParameter<std::string>("class_name"),
       modelParameters.getParameter<std::string>("instance_name"),
       modelParameters);
   pn->removeExistingModel(processManager);
-  pn->ConstructModel(processManager);
+  pn->ConstructGammaProcess(processManager);
   SetPhotonNuclearAsFirstProcess();
   // Add the gamma -> mumu to the physics list.
-  pmanager->AddDiscreteProcess(&gammaConvProcess);
+  processManager->AddDiscreteProcess(&gammaConvProcess);
 }
 }  // namespace simcore

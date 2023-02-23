@@ -15,7 +15,7 @@
 #include "G4ProcessManager.hh"
 #include "G4VPhysicsConstructor.hh"
 #include "G4VProcess.hh"
-
+#include "SimCore/PhotonuclearModel.h"
 namespace simcore {
 
 /**
