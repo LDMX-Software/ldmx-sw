@@ -9,6 +9,13 @@
 namespace simcore {
 class PhotonuclearModel {
  public:
+  PhotonuclearModel(const std::string& name,
+                    const framework::config::Parameters& parameters) = default;
+  virtual ~PhotonuclearModel() = default;
+  using Factory =
+      ::simcore::Factory<PhotonuclearModel, std::shared_ptr<PhotonuclearModel>,
+                         const std::string&,
+                         const framework::config::Parameters&>;
 };
 }  // namespace simcore
 
