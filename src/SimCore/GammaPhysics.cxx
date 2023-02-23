@@ -53,6 +53,12 @@ void GammaPhysics::ConstructProcess() {
   // Get the process list associated with the gamma.
   G4ProcessVector* vProcess = pmanager->GetProcessList();
 
+  auto pn = PhotonuclearModel::Factory::get().make(
+      modelParameters.getParameter<std::string>("class_name"),
+      modelParameters.getParameter<std::string>("instance_name"),
+      modelParameters);
+  pn->removeExistingModel(processManager);
+  pn->ConstructModel(processManager);
   SetPhotonNuclearAsFirstProcess();
   // Add the gamma -> mumu to the physics list.
   pmanager->AddDiscreteProcess(&gammaConvProcess);
