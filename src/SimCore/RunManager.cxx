@@ -12,16 +12,15 @@
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //for process name
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/G4User/EventAction.h"
+#include "SimCore/G4User/PrimaryGeneratorAction.h"
+#include "SimCore/G4User/RunAction.h"
+#include "SimCore/G4User/StackingAction.h"
+#include "SimCore/G4User/SteppingAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/XsecBiasingOperator.h"
-
-#include "SimCore/G4User/PrimaryGeneratorAction.h"
-#include "SimCore/G4User/SteppingAction.h"
-#include "SimCore/G4User/EventAction.h"
-#include "SimCore/G4User/RunAction.h"
-#include "SimCore/G4User/StackingAction.h"
-#include "SimCore/G4User/TrackingAction.h"
 
 //------------//
 //   Geant4   //
@@ -62,7 +61,7 @@ void RunManager::setupPhysics() {
     pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
   }
 
-  pList->RegisterPhysics(new GammaPhysics);
+  pList->RegisterPhysics(new GammaPhysics{"GammaPhysics", parameters_});
   pList->RegisterPhysics(new APrimePhysics(
       parameters_.getParameter<framework::config::Parameters>("dark_brem")));
 
@@ -86,7 +85,8 @@ void RunManager::setupPhysics() {
     // specify which particles are going to be biased
     //  this will put a biasing interface wrapper around *all* processes
     //  associated with these particles
-    simcore::XsecBiasingOperator::Factory::get().apply([biasingPhysics](auto bop) {
+    simcore::XsecBiasingOperator::Factory::get().apply([biasingPhysics](
+                                                           auto bop) {
       std::cout << "[ RunManager ]: Biasing operator '" << bop->GetName()
                 << "' set to bias " << bop->getParticleToBias() << std::endl;
       biasingPhysics->Bias(bop->getParticleToBias());
@@ -156,7 +156,7 @@ void RunManager::Initialize() {
       } else if (type == simcore::TYPE::STACKING) {
         stacking_action->registerAction(ua.get());
       } else {
-        EXCEPTION_RAISE("ActionType","Action type does not exist.");
+        EXCEPTION_RAISE("ActionType", "Action type does not exist.");
       }
     }
   }
@@ -170,7 +170,8 @@ void RunManager::TerminateOneEvent() {
   // reactivate any process that contains the G4DarkBremmstrahlung name
   // this covers both cases where the process is biased and not
   static auto reactivate_dark_brem = [](G4ProcessManager* pman) {
-    for (std::size_t i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
+    for (std::size_t i_proc{0}; i_proc < pman->GetProcessList()->size();
+         i_proc++) {
       G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
       if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
         pman->SetProcessActivation(p, true);
