@@ -50,6 +50,15 @@ class GammaPhysics : public G4VPhysicsConstructor {
    */
   void ConstructProcess();
 
+  /**
+   * Search the list for the process "photoNuclear".  When found,
+   * change the calling order so photonNuclear is called before
+   * EM processes. The biasing operator needs the photonNuclear
+   * process to be called first because the cross-section is
+   * needed to bias down other process.
+   */
+  void SetPhotonNuclearAsFirstProcess() const;
+
  private:
   /*
    * Returns the process manager object for the G4Gamma class from the list of
