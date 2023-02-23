@@ -9,9 +9,6 @@
 
 namespace simcore {
 
-GammaPhysics::GammaPhysics(const G4String& name)
-    : G4VPhysicsConstructor(name) {}
-
 GammaPhysics::~GammaPhysics() {}
 
 // needed for GEANT4 10.3.0 and later

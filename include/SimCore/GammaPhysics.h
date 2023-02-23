@@ -19,10 +19,13 @@
 namespace simcore {
 
 /**
- * @class GammaPhysics
- * @brief Adds extra gamma particle physics for simulation
+ * @class GammaPhysics @brief Adds extra gamma particle physics for simulation
+ * and sets up the photonuclear model to use from the configuration
  *
  * @note
+ *
+ * Is responsible for selecting the photonuclear model from the python
+ * configuration.
  * Currently adds gamma -> mumu reaction using the
  * <i>G4GammaConversionToMuons</i> process. Also changes ordering of
  * gamma processes such that photonNuclear and GammaToMuMu are called first.
@@ -32,7 +35,13 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * Class constructor.
    * @param name The name of the physics.
+   * @param parameters The python configuration
    */
+  GammaPhysics(const G4String& name,
+               const framework::config::Parameters& parameters)
+      : G4VPhysicsConstructor(name),
+        modelParameters{parameters.getParameter<framework::config::Parameters>(
+            "photonuclear_model")} {}
   GammaPhysics(const G4String& name = "GammaPhysics");
 
   /**
@@ -69,6 +78,10 @@ class GammaPhysics : public G4VPhysicsConstructor {
    * The gamma to muons process.
    */
   G4GammaConversionToMuons gammaConvProcess;
+  /**
+   * Parameters from the configuration to pass along to the photonuclear model.
+   */
+  framework::config::Parameters modelParameters;
 };
 
 }  // namespace simcore
