@@ -21,19 +21,55 @@
 namespace simcore {
 class PhotonuclearModel {
  public:
+  /**
+   * Base class does not take any parameters or do anything in particular, but
+   * any derived class may.
+   *
+   * @param[in] name unique instance name for this model
+   * @param[in] parameters python configuration
+   */
   PhotonuclearModel(const std::string& name,
-                    const framework::config::Parameters& parameters) = default;
+                    const framework::config::Parameters& parameters){};
   virtual ~PhotonuclearModel() = default;
+
+  /**
+   * The primary part of the model interface, responsible for adding the desired
+   * G4HadronicInteraction to the process manager for the G4Gamma class.
+   *
+   * @param[in] processManager the process manager for the G4Gamma class, passed
+   * in automatically by the GammaPhysics module.
+   */
   virtual void ConstructModel(G4ProcessManager* processManager) = 0;
+
+  /**
+   * The factory for PhotonuclearModels.
+   */
   using Factory =
       ::simcore::Factory<PhotonuclearModel, std::shared_ptr<PhotonuclearModel>,
                          const std::string&,
                          const framework::config::Parameters&>;
 
+  /**
+   * Removes any existing photonNuclear process from the process manager of the
+   * G4Gamma class. Should in general not be overridden for most models other
+   * than the default Bertini model (which just retains the default
+   * interaction).
+   *
+   * @param[in] processManager the process manager for the G4Gamma class, passed
+   * in automatically by the GammaPhysics module.
+   */
   virtual void removeExistingModel(G4ProcessManager* processManager);
 };
 }  // namespace simcore
 
+/**
+ * @macro DECLARE_PHOTONUCLEAR_MODEL
+ *
+ * Defines a builder for the declared derived photonuclear model class and
+ * registers it as a possible photonuclear model. If you are implementing your
+ * own photonuclear model class, make sure to invoke this macro in your
+ * implementation file.
+ */
 #define DECLARE_PHOTONUCLEAR_MODEL(CLASS)                                 \
   namespace {                                                             \
   auto v = ::simcore::PhotonuclearModel::Factory::get().declare<CLASS>(); \
