@@ -12,6 +12,7 @@ class PhotonuclearModel {
   PhotonuclearModel(const std::string& name,
                     const framework::config::Parameters& parameters) = default;
   virtual ~PhotonuclearModel() = default;
+  virtual void ConstructModel(G4ProcessManager* processManager) = 0;
   using Factory =
       ::simcore::Factory<PhotonuclearModel, std::shared_ptr<PhotonuclearModel>,
                          const std::string&,
