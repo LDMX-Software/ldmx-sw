@@ -6,6 +6,18 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "SimCore/Factory.h"
+/*
+** Dynamically loadable photonuclear models either from SimCore or external
+** libraries implementing this interface. For example implementations, see the
+** BertiniNothingHard model in SimCore.
+**
+** Allows for replacing the default Bertini model from Geant4 with any other
+** G4HadronicInteraction process. The library is used from within the
+** GammaPhysics module in SimCore which ensures that the removeExistingModel and
+** ConstructModel functions are called in the right order and that the
+** photonNuclear process is located in the right part of the G4Gamma process
+** list.
+*/
 namespace simcore {
 class PhotonuclearModel {
  public:
