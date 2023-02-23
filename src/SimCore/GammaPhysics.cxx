@@ -38,25 +38,25 @@ G4ProcessManager* GammaPhysics::GetGammaProcessManager() const {
   }
 }
 
+void GammaPhysics::SetPhotonNuclearAsFirstProcess() const {
+  auto processManager{GetGammaProcessManager()};
+  const auto processes{processManager->GetProcessList()};
+  for (int i{0}; i < processes->size(); ++i) {
+    const auto process{(*processes)[i]};
+    const auto processName{process->GetProcessName()};
+    if (processName == "photonNuclear") {
+      processManager->SetProcessOrderingToFirst(
+          process, G4ProcessVectorDoItIndex::idxAll);
+    }
+  }
+}
 void GammaPhysics::ConstructProcess() {
   G4ProcessManager* pmanager = GetGammaProcessManager();
 
   // Get the process list associated with the gamma.
   G4ProcessVector* vProcess = pmanager->GetProcessList();
 
-  // Search the list for the process "photoNuclear".  When found,
-  // change the calling order so photonNuclear is called before
-  // EM processes. The biasing operator needs the photonNuclear
-  // process to be called first because the cross-section is
-  // needed to bias down other process.
-  for (int iProcess = 0; iProcess < vProcess->size(); ++iProcess) {
-    G4String processName = (*vProcess)[iProcess]->GetProcessName();
-    if (processName == "photonNuclear") {
-      pmanager->SetProcessOrderingToFirst((*vProcess)[iProcess],
-                                          G4ProcessVectorDoItIndex::idxAll);
-    }
-  }
-
+  SetPhotonNuclearAsFirstProcess();
   // Add the gamma -> mumu to the physics list.
   pmanager->AddDiscreteProcess(&gammaConvProcess);
 }
