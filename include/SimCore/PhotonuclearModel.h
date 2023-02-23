@@ -17,6 +17,8 @@ class PhotonuclearModel {
       ::simcore::Factory<PhotonuclearModel, std::shared_ptr<PhotonuclearModel>,
                          const std::string&,
                          const framework::config::Parameters&>;
+
+  virtual void removeExistingModel(G4ProcessManager* processManager);
 };
 }  // namespace simcore
 
