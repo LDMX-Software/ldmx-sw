@@ -51,6 +51,11 @@ class GammaPhysics : public G4VPhysicsConstructor {
   void ConstructProcess();
 
  private:
+  /*
+   * Returns the process manager object for the G4Gamma class from the list of
+   * Geant4 particles.
+   */
+  G4ProcessManager* GetGammaProcessManager() const;
   /**
    * The gamma to muons process.
    */
