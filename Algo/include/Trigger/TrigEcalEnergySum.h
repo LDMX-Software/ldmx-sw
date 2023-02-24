@@ -24,7 +24,9 @@ namespace trigger {
 class TrigEcalEnergySum : public framework::Producer {
  public:
   TrigEcalEnergySum(const std::string& name, framework::Process& process)
-      : framework::Producer(name, process) {}
+      : framework::Producer(name, process) {
+    //std::cout << "c++ initializing TrigEcalEnergySum" << std::endl;
+  }
 
   virtual void configure(framework::config::Parameters& ps);
 

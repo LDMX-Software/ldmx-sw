@@ -30,4 +30,12 @@ class TrigEcalClusterProducer(Producer) :
         super().__init__(instance_name , 'trigger::TrigEcalClusterProducer','Trigger')
         self.hitCollName = "ecalTrigDigis"
         self.clusterCollName = "ecalTrigClusters"
- 
+
+class Tester(Producer) :
+    """Configuration for Tester
+    """
+    def __init__(self, instance_name = 'myTester') :
+        print("Initializing myTester python")
+        super().__init__(instance_name , 'trigger::Tester','Trigger')
+        print("Finished initializing myTester python")
+

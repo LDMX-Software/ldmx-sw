@@ -1,6 +1,6 @@
 #include "Trigger/DumpFileWriter.h"
 
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 
@@ -12,8 +12,8 @@ void DumpFileWriter::analyze(const framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   if (!event.exists("ecalTrigDigis")) return;
   auto ecalTrigDigis{

@@ -4,7 +4,7 @@
 #include "Trigger/Event/TrigCaloHit.h"
 #include "Trigger/Event/TrigCaloCluster.h"
 
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 
@@ -20,8 +20,8 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   if (!event.exists(hitCollName_)) return;
   auto ecalTrigDigis{
@@ -36,9 +36,10 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
               secondOrderEnergyCorrection_;
     
     double x, y, z;
-    const auto center_ecalID = geom.centerInTriggerCell(tid);
-    hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
-    std::tie(x,y) = geom.globalPosition( tid );
+    // const auto center_ecalID = geom.centerInTriggerCell(tid);
+    // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
+    // std::tie(x,y) = geom.globalPosition( tid );
+    std::tie(x,y,z) = geom.globalPosition( tid );
 
     // produce Hit object for clustering class
     Hit hit;
@@ -59,8 +60,8 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
     for(int imod=0; imod<7; imod++){
       for(int icell=0; icell<48; icell++){
         ldmx::EcalTriggerID id(0, imod, icell);
-        auto xy = geom.globalPosition( id );
-        myGeo.AddTP(id.raw(), icell, imod, xy.first, xy.second);
+        auto [xx,yy,zz] = geom.globalPosition( id );
+        myGeo.AddTP(id.raw(), icell, imod, xx, yy);
       }
     }
     myGeo.Initialize();
