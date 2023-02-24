@@ -13,7 +13,7 @@
 #include "Trigger/Event/TrigCaloHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
 
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 

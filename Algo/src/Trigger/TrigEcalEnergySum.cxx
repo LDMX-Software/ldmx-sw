@@ -2,22 +2,25 @@
 
 #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
 #include "../../../Algo_HLS/Ecal/src/data.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 
 namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
+  //std::cout << "c++ configuring TrigEcalEnergySum" << std::endl;
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
 }
-  
+
 void TrigEcalEnergySum::produce(framework::Event& event) {
+  //std::cout << "c++ producing TrigEcalEnergySum" << std::endl;
+  
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   if (!event.exists(hitCollName_)) return;
   auto ecalTrigDigis{
@@ -35,7 +38,7 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
   for (const auto& trigDigi : ecalTrigDigis) {
     // HgcrocTrigDigi
 
-    ldmx::EcalTriggerID tid(trigDigi.getId() /*raw value*/);
+    ldmx::EcalTriggerID tid(trigDigi.getId() ); // raw value
     // compressed ECal digis are 8xADCs (HCal will be 4x)
     float sie = 8 * trigDigi.linearPrimitive() * gain *
                 mVtoMeV;  // in MeV, before layer corrections

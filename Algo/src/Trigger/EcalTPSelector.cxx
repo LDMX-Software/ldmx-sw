@@ -12,8 +12,8 @@ void EcalTPSelector::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   if (!event.exists(tpCollName_)) return;
   auto ecalTrigDigis{
@@ -140,13 +140,13 @@ void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double &x, double &y, dou
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalHexReadout& hexReadout = getCondition<ldmx::EcalHexReadout>(
-      ldmx::EcalHexReadout::CONDITIONS_OBJECT_NAME);
+  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   ldmx::EcalTriggerID tid(tp.getId());
-  const auto center_ecalID = geom.centerInTriggerCell(tid);
-  hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
-  std::tie(x,y) = geom.globalPosition( tid );
+  // const auto center_ecalID = geom.centerInTriggerCell(tid);
+  // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
+  std::tie(x,y,z) = geom.globalPosition( tid );
   e = primitiveToEnergy(tp.linearPrimitive(), tid.layer());
 }
 
