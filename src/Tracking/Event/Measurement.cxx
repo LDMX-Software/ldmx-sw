@@ -1,16 +1,11 @@
 #include "Tracking/Event/Measurement.h"
 
-#include "Tracking/Sim/TrackingUtils.h"
-
 ClassImp(ldmx::Measurement)
 
 namespace ldmx {
 Measurement::Measurement(const ldmx::SimTrackerHit& hit,
                          const float& sigma_u,
                          const float& sigma_v) {
-  // Get the layer ID.
-  layerid_ = tracking::sim::utils::getSensorID(hit);
-
   // Set the global positions
   x_ = hit.getPosition()[2];
   y_ = hit.getPosition()[0];
