@@ -43,7 +43,6 @@ if(BUILD_EVENT_ONLY)
                   name Event
                   dependencies ROOT::Core
                   SimCore::Event
-                  ActsCore
                   sources ${EVENT_SRC_FILES}
                   register_target)
 
