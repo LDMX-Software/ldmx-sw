@@ -11,10 +11,16 @@ Measurement::Measurement(const ldmx::SimTrackerHit& hit,
   y_ = hit.getPosition()[0];
   z_ = hit.getPosition()[1];
 
+  // Set the energy deposited 
   edep_ = hit.getEdep();
+
+  // Set the measurement time
   t_ = hit.getTime();
+
+  // Set the measurement ID
   id_ = hit.getID();
 
+  // Set the local covariances
   var_r_ = sigma_u * sigma_u;
   var_z_ = sigma_v * sigma_v;
 }
