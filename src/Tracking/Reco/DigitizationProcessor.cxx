@@ -226,9 +226,12 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (track_id_ > 0 && sim_hit.getTrackID() != track_id_) continue;
 
       ldmx::Measurement measurement(sim_hit);
+      
+      // Get the layer ID.
+      auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
 
       // Get the surface
-      auto hit_surface{ldmx_tg->getSurface(measurement.getLayer())};
+      auto hit_surface{ldmx_tg->getSurface(layer_id)};
 
       if (hit_surface) {
         // Transform from global to local coordinates.
