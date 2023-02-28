@@ -24,15 +24,18 @@
 
 #include "Tracking/Reco/TrackersTrackingGeometry.h"
 
+namespace ldmx {
+class Measurement;
+}
+
 namespace tracking::reco {
 
 class DigitizationProcessor : public framework::Producer {
  public:
   DigitizationProcessor(const std::string& name, framework::Process& process);
-  ~DigitizationProcessor();
+  ~DigitizationProcessor() = default;
 
   void onProcessStart() final override;
-  void onProcessEnd() final override;
 
   void configure(framework::config::Parameters& parameters) final override;
 
@@ -41,8 +44,16 @@ class DigitizationProcessor : public framework::Producer {
   /// The detector
   Acts::GeometryContext gctx_;
 
-  void digitizeHits(const std::vector<ldmx::SimTrackerHit>& sim_hits,
-                    std::vector<ldmx::LdmxSpacePoint*>& ldmxsps);
+  /**
+   * Does basic digitization of SimTrackerHits. For now, this simply uses the
+   * global coordinates (SimTrackerHit position) and hit surface to extract
+   * the local coordinates.  If specified, the local coordinates are smeared and
+   * the global coordinates are updated.
+   *
+   * @param sim_hits The collection of SimTrackerHits to digitize.
+   */
+  std::vector<ldmx::Measurement> digitizeHits(
+      const std::vector<ldmx::SimTrackerHit>& sim_hits);
 
   // TODO avoid copies and use references
   bool mergeSimHits(const std::vector<ldmx::SimTrackerHit>& sim_hits,
