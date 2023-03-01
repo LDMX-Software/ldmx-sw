@@ -647,7 +647,9 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
     
     std::sort(meas_for_seeds.begin(),
               meas_for_seeds.end(),
-              ldmx::Measurement::compareXLocation);
+              [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) { 
+                return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0]; 
+              });
 
     if (meas_for_seeds.size() < 5) {
       nmissing_++;

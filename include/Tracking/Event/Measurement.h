@@ -122,14 +122,10 @@ class Measurement {
   friend std::ostream& operator<<(std::ostream& output,
                                   const Measurement& measurement);
 
-  // TODO: This can be handled using an operator.
-  static bool compareXLocation(ldmx::Measurement& m1, ldmx::Measurement& m2) {
-    return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
-  }
-
-  
-
  private:
+
+    
+
   /// The global position in x (mm).
   float x_{0.};
   /// The global position in x (mm).
