@@ -19,11 +19,11 @@ class Measurement {
    * are optional.
    *
    * @param hit The SimTrackerHit used to set the initial Measurement values.
-   * @param v_r cov(U, U)
-   * @param v_z cov(V, V)
+   * @param cov_uu cov(U, U)
+   * @param cov_vv cov(V, V)
    */
-  Measurement(const ldmx::SimTrackerHit& hit, const float& v_r = 0.05,
-              const float& v_z = 1.0);
+  Measurement(const ldmx::SimTrackerHit& hit, const float& cov_uu = 0.05,
+              const float& cov_vv = 1.0);
 
   /// Default destructor
   ~Measurement() = default;
@@ -67,18 +67,18 @@ class Measurement {
   /**
    * Set cov(U,U) and cov(V, V).
    *
-   * @param v_r cov(U, U).
-   * @param v_z cov(V, V).
+   * @param cov_uu cov(U, U).
+   * @param cov_vv cov(V, V).
    */
-  void setLocalCovariance(const float& v_r, const float& v_z) {
-    var_r_ = v_r;
-    var_z_ = v_z;
+  void setLocalCovariance(const float& cov_uu, const float& cov_vv) {
+    cov_uu_ = cov_uu;
+    cov_vv_ = cov_vv;
   }
 
   /// @return The covariance of the local coordinates as an array { cov(U, U),
   /// cov(V, V) }.
   [[nodiscard]] std::array<float, 2> getLocalCovariance() const {
-    return std::array<float, 2>{var_r_, var_z_};
+    return std::array<float, 2>{cov_uu_, cov_vv_};
   };
 
   /**
@@ -96,22 +96,38 @@ class Measurement {
    *
    * @param layerid The layer ID of the sensor associated with this measurement.
    */
-  void setLayer(const int& layerid) { layerid_ = layerid; };
+  void setLayerID(const int& layerid) {
+    layerid_ = layerid;
+    layer_ = ((layerid_ / 100) % 10 - 1) * 2 + layerid % 2;
+  };
 
   /// @return The layer ID of the sensor associated with this measurement.
-  [[nodiscard]] int getLayer() const { return layerid_; };
+  [[nodiscard]] int getLayerID() const { return layerid_; };
 
-  // TODO: This is confusing ... the name should be changed.
-  int getLyID() const {
-    int lyID = (getLayer() / 100) % 10;
-    int sID = getLayer() % 2;
-    return (lyID - 1) * 2 + sID;
-  }
+  /// @return The layer number internal to the tracker.
+  int getLayer() const { return layer_; }
+
+  /**
+   * Overload the stream insertion operator to output a string representation of
+   * this Measurement.
+   *
+   * @param[in] output The output stream where the string representation will be
+   *  inserted.
+   * @param[in] measurement The Measurement object to print.
+   *
+   * @return[out] An ostream object with the string representation of
+   * Measurement.
+   *
+   */
+  friend std::ostream& operator<<(std::ostream& output,
+                                  const Measurement& measurement);
 
   // TODO: This can be handled using an operator.
   static bool compareXLocation(ldmx::Measurement& m1, ldmx::Measurement& m2) {
     return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
   }
+
+  
 
  private:
   /// The global position in x (mm).
@@ -128,12 +144,14 @@ class Measurement {
   float v_{0.};
   /// The ID of the sensor where the measurement took place.
   int layerid_{0};
+  /// The layer number internal to the tracker.
+  int layer_{0};
   /// The energy deposited in the sensor where the measurement took place.
   float edep_{0.};
   /// cov(U, U)
-  float var_r_{0.};
+  float cov_uu_{0.};
   /// cov(V, V)
-  float var_z_{0.};
+  float cov_vv_{0.};
   /// The ID of the hit.
   int id_{0};
 
