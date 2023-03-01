@@ -229,15 +229,13 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       
       // Get the layer ID.
       auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
+      measurement.setLayerID(layer_id); 
 
       // Get the surface
       auto hit_surface{ldmx_tg->getSurface(layer_id)};
 
       if (hit_surface) {
         // Transform from global to local coordinates.
-        ldmx_log(debug) << "Global hit position on layer::"
-                        << measurement.getLayer();
-        //<< measurement.getGlobalPosition();
         // hit_surface->toStream(gctx_, std::cout);
         ldmx_log(debug) << "Local to global" << std::endl
                         << hit_surface->transform(gctx_).rotation() << std::endl
@@ -257,7 +255,6 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                           .value();
         } catch (const std::exception& e) {
           std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
-          // std::cout << measurement.getGlobalPosition() << std::endl;
           continue;
         }
 
