@@ -41,18 +41,18 @@ class TrigCaloCluster {
   void setDepth(int d){ depth_=d; }
   void setNTP(int n){ nTP_=n; }
 
-  float x(){ return x_; }
-  float y(){ return y_; }
-  float z(){ return z_; }
-  float e(){ return e_; }
-  float xe(){ return xe_; }
-  float ye(){ return ye_; }
-  float ze(){ return ze_; }
-  float energy(){ return e_; }
-  float dxdz(){ return dxdz_; }
-  float dydz(){ return dydz_; }
-  int nTP(){ return nTP_; }
-  int depth(){ return depth_; }
+  float x() const { return x_; }
+  float y() const { return y_; }
+  float z() const { return z_; }
+  float e() const { return e_; }
+  float xe() const { return xe_; }
+  float ye() const { return ye_; }
+  float ze() const { return ze_; }
+  float energy() const { return e_; }
+  float dxdz() const { return dxdz_; }
+  float dydz() const { return dydz_; }
+  int nTP() const { return nTP_; }
+  int depth() const { return depth_; }
   
  private:
   
