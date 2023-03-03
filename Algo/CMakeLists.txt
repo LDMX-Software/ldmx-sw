@@ -19,6 +19,8 @@ if(BUILD_EVENT_ONLY)
                          class "TrigCaloHit" type "collection" )
   register_event_object( module_path "Trigger/Event" namespace "trigger" 
                          class "TrigCaloCluster" type "collection" )
+  register_event_object( module_path "Trigger/Event" namespace "trigger" 
+                         class "TrigParticle" type "collection" )
   
   # Generate the files needed to build the event classes.
   setup_library(module Trigger name Event

@@ -1,7 +1,8 @@
 #include "Trigger/TrigElectronProducer.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "SimCore/Event/SimParticle.h"
+// #include "SimCore/Event/SimParticle.h"
 #include "Trigger/Event/TrigCaloCluster.h"
+#include "Trigger/Event/TrigParticle.h"
 #include "DetDescr/EcalGeometry.h"
 
 namespace trigger {
@@ -34,9 +35,11 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // https://github.com/LDMX-Software/ldmx-analysis/blob/ch/dev/src/TriggerAnalyzer.cxx
   }
 
-  std::vector<ldmx::SimParticle> eles;
+  // std::vector<ldmx::SimParticle> eles;
+  TrigParticleCollection eles;
   for(const auto &clus : ecalClusters){
-    ldmx::SimParticle el;
+    TrigParticle el;
+    // ldmx::SimParticle el;
 
     const float dX = clus.x() - xT;
     float R = clus.e()*(11500/4000.); // convert 11.5m/4GeV (in mm/MeV)
@@ -49,13 +52,17 @@ void TrigElectronProducer::produce(framework::Event& event) {
     float pred_pz = sqrt(std::max(pow(clus.e(),2) - (pow(pred_px,2)+pow(pred_py,2)),0.));
 
     // produce el
-    el.setEnergy(clus.e());
-    el.setPdgID(11);
-    el.setCharge(-1);
-    el.setMass(0.000511);
-    el.setVertex(0, xT, yT);
-    el.setEndPoint(clus.x(), clus.y(), clus.z());
-    el.setMomentum(pred_px, pred_py, pred_pz);
+    Point targ(0, xT, yT);
+    LorentzVector p4(pred_px, pred_py, pred_pz, clus.e());
+    eles.emplace_back(p4, targ, 11);
+    //el.setEndPoint(clus.x(), clus.y(), clus.z()); how to handle?
+
+    // el.setEnergy(clus.e());
+    // el.setPdgID(11);
+    // el.setCharge(-1);
+    // el.setMass(0.000511);
+    // el.setVertex(0, xT, yT);
+    // el.setMomentum(pred_px, pred_py, pred_pz);
     eles.push_back(el);
   }
   event.add(eleCollName_, eles);
