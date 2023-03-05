@@ -166,7 +166,7 @@ private:
    * Did the primary particle enter the tagger region? Will be false unless
    * the TaggerVetoFilter is used.
    */
-  bool primary_entered_tagger_region{false};
+  bool primary_entered_tagger_region_{false};
 };
 } // namespace simcore
 
