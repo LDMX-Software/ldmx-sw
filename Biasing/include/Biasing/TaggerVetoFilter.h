@@ -57,7 +57,11 @@ class TaggerVetoFilter : public simcore::UserAction {
   /// Energy below which an incident electron should be vetoed.
   double threshold_{0};
 
-};  // TaggerVetoFilter
+  // Should the EndOfEventAction reject events where the primary particle never
+  // entered the tagger region?
+  bool reject_primaries_missing_tagger_{true};
+
+}; // TaggerVetoFilter
 
 }  // namespace biasing
 
