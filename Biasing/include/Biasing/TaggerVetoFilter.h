@@ -42,6 +42,14 @@ class TaggerVetoFilter : public simcore::UserAction {
   ~TaggerVetoFilter();
 
   /**
+   *
+   * Action called at the end of an event to veto events where the primary
+   * particle never entered the tagger region.
+   *
+   */
+
+  void EndOfEventAction(const G4Event *) final override;
+  /**
    * Stepping action called when a step is taken during tracking of
    * a particle.
    *
