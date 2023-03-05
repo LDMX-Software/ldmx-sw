@@ -45,6 +45,7 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
       region.compareTo("tagger") != 0)
     return;
 
+  getEventInfo()->setPrimaryEnteredTaggerRegion();
   // If the energy of the particle falls below threshold, stop
   // processing the event.
   if (auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
