@@ -9,7 +9,7 @@ namespace simcore {
  * Encapsulates user defined information associated with a Geant4 event.
  */
 class UserEventInformation : public G4VUserEventInformation {
- public:
+public:
   /// Constructor
   UserEventInformation();
 
@@ -166,7 +166,7 @@ private:
    * Did the primary particle enter the tagger region? Will be false unless
    * the TaggerVetoFilter is used.
    */
-  bool primary_entered_tagger_{false};
+  bool primary_entered_tagger_region{false};
 };
 } // namespace simcore
 
