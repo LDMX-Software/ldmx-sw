@@ -13,6 +13,8 @@ TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
                                    framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
+  reject_primaries_missing_tagger_ =
+      parameters.getParameter<bool>("reject_events_missing_tagger");
 }
 
 TaggerVetoFilter::~TaggerVetoFilter() {}
