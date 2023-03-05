@@ -117,7 +117,7 @@ public:
    *
    * @param[in] status true if it did
    */
-  bool setPrimaryEnteredTheTaggerRegion(bool status = true) {
+  bool setPrimaryEnteredTaggerRegion(bool status = true) {
     primary_entered_tagger_region_ = status;
   }
 
