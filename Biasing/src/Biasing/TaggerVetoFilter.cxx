@@ -9,8 +9,8 @@
 
 namespace biasing {
 
-TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
-                                   framework::config::Parameters& parameters)
+TaggerVetoFilter::TaggerVetoFilter(const std::string &name,
+                                   framework::config::Parameters &parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
   reject_primaries_missing_tagger_ =
@@ -19,11 +19,12 @@ TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
 
 TaggerVetoFilter::~TaggerVetoFilter() {}
 
+void TaggerVetoFilter::BeginOfEventAction(const G4Event *) {
+  primary_entered_tagger_region_ = false;
+}
 void TaggerVetoFilter::EndOfEventAction(const G4Event *) {
-  if (reject_primaries_missing_tagger_) {
-    if (!getEventInfo()->primaryEnteredTaggerRegion()) {
-      G4RunManager::GetRunManager()->AbortEvent();
-    }
+  if (reject_primaries_missing_tagger_ && !primary_entered_tagger_region_) {
+    G4RunManager::GetRunManager()->AbortEvent();
   }
 }
 void TaggerVetoFilter::stepping(const G4Step *step) {
@@ -31,7 +32,8 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   auto track{step->GetTrack()};
 
   // Only process the primary electron track
-  if (track->GetParentID() != 0) return;
+  if (track->GetParentID() != 0)
+    return;
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
@@ -45,7 +47,7 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
       region.compareTo("tagger") != 0)
     return;
 
-  getEventInfo()->setPrimaryEnteredTaggerRegion();
+  primary_entered_tagger_region_ = true;
   // If the energy of the particle falls below threshold, stop
   // processing the event.
   if (auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
@@ -63,6 +65,6 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   }
 }
 
-}  // namespace biasing
+} // namespace biasing
 
 DECLARE_ACTION(biasing, TaggerVetoFilter)
