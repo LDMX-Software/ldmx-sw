@@ -9,7 +9,7 @@ namespace simcore {
  * Encapsulates user defined information associated with a Geant4 event.
  */
 class UserEventInformation : public G4VUserEventInformation {
- public:
+public:
   /// Constructor
   UserEventInformation();
 
@@ -101,7 +101,27 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool wasLastStepEN() const { return last_step_en_; }
 
- private:
+  /**
+   * Did the primary particle enter the tagger region? Will be false unless the
+   * TaggerVetoFilter is used.
+   *
+   * @returns true if a filter has checked that the primary particle has entered
+   * the tagger region
+   */
+  bool primaryEnteredTaggerRegion() const {
+    return primary_entered_tagger_region_;
+  }
+
+  /**
+   * Tell us if the primary particle has entered the tagger region
+   *
+   * @param[in] status true if it did
+   */
+  bool setPrimaryEnteredTaggerRegion(bool status = true) {
+    primary_entered_tagger_region_ = status;
+  }
+
+private:
   /// Total number of brem candidates in the event
   int bremCandidateCount_{0};
 
@@ -141,7 +161,13 @@ class UserEventInformation : public G4VUserEventInformation {
    * Was the most recent step a electron-nuclear interaction?
    */
   bool last_step_en_{false};
-};
-}  // namespace simcore
 
-#endif  // SIMCORE_USEREVENTINFORMATION_H
+  /**
+   * Did the primary particle enter the tagger region? Will be false unless
+   * the TaggerVetoFilter is used.
+   */
+  bool primary_entered_tagger_region_{false};
+};
+} // namespace simcore
+
+#endif // SIMCORE_USEREVENTINFORMATION_H
