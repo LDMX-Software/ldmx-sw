@@ -3,6 +3,7 @@
 
 #include <G4ProcessManager.hh>
 
+#include "Framework/Configure/Parameters.h"
 #include "SimCore/PhotonuclearModel.h"
 namespace simcore {
 
