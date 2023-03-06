@@ -40,3 +40,9 @@ class TrigElectronProducer(Producer) :
         self.clusterCollName = "ecalTrigClusters"
         self.eleCollName = "trigElectrons"
 
+class NtupleWriter(Producer) :
+    """Configuration for Tester
+    """
+    def __init__(self, instance_name = 'myNtupleWriter') :
+        super().__init__(instance_name , 'trigger::NtupleWriter','Trigger')
+

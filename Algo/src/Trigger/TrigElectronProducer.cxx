@@ -52,10 +52,11 @@ void TrigElectronProducer::produce(framework::Event& event) {
     float pred_pz = sqrt(std::max(pow(clus.e(),2) - (pow(pred_px,2)+pow(pred_py,2)),0.));
 
     // produce el
-    Point targ(0, xT, yT);
+    Point targ(xT, yT, 0);
     LorentzVector p4(pred_px, pred_py, pred_pz, clus.e());
     eles.emplace_back(p4, targ, 11);
-    //el.setEndPoint(clus.x(), clus.y(), clus.z()); how to handle?
+    Point calo(clus.x(), clus.y(), clus.z());
+    eles.back().setEndPoint(calo); //clus.x(), clus.y(), clus.z()); how to handle?
 
     // el.setEnergy(clus.e());
     // el.setPdgID(11);
@@ -63,7 +64,7 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // el.setMass(0.000511);
     // el.setVertex(0, xT, yT);
     // el.setMomentum(pred_px, pred_py, pred_pz);
-    eles.push_back(el);
+    // eles.push_back(el);
   }
   event.add(eleCollName_, eles);
 

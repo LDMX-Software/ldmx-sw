@@ -26,6 +26,7 @@ class TrigParticle {
  public:
 
   TrigParticle() = default;
+  TrigParticle(LorentzVector p4);
   TrigParticle(LorentzVector p4, Point vtx);
   TrigParticle(LorentzVector p4, Point vtx, int pdgId);
 
@@ -47,6 +48,7 @@ class TrigParticle {
   double vx() const { return vtx_.X(); }
   double vy() const { return vtx_.Y(); }
   double vz() const { return vtx_.Z(); }
+  const Point& endPoint() const { return end_; }
 
   // setters
   void setP4(const LorentzVector& p4) {
@@ -54,6 +56,9 @@ class TrigParticle {
   }
   void setVertex(const Point& v) {
       vtx_ = v;
+  }
+  void setEndPoint(const Point& v) {
+      end_ = v;
   }
 
   // set HW values
@@ -72,8 +77,9 @@ class TrigParticle {
   
  private:
 
-  Point vtx_;
   XYZTLorentzVector p4_;
+  Point vtx_;
+  Point end_;
   int pdgId_;
 
   int hwPt_;
