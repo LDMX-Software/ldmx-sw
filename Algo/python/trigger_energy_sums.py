@@ -20,8 +20,9 @@ class TrigHcalEnergySum(Producer) :
     """
     def __init__(self, instance_name = 'myTrigHcalEnergySum') :
         super().__init__(instance_name , 'trigger::TrigHcalEnergySum','Trigger')
-        self.quadCollName = "hcalOneEndedTrigQuads"
+        self.quadCollName = "hcalTrigPrimDigiSTQs"
         self.combinedQuadCollName = "hcalTrigQuads"
+        self.inputProc = "" # name of the process where the STQs are built
 
 class TrigEcalClusterProducer(Producer) :
     """Configuration for TrigEcalClusterProducer
@@ -34,8 +35,9 @@ class TrigEcalClusterProducer(Producer) :
 class TrigElectronProducer(Producer) :
     """Configuration for Tester
     """
-    def __init__(self, instance_name = 'myTrigElectronProducer') :
+    def __init__(self, instance_name = 'myTrigElectronProducer', outPath="./ntuple.root") :
         super().__init__(instance_name , 'trigger::TrigElectronProducer','Trigger')
+        self.outPath = outPath
         self.scoringPlaneCollName = "TargetScoringPlaneHits"
         self.clusterCollName = "ecalTrigClusters"
         self.eleCollName = "trigElectrons"

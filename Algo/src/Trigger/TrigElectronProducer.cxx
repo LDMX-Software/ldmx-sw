@@ -48,7 +48,7 @@ void TrigElectronProducer::produce(framework::Event& event) {
     float b = (dX*dX+zd*zd)/(2*R*zd);
 
     float pred_px = clus.e() * (-b+a*sqrt(1+a*a-b*b))/(1+a*a);
-    float pred_py = (clus.y() - yT) * 16; //mev/mm
+    float pred_py = clus.e()/4e3 * (clus.y() - yT) * 13.3; //mev/mm
     float pred_pz = sqrt(std::max(pow(clus.e(),2) - (pow(pred_px,2)+pow(pred_py,2)),0.));
 
     // produce el
@@ -57,6 +57,8 @@ void TrigElectronProducer::produce(framework::Event& event) {
     eles.emplace_back(p4, targ, 11);
     Point calo(clus.x(), clus.y(), clus.z());
     eles.back().setEndPoint(calo); //clus.x(), clus.y(), clus.z()); how to handle?
+    eles.back().setClusTP(clus.nTP());
+    eles.back().setClusDepth(clus.depth()); 
 
     // el.setEnergy(clus.e());
     // el.setPdgID(11);

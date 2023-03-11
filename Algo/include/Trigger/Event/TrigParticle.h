@@ -3,6 +3,7 @@
 
 // ROOT
 #include "TObject.h"  //For ClassDef
+// #include "TrigCaloCluster.h"
 // #include "TLorentzVector.h"
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PositionVector3D.h"
@@ -49,6 +50,14 @@ class TrigParticle {
   double vy() const { return vtx_.Y(); }
   double vz() const { return vtx_.Z(); }
   const Point& endPoint() const { return end_; }
+  double endx() const { return end_.X(); }
+  double endy() const { return end_.Y(); }
+  double endz() const { return end_.Z(); }
+
+  // cluster access
+  int getClusTP() const { return emClusNTP_; }
+  int getClusDepth() const { return emClusDepth_; }
+  /* const TrigCaloCluster& getCluster() const {return clus_;} */
 
   // setters
   void setP4(const LorentzVector& p4) {
@@ -60,6 +69,12 @@ class TrigParticle {
   void setEndPoint(const Point& v) {
       end_ = v;
   }
+  void setClusTP(const int n){ emClusNTP_ = n; }
+  void setClusDepth(const int n){ emClusDepth_ = n; }
+
+  /* void setCluster(const TrigCaloCluster& c) { */
+  /*     clus_ = c; */
+  /* } */
 
   // set HW values
   void setHwPt(int pt) { hwPt_ = pt; }
@@ -77,16 +92,23 @@ class TrigParticle {
   
  private:
 
-  XYZTLorentzVector p4_;
-  Point vtx_;
-  Point end_;
-  int pdgId_;
+  XYZTLorentzVector p4_{};
+  /* TrigCaloCluster clus_; */
+  
+  Point vtx_{};
+  Point end_{};
+  int pdgId_{0};
 
-  int hwPt_;
-  int hwEta_;
-  int hwPhi_;
-  int hwQual_;
-  int hwIso_;
+  int hwPt_{0};
+  int hwEta_{0};
+  int hwPhi_{0};
+  int hwQual_{0};
+  int hwIso_{0};
+
+  // cluster attributes  
+  int emClusNTP_{0};
+  int emClusDepth_{0};
+  
   
   /// ROOT Dictionary class definition macro
   ClassDef(TrigParticle, 1);

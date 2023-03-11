@@ -6,6 +6,7 @@
 
 #include "TFile.h"
 // #include "TTree.h"
+using std::vector;
 
 namespace trigger {
 
@@ -22,9 +23,15 @@ class NtupleWriter : public framework::Producer {
   virtual void onProcessStart();
   virtual void onProcessEnd();
 
- /* private: */
+ private:
   TFile* outFile_{nullptr};
-  /* TTree* eventTree_{nullptr}; */
+  std::string tag_{"Events"};
+  std::string outPath_{"./ntuple.root"};
+  bool writeTruth_{true};
+  bool writeCluster_{true};
+  bool writeEle_{true};
+  bool writeEcalSums_{true};
+  bool writeHcalSums_{true};
   
 
 };

@@ -45,7 +45,7 @@ class EcalTPSelector : public framework::Producer {
 
   // helpers
   void decodeTP(ldmx::HgcrocTrigDigi tp, double &x, double &y, double &z, double &e);
-  double primitiveToEnergy(int tp, int layer);
+  /* double primitiveToEnergy(int tp, int layer); */
     
  private:
   // specific verbosity of this producer
@@ -63,16 +63,17 @@ class EcalTPSelector : public framework::Producer {
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py
   // ECal/src/EcalRecProducer.cxx
-  float gain_ = 320. / 0.1 / 1024;                                    // mV/ADC
-  float mVtoMeV_ = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV
-  std::vector<float> layerWeights = {
-      1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364,
-      17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990};
-  float secondOrderEnergyCorrection_ = 4000. / 4010.;
-  float mipSiEnergy_ = 0.130;
-  int hgc_compression_factor_ = 8;
+  /* float gain_ = 320. / 0.1 / 1024;                                    // mV/ADC */
+  /* float mVtoMeV_ = 0.130 / (37000.0 * (0.1602 / 1000.) * (1. / 0.1));  // MeV/mV */
+  /* std::vector<float> layerWeights = { */
+  /*     2.312, 4.312, 6.522, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915, */
+  /*     10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, */
+  /*     10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, */
+  /*     18.539, 18.539, 9.938}; */
+  /* float secondOrderEnergyCorrection_ = 4000. / 3940.5; */
+  /* float mipSiEnergy_ = 0.130; */
+  /* float adHoc_ = 1.0; // my adhoc correction factor, to match v14 :( */
+  /* int hgc_compression_factor_ = 8; */
 
 };
 }  // namespace trigger

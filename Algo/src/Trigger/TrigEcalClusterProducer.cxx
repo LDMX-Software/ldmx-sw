@@ -1,5 +1,6 @@
 #include "Trigger/TrigEcalClusterProducer.h"
 #include "Trigger/IdealClusterBuilder.h"
+#include "Trigger/TrigUtilities.h"
 
 #include "Trigger/Event/TrigCaloHit.h"
 #include "Trigger/Event/TrigCaloCluster.h"
@@ -30,10 +31,12 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
   std::vector<Hit> hits{};
   for (const auto& trigDigi : ecalTrigDigis) {
     ldmx::EcalTriggerID tid(trigDigi.getId());
-    float sie = hgc_compression_factor_ * trigDigi.linearPrimitive() *
-                gain_ * mVtoMeV_;  // in MeV, before layer corrections
-    float e = (sie / mipSiEnergy_ * layerWeights.at(tid.layer()) + sie) *
-              secondOrderEnergyCorrection_;
+    float e = ecalTpToE(trigDigi.linearPrimitive(), tid.layer());
+    
+    // float sie = hgc_compression_factor_ * trigDigi.linearPrimitive() *
+    //             gain_ * mVtoMeV_;  // in MeV, before layer corrections
+    // float e = (sie / mipSiEnergy_ * layerWeights.at(tid.layer()) + sie) *
+    //           secondOrderEnergyCorrection_;
     
     double x, y, z;
     // const auto center_ecalID = geom.centerInTriggerCell(tid);
