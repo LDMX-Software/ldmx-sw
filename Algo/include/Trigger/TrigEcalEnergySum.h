@@ -53,15 +53,15 @@ class TrigEcalEnergySum : public framework::Producer {
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py
   // ECal/src/EcalRecProducer.cxx
-  float gain = 320. / 0.1 / 1024;                                    // mV/ADC
-  float mVtoMeV = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV
-  std::vector<float> layerWeights = {
-      1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364,
-      17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990};
-  float secondOrderEnergyCorrection = 4000. / 4010.;
-  float mipSiEnergy = 0.130;
+  /* float gain = 320. / 0.1 / 1024;                                    // mV/ADC */
+  /* float mVtoMeV = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV */
+  /* std::vector<float> layerWeights = { */
+  /*     1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630, */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630, */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364, */
+  /*     17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990}; */
+  /* float secondOrderEnergyCorrection = 4000. / 4010.; */
+  /* float mipSiEnergy = 0.130; */
 
   // ClusterGeometry myGeo;
 };

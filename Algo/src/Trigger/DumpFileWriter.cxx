@@ -1,4 +1,5 @@
 #include "Trigger/DumpFileWriter.h"
+#include "Trigger/TrigUtilities.h"
 
 #include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
@@ -28,10 +29,11 @@ void DumpFileWriter::analyze(const framework::Event& event) {
 
     ldmx::EcalTriggerID tid(trigDigi.getId() /*raw value*/);
     // compressed ECal digis are 8xADCs (HCal will be 4x)
-    float sie = 8 * trigDigi.linearPrimitive() * gain *
-                mVtoMeV;  // in MeV, before layer corrections
-    float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
-              secondOrderEnergyCorrection;
+    float e = ecalTpToE(trigDigi.linearPrimitive(), tid.layer());
+    // float sie = 8 * trigDigi.linearPrimitive() * gain *
+    //             mVtoMeV;  // in MeV, before layer corrections
+    // float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
+    //           secondOrderEnergyCorrection;
 
     ldmx_int::EcalTP tp;
     // tp.fill( trigDigi.getId(), trigDigi.getPrimitive() );

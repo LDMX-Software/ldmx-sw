@@ -45,6 +45,7 @@ class TrigHcalEnergySum : public framework::Producer {
   int verbose_{0};
 
   // name of collection for trigger quads to be passed as input
+  std::string inProc_;
   std::string quadCollName_;
   std::string combinedQuadCollName_;
 

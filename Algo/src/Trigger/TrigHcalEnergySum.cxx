@@ -9,6 +9,7 @@
 namespace trigger {
 
 void TrigHcalEnergySum::configure(framework::config::Parameters& ps) {
+  inProc_ = ps.getParameter<std::string>("inputProc");
   quadCollName_ = ps.getParameter<std::string>("quadCollName");
   combinedQuadCollName_ = ps.getParameter<std::string>("combinedQuadCollName");
 }
@@ -37,13 +38,20 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   const hcal::HcalTriggerGeometry& trigGeom =
     getCondition<hcal::HcalTriggerGeometry>(hcal::HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 
-  if (!event.exists(quadCollName_)) return;
-  auto oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>(quadCollName_)};
+  // for(auto t : event.searchProducts("","","")) std::cout << t.name() << " " << t.passname() << " " << t.type() << std::endl;
+
+  if (!event.exists(quadCollName_, inProc_)){
+    //std::cout << "missing collection! : " << quadCollName_ << " " << inProc_ << std::endl;
+    return;
+  }
+
+  // auto oneEndedQuads{event.getObject<ldmx::CaloTrigPrimCollection>(quadCollName_)};
+  const std::vector<ldmx::CaloTrigPrim> oneEndedQuads = event.getCollection<ldmx::CaloTrigPrim>(quadCollName_, inProc_);
 
   //
   // sum bar ends to produce the combined quads
   std::map<int, ldmx::CaloTrigPrim> twoEndedQuadMap;
-  for (auto oneEndedQuad : oneEndedQuads) {
+  for (const auto &oneEndedQuad : oneEndedQuads) {
     const ldmx::HcalTriggerID end_id(oneEndedQuad.getId());
     ldmx::HcalTriggerID combo_id(end_id.section(), end_id.layer(), end_id.superstrip(), 2);
     auto ptr = twoEndedQuadMap.find(combo_id.raw());
