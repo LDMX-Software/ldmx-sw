@@ -42,6 +42,7 @@ if(BUILD_EVENT_ONLY)
     setup_library(module Tracking
                   name Event
                   dependencies ROOT::Core
+                  SimCore::Event
                   sources ${EVENT_SRC_FILES}
                   register_target)
 
