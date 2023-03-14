@@ -50,7 +50,7 @@ class BaseTrackingGeometry {
     return (pvol_a.GetTranslation().z() < pvol_b.GetTranslation().z());
   };
   
-  void ConvertG4Rot(const G4RotationMatrix& g4rot, Acts::RotationMatrix3& rot);
+  void ConvertG4Rot(const G4RotationMatrix* g4rot, Acts::RotationMatrix3& rot);
   Acts::Vector3 ConvertG4Pos(const G4ThreeVector& g4pos);
   
   void dumpGeometry(const std::string& outputDir);
