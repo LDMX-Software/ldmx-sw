@@ -373,7 +373,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     double xmeas = meas.getGlobalPosition()[0] - xOrigin;
 
     // Get the surface
-    const Acts::Surface* hit_surface = ldmx_tg->getSurface(meas.getLayer());
+    const Acts::Surface* hit_surface = ldmx_tg->getSurface(meas.getLayerID());
 
     // Get the global to local transformation
     auto rot = hit_surface->transform(gctx_).rotation();
@@ -586,8 +586,8 @@ bool SeedFinderProcessor::GroupStrips(
 
     if (std::find(strategy.begin(),
                   strategy.end(),
-                  meas.getLyID()) != strategy.end()) {
-      groups_map[meas.getLyID()].push_back(&meas);
+                  meas.getLayer()) != strategy.end()) {
+      groups_map[meas.getLayer()].push_back(&meas);
       found++;
     }
     
@@ -647,7 +647,9 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
     
     std::sort(meas_for_seeds.begin(),
               meas_for_seeds.end(),
-              ldmx::Measurement::compareXLocation);
+              [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) { 
+                return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0]; 
+              });
 
     if (meas_for_seeds.size() < 5) {
       nmissing_++;
