@@ -86,6 +86,7 @@ class SeedFinderProcessor(Producer):
         self.strategies = []
         self.input_hits_collection = 'TaggerSimHits'
         self.out_seed_collection = 'SeedTracks'
+        self.detector = makeDetectorPath('ldmx-det-v14')
 
 class CKFProcessor(Producer):
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.
