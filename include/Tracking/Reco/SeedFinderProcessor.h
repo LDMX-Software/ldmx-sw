@@ -128,6 +128,10 @@ namespace tracking {
     double processing_time_{0.};
     long nevents_{0};
     unsigned int  ntracks_{0};
+    
+    /// The path to the GDML description of the detector
+    std::string detector_; 
+
     /// The name of the output collection of seeds to be stored.
     std::string out_seed_collection_{"SeedTracks"};
     /// The name of the input hits collection to use in finding seeds..

@@ -53,9 +53,7 @@ SeedFinderProcessor::~SeedFinderProcessor() {}
 
 void SeedFinderProcessor::onProcessStart() {
   // Build the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      //"/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
-      "detector.gdml",
+  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(detector_,
       &gctx_, false);
 }
 
@@ -116,6 +114,9 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   bField_(0) = 0.;
   bField_(1) = 0.;
   bField_(2) = config_.bFieldInZ;
+
+  // Retrieve the path to the GDML description of the detector
+  detector_ = parameters.getParameter<std::string>("detector");
 
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "SeedTracks");
