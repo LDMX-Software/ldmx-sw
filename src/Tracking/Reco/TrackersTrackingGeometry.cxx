@@ -137,15 +137,12 @@ TrackersTrackingGeometry::buildTrackerVolume() {
   // Get the transform wrt the world volume in tracker frame
   Acts::Transform3 subDet_transform = GetTransform(*Tagger_, true);
 
-  if (debug_) {
-    std::cout << subDet_transform.translation() << std::endl;
-    std::cout << subDet_transform.rotation() << std::endl;
-  }
+  
 
   // Add 1mm to not make it sit on the first layer surface  -  Ask Omar if it's
   // OK
   Acts::Vector3 sub_det_position = {
-      subDet_transform.translation()(0) - 1,
+      subDet_transform.translation()(0) -1,
       subDet_transform.translation()(1),
       subDet_transform.translation()(2),
   };
@@ -172,6 +169,10 @@ TrackersTrackingGeometry::buildTrackerVolume() {
     std::cout << sub_det_position << std::endl;
     std::cout << "x_length " << x_length << " y_length " << y_length
               << " z_length " << z_length << std::endl;
+
+    std::cout << subDet_transform.translation() << std::endl;
+    std::cout << subDet_transform.rotation() << std::endl;
+  
   }
 
   subDetVolumeConfig.position = sub_det_position;

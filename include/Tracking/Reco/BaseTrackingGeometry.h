@@ -79,7 +79,7 @@ class BaseTrackingGeometry {
   //The rotation matrices to go from global to tracking frame.
   Acts::RotationMatrix3 x_rot_, y_rot_;
   Acts::GeometryContext* gctx_;
-  bool debug_;
+  bool debug_{false};
   std::shared_ptr<const Acts::TrackingGeometry> tGeometry_{nullptr};
   std::string gdml_{""};
   G4VPhysicalVolume* fWorldPhysVol_{nullptr};
