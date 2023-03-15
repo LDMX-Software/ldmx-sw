@@ -126,9 +126,7 @@ Acts::Transform3 BaseTrackingGeometry::GetTransform(
   
   Acts::RotationMatrix3 rotation;
   ConvertG4Rot(phex.GetRotation(), rotation);
-
-  Acts::Translation3 translation(pos);
-      
+  
   // rotate to the tracking frame
   if (toTrackingFrame) {
     pos(0) = phex.GetTranslation().z();
@@ -136,7 +134,9 @@ Acts::Transform3 BaseTrackingGeometry::GetTransform(
     pos(2) = phex.GetTranslation().y();
     rotation = x_rot_ * y_rot_ * rotation;
   }
-    
+
+  Acts::Translation3 translation(pos);
+  
   Acts::Transform3 transform(translation * rotation);
 
   return transform;
@@ -168,7 +168,7 @@ void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
   rot = Acts::RotationMatrix3::Identity();
   
   if (g4rot) {
-    
+
     rot(0, 0) = g4rot->xx();
     rot(0, 1) = g4rot->xy();
     rot(0, 2) = g4rot->xz();
@@ -180,6 +180,7 @@ void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
     rot(2, 0) = g4rot->zx();
     rot(2, 1) = g4rot->zy();
     rot(2, 2) = g4rot->zz();
+    
   }
     
 }
