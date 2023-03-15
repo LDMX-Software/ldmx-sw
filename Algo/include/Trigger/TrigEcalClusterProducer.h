@@ -8,6 +8,7 @@
 #define TRIGECALCLUSTERPRODUCER_H
 
 // LDMX Framework
+#include "TrigUtilities.h"
 #include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"

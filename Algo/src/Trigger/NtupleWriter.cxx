@@ -24,20 +24,48 @@ void NtupleWriter::produce(framework::Event& event) {
   inTag = "TargetScoringPlaneHits";
   if (writeTruth_ && event.exists(inTag)){
     const std::vector<ldmx::SimTrackerHit> hits = event.getCollection<ldmx::SimTrackerHit>(inTag);
-    ldmx::SimTrackerHit h; // the desired truth hit
+    ldmx::SimTrackerHit h, hMaxEle; // the desired truth hits
     for(const auto& hit : hits){
-      if(hit.getTrackID()!=1) continue;
-      if( !(abs(hit.getPdgID())==11) ) continue;
       auto xyz = hit.getPosition();
-      if( xyz[2]<0 || xyz[2]>1 ) continue; // select one sp
-      h = hit;
-      break;
+      if( xyz[2]>0 && xyz[2]<1 ){
+	if(hit.getTrackID()==1) h = hit;
+	if(hit.getPdgID()==11 && (hit.getEnergy() > hMaxEle.getEnergy())) hMaxEle = hit;
+      } else {
+	continue; // select one sp
+      }
     }
+    if (h.getPdgID()==0) h = hMaxEle; // save max energy in case track1 isn't found (A')
     std::string coll = "Truth";
     n.setVar(coll+"_e" ,  prec(h.getEnergy()) );
+    n.setVar(coll+"_x" , prec(h.getPosition()[0]) );
+    n.setVar(coll+"_y" , prec(h.getPosition()[1]) );
     n.setVar(coll+"_px" , prec(h.getMomentum()[0]) );
     n.setVar(coll+"_py" , prec(h.getMomentum()[1]) );
     n.setVar(coll+"_pz" , prec(h.getMomentum()[2]) );
+    n.setVar(coll+"_pdgId", h.getPdgID() );
+  }
+  inTag = "EcalScoringPlaneHits";
+  if (writeTruth_ && event.exists(inTag)){
+    const std::vector<ldmx::SimTrackerHit> hits = event.getCollection<ldmx::SimTrackerHit>(inTag);
+    ldmx::SimTrackerHit h, hMaxEle; // the desired truth hits
+    for(const auto& hit : hits){
+      auto xyz = hit.getPosition();
+      if( xyz[2]>239.99 && xyz[2]<240.01 ){
+	if(hit.getTrackID()==1) h = hit;
+	if(hit.getPdgID()==11 && (hit.getEnergy() > hMaxEle.getEnergy())) hMaxEle = hit;
+      } else {
+	continue; // select one sp
+      }
+    }
+    if (h.getPdgID()==0) h = hMaxEle; // save max energy in case track1 isn't found (A')
+    std::string coll = "TruthEcal";
+    n.setVar(coll+"_e" ,  prec(h.getEnergy()) );
+    n.setVar(coll+"_x" , prec(h.getPosition()[0]) );
+    n.setVar(coll+"_y" , prec(h.getPosition()[1]) );
+    n.setVar(coll+"_px" , prec(h.getMomentum()[0]) );
+    n.setVar(coll+"_py" , prec(h.getMomentum()[1]) );
+    n.setVar(coll+"_pz" , prec(h.getMomentum()[2]) );
+    n.setVar(coll+"_pdgId", h.getPdgID() );
   }
 
   inTag = "ecalTrigSums";
@@ -81,6 +109,8 @@ void NtupleWriter::produce(framework::Event& event) {
     int maxE = -1; float maxEVal=0;
     int maxPt = -1; float maxPtVal=0;
     vector<float> v_e (nEle);
+    vector<float> v_eC(nEle);
+    vector<float> v_zC(nEle);
     vector<float> v_px(nEle);
     vector<float> v_py(nEle);
     vector<float> v_pz(nEle);
@@ -100,6 +130,8 @@ void NtupleWriter::produce(framework::Event& event) {
 	maxPt = i;
       }
       v_e [i] = prec(eles[i].energy());
+      v_eC[i] = prec(eles[i].getClusEnergy());
+      v_zC[i] = prec(eles[i].endz());
       v_px[i] = prec(eles[i].px());
       v_py[i] = prec(eles[i].py());
       v_pz[i] = prec(eles[i].pz());
@@ -115,6 +147,8 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar("maxE", maxE);
     n.setVar("maxPt", maxPt);
     n.setVar(coll+"_e" , v_e );
+    n.setVar(coll+"_eClus" , v_eC);
+    n.setVar(coll+"_zClus" , v_zC);
     n.setVar(coll+"_px", v_px);
     n.setVar(coll+"_py", v_py);
     n.setVar(coll+"_pz", v_pz);
@@ -143,6 +177,8 @@ void NtupleWriter::onProcessStart() {
     n.addVar<int> (tag_, "maxE");
     n.addVar<int> (tag_, "maxPt");
     n.addVar<vector<float> > (tag_, coll+"_e");
+    n.addVar<vector<float> > (tag_, coll+"_eClus");
+    n.addVar<vector<float> > (tag_, coll+"_zClus");
     n.addVar<vector<float> > (tag_, coll+"_px");
     n.addVar<vector<float> > (tag_, coll+"_py");
     n.addVar<vector<float> > (tag_, coll+"_pz");
@@ -154,10 +190,20 @@ void NtupleWriter::onProcessStart() {
     n.addVar<vector<int> > (tag_, coll+"_depth");
   }  
   if (writeTruth_){
+    n.addVar<float> (tag_, "Truth_x");
+    n.addVar<float> (tag_, "Truth_y");
     n.addVar<float> (tag_, "Truth_px");
     n.addVar<float> (tag_, "Truth_py");
     n.addVar<float> (tag_, "Truth_pz");
     n.addVar<float> (tag_, "Truth_e");
+    n.addVar<int> (tag_, "Truth_pdgId");
+    n.addVar<float> (tag_, "TruthEcal_x");
+    n.addVar<float> (tag_, "TruthEcal_y");
+    n.addVar<float> (tag_, "TruthEcal_px");
+    n.addVar<float> (tag_, "TruthEcal_py");
+    n.addVar<float> (tag_, "TruthEcal_pz");
+    n.addVar<float> (tag_, "TruthEcal_e");
+    n.addVar<int> (tag_,   "TruthEcal_pdgId");
   }
   if (writeEcalSums_){
     n.addVar<vector<float> > (tag_, "Ecal_e_afterLayer");

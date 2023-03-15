@@ -1,5 +1,4 @@
 #include "Trigger/TrigEcalEnergySum.h"
-#include "Trigger/TrigUtilities.h"
 
 #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
 #include "../../../Algo_HLS/Ecal/src/data.h"
@@ -35,12 +34,12 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
   EcalTP Input_TPs_hw[N_INPUT_TP];
   e_t energy_hw;
   int iTP = 0;
-
+  ecalTpToE cvt;
   for (const auto& trigDigi : ecalTrigDigis) {
     // HgcrocTrigDigi
 
     ldmx::EcalTriggerID tid(trigDigi.getId() ); // raw value
-    float e = ecalTpToE(trigDigi.linearPrimitive(), tid.layer());
+    float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
     // // compressed ECal digis are 8xADCs (HCal will be 4x)
     // float sie = 8 * trigDigi.linearPrimitive() * gain *
     //             mVtoMeV;  // in MeV, before layer corrections

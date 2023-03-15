@@ -55,6 +55,7 @@ class TrigParticle {
   double endz() const { return end_.Z(); }
 
   // cluster access
+  float getClusEnergy() const { return emClusE_; }
   int getClusTP() const { return emClusNTP_; }
   int getClusDepth() const { return emClusDepth_; }
   /* const TrigCaloCluster& getCluster() const {return clus_;} */
@@ -69,6 +70,7 @@ class TrigParticle {
   void setEndPoint(const Point& v) {
       end_ = v;
   }
+  void setClusEnergy(const float n){ emClusE_ = n; }
   void setClusTP(const int n){ emClusNTP_ = n; }
   void setClusDepth(const int n){ emClusDepth_ = n; }
 
@@ -106,6 +108,7 @@ class TrigParticle {
   int hwIso_{0};
 
   // cluster attributes  
+  float emClusE_{0};
   int emClusNTP_{0};
   int emClusDepth_{0};
   

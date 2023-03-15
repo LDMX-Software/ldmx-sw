@@ -1,6 +1,5 @@
 #include "Trigger/TrigEcalClusterProducer.h"
 #include "Trigger/IdealClusterBuilder.h"
-#include "Trigger/TrigUtilities.h"
 
 #include "Trigger/Event/TrigCaloHit.h"
 #include "Trigger/Event/TrigCaloCluster.h"
@@ -29,9 +28,10 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
       event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
 
   std::vector<Hit> hits{};
+  ecalTpToE cvt;
   for (const auto& trigDigi : ecalTrigDigis) {
     ldmx::EcalTriggerID tid(trigDigi.getId());
-    float e = ecalTpToE(trigDigi.linearPrimitive(), tid.layer());
+    float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
     
     // float sie = hgc_compression_factor_ * trigDigi.linearPrimitive() *
     //             gain_ * mVtoMeV_;  // in MeV, before layer corrections

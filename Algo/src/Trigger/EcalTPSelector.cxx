@@ -1,5 +1,4 @@
 #include "Trigger/EcalTPSelector.h"
-#include "Trigger/TrigUtilities.h"
 
 
 namespace trigger {
@@ -109,18 +108,19 @@ void EcalTPSelector::produce(framework::Event& event) {
   }
 
   TrigEnergySumCollection passTrigSums;
+  ecalTpToE cvt;
   for (auto& pair : lSums){
-    double e = ecalTpToE(pair.second, pair.first);
+    double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 4, e);
     passTrigSums.emplace_back(pair.first, 4, e);
   }
   for (auto& pair : rSums){
-    double e = ecalTpToE(pair.second, pair.first);
+    double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 1, e);
     passTrigSums.emplace_back(pair.first, 1, e);
   }
   for (auto& pair : cSums){
-    double e = ecalTpToE(pair.second, pair.first);
+    double e = cvt.calc(pair.second, pair.first);
     // TrigEnergySum s(pair.first, 0, e);
     passTrigSums.emplace_back(pair.first, 0, e);
   }
@@ -129,6 +129,7 @@ void EcalTPSelector::produce(framework::Event& event) {
   event.add(passCollName_+"Sums", passTrigSums);
   
 }
+
 
 // double EcalTPSelector::primitiveToEnergy(int tp, int layer){
 //   float sie = hgc_compression_factor_ * tp *
@@ -149,7 +150,8 @@ void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double &x, double &y, dou
   // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
   std::tie(x,y,z) = geom.globalPosition( tid );
   // e = primitiveToEnergy(tp.linearPrimitive(), tid.layer());
-  e = ecalTpToE(tp.linearPrimitive(), tid.layer());
+  ecalTpToE cvt;
+  e = cvt.calc(tp.linearPrimitive(), tid.layer());
 }
 
 void EcalTPSelector::onFileOpen() {
