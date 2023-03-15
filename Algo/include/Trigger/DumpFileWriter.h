@@ -8,6 +8,7 @@
 #define DUMPFILEWRITER_H
 
 // LDMX Framework
+#include "TrigUtilities.h"
 #include "DiscreteInputs.h"
 #include "DiscreteInputs_IO.h"
 #include "Ecal/EcalTriggerGeometry.h"

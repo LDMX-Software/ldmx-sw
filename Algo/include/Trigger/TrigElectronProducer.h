@@ -12,6 +12,9 @@
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
+#include "TProfile2D.h"
+#include "TF1.h"
+#include "TFile.h"
 /* #include "ap_fixed.h" */
 /* #include "ap_int.h" */
 
@@ -38,6 +41,11 @@ class TrigElectronProducer : public framework::Producer {
 
   virtual void onProcessEnd();
 
+  void setupMaps(bool isX);
+  float getP(bool isX, float e, float d);
+  float getPx(float e, float d) { return getP(true,e,d); }
+  float getPy(float e, float d) { return getP(false,e,d); }
+
  private:
   // specific verbosity of this producer
   int verbose_{0};
@@ -50,6 +58,12 @@ class TrigElectronProducer : public framework::Producer {
   std::string clusterCollName_;
   // name of collection for electron outputs
   std::string eleCollName_;
+
+  std::string propMapName_;
+  TProfile2D* propMapx_{nullptr};
+  TProfile2D* propMapy_{nullptr};
+  std::vector<TF1*> fitsX_{};
+  std::vector<TF1*> fitsY_{};
 
   // From:
   // Tools/python/HgcrocEmulator.py
