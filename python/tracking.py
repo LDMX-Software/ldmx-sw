@@ -31,6 +31,8 @@ class DigitizationProcessor(Producer):
         Input hit collection to be smeared
     out_collection : string
         Output hit collection to be stored
+    detector: string
+        The path to the GDML description of the detector.
     """
 
     def __init__(self, instance_name="DigitizationProcessor"):
@@ -73,6 +75,8 @@ class SeedFinderProcessor(Producer):
         The name of the input collection of hits to be used for seed finding.
     out_seed_collection : string
         The name of the ouput collection of seeds to be stored.
+    detector: string
+        The path to the GDML description of the detector.
     """
 
     def __init__(self, instance_name = "SeedFinderProcessor"):
