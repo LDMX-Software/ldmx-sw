@@ -112,24 +112,18 @@ void CustomStatePropagator::onProcessStart() {
     gen_mom(1) = py / Acts::UnitConstants::MeV;
     gen_mom(2) = pz / Acts::UnitConstants::MeV;
 
-    std::cout<<"Generated position"<<std::endl;
-    std::cout<<gen_pos<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<"Generated momentum"<<std::endl;
-    std::cout<<gen_mom<<std::endl;
+    //std::cout<<"Generated position"<<std::endl;
+    //std::cout<<gen_pos<<std::endl;
+    //std::cout<<std::endl;
+    //std::cout<<"Generated momentum"<<std::endl;
+    //std::cout<<gen_mom<<std::endl;
 
     Acts::ActsScalar q = charge * Acts::UnitConstants::e;
 
-    std::cout<<"q"<<std::endl;
-    std::cout<<q<<std::endl;
-    
     Acts::FreeVector part_free =
         tracking::sim::utils::toFreeParameters(gen_pos, gen_mom, q);
 
-    std::cout<<"Free acts Vector"<<std::endl;
-    std::cout<<part_free<<std::endl;
-
-    
+        
     // perigee on the track
     std::shared_ptr<const Acts::PerigeeSurface> gen_surface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
