@@ -34,9 +34,9 @@ class DigitizationProcessor(Producer):
     detector: string
         The path to the GDML description of the detector.
     """
-
     def __init__(self, instance_name="DigitizationProcessor"):
-        super().__init__(instance_name, 'tracking::reco::DigitizationProcessor', 'Tracking')
+        super().__init__(instance_name,
+                         'tracking::reco::DigitizationProcessor', 'Tracking')
         self.merge_hits = True
         self.do_smearing = True
         self.sigma_u = 0.06
@@ -79,8 +79,9 @@ class SeedFinderProcessor(Producer):
         The path to the GDML description of the detector.
     """
 
-    def __init__(self, instance_name = "SeedFinderProcessor"):
-        super().__init__(instance_name, 'tracking::reco::SeedFinderProcessor','Tracking')
+    def __init__(self, instance_name="SeedFinderProcessor"):
+        super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor',
+                         'Tracking')
         self.perigee_location = []
         self.pmin = 0.05
         self.pmax = 8.
@@ -91,6 +92,7 @@ class SeedFinderProcessor(Producer):
         self.input_hits_collection = 'TaggerSimHits'
         self.out_seed_collection = 'SeedTracks'
         self.detector = makeDetectorPath('ldmx-det-v14')
+
 
 class CKFProcessor(Producer):
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.
@@ -171,8 +173,10 @@ class CKFProcessor(Producer):
        Refit tracks with Gaussian Sum Filter 
         
     """
-    def __init__(self, instance_name = 'CKFProcessor'): 
-        super().__init__(instance_name, 'tracking::reco::CKFProcessor', 'Tracking')
+
+    def __init__(self, instance_name='CKFProcessor'):
+        super().__init__(instance_name, 'tracking::sim::CKFProcessor',
+                         'Tracking')
 
         self.dumpobj = False
         self.pionstates = 0
@@ -197,7 +201,8 @@ class CKFProcessor(Producer):
         self.gsf_refit = False
         self.min_hits = 6
 
-class TruthSeedProcessor(Producer) :
+
+class TruthSeedProcessor(Producer):
     """ Producer that returns truth seeds to feed the KF based track finding.
     Seeds are not smeared, so the fits will be too optimistic, especially the
     residuals of the estimated locations w.r.t. simulated hits on each surface.
@@ -212,15 +217,13 @@ class TruthSeedProcessor(Producer) :
     Attributes
     ----------
 
-    out_trk_coll_name : string
-        Name of the output seed collection.
     pdg_ids : list[int]
         List of particle IDs whose scoring plane hits will be used to form 
         initial seeds.
-    scoring_hits : string
+    scoring_hits_coll_name : string
         The name of the scoring plane hits from where to get the truth 
         parameters.
-    sim_hits : string
+    recoil_sim_sim_hits_coll_name : string
         The name of the sim tracker hits collection.
     n_min_hits : int
         The minimum number of hits to create a seed from.
@@ -232,24 +235,24 @@ class TruthSeedProcessor(Producer) :
         Minimum cut on the momentum (MeV) of the seed along the beam axis.
     p_cut : double
         Minimum cut on the momentum (MeV) of the seed.
-    p_cut_Max : double
+    p_cut_max : double
         Maximum cut on the momentum of the seed.
     p_cut_ecal : double
         Minimum seed track momentum (MeV) at the ECAL scoring plane
        
     
     """
-    def __init__(self, instance_name = "TruthSeedProcessor"):
-        super().__init__(instance_name, 'tracking::reco::TruthSeedProcessor','Tracking')
+    def __init__(self, instance_name="TruthSeedProcessor"):
+        super().__init__(instance_name, 'tracking::reco::TruthSeedProcessor',
+                         'Tracking')
 
-        self.out_trk_coll_name = 'RecoilTruthSeeds'
-        self.pdgIDs = [11]
-        self.scoring_hits = 'TargetScoringPlaneHits'
-        self.sim_hits = 'RecoilSimHits'
+        self.pdg_ids = [11]
+        self.scoring_hits_coll_name = 'TargetScoringPlaneHits'
+        self.recoil_sim_hits_coll_name = 'RecoilSimHits'
         self.n_min_hits = 7
-        self.z_min = -9999. # mm
+        self.z_min = -9999.  # mm
         self.track_id = -9999
-        self.pz_cut = -9999. # MeV
-        self.p_cut = 0. # MeV
-        self.p_cut_max = 100000. # MeV
-        self.p_cut_ecal = -1. # MeV
+        self.pz_cut = -9999.  # MeV
+        self.p_cut = 0.  # MeV
+        self.p_cut_max = 100000.  # MeV
+        self.p_cut_ecal = -1.  # MeV
