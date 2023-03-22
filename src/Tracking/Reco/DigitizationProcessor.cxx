@@ -7,14 +7,11 @@
 
 using namespace framework;
 
-namespace tracking {
-namespace reco {
+namespace tracking::reco {
 
 DigitizationProcessor::DigitizationProcessor(const std::string& name,
                                              framework::Process& process)
     : framework::Producer(name, process) {}
-
-DigitizationProcessor::~DigitizationProcessor() {}
 
 void DigitizationProcessor::onProcessStart() {
   gctx_ = Acts::GeometryContext();
@@ -24,8 +21,7 @@ void DigitizationProcessor::onProcessStart() {
 
   // Load the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
-      &gctx_, false);
+      detector_, &gctx_, false);
 
   // Module Bounds => Take them from the tracking geometry TODO
   auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
@@ -68,6 +64,7 @@ void DigitizationProcessor::onProcessStart() {
 
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
+  detector_ = parameters.getParameter<std::string>("detector");
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
@@ -86,47 +83,28 @@ void DigitizationProcessor::produce(framework::Event& event) {
   const auto tGeometry = ldmx_tg->getTG();
 
   ldmx_log(debug) << " Getting the tracking geometry:" << tGeometry;
-  
+
   // Mode 0: Load simulated hits and produce smeared 1d measurements
   // Mode 1: Load simulated hits and produce digitized 1d measurements
-
-  std::vector<ldmx::LdmxSpacePoint*> digitized_hits;
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
 
+  std::vector<ldmx::Measurement> measurements;
   if (merge_hits_) {
     mergeSimHits(sim_hits, merged_hits);
-    digitizeHits(merged_hits, digitized_hits);
+    measurements = digitizeHits(merged_hits);
   }
 
   else {
-    digitizeHits(sim_hits, digitized_hits);
+    measurements = digitizeHits(sim_hits);
   }
 
-  // Get the measurements and run clustering
-
-  std::vector<ldmx::Measurement> output_measurements;
-
-  for (auto dh : digitized_hits) {
-    ldmx::Measurement m;
-    m.setGlobalPosition(dh->global_pos_(0), dh->global_pos_(1),
-                        dh->global_pos_(2));
-    m.setLocalPosition(dh->local_pos_(0), dh->local_pos_(1));
-    m.setTime(-999);
-    m.setLayer(dh->layer());
-
-    output_measurements.push_back(m);
-  }
-  ldmx_log(debug)<< "Output measurements " << output_measurements.size();
-                 
-
-  event.add(out_collection_, output_measurements);
+  event.add(out_collection_, measurements);
 }
 
-void DigitizationProcessor::onProcessEnd() {}
 // This method merges hits that have the same track_id on the same layer.
 // The energy of the merged hit is the sum of the energy of the single sub-hits
 // The position/momentum of the merged hit is the energy-weighted average
@@ -205,9 +183,9 @@ bool DigitizationProcessor::mergeSimHits(
     unsigned int index = tracking::sim::utils::getSensorID(hit);
     unsigned int trackid = hit.getTrackID();
     hitmap[index][trackid].push_back(hit);
-    
-    ldmx_log(debug) << "hitmap being filled, size::[" << index << "][" << trackid
-                    << "] size " << hitmap[index][trackid].size();
+
+    ldmx_log(debug) << "hitmap being filled, size::[" << index << "]["
+                    << trackid << "] size " << hitmap[index][trackid].size();
   }
 
   typedef std::map<int,
@@ -222,100 +200,92 @@ bool DigitizationProcessor::mergeSimHits(
 
   ldmx_log(debug) << "Sim_hits Size=" << sim_hits.size()
                   << "Merged_hits Size=" << merged_hits.size();
-  
-  //for (auto hit : sim_hits) hit.Print();
-  //for (auto mhit : merged_hits) mhit.Print();
-  
-  
+
+  // for (auto hit : sim_hits) hit.Print();
+  // for (auto mhit : merged_hits) mhit.Print();
+
   return true;
 }
 
-void DigitizationProcessor::digitizeHits(
-    const std::vector<ldmx::SimTrackerHit>& sim_hits,
-    std::vector<ldmx::LdmxSpacePoint*>& ldmxsps) {
-
+std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
+    const std::vector<ldmx::SimTrackerHit>& sim_hits) {
   ldmx_log(debug) << "Found:" << sim_hits.size() << " sim hits in the "
                   << hit_collection_;
-  
-  // Convert to ldmxsps
 
-  for (auto& simHit : sim_hits) {
+  std::vector<ldmx::Measurement> measurements;
+
+  // Loop over all SimTrackerHits and
+  // * Use the position of the SimTrackerHit (global position) and the surface
+  //   the hit was created on to extract the local coordinates.
+  // * If specified, smear the local coordinates and update the global
+  //   coordinates.
+  // * Create a Measurement object.
+  for (auto& sim_hit : sim_hits) {
     // Remove low energy deposit hits
-    if (simHit.getEdep() > min_e_dep_) {
-      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
+    if (sim_hit.getEdep() > min_e_dep_) {
+      if (track_id_ > 0 && sim_hit.getTrackID() != track_id_) continue;
 
-      ldmx::LdmxSpacePoint* ldmxsp =
-          tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit);
-
-      // Get the layer from the ldmxsp
-      unsigned int layerid = ldmxsp->layer();
+      ldmx::Measurement measurement(sim_hit);
+      
+      // Get the layer ID.
+      auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
+      measurement.setLayerID(layer_id); 
 
       // Get the surface
-      const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
-      
-      if (hit_surface) {
-        // Transform the ldmx space point from global to local and store the
-        // information
+      auto hit_surface{ldmx_tg->getSurface(layer_id)};
 
-        ldmx_log(debug) << "Global hit position on layer::" << ldmxsp->layer()
-                        << ldmxsp->global_pos_;
-        
-        //hit_surface->toStream(gctx_, std::cout);
-        ldmx_log(debug) << "Local to global"
-                        << std::endl<< hit_surface->transform(gctx_).rotation()
-                        << std::endl<< hit_surface->transform(gctx_).translation();
-        
-        
+      if (hit_surface) {
+        // Transform from global to local coordinates.
+        // hit_surface->toStream(gctx_, std::cout);
+        ldmx_log(debug) << "Local to global" << std::endl
+                        << hit_surface->transform(gctx_).rotation() << std::endl
+                        << hit_surface->transform(gctx_).translation();
+
         Acts::Vector3 dummy_momentum;
         Acts::Vector2 local_pos;
         double surface_thickness = 0.320 * Acts::UnitConstants::mm;
-        
+        Acts::Vector3 global_pos(measurement.getGlobalPosition()[0],
+                                 measurement.getGlobalPosition()[1],
+                                 measurement.getGlobalPosition()[2]);
+
         try {
           local_pos = hit_surface
-                      ->globalToLocal(gctx_, ldmxsp->global_pos_,
-                                      dummy_momentum, surface_thickness)
-                      .value();
+                          ->globalToLocal(gctx_, global_pos, dummy_momentum,
+                                          surface_thickness)
+                          .value();
         } catch (const std::exception& e) {
           std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
-          std::cout << ldmxsp->global_pos_ << std::endl;
           continue;
         }
-        
+
         // Smear the local position
-        
-        
-        
         if (do_smearing_) {
           float smear_factor{(*normal_)(generator_)};
-          
+
           local_pos[0] += smear_factor * sigma_u_;
           smear_factor = (*normal_)(generator_);
           local_pos[1] += smear_factor * sigma_v_;
-          
-          
+
           // update covariance
-          ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-          
-          // cache the acts x coordinate
-          double original_x = ldmxsp->global_pos_(0);
-          
+          measurement.setLocalCovariance(sigma_u_ * sigma_u_,
+                                         sigma_v_ * sigma_v_);
+
           // transform to global
-          ldmxsp->global_pos_ =
-              hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum);
-          // update the acts x location
-          ldmxsp->global_pos_(0) = original_x;
-          
+          auto global_pos{
+              hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum)};
+          measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
+                                        global_pos(1), global_pos(2));
+
         }  // do smearing
-        
-        ldmxsp->local_pos_ = local_pos;
-        
-        ldmxsps.push_back(ldmxsp);
+        measurement.setLocalPosition(local_pos(0), local_pos(1));
+        measurements.push_back(measurement);
       }  // hit_surface exists
     }    // energy cut
-    
-  }  // loop on sim-hits
+  }      // loop on sim-hits
+
+  return measurements;
+
 }  // digitizeHits
-}  // namespace reco
-}  // namespace tracking
+}  // namespace tracking::reco
 
 DECLARE_PRODUCER_NS(tracking::reco, DigitizationProcessor)
