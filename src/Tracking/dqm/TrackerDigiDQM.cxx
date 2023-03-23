@@ -13,7 +13,7 @@ void TrackerDigiDQM::analyze(const framework::Event& event) {
   for (auto& measurement : measurements) { 
     auto global_position{measurement.getGlobalPosition()};
     auto local_position{measurement.getLocalPosition()}; 
-    auto layer_id{measurement.getLyID()};
+    auto layer_id{measurement.getLayerID()};
     auto time{measurement.getTime()}; 
     
     histograms_.fill("global_yz_l"+std::to_string(layer_id), global_position[1], global_position[2]);
