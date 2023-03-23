@@ -80,7 +80,7 @@ class SeedFinderProcessor(Producer):
     """
 
     def __init__(self, instance_name="SeedFinderProcessor"):
-        super().__init__(instance_name, 'tracking::sim::SeedFinderProcessor',
+        super().__init__(instance_name, 'tracking::reco::SeedFinderProcessor',
                          'Tracking')
         self.perigee_location = []
         self.pmin = 0.05
