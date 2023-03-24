@@ -71,7 +71,7 @@ PropagatorStepWriter::~PropagatorStepWriter() {
 bool PropagatorStepWriter::WriteSteps(
     framework::Event& event,
     const std::vector<PropagationSteps>& stepCollection,
-    const std::vector<ldmx::LdmxSpacePoint*> ldmxsps,
+    const std::vector<ldmx::Measurement>& measurements,
     const Acts::Vector3& start_pos, const Acts::Vector3& start_mom) {
   // Exclusive access to the tree while writing
   std::lock_guard<std::mutex> lock(m_writeMutex);
@@ -91,12 +91,12 @@ bool PropagatorStepWriter::WriteSteps(
   m_start_pos.clear();
   m_start_mom.clear();
 
-  for (auto& ldmxsp : ldmxsps) {
-    m_hit_x.push_back(ldmxsp->x());
-    m_hit_y.push_back(ldmxsp->y());
-    m_hit_z.push_back(ldmxsp->z());
+  for (auto& meas : measurements) {
+    m_hit_x.push_back(meas.getGlobalPosition()[0]);
+    m_hit_y.push_back(meas.getGlobalPosition()[1]);
+    m_hit_z.push_back(meas.getGlobalPosition()[2]);
   }
-
+  
   for (unsigned int i = 0; i < 3; i++) {
     m_start_pos.push_back(start_pos(i));
     m_start_mom.push_back(start_mom(i));

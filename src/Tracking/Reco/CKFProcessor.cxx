@@ -33,7 +33,8 @@ void CKFProcessor::onProcessStart() {
 
   // Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      //"/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      "detector.gdml",
       &gctx_, debug_);
   const auto tGeometry = ldmx_tg->getTG();
 
@@ -101,28 +102,6 @@ void CKFProcessor::onProcessStart() {
 
   // Create a mapping between the layers and the Acts::Surface
   // layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
-
-  // Prepare histograms
-
-  // getHistoDirectory();
-
-  // Track parameters
-  // histograms_.create("d0_reco","d0_reco",100,-20,20);
-  // histograms_.create("z0_reco","z0_reco",100,-20,20);
-  // histograms_.create("q/p","q_over_p",100,-1,1);
-  // histograms_.create("p","p",100,0,10);
-  // histograms_.create("theta","theta",100,-3.15,3.15);
-  // histograms_.create("phi","phi",100,-3.15,3.15);
-  // histograms_.create("t","t",100,0,100);
-
-  // Residuals
-  // histograms_.create("d0_res","d0_reco",100,-5,5);
-  // histograms_.create("z0_res","z0_reco",100,-5,5);
-  // histograms_.create("q/p_res","q_over_p",100,-0.1,0.1);
-  // histograms_.create("p_res","p",100,-2,2);
-  // histograms_.create("theta_res","theta",100,-0.1,0.1);
-  // histograms_.create("phi_res","phi",100,-0.1,0.1);
-  // histograms_.create("t_res","t",100,-0.1,0.1);
 
   // Validation histograms
   double ptlim = 0.1;
@@ -228,6 +207,12 @@ void CKFProcessor::onProcessStart() {
 }
 
 void CKFProcessor::produce(framework::Event& event) {
+
+  eventnr_++;
+
+  //if (eventnr_ != 8283)
+  //  return;
+  
   // int counter=0
   // if (counter==0) {
   // propagateENstates(event,
@@ -301,11 +286,15 @@ void CKFProcessor::produce(framework::Event& event) {
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
-  const auto ldmxsps = makeLdmxSpacepoints(sim_hits);
+  
+
+  const std::vector<ldmx::Measurement> measurements =
+      event.getCollection<ldmx::Measurement>(measurement_collection_);
+  
 
   // The mapping between the geometry identifier
-  // and the IndexSourceLink that points to the hit
-  const auto geoId_sl_map = makeGeoIdSourceLinkMap(ldmxsps);
+  // and the IndexsourceLink that points to the hit
+  const auto geoId_sl_map = makeGeoIdSourceLinkMap(measurements);
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] +=
@@ -401,16 +390,18 @@ void CKFProcessor::produce(framework::Event& event) {
   };
 
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
-  tracking::sim::LdmxMeasurementCalibrator calibrator{ldmxsps};
+  
+  tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
-
+  
   if (use1Dmeasurements_)
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
         &calibrator);
   else
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate>(
         &calibrator);
+  
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
       &kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(
@@ -418,6 +409,10 @@ void CKFProcessor::produce(framework::Event& event) {
   ckf_extensions.measurementSelector
       .connect<&Acts::MeasurementSelector::select>(&measSel);
 
+
+  ldmx_log(debug) 
+      << "SourceLinkAccessor..." <<  std::endl;
+  
   // Create source link accessor and connect delegate
   struct SourceLinkAccIt {
     using BaseIt = decltype(geoId_sl_map.begin());
@@ -443,16 +438,19 @@ void CKFProcessor::produce(framework::Event& event) {
   };
 
   auto sourceLinkAccessor = [&](const Acts::Surface& surface)
-      -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
+                            -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
     auto [begin, end] = geoId_sl_map.equal_range(surface.geometryId());
     return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
   };
-
+  
   Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> sourceLinkAccessorDelegate;
   sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(),
                                      decltype(sourceLinkAccessor)>(
-      &sourceLinkAccessor);
-
+                                         &sourceLinkAccessor);
+  
+  ldmx_log(debug) 
+      << "Surfaces..." <<  std::endl;
+  
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
@@ -479,19 +477,32 @@ void CKFProcessor::produce(framework::Event& event) {
   }
 
   auto ckf_loggingLevel = Acts::Logging::FATAL;
-  if (debug_) ckf_loggingLevel = Acts::Logging::VERBOSE;
+  if (debug_)
+    ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
   const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions(
       gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
       Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
 
+
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions_meas(
+      gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
+      Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
+
+
+  ldmx_log(debug) 
+      << "About to run CKF..." <<  std::endl;
+    
   // run the CKF for all initial track states
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] +=
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
 
-  auto results = ckf_->findTracks(startParameters, ckfOptions);
-
+  auto results = ckf_->findTracks(startParameters, ckfOptions_meas);
+  
+  ldmx_log(debug) 
+      << "CKF Ran!" <<  std::endl;
+    
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
@@ -723,11 +734,11 @@ void CKFProcessor::produce(framework::Event& event) {
     ntracks_++;
 
     // Write the event display for the recoil
-    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 &&
-        false) {
-      writeEvent(event, ckf_result.fittedParameters.begin()->second, mj,
-                 trackTip, ldmxsps);
-    }
+    //if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 &&
+    //    false) {
+    //  writeEvent(event, ckf_result.fittedParameters.begin()->second, mj,
+    //             trackTip, measurements);
+    //}
 
     // Refit the track with the KalmanFitter using backward propagation
     if (kf_refit_) {
@@ -978,7 +989,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       "perigee_location", {0., 0., 0.});
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
-
+  measurement_collection_ =
+      parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
+  
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
   if (remove_stereo_)
     std::cout << "CONFIGURE::remove_stereo=" << (int)remove_stereo_ << std::endl;
@@ -1051,7 +1064,7 @@ void CKFProcessor::writeEvent(
     framework::Event& event,
     const Acts::BoundTrackParameters& perigeeParameters,
     const Acts::MultiTrajectory& mj, const int& trackTip,
-    const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {
+    const std::vector<ldmx::Measurement> measurements) {
   // Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
@@ -1222,11 +1235,12 @@ void CKFProcessor::writeEvent(
   propagationSteps.push_back(steps);
   Acts::Vector3 gen_pos(0., 0., 0.);
   Acts::Vector3 gen_mom(0., 0., 0.);
-  writer_->WriteSteps(event, propagationSteps, ldmxsps, gen_pos, gen_mom);
+  writer_->WriteSteps(event, propagationSteps, measurements, gen_pos, gen_mom);
 }
 
+
 auto CKFProcessor::makeGeoIdSourceLinkMap(
-    const std::vector<ldmx::LdmxSpacePoint*>& ldmxsps)
+    const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
                                ActsExamples::IndexSourceLink> {
   std::unordered_multimap<Acts::GeometryIdentifier,
@@ -1234,11 +1248,9 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       geoId_sl_map;
 
   // Check the hits associated to the surfaces
-  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
-    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
-    unsigned int layerid = ldmxsp->layer();
-
-    // const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+  for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
+    ldmx::Measurement meas = measurements.at(i_meas);
+    unsigned int layerid = meas.getLayerID();
 
     const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
 
@@ -1246,88 +1258,20 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // Transform the ldmx space point from global to local and store the
       // information
 
-      Acts::Vector3 dummy_momentum;
-      Acts::Vector2 local_pos;
-      try {
-        local_pos = hit_surface
-                        ->globalToLocal(gctx_, ldmxsp->global_pos_,
-                                        dummy_momentum, 0.320)
-                        .value();
-      } catch (const std::exception& e) {
-        std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
-        std::cout << ldmxsp->global_pos_ << std::endl;
-        continue;
-      }
-
-      // Smear the local position
-
-      if (do_smearing_) {
-        float smear_factor{(*normal_)(generator_)};
-
-        local_pos[0] += smear_factor * sigma_u_;
-        smear_factor = (*normal_)(generator_);
-        local_pos[1] += smear_factor * sigma_v_;
-        // update covariance
-        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-
-        // cache the acts x coordinate
-        double original_x = ldmxsp->global_pos_(0);
-
-        // transform to global
-        ldmxsp->global_pos_ =
-            hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum);
-
-        // update the acts x location
-        ldmxsp->global_pos_(0) = original_x;
-
-      }
-
-      ldmxsp->local_pos_ = local_pos;
-
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
-                                           i_ldmx_hit);
-
+                                           i_meas);
+      
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
     } else
-      std::cout << getName() << "::HIT " << i_ldmx_hit << " at layer"
-                << (ldmxsps.at(i_ldmx_hit))->layer()
+      std::cout << getName() << "::HIT " << i_meas << " at layer"
+                << (measurements.at(i_meas)).getLayerID()
                 << " is not associated to any surface?!" << std::endl;
   }
-
+  
   return geoId_sl_map;
 }
 
-auto CKFProcessor::makeLdmxSpacepoints(
-    const std::vector<ldmx::SimTrackerHit>& sim_hits)
-    -> std::vector<ldmx::LdmxSpacePoint*> {
-  std::vector<ldmx::LdmxSpacePoint*> ldmxsps;
-
-  // Convert to ldmxsps
-  for (auto& simHit : sim_hits) {
-    // Remove low energy deposit hits
-    if (simHit.getEdep() > 0.05) {
-      // Only selects hits that have track_id==1
-      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
-
-      if (pdg_id_ != -9999 && abs(simHit.getPdgID()) != pdg_id_) continue;
-
-      ldmx::LdmxSpacePoint* ldmxsp =
-          tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit);
-
-      if (remove_stereo_) {
-        unsigned int layerid = ldmxsp->layer();
-        if (layerid == 3101 || layerid == 3201 || layerid == 3301 ||
-            layerid == 3401)
-          continue;
-      }
-
-      ldmxsps.push_back(ldmxsp);
-    }
-  }
-
-  return ldmxsps;
-}
 
 // This is used to propagate the initial eN states through the detector
 
@@ -1486,7 +1430,7 @@ void CKFProcessor::propagateENstates(framework::Event& event,
     }
 
     // empty
-    std::vector<ldmx::LdmxSpacePoint*> hits{};
+    std::vector<ldmx::Measurement> hits{};
     writer_->WriteSteps(event, propagationSteps, hits, gen_pos, gen_mom);
 
   }  // loop on inputs

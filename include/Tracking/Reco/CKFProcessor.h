@@ -57,9 +57,6 @@
 
 //Kalman Filter
 
-//Step 1 - gather the measurements
-//#include "Tracking/Sim/LdmxMeasurement.h" <-Not needed
-
 //#include "Acts/EventData/Measurement.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp" 
 #include "Acts/TrackFitting/GainMatrixSmoother.hpp"
@@ -83,6 +80,7 @@
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Event/Track.h"
+#include "Tracking/Event/Measurement.h"
 
 
 //--- Interpolated magnetic field ---//
@@ -156,11 +154,10 @@ class CKFProcessor final : public framework::Producer {
   //Forms the layer to acts map
   auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
 
-  //Make geoid -> source link map
-  auto makeGeoIdSourceLinkMap(const std::vector<ldmx::LdmxSpacePoint* > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
-
-  auto makeLdmxSpacepoints(const std::vector<ldmx::SimTrackerHit> &sim_hits) -> std::vector<ldmx::LdmxSpacePoint* >;
-
+  //Make geoid -> source link map Measurements
+  auto makeGeoIdSourceLinkMap(const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
+    
+    
   //Test the measurement calibrator (TODO::move it somewhere else)
   void testMeasurmentCalibrator(const tracking::sim::LdmxMeasurementCalibrator& calibrator,
                                 const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const;
@@ -169,13 +166,13 @@ class CKFProcessor final : public framework::Producer {
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
                  const Acts::Vector3& eval_pos) const;
-
+  
   // Make a simple event display
   void writeEvent(framework::Event &event,
 		  const Acts::BoundTrackParameters& perigeeParameters,
 		  const Acts::MultiTrajectory& mj,
                   const int& trackTip,
-                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps);
+                  const std::vector<ldmx::Measurement> meas);
 
   
   /// The tracking geometry
@@ -239,6 +236,9 @@ class CKFProcessor final : public framework::Producer {
   
   //The hit collection to use for track reconstruction
   std::string hit_collection_{"TaggerSimHits"};
+
+  //The measurement collection to use for track reconstruction
+  std::string measurement_collection_{"TaggerMeasurements"};
   
   //The output track collection
   std::string out_trk_collection_{"Tracks"};
@@ -369,6 +369,8 @@ class CKFProcessor final : public framework::Producer {
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
+
+  int eventnr_{0};
   
 }; // CKFProcessor
     

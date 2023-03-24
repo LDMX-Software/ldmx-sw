@@ -15,7 +15,7 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 
 //--- Tracking ---//
-#include "Tracking/Sim/LdmxSpacePoint.h"
+#include "Tracking/Event/Measurement.h"
 
 
 //--- ROOT ---//
@@ -48,7 +48,7 @@ class PropagatorStepWriter{
   
   bool WriteSteps(framework::Event &event,
                   const std::vector<PropagationSteps>& stepCollection,
-                  const std::vector<ldmx::LdmxSpacePoint*> ldmxsps,
+                  const std::vector<ldmx::Measurement>& measurements,
                   const Acts::Vector3 & start_pos, const Acts::Vector3& start_mom);
                                  
  protected:

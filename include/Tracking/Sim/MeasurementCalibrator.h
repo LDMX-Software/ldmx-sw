@@ -5,7 +5,10 @@
 #include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/SourceLink.hpp"
+#include "Acts/Definitions/Algebra.hpp"
 #include "Tracking/Sim/IndexSourceLink.h"
+#include "Tracking/Event/Measurement.h"
+
 
 /** The measurement calibrator can be a function or a class/struct able to retrieve the sim hits container.
  *  It gets by CKF passing the propagated TrackState. The measurement calibrator gets called for every propagation and a new track state is passed which contains the source link.
@@ -24,9 +27,9 @@
 /// TODO: use local measurements instead of global space points. 
 
 namespace tracking {
-  namespace sim {
+namespace sim {
     
-    class LdmxMeasurementCalibrator {
+  class LdmxMeasurementCalibrator {
 
    public:
       
@@ -34,9 +37,9 @@ namespace tracking {
       LdmxMeasurementCalibrator() = default;
       
       //The calibrator needs to access the sim hit container
-      LdmxMeasurementCalibrator(const std::vector<ldmx::LdmxSpacePoint*>& measurements) {
-        m_measurements = &measurements;
-      }
+    LdmxMeasurementCalibrator(const std::vector<ldmx::Measurement>& measurements) {
+      m_measurements = &measurements;
+    }
       
       /// Find the measurement corresponding to the source link. Uses a 2D measurement, cov-matrix and projection
       ///
@@ -56,11 +59,24 @@ namespace tracking {
         auto meas = m_measurements->at(sourceLink.index());
         
         trackState.calibrated().setZero();
-        trackState.calibrated().head<2>() = meas->local_pos_;
+
+        Acts::Vector2 local_pos{meas.getLocalPosition()[0], meas.getLocalPosition()[1]};
+        trackState.calibrated().head<2>() = local_pos;
         trackState.data().measdim = 2;
         trackState.calibratedCovariance().setZero();
-        trackState.calibratedCovariance().block<2,2>(0,0) = meas->local_cov_;
-        trackState.setProjector(meas->projector_);
+
+        Acts::SymMatrix2 local_cov;
+        local_cov.setZero();
+        local_cov(0,0) = meas.getLocalCovariance()[0];
+        local_cov(1,1) = meas.getLocalCovariance()[1];
+        trackState.calibratedCovariance().block<2,2>(0,0) = local_cov;
+
+        Acts::ActsMatrix<2,6> projector;
+        projector.setZero();
+        projector(0,0) = 1.;
+        projector(1,1) = 1.;
+        
+        trackState.setProjector(projector);
         
       }
 
@@ -85,24 +101,19 @@ namespace tracking {
         auto meas = m_measurements->at(sourceLink.index());
         
         trackState.calibrated().setZero();
-        trackState.calibrated()(0) = meas->local_pos_(0);
+        trackState.calibrated()(0) = (meas.getLocalPosition())[0];
         trackState.data().measdim = 1;
         trackState.calibratedCovariance().setZero();
-        trackState.calibratedCovariance()(0,0) = meas->local_cov_(0,0);
-        trackState.setProjector(meas->projector_.row(0));
-
-        //placeholder
-
-        /*
-        std::cout<<"trackState calibrated"<<std::endl;
-        std::cout<<trackState.calibrated()<<std::endl;
-        std::cout<<"trackState data meas dim"<<std::endl;
-        std::cout<<trackState.data().measdim<<std::endl;
-        std::cout<<"cov "<<meas->local_cov_(0,0)<<std::endl;
-        std::cout<<trackState.calibratedCovariance()<<std::endl;
-        std::cout<<"projector"<<std::endl;
-        std::cout<<meas->projector_.row(0)<<std::endl;
-        */
+        trackState.calibratedCovariance()(0,0) = (meas.getLocalCovariance())[0];
+        
+        Acts::ActsMatrix<2,6> projector;
+        projector.setZero();
+        projector(0,0) = 1.;
+        projector(1,1) = 1.;
+        trackState.setProjector(projector.row(0));
+        
+        
+        
       }
 
       //Function to test the measurement calibrator
@@ -113,19 +124,27 @@ namespace tracking {
         
         auto meas = m_measurements->at(sourceLink.index());
         //get the measurement
-        std::cout<<"Measurement layer::\n"<<meas->layer()<<std::endl;
-        std::cout<<"Measurement global_position::\n"<<meas->global_pos_<<std::endl;
-        std::cout<<"Measurement local_position::\n"<<meas->local_pos_<<std::endl;
-        std::cout<<"Measurement projector::\n"<<meas->projector_<<std::endl;
+        std::cout<<"Measurement layer::\n"<<meas.getLayer()<<std::endl;
 
+        Acts::Vector3 global_pos{meas.getGlobalPosition()[0],
+          meas.getGlobalPosition()[1],
+          meas.getGlobalPosition()[2]};
+        std::cout<<"Measurement global_position::\n"<<global_pos<<std::endl;
+        
+        Acts::Vector2 local_pos{meas.getLocalPosition()[0],
+          meas.getLocalPosition()[1]};
+        std::cout<<"Measurement local_position::\n"<<local_pos<<std::endl;
+                
       }
-
-            
+    
+    
    private:
 
       // use pointer so the calibrator is copyable and default constructible.
-      const std::vector<ldmx::LdmxSpacePoint*>* m_measurements = nullptr;
+      const std::vector<ldmx::Measurement>* m_measurements = nullptr;
     };
+
+  
   }
 }
 
