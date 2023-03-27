@@ -6,17 +6,35 @@
  */
 
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/UserEventInformation.h"
 
 #include "G4DarkBreM/G4APrime.h"
 #include "G4DarkBreM/G4DarkBreMModel.h"
 
 // Geant4
 #include "G4Electron.hh"
+#include "G4EventManager.hh"
 #include "G4ProcessManager.hh"
 
 namespace simcore {
 
 const std::string APrimePhysics::NAME = "APrime";
+
+/**
+ * Store the atomic Z for the element in which the dark brem occurred.
+ *
+ * This function is registered with G4DarkBremsstrahlung and will be
+ * called with the element that the dark brem will occurr off of. We
+ * store the element Z in UserEventInformation for later serialization
+ * into the EventHeader
+ *
+ * @param[in] element G4Element off-which the dark brem occurred
+ */
+static void store_element_z(const G4Element& element) {
+  static_cast<UserEventInformation*>(
+      G4EventManager::GetEventManager()->GetUserInformation()
+      )->setDarkBremMaterialZ(element.GetZ());
+}
 
 APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
     : G4VPhysicsConstructor(APrimePhysics::NAME),
@@ -74,6 +92,7 @@ void APrimePhysics::ConstructProcess() {
           parameters_.getParameter<bool>("only_one_per_event"),
           1., /* global bias - should use bias operator instead */
           parameters_.getParameter<bool>("cache_xsec"));
+      proc->RegisterStorageMechanism(store_element_z);
     } else {
       EXCEPTION_RAISE("BadConf",
                       "Unrecognized model name '" + model_name + "'.");

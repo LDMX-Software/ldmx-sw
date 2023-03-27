@@ -25,6 +25,19 @@ class UserEventInformation : public G4VUserEventInformation {
   void decBremCandidateCount() { bremCandidateCount_ -= 1; }
 
   /**
+   * Set the elemental Z in which the dark brem ocurred
+   *
+   * @param[in] z elemental z in which the dark brem ocurred
+   */
+  void setDarkBremMaterialZ(double z) {
+    db_material_z_ = z;
+  }
+
+  double getDarkBremMaterialZ() const {
+    return db_material_z_;
+  }
+
+  /**
    * Set the event weight.
    *
    * @param[in] weight the event weight
@@ -140,6 +153,11 @@ class UserEventInformation : public G4VUserEventInformation {
    * Was the most recent step a electron-nuclear interaction?
    */
   bool last_step_en_{false};
+
+  /**
+   * elemental z in which dark brem occurred (-1 if didn't happen)
+   */
+  double db_material_z_{-1.};
 };
 }  // namespace simcore
 
