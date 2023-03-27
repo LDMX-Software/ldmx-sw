@@ -56,7 +56,33 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "P [GeV]",100,0,pmax)
 
             self.build1DHistogram(title+"qOp",
-                                  "qOverP [GeV^{-1}]",100,-1/pmax,1/pmax)
+                                  "qOverP [GeV^{-1}]",100,-20,20)
+
+            self.build1DHistogram(title+"pt_bending",
+                                  "pT bending plane [GeV]",100,pmax,pmax)
+            self.build1DHistogram(title+"pt_beam",
+                                  "pT beam axis [GeV]",100,pmax,pmax)
                         
+            self.build1DHistogram(title+"nHits",
+                                  "nHits",15,0,15)
+            self.build1DHistogram(title+"px",
+                                  "pX [GeV]",100,-pmax,pmax)
+            self.build1DHistogram(title+"py",
+                                  "pY [GeV]",100,-pmax,pmax)
+            self.build1DHistogram(title+"pz",
+                                  "pZ [GeV]",100,-pmax,pmax)
+            self.build1DHistogram(title+"d0_err",
+                                  "#sigma_{d0} [mm]",100,0,1)
+            self.build1DHistogram(title+"z0_err",
+                                  "#sigma_{z0} [mm]",100,0,2)
+            self.build1DHistogram(title+"phi_err",
+                                  "#sigma_{#phi} [rad]",100,0,1)
+            self.build1DHistogram(title+"theta_err",
+                                  "#sigma_{#theta} [rad]",100,0,1)
+            self.build1DHistogram(title+"qop_err",
+                                  "#sigma_{qOp} [GeV-1]",100,0,20)
+            self.build1DHistogram(title+"p_err",
+                                  "#sigma_{p} [GeV]", 100, 0, 1)
+            
             
             

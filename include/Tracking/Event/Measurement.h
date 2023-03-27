@@ -1,3 +1,4 @@
+#pragma once
 
 //~~ StdLib ~~//
 #include <array>
