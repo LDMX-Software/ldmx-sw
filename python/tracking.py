@@ -175,7 +175,7 @@ class CKFProcessor(Producer):
     """
 
     def __init__(self, instance_name='CKFProcessor'):
-        super().__init__(instance_name, 'tracking::sim::CKFProcessor',
+        super().__init__(instance_name, 'tracking::reco::CKFProcessor',
                          'Tracking')
 
         self.dumpobj = False

@@ -33,7 +33,8 @@ void CKFProcessor::onProcessStart() {
 
   // Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      "/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      //"/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
+      "detector.gdml",
       &gctx_, debug_);
   const auto tGeometry = ldmx_tg->getTG();
 
@@ -99,135 +100,16 @@ void CKFProcessor::onProcessStart() {
 
   writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
 
-  // Create a mapping between the layers and the Acts::Surface
-  // layer_surface_map_ = makeLayerSurfacesMap(tGeometry);
-
-  // Prepare histograms
-
-  // getHistoDirectory();
-
-  // Track parameters
-  // histograms_.create("d0_reco","d0_reco",100,-20,20);
-  // histograms_.create("z0_reco","z0_reco",100,-20,20);
-  // histograms_.create("q/p","q_over_p",100,-1,1);
-  // histograms_.create("p","p",100,0,10);
-  // histograms_.create("theta","theta",100,-3.15,3.15);
-  // histograms_.create("phi","phi",100,-3.15,3.15);
-  // histograms_.create("t","t",100,0,100);
-
-  // Residuals
-  // histograms_.create("d0_res","d0_reco",100,-5,5);
-  // histograms_.create("z0_res","z0_reco",100,-5,5);
-  // histograms_.create("q/p_res","q_over_p",100,-0.1,0.1);
-  // histograms_.create("p_res","p",100,-2,2);
-  // histograms_.create("theta_res","theta",100,-0.1,0.1);
-  // histograms_.create("phi_res","phi",100,-0.1,0.1);
-  // histograms_.create("t_res","t",100,-0.1,0.1);
-
-  // Validation histograms
-  double ptlim = 0.1;
-  histo_p_ = std::make_unique<TH1F>("p_res", "p_res", 200, -1, 1);
-
-  histo_px_ = std::make_unique<TH1F>("px_res", "px_res", 200, -1, 1);
-  histo_py_ = std::make_unique<TH1F>("py_res", "py_res", 200, -ptlim, ptlim);
-  histo_pz_ = std::make_unique<TH1F>("pz_res", "pz_res", 200, -ptlim, ptlim);
-  histo_pt_ = std::make_unique<TH1F>("pt_res", "pt_res", 200, -ptlim, ptlim);
-
-  histo_d0_ = std::make_unique<TH1F>("d0_res", "d0_res", 200, -0.2, 0.2);
-  histo_z0_ = std::make_unique<TH1F>("z0_res", "z0_res", 200, -0.75, 0.75);
-  histo_phi_ = std::make_unique<TH1F>("phi_res", "phi_res", 200, -0.015, 0.015);
-  histo_theta_ =
-      std::make_unique<TH1F>("theta_res", "theta_res", 200, -0.01, 0.01);
-  histo_qop_ = std::make_unique<TH1F>("qop_res", "qop_res", 200, -5, 5);
-
-  histo_py_vs_p_ = std::make_unique<TH2F>("py_vs_p", "py_vs_p", 200, 0, 6, 200,
-                                          -ptlim, ptlim);
-  histo_py_vs_py_ = std::make_unique<TH2F>("py_vs_py", "py_vs_py", 200, 0, 2,
-                                           200, -ptlim, ptlim);
-  histo_pz_vs_p_ = std::make_unique<TH2F>("pz_vs_p", "pz_vs_p", 200, 0, 6, 200,
-                                          -ptlim, ptlim);
-  histo_pz_vs_pz_ = std::make_unique<TH2F>("pz_vs_pz", "pz_vs_pz", 200, 0, 2,
-                                           200, -ptlim, ptlim);
-  histo_pt_vs_p_ = std::make_unique<TH2F>("pt_vs_p", "pt_vs_p", 200, 0, 2, 200,
-                                          -ptlim, ptlim);
-  histo_pt_vs_pt_ = std::make_unique<TH2F>("pt_vs_pt", "pt_vs_pt", 200, 0, 2,
-                                           200, -ptlim, ptlim);
-
-  histo_p_pull_ = std::make_unique<TH1F>("p_pull", "p_pull", 200, -5, 5);
-  histo_d0_pull_ = std::make_unique<TH1F>("d0_pull", "d0_pull", 200, -5, 5);
-  histo_z0_pull_ = std::make_unique<TH1F>("z0_pull", "z0_pull", 200, -5, 5);
-  histo_phi_pull_ = std::make_unique<TH1F>("phi_pull", "phi_pull", 200, -5, 5);
-  histo_theta_pull_ =
-      std::make_unique<TH1F>("theta_pull", "theta_pull", 200, -5, 5);
-  histo_qop_pull_ = std::make_unique<TH1F>("qop_pull", "qop_pull", 200, -5, 5);
-
-  h_p_ = std::make_unique<TH1F>("p", "p", 600, 0, 6);
-  h_px_ = std::make_unique<TH1F>("px", "px", 600, 0, 6);
-  h_py_ = std::make_unique<TH1F>("py", "py", 200, -ptlim, ptlim);
-  h_pz_ = std::make_unique<TH1F>("pz", "pz", 200, -ptlim, ptlim);
-  h_pt_ = std::make_unique<TH1F>("pt", "pt", 200, 0, ptlim);
-
-  h_d0_ = std::make_unique<TH1F>("d0", "d0", 100, -20, 20);
-  h_z0_ = std::make_unique<TH1F>("z0", "z0", 100, -50, 50);
-  h_phi_ = std::make_unique<TH1F>("phi", "phi", 200, -0.5, 0.5);
-  h_theta_ = std::make_unique<TH1F>("theta", "theta", 200, 0.8, 2.2);
-  h_qop_ = std::make_unique<TH1F>("qop", "qop", 200, -10, 10);
-  h_nHits_ = std::make_unique<TH1F>("nHits", "nHits", 15, 0, 15);
-
-  h_p_err_ = std::make_unique<TH1F>("p_err", "p_err", 600, 0, 1);
-  h_d0_err_ = std::make_unique<TH1F>("d0_err", "d0_err", 100, 0, 0.05);
-  h_z0_err_ = std::make_unique<TH1F>("z0_err", "z0_err", 100, 0, 0.8);
-  h_phi_err_ = std::make_unique<TH1F>("phi_err", "phi_err", 200, 0, 0.002);
-  h_theta_err_ = std::make_unique<TH1F>("theta_err", "theta_err", 200, 0, 0.02);
-  h_qop_err_ = std::make_unique<TH1F>("qop_err", "qop_err", 200, 0, 0.1);
-
-  h_p_refit_ = std::make_unique<TH1F>("p_refit", "p_refit", 600, 0, 6);
-  h_d0_refit_ = std::make_unique<TH1F>("d0_refit", "d0_refit", 100, -20, 20);
-  h_z0_refit_ = std::make_unique<TH1F>("z0_refit", "z0_refit", 100, -50, 50);
-  h_phi_refit_ =
-      std::make_unique<TH1F>("phi_refit", "phi_refit", 200, -0.5, 0.5);
-  h_theta_refit_ =
-      std::make_unique<TH1F>("theta_refit", "theta_refit", 200, 0.8, 2.2);
-
-  h_p_gsf_refit_ =
-      std::make_unique<TH1F>("p_gsf_refit", "p_gsf_refit", 600, 0, 6);
-  h_d0_gsf_refit_ =
-      std::make_unique<TH1F>("d0_gsf_refit", "d0_gsf_refit", 100, -20, 20);
-  h_z0_gsf_refit_ =
-      std::make_unique<TH1F>("z0_gsf_refit", "z0_gsf_refit", 100, -50, 50);
-  h_phi_gsf_refit_ =
-      std::make_unique<TH1F>("phi_gsf_refit", "phi_gsf_refit", 200, -0.5, 0.5);
-  h_theta_gsf_refit_ = std::make_unique<TH1F>("theta_gsf_refit",
-                                              "theta_gsf_refit", 200, 0.8, 2.2);
-
-  h_p_gsf_refit_res_ =
-      std::make_unique<TH1F>("p_gsf_res", "p_gsf_res", 200, -1, 1);
-  h_qop_gsf_refit_res_ =
-      std::make_unique<TH1F>("qop_gsf_res", "qop_gsf_res", 200, -5, 5);
-
-  h_p_truth_ = std::make_unique<TH1F>("p_truth", "p_truth", 600, 0, 6);
-  h_pt_truth_ = std::make_unique<TH1F>("pt_truth", "pt_truth", 200, 0., ptlim);
-  h_px_truth_ = std::make_unique<TH1F>("px_truth", "px_truth", 600, -6, 6);
-  h_py_truth_ =
-      std::make_unique<TH1F>("py_truth", "py_truth", 200, -ptlim, ptlim);
-  h_pz_truth_ =
-      std::make_unique<TH1F>("pz_truth", "pz_truth", 200, -ptlim, ptlim);
-
-  h_d0_truth_ = std::make_unique<TH1F>("d0_truth", "d0_truth", 100, -20, 20);
-  h_z0_truth_ = std::make_unique<TH1F>("z0_truth_", "z0_truth", 100, -50, 50);
-  h_phi_truth_ =
-      std::make_unique<TH1F>("phi_truth", "phi_truth", 200, -0.5, 0.5);
-  h_theta_truth_ =
-      std::make_unique<TH1F>("theta_truth`", "theta_truth", 200, 0.8, 2.2);
-  h_qop_truth_ = std::make_unique<TH1F>("qop_truth", "qop_truth", 200, -10, 10);
-
-  h_tgt_scoring_x_y_ = std::make_unique<TH2F>(
-      "tgt_scoring_x_y", "tgt_scoring_x_y", 100, -40, 40, 100, -40, 40);
-  h_tgt_scoring_z_ =
-      std::make_unique<TH1F>("tgt_scoring_z", "tgt_scoring_z", 100, 0, 10);
+  
 }
 
 void CKFProcessor::produce(framework::Event& event) {
+
+  eventnr_++;
+
+  //if (eventnr_ != 8283)
+  //  return;
+  
   // int counter=0
   // if (counter==0) {
   // propagateENstates(event,
@@ -301,11 +183,15 @@ void CKFProcessor::produce(framework::Event& event) {
 
   const std::vector<ldmx::SimTrackerHit> sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
-  const auto ldmxsps = makeLdmxSpacepoints(sim_hits);
+  
+
+  const std::vector<ldmx::Measurement> measurements =
+      event.getCollection<ldmx::Measurement>(measurement_collection_);
+  
 
   // The mapping between the geometry identifier
-  // and the IndexSourceLink that points to the hit
-  const auto geoId_sl_map = makeGeoIdSourceLinkMap(ldmxsps);
+  // and the IndexsourceLink that points to the hit
+  const auto geoId_sl_map = makeGeoIdSourceLinkMap(measurements);
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] +=
@@ -359,31 +245,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   nseeds_++;
 
-  for (auto& startParameter : startParameters) {
-    // Already fill the plots with the truth information
-    h_p_truth_->Fill(startParameters.at(0).absoluteMomentum());
-    h_px_truth_->Fill(startParameters.at(0).momentum()(0));
-    h_py_truth_->Fill(startParameters.at(0).momentum()(1));
-    h_pz_truth_->Fill(startParameters.at(0).momentum()(2));
-
-    double py_truth = startParameters.at(0).momentum()(1);
-    double pz_truth = startParameters.at(0).momentum()(2);
-    double pt_truth = sqrt(py_truth * py_truth + pz_truth * pz_truth);
-
-    h_pt_truth_->Fill(pt_truth);
-
-    h_d0_truth_->Fill(
-        startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>());
-    h_z0_truth_->Fill(
-        startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>());
-    h_phi_truth_->Fill(
-        startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>());
-    h_theta_truth_->Fill(
-        startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>());
-    h_qop_truth_->Fill(
-        startParameters.at(0).get<Acts::BoundIndices::eBoundQOverP>());
-  }
-
+  
   auto seeds = std::chrono::high_resolution_clock::now();
   profiling_map_["seeds"] +=
       std::chrono::duration<double, std::milli>(seeds - hits).count();
@@ -401,16 +263,18 @@ void CKFProcessor::produce(framework::Event& event) {
   };
 
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
-  tracking::sim::LdmxMeasurementCalibrator calibrator{ldmxsps};
+  
+  tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
   Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
-
+  
   if (use1Dmeasurements_)
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
         &calibrator);
   else
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate>(
         &calibrator);
+  
   ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
       &kfUpdater);
   ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(
@@ -418,6 +282,10 @@ void CKFProcessor::produce(framework::Event& event) {
   ckf_extensions.measurementSelector
       .connect<&Acts::MeasurementSelector::select>(&measSel);
 
+
+  ldmx_log(debug) 
+      << "SourceLinkAccessor..." <<  std::endl;
+  
   // Create source link accessor and connect delegate
   struct SourceLinkAccIt {
     using BaseIt = decltype(geoId_sl_map.begin());
@@ -443,16 +311,19 @@ void CKFProcessor::produce(framework::Event& event) {
   };
 
   auto sourceLinkAccessor = [&](const Acts::Surface& surface)
-      -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
+                            -> std::pair<SourceLinkAccIt, SourceLinkAccIt> {
     auto [begin, end] = geoId_sl_map.equal_range(surface.geometryId());
     return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
   };
-
+  
   Acts::SourceLinkAccessorDelegate<SourceLinkAccIt> sourceLinkAccessorDelegate;
   sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(),
                                      decltype(sourceLinkAccessor)>(
-      &sourceLinkAccessor);
-
+                                         &sourceLinkAccessor);
+  
+  ldmx_log(debug) 
+      << "Surfaces..." <<  std::endl;
+  
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
@@ -479,19 +350,32 @@ void CKFProcessor::produce(framework::Event& event) {
   }
 
   auto ckf_loggingLevel = Acts::Logging::FATAL;
-  if (debug_) ckf_loggingLevel = Acts::Logging::VERBOSE;
+  if (debug_)
+    ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
   const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions(
       gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
       Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
 
+
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions_meas(
+      gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
+      Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
+
+
+  ldmx_log(debug) 
+      << "About to run CKF..." <<  std::endl;
+    
   // run the CKF for all initial track states
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] +=
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
 
-  auto results = ckf_->findTracks(startParameters, ckfOptions);
-
+  auto results = ckf_->findTracks(startParameters, ckfOptions_meas);
+  
+  ldmx_log(debug) 
+      << "CKF Ran!" <<  std::endl;
+    
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
@@ -565,109 +449,6 @@ void CKFProcessor::produce(framework::Event& event) {
     // Cut on number of hits?
     if (trajState.nMeasurements < min_hits_) continue;
 
-    h_nHits_->Fill(trajState.nMeasurements);
-
-    for (const auto& pair : ckf_result.fittedParameters) {
-      // std::cout<<"Number of hits-on-track::" << (int) pair.first <<
-      // std::endl;
-
-      double p = pair.second.absoluteMomentum();
-
-      double px = pair.second.momentum()(0);
-      double py = pair.second.momentum()(1);
-      double pz = pair.second.momentum()(2);
-      double pt = sqrt(py * py + pz * pz);
-
-      double truth_pt = sqrt(startParameters.at(0).momentum()(1) *
-                                 startParameters.at(0).momentum()(1) +
-                             startParameters.at(0).momentum()(2) *
-                                 startParameters.at(0).momentum()(2));
-
-      double resp = pair.second.absoluteMomentum() -
-                    startParameters.at(0).absoluteMomentum();
-
-      double respx = px - startParameters.at(0).momentum()(0);
-      double respy = py - startParameters.at(0).momentum()(1);
-      double respz = pz - startParameters.at(0).momentum()(2);
-
-      double respt = pt - truth_pt;
-
-      double resd0 =
-          pair.second.get<Acts::BoundIndices::eBoundLoc0>() -
-          startParameters.at(0).get<Acts::BoundIndices::eBoundLoc0>();
-      double resz0 =
-          pair.second.get<Acts::BoundIndices::eBoundLoc1>() -
-          startParameters.at(0).get<Acts::BoundIndices::eBoundLoc1>();
-      double resphi =
-          pair.second.get<Acts::BoundIndices::eBoundPhi>() -
-          startParameters.at(0).get<Acts::BoundIndices::eBoundPhi>();
-      double restheta =
-          pair.second.get<Acts::BoundIndices::eBoundTheta>() -
-          startParameters.at(0).get<Acts::BoundIndices::eBoundTheta>();
-
-      histo_p_->Fill(resp);
-      histo_px_->Fill(respx);
-      histo_py_->Fill(respy);
-      histo_pz_->Fill(respz);
-      histo_pt_->Fill(respt);
-
-      histo_py_vs_p_->Fill(p, respy);
-      histo_py_vs_py_->Fill(abs(py), respy);
-      histo_pz_vs_p_->Fill(p, respz);
-      histo_pz_vs_pz_->Fill(abs(pz), respz);
-      histo_pt_vs_pt_->Fill(pt, respt);
-      histo_pt_vs_p_->Fill(p, respt);
-
-      histo_d0_->Fill(resd0);
-      histo_z0_->Fill(resz0);
-      histo_phi_->Fill(resphi);
-      histo_theta_->Fill(restheta);
-
-      h_p_->Fill(p);
-      h_px_->Fill(px);
-      h_py_->Fill(py);
-      h_pz_->Fill(pz);
-      h_pt_->Fill(pt);
-
-      h_d0_->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc0>());
-      h_z0_->Fill(pair.second.get<Acts::BoundIndices::eBoundLoc1>());
-      h_phi_->Fill(pair.second.get<Acts::BoundIndices::eBoundPhi>());
-      h_theta_->Fill(pair.second.get<Acts::BoundIndices::eBoundTheta>());
-      h_qop_->Fill(pair.second.get<Acts::BoundIndices::eBoundQOverP>());
-
-      // auto cov = pair.second.covariance();
-      // auto stddev = cov.diagonal().cwiseSqrt().eval();
-
-      auto cov = pair.second.covariance();
-      double sigma_d0 = sqrt(cov.value()(Acts::BoundIndices::eBoundLoc0,
-                                         Acts::BoundIndices::eBoundLoc0));
-      double sigma_z0 = sqrt(cov.value()(Acts::BoundIndices::eBoundLoc1,
-                                         Acts::BoundIndices::eBoundLoc1));
-      double sigma_phi = sqrt(cov.value()(Acts::BoundIndices::eBoundPhi,
-                                          Acts::BoundIndices::eBoundPhi));
-      double sigma_theta = sqrt(cov.value()(Acts::BoundIndices::eBoundTheta,
-                                            Acts::BoundIndices::eBoundTheta));
-      double sigma_qop = sqrt(cov.value()(Acts::BoundIndices::eBoundQOverP,
-                                          Acts::BoundIndices::eBoundQOverP));
-
-      h_d0_err_->Fill(sigma_d0);
-      h_z0_err_->Fill(sigma_z0);
-      h_phi_err_->Fill(sigma_phi);
-      h_theta_err_->Fill(sigma_theta);
-      h_qop_err_->Fill(sigma_qop);
-
-      histo_d0_pull_->Fill(resd0 / sigma_d0);
-      histo_z0_pull_->Fill(resz0 / sigma_z0);
-      histo_phi_pull_->Fill(resphi / sigma_phi);
-      histo_theta_pull_->Fill(restheta / sigma_theta);
-
-      double sigma_p = pair.second.absoluteMomentum() *
-                       pair.second.absoluteMomentum() * sigma_qop;
-
-      h_p_err_->Fill(sigma_p);
-      histo_p_pull_->Fill(resp / sigma_p);
-    }
-
     // Create a track object
 
     ldmx::Track trk = ldmx::Track();
@@ -723,11 +504,11 @@ void CKFProcessor::produce(framework::Event& event) {
     ntracks_++;
 
     // Write the event display for the recoil
-    if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 &&
-        false) {
-      writeEvent(event, ckf_result.fittedParameters.begin()->second, mj,
-                 trackTip, ldmxsps);
-    }
+    //if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 &&
+    //    false) {
+    //  writeEvent(event, ckf_result.fittedParameters.begin()->second, mj,
+    //             trackTip, measurements);
+    //}
 
     // Refit the track with the KalmanFitter using backward propagation
     if (kf_refit_) {
@@ -772,16 +553,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
       if (!kf_refit_result.ok()) {
         std::cout << "KF Refit failed" << std::endl;
-      } else {
-        auto kf_refit_value = kf_refit_result.value();
-        auto kf_params = kf_refit_value.fittedParameters;
-        h_p_refit_->Fill((*kf_params).absoluteMomentum());
-        h_d0_refit_->Fill((*kf_params).get<Acts::BoundIndices::eBoundLoc0>());
-        h_z0_refit_->Fill((*kf_params).get<Acts::BoundIndices::eBoundLoc1>());
-        h_phi_refit_->Fill((*kf_params).get<Acts::BoundIndices::eBoundPhi>());
-        h_theta_refit_->Fill(
-            (*kf_params).get<Acts::BoundIndices::eBoundTheta>());
-      }
+      } else {}
 
     }  // Run the refit
 
@@ -827,19 +599,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
         if (!gsf_refit_result.ok()) {
           std::cout << "GSF Refit failed" << std::endl;
-        } else {
-          auto gsf_refit_value = gsf_refit_result.value();
-          auto gsf_params = gsf_refit_value.fittedParameters;
-          h_p_gsf_refit_->Fill((*gsf_params).absoluteMomentum());
-          h_d0_gsf_refit_->Fill(
-              (*gsf_params).get<Acts::BoundIndices::eBoundLoc0>());
-          h_z0_gsf_refit_->Fill(
-              (*gsf_params).get<Acts::BoundIndices::eBoundLoc1>());
-          h_phi_gsf_refit_->Fill(
-              (*gsf_params).get<Acts::BoundIndices::eBoundPhi>());
-          h_theta_gsf_refit_->Fill(
-              (*gsf_params).get<Acts::BoundIndices::eBoundTheta>());
-        }
+        } else {}
 
       } catch (...) {
         std::cout << "ERROR:: GSF Refit failed" << std::endl;
@@ -865,81 +625,7 @@ void CKFProcessor::onProcessEnd() {
   std::cout << "Producer " << getName() << " found " << ntracks_
             << " tracks  / " << nseeds_ << " nseeds" << std::endl;
 
-  TFile* outfile_ = new TFile((getName() + ".root").c_str(), "RECREATE");
-  outfile_->cd();
-
-  histo_p_->Write();
-  histo_px_->Write();
-  histo_py_->Write();
-  histo_pz_->Write();
-  histo_pt_->Write();
-
-  histo_d0_->Write();
-  histo_z0_->Write();
-  histo_phi_->Write();
-  histo_theta_->Write();
-
-  histo_p_pull_->Write();
-  histo_d0_pull_->Write();
-  histo_z0_pull_->Write();
-  histo_phi_pull_->Write();
-  histo_theta_pull_->Write();
-
-  h_p_->Write();
-  h_px_->Write();
-  h_py_->Write();
-  h_pz_->Write();
-  h_pt_->Write();
-
-  histo_py_vs_p_->Write();
-  histo_py_vs_py_->Write();
-  histo_pz_vs_p_->Write();
-  histo_pz_vs_pz_->Write();
-  histo_pt_vs_pt_->Write();
-  histo_pt_vs_p_->Write();
-
-  h_d0_->Write();
-  h_z0_->Write();
-  h_phi_->Write();
-  h_theta_->Write();
-  h_qop_->Write();
-  h_nHits_->Write();
-
-  h_p_err_->Write();
-  h_d0_err_->Write();
-  h_z0_err_->Write();
-  h_phi_err_->Write();
-  h_theta_err_->Write();
-  h_qop_err_->Write();
-
-  h_p_refit_->Write();
-  h_d0_refit_->Write();
-  h_z0_refit_->Write();
-  h_phi_refit_->Write();
-  h_theta_refit_->Write();
-
-  h_p_gsf_refit_->Write();
-  h_d0_gsf_refit_->Write();
-  h_z0_gsf_refit_->Write();
-  h_phi_gsf_refit_->Write();
-  h_theta_gsf_refit_->Write();
-  // h_nHits_gsf_refit_->Write();
-
-  h_p_truth_->Write();
-  h_px_truth_->Write();
-  h_py_truth_->Write();
-  h_pz_truth_->Write();
-  h_pt_truth_->Write();
-
-  h_d0_truth_->Write();
-  h_z0_truth_->Write();
-  h_phi_truth_->Write();
-  h_theta_truth_->Write();
-  h_qop_truth_->Write();
-
-  outfile_->Close();
-  delete outfile_;
-
+  
   std::cout << "PROCESSOR:: " << this->getName()
             << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
             << std::endl;
@@ -978,7 +664,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       "perigee_location", {0., 0., 0.});
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
-
+  measurement_collection_ =
+      parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
+  
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
   if (remove_stereo_)
     std::cout << "CONFIGURE::remove_stereo=" << (int)remove_stereo_ << std::endl;
@@ -1051,7 +739,7 @@ void CKFProcessor::writeEvent(
     framework::Event& event,
     const Acts::BoundTrackParameters& perigeeParameters,
     const Acts::MultiTrajectory& mj, const int& trackTip,
-    const std::vector<ldmx::LdmxSpacePoint*> ldmxsps) {
+    const std::vector<ldmx::Measurement> measurements) {
   // Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
   propagationSteps.reserve(1);
@@ -1222,11 +910,12 @@ void CKFProcessor::writeEvent(
   propagationSteps.push_back(steps);
   Acts::Vector3 gen_pos(0., 0., 0.);
   Acts::Vector3 gen_mom(0., 0., 0.);
-  writer_->WriteSteps(event, propagationSteps, ldmxsps, gen_pos, gen_mom);
+  writer_->WriteSteps(event, propagationSteps, measurements, gen_pos, gen_mom);
 }
 
+
 auto CKFProcessor::makeGeoIdSourceLinkMap(
-    const std::vector<ldmx::LdmxSpacePoint*>& ldmxsps)
+    const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
                                ActsExamples::IndexSourceLink> {
   std::unordered_multimap<Acts::GeometryIdentifier,
@@ -1234,11 +923,9 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       geoId_sl_map;
 
   // Check the hits associated to the surfaces
-  for (unsigned int i_ldmx_hit = 0; i_ldmx_hit < ldmxsps.size(); i_ldmx_hit++) {
-    ldmx::LdmxSpacePoint* ldmxsp = ldmxsps.at(i_ldmx_hit);
-    unsigned int layerid = ldmxsp->layer();
-
-    // const Acts::Surface* hit_surface = layer_surface_map_.at(layerid);
+  for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
+    ldmx::Measurement meas = measurements.at(i_meas);
+    unsigned int layerid = meas.getLayerID();
 
     const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
 
@@ -1246,88 +933,20 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // Transform the ldmx space point from global to local and store the
       // information
 
-      Acts::Vector3 dummy_momentum;
-      Acts::Vector2 local_pos;
-      try {
-        local_pos = hit_surface
-                        ->globalToLocal(gctx_, ldmxsp->global_pos_,
-                                        dummy_momentum, 0.320)
-                        .value();
-      } catch (const std::exception& e) {
-        std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
-        std::cout << ldmxsp->global_pos_ << std::endl;
-        continue;
-      }
-
-      // Smear the local position
-
-      if (do_smearing_) {
-        float smear_factor{(*normal_)(generator_)};
-
-        local_pos[0] += smear_factor * sigma_u_;
-        smear_factor = (*normal_)(generator_);
-        local_pos[1] += smear_factor * sigma_v_;
-        // update covariance
-        ldmxsp->setLocalCovariance(sigma_u_ * sigma_u_, sigma_v_ * sigma_v_);
-
-        // cache the acts x coordinate
-        double original_x = ldmxsp->global_pos_(0);
-
-        // transform to global
-        ldmxsp->global_pos_ =
-            hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum);
-
-        // update the acts x location
-        ldmxsp->global_pos_(0) = original_x;
-
-      }
-
-      ldmxsp->local_pos_ = local_pos;
-
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
-                                           i_ldmx_hit);
-
+                                           i_meas);
+      
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
     } else
-      std::cout << getName() << "::HIT " << i_ldmx_hit << " at layer"
-                << (ldmxsps.at(i_ldmx_hit))->layer()
+      std::cout << getName() << "::HIT " << i_meas << " at layer"
+                << (measurements.at(i_meas)).getLayerID()
                 << " is not associated to any surface?!" << std::endl;
   }
-
+  
   return geoId_sl_map;
 }
 
-auto CKFProcessor::makeLdmxSpacepoints(
-    const std::vector<ldmx::SimTrackerHit>& sim_hits)
-    -> std::vector<ldmx::LdmxSpacePoint*> {
-  std::vector<ldmx::LdmxSpacePoint*> ldmxsps;
-
-  // Convert to ldmxsps
-  for (auto& simHit : sim_hits) {
-    // Remove low energy deposit hits
-    if (simHit.getEdep() > 0.05) {
-      // Only selects hits that have track_id==1
-      if (track_id_ > 0 && simHit.getTrackID() != track_id_) continue;
-
-      if (pdg_id_ != -9999 && abs(simHit.getPdgID()) != pdg_id_) continue;
-
-      ldmx::LdmxSpacePoint* ldmxsp =
-          tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit);
-
-      if (remove_stereo_) {
-        unsigned int layerid = ldmxsp->layer();
-        if (layerid == 3101 || layerid == 3201 || layerid == 3301 ||
-            layerid == 3401)
-          continue;
-      }
-
-      ldmxsps.push_back(ldmxsp);
-    }
-  }
-
-  return ldmxsps;
-}
 
 // This is used to propagate the initial eN states through the detector
 
@@ -1486,7 +1105,7 @@ void CKFProcessor::propagateENstates(framework::Event& event,
     }
 
     // empty
-    std::vector<ldmx::LdmxSpacePoint*> hits{};
+    std::vector<ldmx::Measurement> hits{};
     writer_->WriteSteps(event, propagationSteps, hits, gen_pos, gen_mom);
 
   }  // loop on inputs

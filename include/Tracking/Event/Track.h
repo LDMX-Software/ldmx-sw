@@ -52,6 +52,7 @@ class Track {
 
   void setNoutliers(int nout) {n_outliers_ = nout;}
   void setNdf(int ndf) {ndf_ = ndf;}
+  int  getNdf(){return ndf_;};
   void setNsharedHits(int nsh) {n_shared_hits_ = nsh;}
   
   
@@ -121,7 +122,7 @@ class Track {
   double getQoP()   const {return perigee_pars_[4];};
   double getT()     const {return perigee_pars_[5];};
 
-  
+
   
  protected:
     
@@ -139,7 +140,7 @@ class Track {
   //The parameters and covariance matrix wrt the perigee surface
   //Acts::BoundVector perigee_pars_;
   //Acts::BoundSymMatrix perigee_cov_;
-
+  
   //6 elements
   //d0 / z0 / phi / theta / qop / t
   std::vector<double> perigee_pars_{0.,0.,0.,0.,0.,0.};
