@@ -66,6 +66,8 @@
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/MultiTrajectoryHelpers.hpp"
+#include "Acts/EventData/VectorTrackContainer.hpp"
+
 
 //--- Refit with backward propagation ---//
 #include "Acts/TrackFitting/KalmanFitter.hpp"
@@ -170,7 +172,7 @@ class CKFProcessor final : public framework::Producer {
   // Make a simple event display
   void writeEvent(framework::Event &event,
 		  const Acts::BoundTrackParameters& perigeeParameters,
-		  const Acts::MultiTrajectory& mj,
+		  const Acts::MultiTrajectory<Acts::VectorMultiTrajectory>& mj,
                   const int& trackTip,
                   const std::vector<ldmx::Measurement> meas);
 
@@ -262,13 +264,13 @@ class CKFProcessor final : public framework::Producer {
   std::unique_ptr<const CkfPropagator> propagator_;
 
   //The CKF
-  std::unique_ptr<const Acts::CombinatorialKalmanFilter<CkfPropagator>> ckf_;
+  std::unique_ptr<const Acts::CombinatorialKalmanFilter<CkfPropagator,Acts::VectorMultiTrajectory>> ckf_;
 
   //The KF
-  std::unique_ptr<const Acts::KalmanFitter<CkfPropagator>> kf_;
+  std::unique_ptr<const Acts::KalmanFitter<CkfPropagator,Acts::VectorMultiTrajectory>> kf_;
 
   //The GSF Fitter
-  std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
+  //std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
   
   //The propagator steps writer
   std::unique_ptr<tracking::sim::PropagatorStepWriter> writer_;

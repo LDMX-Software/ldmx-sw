@@ -119,8 +119,8 @@ TrackersTrackingGeometry::buildRecoilVolume() {
 
     // std::cout<<"Sensor Thickness from Material slab "<< thickness<<std::endl;
 
-    lcfg.envelopeX = std::pair<double, double>{thickness / 2. + clearance,
-                                               thickness / 2. + clearance};
+    lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
+      thickness / 2. + clearance};
     lcfg.active = true;
     layerConfig.push_back(lcfg);
   }
@@ -206,8 +206,8 @@ TrackersTrackingGeometry::buildTrackerVolume() {
 
     // std::cout<<"Sensor Thickness from Material slab "<< thickness<<std::endl;
 
-    lcfg.envelopeX = std::pair<double, double>{thickness / 2. + clearance,
-                                               thickness / 2. + clearance};
+    lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
+      thickness / 2. + clearance};
     lcfg.active = true;
     layerConfig.push_back(lcfg);
   }

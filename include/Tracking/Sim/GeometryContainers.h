@@ -8,16 +8,16 @@
 
 #pragma once
 
+#include "Acts/EventData/SourceLink.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
-//#include "ActsExamples/Utilities/GroupBy.hpp"
-//#include "ActsExamples/Utilities/Range.hpp"
-
+#include "Acts/Surfaces/Surface.hpp"
 #include "Tracking/Sim/GroupBy.h"
 #include "Tracking/Sim/Range.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <iostream>
 #include <utility>
 
 #include <boost/container/flat_map.hpp>
@@ -227,22 +227,7 @@ struct GeometryIdMultisetAccessor {
 
   // pointer to the container
   const Container* container = nullptr;
-
-  // count the number of elements with requested geoId
-  size_t count(const Acts::GeometryIdentifier& geoId) const {
-    assert(container != nullptr);
-    return container->count(geoId);
-  }
-
-  // get the range of elements with requested geoId
-  std::pair<Iterator, Iterator> range(
-      const Acts::GeometryIdentifier& geoId) const {
-    assert(container != nullptr);
-    return container->equal_range(geoId);
-  }
-
-  // get the element using the iterator
-  const Value& at(const Iterator& it) const { return *it; }
 };
+
 
 }  // namespace ActsExamples
