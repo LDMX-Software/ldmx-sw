@@ -99,16 +99,7 @@ class SeedFinderProcessor : public framework::Producer {
   Acts::MagneticFieldContext bctx_;
   Acts::CalibrationContext cctx_;
 
-  Acts::SpacePointGridConfig grid_conf_;
-  Acts::SeedfinderConfig<ldmx::LdmxSpacePoint> config_;
-  Acts::SeedFilterConfig seed_filter_cfg_;
   Acts::Vector3 bField_;
-
-  // Acts::Seedfinder::State state_;
-
-  std::shared_ptr<Acts::Seedfinder<ldmx::LdmxSpacePoint>> seed_finder_;
-  std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint>> bottom_bin_finder_;
-  std::shared_ptr<Acts::BinFinder<ldmx::LdmxSpacePoint>> top_bin_finder_;
 
   /* This is a temporary (working) solution to estimate the track parameters out
    * of the seeds Eventually we should move to what is in ACTS (I'm not happy
