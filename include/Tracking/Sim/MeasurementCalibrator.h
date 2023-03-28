@@ -4,6 +4,7 @@
 #include <vector>
 #include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Acts/EventData/MultiTrajectory.hpp"
+#include "Acts/EventData/VectorMultiTrajectory.hpp"
 #include "Acts/EventData/SourceLink.hpp"
 #include "Acts/Definitions/Algebra.hpp"
 #include "Tracking/Sim/IndexSourceLink.h"
@@ -47,9 +48,10 @@ namespace sim {
       /// @param gctx The geometry context (unused)
       /// @param trackState The track state to calibrate
       void calibrate(const Acts::GeometryContext& /*gctx*/,
-                     Acts::MultiTrajectory::TrackStateProxy trackState) const {
-        const auto& sourceLink =
-            static_cast<const ActsExamples::IndexSourceLink&>(trackState.uncalibrated());
+                     Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::TrackStateProxy trackState) const {
+
+        ActsExamples::IndexSourceLink sourceLink =
+            trackState.uncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         
         assert(m_measurements and
                "Undefined measurement container in LdmxMeasurementCalibrator");
@@ -58,18 +60,18 @@ namespace sim {
 
         auto meas = m_measurements->at(sourceLink.index());
         
-        trackState.calibrated().setZero();
+        trackState.calibrated<2>().setZero();
 
         Acts::Vector2 local_pos{meas.getLocalPosition()[0], meas.getLocalPosition()[1]};
-        trackState.calibrated().head<2>() = local_pos;
-        trackState.data().measdim = 2;
-        trackState.calibratedCovariance().setZero();
+        trackState.calibrated<2>().head<2>() = local_pos;
+        //trackState.data().measdim = 2;
+        trackState.calibratedCovariance<2>().setZero();
 
         Acts::SymMatrix2 local_cov;
         local_cov.setZero();
         local_cov(0,0) = meas.getLocalCovariance()[0];
         local_cov(1,1) = meas.getLocalCovariance()[1];
-        trackState.calibratedCovariance().block<2,2>(0,0) = local_cov;
+        trackState.calibratedCovariance<2>().block<2,2>(0,0) = local_cov;
 
         Acts::ActsMatrix<2,6> projector;
         projector.setZero();
@@ -87,9 +89,11 @@ namespace sim {
       /// @param gctx The geometry context (unused)
       /// @param trackState The track state to calibrate
       void calibrate_1d(const Acts::GeometryContext& /*gctx*/,
-                        Acts::MultiTrajectory::TrackStateProxy trackState) const {
-        const auto& sourceLink =
-            static_cast<const ActsExamples::IndexSourceLink&>(trackState.uncalibrated());
+                        Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::TrackStateProxy trackState) const {
+
+        //Use by value - life management is not working properly
+        ActsExamples::IndexSourceLink sourceLink =
+            trackState.uncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         
         assert(m_measurements and
                "Undefined measurement container in LdmxMeasurementCalibrator");
@@ -99,21 +103,20 @@ namespace sim {
 
         //std::cout<<"calibrate_1d ==> NMeasurements available=" << m_measurements->size()<<std::endl;
         auto meas = m_measurements->at(sourceLink.index());
-        
-        trackState.calibrated().setZero();
-        trackState.calibrated()(0) = (meas.getLocalPosition())[0];
-        trackState.data().measdim = 1;
-        trackState.calibratedCovariance().setZero();
-        trackState.calibratedCovariance()(0,0) = (meas.getLocalCovariance())[0];
+
+        //You need to explicitly allocate measurements here
+        trackState.allocateCalibrated(1);
+        trackState.calibrated<1>().setZero();
+        trackState.calibrated<1>()(0) = (meas.getLocalPosition())[0];
+        trackState.calibratedCovariance<1>().setZero();
+        trackState.calibratedCovariance<1>()(0,0) = (meas.getLocalCovariance())[0];
         
         Acts::ActsMatrix<2,6> projector;
         projector.setZero();
         projector(0,0) = 1.;
         projector(1,1) = 1.;
         trackState.setProjector(projector.row(0));
-        
-        
-        
+                
       }
 
       //Function to test the measurement calibrator
