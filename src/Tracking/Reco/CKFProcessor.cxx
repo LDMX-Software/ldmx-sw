@@ -3,6 +3,8 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Sim/GeometryContainers.h"
 
+
+
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
 #include <iostream>
@@ -80,6 +82,7 @@ void CKFProcessor::onProcessStart() {
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = true;
   navCfg.resolveSensitive = true;
+  navCfg.boundaryCheckLayerResolving = false;
   const Acts::Navigator navigator(navCfg);
 
   // Setup the propagators
@@ -88,11 +91,13 @@ void CKFProcessor::onProcessStart() {
                     : std::make_unique<CkfPropagator>(stepper, navigator);
   auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
-  // Setup the fitters
+  // Setup the fitters // you can add a second argument with a unique pointer to the logger you want
+  //ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE));
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
-  gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
-      std::move(gsf_propagator));
+
+  //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
+  //    std::move(gsf_propagator));
 
   // Setup the propagator steps writer
   tracking::sim::PropagatorStepWriter::Config cfg;
@@ -138,8 +143,7 @@ void CKFProcessor::produce(framework::Event& event) {
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
 
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
-      gctx_, bctx_, Acts::LoggerWrapper{logger()});
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
 
   propagator_options.pathLimit = std::numeric_limits<double>::max();
 
@@ -266,23 +270,27 @@ void CKFProcessor::produce(framework::Event& event) {
   
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
-  Acts::CombinatorialKalmanFilterExtensions ckf_extensions;
+  Acts::CombinatorialKalmanFilterExtensions<Acts::VectorMultiTrajectory> ckf_extensions;
   
   if (use1Dmeasurements_)
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
         &calibrator);
+  
   else
     ckf_extensions.calibrator.connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate>(
         &calibrator);
   
-  ckf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
-      &kfUpdater);
-  ckf_extensions.smoother.connect<&Acts::GainMatrixSmoother::operator()>(
-      &kfSmoother);
+  ckf_extensions.updater.connect<
+    &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
+        &kfUpdater);
+  ckf_extensions.smoother.connect<
+    &Acts::GainMatrixSmoother::operator()<Acts::VectorMultiTrajectory>>(
+        &kfSmoother);
+
   ckf_extensions.measurementSelector
-      .connect<&Acts::MeasurementSelector::select>(&measSel);
-
-
+      .connect<&Acts::MeasurementSelector::select<Acts::VectorMultiTrajectory>>(&measSel);
+  
+  
   ldmx_log(debug) 
       << "SourceLinkAccessor..." <<  std::endl;
   
@@ -293,7 +301,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
     using difference_type = typename BaseIt::difference_type;
     using iterator_category = typename BaseIt::iterator_category;
-    using value_type = typename BaseIt::value_type::second_type;
+    //using value_type = typename BaseIt::value_type::second_type;
+    using value_type = Acts::SourceLink;
     using pointer = typename BaseIt::pointer;
     using reference = value_type&;
 
@@ -307,7 +316,10 @@ void CKFProcessor::produce(framework::Event& event) {
     bool operator!=(const SourceLinkAccIt& other) const {
       return !(*this == other);
     }
-    const value_type& operator*() const { return it->second; }
+    //const value_type& operator*() const { return it->second; }
+
+    //by value
+    value_type operator*() const { return value_type{it->second}; }
   };
 
   auto sourceLinkAccessor = [&](const Acts::Surface& surface)
@@ -320,6 +332,32 @@ void CKFProcessor::produce(framework::Event& event) {
   sourceLinkAccessorDelegate.connect<&decltype(sourceLinkAccessor)::operator(),
                                      decltype(sourceLinkAccessor)>(
                                          &sourceLinkAccessor);
+  
+
+  /*
+  ActsExamples::GeometryIdMultiset<ActsExamples::IndexSourceLink> geoId_flat_multimap;
+  
+  for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
+    ldmx::Measurement meas = measurements.at(i_meas);
+    unsigned int layerid = meas.getLayerID();
+    const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
+    if (hit_surface) {
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
+                                           i_meas);
+      
+      geoId_flat_multimap.emplace(hit_surface->geometryId(), idx_sl);
+    }
+  }
+
+  
+  ActsExamples::IndexSourceLinkAccessor slAccessor;
+  slAccessor.container = &geoId_flat_multiset;
+  Acts::SourceLinkAccessorDelegate<ActsExamples::IndexSourceLinkAccessor::Iterator>
+      slAccessorDelegate;
+  slAccessorDelegate.connect<&ActsExamples::IndexSourceLinkAccessor::range>(&slAccessor);
+  */
+  
+  
   
   ldmx_log(debug) 
       << "Surfaces..." <<  std::endl;
@@ -353,14 +391,9 @@ void CKFProcessor::produce(framework::Event& event) {
   if (debug_)
     ckf_loggingLevel = Acts::Logging::VERBOSE;
   const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
-  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions(
+  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
       gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
-      Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
-
-
-  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt> ckfOptions_meas(
-      gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
-      Acts::LoggerWrapper{*ckflogger}, propagator_options, &(*extr_surface));
+      propagator_options, &(*extr_surface));
 
 
   ldmx_log(debug) 
@@ -370,139 +403,124 @@ void CKFProcessor::produce(framework::Event& event) {
   auto ckf_setup = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_setup"] +=
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
-
-  auto results = ckf_->findTracks(startParameters, ckfOptions_meas);
   
-  ldmx_log(debug) 
-      << "CKF Ran!" <<  std::endl;
-    
-  auto ckf_run = std::chrono::high_resolution_clock::now();
-  profiling_map_["ckf_run"] +=
-      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
 
-  // std::cout<<"StartParameters size::"<<startParameters.size()<<std::endl;
-  // std::cout<<"results size::"<<results.size()<<std::endl;
-
-  int ResultIndex = 0;
+  Acts::VectorTrackContainer vtc;
+  Acts::VectorMultiTrajectory mtj;
+  Acts::TrackContainer tc{vtc, mtj};
+  
   int GoodResult = 0;
 
-  for (auto& result : results) {
-    ResultIndex++;
-    if (!result.ok()) {
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+    profiling_map_["ckf_run"] +=
+        std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
+    
+
+  
+  
+  for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
+
+    auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
+    
+    if (not results.ok()) {
+      ldmx_log(warn)
+          <<"CKF Fit failed"<<std::endl;
       continue;
     }
+                    
+
+    //No track found
+    if (tc.size() < 1)
+      continue;
+    
+
+    ldmx_log(debug)<<"Filling track info"<<std::endl;
+
+    
     GoodResult++;
-
-    auto ckf_result = result.value();
-
-    
-    ldmx_log(debug) 
-        << "Track Index::" << GoodResult - 1 << std::endl
-        << "===============" << std::endl
-        << "ckf_result:: filtered " << ckf_result.filtered << std::endl
-        << "ckf_result:: smoothed " << ckf_result.smoothed << std::endl
-        << "ckf_result:: iSmoothed " << ckf_result.iSmoothed << std::endl
-        << "ckf_result:: finished " << ckf_result.finished << std::endl
-        << "Size of the active Tips " << ckf_result.activeTips.size() << std::endl
-        << "Last Measurement indices "
-        << ckf_result.lastMeasurementIndices.size();
-    for (auto& lm : ckf_result.lastMeasurementIndices) {
-      ldmx_log(debug)<< "LastMeasurementIndex=" << lm;
-    }
-    ldmx_log(debug) << "Last Track indices " << ckf_result.lastTrackIndices.size();
-    
-    for (auto& lt : ckf_result.lastTrackIndices) {
-      ldmx_log(debug) << "LastTrackIndex=" << lt;
-    }
-    
     
     // The track tips are the last measurement index
-    Acts::MultiTrajectory mj = ckf_result.fittedStates;
+    //Acts::MultiTrajectory<Acts::VectorMultiTrajectory> mj = tc.getTrack(trackId);
+    //                                                        //.container()
+    //                                                        //.trackStateContainer();
+    
+    auto track = tc.getTrack(trackId);
+    //for (auto& ts : track.trackStates()) {
+    ///ts is the track state.
+    ///auto lastTrackStates = track.trackStates().begin(); //<--- IT's reversed
+    //}
+    
 
-    // In the current case I should have a single trackTip
-    // Check
-    // https://github.com/acts-project/acts/blob/8f1f47bb57044b3e476d01b3dbafb13030038bd5/Examples/Io/Performance/ActsExamples/Io/Performance/TrackFitterPerformanceWriter.cpp#L114
-    auto trackTip = ckf_result.lastMeasurementIndices.front();
+    int nTrackStates = track.nTrackStates();
 
-    // Collect the trajectory summary info
-    auto trajState =
-        Acts::MultiTrajectoryHelpers::trajectoryState(mj, trackTip);
+    //Cut on minimum number of track states
+    if (nTrackStates < min_hits_ )
+      continue;
 
-    // Check some track info
+    const Acts::BoundVector& perigee_pars =  track.parameters();
+    const Acts::BoundMatrix& trk_cov  = track.covariance();
+    const Acts::Surface& perigee_surface = track.referenceSurface();
+       
+    
+    ldmx_log(debug)<<"Found track: nMeas "<< track.nMeasurements()<<std::endl
+                   <<"Track states "<< track.nTrackStates()<<std::endl
+                   <<perigee_pars[Acts::eBoundLoc0]<<" "
+                   <<perigee_pars[Acts::eBoundLoc1]<<" "
+                   <<perigee_pars[Acts::eBoundPhi]<<" "
+                   <<perigee_pars[Acts::eBoundTheta]<<" "
+                   <<perigee_pars[Acts::eBoundQOverP]<<std::endl
+                   <<"nHoles  "<<track.nHoles();
 
-    ldmx_log(debug)
-        << "nStates=" << trajState.nStates << std::endl
-        << "nMeasurements=" << trajState.nMeasurements << std::endl
-        << "nOutliers=" << trajState.nOutliers << std::endl
-        << "nHoles=" << trajState.nHoles << std::endl
-        << "chi2sum=" << trajState.chi2Sum << std::endl
-        << "NDF=" << trajState.NDF << std::endl
-        << "nsharedHits=" << trajState.nSharedHits;
-        
-        
-    if (trajState.nStates !=
-        trajState.nMeasurements + trajState.nOutliers + trajState.nHoles) {
-      ldmx_log(warn)<<"Found track with nStates inconsistent with expectation";
-      // continue;
-    }
-
-    // Cut on number of hits?
-    if (trajState.nMeasurements < min_hits_) continue;
-
-    // Create a track object
+    
 
     ldmx::Track trk = ldmx::Track();
-    trk.setPerigeeLocation(extr_surface->center(gctx_)[0],
-                           extr_surface->center(gctx_)[1],
-                           extr_surface->center(gctx_)[2]);
-
-    trk.setChi2(trajState.chi2Sum);
-    trk.setNhits(trajState.nMeasurements);
-    trk.setNdf(trajState.NDF);
-    trk.setNsharedHits(trajState.nSharedHits);
-
-    // Set the perigee parameters (TODO:: There should only be one single track
-    // per finding-fit for now. This method needs to be updated)
-    // trk.setPerigeeParameters(ckf_result.fittedParameters.begin()->second.parameters());
-
-    Acts::BoundVector tgt_srf_pars =
-        ckf_result.fittedParameters.begin()->second.parameters();
-    Acts::BoundMatrix tgt_srf_cov =
-        ckf_result.fittedParameters.begin()->second.covariance()
-            ? ckf_result.fittedParameters.begin()->second.covariance().value()
-            : Acts::BoundSymMatrix::Identity();
+    trk.setPerigeeLocation(perigee_surface.transform(gctx_).translation()(0),
+                           perigee_surface.transform(gctx_).translation()(1),
+                           perigee_surface.transform(gctx_).translation()(2));
     
-    /*
-    if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
-      std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0.
-    Chi2="<<trajState.chi2Sum<<std::endl; mj.visitBackwards(trackTip, [&](const
-    auto& state) { std::cout<<"Printing smoothed states"<<std::endl;
-        std::cout<<state.smoothed()<<std::endl;
-        std::cout<<"Printing filtered states"<<std::endl;
-        std::cout<<state.filtered()<<std::endl;
-      });
-
-
-    }*/
-
-    std::vector<double> v_tgt_srf_pars(
-        tgt_srf_pars.data(),
-        tgt_srf_pars.data() + tgt_srf_pars.rows() * tgt_srf_pars.cols());
-    std::vector<double> v_tgt_srf_cov_flat;
-    tracking::sim::utils::flatCov(tgt_srf_cov, v_tgt_srf_cov_flat);
-    Acts::Vector3 trk_momentum =
-        ckf_result.fittedParameters.begin()->second.momentum();
-    Acts::Vector3 trk_position =
-        ckf_result.fittedParameters.begin()->second.position(gctx_);
-
-    trk.setPerigeeParameters(v_tgt_srf_pars);
-    trk.setPerigeeCov(v_tgt_srf_cov_flat);
+    //TODO FIx
+    trk.setChi2(0.);
+    trk.setNhits(track.nTrackStates());
+    trk.setNdf(0);
+    trk.setNsharedHits(0);
+    
+    trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
+    std::vector<double> v_trk_cov;
+    tracking::sim::utils::flatCov(trk_cov, v_trk_cov);
+    trk.setPerigeeCov(v_trk_cov);
+    
+    Acts::Vector3 trk_momentum = track.momentum();
     trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
-    trk.setPosition(trk_position(0), trk_position(1), trk_position(2));
 
     tracks.push_back(trk);
     ntracks_++;
+    
+    
+    //auto trajState =
+    //    Acts::MultiTrajectoryHelpers::trajectoryState(mj, trackTip);
+    
+    // trk.setPerigeeParameters(ckf_result.fittedParameters.begin()->second.parameters());
 
+    //Acts::BoundVector tgt_srf_pars =
+    //    ckf_result.fittedParameters.begin()->second.parameters();
+    //Acts::BoundMatrix tgt_srf_cov =
+    //    ckf_result.fittedParameters.begin()->second.covariance()
+    //    ? ckf_result.fittedParameters.begin()->second.covariance().value()
+    //    : Acts::BoundSymMatrix::Identity();
+    
+    /*
+      if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
+      std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0.
+      Chi2="<<trajState.chi2Sum<<std::endl; mj.visitBackwards(trackTip, [&](const
+      auto& state) { std::cout<<"Printing smoothed states"<<std::endl;
+      std::cout<<state.smoothed()<<std::endl;
+      std::cout<<"Printing filtered states"<<std::endl;
+      std::cout<<state.filtered()<<std::endl;
+      });
+
+
+      }*/
+    
     // Write the event display for the recoil
     //if (ckf_result.fittedParameters.begin()->second.absoluteMomentum() < 1.2 &&
     //    false) {
@@ -511,102 +529,103 @@ void CKFProcessor::produce(framework::Event& event) {
     //}
 
     // Refit the track with the KalmanFitter using backward propagation
-    if (kf_refit_) {
-      std::cout << "Preparing theKF refit" << std::endl;
-      std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
-          fit_trackSourceLinks;
-      mj.visitBackwards(trackTip, [&](const auto& state) {
-        const auto& sourceLink =
-            static_cast<const ActsExamples::IndexSourceLink&>(
-                state.uncalibrated());
-        auto typeFlags = state.typeFlags();
-        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-          fit_trackSourceLinks.push_back(std::cref(sourceLink));
-        }
-      });
-
-      std::cout << "Getting the logger and adding the extensions." << std::endl;
-      const auto kfLogger =
-          Acts::getDefaultLogger("KalmanFitter", Acts::Logging::INFO);
-      Acts::KalmanFitterExtensions kfitter_extensions;
-      kfitter_extensions.calibrator
-          .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
-      kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
-          &kfUpdater);
-      kfitter_extensions.smoother
-          .connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
-
-      // rFiltering is true, so it should run in reversed direction.
-      Acts::KalmanFitterOptions kfitter_options = Acts::KalmanFitterOptions(
-          gctx_, bctx_, cctx_, kfitter_extensions,
-          Acts::LoggerWrapper{*kfLogger}, propagator_options, &(*extr_surface),
-          true, true, true);  // mScattering, exoLoss, rFiltering
-
-      // Acts::MagneticFieldProvider::Cache cache =
-      // sp_interpolated_bField_->makeCache(bctx_); std::cout<<"
-      // BField::\n"<<sp_interpolated_bField_->getField(ckf_result.fittedParameters.begin()->second.position(gctx_),cache).value()
-      // / Acts::UnitConstants::T <<std::endl;
-
-      auto kf_refit_result = kf_->fit(
-          fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
-          ckf_result.fittedParameters.begin()->second, kfitter_options);
-
-      if (!kf_refit_result.ok()) {
-        std::cout << "KF Refit failed" << std::endl;
-      } else {}
-
-    }  // Run the refit
-
-    // Refit track using the GSF
-    if (gsf_refit_) {
-      try {
-        const auto gsfLogger =
-            Acts::getDefaultLogger("GSF", Acts::Logging::INFO);
-        std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
-            fit_trackSourceLinks;
-        mj.visitBackwards(trackTip, [&](const auto& state) {
-          auto typeFlags = state.typeFlags();
-          if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-            const auto& sourceLink =
-                static_cast<const ActsExamples::IndexSourceLink&>(
-                    state.uncalibrated());
-            fit_trackSourceLinks.push_back(std::cref(sourceLink));
-          }
-        });
-
-        // Same extensions of the KF
-        Acts::GsfExtensions gsf_extensions;
-        gsf_extensions.calibrator
-            .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
-        gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
-            &kfUpdater);
-
-        Acts::GsfOptions gsf_options{gctx_,
-                                     bctx_,
-                                     cctx_,
-                                     gsf_extensions,
-                                     Acts::LoggerWrapper{*gsfLogger},
-                                     propagator_options,
-                                     &(*extr_surface)};
-
-        gsf_options.abortOnError = false;
-        gsf_options.maxComponents = 4;
-        gsf_options.disableAllMaterialHandling = false;
-
-        auto gsf_refit_result =
-            gsf_->fit(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
-                      ckf_result.fittedParameters.begin()->second, gsf_options);
-
-        if (!gsf_refit_result.ok()) {
-          std::cout << "GSF Refit failed" << std::endl;
-        } else {}
-
-      } catch (...) {
-        std::cout << "ERROR:: GSF Refit failed" << std::endl;
-      }
-    }  // do refit GSF
-  }    // loop on CKF Results
-
+    //if (kf_refit_) {
+    //  std::cout << "Preparing theKF refit" << std::endl;
+    //  std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
+    //      fit_trackSourceLinks;
+    //  mj.visitBackwards(trackTip, [&](const auto& state) {
+    //    const auto& sourceLink =
+    //        static_cast<const ActsExamples::IndexSourceLink&>(
+    //            state.uncalibrated());
+    //    auto typeFlags = state.typeFlags();
+    //    if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+    //      fit_trackSourceLinks.push_back(std::cref(sourceLink));
+    //    }
+    //  });
+    //
+    //  std::cout << "Getting the logger and adding the extensions." << std::endl;
+    //  const auto kfLogger =
+    //      Acts::getDefaultLogger("KalmanFitter", Acts::Logging::INFO);
+    //  Acts::KalmanFitterExtensions kfitter_extensions;
+    //  kfitter_extensions.calibrator
+    //      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+    //  kfitter_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
+    //      &kfUpdater);
+    //  kfitter_extensions.smoother
+    //      .connect<&Acts::GainMatrixSmoother::operator()>(&kfSmoother);
+    //
+    //  // rFiltering is true, so it should run in reversed direction.
+    //  Acts::KalmanFitterOptions kfitter_options = Acts::KalmanFitterOptions(
+    //      gctx_, bctx_, cctx_, kfitter_extensions,
+    //      propagator_options, &(*extr_surface),
+    //      true, true, true);  // mScattering, exoLoss, rFiltering
+    //
+    //  auto kf_refit_result = kf_->fit(
+    //        fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
+    //      ckf_result.fittedParameters.begin()->second, kfitter_options);
+    //  
+    //  if (!kf_refit_result.ok()) {
+    //    std::cout << "KF Refit failed" << std::endl;
+    //  } else {}
+    //  
+    //}  // Run the refit
+    
+    // Refit track using the GSF - DISABLE
+    
+    //if (gsf_refit_) {
+    //  try {
+    //    const auto gsfLogger =
+    //        Acts::getDefaultLogger("GSF", Acts::Logging::INFO);
+    //   std::vector<std::reference_wrapper<const ActsExamples::IndexSourceLink>>
+    //        fit_trackSourceLinks;
+    //    mj.visitBackwards(trackTip, [&](const auto& state) {
+    //      auto typeFlags = state.typeFlags();
+    //      if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+    //        const auto& sourceLink =
+    //            static_cast<const ActsExamples::IndexSourceLink&>(
+    //                state.uncalibrated());
+    //        fit_trackSourceLinks.push_back(std::cref(sourceLink));
+    //      }
+    //    });
+    //    
+    //
+    //    // Same extensions of the KF
+    //    Acts::GsfExtensions gsf_extensions;
+    //    gsf_extensions.calibrator
+    //        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(&calibrator);
+    //    gsf_extensions.updater.connect<&Acts::GainMatrixUpdater::operator()>(
+    //        &kfUpdater);
+    //
+    //    Acts::GsfOptions gsf_options{gctx_,
+    //                                 bctx_,
+    //                                 cctx_,
+    //                                 gsf_extensions,
+    //                                 Acts::LoggerWrapper{*gsfLogger},
+    //                                 propagator_options,
+    //                                 &(*extr_surface)};
+    //
+    //    gsf_options.abortOnError = false;
+    //    gsf_options.maxComponents = 4;
+    //    gsf_options.disableAllMaterialHandling = false;
+    //
+    //    auto gsf_refit_result =
+    //        gsf_->fit(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
+    //                  ckf_result.fittedParameters.begin()->second, gsf_options);
+    //
+    //    if (!gsf_refit_result.ok()) {
+    //      std::cout << "GSF Refit failed" << std::endl;
+    //    } else {}
+    //
+    //  } catch (...) {
+    //  std::cout << "ERROR:: GSF Refit failed" << std::endl;
+    //  }
+    //  }  // do refit GSF
+    //
+    //
+    
+  }    // loop seed track parameters
+  
+  
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
@@ -738,7 +757,7 @@ void CKFProcessor::testMeasurmentCalibrator(
 void CKFProcessor::writeEvent(
     framework::Event& event,
     const Acts::BoundTrackParameters& perigeeParameters,
-    const Acts::MultiTrajectory& mj, const int& trackTip,
+    const Acts::MultiTrajectory<Acts::VectorMultiTrajectory>& mj, const int& trackTip,
     const std::vector<ldmx::Measurement> measurements) {
   // Prepare the outputs..
   std::vector<std::vector<Acts::detail::Step>> propagationSteps;
@@ -760,8 +779,7 @@ void CKFProcessor::writeEvent(
   PropagationOutput pOutput;
   const auto evtLogger =
       Acts::getDefaultLogger("evtDisplay", Acts::Logging::INFO);
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
-      gctx_, bctx_, Acts::LoggerWrapper{*evtLogger});
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
 
   propagator_options.pathLimit = std::numeric_limits<double>::max();
 
@@ -913,7 +931,6 @@ void CKFProcessor::writeEvent(
   writer_->WriteSteps(event, propagationSteps, measurements, gen_pos, gen_mom);
 }
 
-
 auto CKFProcessor::makeGeoIdSourceLinkMap(
     const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
@@ -922,19 +939,28 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
                           ActsExamples::IndexSourceLink>
       geoId_sl_map;
 
+
+  ldmx_log(debug) << "makeGeoIdSourceLinkMap::Available measurements"<< measurements.size();
+
   // Check the hits associated to the surfaces
   for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
     ldmx::Measurement meas = measurements.at(i_meas);
     unsigned int layerid = meas.getLayerID();
 
     const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
-
+    
+    
     if (hit_surface) {
       // Transform the ldmx space point from global to local and store the
       // information
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
                                            i_meas);
+
+      ldmx_log(debug)<<"Insert measurement on surface located at::"<<hit_surface->transform(gctx_).translation();
+      ldmx_log(debug)<<"and geoId::"<<hit_surface->geometryId()<<std::endl;
+      
+      ldmx_log(debug)<<"Surface info::"<<std::tie(*hit_surface, gctx_);
       
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
@@ -1069,10 +1095,8 @@ void CKFProcessor::propagateENstates(framework::Event& event,
         std::pair<std::vector<Acts::detail::Step>, RecordedMaterial>;
 
     PropagationOutput pOutput;
-    const auto eNLogger = Acts::getDefaultLogger("eN", Acts::Logging::INFO);
-
-    Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
-        gctx_, bctx_, Acts::LoggerWrapper{*eNLogger});
+    
+    Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
     propagator_options.pathLimit = std::numeric_limits<double>::max();
     propagator_options.loopProtection = false;
     auto& mInteractor =
@@ -1117,3 +1141,5 @@ void CKFProcessor::propagateENstates(framework::Event& event,
 }  // namespace tracking
 
 DECLARE_PRODUCER_NS(tracking::reco, CKFProcessor)
+
+
