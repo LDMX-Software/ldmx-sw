@@ -373,18 +373,15 @@ bool SeedFinderProcessor::GroupStrips(
   //}
   // std::cout<<std::endl;
 
-  int found = 0;
-
   for (auto& meas : measurements) {
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
       groups_map[meas.getLayer()].push_back(&meas);
-      found++;
     }
 
   }  // loop meas
 
-  if (found < 5)
+  if (groups_map.size() < 5)
     return false;
   else
     return true;
