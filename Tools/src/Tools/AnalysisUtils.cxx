@@ -29,17 +29,16 @@ namespace Analysis {
 std::tuple<int, const ldmx::SimParticle*> getRecoil(
     const std::map<int, ldmx::SimParticle>& particleMap) {
   // The recoil electron is "produced" in the dark brem geneartion 
-  for (auto const& [trackID, particle] : particleMap) {
-	if (particle.getPdgID() == 11 and
-		particle.getProcessType() ==
-		ldmx::SimParticle::ProcessType::eDarkBrem) {
-	  return {trackID, &particle};
-	}
-	else if (particle.getPdgID() == 11 and trackID == 1) {
-	  // primary electron
-	  return {trackID, &particle};
-	}
+  for (const auto& [trackID, particle] : particleMap) {
+    if (particle.getPdgID() == 11 and 
+        particle.getProcessType() == 
+        ldmx::SimParticle::ProcessType::eDarkBrem) {
+      return {trackID, &particle};
+    }
   }
+  // only get here if recoil electron was not "produced" by dark brem
+  //   in this case (bkgd), we interpret the primary electron as also the recoil electron
+  return {1, &(particleMap.at(1))};
 }
 
 const ldmx::SimParticle* getPNGamma(
