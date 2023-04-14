@@ -89,7 +89,7 @@ void CKFProcessor::onProcessStart() {
   propagator_ = const_b_field_
                     ? std::make_unique<CkfPropagator>(const_stepper, navigator)
                     : std::make_unique<CkfPropagator>(stepper, navigator);
-  auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
+  //auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
   // Setup the fitters // you can add a second argument with a unique pointer to the logger you want
   //ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE));
@@ -445,10 +445,17 @@ void CKFProcessor::produce(framework::Event& event) {
     //                                                        //.trackStateContainer();
     
     auto track = tc.getTrack(trackId);
-    //for (auto& ts : track.trackStates()) {
-    ///ts is the track state.
-    ///auto lastTrackStates = track.trackStates().begin(); //<--- IT's reversed
-    //}
+
+    //Loop on the trackStates
+    for (auto ts : track.trackStates()) {
+      ///ts is the track state.
+      ///auto lastTrackStates = track.trackStates().begin(); //<--- IT's reversed
+      ///
+      
+    }
+
+    
+    
     
 
     int nTrackStates = track.nTrackStates();

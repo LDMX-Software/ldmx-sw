@@ -74,7 +74,7 @@
 
 
 //GSF
-#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//
