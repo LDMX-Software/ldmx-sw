@@ -51,7 +51,7 @@ namespace sim {
                      Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::TrackStateProxy trackState) const {
 
         ActsExamples::IndexSourceLink sourceLink =
-            trackState.uncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
+            trackState.getUncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         
         assert(m_measurements and
                "Undefined measurement container in LdmxMeasurementCalibrator");
@@ -93,7 +93,7 @@ namespace sim {
 
         //Use by value - life management is not working properly
         ActsExamples::IndexSourceLink sourceLink =
-            trackState.uncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
+            trackState.getUncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         
         assert(m_measurements and
                "Undefined measurement container in LdmxMeasurementCalibrator");
