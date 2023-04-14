@@ -451,9 +451,6 @@ void CKFProcessor::produce(framework::Event& event) {
       ///ts is the track state.
       ///auto lastTrackStates = track.trackStates().begin(); //<--- IT's reversed
       ///
-
-      std::cout<<"Track State Flag"<<std::endl;
-      std::cout<<std::hex<<"0x"<<ts.typeFlags()<<std::dec<<std::endl;
       
     }
 
