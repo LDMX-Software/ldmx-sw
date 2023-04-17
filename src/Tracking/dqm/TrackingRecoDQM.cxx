@@ -1,5 +1,5 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
-#inclxude "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking::dqm {
 
@@ -13,16 +13,13 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   
 }
 
-
-
 void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                                       const std::string title) {
   
-
   for (auto &track : tracks) {
 
     //Perigee track parameters
-
+    
     double trk_d0     = track.getD0();
     double trk_z0     = track.getZ0();
     double trk_qOp    = track.getQoP();
@@ -42,7 +39,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"qOp",trk_qOp);
     histograms_.fill(title+"phi",trk_phi);
     histograms_.fill(title+"theta",trk_theta);
-
+    
     histograms_.fill(title+"p",  std::abs(1./trk_qOp));
     histograms_.fill(title+"px", trk_mom[0]);
     histograms_.fill(title+"py", trk_mom[1]);
@@ -51,9 +48,13 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"pt_bending", pt_bending);
     histograms_.fill(title+"pt_beam", pt_beam);
     
-
     histograms_.fill(title+"nHits", track.getNhits());
-   
+    histograms_.fill(title+"Chi2", track.getChi2());
+    histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
+    histograms_.fill(title+"nShared", track.getNsharedHits());
+    histograms_.fill(title+"nHoles", track.getNholes());
+    
+    
     //Covariance matrix
     Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
 
@@ -72,9 +73,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double sigmap = (1./trk_qOp)*(1./trk_qOp)*sigmaqop;
     histograms_.fill(title+"p_err",  sigmap); 
     
-    //histograms_.fill(title+"Chi2", track.getChi2());
-    //histograms_.fill(title+"Chi2/ndf", track.getChi2() / track.getNdf());
-
     //Target surface track parameters
     
     //histogram_fill(name+"tgt_loc0", tgt_loc0);
@@ -85,7 +83,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     //histogram_fill(name+"tgt_py",tgt_mom(1));
     //histogram_fill(name+"tgt_pz",tgt_mom(2));
     
-        
   }
         
   
