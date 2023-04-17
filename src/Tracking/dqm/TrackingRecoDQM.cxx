@@ -1,5 +1,5 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
-#include "Tracking/Sim/TrackingUtils.h"
+#inclxude "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking::dqm {
 
@@ -68,13 +68,9 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"phi_err",  sigmaphi); 
     histograms_.fill(title+"theta_err",sigmatheta); 
     histograms_.fill(title+"qop_err",  sigmaqop); 
-                                        
     
-
     double sigmap = (1./trk_qOp)*(1./trk_qOp)*sigmaqop;
     histograms_.fill(title+"p_err",  sigmap); 
-
-    
     
     //histograms_.fill(title+"Chi2", track.getChi2());
     //histograms_.fill(title+"Chi2/ndf", track.getChi2() / track.getNdf());
