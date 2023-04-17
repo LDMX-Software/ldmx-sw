@@ -59,9 +59,9 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "qOverP [GeV^{-1}]",100,-20,20)
 
             self.build1DHistogram(title+"pt_bending",
-                                  "pT bending plane [GeV]",100,pmax,pmax)
+                                  "pT bending plane [GeV]",100,-pmax,pmax)
             self.build1DHistogram(title+"pt_beam",
-                                  "pT beam axis [GeV]",100,pmax,pmax)
+                                  "pT beam axis [GeV]",100,-pmax,pmax)
                         
             self.build1DHistogram(title+"nHits",
                                   "nHits",15,0,15)
