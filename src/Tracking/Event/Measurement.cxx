@@ -33,7 +33,7 @@ ClassImp(ldmx::Measurement)
            << " cov(V,V) " << measurement.cov_vv_
            << "\n\tTime: " << measurement.t_
            << " ns \n\tLayer ID: " << measurement.layerid_
-           << " ns \n\tLayer: " << measurement.layer_
+           << "\n\tLayer: " << measurement.layer_
            << "\n\tEnergy Deposition: " << measurement.edep_ << " MeV"
            << std::endl;
 

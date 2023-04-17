@@ -39,7 +39,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         titles = ["tagger_trk_","recoil_trk_"]
 
         for title in titles:
-
+            
             self.build1DHistogram(title+"d0",
                                   "d0 [mm]",100,d0min,d0max)
         
@@ -65,6 +65,14 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                         
             self.build1DHistogram(title+"nHits",
                                   "nHits",15,0,15)
+            self.build1DHistogram(title+"Chi2",
+                                  "Chi2",100,0,100)
+            self.build1DHistogram(title+"Chi2/ndf",
+                                  "Chi2/ndf",100,0,10)
+            self.build1DHistogram(title+"nShared",
+                                  "nShared",5,0,5)
+            self.build1DHistogram(title+"nHoles",
+                                  "nHoles",5,0,5)
             self.build1DHistogram(title+"px",
                                   "pX [GeV]",100,-pmax,pmax)
             self.build1DHistogram(title+"py",
