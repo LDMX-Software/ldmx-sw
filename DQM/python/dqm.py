@@ -202,9 +202,10 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
-    def __init__(self,name='PN') :
+    def __init__(self,name='PN', verbose=False) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
+        self.verbose = verbose
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
         self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
         self.build1DHistogram("event_type_2000mev" , "", 24, -1, 23)
