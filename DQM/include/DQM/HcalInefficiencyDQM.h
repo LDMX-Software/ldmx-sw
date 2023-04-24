@@ -1,5 +1,5 @@
-#ifndef HCALNEUTRONINEFFICIENCYDQM_H
-#define HCALNEUTRONINEFFICIENCYDQM_H
+#ifndef HCALINEFFICIENCYDQM_H
+#define HCALINEFFICIENCYDQM_H
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
@@ -8,10 +8,9 @@
 #include <Hcal/Event/HcalHit.h>
 #include <string>
 namespace dqm {
-class HcalNeutronInefficiencyAnalyzer : public framework::Analyzer {
+class HcalInefficiencyAnalyzer : public framework::Analyzer {
 public:
-  HcalNeutronInefficiencyAnalyzer(const std::string &name,
-                                  framework::Process &process)
+  HcalInefficiencyAnalyzer(const std::string &name, framework::Process &process)
       : framework::Analyzer{name, process} {}
 
   void configure(framework::config::Parameters &parameters) {}
@@ -56,4 +55,4 @@ public:
 
 } // namespace dqm
 
-#endif /* HCALNEUTRONINEFFICIENCYDQM_H */
+#endif /* HCALINEFFICIENCYDQM_H */
