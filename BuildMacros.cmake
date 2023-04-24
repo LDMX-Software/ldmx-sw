@@ -379,8 +379,8 @@ macro(build_test)
     include(FetchContent)
     FetchContent_Declare(
         Catch2
-        URL https://github.com/catchorg/Catch2.git
-        GIT_TAG        v3.2.0
+        URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.3.1.tar.gz
+        URL_HASH MD5=5cdc99f93e0b709936eb5af973df2a5c
     )
     FetchContent_MakeAvailable(Catch2)
   endif()
