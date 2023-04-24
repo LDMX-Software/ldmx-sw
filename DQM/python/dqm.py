@@ -72,9 +72,9 @@ class HCalDQM(ldmxcfg.Analyzer) :
         #                    "Photoelectrons in an HCal Module", 1500, 0, 1500,
         #                    f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
 
-class HcalNeutronInefficiencyAnalyzer(ldmxcfg.Analyzer):
-    def __init__(self,name="HcalNeutronInefficiencyAnalyzer") :
-        super().__init__(name,'dqm::HcalNeutronInefficiencyAnalyzer','DQM')
+class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
+    def __init__(self,name="HcalInefficiencyAnalyzer") :
+        super().__init__(name,'dqm::HcalInefficiencyAnalyzer','DQM')
 
         self.hcalSimHitColl = "HcalSimHits"
         self.hcalSimHitPass = "" #use whatever pass is available
