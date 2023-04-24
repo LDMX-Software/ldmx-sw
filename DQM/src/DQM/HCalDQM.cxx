@@ -31,9 +31,16 @@ void HCalDQM::analyze(const framework::Event &event) {
       continue;
     }
 
-    histograms_.fill("pe", hit.getPE());
+    const auto pe{hit.getPE()};
+    const auto t{hit.getTime()};
+    totalPE += pe;
+
+    histograms_.fill("pe", pe);
+    histograms_.fill("hit_time", t);
+    histograms_.fill("layer", id.layer());
   }
 
+  histograms_.fill("total_pe", totalPE);
   // float totalPE{0}, total_back_pe{0}, minTime{999}, minTimePE{-1};
   // float maxPE{-1}, maxPETime{-1};
   // std::vector<float> total_section_pe(5);
