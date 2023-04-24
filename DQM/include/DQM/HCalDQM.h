@@ -22,9 +22,9 @@
 namespace dqm {
 
 class HCalDQM : public framework::Analyzer {
- public:
+public:
   /** Constructor */
-  HCalDQM(const std::string& name, framework::Process& process);
+  HCalDQM(const std::string &name, framework::Process &process);
 
   /** Destructor */
   ~HCalDQM() {}
@@ -34,16 +34,16 @@ class HCalDQM : public framework::Analyzer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event& event);
+  void analyze(const framework::Event &event);
 
- private:
+private:
   /// Hcal Rec Hits collection name
   std::string rec_coll_name_;
 
@@ -58,8 +58,10 @@ class HCalDQM : public framework::Analyzer {
 
   // Veto threshold for photo-electrons
   float pe_veto_threshold;
+  std::vector<std::string> section_names_;
+  int section_;
 };
 
-}  // namespace dqm
+} // namespace dqm
 
-#endif  // _DQM_HCAL_DQM_H_
+#endif // _DQM_HCAL_DQM_H_
