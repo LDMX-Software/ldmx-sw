@@ -1,6 +1,97 @@
 """Configuration for DQM analyzers"""
 
 from LDMX.Framework import ldmxcfg
+class HCalDQM(ldmxcfg.Analyzer) :
+    """Configured HCalDQM python object
+
+    Contains an instance of HCalDQM that
+    has already been configured.
+
+    Builds the necessary histograms as well.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.HCalDQM() )
+    """
+
+    def build_submodule_histograms(self, name, xlabel, nbins, xmin, xmax):
+        for section in self.section_names:
+            self.build1DHistogram(f'{section}_{name}', xlabel.format(section),
+                                  nbins, xmin, xmax)
+
+
+    def __init__(self,name="hcal_dqm", pe_threshold=5, section=0) :
+        super().__init__(name,'dqm::HCalDQM','DQM')
+
+        self.section_names = ['back', 'top', 'bottom', 'left', 'right']
+        self.pe_threshold = float(pe_threshold)
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''
+        self.section = section
+
+        self.build1DHistogram("pe", "Photoelectrons in the {self.section_names[section]} HCal", 1500,0,1500)
+        # # every hit in hcal
+        # self.build1DHistogram("pe", "Photoelectrons in a the HCal", 1500, 0, 1500)
+        # self.build_submodule_histograms('pe', 'Photoelectrons in the {} section of the Hcal',
+        #                                 1500, 0, 1500)
+
+
+        # self.build1DHistogram('layer', 'Layer number', 100, 0, 100)
+        # self.build_submodule_histograms('layer', 'Layer number in {} section', 100, 0, 100)
+
+        # self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
+        # self.build2DHistogram("back_pe:layer",
+        #         "Photoelectrons in a Back HCal Layer",10,0,10,
+        #         "Back HCal Layer",100,0,100)
+        # self.build2DHistogram("back_layer:strip",
+        #         "Back HCal Layer",100,0,100,
+        #         "Back HCal Strip",62,0,62)
+        # self.build2DHistogram("side_pe:layer",
+        #         "Photoelectrons in a Side HCal Layer",10,0,10,
+        #         "Side HCal Layer",20,0,20)
+        # self.build2DHistogram("side_layer:strip",
+        #         "Side HCal Layer",20,0,20,
+        #         "Side HCal Strip",30,0,30)
+
+        # # once per event
+        # self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
+        # self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
+        # self.build_submodule_histograms('total_pe', 'Total Photoelectrons in the {} section of the Hcal',
+        #                                 3000, 0, 3000)
+        # self.build1DHistogram("max_pe",
+        #         "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
+        # self.build1DHistogram("hit_time_max_pe",
+        #         "Max PE hit time (ns)", 1600, -100, 1500)
+        # self.build2DHistogram("max_pe:time",
+        #         "Max Photoelectrons in an HCal Module", 1500, 0, 1500,
+        #         "HCal max PE hit time (ns)", 1500, 0, 1500)
+        # self.build1DHistogram("min_time_hit_above_thresh",
+        #         f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
+        # self.build2DHistogram("min_time_hit_above_thresh:pe",
+        #                    "Photoelectrons in an HCal Module", 1500, 0, 1500,
+        #                    f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
+
+class HcalNeutronInefficiencyAnalyzer(ldmxcfg.Analyzer):
+    def __init__(self,name="HcalNeutronInefficiencyAnalyzer") :
+        super().__init__(name,'dqm::HcalNeutronInefficiencyAnalyzer','DQM')
+
+        self.hcalSimHitColl = "HcalSimHits"
+        self.hcalSimHitPass = "" #use whatever pass is available
+
+        self.hcalRecHitColl = "HcalRecHits"
+        self.hcalRecHitPass = "" #use whatever pass is available
+
+        self.build1DHistogram("Inefficiency", "Inefficiency", 6000, 0., 6000.)
+        # self.build1DHistogram( "num_sim_hits_per_cell" ,
+        #         "Number SimHits per Hcal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
+
+        # self.build1DHistogram( "total_rec_energy"      ,
+        #         "Total Reconstructed Energy in Hcal [MeV]" , 800 , 0. , 8000. )
+
+        # self.build2DHistogram( "sim_edep__rec_amplitude" ,
+        #         "Simulated [MeV]" , 1000 , 0. , 50. ,
+        #         "Reconstructed [MeV]" , 1000 , 0. , 50. )
 
 class EcalDigiVerify(ldmxcfg.Analyzer) :
     """Configured EcalDigiVerifier python object
@@ -92,74 +183,6 @@ class SimObjects(ldmxcfg.Analyzer) :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
 
-class HCalDQM(ldmxcfg.Analyzer) :
-    """Configured HCalDQM python object
-    
-    Contains an instance of HCalDQM that
-    has already been configured.
-    
-    Builds the necessary histograms as well.
-    
-    Examples
-    --------
-        from LDMX.DQM import dqm
-        p.sequence.append( dqm.HCalDQM() )
-    """
-
-    def build_submodule_histograms(self, name, xlabel, nbins, xmin, xmax):
-        for section in self.section_names:
-            self.build1DHistogram(f'{section}_{name}', xlabel.format(section),
-                                  nbins, xmin, xmax)
-
-
-    def __init__(self,name="hcal_dqm", pe_threshold=5) :
-        super().__init__(name,'dqm::HCalDQM','DQM')
-
-        self.section_names = ['back', 'top', 'bottom', 'left', 'right']
-        self.pe_threshold = float(pe_threshold)
-        self.rec_coll_name = 'HcalRecHits'
-        self.rec_pass_name = ''
-        
-        # every hit in hcal
-        self.build1DHistogram("pe", "Photoelectrons in a the HCal", 1500, 0, 1500)
-        self.build_submodule_histograms('pe', 'Photoelectrons in the {} section of the Hcal',
-                                        1500, 0, 1500)
-
-
-        self.build1DHistogram('layer', 'Layer number', 100, 0, 100)
-        self.build_submodule_histograms('layer', 'Layer number in {} section', 100, 0, 100)
-
-        self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
-        self.build2DHistogram("back_pe:layer",
-                "Photoelectrons in a Back HCal Layer",10,0,10,
-                "Back HCal Layer",100,0,100)
-        self.build2DHistogram("back_layer:strip",
-                "Back HCal Layer",100,0,100,
-                "Back HCal Strip",62,0,62)
-        self.build2DHistogram("side_pe:layer",
-                "Photoelectrons in a Side HCal Layer",10,0,10,
-                "Side HCal Layer",20,0,20)
-        self.build2DHistogram("side_layer:strip",
-                "Side HCal Layer",20,0,20,
-                "Side HCal Strip",30,0,30)
-        
-        # once per event
-        self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
-        self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
-        self.build_submodule_histograms('total_pe', 'Total Photoelectrons in the {} section of the Hcal',
-                                        3000, 0, 3000)
-        self.build1DHistogram("max_pe",
-                "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
-        self.build1DHistogram("hit_time_max_pe", 
-                "Max PE hit time (ns)", 1600, -100, 1500)
-        self.build2DHistogram("max_pe:time", 
-                "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                "HCal max PE hit time (ns)", 1500, 0, 1500)
-        self.build1DHistogram("min_time_hit_above_thresh", 
-                f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
-        self.build2DHistogram("min_time_hit_above_thresh:pe", 
-                           "Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
     def __init__(self, input_name) :
