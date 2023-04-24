@@ -15,10 +15,6 @@ class HCalDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HCalDQM() )
     """
 
-    def build_submodule_histograms(self, name, xlabel, nbins, xmin, xmax):
-        for section in self.section_names:
-            self.build1DHistogram(f'{section}_{name}', xlabel.format(section),
-                                  nbins, xmin, xmax)
 
 
     def __init__(self,name="hcal_dqm", pe_threshold=5, section=0) :
@@ -29,18 +25,25 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
         self.section = section
+        section_name = self.section_names[section]
 
-        self.build1DHistogram("pe", "Photoelectrons in the {self.section_names[section]} HCal", 1500,0,1500)
+        pe_bins = [1500, 0, 1500]
+        self.build1DHistogram("pe",
+                              "Photoelectrons in the HCal ({section_name})",
+                              *pe_bins)
+        self.build1DHistogram('hit_time', 'HCal hit time (ns) ({section_name})',
+                              1600, -100, 1500)
+        self.build1DHistogram("layer", "Layer number ({section_name})",
+                              100,0,100
+                              )
+
+        # Once per event
+        self.build1DHistogram("total_pe",
+                              "Total photoelectrons in the HCal ({section_name})",
+                              *pe_bins)
+
+
         # # every hit in hcal
-        # self.build1DHistogram("pe", "Photoelectrons in a the HCal", 1500, 0, 1500)
-        # self.build_submodule_histograms('pe', 'Photoelectrons in the {} section of the Hcal',
-        #                                 1500, 0, 1500)
-
-
-        # self.build1DHistogram('layer', 'Layer number', 100, 0, 100)
-        # self.build_submodule_histograms('layer', 'Layer number in {} section', 100, 0, 100)
-
-        # self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
         # self.build2DHistogram("back_pe:layer",
         #         "Photoelectrons in a Back HCal Layer",10,0,10,
         #         "Back HCal Layer",100,0,100)
@@ -82,7 +85,12 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         self.hcalRecHitColl = "HcalRecHits"
         self.hcalRecHitPass = "" #use whatever pass is available
 
-        self.build1DHistogram("Inefficiency", "Inefficiency", 6000, 0., 6000.)
+        inefficiency_depth_bins = [6000, 0., 6000.]
+        inefficiency_layer_bins = [100, 0, 100]
+        self.build1DHistogram("Inefficiency", "Inefficiency; Entries; Depth [mm]", *inefficiency_depth_bins)
+        self.build1DHistogram("TwoHitInefficiency", "Inefficiency (2 hits); Entries; Depth [mm]", *inefficiency_depth_bins)
+        self.build1DHistogram("InefficiencyLayer", "Inefficiency; Entries; Layer", *inefficiency_layer_bins)
+        self.build1DHistogram("TwoHitInefficiencyLayer", "Inefficiency (2 hits); Entries; Layer", *inefficiency_layer_bins)
         # self.build1DHistogram( "num_sim_hits_per_cell" ,
         #         "Number SimHits per Hcal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
 

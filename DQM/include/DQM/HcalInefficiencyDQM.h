@@ -27,8 +27,10 @@ public:
      * event.getCollection<ldmx::SimCalorimeterHit>(hcalSimHitsCollection_,
      * hcalSimHitsPassName_); */
 
-    /* int firstLayerHit {9999}; */
-    double firstHitZ{5500};
+    double firstHitZ{9999};
+    double secondHitZ{9999};
+    double firstHitLayer{200};
+    double secondHitLayer{200};
 
     for (const auto hit : hcalRecHits) {
       const ldmx::HcalID id{hit.getID()};
@@ -36,15 +38,26 @@ public:
         continue;
       }
       const auto z{hit.getZPos()};
-
+      const auto layer{id.layer()};
       if (hitPassesVeto(hit)) {
-        /* const auto& [x,y,z] {hit.getPosition()}; */
         if (z < firstHitZ) {
           firstHitZ = z;
+          secondHitZ = firstHitZ;
+        } else if (z < secondHitZ) {
+          secondHitZ = z;
+        }
+        if (layer < firstHitLayer) {
+          secondHitLayer = firstHitLayer;
+          firstHitLayer = layer;
+        } else if (layer < secondHitLayer && layer != firstHitLayer) {
+          secondHitLayer = layer;
         }
       }
     }
     histograms_.fill("Inefficiency", firstHitZ);
+    histograms_.fill("TwoHitInefficiency", secondHitZ);
+    histograms_.fill("InefficiencyLayer", firstHitLayer);
+    histograms_.fill("TwoHitInefficiencyLayer", secondHitLayer);
   }
 
   std::string hcalSimHitsCollection_{"HcalSimHits"};
