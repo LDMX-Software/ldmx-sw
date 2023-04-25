@@ -22,6 +22,10 @@ ClassImp(ldmx::Measurement)
     // Set the local covariances
     cov_uu_ = sigma_u * sigma_u;
     cov_vv_ = sigma_v * sigma_v;
+
+    //Store the trackID
+    addTrackId(hit.getTrackID());
+    
   }
 
   std::ostream& operator<<(std::ostream& output,

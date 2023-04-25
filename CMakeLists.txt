@@ -28,6 +28,11 @@ if(BUILD_EVENT_ONLY)
                     class "Track" type "collection")
 
 
+    register_event_object(module_path "Tracking/Event" 
+                    namespace "ldmx" 
+                    class "TruthTrack" type "collection")
+
+
     register_event_object(module_path "Tracking/Event"
  		    namespace "ldmx"
 		    class "Measurement" type "collection")

@@ -4,6 +4,7 @@
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Eigen/Dense"
 
+
 /* This processor takes in input a set of 3D space points and builds seedTracks
  * using the ACTS algorithm which is based on the ATLAS 3-space point conformal
  * fit.
@@ -41,6 +42,10 @@ void SeedFinderProcessor::onProcessStart() {
   // Build the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
       detector_, &gctx_, false);
+
+  truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
+
+  
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
@@ -74,25 +79,18 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  // Read in the Sim hits -- TODO choose which collection from config
-  const std::vector<ldmx::SimTrackerHit> sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>("TaggerSimHits");
-  std::vector<ldmx::LdmxSpacePoint*> ldmxsps;
-
-  // Only convert simHits that have at least 0.05 edep
-  // ldmx_log(info) << "Converting sim hits";
-
-  for (auto& simHit : sim_hits) {
-    // Remove low energy deposit hits
-    if (simHit.getEdep() > 0.05) {
-      ldmxsps.push_back(
-          tracking::sim::utils::convertSimHitToLdmxSpacePoint(simHit));
-    }
-  }
+  //check if SimParticleMap is available for truth matching 
+  std::map<int, ldmx::SimParticle> particleMap;
+  
 
   const std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(input_hits_collection_);
-
+  
+  if(event.exists("SimParticles")) {
+    particleMap = event.getMap<int,ldmx::SimParticle>("SimParticles");
+    truthMatchingTool_->setup(particleMap,measurements);
+  }
+  
   groups_map.clear();
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
@@ -294,7 +292,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
   trk.setPerigeeParameters(v_seed_params);
   trk.setPerigeeCov(v_seed_cov);
-
+  
   Acts::BoundTrackParameters seedParameters(seed_perigee,
                                             std::move(bound_params), bound_cov);
 
@@ -415,14 +413,14 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
 
   while (it[0] != groups_iter->second.end()) {
     // process the pointed-to elements
-
+    
     /*
-    for (int j=0; j<K; j++) {
+      for (int j=0; j<K; j++) {
       const ldmx::Measurement* meas = (*(it[j]));
       std::cout<<meas->getGlobalPosition()[0]<<","
-               <<meas->getGlobalPosition()[1]<<","
-               <<meas->getGlobalPosition()[2]<<","<<std::endl;
-               }
+      <<meas->getGlobalPosition()[1]<<","
+      <<meas->getGlobalPosition()[2]<<","<<std::endl;
+      }
     */
 
     std::vector<ldmx::Measurement> meas_for_seeds;
@@ -447,7 +445,7 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
         SeedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
                     Acts::Vector3(perigee_location_[0], perigee_location_[1],
                                   perigee_location_[2]));
-
+    
     bool fail = false;
     // Remove failed fits
 
@@ -468,9 +466,18 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
       fail = true;
     }
 
-    if (!fail)
-      seeds.push_back(seedTrack);
+    if (!fail) {
+      
+      if (truthMatchingTool_->configured()) {
+        auto truthInfo = truthMatchingTool_->TruthMatch(meas_for_seeds);
+        seedTrack.setTrackID(truthInfo.trackID);
+        seedTrack.setPdgID(truthInfo.pdgID);
+        seedTrack.setTruthProb(truthInfo.truthProb);
+      }
 
+      seeds.push_back(seedTrack);
+    }
+    
     else {
       b0_.pop_back();
       b1_.pop_back();
