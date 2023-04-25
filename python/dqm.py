@@ -35,6 +35,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         z0min = -2.
         z0max =  2.
         pmax  =  6.
+        self.doTruth= True
 
         titles = ["tagger_trk_","recoil_trk_"]
 
@@ -42,7 +43,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             
             self.build1DHistogram(title+"d0",
                                   "d0 [mm]",100,d0min,d0max)
-        
+                    
             self.build1DHistogram(title+"z0",
                                   "z0 [mm]",100,z0min,z0max)
 
@@ -55,7 +56,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram(title+"p",
                                   "P [GeV]",100,0,pmax)
 
-            self.build1DHistogram(title+"qOp",
+            self.build1DHistogram(title+"qop",
                                   "qOverP [GeV^{-1}]",100,-20,20)
 
             self.build1DHistogram(title+"pt_bending",
@@ -92,5 +93,50 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram(title+"p_err",
                                   "#sigma_{p} [GeV]", 100, 0, 1)
             
+
+            if self.doTruth:
+                self.build1DHistogram(title+"truth_d0",
+                                      "truth d0 [mm]", 100, d0min,d0max)
+                self.build1DHistogram(title+"truth_z0",
+                                      "truth z0 [mm]", 100, z0min,z0max)
+                self.build1DHistogram(title+"truth_phi",
+                                      "truth #phi", 100, -3.14, 3.14)
+                self.build1DHistogram(title+"truth_theta",
+                                      "truth #theta", 100, 0.7,2.1)
+                self.build1DHistogram(title+"truth_p",
+                                      "truth p [GeV]",100,0,pmax)
+                self.build1DHistogram(title+"truth_qop",
+                                      "truth q/p [GeV^{-1}]",100,-20,20)
+        
+                #self.build1DHistogram(title+"truth_pt_bending",
+                #                  "pT bending plane [GeV]",100,-pmax,pmax)
+                #self.build1DHistogram(title+"truth_pt_beam",
+                #                      "pT beam axis [GeV]",100,-pmax,pmax)
             
-            
+                #res
+                self.build1DHistogram(title+"res_d0",
+                                      "res d0 [mm]", 100, -0.2,0.2)
+                self.build1DHistogram(title+"res_z0",
+                                      "res z0 [mm]", 100, -0.2,0.2)
+                self.build1DHistogram(title+"res_phi",
+                                      "res #phi", 100, -0.1, 0.1)
+                self.build1DHistogram(title+"res_theta",
+                                      "res #theta", 100, -0.1,0.1)
+                self.build1DHistogram(title+"res_p",
+                                      "res p [GeV]",100,-0.2,0.2)
+                self.build1DHistogram(title+"res_qop",
+                                      "res q/p [GeV^{-1}]",100,-2,2)
+                
+                #pull
+                self.build1DHistogram(title+"pull_d0",
+                                      "pull d0",     100, -5,5)
+                self.build1DHistogram(title+"pull_z0",
+                                      "pull z0",     100, -5,5)
+                self.build1DHistogram(title+"pull_phi",
+                                      "pull #phi",   100, -5, 5)
+                self.build1DHistogram(title+"pull_theta",
+                                      "pull #theta", 100, -5,5)
+                self.build1DHistogram(title+"truth_p",
+                                      "pull p",      100,-5,5)
+                self.build1DHistogram(title+"pull_qop",
+                                      "pull q/p",    100,-5,5)
