@@ -21,13 +21,6 @@
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/BinFinder.hpp"
-#include "Acts/Seeding/BinnedSPGroup.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Seeding/Seed.hpp"
-#include "Acts/Seeding/SeedFilter.hpp"
-#include "Acts/Seeding/Seedfinder.hpp"
-#include "Acts/Seeding/SpacePointGrid.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 
 //--- LDMX ---//
@@ -35,6 +28,7 @@
 #include "TTree.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Reco/TrackersTrackingGeometry.h"
+#include "Tracking/Reco/TruthMatchingTool.h"
 
 namespace tracking {
 namespace reco {
@@ -161,6 +155,9 @@ class SeedFinderProcessor : public framework::Producer {
 
   std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
   std::array<const ldmx::Measurement*, 5> groups_array;
+
+  // Truth Matching tool
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ = nullptr;
 
 };  // SeedFinderProcessor
 

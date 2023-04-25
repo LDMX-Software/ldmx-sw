@@ -5,9 +5,11 @@
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Framework/Logger.h"
 
 // --- Tracking --- //
 #include "Tracking/Event/Track.h"
+#include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
@@ -77,7 +79,8 @@ class TruthSeedProcessor : public framework::Producer {
    *
    * @param particle The SimParticle to make a seed from.
    */
-  ldmx::Track createSeed(const ldmx::SimParticle &particle);
+  void createTruthTrack(const ldmx::SimParticle &particle,
+                        ldmx::TruthTrack& trk);
 
   /**
    * Use the scoring plane hit at the target to extract
@@ -87,8 +90,9 @@ class TruthSeedProcessor : public framework::Producer {
    * @param particle The SimParticle to extract the charge from.
    * @param hit The SimTrackerHit used to create the seed.
    */
-  ldmx::Track createSeed(const ldmx::SimParticle &particle,
-                         const ldmx::SimTrackerHit &hit);
+  void createTruthTrack(const ldmx::SimParticle &particle,
+                        const ldmx::SimTrackerHit &hit,
+                        ldmx::TruthTrack& trk);
 
   /**
    * Create a seed track from the given position, momentum and charge.
@@ -97,9 +101,10 @@ class TruthSeedProcessor : public framework::Producer {
    * @param p The momentum of the particle at the point of creation.
    * @param charge The charge of the particle.
    */
-  ldmx::Track createSeed(const std::vector<double> &pos_vec,
-                         const std::vector<double> &p_vec, int charge);
-
+  void createTruthTrack(const std::vector<double> &pos_vec,
+                        const std::vector<double> &p_vec, int charge,
+                        ldmx::TruthTrack& trk);
+  
   /**
    * Filter that checks if a scoring plane passes specified momentum cuts as
    * well as if the associated SimParticle hits the ECal.
@@ -111,6 +116,7 @@ class TruthSeedProcessor : public framework::Producer {
   bool scoringPlaneHitFilter(
       const ldmx::SimTrackerHit &hit,
       const std::vector<ldmx::SimTrackerHit> &ecal_sp_hits);
+
 
   /// The ACTS geometry context properly
   Acts::GeometryContext gctx_;
@@ -150,5 +156,12 @@ class TruthSeedProcessor : public framework::Producer {
 
   // Ask for a minimum p for the seeds at the ecal (from truth)
   double p_cut_ecal_{-1.};
+
+  // Use scoring plane for recoil truth tracks
+  bool recoil_sp_{true};
+
+  // Use scoring plane for target truth tracks
+  bool target_sp_{true};
+  
 };
 }  // namespace tracking::reco

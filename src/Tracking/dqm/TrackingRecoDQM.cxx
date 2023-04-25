@@ -49,10 +49,10 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"pt_beam", pt_beam);
     
     histograms_.fill(title+"nHits", track.getNhits());
-    histograms_.fill(title+"Chi2", track.getChi2());
-    histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
-    histograms_.fill(title+"nShared", track.getNsharedHits());
-    histograms_.fill(title+"nHoles", track.getNholes());
+    //histograms_.fill(title+"Chi2", track.getChi2());
+    //histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
+    //histograms_.fill(title+"nShared", track.getNsharedHits());
+    //histograms_.fill(title+"nHoles", track.getNholes());
     
     
     //Covariance matrix
