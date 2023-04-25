@@ -29,18 +29,19 @@ class HCalDQM(ldmxcfg.Analyzer) :
 
         pe_bins = [1500, 0, 1500]
         self.build1DHistogram("pe",
-                              "Photoelectrons in the HCal ({section_name})",
+                              f"Photoelectrons in the HCal ({section_name})",
                               *pe_bins)
-        self.build1DHistogram('hit_time', 'HCal hit time (ns) ({section_name})',
+        self.build1DHistogram('hit_time', f'HCal hit time (ns) ({section_name})',
                               1600, -100, 1500)
-        self.build1DHistogram("layer", "Layer number ({section_name})",
+        self.build1DHistogram("layer", f"Layer number ({section_name})",
                               100,0,100
                               )
 
         # Once per event
         self.build1DHistogram("total_pe",
-                              "Total photoelectrons in the HCal ({section_name})",
+                              f"Total photoelectrons in the HCal ({section_name})",
                               *pe_bins)
+        self.build1DHistogram(f"noise", "Is pure noise hit? ({section_name})", 2, 0, 1)
 
 
         # # every hit in hcal
