@@ -135,6 +135,23 @@ class TaggerVetoFilter(simcfg.UserAction):
 
         self.threshold = thresh
 
+class TaggerHitFilter(simcfg.UserAction): 
+    """ Configuration used to reject off-energy electrons in the tagger tracker.
+
+    Parameters
+    ----------
+    layers_hit : int
+        Minimum number of tagger layers with a hit needed to persist the event.
+    """
+    
+    def __init__(self) :
+        super().__init__('tagger_hit_filter','biasing::TaggerHitFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.layers_hit = 8
+
 class PrimaryToEcalFilter(simcfg.UserAction) :
     """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
 
