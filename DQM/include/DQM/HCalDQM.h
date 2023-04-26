@@ -16,6 +16,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
+#include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/AnalysisUtils.h"
 
@@ -41,7 +42,7 @@ public:
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event &event);
+  void analyze(const framework::Event &event) override;
 
 private:
   /// Hcal Rec Hits collection name
