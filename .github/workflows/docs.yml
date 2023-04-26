@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: 'recursive'
 
@@ -29,14 +29,14 @@ jobs:
 
     # Runs doxygen doxygen.conf in the docs/ directory
     - name: Run Doxygen to build C++ Docs
-      uses: mattnotmitt/doxygen-action@v1.1.0
+      uses: mattnotmitt/doxygen-action@v1.9
       with:
         doxyfile-path: doxygen.conf/doxyfile #relative to working directory
         working-directory: docs #docs subdirectory
 
     # sphinx is a python package, so we need to setup python on this runner
     - name: Setup Python for Sphinx
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
     
     # Runs sphinx-apidoc and sphinx-build in the docs/ directory
     #   sphinx-apidoc requires the python files to be packaged together

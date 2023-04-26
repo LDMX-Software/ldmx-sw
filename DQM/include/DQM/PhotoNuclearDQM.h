@@ -70,6 +70,8 @@ class PhotoNuclearDQM : public framework::Analyzer {
   int classifyCompactEvent(
       const ldmx::SimParticle* pnGamma,
       const std::vector<const ldmx::SimParticle*> daughters, double threshold);
+
+  bool verbose_;
 };
 
 }  // namespace dqm

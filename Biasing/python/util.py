@@ -91,7 +91,7 @@ class TrackProcessFilter(BiasingUtilityAction):
         Instance of TrackProcessFilter configured to tag dark brem tracks.
     
         """
-        return TrackProcessFilter('eDarkBrem')
+        return TrackProcessFilter('DarkBrem')
 
 class DecayChildrenKeeper(BiasingUtilityAction):
     """ Configuration used to store children of specific particle decays

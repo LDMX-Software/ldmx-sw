@@ -43,7 +43,7 @@ set_output() {
   local _key="$1"
   local _val="$2"
   echo "${_key} = ${_val}"
-  echo "::set-output name=${_key}::${_val}"
+  echo "${_key}=${_val}" >> $GITHUB_OUTPUT
 }
 
 # GitHub workflow command to start an group of output messages

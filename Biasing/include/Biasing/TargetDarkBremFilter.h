@@ -62,8 +62,15 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @return list of action types this class does
    */
   std::vector<simcore::TYPE> getTypes() final override {
-    return {simcore::TYPE::STEPPING};
+    return {simcore::TYPE::STEPPING, simcore::TYPE::EVENT};
   }
+
+  /**
+   * Reset flag signaling finding of A' to false
+   *
+   * @param[in] e event being started, unused
+   */
+  void BeginOfEventAction(const G4Event* e) final override;
 
   /**
    * Looking for A' while primary is stepping.
@@ -77,6 +84,14 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * @param[in] step current G4Step
    */
   void stepping(const G4Step* step);
+
+  /**
+   * Check flag signaling finding of A', if false,
+   * abort the event so it isn't saved.
+   *
+   * @param[in] event being ended, check if it is already aborted
+   */
+  void EndOfEventAction(const G4Event* event) final override;
 
  private:
   /**
@@ -126,6 +141,11 @@ class TargetDarkBremFilter : public simcore::UserAction {
    * Parameter Name: 'threshold'
    */
   double threshold_;
+
+  /**
+   * flag to signal that we saw an A'
+   */
+  bool found_aprime_;
 
 };  // TargetDarkBremFilter
 }  // namespace biasing

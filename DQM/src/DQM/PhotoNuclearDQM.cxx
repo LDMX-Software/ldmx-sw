@@ -99,7 +99,9 @@ void PhotoNuclearDQM::onProcessStart() {
   }
 }
 
-void PhotoNuclearDQM::configure(framework::config::Parameters& parameters) {}
+void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
+  verbose_ = parameters.getParameter<bool>("verbose");
+}
 
 void PhotoNuclearDQM::analyze(const framework::Event& event) {
   // Get the particle map from the event.  If the particle map is empty,
@@ -120,8 +122,10 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
   // photo-nuclear reaction.
   auto pnGamma{Analysis::getPNGamma(particleMap, recoil, 2500.)};
   if (pnGamma == nullptr) {
-    std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping."
-              << std::endl;
+    if (verbose_) {
+      std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping."
+                << std::endl;
+    }
     return;
   }
 
@@ -484,6 +488,6 @@ std::vector<int> PhotoNuclearDQM::printDaughters(
   }
 }
 
-}  // namespace dqm
+} // namespace dqm
 
 DECLARE_ANALYZER_NS(dqm, PhotoNuclearDQM)
