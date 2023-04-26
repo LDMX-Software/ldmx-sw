@@ -95,8 +95,11 @@ p.sequence.extend([
     trigScintTrack,
     count, TriggerProcessor('trigger'),
     dqm.SimObjects(sim_pass=thisPassName),
-    ecalDigiVerify,dqm.EcalShowerFeatures(), 
-    dqm.HCalDQM()]+dqm.recoil_dqm+dqm.trigger_dqm)
+    ecalDigiVerify,dqm.EcalShowerFeatures(),
+        dqm.PhotoNuclearDQM(verbose=False),
+    dqm.HCalDQM(),
+
+]+dqm.recoil_dqm+dqm.trigger_dqm)
 
 p.inputFiles = ['ecal_pn.root']
 p.outputFiles= ['events.root']
