@@ -78,12 +78,12 @@ class File :
         File.log.debug(f'Deduced File Parameters: {file_params}')
         
         if legendlabel_parameter is None :
-            legendlabel_parameter = next(iter(file_params))
-
-        if legendlabel_parameter in file_params :
-            ll  = file_params[legendlabel_parameter]
-        else :
-            raise KeyError(f'{legendlabel_parameter} not in deduced file parameters\n{file_params}')
+            legendlabel_parameter = [next(iter(file_params))]
+        ll = [file_params[l] for l in legendlabel_parameter if l in file_params]
+        if len(ll) < len(legendlabel_parameter):
+            missing_params = set(legendlabel_parameter) - set(file_params.keys())
+            raise KeyError(f"{', '.join(missing_params)} not in deduced file parameters:\n{file_params}")
+        ll='_'.join(ll)
 
         File.log.debug(f'Deduced File Label: {ll}')
         return File(filepath, hist_kwargs=dict(label=ll))

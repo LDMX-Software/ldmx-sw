@@ -41,7 +41,9 @@ if __name__ == '__main__' :
     parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data directory')
     parser.add_argument('--systems',required=True, choices=plotter.__registry__.keys(), nargs='+',
         help='list of plotters to run')
-    parser.add_argument('--param',help='parameter in filename to use as file labels')
+    parser.add_argument('--param',
+                        nargs='+',
+                        help='parameter(s) in filename to use as file labels')
 
     arg = parser.parse_args()
 
