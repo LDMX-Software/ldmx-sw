@@ -152,6 +152,8 @@ void HcalGeometry::buildStripPositionMap() {
         ldmx::HcalID::HcalSection hcalsection =
             (ldmx::HcalID::HcalSection)section;
 
+        const ldmx::HcalID id{section, layer, strip};
+        const auto orientation{getScintillatorOrientation(id)};
         // the center of a layer: (layer-1) * (layer_thickness) +
         // scint_thickness/2
         double layercenter =
@@ -178,7 +180,7 @@ void HcalGeometry::buildStripPositionMap() {
             half_total_width_.
             The x(y) position is set to the center of the strip (0).
           */
-          if (backLayerIsHorizontal(layer)) {
+          if (orientation == ScintillatorOrientation::horizontal) {
             y = stripcenter - getZeroStrip(section, layer);
             x = 0;
           } else {
@@ -187,17 +189,19 @@ void HcalGeometry::buildStripPositionMap() {
           }
         } else {
           /**
-          For side Hcal
+          For side Hcal before 3D readout
           - layers in y(x)
           - all layers have strips in x(y) for top-bottom (left-right) sections
           - all layers have strips occupying width of scintillator in z (e.g.
-          50mm) For 3D readout:
+          50mm)
+          For 3D readout:
           - odd layers have strips in z
           - even layers have strips in x(y) for top-bottom (left-right) sections
           - odd layers have strips occupying width of scintillator in x(y)
           - even layers have strips occupying width of scintillator in z
           */
-          if (side_3d_readout_ && (layer % 2 == 1)) {
+          if (side_3d_readout_ &&
+              orientation == ScintillatorOrientation::depth) {
             // z position: zero-strip + half-width (center_strip) of strip
             z = getZeroStrip(section, layer) +
                 getHalfTotalWidth(section, layer);
@@ -210,8 +214,10 @@ void HcalGeometry::buildStripPositionMap() {
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
             y = zero_layer_.at(section) + layercenter;
             x = getHalfTotalWidth(section, layer);
-            if (side_3d_readout_ && layer % 2 == 1)
+            if (side_3d_readout_ &&
+                orientation == ScintillatorOrientation::horizontal) {
               x = getZeroStrip(section, layer) + stripcenter;
+            }
             if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
               y *= -1;
               x *= -1;
@@ -219,8 +225,10 @@ void HcalGeometry::buildStripPositionMap() {
           } else {
             x = zero_layer_.at(section) + layercenter;
             y = getHalfTotalWidth(section, layer);
-            if (side_3d_readout_ && layer % 2 == 1)
+            if (side_3d_readout_ &&
+                orientation == ScintillatorOrientation::vertical) {
               y = getZeroStrip(section, layer) + stripcenter;
+            }
             if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
               x *= -1;
               y *= -1;
