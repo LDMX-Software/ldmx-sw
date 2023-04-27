@@ -83,10 +83,10 @@ class HcalGeometry : public framework::ConditionsObject {
   }
 
   /** Check whether a given layer corresponds to a horizontal (scintillator
-   * length along the x-axis) or vertical layer. See the horizontal_parity_
-   * member for details.
+   * length along the x-axis) or vertical layer in the back HCal. See the
+   * back_horizontal_parity_ member for details.
    */
-  bool layerIsHorizontal(const int layer) const {
+  bool backLayerIsHorizontal(const int layer) const {
     return layer % 2 == back_horizontal_parity_;
   }
   /**
