@@ -97,6 +97,7 @@ public:
    * @return half total width [mm]
    */
   double getHalfTotalWidth(int isection, int layer = 1) const {
+    // Layer numbering starts at 1, but a vector is zero-indexed
     auto layer_index = layer - 1;
     return half_total_width_.at(isection).at(layer_index);
   }
