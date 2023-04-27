@@ -21,7 +21,7 @@ class HcalID : public HcalAbstractID {
   /**
    * Encodes the section of the HCal based on the 'section' field value.
    */
-  enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, LEFT = 4, RIGHT = 3 };
+  enum HcalSection { BACK = 0, TOP = 1, BOTTOM = 2, RIGHT = 3, LEFT = 4 };
 
   static const RawValue SECTION_MASK{0x7};  // space for up to 7 sections
   static const RawValue SECTION_SHIFT{18};
