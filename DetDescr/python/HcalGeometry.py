@@ -411,7 +411,9 @@ class HcalGeometry:
         for s in range(side_hcal_numSections):
             for m in range(self.v14.side_num_modules):
                 for l in range(side_hcal_numLayers[m] * 2):
+                    # Layer numbering starts at 1
                     layer = l + 1
+                    # The back hcal (section 0) has already been handled
                     section_index = s + 1
                     layer_index = l + side_hcal_numPrevLayers[m] * 2
                     if layer % 2 == 0:
