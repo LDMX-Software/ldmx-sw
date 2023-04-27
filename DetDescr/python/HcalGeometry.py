@@ -125,8 +125,15 @@ class HcalGeometry:
         self.v13.scint_width = 50.0
 
         back_scint_length = 3100.0
-        side_TB_scint_length = back_scint_length - 600. #TODO/FIXME Dummy value
-        side_LR_scint_length = back_scint_length - 800. #TODO/FIXME Dummy value
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L21
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L177
+        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178068211
+        side_TB_scint_length = 1944
+
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L22
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L181
+        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178070801
+        side_LR_scint_length = 1832
         self.v13.scint_length = [[back_scint_length for layer in range(self.v13.num_layers[0])],
                                  [side_TB_scint_length for layer in range(self.v13.num_layers[1])],
                                  [side_TB_scint_length for layer in range(self.v13.num_layers[2])],
