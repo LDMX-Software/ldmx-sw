@@ -15,40 +15,11 @@ public:
   HcalInefficiencyAnalyzer(const std::string &name, framework::Process &process)
       : framework::Analyzer{name, process} {}
 
-  void configure(framework::config::Parameters &parameters) {
-    histogramNames =
-        parameters.getParameter<std::vector<std::string>>("histogram_names");
-    outputPrefix = parameters.getParameter<std::string>("output_prefix");
-  }
+  void configure(framework::config::Parameters &parameters) {}
   bool hitPassesVeto(const ldmx::HcalHit &hit) {
     return hit.getPE() > 0 && hit.getMinPE() > 0;
   }
 
-  virtual void onFileClose(framework::EventFile &eventFile) override {
-    for (auto histogramName : histogramNames) {
-      const auto histogram{histograms_.get(histogramName)};
-      if (!histogram) {
-        std::cout << "Couldn't find histogram with name " << histogramName
-                  << std::endl;
-        continue;
-      }
-      TCanvas c;
-      histogram->Draw();
-
-      c.SaveAs(("figures/" + outputPrefix + "_dump/" + histogramName + ".pdf")
-                   .c_str());
-      c.SetLogy();
-      c.SaveAs(
-          ("figures/" + outputPrefix + "_logdump/" + histogramName + ".pdf")
-              .c_str());
-    }
-  }
-  // void onProcessEnd() override {
-  //   for (auto histogramName : histogramNames) {
-  //     const auto histogram{histograms_.get(histogramName)};
-  //     histogram->SaveAs(("figures/dump/" + histogramName + ".pdf").c_str());
-  //   }
-  // }
   void analyze(const framework::Event &event) override {
     const auto hcalSimHits = event.getCollection<ldmx::SimCalorimeterHit>(
         hcalSimHitsCollection_, hcalSimHitsPassName_);
