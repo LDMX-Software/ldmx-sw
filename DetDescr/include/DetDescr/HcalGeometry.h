@@ -32,14 +32,14 @@ class HcalGeometryProvider;
  *
  */
 class HcalGeometry : public framework::ConditionsObject {
- public:
+public:
   /**
    * Conditions object:
    *  The name of the python configuration calling this class
    * (Hcal/python/HcalGeometry.py) needs to match the CONDITIONS_OBJECT_NAME
    * exactly.
    */
-  static constexpr const char* CONDITIONS_OBJECT_NAME{"HcalGeometry"};
+  static constexpr const char *CONDITIONS_OBJECT_NAME{"HcalGeometry"};
 
   /**
    * Encodes the orientation of a bar.
@@ -60,8 +60,8 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   ~HcalGeometry() = default;
 
-  ScintillatorOrientation getScintillatorOrientation(
-      const ldmx::HcalID id) const;
+  ScintillatorOrientation
+  getScintillatorOrientation(const ldmx::HcalID id) const;
 
   /**
    * Get a strip center position from a combined hcal ID.
@@ -164,13 +164,39 @@ class HcalGeometry : public framework::ConditionsObject {
    */
   bool isPrototype() const { return is_prototype_; }
 
- private:
+  /**
+   * Coordinates that are given by Geant4 are typically global. These can be
+   * transformed into corresponding local coordinates of a volume with a
+   * TopTransform. However, a TopTransform translates to the local bar but does
+   * not do the rotation (this is because we don't do a rotation when placing
+   * the bars in the GDML). This is used primarily for recording pre and post
+   * step positions in local coordinates of the volume in HcalSD.
+   *
+   * the logic below does the rotation to the local coordiates where
+   *  x : short transverse side of bar
+   *  y : long transverse side of bar
+   *  z : along length of bar
+   *
+   * @note This logic only applies to the v14 and prototype detector; however,
+   * support for v12 is not broken because no studies using these pre/post step
+   * positions have been (or should be) done with the v12 detector.
+   /
+   * @note: The native position type in Geant4 is typically a G4ThreeVector,
+   * which is a typedef for a CLHEP::Hep3Vector. However, DetDescr currently
+   * does not have a dependency on Geant4/CLHEP so we are taking the position
+   * as a vector of floats (which is what is used by SimCalorimeterHit)
+   **/
+  std::vector<double>
+  rotateGlobalToLocalBarPosition(const std::vector<double> &globalPosition,
+                                 const ldmx::HcalID &id) const;
+
+private:
   /**
    * Class constructor, for use only by the provider
    *
    * @param ps Parameters to configure the HcalGeometry
    */
-  HcalGeometry(const framework::config::Parameters& ps);
+  HcalGeometry(const framework::config::Parameters &ps);
   friend class hcal::HcalGeometryProvider;
 
   /**
@@ -203,7 +229,7 @@ class HcalGeometry : public framework::ConditionsObject {
     }
   }
 
- private:
+private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
@@ -232,7 +258,7 @@ class HcalGeometry : public framework::ConditionsObject {
 
   // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
   // geometry that corresponds to a horizontal layer (scintillator bar length
-  // along the x-axis).
+  // along the x-axis) in the back HCal.
   int back_horizontal_parity_{};
 
   // 3D readout for side Hcal
@@ -256,6 +282,6 @@ class HcalGeometry : public framework::ConditionsObject {
   std::map<ldmx::HcalID, TVector3> strip_position_map_;
 };
 
-}  // namespace ldmx
+} // namespace ldmx
 
 #endif
