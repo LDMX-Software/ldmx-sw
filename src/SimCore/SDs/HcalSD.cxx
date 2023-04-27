@@ -44,7 +44,7 @@ ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
     
     // 5cm wide bars are HARD-CODED
     if (section == ldmx::HcalID::BACK) {
-      if (geometry.layerIsHorizontal(layer)) {
+      if (geometry.backLayerIsHorizontal(layer)) {
         stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
       } else {
         stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
