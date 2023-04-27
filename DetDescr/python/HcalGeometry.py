@@ -38,8 +38,8 @@ class HcalReadoutGeometry:
         Used in the regular geometry to describe the dimensions of the Ecal.
         Since there is no Ecal in the prototype geometry, these are both set to
         0.
-    horizontal_parity:
-        Layers with odd parity (1) are horizontal on the x-axis
+    back_horizontal_parity:
+        Layers with odd parity (1) are horizontal on the x-axis in the back HCal
     """
 
     def __init__(self):
@@ -59,7 +59,7 @@ class HcalReadoutGeometry:
         self.ecal_dy = 0.0
         self.num_sections = 0
         self.verbose = 0
-        self.horizontal_parity = 1
+        self.back_horizontal_parity = 1
         self.side_3d_readout = 0
 
     def __str__(self):
@@ -184,8 +184,8 @@ class HcalGeometry:
             "ldmx-det-v11",
         ]
         # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v13.horizontal_parity = 1
+        # along the x-axis) in the back hcal
+        self.v13.back_horizontal_parity = 1
         self.v13.side_3d_readout = 0
 
     def make_v1_prototype(self):
@@ -237,8 +237,8 @@ class HcalGeometry:
             "ldmx-hcal-prototype-v1.0[.].*",
         ]
         # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v1_prototype.horizontal_parity = 1
+        # along the x-axis) in the back HCal
+        self.v1_prototype.back_horizontal_parity = 1
         self.v1_prototype.side_3d_readout = 0
 
     def make_v2_prototype(self):
@@ -300,8 +300,8 @@ class HcalGeometry:
             "ldmx-hcal-prototype-v2.0[.].*",
         ]
         # Layers with even parity (0) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v2_prototype.horizontal_parity = 0
+        # along the x-axis) in the back HCal
+        self.v2_prototype.back_horizontal_parity = 0
         self.v2_prototype.side_3d_readout = 0
 
     def make_v14(self):
@@ -387,7 +387,7 @@ class HcalGeometry:
         self.v14.side_3d_readout = 1
         self.v14.side_num_modules = side_hcal_numModules
         # In back hcal: odd layers are horizontal, even layers are vertical
-        self.v14.horizontal_parity = 1
+        self.v14.back_horizontal_parity = 1
         # In side hcal: odd layers have strips oriented in z
         zero_strip_odd = [
             -ecal_side_dx / 2.0,
