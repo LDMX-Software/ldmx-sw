@@ -8,7 +8,7 @@
 
 namespace ldmx {
 
-HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
+HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
     : framework::ConditionsObject(HcalGeometry::CONDITIONS_OBJECT_NAME) {
   scint_thickness_ = ps.getParameter<double>("scint_thickness");
   scint_width_ = ps.getParameter<double>("scint_width");
@@ -19,7 +19,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   ecal_dx_ = ps.getParameter<double>("ecal_dx");
   ecal_dy_ = ps.getParameter<double>("ecal_dy");
   verbose_ = ps.getParameter<int>("verbose");
-  back_horizontal_parity_ = ps.getParameter<int>("horizontal_parity");
+  back_horizontal_parity_ = ps.getParameter<int>("back_horizontal_parity");
   side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
 
   auto detectors_valid =
@@ -147,7 +147,7 @@ void HcalGeometry::buildStripPositionMap() {
             half_total_width_.
             The x(y) position is set to the center of the strip (0).
           */
-          if (layerIsHorizontal(layer)) {
+          if (backLayerIsHorizontal(layer)) {
             y = stripcenter - getZeroStrip(section, layer);
             x = 0;
           } else {
@@ -199,9 +199,9 @@ void HcalGeometry::buildStripPositionMap() {
         TVector3 pos;
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
-      }  // loop over strips
-    }    // loop over layers
-  }      // loop over sections
-}  // strip position map
+      } // loop over strips
+    }   // loop over layers
+  }     // loop over sections
+} // strip position map
 
-}  // namespace ldmx
+} // namespace ldmx
