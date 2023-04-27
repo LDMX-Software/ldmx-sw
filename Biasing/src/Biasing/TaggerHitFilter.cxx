@@ -27,12 +27,18 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11)
     return;
 
+  // Only electrons in the Tagger region are of interest.
+  auto volume{track->GetVolume()};
+  if (auto region{volume->GetLogicalVolume()->GetRegion()->GetName()};
+      region.compareTo("tagger") != 0)
+    return;
+
   // If the electron is exiting the tagger volume i.e. entering the world
   // volume, count the number of sensors hit. If the number of sensors hit
   // is below the hit threshold, abort the event.
   if (auto nvolume{track->GetNextVolume()->GetName()};
       nvolume.compareTo("World_PV") == 0) {
-    if (layer_count_.size() < 8) {
+    if (layer_count_.size() < layers_hit_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
