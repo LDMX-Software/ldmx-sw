@@ -28,7 +28,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.rec_pass_name = ''
 
         pe_bins = [1500, 0, 1500]
-        time_bins = [1500, -500, 1000]
+        time_bins = [200, -100, 300]
         layer_bins = [100,0,100]
         multiplicity_bins = [200,0,200]
         energy_bins = [1000,0,100]
@@ -52,7 +52,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
                               1000,0, 1000)
         self.build1DHistogram("total_pe",
                               f"Total photoelectrons in the HCal ({section_name})",
-                              10,0,10000)
+                              200,0,10000)
         self.build1DHistogram('max_pe',
                               f"Maximum photoelectrons in the HCal ({section_name})",
                               *pe_bins)
@@ -496,7 +496,23 @@ ecal_dqm = [
         ]
 
 hcal_dqm = [
-        HCalDQM()
+        HCalDQM(pe_threshold=8,
+                section=0
+                ),
+        HCalDQM(pe_threshold=8,
+                section=1
+                ),
+        HCalDQM(pe_threshold=8,
+                section=2
+                ),
+        HCalDQM(pe_threshold=8,
+                section=3
+                ),
+        HCalDQM(pe_threshold=8,
+                section=4
+                ),
+        HcalInefficiencyAnalyzer(),
+
         ]
 
 recoil_dqm = [
@@ -504,16 +520,16 @@ recoil_dqm = [
         ]
 
 trigScint_dqm = [
-    TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
-    TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
-    TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
-    TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
-    TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
-    TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
-    TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
-    TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
-    TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
-    TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
+    # TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
+    # TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
+    # TrigScintSimDQM('TrigScintSimPad3','TriggerPad3SimHits','pad3'),
+    # TrigScintDigiDQM('TrigScintDigiPad1','trigScintDigisPad1','pad1'),
+    # TrigScintDigiDQM('TrigScintDigiPad2','trigScintDigisPad2','pad2'),
+    # TrigScintDigiDQM('TrigScintDigiPad3','trigScintDigisPad3','pad3'),
+    # TrigScintClusterDQM('TrigScintClusterPad1','TriggerPad1Clusters','pad1'),
+    # TrigScintClusterDQM('TrigScintClusterPad2','TriggerPad2Clusters','pad2'),
+    # TrigScintClusterDQM('TrigScintClusterPad3','TriggerPad3Clusters','pad3'),
+    # TrigScintTrackDQM('TrigScintTracks','TriggerPadTracks')
     ]
 
 
