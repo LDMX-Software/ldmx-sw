@@ -500,15 +500,16 @@ void CKFProcessor::produce(framework::Event& event) {
 
     //Truth matching
     if (truthMatchingTool) {
-      
       auto truthInfo = truthMatchingTool->TruthMatch(trk);
       trk.setTrackID(truthInfo.trackID);
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
     
-    tracks.push_back(trk);
-    ntracks_++;
+    if (trk.getNhits() > min_hits_) {
+      tracks.push_back(trk);
+      ntracks_++;
+    }
     
     /*
       if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
@@ -630,7 +631,9 @@ void CKFProcessor::produce(framework::Event& event) {
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
-  
+
+
+    
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
 
