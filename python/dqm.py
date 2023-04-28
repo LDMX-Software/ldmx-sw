@@ -140,3 +140,17 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                       "pull p",      100,-5,5)
                 self.build1DHistogram(title+"pull_qop",
                                       "pull q/p",    100,-5,5)
+
+                
+                
+                self.build1DHistogram(title+"match_d0",
+                                      "reco match d0 [mm]", 100, d0min,d0max)
+                self.build1DHistogram(title+"match_z0",
+                                      "reco match z0 [mm]", 100, z0min,z0max)
+                self.build1DHistogram(title+"match_phi",
+                                      "reco match #phi", 100, -3.14, 3.14)
+                self.build1DHistogram(title+"match_theta",
+                                      "reco match #theta", 100, 0.7,2.1)
+                self.build1DHistogram(title+"truth_p",
+                                      "match p [GeV]",100,0,pmax)
+                
