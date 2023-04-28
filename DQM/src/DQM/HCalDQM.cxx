@@ -21,6 +21,9 @@ void HCalDQM::analyze(const framework::Event &event) {
   // Get the collection of HCalDQM digitized hits if the exists
   const auto &hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
+
+  const auto &geometry = getCondition<ldmx::HcalGeometry>(
+      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   float totalPE{0};
   float maxPE{-1};
   float maxPETime{-1};
@@ -44,7 +47,7 @@ void HCalDQM::analyze(const framework::Event &event) {
     const auto section{id.section()};
     const auto layer{id.layer()};
     const auto strip{id.strip()};
-    if (section != section_) {
+    if (section != section_ && section_ != -1) {
       continue;
     }
 
@@ -62,7 +65,15 @@ void HCalDQM::analyze(const framework::Event &event) {
     const auto pe{hit.getPE()};
     const auto t{hit.getTime()};
     const auto e{hit.getEnergy()};
+    const auto x{hit.getZPos()};
     const auto z{hit.getZPos()};
+    switch (section) {
+    case ldmx::HcalID::HcalSection::BACK:
+    case ldmx::HcalID::HcalSection::TOP:
+    case ldmx::HcalID::HcalSection::BOTTOM:
+    case ldmx::HcalID::HcalSection::LEFT:
+    case ldmx::HcalID::HcalSection::RIGHT:
+    }
 
     totalE += e;
     totalPE += pe;
