@@ -1,10 +1,5 @@
 
 #include "DQM/HCalDQM.h"
-
-#include "DetDescr/HcalID.h"
-#include "Hcal/Event/HcalHit.h"
-#include "Hcal/Event/HcalVetoResult.h"
-
 namespace dqm {
 
 HCalDQM::HCalDQM(const std::string &name, framework::Process &process)
@@ -13,6 +8,8 @@ HCalDQM::HCalDQM(const std::string &name, framework::Process &process)
 void HCalDQM::configure(framework::config::Parameters &ps) {
   rec_coll_name_ = ps.getParameter<std::string>("rec_coll_name");
   rec_pass_name_ = ps.getParameter<std::string>("rec_pass_name");
+  sim_coll_name_ = ps.getParameter<std::string>("sim_coll_name");
+  sim_pass_name_ = ps.getParameter<std::string>("sim_pass_name");
   pe_veto_threshold = ps.getParameter<double>("pe_threshold");
   section_ = ps.getParameter<int>("section");
 }
@@ -22,8 +19,15 @@ void HCalDQM::analyze(const framework::Event &event) {
   const auto &hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 
+  analyzeRecHits(hcalHits);
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+}
+void HCaldDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
+
+  const auto &geometry = getCondition<ldmx::HcalGeometry>(
+      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+
   float totalPE{0};
   float maxPE{-1};
   float maxPETime{-1};
@@ -47,7 +51,7 @@ void HCalDQM::analyze(const framework::Event &event) {
     const auto section{id.section()};
     const auto layer{id.layer()};
     const auto strip{id.strip()};
-    if (section != section_ && section_ != -1) {
+    if (skipHit(id)) {
       continue;
     }
 
@@ -65,14 +69,19 @@ void HCalDQM::analyze(const framework::Event &event) {
     const auto pe{hit.getPE()};
     const auto t{hit.getTime()};
     const auto e{hit.getEnergy()};
-    const auto x{hit.getZPos()};
+    const auto x{hit.getXPos()};
+    const auto y{hit.getYPos()};
     const auto z{hit.getZPos()};
-    switch (section) {
-    case ldmx::HcalID::HcalSection::BACK:
-    case ldmx::HcalID::HcalSection::TOP:
-    case ldmx::HcalID::HcalSection::BOTTOM:
-    case ldmx::HcalID::HcalSection::LEFT:
-    case ldmx::HcalID::HcalSection::RIGHT:
+    switch (orientation) {
+    case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
+      histograms_.fill("along_x", x);
+      break;
+    case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
+      histograms_.fill("along_y", y);
+      break;
+    case ldmx::HcalGeometry::ScintillatorOrientation::depth:
+      histograms_.fill("along_z", z);
+      break;
     }
 
     totalE += e;
