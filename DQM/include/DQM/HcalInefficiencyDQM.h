@@ -15,60 +15,41 @@ public:
   HcalInefficiencyAnalyzer(const std::string &name, framework::Process &process)
       : framework::Analyzer{name, process} {}
 
-  void configure(framework::config::Parameters &parameters) {}
-  bool hitPassesVeto(const ldmx::HcalHit &hit) {
-    return hit.getPE() > 0 && hit.getMinPE() > 0;
-  }
+  enum vetoCategories {
+    back = 0,
+    top = 1,
+    bottom = 2,
+    right = 3,
+    left = 4,
+    any = 5,
+    both = 6,
+    back_only = 7,
+    side_only = 8,
+    neither = 9
+  };
+  void configure(framework::config::Parameters &parameters) override;
 
-  void analyze(const framework::Event &event) override {
-    const auto hcalSimHits = event.getCollection<ldmx::SimCalorimeterHit>(
-        hcalSimHitsCollection_, hcalSimHitsPassName_);
-    const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(
-        hcalRecHitsCollection_, hcalRecHitsPassName_);
-
-    /* const auto hcalSimHits =
-     * event.getCollection<ldmx::SimCalorimeterHit>(hcalSimHitsCollection_,
-     * hcalSimHitsPassName_); */
-
-    double firstHitZ{9999};
-    double secondHitZ{9999};
-    double firstHitLayer{200};
-    double secondHitLayer{200};
-
-    for (const auto hit : hcalRecHits) {
-      const ldmx::HcalID id{hit.getID()};
-      if (id.section() != ldmx::HcalID::HcalSection::BACK) {
-        continue;
-      }
-      const auto z{hit.getZPos()};
-      const auto layer{id.layer()};
-      if (hitPassesVeto(hit)) {
-        if (z < firstHitZ) {
-          firstHitZ = z;
-          secondHitZ = firstHitZ;
-        } else if (z < secondHitZ) {
-          secondHitZ = z;
-        }
-        if (layer < firstHitLayer) {
-          secondHitLayer = firstHitLayer;
-          firstHitLayer = layer;
-        } else if (layer < secondHitLayer && layer != firstHitLayer) {
-          secondHitLayer = layer;
-        }
-      }
+  bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
+    if (hit.getPE() < pe_veto_threshold || hit.getTime() > max_hit_time_) {
+      return true;
     }
-    histograms_.fill("Inefficiency", firstHitZ);
-    histograms_.fill("TwoHitInefficiency", secondHitZ);
-    histograms_.fill("InefficiencyLayer", firstHitLayer);
-    histograms_.fill("TwoHitInefficiencyLayer", secondHitLayer);
+    if (section == ldmx::HcalID::HcalSection::BACK && hit.getMinPE() < 1) {
+      return true;
+    }
+    return false;
   }
 
-  std::vector<std::string> histogramNames;
+  void analyze(const framework::Event &event) override;
+
+private:
   std::string hcalSimHitsCollection_{"HcalSimHits"};
   std::string hcalRecHitsCollection_{"HcalRecHits"};
   std::string hcalSimHitsPassName_{""};
   std::string hcalRecHitsPassName_{""};
-  std::string outputPrefix;
+
+  // Veto threshold for photo-electrons
+  float pe_veto_threshold;
+  double max_hit_time_;
 };
 
 } // namespace dqm

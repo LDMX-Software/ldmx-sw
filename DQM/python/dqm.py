@@ -526,7 +526,7 @@ hcal_dqm = [
         HCalDQM(pe_threshold=8,
                 section=4
                 ),
-        HcalInefficiencyAnalyzer(),
+        HcalInefficiencyAnalyzer(pe_threshold=8),
 
         ]
 
