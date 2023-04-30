@@ -6,7 +6,7 @@ import re
 
 # external dependencies
 import matplotlib.pyplot as plt
-
+import matplotlib
 # us
 from ._file import File
 
@@ -59,11 +59,12 @@ class Differ :
         """Short form representation of a Differ"""
         return f'Differ ({self.grp_name}) {self.files}'
 
-    def plot1d(self, column, xlabel, 
+    def plot1d(self, column, xlabel,
               ylabel = 'Count',
               yscale = 'log',
               ylim = (None,None),
               out_dir = None, file_name = None,
+              tick_labels = None,
               legend_kw = dict(),
               **hist_kwargs) :
         """Plot a 1D histogram, overlaying the File entries
@@ -92,6 +93,8 @@ class Differ :
             Limits to set for the y-axis (default: deduced by matplotlib)
         out_dir : str
             Directory in which to write the plotting file
+        tick_labels: list, optional
+            Tick labels for the x-axis
         file_name : str
             Name of file, no extension (default: column name with directory separators removed)
         hist_kwargs : dict
@@ -101,7 +104,7 @@ class Differ :
         ax = fig.subplots()
 
         for f in self.files :
-            f.plot1d(ax, column, **hist_kwargs)
+            weights, bins, patches = f.plot1d(ax, column, **hist_kwargs)
 
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
@@ -110,6 +113,11 @@ class Differ :
 
         if 'title' not in legend_kw :
             legend_kw['title'] = self.grp_name
+
+        if tick_labels is not None:
+            ax.set_xticks(bins)
+            ax.set_xticklabels(tick_labels)
+            ax.tick_params(axis='x', rotation=90)
 
         ax.legend(**legend_kw)
 
