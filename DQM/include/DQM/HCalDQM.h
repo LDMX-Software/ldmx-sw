@@ -14,12 +14,17 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/Event/HcalVetoResult.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/AnalysisUtils.h"
-
+#include <map>
 namespace dqm {
 
 class HCalDQM : public framework::Analyzer {
@@ -48,6 +53,7 @@ public:
     const auto section{id.section()};
     return (section != section_ && section_ != -1);
   }
+  void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits);
 private:
   /// Hcal Sim Hits collection name
   std::string sim_coll_name_;
