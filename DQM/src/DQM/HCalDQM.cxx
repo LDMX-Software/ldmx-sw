@@ -19,11 +19,71 @@ void HCalDQM::analyze(const framework::Event &event) {
   const auto &hcalHits{
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_)};
 
+  const auto &hcalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      sim_coll_name_, sim_pass_name_)};
+  analyzeSimHits(hcalSimHits);
   analyzeRecHits(hcalHits);
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 }
-void HCaldDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
+void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
+
+  const auto &geometry = getCondition<ldmx::HcalGeometry>(
+      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+
+  std::map<ldmx::HcalID, double> simEnergyPerBar;
+  int hitMultiplicity{0};
+
+  for (const auto &hit : hits) {
+
+    ldmx::HcalID id(hit.getID());
+    if (skipHit(id)) {
+      continue;
+    }
+    const auto energy{hit.getEdep()};
+    if (simEnergyPerBar.count(id) == 0) {
+      simEnergyPerBar[id] = energy;
+    } else {
+      simEnergyPerBar[id] += energy;
+    }
+    const auto orientation{geometry.getScintillatorOrientation(id)};
+    const auto section{id.section()};
+    const auto layer{id.layer()};
+    const auto strip{id.strip()};
+    const auto pos{hit.getPosition()};
+    const auto x{pos[0]};
+    const auto y{pos[1]};
+    const auto z{pos[2]};
+    const auto t{hit.getTime()};
+    hitMultiplicity++;
+    histograms_.fill("sim_hit_time", t);
+    histograms_.fill("sim_layer", layer);
+    histograms_.fill("sim_layer:strip", layer, strip);
+    histograms_.fill("sim_energy", energy);
+    switch (orientation) {
+    case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
+      histograms_.fill("sim_along_x", x);
+      break;
+    case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
+      histograms_.fill("sim_along_y", y);
+      break;
+    case ldmx::HcalGeometry::ScintillatorOrientation::depth:
+      histograms_.fill("sim_along_z", z);
+      break;
+    }
+  }
+
+  histograms_.fill("sim_hit_multiplicity", hitMultiplicity);
+  histograms_.fill("sim_num_bars_hit", simEnergyPerBar.size());
+
+  double total_energy{0};
+  for (const auto [id, energy] : simEnergyPerBar) {
+    histograms_.fill("sim_energy_per_bar", energy);
+    total_energy += energy;
+  }
+  histograms_.fill("sim_total_energy", total_energy);
+}
+void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
 
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
@@ -46,8 +106,9 @@ void HCaldDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
     }
     return false;
   };
-  for (const ldmx::HcalHit &hit : hcalHits) {
+  for (const ldmx::HcalHit &hit : hits) {
     ldmx::HcalID id(hit.getID());
+    const auto orientation{geometry.getScintillatorOrientation(id)};
     const auto section{id.section()};
     const auto layer{id.layer()};
     const auto strip{id.strip()};

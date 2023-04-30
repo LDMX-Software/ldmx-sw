@@ -54,6 +54,8 @@ public:
     return (section != section_ && section_ != -1);
   }
   void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits);
+  void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits);
+
 private:
   /// Hcal Sim Hits collection name
   std::string sim_coll_name_;
