@@ -56,6 +56,16 @@ public:
   void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits);
   void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits);
 
+  bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
+    if (hit.getPE() < pe_veto_threshold || hit.getTime() > max_hit_time_) {
+      return true;
+    }
+    if (section == ldmx::HcalID::HcalSection::BACK && hit.getMinPE() < 1) {
+      return true;
+    }
+    return false;
+  }
+
 private:
   /// Hcal Sim Hits collection name
   std::string sim_coll_name_;
@@ -77,6 +87,7 @@ private:
   // Veto threshold for photo-electrons
   float pe_veto_threshold;
   int section_;
+  double max_hit_time_;
 };
 
 } // namespace dqm

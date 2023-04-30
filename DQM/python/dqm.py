@@ -17,13 +17,14 @@ class HCalDQM(ldmxcfg.Analyzer) :
 
 
 
-    def __init__(self,name="hcal_dqm", pe_threshold=5, section=0) :
+    def __init__(self,name="hcal_dqm", pe_threshold=5, section=0, max_hit_time = 50.0) :
         self.section = section
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         section_name = section_names[section]
         super().__init__(name + f'_{section_name}','dqm::HCalDQM','DQM')
 
-        self.pe_threshold = float(pe_threshold)
+        self.pe_veto_threshold = float(pe_threshold)
+        self.max_hit_time = max_hit_time
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
         self.sim_coll_name = 'HcalSimHits'
@@ -106,54 +107,36 @@ class HCalDQM(ldmxcfg.Analyzer) :
                               )
 
 
-        # # every hit in hcal
-        # self.build2DHistogram("back_pe:layer",
-        #         "Photoelectrons in a Back HCal Layer",10,0,10,
-        #         "Back HCal Layer",100,0,100)
-        # self.build2DHistogram("back_layer:strip",
-        #         "Back HCal Layer",100,0,100,
-        #         "Back HCal Strip",62,0,62)
-        # self.build2DHistogram("side_pe:layer",
-        #         "Photoelectrons in a Side HCal Layer",10,0,10,
-        #         "Side HCal Layer",20,0,20)
-        # self.build2DHistogram("side_layer:strip",
-        #         "Side HCal Layer",20,0,20,
-        #         "Side HCal Strip",30,0,30)
-
-        # # once per event
-        # self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
-        # self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
-        # self.build_submodule_histograms('total_pe', 'Total Photoelectrons in the {} section of the Hcal',
-        #                                 3000, 0, 3000)
-        # self.build1DHistogram("max_pe",
-        #         "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
-        # self.build1DHistogram("hit_time_max_pe",
-        #         "Max PE hit time (ns)", 1600, -100, 1500)
-        # self.build2DHistogram("max_pe:time",
-        #         "Max Photoelectrons in an HCal Module", 1500, 0, 1500,
-        #         "HCal max PE hit time (ns)", 1500, 0, 1500)
-        # self.build1DHistogram("min_time_hit_above_thresh",
-        #         f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
-        # self.build2DHistogram("min_time_hit_above_thresh:pe",
-        #                    "Photoelectrons in an HCal Module", 1500, 0, 1500,
-        #                    f"Earliest time of HCal hit above {pe_threshold} PE threshold (ns)", 1600, -100, 1500)
 
 class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
-    def __init__(self,name="HcalInefficiencyAnalyzer") :
+    def __init__(self,name="HcalInefficiencyAnalyzer", num_sections=5,
+                 pe_threshold=5, max_hit_time=50.0):
         super().__init__(name,'dqm::HcalInefficiencyAnalyzer','DQM')
 
-        self.hcalSimHitColl = "HcalSimHits"
-        self.hcalSimHitPass = "" #use whatever pass is available
+        self.sim_coll_name = "HcalSimHits"
+        self.sim_pass_name = "" #use whatever pass is available
 
-        self.hcalRecHitColl = "HcalRecHits"
-        self.hcalRecHitPass = "" #use whatever pass is available
+        self.rec_coll_name= "HcalRecHits"
+        self.rec_pass_name= "" #use whatever pass is available
 
+        self.pe_veto_threshold = float(pe_threshold)
+        self.max_hit_time = max_hit_time
+
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
         inefficiency_depth_bins = [6000, 0., 6000.]
         inefficiency_layer_bins = [100, 0, 100]
-        self.build1DHistogram("Inefficiency", "Inefficiency; Entries; Depth [mm]", *inefficiency_depth_bins)
-        self.build1DHistogram("TwoHitInefficiency", "Inefficiency (2 hits); Entries; Depth [mm]", *inefficiency_depth_bins)
-        self.build1DHistogram("InefficiencyLayer", "Inefficiency; Entries; Layer", *inefficiency_layer_bins)
-        self.build1DHistogram("TwoHitInefficiencyLayer", "Inefficiency (2 hits); Entries; Layer", *inefficiency_layer_bins)
+        # Overall, Back, Side, Top, Bottom, Left, Right
+        self.build1DHistogram('efficiency', "", 12, -1, 11)
+        for section in range(num_sections):
+            section_name = section_names[section]
+            self.build1DHistogram(f"inefficiency_{section_name}",
+                                  "fInefficiency ({section_name})",
+                                  *inefficiency_layer_bins
+                                  )
+        # self.build1DHistogram("Inefficiency", "Inefficiency; Entries; Depth [mm]", *inefficiency_depth_bins)
+        # self.build1DHistogram("TwoHitInefficiency", "Inefficiency (2 hits); Entries; Depth [mm]", *inefficiency_depth_bins)
+        # self.build1DHistogram("InefficiencyLayer", "Inefficiency; Entries; Layer", *inefficiency_layer_bins)
+        # self.build1DHistogram("TwoHitInefficiencyLayer", "Inefficiency (2 hits); Entries; Layer", *inefficiency_layer_bins)
         # self.build1DHistogram( "num_sim_hits_per_cell" ,
         #         "Number SimHits per Hcal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
 
