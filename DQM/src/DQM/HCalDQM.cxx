@@ -10,8 +10,9 @@ void HCalDQM::configure(framework::config::Parameters &ps) {
   rec_pass_name_ = ps.getParameter<std::string>("rec_pass_name");
   sim_coll_name_ = ps.getParameter<std::string>("sim_coll_name");
   sim_pass_name_ = ps.getParameter<std::string>("sim_pass_name");
-  pe_veto_threshold = ps.getParameter<double>("pe_threshold");
+  pe_veto_threshold = ps.getParameter<double>("pe_veto_threshold");
   section_ = ps.getParameter<int>("section");
+  max_hit_time_ = ps.getParameter<double>("max_hit_time");
 }
 
 void HCalDQM::analyze(const framework::Event &event) {
@@ -96,16 +97,6 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   int vetoableHitMultiplicity{0};
   int hitMultiplicity{0};
 
-  auto passesVeto = [&](const ldmx::HcalHit &hit, int section) {
-    constexpr double max_time{50};
-    if (hit.getPE() < pe_veto_threshold) {
-      return true;
-    }
-    if (section == ldmx::HcalID::HcalSection::BACK && hit.getMinPE() < 1) {
-      return true;
-    }
-    return false;
-  };
   for (const ldmx::HcalHit &hit : hits) {
     ldmx::HcalID id(hit.getID());
     const auto orientation{geometry.getScintillatorOrientation(id)};
@@ -121,7 +112,7 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
       char c;
       std::cin >> c;
     }
-    if (passesVeto(hit, section)) {
+    if (hitPassesVeto(hit, section)) {
       hitMultiplicity++;
     } else {
       hitMultiplicity++;
