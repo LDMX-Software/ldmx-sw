@@ -26,19 +26,31 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.pe_threshold = float(pe_threshold)
         self.rec_coll_name = 'HcalRecHits'
         self.rec_pass_name = ''
+        self.sim_coll_name = 'HcalSimHits'
+        self.sim_pass_name = ''
 
-        pe_bins = [1500, 0, 1500]
-        time_bins = [200, -100, 300]
+        pe_bins = [500, 0, 1500]
+        time_bins = [100, -100, 500]
         layer_bins = [100,0,100]
-        multiplicity_bins = [200,0,200]
-        energy_bins = [1000,0,100]
+        multiplicity_bins = [400,0,400]
+        energy_bins = [200,0,200]
+        self.build1DHistogram('sim_along_x', 'x', 3000, -3000,3000)
+        self.build1DHistogram('sim_along_y', 'y', 3000, -3000,3000)
+        self.build1DHistogram('sim_along_z', 'z', 3000, 0,6000)
+        self.build1DHistogram('along_x', 'x', 3000, -3000,3000)
+        self.build1DHistogram('along_y', 'y', 3000, -3000,3000)
+        self.build1DHistogram('along_z', 'z', 3000, 0,6000)
         # Per hit
         self.build1DHistogram("pe",
                               f"Photoelectrons in the HCal ({section_name})",
                               *pe_bins)
         self.build1DHistogram('hit_time', f'HCal hit time ({section_name}) [ns]',
                               *time_bins)
+        self.build1DHistogram('sim_hit_time', f'HCal hit time ({section_name}) [ns]',
+                              *time_bins)
         self.build1DHistogram("layer", f"Layer number ({section_name})",
+                              *layer_bins)
+        self.build1DHistogram("sim_layer", f"Layer number ({section_name})",
                               *layer_bins)
         self.build1DHistogram("noise",
                               f"Is pure noise hit? ({section_name})", 2, 0, 1)
@@ -46,9 +58,19 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("energy",
                               f"Reconstructed hit energy in the HCal ({section_name})",
                               *energy_bins)
+
+        self.build1DHistogram("sim_energy",
+                              f"Simulated hit energy in the HCal ({section_name})",
+                              *energy_bins)
+        self.build1DHistogram("sim_energy_per_bar",
+                              f"Simulated hit energy per bar in the HCal ({section_name})",
+                              *energy_bins)
         # Once per event
         self.build1DHistogram("total_energy",
                               f"Total reconstructed energy in the HCal ({section_name})",
+                              1000,0, 1000)
+        self.build1DHistogram("sim_total_energy",
+                              f"Total simulated energy in the HCal ({section_name})",
                               1000,0, 1000)
         self.build1DHistogram("total_pe",
                               f"Total photoelectrons in the HCal ({section_name})",
@@ -56,11 +78,21 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram('max_pe',
                               f"Maximum photoelectrons in the HCal ({section_name})",
                               *pe_bins)
+        self.build2DHistogram('sim_layer:strip',
+                              f'HCal Layer ({section_name})',
+                              *layer_bins,
+                              'Back HCal Strip', 62,0,62 )
         self.build2DHistogram('layer:strip',
                               f'HCal Layer ({section_name})',
                               *layer_bins,
                               'Back HCal Strip', 62,0,62 )
         self.build1DHistogram("hit_multiplicity",
+                              f"HCal hit multiplicity ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram("sim_hit_multiplicity",
+                              f"HCal hit multiplicity ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram("sim_num_bars_hit",
                               f"HCal hit multiplicity ({section_name})",
                               *multiplicity_bins)
         self.build1DHistogram("vetoable_hit_multiplicity",
