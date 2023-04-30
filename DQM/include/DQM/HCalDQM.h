@@ -45,6 +45,11 @@ public:
   void analyze(const framework::Event &event) override;
 
 private:
+  /// Hcal Sim Hits collection name
+  std::string sim_coll_name_;
+
+  /// Hcal Sim Hits pass name
+  std::string sim_pass_name_;
   /// Hcal Rec Hits collection name
   std::string rec_coll_name_;
 
