@@ -72,7 +72,7 @@ class Track {
   int  getTrackID() const {return trackID_;};
 
   void setTruthProb(double truthProb){truthProb_ = truthProb;};
-  int  getTruthProb() const {return truthProb_;};
+  double  getTruthProb() const {return truthProb_;};
 
   void setPdgID(int pdgID){pdgID_ = pdgID;};
   int  getPdgID() const {return pdgID_;};

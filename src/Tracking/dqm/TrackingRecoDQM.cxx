@@ -18,17 +18,15 @@ void TrackingRecoDQM::configure(framework::config::Parameters &parameters) {
 void TrackingRecoDQM::analyze(const framework::Event& event) {
   
   if (!event.exists(trackCollection_)) return;
-  auto tagger_tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-
+  auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
+  
   if (event.exists(truthCollection_)) {
     truthTrackCollection_ =
         std::make_shared<std::vector<ldmx::TruthTrack>>(event.getCollection<ldmx::TruthTrack>(truthCollection_));
     doTruthComparison = true;
   }
-  
-  TrackMonitoring(tagger_tracks,title_);
-  
-  
+
+  TrackMonitoring(tracks,title_);
 }
 
 
@@ -42,11 +40,21 @@ void TrackingRecoDQM::onProcessEnd() {
 
 void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                                       const std::string title) {
-
-  //If I have truth information, sort the tracks vector according to their trackID and truthProb
   
-  for (auto &track : tracks) {
-
+  //If I have truth information, sort the tracks vector according to their trackID and truthProb
+  std::vector<ldmx::Track> uniqueTracks;     // real tracks (truth_prob > cut), unique
+  std::vector<ldmx::Track> duplicateTracks;  // real tracks (truth_prob > cut), duplicated
+  std::vector<ldmx::Track> fakeTracks;       // fake tracks (truth_prob < cut)
+  
+  if (doTruthComparison) {
+    sortTracks(tracks,uniqueTracks, duplicateTracks,fakeTracks);
+  }
+  else {
+    uniqueTracks = tracks;
+  }
+  
+  for (auto &track : uniqueTracks) {
+    
     //Perigee track parameters
     
     double trk_d0     = track.getD0();
@@ -57,10 +65,10 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double trk_p      = 1./abs(trk_qop);
     
     std::vector<double> trk_mom = track.getMomentum();
-
+    
     //The transverse momentum in the bending plane
     double pt_bending = std::sqrt(trk_mom[0]*trk_mom[0] + trk_mom[1]*trk_mom[1]);
-
+    
     //The momentum in the plane transverse wrt the beam axis
     double pt_beam    = std::sqrt(trk_mom[1]*trk_mom[1] + trk_mom[2]*trk_mom[2]);
     
@@ -74,15 +82,16 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"px", trk_mom[0]);
     histograms_.fill(title+"py", trk_mom[1]);
     histograms_.fill(title+"pz", trk_mom[2]);
-
-    histograms_.fill(title+"pt_bending", pt_bending);
-    histograms_.fill(title+"pt_beam", pt_beam);
     
-    histograms_.fill(title+"nHits", track.getNhits());
-    histograms_.fill(title+"Chi2", track.getChi2());
+    histograms_.fill(title+"pt_bending", pt_bending);
+    histograms_.fill(title+"pt_beam",    pt_beam);
+    
+    histograms_.fill(title+"nHits",    track.getNhits());
+    histograms_.fill(title+"Chi2",     track.getChi2());
+    histograms_.fill(title+"Chi2/ndf", track.getNdf());
     histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
-    histograms_.fill(title+"nShared", track.getNsharedHits());
-        
+    histograms_.fill(title+"nShared",  track.getNsharedHits());
+    
     
     //Covariance matrix
     Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
@@ -102,28 +111,11 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
     histograms_.fill(title+"p_err",  sigmap); 
     
-    //Target surface track parameters
-    
-    //histogram_fill(name+"tgt_loc0", tgt_loc0);
-    //histogram_fill(name+"tgt_loc1", tgt_loc1);
-    //histogram_fill(name+"tgt_phi",  tgt_phi);
-    //histogram_fill(name+"tgt_theta",tgt_theta);
-    //histogram_fill(name+"tgt_px",tgt_mom(0));
-    //histogram_fill(name+"tgt_py",tgt_mom(1));
-    //histogram_fill(name+"tgt_pz",tgt_mom(2));
-
-    
     if (doTruthComparison) {
 
-      //Remove duplicates
-      std::vector<ldmx::Track> unique_tracks;
-      std::vector<ldmx::Track> duplicate_tracks;
-    
-      removeDuplicates(tracks,unique_tracks,duplicate_tracks);
-      
       //Truth Comparison
       ldmx::TruthTrack* truth_trk = nullptr;
-    
+      
       auto it = std::find_if(truthTrackCollection_->begin(),
                              truthTrackCollection_->end(),[&](const ldmx::TruthTrack& tt) {
                                return tt.getTrackID() == track.getTrackID();
@@ -131,9 +123,9 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
       
       double trackTruthProb = track.getTruthProb();
       
-      if (it != truthTrackCollection_->end() && trackTruthProb > trackProb_cut_)
+      if (it != truthTrackCollection_->end() && trackTruthProb >= trackProb_cut_)
         truth_trk = &(*it);
-     
+      
       
       //Found matched track
       if (truth_trk) {
@@ -183,30 +175,48 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
 
         //Fill reco plots for efficiencies - numerator
         
-        histograms_.fill(title+"match_d0",   truth_d0);
-        histograms_.fill(title+"match_z0",   truth_z0);
-        histograms_.fill(title+"match_phi",  truth_phi);
-        histograms_.fill(title+"match_theta",truth_theta);
-        histograms_.fill(title+"match_p",    truth_p);
-      
-      
+        histograms_.fill(title+"match_d0",   trk_d0);
+        histograms_.fill(title+"match_z0",   trk_z0);
+        histograms_.fill(title+"match_phi",  trk_phi);
+        histograms_.fill(title+"match_theta",trk_theta);
+        histograms_.fill(title+"match_p",    trk_p);
+
       } //found matched track
     }//do TruthComparison
-  }//loop on tracks
+  }//loop on unique tracks (or not split)
   
-  if (doTruthComparison) {
-    std::vector<ldmx::Tracks> uniqueTracks;
-    std::vector<ldmx::Tracks> duplicateTracks;
-    removeDuplicates(tracks,uniqueTracks, duplicateTracks);
+  
+  for (auto& ftrack : fakeTracks) {
+    histograms_.fill(title+"fake_d0",   ftrack.getD0());
+    histograms_.fill(title+"fake_z0",   ftrack.getZ0());
+    histograms_.fill(title+"fake_phi",  ftrack.getPhi());
+    histograms_.fill(title+"fake_theta",ftrack.getTheta());
+    histograms_.fill(title+"fake_p",    1. / abs(ftrack.getQoP()));
+    histograms_.fill(title+"fake_nHits",    ftrack.getNhits());
+    histograms_.fill(title+"fake_Chi2",     ftrack.getChi2());
+    histograms_.fill(title+"fake_Chi2/ndf", ftrack.getChi2()/ftrack.getNdf());
+    histograms_.fill(title+"fake_nShared",  ftrack.getNsharedHits());
   }
   
-    
+  for (auto& dtrack : duplicateTracks) {
+    histograms_.fill(title+"dup_d0",   dtrack.getD0());
+    histograms_.fill(title+"dup_z0",   dtrack.getZ0());
+    histograms_.fill(title+"dup_phi",  dtrack.getPhi());
+    histograms_.fill(title+"dup_theta",dtrack.getTheta());
+    histograms_.fill(title+"dup_p",    1. / abs(dtrack.getQoP()));
+    histograms_.fill(title+"dup_nHits",    dtrack.getNhits());
+    histograms_.fill(title+"dup_Chi2",     dtrack.getChi2());
+    histograms_.fill(title+"dup_Chi2/ndf", dtrack.getChi2()/dtrack.getNdf());
+    histograms_.fill(title+"dup_nShared",  dtrack.getNsharedHits());
+  }
+      
 }//Track Monitoring
 
 
-void removeDuplicates(const std::vector<ldmx::Track>& tracks,
-                      std::vector<ldmx::Track>& uniqueTracks,
-                      std::vector<ldmx::Track>& duplicateTracks) {
+void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
+                                 std::vector<ldmx::Track>& uniqueTracks,
+                                 std::vector<ldmx::Track>& duplicateTracks,
+                                 std::vector<ldmx::Track>& fakeTracks) {
   
   // Create a copy of the const vector so we can sort it
   std::vector<ldmx::Track> sortedTracks = tracks;
@@ -221,36 +231,45 @@ void removeDuplicates(const std::vector<ldmx::Track>& tracks,
   
   // Loop over the sorted vector of Track objects
   for (size_t i = 0; i < sortedTracks.size(); i++) {
-    // If this is the first Track object with this trackID, add it to the uniqueTracks vector
-    if (i == 0 || sortedTracks[i].getTrackID() != sortedTracks[i-1].getTrackID()) {
-      uniqueTracks.push_back(sortedTracks[i]);
-    }
-    // Otherwise, add it to the duplicateTracks vector if its truthProb is lower than the existing Track object
-    // Otherwise, if the truthProbability is higher than the track stored in uniqueTracks, put it in uniqueTracks and move the uniqueTracks.back to duplicateTracks.
-    else if (sortedTracks[i].getTruthProb() > uniqueTracks.back().getTruthProb()) {
-      duplicateTracks.push_back(uniqueTracks.back());
-      uniqueTracks.back() = sortedTracks[i];
-    }
-    // Otherwise, add it to the duplicateTracks vector
-    else {
-      duplicateTracks.push_back(sortedTracks[i]);
-    }
-  }
-  
+    if (sortedTracks[i].getTruthProb() < trackProb_cut_) 
+      fakeTracks.push_back(sortedTracks[i]);
+    else { //not a fake track
+      // If this is the first Track object with this trackID, add it to the uniqueTracks vector directly
+      if (uniqueTracks.size() == 0 || sortedTracks[i].getTrackID() != sortedTracks[i-1].getTrackID()) {
+        uniqueTracks.push_back(sortedTracks[i]);
+      }
+      // Otherwise, add it to the duplicateTracks vector if its truthProb is lower than the existing Track object
+      // Otherwise, if the truthProbability is higher than the track stored in uniqueTracks, put it in uniqueTracks and move the uniqueTracks.back to duplicateTracks.
+      else if (sortedTracks[i].getTruthProb() > uniqueTracks.back().getTruthProb()) {
+        duplicateTracks.push_back(uniqueTracks.back());
+        uniqueTracks.back() = sortedTracks[i];
+      }
+      // Otherwise, add it to the duplicateTracks vector
+      else {
+        duplicateTracks.push_back(sortedTracks[i]);
+      }
+    } //a real track
+  } //loop on sorted tracks
   // The total number of elements in the uniqueTracks and duplicateTracks vectors should be equal to the number of elements in the original tracks vector
-  if (uniqueTracks.size() + duplicateTracks.size() != tracks.size()) {
+  if (uniqueTracks.size() + duplicateTracks.size() + fakeTracks.size() != tracks.size()) {
     std::cerr << "Error: unique and duplicate tracks vectors do not add up to original tracks vector" << std::endl;
     return;
   }
   
-  // Iterate through the uniqueTracks vector and duplicateTracks vector
-  std::cout << "Unique tracks:" << std::endl;
-  for (const ldmx::Track& track : uniqueTracks) {
-    std::cout << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb() << std::endl;
-  }
-  std::cout << "Duplicate tracks:" << std::endl;
-  for (const ldmx::Track& track : duplicateTracks) {
-    std::cout << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb() << std::endl;
+  if (debug_) {
+    // Iterate through the uniqueTracks vector and duplicateTracks vector
+    std::cout << "Unique tracks:" << std::endl;
+    for (const ldmx::Track& track : uniqueTracks) {
+      std::cout << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb() << std::endl;
+    }
+    std::cout << "Duplicate tracks:" << std::endl;
+    for (const ldmx::Track& track : duplicateTracks) {
+      std::cout << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb() << std::endl;
+    }
+    std::cout << "Fake tracks:" << std::endl;
+    for (const ldmx::Track& track : fakeTracks) {
+      std::cout << "Track ID: " << track.getTrackID() << ", Truth Prob: " << track.getTruthProb() << std::endl; 
+    }
   }
 }
 } //tracking::dqm
