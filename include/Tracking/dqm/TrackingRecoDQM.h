@@ -34,11 +34,12 @@ namespace tracking::dqm {
 
     void onProcessEnd() override;
 
-    void removeDuplicates(const std::vector<ldmx::Track>& tracks,
-                          std::vector<ldmx::Track>& uniqueTracks,
-                          std::vector<ldmx::Track>& duplicateTracks);
+    void sortTracks(const std::vector<ldmx::Track>& tracks,
+                    std::vector<ldmx::Track>& uniqueTracks,
+                    std::vector<ldmx::Track>& duplicateTracks,
+                    std::vector<ldmx::Track>& fakeTracks);
     
-    
+
    private:
     
     std::string trackCollection_{"TruthTracks"};
@@ -46,7 +47,8 @@ namespace tracking::dqm {
     std::string title_{"tagger_trk_"};
     double trackProb_cut_{0.5};
     bool doTruthComparison{false};
-
+    bool debug_{false};
+    
     std::shared_ptr<std::vector<ldmx::TruthTrack>> truthTrackCollection_{nullptr};
     
   };
