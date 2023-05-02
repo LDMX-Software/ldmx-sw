@@ -23,9 +23,7 @@ G4HadFinalState* BertiniEventTopologyProcess::ApplyYourself(
     theParticleChange.SetStatusChange(stopAndKill);
     G4CascadeInterface::ApplyYourself(projectile, targetNucleus);
     if (acceptEvent()) {
-      auto event_info{static_cast<UserEventInformation*>(
-          G4EventManager::GetEventManager()->GetUserInformation())};
-      event_info->incWeight(1. / attempts);
+      incrementEventWeight(attempts);
       return &theParticleChange;
     }
     attempts++;

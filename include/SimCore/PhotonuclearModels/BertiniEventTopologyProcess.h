@@ -79,6 +79,20 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
     }
     return false;
   }
+
+  /*
+   *  Update the event weight depending on the number of attempts made.
+   *
+   *  @param N The number of attempts used for a successful topology
+   *  production.
+   *
+   **/
+
+  virtual void incrementEventWeight(int N) {
+    auto event_info{static_cast<UserEventInformation*>(
+        G4EventManager::GetEventManager()->GetUserInformation())};
+    event_info->incWeight(1. / N);
+  }
 };
 }  // namespace simcore
 
