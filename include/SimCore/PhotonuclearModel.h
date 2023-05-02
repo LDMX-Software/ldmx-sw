@@ -1,5 +1,9 @@
 #ifndef SIMCORE_PHOTONUCLEAR_MODEL_H
 #define SIMCORE_PHOTONUCLEAR_MODEL_H
+#include <G4CrossSectionDataSetRegistry.hh>
+#include <G4HadronInelasticProcess.hh>
+#include <G4HadronicInteraction.hh>
+#include <G4PhotoNuclearCrossSection.hh>
 #include <G4ProcessManager.hh>
 #include <string>
 #include <utility>
@@ -19,6 +23,7 @@
 ** list.
 */
 namespace simcore {
+
 class PhotonuclearModel {
  public:
   /**
@@ -59,6 +64,20 @@ class PhotonuclearModel {
    * in automatically by the GammaPhysics module.
    */
   virtual void removeExistingModel(G4ProcessManager* processManager);
+
+  /**
+   * Default implementation for adding XS data for the process.
+   *
+   * The default implementation is adapted from G4PhotoNuclearProcess.hh but can
+   * be overridden to add cross sections in another way (e.g. from FLUKA). If no
+   * cross-section is added to the process, the simulation process will halt
+   * when attempting to calculate the mean free path so there is no way of
+   * accidentally forgetting to enable the XS data.
+   *
+   * Typically called during `ConstructGammaProcess`.
+   *
+   */
+  virtual void addPNCrossSectionData(G4HadronInelasticProcess* process) const;
 };
 }  // namespace simcore
 
@@ -69,6 +88,8 @@ class PhotonuclearModel {
  * registers it as a possible photonuclear model. If you are implementing your
  * own photonuclear model class, make sure to invoke this macro in your
  * implementation file.
+ *
+ * See e.g. SimCore/src/SimCore/PhotonuclearModels/BertiniModel.cxx
  */
 #define DECLARE_PHOTONUCLEAR_MODEL(CLASS)                                 \
   namespace {                                                             \

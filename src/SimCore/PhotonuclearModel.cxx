@@ -11,4 +11,15 @@ void PhotonuclearModel::removeExistingModel(G4ProcessManager* processManager) {
     }
   }
 }
+
+void PhotonuclearModel::addPNCrossSectionData(
+    G4HadronInelasticProcess* process) const {
+  auto crossSectionRegistry{G4CrossSectionDataSetRegistry::Instance()};
+  auto crossSection{
+      crossSectionRegistry->GetCrossSectionDataSet("PhotoNuclearXS")};
+  if (!crossSection) {
+    crossSection = new G4PhotoNuclearCrossSection{};
+  }
+  process->AddDataSet(crossSection);
+}
 }  // namespace simcore
