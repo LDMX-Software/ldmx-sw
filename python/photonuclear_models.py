@@ -90,3 +90,34 @@ class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
         self.zmin = 0
         self.emin = 2500.
         self.count_light_ions = True
+
+
+
+class BertiniAtLeastNProductsModel(simcfg.PhotonuclearModel):
+    """ A photonuclear model producing only topologies with no particles above a
+    certain threshold.
+
+    Uses the default Bertini model from Geant4.
+
+    """
+
+    def __init__(self, name):
+        super().__init__(name,
+                         'simcore::BertiniAtLeastNProductsModel',
+                         'SimCore_PhotonuclearModels')
+        self.hard_particle_threshold = 200.
+        self.zmin = 0
+        self.emin = 2500.
+        self.min_products = 1
+        self.pdg_ids = []
+
+    def kaon(min_products = 1):
+        model = BertiniAtLeastNProductsModel(f"{min_products}_kaon_model")
+        model.pdg_ids = [
+                130, # K_L^0
+                310, # K_S^0
+                311, # K^0
+                321  # K^+
+        ]
+        model.min_products = min_products
+        return model
