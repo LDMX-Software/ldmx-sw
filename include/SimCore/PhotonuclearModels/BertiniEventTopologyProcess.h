@@ -32,7 +32,7 @@ namespace simcore {
 
 class BertiniEventTopologyProcess : public G4CascadeInterface {
  public:
-  BertiniEventTopologyProcess(bool count_light_ions)
+  BertiniEventTopologyProcess(bool count_light_ions = true)
       : G4CascadeInterface{}, count_light_ions_{count_light_ions} {}
 
   /*
