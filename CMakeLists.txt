@@ -41,7 +41,7 @@ setup_geant4_target()
 add_subdirectory(G4DarkBreM)
 
 setup_library(module SimCore
-  name PhotonuclearModels
+  name PhotoNuclearModels
   dependencies SimCore::SimCore)
 
 # Set the LHE Reading Library

@@ -4,7 +4,7 @@
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/PhotonuclearModel.h"
+#include "SimCore/PhotoNuclearModel.h"
 namespace simcore {
 
 /**
@@ -13,11 +13,11 @@ namespace simcore {
  * construct any new process but does override the removeExistingModel function
  * to ensure that the existing process is not removed.
  */
-class BertiniModel : public PhotonuclearModel {
+class BertiniModel : public PhotoNuclearModel {
  public:
   BertiniModel(const std::string& name,
                const framework::config::Parameters& parameters)
-      : PhotonuclearModel{name, parameters} {}
+      : PhotoNuclearModel{name, parameters} {}
   virtual ~BertiniModel() = default;
   /**
    * Do nothing, the Bertini process is already present.

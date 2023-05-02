@@ -8,8 +8,8 @@
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/PhotonuclearModel.h"
-#include "SimCore/PhotonuclearModels/BertiniEventTopologyProcess.h"
+#include "SimCore/PhotoNuclearModel.h"
+#include "SimCore/PhotoNuclearModels/BertiniEventTopologyProcess.h"
 namespace simcore {
 class BertiniSingleNeutronProcess : public BertiniEventTopologyProcess {
  public:
@@ -34,11 +34,11 @@ class BertiniSingleNeutronProcess : public BertiniEventTopologyProcess {
   double Emin_;
 };
 
-class BertiniSingleNeutronModel : public PhotonuclearModel {
+class BertiniSingleNeutronModel : public PhotoNuclearModel {
  public:
   BertiniSingleNeutronModel(const std::string& name,
                             const framework::config::Parameters& parameters)
-      : PhotonuclearModel{name, parameters},
+      : PhotoNuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
         Zmin_{parameters.getParameter<int>("zmin")},
         Emin_{parameters.getParameter<double>("emin")},
