@@ -7,6 +7,7 @@
 #define FRAMEWORK_SIMPLETABLECONDITION_H_
 
 #include <vector>
+#include <ostream>
 
 #include "Framework/ConditionsObject.h"
 #include "Framework/Exception/Exception.h"
@@ -86,6 +87,11 @@ class BaseTableCondition : public framework::ConditionsObject {
    */
   unsigned int getIdMask() const { return idMask_; }
 
+  /**
+   * Streams a given row of this table
+   */
+  virtual std::ostream& streamRow(std::ostream& s, int irow) const { return s << keys_[irow]; }
+  
  protected:
   std::size_t findKey(unsigned int id) const;
 
@@ -176,6 +182,20 @@ class HomogenousTableCondition : public BaseTableCondition {
     return get(id, getColumnNumber(colname));
   }
 
+  /**
+   * Streams a given row of this table
+   */
+  virtual std::ostream& streamRow(std::ostream& s, int irow) const {
+    if (irow >= getRowCount()) {  // raise exception
+      EXCEPTION_RAISE("ConditionsException",
+                      "Row out of range: " + std::to_string(irow));
+    }
+    s << keys_[irow];
+    for (int i=0; i<columnCount_; i++) 
+      s << ',' << values_[irow*columnCount_+i];
+    return s << std::endl;
+  }
+  
  private:
   std::vector<T> values_;  // unrolled array
 };
@@ -207,5 +227,7 @@ class IntegerTableCondition : public HomogenousTableCondition<int> {
 };
 
 }  // namespace conditions
+
+std::ostream& operator<<(std::ostream&, const conditions::BaseTableCondition&);
 
 #endif
