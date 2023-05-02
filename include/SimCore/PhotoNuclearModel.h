@@ -24,7 +24,7 @@
 */
 namespace simcore {
 
-class PhotonuclearModel {
+class PhotoNuclearModel {
  public:
   /**
    * Base class does not take any parameters or do anything in particular, but
@@ -33,9 +33,9 @@ class PhotonuclearModel {
    * @param[in] name unique instance name for this model
    * @param[in] parameters python configuration
    */
-  PhotonuclearModel(const std::string& name,
+  PhotoNuclearModel(const std::string& name,
                     const framework::config::Parameters& parameters){};
-  virtual ~PhotonuclearModel() = default;
+  virtual ~PhotoNuclearModel() = default;
 
   /**
    * The primary part of the model interface, responsible for adding the desired
@@ -47,10 +47,10 @@ class PhotonuclearModel {
   virtual void ConstructGammaProcess(G4ProcessManager* processManager) = 0;
 
   /**
-   * The factory for PhotonuclearModels.
+   * The factory for PhotoNuclearModels.
    */
   using Factory =
-      ::simcore::Factory<PhotonuclearModel, std::shared_ptr<PhotonuclearModel>,
+      ::simcore::Factory<PhotoNuclearModel, std::shared_ptr<PhotoNuclearModel>,
                          const std::string&,
                          const framework::config::Parameters&>;
 
@@ -89,10 +89,10 @@ class PhotonuclearModel {
  * own photonuclear model class, make sure to invoke this macro in your
  * implementation file.
  *
- * See e.g. SimCore/src/SimCore/PhotonuclearModels/BertiniModel.cxx
+ * See e.g. SimCore/src/SimCore/PhotoNuclearModels/BertiniModel.cxx
  */
 #define DECLARE_PHOTONUCLEAR_MODEL(CLASS)                                 \
   namespace {                                                             \
-  auto v = ::simcore::PhotonuclearModel::Factory::get().declare<CLASS>(); \
+  auto v = ::simcore::PhotoNuclearModel::Factory::get().declare<CLASS>(); \
   }
 #endif /* SIMCORE_PHOTONUCLEAR_MODEL_H */

@@ -143,17 +143,17 @@ class SensitiveDetector:
 
         return '%s of class %s' % (self.instance_name, self.class_name)
 
-class PhotonuclearModel():
+class PhotoNuclearModel():
     """Configuration for a photonuclear model that we want to load
 
     Parameters
     ----------
     instance_name : str
-        Unique name for this particular instance of a Photonuclear Model
+        Unique name for this particular instance of a PhotoNuclear Model
     class_name : str
-        Name of C++ class that this Photonuclear model should be
+        Name of C++ class that this PhotoNuclear model should be
     module_name : str
-        Name of C++ library that this Photonuclear model is compiled into
+        Name of C++ library that this PhotoNuclear model is compiled into
     """
 
     def __init__(self, instance_name, class_name, module_name ):

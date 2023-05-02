@@ -9,7 +9,7 @@
 #include <G4Nucleus.hh>
 #include <iostream>
 
-#include "SimCore/PhotonuclearModel.h"
+#include "SimCore/PhotoNuclearModel.h"
 #include "SimCore/UserEventInformation.h"
 namespace simcore {
 
@@ -20,7 +20,7 @@ namespace simcore {
 ** handled by the acceptEvent virtual function.
 **
 ** For example of a derived class, see
-** SimCore/include/SimCore/PhotonuclearModels/BertiniNothingHardModel.h
+** SimCore/include/SimCore/PhotoNuclearModels/BertiniNothingHardModel.h
 **
 ** Note: You almost certainly want to use these types of models together with a
 ** photonuclear topology filter.

@@ -52,7 +52,7 @@ void GammaPhysics::SetPhotonNuclearAsFirstProcess() const {
 void GammaPhysics::ConstructProcess() {
   G4ProcessManager* processManager = GetGammaProcessManager();
 
-  auto pn = PhotonuclearModel::Factory::get().make(
+  auto pn = PhotoNuclearModel::Factory::get().make(
       modelParameters.getParameter<std::string>("class_name"),
       modelParameters.getParameter<std::string>("instance_name"),
       modelParameters);

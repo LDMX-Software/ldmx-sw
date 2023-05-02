@@ -1,7 +1,7 @@
-#include "SimCore/PhotonuclearModel.h"
+#include "SimCore/PhotoNuclearModel.h"
 
 namespace simcore {
-void PhotonuclearModel::removeExistingModel(G4ProcessManager* processManager) {
+void PhotoNuclearModel::removeExistingModel(G4ProcessManager* processManager) {
   const auto processes{processManager->GetProcessList()};
   for (int i{0}; i < processes->size(); ++i) {
     const auto process{(*processes)[i]};
@@ -12,7 +12,7 @@ void PhotonuclearModel::removeExistingModel(G4ProcessManager* processManager) {
   }
 }
 
-void PhotonuclearModel::addPNCrossSectionData(
+void PhotoNuclearModel::addPNCrossSectionData(
     G4HadronInelasticProcess* process) const {
   auto crossSectionRegistry{G4CrossSectionDataSetRegistry::Instance()};
   auto crossSection{

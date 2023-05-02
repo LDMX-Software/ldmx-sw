@@ -1,4 +1,4 @@
-#include "SimCore/PhotonuclearModels/BertiniEventTopologyProcess.h"
+#include "SimCore/PhotoNuclearModels/BertiniEventTopologyProcess.h"
 namespace simcore {
 
 void BertiniEventTopologyProcess::cleanupSecondaries() {

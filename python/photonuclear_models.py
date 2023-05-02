@@ -3,7 +3,7 @@
 from LDMX.SimCore import simcfg
 
 
-class BertiniModel(simcfg.PhotonuclearModel):
+class BertiniModel(simcfg.PhotoNuclearModel):
     """The default model for photonuclear interactions.
 
     Keeps the default Bertini model from Geant4.
@@ -12,9 +12,9 @@ class BertiniModel(simcfg.PhotonuclearModel):
     def __init__(self):
         super().__init__('BertiniModel',
                          'simcore::BertiniModel',
-                         'SimCore_PhotonuclearModels')
+                         'SimCore_PhotoNuclearModels')
 
-class BertiniNothingHardModel(simcfg.PhotonuclearModel):
+class BertiniNothingHardModel(simcfg.PhotoNuclearModel):
     """A photonuclear model producing only topologies with no particles above a
     certain threshold.
 
@@ -69,12 +69,12 @@ class BertiniNothingHardModel(simcfg.PhotonuclearModel):
 
         super().__init__('BertiniNothingHardModel',
                          'simcore::BertiniNothingHardModel',
-                         'SimCore_PhotonuclearModels')
+                         'SimCore_PhotoNuclearModels')
         self.count_light_ions = True
         self.hard_particle_threshold = 200.
         self.zmin = 74
         self.emin = 2500.
-class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
+class BertiniSingleNeutronModel(simcfg.PhotoNuclearModel):
     """A photonuclear model producing only topologies where only one neutron has
     kinetic energy above a particular threshold.
 
@@ -85,7 +85,7 @@ class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
     def __init__(self):
         super().__init__('BertiniSingleNeutronModel',
                          'simcore::BertiniSingleNeutronModel',
-                         'SimCore_PhotonuclearModels')
+                         'SimCore_PhotoNuclearModels')
         self.hard_particle_threshold = 200.
         self.zmin = 0
         self.emin = 2500.
@@ -93,7 +93,7 @@ class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
 
 
 
-class BertiniAtLeastNProductsModel(simcfg.PhotonuclearModel):
+class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
     """ A photonuclear model producing only topologies with no particles above a
     certain threshold.
 
@@ -104,7 +104,7 @@ class BertiniAtLeastNProductsModel(simcfg.PhotonuclearModel):
     def __init__(self, name):
         super().__init__(name,
                          'simcore::BertiniAtLeastNProductsModel',
-                         'SimCore_PhotonuclearModels')
+                         'SimCore_PhotoNuclearModels')
         self.hard_particle_threshold = 200.
         self.zmin = 0
         self.emin = 2500.

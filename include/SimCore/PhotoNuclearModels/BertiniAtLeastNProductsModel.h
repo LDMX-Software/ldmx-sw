@@ -8,8 +8,8 @@
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/PhotonuclearModel.h"
-#include "SimCore/PhotonuclearModels/BertiniEventTopologyProcess.h" /*  */
+#include "SimCore/PhotoNuclearModel.h"
+#include "SimCore/PhotoNuclearModels/BertiniEventTopologyProcess.h" /*  */
 namespace simcore {
 class BertiniAtLeastNProductsProcess : public BertiniEventTopologyProcess {
  public:
@@ -38,11 +38,11 @@ class BertiniAtLeastNProductsProcess : public BertiniEventTopologyProcess {
   int min_products_;
 };
 
-class BertiniAtLeastNProductsModel : public PhotonuclearModel {
+class BertiniAtLeastNProductsModel : public PhotoNuclearModel {
  public:
   BertiniAtLeastNProductsModel(const std::string& name,
                                const framework::config::Parameters& parameters)
-      : PhotonuclearModel{name, parameters},
+      : PhotoNuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
         Zmin_{parameters.getParameter<int>("zmin")},
         Emin_{parameters.getParameter<double>("emin")},
