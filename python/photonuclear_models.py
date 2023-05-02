@@ -70,9 +70,8 @@ class BertiniNothingHardModel(simcfg.PhotonuclearModel):
         super().__init__('BertiniNothingHardModel',
                          'simcore::BertiniNothingHardModel',
                          'SimCore_PhotonuclearModels')
-        self.count_light_ions = 0
+        self.count_light_ions = True
         self.hard_particle_threshold = 200.
-
         self.zmin = 74
         self.emin = 2500.
 class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
@@ -90,3 +89,4 @@ class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
         self.hard_particle_threshold = 200.
         self.zmin = 0
         self.emin = 2500.
+        self.count_light_ions = True

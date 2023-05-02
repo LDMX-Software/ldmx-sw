@@ -1,21 +1,23 @@
 #ifndef SIMCORE_BERTINI_NOTHING_HARD_MODEL_H
 #define SIMCORE_BERTINI_NOTHING_HARD_MODEL_H
+#include <G4CrossSectionDataSetRegistry.hh>
+#include <G4Gamma.hh>
+#include <G4HadProjectile.hh>
+#include <G4HadronInelasticProcess.hh>
+#include <G4Nucleus.hh>
+#include <G4PhotoNuclearCrossSection.hh>
+#include <G4ProcessManager.hh>
+
 #include "Framework/Configure/Parameters.h"
-#include "G4CrossSectionDataSetRegistry.hh"
-#include "G4Gamma.hh"
-#include "G4HadProjectile.hh"
-#include "G4HadronInelasticProcess.hh"
-#include "G4Nucleus.hh"
-#include "G4PhotoNuclearCrossSection.hh"
-#include "G4ProcessManager.hh"
 #include "SimCore/PhotonuclearModel.h"
 #include "SimCore/PhotonuclearModels/BertiniEventTopologyProcess.h"
 namespace simcore {
 
 class BertiniNothingHardProcess : public BertiniEventTopologyProcess {
  public:
-  BertiniNothingHardProcess(double threshold, int Zmin, double Emin)
-      : BertiniEventTopologyProcess{},
+  BertiniNothingHardProcess(double threshold, int Zmin, double Emin,
+                            bool count_light_ions)
+      : BertiniEventTopologyProcess{count_light_ions},
         threshold_{threshold},
         Zmin_{Zmin},
         Emin_{Emin} {}
@@ -41,7 +43,8 @@ class BertiniNothingHardModel : public PhotonuclearModel {
       : PhotonuclearModel{name, parameters},
         threshold_{parameters.getParameter<double>("hard_particle_threshold")},
         Zmin_{parameters.getParameter<int>("zmin")},
-        Emin_{parameters.getParameter<double>("emin")} {}
+        Emin_{parameters.getParameter<double>("emin")},
+        count_light_ions_{parameters.getParameter<bool>("count_light_ions")} {}
   virtual ~BertiniNothingHardModel() = default;
   void ConstructGammaProcess(G4ProcessManager* processManager) override;
 
@@ -49,6 +52,7 @@ class BertiniNothingHardModel : public PhotonuclearModel {
   double threshold_;
   int Zmin_;
   double Emin_;
+  bool count_light_ions_;
 };
 }  // namespace simcore
 #endif /* SIMCORE_BERTINI_NOTHING_HARD_MODEL_H */

@@ -14,7 +14,8 @@
 namespace simcore {
 class BertiniEventTopologyProcess : public G4CascadeInterface {
  public:
-  BertiniEventTopologyProcess() : G4CascadeInterface{} {}
+  BertiniEventTopologyProcess(bool count_light_ions)
+      : G4CascadeInterface{}, count_light_ions_{count_light_ions} {}
 
   /*
    * The primary function for derived classes to customize. After each call to
@@ -70,7 +71,7 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
    *  take the modulo with 1000.
    *
    */
-  constexpr bool isLightNucleus(const int pdgCode) const {
+  constexpr bool isLightIon(const int pdgCode) const {
     //
     // TODO: Is the < check necessary?
     if (pdgCode > 1000000000 && pdgCode < 10000000000) {
@@ -78,6 +79,22 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
       return ((pdgCode / 10) % 1000) <= 4;
     }
     return false;
+  }
+
+  /**
+   * Whether or not to include a particular particle type in any counting.
+   * Unless \ref count_light_ions_ is set, we don't count anything with a
+   * nuclear PDG code. This is consistent with the counting behaviour used in
+   * the PhotoNuclearDQM.
+   *
+   * If \ref count_light_ions_ is set, we also match PDG codes for nuclei with
+   * atomic number < 4. 
+   *
+   * @see isLightIon
+   *
+   */
+  constexpr bool skipCountingParticle(const int pdgcode) const {
+    return !(pdgcode < 10000 || count_light_ions_ && isLightIon(pdgcode));
   }
 
   /*
@@ -93,6 +110,9 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
         G4EventManager::GetEventManager()->GetUserInformation())};
     event_info->incWeight(1. / N);
   }
+
+ private:
+  bool count_light_ions_;
 };
 }  // namespace simcore
 
