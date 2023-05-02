@@ -75,8 +75,8 @@ class BertiniNothingHardModel(simcfg.PhotonuclearModel):
         self.zmin = 74
         self.emin = 2500.
 class BertiniSingleNeutronModel(simcfg.PhotonuclearModel):
-    """ A photonuclear model producing only topologies with no particles above a
-    certain threshold.
+    """A photonuclear model producing only topologies where only one neutron has
+    kinetic energy above a particular threshold.
 
     Uses the default Bertini model from Geant4.
 
