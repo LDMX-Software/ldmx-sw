@@ -1,17 +1,35 @@
 #ifndef SIMCORE_BERTINI_EVENTTOPOLOGY_PROCESS_H
 #define SIMCORE_BERTINI_EVENTTOPOLOGY_PROCESS_H
 
+#include <G4CascadeInterface.hh>
+#include <G4EventManager.hh>
+#include <G4HadFinalState.hh>
+#include <G4HadProjectile.hh>
+#include <G4HadronicInteraction.hh>
+#include <G4Nucleus.hh>
 #include <iostream>
 
-#include "G4CascadeInterface.hh"
-#include "G4EventManager.hh"
-#include "G4HadFinalState.hh"
-#include "G4HadProjectile.hh"
-#include "G4HadronicInteraction.hh"
-#include "G4Nucleus.hh"
 #include "SimCore/PhotonuclearModel.h"
 #include "SimCore/UserEventInformation.h"
 namespace simcore {
+
+/*
+** A wrapper interface around the Bertini cascade process (G4CascadeInterface)
+** which reruns the event generator until a particular condition is met for the
+** products. The decision of whether or not to rerun the event generator is
+** handled by the acceptEvent virtual function.
+**
+** For example of a derived class, see
+** SimCore/include/SimCore/PhotonuclearModels/BertiniNothingHardModel.h
+**
+** Note: You almost certainly want to use these types of models together with a
+** photonuclear topology filter.
+**
+** Note: When performing N attempts, this will increment the event weight in the
+** UserEventInformation by 1/N. To change this behaviour, override the
+** incrementEventWeight function.
+*/
+
 class BertiniEventTopologyProcess : public G4CascadeInterface {
  public:
   BertiniEventTopologyProcess(bool count_light_ions)
@@ -57,8 +75,8 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
   /*
    * Geant4 assumes that secondaries produced from the bertini cascade are owned
    *  by some other part of the code. Since we are re-running the cascade until
-   * we get something matching our condition in `acceptEvent`, we have to make
-   * sure to clean up any secondaries from failed attempts.
+   *  we get something matching our condition in `acceptEvent`, we have to make
+   *  sure to clean up any secondaries from failed attempts.
    *
    */
   void cleanupSecondaries();
