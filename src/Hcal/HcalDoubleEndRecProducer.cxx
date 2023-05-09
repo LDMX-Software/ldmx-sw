@@ -120,7 +120,10 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     double mean_shift = conditions.toaCalib(digi_id_neg.raw(), 1);
 
     double pos_time = hitPosEnd.getTime();
-    double neg_time = hitNegEnd.getTime() - mean_shift;
+    double neg_time = hitNegEnd.getTime();
+    if( pos_time != 0 || neg_time !=0 ) {
+      neg_time = neg_time - mean_shift;
+    }
 
     // update position in strip according to time measurement
     double v =

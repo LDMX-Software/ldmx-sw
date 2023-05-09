@@ -154,7 +154,7 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
       num_mips_equivalent = adc_calib;
     } else {
       double tot_calib = conditions.linearize(digi.id(), sum_tot);
-      num_mips_equivalent = tot_calib;
+      num_mips_equivalent = tot_calib / conditions.adcGain(digi.id(), 0);
     }
     int PEs = num_mips_equivalent * pe_per_mip_;
     double reconstructed_energy =
