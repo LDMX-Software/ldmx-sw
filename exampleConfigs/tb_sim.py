@@ -21,7 +21,7 @@ detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 p.outputFiles = [
         arg.particle
         +"Sim_%.2fGeV_"%arg.energy
-        + str(p.maxEvents) 
+        + str(p.maxEvents)
         + "_%s.root"%detector
         ]
 
@@ -35,7 +35,7 @@ mySim.setDetector(detector)
 from LDMX.SimCore import generators as gen
 myGun = gen.gun('myGun')
 myGun.particle = arg.particle
-myGun.position = [ 0., 0., 0 ] # mm 
+myGun.position = [ 0., 0., 0 ] # mm
 myGun.direction = [ 0., 0., 1] # forward in z
 myGun.energy = arg.energy # GeV
 mySim.generators = [ myGun ]
@@ -44,7 +44,7 @@ p.sequence.append( mySim )
 
 # import chip/geometry (hardcoded) conditions
 import LDMX.Hcal.HcalGeometry
-import LDMX.Hcal.hcal_hardcoded_conditions
+import LDMX.Hcal.hcal_testbeamsim_conditions
 import LDMX.Hcal.digi as hcal_digi
 
 # add them to the sequence
@@ -56,6 +56,12 @@ p.sequence.extend(
             pass_name = 'sim', coll_name = 'HcalDigis',
             rec_coll_name = 'HcalSingleEndRecHits',
         ),
+        hcal_digi.HcalDoubleEndRecProducer(
+            pass_name = '',
+            coll_name = 'HcalSingleEndRecHits',
+            rec_coll_name = 'HcalDoubleEndRecHits',
+            rec_pass_name = ''
+        )
     ]
 )
 
