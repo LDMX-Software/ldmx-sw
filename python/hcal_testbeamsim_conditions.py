@@ -23,7 +23,7 @@ adc_pedestal.validForAllRows([1.]) # should match HgcrocEmulator
 
 adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
 #Update this number
-adc_gain.validForAllRows([600.]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+adc_gain.validForAllRows([738.]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
 
 tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
                                          ["m_adc_i","cut_point_tot","high_slope","high_offset",
