@@ -35,9 +35,13 @@ tot_calib.validForAllRows([
     1.,1.
 ]) # dummy value since TOT is not implemented
 
+toa_calib =  SimpleCSVDoubleTableProvider("hcal_toa_calibration",
+                                          ["bx_shift","mean_shift"])
+toa_calib.validForAllRows([0., 0.]) # dummy values
+
 # wrap our tables in the parent object that is used by the processors
 from .conditions import HcalReconConditionsProvider
-HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib)
+HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)
 
 HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions", [
             "PEDESTAL",
