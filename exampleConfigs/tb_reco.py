@@ -40,11 +40,14 @@ p.sequence = [
     #     output_name = 'HcalRawDigis'
     # ),
     hcal_digi.HcalSingleEndRecProducer(
-      coll_name = 'HcalRawDigis',
-      rec_coll_name = 'HcalSingleEndRecHits',
-      rec_pass_name = '',
+        coll_name = 'HcalRawDigis',
+        rec_coll_name = 'HcalSingleEndRecHits',
+        rec_pass_name = '',
     ),
     hcal_digi.HcalDoubleEndRecProducer(
-        pass_name = '', coll_name = 'HcalSingleEndRecHits', rec_coll_name = 'HcalDoubleEndRecHits', rec_pass_name = ''
+        pass_name = '', 
+        coll_name = 'HcalSingleEndRecHits', 
+        rec_coll_name = 'HcalDoubleEndRecHits',
+        rec_pass_name = ''
     )
 ]
