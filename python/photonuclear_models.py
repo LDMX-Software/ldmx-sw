@@ -111,7 +111,9 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
         self.min_products = 1
         self.pdg_ids = []
 
-    def kaon(min_products = 1):
+    def kaon(min_products = 1, hard_particle_threshold):
+        # Note: By default, this is requiring at least 1 kaon with at least 200
+        # MeV. You may want a different energy threshold depending on your needs.
         model = BertiniAtLeastNProductsModel(f"{min_products}_kaon_model")
         model.pdg_ids = [
                 130, # K_L^0
