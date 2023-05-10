@@ -34,8 +34,8 @@ class HCalDQM(ldmxcfg.Analyzer) :
         time_bins = [100, -100, 500]
         layer_bins = [100,0,100]
         multiplicity_bins = [400,0,400]
-        energy_bins = [100,0,200]
-        total_energy_bins = [100, 0, 1000]
+        energy_bins = [200,0,200]
+        total_energy_bins = [1000, 0, 1000]
         self.build1DHistogram('sim_along_x', 'x', 1200, -3000,3000)
         self.build1DHistogram('sim_along_y', 'y', 1200, -3000,3000)
         self.build1DHistogram('sim_along_z', 'z', 1200, 0,6000)
@@ -126,7 +126,8 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         inefficiency_depth_bins = [6000, 0., 6000.]
         inefficiency_layer_bins = [100, 0, 100]
-        # Overall, Back, Side, Top, Bottom, Left, Right
+        # Overall, Back, Side, Top, Bottom, Left, Right, Both,
+        # Back only, Side Only, Neither
         self.build1DHistogram('efficiency', "", 12, -1, 11)
         for section in range(num_sections):
             section_name = section_names[section]
@@ -134,19 +135,6 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
                                   "fInefficiency ({section_name})",
                                   *inefficiency_layer_bins
                                   )
-        # self.build1DHistogram("Inefficiency", "Inefficiency; Entries; Depth [mm]", *inefficiency_depth_bins)
-        # self.build1DHistogram("TwoHitInefficiency", "Inefficiency (2 hits); Entries; Depth [mm]", *inefficiency_depth_bins)
-        # self.build1DHistogram("InefficiencyLayer", "Inefficiency; Entries; Layer", *inefficiency_layer_bins)
-        # self.build1DHistogram("TwoHitInefficiencyLayer", "Inefficiency (2 hits); Entries; Layer", *inefficiency_layer_bins)
-        # self.build1DHistogram( "num_sim_hits_per_cell" ,
-        #         "Number SimHits per Hcal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
-
-        # self.build1DHistogram( "total_rec_energy"      ,
-        #         "Total Reconstructed Energy in Hcal [MeV]" , 800 , 0. , 8000. )
-
-        # self.build2DHistogram( "sim_edep__rec_amplitude" ,
-        #         "Simulated [MeV]" , 1000 , 0. , 50. ,
-        #         "Reconstructed [MeV]" , 1000 , 0. , 50. )
 
 class EcalDigiVerify(ldmxcfg.Analyzer) :
     """Configured EcalDigiVerifier python object
