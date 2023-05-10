@@ -16,15 +16,22 @@ def pndqm(d: Differ, out_dir=None):
     compact_event_type_labels = ['', 'n', 'K^{±}X', 'K⁰', 'nn', 'soft', 'other', '','']
     neutron_event_type_labels = ['', '', 'nn', 'pn', 'π^+n', 'π⁰n', '', '']
 
-    d.plot1d("PN/PN_event_type", "",
+    d.plot1d("PN/PN_event_type",  "Event category (200 MeV cut)",
              tick_labels=event_type_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_event_type_500mev", "",
+             out_dir=out_dir,
+             density=True
+             )
+    d.plot1d("PN/PN_event_type_500mev",  "Event category (500 MeV cut)",
              tick_labels=event_type_labels,
-             out_dir=out_dir)
-    d.plot1d("PN/PN_event_type_2000mev", "",
+             out_dir=out_dir,
+             density=True
+             )
+    d.plot1d("PN/PN_event_type_2000mev",  "Event category (2000 MeV cut)",
              tick_labels=event_type_labels,
-             out_dir=out_dir)
+             out_dir=out_dir,
+             density=True
+
+             )
     d.plot1d("PN/PN_event_type_compact", "",
              tick_labels=compact_event_type_labels,
              out_dir=out_dir)
