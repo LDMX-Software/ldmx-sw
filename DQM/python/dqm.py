@@ -30,17 +30,18 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.sim_coll_name = 'HcalSimHits'
         self.sim_pass_name = ''
 
-        pe_bins = [500, 0, 1500]
+        pe_bins = [1500, 0, 1500]
         time_bins = [100, -100, 500]
         layer_bins = [100,0,100]
         multiplicity_bins = [400,0,400]
-        energy_bins = [200,0,200]
-        self.build1DHistogram('sim_along_x', 'x', 3000, -3000,3000)
-        self.build1DHistogram('sim_along_y', 'y', 3000, -3000,3000)
-        self.build1DHistogram('sim_along_z', 'z', 3000, 0,6000)
-        self.build1DHistogram('along_x', 'x', 3000, -3000,3000)
-        self.build1DHistogram('along_y', 'y', 3000, -3000,3000)
-        self.build1DHistogram('along_z', 'z', 3000, 0,6000)
+        energy_bins = [100,0,200]
+        total_energy_bins = [100, 0, 1000]
+        self.build1DHistogram('sim_along_x', 'x', 1200, -3000,3000)
+        self.build1DHistogram('sim_along_y', 'y', 1200, -3000,3000)
+        self.build1DHistogram('sim_along_z', 'z', 1200, 0,6000)
+        self.build1DHistogram('along_x', 'x', 1200, -3000,3000)
+        self.build1DHistogram('along_y', 'y', 1200, -3000,3000)
+        self.build1DHistogram('along_z', 'z', 1200, 0,6000)
         # Per hit
         self.build1DHistogram("pe",
                               f"Photoelectrons in the HCal ({section_name})",
@@ -69,10 +70,10 @@ class HCalDQM(ldmxcfg.Analyzer) :
         # Once per event
         self.build1DHistogram("total_energy",
                               f"Total reconstructed energy in the HCal ({section_name})",
-                              1000,0, 1000)
+                              *total_energy_bins)
         self.build1DHistogram("sim_total_energy",
                               f"Total simulated energy in the HCal ({section_name})",
-                              1000,0, 1000)
+                              *total_energy_bins)
         self.build1DHistogram("total_pe",
                               f"Total photoelectrons in the HCal ({section_name})",
                               200,0,10000)
