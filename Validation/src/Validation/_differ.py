@@ -24,6 +24,9 @@ class Differ :
     grp_name : str
         Name to include in legend title to differentiate
         this group of plots from another
+    output_type : str
+        The extension for the filetype that figures should be produced with in
+        non-interactive mode
     args : list of tuples or Files
         Each entry is a tuple (file_path, name, *args) where file_path
         specifies the file to open and name is what should appear
@@ -41,9 +44,10 @@ class Differ :
     we are in an interactive notebook.
 
         d.plot1d('EcalSimHits_valid/EcalSimHits_valid.edep_', 'Sim E Dep [MeV]')
+
     """
 
-    def __init__(self, grp_name, *args) :
+    def __init__(self, grp_name, output_type,  *args) :
         def open_file(arg) :
             if isinstance(arg, (list,tuple)) :
                 return File(*arg)
@@ -54,6 +58,7 @@ class Differ :
                 
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
+        self.output_type = output_type
 
     def __repr__(self) :
         """Short form representation of a Differ"""
@@ -119,6 +124,7 @@ class Differ :
             ax.set_xticklabels(tick_labels)
             ax.tick_params(axis='x', rotation=90)
 
+
         ax.legend(**legend_kw)
 
         if out_dir is None :
@@ -131,7 +137,7 @@ class Differ :
                     # assume column is a function meaning the '__name__'
                     #   parameter is defined by Python for us
                     file_name = column.__name__
-            fig.savefig(os.path.join(out_dir,file_name)+'.pdf', bbox_inches='tight')
+            fig.savefig(os.path.join(out_dir,file_name)+ self.output_type, bbox_inches='tight')
             fig.clf()
 
     def load(self, **kwargs) :
