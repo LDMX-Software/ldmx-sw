@@ -107,8 +107,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   // Get the particle map from the event.  If the particle map is empty,
   // don't process the event.
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-  if (particleMap.size() == 0)
+  if (particleMap.size() == 0) {
     return;
+  }
 
   // Get the recoil electron
   auto [trackID, recoil] = Analysis::getRecoil(particleMap);
@@ -148,8 +149,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   // information.
   for (const auto &daughterTrackID : pnGamma->getDaughters()) {
     // skip daughters that weren't saved
-    if (particleMap.count(daughterTrackID) == 0)
+    if (particleMap.count(daughterTrackID) == 0) {
       continue;
+    }
 
     auto daughter{&(particleMap.at(daughterTrackID))};
 
@@ -233,8 +235,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
     nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass();
     slke = -9999;
-    if (pnDaughters.size() > 1)
+    if (pnDaughters.size() > 1) {
       slke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
+    }
     energyDiff = pnGamma->getEnergy() - nEnergy;
     energyFrac = nEnergy / pnGamma->getEnergy();
 
@@ -263,14 +266,17 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
     auto nPdgID{abs(pnDaughters[0]->getPdgID())};
     auto nEventType{-10};
-    if (nPdgID == 2112)
+    if (nPdgID == 2112) {
       nEventType = 1;
-    else if (nPdgID == 2212)
+    } else if (nPdgID == 2212) {
+
       nEventType = 2;
-    else if (nPdgID == 211)
+    } else if (nPdgID == 211) {
+
       nEventType = 3;
-    else if (nPdgID == 111)
+    } else if (nPdgID == 111) {
       nEventType = 4;
+    }
 
     histograms_.fill("1n_event_type", nEventType);
   }
@@ -293,118 +299,105 @@ int PhotoNuclearDQM::classifyEvent(
     // Get the PDG ID
     auto pdgID{abs(daughter->getPdgID())};
 
-    if (pdgID == 2112)
+    if (pdgID == 2112) {
       n++;
-    else if (pdgID == 2212)
+    } else if (pdgID == 2212) {
+
       p++;
-    else if (pdgID == 211)
+    } else if (pdgID == 211) {
+
       pi++;
-    else if (pdgID == 111)
+    } else if (pdgID == 111) {
+
       pi0++;
-    else if (pdgID == 130)
+    } else if (pdgID == 130) {
+
       k0l++;
-    else if (pdgID == 321)
+    } else if (pdgID == 321) {
+
       kp++;
-    else if (pdgID == 310)
+    } else if (pdgID == 310) {
+
       k0s++;
-    else
+    } else {
+
       exotic++;
+    }
   }
 
   int kaons = k0l + kp + k0s;
   int nucleons = n + p;
   int pions = pi + pi0;
   int count = nucleons + pions + exotic + kaons;
-  int count_a = p + pions + exotic + kaons;
-  int count_b = pions + exotic + kaons;
-  int count_c = nucleons + pi0 + exotic + kaons;
-  int count_d = n + pi0 + exotic + k0l + kp + k0s;
-  int count_e = p + pi0 + exotic + k0l + kp + k0s;
-  int count_f = n + p + pi + exotic + k0l + kp + k0s;
-  int count_g = n + pi + pi0 + exotic + k0l + kp + k0s;
-  int count_h = n + p + pi + pi0 + k0l + kp + k0s;
-  int count_i = p + pi + exotic + k0l + kp + k0s;
-  int count_j = n + pi + exotic + k0l + kp + k0s;
-  int count_k = nucleons + pions + exotic + kp + k0s;
-  int count_l = nucleons + pions + exotic + k0l + k0s;
-  int count_m = nucleons + pions + exotic + kp + k0l;
-  int count_n = pi0 + exotic + kaons;
-  int count_o = pi + exotic + kaons;
-  int count_p = exotic + kaons;
+  int non_neutral_pion = count - pi0;
 
-  if (count == 0)
-    return 0; // Nothing hard
-
-  if (n == 1) {
-    if (count_a == 0)
-      return 1; // 1n
-    else if ((p == 1) && (count_b == 0))
-      return 15; // pn
+  if (count == 0) {
+    return nothing_hard;
+  }
+  if (count == 1) {
+    if (n == 1) {
+      return single_neutron;
+    } else if (p == 1) {
+      return single_proton;
+    } else if (pi0 == 1) {
+      return single_neutral_pion;
+    } else if (pi == 1) {
+      return single_charged_pion;
+    }
+  }
+  if (count == 2) {
+    if (n == 2) {
+      return two_neutrons;
+    } else if (n == 1 && p == 1) {
+      return proton_neutron;
+    } else if (p == 2) {
+      return two_protons;
+    } else if (pi == 2) {
+      return two_charged_pions;
+    } else if (pi == 1 && nucleons == 1) {
+      return single_charged_pion_and_nucleon;
+    } else if (pi0 == 1 && nucleons == 1) {
+      return single_neutral_pion_and_nucleon;
+    }
   }
 
-  if ((n == 2) && (count_a == 0))
-    return 2; // 2 n
-
-  if ((n >= 3) && (count_a == 0))
-    return 3; // >= 3 n
-
-  if (pi == 1) {
-    if (count_c == 0)
-      return 4; // 1 pi
-    else if ((p == 1) && (count_d == 0))
-      return 7; // 1 pi 1 p
-    else if ((p == 2) && (count_d == 0))
-      return 8; // 1 pi 1 p
-    else if ((n == 1) && (count_e == 0))
-      return 7; // 1 pi 1 n
-    else if ((n == 2) && (count_e == 0))
-      return 8; // 1 pi 1 n
-    else if ((n == 1) && (p == 1) && (count_n == 0))
-      return 8;
+  if (count == 3) {
+    if (pi == 1 && nucleons == 2) {
+      return single_charged_pion_and_two_nucleons;
+    } else if (pi == 2 && nucleons == 1) {
+      return two_charged_pions_and_nucleon;
+    } // else
+    else if (pi0 == 1 && nucleons == 2) {
+      return single_neutral_pion_and_two_nucleons;
+    } else if (pi0 == 1 && nucleons == 1 && pi == 1) {
+      return single_neutral_pion_charged_pion_and_nucleon;
+    }
+  }
+  if (count >= 3 && count == n) {
+    return three_or_more_neutrons;
   }
 
-  if (pi == 2) {
-    if (count_c == 0)
-      return 5; // 2pi
-    else if ((p == 1) && (count_d == 0))
-      return 9; // 2pi p
-    else if ((n == 1) && (count_e == 0))
-      return 9; // 2pi n
+  if (kaons >= 1) {
+    if (k0l == 1) {
+      return klong;
+    } else if (kp == 1) {
+      return charged_kaon;
+    } else if (k0s == 1) {
+      return kshort;
+    }
+  }
+  if (exotics == count && count != 0) {
+    return exotics;
   }
 
+  // TODO Remove, broken
   if (pi0 == 1) {
-    if (count_f == 0)
-      return 6; // 1 pi0
-    else if ((n == 1) && (count_i == 0))
-      return 10; // 1pi0 1 p
-    else if ((n == 2) && (count_i == 0))
-      return 11; // 1pi0 1 p
-    else if ((p == 1) && (count_j == 0))
-      return 10; // 1pi0 1 n
-    else if ((p == 2) && (count_j == 0))
-      return 11;
-    else if ((n == 1) && (p == 1) && (count_o == 0))
-      return 11;
-    else if ((pi == 1) && ((p == 1) || (n == 1)) && (count_p == 0))
+    if ((pi == 1) && ((p == 1) || (n == 1)) && (kaons == 0 && exotic == 0)) {
       return 12;
+    }
   }
 
-  if ((p == 1) && (count_g == 0))
-    return 13; // 1 p
-  if ((p == 2) && (count_g == 0))
-    return 14; // 2 p
-
-  if (k0l == 1)
-    return 16;
-  if (kp == 1)
-    return 17;
-  if (k0s == 1)
-    return 18;
-
-  if ((exotic > 0) && (count_h == 0))
-    return 19;
-
-  return 20;
+  return multibody;
 }
 
 int PhotoNuclearDQM::classifyCompactEvent(
