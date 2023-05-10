@@ -6,7 +6,7 @@ import re
 
 # external dependencies
 import matplotlib.pyplot as plt
-import matplotlib
+
 # us
 from ._file import File
 
@@ -45,6 +45,7 @@ class Differ :
 
         d.plot1d('EcalSimHits_valid/EcalSimHits_valid.edep_', 'Sim E Dep [MeV]')
 
+
     """
 
     def __init__(self, grp_name, output_type,  *args) :
@@ -68,7 +69,8 @@ class Differ :
               ylabel = 'Count',
               yscale = 'log',
               ylim = (None,None),
-              out_dir = None, file_name = None,
+              out_dir = None,
+              file_name = None,
               tick_labels = None,
               legend_kw = dict(),
               **hist_kwargs) :
