@@ -500,22 +500,22 @@ ecal_dqm = [
         ]
 
 hcal_dqm = [
-        HCalDQM(pe_threshold=8,
+        HCalDQM(pe_threshold=5,
                 section=0
                 ),
-        HCalDQM(pe_threshold=8,
+        HCalDQM(pe_threshold=5,
                 section=1
                 ),
-        HCalDQM(pe_threshold=8,
+        HCalDQM(pe_threshold=5,
                 section=2
                 ),
-        HCalDQM(pe_threshold=8,
+        HCalDQM(pe_threshold=5,
                 section=3
                 ),
-        HCalDQM(pe_threshold=8,
+        HCalDQM(pe_threshold=5,
                 section=4
                 ),
-        HcalInefficiencyAnalyzer(pe_threshold=8),
+        HcalInefficiencyAnalyzer(pe_threshold=5),
 
         ]
 
