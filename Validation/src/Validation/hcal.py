@@ -35,15 +35,30 @@ def dqm(d: Differ, out_dir=None):
         ('sim_along_z', 'Reconstructed hit position along z-oriented bars [mm]'),
     ]
 
+    log.info("Making the efficiency histogram...")
+    d.plot1d('HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_efficiency',
+             'Hcal part involved in veto',
+             'Efficiency [%]',
+             tick_labels=['', 'Back', 'Top', 'Bottom',
+                          'Right', 'Left', 'Any',
+                          'Both', 'Back only', 'Side only',
+                          'Neither', '', ''],
+             out_dir=out_dir,
+             yscale='linear',
+)
+
     for section in sections:
         for histogram, title in histograms:
             name = histogram_name_format.format(section, histogram)
             title = title.format(section.capitalize())
             log.info(f"Making the {name} histogram...")
-            d.plot1d(name, title, out_dir=out_dir)
+            d.plot1d(name, title, out_dir=out_dir, density=True, ylabel='Event rate')
+        log.info(f"Making the inefficiency figure for {section}")
         d.plot1d(f'HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_inefficiency_{section}',
-                 'Inefficiency',
-                 out_dir=out_dir)
+                 'Layer',
+                 'Inefficiency (8PE)',
+                 out_dir=out_dir,
+                 density=True)
 
 
 
