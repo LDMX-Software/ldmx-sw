@@ -16,9 +16,9 @@ class Event;
 class SimParticle;
 
 class PhotoNuclearDQM : public framework::Analyzer {
- public:
+public:
   /// Constructor
-  PhotoNuclearDQM(const std::string& name, framework::Process& process);
+  PhotoNuclearDQM(const std::string &name, framework::Process &process);
 
   /// Destructor
   ~PhotoNuclearDQM();
@@ -29,19 +29,19 @@ class PhotoNuclearDQM : public framework::Analyzer {
    * @param parameters Set of parameters used to configure this
    *                   analyzer.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters &parameters) final override;
 
   /**
    * Process the event and create the histogram summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event& event) final override;
+  void analyze(const framework::Event &event) final override;
 
   /// Method executed before processing of events begins.
   void onProcessStart();
 
- private:
+private:
   /**
    * Print the particle tree.
    *
@@ -63,17 +63,41 @@ class PhotoNuclearDQM : public framework::Analyzer {
                                   const ldmx::SimParticle particle, int depth);
 
   /** Method used to classify events. */
-  int classifyEvent(const std::vector<const ldmx::SimParticle*> daughters,
+  int classifyEvent(const std::vector<const ldmx::SimParticle *> daughters,
                     double threshold);
 
   /** Method used to classify events in a compact manner. */
   int classifyCompactEvent(
-      const ldmx::SimParticle* pnGamma,
-      const std::vector<const ldmx::SimParticle*> daughters, double threshold);
+      const ldmx::SimParticle *pnGamma,
+      const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
   bool verbose_;
+
+  enum EventType {
+    nothing_hard = 0,
+    single_neutron = 1,
+    two_neutrons = 2,
+    three_or_more_neutrons = 3,
+    single_charged_pion = 4,
+    two_charged_pions = 5,
+    single_neutral_pion = 6,
+    single_charged_pion_and_nucleon = 7,
+    single_charged_pion_and_two_nucleons = 8,
+    two_charged_pions_and_nucleon = 9,
+    single_neutral_pion_and_nucleon = 10,
+    single_neutral_pion_and_two_nucleons = 11,
+    single_neutral_pion_charged_pion_and_nucleon = 12,
+    single_proton = 13,
+    two_protons = 14,
+    proton_neutron = 15,
+    klong = 16,
+    charged_kaon = 17,
+    kshort = 18,
+    exotics = 19,
+    multibody = 20,
+  };
 };
 
-}  // namespace dqm
+} // namespace dqm
 
-#endif  // _DQM_ECAL_PN_H_
+#endif // _DQM_ECAL_PN_H_
