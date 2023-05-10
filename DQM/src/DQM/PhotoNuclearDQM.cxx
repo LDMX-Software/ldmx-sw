@@ -138,11 +138,10 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);
   histograms_.fill("pn_gamma_vertex_z", pnGamma->getVertex()[2]);
 
-  double lke{-1}, lt{-1};
-  double lpke{-1}, lpt{-1};
-  double lnke{-1}, lnt{-1};
-  double lpike{-1}, lpit{-1};
-
+  double leading_ke{-1}, leading_theta{-1};
+  double leading_proton_ke{-1}, leading_proton_theta{-1};
+  double leading_neutron_ke{-1}, leading_neutron_theta{-1};
+  double leading_pion_ke{-1}, leading_pion_theta{-1};
   std::vector<const ldmx::SimParticle *> pnDaughters;
 
   // Loop through all of the PN daughters and extract kinematic
@@ -171,38 +170,38 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     //  Calculate the polar angle
     auto theta{pvec.Theta() * (180 / 3.14159)};
 
-    if (lke < ke) {
-      lke = ke;
-      lt = theta;
+    if (leading_ke < ke) {
+      leading_ke = ke;
+      leading_theta = theta;
     }
 
-    if ((pdgID == 2112) && (lnke < ke)) {
-      lnke = ke;
-      lnt = theta;
+    if ((pdgID == 2112) && (leading_neutron_ke < ke)) {
+      leading_neutron_ke = ke;
+      leading_neutron_theta = theta;
     }
 
-    if ((pdgID == 2212) && (lpke < ke)) {
-      lpke = ke;
-      lpt = theta;
+    if ((pdgID == 2212) && (leading_proton_ke < ke)) {
+      leading_proton_ke = ke;
+      leading_proton_theta = theta;
     }
 
-    if (((abs(pdgID) == 211) || (pdgID == 111)) && (lpike < ke)) {
-      lpike = ke;
-      lpit = theta;
+    if (((abs(pdgID) == 211) || (pdgID == 111)) && (leading_pion_ke < ke)) {
+      leading_pion_ke = ke;
+      leading_pion_theta = theta;
     }
 
     pnDaughters.push_back(daughter);
   }
 
-  histograms_.fill("hardest_ke", lke);
-  histograms_.fill("hardest_theta", lt);
-  histograms_.fill("h_ke_h_theta", lke, lt);
-  histograms_.fill("hardest_p_ke", lpke);
-  histograms_.fill("hardest_p_theta", lpt);
-  histograms_.fill("hardest_n_ke", lnke);
-  histograms_.fill("hardest_n_theta", lnt);
-  histograms_.fill("hardest_pi_ke", lpike);
-  histograms_.fill("hardest_pi_theta", lpit);
+  histograms_.fill("hardest_ke", leading_ke);
+  histograms_.fill("hardest_theta", leading_theta);
+  histograms_.fill("h_ke_h_theta", leading_ke, leading_theta);
+  histograms_.fill("hardest_p_ke", leading_proton_ke);
+  histograms_.fill("hardest_p_theta", leading_proton_theta);
+  histograms_.fill("hardest_n_ke", leading_neutron_ke);
+  histograms_.fill("hardest_n_theta", leading_neutron_theta);
+  histograms_.fill("hardest_pi_ke", leading_pion_ke);
+  histograms_.fill("hardest_pi_theta", leading_pion_theta);
 
   // Classify the event
   auto eventType{classifyEvent(pnDaughters, 200)};
@@ -221,7 +220,7 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("event_type_compact_500mev", eventTypeComp500MeV);
   histograms_.fill("event_type_compact_2000mev", eventTypeComp2000MeV);
 
-  double slke{-9999};
+  double subleading_ke{-9999};
   double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999};
 
   if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 ||
@@ -234,31 +233,31 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
               });
 
     nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass();
-    slke = -9999;
+    subleading_ke = -9999;
     if (pnDaughters.size() > 1) {
-      slke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
+      subleading_ke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
     }
     energyDiff = pnGamma->getEnergy() - nEnergy;
     energyFrac = nEnergy / pnGamma->getEnergy();
 
     if (eventType == 1) {
-      histograms_.fill("1n_ke:2nd_h_ke", nEnergy, slke);
+      histograms_.fill("1n_ke:2nd_h_ke", nEnergy, subleading_ke);
       histograms_.fill("1n_neutron_energy", nEnergy);
       histograms_.fill("1n_energy_diff", energyDiff);
       histograms_.fill("1n_energy_frac", energyFrac);
     } else if (eventType == 2) {
-      histograms_.fill("2n_n2_energy", slke);
-      auto energyFrac2n = (nEnergy + slke) / pnGamma->getEnergy();
+      histograms_.fill("2n_n2_energy", subleading_ke);
+      auto energyFrac2n = (nEnergy + subleading_ke) / pnGamma->getEnergy();
       histograms_.fill("2n_energy_frac", energyFrac2n);
       histograms_.fill("2n_energy_other", pnGamma->getEnergy() - energyFrac2n);
 
     } else if (eventType == 17) {
-      histograms_.fill("1kp_ke:2nd_h_ke", nEnergy, slke);
+      histograms_.fill("1kp_ke:2nd_h_ke", nEnergy, subleading_ke);
       histograms_.fill("1kp_energy", nEnergy);
       histograms_.fill("1kp_energy_diff", energyDiff);
       histograms_.fill("1kp_energy_frac", energyFrac);
     } else if (eventType == 16 || eventType == 18) {
-      histograms_.fill("1k0_ke:2nd_h_ke", nEnergy, slke);
+      histograms_.fill("1k0_ke:2nd_h_ke", nEnergy, subleading_ke);
       histograms_.fill("1k0_energy", nEnergy);
       histograms_.fill("1k0_energy_diff", energyDiff);
       histograms_.fill("1k0_energy_frac", energyFrac);
