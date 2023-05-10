@@ -269,10 +269,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     if (nPdgID == 2112) {
       nEventType = 1;
     } else if (nPdgID == 2212) {
-
       nEventType = 2;
     } else if (nPdgID == 211) {
-
       nEventType = 3;
     } else if (nPdgID == 111) {
       nEventType = 4;
@@ -302,25 +300,18 @@ int PhotoNuclearDQM::classifyEvent(
     if (pdgID == 2112) {
       n++;
     } else if (pdgID == 2212) {
-
       p++;
     } else if (pdgID == 211) {
-
       pi++;
     } else if (pdgID == 111) {
-
       pi0++;
     } else if (pdgID == 130) {
-
       k0l++;
     } else if (pdgID == 321) {
-
       kp++;
     } else if (pdgID == 310) {
-
       k0s++;
     } else {
-
       exotic++;
     }
   }
@@ -329,7 +320,6 @@ int PhotoNuclearDQM::classifyEvent(
   int nucleons = n + p;
   int pions = pi + pi0;
   int count = nucleons + pions + exotic + kaons;
-  int non_neutral_pion = count - pi0;
 
   if (count == 0) {
     return nothing_hard;
