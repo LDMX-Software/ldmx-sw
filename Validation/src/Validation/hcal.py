@@ -38,7 +38,7 @@ def dqm(d: Differ, out_dir=None):
     log.info("Making the efficiency histogram...")
     d.plot1d('HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_efficiency',
              'Hcal part involved in veto',
-             'Efficiency [%]',
+             'Efficiency',
              tick_labels=['', 'Back', 'Top', 'Bottom',
                           'Right', 'Left', 'Any',
                           'Both', 'Back only', 'Side only',
@@ -56,7 +56,7 @@ def dqm(d: Differ, out_dir=None):
         log.info(f"Making the inefficiency figure for {section}")
         d.plot1d(f'HcalInefficiencyAnalyzer/HcalInefficiencyAnalyzer_inefficiency_{section}',
                  'Layer',
-                 'Inefficiency (8PE)',
+                 'Inefficiency (5PE)',
                  out_dir=out_dir,
                  density=True)
 
