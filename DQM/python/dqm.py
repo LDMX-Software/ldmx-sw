@@ -523,6 +523,7 @@ recoil_dqm = [
         RecoilTrackerDQM()
         ]
 
+
 trigScint_dqm = [
     TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
     TrigScintSimDQM('TrigScintSimPad2','TriggerPad2SimHits','pad2'),
