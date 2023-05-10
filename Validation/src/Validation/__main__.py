@@ -84,7 +84,6 @@ if __name__ == '__main__' :
 
     logging.debug(f'ROOT Files: {root_files}')
 
-    args = [f for f in root_files if not f.is_events()]
     hd = Differ(label, output_type, *[f for f in root_files if not f.is_events()])
     ed = Differ(label, output_type, *[f for f in root_files if f.is_events()])
 
