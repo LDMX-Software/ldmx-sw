@@ -102,6 +102,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
 
     // get bar position from geometry
     auto position = hcalGeometry.getStripCenterPosition(id);
+    const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
 
     // skip non-double-ended layers
     if (id.section() != ldmx::HcalID::HcalSection::BACK)
@@ -116,9 +117,9 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
       299.792 / 1.6;  // velocity of light in polystyrene, n = 1.6 = c/v
     double hitTimeDiff = hitPosEnd.getTime() - hitNegEnd.getTime();
     int position_bar_sign = hitTimeDiff > 0 ? 1 : -1;
-    double position_bar =
-      position_bar_sign * fabs(hitTimeDiff) * v / 2;
-    if (hcalGeometry.layerIsHorizontal(hitPosEnd.getLayer())) {
+    double position_bar = position_bar_sign * fabs(hitTimeDiff) * v / 2;
+    if (orientation ==
+        ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
       position.SetX(position_bar);
     } else {
       position.SetY(position_bar);
