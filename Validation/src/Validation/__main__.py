@@ -41,6 +41,7 @@ if __name__ == '__main__' :
     parser.add_argument('--out-dir',help='directory to which to print plots. defaults to input data directory')
     parser.add_argument('--systems',required=True, choices=plotter.__registry__.keys(), nargs='+',
         help='list of plotters to run')
+    parser.add_argument('--output-type', help='File format to use to produce figures', default='pdf')
     parser.add_argument('--param',
                         nargs='+',
                         help='parameter(s) in filename to use as file labels')
@@ -69,6 +70,13 @@ if __name__ == '__main__' :
     if arg.out_dir is not None :
         out_dir = arg.out_dir
 
+    if arg.output_type is not None:
+        output_type = arg.output_type
+        if output_type[0] != '.':
+            output_type = '.' + output_type
+    else:
+        output_type = '.pdf'
+
     logging.debug(f'Deduced Args: label = {label} out_dir = {out_dir}')
 
     root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param) 
@@ -76,8 +84,9 @@ if __name__ == '__main__' :
 
     logging.debug(f'ROOT Files: {root_files}')
 
-    hd = Differ(label, *[f for f in root_files if not f.is_events()])
-    ed = Differ(label, *[f for f in root_files if f.is_events()])
+    args = [f for f in root_files if not f.is_events()]
+    hd = Differ(label, output_type, *[f for f in root_files if not f.is_events()])
+    ed = Differ(label, output_type, *[f for f in root_files if f.is_events()])
 
     logging.debug(f'histogram differ = {hd}')
     logging.debug(f'event differ = {ed}')
