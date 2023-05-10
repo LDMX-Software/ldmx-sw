@@ -21,38 +21,38 @@
 
 namespace dqm {
 
-PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name,
-                                 framework::Process& process)
+PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name,
+                                 framework::Process &process)
     : framework::Analyzer(name, process) {}
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
 
 void PhotoNuclearDQM::onProcessStart() {
   std::vector<std::string> labels = {"",
-                                     "Nothing hard",   // 0
-                                     "1 n",            // 1
-                                     "2 n",            // 2
-                                     "#geq 3 n",       // 3
-                                     "1 #pi",          // 4
-                                     "2 #pi",          // 5
-                                     "1 #pi_{0}",      // 6
-                                     "1 #pi A",        // 7
-                                     "1 #pi 2 A",      // 8
-                                     "2 #pi A",        // 9
-                                     "1 #pi_{0} A",    // 10
-                                     "1 #pi_{0} 2 A",  // 11
-                                     "#pi_{0} #pi A",  // 12
-                                     "1 p",            // 13
-                                     "2 p",            // 14
-                                     "pn",             // 15
-                                     "K^{0}_{L} X",    // 16
-                                     "K X",            // 17
-                                     "K^{0}_{S} X",    // 18
-                                     "exotics",        // 19
-                                     "multi-body",     // 20
+                                     "Nothing hard",  // 0
+                                     "1 n",           // 1
+                                     "2 n",           // 2
+                                     "#geq 3 n",      // 3
+                                     "1 #pi",         // 4
+                                     "2 #pi",         // 5
+                                     "1 #pi_{0}",     // 6
+                                     "1 #pi A",       // 7
+                                     "1 #pi 2 A",     // 8
+                                     "2 #pi A",       // 9
+                                     "1 #pi_{0} A",   // 10
+                                     "1 #pi_{0} 2 A", // 11
+                                     "#pi_{0} #pi A", // 12
+                                     "1 p",           // 13
+                                     "2 p",           // 14
+                                     "pn",            // 15
+                                     "K^{0}_{L} X",   // 16
+                                     "K X",           // 17
+                                     "K^{0}_{S} X",   // 18
+                                     "exotics",       // 19
+                                     "multi-body",    // 20
                                      ""};
 
-  std::vector<TH1*> hists = {
+  std::vector<TH1 *> hists = {
       histograms_.get("event_type"),
       histograms_.get("event_type_500mev"),
       histograms_.get("event_type_2000mev"),
@@ -60,18 +60,18 @@ void PhotoNuclearDQM::onProcessStart() {
   };
 
   for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto& hist : hists) {
+    for (auto &hist : hists) {
       hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
     }
   }
 
   labels = {"",
-            "1 n",      // 0
-            "K#pm X",   // 1
-            "1 K^{0}",  // 2
-            "2 n",      // 3
-            "Soft",     // 4
-            "Other",    // 5
+            "1 n",     // 0
+            "K#pm X",  // 1
+            "1 K^{0}", // 2
+            "2 n",     // 3
+            "Soft",    // 4
+            "Other",   // 5
             ""};
 
   hists = {
@@ -81,19 +81,19 @@ void PhotoNuclearDQM::onProcessStart() {
   };
 
   for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {
-    for (auto& hist : hists) {
+    for (auto &hist : hists) {
       hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel - 1].c_str());
     }
   }
 
   std::vector<std::string> n_labels = {"",         "",
-                                       "nn",        // 1
-                                       "pn",        // 2
-                                       "#pi^{+}n",  // 3
-                                       "#pi^{0}n",  // 4
+                                       "nn",       // 1
+                                       "pn",       // 2
+                                       "#pi^{+}n", // 3
+                                       "#pi^{0}n", // 4
                                        ""};
 
-  TH1* hist = histograms_.get("1n_event_type");
+  TH1 *hist = histograms_.get("1n_event_type");
   for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) {
     hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel - 1].c_str());
   }
@@ -103,11 +103,12 @@ void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
 }
 
-void PhotoNuclearDQM::analyze(const framework::Event& event) {
+void PhotoNuclearDQM::analyze(const framework::Event &event) {
   // Get the particle map from the event.  If the particle map is empty,
   // don't process the event.
   auto particleMap{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-  if (particleMap.size() == 0) return;
+  if (particleMap.size() == 0)
+    return;
 
   // Get the recoil electron
   auto [trackID, recoil] = Analysis::getRecoil(particleMap);
@@ -141,13 +142,14 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
   double lnke{-1}, lnt{-1};
   double lpike{-1}, lpit{-1};
 
-  std::vector<const ldmx::SimParticle*> pnDaughters;
+  std::vector<const ldmx::SimParticle *> pnDaughters;
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
-  for (const auto& daughterTrackID : pnGamma->getDaughters()) {
+  for (const auto &daughterTrackID : pnGamma->getDaughters()) {
     // skip daughters that weren't saved
-    if (particleMap.count(daughterTrackID) == 0) continue;
+    if (particleMap.count(daughterTrackID) == 0)
+      continue;
 
     auto daughter{&(particleMap.at(daughterTrackID))};
 
@@ -155,7 +157,8 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
     auto pdgID{daughter->getPdgID()};
 
     // Ignore photons and nuclei
-    if (pdgID == 22 || pdgID > 10000) continue;
+    if (pdgID == 22 || pdgID > 10000)
+      continue;
 
     // Calculate the kinetic energy
     double ke{daughter->getEnergy() - daughter->getMass()};
@@ -205,8 +208,8 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
   auto eventType2000MeV{classifyEvent(pnDaughters, 2000)};
 
   auto eventTypeComp{classifyCompactEvent(pnGamma, pnDaughters, 200)};
-  auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)};
-  auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)};
+  auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 500)};
+  auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 2000)};
 
   histograms_.fill("event_type", eventType);
   histograms_.fill("event_type_500mev", eventType500MeV);
@@ -222,7 +225,7 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
   if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 ||
       eventType == 2) {
     std::sort(pnDaughters.begin(), pnDaughters.end(),
-              [](const auto& lhs, const auto& rhs) {
+              [](const auto &lhs, const auto &rhs) {
                 double lhs_ke = lhs->getEnergy() - lhs->getMass();
                 double rhs_ke = rhs->getEnergy() - rhs->getMass();
                 return lhs_ke > rhs_ke;
@@ -274,17 +277,18 @@ void PhotoNuclearDQM::analyze(const framework::Event& event) {
 }
 
 int PhotoNuclearDQM::classifyEvent(
-    const std::vector<const ldmx::SimParticle*> daughters, double threshold) {
+    const std::vector<const ldmx::SimParticle *> daughters, double threshold) {
   short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, lambda{0};
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
-  for (const auto& daughter : daughters) {
+  for (const auto &daughter : daughters) {
     // Calculate the kinetic energy
     auto ke{daughter->getEnergy() - daughter->getMass()};
 
     // If the kinetic energy is below threshold, continue
-    if (ke <= threshold) continue;
+    if (ke <= threshold)
+      continue;
 
     // Get the PDG ID
     auto pdgID{abs(daughter->getPdgID())};
@@ -328,52 +332,55 @@ int PhotoNuclearDQM::classifyEvent(
   int count_o = pi + exotic + kaons;
   int count_p = exotic + kaons;
 
-  if (count == 0) return 0;  // Nothing hard
+  if (count == 0)
+    return 0; // Nothing hard
 
   if (n == 1) {
     if (count_a == 0)
-      return 1;  // 1n
+      return 1; // 1n
     else if ((p == 1) && (count_b == 0))
-      return 15;  // pn
+      return 15; // pn
   }
 
-  if ((n == 2) && (count_a == 0)) return 2;  // 2 n
+  if ((n == 2) && (count_a == 0))
+    return 2; // 2 n
 
-  if ((n >= 3) && (count_a == 0)) return 3;  // >= 3 n
+  if ((n >= 3) && (count_a == 0))
+    return 3; // >= 3 n
 
   if (pi == 1) {
     if (count_c == 0)
-      return 4;  // 1 pi
+      return 4; // 1 pi
     else if ((p == 1) && (count_d == 0))
-      return 7;  // 1 pi 1 p
+      return 7; // 1 pi 1 p
     else if ((p == 2) && (count_d == 0))
-      return 8;  // 1 pi 1 p
+      return 8; // 1 pi 1 p
     else if ((n == 1) && (count_e == 0))
-      return 7;  // 1 pi 1 n
+      return 7; // 1 pi 1 n
     else if ((n == 2) && (count_e == 0))
-      return 8;  // 1 pi 1 n
+      return 8; // 1 pi 1 n
     else if ((n == 1) && (p == 1) && (count_n == 0))
       return 8;
   }
 
   if (pi == 2) {
     if (count_c == 0)
-      return 5;  // 2pi
+      return 5; // 2pi
     else if ((p == 1) && (count_d == 0))
-      return 9;  // 2pi p
+      return 9; // 2pi p
     else if ((n == 1) && (count_e == 0))
-      return 9;  // 2pi n
+      return 9; // 2pi n
   }
 
   if (pi0 == 1) {
     if (count_f == 0)
-      return 6;  // 1 pi0
+      return 6; // 1 pi0
     else if ((n == 1) && (count_i == 0))
-      return 10;  // 1pi0 1 p
+      return 10; // 1pi0 1 p
     else if ((n == 2) && (count_i == 0))
-      return 11;  // 1pi0 1 p
+      return 11; // 1pi0 1 p
     else if ((p == 1) && (count_j == 0))
-      return 10;  // 1pi0 1 n
+      return 10; // 1pi0 1 n
     else if ((p == 2) && (count_j == 0))
       return 11;
     else if ((n == 1) && (p == 1) && (count_o == 0))
@@ -382,26 +389,32 @@ int PhotoNuclearDQM::classifyEvent(
       return 12;
   }
 
-  if ((p == 1) && (count_g == 0)) return 13;  // 1 p
-  if ((p == 2) && (count_g == 0)) return 14;  // 2 p
+  if ((p == 1) && (count_g == 0))
+    return 13; // 1 p
+  if ((p == 2) && (count_g == 0))
+    return 14; // 2 p
 
-  if (k0l == 1) return 16;
-  if (kp == 1) return 17;
-  if (k0s == 1) return 18;
+  if (k0l == 1)
+    return 16;
+  if (kp == 1)
+    return 17;
+  if (k0s == 1)
+    return 18;
 
-  if ((exotic > 0) && (count_h == 0)) return 19;
+  if ((exotic > 0) && (count_h == 0))
+    return 19;
 
   return 20;
 }
 
 int PhotoNuclearDQM::classifyCompactEvent(
-    const ldmx::SimParticle* pnGamma,
-    const std::vector<const ldmx::SimParticle*> daughters, double threshold) {
+    const ldmx::SimParticle *pnGamma,
+    const std::vector<const ldmx::SimParticle *> daughters, double threshold) {
   short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
-  for (const auto& daughter : daughters) {
+  for (const auto &daughter : daughters) {
     // Calculate the kinetic energy
     auto ke{daughter->getEnergy() - daughter->getMass()};
 
@@ -425,16 +438,22 @@ int PhotoNuclearDQM::classifyCompactEvent(
       continue;
     }
 
-    if ((pdgID == 2112) && ke > threshold) n_t++;
+    if ((pdgID == 2112) && ke > threshold)
+      n_t++;
   }
 
   int neutral_kaons{k0l + k0s};
 
-  if (n != 0) return 0;
-  if (kp != 0) return 1;
-  if (neutral_kaons != 0) return 2;
-  if (n_t == 2) return 3;
-  if (soft == daughters.size()) return 4;
+  if (n != 0)
+    return 0;
+  if (kp != 0)
+    return 1;
+  if (neutral_kaons != 0)
+    return 2;
+  if (n_t == 2)
+    return 3;
+  if (soft == daughters.size())
+    return 4;
 
   return 5;
 }
@@ -444,7 +463,7 @@ void PhotoNuclearDQM::printParticleTree(
   std::vector<int> printedParticles;
 
   // Loop through the particle map
-  for (auto const& [trackID, simParticle] : particleMap) {
+  for (auto const &[trackID, simParticle] : particleMap) {
     // Print the particle only if it has daughters
     if ((simParticle.getDaughters().size() != 0) &
         (std::find(printedParticles.begin(), printedParticles.end(), trackID) ==
@@ -461,20 +480,22 @@ void PhotoNuclearDQM::printParticleTree(
   }
 }
 
-std::vector<int> PhotoNuclearDQM::printDaughters(
-    std::map<int, ldmx::SimParticle> particleMap,
-    const ldmx::SimParticle particle, int depth) {
+std::vector<int>
+PhotoNuclearDQM::printDaughters(std::map<int, ldmx::SimParticle> particleMap,
+                                const ldmx::SimParticle particle, int depth) {
   std::vector<int> printedParticles;
 
   // Don't print anything if a particle doesn't have any daughters
-  if (particle.getDaughters().size() == 0) return printedParticles;
+  if (particle.getDaughters().size() == 0)
+    return printedParticles;
 
   // Generate the prefix
   std::string prefix{""};
-  for (auto i{0}; i < depth; ++i) prefix += "\t";
+  for (auto i{0}; i < depth; ++i)
+    prefix += "\t";
 
   // Loop through all of the daughter particles and print them
-  for (const auto& daughter : particle.getDaughters()) {
+  for (const auto &daughter : particle.getDaughters()) {
     // Print the ith daughter particle
     std::cout << prefix;
     particleMap[daughter].Print();
