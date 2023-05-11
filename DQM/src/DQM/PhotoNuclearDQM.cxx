@@ -246,12 +246,7 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
   // Get the recoil electron
   auto [trackID, recoil] = Analysis::getRecoil(particleMap);
-
-  histograms_.fill("recoil_vertex_x", recoil->getVertex()[0]);
-  histograms_.fill("recoil_vertex_y", recoil->getVertex()[1]);
-  histograms_.fill("recoil_vertex_z", recoil->getVertex()[2]);
-  histograms_.fill("recoil_vertex_x:recoil_vertex_y", recoil->getVertex()[0],
-                   recoil->getVertex()[1]);
+  findRecoilProperties(recoil);
 
   // Use the recoil electron to retrieve the gamma that underwent a
   // photo-nuclear reaction.
@@ -271,70 +266,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);
   histograms_.fill("pn_gamma_vertex_z", pnGamma->getVertex()[2]);
 
-  double leading_ke{-1}, leading_theta{-1};
-  double leading_proton_ke{-1}, leading_proton_theta{-1};
-  double leading_neutron_ke{-1}, leading_neutron_theta{-1};
-  double leading_pion_ke{-1}, leading_pion_theta{-1};
-  std::vector<const ldmx::SimParticle *> pnDaughters;
-
-  // Loop through all of the PN daughters and extract kinematic
-  // information.
-  for (const auto &daughterTrackID : pnGamma->getDaughters()) {
-    // skip daughters that weren't saved
-    if (particleMap.count(daughterTrackID) == 0) {
-      continue;
-    }
-
-    auto daughter{&(particleMap.at(daughterTrackID))};
-
-    // Get the PDG ID
-    auto pdgID{daughter->getPdgID()};
-
-    // Ignore photons and nuclei
-    if (pdgID == 22 || pdgID > 10000)
-      continue;
-
-    // Calculate the kinetic energy
-    double ke{daughter->getEnergy() - daughter->getMass()};
-
-    std::vector<double> vec{daughter->getMomentum()};
-    TVector3 pvec(vec[0], vec[1], vec[2]);
-
-    //  Calculate the polar angle
-    auto theta{pvec.Theta() * (180 / 3.14159)};
-
-    if (leading_ke < ke) {
-      leading_ke = ke;
-      leading_theta = theta;
-    }
-
-    if ((pdgID == 2112) && (leading_neutron_ke < ke)) {
-      leading_neutron_ke = ke;
-      leading_neutron_theta = theta;
-    }
-
-    if ((pdgID == 2212) && (leading_proton_ke < ke)) {
-      leading_proton_ke = ke;
-      leading_proton_theta = theta;
-    }
-
-    if (((abs(pdgID) == 211) || (pdgID == 111)) && (leading_pion_ke < ke)) {
-      leading_pion_ke = ke;
-      leading_pion_theta = theta;
-    }
-
-    pnDaughters.push_back(daughter);
-  }
-
-  histograms_.fill("hardest_ke", leading_ke);
-  histograms_.fill("hardest_theta", leading_theta);
-  histograms_.fill("h_ke_h_theta", leading_ke, leading_theta);
-  histograms_.fill("hardest_p_ke", leading_proton_ke);
-  histograms_.fill("hardest_p_theta", leading_proton_theta);
-  histograms_.fill("hardest_n_ke", leading_neutron_ke);
-  histograms_.fill("hardest_n_theta", leading_neutron_theta);
-  histograms_.fill("hardest_pi_ke", leading_pion_ke);
-  histograms_.fill("hardest_pi_theta", leading_pion_theta);
+  const auto pnDaughters{findPNDaughters(particleMap, pnGamma)};
+  findLeadingKinematics(pnDaughters);
 
   // Classify the event
   auto eventType{classifyEvent(pnDaughters, 200)};
@@ -353,48 +286,9 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("event_type_compact_500mev", eventTypeComp500MeV);
   histograms_.fill("event_type_compact_2000mev", eventTypeComp2000MeV);
 
-  double subleading_ke{-9999};
-  double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999};
-
   if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 ||
       eventType == 2) {
-    std::sort(pnDaughters.begin(), pnDaughters.end(),
-              [](const auto &lhs, const auto &rhs) {
-                double lhs_ke = lhs->getEnergy() - lhs->getMass();
-                double rhs_ke = rhs->getEnergy() - rhs->getMass();
-                return lhs_ke > rhs_ke;
-              });
-
-    nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass();
-    subleading_ke = -9999;
-    if (pnDaughters.size() > 1) {
-      subleading_ke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
-    }
-    energyDiff = pnGamma->getEnergy() - nEnergy;
-    energyFrac = nEnergy / pnGamma->getEnergy();
-
-    if (eventType == 1) {
-      histograms_.fill("1n_ke:2nd_h_ke", nEnergy, subleading_ke);
-      histograms_.fill("1n_neutron_energy", nEnergy);
-      histograms_.fill("1n_energy_diff", energyDiff);
-      histograms_.fill("1n_energy_frac", energyFrac);
-    } else if (eventType == 2) {
-      histograms_.fill("2n_n2_energy", subleading_ke);
-      auto energyFrac2n = (nEnergy + subleading_ke) / pnGamma->getEnergy();
-      histograms_.fill("2n_energy_frac", energyFrac2n);
-      histograms_.fill("2n_energy_other", pnGamma->getEnergy() - energyFrac2n);
-
-    } else if (eventType == 17) {
-      histograms_.fill("1kp_ke:2nd_h_ke", nEnergy, subleading_ke);
-      histograms_.fill("1kp_energy", nEnergy);
-      histograms_.fill("1kp_energy_diff", energyDiff);
-      histograms_.fill("1kp_energy_frac", energyFrac);
-    } else if (eventType == 16 || eventType == 18) {
-      histograms_.fill("1k0_ke:2nd_h_ke", nEnergy, subleading_ke);
-      histograms_.fill("1k0_energy", nEnergy);
-      histograms_.fill("1k0_energy_diff", energyDiff);
-      histograms_.fill("1k0_energy_frac", energyFrac);
-    }
+    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
 
     auto nPdgID{abs(pnDaughters[0]->getPdgID())};
     auto nEventType{-10};
@@ -542,33 +436,40 @@ int PhotoNuclearDQM::classifyCompactEvent(
     }
 
     if (ke >= 0.8 * pnGamma->getEnergy()) {
-      if (pdgID == 2112)
+      if (pdgID == 2112) {
         n++;
-      else if (pdgID == 130)
+      } else if (pdgID == 130) {
         k0l++;
-      else if (pdgID == 321)
+      } else if (pdgID == 321) {
         kp++;
-      else if (pdgID == 310)
+      } else if (pdgID == 310) {
         k0s++;
+      }
       continue;
     }
 
-    if ((pdgID == 2112) && ke > threshold)
+    if ((pdgID == 2112) && ke > threshold) {
       n_t++;
+    }
   }
 
   int neutral_kaons{k0l + k0s};
 
-  if (n != 0)
+  if (n != 0) {
     return 0;
-  if (kp != 0)
+  }
+  if (kp != 0) {
     return 1;
-  if (neutral_kaons != 0)
+  }
+  if (neutral_kaons != 0) {
     return 2;
-  if (n_t == 2)
+  }
+  if (n_t == 2) {
     return 3;
-  if (soft == daughters.size())
+  }
+  if (soft == daughters.size()) {
     return 4;
+  }
 
   return 5;
 }
