@@ -56,7 +56,14 @@ std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findPNDaughters(
 
   return pnDaughters;
 }
+void PhotoNuclearDQM::findRecoilProperties(const ldmx::SimParticle *recoil) {
 
+  histograms_.fill("recoil_vertex_x", recoil->getVertex()[0]);
+  histograms_.fill("recoil_vertex_y", recoil->getVertex()[1]);
+  histograms_.fill("recoil_vertex_z", recoil->getVertex()[2]);
+  histograms_.fill("recoil_vertex_x:recoil_vertex_y", recoil->getVertex()[0],
+                   recoil->getVertex()[1]);
+}
 void PhotoNuclearDQM::findLeadingKinematics(
     const std::vector<const ldmx::SimParticle *> &pnDaughters) {
   double leading_ke{-1}, leading_theta{-1};
