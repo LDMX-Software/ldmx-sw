@@ -57,6 +57,102 @@ std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findPNDaughters(
   return pnDaughters;
 }
 
+void PhotoNuclearDQM::findLeadingKinematics(
+    const std::vector<const ldmx::SimParticle *> &pnDaughters) {
+  double leading_ke{-1}, leading_theta{-1};
+  double leading_proton_ke{-1}, leading_proton_theta{-1};
+  double leading_neutron_ke{-1}, leading_neutron_theta{-1};
+  double leading_pion_ke{-1}, leading_pion_theta{-1};
+  // Loop through all of the PN daughters and extract kinematic
+  // information.
+  for (const auto *daughter : pnDaughters) {
+    // skip daughters that weren't saved
+
+    // Get the PDG ID
+    auto pdgID{daughter->getPdgID()};
+
+    // Calculate the kinetic energy
+    double ke{daughter->getEnergy() - daughter->getMass()};
+
+    std::vector<double> vec{daughter->getMomentum()};
+    TVector3 pvec(vec[0], vec[1], vec[2]);
+
+    //  Calculate the polar angle
+    auto theta{pvec.Theta() * (180 / 3.14159)};
+
+    if (leading_ke < ke) {
+      leading_ke = ke;
+      leading_theta = theta;
+    }
+
+    if ((pdgID == 2112) && (leading_neutron_ke < ke)) {
+      leading_neutron_ke = ke;
+      leading_neutron_theta = theta;
+    }
+
+    if ((pdgID == 2212) && (leading_proton_ke < ke)) {
+      leading_proton_ke = ke;
+      leading_proton_theta = theta;
+    }
+
+    if (((std::abs(pdgID) == 211) || (pdgID == 111)) &&
+        (leading_pion_ke < ke)) {
+      leading_pion_ke = ke;
+      leading_pion_theta = theta;
+    }
+  }
+  histograms_.fill("hardest_ke", leading_ke);
+  histograms_.fill("hardest_theta", leading_theta);
+  histograms_.fill("h_ke_h_theta", leading_ke, leading_theta);
+  histograms_.fill("hardest_p_ke", leading_proton_ke);
+  histograms_.fill("hardest_p_theta", leading_proton_theta);
+  histograms_.fill("hardest_n_ke", leading_neutron_ke);
+  histograms_.fill("hardest_n_theta", leading_neutron_theta);
+  histograms_.fill("hardest_pi_ke", leading_pion_ke);
+  histograms_.fill("hardest_pi_theta", leading_pion_theta);
+}
+
+void PhotoNuclearDQM::findSubleadingKinematics(
+    const ldmx::SimParticle *pnGamma,
+    const std::vector<const ldmx::SimParticle *> &pnDaughters,
+    const int eventType) {
+
+  // Note: Assumes sorted by energy
+
+  double subleading_ke{-9999};
+  double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999};
+
+  nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass();
+  subleading_ke = -9999;
+  if (pnDaughters.size() > 1) {
+    subleading_ke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
+  }
+  energyDiff = pnGamma->getEnergy() - nEnergy;
+  energyFrac = nEnergy / pnGamma->getEnergy();
+
+  if (eventType == 1) {
+    histograms_.fill("1n_ke:2nd_h_ke", nEnergy, subleading_ke);
+    histograms_.fill("1n_neutron_energy", nEnergy);
+    histograms_.fill("1n_energy_diff", energyDiff);
+    histograms_.fill("1n_energy_frac", energyFrac);
+  } else if (eventType == 2) {
+    histograms_.fill("2n_n2_energy", subleading_ke);
+    auto energyFrac2n = (nEnergy + subleading_ke) / pnGamma->getEnergy();
+    histograms_.fill("2n_energy_frac", energyFrac2n);
+    histograms_.fill("2n_energy_other", pnGamma->getEnergy() - energyFrac2n);
+
+  } else if (eventType == 17) {
+    histograms_.fill("1kp_ke:2nd_h_ke", nEnergy, subleading_ke);
+    histograms_.fill("1kp_energy", nEnergy);
+    histograms_.fill("1kp_energy_diff", energyDiff);
+    histograms_.fill("1kp_energy_frac", energyFrac);
+  } else if (eventType == 16 || eventType == 18) {
+    histograms_.fill("1k0_ke:2nd_h_ke", nEnergy, subleading_ke);
+    histograms_.fill("1k0_energy", nEnergy);
+    histograms_.fill("1k0_energy_diff", energyDiff);
+    histograms_.fill("1k0_energy_frac", energyFrac);
+  }
+}
 void PhotoNuclearDQM::onProcessStart() {
   std::vector<std::string> labels = {"",
                                      "Nothing hard",  // 0
