@@ -98,7 +98,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     }
     indicesByID[id] = indices;
   }
-  
+
   // reconstruct double-ended hits
   for (auto const& hcalBar : hitsByID) {
     auto id = hcalBar.first;
@@ -158,7 +158,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     double PEs = (hitPosEnd.getPE() + hitNegEnd.getPE());
     double reconstructed_energy =
       num_mips_equivalent * pe_per_mip_ * mip_energy_;
-    
+
     // reconstructed Hit
     ldmx::HcalHit recHit;
     recHit.setID(id.raw());
@@ -171,6 +171,10 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     recHit.setPE(PEs);
     recHit.setMinPE(std::min(hitPosEnd.getPE(),hitNegEnd.getPE()));
     recHit.setAmplitude(num_mips_equivalent);
+    recHit.setAmplitudePos(hitPosEnd.getAmplitude());
+    recHit.setAmplitudeNeg(hitNegEnd.getAmplitude());
+    recHit.setToaPos(hitPosEnd.getTime());
+    recHit.setToaNeg(hitNegEnd.getTime());
     recHit.setEnergy(reconstructed_energy);
     recHit.setTime(hitTimeDiff);
     recHit.setTimeDiff(hitPosEnd.getTime() - hitNegEnd.getTime());
