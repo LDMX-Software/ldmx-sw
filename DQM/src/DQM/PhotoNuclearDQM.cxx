@@ -26,6 +26,36 @@ PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name,
     : framework::Analyzer(name, process) {}
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
+std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findPNDaughters(
+    const std::map<int, ldmx::SimParticle> particleMap,
+    const ldmx::SimParticle *pnGamma) const {
+  std::vector<const ldmx::SimParticle *> pnDaughters;
+  for (const auto &daughterTrackID : pnGamma->getDaughters()) {
+    // skip daughters that weren't saved
+    if (particleMap.count(daughterTrackID) == 0) {
+      continue;
+    }
+
+    auto daughter{&(particleMap.at(daughterTrackID))};
+
+    // Get the PDG ID
+    auto pdgID{daughter->getPdgID()};
+
+    // Ignore photons and nuclei
+    if (pdgID == 22 || pdgID > 10000)
+      continue;
+    pnDaughters.push_back(daughter);
+  }
+
+  std::sort(pnDaughters.begin(), pnDaughters.end(),
+            [](const auto &lhs, const auto &rhs) {
+              double lhs_ke = lhs->getEnergy() - lhs->getMass();
+              double rhs_ke = rhs->getEnergy() - rhs->getMass();
+              return lhs_ke > rhs_ke;
+            });
+
+  return pnDaughters;
+}
 
 void PhotoNuclearDQM::onProcessStart() {
   std::vector<std::string> labels = {"",
