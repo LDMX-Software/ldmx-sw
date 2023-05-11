@@ -76,6 +76,13 @@ private:
   findPNDaughters(const std::map<int, ldmx::SimParticle> particleMap,
                   const ldmx::SimParticle *pnGamma) const;
 
+  void findLeadingKinematics(
+      const std::vector<const ldmx::SimParticle *> &pnDaughters);
+
+  void findSubleadingKinematics(
+      const ldmx::SimParticle *pnGamma,
+      const std::vector<const ldmx::SimParticle *> &pnDaughters,
+      const int eventType);
   enum EventType {
     nothing_hard = 0,
     single_neutron = 1,
