@@ -72,6 +72,9 @@ private:
       const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
   bool verbose_;
+  std::vector<const ldmx::SimParticle *>
+  findPNDaughters(const std::map<int, ldmx::SimParticle> particleMap,
+                  const ldmx::SimParticle *pnGamma) const;
 
   enum EventType {
     nothing_hard = 0,
