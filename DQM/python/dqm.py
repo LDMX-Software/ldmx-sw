@@ -519,6 +519,7 @@ hcal_dqm = [
         HCalDQM(pe_threshold=5,
                 section=4
                 ),
+        HcalInefficiencyAnalyzer(),
   ]
 
 recoil_dqm = [
