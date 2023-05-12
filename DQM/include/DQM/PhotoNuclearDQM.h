@@ -110,12 +110,18 @@ private:
 
   /**
    *
-   * Fill histograms related to kinematics of PN products
+   * Fill histograms related to kinematics of PN products.
    *
    **/
   void findParticleKinematics(
       const std::vector<const ldmx::SimParticle *> &pnDaughters);
 
+  /**
+   *
+   * Fill histograms related to the kinematics and subleading particles for 1n,
+   * kaon, and 2n type events. Note: This assumes that the daughter particles
+   * are sorted by energy.
+   **/
   void findSubleadingKinematics(
       const ldmx::SimParticle *pnGamma,
       const std::vector<const ldmx::SimParticle *> &pnDaughters, //
