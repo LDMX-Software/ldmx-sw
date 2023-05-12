@@ -108,9 +108,9 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
     }
 
     if (hit.isNoise()) {
-      histograms_.fill("noise", 1)
+      histograms_.fill("noise", 1);
     } else {
-      histograms_.fill("noise", 0)
+      histograms_.fill("noise", 0);
     }
     if (hitPassesVeto(hit, section)) {
       hitMultiplicity++;
