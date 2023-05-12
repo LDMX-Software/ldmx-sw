@@ -42,25 +42,6 @@ public:
   void onProcessStart();
 
 private:
-  /**
-   * Print the particle tree.
-   *
-   * @param[in] particleMap The map containing the SimParticles.
-   */
-  void printParticleTree(std::map<int, ldmx::SimParticle> particleMap);
-
-  /**
-   * Print the daughters of a particle.
-   *
-   * @param[in] particleMap The map containing the SimParticles.
-   * @param[in] particle The particle whose daughters will be printed.
-   * @param[in] depth The tree depth.
-   *
-   * @return[out] A vector with the track IDs of particles that have
-   *      already been printed.
-   */
-  std::vector<int> printDaughters(std::map<int, ldmx::SimParticle> particleMap,
-                                  const ldmx::SimParticle particle, int depth);
 
   /** Method used to classify events. */
   int classifyEvent(const std::vector<const ldmx::SimParticle *> daughters,
