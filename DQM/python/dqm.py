@@ -284,7 +284,7 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
-    def __init__(self,name='PN', verbose=False, count_light_ions=False) :
+    def __init__(self,name='PN', verbose=False, count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
         self.count_light_ions=count_light_ions
