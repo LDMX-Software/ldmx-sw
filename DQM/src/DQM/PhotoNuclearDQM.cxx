@@ -451,28 +451,22 @@ PhotoNuclearDQM::CompactEventType PhotoNuclearDQM::classifyCompactEvent(
   int neutral_kaons{k0l + k0s};
 
   if (n != 0) {
-    return 0;
+    return PhotoNuclearDQM::CompactEventType::single_neutron;
   }
   if (kp != 0) {
-    return 1;
+    return PhotoNuclearDQM::CompactEventType::single_charged_kaon;
   }
   if (neutral_kaons != 0) {
-    return 2;
+    return PhotoNuclearDQM::CompactEventType::single_neutral_kaon;
   }
   if (n_t == 2) {
-    return 3;
+    return PhotoNuclearDQM::CompactEventType::two_neutrons;
   }
   if (soft == daughters.size()) {
-    return 4;
+    return PhotoNuclearDQM::CompactEventType::soft;
   }
 
-  return 5;
-}
-
-    }
-  }
-
-  }
+  return PhotoNuclearDQM::CompactEventType::other;
 }
 
 } // namespace dqm
