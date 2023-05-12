@@ -77,12 +77,6 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
 
 HcalGeometry::ScintillatorOrientation
 HcalGeometry::getScintillatorOrientation(const ldmx::HcalID id) const {
-  if (id.section() == ldmx::HcalID::HcalSection::BACK) {
-    // Configurable, same for all geometries
-    return id.layer() % 2 == back_horizontal_parity_
-               ? ScintillatorOrientation::horizontal
-               : ScintillatorOrientation::vertical;
-  }
   if (hasSide3DReadout()) {
     // v14 or later detector
     switch (id.section()) {
@@ -99,8 +93,22 @@ HcalGeometry::getScintillatorOrientation(const ldmx::HcalID id) const {
       // direction
       return id.layer() % 2 == 0 ? ScintillatorOrientation::vertical
                                  : ScintillatorOrientation::depth;
+    case ldmx::HcalID::HcalSection::BACK:
+      // Configurable
+      return id.layer() % 2 == back_horizontal_parity_
+                 ? ScintillatorOrientation::horizontal
+                 : ScintillatorOrientation::vertical;
     } // V14 or later detector
   }
+  if (isPrototype()) {
+
+    // The prototype only has the back section. However, the orientation
+    // depends on the configuration so we delegate to the
+    // back_horizontal_parity parameter
+    return id.layer() % 2 == back_horizontal_parity_
+               ? ScintillatorOrientation::horizontal
+               : ScintillatorOrientation::vertical;
+  } // Prototype detector
   // v13/v12
   switch (id.section()) {
   // For the v13 side hcal, the bars in each section have the same

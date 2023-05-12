@@ -68,7 +68,8 @@ class Differ :
               ylabel = 'Count',
               yscale = 'log',
               ylim = (None,None),
-              out_dir = None, file_name = None,
+              out_dir = None,
+              file_name = None,
               tick_labels = None,
               legend_kw = dict(),
               **hist_kwargs) :

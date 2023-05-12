@@ -86,7 +86,6 @@ private:
 
   // Veto threshold for photo-electrons
   float pe_veto_threshold;
-  std::vector<std::string> section_names_;
   int section_;
   double max_hit_time_;
 };
