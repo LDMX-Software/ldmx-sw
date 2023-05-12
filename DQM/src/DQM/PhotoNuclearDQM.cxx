@@ -425,7 +425,7 @@ PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
     return EventType::three_or_more_neutrons;
   }
 
-  if (kaons >= 1) {
+  if (kaons == 1) {
     if (k0l == 1) {
       return EventType::klong;
     } else if (kp == 1) {
