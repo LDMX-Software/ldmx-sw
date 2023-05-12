@@ -86,6 +86,7 @@ void PhotoNuclearDQM::findParticleKinematics(
 
     // Calculate the kinetic energy
     double ke{daughter->getEnergy() - daughter->getMass()};
+    total_ke += ke;
 
     std::vector<double> vec{daughter->getMomentum()};
     TVector3 pvec(vec[0], vec[1], vec[2]);
@@ -233,11 +234,12 @@ void PhotoNuclearDQM::onProcessStart() {
     }
   }
 
-  std::vector<std::string> n_labels = {"",         "",
-                                       "nn",       // 1
-                                       "pn",       // 2
-                                       "#pi^{+}n", // 3
-                                       "#pi^{0}n", // 4
+  std::vector<std::string> n_labels = {"",
+                                       "nn",       // 0
+                                       "pn",       // 1
+                                       "#pi^{+}n", // 2
+                                       "#pi^{0}n", // 3
+                                       "other",    // 4
                                        ""};
 
   TH1 *hist = histograms_.get("1n_event_type");
@@ -305,8 +307,23 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
                    static_cast<int>(eventTypeComp2000MeV));
 
   if (eventType == EventType::single_neutron) {
+    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
+    if (pnDaughters.size() > 1) {
+      auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
+      auto nEventType{-10};
+      if (secondHardestPdgID == 2112) {
+        nEventType = 0; // n + n
+      } else if (secondHardestPdgID == 2212) {
+        nEventType = 1; // p + n
+      } else if (secondHardestPdgID == 211) {
+        nEventType = 2; // Pi+/- + n
+      } else if (secondHardestPdgID == 111) {
+        nEventType = 3; // Pi0 + n
+      } else {
+        nEventType = 4; // other
+      }
+      histograms_.fill("1n_event_type", nEventType);
     }
-
   }
 }
 
