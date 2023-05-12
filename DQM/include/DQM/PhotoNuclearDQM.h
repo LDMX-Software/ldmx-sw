@@ -87,20 +87,63 @@ private:
                        const std::vector<const ldmx::SimParticle *> daughters,
                        double threshold);
 
-  bool verbose_;
+  /**
+   * Fill the recoil electron-histograms
+   * */
   void findRecoilProperties(const ldmx::SimParticle *recoil);
 
+  /**
+   *
+   * Find all daughter particles of a parent. Particles are included if they>
+   *
+   * - Are in the particle map,
+   * - Are not photons or nuclear fragment, and
+   * - Are not a light ion (Z < 4) if the \ref count_light_ions_ parameter is
+       set to false
+   *
+   * The products are sorted by kinetic energy, in descending order.
+   *
+   **/
   std::vector<const ldmx::SimParticle *>
-  findPNDaughters(const std::map<int, ldmx::SimParticle> particleMap,
-                  const ldmx::SimParticle *pnGamma) const;
+  findDaughters(const std::map<int, ldmx::SimParticle> particleMap,
+                const ldmx::SimParticle *parent) const;
 
-  void findLeadingKinematics(
+  /**
+   *
+   * Fill histograms related to kinematics of PN products
+   *
+   **/
+  void findParticleKinematics(
       const std::vector<const ldmx::SimParticle *> &pnDaughters);
 
   void findSubleadingKinematics(
       const ldmx::SimParticle *pnGamma,
       const std::vector<const ldmx::SimParticle *> &pnDaughters, //
       const EventType eventType);
+
+public:
+  /**
+   *  Check if the PDG code corresponds to a light ion.
+   *
+   *  Nuclear PDG codes are given by ±10LZZZAAAI So to find the atomic
+   *  number, we first divide by 10 (to lose the I-component) and then
+   *  take the modulo with 1000.
+   *
+   *  TODO: Repeated code from SimCore, could probably live elsewhere.
+   *
+   */
+  constexpr bool isLightIon(const int pdgCode) const {
+    //
+    // TODO: Is the < check necessary?
+    if (pdgCode > 1000000000 && pdgCode < 10000000000) {
+      // Check if the atomic number is less than or equal to 4
+      return ((pdgCode / 10) % 1000) <= 4;
+    }
+    return false;
+  }
+
+  bool verbose_;
+  bool count_light_ions_;
 };
 
 } // namespace dqm
