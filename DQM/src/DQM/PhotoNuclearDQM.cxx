@@ -345,11 +345,9 @@ PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
     // Calculate the kinetic energy
     auto ke{daughter->getEnergy() - daughter->getMass()};
 
-    // NOTE: If we assume that the daughter vector is sorted, which it is
-    // currently, we could break rather than  continuing here...
-    //
-    // If the kinetic energy is below
-    // threshold, continue
+    // Assuming the daughters are sorted by kinetic energy, if the kinetic
+    // energy is below threshold, we don't need to look at any further
+    // particles.
     if (ke <= threshold) {
       break;
     }

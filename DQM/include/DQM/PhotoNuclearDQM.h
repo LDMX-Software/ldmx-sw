@@ -76,7 +76,8 @@ public:
   void onProcessStart();
 
 private:
-  /** Method used to classify events. */
+  /** Method used to classify events. Note: Assumes that daughters is sorted by
+   * kinetic energy. */
   EventType
   classifyEvent(const std::vector<const ldmx::SimParticle *> daughters,
                 double threshold);
