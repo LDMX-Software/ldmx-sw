@@ -294,7 +294,6 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 500)};
   auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 2000)};
 
-
   histograms_.fill("event_type", static_cast<int>(eventType));
   histograms_.fill("event_type_500mev", static_cast<int>(eventType500MeV));
   histograms_.fill("event_type_2000mev", static_cast<int>(eventType2000MeV));
