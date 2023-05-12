@@ -438,13 +438,6 @@ PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
     return EventType::exotics;
   }
 
-  // TODO Remove, broken
-  if (pi0 == 1) {
-    if ((pi == 1) && ((p == 1) || (n == 1)) && (kaons == 0 && exotic == 0)) {
-      return EventType::single_neutral_pion_charged_pion_and_nucleon;
-    }
-  }
-
   return EventType::multibody;
 }
 
