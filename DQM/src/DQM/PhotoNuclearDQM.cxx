@@ -27,11 +27,11 @@ PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name,
     : framework::Analyzer(name, process) {}
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
-std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findPNDaughters(
+std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findDaughters(
     const std::map<int, ldmx::SimParticle> particleMap,
-    const ldmx::SimParticle *pnGamma) const {
+    const ldmx::SimParticle *parent) const {
   std::vector<const ldmx::SimParticle *> pnDaughters;
-  for (const auto &daughterTrackID : pnGamma->getDaughters()) {
+  for (const auto &daughterTrackID : parent->getDaughters()) {
     // skip daughters that weren't saved
     if (particleMap.count(daughterTrackID) == 0) {
       continue;
@@ -43,8 +43,10 @@ std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findPNDaughters(
     auto pdgID{daughter->getPdgID()};
 
     // Ignore photons and nuclei
-    if (pdgID == 22 || pdgID > 10000)
+    if (pdgID == 22 ||
+        (pdgID > 10000 && (!count_light_ions_ || !isLightIon(pdgID)))) {
       continue;
+    }
     pnDaughters.push_back(daughter);
   }
 
@@ -65,12 +67,15 @@ void PhotoNuclearDQM::findRecoilProperties(const ldmx::SimParticle *recoil) {
   histograms_.fill("recoil_vertex_x:recoil_vertex_y", recoil->getVertex()[0],
                    recoil->getVertex()[1]);
 }
-void PhotoNuclearDQM::findLeadingKinematics(
+void PhotoNuclearDQM::findParticleKinematics(
     const std::vector<const ldmx::SimParticle *> &pnDaughters) {
-  double leading_ke{-1}, leading_theta{-1};
-  double leading_proton_ke{-1}, leading_proton_theta{-1};
-  double leading_neutron_ke{-1}, leading_neutron_theta{-1};
-  double leading_pion_ke{-1}, leading_pion_theta{-1};
+  double hardest_ke{-1}, hardest_theta{-1};
+  double hardest_proton_ke{-1}, hardest_proton_theta{-1};
+  double hardest_neutron_ke{-1}, hardest_neutron_theta{-1};
+  double hardest_pion_ke{-1}, hardest_pion_theta{-1};
+  double total_ke{0};
+  double total_neutron_ke{0};
+  int neutron_multiplicity{0};
   // Loop through all of the PN daughters and extract kinematic
   // information.
   for (const auto *daughter : pnDaughters) {
@@ -88,36 +93,44 @@ void PhotoNuclearDQM::findLeadingKinematics(
     //  Calculate the polar angle
     auto theta{pvec.Theta() * (180 / 3.14159)};
 
-    if (leading_ke < ke) {
-      leading_ke = ke;
-      leading_theta = theta;
+    if (hardest_ke < ke) {
+      hardest_ke = ke;
+      hardest_theta = theta;
     }
 
-    if ((pdgID == 2112) && (leading_neutron_ke < ke)) {
-      leading_neutron_ke = ke;
-      leading_neutron_theta = theta;
+    if ((pdgID == 2112)) {
+      total_neutron_ke += ke;
+      neutron_multiplicity++;
+      if (hardest_neutron_ke < ke) {
+        hardest_neutron_ke = ke;
+        hardest_neutron_theta = theta;
+      }
     }
 
-    if ((pdgID == 2212) && (leading_proton_ke < ke)) {
-      leading_proton_ke = ke;
-      leading_proton_theta = theta;
+    if ((pdgID == 2212) && (hardest_proton_ke < ke)) {
+      hardest_proton_ke = ke;
+      hardest_proton_theta = theta;
     }
 
     if (((std::abs(pdgID) == 211) || (pdgID == 111)) &&
-        (leading_pion_ke < ke)) {
-      leading_pion_ke = ke;
-      leading_pion_theta = theta;
+        (hardest_pion_ke < ke)) {
+      hardest_pion_ke = ke;
+      hardest_pion_theta = theta;
     }
   }
-  histograms_.fill("hardest_ke", leading_ke);
-  histograms_.fill("hardest_theta", leading_theta);
-  histograms_.fill("h_ke_h_theta", leading_ke, leading_theta);
-  histograms_.fill("hardest_p_ke", leading_proton_ke);
-  histograms_.fill("hardest_p_theta", leading_proton_theta);
-  histograms_.fill("hardest_n_ke", leading_neutron_ke);
-  histograms_.fill("hardest_n_theta", leading_neutron_theta);
-  histograms_.fill("hardest_pi_ke", leading_pion_ke);
-  histograms_.fill("hardest_pi_theta", leading_pion_theta);
+  histograms_.fill("hardest_ke", hardest_ke);
+  histograms_.fill("hardest_theta", hardest_theta);
+  histograms_.fill("h_ke_h_theta", hardest_ke, hardest_theta);
+  histograms_.fill("hardest_p_ke", hardest_proton_ke);
+  histograms_.fill("hardest_p_theta", hardest_proton_theta);
+  histograms_.fill("hardest_n_ke", hardest_neutron_ke);
+  histograms_.fill("hardest_n_theta", hardest_neutron_theta);
+  histograms_.fill("hardest_pi_ke", hardest_pion_ke);
+  histograms_.fill("hardest_pi_theta", hardest_pion_theta);
+
+  histograms_.fill("pn_neutron_mult", neutron_multiplicity);
+  histograms_.fill("pn_total_ke", total_ke);
+  histograms_.fill("pn_total_neutron_ke", total_neutron_ke);
 }
 
 void PhotoNuclearDQM::findSubleadingKinematics(
@@ -235,6 +248,7 @@ void PhotoNuclearDQM::onProcessStart() {
 
 void PhotoNuclearDQM::configure(framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
+  count_light_ions_ = parameters.getParameter<bool>("count_light_ions", true);
 }
 
 void PhotoNuclearDQM::analyze(const framework::Event &event) {
@@ -259,6 +273,8 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
     }
     return;
   }
+  const auto pnDaughters{findDaughters(particleMap, pnGamma)};
+  findParticleKinematics(pnDaughters);
 
   histograms_.fill("pn_particle_mult", pnGamma->getDaughters().size());
   histograms_.fill("pn_gamma_energy", pnGamma->getEnergy());
@@ -267,8 +283,6 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);
   histograms_.fill("pn_gamma_vertex_z", pnGamma->getVertex()[2]);
 
-  const auto pnDaughters{findPNDaughters(particleMap, pnGamma)};
-  findLeadingKinematics(pnDaughters);
 
   // Classify the event
   auto eventType{classifyEvent(pnDaughters, 200)};
