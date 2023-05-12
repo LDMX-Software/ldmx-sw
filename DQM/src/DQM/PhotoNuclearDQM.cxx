@@ -285,7 +285,6 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("pn_gamma_vertex_y", pnGamma->getVertex()[1]);
   histograms_.fill("pn_gamma_vertex_z", pnGamma->getVertex()[2]);
 
-
   // Classify the event
   auto eventType{classifyEvent(pnDaughters, 200)};
   auto eventType500MeV{classifyEvent(pnDaughters, 500)};
@@ -306,24 +305,33 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   histograms_.fill("event_type_compact_2000mev",
                    static_cast<int>(eventTypeComp2000MeV));
 
-  if (eventType == EventType::single_neutron) {
-    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
-    if (pnDaughters.size() > 1) {
-      auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
-      auto nEventType{-10};
-      if (secondHardestPdgID == 2112) {
-        nEventType = 0; // n + n
-      } else if (secondHardestPdgID == 2212) {
-        nEventType = 1; // p + n
-      } else if (secondHardestPdgID == 211) {
-        nEventType = 2; // Pi+/- + n
-      } else if (secondHardestPdgID == 111) {
-        nEventType = 3; // Pi0 + n
-      } else {
-        nEventType = 4; // other
+  switch (eventType) {
+  case EventType::single_neutron:
+    if (eventType == EventType::single_neutron) {
+      if (pnDaughters.size() > 1) {
+        auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
+        auto nEventType{-10};
+        if (secondHardestPdgID == 2112) {
+          nEventType = 0; // n + n
+        } else if (secondHardestPdgID == 2212) {
+          nEventType = 1; // p + n
+        } else if (secondHardestPdgID == 211) {
+          nEventType = 2; // Pi+/- + n
+        } else if (secondHardestPdgID == 111) {
+          nEventType = 3; // Pi0 + n
+        } else {
+          nEventType = 4; // other
+        }
+        histograms_.fill("1n_event_type", nEventType);
       }
-      histograms_.fill("1n_event_type", nEventType);
     }
+    [[fallthrough]]; // Remaining code is important for 1n as well
+  case EventType::two_neutrons:
+  case EventType::charged_kaon:
+  case EventType::klong:
+  case EventType::kshort:
+    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
+    break;
   }
 }
 
