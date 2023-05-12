@@ -284,9 +284,10 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
-    def __init__(self,name='PN', verbose=False) :
+    def __init__(self,name='PN', verbose=False, count_light_ions=False) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
+        self.count_light_ions=count_light_ions
         self.verbose = verbose
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
         self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
@@ -295,8 +296,11 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("event_type_compact_500mev"  , "", 8, -1, 7)
         self.build1DHistogram("event_type_compact_2000mev" , "", 8, -1, 7)
         self.build1DHistogram("1n_event_type"      , "", 7,  -1, 6)
-        self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 100, 0, 200)
+        self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
+        self.build1DHistogram("pn_neutron_mult", "Photo-nuclear Neutron Multiplicity", 200,0, 200)
         self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy (MeV)", 500, 0, 5000)
+        self.build1DHistogram("pn_total_ke"  , "Total Kineitc Energy of Photo-Nuclear Products(MeV)", 500, 0, 5000)
+        self.build1DHistogram("pn_total_neutron_ke"  , "Total Kineitc Energy of Photo-Nuclear Neutrons  (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_neutron_energy"  , "Neutron Energy (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) (MeV)", 500, 0, 1)
@@ -515,9 +519,7 @@ hcal_dqm = [
         HCalDQM(pe_threshold=5,
                 section=4
                 ),
-        HcalInefficiencyAnalyzer(pe_threshold=5),
-
-        ]
+  ]
 
 recoil_dqm = [
         RecoilTrackerDQM()
