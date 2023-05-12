@@ -123,7 +123,7 @@ void PhotoNuclearDQM::findLeadingKinematics(
 void PhotoNuclearDQM::findSubleadingKinematics(
     const ldmx::SimParticle *pnGamma,
     const std::vector<const ldmx::SimParticle *> &pnDaughters,
-    const int eventType) {
+    const PhotoNuclearDQM::EventType eventType) {
 
   // Note: Assumes sorted by energy
 
@@ -138,23 +138,23 @@ void PhotoNuclearDQM::findSubleadingKinematics(
   energyDiff = pnGamma->getEnergy() - nEnergy;
   energyFrac = nEnergy / pnGamma->getEnergy();
 
-  if (eventType == 1) {
+  if (eventType == EventType::single_neutron) {
     histograms_.fill("1n_ke:2nd_h_ke", nEnergy, subleading_ke);
     histograms_.fill("1n_neutron_energy", nEnergy);
     histograms_.fill("1n_energy_diff", energyDiff);
     histograms_.fill("1n_energy_frac", energyFrac);
-  } else if (eventType == 2) {
+  } else if (eventType == EventType::two_neutrons) {
     histograms_.fill("2n_n2_energy", subleading_ke);
     auto energyFrac2n = (nEnergy + subleading_ke) / pnGamma->getEnergy();
     histograms_.fill("2n_energy_frac", energyFrac2n);
     histograms_.fill("2n_energy_other", pnGamma->getEnergy() - energyFrac2n);
 
-  } else if (eventType == 17) {
+  } else if (eventType == EventType::charged_kaon) {
     histograms_.fill("1kp_ke:2nd_h_ke", nEnergy, subleading_ke);
     histograms_.fill("1kp_energy", nEnergy);
     histograms_.fill("1kp_energy_diff", energyDiff);
     histograms_.fill("1kp_energy_frac", energyFrac);
-  } else if (eventType == 16 || eventType == 18) {
+  } else if (eventType == EventType::klong || eventType == EventType::kshort) {
     histograms_.fill("1k0_ke:2nd_h_ke", nEnergy, subleading_ke);
     histograms_.fill("1k0_energy", nEnergy);
     histograms_.fill("1k0_energy_diff", energyDiff);
@@ -279,35 +279,24 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
   auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 500)};
   auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 2000)};
 
-  histograms_.fill("event_type", eventType);
-  histograms_.fill("event_type_500mev", eventType500MeV);
-  histograms_.fill("event_type_2000mev", eventType2000MeV);
 
-  histograms_.fill("event_type_compact", eventTypeComp);
-  histograms_.fill("event_type_compact_500mev", eventTypeComp500MeV);
-  histograms_.fill("event_type_compact_2000mev", eventTypeComp2000MeV);
+  histograms_.fill("event_type", static_cast<int>(eventType));
+  histograms_.fill("event_type_500mev", static_cast<int>(eventType500MeV));
+  histograms_.fill("event_type_2000mev", static_cast<int>(eventType2000MeV));
 
-  if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 ||
-      eventType == 2) {
-    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
+  histograms_.fill("event_type_compact", static_cast<int>(eventTypeComp));
+  histograms_.fill("event_type_compact_500mev",
+                   static_cast<int>(eventTypeComp500MeV));
+  histograms_.fill("event_type_compact_2000mev",
+                   static_cast<int>(eventTypeComp2000MeV));
 
-    auto nPdgID{abs(pnDaughters[0]->getPdgID())};
-    auto nEventType{-10};
-    if (nPdgID == 2112) {
-      nEventType = 1;
-    } else if (nPdgID == 2212) {
-      nEventType = 2;
-    } else if (nPdgID == 211) {
-      nEventType = 3;
-    } else if (nPdgID == 111) {
-      nEventType = 4;
+  if (eventType == EventType::single_neutron) {
     }
 
-    histograms_.fill("1n_event_type", nEventType);
   }
 }
 
-int PhotoNuclearDQM::classifyEvent(
+PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
     const std::vector<const ldmx::SimParticle *> daughters, double threshold) {
   short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, lambda{0};
 
@@ -317,9 +306,14 @@ int PhotoNuclearDQM::classifyEvent(
     // Calculate the kinetic energy
     auto ke{daughter->getEnergy() - daughter->getMass()};
 
-    // If the kinetic energy is below threshold, continue
-    if (ke <= threshold)
-      continue;
+    // NOTE: If we assume that the daughter vector is sorted, which it is
+    // currently, we could break rather than  continuing here...
+    //
+    // If the kinetic energy is below
+    // threshold, continue
+    if (ke <= threshold) {
+      break;
+    }
 
     // Get the PDG ID
     auto pdgID{abs(daughter->getPdgID())};
@@ -349,75 +343,75 @@ int PhotoNuclearDQM::classifyEvent(
   int count = nucleons + pions + exotic + kaons;
 
   if (count == 0) {
-    return nothing_hard;
+    return EventType::nothing_hard;
   }
   if (count == 1) {
     if (n == 1) {
-      return single_neutron;
+      return EventType::single_neutron;
     } else if (p == 1) {
-      return single_proton;
+      return EventType::single_proton;
     } else if (pi0 == 1) {
-      return single_neutral_pion;
+      return EventType::single_neutral_pion;
     } else if (pi == 1) {
-      return single_charged_pion;
+      return EventType::single_charged_pion;
     }
   }
   if (count == 2) {
     if (n == 2) {
-      return two_neutrons;
+      return EventType::two_neutrons;
     } else if (n == 1 && p == 1) {
-      return proton_neutron;
+      return EventType::proton_neutron;
     } else if (p == 2) {
-      return two_protons;
+      return EventType::two_protons;
     } else if (pi == 2) {
-      return two_charged_pions;
+      return EventType::two_charged_pions;
     } else if (pi == 1 && nucleons == 1) {
-      return single_charged_pion_and_nucleon;
+      return EventType::single_charged_pion_and_nucleon;
     } else if (pi0 == 1 && nucleons == 1) {
-      return single_neutral_pion_and_nucleon;
+      return EventType::single_neutral_pion_and_nucleon;
     }
   }
 
   if (count == 3) {
     if (pi == 1 && nucleons == 2) {
-      return single_charged_pion_and_two_nucleons;
+      return EventType::single_charged_pion_and_two_nucleons;
     } else if (pi == 2 && nucleons == 1) {
-      return two_charged_pions_and_nucleon;
+      return EventType::two_charged_pions_and_nucleon;
     } // else
     else if (pi0 == 1 && nucleons == 2) {
-      return single_neutral_pion_and_two_nucleons;
+      return EventType::single_neutral_pion_and_two_nucleons;
     } else if (pi0 == 1 && nucleons == 1 && pi == 1) {
-      return single_neutral_pion_charged_pion_and_nucleon;
+      return EventType::single_neutral_pion_charged_pion_and_nucleon;
     }
   }
   if (count >= 3 && count == n) {
-    return three_or_more_neutrons;
+    return EventType::three_or_more_neutrons;
   }
 
   if (kaons >= 1) {
     if (k0l == 1) {
-      return klong;
+      return EventType::klong;
     } else if (kp == 1) {
-      return charged_kaon;
+      return EventType::charged_kaon;
     } else if (k0s == 1) {
-      return kshort;
+      return EventType::kshort;
     }
   }
-  if (exotics == count && count != 0) {
-    return exotics;
+  if (exotic == count && count != 0) {
+    return EventType::exotics;
   }
 
   // TODO Remove, broken
   if (pi0 == 1) {
     if ((pi == 1) && ((p == 1) || (n == 1)) && (kaons == 0 && exotic == 0)) {
-      return 12;
+      return EventType::single_neutral_pion_charged_pion_and_nucleon;
     }
   }
 
-  return multibody;
+  return EventType::multibody;
 }
 
-int PhotoNuclearDQM::classifyCompactEvent(
+PhotoNuclearDQM::CompactEventType PhotoNuclearDQM::classifyCompactEvent(
     const ldmx::SimParticle *pnGamma,
     const std::vector<const ldmx::SimParticle *> daughters, double threshold) {
   short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
