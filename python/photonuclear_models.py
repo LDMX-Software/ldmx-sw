@@ -117,10 +117,11 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
         model = BertiniAtLeastNProductsModel(f"{min_products}_kaon_model")
         model.hard_particle_threshold=hard_particle_threshold
         model.pdg_ids = [
-                130, # K_L^0
-                310, # K_S^0
-                311, # K^0
-                321  # K^+
+                130,  # K_L^0
+                310,  # K_S^0
+                311,  # K^0
+                321,  # K^+
+                -321, # K^-
         ]
         model.min_products = min_products
         return model
