@@ -253,8 +253,10 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set amplitude as the average of both bars (reverse attenuated)
       amplT = (amplT_posend / att_posend + amplT_negend / att_negend) / 2;
 
+      const auto orientation{hcalGeometry.getScintillatorOrientation(id)};
       // set position along the bar
-      if (hcalGeometry.layerIsHorizontal(id_posend.layer())) {
+      if (orientation ==
+          ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
         position.SetX(position_bar);
       } else {
         position.SetY(position_bar);
