@@ -33,11 +33,14 @@ void TaggerHitFilter::stepping(const G4Step* step) {
       region.compareTo("tagger") != 0)
     return;
 
-  // If the electron is exiting the tagger volume i.e. entering the world
-  // volume, count the number of sensors hit. If the number of sensors hit
-  // is below the hit threshold, abort the event.
+  // Check if the number of layers hit is above the threshold if 
+  // 1) the incident electron has exited the tagger tracker volume
+  // 2) the incident electron has lost all of its energy.
+  // If the number of sensors hit is below the layer threshold, abort the 
+  // event.
   if (auto nvolume{track->GetNextVolume()->GetName()};
-      nvolume.compareTo("World_PV") == 0) {
+      (nvolume.compareTo("World_PV") == 0) ||
+      (track->GetKineticEnergy() == 0)) {
     if (layer_count_.size() < layers_hit_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
