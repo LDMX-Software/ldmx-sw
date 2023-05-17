@@ -36,7 +36,7 @@ mySim.setDetector(detector)
 from LDMX.SimCore import generators as gen
 myGun = gen.gun('myGun')
 myGun.particle = arg.particle
-myGun.position = [ 0., 0., 0 ] # mm
+myGun.position = [ 0., 0., -600. ] # mm
 myGun.direction = [ 0., 0., 1] # forward in z
 myGun.energy = arg.energy # GeV
 mySim.generators = [ myGun ]
