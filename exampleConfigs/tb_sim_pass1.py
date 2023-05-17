@@ -1,4 +1,4 @@
-import argparse,sys
+import argparse, sys, os, pathlib
 from LDMX.Framework import ldmxcfg
 
 """
@@ -9,21 +9,22 @@ parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
 parser.add_argument('--nevents',default=100,type=int)
 parser.add_argument('--particle',default='neutron') # other options, mu-,e-,pi-,proton
 parser.add_argument('--energy',default=2.0,type=float)
+parser.add_argument('--runnumber',default=1,type=int)
+parser.add_argument('--output_dir',default='.',type=pathlib.Path)
 arg = parser.parse_args()
 
 p = ldmxcfg.Process('sim')
 p.maxEvents = arg.nevents
 p.termLogLevel = 0
 p.logFrequency = 10
+p.run = arg.runnumber
 
 detector = 'ldmx-hcal-prototype-v2.0' # TODO: CHANGE TO FEFIX version
 
-p.outputFiles = [
-        arg.particle
-        +"Sim_%.2fGeV_"%arg.energy
-        + str(p.maxEvents)
-        + "_%s.root"%detector
-        ]
+base_name = os.path.basename(arg.particle+"Sim_%.2fGeV_"%arg.energy+str(p.maxEvents)+"_%s"%detector+"_pass1_%i"%arg.runnumber)
+dir_name  = os.path.dirname(arg.output_dir)
+
+p.outputFiles = [f'{dir_name}/{base_name}.root']
 
 from LDMX.SimCore import simulator
 import LDMX.Ecal.EcalGeometry # geometry required by sim
@@ -64,6 +65,4 @@ p.sequence.extend(
         )
     ]
 )
-
-# View configuration before actually running
-p.pause()
+\

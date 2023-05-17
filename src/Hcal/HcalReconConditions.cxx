@@ -10,11 +10,14 @@ const std::string HcalReconConditions::CONDITIONS_NAME = "HcalReconConditions";
 HcalReconConditions::HcalReconConditions(
     const conditions::DoubleTableCondition& adc_ped,
     const conditions::DoubleTableCondition& adc_gain,
-    const conditions::DoubleTableCondition& tot_calib)
+    const conditions::DoubleTableCondition& tot_calib,
+    const conditions::DoubleTableCondition& toa_calib
+					 )
     : framework::ConditionsObject(HcalReconConditions::CONDITIONS_NAME),
       adc_pedestals_{adc_ped},
       adc_gains_{adc_gain},
-      tot_calibs_{tot_calib} {}
+      tot_calibs_{tot_calib},
+      toa_calibs_{toa_calib} {}
 
 bool HcalReconConditions::is_adc(const ldmx::HcalDigiID& id,
                                  double sum_tot) const {
@@ -66,7 +69,9 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
   std::string adc_ped_;
   /// name of condition object for hcal tot calibrations
   std::string tot_calib_;
-
+  /// name of condition object for hcal toa calibrations
+  std::string toa_calib_;
+  
  public:
   /**
    * Retrieve the name of the parent conditions from the configuration
@@ -93,6 +98,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     adc_gain_ = parameters.getParameter<std::string>("adc_gain");
     adc_ped_ = parameters.getParameter<std::string>("adc_ped");
     tot_calib_ = parameters.getParameter<std::string>("tot_calib");
+    toa_calib_ = parameters.getParameter<std::string>("toa_calib");
   }
 
   /**
@@ -116,6 +122,8 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     auto [adc_ped_co, adc_ped_iov] = requestParentCondition(adc_ped_, context);
     auto [tot_calib_co, tot_calib_iov] =
         requestParentCondition(tot_calib_, context);
+    auto [toa_calib_co, toa_calib_iov] =
+      requestParentCondition(toa_calib_, context);
 
     // deduce "minimum" IOV
     //  Framework #56 : https://github.com/LDMX-Software/Framework/issues/56
@@ -126,7 +134,9 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     framework::ConditionsObject* co = new hcal::HcalReconConditions(
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_ped_co),
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_gain_co),
-        dynamic_cast<const conditions::DoubleTableCondition&>(*tot_calib_co));
+        dynamic_cast<const conditions::DoubleTableCondition&>(*tot_calib_co),
+	dynamic_cast<const conditions::DoubleTableCondition&>(*toa_calib_co)
+								    );
 
     return {co, framework::ConditionsIOV(context.getRun(), context.getRun())};
   }
