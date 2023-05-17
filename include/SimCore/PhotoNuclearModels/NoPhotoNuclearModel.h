@@ -8,6 +8,13 @@
 
 namespace simcore {
 
+/**
+ *
+ * A photonuclear model that removes the photonNuclear process entirely. Be
+ * careful when using that you aren't using any other part of ldmx-sw that
+ * relies on the photonNuclear process being defined such as a biasing
+ * operator for photonuclear reactions.
+ **/
 class NoPhotoNuclearModel : public PhotoNuclearModel {
  public:
   NoPhotoNuclearModel(const std::string& name,
