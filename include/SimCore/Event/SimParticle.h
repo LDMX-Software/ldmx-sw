@@ -64,6 +64,12 @@ class SimParticle {
   double getEnergy() const { return energy_; }
 
   /**
+   * Get the kinetic energy of this particle [MeV].
+   *
+   * @return The kinetic energy of this particle.
+   */
+  double getKineticEnergy() const { return energy_ - mass_; }
+  /**
    * Get the PDG ID of this particle.
    *
    * @return The PDG ID of this particle.
