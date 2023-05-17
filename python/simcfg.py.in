@@ -142,3 +142,23 @@ class SensitiveDetector:
         """
 
         return '%s of class %s' % (self.instance_name, self.class_name)
+
+class PhotoNuclearModel():
+    """Configuration for a photonuclear model that we want to load
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this particular instance of a PhotoNuclear Model
+    class_name : str
+        Name of C++ class that this PhotoNuclear model should be
+    module_name : str
+        Name of C++ library that this PhotoNuclear model is compiled into
+    """
+
+    def __init__(self, instance_name, class_name, module_name ):
+        self.class_name    = class_name
+        self.instance_name = instance_name
+
+        from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+        ldmxcfg.Process.addModule(module_name)
