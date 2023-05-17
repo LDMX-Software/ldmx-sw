@@ -125,3 +125,16 @@ class BertiniAtLeastNProductsModel(simcfg.PhotoNuclearModel):
         ]
         model.min_products = min_products
         return model
+
+
+class NoPhotoNuclearModel(simcfg.PhotoNuclearModel):
+    """A PhotoNuclear model that disables the photonuclear process entirely.
+
+    Make sure that no biasing operators for photonuclear reactions are enabled
+    when using this model.
+
+    """
+    def __init__(self):
+        super().__init__('NoPhotoNuclearModel',
+                         'simcore::NoPhotoNuclearModel',
+                         'SimCore_PhotoNuclearModels')
