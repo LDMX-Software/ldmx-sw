@@ -44,7 +44,6 @@ namespace tracking{
 namespace sim{
 namespace utils {
 
-
 //This method returns the sensor ID 
 inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 
@@ -220,6 +219,38 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
 //inline Acts::BoundTrackParameters extrapolateTrajectory(const Acts::BoundTrackParameters,
 //                                                        const Acts::
 //                                                        const std::shared_ptr<Acts::Surface>& surface, ) {
+
+
+//Return an unbound surface along the beam axis
+inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location) {
+  
+  //Define the target surface - be careful:
+  // x - downstream
+  // y - left (when looking along x)
+  // z - up
+  // Passing identity here means that your target surface is oriented in the same way
+  Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
+  //u direction along +Y
+  surf_rotation(1,0) = 1;
+  //v direction along +Z
+  surf_rotation(2,1) = 1;
+  //w direction along +X
+  surf_rotation(0,2) = 1;
+  
+  Acts::Vector3 pos(surf_location, 0., 0.);
+  Acts::Translation3 surf_translation(pos);
+  Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+  
+  //Unbounded surface
+  const std::shared_ptr<Acts::PlaneSurface> target_surface =
+      Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+  
+  return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+  
+}
+
+
+
 
 }//utils
 }//sim

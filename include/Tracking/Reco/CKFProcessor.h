@@ -236,9 +236,6 @@ class CKFProcessor final : public framework::Producer {
   std::vector<double> extrapolate_location_{0.,0.,0.};
   bool use_seed_perigee_{false};
   
-  //The hit collection to use for track reconstruction
-  std::string hit_collection_{"TaggerSimHits"};
-
   //The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
   
@@ -282,15 +279,6 @@ class CKFProcessor final : public framework::Producer {
   //The mapping between layers and Acts::Surface
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
   
-  /// do smearing
-  bool do_smearing_{false};
-  
-  /// u-direction sigma
-  double sigma_u_{0};
-
-  /// v-direction sigma
-  double sigma_v_{0};
-
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};

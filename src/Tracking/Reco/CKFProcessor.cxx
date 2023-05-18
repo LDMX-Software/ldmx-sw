@@ -2,7 +2,8 @@
 
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Sim/GeometryContainers.h"
-
+#include "Acts/EventData/TrackHelpers.hpp"
+#include "Tracking/Reco/TruthMatchingTool.h"
 
 
 //--- C++ StdLib ---//
@@ -105,16 +106,14 @@ void CKFProcessor::onProcessStart() {
 
   writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
 
-  
+
 }
 
 void CKFProcessor::produce(framework::Event& event) {
 
   eventnr_++;
 
-  //if (eventnr_ != 8283)
-  //  return;
-  
+
   // int counter=0
   // if (counter==0) {
   // propagateENstates(event,
@@ -122,6 +121,7 @@ void CKFProcessor::produce(framework::Event& event) {
   //                   "hadron_vars_piminus_1e6_out.root");
   // counter+=1;
   // }
+
 
   // TODO use global variable instead and call clear;
   std::vector<ldmx::Track> tracks;
@@ -184,15 +184,20 @@ void CKFProcessor::produce(framework::Event& event) {
   auto setup = std::chrono::high_resolution_clock::now();
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
-
-  const std::vector<ldmx::SimTrackerHit> sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>(hit_collection_);
   
-
   const std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(measurement_collection_);
-  
 
+  //check if SimParticleMap is available for truth matching
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool = nullptr;
+  std::map<int, ldmx::SimParticle> particleMap;
+  
+  if(event.exists("SimParticles")) {
+    particleMap = event.getMap<int,ldmx::SimParticle>("SimParticles");
+    truthMatchingTool = std::make_shared<tracking::sim::TruthMatchingTool>(particleMap,measurements);
+    
+  }
+  
   // The mapping between the geometry identifier
   // and the IndexsourceLink that points to the hit
   const auto geoId_sl_map = makeGeoIdSourceLinkMap(measurements);
@@ -207,10 +212,9 @@ void CKFProcessor::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Retrieve the seeds::" << seed_coll_name_;
   
-
   const std::vector<ldmx::Track> seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_);
-
+  
   // Run the CKF on each seed and produce a track candidate
   std::vector<Acts::BoundTrackParameters> startParameters;
   for (auto& seed : seed_tracks) {
@@ -239,15 +243,17 @@ void CKFProcessor::produce(framework::Event& event) {
 
     startParameters.push_back(
         Acts::BoundTrackParameters(perigeeSurface, paramVec, q, covMat));
-  }
 
-  if (startParameters.size() != 1) {
+    nseeds_++;
+  } // loop on seeds
+
+  if (startParameters.size() < 1) {
     std::vector<ldmx::Track> empty;
     event.add(out_trk_collection_, empty);
     return;
   }
-
-  nseeds_++;
+  
+  
 
   
   auto seeds = std::chrono::high_resolution_clock::now();
@@ -333,7 +339,7 @@ void CKFProcessor::produce(framework::Event& event) {
                                      decltype(sourceLinkAccessor)>(
                                          &sourceLinkAccessor);
   
-
+  
   /*
   ActsExamples::GeometryIdMultiset<ActsExamples::IndexSourceLink> geoId_flat_multimap;
   
@@ -414,9 +420,6 @@ void CKFProcessor::produce(framework::Event& event) {
   auto ckf_run = std::chrono::high_resolution_clock::now();
     profiling_map_["ckf_run"] +=
         std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
-    
-
-  
   
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
 
@@ -427,16 +430,13 @@ void CKFProcessor::produce(framework::Event& event) {
           <<"CKF Fit failed"<<std::endl;
       continue;
     }
-                    
-
+    
     //No track found
-    if (tc.size() < 1)
+    if (tc.size() < trackId + 1)
       continue;
     
 
     ldmx_log(debug)<<"Filling track info"<<std::endl;
-
-    
     GoodResult++;
     
     // The track tips are the last measurement index
@@ -445,29 +445,12 @@ void CKFProcessor::produce(framework::Event& event) {
     //                                                        //.trackStateContainer();
     
     auto track = tc.getTrack(trackId);
-
-    //Loop on the trackStates
-    for (auto ts : track.trackStates()) {
-      ///ts is the track state.
-      ///auto lastTrackStates = track.trackStates().begin(); //<--- IT's reversed
-      ///
-      
-    }
-
-    
-    
-    
-
-    int nTrackStates = track.nTrackStates();
-
-    //Cut on minimum number of track states
-    if (nTrackStates < min_hits_ )
-      continue;
+    calculateTrackQuantities(track);
 
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
-       
+    
     
     ldmx_log(debug)<<"Found track: nMeas "<< track.nMeasurements()<<std::endl
                    <<"Track states "<< track.nTrackStates()<<std::endl
@@ -477,7 +460,7 @@ void CKFProcessor::produce(framework::Event& event) {
                    <<perigee_pars[Acts::eBoundTheta]<<" "
                    <<perigee_pars[Acts::eBoundQOverP]<<std::endl
                    <<"nHoles  "<<track.nHoles();
-
+    
     
 
     ldmx::Track trk = ldmx::Track();
@@ -485,11 +468,11 @@ void CKFProcessor::produce(framework::Event& event) {
                            perigee_surface.transform(gctx_).translation()(1),
                            perigee_surface.transform(gctx_).translation()(2));
     
-    //TODO FIx
-    trk.setChi2(0.);
-    trk.setNhits(track.nTrackStates());
-    trk.setNdf(0);
-    trk.setNsharedHits(0);
+    
+    trk.setChi2(track.chi2());
+    trk.setNhits(track.nMeasurements());
+    trk.setNdf(track.nDoF());
+    trk.setNsharedHits(track.nSharedHits());
     
     trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
     std::vector<double> v_trk_cov;
@@ -498,22 +481,35 @@ void CKFProcessor::produce(framework::Event& event) {
     
     Acts::Vector3 trk_momentum = track.momentum();
     trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
+    
+    
+    //Add measurements on track
+    for (auto ts : track.trackStates()) {
+      
+      //Check if the track state is a measurement
+      auto typeFlags = ts.typeFlags();
+      if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+        ActsExamples::IndexSourceLink sl =
+            ts.getUncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
+        ldmx::Measurement ldmx_meas = measurements.at(sl.index());
+        ldmx_log(debug)<<"SourceLink Index::"<<sl.index();
+        ldmx_log(debug)<<"Measurement:\n"<<ldmx_meas<<"\n";
+        trk.addMeasurementIndex(sl.index());
+      }
+    }
 
-    tracks.push_back(trk);
-    ntracks_++;
+    //Truth matching
+    if (truthMatchingTool) {
+      auto truthInfo = truthMatchingTool->TruthMatch(trk);
+      trk.setTrackID(truthInfo.trackID);
+      trk.setPdgID(truthInfo.pdgID);
+      trk.setTruthProb(truthInfo.truthProb);
+    }
     
-    
-    //auto trajState =
-    //    Acts::MultiTrajectoryHelpers::trajectoryState(mj, trackTip);
-    
-    // trk.setPerigeeParameters(ckf_result.fittedParameters.begin()->second.parameters());
-
-    //Acts::BoundVector tgt_srf_pars =
-    //    ckf_result.fittedParameters.begin()->second.parameters();
-    //Acts::BoundMatrix tgt_srf_cov =
-    //    ckf_result.fittedParameters.begin()->second.covariance()
-    //    ? ckf_result.fittedParameters.begin()->second.covariance().value()
-    //    : Acts::BoundSymMatrix::Identity();
+    if (trk.getNhits() > min_hits_) {
+      tracks.push_back(trk);
+      ntracks_++;
+    }
     
     /*
       if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
@@ -524,8 +520,7 @@ void CKFProcessor::produce(framework::Event& event) {
       std::cout<<"Printing filtered states"<<std::endl;
       std::cout<<state.filtered()<<std::endl;
       });
-
-
+      
       }*/
     
     // Write the event display for the recoil
@@ -636,7 +631,9 @@ void CKFProcessor::produce(framework::Event& event) {
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
-  
+
+
+    
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
 
@@ -679,8 +676,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   track_id_ = parameters.getParameter<int>("track_id", -1);
   pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
 
-  bfield_ = parameters.getParameter<double>("bfield", 0.);
-  const_b_field_ = parameters.getParameter<bool>("const_b_field", true);
+  bfield_ = parameters.getParameter<double>("bfield", -1.5);
+  const_b_field_ = parameters.getParameter<bool>("const_b_field", false);
   field_map_ = parameters.getParameter<std::string>("field_map");
   propagator_step_size_ =
       parameters.getParameter<double>("propagator_step_size", 200.);
@@ -688,8 +685,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<int>("propagator_maxSteps", 10000);
   perigee_location_ = parameters.getParameter<std::vector<double>>(
       "perigee_location", {0., 0., 0.});
-  hit_collection_ =
-      parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   measurement_collection_ =
       parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
   
@@ -705,8 +700,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
 
   min_hits_ = parameters.getParameter<int>("min_hits", 7);
 
-  std::cout << "CONFIGURE::min_hits=" << min_hits_ << std::endl;
-
   // Ckf specific options
   use_extrapolate_location_ =
       parameters.getParameter<bool>("use_extrapolate_location", true);
@@ -721,15 +714,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // output track collection
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "Tracks");
-
-  // Hit smearing
-
-  do_smearing_ = parameters.getParameter<bool>("do_smearing", false);
-  sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
-  sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
-
-  std::cout << __PRETTY_FUNCTION__ << "  HitCollection::" << hit_collection_
-            << std::endl;
 
   kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
   gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
