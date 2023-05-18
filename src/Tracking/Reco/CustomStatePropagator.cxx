@@ -1,5 +1,6 @@
 #include "CustomStatePropagator.h"
 
+#include "Acts/Utilities/Logger.hpp"
 
 
 #include <iostream>
@@ -140,9 +141,9 @@ void CustomStatePropagator::onProcessStart() {
         gen_surface, std::move(bound_params), std::move(std::nullopt));
     
 
-    const auto pLogger = Acts::getDefaultLogger("Propagator", Acts::Logging::INFO);
+    //const auto pLogger = Acts::getDefaultLogger("Propagator", Acts::Logging::INFO);
     Acts::PropagatorOptions<> propagator_options(
-        gctx_, bctx_, Acts::LoggerWrapper{*pLogger});
+        gctx_, bctx_);//, Acts::LoggerWrapper{*pLogger});
 
     propagator_options.direction = Acts::NavigationDirection::Forward; // should be the default
     propagator_options.pathLimit = std::numeric_limits<double>::max();
@@ -177,15 +178,15 @@ void CustomStatePropagator::onProcessStart() {
 
     //Do the propagation to the surface
 
-    auto result = propagator->propagate(startParams,*target_surface, propagator_options);
+    //auto result = propagator->propagate(startParams,*target_surface, propagator_options);
 
-    if (result.ok()) {
-      endParams = (*result).endParameters.get();
-      fillTree(i_state, q, gen_pos, gen_mom, endParams);
+    //if (result.ok()) {
+    //  endParams = (*result).endParameters.get();
+    //  fillTree(i_state, q, gen_pos, gen_mom, endParams);
       
-    }
-    else
-      continue;
+    //}
+    //else
+     // continue;
     
     //loc0 // loc1 will give you the u-v location of the hit on the ecal face
     
