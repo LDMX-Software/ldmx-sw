@@ -243,18 +243,15 @@ void CKFProcessor::produce(framework::Event& event) {
 
     startParameters.push_back(
         Acts::BoundTrackParameters(perigeeSurface, paramVec, q, covMat));
-
+  
     nseeds_++;
   } // loop on seeds
-
+  
   if (startParameters.size() < 1) {
     std::vector<ldmx::Track> empty;
     event.add(out_trk_collection_, empty);
     return;
   }
-  
-  
-
   
   auto seeds = std::chrono::high_resolution_clock::now();
   profiling_map_["seeds"] +=
