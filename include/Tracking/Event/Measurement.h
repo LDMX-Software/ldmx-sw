@@ -108,6 +108,14 @@ class Measurement {
   /// @return The layer number internal to the tracker.
   int getLayer() const { return layer_; }
 
+
+  /// Add a trackId to the internal vector
+  void addTrackId(int trkId){trackIds_.push_back(trkId);};
+  /// @return the sim particle IDs that compose the measurement
+  std::vector<unsigned int> getTrackIds(){ return trackIds_;};
+
+  
+  
   /**
    * Overload the stream insertion operator to output a string representation of
    * this Measurement.
@@ -124,9 +132,8 @@ class Measurement {
                                   const Measurement& measurement);
 
  private:
-
-    
-
+  
+  
   /// The global position in x (mm).
   float x_{0.};
   /// The global position in x (mm).
@@ -151,6 +158,9 @@ class Measurement {
   float cov_vv_{0.};
   /// The ID of the hit.
   int id_{0};
+  /// TrackIDs the vector of TrackIDs that form the measurement
+  std::vector<unsigned int> trackIds_{};
+  
 
   ClassDef(Measurement, 1);
 };  // Measurement

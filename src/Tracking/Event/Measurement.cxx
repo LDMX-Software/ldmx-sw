@@ -22,6 +22,10 @@ ClassImp(ldmx::Measurement)
     // Set the local covariances
     cov_uu_ = sigma_u * sigma_u;
     cov_vv_ = sigma_v * sigma_v;
+
+    //Store the trackID
+    addTrackId(hit.getTrackID());
+    
   }
 
   std::ostream& operator<<(std::ostream& output,
@@ -33,7 +37,7 @@ ClassImp(ldmx::Measurement)
            << " cov(V,V) " << measurement.cov_vv_
            << "\n\tTime: " << measurement.t_
            << " ns \n\tLayer ID: " << measurement.layerid_
-           << " ns \n\tLayer: " << measurement.layer_
+           << "\n\tLayer: " << measurement.layer_
            << "\n\tEnergy Deposition: " << measurement.edep_ << " MeV"
            << std::endl;
 

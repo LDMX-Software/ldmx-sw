@@ -29,10 +29,12 @@ namespace ldmx {
  */
 
 class Track {
+
  public:
-  
+
+
   Track(){};
-        
+  
   /**
    * Destructor.
    *
@@ -50,18 +52,38 @@ class Track {
   void setNhits(int nhits) {n_hits_ = nhits;}
   int getNhits() const { return n_hits_;}
 
+  //void setNholes(int nholes) {n_holes_ = nholes;}
+  //int  getNholes() const {return n_holes_;}
+
   void setNoutliers(int nout) {n_outliers_ = nout;}
+  int getNoutliers() const {return n_outliers_;}
+  
   void setNdf(int ndf) {ndf_ = ndf;}
-  int  getNdf(){return ndf_;};
+  int  getNdf() const {return ndf_;};
+
   void setNsharedHits(int nsh) {n_shared_hits_ = nsh;}
-  
-  
+  int  getNsharedHits() const {return n_shared_hits_;}
+    
   void setChi2(double chi2) {chi2_ = chi2;} 
   double getChi2() const { return chi2_;}
 
+
+  void setTrackID(int trackid){trackID_ = trackid;};
+  int  getTrackID() const {return trackID_;};
+
+  void setTruthProb(double truthProb){truthProb_ = truthProb;};
+  double  getTruthProb() const {return truthProb_;};
+
+  void setPdgID(int pdgID){pdgID_ = pdgID;};
+  int  getPdgID() const {return pdgID_;};
+  
+  
   //in units of e 
   int q() const {return perigee_pars_[4] > 0 ? 1 : -1;}
   
+  //Add measurement to track
+  void addMeasurementIndex(unsigned int measIdx) {meas_idxs_.push_back(measIdx);}
+  std::vector<unsigned int> getMeasurementsIdxs() const{return meas_idxs_;} 
   
   ///d_0 z_0 phi_0 theta q/p t
   //void setPerigeeParameters(const Acts::BoundVector& par)  {perigee_pars_ = par; }
@@ -122,7 +144,7 @@ class Track {
   double getQoP()   const {return perigee_pars_[4];};
   double getT()     const {return perigee_pars_[5];};
 
-
+  
   
  protected:
     
@@ -130,6 +152,7 @@ class Track {
   int n_outliers_{0};
   int ndf_{0};
   int n_shared_hits_{0};
+  int n_holes_{0};
   
 
   //particle hypothesis if truth track
@@ -162,6 +185,18 @@ class Track {
 
   //The 3-position at the perigee
   std::vector<double> position_{0.,0.,0.};
+
+  //The vector of measurement IDs
+  std::vector<unsigned int> meas_idxs_{};
+
+  //ID of the matched particle in the SimParticles map
+  int trackID_{-1};
+
+  //Truth probability
+  double truthProb_{0.};
+
+  //pdgID
+  int pdgID_{0};
   
   ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);
