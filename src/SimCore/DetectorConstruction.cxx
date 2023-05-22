@@ -26,7 +26,8 @@ static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
            volumeName.contains("PCB") || volumeName.contains("strongback") ||
            volumeName.contains("Glue") || volumeName.contains("CFMix") ||
            volumeName.contains("Al") || volumeName.contains("C")) &&
-          volumeName.contains("volume"));
+          volumeName.contains("volume")) ||
+         (volumeName.contains("nohole_motherboard"));
 }
 
 /**
