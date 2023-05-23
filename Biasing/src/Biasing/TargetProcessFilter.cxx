@@ -50,7 +50,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
-  if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsArborted())
+  if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
     return;
 
   // Get the track info and check if this track is a brem candidate
@@ -143,7 +143,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
               << "Brem photon produced " << secondaries->size()
               << " particle via " << processName << " process." << std::endl;
     trackInfo->tagBremCandidate(false);
-    trackInfo->setSaveFlag(true)
+    trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();
     getEventInfo()->decBremCandidateCount();
   }
