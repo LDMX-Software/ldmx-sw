@@ -34,11 +34,9 @@ void CKFProcessor::onProcessStart() {
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
-  // Build the tracking geometry
+  // Load the tracking geometry
   ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      //"/Users/pbutti/sw/ldmx-sw/Detectors/data/ldmx-det-v12/detector.gdml",
-      "detector.gdml",
-      &gctx_, debug_);
+      detector_, &gctx_, false);
   const auto tGeometry = ldmx_tg->getTG();
 
   if (dumpobj_) ldmx_tg->dumpGeometry("./");
@@ -666,6 +664,7 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
+  detector_ = parameters.getParameter<std::string>("detector");
   dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>(
