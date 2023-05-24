@@ -185,6 +185,9 @@ class CKFProcessor final : public framework::Producer {
   Acts::MagneticFieldContext bctx_;
   Acts::CalibrationContext cctx_;
 
+  /// The path to the GDML description of the detector
+  std::string detector_{""};
+
   //If we want to dump the tracking geometry
   bool dumpobj_ {false};
 
