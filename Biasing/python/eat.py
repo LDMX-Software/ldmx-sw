@@ -130,8 +130,11 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     #Biasing dark brem up inside of the ecal volumes
     from LDMX.SimCore import bias_operators
+    from math import log10
     sim.biasing_operators = [ 
-            bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**2 / db_model.epsilon**2)
+            bias_operators.DarkBrem.ecal(
+                sim.dark_brem.ap_mass**max(2, log10(sim.dark_brem.ap_mass)) / db_model.epsilon**2
+              )
             ]
     
     sim.actions = [
