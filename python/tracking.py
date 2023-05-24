@@ -171,6 +171,8 @@ class CKFProcessor(Producer):
     gsf_refit : bool
        <experimental>
        Refit tracks with Gaussian Sum Filter 
+    detector: string
+        The path to the GDML description of the detector.
         
     """
 
@@ -200,6 +202,7 @@ class CKFProcessor(Producer):
         self.kf_refit = False
         self.gsf_refit = False
         self.min_hits = 6
+        self.detector = makeDetectorPath('ldmx-det-v14')
 
 
 class TruthSeedProcessor(Producer):
