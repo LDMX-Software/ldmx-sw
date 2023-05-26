@@ -41,7 +41,9 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   if (auto nvolume{track->GetNextVolume()->GetName()};
       (nvolume.compareTo("World_PV") == 0) ||
       (track->GetKineticEnergy() == 0)) {
-    if (layer_count_.size() < layers_hit_) {
+    if ((layer_count_.size() < layers_hit_) 
+        || ((layer_count_.count(10) == 0) 
+          && (layer_count_.count(20) == 0))) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
