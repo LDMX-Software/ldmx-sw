@@ -47,9 +47,7 @@ class TaggerHitFilter : public simcore::UserAction {
    * Action called once tracking of all particles has concluded. This is being
    * used to clear the hit count set in preparation for the next event.
    */
-  void EndOfEventAction(const G4Event* event) final override { 
-    layer_count_.clear();  
-  }
+  void EndOfEventAction(const G4Event* event) final override; 
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
@@ -57,6 +55,8 @@ class TaggerHitFilter : public simcore::UserAction {
   }
 
  private:
+
+  void checkAbortEvent(G4Track* track);  
 
   /// Set used to keep track which layers were hit by a particle.
   std::set<int> layer_count_;

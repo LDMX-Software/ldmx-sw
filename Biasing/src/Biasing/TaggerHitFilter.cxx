@@ -38,16 +38,11 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // 2) the incident electron has lost all of its energy.
   // If the number of sensors hit is below the layer threshold, abort the 
   // event.
-  if (auto nvolume{track->GetNextVolume()->GetName()};
-      (nvolume.compareTo("World_PV") == 0) ||
+  if (auto nregion{track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+      (nregion.compareTo("tagger") != 0) ||
       (track->GetKineticEnergy() == 0)) {
-    if ((layer_count_.size() < layers_hit_) 
-        || ((layer_count_.count(10) == 0) 
-          && (layer_count_.count(20) == 0))) {
-      track->SetTrackStatus(fKillTrackAndSecondaries);
-      G4RunManager::GetRunManager()->AbortEvent();
+      checkAbortEvent(track); 
       return;
-    }
   }
 
   // A particle will only leave hits in the active silicon so other volumes can
@@ -67,6 +62,26 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   // depositions.
   layer_count_.insert(copy_number);
 }
+
+void TaggerHitFilter::EndOfEventAction(const G4Event* event) {
+  checkAbortEvent(nullptr); 
+  layer_count_.clear();
+}
+
+void TaggerHitFilter::checkAbortEvent(G4Track* track) { 
+    if ((layer_count_.size() < layers_hit_) 
+        || ((layer_count_.count(10) == 0) 
+          && (layer_count_.count(20) == 0))) {
+      if (track != nullptr) track->SetTrackStatus(fKillTrackAndSecondaries);
+      G4RunManager::GetRunManager()->AbortEvent();
+      //std::cout << "Aborting" << std::endl;
+      return;
+    }
+    std::cout << "[ "; 
+    for (auto &l : layer_count_) std::cout << l << ", "; 
+    std::cout << " ]" << std::endl;
+}
+
 }  // namespace biasing
 
 DECLARE_ACTION(biasing, TaggerHitFilter)
