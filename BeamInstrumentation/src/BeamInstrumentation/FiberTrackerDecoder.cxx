@@ -15,8 +15,8 @@ namespace beaminstrumentation {
 
     const auto eventStreamDownstreamHorizontal{event.getCollection<uint8_t>( inputCollectionDownstreamHorizontal_, inputPassName_)}; 
     const auto eventStreamDownstreamVertical{event.getCollection<uint8_t>( inputCollectionDownstreamVertical_, inputPassName_)}; 
-    //const auto eventStreamUpstreamHorizontal{event.getCollection<uint8_t>( inputCollectionUpstreamHorizontal_, inputPassName_)}; 
-    //const auto eventStreamUpstreamVertical{event.getCollection<uint8_t>( inputCollectionUpstreamVertical_, inputPassName_)}; 
+    const auto eventStreamUpstreamHorizontal{event.getCollection<uint8_t>( inputCollectionUpstreamHorizontal_, inputPassName_)}; 
+    const auto eventStreamUpstreamVertical{event.getCollection<uint8_t>( inputCollectionUpstreamVertical_, inputPassName_)}; 
 
     std::vector<uint> hitsDownstreamHorizontal;
     if(eventStreamDownstreamHorizontal.size() == 40){
@@ -40,10 +40,29 @@ namespace beaminstrumentation {
       }
     }
 
-    //Temporarily while the upstream fiber trackers are not available
-    std::vector<uint> emptyHits;
-    
-    FiberTracker out(hitsDownstreamHorizontal, hitsDownstreamVertical, emptyHits,  emptyHits); // Order  hitsDownstreamHorizontal, hitsDownstreamVertical, hitsUpstreamHorizontal, hitsUpstreamVertical)
+    std::vector<uint> hitsUpstreamHorizontal;
+    if(eventStreamUpstreamHorizontal.size() == 40){
+      for(int i = 0; i < 24; i++){
+        for(int k = 0; k < 8; k++){
+          if((eventStreamUpstreamHorizontal.at(16+i) >> k) & 0x1 == 1){
+            hitsUpstreamHorizontal.push_back(i*8+k);
+          }
+        }
+      }
+    }
+
+    std::vector<uint> hitsUpstreamVertical;
+    if(eventStreamUpstreamVertical.size() == 40){
+      for(int i = 0; i < 24; i++){
+        for(int k = 0; k < 8; k++){
+          if((eventStreamUpstreamVertical.at(16+i) >> k) & 0x1 == 1){
+            hitsUpstreamVertical.push_back(i*8+k);
+          }
+        }
+      }
+    }
+
+    FiberTracker out(hitsDownstreamHorizontal, hitsDownstreamVertical, hitsUpstreamHorizontal,  hitsUpstreamVertical);
 
     event.add(outputCollection_, out);
   }
