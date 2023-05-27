@@ -27,7 +27,7 @@ namespace beaminstrumentation {
     
     //std::cout << std::endl << deltaTTrigger << " " << deltaTDownstreamHorizontal << " " << deltaTDownstreamVertical << " " << deltaTLowPressure << " " << deltaTHighPressure << " " << " " << deltaTspillStartms << " " << deltaTspillStartls << " " << deltaTspillStart << " " << spillNumber << std::endl;
 
-    WhiteRabbitResult out(deltaTTrigger, deltaTDownstreamHorizontal, deltaTDownstreamVertical, deltaTspillStart, spillNumber); 
+    WhiteRabbitResult out(deltaTTrigger, deltaTDownstreamHorizontal, deltaTDownstreamVertical, deltaTLowPressure, deltaTHighPressure, deltaTspillStart, spillNumber); 
 
     event.add(outputCollection_, out);
   }

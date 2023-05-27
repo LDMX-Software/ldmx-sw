@@ -10,7 +10,7 @@ namespace beaminstrumentation {
   class WhiteRabbitResult {
   public:
     WhiteRabbitResult() = default;
-    WhiteRabbitResult(uint32_t deltaTTrigger, uint32_t deltaTDownstreamHorizontal, uint32_t deltaTDownstreamVertical, uint64_t deltaTSpillStart, uint32_t spillNumber) : deltaTTrigger(deltaTTrigger), deltaTDownstreamHorizontal(deltaTDownstreamHorizontal), deltaTDownstreamVertical(deltaTDownstreamVertical), deltaTSpillStart(deltaTSpillStart), spillNumber(spillNumber) {};
+    WhiteRabbitResult(uint32_t deltaTTrigger, uint32_t deltaTDownstreamHorizontal, uint32_t deltaTDownstreamVertical, uint32_t deltaTLowPressure, uint32_t deltaTHighPressure, uint64_t deltaTSpillStart, uint32_t spillNumber) : deltaTTrigger(deltaTTrigger), deltaTDownstreamHorizontal(deltaTDownstreamHorizontal), deltaTDownstreamVertical(deltaTDownstreamVertical), deltaTLowPressure(deltaTLowPressure), deltaTHighPressure(deltaTHighPressure), deltaTSpillStart(deltaTSpillStart), spillNumber(spillNumber) {};
     ~WhiteRabbitResult() = default;
 
     void Print(Option_t* option = "") const {};
