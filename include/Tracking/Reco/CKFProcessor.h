@@ -238,6 +238,14 @@ class CKFProcessor final : public framework::Producer {
   
   //The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
+
+  // Outlier removal pvalue
+  // The Chi2Cut is applied at filtering stage.
+  // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005 = 7.879
+  // The probability to reject a good measurement is pvalue
+  // The probability to reject an outlier is given in NIM A262 (1987) 444-450
+
+  double outlier_pval_{3.84};
   
   //The output track collection
   std::string out_trk_collection_{"Tracks"};
