@@ -70,14 +70,14 @@ void TargetProcessFilter::stepping(const G4Step* step) {
     // Otherwise, suspend the track and move on to the next brem.
     if (secondaries->size() != 0) {
       if (getEventInfo()->bremCandidateCount() == 1) {
-	track->SetTrackStatus(fKillTrackAndSecondaries);
-	G4RunManager::GetRunManager()->AbortEvent();
-	currentTrack_ = nullptr;
+        track->SetTrackStatus(fKillTrackAndSecondaries);
+        G4RunManager::GetRunManager()->AbortEvent();
+        currentTrack_ = nullptr;
       } else {
-	currentTrack_ = track;
-	track->SetTrackStatus(fSuspend);
-	getEventInfo()->decBremCandidateCount();
-	trackInfo->tagBremCandidate(false);
+        currentTrack_ = track;
+        track->SetTrackStatus(fSuspend);
+        getEventInfo()->decBremCandidateCount();
+        trackInfo->tagBremCandidate(false);
       }
     }
     return;
@@ -91,7 +91,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * Check if the electron will be exiting the target
      *
      * The 'recoil_PV' volume name is automatically constructed by Geant4's
-     * GDML parser and was found by inspecting the geometry using a 
+     * GDML parser and was found by inspecting the geometry using a
      * visualization. This Physical Volume (PV) is associated with the
      * recoil parent volume and so it will break if the recoil parent volume
      * changes its name.
@@ -100,22 +100,21 @@ void TargetProcessFilter::stepping(const G4Step* step) {
      * an air gap between the target region and the recoil tracker.
      */
     if (auto volume{track->GetNextVolume()->GetName()};
-        volume.compareTo("recoil_PV") == 0 or 
+        volume.compareTo("recoil_PV") == 0 or
         volume.compareTo("World_PV") == 0) {
       if (getEventInfo()->bremCandidateCount() == 1) {
-          track->SetTrackStatus(fKillTrackAndSecondaries);
-          G4RunManager::GetRunManager()->AbortEvent();
-          currentTrack_ = nullptr;
-        } else {
-          currentTrack_ = track;
-          track->SetTrackStatus(fSuspend);
-          getEventInfo()->decBremCandidateCount();
-          trackInfo->tagBremCandidate(false);
-        }
+        track->SetTrackStatus(fKillTrackAndSecondaries);
+        G4RunManager::GetRunManager()->AbortEvent();
+        currentTrack_ = nullptr;
+      } else {
+        currentTrack_ = track;
+        track->SetTrackStatus(fSuspend);
+        getEventInfo()->decBremCandidateCount();
+        trackInfo->tagBremCandidate(false);
       }
-      return;
     }
-  else {
+    return;
+  } else {
     // If the brem gamma interacts and produced secondaries, get the
     // process used to create them.
     G4String processName =
@@ -136,12 +135,14 @@ void TargetProcessFilter::stepping(const G4Step* step) {
       return;
     }
 
-    std::cout << "[ TargetProcessFilter ]: "
-	      << G4EventManager::GetEventManager()
+    if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
+      std::cout << "[ TargetProcessFilter ]: "
+              << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
               << " Brem photon produced " << secondaries->size()
               << " particle via " << processName << " process." << std::endl;
+    }
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();
