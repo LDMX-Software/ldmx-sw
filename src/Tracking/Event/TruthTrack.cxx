@@ -15,5 +15,7 @@ std::ostream& operator<<(std::ostream& output,
         <<"momentum: ["<<trk.momentum_[0]<<","<<trk.momentum_[1]<<","<<trk.momentum_[2]<<"]\n"
         <<"pdgID:"<<trk.pdgID_<<"  trackID:"<<trk.trackID_
         <<std::endl;
+
+  return output; 
 }
 }
