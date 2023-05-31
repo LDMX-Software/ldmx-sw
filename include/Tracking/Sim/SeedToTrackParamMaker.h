@@ -3,7 +3,7 @@
 #include "Acts/Seeding/Seed.hpp"
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Utilities/VectorHelpers.hpp"
+//#include "Acts/Utilities/VectorHelpers.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/Utilities/Helpers.hpp"
 
