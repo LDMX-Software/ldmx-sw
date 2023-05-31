@@ -84,6 +84,17 @@ class TargetPNFilter(simcfg.UserAction) :
 
         self.process = 'photonNuclear'
 
+class TargetGammaMuMuFilter(simcfg.UserAction) :
+    """ Configuration for filtering muon conversion events in the target."""
+
+    def __init__(self) :
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.process = 'GammaToMuPair'
+
 class EcalDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 

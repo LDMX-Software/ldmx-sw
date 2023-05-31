@@ -161,7 +161,7 @@ def gamma_mumu( detector, generator ) :
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', 1.E9, 2500.) ]
+    sim.biasing_operators = [ bias_operators.GammaToMuPair('target', 1.E6, 2500.) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -170,6 +170,7 @@ def gamma_mumu( detector, generator ) :
     sim.actions.extend([
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
+            filters.TargetGammaMuMuFilter()
     ])
 
     return sim
