@@ -88,7 +88,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     
     histograms_.fill(title+"nHits",    track.getNhits());
     histograms_.fill(title+"Chi2",     track.getChi2());
-    histograms_.fill(title+"Chi2/ndf", track.getNdf());
+    histograms_.fill(title+"ndf", track.getNdf());
     histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
     histograms_.fill(title+"nShared",  track.getNsharedHits());
     
