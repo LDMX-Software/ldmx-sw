@@ -264,7 +264,7 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::MeasurementSelector::Config measurementSelectorCfg = {
       // global default: no chi2 cut, only one measurement per surface
       {Acts::GeometryIdentifier(),
-       {{}, {std::numeric_limits<double>::max()}, {1u}}},
+       {{}, {outlier_pval_}, {1u}}},
   };
 
   Acts::MeasurementSelector measSel{measurementSelectorCfg};
@@ -466,7 +466,9 @@ void CKFProcessor::produce(framework::Event& event) {
     
     trk.setChi2(track.chi2());
     trk.setNhits(track.nMeasurements());
-    trk.setNdf(track.nDoF());
+    //trk.setNdf(track.nDoF());
+    //TODO Switch back to nDoF when Acts is fixed. 
+    trk.setNdf(track.nMeasurements() - 5);
     trk.setNsharedHits(track.nSharedHits());
     
     trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
@@ -500,8 +502,9 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
-    
-    if (trk.getNhits() > min_hits_) {
+
+    //At least 8 hits and p > 50 MeV
+    if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
       tracks.push_back(trk);
       ntracks_++;
     }
@@ -683,6 +686,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       "perigee_location", {0., 0., 0.});
   measurement_collection_ =
       parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
+  outlier_pval_ = parameters.getParameter<double>("outlier_pval_",3.84);
   
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
   if (remove_stereo_)
