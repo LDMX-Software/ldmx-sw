@@ -145,7 +145,7 @@ void CustomStatePropagator::onProcessStart() {
     Acts::PropagatorOptions<> propagator_options(
         gctx_, bctx_);//, Acts::LoggerWrapper{*pLogger});
 
-    propagator_options.direction = Acts::NavigationDirection::Forward; // should be the default
+    propagator_options.direction = Acts::Direction::Forward; // should be the default
     propagator_options.pathLimit = std::numeric_limits<double>::max();
     propagator_options.loopProtection = true;
     propagator_options.maxStepSize = 1 * Acts::UnitConstants::mm;
