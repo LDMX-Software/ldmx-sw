@@ -90,6 +90,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     particleMap = event.getMap<int,ldmx::SimParticle>("SimParticles");
     truthMatchingTool_->setup(particleMap,measurements);
   }
+
+  ldmx_log(debug) << "Preparing the strategies";
   
   groups_map.clear();
   std::vector<int> strategy = {0, 1, 2, 3, 4};
@@ -257,9 +259,19 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   Acts::Vector3 seed_mom = p * dir / Acts::UnitConstants::MeV;
   Acts::ActsScalar q =
       B(2) < 0 ? -1 * Acts::UnitConstants::e : +1 * Acts::UnitConstants::e;
+  
+  
+  // Linear intersection with the perigee line. TODO:: Use propagator instead
+  // Project the position on the surface.
+  // This is mainly necessary for the perigee surface, where
+  // the mean might not fulfill the perigee condition.
+  
+  auto intersection =
+      (*seed_perigee).intersect(gctx_, seed_pos, dir, false);
+  
   Acts::FreeVector seed_free =
-      tracking::sim::utils::toFreeParameters(seed_pos, seed_mom, q);
-
+      tracking::sim::utils::toFreeParameters(intersection.intersection.position, seed_mom, q);
+  
   auto bound_params = Acts::detail::transformFreeToBoundParameters(
                           seed_free, *seed_perigee, gctx_)
                           .value();
@@ -365,13 +377,16 @@ void SeedFinderProcessor::onProcessEnd() {
 bool SeedFinderProcessor::GroupStrips(
     const std::vector<ldmx::Measurement>& measurements,
     const std::vector<int> strategy) {
-  // std::cout<<"Using stratedy"<<std::endl;
-  // for (auto& e : strategy) {
-  //  std::cout<<e<<" ";
+    //    std::cout<<"Using stratedy"<<std::endl;
+    // for (auto& e : strategy) {
+    //  std::cout<<e<<" ";
   //}
   // std::cout<<std::endl;
 
   for (auto& meas : measurements) {
+      
+      ldmx_log(debug) << meas<<std::endl;
+      
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
       groups_map[meas.getLayer()].push_back(&meas);
@@ -426,6 +441,8 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
     std::vector<ldmx::Measurement> meas_for_seeds;
     meas_for_seeds.reserve(5);
 
+    ldmx_log(debug)<<" Grouping ";
+    
     for (int j = 0; j < K; j++) {
       const ldmx::Measurement* meas = (*(it[j]));
       meas_for_seeds.push_back(*meas);
@@ -433,14 +450,16 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
 
     std::sort(meas_for_seeds.begin(), meas_for_seeds.end(),
               [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-                return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
+                  return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
               });
-
+    
     if (meas_for_seeds.size() < 5) {
       nmissing_++;
       return;
     }
 
+    ldmx_log(debug)<<"seedTrack";
+    
     ldmx::Track seedTrack =
         SeedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
                     Acts::Vector3(perigee_location_[0], perigee_location_[1],
@@ -487,6 +506,8 @@ void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
     }
 
     // Go to next combination
+    ldmx_log(debug)<<"Go to the next combination";
+    
     ++it[K - 1];
     for (int i = K - 1;
          (i > 0) && (it[i] == (std::next(groups_iter, i))->second.end()); --i) {

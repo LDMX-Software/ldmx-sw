@@ -28,6 +28,7 @@
 #include "Acts/Seeding/SeedFilter.hpp"
 #include "Acts/Seeding/SpacePointGrid.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
+#include "Acts/Utilities/Intersection.hpp"
 
 //--- LDMX ---//
 #include "TFile.h"
