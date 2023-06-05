@@ -47,9 +47,12 @@ void TrigElectronProducer::produce(framework::Event& event) {
 
     // We fit for the response in an eGun sample like this:
     // Events->Draw("Electron_e[0]/Truth_e[0]:Truth_e[0]","Truth_e[0]>500 && Truth_e[0]<3500","prof")
+    // --> update fit to use the electron energy at the ecal face (not target) -->
+    // Events->Draw("Electron_eClus[0]/TruthEcal_e[0]:TruthEcal_e[0]","TruthEcal_e[0]>500 && TruthEcal_e[0]<3500","prof")
     // TF1* func = new TF1("func","[0]/x+[1]",500,3500);
     // htemp->Fit(func)
-    float calib_e = clus.e() / (98.099700/clus.e() + 0.77202700); 
+    // float calib_e = clus.e() / (98.099700/clus.e() + 0.77202700); 
+    float calib_e = clus.e() / (184.103/clus.e() + 0.753756);  // divide by response
 
     
     // const float dX = clus.x() - xT;
@@ -59,6 +62,8 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // float b = (dX*dX+zd*zd)/(2*R*zd);
     // float pred_px = clus.e() * (-b+a*sqrt(1+a*a-b*b))/(1+a*a);
     // float pred_py = clus.e()/4e3 * (clus.y() - yT) * 13.3; //mev/mm
+
+    // Events->Draw("TruthEcal_y-Truth_y - Electron_dy*240/Electron_zClus","TruthEcal_e>1e3")
 
     float pred_px = clus.z()>0 ? getPx(calib_e, (240./clus.z()) * (clus.x() - xT)) : 0; // adjust, tracing back to ecal face
     float pred_py = clus.z()>0 ? getPy(calib_e, (240./clus.z()) * (clus.y() - yT)) : 0;

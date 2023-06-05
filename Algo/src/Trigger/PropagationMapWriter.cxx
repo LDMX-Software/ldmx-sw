@@ -43,8 +43,11 @@ void PropagationMapWriter::produce(framework::Event& event) {
   // std::cout << h1.getPdgID() << " and " <<  h2.getPdgID() << std::endl;
 
   if(h1.getPdgID() && h2.getPdgID()){
-    profx_->Fill(h1.getEnergy(), h1.getMomentum()[0]/h1.getEnergy(), h2.getPosition()[0]-h1.getPosition()[0]);
-    profy_->Fill(h1.getEnergy(), h1.getMomentum()[1]/h1.getEnergy(), h2.getPosition()[1]-h1.getPosition()[1]);
+    // as a function of the Ecal face electron (but this should make a minimal difference)
+    profx_->Fill(h2.getEnergy(), h1.getMomentum()[0]/h1.getEnergy(), h2.getPosition()[0]-h1.getPosition()[0]);
+    profy_->Fill(h2.getEnergy(), h1.getMomentum()[1]/h1.getEnergy(), h2.getPosition()[1]-h1.getPosition()[1]);
+    // profx_->Fill(h1.getEnergy(), h1.getMomentum()[0]/h1.getEnergy(), h2.getPosition()[0]-h1.getPosition()[0]);
+    // profy_->Fill(h1.getEnergy(), h1.getMomentum()[1]/h1.getEnergy(), h2.getPosition()[1]-h1.getPosition()[1]);
   }
 }
 
