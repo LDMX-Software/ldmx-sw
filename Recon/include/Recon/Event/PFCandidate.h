@@ -72,6 +72,16 @@ class PFCandidate {
   void setHcalClusterEDXDZ(float x){ hcalClusterEDXDZ_=x; }
   void setHcalClusterEDYDZ(float x){ hcalClusterEDYDZ_=x; }
 
+  void setTruthEcalXYZ(double x, double y, double z){
+      truthEcalX_=x; truthEcalY_=y; truthEcalZ_=z;
+  }
+  void setTruthPxPyPz(double x, double y, double z){
+      truthPx_=x; truthPy_=y; truthPz_=z;
+  }
+  void setTruthMass(double x){ truthMass_=x; }
+  void setTruthEnergy(double x){ truthEnergy_=x; }
+  void setTruthPdgId(int x){ truthPdgId_=x; }
+
   /* 
      Getters
    */
@@ -116,6 +126,16 @@ class PFCandidate {
   float getHcalClusterDYDZ() const { return hcalClusterDYDZ_; }
   float getHcalClusterEDXDZ() const { return hcalClusterEDXDZ_; }
   float getHcalClusterEDYDZ() const { return hcalClusterEDYDZ_; }
+
+  std::vector<double> const getTruthEcalXYZ(){
+    return {truthEcalX_, truthEcalY_, truthEcalZ_};
+  }
+  std::vector<double> const getTruthPxPyPz(){
+    return {truthPx_, truthPy_, truthPz_};
+  }
+  double getTruthMass(){ return truthMass_; }
+  double getTruthEnergy(){ return truthEnergy_; }
+  int getTruthPdgId(){ return truthPdgId_; }
 
  private:
   /* Particle ID enum */
@@ -167,6 +187,16 @@ class PFCandidate {
   float hcalClusterEDXDZ_{0};
   float hcalClusterEDYDZ_{0};
 
+  /* Information for truth matched particles */
+  double truthEcalX_{0};
+  double truthEcalY_{0};
+  double truthEcalZ_{0};
+  double truthPx_{0};
+  double truthPy_{0};
+  double truthPz_{0};
+  double truthMass_{0};
+  double truthEnergy_{0};
+  int truthPdgId_{0};
 
   /* The ROOT class definition. */
   ClassDef(PFCandidate, 1);

@@ -14,7 +14,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
 
   if (!event.exists(hitCollName_)) return;
   const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_);
-  std::cout << "found " << hcalRecHits.size() << " hits" << std::endl;
+  //std::cout << "found " << hcalRecHits.size() << " hits" << std::endl;
 
   std::vector<ldmx::HcalCluster> pfClusters;
   if(trivialCluster_){ 

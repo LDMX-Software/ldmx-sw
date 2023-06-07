@@ -17,7 +17,7 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
 
   if (!event.exists(hitCollName_)) return;
   const auto ecalRecHits = event.getCollection<ldmx::EcalHit>(hitCollName_);
-  std::cout << "found " << ecalRecHits.size() << " hits" << std::endl;
+  //std::cout << "found " << ecalRecHits.size() << " hits" << std::endl;
 
   std::vector<ldmx::EcalCluster> pfClusters;
   if(trivialCluster_){ 
