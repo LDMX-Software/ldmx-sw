@@ -200,10 +200,12 @@ def single_4gev_e_upstream_tagger() :
     the field and arrive at the target at approximately [0, 0, 0] (assuming 
     it's not smeared).
 
-    The gun position below requires the particles to be fired at 4.5 degrees.
+    The gun position of [ -27.926 , 0 , -700 ] # mm requires the particles to be fired at theta = 4.5 degrees.
+    The gun position of [ -44. , 0 , -880 ] # mm requires the particles to be fired at theta = 5.65 degrees.
+
     The direction vector is calculated as follows: 
     
-    dir_vector = [ sin(4.5) = .3138/4, 0, cos(4.5) = 3.9877/4 ] 
+    dir_vector = [ sin(theta), 0, cos(theta) ] 
     
     Returns
     -------
