@@ -14,7 +14,7 @@ setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
 # Setup the test
 setup_test(dependencies DetDescr::DetDescr)
 
-option(BUILD_DETECTORID_BINDINGS "Build the python bindings for the the DetDescr/DetectorID components" OFF)
+option(BUILD_DETECTORID_BINDINGS "Build the python bindings for the the DetDescr/DetectorID components" ON)
 if(BUILD_DETECTORID_BINDINGS)
   find_package(Python COMPONENTS Development)
 
