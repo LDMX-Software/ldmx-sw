@@ -201,7 +201,7 @@ def single_4gev_e_upstream_tagger() :
     it's not smeared).
 
     The gun position of [ -27.926 , 0 , -700 ] # mm requires the particles to be fired at theta = 4.5 degrees.
-    The gun position of [ -27.926 , 0 , -880 ] # mm requires the particles to be fired at theta = 5.65 degrees.
+    The gun position of [ -44. , 0 , -880 ] # mm requires the particles to be fired at theta = 5.65 degrees.
 
     The direction vector is calculated as follows: 
     
