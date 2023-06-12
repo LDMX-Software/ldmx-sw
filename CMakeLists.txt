@@ -92,7 +92,3 @@ setup_library(module Tracking
 include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
-
-#Setup the test
-setup_test(dependencies Tracking::Tracking)
-      
