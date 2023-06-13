@@ -84,6 +84,18 @@ class HcalCluster {
     centroidY_ = y;
     centroidZ_ = z;
   }
+  void setRMSXYZ(double x, double y, double z) {
+    rmsX_ = x;
+    rmsY_ = y;
+    rmsZ_ = z;
+  }
+  void setDXDZ(double x) { DXDZ_=x; }
+
+  void setDYDZ(double x) { DYDZ_=x; }
+
+  void setEDXDZ(double x) { errDXDZ_=x; }
+
+  void setEDYDZ(double x) { errDYDZ_=x; }
 
   void setTime(double x) { time_ = x; }
 
@@ -96,6 +108,20 @@ class HcalCluster {
   double getCentroidY() const { return centroidY_; }
 
   double getCentroidZ() const { return centroidZ_; }
+
+  double getRMSX() const { return rmsX_; }
+
+  double getRMSY() const { return rmsY_; }
+
+  double getRMSZ() const { return rmsZ_; }
+
+  double getDXDZ() const { return DXDZ_; }
+
+  double getDYDZ() const { return DYDZ_; }
+
+  double getEDXDZ() const { return errDXDZ_; }
+
+  double getEDYDZ() const { return errDYDZ_; }
 
   double getTime() const { return time_; }
 
@@ -112,6 +138,13 @@ class HcalCluster {
   double centroidX_{0};
   double centroidY_{0};
   double centroidZ_{0};
+  double rmsX_{0};
+  double rmsY_{0};
+  double rmsZ_{0};
+  double DXDZ_{0};
+  double DYDZ_{0};
+  double errDXDZ_{0};
+  double errDYDZ_{0};
   double time_{0};
 
   ClassDef(HcalCluster, 1);
