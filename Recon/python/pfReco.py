@@ -40,3 +40,10 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputTrackCollName = 'PFTracks'
         self.outputCollName = 'PFCandidates'
   
+class pfTruthProducer(ldmxcfg.Producer) :
+    """Configuration for track selector for particle reco"""
+    def __init__(self, name='PFTruth') :
+        super().__init__(name, 'recon::PFTruthProducer','Recon')
+        self.outputTargetCollName = 'PFTruthTarget'
+        self.outputEcalCollName = 'PFTruthEcal'
+        self.outputHcalCollName = 'PFTruthHcal'

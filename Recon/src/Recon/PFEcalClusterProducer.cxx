@@ -5,6 +5,8 @@
 
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalCluster.h"
+#include "TGraph.h"
+#include "TFitResult.h"
 
 namespace recon {
 
@@ -27,6 +29,9 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
     float w = 1; // weight
     float sumw = 0;
     float minEnergy=0; // min hit energy to consider
+    std::vector<float> xvals{};
+    std::vector<float> yvals{};
+    std::vector<float> zvals{};
     for(const auto &h : ecalRecHits){
       if (h.getEnergy() < minEnergy) continue;
       // w = log( h.getEnergy() - log(minEnergy) );
@@ -39,6 +44,9 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
       zz += w * h.getZPos() * h.getZPos();
       n += 1;
       sumw += w;
+      xvals.push_back(x);
+      yvals.push_back(y);
+      zvals.push_back(z);
     }
     x /= sumw; // now is <x>
     y /= sumw;
@@ -52,7 +60,19 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
     cl.setEnergy(e);
     cl.setNHits(n);
     cl.setCentroidXYZ(x,y,z);
-    // TODO add RMS
+    cl.setRMSXYZ(xx,yy,zz);
+
+    if (xvals.size()>2){
+      TGraph gxz(zvals.size(), zvals.data(), xvals.data());
+      auto r_xz = gxz.Fit("pol1","SQ"); // p0 + x*p1
+      cl.setDXDZ( r_xz->Value(1) );
+      cl.setEDXDZ( r_xz->ParError(1) );
+      TGraph gyz(zvals.size(), zvals.data(), yvals.data());
+      auto r_yz = gyz.Fit("pol1","SQ"); // p0 + x*p1
+      cl.setDYDZ( r_yz->Value(1) );
+      cl.setEDYDZ( r_yz->ParError(1) );
+    }
+
     pfClusters.push_back(cl);
   }
   event.add(clusterCollName_, pfClusters);

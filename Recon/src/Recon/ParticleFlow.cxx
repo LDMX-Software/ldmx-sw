@@ -112,6 +112,13 @@ void ParticleFlow::produce(framework::Event& event) {
     pf.setEcalClusterXYZ(em.getCentroidX(),
 			 em.getCentroidY(),
 			 em.getCentroidZ());
+    pf.setEcalClusterEXYZ(em.getRMSX(),
+			  em.getRMSY(),
+			  em.getRMSZ());
+    pf.setEcalClusterDXDZ(em.getDXDZ());
+    pf.setEcalClusterDYDZ(em.getDYDZ());
+    pf.setEcalClusterEDXDZ(em.getEDXDZ());
+    pf.setEcalClusterEDYDZ(em.getEDYDZ());
 			 
     pid += 2;
   }
@@ -121,6 +128,13 @@ void ParticleFlow::produce(framework::Event& event) {
     pf.setHcalClusterXYZ(had.getCentroidX(),
 			 had.getCentroidY(),
 			 had.getCentroidZ());
+    pf.setEcalClusterEXYZ(had.getRMSX(),
+			  had.getRMSY(),
+			  had.getRMSZ());
+    pf.setEcalClusterDXDZ(had.getDXDZ());
+    pf.setEcalClusterDYDZ(had.getDYDZ());
+    pf.setEcalClusterEDXDZ(had.getEDXDZ());
+    pf.setEcalClusterEDYDZ(had.getEDYDZ());
 			 
     pid += 4;
   }
