@@ -6,9 +6,9 @@
 #
 # This will define the following variables
 #
-# ONNXRuntime_FOUND ONNXRuntime_INCLUDE_DIRS - path to headers
-# ONNXRuntime_VERSION      - version number ONNXRuntime_LIBRARIES    - path to
-# libraries
+# ONNXRuntime_FOUND 
+# ONNXRuntime_INCLUDE_DIRS - path to headers
+# ONNXRuntime_LIBRARIES    - path to libraries
 #
 # and the following targets
 #
@@ -50,18 +50,6 @@ macro(download_onnxruntime version destination)
   execute_process(COMMAND tar -zxvf ${file_prefix}.tgz
                   WORKING_DIRECTORY ${destination})
 
-  # Set the path to the include and libraries to facilitate finding the
-  # dependency.
-  set(ONNXRuntime_INCLUDE_DIRS
-      "${destination}/${file_prefix}/include"
-      CACHE INTERNAL "")
-  set(ONNXRuntime_LIBRARIES
-      "${destination}/${file_prefix}/lib"
-      CACHE INTERNAL "")
-  set(ONNXRuntime_VERSION
-      ${version}
-      CACHE INTERNAL "")
-
 endmacro()
 
 if(NOT TARGET ONNXRuntime::Interface)
@@ -71,9 +59,24 @@ if(NOT TARGET ONNXRuntime::Interface)
     PATHS ${ONNXRuntime_INCLUDE_DIRS}
     PATH_SUFFIXES onnxruntime)
 
-  # If onnxruntime isn't found, download it.
   if(NOT onnxruntime_include_dir)
+    # if onnxruntime isn't found, download it.
     download_onnxruntime(1.2.0 ${CMAKE_INSTALL_PREFIX}/external)
+    # Set the path to the include and libraries to facilitate finding the
+    # dependency.
+    set(ONNXRuntime_INCLUDE_DIRS
+      "${CMAKE_INSTALL_PREFIX}/external/onnxruntime-linux-x64-1.2.0/include"
+        CACHE INTERNAL "")
+    set(ONNXRuntime_LIBRARIES
+      "${CMAKE_INSTALL_PREFIX}/external/onnxruntime-linux-x64-1.2.0/lib/libonnxruntime.so"
+        CACHE INTERNAL "")
+    set(ONNXRuntime_VERSION ${version} CACHE INTERNAL "")
+  else()
+    set(ONNXRuntime_INCLUDE_DIRS "${onnxruntime_include_dir}"
+        CACHE INTERNAL "")
+    cmake_path(GET onnxruntime_include_dir PARENT_PATH onnxruntime_install_dir)
+    set(ONNXRuntime_LIBRARIES
+        "${onnxruntime_install_dir}/lib/libonnxruntime.so")
   endif()
 
   # Create the target
@@ -81,7 +84,7 @@ if(NOT TARGET ONNXRuntime::Interface)
   set_target_properties(
     ONNXRuntime::Interface
     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${ONNXRuntime_INCLUDE_DIRS}"
-               IMPORTED_LOCATION "${ONNXRuntime_LIBRARIES}/libonnxruntime.so")
+               IMPORTED_LOCATION "${ONNXRuntime_LIBRARIES}")
 
   message(STATUS "Found ONNX Runtime version ${ONNXRuntime_VERSION}")
   set(ONNXRuntime_FOUND TRUE)
