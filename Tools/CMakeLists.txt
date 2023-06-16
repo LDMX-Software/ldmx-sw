@@ -21,11 +21,6 @@ setup_library(module Tools
                            ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
 )
 
-target_compile_definitions(Tools PUBLIC 
-  ONNX_VERSION_MAJOR=${ONNXRuntime_VERSION_MAJOR}
-  ONNX_VERSION_MINOR=${ONNXRuntime_VERSION_MINOR}
-  ONNX_VERSION_PATCH=${ONNXRuntime_VERSION_PATCH}
-)
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)
 
 # Add the hgcroc running executable
