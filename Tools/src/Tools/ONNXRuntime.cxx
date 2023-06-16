@@ -12,7 +12,7 @@ namespace ldmx::Ort {
 
 using namespace ::Ort;
 
-#if ONNX_VERSION_MINOR == 2
+#if ORT_API_VERSION == 2
 // version used when first integrated onnx into ldmx-sw
 // and version downloaded by cmake infrastructure
 // only support x86_64 architectures
@@ -31,8 +31,8 @@ std::string get_input_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithD
 std::string get_output_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
   return s->GetOutputNameAllocated(i, a).get();
 }
-#if ONNX_VERSION_MINOR != 15
-#pragma warning ("Untested ONNX version, not certain of API, using newer API")
+#if ORT_API_VERSION != 15
+#pragma warning ("Untested ONNX version, not certain of API, assuming API version 15.")
 #endif
 #endif
 
