@@ -198,7 +198,7 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         for section in range(num_sections):
             section_name = section_names[section]
             self.build1DHistogram(f"inefficiency_{section_name}",
-                                  "fInefficiency ({section_name})",
+                                  f"Inefficiency ({section_name})",
                                   *inefficiency_layer_bins
                                   )
 
