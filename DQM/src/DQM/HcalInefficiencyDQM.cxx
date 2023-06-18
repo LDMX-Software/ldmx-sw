@@ -29,10 +29,14 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
 
   bool vetoedByBack{firstLayersHit[ldmx::HcalID::HcalSection::BACK] !=
                     failedVeto};
-  bool vetoedByTop{firstLayersHit[ldmx::HcalID::HcalSection::TOP]};
-  bool vetoedByBottom{firstLayersHit[ldmx::HcalID::HcalSection::BOTTOM]};
-  bool vetoedByRight{firstLayersHit[ldmx::HcalID::HcalSection::RIGHT]};
-  bool vetoedByLeft{firstLayersHit[ldmx::HcalID::HcalSection::LEFT]};
+  bool vetoedByTop{firstLayersHit[ldmx::HcalID::HcalSection::TOP] !=
+                   failedVeto};
+  bool vetoedByBottom{firstLayersHit[ldmx::HcalID::HcalSection::BOTTOM] !=
+                      failedVeto};
+  bool vetoedByRight{firstLayersHit[ldmx::HcalID::HcalSection::RIGHT] !=
+                     failedVeto};
+  bool vetoedByLeft{firstLayersHit[ldmx::HcalID::HcalSection::LEFT] !=
+                    failedVeto};
   bool vetoedBySide{vetoedByTop || vetoedByBottom || vetoedByRight ||
                     vetoedByLeft};
 
@@ -61,7 +65,6 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
 void HcalInefficiencyAnalyzer::configure(
 
     framework::config::Parameters &parameters) {
-
   hcalSimHitsCollection_ =
       parameters.getParameter<std::string>("sim_coll_name");
   hcalRecHitsCollection_ =
@@ -71,6 +74,6 @@ void HcalInefficiencyAnalyzer::configure(
   pe_veto_threshold = parameters.getParameter<double>("pe_veto_threshold");
   max_hit_time_ = parameters.getParameter<double>("max_hit_time");
 }
-} // namespace dqm
+}  // namespace dqm
 
 DECLARE_ANALYZER_NS(dqm, HcalInefficiencyAnalyzer);
