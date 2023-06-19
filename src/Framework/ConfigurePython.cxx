@@ -68,14 +68,28 @@ static std::string getPyString(PyObject* pyObj) {
  * @param object Python object to get members from
  * @return Mapping between member name and value.
  */
-static std::map<std::string, std::any> getMembers(PyObject* object) {
+static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 0) {
+  /**
+   * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the development
+   * container image. A lot of memory-saving measures were taken which means we have
+   * to explicitly ask Python to construct the __dict__ object for us so that it
+   * knows to "waste" the memory on it.
+   *
+   * https://docs.python.org/3/c-api/object.html
+   *
+   * We use _PyObject_GetDictPtr because that will not set an error if the 
+   * dict does not exist.
+   */
   PyObject* dictionary{NULL};
-  if (PyObject_HasAttrString(object, "__dict__") == 1) {
-    dictionary = PyObject_GetAttrString(object, "__dict__");
-  } else if (PyDict_Check(object)) {
-    dictionary = object;
+  PyObject** p_dictionary{_PyObject_GetDictPtr(object)};
+  if (p_dictionary == NULL) {
+    if (PyDict_Check(object)) {
+      dictionary = object;
+    } else {
+      EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
+    }
   } else {
-    EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
+    dictionary = *p_dictionary;
   }
 
   PyObject *key(0), *value(0);
@@ -85,23 +99,44 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
 
   while (PyDict_Next(dictionary, &pos, &key, &value)) {
     std::string skey{getPyString(key)};
-
+#ifdef GETMEMBERS_TRACE
+    for (std::size_t i{0}; i < depth; ++i) std::cout << " ";
+    std::cout << skey << " : ";
+#endif
     if (PyLong_Check(value)) {
       if (PyBool_Check(value)) {
+#ifdef GETMEMBERS_TRACE
+        std::cout << "bool" << std::endl;
+#endif
         params[skey] = bool(PyLong_AsLong(value));
       } else {
+#ifdef GETMEMBERS_TRACE
+        std::cout << "int" << std::endl;
+#endif
         params[skey] = int(PyLong_AsLong(value));
       }
     } else if (PyFloat_Check(value)) {
+#ifdef GETMEMBERS_TRACE
+      std::cout << "float" << std::endl;
+#endif
       params[skey] = PyFloat_AsDouble(value);
     } else if (PyUnicode_Check(value)) {
+#ifdef GETMEMBERS_TRACE
+      std::cout << "str" << std::endl;
+#endif
       params[skey] = getPyString(value);
     } else if (PyList_Check(value)) {
+#ifdef GETMEMBERS_TRACE
+      std::cout << "list[";
+#endif
       // assume everything is same value as first value
       if (PyList_Size(value) > 0) {
         auto vec0{PyList_GetItem(value, 0)};
 
         if (PyLong_Check(vec0)) {
+#ifdef GETMEMBERS_TRACE
+          std::cout << "int]" << std::endl;
+#endif
           std::vector<int> vals;
 
           for (auto j{0}; j < PyList_Size(value); j++)
@@ -110,6 +145,9 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
           params[skey] = vals;
 
         } else if (PyFloat_Check(vec0)) {
+#ifdef GETMEMBERS_TRACE
+          std::cout << "float]" << std::endl;
+#endif
           std::vector<double> vals;
 
           for (auto j{0}; j < PyList_Size(value); j++)
@@ -118,6 +156,9 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
           params[skey] = vals;
 
         } else if (PyUnicode_Check(vec0)) {
+#ifdef GETMEMBERS_TRACE
+          std::cout << "str]" << std::endl;
+#endif
           std::vector<std::string> vals;
           for (Py_ssize_t j = 0; j < PyList_Size(value); j++) {
             PyObject* elem = PyList_GetItem(value, j);
@@ -126,10 +167,16 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
 
           params[skey] = vals;
         } else if (PyList_Check(vec0)) {
+#ifdef GETMEMBERS_TRACE
+          std::cout << "list[";
+#endif
           // a list in a list ??? oof-dah
           if (PyList_Size(vec0) > 0) {
             auto vecvec0{PyList_GetItem(vec0, 0)};
             if (PyLong_Check(vecvec0)) {
+#ifdef GETMEMBERS_TRACE
+              std::cout << "int]]" << std::endl;
+#endif
               std::vector<std::vector<int>> vals;
               for (auto j{0}; j < PyList_Size(value); j++) {
                 auto subvec{PyList_GetItem(value, j)};
@@ -141,6 +188,9 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
               }
               params[skey] = vals;
             } else if (PyFloat_Check(vecvec0)) {
+#ifdef GETMEMBERS_TRACE
+              std::cout << "float]]" << std::endl;
+#endif
               std::vector<std::vector<double>> vals;
               for (auto j{0}; j < PyList_Size(value); j++) {
                 auto subvec{PyList_GetItem(value, j)};
@@ -152,6 +202,9 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
               }
               params[skey] = vals;
             } else if (PyUnicode_Check(vecvec0)) {
+#ifdef GETMEMBERS_TRACE
+              std::cout << "str]]" << std::endl;
+#endif
               std::vector<std::vector<std::string>> vals;
               for (auto j{0}; j < PyList_Size(value); j++) {
                 auto subvec{PyList_GetItem(value, j)};
@@ -163,46 +216,74 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
               }
               params[skey] = vals;
             } else if (PyList_Check(vecvec0)) {
+#ifdef GETMEMBERS_TRACE
+              std::cout << "list[]]]" << std::endl;
+#endif
               EXCEPTION_RAISE("BadConf",
                   "A python list with dimension greater than 2 is not supported.");
             } else {
               // RECURSION zoinks!
+#ifdef GETMEMBERS_TRACE
+              std::cout << "object]]" << std::endl;
+#endif
               std::vector<std::vector<framework::config::Parameters>> vals;
               for (auto j{0}; j < PyList_Size(value); j++) {
                 auto subvec{PyList_GetItem(value, j)};
                 std::vector<framework::config::Parameters> subvals;
                 for (auto k{0}; k < PyList_Size(subvec); k++) {
                   subvals.emplace_back();
-                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k)));
+                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k),depth+1));
                 }
                 vals.push_back(subvals);
               }
               params[skey] = vals;
             }
           } // non-zero size
+#ifdef GETMEMBERS_TRACE
+          else {
+            std::cout << "]" << std::endl;
+          }
+#endif
         } else {
+#ifdef GETMEMBERS_TRACE
+          std::cout << "object] ";
+#endif
           // RECURSION zoinks!
           // If the objects stored in the list doesn't
           // satisfy any of the above conditions, just
           // create a vector of parameters objects
           std::vector<framework::config::Parameters> vals;
+#ifdef GETMEMBERS_TRACE
+          std::cout << PyList_Size(value) << std::endl;
+#endif
           for (auto j{0}; j < PyList_Size(value); ++j) {
             auto elem{PyList_GetItem(value, j)};
-
+#ifdef GETMEMBERS_TRACE
+            for (size_t i{0}; i < depth; ++i) std::cout << " ";
+            std::cout << j <<  " " << elem << std::endl;
+#endif
             vals.emplace_back();
-            vals.back().setParameters(getMembers(elem));
+            vals.back().setParameters(getMembers(elem, depth+1));
           }
           params[skey] = vals;
         }  // type of object in python list
       }    // python list has non-zero size
+#ifdef GETMEMBERS_TRACE
+      else {
+        std::cout << "]" << std::endl;
+      }
+#endif
     } else {
+#ifdef GETMEMBERS_TRACE
+      std::cout << "object" << std::endl;
+#endif
       // object got here, so we assume
       // it is a higher level object
       //(same logic as last option for a list)
 
       // RECURSION zoinks!
       framework::config::Parameters val;
-      val.setParameters(getMembers(value));
+      val.setParameters(getMembers(value, depth+1));
 
       params[skey] = val;
 
@@ -217,6 +298,12 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   // assumes that nargs >= 0
   //  this is true always because we error out if no python script has been
   //  found
+
+#ifdef GETMEMBERS_TRACE
+  std::cout << pythonScript;
+  for (std::size_t iarg{0}; iarg < nargs; ++iarg) std::cout << " " << args[iarg];
+  std::cout << std::endl;
+#endif
 
   std::string cmd = pythonScript;
   if (pythonScript.rfind("/") != std::string::npos) {
