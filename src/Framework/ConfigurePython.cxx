@@ -39,6 +39,64 @@ static std::string getPyString(PyObject* pyObj) {
 }
 
 /**
+ * extract the dictionary of attributes from the input python object
+ *
+ * This is separated into its own function to isolate the code
+ * that depends on the python version. Since memory-saving measures
+ * were integrated into Python between 3.6.9 and 3.10.6, we need to
+ * alter how we were using the C API to access an objects __dict__
+ * attribute.
+ *
+ * @throws Exception if object does not have a __dict__ and isn't a dict
+ * @param obj pointer to python object to extract from
+ * @return pointer to python dictionary for its members
+ */
+PyObject* extractDictionary(PyObject* obj) {
+#if PY_MAJOR_VERSION != 3
+#pragma error ("Framework requires compiling with Python3")
+#elif PY_MINOR_VERSION < 10
+#if PY_MINOR_VERSION != 6
+#pragma warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration. Using Python3.6 style.")
+#endif
+  /**
+   * This C-pre-processor branch was developed for Python3.6 in Ubuntu 18.04.
+   */
+  if (PyObject_HasAttrString(obj, "__dict__") == 1) {
+    return PyObject_GetAttrString(obj, "__dict__");
+  } else if (!PyDict_Check(obj)) {
+    EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
+  }
+  return obj;
+#else
+#if PY_MINOR_VERSION != 10
+#pragma warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration. Using Python3.10 style.")
+#endif
+  /**
+   * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the development
+   * container image. A lot of memory-saving measures were taken which means we have
+   * to explicitly ask Python to construct the __dict__ object for us so that it
+   * knows to "waste" the memory on it.
+   *
+   * https://docs.python.org/3/c-api/object.html
+   *
+   * We use _PyObject_GetDictPtr because that will not set an error if the 
+   * dict does not exist.
+   */
+  PyObject** p_dictionary{_PyObject_GetDictPtr(obj)};
+  if (p_dictionary == NULL) {
+    if (PyDict_Check(obj)) {
+      return obj;
+    } else {
+      EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
+    }
+  }
+  return *p_dictionary;
+#endif
+}
+
+//#define GETMEMBERS_TRACE
+
+/**
  * Extract members from a python object.
  *
  * Iterates through the object's dictionary and translates the objects inside
@@ -69,29 +127,7 @@ static std::string getPyString(PyObject* pyObj) {
  * @return Mapping between member name and value.
  */
 static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 0) {
-  /**
-   * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the development
-   * container image. A lot of memory-saving measures were taken which means we have
-   * to explicitly ask Python to construct the __dict__ object for us so that it
-   * knows to "waste" the memory on it.
-   *
-   * https://docs.python.org/3/c-api/object.html
-   *
-   * We use _PyObject_GetDictPtr because that will not set an error if the 
-   * dict does not exist.
-   */
-  PyObject* dictionary{NULL};
-  PyObject** p_dictionary{_PyObject_GetDictPtr(object)};
-  if (p_dictionary == NULL) {
-    if (PyDict_Check(object)) {
-      dictionary = object;
-    } else {
-      EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
-    }
-  } else {
-    dictionary = *p_dictionary;
-  }
-
+  PyObject* dictionary{extractDictionary(object)};
   PyObject *key(0), *value(0);
   Py_ssize_t pos = 0;
 
