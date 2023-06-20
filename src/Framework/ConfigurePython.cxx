@@ -45,7 +45,11 @@ static std::string getPyString(PyObject* pyObj) {
  * that depends on the python version. Since memory-saving measures
  * were integrated into Python between 3.6.9 and 3.10.6, we need to
  * alter how we were using the C API to access an objects __dict__
- * attribute.
+ * attribute. We are now using a "hidden" Python C API function
+ * which has only been added to the public C API documentation
+ * in Python 3.11. It has been manually tested for the two different
+ * Python versions we use by running the tests (some of which test
+ * the ConfigurePython) and running a basic simulation.
  *
  * @throws Exception if object does not have a __dict__ and isn't a dict
  * @param obj pointer to python object to extract from
@@ -54,22 +58,9 @@ static std::string getPyString(PyObject* pyObj) {
 PyObject* extractDictionary(PyObject* obj) {
 #if PY_MAJOR_VERSION != 3
 #pragma error ("Framework requires compiling with Python3")
-#elif PY_MINOR_VERSION < 10
-#if PY_MINOR_VERSION != 6
-#pragma warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration. Using Python3.6 style.")
-#endif
-  /**
-   * This C-pre-processor branch was developed for Python3.6 in Ubuntu 18.04.
-   */
-  if (PyObject_HasAttrString(obj, "__dict__") == 1) {
-    return PyObject_GetAttrString(obj, "__dict__");
-  } else if (!PyDict_Check(obj)) {
-    EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
-  }
-  return obj;
 #else
-#if PY_MINOR_VERSION != 10
-#pragma warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration. Using Python3.10 style.")
+#if PY_MINOR_VERSION != 10 && PY_MINOR_VERSION != 6
+#warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration.")
 #endif
   /**
    * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the development
