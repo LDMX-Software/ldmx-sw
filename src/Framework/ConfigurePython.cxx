@@ -18,7 +18,7 @@
 namespace framework {
 
 std::string ConfigurePython::root_module = "ldmxcfg";
-std::string ConfigurePython::root_class  = "Process";
+std::string ConfigurePython::root_class = "Process";
 std::string ConfigurePython::root_object = "lastProcess";
 
 /**
@@ -57,20 +57,20 @@ static std::string getPyString(PyObject* pyObj) {
  */
 PyObject* extractDictionary(PyObject* obj) {
 #if PY_MAJOR_VERSION != 3
-#error ("Framework requires compiling with Python3")
+#error("Framework requires compiling with Python3")
 #else
 #if PY_MINOR_VERSION != 10 && PY_MINOR_VERSION != 6
-#warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration.")
+#warning("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration.")
 #endif
   /**
-   * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the development
-   * container image. A lot of memory-saving measures were taken which means we have
-   * to explicitly ask Python to construct the __dict__ object for us so that it
-   * knows to "waste" the memory on it.
+   * This was developed for Python3.10 when upgrading to Ubuntu 22.04 in the
+   * development container image. A lot of memory-saving measures were taken
+   * which means we have to explicitly ask Python to construct the __dict__
+   * object for us so that it knows to "waste" the memory on it.
    *
    * https://docs.python.org/3/c-api/object.html
    *
-   * We use _PyObject_GetDictPtr because that will not set an error if the 
+   * We use _PyObject_GetDictPtr because that will not set an error if the
    * dict does not exist.
    */
   PyObject** p_dictionary{_PyObject_GetDictPtr(obj)};
@@ -78,7 +78,9 @@ PyObject* extractDictionary(PyObject* obj) {
     if (PyDict_Check(obj)) {
       return obj;
     } else {
-      EXCEPTION_RAISE("ObjFail", "Python Object does not have __dict__ member and is not a dict.");
+      EXCEPTION_RAISE(
+          "ObjFail",
+          "Python Object does not have __dict__ member and is not a dict.");
     }
   }
   return *p_dictionary;
@@ -121,9 +123,10 @@ PyObject* extractDictionary(PyObject* obj) {
  */
 static std::map<std::string, std::any> getMembers(PyObject* object
 #ifdef GETMEMBERS_TRACE
-    , int depth = 0
+                                                  ,
+                                                  int depth = 0
 #endif
-    ) {
+) {
   PyObject* dictionary{extractDictionary(object)};
   PyObject *key(0), *value(0);
   Py_ssize_t pos = 0;
@@ -229,7 +232,8 @@ static std::map<std::string, std::any> getMembers(PyObject* object
                 auto subvec{PyList_GetItem(value, j)};
                 std::vector<double> subvals;
                 for (auto k{0}; k < PyList_Size(subvec); k++) {
-                  subvals.push_back(PyFloat_AsDouble(PyList_GetItem(subvec, k)));
+                  subvals.push_back(
+                      PyFloat_AsDouble(PyList_GetItem(subvec, k)));
                 }
                 vals.push_back(subvals);
               }
@@ -253,7 +257,8 @@ static std::map<std::string, std::any> getMembers(PyObject* object
               std::cout << "list[]]]" << std::endl;
 #endif
               EXCEPTION_RAISE("BadConf",
-                  "A python list with dimension greater than 2 is not supported.");
+                              "A python list with dimension greater than 2 is "
+                              "not supported.");
             } else {
               // RECURSION zoinks!
 #ifdef GETMEMBERS_TRACE
@@ -265,17 +270,19 @@ static std::map<std::string, std::any> getMembers(PyObject* object
                 std::vector<framework::config::Parameters> subvals;
                 for (auto k{0}; k < PyList_Size(subvec); k++) {
                   subvals.emplace_back();
-                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k)
+                  subvals.back().setParameters(getMembers(
+                      PyList_GetItem(subvec, k)
 #ifdef GETMEMBERS_TRACE
-                        ,depth+1
+                          ,
+                      depth + 1
 #endif
-                        ));
+                      ));
                 }
                 vals.push_back(subvals);
               }
               params[skey] = vals;
             }
-          } // non-zero size
+          }  // non-zero size
 #ifdef GETMEMBERS_TRACE
           else {
             std::cout << "]" << std::endl;
@@ -297,14 +304,15 @@ static std::map<std::string, std::any> getMembers(PyObject* object
             auto elem{PyList_GetItem(value, j)};
 #ifdef GETMEMBERS_TRACE
             for (size_t i{0}; i < depth; ++i) std::cout << " ";
-            std::cout << j <<  " " << elem << std::endl;
+            std::cout << j << " " << elem << std::endl;
 #endif
             vals.emplace_back();
             vals.back().setParameters(getMembers(elem
 #ifdef GETMEMBERS_TRACE
-                  , depth+1
+                                                 ,
+                                                 depth + 1
 #endif
-                  ));
+                                                 ));
           }
           params[skey] = vals;
         }  // type of object in python list
@@ -326,9 +334,10 @@ static std::map<std::string, std::any> getMembers(PyObject* object
       framework::config::Parameters val;
       val.setParameters(getMembers(value
 #ifdef GETMEMBERS_TRACE
-            , depth+1
+                                   ,
+                                   depth + 1
 #endif
-            ));
+                                   ));
 
       params[skey] = val;
 
@@ -346,7 +355,8 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
 
 #ifdef GETMEMBERS_TRACE
   std::cout << pythonScript;
-  for (std::size_t iarg{0}; iarg < nargs; ++iarg) std::cout << " " << args[iarg];
+  for (std::size_t iarg{0}; iarg < nargs; ++iarg)
+    std::cout << " " << args[iarg];
   std::cout << std::endl;
 #endif
 
@@ -393,20 +403,20 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   Py_DECREF(script);  // don't need the script anymore
   if (pCMod == 0) {
     PyErr_Print();
-    EXCEPTION_RAISE("ConfigureError", 
-        "Did not import root configuration module " + root_module);
+    EXCEPTION_RAISE("ConfigureError",
+                    "Did not import root configuration module " + root_module);
   }
 
   PyObject* pProcessClass = PyObject_GetAttrString(pCMod, root_class.c_str());
   Py_DECREF(pCMod);  // don't need the config module anymore
   if (pProcessClass == 0) {
     PyErr_Print();
-    EXCEPTION_RAISE(
-        "ConfigureError",
-        "Did not import root configuration class " + root_class);
+    EXCEPTION_RAISE("ConfigureError",
+                    "Did not import root configuration class " + root_class);
   }
 
-  PyObject* pProcess = PyObject_GetAttrString(pProcessClass, root_object.c_str());
+  PyObject* pProcess =
+      PyObject_GetAttrString(pProcessClass, root_object.c_str());
   Py_DECREF(pProcessClass);  // don't need the Process class anymore
   if (pProcess == 0) {
     // wasn't able to get lastProcess class member
@@ -416,9 +426,8 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
         "Process object not defined. This object is required to run.");
   } else if (pProcess == Py_None) {
     // lastProcess was left undefined
-    EXCEPTION_RAISE(
-        "ConfigureError",
-        "Did not create a configuration class instance");
+    EXCEPTION_RAISE("ConfigureError",
+                    "Did not create a configuration class instance");
   }
 
   // okay, now we have fully imported the script and gotten the handle
