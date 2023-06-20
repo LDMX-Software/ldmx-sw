@@ -57,7 +57,7 @@ static std::string getPyString(PyObject* pyObj) {
  */
 PyObject* extractDictionary(PyObject* obj) {
 #if PY_MAJOR_VERSION != 3
-#pragma error ("Framework requires compiling with Python3")
+#error ("Framework requires compiling with Python3")
 #else
 #if PY_MINOR_VERSION != 10 && PY_MINOR_VERSION != 6
 #warning ("Unrecognized Python3 minor version. Unsure if accessing C API properly for configuration.")
@@ -84,8 +84,6 @@ PyObject* extractDictionary(PyObject* obj) {
   return *p_dictionary;
 #endif
 }
-
-//#define GETMEMBERS_TRACE
 
 /**
  * Extract members from a python object.
@@ -114,10 +112,18 @@ PyObject* extractDictionary(PyObject* obj) {
  * parameters that can be empty need to put in a default empty list
  * value: {}.
  *
+ * For any future developers, you can debug this function by defining
+ * the compilation flag GETMEMBERS_TRACE which will print _verbose_
+ * messages trying to highlight what is being decoded and when.
+ *
  * @param object Python object to get members from
  * @return Mapping between member name and value.
  */
-static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 0) {
+static std::map<std::string, std::any> getMembers(PyObject* object
+#ifdef GETMEMBERS_TRACE
+    , int depth = 0
+#endif
+    ) {
   PyObject* dictionary{extractDictionary(object)};
   PyObject *key(0), *value(0);
   Py_ssize_t pos = 0;
@@ -259,7 +265,11 @@ static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 
                 std::vector<framework::config::Parameters> subvals;
                 for (auto k{0}; k < PyList_Size(subvec); k++) {
                   subvals.emplace_back();
-                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k),depth+1));
+                  subvals.back().setParameters(getMembers(PyList_GetItem(subvec, k)
+#ifdef GETMEMBERS_TRACE
+                        ,depth+1
+#endif
+                        ));
                 }
                 vals.push_back(subvals);
               }
@@ -290,7 +300,11 @@ static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 
             std::cout << j <<  " " << elem << std::endl;
 #endif
             vals.emplace_back();
-            vals.back().setParameters(getMembers(elem, depth+1));
+            vals.back().setParameters(getMembers(elem
+#ifdef GETMEMBERS_TRACE
+                  , depth+1
+#endif
+                  ));
           }
           params[skey] = vals;
         }  // type of object in python list
@@ -310,7 +324,11 @@ static std::map<std::string, std::any> getMembers(PyObject* object, int depth = 
 
       // RECURSION zoinks!
       framework::config::Parameters val;
-      val.setParameters(getMembers(value, depth+1));
+      val.setParameters(getMembers(value
+#ifdef GETMEMBERS_TRACE
+            , depth+1
+#endif
+            ));
 
       params[skey] = val;
 
