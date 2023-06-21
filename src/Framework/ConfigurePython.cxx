@@ -39,6 +39,22 @@ static std::string getPyString(PyObject* pyObj) {
 }
 
 /**
+ * Get a C++ string representation of the input python object
+ *
+ * This is replicating the `repr(obj)` syntax of Python.
+ *
+ * @param[in] obj python object to get repr for
+ * @return std::string form of repr
+ */
+std::string repr(PyObject* obj) {
+  PyObject* py_repr = PyObject_Repr(obj);
+  if (repr == nullptr) return "";
+  std::string str = getPyString(py_repr);
+  Py_XDECREF(py_repr);
+  return str;
+}
+
+/**
  * extract the dictionary of attributes from the input python object
  *
  * This is separated into its own function to isolate the code
@@ -78,9 +94,9 @@ PyObject* extractDictionary(PyObject* obj) {
     if (PyDict_Check(obj)) {
       return obj;
     } else {
-      EXCEPTION_RAISE(
-          "ObjFail",
-          "Python Object does not have __dict__ member and is not a dict.");
+      EXCEPTION_RAISE("ObjFail",
+                      "Python Object '" + repr(obj) +
+                          "' does not have __dict__ member and is not a dict.");
     }
   }
   return *p_dictionary;
