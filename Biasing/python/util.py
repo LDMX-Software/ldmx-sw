@@ -93,6 +93,15 @@ class TrackProcessFilter(BiasingUtilityAction):
         """
         return TrackProcessFilter('DarkBrem')
 
+    def gamma_mumu() :
+        """ Configuration used to tag all gamma --> mu+ mu- tracks to persist them to the event.
+
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag gamma --> mu+ mu- tracks.
+        """
+        return TrackProcessFilter('GammaToMuPair')
+
 class DecayChildrenKeeper(BiasingUtilityAction):
     """ Configuration used to store children of specific particle decays
 
