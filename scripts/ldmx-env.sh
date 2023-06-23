@@ -525,6 +525,16 @@ __ldmx_checkout() {
 }
 
 ###############################################################################
+# __ldmx_format
+#   format the C++ code with clang-format in the container (requires v4.0.0)
+#   uses `find` to run it on all *.h and *.cxx files in ldmx-sw
+###############################################################################
+__ldmx_format() {
+  __ldmx_run . 'if command -v clang-format &> /dev/null; then find ${LDMX_BASE}/ldmx-sw -type f -name "*.h" -o -name "*.cxx" -exec clang-format --style=Google -i {} \;; else echo "ERROR: no clang-format in container"; fi'
+  return $?
+}
+
+###############################################################################
 # __ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
