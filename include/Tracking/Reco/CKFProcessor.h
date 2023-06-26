@@ -6,9 +6,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/RandomNumberSeedService.h"
 
-//--- ROOT ---//
-#include "TGeoMatrix.h"
-
 //--- Tracking I/O---//
 #include "Tracking/Sim/PropagatorStepWriter.h"
 
