@@ -249,9 +249,6 @@ inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location)
   
 }
 
-
-
-
 }//utils
 }//sim
 }//tracking

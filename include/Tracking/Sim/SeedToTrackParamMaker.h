@@ -184,8 +184,8 @@ class SeedToTrackParamMaker {
     Acts::BoundVector params = Acts::BoundVector::Zero();
 
     // The estimated phi and theta
-    params[Acts::eBoundPhi] = Acts::VectorHelpers::phi(direction);
-    params[Acts::eBoundTheta] = Acts::VectorHelpers::theta(direction);
+    //params[Acts::eBoundPhi] = Acts::VectorHelpers::phi(direction);
+    //params[Acts::eBoundTheta] = Acts::VectorHelpers::theta(direction);
 
     Acts::Vector3 bottomLocalPos = Tp.inverse() * spGlobalPositions[0];
         
