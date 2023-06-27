@@ -7,3 +7,6 @@
 [submodule "SimCore/G4DarkBreM"]
 	path = SimCore/G4DarkBreM
 	url = https://github.com/LDMX-Software/G4DarkBreM.git
+[submodule "EventDisplay/gdml_to_gltf/root_cern-To_gltf-Exporter"]
+	path = EventDisplay/gdml_to_gltf/root_cern-To_gltf-Exporter
+	url = git@github.com:HSF/root_cern-To_gltf-Exporter.git

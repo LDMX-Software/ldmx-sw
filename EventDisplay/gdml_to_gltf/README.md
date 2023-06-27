@@ -7,7 +7,7 @@ Converting from gdml to gltf:
 
 3) Based on the following repo: [https://github.com/HSF/root_cern-To_gltf-Exporter/tree/main](https://github.com/HSF/root_cern-To_gltf-Exporter/tree/main), make an html file based off of export_LHCb.html, replacing filenames and arrays as needed. A working html file for the whole detector is included as export.html.
 
-4) The export.html file has 7 array for the parts it needs to generate. If you don't want to include a part, just comment out that line. This has been done for the magnet so it will only generate 6 parts. Uncomment that line if you want to see the magnet. Replace "true" with numbers ranging from 0 to 1 to change opacity.
+4) Move export.html inThe export.html file has 7 array for the parts it needs to generate. If you don't want to include a part, just comment out that line. This has been done for the magnet so it will only generate 6 parts. Uncomment that line if you want to see the magnet. Replace "true" with numbers ranging from 0 to 1 to change opacity.
 
 5) Put the new gltf file into phoenix: [https://github.com/HSF/phoenix/tree/main](https://github.com/HSF/phoenix/tree/main)
 
