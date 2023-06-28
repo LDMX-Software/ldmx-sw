@@ -34,8 +34,12 @@ function(enable_sanitizers project_name)
     set(SANITIZERS_STRICT "")
 
     option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
+    option(SANITIZER_ADDRESS_RELAXED "Optionally allow for recover on error for ASAN if ASAN_OPTIONS environment variable is set to halt_on_error=0")
     if(ENABLE_SANITIZER_ADDRESS)
       list(APPEND SANITIZERS "address")
+      if(SANITIZER_ADDRESS_RELAXED)
+        list(APPEND SANITIZERS_RECOVERY "address")
+      endif()
     endif()
 
     option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
@@ -44,8 +48,14 @@ function(enable_sanitizers project_name)
     endif()
 
     option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
+    option(SANITIZER_UNDEFINED_BEHAVIOR_STRICT
+        "Enable strict enforcement of undefined behavior sanitizers" OFF
+    )
     if(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
       list(APPEND SANITIZERS "undefined")
+      if (SANITIZER_UNDEFINED_BEHAVIOR_STRICT)
+        list(APPEND SANITIZERS_STRICT "undefined")
+      endif()
     endif()
 
     option(ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
