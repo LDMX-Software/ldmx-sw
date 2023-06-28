@@ -157,10 +157,6 @@ class CKFProcessor final : public framework::Producer {
   auto makeGeoIdSourceLinkMap(const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
     
     
-  //Test the measurement calibrator (TODO::move it somewhere else)
-  void testMeasurmentCalibrator(const tracking::sim::LdmxMeasurementCalibrator& calibrator,
-                                const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const;
-
   //Test the magnetic field
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
