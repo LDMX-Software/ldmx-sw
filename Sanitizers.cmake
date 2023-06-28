@@ -25,6 +25,15 @@
 # within the container environment, you can do this by running
 #
 # ldmx setenv ASAN_OPTIONS=halt_on_error=0
+#
+# You can also enable/disable any custom selection of sanitizers with
+# - ENABLE_SANITIZER_CUSTOM
+# - DISABLE_SANITIZER_CUSTOM
+#
+# These take a comma-separated list of arguments that will be passed as
+# -fsanitize=args and -fno-sanitize=args respectively. No correctness checks are
+# applied to these so use them with caution.
+
 function(enable_sanitizers project_name)
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
@@ -32,6 +41,30 @@ function(enable_sanitizers project_name)
     set(SANITIZERS "")
     set(SANITIZERS_RECOVERY "")
     set(SANITIZERS_STRICT "")
+    set(DISABLED_SANITIZERS "")
+
+    set(ENABLE_SANITIZER_CUSTOM "" CACHE STRING "Add custom (comma separated) entries to the -fsanitize= flag")
+    set(DISABLE_SANITIZER_CUSTOM "" CACHE STRING "Add custom (comma separated) entries to the -fno-sanitize= flag")
+    if (NOT "${ENABLE_SANITIZER_CUSTOM}"
+        STREQUAL
+        "")
+      # Replace commas with spaces in the custom sanitizer string and split into a list
+      string(REGEX REPLACE "," ";" CUSTOM_SANITIZER_LIST "${ENABLE_SANITIZER_CUSTOM}")
+      foreach(sanitizer ${CUSTOM_SANITIZER_LIST})
+        list(APPEND SANITIZERS "${sanitizer}")
+      endforeach()
+    endif()
+    if (NOT "${DISABLE_SANITIZER_CUSTOM}"
+        STREQUAL
+        "")
+      # Replace commas with spaces in the custom sanitizer string and split into a list
+      string(REGEX REPLACE "," ";" CUSTOM_SANITIZER_LIST "${DISABLE_SANITIZER_CUSTOM}")
+      foreach(sanitizer ${CUSTOM_SANITIZER_LIST})
+        list(APPEND DISABLED_SANITIZERS "${sanitizer}")
+      endforeach()
+    endif()
+
+
 
     option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
     option(SANITIZER_ADDRESS_RELAXED "Optionally allow for recover on error for ASAN if ASAN_OPTIONS environment variable is set to halt_on_error=0")
@@ -94,6 +127,11 @@ function(enable_sanitizers project_name)
       SANITIZERS_STRICT
       ","
       LIST_OF_STRICT_SANITIZERS)
+    list(
+      JOIN
+      DISABLED_SANITIZERS
+      ","
+      LIST_OF_DISABLED_SANITIZERS)
   endif()
 
   if(LIST_OF_SANITIZERS)
@@ -117,6 +155,13 @@ function(enable_sanitizers project_name)
         target_compile_options(${project_name} INTERFACE -fno-sanitize-recover=${LIST_OF_STRICT_SANITIZERS})
         target_link_options(${project_name} INTERFACE -fno-sanitize-recover=${LIST_OF_STRICT_SANITIZERS})
       endif()
+    endif()
+    if (NOT
+        "${LIST_OF_DISABLED_SANITIZERS}"
+        STREQUAL
+        "")
+      target_compile_options(${project_name} INTERFACE -fno-sanitize=${LIST_OF_DISABLED_SANITIZERS})
+      target_link_options(${project_name} INTERFACE -fno-sanitize=${LIST_OF_DISABLED_SANITIZERS})
     endif()
   endif()
 
