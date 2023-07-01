@@ -5,7 +5,7 @@
 #include "Ecal/Event/EcalCluster.h"
 #include "Hcal/Event/HcalCluster.h"
 #include "Recon/Event/PFCandidate.h"
-
+#include <vector>
 
 namespace recon {
 
@@ -14,6 +14,13 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   inputHcalCollName_ = ps.getParameter<std::string>("inputHcalCollName");
   inputTrackCollName_ = ps.getParameter<std::string>("inputTrackCollName");
   outputCollName_ = ps.getParameter<std::string>("outputCollName"); 
+  //from jason
+  std::vector<float> em1{250.0,750.0,1250.0,1750.0,2250.0,2750.0,3250.0,3750.0,4250.0,4750.0,5250.0,5750.};
+  std::vector<float> em2{1.175,1.02,0.99,0.985,0.975,0.975,0.96,0.94,0.87,0.8,0.73,0.665};
+  std::vector<float> h1{25.0,75.0,125.0,175.0,225.0,275.0,325.0,375.0,425.0};
+  std::vector<float> h2{8.44,7.38,7.76,8.535,9.47,10.45,10.47,9.71,8.87};
+  eCorr_ = new TGraph(em1.size(), em1.data(), em2.data());
+  hCorr_ = new TGraph(h1.size(), h1.data(), h2.data());
 }
 
 void ParticleFlow::produce(framework::Event& event) {
@@ -108,7 +115,17 @@ void ParticleFlow::produce(framework::Event& event) {
   }
   if (ecalClusters.size()){
     const auto& em = ecalClusters[0];
-    pf.setEcalEnergy( em.getEnergy() );
+    float corr = 1.;
+    float e = em.getEnergy();
+    if (e<eCorr_->GetX()[0]){
+      corr = eCorr_->GetX()[0];
+    } else if (e>eCorr_->GetX()[eCorr_->GetN()-1]){
+      corr = eCorr_->GetX()[eCorr_->GetN()-1];
+    } else {
+      corr = eCorr_->Eval(e);
+    }
+    pf.setEcalEnergy( e*corr );
+    pf.setEcalRawEnergy( e );
     pf.setEcalClusterXYZ(em.getCentroidX(),
 			 em.getCentroidY(),
 			 em.getCentroidZ());
@@ -124,18 +141,27 @@ void ParticleFlow::produce(framework::Event& event) {
   }
   if (hcalClusters.size()){
     const auto& had = hcalClusters[0];
-    pf.setHcalEnergy( had.getEnergy() );
+    float corr = 1.;
+    float e = had.getEnergy();
+    if (e<hCorr_->GetX()[0]){
+      corr = hCorr_->GetX()[0];
+    } else if (e>hCorr_->GetX()[hCorr_->GetN()-1]){
+      corr = hCorr_->GetX()[hCorr_->GetN()-1];
+    } else {
+      corr = hCorr_->Eval(e);
+    }
+    pf.setHcalEnergy( e*corr );
+    pf.setHcalRawEnergy( e );
     pf.setHcalClusterXYZ(had.getCentroidX(),
 			 had.getCentroidY(),
 			 had.getCentroidZ());
-    pf.setEcalClusterEXYZ(had.getRMSX(),
+    pf.setHcalClusterEXYZ(had.getRMSX(),
 			  had.getRMSY(),
 			  had.getRMSZ());
-    pf.setEcalClusterDXDZ(had.getDXDZ());
-    pf.setEcalClusterDYDZ(had.getDYDZ());
-    pf.setEcalClusterEDXDZ(had.getEDXDZ());
-    pf.setEcalClusterEDYDZ(had.getEDYDZ());
-			 
+    pf.setHcalClusterDXDZ(had.getDXDZ());
+    pf.setHcalClusterDYDZ(had.getDYDZ());
+    pf.setHcalClusterEDXDZ(had.getEDXDZ());
+    pf.setHcalClusterEDYDZ(had.getEDYDZ());
     pid += 4;
   }
   pf.setPID(pid);

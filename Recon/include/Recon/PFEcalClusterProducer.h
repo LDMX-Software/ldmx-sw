@@ -12,6 +12,15 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 
+#include "DetDescr/EcalGeometry.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Ecal/MyClusterWeight.h"
+#include "Ecal/TemplatedClusterFinder.h"
+#include "Ecal/WorkingCluster.h"
+#include "TGraph.h"
+#include "TFitResult.h"
+
 namespace recon {
 
 /**
@@ -38,7 +47,7 @@ class PFEcalClusterProducer : public framework::Producer {
  private:
   // specific verbosity of this producer
   int verbose_{0};
-  bool trivialCluster_{true};
+  bool singleCluster_{true};
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;

@@ -11,6 +11,7 @@
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
+#include "TGraph.h"
 
 namespace recon {
 
@@ -38,6 +39,9 @@ class ParticleFlow : public framework::Producer {
  private:
   // specific verbosity of this producer
   int verbose_{0};
+
+  TGraph* eCorr_{0};
+  TGraph* hCorr_{0};
 
   // name of collection for PF inputs to be passed
   std::string inputEcalCollName_;

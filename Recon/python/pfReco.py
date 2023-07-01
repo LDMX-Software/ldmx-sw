@@ -16,6 +16,7 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
         super().__init__(name, 'recon::PFEcalClusterProducer','Recon')
         self.hitCollName = 'EcalRecHits'
         self.clusterCollName = 'PFEcalClusters'
+        self.doSingleCluster = True
 
 class pfHcalClusterProducer(ldmxcfg.Producer) :
     """Configuration for Hcal cluster builder for particle reco"""
@@ -23,6 +24,7 @@ class pfHcalClusterProducer(ldmxcfg.Producer) :
         super().__init__(name, 'recon::PFHcalClusterProducer','Recon')
         self.hitCollName = 'HcalRecHits'
         self.clusterCollName = 'PFHcalClusters'
+        self.doSingleCluster = True
 
 class pfTrackProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
