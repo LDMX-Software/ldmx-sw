@@ -3,6 +3,8 @@
 
 #include "Recon/PFEcalClusterProducer.h"
 
+using std::cout;
+using std::endl;
 
 namespace recon {
 
@@ -95,48 +97,75 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
   if(!singleCluster_){ 
     // make configurable
     float minEnergy=0;
-    int minNHit=5;
-    float minDist=5;
+    int minNHit=2;
+    float maxDist=100;
+    bool debug = false;
     // DBSCAN
     const auto &hits = ecalRecHits;
     const int n = ecalRecHits.size();
     std::vector<std::vector<unsigned int> > idx_clusters;
     std::vector<unsigned int> tried; tried.reserve(n);
     std::vector<unsigned int> used; used.reserve(n);
+    // std::vector<unsigned int> sortedIndices(n);
+    // for(unsigned int i=0;i<n;i++) sortedIndices[i]=i;
+    // std::sort(sortedIndices.begin(), sortedIndices.end(), 
+    // 	      [](unsigned int a, unsigned int b) { return hits[a].getEnergy() > hits[b].getEnergy(); });
+    // cout << "sorted: {";
+    // for (auto i : sortedIndices) cout << i << " : " << hits[i].getEnergy() << ", ";
+    // cout << "}" << endl;
     //std::sort(hits.begin(), hits.end(), [](const ldmx::EcalHit a, const ldmx::EcalHit b) { return a.getEnergy() > b.getEnergy(); });
     for(unsigned int i=0;i<n;i++){
+      //if (debug) cout << "considering i = " << i << endl;
       if( isIn(i,tried) ) continue;
       tried.push_back(i);
+      if (debug) cout << "trying " << i << endl;
       if (hits[i].getEnergy() < minEnergy) continue;
       std::set<unsigned int> neighbors;
       unsigned int nNearby=1;
       // find neighbors
       for(unsigned int j=0;j<n;j++){
-	if( i!=j && dist(hits[i],hits[j]) < minDist){
+	//if (debug) cout << "    >> dist " << j << " = " << dist(hits[i],hits[j]) << endl;
+	if( i!=j && dist(hits[i],hits[j]) < maxDist){
+	  //if (debug) cout << "  found neighbor j = " << j << endl;
 	  neighbors.insert(j);
 	  if (hits[j].getEnergy() >= minEnergy) nNearby++;
 	}
       }
-      if (nNearby > minNHit){
+      //if (debug) cout << "  has # nearby = " << nNearby << endl;
+      if (nNearby >= minNHit){
 	std::vector<unsigned int> idx_cluster{i}; // start a cluster
 	used.push_back(i);
+	if (debug) cout << "- starting a cluster from " << i << endl;
 	for(unsigned int j : neighbors){
 	  if ( !isIn(j,tried) ){
 	    tried.push_back(j);
+	    if (debug) cout << "== tried " << j << endl;
 	    std::vector<unsigned int> neighbors2;
 	    for(unsigned int k=0;k<n;k++){
-	      if( k!=j && dist(hits[i],hits[j]) < minDist){
+	      if( dist(hits[k],hits[j]) < maxDist){
+		//if (debug) cout << "  found neighbor2 k = " << k << endl;
 		neighbors2.push_back(k);
 	      }
 	    }
 	    for(unsigned int k : neighbors2)
 	      neighbors.insert(k);
 	  }
-	  if ( !isIn(j,used) ) idx_cluster.push_back(j);
+	  if ( !isIn(j,used) ) {
+	    if (debug) cout << "== used " << j << endl;
+	    used.push_back(j);
+	    idx_cluster.push_back(j);
+	  }
+	}
+	if (debug){ 
+	  cout << "adding cluster: {";
+	  for (auto i : idx_cluster) cout << i << " ";
+	  cout << "}" << endl;
 	}
 	idx_clusters.push_back( idx_cluster );
       }
     }
+    if (debug)
+      cout << "done. writing this many clusters out: " << idx_clusters.size() << endl;
     for(const auto idx_cluster : idx_clusters){
       //std::vector<ldmx::EcalHit>
       ldmx::EcalCluster cl;
