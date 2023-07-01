@@ -49,6 +49,7 @@ class PFCandidate {
   }
 
   void setEcalEnergy(float x) {ecalEnergy_ = x;}
+  void setEcalRawEnergy(float x) {ecalRawEnergy_ = x;}
   void setEcalClusterXYZ(float x, float y, float z){
       ecalClusterX_=x; ecalClusterY_=y; ecalClusterZ_=z;
   }
@@ -61,6 +62,7 @@ class PFCandidate {
   void setEcalClusterEDYDZ(float x){ ecalClusterEDYDZ_=x; }
 
   void setHcalEnergy(float x) {hcalEnergy_ = x;}
+  void setHcalRawEnergy(float x) {hcalRawEnergy_ = x;}
   void setHcalClusterXYZ(float x, float y, float z){
       hcalClusterX_=x; hcalClusterY_=y; hcalClusterZ_=z;
   }
@@ -104,6 +106,7 @@ class PFCandidate {
   }
 
   float getEcalEnergy() const { return ecalEnergy_;}
+  float getEcalRawEnergy() const { return ecalRawEnergy_;}
   std::vector<float> getEcalClusterXYZ() const {
       return {ecalClusterX_, ecalClusterY_, ecalClusterZ_};
   }
@@ -116,6 +119,7 @@ class PFCandidate {
   float getEcalClusterEDYDZ() const { return ecalClusterEDYDZ_; }
 
   float getHcalEnergy() const { return hcalEnergy_;}
+  float getHcalRawEnergy() const { return hcalRawEnergy_;}
   std::vector<float> getHcalClusterXYZ() const {
       return {hcalClusterX_, hcalClusterY_, hcalClusterZ_};
   }
@@ -163,6 +167,7 @@ class PFCandidate {
 
   /* Ecal energy, cluster info */
   float ecalEnergy_{0};
+  float ecalRawEnergy_{0};
   float ecalClusterX_{0};
   float ecalClusterY_{0};
   float ecalClusterZ_{0};
@@ -176,6 +181,7 @@ class PFCandidate {
 
   /* Hcal energy, cluster info */
   float hcalEnergy_{0};
+  float hcalRawEnergy_{0};
   float hcalClusterX_{0};
   float hcalClusterY_{0};
   float hcalClusterZ_{0};

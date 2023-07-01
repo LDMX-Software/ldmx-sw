@@ -38,7 +38,7 @@ class PFHcalClusterProducer : public framework::Producer {
  private:
   // specific verbosity of this producer
   int verbose_{0};
-  bool trivialCluster_{true};
+  bool singleCluster_{true};
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
