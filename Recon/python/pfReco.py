@@ -14,38 +14,39 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
     """Configuration for Ecal cluster builder for particle reco"""
     def __init__(self, name='PFEcalCluster') :
         super().__init__(name, 'recon::PFEcalClusterProducer','Recon')
-        self.hitCollName = 'EcalRecHits'
+        self.hitCollName     = 'EcalRecHits'
         self.clusterCollName = 'PFEcalClusters'
-        self.doSingleCluster = True
+        self.doSingleCluster = False
 
 class pfHcalClusterProducer(ldmxcfg.Producer) :
     """Configuration for Hcal cluster builder for particle reco"""
     def __init__(self, name='PFHcalCluster') :
         super().__init__(name, 'recon::PFHcalClusterProducer','Recon')
-        self.hitCollName = 'HcalRecHits'
+        self.hitCollName     = 'HcalRecHits'
         self.clusterCollName = 'PFHcalClusters'
-        self.doSingleCluster = True
+        self.doSingleCluster = False
 
 class pfTrackProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
     def __init__(self, name='PFTrack') :
         super().__init__(name, 'recon::PFTrackProducer','Recon')
-        self.inputTrackCollName = 'EcalScoringPlaneHits'
+        self.inputTrackCollName  = 'EcalScoringPlaneHits'
         self.outputTrackCollName = 'PFTracks'
 
 class pfProducer(ldmxcfg.Producer) :
     """Configuration for particle reco"""
     def __init__(self, name='PFlow') :
         super().__init__(name, 'recon::ParticleFlow','Recon')
-        self.inputEcalCollName = 'PFEcalClusters'
-        self.inputHcalCollName = 'PFHcalClusters'
+        self.inputEcalCollName  = 'PFEcalClusters'
+        self.inputHcalCollName  = 'PFHcalClusters'
         self.inputTrackCollName = 'PFTracks'
-        self.outputCollName = 'PFCandidates'
+        self.outputCollName     = 'PFCandidates'
   
 class pfTruthProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
     def __init__(self, name='PFTruth') :
         super().__init__(name, 'recon::PFTruthProducer','Recon')
-        self.outputTargetCollName = 'PFTruthTarget'
-        self.outputEcalCollName = 'PFTruthEcal'
-        self.outputHcalCollName = 'PFTruthHcal'
+        self.outputPrimaryCollName = 'PFTruth'
+        self.outputTargetCollName  = 'PFTruthTarget'
+        self.outputEcalCollName    = 'PFTruthEcal'
+        self.outputHcalCollName    = 'PFTruthHcal'
