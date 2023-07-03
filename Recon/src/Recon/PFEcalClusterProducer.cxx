@@ -8,8 +8,10 @@ using std::endl;
 
 namespace recon {
 
-void fillClusterInfo(ldmx::EcalCluster &cl, std::vector<ldmx::EcalHit> hits,
-		       std::vector<unsigned int> toUse={}, bool select=false){
+template <class C, class H>
+void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
+// void fillClusterInfoFromHits(ldmx::EcalCluster &cl, std::vector<ldmx::EcalHit> hits,
+// 			     std::vector<unsigned int> toUse={}, bool select=false){
   float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
   float w = 1; // weight
   float sumw = 0;
@@ -17,22 +19,22 @@ void fillClusterInfo(ldmx::EcalCluster &cl, std::vector<ldmx::EcalHit> hits,
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
-  if (!select){ // use all the hit indices...
-    for(unsigned int i=0; i<hits.size();i++){
-      toUse.push_back(i);
-    }
-  }
-  for(unsigned int i : toUse){
-    const auto &h = hits[i];
-    //if (h.getEnergy() < minEnergy) continue;
-    // w = log( h.getEnergy() - log(minEnergy) );
-    e += h.getEnergy();
-    x += w * h.getXPos();
-    y += w * h.getYPos();
-    z += w * h.getZPos();
-    xx += w * h.getXPos() * h.getXPos();
-    yy += w * h.getYPos() * h.getYPos();
-    zz += w * h.getZPos() * h.getZPos();
+  // if (!select){ // use all the hit indices...
+  //   for(unsigned int i=0; i<hits.size();i++){
+  //     toUse.push_back(i);
+  //   }
+  // }
+  for(const H* h : hits){
+    // const auto h = hits[i];
+    //if (h->getEnergy() < minEnergy) continue;
+    // w = log( h->getEnergy() - log(minEnergy) );
+    e += h->getEnergy();
+    x += w * h->getXPos();
+    y += w * h->getYPos();
+    z += w * h->getZPos();
+    xx += w * h->getXPos() * h->getXPos();
+    yy += w * h->getYPos() * h->getYPos();
+    zz += w * h->getZPos() * h->getZPos();
     n += 1;
     sumw += w;
     xvals.push_back(x);
@@ -85,6 +87,66 @@ float dist(ldmx::EcalHit a, ldmx::EcalHit b){
 	       + pow(a.getYPos() - b.getYPos(),2)
 	       + pow(a.getZPos() - b.getZPos(),2));
 }
+template <class T>
+std::vector<std::vector<const T*> > runDBSCAN( const std::vector<T> &hits,
+		float minEnergy=0, int minNHit=2, float maxDist=100,
+		bool debug = false){
+  
+    const int n = hits.size();
+    std::vector<std::vector<const T*> > idx_clusters;
+    std::vector<unsigned int> tried; tried.reserve(n);
+    std::vector<unsigned int> used; used.reserve(n);
+    for(unsigned int i=0;i<n;i++){
+      if( isIn(i,tried) ) continue;
+      tried.push_back(i);
+      if (debug) cout << "trying " << i << endl;
+      if (hits[i].getEnergy() < minEnergy) continue;
+      std::set<unsigned int> neighbors;
+      unsigned int nNearby=1;
+      // find neighbors
+      for(unsigned int j=0;j<n;j++){
+	if( i!=j && dist(hits[i],hits[j]) < maxDist){
+	  neighbors.insert(j);
+	  if (hits[j].getEnergy() >= minEnergy) nNearby++;
+	}
+      }
+      if (nNearby >= minNHit){
+	std::vector<const T*> idx_cluster{&hits[i]}; // start a cluster
+	used.push_back(i);
+	if (debug) cout << "- starting a cluster from " << i << endl;
+	for(unsigned int j : neighbors){
+	  if ( !isIn(j,tried) ){
+	    tried.push_back(j);
+	    if (debug) cout << "== tried " << j << endl;
+	    std::vector<unsigned int> neighbors2;
+	    for(unsigned int k=0;k<n;k++){
+	      if( dist(hits[k],hits[j]) < maxDist){
+		neighbors2.push_back(k);
+	      }
+	    }
+	    for(unsigned int k : neighbors2)
+	      neighbors.insert(k);
+	  }
+	  if ( !isIn(j,used) ) {
+	    if (debug) cout << "== used " << j << endl;
+	    used.push_back(j);
+	    idx_cluster.push_back(&hits[j]);
+	  }
+	}
+	// if (debug){ 
+	//   cout << "adding cluster: {";
+	//   for (auto i : idx_cluster) cout << i << " ";
+	//   cout << "}" << endl;
+	// }
+	idx_clusters.push_back( idx_cluster );
+      }
+    }
+    return idx_clusters;
+    if (debug)
+      cout << "done. writing this many clusters out: " << idx_clusters.size() << endl;
+
+}
+
 void PFEcalClusterProducer::produce(framework::Event& event) {
 
   if (!event.exists(hitCollName_)) return;
@@ -95,84 +157,81 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::EcalCluster> pfClusters;
   if(!singleCluster_){ 
-    // make configurable
-    float minEnergy=0;
-    int minNHit=2;
-    float maxDist=100;
-    bool debug = false;
-    // DBSCAN
-    const auto &hits = ecalRecHits;
-    const int n = ecalRecHits.size();
-    std::vector<std::vector<unsigned int> > idx_clusters;
-    std::vector<unsigned int> tried; tried.reserve(n);
-    std::vector<unsigned int> used; used.reserve(n);
-    // std::vector<unsigned int> sortedIndices(n);
-    // for(unsigned int i=0;i<n;i++) sortedIndices[i]=i;
-    // std::sort(sortedIndices.begin(), sortedIndices.end(), 
-    // 	      [](unsigned int a, unsigned int b) { return hits[a].getEnergy() > hits[b].getEnergy(); });
-    // cout << "sorted: {";
-    // for (auto i : sortedIndices) cout << i << " : " << hits[i].getEnergy() << ", ";
-    // cout << "}" << endl;
-    //std::sort(hits.begin(), hits.end(), [](const ldmx::EcalHit a, const ldmx::EcalHit b) { return a.getEnergy() > b.getEnergy(); });
-    for(unsigned int i=0;i<n;i++){
-      //if (debug) cout << "considering i = " << i << endl;
-      if( isIn(i,tried) ) continue;
-      tried.push_back(i);
-      if (debug) cout << "trying " << i << endl;
-      if (hits[i].getEnergy() < minEnergy) continue;
-      std::set<unsigned int> neighbors;
-      unsigned int nNearby=1;
-      // find neighbors
-      for(unsigned int j=0;j<n;j++){
-	//if (debug) cout << "    >> dist " << j << " = " << dist(hits[i],hits[j]) << endl;
-	if( i!=j && dist(hits[i],hits[j]) < maxDist){
-	  //if (debug) cout << "  found neighbor j = " << j << endl;
-	  neighbors.insert(j);
-	  if (hits[j].getEnergy() >= minEnergy) nNearby++;
-	}
-      }
-      //if (debug) cout << "  has # nearby = " << nNearby << endl;
-      if (nNearby >= minNHit){
-	std::vector<unsigned int> idx_cluster{i}; // start a cluster
-	used.push_back(i);
-	if (debug) cout << "- starting a cluster from " << i << endl;
-	for(unsigned int j : neighbors){
-	  if ( !isIn(j,tried) ){
-	    tried.push_back(j);
-	    if (debug) cout << "== tried " << j << endl;
-	    std::vector<unsigned int> neighbors2;
-	    for(unsigned int k=0;k<n;k++){
-	      if( dist(hits[k],hits[j]) < maxDist){
-		//if (debug) cout << "  found neighbor2 k = " << k << endl;
-		neighbors2.push_back(k);
-	      }
-	    }
-	    for(unsigned int k : neighbors2)
-	      neighbors.insert(k);
-	  }
-	  if ( !isIn(j,used) ) {
-	    if (debug) cout << "== used " << j << endl;
-	    used.push_back(j);
-	    idx_cluster.push_back(j);
-	  }
-	}
-	if (debug){ 
-	  cout << "adding cluster: {";
-	  for (auto i : idx_cluster) cout << i << " ";
-	  cout << "}" << endl;
-	}
-	idx_clusters.push_back( idx_cluster );
-      }
-    }
-    if (debug)
-      cout << "done. writing this many clusters out: " << idx_clusters.size() << endl;
-    for(const auto idx_cluster : idx_clusters){
-      //std::vector<ldmx::EcalHit>
+    std::vector<std::vector<const ldmx::EcalHit*> > all_hit_ptrs = runDBSCAN(ecalRecHits);
+    for(const auto hit_ptrs : all_hit_ptrs){
       ldmx::EcalCluster cl;
-      fillClusterInfo(cl,ecalRecHits, idx_cluster, true);
+      fillClusterInfoFromHits(cl, hit_ptrs);
       pfClusters.push_back(cl);
     }
-      
+    // // std::vector<std::vector<T*> > runDBSCAN( const std::vector<T> &hits,
+
+    // // make configurable
+    // float minEnergy=0;
+    // int minNHit=2;
+    // float maxDist=100;
+    // bool debug = false;
+    // // DBSCAN
+    // const auto &hits = ecalRecHits;
+    // const int n = ecalRecHits.size();
+    // std::vector<std::vector<unsigned int> > idx_clusters;
+    // std::vector<unsigned int> tried; tried.reserve(n);
+    // std::vector<unsigned int> used; used.reserve(n);
+    // for(unsigned int i=0;i<n;i++){
+    //   //if (debug) cout << "considering i = " << i << endl;
+    //   if( isIn(i,tried) ) continue;
+    //   tried.push_back(i);
+    //   if (debug) cout << "trying " << i << endl;
+    //   if (hits[i].getEnergy() < minEnergy) continue;
+    //   std::set<unsigned int> neighbors;
+    //   unsigned int nNearby=1;
+    //   // find neighbors
+    //   for(unsigned int j=0;j<n;j++){
+    // 	//if (debug) cout << "    >> dist " << j << " = " << dist(hits[i],hits[j]) << endl;
+    // 	if( i!=j && dist(hits[i],hits[j]) < maxDist){
+    // 	  //if (debug) cout << "  found neighbor j = " << j << endl;
+    // 	  neighbors.insert(j);
+    // 	  if (hits[j].getEnergy() >= minEnergy) nNearby++;
+    // 	}
+    //   }
+    //   //if (debug) cout << "  has # nearby = " << nNearby << endl;
+    //   if (nNearby >= minNHit){
+    // 	std::vector<unsigned int> idx_cluster{i}; // start a cluster
+    // 	used.push_back(i);
+    // 	if (debug) cout << "- starting a cluster from " << i << endl;
+    // 	for(unsigned int j : neighbors){
+    // 	  if ( !isIn(j,tried) ){
+    // 	    tried.push_back(j);
+    // 	    if (debug) cout << "== tried " << j << endl;
+    // 	    std::vector<unsigned int> neighbors2;
+    // 	    for(unsigned int k=0;k<n;k++){
+    // 	      if( dist(hits[k],hits[j]) < maxDist){
+    // 		//if (debug) cout << "  found neighbor2 k = " << k << endl;
+    // 		neighbors2.push_back(k);
+    // 	      }
+    // 	    }
+    // 	    for(unsigned int k : neighbors2)
+    // 	      neighbors.insert(k);
+    // 	  }
+    // 	  if ( !isIn(j,used) ) {
+    // 	    if (debug) cout << "== used " << j << endl;
+    // 	    used.push_back(j);
+    // 	    idx_cluster.push_back(j);
+    // 	  }
+    // 	}
+    // 	if (debug){ 
+    // 	  cout << "adding cluster: {";
+    // 	  for (auto i : idx_cluster) cout << i << " ";
+    // 	  cout << "}" << endl;
+    // 	}
+    // 	idx_clusters.push_back( idx_cluster );
+    //   }
+    // }
+    // if (debug) cout << "done. writing this many clusters out: " << idx_clusters.size() << endl;
+    // for(const auto idx_cluster : idx_clusters){
+    //   ldmx::EcalCluster cl;
+    //   fillClusterInfoFromHits(cl,ecalRecHits, idx_cluster, true);
+    //   pfClusters.push_back(cl);
+    // }
 
     // // use the approach from EcalClusterProducer
     // ecal::TemplatedClusterFinder<ecal::MyClusterWeight> cf;
@@ -196,7 +255,12 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
     
   } else { // create a single, large cluster
     ldmx::EcalCluster cl;
-    fillClusterInfo(cl,ecalRecHits);
+    std::vector<const ldmx::EcalHit*> ptrs; 
+    ptrs.reserve(ecalRecHits.size());
+    for (const auto &h : ecalRecHits) 
+      ptrs.push_back(&h);
+    fillClusterInfoFromHits(cl, ptrs);
+    // fillClusterInfoFromHits(cl,ecalRecHits);
     pfClusters.push_back(cl);
   }
   event.add(clusterCollName_, pfClusters);

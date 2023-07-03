@@ -41,6 +41,7 @@ class PFTruthProducer : public framework::Producer {
   bool truthTracking_{true};
 
   // name of collection for target, ecal, hcal truth to be output
+  std::string primaryCollName_;
   std::string targetCollName_;
   std::string ecalCollName_;
   std::string hcalCollName_;
