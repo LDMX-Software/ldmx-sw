@@ -14,7 +14,8 @@
 #include <memory>
 
 //--- LDMX ---//
-#include "Tracking/Reco/TrackersTrackingGeometry.h"
+#include "Tracking/Reco/TrackingGeometryUser.h"
+
 
 //--- ACTS ---//
 
@@ -104,7 +105,7 @@ using GsfPropagator = Acts::Propagator<
 namespace tracking {
 namespace reco {
 
-class CKFProcessor final : public framework::Producer {
+class CKFProcessor final : public TrackingGeometryUser {
 
  public:
   /**
@@ -122,6 +123,14 @@ class CKFProcessor final : public framework::Producer {
    *
    */
   void onProcessStart() override;
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -144,7 +153,6 @@ class CKFProcessor final : public framework::Producer {
   
  private:
 
-
   //TODO move it away
 
   void propagateENstates(framework::Event &event,std::string inputFile, std::string outFile);
@@ -154,13 +162,15 @@ class CKFProcessor final : public framework::Producer {
   auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
 
   //Make geoid -> source link map Measurements
-  auto makeGeoIdSourceLinkMap(const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
+  auto makeGeoIdSourceLinkMap(
+      const geo::TrackersTrackingGeometry& tg,
+      const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
     
     
   //Test the magnetic field
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
-                 const Acts::Vector3& eval_pos) const;
+                 const Acts::Vector3& eval_pos);
   
   // Make a simple event display
   void writeEvent(framework::Event &event,
@@ -170,17 +180,6 @@ class CKFProcessor final : public framework::Producer {
                   const std::vector<ldmx::Measurement> meas);
 
   
-  /// The tracking geometry
-  std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
-  
-  /// The contexts
-  Acts::GeometryContext gctx_;
-  Acts::MagneticFieldContext bctx_;
-  Acts::CalibrationContext cctx_;
-
-  /// The path to the GDML description of the detector
-  std::string detector_{""};
-
   //If we want to dump the tracking geometry
   bool dumpobj_ {false};
 
