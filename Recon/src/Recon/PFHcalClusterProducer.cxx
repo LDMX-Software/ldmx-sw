@@ -69,11 +69,11 @@ namespace recon {
 
 
 template <class C, class H>
-void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits){
+void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
+			      float minHitEnergy=0, bool logEnergyWeight=true){
   float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
   float w = 1; // weight
   float sumw = 0;
-  float minEnergy=0; // min hit energy to consider
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
@@ -84,8 +84,8 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits){
   // }
   for(const H* h : hits){
     // const auto h = hits[i];
-    //if (h->getEnergy() < minEnergy) continue;
-    // w = log( h->getEnergy() - log(minEnergy) );
+    if (h->getEnergy() < minHitEnergy) continue;
+    if (logEnergyWeight) w = log( h->getEnergy() - log(minEnergy) );
     e += h->getEnergy();
     x += w * h->getXPos();
     y += w * h->getYPos();
@@ -206,6 +206,10 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName"); 
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
+  logEnergyWeight_ = ps.getParameter<bool>("logEnergyWeight");
+  minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
+  clusterHitDist_ = ps.getParameter<float>("clusterHitDist");
+  minHitEnergy_ = ps.getParameter<float>("minHitEnergy");
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
@@ -216,10 +220,11 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::HcalCluster> pfClusters;
   if(!singleCluster_){ 
-    std::vector<std::vector<const ldmx::HcalHit*> > all_hit_ptrs = runDBSCAN2(hcalRecHits);
+    std::vector<std::vector<const ldmx::HcalHit*> > all_hit_ptrs = runDBSCAN2(hcalRecHits, 
+        minHitEnergy_, minClusterHitMult_, clusterHitDist_);
     for(const auto hit_ptrs : all_hit_ptrs){
       ldmx::HcalCluster cl;
-      fillClusterInfoFromHits2(cl, hit_ptrs);
+      fillClusterInfoFromHits2(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
       pfClusters.push_back(cl);
     }    
   } else {
@@ -229,7 +234,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
     ptrs.reserve(hcalRecHits.size());
     for (const auto &h : hcalRecHits) 
       ptrs.push_back(&h);
-    fillClusterInfoFromHits2(cl, ptrs);
+    fillClusterInfoFromHits2(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     pfClusters.push_back(cl);
   }
   event.add(clusterCollName_, pfClusters);

@@ -39,6 +39,11 @@ class PFHcalClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
   bool singleCluster_{true};
+  bool logEnergyWeight_{true};
+
+  float minHitEnergy_{0};
+  float clusterHitDist_{100.};
+  int minClusterHitMult_{2};
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
