@@ -85,7 +85,7 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
   for(const H* h : hits){
     // const auto h = hits[i];
     if (h->getEnergy() < minHitEnergy) continue;
-    if (logEnergyWeight) w = log( h->getEnergy() - log(minEnergy) );
+    if (logEnergyWeight) w = log( h->getEnergy() - log(minHitEnergy) );
     e += h->getEnergy();
     x += w * h->getXPos();
     y += w * h->getYPos();
