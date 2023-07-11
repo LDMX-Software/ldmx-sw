@@ -17,6 +17,10 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
         self.hitCollName     = 'EcalRecHits'
         self.clusterCollName = 'PFEcalClusters'
         self.doSingleCluster = False
+        # self.logEnergyWeight = True
+        # self.minClusterHitMult = 2
+        # self.clusterHitDist = 100.
+        # self.minHitEnergy = 5.
 
 class pfHcalClusterProducer(ldmxcfg.Producer) :
     """Configuration for Hcal cluster builder for particle reco"""
@@ -25,6 +29,10 @@ class pfHcalClusterProducer(ldmxcfg.Producer) :
         self.hitCollName     = 'HcalRecHits'
         self.clusterCollName = 'PFHcalClusters'
         self.doSingleCluster = False
+        self.logEnergyWeight = True
+        self.minClusterHitMult = 2
+        self.clusterHitDist = 100.
+        self.minHitEnergy = 1.
 
 class pfTrackProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""
