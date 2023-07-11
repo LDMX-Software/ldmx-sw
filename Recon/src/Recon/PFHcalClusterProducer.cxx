@@ -208,8 +208,8 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
   logEnergyWeight_ = ps.getParameter<bool>("logEnergyWeight");
   minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
-  clusterHitDist_ = ps.getParameter<float>("clusterHitDist");
-  minHitEnergy_ = ps.getParameter<float>("minHitEnergy");
+  clusterHitDist_ = ps.getParameter<double>("clusterHitDist");
+  minHitEnergy_ = ps.getParameter<double>("minHitEnergy");
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
