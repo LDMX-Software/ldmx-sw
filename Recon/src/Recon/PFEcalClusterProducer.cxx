@@ -1,4 +1,4 @@
-//#include "DetDescr/EcalGeometry.h"
+// #include "DetDescr/EcalGeometry.h"
 // #include "Recon/Event/HgcrocDigiCollection.h"
 
 #include "Recon/PFEcalClusterProducer.h"
@@ -9,7 +9,8 @@ using std::endl;
 namespace recon {
 
 template <class C, class H>
-void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
+void fillClusterInfoFromHits(C &cl, std::vector<H*> hits,
+			     float minHitEnergy=0, bool logEnergyWeight=true){
 // void fillClusterInfoFromHits(ldmx::EcalCluster &cl, std::vector<ldmx::EcalHit> hits,
 // 			     std::vector<unsigned int> toUse={}, bool select=false){
   float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
@@ -19,6 +20,7 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
+  std::vector<float> evals{};
   // if (!select){ // use all the hit indices...
   //   for(unsigned int i=0; i<hits.size();i++){
   //     toUse.push_back(i);
@@ -26,6 +28,8 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
   // }
   for(const H* h : hits){
     // const auto h = hits[i];
+    if (h->getEnergy() < minHitEnergy) continue;
+    if (logEnergyWeight) w = log( h->getEnergy() - log(minHitEnergy) );
     //if (h->getEnergy() < minEnergy) continue;
     // w = log( h->getEnergy() - log(minEnergy) );
     e += h->getEnergy();
@@ -40,6 +44,7 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
     xvals.push_back(x);
     yvals.push_back(y);
     zvals.push_back(z);
+    evals.push_back(e);
   }
   x /= sumw; // now is <x>
   y /= sumw;
@@ -54,6 +59,10 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
   cl.setNHits(n);
   cl.setCentroidXYZ(x,y,z);
   cl.setRMSXYZ(xx,yy,zz);
+  cl.setHitValsX(xvals);
+  cl.setHitValsY(yvals);
+  cl.setHitValsZ(zvals);
+  cl.setHitValsE(evals);
 
   if (xvals.size()>2){
     for(int i=0; i<xvals.size();i++){ // mean subtract
@@ -77,7 +86,12 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits){
 void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName"); 
+  suffix_ = ps.getParameter<std::string>("suffix","");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
+  logEnergyWeight_ = ps.getParameter<bool>("logEnergyWeight");
+  // minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
+  // clusterHitDist_ = ps.getParameter<double>("clusterHitDist");
+  minHitEnergy_ = ps.getParameter<double>("minHitEnergy");
 }
 bool isIn(unsigned int i, std::vector<unsigned int> l){
   return std::find(l.begin(), l.end(), i) != l.end();
@@ -156,11 +170,13 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
   const auto& geo = getCondition<ldmx::EcalGeometry>(ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   std::vector<ldmx::EcalCluster> pfClusters;
+  float eTotal=0;
   if(!singleCluster_){ 
+    for (const auto &h : ecalRecHits) eTotal += h.getEnergy();
     std::vector<std::vector<const ldmx::EcalHit*> > all_hit_ptrs = runDBSCAN(ecalRecHits);
     for(const auto hit_ptrs : all_hit_ptrs){
       ldmx::EcalCluster cl;
-      fillClusterInfoFromHits(cl, hit_ptrs);
+      fillClusterInfoFromHits(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
       pfClusters.push_back(cl);
     }
     // // std::vector<std::vector<T*> > runDBSCAN( const std::vector<T> &hits,
@@ -257,13 +273,20 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
     ldmx::EcalCluster cl;
     std::vector<const ldmx::EcalHit*> ptrs; 
     ptrs.reserve(ecalRecHits.size());
-    for (const auto &h : ecalRecHits) 
+    for (const auto &h : ecalRecHits) {
       ptrs.push_back(&h);
-    fillClusterInfoFromHits(cl, ptrs);
+      eTotal += h.getEnergy();
+    }
+    fillClusterInfoFromHits(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     // fillClusterInfoFromHits(cl,ecalRecHits);
     pfClusters.push_back(cl);
   }
+  std::sort(pfClusters.begin(), pfClusters.end(),
+	    [](ldmx::EcalCluster a, ldmx::EcalCluster b) {
+	      return a.getEnergy() > b.getEnergy();
+	    });
   event.add(clusterCollName_, pfClusters);
+  event.add("EcalTotalEnergy"+suffix_, eTotal);
 }
 
 void PFEcalClusterProducer::onFileOpen() {

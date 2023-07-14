@@ -77,6 +77,7 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
+  std::vector<float> evals{};
   // if (!select){ // use all the hit indices...
   //   for(unsigned int i=0; i<hits.size();i++){
   //     toUse.push_back(i);
@@ -98,6 +99,7 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
     xvals.push_back(x);
     yvals.push_back(y);
     zvals.push_back(z);
+    evals.push_back(e);
   }
   x /= sumw; // now is <x>
   y /= sumw;
@@ -112,6 +114,10 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
   cl.setNHits(n);
   cl.setCentroidXYZ(x,y,z);
   cl.setRMSXYZ(xx,yy,zz);
+  cl.setHitValsX(xvals);
+  cl.setHitValsY(yvals);
+  cl.setHitValsZ(zvals);
+  cl.setHitValsE(evals);
 
   if (xvals.size()>2){
     for(int i=0; i<xvals.size();i++){ // mean subtract
@@ -205,6 +211,7 @@ std::vector<std::vector<const T*> > runDBSCAN2( const std::vector<T> &hits,
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName"); 
+  suffix_ = ps.getParameter<std::string>("suffix","");
   singleCluster_ = ps.getParameter<bool>("doSingleCluster");
   logEnergyWeight_ = ps.getParameter<bool>("logEnergyWeight");
   minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
@@ -219,6 +226,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
   //std::cout << "found " << hcalRecHits.size() << " hits" << std::endl;
 
   std::vector<ldmx::HcalCluster> pfClusters;
+  float eTotal=0;
   if(!singleCluster_){ 
     std::vector<std::vector<const ldmx::HcalHit*> > all_hit_ptrs = runDBSCAN2(hcalRecHits, 
         minHitEnergy_, minClusterHitMult_, clusterHitDist_);
@@ -227,17 +235,26 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
       fillClusterInfoFromHits2(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
       pfClusters.push_back(cl);
     }    
+    for (const auto &h : hcalRecHits) eTotal += h.getEnergy();
   } else {
     ldmx::HcalCluster cl;
     // fillClusterInfo(cl,hcalRecHits);
     std::vector<const ldmx::HcalHit*> ptrs; 
     ptrs.reserve(hcalRecHits.size());
-    for (const auto &h : hcalRecHits) 
+    for (const auto &h : hcalRecHits) {
       ptrs.push_back(&h);
+      eTotal += h.getEnergy();
+    }
     fillClusterInfoFromHits2(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     pfClusters.push_back(cl);
   }
-  event.add(clusterCollName_, pfClusters);
+  // sort
+  std::sort(pfClusters.begin(), pfClusters.end(),
+	    [](ldmx::HcalCluster a, ldmx::HcalCluster b) {
+	      return a.getEnergy() > b.getEnergy();
+	    });
+ event.add(clusterCollName_, pfClusters);
+ event.add("HcalTotalEnergy"+suffix_, eTotal);
 }
 
 void PFHcalClusterProducer::onFileOpen() {

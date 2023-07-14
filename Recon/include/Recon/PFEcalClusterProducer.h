@@ -48,11 +48,15 @@ class PFEcalClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
   bool singleCluster_{true};
+  bool logEnergyWeight_{true};
+
+  float minHitEnergy_{0};
 
   // name of collection for hits to be passed as input
   std::string hitCollName_;
   // name of collection for pfCluster to be output
   std::string clusterCollName_;
+  std::string suffix_;
 };
 }  // namespace recon
 
