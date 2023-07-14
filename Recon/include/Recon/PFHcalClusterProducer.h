@@ -49,6 +49,7 @@ class PFHcalClusterProducer : public framework::Producer {
   std::string hitCollName_;
   // name of collection for pfCluster to be output
   std::string clusterCollName_;
+  std::string suffix_;
 };
 }  // namespace recon
 
