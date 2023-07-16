@@ -2,6 +2,7 @@
 
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Recon/Event/CaloCluster.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "Hcal/Event/HcalCluster.h"
 #include "Recon/Event/PFCandidate.h"
@@ -29,7 +30,8 @@ void ParticleFlow::produce(framework::Event& event) {
   if (!event.exists(inputEcalCollName_)) return;
   if (!event.exists(inputHcalCollName_)) return;
   const auto ecalClusters = event.getCollection<ldmx::EcalCluster>(inputEcalCollName_);
-  const auto hcalClusters = event.getCollection<ldmx::HcalCluster>(inputHcalCollName_);
+  const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
+  // const auto hcalClusters = event.getCollection<ldmx::HcalCluster>(inputHcalCollName_);
   const auto tracks = event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
 
   //std::cout << ecalClusters.size() << " " << hcalClusters.size() << " " << tracks.size() << std::endl;

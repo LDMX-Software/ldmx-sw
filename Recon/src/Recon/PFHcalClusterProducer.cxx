@@ -1,6 +1,8 @@
 #include "Recon/PFHcalClusterProducer.h"
 #include "Recon/DBScanClusterBuilder.h"
 
+#include "Recon/Event/CalorimeterHit.h"
+#include "Recon/Event/CaloCluster.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/Event/HcalCluster.h"
 #include "TGraph.h"
@@ -232,7 +234,8 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
   const auto hcalRecHits = event.getCollection<ldmx::HcalHit>(hitCollName_);
   //std::cout << "found " << hcalRecHits.size() << " hits" << std::endl;
 
-  std::vector<ldmx::HcalCluster> pfClusters;
+  // std::vector<ldmx::HcalCluster> pfClusters;
+  std::vector<ldmx::CaloCluster> pfClusters;
   float eTotal=0;
   if(!singleCluster_){ 
     DBScanClusterBuilder cb;
@@ -241,27 +244,28 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs = cb.runDBSCAN(ptrs,false);
     //cout << all_hit_ptrs.size() << endl;
     for(const auto hit_ptrs : all_hit_ptrs){
-      ldmx::HcalCluster cl;
-      //cb.fillClusterInfoFromHits<ldmx::HcalCluster>(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
+      ldmx::CaloCluster cl;
+      cb.fillClusterInfoFromHits(&cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
       pfClusters.push_back(cl);
     }    
     for (const auto &h : hcalRecHits) eTotal += h.getEnergy();
   } else {
-    ldmx::HcalCluster cl;
+    DBScanClusterBuilder dummy;
+    ldmx::CaloCluster cl;
     // fillClusterInfo(cl,hcalRecHits);
-    std::vector<const ldmx::HcalHit*> ptrs; 
+    std::vector<const ldmx::CalorimeterHit*> ptrs; 
     ptrs.reserve(hcalRecHits.size());
     for (const auto &h : hcalRecHits) {
       ptrs.push_back(&h);
       eTotal += h.getEnergy();
     }
-    //cb.fillClusterInfoFromHits(cl, ptrs, minHitEnergy_, logEnergyWeight_);
-    fillClusterInfoFromHits2(cl, ptrs, minHitEnergy_, logEnergyWeight_);
+    dummy.fillClusterInfoFromHits(&cl, ptrs, minHitEnergy_, logEnergyWeight_);
+    //fillClusterInfoFromHits2(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     pfClusters.push_back(cl);
   }
   // sort
   std::sort(pfClusters.begin(), pfClusters.end(),
-	    [](ldmx::HcalCluster a, ldmx::HcalCluster b) {
+	    [](ldmx::CaloCluster a, ldmx::CaloCluster b) {
 	      return a.getEnergy() > b.getEnergy();
 	    });
  event.add(clusterCollName_, pfClusters);

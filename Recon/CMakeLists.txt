@@ -18,6 +18,8 @@ if(BUILD_EVENT_ONLY)
 
   register_event_object(module_path "Recon/Event" namespace "ldmx" 
                         class "CalorimeterHit" type "collection" )
+  register_event_object(module_path "Recon/Event" namespace "ldmx" 
+                        class "CaloCluster" type "collection" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "TriggerResult" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 

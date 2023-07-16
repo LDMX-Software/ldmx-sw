@@ -75,8 +75,7 @@ namespace recon {
 
 }
 
-template <class C>
-void DBScanClusterBuilder::fillClusterInfoFromHits(C &cl,
+ void DBScanClusterBuilder::fillClusterInfoFromHits(ldmx::CaloCluster *cl,
     std::vector<const ldmx::CalorimeterHit*> hits,
     float minHitEnergy, bool logEnergyWeight){
 			      
@@ -120,14 +119,14 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(C &cl,
   xx = sqrt(xx - x * x); //now is sqrt(<x^2>-<x>^2)
   yy = sqrt(yy - y * y); 
   zz = sqrt(zz - z * z);
-  cl.setEnergy(e);
-  cl.setNHits(n);
-  cl.setCentroidXYZ(x,y,z);
-  cl.setRMSXYZ(xx,yy,zz);
-  cl.setHitValsX(raw_xvals);
-  cl.setHitValsY(raw_yvals);
-  cl.setHitValsZ(raw_zvals);
-  cl.setHitValsE(raw_evals);
+  cl->setEnergy(e);
+  cl->setNHits(n);
+  cl->setCentroidXYZ(x,y,z);
+  cl->setRMSXYZ(xx,yy,zz);
+  cl->setHitValsX(raw_xvals);
+  cl->setHitValsY(raw_yvals);
+  cl->setHitValsZ(raw_zvals);
+  cl->setHitValsE(raw_evals);
 
   if (xvals.size()>2){
     for(int i=0; i<xvals.size();i++){ // mean subtract
@@ -137,12 +136,12 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(C &cl,
     }
     TGraph gxz(zvals.size(), zvals.data(), xvals.data());
     auto r_xz = gxz.Fit("pol1","SQ"); // p0 + x*p1
-    cl.setDXDZ( r_xz->Value(1) );
-    cl.setEDXDZ( r_xz->ParError(1) );
+    cl->setDXDZ( r_xz->Value(1) );
+    cl->setEDXDZ( r_xz->ParError(1) );
     TGraph gyz(zvals.size(), zvals.data(), yvals.data());
     auto r_yz = gyz.Fit("pol1","SQ"); // p0 + x*p1
-    cl.setDYDZ( r_yz->Value(1) );
-    cl.setEDYDZ( r_yz->ParError(1) );
+    cl->setDYDZ( r_yz->Value(1) );
+    cl->setEDYDZ( r_yz->ParError(1) );
   }
   return;
 }

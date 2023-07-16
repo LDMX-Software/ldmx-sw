@@ -18,6 +18,7 @@
 /* #include "Hcal/Event/HcalHit.h" */
 /* #include "Hcal/Event/HcalCluster.h" */
 #include "Recon/Event/CalorimeterHit.h"
+#include "Recon/Event/CaloCluster.h"
 /* #include "Ecal/MyClusterWeight.h" */
 /* #include "Ecal/TemplatedClusterFinder.h" */
 /* #include "Ecal/WorkingCluster.h" */
@@ -43,9 +44,9 @@ class DBScanClusterBuilder {
   std::vector<std::vector<const ldmx::CalorimeterHit*> > runDBSCAN( 
     const std::vector<const ldmx::CalorimeterHit*> &hits, bool debug);
 
-  template <class C>
-  void fillClusterInfoFromHits(C &cl, std::vector<const ldmx::CalorimeterHit*> hits,
-				 float minHitEnergy, bool logEnergyWeight);
+  void fillClusterInfoFromHits(ldmx::CaloCluster *cl, 
+			       std::vector<const ldmx::CalorimeterHit*> hits,
+			       float minHitEnergy, bool logEnergyWeight);
 
   void setMinHitEnergy(float x){minHitEnergy_=x;}
 
