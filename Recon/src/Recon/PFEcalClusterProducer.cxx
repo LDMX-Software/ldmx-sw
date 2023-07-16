@@ -20,7 +20,10 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits,
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
-  std::vector<float> evals{};
+  std::vector<float> raw_xvals{};
+  std::vector<float> raw_yvals{};
+  std::vector<float> raw_zvals{};
+  std::vector<float> raw_evals{};
   // if (!select){ // use all the hit indices...
   //   for(unsigned int i=0; i<hits.size();i++){
   //     toUse.push_back(i);
@@ -44,7 +47,10 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits,
     xvals.push_back(x);
     yvals.push_back(y);
     zvals.push_back(z);
-    evals.push_back(e);
+    raw_xvals.push_back(h->getXPos());
+    raw_yvals.push_back(h->getYPos());
+    raw_zvals.push_back(h->getZPos());
+    raw_evals.push_back(h->getEnergy());
   }
   x /= sumw; // now is <x>
   y /= sumw;
@@ -59,10 +65,10 @@ void fillClusterInfoFromHits(C &cl, std::vector<H*> hits,
   cl.setNHits(n);
   cl.setCentroidXYZ(x,y,z);
   cl.setRMSXYZ(xx,yy,zz);
-  cl.setHitValsX(xvals);
-  cl.setHitValsY(yvals);
-  cl.setHitValsZ(zvals);
-  cl.setHitValsE(evals);
+  cl.setHitValsX(raw_xvals);
+  cl.setHitValsY(raw_yvals);
+  cl.setHitValsZ(raw_zvals);
+  cl.setHitValsE(raw_evals);
 
   if (xvals.size()>2){
     for(int i=0; i<xvals.size();i++){ // mean subtract

@@ -1,4 +1,5 @@
 #include "Recon/PFHcalClusterProducer.h"
+#include "Recon/DBScanClusterBuilder.h"
 
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/Event/HcalCluster.h"
@@ -77,7 +78,10 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
   std::vector<float> xvals{};
   std::vector<float> yvals{};
   std::vector<float> zvals{};
-  std::vector<float> evals{};
+  std::vector<float> raw_xvals{};
+  std::vector<float> raw_yvals{};
+  std::vector<float> raw_zvals{};
+  std::vector<float> raw_evals{};
   // if (!select){ // use all the hit indices...
   //   for(unsigned int i=0; i<hits.size();i++){
   //     toUse.push_back(i);
@@ -99,7 +103,10 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
     xvals.push_back(x);
     yvals.push_back(y);
     zvals.push_back(z);
-    evals.push_back(e);
+    raw_xvals.push_back(h->getXPos());
+    raw_yvals.push_back(h->getYPos());
+    raw_zvals.push_back(h->getZPos());
+    raw_evals.push_back(h->getEnergy());
   }
   x /= sumw; // now is <x>
   y /= sumw;
@@ -114,10 +121,10 @@ void fillClusterInfoFromHits2(C &cl, std::vector<H*> hits,
   cl.setNHits(n);
   cl.setCentroidXYZ(x,y,z);
   cl.setRMSXYZ(xx,yy,zz);
-  cl.setHitValsX(xvals);
-  cl.setHitValsY(yvals);
-  cl.setHitValsZ(zvals);
-  cl.setHitValsE(evals);
+  cl.setHitValsX(raw_xvals);
+  cl.setHitValsY(raw_yvals);
+  cl.setHitValsZ(raw_zvals);
+  cl.setHitValsE(raw_evals);
 
   if (xvals.size()>2){
     for(int i=0; i<xvals.size();i++){ // mean subtract
@@ -228,11 +235,14 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
   std::vector<ldmx::HcalCluster> pfClusters;
   float eTotal=0;
   if(!singleCluster_){ 
-    std::vector<std::vector<const ldmx::HcalHit*> > all_hit_ptrs = runDBSCAN2(hcalRecHits, 
-        minHitEnergy_, minClusterHitMult_, clusterHitDist_);
+    DBScanClusterBuilder cb;
+    std::vector<const ldmx::CalorimeterHit*> ptrs;
+    for(const auto & h : hcalRecHits) ptrs.push_back(&h);
+    std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs = cb.runDBSCAN(ptrs,false);
+    //cout << all_hit_ptrs.size() << endl;
     for(const auto hit_ptrs : all_hit_ptrs){
       ldmx::HcalCluster cl;
-      fillClusterInfoFromHits2(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
+      //cb.fillClusterInfoFromHits<ldmx::HcalCluster>(cl, hit_ptrs, minHitEnergy_, logEnergyWeight_);
       pfClusters.push_back(cl);
     }    
     for (const auto &h : hcalRecHits) eTotal += h.getEnergy();
@@ -245,6 +255,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
       ptrs.push_back(&h);
       eTotal += h.getEnergy();
     }
+    //cb.fillClusterInfoFromHits(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     fillClusterInfoFromHits2(cl, ptrs, minHitEnergy_, logEnergyWeight_);
     pfClusters.push_back(cl);
   }
