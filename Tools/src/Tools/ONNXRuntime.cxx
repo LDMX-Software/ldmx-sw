@@ -12,6 +12,30 @@ namespace ldmx::Ort {
 
 using namespace ::Ort;
 
+#if ORT_API_VERSION == 2
+// version used when first integrated onnx into ldmx-sw
+// and version downloaded by cmake infrastructure
+// only support x86_64 architectures
+std::string get_input_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+  return s->GetInputName(i, a);
+}
+std::string get_output_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+  return s->GetOutputName(i, a);
+}
+#else
+// latest version with prebuilds for both x86_64 and arm64
+// architectures but contains a slight API change
+std::string get_input_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+  return s->GetInputNameAllocated(i, a).get();
+}
+std::string get_output_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+  return s->GetOutputNameAllocated(i, a).get();
+}
+#if ORT_API_VERSION != 15
+#pragma warning ("Untested ONNX version, not certain of API, assuming API version 15.")
+#endif
+#endif
+
 Env ONNXRuntime::env_(ORT_LOGGING_LEVEL_WARNING, "");
 
 ONNXRuntime::ONNXRuntime(const std::string& model_path,
@@ -34,7 +58,7 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
 
   for (size_t i = 0; i < num_input_nodes; i++) {
     // get input node names
-    std::string input_name(session_->GetInputName(i, allocator));
+    std::string input_name(get_input_name(session_, i, allocator));
     input_node_strings_[i] = input_name;
     input_node_names_[i] = input_node_strings_[i].c_str();
 
@@ -56,7 +80,7 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
 
   for (size_t i = 0; i < num_output_nodes; i++) {
     // get output node names
-    std::string output_name(session_->GetOutputName(i, allocator));
+    std::string output_name(get_output_name(session_, i, allocator));
     output_node_strings_[i] = output_name;
     output_node_names_[i] = output_node_strings_[i].c_str();
 

@@ -46,6 +46,8 @@ utility::Reader& EventPacket::read(utility::Reader& r) {
   r.read(subsys_data_, num_subsys);
 
   r >> crc_;
+
+  return r;
 }
 
 utility::Writer& EventPacket::write(utility::Writer& w) const {
