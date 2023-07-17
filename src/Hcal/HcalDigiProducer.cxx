@@ -54,8 +54,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   double gain = ps.getParameter<double>("avgGain");
   double pedestal = ps.getParameter<double>("avgPedestal");
   // rms noise in mV
-  noiseGenerator_->setNoise(
-      hgcrocParams.getParameter<double>("noiseRMS"));  // rms noise in mV
+  noiseGenerator_->setNoise(gain*ps.getParameter<double>("avgNoiseRMS"));
   // mean noise amplitude (if using Gaussian Model for the noise) in mV
   noiseGenerator_->setPedestal(gain * pedestal);
   // threshold for readout in mV
@@ -123,7 +122,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     int strip = detID.strip();
 
     // get position
-    double half_total_width = hcalGeometry.getHalfTotalWidth(section,layer);
+    double half_total_width = hcalGeometry.getHalfTotalWidth(section, layer);
     double ecal_dx = hcalGeometry.getEcalDx();
     double ecal_dy = hcalGeometry.getEcalDy();
 
@@ -140,7 +139,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
        * Define two pulses: with positive and negative ends.
        * For this we need to:
        * (1) Find the position along the bar:
-       *     For back Hcal: x (y) for even (odd) layers.
+       *     For back Hcal: x (y) for horizontal (vertical) layers.
        *     For side Hcal: x (top,bottom) and y (left,right).
        *
        * (2) Define the end of the bar:
@@ -167,8 +166,13 @@ void HcalDigiProducer::produce(framework::Event& event) {
       float distance_along_bar, distance_ecal;
       float distance_close, distance_far;
       int end_close;
+      const auto orientation{hcalGeometry.getScintillatorOrientation(detID)};
       if (section == ldmx::HcalID::HcalSection::BACK) {
-        distance_along_bar = (layer % 2) ? position[0] : position[1];
+        distance_along_bar =
+            (orientation ==
+             ldmx::HcalGeometry::ScintillatorOrientation::horizontal)
+                ? position[0]
+                : position[1];
         end_close = (distance_along_bar > 0) ? 0 : 1;
         distance_close = half_total_width;
         distance_far = half_total_width;
@@ -274,8 +278,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
       int numChannelsInSection = 0;
-      for (int layer = 1; layer <=hcalGeometry.getNumLayers(section); layer++) {
-        numChannelsInSection += hcalGeometry.getNumStrips(section,layer);
+      for (int layer = 1; layer <= hcalGeometry.getNumLayers(section);
+           layer++) {
+        numChannelsInSection += hcalGeometry.getNumStrips(section, layer);
       }
       // for back Hcal we have double readout, therefore we multiply the number
       // of channels by 2.
@@ -301,7 +306,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
         // set layer to 1 if the generator says it is 0 (geometry map starts
         // from 1)
         if (layerID == 0) layerID = 1;
-        stripID = noiseInjector_->Integer(hcalGeometry.getNumStrips(sectionID,layerID));
+        stripID = noiseInjector_->Integer(
+            hcalGeometry.getNumStrips(sectionID, layerID));
         endID = noiseInjector_->Integer(2);
         if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
             (sectionID == ldmx::HcalID::HcalSection::LEFT)) {

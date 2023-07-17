@@ -20,15 +20,20 @@ adc_pedestal = SimpleCSVDoubleTableProvider("hcal_adc_pedestal",["PEDESTAL_ADC",
 adc_pedestal.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
 adc_pedestal.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/pedestals/index_v1_0_0.csv'
 
-adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["gain"])
-adc_gain.validForAllRows([1.2]) # 4 ADCs per PE - maxADCRange/readoutPadCapacitance/1024
+adc_gain = SimpleCSVDoubleTableProvider("hcal_adc_gain",["MIPMPV_ADC"])
+adc_gain.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
+adc_gain.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/mips/index_v1_1_0.csv'
 
-tot_pedestal = SimpleCSVDoubleTableProvider("hcal_tot_pedestal",["pedestal"])
-tot_pedestal.validForAllRows([1.]) # dummy value since TOT is not implemented
+# the TOT linearization parameters are very stable so we use the same set for all runs
+tot_calib = SimpleCSVDoubleTableProvider("hcal_tot_calibration",
+        ["m_adc_i","cut_point_tot","high_slope","high_offset",
+         "low_slope","low_power","low_offset","tot_not","channel","flagged"])
+tot_calib.validForever(f'file://{os.environ["LDMX_BASE"]}/conditions-data/Hcal/testbeam04-2022/tot_calibration/calibrated_tot_calib_v0_1_0.csv')
 
-tot_gain = SimpleCSVDoubleTableProvider("hcal_tot_gain",["gain"])
-tot_gain.validForAllRows([2.5]) # dummy value - conversion to estimated charge deposited in TOT mode
+toa_calib = SimpleCSVDoubleTableProvider("hcal_toa_calibration",
+                                         ["bx_shift", "mean_shift"])
+toa_calib.conditions_baseURL = f'file://{os.environ["LDMX_BASE"]}/conditions-data/'
+toa_calib.entriesURL = '${LDMX_CONDITION_BASEURL}/Hcal/testbeam04-2022/toa_calibration/index_v1_0_0.csv'
 
 from .conditions import HcalReconConditionsProvider
-HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_pedestal, tot_gain)
-
+HcalReconConditionsProvider(adc_pedestal, adc_gain, tot_calib, toa_calib)

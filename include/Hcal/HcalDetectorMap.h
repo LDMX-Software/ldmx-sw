@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "Conditions/GeneralCSVLoader.h"
-#include "DetDescr/HcalElectronicsID.h"
 #include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalElectronicsID.h"
 #include "Framework/ConditionsObject.h"
 #include "Tools/ElectronicsMap.h"
 
@@ -22,8 +22,9 @@ namespace hcal {
  * \brief Class which provides various information about how the parts of the
  * Hcal connect to each other.
  *
- * The class is loaded from a single connection table, currently in the form of a CSV file,
- * using the HcalDetectorMapLoader declared and defined in the source.
+ * The class is loaded from a single connection table, currently in the form of
+ * a CSV file, using the HcalDetectorMapLoader declared and defined in the
+ * source.
  *
  * We inherit from two classes: (1) the ConditionsObject because we are a
  * conditions object and (2) from the ElectronicsMap template because we
@@ -52,4 +53,3 @@ class HcalDetectorMap
 }  // namespace hcal
 
 #endif  // HCAL_HCALDETECTORMAP_H_
-

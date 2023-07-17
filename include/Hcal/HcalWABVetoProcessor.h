@@ -15,9 +15,9 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/HcalHit.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Event/HcalCluster.h"
+#include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
@@ -48,20 +48,20 @@ class HcalWABVetoProcessor : public framework::Producer {
   void produce(framework::Event &event);
 
  private:
-     // Maximum sum of total ECAL and HCAL energy
-     double maxtotalEnergyCompare_{1000.};
-     // Minimum sum of total ECAL and HCAL energy
-     double mintotalEnergyCompare_{0.};
-     // Maximum number of clusters in an event
-     double maxnClusters_{0.};
-     // Maximum allowed mean average number of hits in the event's clusters
-     double maxMeanHitsPerCluster_{0.};
-     // Maimum allowed mean average energy in event's clusters
-     double maxMeanEnergyPerCluster_{0.};
-     std::string outputCollName_;
-     std::string inputHCALClusterCollName_;
-     std::string inputHCALHitCollName_;
-     std::string inputECALHitCollName_;
+  // Maximum sum of total ECAL and HCAL energy
+  double maxtotalEnergyCompare_{1000.};
+  // Minimum sum of total ECAL and HCAL energy
+  double mintotalEnergyCompare_{0.};
+  // Maximum number of clusters in an event
+  double maxnClusters_{0.};
+  // Maximum allowed mean average number of hits in the event's clusters
+  double maxMeanHitsPerCluster_{0.};
+  // Maimum allowed mean average energy in event's clusters
+  double maxMeanEnergyPerCluster_{0.};
+  std::string outputCollName_;
+  std::string inputHCALClusterCollName_;
+  std::string inputHCALHitCollName_;
+  std::string inputECALHitCollName_;
 
 };  // HcalWABVetoProcessor
 }  // namespace hcal

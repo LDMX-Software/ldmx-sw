@@ -46,9 +46,6 @@ class HcalHgcrocEmulator(HgcrocEmulator) :
         self.timeDnSlope = 45.037
         self.timePeak    = 12.698 # the time such that with [parameter 4]=0, the pulse peaks at t=0
 
-        # noise (0.02PE)
-        self.noiseRMS = self.calculateVoltageHcal(0.02) # mV
-
     def calculateVoltageHcal(self, PE) :
         """Calculate the voltage signal [mV] of the input number of photo-electrons (PEs)
         Assuming that 1 PE ~ 5mV
@@ -94,6 +91,8 @@ class HcalDigiProducer(Producer) :
         self.avgReadoutThreshold = 4. #ADCs - noise config only
         self.avgGain = 1.2 #noise config only
         self.avgPedestal = 1. #noise config only
+        # avg noise set to 0.02PE
+        self.avgNoiseRMS = self.hgcroc.calculateVoltageHcal(0.02)/self.avgGain
         
         # input and output collection name parameters
         self.inputCollName = 'HcalSimHits'
@@ -154,3 +153,65 @@ class HcalRecProducer(Producer) :
         self.avgToaThreshold = 1.6 # mV - correction config only
         self.avgGain = 1.2 # correction config only 
         self.avgPedestal = 1. #noise config only   
+
+class HcalSingleEndRecProducer(Producer) :
+    """ Configuration for the single ended Hcal Rec Producer
+
+    Attributes
+    ----------
+    -  mip_energy : float
+       Copied from module-wide mipEnergy [MeV]
+    -  clock_cycle : float
+       Time for one DAQ clock cycle to pass [ns]
+    -  pe_per_mip: float
+       number of photo-electrons per MIP
+    -  pass_name: str
+       Name of digi pass
+    -  coll_name: str
+       Name of digi collection
+    -  rec_coll_name: str
+       Name of rechit collection
+    """
+
+    def __init__(self, instance_name = 'hcalRecon', pass_name = '', coll_name = 'HcalDigis', rec_coll_name = 'HcalRecHits', rec_pass_name = '') :
+        super().__init__(instance_name , 'hcal::HcalSingleEndRecProducer','Hcal')
+
+        self.mip_energy = mipEnergy
+        self.clock_cycle = 25.
+        self.pe_per_mip = nPEPerMIP
+        
+        self.coll_name = coll_name
+        self.pass_name = pass_name
+        self.rec_coll_name = rec_coll_name
+        self.rec_pass_name = rec_pass_name
+
+class HcalDoubleEndRecProducer(Producer) :
+    """ Configuration for the double ended Hcal Rec Producer
+    
+    Attributes
+    ----------
+    -  mip_energy : float
+       Copied from module-wide mipEnergy [MeV]
+    -  clock_cycle : float
+       Time for one DAQ clock cycle to pass [ns]
+    -  pe_per_mip: float
+       number of photo-electrons per MIP
+    -  pass_name: str
+       Name of digi pass
+    -  coll_name: str
+       Name of digi collection
+    -  rec_coll_name: str
+       Name of rechit collection
+    """
+
+    def __init__(self, instance_name = 'hcalDoubleRecon', pass_name = '', coll_name = 'HcalRecHits', rec_coll_name = 'HcalDoubleEndRecHits', rec_pass_name = '') :
+        super().__init__(instance_name , 'hcal::HcalDoubleEndRecProducer','Hcal')
+
+        self.mip_energy = mipEnergy
+        self.clock_cycle = 25.
+        self.pe_per_mip = nPEPerMIP
+
+        self.coll_name = coll_name
+        self.pass_name = pass_name
+        self.rec_coll_name = rec_coll_name
+        self.rec_pass_name = rec_pass_name

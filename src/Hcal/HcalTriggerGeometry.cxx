@@ -1,6 +1,8 @@
 #include "Hcal/HcalTriggerGeometry.h"
+
 #include <iostream>
 #include <sstream>
+
 #include "DetDescr/HcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
@@ -8,44 +10,42 @@
 namespace hcal {
 
 HcalTriggerGeometry::HcalTriggerGeometry(const ldmx::HcalGeometry* hcalGeom)
-  : ConditionsObject(CONDITIONS_OBJECT_NAME),
-    hcalGeometry_{hcalGeom} {
-  
-}
+    : ConditionsObject(CONDITIONS_OBJECT_NAME), hcalGeometry_{hcalGeom} {}
 
 std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfQuad(
     ldmx::HcalTriggerID triggerCell) const {
   std::vector<ldmx::HcalDigiID> retval;
-  for(int iStrip=0;iStrip<4;iStrip++){
-    int strip = iStrip+4*triggerCell.superstrip();
+  for (int iStrip = 0; iStrip < 4; iStrip++) {
+    int strip = iStrip + 4 * triggerCell.superstrip();
     if (strip >= hcalGeometry_->getNumStrips(triggerCell.section())) break;
-    retval.push_back( ldmx::HcalDigiID(triggerCell.section(), triggerCell.layer(),
-                                       strip, triggerCell.end()) );
+    retval.push_back(ldmx::HcalDigiID(
+        triggerCell.section(), triggerCell.layer(), strip, triggerCell.end()));
   }
   return retval;
 }
 
-  std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfSTQ(
+std::vector<ldmx::HcalDigiID> HcalTriggerGeometry::contentsOfSTQ(
     ldmx::HcalTriggerID triggerCell) const {
   std::vector<ldmx::HcalDigiID> retval;
-  for(int iStrip=0;iStrip<8;iStrip++){
-    for(int iLayer=0;iLayer<2;iLayer++){
-      int strip = iStrip+8*triggerCell.superstrip();
+  for (int iStrip = 0; iStrip < 8; iStrip++) {
+    for (int iLayer = 0; iLayer < 2; iLayer++) {
+      int strip = iStrip + 8 * triggerCell.superstrip();
       if (strip >= hcalGeometry_->getNumStrips(triggerCell.section())) continue;
       int tlayer = triggerCell.layer();
-      int player = 2*(tlayer+iStrip) - tlayer%2;
-      if (player >= hcalGeometry_->getNumLayers(triggerCell.section())) continue;
-      retval.push_back(ldmx::HcalDigiID(triggerCell.section(), player,
-                                        strip, triggerCell.end()));
+      int player = 2 * (tlayer + iStrip) - tlayer % 2;
+      if (player >= hcalGeometry_->getNumLayers(triggerCell.section()))
+        continue;
+      retval.push_back(ldmx::HcalDigiID(triggerCell.section(), player, strip,
+                                        triggerCell.end()));
     }
   }
   return retval;
 }
-  
+
 ldmx::HcalTriggerID HcalTriggerGeometry::belongsToQuad(
     ldmx::HcalDigiID precisionCell) const {
   return ldmx::HcalTriggerID(precisionCell.section(), precisionCell.layer(),
-                             precisionCell.strip()/4, precisionCell.end());
+                             precisionCell.strip() / 4, precisionCell.end());
 }
 
 ldmx::HcalTriggerID HcalTriggerGeometry::belongsToSTQ(
@@ -54,9 +54,9 @@ ldmx::HcalTriggerID HcalTriggerGeometry::belongsToSTQ(
   // 0 1 0 1 2 3 2 3 ...
   // V H V H V H V H ...
   int layer = precisionCell.layer();
-  int superlayer = 2*(layer / 4) + (layer % 4)%2;
+  int superlayer = 2 * (layer / 4) + (layer % 4) % 2;
   return ldmx::HcalTriggerID(precisionCell.section(), superlayer,
-                             precisionCell.strip()/8, precisionCell.end());
+                             precisionCell.strip() / 8, precisionCell.end());
 }
 
 class HcalTriggerGeometryProvider : public framework::ConditionsObjectProvider {
