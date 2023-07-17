@@ -1,3 +1,7 @@
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
+using Catch::Approx;
 
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"  //creating unique cell IDs
@@ -5,7 +9,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 namespace hcal {
 namespace test {

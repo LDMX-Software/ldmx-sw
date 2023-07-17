@@ -44,7 +44,7 @@ In this configuration file `HcalSingleEndRecProducer` is run by default. A `Doub
 #### Decoded inputs
 A set of decoded April-2022 TB data is available on the SLAC cluster:
 ```
-/nfs/slac/g/ldmx/data/hcal-tb
+/sdf/group/ldmx/data/hcal-tb
 ```
 The directory holds the test beam data from the HCal prototype subsystem.
 
@@ -74,7 +74,7 @@ Event building was not done online, so it needs to be done on raw TB data files 
 
 A copy of raw April-2022 TB data is available on the SLAC cluster:
 ```
-/nfs/slac/g/ldmx/CERN-TB-DATA/ldmx/testbeam/data/pf_external/
+/sdf/group/ldmx/CERN-TB-DATA/ldmx/testbeam/data/pf_external/
 ```
 
 - Reformat: 

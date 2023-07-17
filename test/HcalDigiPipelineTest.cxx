@@ -1,3 +1,8 @@
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/catch_approx.hpp>
+
+using Catch::Approx;
 
 #include "DetDescr/HcalID.h"  //creating unique hcal IDs
 #include "Framework/ConfigurePython.h"
@@ -6,7 +11,6 @@
 #include "Hcal/Event/HcalHit.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "catch.hpp"  //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 namespace hcal {
 namespace test {
@@ -71,7 +75,7 @@ static const int NUM_TEST_SIM_HITS = 1000;
  * the input energy/position is "close enough" to the truth
  * energy/position.
  */
-class isCloseEnough : public Catch::MatcherBase<double> {
+class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
  private:
   /// correct (sim-level)
   double truth_;
