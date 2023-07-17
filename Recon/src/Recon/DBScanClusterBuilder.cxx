@@ -77,7 +77,7 @@ namespace recon {
 
  void DBScanClusterBuilder::fillClusterInfoFromHits(ldmx::CaloCluster *cl,
     std::vector<const ldmx::CalorimeterHit*> hits,
-    float minHitEnergy, bool logEnergyWeight){
+    bool logEnergyWeight){
 			      
   float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
   float w = 1; // weight
@@ -91,8 +91,8 @@ namespace recon {
   std::vector<float> raw_evals{};
 
   for(const ldmx::CalorimeterHit* h : hits){
-    if (h->getEnergy() < minHitEnergy) continue;
-    if (logEnergyWeight) w = log( h->getEnergy() - log(minHitEnergy) );
+    if (h->getEnergy() < minHitEnergy_) continue;
+    if (logEnergyWeight) w = log( h->getEnergy() - log(minHitEnergy_) );
     e += h->getEnergy();
     x += w * h->getXPos();
     y += w * h->getYPos();
