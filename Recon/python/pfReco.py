@@ -18,8 +18,8 @@ class pfEcalClusterProducer(ldmxcfg.Producer) :
         self.clusterCollName = 'PFEcalClusters'
         self.doSingleCluster = False
         self.logEnergyWeight = True
-        # self.minClusterHitMult = 2
-        # self.clusterHitDist = 100.
+        self.minClusterHitMult = 2
+        self.clusterHitDist = 100.
         self.minHitEnergy = 1.
 
 class pfHcalClusterProducer(ldmxcfg.Producer) :

@@ -29,9 +29,8 @@ void ParticleFlow::produce(framework::Event& event) {
   if (!event.exists(inputTrackCollName_)) return;
   if (!event.exists(inputEcalCollName_)) return;
   if (!event.exists(inputHcalCollName_)) return;
-  const auto ecalClusters = event.getCollection<ldmx::EcalCluster>(inputEcalCollName_);
+  const auto ecalClusters = event.getCollection<ldmx::CaloCluster>(inputEcalCollName_);
   const auto hcalClusters = event.getCollection<ldmx::CaloCluster>(inputHcalCollName_);
-  // const auto hcalClusters = event.getCollection<ldmx::HcalCluster>(inputHcalCollName_);
   const auto tracks = event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
 
   //std::cout << ecalClusters.size() << " " << hcalClusters.size() << " " << tracks.size() << std::endl;
