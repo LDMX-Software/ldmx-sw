@@ -1,16 +1,11 @@
 # Setup workflow to test if format matches that specified in the .clang-format file
-name: test-clang-format
+name: clang-format
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the trunk branch
   push:
     branches: [ trunk ]
-  pull_request:
-    branches: [ trunk ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -29,11 +24,12 @@ jobs:
           exclude: ''
           extensions: 'h,cpp'
           clangFormatVersion: 12
+          inplace: True
           style: google
       - uses: EndBug/add-and-commit@v4
         with:
-          committer_name: LDMX Bot
-          commiter_email: bot@ldmx.com
+          author_name: LDMX Bot
+          author_email: bot@ldmx.com
           message: 'Committing clang-format changes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
