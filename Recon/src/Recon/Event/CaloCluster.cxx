@@ -35,6 +35,6 @@ namespace ldmx {
       vecIDs.push_back(hitsVec[iHit]->getID());
     }
     setIDs(vecIDs);
-  }      
+  }
 
 }  // namespace ldmx
