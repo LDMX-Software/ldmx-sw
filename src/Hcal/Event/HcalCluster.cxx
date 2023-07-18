@@ -7,11 +7,11 @@ ClassImp(ldmx::HcalCluster)
 
   HcalCluster::~HcalCluster() { Clear(); }
 
-  void HcalCluster::Print() const {
-    std::cout << "HcalCluster { "
-              << "Energy: " << energy_ << ", "
-              << "Number of hits: " << nHits_ << " }" << std::endl;
-  }
+  // void HcalCluster::Print() const {
+  //   std::cout << "HcalCluster { "
+  //             << "Energy: " << energy_ << ", "
+  //             << "Number of hits: " << nHits_ << " }" << std::endl;
+  // }
 
   void HcalCluster::Clear() {
     hitIDs_.clear();
@@ -27,6 +27,7 @@ ClassImp(ldmx::HcalCluster)
     DYDZ_ = 0;
     errDXDZ_ = 0;
     errDYDZ_ = 0;
+    time_ = 0;
   }
 
   void HcalCluster::addHits(const std::vector<const HcalHit *> hitsVec) {
