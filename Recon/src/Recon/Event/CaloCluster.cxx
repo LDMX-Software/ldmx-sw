@@ -2,7 +2,7 @@
 
 ClassImp(ldmx::CaloCluster)
 
-    namespace ldmx {
+namespace ldmx {
   CaloCluster::CaloCluster() {}
 
   CaloCluster::~CaloCluster() { Clear(); }
@@ -15,14 +15,8 @@ ClassImp(ldmx::CaloCluster)
 
   void CaloCluster::Clear() {
     hitIDs_.clear();
-    // strips_.clear();
-    // strips_per_layer_.clear();
     energy_ = 0;
     nHits_ = 0;
-    n2D_ = 0;
-    layer_ = 0;
-    depth_ = 0;
-    time_ = 0;
     centroidX_ = 0;
     centroidY_ = 0;
     centroidZ_ = 0;
