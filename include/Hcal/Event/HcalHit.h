@@ -42,6 +42,14 @@ class HcalHit : public ldmx::CalorimeterHit {
    */
   void Print() const;
 
+  // int getSection() const { return section_;}
+  // int getLayer() const { return layer_;}
+  // int getStrip() const { return strip_;}
+  
+  // void setSection(int section) { section_ = section;}
+  // void setLayer(int layer) { layer_ = layer;}
+  // void setStrip(int strip) { strip_ = strip;}
+  
   /**
    * Get the number of photoelectrons estimated for this hit.
    * @return Number of photoelectrons, including noise which affects the
@@ -88,6 +96,30 @@ class HcalHit : public ldmx::CalorimeterHit {
   int getIsADC() const { return isADC_; }
 
   /**
+   * Get the toa of the positive end.
+   * @return toaPos
+   */
+  int getToaPos() const { return toaPos_; }
+
+  /**
+   * Get the toa of the negative end.
+   * @return toaNeg
+   */
+  int getToaNeg() const { return toaNeg_; }
+
+  /**
+   * Get the amplitude of the positive end.
+   * @return amplitudePos
+   */
+  int getAmplitudePos() const { return amplitudePos_; }
+
+  /**
+   * Get the amplitude of the negative end.
+   * @return amplitudeNeg
+   */
+  int getAmplitudeNeg() const { return amplitudeNeg_; }
+
+  /**
    * Set the number of photoelectrons estimated for this hit.
    * @param pe Number of photoelectrons, including noise which affects the
    * estimate.
@@ -131,6 +163,45 @@ class HcalHit : public ldmx::CalorimeterHit {
    */
   void setIsADC(int isADC) { isADC_ = isADC; }
 
+  /**
+   * Set time difference (uncorrected)
+   * @param time
+   */
+  void setTimeDiff(double timeDiff) { timeDiff_ = timeDiff; }
+
+  /**
+   * Set toa of the positive end
+   * @param time
+   */
+  void setToaPos(double toaPos) { toaPos_ = toaPos; }
+
+  /**
+   * Set toa of the negative end
+   * @param time
+   */
+  void setToaNeg(double toaNeg) { toaNeg_ = toaNeg; }
+
+  /**
+   * Set amplitude of the positive end
+   * @param amplitude
+   */
+  void setAmplitudePos(double amplitudePos) { amplitudePos_ = amplitudePos; }
+
+  /**
+   * Set amplitude of the negative end
+   * @param amplitude
+   */
+  void setAmplitudeNeg(double amplitudeNeg) { amplitudeNeg_ = amplitudeNeg; }
+
+  /**
+   * Set original position
+   */
+  void setPositionUnchanged(double position, int isX) { position_ = position; isX_ = isX; }
+
+  double getPosition() const { return position_;}
+  int getIsX() const { return isX_;}
+  double getTimeDiff() const { return timeDiff_;}
+
  private:
   /** The number of PE estimated for this hit. */
   float pe_{0};
@@ -148,6 +219,15 @@ class HcalHit : public ldmx::CalorimeterHit {
   /// isADC
   int isADC_;
 
+  double timeDiff_;
+  double position_;
+  double isX_;
+
+  double toaPos_;
+  double toaNeg_;
+  double amplitudePos_;
+  double amplitudeNeg_;
+  
   /**
    * The ROOT class definition.
    */
