@@ -16,8 +16,8 @@ source ${GITHUB_ACTION_PATH}/../common.sh
 
 __main__() {
   start_group Pull the Environment
-  docker pull ldmx/dev:latest
-  docker inspect ldmx/dev:latest
+  docker pull ${LDMX_DOCKER_TAG}
+  docker inspect ${LDMX_DOCKER_TAG}
   end_group
 
   start_group Configure the Build
