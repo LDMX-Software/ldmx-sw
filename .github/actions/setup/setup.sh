@@ -15,6 +15,11 @@ set -e
 source ${GITHUB_ACTION_PATH}/../common.sh
 
 __main__() {
+  start_group Pull the Environment
+  docker pull ldmx/dev:latest
+  docker inspect ldmx/dev:latest
+  end_group
+
   start_group Configure the Build
   local _build=${LDMX_BASE}/ldmx-sw/build
   mkdir ${_build}
