@@ -49,6 +49,7 @@ class pfProducer(ldmxcfg.Producer) :
         self.inputHcalCollName  = 'PFHcalClusters'
         self.inputTrackCollName = 'PFTracks'
         self.outputCollName     = 'PFCandidates'
+        self.singleParticle     = False
   
 class pfTruthProducer(ldmxcfg.Producer) :
     """Configuration for track selector for particle reco"""

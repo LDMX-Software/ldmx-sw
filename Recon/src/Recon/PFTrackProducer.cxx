@@ -10,6 +10,11 @@ void PFTrackProducer::configure(framework::config::Parameters& ps) {
   outputTrackCollName_ = ps.getParameter<std::string>("outputTrackCollName"); 
 }
 
+double getP(const ldmx::SimTrackerHit &tk){
+  std::vector<double> pxyz = tk.getMomentum();
+  return sqrt(pow(pxyz[0],2)+pow(pxyz[1],2)+pow(pxyz[2],2));
+}
+
 void PFTrackProducer::produce(framework::Event& event) {
 
   if (!event.exists(inputTrackCollName_)) return;
@@ -26,7 +31,7 @@ void PFTrackProducer::produce(framework::Event& event) {
   }
   std::sort(pfTracks.begin(), pfTracks.end(),
 	    [](ldmx::SimTrackerHit a, ldmx::SimTrackerHit b) {
-	      return a.getEnergy() > b.getEnergy();
+	      return getP(a) > getP(b);
 	    });
   event.add(outputTrackCollName_, pfTracks);
 }
