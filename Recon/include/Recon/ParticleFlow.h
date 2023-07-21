@@ -13,6 +13,13 @@
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "TGraph.h"
 
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Recon/Event/CaloCluster.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Hcal/Event/HcalCluster.h"
+#include "Recon/Event/PFCandidate.h"
+
 namespace recon {
 
 /**
@@ -36,6 +43,10 @@ class ParticleFlow : public framework::Producer {
 
   virtual void onProcessEnd();
 
+  void FillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk);
+  void FillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em);
+  void FillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had);
+
  private:
   // specific verbosity of this producer
   int verbose_{0};
@@ -49,6 +60,8 @@ class ParticleFlow : public framework::Producer {
   std::string inputTrackCollName_;
   // name of collection for PF outputs
   std::string outputCollName_;
+  // configuration
+  bool singleParticle_;
 };
 }  // namespace recon
 
