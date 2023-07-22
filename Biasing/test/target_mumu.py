@@ -6,7 +6,7 @@ import LDMX.Ecal.EcalGeometry
 import LDMX.Hcal.HcalGeometry
 p.sequence = [
     target.gamma_mumu(
-        'ldmx-det-v12' ,
+        'ldmx-det-v14' ,
         generators.single_4gev_e_upstream_tagger()
         )
     ]

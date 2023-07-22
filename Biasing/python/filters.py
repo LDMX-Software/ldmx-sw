@@ -84,6 +84,17 @@ class TargetPNFilter(simcfg.UserAction) :
 
         self.process = 'photonNuclear'
 
+class TargetGammaMuMuFilter(simcfg.UserAction) :
+    """ Configuration for filtering muon conversion events in the target."""
+
+    def __init__(self) :
+        super().__init__("target_process_filter", "biasing::TargetProcessFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.process = 'GammaToMuPair'
+
 class EcalDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 
@@ -125,15 +136,18 @@ class TaggerVetoFilter(simcfg.UserAction):
     ----------
     thresh : float
         Minimum energy [MeV] that electron should have
+    reject_events_missing_tagger : bool
+        Also veto events where the primary particle misses the tagger region
     """
     
-    def __init__(self,thresh=3800.) :
+    def __init__(self,thresh=3800., reject_events_missing_tagger=True) :
         super().__init__('tagger_veto_filter','biasing::TaggerVetoFilter')
 
         from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
+        self.reject_events_missing_tagger = reject_events_missing_tagger
 
 class PrimaryToEcalFilter(simcfg.UserAction) :
     """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy

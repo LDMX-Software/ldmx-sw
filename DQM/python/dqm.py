@@ -1,6 +1,140 @@
 """Configuration for DQM analyzers"""
 
 from LDMX.Framework import ldmxcfg
+class HCalDQM(ldmxcfg.Analyzer) :
+    """Configured HCalDQM python object
+
+    Contains an instance of HCalDQM that
+    has already been configured.
+
+    Builds the necessary histograms as well.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.HCalDQM() )
+    """
+
+
+
+    def __init__(self,name="hcal_dqm", pe_threshold=5, section=0, max_hit_time = 50.0) :
+        self.section = section
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        section_name = section_names[section]
+        super().__init__(name + f'_{section_name}','dqm::HCalDQM','DQM')
+
+        self.pe_veto_threshold = float(pe_threshold)
+        self.max_hit_time = max_hit_time
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''
+        self.sim_coll_name = 'HcalSimHits'
+        self.sim_pass_name = ''
+
+        pe_bins = [1500, 0, 1500]
+        time_bins = [100, -100, 500]
+        layer_bins = [100,0,100]
+        multiplicity_bins = [400,0,400]
+        energy_bins = [200,0,200]
+        total_energy_bins = [1000, 0, 1000]
+        self.build1DHistogram('sim_along_x', 'x', 1200, -3000,3000)
+        self.build1DHistogram('sim_along_y', 'y', 1200, -3000,3000)
+        self.build1DHistogram('sim_along_z', 'z', 1200, 0,6000)
+        self.build1DHistogram('along_x', 'x', 1200, -3000,3000)
+        self.build1DHistogram('along_y', 'y', 1200, -3000,3000)
+        self.build1DHistogram('along_z', 'z', 1200, 0,6000)
+        # Per hit
+        self.build1DHistogram("pe",
+                              f"Photoelectrons in the HCal ({section_name})",
+                              *pe_bins)
+        self.build1DHistogram('hit_time', f'HCal hit time ({section_name}) [ns]',
+                              *time_bins)
+        self.build1DHistogram('sim_hit_time', f'HCal hit time ({section_name}) [ns]',
+                              *time_bins)
+        self.build1DHistogram("layer", f"Layer number ({section_name})",
+                              *layer_bins)
+        self.build1DHistogram("sim_layer", f"Layer number ({section_name})",
+                              *layer_bins)
+        self.build1DHistogram("noise",
+                              f"Is pure noise hit? ({section_name})", 2, 0, 1)
+
+        self.build1DHistogram("energy",
+                              f"Reconstructed hit energy in the HCal ({section_name})",
+                              *energy_bins)
+
+        self.build1DHistogram("sim_energy",
+                              f"Simulated hit energy in the HCal ({section_name})",
+                              *energy_bins)
+        self.build1DHistogram("sim_energy_per_bar",
+                              f"Simulated hit energy per bar in the HCal ({section_name})",
+                              *energy_bins)
+        # Once per event
+        self.build1DHistogram("total_energy",
+                              f"Total reconstructed energy in the HCal ({section_name})",
+                              *total_energy_bins)
+        self.build1DHistogram("sim_total_energy",
+                              f"Total simulated energy in the HCal ({section_name})",
+                              *total_energy_bins)
+        self.build1DHistogram("total_pe",
+                              f"Total photoelectrons in the HCal ({section_name})",
+                              200,0,10000)
+        self.build1DHistogram('max_pe',
+                              f"Maximum photoelectrons in the HCal ({section_name})",
+                              *pe_bins)
+        self.build2DHistogram('sim_layer:strip',
+                              f'HCal Layer ({section_name})',
+                              *layer_bins,
+                              'Back HCal Strip', 62,0,62 )
+        self.build2DHistogram('layer:strip',
+                              f'HCal Layer ({section_name})',
+                              *layer_bins,
+                              'Back HCal Strip', 62,0,62 )
+        self.build1DHistogram("hit_multiplicity",
+                              f"HCal hit multiplicity ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram("sim_hit_multiplicity",
+                              f"HCal hit multiplicity ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram("sim_num_bars_hit",
+                              f"HCal hit multiplicity ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram("vetoable_hit_multiplicity",
+                              f"Multiplicity of vetoable hits at {pe_threshold} PE ({section_name})",
+                              *multiplicity_bins)
+        self.build1DHistogram('max_pe_time',
+                             f"Max PE hit time ({section_name}) [ns]",
+                              *time_bins)
+        self.build1DHistogram('hit_z', 'Reconstructed Z position in the HCal ({section_name}) [mm]',
+                              1000, 0, 6000
+                              )
+
+
+
+class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
+    def __init__(self,name="HcalInefficiencyAnalyzer", num_sections=5,
+                 pe_threshold=5, max_hit_time=50.0):
+        super().__init__(name,'dqm::HcalInefficiencyAnalyzer','DQM')
+
+        self.sim_coll_name = "HcalSimHits"
+        self.sim_pass_name = "" #use whatever pass is available
+
+        self.rec_coll_name= "HcalRecHits"
+        self.rec_pass_name= "" #use whatever pass is available
+
+        self.pe_veto_threshold = float(pe_threshold)
+        self.max_hit_time = max_hit_time
+
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        inefficiency_depth_bins = [6000, 0., 6000.]
+        inefficiency_layer_bins = [100, 0, 100]
+        # Overall, Back, Side, Top, Bottom, Left, Right, Both,
+        # Back only, Side Only, Neither
+        self.build1DHistogram('efficiency', "", 12, -1, 11)
+        for section in range(num_sections):
+            section_name = section_names[section]
+            self.build1DHistogram(f"inefficiency_{section_name}",
+                                  "fInefficiency ({section_name})",
+                                  *inefficiency_layer_bins
+                                  )
 
 class EcalDigiVerify(ldmxcfg.Analyzer) :
     """Configured EcalDigiVerifier python object
@@ -92,58 +226,6 @@ class SimObjects(ldmxcfg.Analyzer) :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
 
-class HCalDQM(ldmxcfg.Analyzer) :
-    """Configured HCalDQM python object
-    
-    Contains an instance of HCalDQM that
-    has already been configured.
-    
-    Builds the necessary histograms as well.
-    
-    Examples
-    --------
-        from LDMX.DQM import dqm
-        p.sequence.append( dqm.HCalDQM() )
-    """
-
-    def __init__(self,name="hcal_dqm") :
-        super().__init__(name,'dqm::HCalDQM','DQM')
-
-        self.rec_coll_name = 'HcalRecHits'
-        self.rec_pass_name = ''
-        
-        # every hit in hcal
-        self.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
-        self.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
-        self.build2DHistogram("back_pe:layer",
-                "Photoelectrons in a Back HCal Layer",10,0,10,
-                "Back HCal Layer",100,0,100)
-        self.build2DHistogram("back_layer:strip",
-                "Back HCal Layer",100,0,100,
-                "Back HCal Strip",62,0,62)
-        self.build2DHistogram("side_pe:layer",
-                "Photoelectrons in a Side HCal Layer",10,0,10,
-                "Side HCal Layer",20,0,20)
-        self.build2DHistogram("side_layer:strip",
-                "Side HCal Layer",20,0,20,
-                "Side HCal Strip",30,0,30)
-        
-        # once per event
-        self.build1DHistogram("n_hits", "HCal hit multiplicity", 300, 0, 300)
-        self.build1DHistogram("total_pe", "Total Photoelectrons", 3000, 0, 3000)
-        self.build1DHistogram("back_total_pe", "Total Photoelectrons in Back", 3000, 0, 3000)
-        self.build1DHistogram("max_pe", 
-                "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
-        self.build1DHistogram("hit_time_max_pe", 
-                "Max PE hit time (ns)", 1600, -100, 1500)
-        self.build2DHistogram("max_pe:time", 
-                "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                "HCal max PE hit time (ns)", 1500, 0, 1500)
-        self.build1DHistogram("min_time_hit_above_thresh", 
-                "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
-        self.build2DHistogram("min_time_hit_above_thresh:pe", 
-                           "Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
     def __init__(self, input_name) :
@@ -202,9 +284,11 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.PhotoNuclearDQM() )
     """
 
-    def __init__(self,name='PN') :
+    def __init__(self,name='PN', verbose=False, count_light_ions=True) :
         super().__init__(name,'dqm::PhotoNuclearDQM','DQM')
 
+        self.count_light_ions=count_light_ions
+        self.verbose = verbose
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
         self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
         self.build1DHistogram("event_type_2000mev" , "", 24, -1, 23)
@@ -212,8 +296,11 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram("event_type_compact_500mev"  , "", 8, -1, 7)
         self.build1DHistogram("event_type_compact_2000mev" , "", 8, -1, 7)
         self.build1DHistogram("1n_event_type"      , "", 7,  -1, 6)
-        self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 100, 0, 200)
+        self.build1DHistogram("pn_particle_mult"   , "Photo-nuclear Multiplicity", 200, 0, 200)
+        self.build1DHistogram("pn_neutron_mult", "Photo-nuclear Neutron Multiplicity", 200,0, 200)
         self.build1DHistogram("pn_gamma_energy"    , "#gamma Energy (MeV)", 500, 0, 5000)
+        self.build1DHistogram("pn_total_ke"  , "Total Kineitc Energy of Photo-Nuclear Products(MeV)", 500, 0, 5000)
+        self.build1DHistogram("pn_total_neutron_ke"  , "Total Kineitc Energy of Photo-Nuclear Neutrons  (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_neutron_energy"  , "Neutron Energy (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_energy_diff"     , "E(#gamma_{PN}) - E(n) (MeV)", 500, 0, 5000)
         self.build1DHistogram("1n_energy_frac"     , "E(n)/E(#gamma_{PN}) (MeV)", 500, 0, 1)
@@ -417,12 +504,28 @@ ecal_dqm = [
         ]
 
 hcal_dqm = [
-        HCalDQM()
-        ]
+        HCalDQM(pe_threshold=5,
+                section=0
+                ),
+        HCalDQM(pe_threshold=5,
+                section=1
+                ),
+        HCalDQM(pe_threshold=5,
+                section=2
+                ),
+        HCalDQM(pe_threshold=5,
+                section=3
+                ),
+        HCalDQM(pe_threshold=5,
+                section=4
+                ),
+        HcalInefficiencyAnalyzer(),
+  ]
 
 recoil_dqm = [
         RecoilTrackerDQM()
         ]
+
 
 trigScint_dqm = [
     TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),

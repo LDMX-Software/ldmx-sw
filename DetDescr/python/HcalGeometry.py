@@ -38,8 +38,8 @@ class HcalReadoutGeometry:
         Used in the regular geometry to describe the dimensions of the Ecal.
         Since there is no Ecal in the prototype geometry, these are both set to
         0.
-    horizontal_parity:
-        Layers with odd parity (1) are horizontal on the x-axis
+    back_horizontal_parity:
+        Layers with odd parity (1) are horizontal on the x-axis in the back HCal
     """
 
     def __init__(self):
@@ -48,17 +48,18 @@ class HcalReadoutGeometry:
         self.detectors_valid = []
         self.scint_thickness = 0.0
         self.scint_width = 0.0
+        self.scint_length = [[]]
         self.zero_layer = []
-        self.zero_strip = []
+        self.zero_strip = [[]]
         self.layer_thickness = []
         self.num_layers = []
-        self.num_strips = []
-        self.half_total_width = []
+        self.num_strips = [[]]
+        self.half_total_width = [[]]
         self.ecal_dx = 0.0
         self.ecal_dy = 0.0
         self.num_sections = 0
         self.verbose = 0
-        self.horizontal_parity = 1
+        self.back_horizontal_parity = 1
         self.side_3d_readout = 0
 
     def __str__(self):
@@ -74,6 +75,7 @@ class HcalReadoutGeometry:
                 Half total width of layers: {} [mm]
                 Number of strips per layer: {}
                 Location of zero-th strip per layer: {} [mm]
+                Scintillator length: {} [mm]
             }},
             Ecal DX, DY: {}, {} [mm],
             Valid detector regexps: {}
@@ -88,6 +90,7 @@ class HcalReadoutGeometry:
             self.half_total_width,
             self.num_strips,
             self.zero_strip,
+            self.scint_length,
             self.ecal_dx,
             self.ecal_dy,
             self.detectors_valid,
@@ -116,8 +119,28 @@ class HcalGeometry:
         """
         self.v13 = HcalReadoutGeometry()
 
+        self.v13.num_sections = 5
+        self.v13.num_layers = [100, 28, 28, 26, 26]
         self.v13.scint_thickness = 20.0
         self.v13.scint_width = 50.0
+
+        back_scint_length = 3100.0
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L21
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L177
+        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178068211
+        side_TB_scint_length = 1944
+
+        # See https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L22
+        # and https://github.com/LDMX-Software/ldmx-sw/blob/trunk/Detectors/data/ldmx-det-v13/hcal.gdml#L181
+        # and the corresponding discussion https://github.com/LDMX-Software/ldmx-sw/pull/1135#discussion_r1178070801
+        side_LR_scint_length = 1832
+        self.v13.scint_length = [[back_scint_length for layer in range(self.v13.num_layers[0])],
+                                 [side_TB_scint_length for layer in range(self.v13.num_layers[1])],
+                                 [side_TB_scint_length for layer in range(self.v13.num_layers[2])],
+                                 [side_LR_scint_length for layer in range(self.v13.num_layers[3])],
+                                 [side_LR_scint_length for layer in range(self.v13.num_layers[4])],
+                                 ]
+
         self.v13.zero_layer = [
             220.0 + 600.0 + 25.0 + 2 * 2.0,
             600.0 / 2 + 20.0 + 2 * 2.0,
@@ -125,7 +148,11 @@ class HcalGeometry:
             800.0 / 2 + 20.0 + 2 * 2.0,
             800.0 / 2 + 20.0 + 2 * 2.0,
         ]
-        self.v13.zero_strip = [3100.0 / 2, 220.0, 220.0, 220.0, 220.0]
+        self.v13.zero_strip = [[back_scint_length / 2 for layer in range(self.v13.num_layers[0])],
+                               [220.0 for layer in range(self.v13.num_layers[1])],
+                               [220.0 for layer in range(self.v13.num_layers[2])],
+                               [220.0 for layer in range(self.v13.num_layers[3])],
+                               [220.0 for layer in range(self.v13.num_layers[4])]]
         self.v13.layer_thickness = [
             25.0 + self.v13.scint_thickness + 2 * 2.0,
             20.0 + self.v13.scint_thickness + 2 * 2.0,
@@ -133,21 +160,27 @@ class HcalGeometry:
             20.0 + self.v13.scint_thickness + 2 * 2.0,
             20.0 + self.v13.scint_thickness + 2 * 2.0,
         ]
-        self.v13.num_sections = 5
-        self.v13.num_layers = [100, 28, 28, 26, 26]
-        self.v13.num_strips = [62, 12, 12, 12, 12]
+        self.v13.num_strips = [[62 for layer in range(self.v13.num_layers[0])],
+                               [12 for layer in range(self.v13.num_layers[1])],
+                               [12 for layer in range(self.v13.num_layers[2])],
+                               [12 for layer in range(self.v13.num_layers[3])],
+                               [12 for layer in range(self.v13.num_layers[4])]]
         self.v13.ecal_dx = 800.0
         self.v13.ecal_dy = 600.0
         self.v13.half_total_width = [
-            (self.v13.num_strips[0] * self.v13.scint_width) / 2,
-            (self.v13.num_layers[1] * self.v13.layer_thickness[1] + self.v13.ecal_dx)
-            / 2,
-            (self.v13.num_layers[2] * self.v13.layer_thickness[2] + self.v13.ecal_dx)
-            / 2,
-            (self.v13.num_layers[3] * self.v13.layer_thickness[3] + self.v13.ecal_dy)
-            / 2,
-            (self.v13.num_layers[4] * self.v13.layer_thickness[4] + self.v13.ecal_dy)
-            / 2,
+            [(self.v13.num_strips[0][layer] * self.v13.scint_width) / 2 for layer in range(self.v13.num_layers[0])],
+            [(self.v13.num_layers[1] * self.v13.layer_thickness[1] + self.v13.ecal_dx)
+            / 2
+             for layer in range(self.v13.num_layers[1])],
+            [(self.v13.num_layers[2] * self.v13.layer_thickness[2] + self.v13.ecal_dx)
+            / 2
+             for layer in range(self.v13.num_layers[2])],
+            [(self.v13.num_layers[3] * self.v13.layer_thickness[3] + self.v13.ecal_dy)
+            / 2
+             for layer in range(self.v13.num_layers[3])],
+            [(self.v13.num_layers[4] * self.v13.layer_thickness[4] + self.v13.ecal_dy)
+            / 2
+             for layer in range(self.v13.num_layers[4])],
         ]
         self.v13.detectors_valid = [
             "ldmx-det-v13",
@@ -158,8 +191,8 @@ class HcalGeometry:
             "ldmx-det-v11",
         ]
         # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v13.horizontal_parity = 1
+        # along the x-axis) in the back hcal
+        self.v13.back_horizontal_parity = 1
         self.v13.side_3d_readout = 0
 
     def make_v1_prototype(self):
@@ -188,6 +221,7 @@ class HcalGeometry:
 
         self.v1_prototype.scint_thickness = scint_thickness
         self.v1_prototype.scint_width = scint_bar_width
+        self.v1_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
 
         # Note that this seems to be location of the first scintillator layer
         self.v1_prototype.zero_layer = [-dz / 2 + air_thickness + absorber_thickness]
@@ -196,11 +230,12 @@ class HcalGeometry:
         self.v1_prototype.num_layers = [num_layers]
         num_strips_front = [num_bars_front for i in range(num_layers_front)]
         num_strips_back = [num_bars_back for i in range(num_layers_back)]
-        self.v1_prototype.num_strips = num_strips_front + num_strips_back
+        num_strips_total = num_strips_front + num_strips_back
+        self.v1_prototype.num_strips = [num_strips_total]
         # zero_strip and half_total_width are identical
-        self.v1_prototype.zero_strip = [
-            N * scint_bar_width / 2 for N in self.v1_prototype.num_strips
-        ]
+        self.v1_prototype.zero_strip = [[
+            N * scint_bar_width / 2 for N in num_strips_total
+        ]]
         self.v1_prototype.half_total_width = self.v1_prototype.zero_strip
         self.v1_prototype.ecal_dx = 0.0
         self.v1_prototype.ecal_dy = 0.0
@@ -209,8 +244,8 @@ class HcalGeometry:
             "ldmx-hcal-prototype-v1.0[.].*",
         ]
         # Layers with odd parity (1) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v1_prototype.horizontal_parity = 1
+        # along the x-axis) in the back HCal
+        self.v1_prototype.back_horizontal_parity = 1
         self.v1_prototype.side_3d_readout = 0
 
     def make_v2_prototype(self):
@@ -245,6 +280,7 @@ class HcalGeometry:
 
         self.v2_prototype.scint_thickness = scint_thickness
         self.v2_prototype.scint_width = scint_bar_width
+        self.v2_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
 
         self.v2_prototype.zero_layer = [
             -dz / 2
@@ -257,11 +293,12 @@ class HcalGeometry:
         self.v2_prototype.num_layers = [num_layers]
         num_strips_front = [num_bars_front for i in range(num_layers_front)]
         num_strips_back = [num_bars_back for i in range(num_layers_back)]
-        self.v2_prototype.num_strips = num_strips_front + num_strips_back
+        num_strips_total = num_strips_front + num_strips_back
+        self.v2_prototype.num_strips = [num_strips_total]
         # zero_strip and half_total_width are identical
-        self.v2_prototype.zero_strip = [
-            N * scint_bar_width / 2 for N in self.v2_prototype.num_strips
-        ]
+        self.v2_prototype.zero_strip = [[
+            N * scint_bar_width / 2 for N in num_strips_total
+        ]]
         self.v2_prototype.half_total_width = self.v2_prototype.zero_strip
         self.v2_prototype.ecal_dx = 0.0
         self.v2_prototype.ecal_dy = 0.0
@@ -270,8 +307,8 @@ class HcalGeometry:
             "ldmx-hcal-prototype-v2.0[.].*",
         ]
         # Layers with even parity (0) are horizontal (scintillator bar length
-        # along the x-axis)
-        self.v2_prototype.horizontal_parity = 0
+        # along the x-axis) in the back HCal
+        self.v2_prototype.back_horizontal_parity = 0
         self.v2_prototype.side_3d_readout = 0
 
     def make_v14(self):
@@ -288,18 +325,19 @@ class HcalGeometry:
         back_hcal_layerThick = (
             back_hcal_absoThick + hcal_scintThick + 2.0 * hcal_airThick
         )
-        back_hcal_dx = 2000.0
-        back_hcal_dy = 2000.0
+        back_hcal_scint_length = 2000.0
+        back_hcal_dx = back_hcal_scint_length
+        back_hcal_dy = back_hcal_scint_length
         back_hcal_dz = back_hcal_numLayers * back_hcal_layerThick
 
         side_hcal_absoThick = 20.0
         side_hcal_dz = 600.0
         side_hcal_numModules = 4
         side_hcal_numSections = 4
-        side_hcal_length = [1800.0, 1600.0, 1400.0, 1200.0]
+        side_hcal_scint_length = [1800.0, 1600.0, 1400.0, 1200.0]
         side_hcal_numLayers = [4, 3, 2, 3]
         side_hcal_numPrevLayers = [0, 4, 7, 9]
-        side_hcal_numScintZ = [m / hcal_scintWidth for m in side_hcal_length]
+        side_hcal_numScintZ = [m / hcal_scintWidth for m in side_hcal_scint_length]
         side_hcal_numScintXY = side_hcal_dz / hcal_scintWidth
         # Number of layers oriented in x,y. Multiply by 2 to get the total number of layers
         side_hcal_numTotalLayers = (
@@ -312,7 +350,7 @@ class HcalGeometry:
             side_hcal_absoThick + 2.0 * hcal_airThick + hcal_scintThick
         )
         side_hcal_moduleWidth = side_hcal_numTotalLayers * side_hcal_layerThick
-        side_hcal_moduleLength = side_hcal_length[0]
+        side_hcal_moduleLength = side_hcal_scint_length[0]
 
         hcal_envelope_dx = 3000.0
         hcal_envelope_dy = 3000.0
@@ -356,7 +394,7 @@ class HcalGeometry:
         self.v14.side_3d_readout = 1
         self.v14.side_num_modules = side_hcal_numModules
         # In back hcal: odd layers are horizontal, even layers are vertical
-        self.v14.horizontal_parity = 1
+        self.v14.back_horizontal_parity = 1
         # In side hcal: odd layers have strips oriented in z
         zero_strip_odd = [
             -ecal_side_dx / 2.0,
@@ -365,6 +403,25 @@ class HcalGeometry:
             ecal_side_dy / 2.0,
         ]
 
+        self.v14.scint_length = [[back_hcal_scint_length for layer in range(back_hcal_numLayers)],
+                                 [0.] * side_hcal_numTotalLayers, # Filled below
+                                 [0.] * side_hcal_numTotalLayers,
+                                 [0.] * side_hcal_numTotalLayers,
+                                 [0.] * side_hcal_numTotalLayers]
+        for s in range(side_hcal_numSections):
+            for m in range(self.v14.side_num_modules):
+                for l in range(side_hcal_numLayers[m] * 2):
+                    # Layer numbering starts at 1
+                    layer = l + 1
+                    # The back hcal (section 0) has already been handled
+                    section_index = s + 1
+                    layer_index = l + side_hcal_numPrevLayers[m] * 2
+                    if layer % 2 == 0:
+                        # Layer number is even, length is along X/Y
+                        self.v14.scint_length[section_index][layer_index] = side_hcal_scint_length[m]
+                    else:
+                        # Layer number is odd, length is along Z
+                        self.v14.scint_length[section_index][layer_index] = side_hcal_dz
         # side properties
         # num strips
         #  for layer 1: side_hcal_numScintZ (odd layers have strips oriented in z)
@@ -375,10 +432,12 @@ class HcalGeometry:
         for m in range(self.v14.side_num_modules):
             for l in range(side_hcal_numLayers[m] * 2):
                 if (l + 1) % 2 == 0:
+                    # Layer number is even
                     half_total_width_side.append(side_hcal_dz / 2)
                     num_strips_side.append(int(side_hcal_numScintXY))
                 else:
-                    half_total_width_side.append(side_hcal_length[m] / 2)
+                    # Layer number is odd
+                    half_total_width_side.append(side_hcal_scint_length[m] / 2)
                     num_strips_side.append(int(side_hcal_numScintZ[m]))
 
         zero_strip_side = []

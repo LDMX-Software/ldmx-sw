@@ -15,7 +15,6 @@
 //----------//
 //   ldmx   //
 //----------//
-//#include "Event/FindableTrackResult.h"
 #include "Framework/Exception/Exception.h"
 #include "SimCore/Event/SimParticle.h"
 
@@ -26,60 +25,63 @@
 
 namespace Analysis {
 
-std::tuple<int, const ldmx::SimParticle*> getRecoil(
-    const std::map<int, ldmx::SimParticle>& particleMap) {
-  // The recoil electron always has a track ID of 1.
+std::tuple<int, const ldmx::SimParticle *>
+getRecoil(const std::map<int, ldmx::SimParticle> &particleMap) {
+  // The recoil electron is "produced" in the dark brem geneartion
+  for (const auto &[trackID, particle] : particleMap) {
+    if (particle.getPdgID() == 11 and
+        particle.getProcessType() ==
+            ldmx::SimParticle::ProcessType::eDarkBrem) {
+      return {trackID, &particle};
+    }
+  }
+  // only get here if recoil electron was not "produced" by dark brem
+  //   in this case (bkgd), we interpret the primary electron as also the recoil
+  //   electron
   return {1, &(particleMap.at(1))};
 }
 
-const ldmx::SimParticle* getPNGamma(
-    const std::map<int, ldmx::SimParticle>& particleMap,
-    const ldmx::SimParticle* recoil, const float& energyThreshold) {
-  // Get all of the daughter track IDs
-  auto daughterTrackIDs{recoil->getDaughters()};
+// Search the recoil electrons daughters for a photon
+// Check if the photon has daughters and if so, if they were produced by PN
+//
 
-  auto pit = std::find_if(
-      daughterTrackIDs.begin(), daughterTrackIDs.end(),
-      [energyThreshold, particleMap](const int& id) {
-        // Get the SimParticle from the map
-        auto daughter{particleMap.at(id)};
+bool doesParticleHavePNDaughters(
+    const ldmx::SimParticle &gamma,
+    const std::map<int, ldmx::SimParticle> &particleMap) {
+  for (auto daughterID : gamma.getDaughters()) {
+    if (particleMap.find(daughterID) != std::end(particleMap)) {
+      const auto daughter{particleMap.at(daughterID)};
+      const auto processType{daughter.getProcessType()};
+      if (processType == ldmx::SimParticle::ProcessType::photonNuclear) {
+        return true;
+      } // Was it PN?
+    }   // Was it in the map?
+  }
 
-        // If the particle doesn't have any daughters, return false
-        if (daughter.getDaughters().size() == 0) return false;
+  return false;
+}
 
-        // If the particle has daughters that were a result of a
-        // photo-nuclear reaction, and its energy is above threshold,
-        // then tag it as the PN gamma.
-        return (
-            (particleMap.at(daughter.getDaughters().front()).getProcessType() ==
-             ldmx::SimParticle::ProcessType::photonNuclear) &&
-            (daughter.getEnergy() >= energyThreshold));
-      });
-
-  // If a PN daughter was found, return it.
-  if (pit != daughterTrackIDs.end()) return &particleMap.at(*pit);
-
+const ldmx::SimParticle *
+getPNGamma(const std::map<int, ldmx::SimParticle> &particleMap,
+           const ldmx::SimParticle *recoil, const float &energyThreshold) {
+  auto recoilDaughters{recoil->getDaughters()};
+  for (auto recoilDaughterID : recoilDaughters) {
+    // Have we stored the recoil daughter?
+    if (particleMap.find(recoilDaughterID) != std::end(particleMap)) {
+      auto recoilDaughter{particleMap.at(recoilDaughterID)};
+      // Is it a gamma?
+      if (recoilDaughter.getPdgID() == 22) {
+        // Does it have enough energy?
+        if (recoilDaughter.getEnergy() >= energyThreshold) {
+          // Are its daughters PN products?
+          if (doesParticleHavePNDaughters(recoilDaughter, particleMap)) {
+            return &particleMap.at(recoilDaughterID);
+          }
+        }
+      }
+    }
+  }
   return nullptr;
 }
 
-/*
-TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks) {
-
-    TrackMaps map;
-
-    for (const FindableTrackResult &track : tracks ) {
-        if (track.is4sFindable() || track.is3s1aFindable() ||
-track.is2s2aFindable()) { map.findable[track.getParticleTrackID()] =  &track;
-        }
-
-        if (track.is2sFindable()) map.loose[track.getParticleTrackID()] =
-&track;
-
-        if (track.is2aFindable()) map.axial[track.getParticleTrackID()] =
-&track;
-    }
-
-    return map;
-}*/
-
-}  // namespace Analysis
+} // namespace Analysis

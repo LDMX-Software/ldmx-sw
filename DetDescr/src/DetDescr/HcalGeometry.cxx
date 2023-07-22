@@ -8,7 +8,7 @@
 
 namespace ldmx {
 
-HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
+HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
     : framework::ConditionsObject(HcalGeometry::CONDITIONS_OBJECT_NAME) {
   scint_thickness_ = ps.getParameter<double>("scint_thickness");
   scint_width_ = ps.getParameter<double>("scint_width");
@@ -19,49 +19,107 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   ecal_dx_ = ps.getParameter<double>("ecal_dx");
   ecal_dy_ = ps.getParameter<double>("ecal_dy");
   verbose_ = ps.getParameter<int>("verbose");
-  horizontal_parity_ = ps.getParameter<int>("horizontal_parity");
+  back_horizontal_parity_ = ps.getParameter<int>("back_horizontal_parity");
   side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
-  
+
   auto detectors_valid =
       ps.getParameter<std::vector<std::string>>("detectors_valid");
   // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
   // use prototype geometry initialization
-  auto is_prototype =
-      std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
-                   [](const auto detector) {
-                     return detector.find("ldmx-hcal-prototype") !=
-                            std::string::npos;
-                   }) != detectors_valid.cend();
+  is_prototype_ = std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
+                               [](const auto detector) {
+                                 return detector.find("ldmx-hcal-prototype") !=
+                                        std::string::npos;
+                               }) != detectors_valid.cend();
 
-  if (is_prototype) {
-    auto zero_strip_prototype_ =
-        ps.getParameter<std::vector<double>>("zero_strip", {});
-    auto num_strips_prototype_ =
-        ps.getParameter<std::vector<int>>("num_strips", {});
-    auto half_total_width_prototype_ =
-        ps.getParameter<std::vector<double>>("half_total_width", {});
-    // The prototype only has one section, so we only have one entry into these
-    // vectors
-    zero_strip_ = {zero_strip_prototype_};
-    num_strips_ = {num_strips_prototype_};
-    half_total_width_ = {half_total_width_prototype_};
-  }
-  else if (side_3d_readout_==1) {
-    num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips", {});
-    half_total_width_ = ps.getParameter<std::vector<std::vector<double>>>("half_total_width", {});
-    zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip", {});
-  }
-  else {
-    auto zero_strip_v12_ = ps.getParameter<std::vector<double>>("zero_strip", {});
-    auto num_strips_v12_ = ps.getParameter<std::vector<int>>("num_strips", {});
-    auto half_total_width_v12_ = ps.getParameter<std::vector<double>>("half_total_width", {});
-
-    zero_strip_ = makeCanonicalLayeredParameter(zero_strip_v12_);
-    num_strips_ = makeCanonicalLayeredParameter(num_strips_v12_);
-    half_total_width_ = makeCanonicalLayeredParameter(half_total_width_v12_);
-  }
+  num_strips_ = ps.getParameter<std::vector<std::vector<int>>>("num_strips");
+  half_total_width_ =
+      ps.getParameter<std::vector<std::vector<double>>>("half_total_width");
+  zero_strip_ = ps.getParameter<std::vector<std::vector<double>>>("zero_strip");
+  scint_length_ =
+      ps.getParameter<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
+  if (verbose_ > 0) {
+    printPositionMap();
+  }
+}
+
+std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
+    const std::vector<double> &globalPosition, const ldmx::HcalID &id) const {
+  const auto orientation{getScintillatorOrientation(id)};
+  switch (id.section()) {
+  case ldmx::HcalID::HcalSection::BACK:
+    switch (orientation) {
+    case ScintillatorOrientation::horizontal:
+      return {globalPosition[2], globalPosition[1], globalPosition[0]};
+    case ScintillatorOrientation::vertical:
+      return {globalPosition[2], globalPosition[0], globalPosition[1]};
+    }
+  case ldmx::HcalID::HcalSection::TOP:
+  case ldmx::HcalID::HcalSection::BOTTOM:
+    switch (orientation) {
+    case ScintillatorOrientation::horizontal:
+      return {globalPosition[1], globalPosition[2], globalPosition[0]};
+    case ScintillatorOrientation::depth:
+      return {globalPosition[1], globalPosition[0], globalPosition[2]};
+    }
+  case ldmx::HcalID::HcalSection::LEFT:
+  case ldmx::HcalID::HcalSection::RIGHT:
+    switch (orientation) {
+    case ScintillatorOrientation::vertical:
+      return {globalPosition[0], globalPosition[2], globalPosition[1]};
+    case ScintillatorOrientation::depth:
+      return globalPosition;
+    }
+  }
+}
+
+HcalGeometry::ScintillatorOrientation
+HcalGeometry::getScintillatorOrientation(const ldmx::HcalID id) const {
+  if (hasSide3DReadout()) {
+    // v14 or later detector
+    switch (id.section()) {
+    case ldmx::HcalID::HcalSection::TOP:
+    case ldmx::HcalID::HcalSection::BOTTOM:
+      // Odd layers are in z/depth direction, even are in the x/horizontal
+      // direction
+      return id.layer() % 2 == 0 ? ScintillatorOrientation::horizontal
+                                 : ScintillatorOrientation::depth;
+
+    case ldmx::HcalID::HcalSection::LEFT:
+    case ldmx::HcalID::HcalSection::RIGHT:
+      // Odd layers are in the z/depth direction, even are in the y/vertical
+      // direction
+      return id.layer() % 2 == 0 ? ScintillatorOrientation::vertical
+                                 : ScintillatorOrientation::depth;
+    case ldmx::HcalID::HcalSection::BACK:
+      // Configurable
+      return id.layer() % 2 == back_horizontal_parity_
+                 ? ScintillatorOrientation::horizontal
+                 : ScintillatorOrientation::vertical;
+    } // V14 or later detector
+  }
+  if (isPrototype()) {
+
+    // The prototype only has the back section. However, the orientation
+    // depends on the configuration so we delegate to the
+    // back_horizontal_parity parameter
+    return id.layer() % 2 == back_horizontal_parity_
+               ? ScintillatorOrientation::horizontal
+               : ScintillatorOrientation::vertical;
+  } // Prototype detector
+  // v13/v12
+  switch (id.section()) {
+  // For the v13 side hcal, the bars in each section have the same
+  // orientation
+  case ldmx::HcalID::HcalSection::TOP:
+  case ldmx::HcalID::HcalSection::BOTTOM:
+    return ScintillatorOrientation::horizontal;
+  case ldmx::HcalID::HcalSection::LEFT:
+  case ldmx::HcalID::HcalSection::RIGHT:
+    return ScintillatorOrientation::vertical;
+  } // v13/v12 detector
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
@@ -89,7 +147,10 @@ void HcalGeometry::buildStripPositionMap() {
         ldmx::HcalID::HcalSection hcalsection =
             (ldmx::HcalID::HcalSection)section;
 
-        // the center of a layer: (layer-1) * (layer_thickness) + scint_thickness/2
+        const ldmx::HcalID id{section, layer, strip};
+        const auto orientation{getScintillatorOrientation(id)};
+        // the center of a layer: (layer-1) * (layer_thickness) +
+        // scint_thickness/2
         double layercenter =
             (layer - 1) * layer_thickness_.at(section) + 0.5 * scint_thickness_;
 
@@ -97,13 +158,13 @@ void HcalGeometry::buildStripPositionMap() {
         double stripcenter = (strip + 0.5) * scint_width_;
 
         if (hcalsection == ldmx::HcalID::HcalSection::BACK) {
-	  /**
-	     For back Hcal:
-	     - layers in z
-	     - strips occupy thickness of scintillator in z (e.g. 20mm)
-	     - strips orientation is in x(y) depending on horizontal parity
-	  */
-          // z position: zero-layer(z) + layer_z + scint_thickness
+          /**
+             For back Hcal:
+             - layers in z
+             - strips occupy thickness of scintillator in z (e.g. 20mm)
+             - strips orientation is in x(y) depending on back_horizontal parity
+          */
+          // z position: zero-layer(z) + layer_z + scint_thickness / 2
           z = zero_layer_.at(section) + layercenter;
 
           /**
@@ -112,68 +173,69 @@ void HcalGeometry::buildStripPositionMap() {
             stripcenter will be large for +y(+x) and the half width of the strip
             needs to be subtracted The halfwidth of the scintillator is given by
             half_total_width_.
-	    The x(y) position is set to the center of the strip (0).
+            The x(y) position is set to the center of the strip (0).
           */
-          if (layerIsHorizontal(layer)) {
+          if (orientation == ScintillatorOrientation::horizontal) {
             y = stripcenter - getZeroStrip(section, layer);
             x = 0;
           } else {
             x = stripcenter - getZeroStrip(section, layer);
             y = 0;
           }
-	  // std::cout << "back (section,layer,strip)" << section << " " << layer << " " << strip;
-	  // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl;
         } else {
-	  /**
-	     For side Hcal
-	     - layers in y(x)
-	     - all layers have strips in x(y) for top-bottom (left-right) sections
-	     - all layers have strips occupying width of scintillator in z (e.g. 50mm)
-	     For 3D readout:
-	     - odd layers have strips in z
-	     - even layers have strips in x(y) for top-bottom (left-right) sections
-	     - odd layers have strips occupying width of scintillator in x(y)
-	     - even layers have strips occupying width of scintillator in z
-	  */
-	  if(side_3d_readout_ && (layer%2==1)){
-	    // z position: zero-strip + half-width (center_strip) of strip
-	    z = getZeroStrip(section, layer) + getHalfTotalWidth(section, layer);
-	  }
-	  else {
-	    // z position: zero-strip(z) + strip_center(z)
-	    z = getZeroStrip(section, layer) + stripcenter;
-	  }
-	  
+          /**
+          For side Hcal before 3D readout
+          - layers in y(x)
+          - all layers have strips in x(y) for top-bottom (left-right) sections
+          - all layers have strips occupying width of scintillator in z (e.g.
+          50mm)
+          For 3D readout:
+          - odd layers have strips in z
+          - even layers have strips in x(y) for top-bottom (left-right) sections
+          - odd layers have strips occupying width of scintillator in x(y)
+          - even layers have strips occupying width of scintillator in z
+          */
+          if (side_3d_readout_ &&
+              orientation == ScintillatorOrientation::depth) {
+            // z position: zero-strip + half-width (center_strip) of strip
+            z = getZeroStrip(section, layer) +
+                getHalfTotalWidth(section, layer);
+          } else {
+            // z position: zero-strip(z) + strip_center(z)
+            z = getZeroStrip(section, layer) + stripcenter;
+          }
+
           if (hcalsection == ldmx::HcalID::HcalSection::TOP or
               hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-	    y = zero_layer_.at(section) + layercenter;
-	    x = getHalfTotalWidth(section, layer);
-	    if(side_3d_readout_ && layer%2==1)
-	      x = getZeroStrip(section, layer) + stripcenter;
-	    if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-	      y *= -1;
-	      x *= -1;
-	    }
+            y = zero_layer_.at(section) + layercenter;
+            x = getHalfTotalWidth(section, layer);
+            if (side_3d_readout_ &&
+                orientation == ScintillatorOrientation::horizontal) {
+              x = getZeroStrip(section, layer) + stripcenter;
+            }
+            if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
+              y *= -1;
+              x *= -1;
+            }
           } else {
             x = zero_layer_.at(section) + layercenter;
             y = getHalfTotalWidth(section, layer);
-	    if(side_3d_readout_ && layer%2==1)
-	      y = getZeroStrip(section, layer) + stripcenter;
+            if (side_3d_readout_ &&
+                orientation == ScintillatorOrientation::vertical) {
+              y = getZeroStrip(section, layer) + stripcenter;
+            }
             if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
               x *= -1;
               y *= -1;
             }
           }
-
-	  // std::cout << "side (section,layer,strip)" << section << " " << layer << " " << strip;
-          // std::cout << " (x,y,z) " << x << " " << y << " " << z << std::endl; 
         }
         TVector3 pos;
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
-      }  // loop over strips
-    }    // loop over layers
-  }      // loop over sections
-}  // strip position map
+      } // loop over strips
+    }   // loop over layers
+  }     // loop over sections
+} // strip position map
 
-}  // namespace ldmx
+} // namespace ldmx
