@@ -190,50 +190,101 @@ void HcalGeometry::buildStripPositionMap() {
             y = 0;
           }
         } else {
-          /**
-          For side Hcal before 3D readout
-          - layers in y(x)
-          - all layers have strips in x(y) for top-bottom (left-right) sections
-          - all layers have strips occupying width of scintillator in z (e.g.
-          50mm)
-          For 3D readout:
-          - odd layers have strips in z
-          - even layers have strips in x(y) for top-bottom (left-right) sections
-          - odd layers have strips occupying width of scintillator in x(y)
-          - even layers have strips occupying width of scintillator in z
-          */
-          if (side_3d_readout_ &&
-              orientation == ScintillatorOrientation::depth) {
-            // z position: zero-strip + half-width (center_strip) of strip
-            z = getZeroStrip(section, layer) +
-                getHalfTotalWidth(section, layer);
+          if (side_3d_readout_) {
+            /*
+             *
+             * For 3D readout:
+             * - odd layers have strips in z
+             * - even layers have strips in x(y) for top-bottom (left-right)
+             * sections
+             * - odd layers have strips occupying width of scintillator in x(y)
+             * - even layers have strips occupying width of scintillator in z
+             *
+             */
+            switch (hcalsection) {
+              case ldmx::HcalID::HcalSection::LEFT:
+              case ldmx::HcalID::HcalSection::RIGHT:
+                if (orientation == ScintillatorOrientation::vertical) {
+                  x = zero_layer_[section] + 0.5 * scint_thickness_ +
+                      (layer - 1) * layer_thickness_[section];
+                  y = ecal_dy_ -
+                      (getScintillatorLength({id.section(), 2, id.strip()}) -
+                       getScintillatorLength(id)) /
+                          2;
+                  z = getZeroStrip(section, layer) +
+                      (strip + 0.5) * getScintillatorWidth();
+                } else if (orientation == ScintillatorOrientation::depth) {
+                  x = zero_layer_[section] + 0.5 * scint_thickness_ +
+                      layer_thickness_[section] * (layer - 1);
+                  y = -ecal_dy_ / 2 + (strip + 0.5) * getScintillatorWidth();
+                  z = getZeroStrip(section, layer + 1) +
+                      getScintillatorLength(id) / 2;
+                }
+                if (section == ldmx::HcalID::HcalSection::LEFT) {
+                  y *= -1;
+                  x *= -1;
+                }
+                break;
+
+              case ldmx::HcalID::HcalSection::BOTTOM:
+              case ldmx::HcalID::HcalSection::TOP:
+                if (orientation == ScintillatorOrientation::horizontal) {
+                  //
+                  // Second half of the expression is the difference between the
+                  // longest strips (first module) and the current module.
+                  //
+                  // 22 mm extra for space for 1 absorber and one air box
+                  x = -ecal_dx_ / 2 - 2 - 20 +
+                      (getScintillatorLength({id.section(), 2, id.strip()}) -
+                       getScintillatorLength(id)) /
+                          2;
+                  y = zero_layer_[section] + 0.5 * scint_thickness_ +
+                      (layer - 1) * layer_thickness_[section];
+                  z = getZeroStrip(section, layer) +
+                      (strip + 0.5) * getScintillatorWidth();
+                }
+                if (orientation == ScintillatorOrientation::depth) {
+                  x = (ecal_dx_ / 2) - (strip + 0.5) * getScintillatorWidth();
+                  y = zero_layer_[section] + 0.5 * scint_thickness_ +
+                      layer_thickness_[section] * (layer - 1);
+                  z = getZeroStrip(section, layer + 1) +
+                      getScintillatorLength(id) / 2;
+                }
+                if (section == ldmx::HcalID::HcalSection::BOTTOM) {
+                  y *= -1;
+                  x *= -1;
+                }
+                break;
+            }
+
           } else {
+            /**
+            For side Hcal before 3D readout
+            - layers in y(x)
+            - all layers have strips in x(y) for top-bottom (left-right)
+            sections
+            - all layers have strips occupying width of scintillator in z (e.g.
+            50mm)
+            */
+
             // z position: zero-strip(z) + strip_center(z)
             z = getZeroStrip(section, layer) + stripcenter;
-          }
+            if (hcalsection == ldmx::HcalID::HcalSection::TOP or
+                hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
+              y = zero_layer_.at(section) + layercenter;
+              x = getHalfTotalWidth(section, layer);
+              if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
+                y *= -1;
+                x *= -1;
+              }
 
-          if (hcalsection == ldmx::HcalID::HcalSection::TOP or
-              hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-            y = zero_layer_.at(section) + layercenter;
-            x = getHalfTotalWidth(section, layer);
-            if (side_3d_readout_ &&
-                orientation == ScintillatorOrientation::horizontal) {
-              x = getZeroStrip(section, layer) + stripcenter;
-            }
-            if (hcalsection == ldmx::HcalID::HcalSection::BOTTOM) {
-              y *= -1;
-              x *= -1;
-            }
-          } else {
-            x = zero_layer_.at(section) + layercenter;
-            y = getHalfTotalWidth(section, layer);
-            if (side_3d_readout_ &&
-                orientation == ScintillatorOrientation::vertical) {
-              y = getZeroStrip(section, layer) + stripcenter;
-            }
-            if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
-              x *= -1;
-              y *= -1;
+            } else {
+              x = zero_layer_.at(section) + layercenter;
+              y = getHalfTotalWidth(section, layer);
+              if (hcalsection == ldmx::HcalID::HcalSection::RIGHT) {
+                x *= -1;
+                y *= -1;
+              }
             }
           }
         }
