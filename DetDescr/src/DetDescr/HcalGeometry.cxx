@@ -119,6 +119,11 @@ HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
     case ldmx::HcalID::HcalSection::LEFT:
     case ldmx::HcalID::HcalSection::RIGHT:
       return ScintillatorOrientation::vertical;
+    case ldmx::HcalID::HcalSection::BACK:
+      // Configurable
+      return id.layer() % 2 == back_horizontal_parity_
+                 ? ScintillatorOrientation::horizontal
+                 : ScintillatorOrientation::vertical;
   }  // v13/v12 detector
 }
 void HcalGeometry::printPositionMap(int section) const {
