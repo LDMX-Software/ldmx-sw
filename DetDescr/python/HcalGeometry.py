@@ -433,6 +433,8 @@ class HcalGeometry:
                     half_total_width_side.append(side_hcal_scint_length[m] / 2)
                     num_strips_side.append(int(side_hcal_numScintZ[m]))
 
+        # In side hcal: odd layers have strips oriented in z
+        zero_strip_even = ecal_front_z
         zero_strip_odd = [
             -ecal_side_dx / 2.0,  # Top
             ecal_side_dx / 2.0,   # Bottom
@@ -445,7 +447,7 @@ class HcalGeometry:
             for m in range(self.v14.side_num_modules):
                 for l in range(side_hcal_numLayers[m] * 2):
                     if (l + 1) % 2 == 0:
-                        zero_strip_section.append(ecal_front_z)
+                        zero_strip_section.append(zero_strip_even)
                     else:
                         zero_strip_section.append(zero_strip_odd[s])
             zero_strip_side.append(zero_strip_section)
