@@ -21,6 +21,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
   verbose_ = ps.getParameter<int>("verbose");
   back_horizontal_parity_ = ps.getParameter<int>("back_horizontal_parity");
   side_3d_readout_ = ps.getParameter<int>("side_3d_readout");
+  y_offset_ = ps.getParameter<double>("y_offset");
 
   auto detectors_valid =
       ps.getParameter<std::vector<std::string>>("detectors_valid");
@@ -230,6 +231,8 @@ void HcalGeometry::buildStripPositionMap() {
             }
           }
         }
+
+        y += y_offset_;
         TVector3 pos;
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
