@@ -1,6 +1,44 @@
 """Configuration for DQM analyzers"""
 
 from LDMX.Framework import ldmxcfg
+
+class HCalGeometryVerifier(ldmxcfg.Analyzer) :
+    """Configured HCalGeometryVerifier python object
+
+    Contains an instance of the verifier that has already been configured.
+
+    This analyzer verifies that all simhits and rechits for the hcal are within
+    the bounds of the scintillator strips as set in the geometry condition.
+
+    If the analyzer encounters an error and `stop_on_error` is true, raises an
+    exception with details about the issue. Otherwise, the error is logged and
+    histograms for each section is produced.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.HcalGeometryVerifier() )
+
+    """
+
+    def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        super().__init__(name,'dqm::HcalGeometryVerifier','DQM')
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''
+        self.sim_coll_name = 'HcalSimHits'
+        self.sim_pass_name = ''
+        self.stop_on_error=stop_on_error
+        self.tolerance=1e-3 # mm
+        self.build1DHistogram('passes_sim', 'Simulated hits within scintillator bounds?', 2, 0,2)
+        self.build1DHistogram('passes_rec', 'Reconstructed hits within scintillator bounds?', 2, 0,2)
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        for name in section_names:
+            self.build1DHistogram(f'passes_sim_{name}', f'Simulated hits within scintillator bounds? ({name})', 2, 0,2)
+            self.build1DHistogram(f'passes_rec_{name}', f'Reconstructed hits within scintillator bounds? Passing ({name})', 2, 0,2)
+
+
+
 class HCalDQM(ldmxcfg.Analyzer) :
     """Configured HCalDQM python object
 
