@@ -116,6 +116,11 @@ class HcalGeometry : public framework::ConditionsObject {
   double getScintillatorWidth() const { return scint_width_; }
 
   /**
+   * Get the scitillator thickness
+   */
+  double getScintillatorThickness() const { return scint_thickness_; }
+
+  /**
    * Get the number of sections.
    */
   int getNumSections() const { return num_sections_; }
