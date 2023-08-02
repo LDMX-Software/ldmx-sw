@@ -395,13 +395,6 @@ class HcalGeometry:
         self.v14.side_num_modules = side_hcal_numModules
         # In back hcal: odd layers are horizontal, even layers are vertical
         self.v14.back_horizontal_parity = 1
-        # In side hcal: odd layers have strips oriented in z
-        zero_strip_odd = [
-            -ecal_side_dx / 2.0,
-            ecal_side_dx / 2.0,
-            -ecal_side_dy / 2.0,
-            ecal_side_dy / 2.0,
-        ]
 
         self.v14.scint_length = [[back_hcal_scint_length for layer in range(back_hcal_numLayers)],
                                  [0.] * side_hcal_numTotalLayers, # Filled below
@@ -440,6 +433,12 @@ class HcalGeometry:
                     half_total_width_side.append(side_hcal_scint_length[m] / 2)
                     num_strips_side.append(int(side_hcal_numScintZ[m]))
 
+        zero_strip_odd = [
+            -ecal_side_dx / 2.0,  # Top
+            ecal_side_dx / 2.0,   # Bottom
+            -ecal_side_dy / 2.0,  # Right
+            ecal_side_dy / 2.0,   # Left
+        ]
         zero_strip_side = []
         for s in range(side_hcal_numSections):
             zero_strip_section = []
