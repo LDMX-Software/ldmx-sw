@@ -257,6 +257,8 @@ private:
   double ecal_dx_;
   double ecal_dy_;
 
+  // Offset of the entire Hcal geometry in y (mm)
+  double y_offset_;
   // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
   // geometry that corresponds to a horizontal layer (scintillator bar length
   // along the x-axis) in the back HCal.

@@ -40,6 +40,8 @@ class HcalReadoutGeometry:
         0.
     back_horizontal_parity:
         Layers with odd parity (1) are horizontal on the x-axis in the back HCal
+    y_offset
+        Offset of the entire Hcal geometry to be taken into account
     """
 
     def __init__(self):
@@ -61,6 +63,7 @@ class HcalReadoutGeometry:
         self.verbose = 0
         self.back_horizontal_parity = 1
         self.side_3d_readout = 0
+        self.y_offset=0.
 
     def __str__(self):
         """Stringify this configuration class"""
@@ -78,6 +81,7 @@ class HcalReadoutGeometry:
                 Scintillator length: {} [mm]
             }},
             Ecal DX, DY: {}, {} [mm],
+            Y offset: {},
             Valid detector regexps: {}
         }}
         """.format(
@@ -93,6 +97,7 @@ class HcalReadoutGeometry:
             self.scint_length,
             self.ecal_dx,
             self.ecal_dy,
+            self.y_offset,
             self.detectors_valid,
         )
         return s
@@ -194,6 +199,8 @@ class HcalGeometry:
         # along the x-axis) in the back hcal
         self.v13.back_horizontal_parity = 1
         self.v13.side_3d_readout = 0
+        # TODO: Check this
+        self.v13.y_offset = 0.
 
     def make_v1_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters"""
@@ -247,6 +254,8 @@ class HcalGeometry:
         # along the x-axis) in the back HCal
         self.v1_prototype.back_horizontal_parity = 1
         self.v1_prototype.side_3d_readout = 0
+        # TODO: Check this
+        self.v1_prototype.y_offset = 0.
 
     def make_v2_prototype(self):
         """Create the HcalGeometry with the testbeam prototype geometry parameters"""
@@ -310,6 +319,8 @@ class HcalGeometry:
         # along the x-axis) in the back HCal
         self.v2_prototype.back_horizontal_parity = 0
         self.v2_prototype.side_3d_readout = 0
+        # TODO: Check this
+        self.v2_prototype.y_offset = 0.
 
     def make_v14(self):
         self.v14 = HcalReadoutGeometry()
@@ -475,3 +486,4 @@ class HcalGeometry:
             zero_strip_side[3],
         ]
         self.v14.detectors_valid = ["ldmx-det-v14"]
+        self.v14.y_offset = 19.05
