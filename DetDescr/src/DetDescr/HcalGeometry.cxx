@@ -25,8 +25,8 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
 
   auto detectors_valid =
       ps.getParameter<std::vector<std::string>>("detectors_valid");
-  // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we will
-  // use prototype geometry initialization
+  // If one of the strings in detectors_valid is "ldmx-hcal-prototype", we
+  // will use prototype geometry initialization
   is_prototype_ = std::find_if(detectors_valid.cbegin(), detectors_valid.cend(),
                                [](const auto detector) {
                                  return detector.find("ldmx-hcal-prototype") !=
@@ -41,86 +41,85 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
       ps.getParameter<std::vector<std::vector<double>>>("scint_length");
 
   buildStripPositionMap();
+
   if (verbose_ > 0) {
     printPositionMap();
   }
 }
-
 std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
     const std::vector<double> &globalPosition, const ldmx::HcalID &id) const {
   const auto orientation{getScintillatorOrientation(id)};
   switch (id.section()) {
-  case ldmx::HcalID::HcalSection::BACK:
-    switch (orientation) {
-    case ScintillatorOrientation::horizontal:
-      return {globalPosition[2], globalPosition[1], globalPosition[0]};
-    case ScintillatorOrientation::vertical:
-      return {globalPosition[2], globalPosition[0], globalPosition[1]};
-    }
-  case ldmx::HcalID::HcalSection::TOP:
-  case ldmx::HcalID::HcalSection::BOTTOM:
-    switch (orientation) {
-    case ScintillatorOrientation::horizontal:
-      return {globalPosition[1], globalPosition[2], globalPosition[0]};
-    case ScintillatorOrientation::depth:
-      return {globalPosition[1], globalPosition[0], globalPosition[2]};
-    }
-  case ldmx::HcalID::HcalSection::LEFT:
-  case ldmx::HcalID::HcalSection::RIGHT:
-    switch (orientation) {
-    case ScintillatorOrientation::vertical:
-      return {globalPosition[0], globalPosition[2], globalPosition[1]};
-    case ScintillatorOrientation::depth:
-      return globalPosition;
-    }
+    case ldmx::HcalID::HcalSection::BACK:
+      switch (orientation) {
+        case ScintillatorOrientation::horizontal:
+          return {globalPosition[2], globalPosition[1], globalPosition[0]};
+        case ScintillatorOrientation::vertical:
+          return {globalPosition[2], globalPosition[0], globalPosition[1]};
+      }
+    case ldmx::HcalID::HcalSection::TOP:
+    case ldmx::HcalID::HcalSection::BOTTOM:
+      switch (orientation) {
+        case ScintillatorOrientation::horizontal:
+          return {globalPosition[1], globalPosition[2], globalPosition[0]};
+        case ScintillatorOrientation::depth:
+          return {globalPosition[1], globalPosition[0], globalPosition[2]};
+      }
+    case ldmx::HcalID::HcalSection::LEFT:
+    case ldmx::HcalID::HcalSection::RIGHT:
+      switch (orientation) {
+        case ScintillatorOrientation::vertical:
+          return {globalPosition[0], globalPosition[2], globalPosition[1]};
+        case ScintillatorOrientation::depth:
+          return globalPosition;
+      }
   }
 }
 
-HcalGeometry::ScintillatorOrientation
-HcalGeometry::getScintillatorOrientation(const ldmx::HcalID id) const {
+HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
+    const ldmx::HcalID id) const {
   if (hasSide3DReadout()) {
     // v14 or later detector
     switch (id.section()) {
-    case ldmx::HcalID::HcalSection::TOP:
-    case ldmx::HcalID::HcalSection::BOTTOM:
-      // Odd layers are in z/depth direction, even are in the x/horizontal
-      // direction
-      return id.layer() % 2 == 0 ? ScintillatorOrientation::horizontal
-                                 : ScintillatorOrientation::depth;
+      case ldmx::HcalID::HcalSection::TOP:
+      case ldmx::HcalID::HcalSection::BOTTOM:
+        // Odd layers are in z/depth direction, even are in the x/horizontal
+        // direction
+        return id.layer() % 2 == 0 ? ScintillatorOrientation::horizontal
+                                   : ScintillatorOrientation::depth;
 
-    case ldmx::HcalID::HcalSection::LEFT:
-    case ldmx::HcalID::HcalSection::RIGHT:
-      // Odd layers are in the z/depth direction, even are in the y/vertical
-      // direction
-      return id.layer() % 2 == 0 ? ScintillatorOrientation::vertical
-                                 : ScintillatorOrientation::depth;
-    case ldmx::HcalID::HcalSection::BACK:
-      // Configurable
-      return id.layer() % 2 == back_horizontal_parity_
-                 ? ScintillatorOrientation::horizontal
-                 : ScintillatorOrientation::vertical;
-    } // V14 or later detector
+      case ldmx::HcalID::HcalSection::LEFT:
+      case ldmx::HcalID::HcalSection::RIGHT:
+        // Odd layers are in the z/depth direction, even are in the y/vertical
+        // direction
+        return id.layer() % 2 == 0 ? ScintillatorOrientation::vertical
+                                   : ScintillatorOrientation::depth;
+      case ldmx::HcalID::HcalSection::BACK:
+        // Configurable
+        return id.layer() % 2 == back_horizontal_parity_
+                   ? ScintillatorOrientation::horizontal
+                   : ScintillatorOrientation::vertical;
+    }  // V14 or later detector
   }
   if (isPrototype()) {
-
     // The prototype only has the back section. However, the orientation
     // depends on the configuration so we delegate to the
     // back_horizontal_parity parameter
     return id.layer() % 2 == back_horizontal_parity_
                ? ScintillatorOrientation::horizontal
                : ScintillatorOrientation::vertical;
-  } // Prototype detector
+  }  // Prototype detector
   // v13/v12
   switch (id.section()) {
-  // For the v13 side hcal, the bars in each section have the same
-  // orientation
-  case ldmx::HcalID::HcalSection::TOP:
-  case ldmx::HcalID::HcalSection::BOTTOM:
-    return ScintillatorOrientation::horizontal;
-  case ldmx::HcalID::HcalSection::LEFT:
-  case ldmx::HcalID::HcalSection::RIGHT:
-    return ScintillatorOrientation::vertical;
-  } // v13/v12 detector
+    // For the v13 side hcal, the bars in each section have the same
+    // orientation
+    case ldmx::HcalID::HcalSection::TOP:
+    case ldmx::HcalID::HcalSection::BOTTOM:
+      return ScintillatorOrientation::horizontal;
+    case ldmx::HcalID::HcalSection::LEFT:
+    case ldmx::HcalID::HcalSection::RIGHT:
+      return ScintillatorOrientation::vertical;
+  }  // v13/v12 detector
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
@@ -136,6 +135,7 @@ void HcalGeometry::printPositionMap(int section) const {
     }
   }
 }
+
 void HcalGeometry::buildStripPositionMap() {
   // We hard-code the number of sections as seen in HcalID
   for (int section = 0; section < num_sections_; section++) {
@@ -163,18 +163,19 @@ void HcalGeometry::buildStripPositionMap() {
              For back Hcal:
              - layers in z
              - strips occupy thickness of scintillator in z (e.g. 20mm)
-             - strips orientation is in x(y) depending on back_horizontal parity
+             - strips orientation is in x(y) depending on back_horizontal
+             parity
           */
           // z position: zero-layer(z) + layer_z + scint_thickness / 2
           z = zero_layer_.at(section) + layercenter;
 
           /**
-            Now compute, y(x) position for horizontal(vertical) layers, relative
-            to the center of detector. Strips enumeration starts from -y(-x)
-            stripcenter will be large for +y(+x) and the half width of the strip
-            needs to be subtracted The halfwidth of the scintillator is given by
-            half_total_width_.
-            The x(y) position is set to the center of the strip (0).
+            Now compute, y(x) position for horizontal(vertical) layers,
+            relative to the center of detector. Strips enumeration starts from
+            -y(-x) stripcenter will be large for +y(+x) and the half width of
+            the strip needs to be subtracted The halfwidth of the scintillator
+            is given by half_total_width_. The x(y) position is set to the
+            center of the strip (0).
           */
           if (orientation == ScintillatorOrientation::horizontal) {
             y = stripcenter - getZeroStrip(section, layer);
@@ -236,9 +237,9 @@ void HcalGeometry::buildStripPositionMap() {
         TVector3 pos;
         pos.SetXYZ(x, y, z);
         strip_position_map_[ldmx::HcalID(section, layer, strip)] = pos;
-      } // loop over strips
-    }   // loop over layers
-  }     // loop over sections
-} // strip position map
+      }  // loop over strips
+    }    // loop over layers
+  }      // loop over sections
+}  // strip position map
 
-} // namespace ldmx
+}  // namespace ldmx
