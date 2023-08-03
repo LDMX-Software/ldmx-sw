@@ -3,27 +3,34 @@
 from LDMX.Framework import ldmxcfg
 
 class ReSimVerifier(ldmxcfg.Analyzer) :
-    """Configured HCalGeometryVerifier python object
-    Contains an instance of the verifier that has already been configured.
-    This analyzer verifies that all simhits and rechits for the hcal are within
-    the bounds of the scintillator strips as set in the geometry condition.
-    If the analyzer encounters an error and `stop_on_error` is true, raises an
-    exception with details about the issue. Otherwise, the error is logged and
-    histograms for each section is produced.
+    """Configured ReSimVerifier python object
+
+    Contains an instance of the verifier that has already been configured. This
+    analyzer does not produce anything, it just checks that the sim hits and sim
+    particles between two different passes are the same.
+
     Examples
     --------
         from LDMX.DQM import dqm
         p.sequence.append( dqm.ReSimVerifier() )
+
     """
 
     def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
         super().__init__(name,'dqm::ReSimVerifier','DQM')
-        self.hcal_sim_coll_name = 'HcalSimHits'
-        self.hcal_resim_coll_name = 'HcalReSimHits'
+        self.collections = [
+            'HcalSimHits',
+            'EcalSimHits',
+            'TargetSimHits',
+            'TriggerPad1SimHits',
+            'TriggerPad2SimHits',
+            'TriggerPad3SimHits',
+            'RecoilSimHits',
+            'TaggerSimHits',
+        ]
         self.sim_pass_name = ''
         self.resim_pass_name = 'resim'
         self.stop_on_error=stop_on_error
-        self.tolerance=1e-3 # mm
 
 
 class HCalDQM(ldmxcfg.Analyzer) :
