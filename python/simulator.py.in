@@ -83,6 +83,7 @@ class simulator(Producer):
         self.validate_detector = False
         self.verbosity = 0
 
+
         #Dark Brem stuff
         from LDMX.SimCore import dark_brem
         self.dark_brem = dark_brem.DarkBrem()
@@ -135,41 +136,6 @@ class simulator(Producer):
                 ])
 
 class resimulator(Producer):
-
-    def from_simulator(self,simulator):
-        # super().__init__( instance_name , "simcore::ReSimulator" , "SimCore" )
-        #######################################################################
-        # Required Parameters
-        self.generators = simulator.generators
-        self.detector = simulator.detector
-        self.sensitive_detectors = simulator.sensitive_detectors
-        self.description = simulator.description
-
-        #######################################################################
-        # Optional Parameters (with helpful defaults)
-        self.scoringPlanes = simulator.scoringPlanes
-        self.beamSpotSmear = simulator.beamSpotSmear
-        self.time_shift_primaries = simulator.time_shift_primaries
-        self.preInitCommands = simulator.preInitCommands
-        self.postInitCommands = simulator.postInitCommands
-        self.actions = simulator.actions
-        self.biasing_operators = simulator.biasing_operators
-        self.logging_prefix = simulator.logging_prefix
-        self.rootPrimaryGenUseSeed = simulator.rootPrimaryGenUseSeed
-        self.validate_detector = simulator.validate_detector
-        self.verbosity = simulator.verbosity
-
-        #Dark Brem stuff
-        # from LDMX.SimCore import dark_brem
-        self.dark_brem = simulator.dark_brem
-
-        # Default photonuclear model
-        # from LDMX.SimCore import photonuclear_models
-        self.photonuclear_model = simulator.photonuclear_model
-        return self
-
-
-
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -222,37 +188,39 @@ class resimulator(Producer):
         Verbosity level to print
     """
 
-    def __init__(self, instance_name ) :
+    def __init__(self, simulator, instance_name) :
         super().__init__( instance_name , "simcore::ReSimulator" , "SimCore" )
 
-        #######################################################################
         # Required Parameters
-        self.generators = [ ]
-        self.detector = ''
-        self.sensitive_detectors = [ ]
-        self.description = ''
+        self.generators = simulator.generators
+        self.detector = simulator.detector
+        self.sensitive_detectors = simulator.sensitive_detectors
+        self.description = simulator.description
 
         #######################################################################
         # Optional Parameters (with helpful defaults)
-        self.scoringPlanes = ''
-        self.beamSpotSmear = [ ]
-        self.time_shift_primaries = True
-        self.preInitCommands = [ ]
-        self.postInitCommands = [ ]
-        self.actions = [ ]
-        self.biasing_operators = [ ]
-        self.logging_prefix = ''
-        self.rootPrimaryGenUseSeed = False
-        self.validate_detector = False
-        self.verbosity = 0
+        self.scoringPlanes = simulator.scoringPlanes
+        self.beamSpotSmear = simulator.beamSpotSmear
+        self.time_shift_primaries = simulator.time_shift_primaries
+        self.preInitCommands = simulator.preInitCommands
+        self.postInitCommands = simulator.postInitCommands
+        self.actions = simulator.actions
+        self.biasing_operators = simulator.biasing_operators
+        self.logging_prefix = simulator.logging_prefix
+        self.rootPrimaryGenUseSeed = simulator.rootPrimaryGenUseSeed
+        self.validate_detector = simulator.validate_detector
+        self.verbosity = simulator.verbosity
 
         #Dark Brem stuff
-        from LDMX.SimCore import dark_brem
-        self.dark_brem = dark_brem.DarkBrem()
+        # from LDMX.SimCore import dark_brem
+        self.dark_brem = simulator.dark_brem
 
         # Default photonuclear model
-        from LDMX.SimCore import photonuclear_models
-        self.photonuclear_model = photonuclear_models.BertiniModel()
+        # from LDMX.SimCore import photonuclear_models
+        self.photonuclear_model = simulator.photonuclear_model
+        self.resimulate_all_events = True
+        self.events_to_resimulate=[]
+
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
