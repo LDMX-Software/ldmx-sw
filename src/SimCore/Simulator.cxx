@@ -10,10 +10,10 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "Framework/Version.h"  //for LDMX_INSTALL path
-#include "Framework/EventFile.h"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -21,21 +21,19 @@
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
-#include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/Geo/ParserFactory.h"
 #include "SimCore/PrimaryGenerator.h"
 #include "SimCore/SensitiveDetector.h"
-#include "SimCore/Geo/ParserFactory.h"
 #include "SimCore/UserEventInformation.h"
-#include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/XsecBiasingOperator.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
-#include "G4UIsession.hh"
-#include "G4UImanager.hh"
 #include "G4BiasingProcessInterface.hh"
-#include "G4Electron.hh"
 #include "G4CascadeParameters.hh"
+#include "G4Electron.hh"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4UImanager.hh"
@@ -44,17 +42,8 @@
 
 namespace simcore {
 
-const std::vector<std::string> Simulator::invalidCommands_ = {
-    "/run/initialize",        // hard coded at the right time
-    "/run/beamOn",            // passed commands should only be sim setup
-    "/random/setSeeds",       // handled by own config parameter (if passed)
-    "ldmx",                   // all ldmx messengers have been removed
-    "/persistency/gdml/read"  // detector description is read after passed a
-                              // path to the detector description (required)
-};
-
 Simulator::Simulator(const std::string& name, framework::Process& process)
-    : framework::Producer(name, process), conditionsIntf_(this) {
+    : simcore::SimulatorBase(name, process) {
   // Get the ui manager from geant
   //      This pointer is handled by Geant4
   uiManager_ = G4UImanager::GetUIpointer();
@@ -63,84 +52,7 @@ Simulator::Simulator(const std::string& name, framework::Process& process)
 Simulator::~Simulator() {}
 
 void Simulator::configure(framework::config::Parameters& parameters) {
-  // parameters used to configure the simulation
-  parameters_ = parameters;
-
-  // Set the verbosity level.  The default level  is 0.
-  verbosity_ = parameters_.getParameter<int>("verbosity");
-
-  // in past versions of SimCore, the run number for the simulation was
-  // passed directly to the simulator class rather than pulled from central
-  // framework. This is here to prevent the user from accidentally using the
-  // old style.
-  if (parameters.exists("runNumber")) {
-    EXCEPTION_RAISE("InvalidParam",
-      "Remove old-style of setting the simulation run number (sim.runNumber)."
-      " Replace with using the Process object (p.run).");
-  }
-
-  // If the verbosity level is set to 0,
-  // If the verbosity level is > 1, log everything to a file. Otherwise,
-  // dump the output. If a prefix has been specified, append it ot the
-  // log message.
-  auto loggingPrefix = parameters_.getParameter<std::string>("logging_prefix");
-  if (verbosity_ == 0)
-    sessionHandle_ = std::make_unique<BatchSession>();
-  else if (verbosity_ > 1) {
-    if (loggingPrefix.empty())
-      sessionHandle_ = std::make_unique<LoggedSession>();
-    else
-      sessionHandle_ = std::make_unique<LoggedSession>(
-          loggingPrefix + "_G4cout.log", loggingPrefix + "_G4cerr.log");
-  }
-  if (sessionHandle_ != nullptr)
-    uiManager_->SetCoutDestination(sessionHandle_.get());
-
-  // Instantiate the run manager.
-  runManager_ = std::make_unique<RunManager>(parameters_, conditionsIntf_);
-
-  // Instantiate the GDML parser and corresponding messenger owned and
-  // managed by DetectorConstruction
-  auto parser{simcore::geo::ParserFactory::getInstance().createParser(
-      "gdml", parameters, conditionsIntf_)};
-
-  // Instantiate the class so cascade parameters can be set.
-  G4CascadeParameters::Instance();
-
-  // Set the DetectorConstruction instance used to build the detector
-  // from the GDML description.
-  runManager_->SetUserInitialization(
-      new DetectorConstruction(parser, parameters_, conditionsIntf_));
-
-  // Parse the detector geometry and validate if specified.
-  auto detectorPath{parameters_.getParameter<std::string>("detector")};
-  auto validateGeometry{parameters_.getParameter<bool>("validate_detector")};
-  if (verbosity_ > 0) {
-    std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
-              << "'... " << std::flush;
-  }
-  G4GeometryManager::GetInstance()->OpenGeometry();
-  parser->read();
-  runManager_->DefineWorldVolume(parser->GetWorldVolume());
-
-  auto preInitCommands =
-      parameters_.getParameter<std::vector<std::string>>("preInitCommands", {});
-  for (const std::string& cmd : preInitCommands) {
-    if (allowed(cmd)) {
-      int g4Ret = uiManager_->ApplyCommand(cmd);
-      if (g4Ret > 0) {
-        EXCEPTION_RAISE("PreInitCmd",
-                        "Pre Initialization command '" + cmd +
-                            "' returned a failue status from Geant4: " +
-                            std::to_string(g4Ret));
-      }
-    } else {
-      EXCEPTION_RAISE(
-          "PreInitCmd",
-          "Pre Initialization command '" + cmd +
-              "' is not allowed because another part of Simulator handles it.");
-    }
-  }
+  SimulatorBase::configure(parameters);
 }
 
 void Simulator::beforeNewRun(ldmx::RunHeader& header) {
@@ -187,15 +99,14 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                    parameters_.getParameter<std::vector<std::string>>(
                        "postInitCommands", {}));
 
-  simcore::XsecBiasingOperator::Factory::get().apply([&header](auto bop) {
-      bop->RecordConfig(header);
-      });
+  simcore::XsecBiasingOperator::Factory::get().apply(
+      [&header](auto bop) { bop->RecordConfig(header); });
 
   int counter = 0;
-  PrimaryGenerator::Factory::get().apply([&header,&counter](auto gen) {
-        std::string gen_id = "Gen"+std::to_string(counter++);
-        gen->RecordConfig(gen_id, header);
-      });
+  PrimaryGenerator::Factory::get().apply([&header, &counter](auto gen) {
+    std::string gen_id = "Gen" + std::to_string(counter++);
+    gen->RecordConfig(gen_id, header);
+  });
 
   /**
   SensitiveDetector::Factory::get().apply([&header](auto sd) {
@@ -217,8 +128,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 }
 
 void Simulator::onNewRun(const ldmx::RunHeader& rh) {
-  const framework::RandomNumberSeedService& rseed = getCondition<framework::RandomNumberSeedService>(
-      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  const framework::RandomNumberSeedService& rseed =
+      getCondition<framework::RandomNumberSeedService>(
+          framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
@@ -230,6 +142,10 @@ void Simulator::onNewRun(const ldmx::RunHeader& rh) {
 void Simulator::produce(framework::Event& event) {
   // Generate and process a Geant4 event.
   numEventsBegan_++;
+  // Save the state of the random engine to an output stream. A string
+  // is then extracted and saved to the event header.
+  std::ostringstream stream;
+  G4Random::saveFullState(stream);
   runManager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
 
   // If a Geant4 event has been aborted, skip the rest of the processing
@@ -237,10 +153,8 @@ void Simulator::produce(framework::Event& event) {
   // the next event.
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();  // clean up event objects
-    SensitiveDetector::Factory::get().apply([](auto sd) {
-        sd->EndOfEvent();
-    });
-    this->abortEvent();                // get out of processors loop
+    SensitiveDetector::Factory::get().apply([](auto sd) { sd->EndOfEvent(); });
+    this->abortEvent();  // get out of processors loop
   }
 
   // Terminate the event.  This checks if an event is to be stored or
@@ -248,71 +162,16 @@ void Simulator::produce(framework::Event& event) {
   numEventsCompleted_++;
 
   // store event-wide information in EventHeader
-  auto event_info = static_cast<UserEventInformation *>(
-      runManager_->GetCurrentEvent()
-        ->GetUserInformation());
   auto& event_header = event.getEventHeader();
-  event_header.setWeight(event_info->getWeight());
-  event_header.setFloatParameter("total_photonuclear_energy",
-                                event_info->getPNEnergy());
-  event_header.setFloatParameter("total_electronuclear_energy",
-                                event_info->getENEnergy());
+  updateEventHeader(event_header);
 
-  // Save the state of the random engine to an output stream. A string
-  // is then extracted and saved to the event header.
-  std::ostringstream stream;
-  G4Random::saveFullState(stream);
-  // std::cout << stream.str() << std::endl;
   event_header.setStringParameter("eventSeed", stream.str());
 
-  // track storage
-  TrackMap& tracks{g4user::TrackingAction::get()->getTrackMap()};
-  tracks.traceAncestry();
-  event.add("SimParticles", tracks.getParticleMap());
+  saveTracks(event);
 
-  // Copy hit objects from SD hit collections into the output event.
-  SensitiveDetector::Factory::get().apply([&event](auto sd) {
-        sd->saveHits(event);
-        sd->EndOfEvent();
-      });
+  saveSDHits(event);
 
   runManager_->TerminateOneEvent();
-
-  return;
-}
-
-void Simulator::onProcessStart() {
-  // initialize run
-  runManager_->Initialize();
-
-  // Get the extra simulation configuring commands
-  auto postInitCommands = parameters_.getParameter<std::vector<std::string>>(
-      "postInitCommands", {});
-  for (const std::string& cmd : postInitCommands) {
-    if (allowed(cmd)) {
-      int g4Ret = uiManager_->ApplyCommand(cmd);
-      if (g4Ret > 0) {
-        EXCEPTION_RAISE("PostInitCmd",
-                        "Post Initialization command '" + cmd +
-                            "' returned a failue status from Geant4: " +
-                            std::to_string(g4Ret));
-      }
-    } else {
-      EXCEPTION_RAISE(
-          "PostInitCmd",
-          "Post Initialization command '" + cmd +
-              "' is not allowed because another part of Simulator handles it.");
-    }
-  }
-
-  // Instantiate the scoring worlds including any parallel worlds.
-  runManager_->ConstructScoringWorlds();
-
-  // Initialize the current run
-  runManager_->RunInitialization();
-
-  // Initialize the event processing
-  runManager_->InitializeEventLoop(1);
 
   return;
 }
@@ -320,7 +179,7 @@ void Simulator::onProcessStart() {
 void Simulator::onFileClose(framework::EventFile& file) {
   // End the current run and print out some basic statistics if verbose
   // level > 0.
-  runManager_->TerminateEventLoop();
+  // runManager_->TerminateEventLoop();
 
   // Pass the **real** number of events to the persistency manager
   auto rh = file.getRunHeader(run_);
@@ -329,42 +188,14 @@ void Simulator::onFileClose(framework::EventFile& file) {
 
   // Persist any remaining events, call the end of run action and
   // terminate the Geant4 kernel.
-  runManager_->RunTermination();
+  // runManager_->RunTermination();
 }
 
 void Simulator::onProcessEnd() {
+  SimulatorBase::onProcessEnd();
   std::cout << "[ Simulator ] : "
             << "Started " << numEventsBegan_ << " events to produce "
             << numEventsCompleted_ << " events." << std::endl;
-
-  // Delete Run Manager
-  // From Geant4 Basic Example B01:
-  //      Job termination
-  //      Free the store: user actions, physics list and detector descriptions
-  //      are owned and deleted by the run manager, so they should not be
-  //      deleted in the main() program
-  // This needs to happen here because otherwise, Geant4 objects are deleted
-  // twice:
-  //  1. When the histogram file is closed (all ROOT objects created during
-  //  processing are put there because ROOT)
-  //  2. When Simulator is deleted because runManager_ is a unique_ptr
-  runManager_.reset(nullptr);
-
-  // Delete the G4UIsession
-  // I don't think this needs to happen here, but since we are cleaning up loose
-  // ends...
-  sessionHandle_.reset(nullptr);
-}
-
-bool Simulator::allowed(const std::string& command) const {
-  for (const std::string& invalidSubstring : invalidCommands_) {
-    if (command.find(invalidSubstring) != std::string::npos) {
-      // found invalid substring in this command ==> NOT ALLOWED
-      return false;
-    }
-  }
-  // checked all invalid commands ==> ALLOWED
-  return true;
 }
 
 void Simulator::setSeeds(std::vector<int> seeds) {

@@ -22,10 +22,10 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
-
-#include "SimCore/RunManager.h"
-#include "SimCore/DetectorConstruction.h"
 #include "SimCore/ConditionsInterface.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/RunManager.h"
+#include "SimCore/SimulatorBase.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -44,7 +44,7 @@ namespace simcore {
  * Sim* modules.  This producer is mainly focused on calling appropriate
  * functions at the right time in the processing chain.
  */
-class Simulator : public framework::Producer {
+class Simulator : public SimulatorBase {
  public:
   /**
    * Constructor.
@@ -63,7 +63,7 @@ class Simulator : public framework::Producer {
    *
    * Deletes hanging pointers
    */
-  ~Simulator();
+  virtual ~Simulator();
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -113,21 +113,12 @@ class Simulator : public framework::Producer {
    *
    * This function runs the post init setup commands.
    */
-  void onProcessStart() final override;
+  // void onProcessStart() final override;
 
   /// Callback called once processing is complete.
   void onProcessEnd() final override;
 
  private:
-  /**
-   * Check if the input command is allowed to be run.
-   *
-   * Looks for sub-strings matching the ones listed as an invalid command.
-   * These invalid commands are mostly commands where control has been handed
-   * over to Simulator.
-   */
-  bool allowed(const std::string& command) const;
-
   /**
    * Set the seeds to be used by the Geant4 random engine.
    *
@@ -138,19 +129,6 @@ class Simulator : public framework::Producer {
   void setSeeds(std::vector<int> seeds);
 
  private:
-  /// Manager controlling G4 simulation run
-  std::unique_ptr<RunManager> runManager_;
-
-  /// User interface handle
-  G4UImanager* uiManager_{nullptr};
-
-  /// Handle to the G4Session -> how to deal with G4cout and G4cerr
-  std::unique_ptr<G4UIsession> sessionHandle_;
-
-  /// Commands not allowed to be passed from python config file
-  ///     This is because Simulator already runs them.
-  static const std::vector<std::string> invalidCommands_;
-
   /// Number of events started
   int numEventsBegan_{0};
 
@@ -159,19 +137,6 @@ class Simulator : public framework::Producer {
 
   /// the run number (for accessing the run header in onFileClose
   int run_{-1};
-
-  ///  Conditions interface
-  ConditionsInterface conditionsIntf_;
-
-  /*********************************************************
-   * Python Configuration Parameters
-   *********************************************************/
-
-  /// The parameters used to configure the simulation
-  framework::config::Parameters parameters_;
-
-  /// Vebosity for the simulation
-  int verbosity_{1};
 };
 }  // namespace simcore
 
