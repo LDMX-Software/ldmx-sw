@@ -55,6 +55,7 @@ void ReSimulator::produce(framework::Event& event) {
             std::to_string(eventNumber));
   }
 
+  eventHeader.setEventNumber(++events_resimulated);
   updateEventHeader(eventHeader);
   saveTracks(event);
 

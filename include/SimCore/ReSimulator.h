@@ -40,6 +40,13 @@ class ReSimulator : public SimulatorBase {
    * Whether to resimulate all events in the input files
    */
   bool resimulate_all_events;
+
+  /*
+   * How many events have already been resimulated. This determines the event
+   * number in the output file, since more than one input file can be used.
+   *
+   */
+  int events_resimulated = 0;
 };
 }  // namespace simcore
 
