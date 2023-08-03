@@ -16,38 +16,35 @@ class ReSimVerifier : public framework::Analyzer {
   ReSimVerifier(const std::string &name, framework::Process &process)
       : framework::Analyzer{name, process} {}
   void configure(framework::config::Parameters &parameters) override;
-  /*
-   *
-   * Determine which of x/y/z corresponds to the direction along, across, and
-   * through the bar respectively. Along corresponding to the length of the bar,
-   * across to the width of the bar, and through to the thickness of the bar.
-   *
-   *
-   */
-  std::array<int, 3> determine_indices(const ldmx::HcalID id);
-
-  /*
-   *
-   * Check if the hit at position `position` is within the bounds of the
-   * scintillator bar with HcalID `id`.
-   *
-   * @note: On error, this function will raise an exception if `stop_on_error`
-   * is set to true or log the issue if false.
-   *
-   */
-  bool hit_ok(const ldmx::HcalID id, const std::array<double, 3> &position);
 
   void analyze(const framework::Event &event) override;
 
+  /*
+   * Check that the simhits between the two collections are identical.
+   *
+   * @return: False if any hit is different between the two
+   *
+   **/
+  bool verifySimCalorimeterHits(
+      const std::vector<ldmx::SimCalorimeterHit> &simHits,
+      const std::vector<ldmx::SimCalorimeterHit> &reSimHits);
+
+  /*
+   * Check that all SimParticles are present in both passes of the event
+   *
+   * @return: False if any SimParticle is different between the two
+   *
+   **/
+  bool verifySimParticles(const framework::Event &event);
+
  private:
-  std::string hcalSimHitsCollection_{"HcalSimHits"};
-  std::string hcalReSimHitsCollection_{"HcalReSimHits"};
+  std::vector<std::string> collections;
   std::string simPassName_{""};
   std::string reSimPassName_{""};
 
-  // Maximum difference between position and bounds of the scintillator bar that
-  // will be accepted [mm]
-  double tolerance{};
+  /*
+   * If true, abort on the first mismatch. Otherwise, report and continue.
+   **/
   bool stop_on_error{};
 };
 }  // namespace dqm
