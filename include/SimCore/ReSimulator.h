@@ -10,35 +10,36 @@ class ReSimulator : public SimulatorBase {
  public:
   ReSimulator(const std::string& name, framework::Process& process)
       : SimulatorBase{name, process} {}
-  void produce(framework::Event& event) override {
-    /* numEventsBegan_++; */
-    auto& eventHeader{event.getEventHeader()};
-    std::istringstream iss(eventHeader.getStringParameter("eventSeed"));
-    G4Random::restoreFullState(iss);
-    const auto eventNumber{eventHeader.getEventNumber()};
-    runManager_->ProcessOneEvent(eventNumber);
-    std::cout << "Finished with event number " << eventNumber << std::endl;
-    if (runManager_->GetCurrentEvent()->IsAborted()) {
-      runManager_->TerminateOneEvent();
-      SensitiveDetector::Factory::get().apply(
-          [](auto sd) { sd->EndOfEvent(); });
-      EXCEPTION_RAISE(
-          "ReSimAbortedEvent",
-          "Resimulation resulted in an aborted event, something is wrong with "
-          "the seed from event " +
-              std::to_string(eventNumber));
-    }
+  /**
+   * Callback for the processor to configure itself from the given set
+   * of parameters.
+   *
+   * @param parameters ParameterSet for configuration.
+   */
+  void configure(framework::config::Parameters& parameters) final override;
+  /**
+   * Run resimulation if the event is part of the requested sets of events to
+   * resimulate
+   *
+   * @param event The event to process.
+   */
+  void produce(framework::Event& event) override;
 
-    updateEventHeader(eventHeader);
-    saveTracks(event);
+ private:
+  /*
+   *
+   * List of event numbers in the input files that should be resimulated if
+   * `resimulate_all_events` is false.
+   *
+   * @note: If an event number in `events_to_resimulate_` is not part of the
+   * input file, it will be ignored.
+   */
+  std::vector<int> events_to_resimulate_;
 
-    saveSDHits(event);
-    /* TrackMap& tracks{g4user::TrackingAction::get()->getTrackMap()}; */
-    /* tracks.traceAncestry(); */
-    /* event.add("SimParticles", tracks.getParticleMap()); */
-
-    runManager_->TerminateOneEvent();
-  }
+  /**
+   * Whether to resimulate all events in the input files
+   */
+  bool resimulate_all_events;
 };
 }  // namespace simcore
 
