@@ -105,16 +105,6 @@ class Simulator : public SimulatorBase {
    */
   void onFileClose(framework::EventFile& eventFile) final override;
 
-  /**
-   * Initialization of simulation
-   *
-   * This uses the parameters set in the configure method to
-   * construct and initialize the simulation objects.
-   *
-   * This function runs the post init setup commands.
-   */
-  // void onProcessStart() final override;
-
   /// Callback called once processing is complete.
   void onProcessEnd() final override;
 

@@ -43,11 +43,7 @@
 namespace simcore {
 
 Simulator::Simulator(const std::string& name, framework::Process& process)
-    : simcore::SimulatorBase(name, process) {
-  // Get the ui manager from geant
-  //      This pointer is handled by Geant4
-  uiManager_ = G4UImanager::GetUIpointer();
-}
+    : simcore::SimulatorBase(name, process) {}
 
 Simulator::~Simulator() {}
 
@@ -107,12 +103,6 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
     std::string gen_id = "Gen" + std::to_string(counter++);
     gen->RecordConfig(gen_id, header);
   });
-
-  /**
-  SensitiveDetector::Factory::get().apply([&header](auto sd) {
-    sd->RecordConfig(header);
-  });
-   */
 
   // Set a string parameter with the Geant4 SHA-1.
   if (G4RunManagerKernel::GetRunManagerKernel()) {
@@ -177,18 +167,10 @@ void Simulator::produce(framework::Event& event) {
 }
 
 void Simulator::onFileClose(framework::EventFile& file) {
-  // End the current run and print out some basic statistics if verbose
-  // level > 0.
-  // runManager_->TerminateEventLoop();
-
   // Pass the **real** number of events to the persistency manager
   auto rh = file.getRunHeader(run_);
   rh.setIntParameter("Event Count", numEventsCompleted_);
   rh.setIntParameter("Events Began", numEventsBegan_);
-
-  // Persist any remaining events, call the end of run action and
-  // terminate the Geant4 kernel.
-  // runManager_->RunTermination();
 }
 
 void Simulator::onProcessEnd() {
