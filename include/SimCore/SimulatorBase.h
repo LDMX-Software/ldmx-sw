@@ -67,18 +67,6 @@ class SimulatorBase : public framework::Producer {
 
   std::vector<std::string> postInitCommands_;
 
- private:
-  /*
-   * Set up logging for Geant4
-   *
-   *  If the verbosity level is set to 0, create a batch session
-   *  If the verbosity level is > 1, log everything to a file.
-   *  Otherwise, dump the output. If a prefix has been specified, append it ot
-   *  the log message.
-   **/
-  void createLogging();
-
- protected:
   /*
    *
    * On succesful event, update event header properties like total PN/EN energy
@@ -101,7 +89,17 @@ class SimulatorBase : public framework::Producer {
 
  private:
   /*
-   * Create the GDML parser and load the detector geometry
+   * Set up logging for Geant4 during initialization
+   *
+   *  If the verbosity level is set to 0, create a batch session
+   *  If the verbosity level is > 1, log everything to a file.
+   *  Otherwise, dump the output. If a prefix has been specified, append it ot
+   *  the log message.
+   **/
+  void createLogging();
+  /*
+   * Create the GDML parser and load the detector geometry during
+   * initialization.
    */
   void buildGeometry();
 
