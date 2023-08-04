@@ -10,14 +10,14 @@ class ReSimulator : public SimulatorBase {
  public:
   ReSimulator(const std::string& name, framework::Process& process)
       : SimulatorBase{name, process} {}
-  /**
+  /*
    * Callback for the processor to configure itself from the given set
    * of parameters.
    *
    * @param parameters ParameterSet for configuration.
    */
   void configure(framework::config::Parameters& parameters) final override;
-  /**
+  /*
    * Run resimulation if the event is part of the requested sets of events to
    * resimulate
    *
@@ -27,7 +27,6 @@ class ReSimulator : public SimulatorBase {
 
  private:
   /*
-   *
    * List of event numbers in the input files that should be resimulated if
    * `resimulate_all_events` is false.
    *
