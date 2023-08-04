@@ -13,20 +13,6 @@ function(
   option(ADDITIONAL_WARNINGS "Build LDMX-sw with additional compiler warnings enabled" OFF)
 
   if (ADDITIONAL_WARNINGS)
-    if("${DISABLED_WARNINGS}" STREQUAL "")
-      set(DISABLED_WARNINGS
-        # These are used so much in ldmx-sw that we can't warn on them
-        -Wno-old-style-cast # warn for c-style casts
-        -Wno-unused-parameter
-        -Wno-sign-conversion # warn on sign conversions
-        -Wno-conversion # warn on type conversions that may lose data
-        -Wno-sign-compare
-        # SimCore sometimes chokes on this one
-        -Wno-duplicated-branches
-        # Do we care about this one?
-        -Wno-double-promotion # warn if float is implicit promoted to double
-      )
-    endif()
     if(PEDANTIC_WARNINGS)
       set(PEDANTIC_WARNINGS_ENABLED
         -Wpedantic # warn if non-standard C++ is used
@@ -61,6 +47,28 @@ function(
         -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
         -Wuseless-cast # warn if you perform a cast to the same type
       )
+    if("${DISABLED_WARNINGS}" STREQUAL "")
+      set(DISABLED_WARNINGS
+        # These are used so much in ldmx-sw that we can't warn on them
+        -Wno-old-style-cast # warn for c-style casts
+        -Wno-unused-parameter
+        -Wno-sign-conversion # warn on sign conversions
+        -Wno-conversion # warn on type conversions that may lose data
+        -Wno-sign-compare
+        # Do we care about this one?
+        -Wno-double-promotion # warn if float is implicit promoted to double
+        # SimCore sometimes chokes on this one
+        # -Wno-duplicated-branches
+      )
+      list(APPEND CLANG_WARNINGS
+        ${DISABLED_WARNINGS}
+        # Clang is being standards-compliant and forbidding conversions in
+        # {}-initialization. Our code isn't currently.
+        -Wno-c++11-narrowing
+      )
+      list(APPEND GCC_WARNINGS ${DISABLED_WARNINGS}
+      )
+    endif()
 
     endif()
 
@@ -68,7 +76,6 @@ function(
 
 
   if(WARNINGS_AS_ERRORS)
-    message(TRACE "Warnings are treated as errors")
     list(APPEND CLANG_WARNINGS -Werror)
     list(APPEND GCC_WARNINGS -Werror)
   endif()
