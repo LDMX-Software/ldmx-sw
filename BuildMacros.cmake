@@ -2,6 +2,7 @@ include(CMakeParseArguments)
 include(Sanitizers)
 include(CompilerWarnings)
 
+include(InterProceduralOptimization)
 # Define some colors. These are used to colorize CMake's user output
 if(NOT WIN32)
   string(ASCII 27 esc)
@@ -140,6 +141,7 @@ macro(setup_library)
   target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
   enable_sanitizers(${library_name})
   enable_compiler_warnings(${library_name})
+  enable_ipo(${library_name})
 
   # Define an alias. This is used to create the imported target.
   set(alias "${setup_library_module}::${setup_library_module}")
