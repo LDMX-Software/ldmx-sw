@@ -58,7 +58,7 @@ function(
         # Do we care about this one?
         -Wno-double-promotion # warn if float is implicit promoted to double
         # SimCore sometimes chokes on this one
-        # -Wno-duplicated-branches
+        -Wno-duplicated-branches
       )
       list(APPEND CLANG_WARNINGS
         ${DISABLED_WARNINGS}
