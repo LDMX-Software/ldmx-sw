@@ -48,7 +48,7 @@ class RunManager : public G4RunManager {
   /**
    * Class destructor.
    */
-  virtual ~RunManager();
+  virtual ~RunManager() = default;
 
   /**
    * Initialize physics.
