@@ -45,10 +45,10 @@ class SimParticle {
   typedef std::map<std::string, ProcessType> ProcessTypeMap;
 
   /// Constructor
-  SimParticle();
+  SimParticle() = default;
 
   /// Destructor
-  virtual ~SimParticle();
+  virtual ~SimParticle() = default;
 
   /// Reset an instance of this class by clearing all of its data.
   void Clear();

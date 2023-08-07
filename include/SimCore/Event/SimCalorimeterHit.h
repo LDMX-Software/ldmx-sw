@@ -70,12 +70,12 @@ class SimCalorimeterHit {
   /**
    * Class constructor.
    */
-  SimCalorimeterHit();
+  SimCalorimeterHit() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~SimCalorimeterHit();
+  virtual ~SimCalorimeterHit() = default;
 
   /**
    * Clear the data in the object.
