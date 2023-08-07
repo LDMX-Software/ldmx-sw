@@ -87,20 +87,23 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * the input to this function is of no use to us. This is simply
    * here to make sure that we can reset the SD to a new-event state
    * whether or not a given event was serialized.
+   *
+   * @note: If you are looking for the callback that is used in LDMX-sw when a
+   * Simulator event finishes, you want `OnFinishedEvent`
    */
   virtual void EndOfEvent(G4HCofThisEvent*) override {}
 
   /**
-   * Cleanup SD and prepare a new-event state
+   * Cleanup SD and prepare a new-event state.
    */
-  virtual void EndOfEvent() = 0;
+  virtual void OnFinishedEvent() = 0;
 
   /**
    * Record the configuration of this detector into the run header.
    *
    * @param[in,out] header RunHeader to write configuration to
    */
-  //virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
+  // virtual void RecordConfig(ldmx::RunHeader& header) const = 0;
 
  protected:
   /**

@@ -47,7 +47,8 @@ void ReSimulator::produce(framework::Event& event) {
   }
   if (runManager_->GetCurrentEvent()->IsAborted()) {
     runManager_->TerminateOneEvent();
-    SensitiveDetector::Factory::get().apply([](auto sd) { sd->EndOfEvent(); });
+    SensitiveDetector::Factory::get().apply(
+        [](auto sd) { sd->OnFinishedEvent(); });
     EXCEPTION_RAISE(
         "ReSimAbortedEvent",
         "Resimulation resulted in an aborted event, something is wrong with "
