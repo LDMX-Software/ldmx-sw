@@ -31,19 +31,17 @@
 namespace simcore {
 namespace generators {
 
-RootSimFromEcalSP::RootSimFromEcalSP(const std::string& name,
-                                     const framework::config::Parameters& parameters)
+RootSimFromEcalSP::RootSimFromEcalSP(
+    const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters), ievent_("InputReSim") {
   framework::config::Parameters file_params;
-  file_params.addParameter<std::string>("tree_name","LDMX_Events");
+  file_params.addParameter<std::string>("tree_name", "LDMX_Events");
   std::string filename = parameters.getParameter<std::string>("filePath");
-  ifile_ = std::make_unique<framework::EventFile>(file_params,filename);
+  ifile_ = std::make_unique<framework::EventFile>(file_params, filename);
   ifile_->setupEvent(&ievent_);
 
   timeCutoff_ = parameters.getParameter<double>("time_cutoff");
-
-  ecalSPHitsCollName_ =
-      parameters.getParameter<std::string>("collection_name");
+  ecalSPHitsCollName_ = parameters.getParameter<std::string>("collection_name");
   ecalSPHitsPassName_ = parameters.getParameter<std::string>("pass_name");
 }
 
@@ -123,8 +121,10 @@ void RootSimFromEcalSP::GeneratePrimaryVertex(G4Event* anEvent) {
   G4Random::restoreFullState(iss);
 }
 
-void RootSimFromEcalSP::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
-  rh.setStringParameter(id + " Class", "simcore::generators::RootSimFromEcalSP");
+void RootSimFromEcalSP::RecordConfig(const std::string& id,
+                                     ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class",
+                        "simcore::generators::RootSimFromEcalSP");
   rh.setStringParameter(id + " File Path", ifile_->getFileName());
   rh.setFloatParameter(id + " Time Cutoff [ns]", timeCutoff_);
 }

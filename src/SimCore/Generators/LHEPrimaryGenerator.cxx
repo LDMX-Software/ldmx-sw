@@ -22,8 +22,8 @@
 namespace simcore {
 namespace generators {
 
-LHEPrimaryGenerator::LHEPrimaryGenerator(const std::string& name,
-                                         const framework::config::Parameters& parameters)
+LHEPrimaryGenerator::LHEPrimaryGenerator(
+    const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
   file_path_ = parameters.getParameter<std::string>("filePath");
   reader_ = new simcore::lhe::LHEReader(file_path_);
@@ -43,9 +43,9 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     std::map<simcore::lhe::LHEParticle*, G4PrimaryParticle*> particleMap;
 
     int particleIndex = 0;
-    const std::vector<simcore::lhe::LHEParticle*>& particles = lheEvent->getParticles();
-    for (auto it = particles.begin();
-         it != particles.end(); it++) {
+    const std::vector<simcore::lhe::LHEParticle*>& particles =
+        lheEvent->getParticles();
+    for (auto it = particles.begin(); it != particles.end(); it++) {
       simcore::lhe::LHEParticle* particle = (*it);
 
       if (particle->getISTUP() > 0) {
@@ -106,9 +106,11 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   delete lheEvent;
 }
 
-void LHEPrimaryGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
-  rh.setStringParameter(id+" Class", "simcore::generators::LHEPrimaryGenerator");
-  rh.setStringParameter(id+" LHE File", file_path_);
+void LHEPrimaryGenerator::RecordConfig(const std::string& id,
+                                       ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class",
+                        "simcore::generators::LHEPrimaryGenerator");
+  rh.setStringParameter(id + " LHE File", file_path_);
 }
 
 }  // namespace generators

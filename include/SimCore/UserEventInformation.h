@@ -2,7 +2,6 @@
 #define SIMCORE_USEREVENTINFORMATION_H
 
 #include "G4VUserEventInformation.hh"
-
 namespace simcore {
 
 /**

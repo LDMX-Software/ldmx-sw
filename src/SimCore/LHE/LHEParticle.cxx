@@ -1,8 +1,10 @@
 #include "SimCore/LHE/LHEParticle.h"
+
 #include "Framework/Exception/Exception.h"
 
 // STL
 #include <stdlib.h>
+
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -42,8 +44,8 @@ LHEParticle::LHEParticle(std::string& line) {
   vtimup_ = atof(tokens[11].c_str());
   spinup_ = atof(tokens[12].c_str());
 
-  mothers_[0] = NULL;
-  mothers_[1] = NULL;
+  mothers_[0] = nullptr;
+  mothers_[1] = nullptr;
 }
 
 int LHEParticle::getIDUP() const { return idup_; }
@@ -82,4 +84,4 @@ std::ostream& operator<<(std::ostream& stream, const LHEParticle& particle) {
   return stream;
 }
 
-}  // namespace simcore
+}  // namespace simcore::lhe

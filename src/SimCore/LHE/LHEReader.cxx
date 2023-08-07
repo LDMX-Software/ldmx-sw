@@ -25,7 +25,7 @@ LHEEvent* LHEReader::readNextEvent() {
   if (!foundEventElement) {
     std::cerr << "WARNING: No next <event> element was found by the LHE reader."
               << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   getline(ifs_, line);
@@ -68,4 +68,4 @@ LHEEvent* LHEReader::readNextEvent() {
   return nextEvent;
 }
 
-}  // namespace simcore
+}  // namespace simcore::lhe

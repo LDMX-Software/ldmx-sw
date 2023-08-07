@@ -24,7 +24,8 @@ UserEventInformation* UserAction::getEventInfo() const {
       G4EventManager::GetEventManager()->GetUserInformation());
 }
 
-const std::map<int,ldmx::SimParticle>& UserAction::getCurrentParticleMap() const {
+const std::map<int, ldmx::SimParticle>& UserAction::getCurrentParticleMap()
+    const {
   return g4user::TrackingAction::get()->getTrackMap().getParticleMap();
 }
 

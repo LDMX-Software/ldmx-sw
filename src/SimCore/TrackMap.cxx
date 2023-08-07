@@ -7,7 +7,8 @@
 namespace simcore {
 
 void TrackMap::insert(const G4Track* track) {
-  ancestry_[track->GetTrackID()] = std::make_pair(track->GetParentID(),isInCalorimeterRegion(track));
+  ancestry_[track->GetTrackID()] =
+      std::make_pair(track->GetParentID(), isInCalorimeterRegion(track));
   descendents_[track->GetParentID()].push_back(track->GetTrackID());
 }
 
@@ -15,7 +16,7 @@ int TrackMap::findIncident(G4int trackID) const {
   int currTrackID = trackID;
   bool foundIncident{false};
   while (not foundIncident) {
-    auto &[parentID, inCalRegion] = ancestry_.at(currTrackID);
+    auto& [parentID, inCalRegion] = ancestry_.at(currTrackID);
     if (not inCalRegion or parentID == 0) {
       // current track ID is nearest ancestor
       // originating outside cal region
@@ -51,7 +52,8 @@ void TrackMap::save(const G4Track* track) {
   particle.setPdgID(particle_def->GetPDGEncoding());
   particle.setCharge(particle_def->GetPDGCharge());
   particle.setMass(track->GetDynamicParticle()->GetMass());
-  particle.setEnergy(track->GetVertexKineticEnergy()+track->GetDynamicParticle()->GetMass());
+  particle.setEnergy(track->GetVertexKineticEnergy() +
+                     track->GetDynamicParticle()->GetMass());
 
   auto track_info{UserTrackInformation::get(track)};
   particle.setVertexVolume(track_info->getVertexVolume());
@@ -82,16 +84,16 @@ void TrackMap::save(const G4Track* track) {
 }
 
 void TrackMap::traceAncestry() {
-  for (auto & [id, particle] : particle_map_) {
+  for (auto& [id, particle] : particle_map_) {
     particle.addParent(ancestry_.at(id).first);
-    
+
     /**
      * Use [] instead of at() for descendents_
      * so that if it wasn't previously created,
      * we will just silently create an empty
      * vector and move on.
      */
-    for (auto &child : descendents_[id]) {
+    for (auto& child : descendents_[id]) {
       particle.addDaughter(child);
     }
   }
