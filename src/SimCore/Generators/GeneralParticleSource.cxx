@@ -20,10 +20,11 @@
 namespace simcore {
 namespace generators {
 
-GeneralParticleSource::GeneralParticleSource(const std::string& name,
-                                             const framework::config::Parameters& parameters)
+GeneralParticleSource::GeneralParticleSource(
+    const std::string& name, const framework::config::Parameters& parameters)
     : PrimaryGenerator(name, parameters) {
-  init_commands_ = parameters.getParameter<std::vector<std::string>>("initCommands");
+  init_commands_ =
+      parameters.getParameter<std::vector<std::string>>("initCommands");
   for (const auto& cmd : init_commands_) {
     int g4Ret = G4UImanager::GetUIpointer()->ApplyCommand(cmd);
     if (g4Ret > 0) {
@@ -41,11 +42,14 @@ void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   return;
 }
 
-void GeneralParticleSource::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
-  rh.setStringParameter(id+" Class", "simcore::generators::GeneralParticleSource");
-  std::string init_prefix{id+" Init Cmd "};
+void GeneralParticleSource::RecordConfig(const std::string& id,
+                                         ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class",
+                        "simcore::generators::GeneralParticleSource");
+  std::string init_prefix{id + " Init Cmd "};
   for (std::size_t i{0}; i < init_commands_.size(); i++) {
-    rh.setStringParameter(init_prefix+std::to_string(i), init_commands_.at(i));
+    rh.setStringParameter(init_prefix + std::to_string(i),
+                          init_commands_.at(i));
   }
 }
 

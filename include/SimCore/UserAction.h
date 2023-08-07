@@ -20,9 +20,9 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/UserEventInformation.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Factory.h"
+#include "SimCore/UserEventInformation.h"
 
 // Forward Declarations
 class G4Event;
@@ -50,10 +50,9 @@ class UserAction {
              framework::config::Parameters& parameters);
 
   /// factory for user actions
-  using Factory = ::simcore::Factory<UserAction,
-                                     std::shared_ptr<UserAction>,
-                                     const std::string&,
-                                     framework::config::Parameters&>;
+  using Factory =
+      ::simcore::Factory<UserAction, std::shared_ptr<UserAction>,
+                         const std::string&, framework::config::Parameters&>;
 
   /// Destructor
   virtual ~UserAction() = default;
@@ -175,7 +174,7 @@ class UserAction {
    * already fully processed and chosen to be saved. The ancestry
    * of the particles will not have been traced yet.
    */
-  const std::map<int,ldmx::SimParticle>& getCurrentParticleMap() const;
+  const std::map<int, ldmx::SimParticle>& getCurrentParticleMap() const;
 
  protected:
   /// Name of the UserAction

@@ -27,7 +27,8 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
    * Class constructor.
    * @param reader The LHE reader with the event data.
    */
-  LHEPrimaryGenerator(const std::string& name, const framework::config::Parameters& parameters);
+  LHEPrimaryGenerator(const std::string& name,
+                      const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.

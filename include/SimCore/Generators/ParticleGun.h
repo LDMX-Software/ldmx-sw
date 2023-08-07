@@ -4,7 +4,6 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
-
 #ifndef SIMCORE_PARTICLE_GUN_H
 #define SIMCORE_PARTICLE_GUN_H
 
@@ -43,7 +42,8 @@ class ParticleGun : public simcore::PrimaryGenerator {
    *  time     : time to shoot at (ns)
    *  direction: direction to shoot in (unitless three-vector)
    */
-  ParticleGun(const std::string& name, const framework::config::Parameters& parameters);
+  ParticleGun(const std::string& name,
+              const framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~ParticleGun() = default;

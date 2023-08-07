@@ -137,6 +137,6 @@ class LHEParticle {
   int spinup_;
 };
 
-}  // namespace simcore
+}  // namespace simcore::lhe
 
 #endif

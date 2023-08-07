@@ -37,7 +37,8 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
    * Parameters:
    *  initCommands : vector of Geant4 strings to initialize the GPS
    */
-  GeneralParticleSource(const std::string& name, const framework::config::Parameters& parameters);
+  GeneralParticleSource(const std::string& name,
+                        const framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~GeneralParticleSource() = default;
@@ -64,7 +65,7 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
 
 };  // GeneralParticleSource
 
-}  // namesapce generators
+}  // namespace generators
 }  // namespace simcore
 
 #endif  // SIMCORE_GENERALPARTICLESOURCE_H

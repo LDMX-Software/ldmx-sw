@@ -10,8 +10,8 @@
 
 // LDMX
 #include "SimCore/Event/SimParticle.h"
-#include "SimCore/UserTrackInformation.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
+#include "SimCore/UserTrackInformation.h"
 
 namespace simcore {
 
@@ -92,9 +92,7 @@ class TrackMap {
   /**
    * Get the map of particles to be stored in output event.
    */
-  std::map<int,ldmx::SimParticle> &getParticleMap() {
-    return particle_map_;
-  }
+  std::map<int, ldmx::SimParticle>& getParticleMap() { return particle_map_; }
 
  private:
   /**
@@ -125,13 +123,13 @@ class TrackMap {
    * @see isInCalorimeterRegion for how we check if a track
    * originated in the calorimeter region.
    */
-  std::unordered_map<int,std::pair<int,bool>> ancestry_;
+  std::unordered_map<int, std::pair<int, bool>> ancestry_;
 
   /// descendents map of particles in event (parent -> children)
-  std::unordered_map<int,std::vector<int>> descendents_;
+  std::unordered_map<int, std::vector<int>> descendents_;
 
   /// map of SimParticles that will be stored
-  std::map<int,ldmx::SimParticle> particle_map_;
+  std::map<int, ldmx::SimParticle> particle_map_;
 };
 
 }  // namespace simcore
