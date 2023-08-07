@@ -65,7 +65,8 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * @param[in] step the step that happened within one of our logical volumes
    * @param[in] hist the touchable history of the step
    */
-  virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist) = 0;
+  virtual G4bool ProcessHits(G4Step* step,
+                             G4TouchableHistory* hist) override = 0;
 
   /**
    * We are given the event bus here and we must decide
@@ -88,7 +89,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * here to make sure that we can reset the SD to a new-event state
    * whether or not a given event was serialized.
    */
-  virtual void EndOfEvent(G4HCofThisEvent*) final override {}
+  virtual void EndOfEvent(G4HCofThisEvent*) override {}
 
   /**
    * Cleanup SD and prepare a new-event state
