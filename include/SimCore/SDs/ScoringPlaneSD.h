@@ -2,9 +2,8 @@
 #define SIMCORE_SCORINGPLANESD_H
 
 #include "DetDescr/DetectorID.h"
-
-#include "SimCore/SensitiveDetector.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
@@ -20,8 +19,7 @@ class ScoringPlaneSD : public SensitiveDetector {
    * @param ci Conditions interface handle
    * @param params python configuration parameters
    */
-  ScoringPlaneSD(const std::string& name,
-                 simcore::ConditionsInterface& ci,
+  ScoringPlaneSD(const std::string& name, simcore::ConditionsInterface& ci,
                  const framework::config::Parameters& params);
 
   /** Destructor */
@@ -36,12 +34,14 @@ class ScoringPlaneSD : public SensitiveDetector {
 
   /**
    * This is Geant4's handle to tell us that a particle has stepped
-   * through our sensitive detector and we should process its interaction with us.
+   * through our sensitive detector and we should process its interaction with
+   * us.
    *
    * @param[in] step the step that happened within one of our logical volumes
    * @param[in] hist the touchable history of the step
    */
-  virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist) final override;
+  virtual G4bool ProcessHits(G4Step* step,
+                             G4TouchableHistory* hist) final override;
 
   /**
    * We are given the event bus here and we must decide
@@ -58,7 +58,7 @@ class ScoringPlaneSD : public SensitiveDetector {
  private:
   /// Substring to match to logical volumes
   std::string match_substr_;
-  
+
   /// Name of output collection to add
   std::string collection_name_;
 

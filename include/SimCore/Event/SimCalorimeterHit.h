@@ -122,13 +122,17 @@ class SimCalorimeterHit {
    * sensitive volume [mm].
    * @return The local XYZ position of the hit.
    */
-  std::vector<float> getPreStepPosition() const { return {preStepX_, preStepY_, preStepZ_}; }
+  std::vector<float> getPreStepPosition() const {
+    return {preStepX_, preStepY_, preStepZ_};
+  }
   /**
    * Get the XYZ post-step position of the hit in the coordinate frame of the
    * sensitive volume [mm].
    * @return The XYZ position of the hit.
    */
-  std::vector<float> getPostStepPosition() const { return {postStepX_, postStepY_, postStepZ_}; }
+  std::vector<float> getPostStepPosition() const {
+    return {postStepX_, postStepY_, postStepZ_};
+  }
   /**
    * Set the XYZ position of the hit [mm].
    * @param x The X position.
@@ -169,9 +173,7 @@ class SimCalorimeterHit {
    * Set the physical path length for the interaction [mm].
    * @param length The physical path lenght
    */
-  void setPathLength(const float length) {
-    pathLength_ = length;
-  }
+  void setPathLength(const float length) { pathLength_ = length; }
   /**
    * Get the physical path length for the interaction [mm].
    * @return physical path length
@@ -181,25 +183,18 @@ class SimCalorimeterHit {
    * Set global pre-step time of the hit [ns].
    * @param time The time before the step
    */
-  void setPreStepTime(const float time) {
-    preStepTime_ = time;
-  }
+  void setPreStepTime(const float time) { preStepTime_ = time; }
   /**
    * Set global post-step time of the hit [ns].
    * @param time The time before the step
    */
-  void setPostStepTime(const float time) {
-    postStepTime_ = time;
-  }
+  void setPostStepTime(const float time) { postStepTime_ = time; }
 
   /**
    * Set the velocity of the track [mm/ns].
    * @param velocity The track velocity
    */
-  void setVelocity(float velocity) {
-    velocity_ = velocity;
-  }
-
+  void setVelocity(float velocity) { velocity_ = velocity; }
 
   /**
    * Get the global time of the hit [ns].
@@ -221,8 +216,7 @@ class SimCalorimeterHit {
    * Get the track velocity of the hit [mm/ns].
    * @return Thetrack velocity of the hit.
    */
-  float getVelocity() const {return velocity_;}
-
+  float getVelocity() const { return velocity_; }
 
   /**
    * Set the time of the hit [ns].
@@ -280,7 +274,6 @@ class SimCalorimeterHit {
   }
 
  private:
-
   /**
    * Member variables used in all calorimeter types
    */
@@ -308,7 +301,6 @@ class SimCalorimeterHit {
    * The Z position.
    */
   float z_{0};
-
 
   /**
    * The global time of the hit.
@@ -356,7 +348,6 @@ class SimCalorimeterHit {
    */
   float pathLength_{-1};
 
-
   /**
    * The X, Y, and Z positions [mm] before the interaction in the coordinate
    * frame of the sensitive volume.
@@ -385,13 +376,11 @@ class SimCalorimeterHit {
    */
   float velocity_{-1};
 
-
-
   /**
    * ROOT class definition.
    */
   ClassDef(SimCalorimeterHit, 4)
 };
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

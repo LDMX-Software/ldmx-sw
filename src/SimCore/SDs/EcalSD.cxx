@@ -9,8 +9,8 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalGeometry.h"
+#include "DetDescr/EcalID.h"
 
 namespace simcore {
 
@@ -19,14 +19,14 @@ const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";
 EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
                const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-      enableHitContribs_ = p.getParameter<bool>("enableHitContribs");
-      compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
-    }
+  enableHitContribs_ = p.getParameter<bool>("enableHitContribs");
+  compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
+}
 
 EcalSD::~EcalSD() {}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-  static const int layer_depth = 2; // index depends on GDML implementation
+  static const int layer_depth = 2;  // index depends on GDML implementation
   const auto& geometry = getCondition<ldmx::EcalGeometry>(
       ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -42,11 +42,11 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     return false;
   }
 
-  // Compute the hit position 
+  // Compute the hit position
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
   G4StepPoint* postPoint = aStep->GetPostStepPoint();
   G4ThreeVector position =
-    0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
+      0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
 
   // Create the ID for the hit.
   int cpynum = aStep->GetPreStepPoint()
@@ -61,26 +61,28 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
    * DEBUG
    *  this printout is helpful when developing the GDML and/or EcalGeometry
    *  since Geant4 will probe where _exactly_ the GDML sensitive volumes are
-  std::cout 
+  std::cout
     << "(" << position[0] << ", " << position[1] << ", " << position[2] << ") "
-    << cpynum << " -> layer " << layerNumber 
+    << cpynum << " -> layer " << layerNumber
     << " module " << module_position
     << std::endl;
    */
 
-  // fastest, but need to trust module number between GDML and EcalGeometry match
-  ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber, module_position);
+  // fastest, but need to trust module number between GDML and EcalGeometry
+  // match
+  ldmx::EcalID id =
+      geometry.getID(position[0], position[1], layerNumber, module_position);
 
   // medium, only need to trust z-layer positions in GDML and EcalGeometry match
-  //    helpful for debugging any issues where transverse position is not matching
-  //    between the GDML and EcalGeometry
-  //ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber);
+  //    helpful for debugging any issues where transverse position is not
+  //    matching between the GDML and EcalGeometry
+  // ldmx::EcalID id = geometry.getID(position[0], position[1], layerNumber);
 
   // slowest, completely rely on EcalGeometry
   //    this is helpful for validating the EcalGeometry implementation and
   //    configuration since this will be called with any hit position that
   //    is inside of the configured SD volumes from Geant4's point of view
-  //ldmx::EcalID id = geometry.getID(position[0], position[1], position[2]);
+  // ldmx::EcalID id = geometry.getID(position[0], position[1], position[2]);
 
   if (hits_.find(id) == hits_.end()) {
     // hit in empty cell
@@ -95,7 +97,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
      * persisted the actual simulated position of the hit rather
      * than the cell center; however, that is up for more discussion.
      */
-    auto [x,y,z] = geometry.getPosition(id);
+    auto [x, y, z] = geometry.getPosition(id);
     hit.setPosition(x, y, z);
   }
 
@@ -112,8 +114,8 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (compressHitContribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
-      hit.addContrib(getTrackMap().findIncident(track_id), track_id,
-                     pdg, edep, time);
+      hit.addContrib(getTrackMap().findIncident(track_id), track_id, pdg, edep,
+                     time);
     }
   } else {
     // no hit contribs and hit already exists

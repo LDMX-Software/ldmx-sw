@@ -1,5 +1,4 @@
 #include "SimCore/SDs/TrackerSD.h"
-
 // STL
 #include <iostream>
 
@@ -9,22 +8,18 @@
 
 namespace simcore {
 
-TrackerSD::TrackerSD(const std::string& name,
-            simcore::ConditionsInterface& ci,
-            const framework::config::Parameters& p) 
+TrackerSD::TrackerSD(const std::string& name, simcore::ConditionsInterface& ci,
+                     const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-
-  subsystem_       = p.getParameter<std::string>("subsystem");
+  subsystem_ = p.getParameter<std::string>("subsystem");
   collection_name_ = p.getParameter<std::string>("collection_name");
 
   subDetID_ = ldmx::SubdetectorIDType(p.getParameter<int>("subdet_id"));
-
 }
 
 TrackerSD::~TrackerSD() {}
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
-
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
 

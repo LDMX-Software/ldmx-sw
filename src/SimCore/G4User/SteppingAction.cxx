@@ -54,4 +54,4 @@ void SteppingAction::UserSteppingAction(const G4Step* step) {
   for (auto& steppingAction : steppingActions_) steppingAction->stepping(step);
 }
 
-}  // namespace simcore
+}  // namespace simcore::g4user

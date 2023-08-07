@@ -34,7 +34,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, const framework::config::Parameters& ps);
+  AuxInfoReader(G4GDMLParser *parser, const framework::config::Parameters &ps);
 
   /**
    * Class destructor.
@@ -102,9 +102,6 @@ class AuxInfoReader {
    * Detector header with name and version.
    */
   ldmx::DetectorHeader *detectorHeader_{nullptr};
-
-  /// Configuration parameters
-  const framework::config::Parameters& parameters_;
 };
 
 }  // namespace simcore::geo

@@ -75,8 +75,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   event->SetUserInformation(event_info);
 
   PrimaryGenerator::Factory::get().apply([event](const auto& generator) {
-        generator->GeneratePrimaryVertex(event);
-      });
+    generator->GeneratePrimaryVertex(event);
+  });
 
   // smear all primary vertices (if activated)
   int nPV = event->GetNumberOfPrimaryVertex();

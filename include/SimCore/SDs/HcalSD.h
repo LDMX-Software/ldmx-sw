@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "DetDescr/PackedIndex.h"
 #include "DetDescr/HcalID.h"
-
+#include "DetDescr/PackedIndex.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/SensitiveDetector.h"
@@ -25,7 +24,7 @@ class HcalSD : public SensitiveDetector {
  public:
   /// name of collection to be added to event bus
   static const std::string COLLECTION_NAME;
-  
+
   /**
    * Constructor
    *
@@ -68,9 +67,9 @@ class HcalSD : public SensitiveDetector {
    * @param scint The G4Box of the scintillator volume.
    */
   ldmx::HcalID decodeCopyNumber(const std::uint32_t copyNumber,
-				const G4ThreeVector& localPosition,
-				const G4Box* scint);
-  
+                                const G4ThreeVector& localPosition,
+                                const G4Box* scint);
+
   /**
    * Create a hit out of the energy deposition deposited during a
    * step.
@@ -105,7 +104,7 @@ class HcalSD : public SensitiveDetector {
 
   // collection of hits to write to event bus
   std::vector<ldmx::SimCalorimeterHit> hits_;
-  
+
 };  // HcalSD
 
 }  // namespace simcore

@@ -1,8 +1,8 @@
 #ifndef SIMCORE_TRIGSD_H
 #define SIMCORE_TRIGSD_H
 
-#include "SimCore/SensitiveDetector.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/SensitiveDetector.h"
 
 namespace simcore {
 
@@ -18,8 +18,7 @@ class TrigScintSD : public SensitiveDetector {
    * @param[in] ci interface to conditions objects
    * @param[in] p python configuration parameters
    */
-  TrigScintSD(const std::string& name,
-              simcore::ConditionsInterface& ci,
+  TrigScintSD(const std::string& name, simcore::ConditionsInterface& ci,
               const framework::config::Parameters& p);
 
   /// Destructor
@@ -32,11 +31,12 @@ class TrigScintSD : public SensitiveDetector {
    * @note Depends on names in GDML!
    *
    * In order to avoid attaching to both 'target' and 'sp_target',
-   * we intentionally exclude volumes with the string 'sp_' in 
+   * we intentionally exclude volumes with the string 'sp_' in
    * their names.
    */
   virtual bool isSensDet(G4LogicalVolume* vol) const final override {
-    return vol->GetName().contains(vol_name_) and not vol->GetName().contains("sp_");
+    return vol->GetName().contains(vol_name_) and
+           not vol->GetName().contains("sp_");
   }
 
   /**
@@ -67,7 +67,6 @@ class TrigScintSD : public SensitiveDetector {
   std::string vol_name_;
   /// the ID number for the module we are gathering hits from
   int module_id_;
-
 };
 
 }  // namespace simcore

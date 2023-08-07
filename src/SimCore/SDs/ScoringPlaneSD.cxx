@@ -24,7 +24,7 @@ ScoringPlaneSD::ScoringPlaneSD(const std::string& name,
                                const framework::config::Parameters& params)
     : SensitiveDetector(name, ci, params) {
   collection_name_ = params.getParameter<std::string>("collection_name");
-  match_substr_    = params.getParameter<std::string>("match_substr");
+  match_substr_ = params.getParameter<std::string>("match_substr");
 }
 
 ScoringPlaneSD::~ScoringPlaneSD() {}

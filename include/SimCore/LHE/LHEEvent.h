@@ -156,6 +156,6 @@ class LHEEvent {
   std::vector<LHEParticle*> particles_;
 };
 
-}  // namespace simcore
+}  // namespace simcore::lhe
 
 #endif

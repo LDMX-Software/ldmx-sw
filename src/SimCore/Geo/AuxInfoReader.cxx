@@ -19,6 +19,7 @@
 
 // STL
 #include <stdlib.h>
+
 #include <string>
 
 using std::string;
@@ -347,8 +348,8 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
     }
   }
 
-  detectorHeader_ =
-      new ldmx::DetectorHeader(detectorName, detectorVersion, description, author);
+  detectorHeader_ = new ldmx::DetectorHeader(detectorName, detectorVersion,
+                                             description, author);
 
   /*G4cout << G4endl;
   G4cout << "Read detector header from userinfo: " << G4endl;
@@ -359,4 +360,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << G4endl;*/
 }
 
-}  // namespace simcore
+}  // namespace simcore::geo
