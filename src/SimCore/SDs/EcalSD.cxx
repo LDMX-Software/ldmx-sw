@@ -53,7 +53,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
                    ->GetVolume(layer_depth)
                    ->GetCopyNo();
   int layerNumber;
-  layerNumber = int(cpynum / 7);
+  layerNumber = cpynum / 7;
   int module_position = cpynum % 7;
   /**
    * DEBUG
