@@ -60,7 +60,7 @@ double LHEEvent::getAQCDUP() const { return aqcdup_; }
 
 const double* LHEEvent::getVertex() const { return vtx_; }
 
-const double LHEEvent::getVertexTime() const { return vtxt_; }
+double LHEEvent::getVertexTime() const { return vtxt_; }
 
 void LHEEvent::addParticle(LHEParticle* particle) {
   particles_.push_back(particle);

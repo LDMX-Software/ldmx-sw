@@ -110,7 +110,7 @@ class RunManager : public G4RunManager {
 
   /** ConditionsInterface
    */
-  ConditionsInterface& conditionsIntf_;
+  [[maybe_unused]] ConditionsInterface& conditionsIntf_;
 
 };  // RunManager
 }  // namespace simcore

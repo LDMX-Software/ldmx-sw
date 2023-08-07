@@ -25,11 +25,9 @@ using std::string;
 
 namespace simcore::geo {
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, 
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser,
                              const framework::config::Parameters& ps)
-    : parser_(theParser),
-      eval_(new G4GDMLEvaluator),
-      parameters_(ps) {}
+    : parser_(theParser), eval_(new G4GDMLEvaluator) {}
 
 AuxInfoReader::~AuxInfoReader() {
   delete eval_;
@@ -151,7 +149,6 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
 
   // Create a uniform mag field using the built-in Geant4 type.
   if (magFieldType == "G4UniformMagField") {
-    string::size_type sz;
     double bx, by, bz;
     bx = by = bz = 0.;
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
