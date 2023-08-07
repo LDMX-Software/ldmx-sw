@@ -12,13 +12,12 @@
 
 // STL
 #include <iostream>
-
 namespace simcore::g4user {
 
 void TrackingAction::PreUserTrackingAction(const G4Track* track) {
   if (not trackMap_.contains(track)) {
     // New Track
-    
+
     // get track information and initialize our new track
     //  this will create a new track info object if it doesn't exist
     auto track_info{UserTrackInformation::get(track)};
@@ -47,12 +46,12 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
      * DON'T change the save-status even if these are false
      *  The track's save-status is false by default when the track-info
      *  is constructed and the track's save-status could have been modified by a
-     *  user action **prior** to the track being processed for the first time. 
+     *  user action **prior** to the track being processed for the first time.
      *  For example, this happens if the user wants to save the
      *  secondaries of a particular track.
      */
     if (curGenStatus == 1 or !regionInfo or regionInfo->getStoreSecondaries()) {
-      track_info->setSaveFlag(true); 
+      track_info->setSaveFlag(true);
     }
 
     // insert this track into the event's track map
@@ -83,4 +82,4 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   }
 }
 
-}  // namespace simcore
+}  // namespace simcore::g4user

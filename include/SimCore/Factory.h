@@ -1,12 +1,11 @@
 #ifndef SIMCORE_FACTORY_H
 #define SIMCORE_FACTORY_H
 
-#include <memory>         // for the unique_ptr default
-#include <string>         // for the keys in the library map
-#include <unordered_map>  // for the library of prototypes
-#include <algorithm>      // for for_each call in apply
-
-#include <boost/core/demangle.hpp> // for demangling
+#include <algorithm>                // for for_each call in apply
+#include <boost/core/demangle.hpp>  // for demangling
+#include <memory>                   // for the unique_ptr default
+#include <string>                   // for the keys in the library map
+#include <unordered_map>            // for the library of prototypes
 
 #include "Framework/Exception/Exception.h"
 
@@ -21,7 +20,7 @@ namespace simcore {
  * @tparam Prototype the type of object that this factory creates.
  *    This should be the base class that all types in this factory derive from.
  * @tparam PrototypePtr the type of pointer that the factory creates
- * @tparam PrototypeConstructorArgs parameter pack of arguments to pass 
+ * @tparam PrototypeConstructorArgs parameter pack of arguments to pass
  *    to the object constructor.
  *
  * ## Terminology
@@ -42,10 +41,11 @@ namespace simcore {
  *    to it in the form of a prototype-class pointer.
  *
  * ### Declaration
- * Using an 
- * [unnamed namespace](https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
- * defines the variables inside it as having internal linkage and as implicitly 
- * static. Having internal linkage allows us to have repeat variable names 
+ * Using an
+ * [unnamed
+ namespace](https://en.cppreference.com/w/cpp/language/namespace#Unnamed_namespaces)
+ * defines the variables inside it as having internal linkage and as implicitly
+ * static. Having internal linkage allows us to have repeat variable names
  * across different source files. Being static means that the variable is
  * guaranteed to be constructed during library load time.
  *
@@ -61,7 +61,8 @@ namespace simcore {
  * ```
  *
  * The details of how this is handled is documented in
- * [Storage Class Specifiers](https://en.cppreference.com/w/cpp/language/storage_duration).
+ * [Storage Class
+ Specifiers](https://en.cppreference.com/w/cpp/language/storage_duration).
  *
  * ## Usage
  *
@@ -82,7 +83,7 @@ namespace simcore {
  * #define LIBRARYENTRY_HPP
  * // we need the factory template
  * #include "Factory.h"
- * 
+ *
  * // this class is our prototype
  * class LibraryEntry {
  *  public:
@@ -93,7 +94,7 @@ namespace simcore {
  *   // the factory type that we will use here
  *   using Factory = ::fire::factory::Factory<LibraryEntry>;
  * };  // LibraryEntry
- * 
+ *
  * // a macro to help with registering our library entries with our factory
  * #define DECLARE_LIBRARYENTRY(CLASS)                          \
  *   namespace {                                                \
@@ -116,10 +117,10 @@ namespace simcore {
  *   }
  * };
  * }
- * 
+ *
  * DECLARE_LIBRARYENTRY(library::Book)
  * ```
- * 
+ *
  * ```cpp
  * // Podcast.cpp
  * #include "LibraryEntry.hpp"
@@ -133,10 +134,10 @@ namespace simcore {
  * };
  * }
  * }
- * 
+ *
  * DECLARE_LIBRARYENTRY(library::audio::Podcast)
  * ```
- * 
+ *
  * ```cpp
  * // Album.cpp
  * #include "LibraryEntry.hpp"
@@ -150,7 +151,7 @@ namespace simcore {
  * };
  * }
  * }
- * 
+ *
  * DECLARE_LIBRARYENTRY(library::audio::Album)
  * ```
  *
@@ -165,9 +166,9 @@ namespace simcore {
  * ```cpp
  * // main.cxx
  * #include "LibraryEntry.hpp"
- * 
+ *
  * int main(int argc, char* argv[]) {
- *   std::string full_cpp_name{argv[1]}; 
+ *   std::string full_cpp_name{argv[1]};
  *   try {
  *     auto entry_ptr{LibraryEntry::Factory::get().make(full_cpp_name)};
  *     std::cout << entry_ptr->name() << std::endl;
@@ -176,7 +177,7 @@ namespace simcore {
  *   }
  * }
  * ```
- * 
+ *
  * Compiling these files together into the `fave-things` executable would
  * then lead to the following behavior.
  *
@@ -191,8 +192,7 @@ namespace simcore {
  * ERROR: An object named library::DoesNotExist has not been declared.
  * ```
  */
-template <typename Prototype,
-          typename PrototypePtr,
+template <typename Prototype, typename PrototypePtr,
           typename... PrototypeConstructorArgs>
 class Factory {
  public:
@@ -237,7 +237,7 @@ class Factory {
    *  at library load time. It relates to variables so that it cannot be
    *  optimized away.
    */
-  template<typename DerivedType>
+  template <typename DerivedType>
   uint64_t declare() {
     std::string full_name{boost::core::demangle(typeid(DerivedType).name())};
     library_[full_name] = &maker<DerivedType>;
@@ -256,7 +256,8 @@ class Factory {
    * The arguments to the maker are determined at compiletime
    * using the template parameters of Factory.
    *
-   * @param[in] full_name name of class to create, same name as passed to declare
+   * @param[in] full_name name of class to create, same name as passed to
+   * declare
    * @param[in] maker_args parameter pack of arguments to pass on to maker
    *
    * @returns a pointer to the parent class that the objects derive from.
@@ -265,8 +266,8 @@ class Factory {
                     PrototypeConstructorArgs... maker_args) {
     auto lib_it{library_.find(full_name)};
     if (lib_it == library_.end()) {
-      EXCEPTION_RAISE("SimFactory","An object named "+full_name+
-          " has not been declared.");
+      EXCEPTION_RAISE("SimFactory", "An object named " + full_name +
+                                        " has not been declared.");
     }
     warehouse_.emplace_back(lib_it->second(maker_args...));
     return warehouse_.back();
@@ -278,7 +279,7 @@ class Factory {
    * UnaryFunction is simply passed dirctly to std::for_each so
    * look there for requirements upon it.
    */
-  template<class UnaryFunction>
+  template <class UnaryFunction>
   void apply(UnaryFunction f) const {
     std::for_each(warehouse_.begin(), warehouse_.end(), f);
   }
@@ -293,9 +294,9 @@ class Factory {
   /**
    * make a new DerivedType returning a PrototypePtr
    *
-   * Basically a copy of what 
-   * [`std::make_unique`](https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique) 
-   * or 
+   * Basically a copy of what
+   * [`std::make_unique`](https://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
+   * or
    * [`std::make_shared`](https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared)
    * do but with the following changes:
    *  1. constructor arguments defined by the Factory and not here
@@ -311,7 +312,8 @@ class Factory {
    */
   template <typename DerivedType>
   static PrototypePtr maker(PrototypeConstructorArgs... args) {
-    return PrototypePtr(new DerivedType(std::forward<PrototypeConstructorArgs>(args)...));
+    return PrototypePtr(
+        new DerivedType(std::forward<PrototypeConstructorArgs>(args)...));
   }
 
   /// private constructor to prevent creation
@@ -325,5 +327,4 @@ class Factory {
 };  // Factory
 
 }  // namespace simcore
-
 #endif  // SIMCORE_FACTORY_H

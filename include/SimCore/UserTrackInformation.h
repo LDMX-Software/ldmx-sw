@@ -2,8 +2,8 @@
 #define SIMCORE_USERTRACKINFORMATION_H
 
 #include "G4ThreeVector.hh"
-#include "G4VUserTrackInformation.hh"
 #include "G4Track.hh"
+#include "G4VUserTrackInformation.hh"
 
 namespace simcore {
 

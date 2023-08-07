@@ -45,6 +45,6 @@ class LHEReader {
   std::ifstream ifs_;
 };
 
-}  // namespace simcore
+}  // namespace simcore::lhe
 
 #endif

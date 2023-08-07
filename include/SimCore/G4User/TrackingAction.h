@@ -90,7 +90,7 @@ class TrackingAction : public G4UserTrackingAction {
    * We start by calling any other tracking actions'
    * PostUserTrackingAction methods.
    *
-   * If the track should be saved (it's save flag is set to true) 
+   * If the track should be saved (it's save flag is set to true)
    * and it is being stopped, then we save it in the track map.
    *
    * @note This is where we make the final decision on if a
@@ -135,6 +135,6 @@ class TrackingAction : public G4UserTrackingAction {
   TrackMap trackMap_;
 };  // TrackingAction
 
-}  // namespace simcore
+}  // namespace simcore::g4user
 
 #endif

@@ -72,7 +72,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   framework::config::Parameters parameters_;
 
   /// interface to conditions to be passed to SDs
-  simcore::ConditionsInterface& conditions_interface_;
+  simcore::ConditionsInterface &conditions_interface_;
 };  // DetectorConstruction
 }  // namespace simcore
 

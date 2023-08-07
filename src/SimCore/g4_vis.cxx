@@ -1,12 +1,11 @@
+#include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 #include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4PhysListFactory.hh"
 #include "G4RunManager.hh"
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
-
-#include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/Geo/ParserFactory.h"
 
@@ -35,7 +34,7 @@ int main(int argc, char* argv[]) {
   framework::EventProcessor* null_processor{nullptr};
   simcore::ConditionsInterface empty_interface(null_processor);
   framework::config::Parameters parser_parameters;
-  parser_parameters.addParameter("validate_detector",true);
+  parser_parameters.addParameter("validate_detector", true);
   parser_parameters.addParameter<std::string>("detector", the_arg);
 
   // RunManager

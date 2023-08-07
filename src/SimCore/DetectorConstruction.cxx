@@ -1,8 +1,8 @@
 #include "SimCore/DetectorConstruction.h"
 
 #include "Framework/Exception/Exception.h"
-#include "SimCore/XsecBiasingOperator.h"
 #include "SimCore/SensitiveDetector.h"
+#include "SimCore/XsecBiasingOperator.h"
 
 namespace simcore {
 
@@ -21,12 +21,12 @@ namespace logical_volume_tests {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
+  const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("Si") || volumeName.contains("W") ||
            volumeName.contains("PCB") || volumeName.contains("strongback") ||
            volumeName.contains("Glue") || volumeName.contains("CFMix") ||
-           volumeName.contains("Al") || volumeName.contains("C")
-          ) && volumeName.contains("volume"));
+           volumeName.contains("Al") || volumeName.contains("C")) &&
+          volumeName.contains("volume"));
 }
 
 /**
@@ -38,9 +38,10 @@ static bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
-  return ((volumeName.contains("abso") || volumeName.contains("ScintBox") || volumeName.contains("scint")) 
-          && volumeName.contains("hcal") && volumeName.contains("olume"));
+  const G4String& volumeName = vol->GetName();
+  return ((volumeName.contains("abso") || volumeName.contains("ScintBox") ||
+           volumeName.contains("scint")) &&
+          volumeName.contains("hcal") && volumeName.contains("olume"));
 }
 
 /**
@@ -55,7 +56,7 @@ static bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  * @param[in] vol_to_bias UNUSED name of volume to bias
  */
 static bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  G4String volumeName = vol->GetName();
+  const G4String& volumeName = vol->GetName();
   return ((volumeName.contains("Si") || volumeName.contains("W")) &&
           volumeName.contains("volume"));
 }
@@ -110,7 +111,7 @@ static bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  *
  * Used below when determining which test to use.
  */
-typedef bool (*Test)(G4LogicalVolume*, const std::string&);
+using Test = bool (*)(G4LogicalVolume*, const std::string&);
 
 }  // namespace logical_volume_tests
 
@@ -124,20 +125,21 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 }
 
 void DetectorConstruction::ConstructSDandField() {
-  auto sens_dets{parameters_.getParameter<std::vector<framework::config::Parameters>>(
-      "sensitive_detectors",{})};
+  auto sens_dets{
+      parameters_.getParameter<std::vector<framework::config::Parameters>>(
+          "sensitive_detectors", {})};
   for (auto& det : sens_dets) {
     // create
     auto sd = SensitiveDetector::Factory::get().make(
         det.getParameter<std::string>("class_name"),
-        det.getParameter<std::string>("instance_name"),
-        conditions_interface_, det);
+        det.getParameter<std::string>("instance_name"), conditions_interface_,
+        det);
     // attach to volumes
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
       if (sd->isSensDet(volume)) {
         std::cout << "[ DetectorConstruction ] : "
-          << "Attaching " << sd->GetName()
-          << " to " << volume->GetName() << std::endl;
+                  << "Attaching " << sd->GetName() << " to "
+                  << volume->GetName() << std::endl;
         volume->SetSensitiveDetector(sd);
       }
     }
