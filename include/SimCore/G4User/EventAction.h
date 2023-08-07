@@ -46,12 +46,12 @@ class EventAction : public G4UserEventAction {
   /**
    * Class constructor.
    */
-  EventAction() {}
+  EventAction() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~EventAction() {}
+  virtual ~EventAction() = default;
 
   /**
    * Implementation of begin of event hook.

@@ -27,7 +27,6 @@ class G4Run;
 
 namespace simcore {
 namespace g4user {
-
 /**
  * @class RunAction
  * @brief Implementation of user run action hook
