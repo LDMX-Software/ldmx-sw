@@ -43,7 +43,6 @@ function(
         ${CLANG_WARNINGS}
         -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
         -Wduplicated-cond # warn if if / else chain has duplicated conditions
-        -Wduplicated-branches # warn if if / else branches have duplicated code
         -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
         -Wuseless-cast # warn if you perform a cast to the same type
       )
@@ -57,16 +56,26 @@ function(
         -Wno-sign-compare
         # Do we care about this one?
         -Wno-double-promotion # warn if float is implicit promoted to double
-        # SimCore sometimes chokes on this one
-        -Wno-duplicated-branches
       )
       list(APPEND CLANG_WARNINGS
         ${DISABLED_WARNINGS}
         # Clang is being standards-compliant and forbidding conversions in
-        # {}-initialization. Our code isn't currently.
+        # {}-initialization. Our code isn't currently standards-compliant here :)
         -Wno-c++11-narrowing
       )
-      list(APPEND GCC_WARNINGS ${DISABLED_WARNINGS}
+      list(APPEND GCC_WARNINGS
+        ${DISABLED_WARNINGS}
+        # SimCore sometimes chokes on this one :(
+        # -Wduplicated-branches # warn if if / else branches have duplicated code
+        -Wno-duplicated-branches
+        # Clang will warn if you have private member variables that are never
+        # used in the code. You can suppress this with the [[maybe_unused]]
+        # attribute. However, GCC does not provide such a warning and therefore
+        # thinks that the attribute is meaningless.
+        #
+        # See
+        # https://stackoverflow.com/questions/50646334/maybe-unused-on-member-variable-gcc-warns-incorrectly-that-attribute-is
+        -Wno-attributes
       )
     endif()
 
