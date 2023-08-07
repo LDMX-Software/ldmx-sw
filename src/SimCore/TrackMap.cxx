@@ -37,10 +37,10 @@ void TrackMap::save(const G4Track* track) {
   particle.setGenStatus(0);
 
   // Update the gen status from the primary particle.
-  if (track->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
+  if (track->GetDynamicParticle()->GetPrimaryParticle() != nullptr) {
     G4VUserPrimaryParticleInformation* primaryInfo =
         track->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
-    if (primaryInfo != NULL) {
+    if (primaryInfo != nullptr) {
       particle.setGenStatus(
           ((UserPrimaryParticleInformation*)primaryInfo)->getHepEvtStatus());
     }

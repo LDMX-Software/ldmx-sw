@@ -81,7 +81,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
           G4String magFieldName = auxVal;
           G4MagneticField* magField =
               MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
-          if (magField != NULL) {
+          if (magField != nullptr) {
             G4FieldManager* mgr = new G4FieldManager(magField);
             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
             // G4cout << "Assigned magnetic field " << magFieldName << " to
@@ -96,7 +96,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
           G4String regionName = auxVal;
           G4Region* region =
               G4RegionStore::GetInstance()->GetRegion(regionName);
-          if (region != NULL) {
+          if (region != nullptr) {
             region->AddRootLogicalVolume(lv);
             // G4cout << "Added volume " << lv->GetName() << " to region " <<
             // regionName << G4endl;
@@ -109,7 +109,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
           G4String visName = auxVal;
           G4VisAttributes* visAttributes =
               VisAttributesStore::getInstance()->getVisAttributes(visName);
-          if (visAttributes != NULL) {
+          if (visAttributes != nullptr) {
             lv->SetVisAttributes(visAttributes);
             // G4cout << "Assigned VisAttributes " << visName << " to volume "
             // << lv->GetName() << G4endl;
@@ -145,7 +145,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
                     "Missing MagFieldType for magnetic field definition.");
   }
 
-  G4MagneticField* magField = NULL;
+  G4MagneticField* magField = nullptr;
 
   // Create a uniform mag field using the built-in Geant4 type.
   if (magFieldType == "G4UniformMagField") {

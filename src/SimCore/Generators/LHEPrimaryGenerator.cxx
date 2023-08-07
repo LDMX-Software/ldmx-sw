@@ -34,7 +34,7 @@ LHEPrimaryGenerator::~LHEPrimaryGenerator() { delete reader_; }
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
   simcore::lhe::LHEEvent* lheEvent = reader_->readNextEvent();
 
-  if (lheEvent != NULL) {
+  if (lheEvent != nullptr) {
     G4PrimaryVertex* vertex = new G4PrimaryVertex();
     vertex->SetPosition(lheEvent->getVertex()[0], lheEvent->getVertex()[1],
                         lheEvent->getVertex()[2]);
@@ -53,7 +53,7 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
         if (particle->getIDUP() == -623) { /* Tungsten ion */
           G4ParticleDefinition* tungstenIonDef =
               G4IonTable::GetIonTable()->GetIon(74, 184, 0.);
-          if (tungstenIonDef != NULL) {
+          if (tungstenIonDef != nullptr) {
             primary->SetParticleDefinition(tungstenIonDef);
           } else {
             EXCEPTION_RAISE("EventGenerator",
@@ -79,10 +79,10 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
          * Assign primary as daughter but only if the mother is not a DOC
          * particle.
          */
-        if (particle->getMother(0) != NULL &&
+        if (particle->getMother(0) != nullptr &&
             particle->getMother(0)->getISTUP() > 0) {
           G4PrimaryParticle* primaryMom = particleMap[particle->getMother(0)];
-          if (primaryMom != NULL) {
+          if (primaryMom != nullptr) {
             primaryMom->SetDaughter(primary);
           }
         } else {
