@@ -47,8 +47,6 @@ RunManager::RunManager(framework::config::Parameters& parameters,
   setUseRootSeed(rootPrimaryGenUseSeed);
 }
 
-RunManager::~RunManager() {}
-
 void RunManager::setupPhysics() {
   auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
 
