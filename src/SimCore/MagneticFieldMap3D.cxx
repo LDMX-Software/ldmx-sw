@@ -1,4 +1,5 @@
 #include "SimCore/MagneticFieldMap3D.h"
+
 #include "Framework/Exception/Exception.h"
 
 // STL
@@ -14,7 +15,6 @@
 using namespace std;
 
 namespace simcore {
-
 MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset,
                                        double yOffset, double zOffset)
     : nx_(0),
