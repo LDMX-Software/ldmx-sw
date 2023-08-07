@@ -33,6 +33,9 @@ G4ProcessManager* GammaPhysics::GetGammaProcessManager() const {
       return particle->GetProcessManager();
     }
   }
+  EXCEPTION_RAISE("GammaPhysics",
+                  "Was unable to access the process manager for photons, "
+                  "something is very wrong!");
 }
 
 void GammaPhysics::SetPhotonNuclearAsFirstProcess() const {
