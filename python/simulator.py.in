@@ -166,6 +166,8 @@ class simulator(Producer):
         elif isinstance(which_events, list):
             resimulator.resimulate_all_events = False
             resimulator.events_to_resimulate = which_events
+            if len(which_events) == 0:
+                raise ValueError('which_events must contain at least one element if provided')
         else:
             raise ValueError('which_events must be a list if provided')
         return resimulator
