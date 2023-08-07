@@ -34,25 +34,24 @@ ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
     using Index = ldmx::PackedIndex<256, 256, 256>;
     return ldmx::HcalID{Index(copyNumber).field2(), Index(copyNumber).field1(),
                         Index(copyNumber).field0()};
-  } else {
-    const auto& geometry = getCondition<ldmx::HcalGeometry>(
-        ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
-    unsigned int stripID = 0;
-    const unsigned int section = copyNumber / 1000;
-    const unsigned int layer = copyNumber % 1000;
-
-    // 5cm wide bars are HARD-CODED
-    if (section == ldmx::HcalID::BACK) {
-      if (geometry.backLayerIsHorizontal(layer)) {
-        stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
-      } else {
-        stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
-      }
-    } else {
-      stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
-    }
-    return ldmx::HcalID{section, layer, stripID};
   }
+  const auto& geometry = getCondition<ldmx::HcalGeometry>(
+      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
+  unsigned int stripID = 0;
+  const unsigned int section = copyNumber / 1000;
+  const unsigned int layer = copyNumber % 1000;
+
+  // 5cm wide bars are HARD-CODED
+  if (section == ldmx::HcalID::BACK) {
+    if (geometry.backLayerIsHorizontal(layer)) {
+      stripID = int((localPosition.y() + scint->GetYHalfLength()) / 50.0);
+    } else {
+      stripID = int((localPosition.x() + scint->GetXHalfLength()) / 50.0);
+    }
+  } else {
+    stripID = int((localPosition.z() + scint->GetZHalfLength()) / 50.0);
+  }
+  return ldmx::HcalID{section, layer, stripID};
 }
 
 G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {

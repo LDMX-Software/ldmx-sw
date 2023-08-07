@@ -41,7 +41,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step) {
           event_info->addPNEnergy(delta_energy);
           event_info->lastStepWasPN(true);
           break;  // done <- assumes first match determines step process
-        } else if (creator_name.contains("electronNuclear")) {
+        }
+        if (creator_name.contains("electronNuclear")) {
           event_info->addENEnergy(delta_energy);
           event_info->lastStepWasEN(true);
           break;  // done <- assumes first match determines step process

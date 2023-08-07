@@ -18,8 +18,7 @@
 #include "G4UniformMagField.hh"
 
 // STL
-#include <stdlib.h>
-
+#include <cstdlib>
 #include <string>
 
 using std::string;

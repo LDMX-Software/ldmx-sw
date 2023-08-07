@@ -4,7 +4,8 @@
 namespace simcore {
 namespace biasoperators {
 
-NeutronInelastic::NeutronInelastic(std::string name, const framework::config::Parameters& p)
+NeutronInelastic::NeutronInelastic(std::string name,
+                                   const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   factor_ = p.getParameter<double>("factor");
