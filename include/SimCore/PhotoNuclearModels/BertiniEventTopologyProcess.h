@@ -91,8 +91,7 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
    */
   constexpr bool isLightIon(const int pdgCode) const {
     //
-    // TODO: Is the < check necessary?
-    if (pdgCode > 1000000000 && pdgCode < 10000000000) {
+    if (pdgCode > 1000000000) {
       // Check if the atomic number is less than or equal to 4
       return ((pdgCode / 10) % 1000) <= 4;
     }
@@ -112,7 +111,7 @@ class BertiniEventTopologyProcess : public G4CascadeInterface {
    *
    */
   constexpr bool skipCountingParticle(const int pdgcode) const {
-    return !(pdgcode < 10000 || count_light_ions_ && isLightIon(pdgcode));
+    return !(pdgcode < 10000 || (count_light_ions_ && isLightIon(pdgcode)));
   }
 
   /*
