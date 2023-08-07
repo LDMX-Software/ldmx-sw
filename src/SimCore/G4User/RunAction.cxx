@@ -14,10 +14,6 @@
 namespace simcore {
 namespace g4user {
 
-RunAction::RunAction() {}
-
-RunAction::~RunAction() {}
-
 void RunAction::BeginOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& runAction : runActions_) runAction->BeginOfRunAction(run);

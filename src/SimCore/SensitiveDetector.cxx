@@ -17,8 +17,6 @@ SensitiveDetector::SensitiveDetector(
   G4SDManager::GetSDMpointer()->AddNewDetector(this);
 }
 
-SensitiveDetector::~SensitiveDetector() {}
-
 bool SensitiveDetector::isGeantino(const G4Step* step) const {
   auto particle_def{step->GetTrack()->GetDefinition()};
   return (particle_def == G4Geantino::Definition() or

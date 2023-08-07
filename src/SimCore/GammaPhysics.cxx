@@ -9,8 +9,6 @@
 
 namespace simcore {
 
-GammaPhysics::~GammaPhysics() {}
-
 // needed for GEANT4 10.3.0 and later
 #ifndef aParticleIterator
 #define aParticleIterator \

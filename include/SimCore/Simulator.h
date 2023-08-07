@@ -61,9 +61,8 @@ class Simulator : public SimulatorBase {
   /**
    * Destructor.
    *
-   * Deletes hanging pointers
    */
-  virtual ~Simulator();
+  virtual ~Simulator() = default;
 
   /**
    * Callback for the processor to configure itself from the given set

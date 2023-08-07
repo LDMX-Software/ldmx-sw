@@ -56,8 +56,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(
   }
 }
 
-PrimaryGeneratorAction::~PrimaryGeneratorAction() {}
-
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   /*
    * Create our Event information first so that it

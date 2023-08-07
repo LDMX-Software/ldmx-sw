@@ -45,7 +45,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   /**
    * Class destructor.
    */
-  virtual ~PrimaryGeneratorAction();
+  virtual ~PrimaryGeneratorAction() = default;
 
   /**
    * Generate primaries for the event.

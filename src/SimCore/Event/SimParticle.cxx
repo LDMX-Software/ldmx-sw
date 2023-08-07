@@ -38,9 +38,6 @@ SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
 SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP =
     SimParticle::createProcessTypeMap();
 
-SimParticle::SimParticle() {}
-
-SimParticle::~SimParticle() {}
 
 void SimParticle::Clear() {
   daughters_.clear();

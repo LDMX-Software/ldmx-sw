@@ -46,7 +46,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
                                      const framework::config::Parameters&>;
 
   /** Destructor */
-  virtual ~SensitiveDetector();
+  virtual ~SensitiveDetector() = default;
 
   /**
    * Here, we must determine if we should be attached to the 

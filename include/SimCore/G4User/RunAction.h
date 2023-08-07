@@ -37,12 +37,12 @@ class RunAction : public G4UserRunAction {
   /**
    * Class constructor.
    */
-  RunAction();
+  RunAction() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~RunAction();
+  virtual ~RunAction() = default;
 
   /**
    * Implementation of begin run hook.
