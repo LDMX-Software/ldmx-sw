@@ -26,7 +26,7 @@ class UserRegionInformation : public G4VUserRegionInformation {
  public:
   UserRegionInformation(bool storeSecondaries);
 
-  virtual ~UserRegionInformation();
+  virtual ~UserRegionInformation() = default;
 
   void Print() const;
 

@@ -22,7 +22,7 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
       callingProcess->GetWrappedProcess()->GetProcessName();
   if (currentProcess.compare(this->getProcessToBias()) == 0) {
     // bias only the primary particle if we don't want to bias all particles
-    if (not bias_all_ and track->GetParentID() != 0) return 0;
+    if (not bias_all_ and track->GetParentID() != 0) return nullptr;
 
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
@@ -37,8 +37,8 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
     }
 
     return BiasedXsec(dbXsecBiased);
-  } else
-    return nullptr;
+  }
+  return nullptr;
 }
 
 void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
