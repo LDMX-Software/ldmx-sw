@@ -61,7 +61,7 @@ void APrimePhysics::ConstructProcess() {
                 "',"
                 " options are 'forward_only', 'cm_scaling', or 'undefined'.");
       }
-      // Note: The proc variable isn't used here, but creating the
+      // Note: The process variable isn't used here, but creating the
       // G4DarkBremsstahlung object has side-effects
       process_ = std::make_unique<G4DarkBremsstrahlung>(
           std::make_shared<g4db::G4DarkBreMModel>(
