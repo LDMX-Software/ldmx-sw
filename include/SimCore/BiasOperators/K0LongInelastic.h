@@ -20,7 +20,7 @@ class K0LongInelastic : public XsecBiasingOperator {
   K0LongInelastic(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
-  ~K0LongInelastic() = default;
+  virtual ~K0LongInelastic() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -31,20 +31,20 @@ class K0LongInelastic : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the process to bias
-  virtual std::string getProcessToBias() const { return "kaon0LInelastic"; }
+  std::string getProcessToBias() const override { return "kaon0LInelastic"; }
 
   /// Return the particle to bias
-  virtual std::string getParticleToBias() const { return "kaon0L"; }
+  std::string getParticleToBias() const override { return "kaon0L"; }
 
   /// Return the volume to bias in
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /**
    * Record the configuration to the run header
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
+  void RecordConfig(ldmx::RunHeader& header) const override {
     header.setStringParameter("BiasOperator::K0LongInelastic::Volume", volume_);
     header.setFloatParameter("BiasOperator::K0LongInelastic::Factor", factor_);
     header.setFloatParameter("BiasOperator::K0LongInelastic::Threshold",
@@ -60,7 +60,6 @@ class K0LongInelastic : public XsecBiasingOperator {
 
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
-
 };
 
 }  // namespace biasoperators

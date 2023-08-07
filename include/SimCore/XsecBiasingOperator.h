@@ -61,7 +61,7 @@ class XsecBiasingOperator : public G4VBiasingOperator {
                                      const framework::config::Parameters&>;
 
   /** Destructor */
-  virtual ~XsecBiasingOperator();
+  virtual ~XsecBiasingOperator() = default;
 
   /**
    * Propose a biasing operation for the current track and calling process.

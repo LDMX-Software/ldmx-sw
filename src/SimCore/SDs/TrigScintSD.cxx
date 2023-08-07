@@ -22,8 +22,6 @@ TrigScintSD::TrigScintSD(const std::string& name,
   vol_name_ = p.getParameter<std::string>("volume_name");
 }
 
-TrigScintSD::~TrigScintSD() {}
-
 G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // Get the energy deposited by the particle during the step
   auto energy{step->GetTotalEnergyDeposit()};

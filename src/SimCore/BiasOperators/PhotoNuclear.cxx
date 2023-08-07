@@ -35,10 +35,14 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
   // if we want to only bias children of primary, leave if this track is NOT a
   // child of the primary
-  if (only_children_of_primary_ and track->GetParentID() != 1) return 0;
+  if (only_children_of_primary_ and track->GetParentID() != 1) {
+    return nullptr;
+  }
 
   // is this track too low energy to be biased?
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_) {
+    return nullptr;
+  }
 
   /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -89,9 +93,8 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     emXsecOperation->Sample();
 
     return emXsecOperation;
-
-  } else
-    return 0;
+  }
+  return nullptr;
 }
 
 }  // namespace biasoperators

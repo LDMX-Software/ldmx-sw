@@ -16,7 +16,7 @@ class PhotoNuclear : public XsecBiasingOperator {
   PhotoNuclear(std::string name, const framework::config::Parameters& p);
 
   /** Method called at the beginning of a run. */
-  void StartRun();
+  void StartRun() override;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -27,16 +27,16 @@ class PhotoNuclear : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// return the process we want to bias
-  virtual std::string getProcessToBias() const { return "photonNuclear"; }
+  std::string getProcessToBias() const override { return "photonNuclear"; }
 
   /// return the particle that we want to bias
-  virtual std::string getParticleToBias() const { return "gamma"; }
+  std::string getParticleToBias() const override { return "gamma"; }
 
   /// return the volume we want to bias within
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /// record the configuration into the run header
-  virtual void RecordConfig(ldmx::RunHeader& h) const {
+  void RecordConfig(ldmx::RunHeader& h) const override {
     h.setStringParameter("BiasOperators::PhotoNuclear::Volume", volume_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Threshold", threshold_);
     h.setFloatParameter("BiasOperators::PhotoNuclear::Factor", factor_);

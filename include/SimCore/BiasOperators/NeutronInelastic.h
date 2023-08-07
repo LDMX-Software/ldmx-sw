@@ -20,7 +20,7 @@ class NeutronInelastic : public XsecBiasingOperator {
   NeutronInelastic(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
-  ~NeutronInelastic() = default;
+  virtual ~NeutronInelastic() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -31,21 +31,22 @@ class NeutronInelastic : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the process to bias
-  virtual std::string getProcessToBias() const { return "neutronInelastic"; }
+  std::string getProcessToBias() const override { return "neutronInelastic"; }
 
   /// Return the particle to bias
-  virtual std::string getParticleToBias() const { return "neutron"; }
+  std::string getParticleToBias() const override { return "neutron"; }
 
   /// Return the volume to bias in
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /**
    * Record the configuration to the run header
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
-    header.setStringParameter("BiasOperator::NeutronInelastic::Volume", volume_);
+  void RecordConfig(ldmx::RunHeader& header) const override {
+    header.setStringParameter("BiasOperator::NeutronInelastic::Volume",
+                              volume_);
     header.setFloatParameter("BiasOperator::NeutronInelastic::Factor", factor_);
     header.setFloatParameter("BiasOperator::NeutronInelastic::Threshold",
                              threshold_);
@@ -60,7 +61,6 @@ class NeutronInelastic : public XsecBiasingOperator {
 
   /// Minimum kinetic energy [MeV] to allow a track to be biased
   double threshold_;
-
 };
 
 }  // namespace biasoperators

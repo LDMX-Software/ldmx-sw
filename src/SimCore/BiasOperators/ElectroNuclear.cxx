@@ -22,7 +22,9 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
             << "Currently in volume " << track->GetVolume()->GetName()
             << std::endl;*/
 
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_) {
+    return nullptr;
+  }
 
   /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
             << "Calling process: "
@@ -47,10 +49,9 @@ G4VBiasingOperation* ElectroNuclear::ProposeOccurenceBiasingOperation(
               << enXsecBiased << std::endl;*/
 
     return BiasedXsec(enXsecBiased);
-  } else
-    return 0;
+  }
+  return nullptr;
 }
-
 }  // namespace biasoperators
 }  // namespace simcore
 

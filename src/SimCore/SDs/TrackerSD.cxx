@@ -17,8 +17,6 @@ TrackerSD::TrackerSD(const std::string& name, simcore::ConditionsInterface& ci,
   subDetID_ = ldmx::SubdetectorIDType(p.getParameter<int>("subdet_id"));
 }
 
-TrackerSD::~TrackerSD() {}
-
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   // Get the edep from the step.
   G4double edep = aStep->GetTotalEnergyDeposit();
