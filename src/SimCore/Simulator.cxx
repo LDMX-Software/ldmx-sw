@@ -52,7 +52,7 @@ void Simulator::configure(framework::config::Parameters& parameters) {
 void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   // Get the detector header from the user detector construction
   DetectorConstruction* detector =
-      static_cast<RunManager*>(RunManager::GetRunManager())
+      dynamic_cast<RunManager*>(RunManager::GetRunManager())
           ->getDetectorConstruction();
 
   header.setDetectorName(detector->getDetectorName());
