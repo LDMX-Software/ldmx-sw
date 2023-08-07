@@ -56,7 +56,7 @@ class UserAction {
                                      framework::config::Parameters&>;
 
   /// Destructor
-  virtual ~UserAction();
+  virtual ~UserAction() = default;
 
   /**
    * Method called at the beginning of every event.

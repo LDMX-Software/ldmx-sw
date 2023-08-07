@@ -19,8 +19,6 @@ UserAction::UserAction(const std::string& name,
   parameters_ = parameters;
 }
 
-UserAction::~UserAction() {}
-
 UserEventInformation* UserAction::getEventInfo() const {
   return static_cast<UserEventInformation*>(
       G4EventManager::GetEventManager()->GetUserInformation());

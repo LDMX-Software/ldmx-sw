@@ -40,7 +40,7 @@ class GeneralParticleSource : public simcore::PrimaryGenerator {
   GeneralParticleSource(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
-  ~GeneralParticleSource();
+  virtual ~GeneralParticleSource() = default;
 
   /**
    * Generate the primary vertices in the Geant4 event.

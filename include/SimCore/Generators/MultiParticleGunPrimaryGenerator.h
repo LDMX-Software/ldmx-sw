@@ -64,20 +64,20 @@ class MultiParticleGunPrimaryGenerator : public simcore::PrimaryGenerator {
    *  pdgID         : pdgID of particle to shoot
    *  enablePoisson : whether to poisson distribute the number of particles
    */
-  MultiParticleGunPrimaryGenerator(const std::string& name,
-                                   const framework::config::Parameters& parameters);
+  MultiParticleGunPrimaryGenerator(
+      const std::string& name, const framework::config::Parameters& parameters);
 
   /** Destructor */
   virtual ~MultiParticleGunPrimaryGenerator();
-
   /**
    * Generate vertices in the Geant4 event.
    *
    * @param anEvent The Geant4 event.
    */
-  void GeneratePrimaryVertex(G4Event* anEvent);
+  void GeneratePrimaryVertex(G4Event* anEvent) final override;
 
   void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
+
  private:
   /** Random number generator. */
   TRandom* random_;

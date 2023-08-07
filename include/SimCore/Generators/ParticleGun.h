@@ -46,7 +46,7 @@ class ParticleGun : public simcore::PrimaryGenerator {
   ParticleGun(const std::string& name, const framework::config::Parameters& parameters);
 
   /// Destructor
-  ~ParticleGun();
+  virtual ~ParticleGun() = default;
 
   /**
    * Generate the primary vertices in the Geant4 event.
