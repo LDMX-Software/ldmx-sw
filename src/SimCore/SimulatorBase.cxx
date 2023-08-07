@@ -104,7 +104,6 @@ void SimulatorBase::verifyParameters() const {
 }
 
 void SimulatorBase::configure(framework::config::Parameters& parameters) {
-  std::cout << "SimCoreBase::configure" << std::endl;
   // parameters used to configure the simulation
   parameters_ = parameters;
   // Set the verbosity level.  The default level  is 0.
