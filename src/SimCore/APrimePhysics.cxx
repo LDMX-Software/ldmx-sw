@@ -19,7 +19,9 @@ namespace simcore {
 const std::string APrimePhysics::NAME = "APrime";
 
 APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
-    : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_{params} {
+    : G4VPhysicsConstructor(APrimePhysics::NAME),
+      parameters_{params},
+      process_{nullptr} {
   ap_mass_ = parameters_.getParameter<double>("ap_mass", 0.) * MeV;
   enable_ = parameters_.getParameter<bool>("enable", false);
 }
@@ -61,7 +63,7 @@ void APrimePhysics::ConstructProcess() {
       }
       // Note: The proc variable isn't used here, but creating the
       // G4DarkBremsstahlung object has side-effects
-      [[maybe_unused]] auto proc = new G4DarkBremsstrahlung(
+      process_ = std::make_unique<G4DarkBremsstrahlung>(
           std::make_shared<g4db::G4DarkBreMModel>(
               model.getParameter<std::string>("library_path"),
               false /* dark brem off muons instead of electrons - we

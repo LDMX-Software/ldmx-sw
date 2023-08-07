@@ -99,6 +99,8 @@ class APrimePhysics : public G4VPhysicsConstructor {
    * is done. Thus we need our own copy that won't be destroyed.
    */
   framework::config::Parameters parameters_;
+
+  std::unique_ptr<G4DarkBremsstrahlung> process_;
 };
 
 }  // namespace simcore
