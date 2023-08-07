@@ -16,12 +16,16 @@ namespace g4user {
 
 void RunAction::BeginOfRunAction(const G4Run* run) {
   // Call user run action
-  for (auto& runAction : runActions_) runAction->BeginOfRunAction(run);
+  for (auto& runAction : runActions_) {
+    runAction->BeginOfRunAction(run);
+  }
 }
 
 void RunAction::EndOfRunAction(const G4Run* run) {
   // Call user run action
-  for (auto& runAction : runActions_) runAction->EndOfRunAction(run);
+  for (auto& runAction : runActions_) {
+    runAction->EndOfRunAction(run);
+  }
 }
 
 }  // namespace g4user
