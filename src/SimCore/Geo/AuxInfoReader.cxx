@@ -246,12 +246,18 @@ void AuxInfoReader::createRegion(G4String name,
 
   G4VUserRegionInformation* regionInfo =
       new UserRegionInformation(storeTrajectories);
-  G4Region* region = new G4Region(name);
+  // This looks like a memory leak, but isn't. I (Einar) have checked. Geant4
+  // registers the region in the constructor and deletes it at the end.
+  //
+  // Some static analysis tools may struggle with identifying that this one
+  // happens to be fine. The NOLINT comment tells clang-tidy to not bother
+  // within the region
+  //
+  // NOLINTBEGIN
+  auto region = new G4Region(name);
   region->SetUserInformation(regionInfo);
-
-  // G4cout << "Created new detector region " << region->GetName() << G4endl <<
-  // G4endl;
 }
+// NOLINTEND
 
 void AuxInfoReader::createVisAttributes(G4String name,
                                         const G4GDMLAuxListType* auxInfoList) {
