@@ -3,10 +3,6 @@
 namespace simcore {
 namespace g4user {
 
-StackingAction::StackingAction() {}
-
-StackingAction::~StackingAction() {}
-
 G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(
     const G4Track* track) {
   // Default value of a track is fUrgent.

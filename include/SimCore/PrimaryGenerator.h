@@ -53,7 +53,7 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
                                      const framework::config::Parameters&>;
 
   /// Destructor
-  virtual ~PrimaryGenerator();
+  virtual ~PrimaryGenerator() = default;
 
   /**
    * Generate a Primary Vertex

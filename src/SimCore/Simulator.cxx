@@ -45,8 +45,6 @@ namespace simcore {
 Simulator::Simulator(const std::string& name, framework::Process& process)
     : simcore::SimulatorBase(name, process) {}
 
-Simulator::~Simulator() {}
-
 void Simulator::configure(framework::config::Parameters& parameters) {
   SimulatorBase::configure(parameters);
 }

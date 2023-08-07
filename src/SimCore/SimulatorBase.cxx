@@ -187,7 +187,6 @@ void SimulatorBase::buildGeometry() {
 
   // Parse the detector geometry and validate if specified.
   auto detectorPath{parameters_.getParameter<std::string>("detector")};
-  auto validateGeometry{parameters_.getParameter<bool>("validate_detector")};
   if (verbosity_ > 0) {
     std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath
               << "'... " << std::flush;

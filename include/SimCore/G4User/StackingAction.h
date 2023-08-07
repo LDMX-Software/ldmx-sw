@@ -32,10 +32,10 @@ namespace g4user {
 class StackingAction : public G4UserStackingAction {
  public:
   /// Constructor
-  StackingAction();
+  StackingAction() = default;
 
   /// Destructor
-  virtual ~StackingAction();
+  virtual ~StackingAction() = default;
 
   /**
    * Classify a new track.

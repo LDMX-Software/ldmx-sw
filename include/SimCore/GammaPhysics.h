@@ -47,7 +47,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * Class destructor.
    */
-  virtual ~GammaPhysics();
+  virtual ~GammaPhysics() = default;
 
   /**
    * Construct particles (no-op).
