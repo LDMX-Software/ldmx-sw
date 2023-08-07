@@ -1,11 +1,10 @@
 #include "SimCore/SensitiveDetector.h"
 
-#include "G4SDManager.hh"
+#include "Framework/Exception/Exception.h"
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
+#include "G4SDManager.hh"
 #include "G4Step.hh"
-
-#include "Framework/Exception/Exception.h"
 
 namespace simcore {
 

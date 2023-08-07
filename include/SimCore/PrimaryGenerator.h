@@ -21,7 +21,6 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
-
 #include "SimCore/Factory.h"
 
 // Forward Declarations
@@ -47,10 +46,10 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
                    const framework::config::Parameters& parameters);
 
   /// Factory for primary generators
-  using Factory = ::simcore::Factory<PrimaryGenerator,
-                                     std::shared_ptr<PrimaryGenerator>,
-                                     const std::string&,
-                                     const framework::config::Parameters&>;
+  using Factory =
+      ::simcore::Factory<PrimaryGenerator, std::shared_ptr<PrimaryGenerator>,
+                         const std::string&,
+                         const framework::config::Parameters&>;
 
   /// Destructor
   virtual ~PrimaryGenerator() = default;
@@ -84,9 +83,9 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
  * and then registers the class as a generator
  * with the Factory
  */
-#define DECLARE_GENERATOR(CLASS)                                           \
-  namespace {                                                              \
-    auto v = ::simcore::PrimaryGenerator::Factory::get().declare<CLASS>(); \
+#define DECLARE_GENERATOR(CLASS)                                         \
+  namespace {                                                            \
+  auto v = ::simcore::PrimaryGenerator::Factory::get().declare<CLASS>(); \
   }
 
 #endif  // SIMCORE_PRIMARYGENERATOR_H

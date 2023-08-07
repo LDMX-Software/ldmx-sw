@@ -3,9 +3,8 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
-
-#include "SimCore/Factory.h"
 #include "SimCore/ConditionsInterface.h"
+#include "SimCore/Factory.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/TrackMap.h"
 
@@ -29,8 +28,7 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * @param[in] ci handle to current conditions interface
    * @param[in] parameters python configuration parameters
    */
-  SensitiveDetector(const std::string& name,
-                    simcore::ConditionsInterface& ci, 
+  SensitiveDetector(const std::string& name, simcore::ConditionsInterface& ci,
                     const framework::config::Parameters& parameters);
 
   /**
@@ -39,28 +37,29 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * We have the factory create raw pointers since the G4SDManager handles
    * destruction of all of the registered SensitiveDetectors.
    */
-  using Factory = ::simcore::Factory<SensitiveDetector,
-                                     SensitiveDetector*,
-                                     const std::string&,
-                                     simcore::ConditionsInterface&,
-                                     const framework::config::Parameters&>;
+  using Factory =
+      ::simcore::Factory<SensitiveDetector, SensitiveDetector*,
+                         const std::string&, simcore::ConditionsInterface&,
+                         const framework::config::Parameters&>;
 
   /** Destructor */
   virtual ~SensitiveDetector() = default;
 
   /**
-   * Here, we must determine if we should be attached to the 
+   * Here, we must determine if we should be attached to the
    * input logical volume. Return 'true' if we should be attached
    * to it and 'false' otherwise.
-   * 
+   *
    * @param[in] lv logical volume to check
-   * @returns true if the input lv should be connected to this sensitive detector
+   * @returns true if the input lv should be connected to this sensitive
+   * detector
    */
   virtual bool isSensDet(G4LogicalVolume* lv) const = 0;
 
   /**
    * This is Geant4's handle to tell us that a particle has stepped
-   * through our sensitive detector and we should process its interaction with us.
+   * through our sensitive detector and we should process its interaction with
+   * us.
    *
    * @param[in] step the step that happened within one of our logical volumes
    * @param[in] hist the touchable history of the step
@@ -113,7 +112,8 @@ class SensitiveDetector : public G4VSensitiveDetector {
    * @param[in] name name of condition to get
    * @returns condition object requested
    */
-  template <class T> const T &getCondition(const std::string &condition_name) {
+  template <class T>
+  const T& getCondition(const std::string& condition_name) {
     return conditions_interface_.getCondition<T>(condition_name);
   }
 
@@ -149,9 +149,9 @@ class SensitiveDetector : public G4VSensitiveDetector {
  * Defines a builder for the declared class
  * and then registers the class as a possible sensitive detector
  */
-#define DECLARE_SENSITIVEDETECTOR(CLASS)                                    \
-  namespace {                                                               \
-    auto v = ::simcore::SensitiveDetector::Factory::get().declare<CLASS>(); \
+#define DECLARE_SENSITIVEDETECTOR(CLASS)                                  \
+  namespace {                                                             \
+  auto v = ::simcore::SensitiveDetector::Factory::get().declare<CLASS>(); \
   }
 
 #endif  // SIMCORE_SENSITIVEDETECTOR_H_

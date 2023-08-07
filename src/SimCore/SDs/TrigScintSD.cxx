@@ -17,10 +17,10 @@ TrigScintSD::TrigScintSD(const std::string& name,
                          simcore::ConditionsInterface& ci,
                          const framework::config::Parameters& p)
     : SensitiveDetector(name, ci, p) {
-      module_id_ = p.getParameter<int>("module_id");
-      collection_name_ = p.getParameter<std::string>("collection_name");
-      vol_name_ = p.getParameter<std::string>("volume_name");
-    }
+  module_id_ = p.getParameter<int>("module_id");
+  collection_name_ = p.getParameter<std::string>("collection_name");
+  vol_name_ = p.getParameter<std::string>("volume_name");
+}
 
 TrigScintSD::~TrigScintSD() {}
 
@@ -52,8 +52,7 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // Affine transform for converting between local and global coordinates
   auto topTransform{touchableHistory->GetTopTransform()};
   // Set the hit position
-  auto position{0.5 * (prePoint->GetPosition() +
-                       postPoint->GetPosition())};
+  auto position{0.5 * (prePoint->GetPosition() + postPoint->GetPosition())};
 
   // Convert the center of the bar to its corresponding global position
   auto volumePosition{topTransform.Inverse().TransformPoint(G4ThreeVector())};
@@ -77,8 +76,6 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
                  track->GetParticleDefinition()->GetPDGEncoding(), energy,
                  track->GetGlobalTime());
 
-
-
   // Step details
   hit.setPathLength(step->GetStepLength());
   hit.setVelocity(track->GetVelocity());
@@ -92,11 +89,10 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
                          localPreStepPoint[2]);
 
   hit.setPostStepPosition(localPostStepPoint[0], localPostStepPoint[1],
-                         localPostStepPoint[2]);
+                          localPostStepPoint[2]);
 
   hit.setPreStepTime(prePoint->GetGlobalTime());
   hit.setPostStepTime(postPoint->GetGlobalTime());
-  
 
   return true;
 }

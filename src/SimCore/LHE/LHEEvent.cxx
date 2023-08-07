@@ -1,4 +1,5 @@
 #include "SimCore/LHE/LHEEvent.h"
+
 #include "Framework/Exception/Exception.h"
 
 // Geant4
@@ -102,4 +103,4 @@ void LHEEvent::setVertex(const std::string& line) {
   }
 }
 
-}  // namespace simcore
+}  // namespace simcore::lhe

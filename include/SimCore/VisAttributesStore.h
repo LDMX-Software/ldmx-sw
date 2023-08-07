@@ -53,8 +53,9 @@ class VisAttributesStore {
     try {
       return visAttributesMap_.at(name);
     } catch (const std::out_of_range& oor) {
-      G4cout << "[ WARN ] : VisAttribute '" << name 
-        << "' not recognized. Ignoring." << G4endl;
+      G4cout << "[ WARN ] : VisAttribute '" << name
+             << "' not recognized. Ignoring." << G4endl;
+      return nullptr;
     }
   }
 
