@@ -79,8 +79,6 @@ ParticleGun::ParticleGun(const std::string& name,
   }
 }
 
-ParticleGun::~ParticleGun() {}
-
 void ParticleGun::GeneratePrimaryVertex(G4Event* event) {
   // Call G4 class method to generate primaries.
   theGun_.GeneratePrimaryVertex(event);

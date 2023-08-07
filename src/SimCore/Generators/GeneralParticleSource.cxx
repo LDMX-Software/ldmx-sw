@@ -35,8 +35,6 @@ GeneralParticleSource::GeneralParticleSource(const std::string& name,
   }
 }
 
-GeneralParticleSource::~GeneralParticleSource() {}
-
 void GeneralParticleSource::GeneratePrimaryVertex(G4Event* event) {
   // just pass to the Geant4 implementation
   theG4Source_.GeneratePrimaryVertex(event);
