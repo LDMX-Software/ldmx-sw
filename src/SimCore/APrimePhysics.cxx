@@ -59,7 +59,9 @@ void APrimePhysics::ConstructProcess() {
                 "',"
                 " options are 'forward_only', 'cm_scaling', or 'undefined'.");
       }
-      auto proc = new G4DarkBremsstrahlung(
+      // Note: The proc variable isn't used here, but creating the
+      // G4DarkBremsstahlung object has side-effects
+      [[maybe_unused]] auto proc = new G4DarkBremsstrahlung(
           std::make_shared<g4db::G4DarkBreMModel>(
               model.getParameter<std::string>("library_path"),
               false /* dark brem off muons instead of electrons - we
