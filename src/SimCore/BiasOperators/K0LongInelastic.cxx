@@ -4,7 +4,8 @@
 namespace simcore {
 namespace biasoperators {
 
-K0LongInelastic::K0LongInelastic(std::string name, const framework::config::Parameters& p)
+K0LongInelastic::K0LongInelastic(std::string name,
+                                 const framework::config::Parameters& p)
     : XsecBiasingOperator(name, p) {
   volume_ = p.getParameter<std::string>("volume");
   factor_ = p.getParameter<double>("factor");

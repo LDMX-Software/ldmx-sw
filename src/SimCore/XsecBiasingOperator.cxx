@@ -16,7 +16,8 @@ void XsecBiasingOperator::StartRun() {
   } else if (this->getParticleToBias().compare("neutron") == 0) {
     processManager_ = G4Neutron::NeutronDefinition()->GetProcessManager();
   } else if (this->getParticleToBias().compare("kaon0L") == 0) {
-    processManager_ = G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
+    processManager_ =
+        G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
   } else {
     EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
                                      this->getParticleToBias() + "'.");

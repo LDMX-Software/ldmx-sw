@@ -74,8 +74,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   auto beamSpotSmear{
       parameters_.getParameter<std::vector<double>>("beamSpotSmear", {})};
-  if (!beamSpotSmear.empty())
+  if (!beamSpotSmear.empty()) {
     threeVectorDump("Smear Beam Spot [mm]", beamSpotSmear);
+  }
 
   // lambda function for dumping vectors of strings to the run header
   auto stringVectorDump = [&header](const std::string& name,
@@ -180,7 +181,9 @@ void Simulator::onProcessEnd() {
 
 void Simulator::setSeeds(std::vector<int> seeds) {
   // If no seeds have been specified then return immediately.
-  if (seeds.empty()) return;
+  if (seeds.empty()) {
+    return;
+  }
 
   // If seeds are specified, make sure that the container has at least
   // two seeds.  If not, throw an exception.
