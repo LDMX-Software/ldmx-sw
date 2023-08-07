@@ -51,9 +51,7 @@ class TrackerSD : public SensitiveDetector {
     event.add(collection_name_, hits_);
   }
 
-  virtual void EndOfEvent() final override {
-    hits_.clear();
-  }
+  virtual void OnFinishedEvent() final override { hits_.clear(); }
 
  private:
   /// The name of the subsystem we are apart of

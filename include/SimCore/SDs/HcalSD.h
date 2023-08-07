@@ -87,8 +87,8 @@ class HcalSD : public SensitiveDetector {
     event.add(COLLECTION_NAME, hits_);
   }
 
-  virtual void EndOfEvent() final override { hits_.clear(); }
-  
+  virtual void OnFinishedEvent() final override { hits_.clear(); }
+
  private:
   // A list of identifiers used to find out whether or not a given logical
   // volume is one of the Hcal sensitive detector volumes. Any volume that is
