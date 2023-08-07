@@ -116,7 +116,7 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const ldmx::RunHeader& rh) {
+void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
   const framework::RandomNumberSeedService& rseed =
       getCondition<framework::RandomNumberSeedService>(
           framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
@@ -125,7 +125,7 @@ void Simulator::onNewRun(const ldmx::RunHeader& rh) {
   seeds.push_back(rseed.getSeed("Simulator[1]"));
   setSeeds(seeds);
 
-  run_ = rh.getRunNumber();
+  run_ = runHeader.getRunNumber();
 }
 
 void Simulator::produce(framework::Event& event) {
@@ -195,12 +195,15 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   // Create the array of seeds and pass them to G4Random.  Currently,
   // only 100 seeds can be specified at a time.  If less than 100
   // seeds are specified, the remaining slots are set to 0.
-  std::vector<long> seedVec(100, 0);
-  for (std::size_t index{0}; index < seeds.size(); ++index)
+
+  constexpr int max_number_of_seeds{100};
+  std::vector<long> seedVec(max_number_of_seeds, 0);
+  for (std::size_t index{0}; index < seeds.size(); ++index) {
     seedVec[index] = static_cast<long>(seeds[index]);
+  }
 
   // Pass the array of seeds to the random engine.
-  G4Random::setTheSeeds(&seedVec[0]);
+  G4Random::setTheSeeds(seedVec.data());
 }
 
 }  // namespace simcore
