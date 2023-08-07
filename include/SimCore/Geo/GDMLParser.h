@@ -35,7 +35,7 @@ class GDMLParser : public Parser {
              simcore::ConditionsInterface &ci);
 
   /// Default destructor
-  ~GDMLParser() = default;
+  virtual ~GDMLParser() = default;
 
   /**
    * Retrieve the G4VPhysicalVolume associated with the most top-level

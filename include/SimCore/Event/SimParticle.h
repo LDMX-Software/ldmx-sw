@@ -48,7 +48,7 @@ class SimParticle {
   SimParticle();
 
   /// Destructor
-  ~SimParticle();
+  virtual ~SimParticle();
 
   /// Reset an instance of this class by clearing all of its data.
   void Clear();

@@ -31,7 +31,7 @@ namespace g4user {
 class SteppingAction : public G4UserSteppingAction {
  public:
   /// Destructor
-  ~SteppingAction() final override {}
+  ~SteppingAction() {}
 
   /**
    * Callback used to process a step.

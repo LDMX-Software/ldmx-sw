@@ -47,6 +47,8 @@ class Parser {
    */
   virtual void read() = 0;
 
+  virtual ~Parser() = default;
+
 };  // Parser
 
 using createFunc =

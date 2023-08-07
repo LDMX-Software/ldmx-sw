@@ -35,24 +35,24 @@ class StackingAction : public G4UserStackingAction {
   StackingAction();
 
   /// Destructor
-  virtual ~StackingAction() final override;
+  virtual ~StackingAction();
 
   /**
    * Classify a new track.
    * @param aTrack The track to classify.
    * @return The track classification.
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track);
+  G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track) override;
 
   /**
    * Invoked when there is a new stacking stage.
    */
-  void NewStage();
+  void NewStage() override;
 
   /**
    * Invoked for a new event.
    */
-  void PrepareNewEvent();
+  void PrepareNewEvent() override;
 
   /**
    * Register a user action of type stacking action with this class.
