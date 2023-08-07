@@ -26,7 +26,7 @@ class SimTrackerHit {
   /**
    * Class constructor.
    */
-  SimTrackerHit();
+  SimTrackerHit() = default;
 
   /**
    * Class destructor.
