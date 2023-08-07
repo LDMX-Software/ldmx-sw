@@ -168,8 +168,7 @@ void RunManager::TerminateOneEvent() {
   // reactivate any process that contains the G4DarkBremmstrahlung name
   // this covers both cases where the process is biased and not
   static auto reactivate_dark_brem = [](G4ProcessManager* pman) {
-    for (std::size_t i_proc{0}; i_proc < pman->GetProcessList()->size();
-         i_proc++) {
+    for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
       G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
       if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
         pman->SetProcessActivation(p, true);

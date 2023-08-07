@@ -46,7 +46,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   /**
    * Class destructor.
    */
-  ~DetectorConstruction() = default;
+  virtual ~DetectorConstruction() = default;
 
   /**
    * Construct the detector.

@@ -22,12 +22,12 @@ class UserPrimaryParticleInformation
   /**
    * Class Constructor.
    */
-  UserPrimaryParticleInformation() { ; }
+  UserPrimaryParticleInformation() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~UserPrimaryParticleInformation() { ; }
+  virtual ~UserPrimaryParticleInformation() = default;
 
   /**
    * Set the HEP event status (generator status) e.g. from an LHE particle.

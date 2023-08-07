@@ -5,8 +5,6 @@ namespace simcore {
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
     : storeSecondaries_(aStoreSecondaries) {}
 
-UserRegionInformation::~UserRegionInformation() {}
-
 bool UserRegionInformation::getStoreSecondaries() const {
   return storeSecondaries_;
 }
