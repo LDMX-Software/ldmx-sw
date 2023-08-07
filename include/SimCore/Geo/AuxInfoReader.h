@@ -63,28 +63,30 @@ class AuxInfoReader {
    * @param name The name of the magnetic field.
    * @param auxInfoList The aux info defining the magnetic field.
    */
-  void createMagneticField(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createMagneticField(const G4String &name,
+                           const G4GDMLAuxListType *auxInfoList);
 
   /**
    * Create a detector region from GDML data.
    * @param name The name of the detector region.
    * @param auxInfoList The aux info defining the detector region.
    */
-  void createRegion(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createRegion(const G4String &name, const G4GDMLAuxListType *auxInfoList);
 
   /**
    * Create visualization attributes from GDML data.
    * @param name The name of the visualization attributes.
    * @param auxInfoList The aux info defining the visualization attributes.
    */
-  void createVisAttributes(G4String name, const G4GDMLAuxListType *auxInfoList);
+  void createVisAttributes(const G4String &name,
+                           const G4GDMLAuxListType *auxInfoList);
 
   /**
    * Create the detector header from the global auxinfo.
    * @param detectorVersion The aux value with the detector version.
    * @param auxInfoList The aux info with the detector header information.
    */
-  void createDetectorHeader(G4String detectorVersion,
+  void createDetectorHeader(const G4String &detectorVersion,
                             const G4GDMLAuxListType *auxInfoList);
 
  private:

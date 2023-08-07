@@ -36,12 +36,9 @@ AuxInfoReader::~AuxInfoReader() {
 
 void AuxInfoReader::readGlobalAuxInfo() {
   const G4GDMLAuxListType* auxInfoList = parser_->GetAuxList();
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+  for (const auto& auxInfo : *auxInfoList) {
+    G4String auxType = auxInfo.type;
+    G4String auxVal = auxInfo.value;
 
     if (auxType == "SensDet") {
       std::cerr
@@ -49,13 +46,13 @@ void AuxInfoReader::readGlobalAuxInfo() {
              "See https://github.com/LDMX-Software/SimCore/issues/39"
           << std::endl;
     } else if (auxType == "MagneticField") {
-      createMagneticField(auxVal, iaux->auxList);
+      createMagneticField(auxVal, auxInfo.auxList);
     } else if (auxType == "Region") {
-      createRegion(auxVal, iaux->auxList);
+      createRegion(auxVal, auxInfo.auxList);
     } else if (auxType == "VisAttributes") {
-      createVisAttributes(auxVal, iaux->auxList);
+      createVisAttributes(auxVal, auxInfo.auxList);
     } else if (auxType == "DetectorVersion") {
-      createDetectorHeader(auxVal, iaux->auxList);
+      createDetectorHeader(auxVal, auxInfo.auxList);
     }
   }
   return;
@@ -65,74 +62,69 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
   const G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
   std::vector<G4LogicalVolume*>::const_iterator lvciter;
   for (lvciter = lvs->begin(); lvciter != lvs->end(); lvciter++) {
-    G4GDMLAuxListType auxInfo =
+    G4GDMLAuxListType auxInfoList =
         parser_->GetVolumeAuxiliaryInformation(*lvciter);
-    if (auxInfo.size() > 0) {
-      for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-               auxInfo.begin();
-           iaux != auxInfo.end(); iaux++) {
-        G4String auxType = iaux->type;
-        G4String auxVal = iaux->value;
-        G4String auxUnit = iaux->unit;
 
-        G4LogicalVolume* lv = (*lvciter);
+    for (const auto& auxInfo : auxInfoList) {
+      G4String auxType = auxInfo.type;
+      G4String auxVal = auxInfo.value;
 
-        if (auxType == "MagneticField") {
-          G4String magFieldName = auxVal;
-          G4MagneticField* magField =
-              MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
-          if (magField != nullptr) {
-            G4FieldManager* mgr = new G4FieldManager(magField);
-            lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
-            // G4cout << "Assigned magnetic field " << magFieldName << " to
-            // volume " << lv->GetName() << G4endl;
-          } else {
-            EXCEPTION_RAISE(
-                "MissingInfo",
-                "Unknown MagneticField ref in volume's auxiliary info: " +
-                    std::string(magFieldName.data()));
-          }
-        } else if (auxType == "Region") {
-          G4String regionName = auxVal;
-          G4Region* region =
-              G4RegionStore::GetInstance()->GetRegion(regionName);
-          if (region != nullptr) {
-            region->AddRootLogicalVolume(lv);
-            // G4cout << "Added volume " << lv->GetName() << " to region " <<
-            // regionName << G4endl;
-          } else {
-            EXCEPTION_RAISE("MissingInfo", "Reference region '" +
-                                               std::string(regionName.data()) +
-                                               "' was not found!");
-          }
-        } else if (auxType == "VisAttributes") {
-          G4String visName = auxVal;
-          G4VisAttributes* visAttributes =
-              VisAttributesStore::getInstance()->getVisAttributes(visName);
-          if (visAttributes != nullptr) {
-            lv->SetVisAttributes(visAttributes);
-            // G4cout << "Assigned VisAttributes " << visName << " to volume "
-            // << lv->GetName() << G4endl;
-          } else {
-            EXCEPTION_RAISE("MissingInfo", "Referenced VisAttributes '" +
-                                               std::string(visName.data()) +
-                                               "' was not found!");
-          }
+      G4LogicalVolume* lv = (*lvciter);
+
+      if (auxType == "MagneticField") {
+        const G4String& magFieldName = auxVal;
+        G4MagneticField* magField =
+            MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
+        if (magField != nullptr) {
+          auto mgr = new G4FieldManager(magField);
+          lv->SetFieldManager(
+              mgr,
+              true /* FIXME: hard-coded to force field manager to daughters */);
+          // G4cout << "Assigned magnetic field " << magFieldName << " to
+          // volume " << lv->GetName() << G4endl;
+        } else {
+          EXCEPTION_RAISE(
+              "MissingInfo",
+              "Unknown MagneticField ref in volume's auxiliary info: " +
+                  std::string(magFieldName.data()));
+        }
+      } else if (auxType == "Region") {
+        const G4String& regionName = auxVal;
+        G4Region* region = G4RegionStore::GetInstance()->GetRegion(regionName);
+        if (region != nullptr) {
+          region->AddRootLogicalVolume(lv);
+          // G4cout << "Added volume " << lv->GetName() << " to region " <<
+          // regionName << G4endl;
+        } else {
+          EXCEPTION_RAISE("MissingInfo", "Reference region '" +
+                                             std::string(regionName.data()) +
+                                             "' was not found!");
+        }
+      } else if (auxType == "VisAttributes") {
+        const G4String& visName = auxVal;
+        G4VisAttributes* visAttributes =
+            VisAttributesStore::getInstance()->getVisAttributes(visName);
+        if (visAttributes != nullptr) {
+          lv->SetVisAttributes(visAttributes);
+          // G4cout << "Assigned VisAttributes " << visName << " to volume "
+          // << lv->GetName() << G4endl;
+        } else {
+          EXCEPTION_RAISE("MissingInfo", "Referenced VisAttributes '" +
+                                             std::string(visName.data()) +
+                                             "' was not found!");
         }
       }
     }
   }
 }
 
-void AuxInfoReader::createMagneticField(G4String magFieldName,
+void AuxInfoReader::createMagneticField(const G4String& magFieldName,
                                         const G4GDMLAuxListType* auxInfoList) {
   // Find type of the mag field.
   G4String magFieldType("");
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
+  for (const auto& auxInfo : *auxInfoList) {
+    G4String auxType = auxInfo.type;
+    G4String auxVal = auxInfo.value;
 
     if (auxType == "MagneticFieldType") {
       magFieldType = auxVal;
@@ -151,12 +143,10 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
   if (magFieldType == "G4UniformMagField") {
     double bx, by, bz;
     bx = by = bz = 0.;
-    for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-             auxInfoList->begin();
-         iaux != auxInfoList->end(); iaux++) {
-      G4String auxType = iaux->type;
-      G4String auxVal = iaux->value;
-      G4String auxUnit = iaux->unit;
+    for (const auto& auxInfo : *auxInfoList) {
+      G4String auxType = auxInfo.type;
+      G4String auxVal = auxInfo.value;
+      G4String auxUnit = auxInfo.unit;
 
       G4String expr = auxVal + "*" + auxUnit;
       if (auxType == "bx") {
@@ -176,14 +166,14 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
     // Create a global 3D field map by reading from a data file.
   } else if (magFieldType == "MagneticFieldMap3D") {
     string fileName;
-    double offsetX, offsetY, offsetZ;
+    double offsetX{};
+    double offsetY{};
+    double offsetZ{};
 
-    for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-             auxInfoList->begin();
-         iaux != auxInfoList->end(); iaux++) {
-      G4String auxType = iaux->type;
-      G4String auxVal = iaux->value;
-      G4String auxUnit = iaux->unit;
+    for (const auto& auxInfo : *auxInfoList) {
+      G4String auxType = auxInfo.type;
+      G4String auxVal = auxInfo.value;
+      G4String auxUnit = auxInfo.unit;
 
       G4String expr = auxVal + "*" + auxUnit;
 
@@ -225,15 +215,12 @@ void AuxInfoReader::createMagneticField(G4String magFieldName,
   MagneticFieldStore::getInstance()->addMagneticField(magFieldName, magField);
 }
 
-void AuxInfoReader::createRegion(G4String name,
+void AuxInfoReader::createRegion(const G4String& name,
                                  const G4GDMLAuxListType* auxInfoList) {
   bool storeTrajectories = true;
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+  for (const auto& auxInfo : *auxInfoList) {
+    G4String auxType = auxInfo.type;
+    G4String auxVal = auxInfo.value;
 
     if (auxType == "StoreTrajectories") {
       if (auxVal == "false") {
@@ -243,7 +230,6 @@ void AuxInfoReader::createRegion(G4String name,
       }
     }
   }
-
   G4VUserRegionInformation* regionInfo =
       new UserRegionInformation(storeTrajectories);
   // This looks like a memory leak, but isn't. I (Einar) have checked. Geant4
@@ -259,9 +245,9 @@ void AuxInfoReader::createRegion(G4String name,
 }
 // NOLINTEND
 
-void AuxInfoReader::createVisAttributes(G4String name,
+void AuxInfoReader::createVisAttributes(const G4String& name,
                                         const G4GDMLAuxListType* auxInfoList) {
-  G4double rgba[4] = {1., 1., 1., 1.};
+  std::array<G4double, 4> rgba = {1., 1., 1., 1.};
   G4bool visible = true;
   G4bool dauInvisible = false;
   G4bool forceWireframe = false;
@@ -269,12 +255,9 @@ void AuxInfoReader::createVisAttributes(G4String name,
   G4double lineWidth = 1.0;
   G4VisAttributes::LineStyle lineStyle = G4VisAttributes::unbroken;
 
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+  for (const auto& auxInfo : *auxInfoList) {
+    G4String auxType = auxInfo.type;
+    G4String auxVal = auxInfo.value;
 
     if (auxType == "R") {
       rgba[0] = atof(auxVal.c_str());
@@ -315,7 +298,7 @@ void AuxInfoReader::createVisAttributes(G4String name,
     }
   }
 
-  G4VisAttributes* visAttributes = new G4VisAttributes();
+  auto visAttributes = new G4VisAttributes();
   visAttributes->SetColor(rgba[0], rgba[1], rgba[2], rgba[3]);
   visAttributes->SetVisibility(visible);
   visAttributes->SetDaughtersInvisible(dauInvisible);
@@ -329,7 +312,7 @@ void AuxInfoReader::createVisAttributes(G4String name,
   // G4endl << G4endl;
 }
 
-void AuxInfoReader::createDetectorHeader(G4String auxValue,
+void AuxInfoReader::createDetectorHeader(const G4String& auxValue,
                                          const G4GDMLAuxListType* auxInfoList) {
   int detectorVersion = atoi(auxValue.c_str());
 
@@ -337,12 +320,9 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   std::string author("");
   std::string description("");
 
-  for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
-           auxInfoList->begin();
-       iaux != auxInfoList->end(); iaux++) {
-    G4String auxType = iaux->type;
-    G4String auxVal = iaux->value;
-    G4String auxUnit = iaux->unit;
+  for (const auto& auxInfo : *auxInfoList) {
+    G4String auxType = auxInfo.type;
+    G4String auxVal = auxInfo.value;
 
     if (auxType == "DetectorName") {
       detectorName = auxVal;
@@ -364,5 +344,4 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue,
   G4cout << "  Description: " << detectorHeader_->getDescription() << G4endl;
   G4cout << G4endl;*/
 }
-
 }  // namespace simcore::geo
