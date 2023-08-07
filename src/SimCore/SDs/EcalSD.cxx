@@ -23,8 +23,6 @@ EcalSD::EcalSD(const std::string& name, simcore::ConditionsInterface& ci,
   compressHitContribs_ = p.getParameter<bool>("compressHitContribs");
 }
 
-EcalSD::~EcalSD() {}
-
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   static const int layer_depth = 2;  // index depends on GDML implementation
   const auto& geometry = getCondition<ldmx::EcalGeometry>(

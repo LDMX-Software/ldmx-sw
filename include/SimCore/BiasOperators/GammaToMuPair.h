@@ -20,7 +20,7 @@ class GammaToMuPair : public XsecBiasingOperator {
   GammaToMuPair(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
-  ~GammaToMuPair() = default;
+  virtual ~GammaToMuPair() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -31,20 +31,20 @@ class GammaToMuPair : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the process to bias
-  virtual std::string getProcessToBias() const { return "GammaToMuPair"; }
+  std::string getProcessToBias() const override { return "GammaToMuPair"; }
 
   /// Return the particle to bias
-  virtual std::string getParticleToBias() const { return "gamma"; }
+  std::string getParticleToBias() const override { return "gamma"; }
 
   /// Return the volume to bias in
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /**
    * Record the configuration to the run header
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
+  void RecordConfig(ldmx::RunHeader& header) const override {
     header.setStringParameter("BiasOperator::GammaToMuPair::Volume", volume_);
     header.setFloatParameter("BiasOperator::GammaToMuPair::Factor", factor_);
     header.setFloatParameter("BiasOperator::GammaToMuPair::Threshold",

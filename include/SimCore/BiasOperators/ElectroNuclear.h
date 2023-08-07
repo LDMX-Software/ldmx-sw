@@ -20,7 +20,7 @@ class ElectroNuclear : public XsecBiasingOperator {
   ElectroNuclear(std::string name, const framework::config::Parameters& p);
 
   /** Destructor */
-  ~ElectroNuclear() {}
+  virtual ~ElectroNuclear() = default;
 
   /**
    * @return Method that returns the biasing operation that will be used
@@ -31,20 +31,20 @@ class ElectroNuclear : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the process to bias
-  virtual std::string getProcessToBias() const { return "electronNuclear"; }
+  std::string getProcessToBias() const override { return "electronNuclear"; }
 
   /// Return the particle to bias
-  virtual std::string getParticleToBias() const { return "e-"; }
+  std::string getParticleToBias() const override { return "e-"; }
 
   /// Return the volume to bias in
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /**
    * Record the configuration to the run header
    *
    * @param[in,out] header RunHeader to record to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const {
+  void RecordConfig(ldmx::RunHeader& header) const override {
     header.setStringParameter("BiasOperator::ElectroNuclear::Volume", volume_);
     header.setFloatParameter("BiasOperator::ElectroNuclear::Factor", factor_);
     header.setFloatParameter("BiasOperator::ElectroNuclear::Threshold",

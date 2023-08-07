@@ -26,13 +26,12 @@ HcalSD::HcalSD(const std::string& name, simcore::ConditionsInterface& ci,
       p.getParameter<std::vector<std::string>>("gdml_identifiers")};
 }
 
-HcalSD::~HcalSD() {}
 ldmx::HcalID HcalSD::decodeCopyNumber(const std::uint32_t copyNumber,
                                       const G4ThreeVector& localPosition,
                                       const G4Box* scint) {
   const unsigned int version{copyNumber / 0x01000000};
   if (version != 0) {
-    typedef ldmx::PackedIndex<256, 256, 256> Index;
+    using Index = ldmx::PackedIndex<256, 256, 256>;
     return ldmx::HcalID{Index(copyNumber).field2(), Index(copyNumber).field1(),
                         Index(copyNumber).field0()};
   } else {

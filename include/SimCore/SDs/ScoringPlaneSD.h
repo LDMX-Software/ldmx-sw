@@ -23,7 +23,7 @@ class ScoringPlaneSD : public SensitiveDetector {
                  const framework::config::Parameters& params);
 
   /** Destructor */
-  ~ScoringPlaneSD();
+  virtual ~ScoringPlaneSD() = default;
 
   /**
    * Check if the input logical volume is a scoring plane we should include.

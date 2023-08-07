@@ -27,8 +27,6 @@ ScoringPlaneSD::ScoringPlaneSD(const std::string& name,
   match_substr_ = params.getParameter<std::string>("match_substr");
 }
 
-ScoringPlaneSD::~ScoringPlaneSD() {}
-
 G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // Get the edep from the step.
   G4double edep = step->GetTotalEnergyDeposit();

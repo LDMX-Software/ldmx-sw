@@ -8,8 +8,6 @@ XsecBiasingOperator::XsecBiasingOperator(
     std::string name, const framework::config::Parameters& parameters)
     : G4VBiasingOperator(name) {}
 
-XsecBiasingOperator::~XsecBiasingOperator() {}
-
 void XsecBiasingOperator::StartRun() {
   if (this->getParticleToBias().compare("gamma") == 0) {
     processManager_ = G4Gamma::GammaDefinition()->GetProcessManager();

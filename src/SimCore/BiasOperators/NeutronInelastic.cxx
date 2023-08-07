@@ -13,8 +13,9 @@ NeutronInelastic::NeutronInelastic(std::string name, const framework::config::Pa
 
 G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_) {
+    return nullptr;
+  }
 
   std::string currentProcess =
       callingProcess->GetWrappedProcess()->GetProcessName();
@@ -27,8 +28,8 @@ G4VBiasingOperation* NeutronInelastic::ProposeOccurenceBiasingOperation(
     double neutInXsecBiased = neutInXsecUnbiased * factor_;
 
     return BiasedXsec(neutInXsecBiased);
-  } else
-    return 0;
+  }
+  return nullptr;
 }
 
 }  // namespace biasoperators

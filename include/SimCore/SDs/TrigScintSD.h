@@ -22,7 +22,7 @@ class TrigScintSD : public SensitiveDetector {
               const framework::config::Parameters& p);
 
   /// Destructor
-  ~TrigScintSD();
+  virtual ~TrigScintSD() = default;
 
   /**
    * Should the input logical volume be included

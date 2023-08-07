@@ -14,7 +14,9 @@ GammaToMuPair::GammaToMuPair(std::string name,
 
 G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
     const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-  if (track->GetKineticEnergy() < threshold_) return 0;
+  if (track->GetKineticEnergy() < threshold_) {
+    return nullptr;
+  }
 
   std::string currentProcess =
       callingProcess->GetWrappedProcess()->GetProcessName();
@@ -27,8 +29,8 @@ G4VBiasingOperation* GammaToMuPair::ProposeOccurenceBiasingOperation(
     double enXsecBiased = enXsecUnbiased * factor_;
 
     return BiasedXsec(enXsecBiased);
-  } else
-    return 0;
+  }
+  return nullptr;
 }
 
 }  // namespace biasoperators

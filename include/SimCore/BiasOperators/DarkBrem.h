@@ -28,7 +28,7 @@ class DarkBrem : public XsecBiasingOperator {
    *
    * Blank right now
    */
-  ~DarkBrem() {}
+  virtual ~DarkBrem() = default;
 
   /**
    * Calculate the biased cross section given the
@@ -48,22 +48,22 @@ class DarkBrem : public XsecBiasingOperator {
       const G4BiasingProcessInterface* callingProcess) final override;
 
   /// Return the name of the process this operator biases
-  virtual std::string getProcessToBias() const {
+  std::string getProcessToBias() const override {
     return G4DarkBremsstrahlung::PROCESS_NAME;
   }
 
   /// Return the name of the particle this operator biases
-  virtual std::string getParticleToBias() const { return "e-"; }
+  std::string getParticleToBias() const override { return "e-"; }
 
   /// Return the volume this operator biases
-  virtual std::string getVolumeToBias() const { return volume_; }
+  std::string getVolumeToBias() const override { return volume_; }
 
   /**
    * Record the configuration of this biasing operator into the run header
    *
    * @param[in,out] header RunHeader to record configuration to
    */
-  virtual void RecordConfig(ldmx::RunHeader& header) const;
+  void RecordConfig(ldmx::RunHeader& header) const override;
 
  protected:
   /**

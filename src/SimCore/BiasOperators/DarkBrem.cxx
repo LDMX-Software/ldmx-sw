@@ -38,7 +38,7 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
 
     return BiasedXsec(dbXsecBiased);
   } else
-    return 0;
+    return nullptr;
 }
 
 void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
@@ -46,7 +46,6 @@ void DarkBrem::RecordConfig(ldmx::RunHeader& h) const {
   h.setFloatParameter("BiasOperator::DarkBrem::Factor", factor_);
   h.setStringParameter("BiasOperator::DarkBrem::Volume", volume_);
 }
-
 }  // namespace biasoperators
 }  // namespace simcore
 

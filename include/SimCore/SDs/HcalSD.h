@@ -36,7 +36,7 @@ class HcalSD : public SensitiveDetector {
          const framework::config::Parameters& params);
 
   /// Destructor
-  ~HcalSD();
+  virtual ~HcalSD() = default;
 
   /**
    * Check if the input logical volume is a part of the hcal sensitive

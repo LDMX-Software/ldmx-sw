@@ -45,7 +45,7 @@ class EcalSD : public SensitiveDetector {
   /**
    * Class destructor.
    */
-  virtual ~EcalSD();
+  virtual ~EcalSD() = default;
 
   /**
    * Should the input volume be consider apart of this sensitive detector?
@@ -65,7 +65,7 @@ class EcalSD : public SensitiveDetector {
    * @param aStep The step information.
    * @param ROhist The readout history.
    */
-  G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+  G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) final override;
 
   /**
    * Add our hits to the event bus.

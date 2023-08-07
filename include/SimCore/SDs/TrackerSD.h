@@ -23,7 +23,7 @@ class TrackerSD : public SensitiveDetector {
             const framework::config::Parameters& p);
 
   /// Destructor
-  ~TrackerSD();
+  virtual ~TrackerSD() = default;
 
   /**
    * Should the input logical volume be attached to
@@ -42,7 +42,7 @@ class TrackerSD : public SensitiveDetector {
    * @param step The step information
    * @param history The readout history.
    */
-  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
+  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) override;
 
   /**
    * Add the hits to the event and then reset the container
