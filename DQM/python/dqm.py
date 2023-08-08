@@ -20,7 +20,7 @@ class HCalGeometryVerifier(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HcalGeometryVerifier() )
 
     """
-
+ DQM/python/dqm.py 
     def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         super().__init__(name,'dqm::HcalGeometryVerifier','DQM')
@@ -36,7 +36,6 @@ class HCalGeometryVerifier(ldmxcfg.Analyzer) :
         for name in section_names:
             self.build1DHistogram(f'passes_sim_{name}', f'Simulated hits within scintillator bounds? ({name})', 2, 0,2)
             self.build1DHistogram(f'passes_rec_{name}', f'Reconstructed hits within scintillator bounds? Passing ({name})', 2, 0,2)
-
 
 
 class ReSimVerifier(ldmxcfg.Analyzer) :
@@ -68,7 +67,6 @@ class ReSimVerifier(ldmxcfg.Analyzer) :
         self.sim_pass_name = ''
         self.resim_pass_name = 'resim'
         self.stop_on_error=stop_on_error
-
 
 class HCalDQM(ldmxcfg.Analyzer) :
     """Configured HCalDQM python object
