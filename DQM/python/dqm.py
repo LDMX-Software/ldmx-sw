@@ -20,7 +20,6 @@ class HCalGeometryVerifier(ldmxcfg.Analyzer) :
         p.sequence.append( dqm.HcalGeometryVerifier() )
 
     """
- DQM/python/dqm.py 
     def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
         section_names = ['back', 'top', 'bottom', 'right', 'left']
         super().__init__(name,'dqm::HcalGeometryVerifier','DQM')
