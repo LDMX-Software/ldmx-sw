@@ -2,6 +2,7 @@
 name: PR Validation
 
 on: 
+  workflow_dispatch:
   pull_request: 
     branches: [trunk]
     types: [opened, ready_for_review]
