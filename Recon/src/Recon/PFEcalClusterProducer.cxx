@@ -18,6 +18,7 @@ void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {
   //DBScan parameters
   minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
   clusterHitDist_ = ps.getParameter<double>("clusterHitDist");
+  clusterZBias_ = ps.getParameter<double>("clusterZBias");
   minHitEnergy_ = ps.getParameter<double>("minHitEnergy");
 }
 
@@ -33,7 +34,7 @@ void PFEcalClusterProducer::produce(framework::Event& event) {
   std::vector<ldmx::CaloCluster> pfClusters;
   if(!singleCluster_){ 
 
-    DBScanClusterBuilder cb(minHitEnergy_, clusterHitDist_, minClusterHitMult_);
+    DBScanClusterBuilder cb(minHitEnergy_, clusterHitDist_, clusterZBias_, minClusterHitMult_);
     std::vector<const ldmx::CalorimeterHit*> ptrs;
     for(const auto & h : ecalRecHits) ptrs.push_back(&h);
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs = cb.runDBSCAN(ptrs,false);

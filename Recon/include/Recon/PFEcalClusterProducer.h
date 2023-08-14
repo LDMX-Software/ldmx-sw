@@ -52,6 +52,7 @@ class PFEcalClusterProducer : public framework::Producer {
 
   float minHitEnergy_{0};
   float clusterHitDist_{100.};
+  float clusterZBias_{1.};  // private parameter for z bias
   int minClusterHitMult_{2};
 
   // name of collection for hits to be passed as input
