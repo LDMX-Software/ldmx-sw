@@ -193,35 +193,63 @@ class gps(simcfg.PrimaryGenerator) :
         super().__init__(name,'simcore::generators::GeneralParticleSource')
         self.initCommands = initCommands
 
+def _single_e_upstream_tagger(position, momentum, energy):
+    """Internal helper function for creating electron beam guns upstream of tagger
+
+    The guns position and momentum are determined by shooting a positron
+    _backwards_ from the target without any detector components present. This
+    uses Geant4 to calculate the trajectory within the magnetic field for us.
+    Since the particle (if its high enough energy) will not interact with anything,
+    you only need to generate a few events to get a good measurement.
+
+    Parameters
+    ----------
+    position: list[float]
+        end-point position of the positron shot backwards from target,
+        is the start-point of an electron being shot into the target
+    momentum: list[float]
+        end-point momentum of the backwards positron **multiplied by -1**,
+        defines the starting direction of an electron being shot into
+        the target
+    energy: float
+        the energy of the electron in GeV, should be the same energy
+        as the backwards positron used to deduce position and momentum
+
+    Returns
+    -------
+    gun:
+        configured instance of gun firing from far upstream of detector
+    """
+
+    import math
+    momentum_mag = math.sqrt(sum(map(lambda x: x*x, momentum)))
+    unit_direction = list(map(lambda x: x/momentum_mag, momentum))
+    
+    particle_gun = gun(f'single_{energy}gev_e_upstream_tagger')
+    particle_gun.particle = 'e-'
+    particle_gun.position = position
+    particle_gun.direction = unit_direction
+    particle_gun.energy = energy
+    return particle_gun
+
 def single_4gev_e_upstream_tagger() :
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
 
     The position and direction are set such that the electron will be bent by 
-    the field and arrive at the target at approximately [0, 0, 0] (assuming 
-    it's not smeared).
+    the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
+    interact with any material. In reality, it will be smeared and it will interact
+    with some material but we can dream.
 
-    The gun position of [ -27.926 , 0 , -700 ] # mm requires the particles to be fired at theta = 4.5 degrees.
-    The gun position of [ -44. , 0 , -880 ] # mm requires the particles to be fired at theta = 5.65 degrees.
-
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ sin(theta), 0, cos(theta) ] 
-    
     Returns
     -------
     Instance of a particle gun configured to fire a single 4 Gev electron 
-    directly upstream of the tagger tracker.  
-
+    upstream of the entire detector apparatus.
     """
-    particle_gun = gun('single_4gev_e_upstream_tagger')
-    particle_gun.particle = 'e-'
-    particle_gun.position = [ -44. , 0. , -880. ] # mm
-    import math
-    theta = math.radians(5.65)
-    particle_gun.direction = [ math.sin(theta) , 0, math.cos(theta) ] #unitless
-    particle_gun.energy = 4.0 # GeV
-
-    return particle_gun
+    return _single_e_upstream_tagger(
+        [ -600.8976671223825, 0.0, -6000.0 ],
+        [ 434.54301089006407, 0.0, 3976.8404804302777],
+        4.0
+    )
 
 def single_4gev_e_upstream_target() :
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
@@ -233,8 +261,7 @@ def single_4gev_e_upstream_target() :
     Returns
     -------
     Instance of a particle gun configured to fire a single 4 Gev electron 
-    directly upstream of the tagger tracker.  
-
+    directly upstream of the target.
     """
 
     particle_gun = gun('single_4gev_e_upstream_target')
@@ -246,62 +273,39 @@ def single_4gev_e_upstream_target() :
     return particle_gun
 
 def single_1pt2gev_e_upstream_tagger(): 
-    """Configure a particle gun to fire a 1.2 GeV electron upstream of the tagger tracker.
+    """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    This is used to study the rejection of off energy electrons in the tagger
-    tracker. The position and direction are set such that the electron will be 
-    bent by  the field and arrive at the target at approximately [0, 0, 0]
-    (assuming it's not smeared).
+    The position and direction are set such that the electron will be bent by 
+    the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
+    interact with any material. In reality, it will be smeared and it will interact
+    with some material but we can dream.
 
-    The gun position below requires the particles to be fired at 11.011 degrees.
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ sin(11.011) = .2292/1.2, 0, cos(11.011) = 1.1779/1.2 ] 
-
-    
     Returns
     -------
-    Instance of a particle gun configured to fire a single 1.2 Gev electron 
-    directly upstream of the tagger tracker.  
-
+    Instance of a particle gun configured to fire a single 8 GeV electron 
+    upstream of the entire detector apparatus.
     """
-    particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
-    particle_gun.particle = 'e-' 
-    particle_gun.position = [ -36.387, 0, -700 ] #mm
-    import math
-    theta = math.radians(11.011)
-    particle_gun.direction = [ math.sin(theta) , 0, math.cos(theta) ] #unitless
-    particle_gun.energy = 1.2 #GeV
-    
-    return particle_gun
-
+    return _single_e_upstream_tagger(
+        [ -2083.3707473241993, 0.0, -6000.0 ],
+        [ 425.132266424426, 0.0, 1122.7149711218378],
+        1.2
+    )
 
 def single_8gev_e_upstream_tagger(): 
     """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
 
-    This is used to study the rejection of off energy electrons in the tagger
-    tracker. The position and direction are set such that the electron will be 
-    bent by  the field and arrive at the target at approximately [0, 0, 0]
-    (assuming it's not smeared).
+    The position and direction are set such that the electron will be bent by 
+    the field and arrive at the target at [0, 0, 0] if it isn't smeared and doesn't
+    interact with any material. In reality, it will be smeared and it will interact
+    with some material but we can dream.
 
-    The gun position below requires the particles to be fired at 2.5 degrees.
-    The direction vector is calculated as follows: 
-    
-    dir_vector = [ 8.*sin(2.5) = .349, 0, 8.*cos(2.5) = 7.9924 ] 
-
-    
     Returns
     -------
-    Instance of a particle gun configured to fire a single 8 Gev electron 
-    directly upstream of the tagger tracker.  
-
+    Instance of a particle gun configured to fire a single 8 GeV electron 
+    upstream of the entire detector apparatus.
     """
-    particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
-    particle_gun.particle = 'e-' 
-    particle_gun.position = [ -14.292, 0, -700 ] #mm
-    import math
-    theta = math.radians(2.5)
-    particle_gun.direction = [ math.sin(theta) , 0, math.cos(theta) ] #unitless
-    particle_gun.energy = 8.0 #GeV
-    
-    return particle_gun
+    return _single_e_upstream_tagger(
+        [ -299.2386690686212, 0.0, -6000.0 ],
+        [ 434.59663056485   , 0.0, 7988.698356992288],
+        8.0
+    )
