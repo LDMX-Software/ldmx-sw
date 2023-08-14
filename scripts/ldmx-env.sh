@@ -21,11 +21,11 @@
 # All of this setup requires us to be in a bash shell.
 #   We add this check to make sure the user is in a bash shell.
 ###############################################################################
-if [[ -z ${BASH} ]]; then
-  echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
-  [[ "$SHELL" = *"bash"* ]] || echo "  You're default shell '$SHELL' isn't bash."
-  return 1
-fi
+# if [[ -z ${BASH} ]]; then
+#   echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
+#   [[ "$SHELL" = *"bash"* ]] || echo "  You're default shell '$SHELL' isn't bash."
+#   return 1
+# fi
 
 ###############################################################################
 # __ldmx_has_required_engine
