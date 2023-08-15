@@ -1,0 +1,35 @@
+# LDMX Detectors
+This directory holds the various LDMX detector descriptions we've used.
+We follow a naming convention to simply stay organized and help with
+collaboration.
+
+## Naming Convention
+`ldmx-<category>-v<version>[-<beam>]`
+
+- All detectors have a `ldmx-` prefix
+- The next string defines the "category" of the detector, generally
+  thought of as structurally different detectors.
+  - The `det` category is the full LDMX detector
+  - The category can have hyphens as well.
+- The string starting with `-v` is the version number for that detector
+- Optionally, a suffix can define the beam energy the detector was
+  designed for. This is optional since some detectors (e.g. the one
+  used for the test beam) do not change their design when the beam
+  energy changes.
+  - If no beam energy suffix is provided, the beam energy is assumed
+    to either be 4GeV or that the detector would not change structure
+    with a different beam.
+
+### Categories
+This defines what the different category names mean so that future
+collaborators understand what the detector is meant to describe.
+- `det`: the full LDMX detector
+- `ti-target`: the full detector but using a Ti target instead of W
+- `lyso`: the full detector but using a LySO target instead of W
+- `hcal-prototype`: the HCal prototype detector used during testbeam
+
+### Examples
+- `ldmx-det-v14` : version 14 of the full LDMX detector for the 4GeV beam
+- `ldmx-hcal-prototype-v2.0` : version 2.0 the HCal prototype detector used during testbeam
+- `ldmx-ti-target-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
+- `ldmx-det-v14-8GeV` : version 14 of the full LDMX detector updated for an 8GeV beam
