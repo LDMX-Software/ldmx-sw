@@ -69,7 +69,7 @@ class DBScanClusterBuilder {
   float dist(const ldmx::CalorimeterHit * a, const ldmx::CalorimeterHit * b){
     return sqrt( pow(a->getXPos() - b->getXPos(),2)  // distance
                + pow(a->getYPos() - b->getYPos(),2)
-               + pow(a->getZPos() - b->getZPos(),2)/clusterZBias_);  // divide by the z bias
+	       + pow((a->getZPos() - b->getZPos())/clusterZBias_,2) );  // divide by the z bias
   }
   
   // specific verbosity of this producer
