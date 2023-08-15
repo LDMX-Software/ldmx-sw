@@ -12,12 +12,14 @@ namespace recon {
   DBScanClusterBuilder::DBScanClusterBuilder(){
     minHitEnergy_      = 0;
     clusterHitDist_    = 100;
+    clusterZBias_      = 1;  // defaults to 1
     minClusterHitMult_ = 2;
   }
 
-  DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy, float clusterHitDist, float minClusterHitMult){
+  DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy, float clusterHitDist, float clusterZBias, float minClusterHitMult){
     minHitEnergy_      = minHitEnergy;
     clusterHitDist_    = clusterHitDist;
+    clusterZBias_      = clusterZBias;  // clustering bias in the z direction
     minClusterHitMult_ = minClusterHitMult;
   }
 
@@ -37,7 +39,7 @@ namespace recon {
       unsigned int nNearby=1;
       // find neighbors
       for(unsigned int j=0;j<n;j++){
-	if( i!=j && dist(hits[i],hits[j]) < clusterHitDist_){
+	if(i!=j && dist(hits[i],hits[j]) < clusterHitDist_){  // pair-wise distance
 	  neighbors.insert(j);
 	  if (hits[j]->getEnergy() >= minHitEnergy_) nNearby++;
 	}
