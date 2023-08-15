@@ -1,0 +1,64 @@
+<!-- - - - - - - - - HCal solids - - - - - - - -  -->
+<!-- Absorber -->
+<box lunit="mm" name="absorber_box"
+      x="absorber_width"
+      y="absorber_height"
+      z="absorber_thickness"/>
+<tube lunit="mm" name="absorber_hole"
+      z="absorber_thickness"
+      rmax="absorber_hole_radius"
+      deltaphi="2*pi"
+      aunit="rad"/>
+
+<!-- Mounting plates  -->
+<box lunit="mm" name="vertical_bar_mounting_plate_box"
+      x="bar_mounting_plate_vertical_x"
+      y="bar_mounting_plate_vertical_y"
+      z="bar_mounting_plate_thickness"/>
+<box lunit="mm" name="horizontal_bar_mounting_plate_box"
+      x="bar_mounting_plate_horizontal_x"
+      y="bar_mounting_plate_horizontal_y"
+      z="bar_mounting_plate_thickness"/>
+
+<!-- Scintillators -->
+<!-- Front -->
+<box lunit="mm" name="front_vertical_scint_box"
+      x="scint_front_vertical_x"
+      y="scint_front_vertical_y"
+      z="scint_thickness"/>
+<box lunit="mm" name="front_horizontal_scint_box"
+      x="scint_front_horizontal_x"
+      y="scint_front_horizontal_y"
+      z="scint_thickness"/>
+<!-- Back -->
+<box lunit="mm" name="back_vertical_scint_box"
+      x="scint_back_vertical_x"
+      y="scint_back_vertical_y"
+      z="scint_thickness"/>
+<box lunit="mm" name="back_horizontal_scint_box"
+      x="scint_back_horizontal_x"
+      y="scint_back_horizontal_y"
+      z="scint_thickness"/>
+
+<!-- Scintillator covers -->
+<!-- Front -->
+<box lunit="mm" name="front_vertical_scint_cover_box"
+      x="scint_front_vertical_x"
+      y="scint_front_vertical_y"
+      z="scint_bar_cover_thickness"/>
+<box lunit="mm" name="front_horizontal_scint_cover_box"
+      x="scint_front_horizontal_x"
+      y="scint_front_horizontal_y"
+      z="scint_bar_cover_thickness"/>
+<!-- Back -->
+<box lunit="mm" name="back_vertical_scint_cover_box"
+      x="scint_back_vertical_x"
+      y="scint_back_vertical_y"
+      z="scint_bar_cover_thickness"/>
+<box lunit="mm" name="back_horizontal_scint_cover_box"
+      x="scint_back_horizontal_x"
+      y="scint_back_horizontal_y"
+      z="scint_bar_cover_thickness"/>
+
+<!-- Air -->
+<box lunit="mm" name="air_box" x="dx" y="dy" z="air_thickness"/>
