@@ -1,0 +1,3 @@
+<box lunit="mm" name="TS_plastic_bar_box" x="TS_plastic_bar_dx" y="TS_plastic_bar_dy" z="TS_plastic_bar_dz"/>
+<box lunit="mm" name="TS_LYSO_bar_box" x="TS_LYSO_bar_dx" y="TS_LYSO_bar_dy" z="TS_LYSO_bar_dz"/>
+<box lunit="mm" name="TS_LYSO_plate_box" x="TS_LYSO_plate_dx" y="TS_LYSO_plate_dy" z="TS_LYSO_plate_dz"/>

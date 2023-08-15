@@ -1,0 +1,18 @@
+<volume name="TS_plastic_bar_volume">
+	<materialref ref="Polyvinyltoluene"/>
+	<solidref ref="TS_plastic_bar_box"/>
+	<auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="TriggerVis"/>
+</volume>
+<volume name="TS_LYSO_bar_volume">
+	<materialref ref="LYSO"/>
+	<solidref ref="TS_LYSO_bar_box"/>
+	<auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="TriggerVis"/>
+</volume>
+<volume name="TS_LYSO_plate_volume">
+	<materialref ref="LYSO"/>
+	<solidref ref="TS_LYSO_plate_box"/>
+	<auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="TriggerVis"/>
+</volume>
