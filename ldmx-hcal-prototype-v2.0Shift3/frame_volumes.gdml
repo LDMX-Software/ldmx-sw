@@ -1,0 +1,24 @@
+<volume name="frame_8080_vol">
+	<materialref ref="Aluminum"/>
+	<solidref ref="frame_8080"/>
+  <auxiliary auxtype="Color" auxvalue="White"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="FrameVis"/>
+</volume>
+<volume name="frame_8080_short_vol">
+	<materialref ref="Aluminum"/>
+	<solidref ref="frame_8080_short"/>
+  <auxiliary auxtype="Color" auxvalue="White"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="FrameVis"/>
+</volume>
+<volume name="frame_4080_vol">
+	<materialref ref="Aluminum"/>
+	<solidref ref="frame_4080"/>
+  <auxiliary auxtype="Color" auxvalue="White"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="FrameVis"/>
+</volume>
+<volume name="frame_4080_short_vol">
+	<materialref ref="Aluminum"/>
+	<solidref ref="frame_4080_short"/>
+  <auxiliary auxtype="Color" auxvalue="White"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="FrameVis"/>
+</volume>
