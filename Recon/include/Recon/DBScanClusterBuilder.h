@@ -39,7 +39,7 @@ class DBScanClusterBuilder {
 
   DBScanClusterBuilder();
 
-  DBScanClusterBuilder(float minHitEnergy, float clusterHitDist, float minClusterHitMult);
+  DBScanClusterBuilder(float minHitEnergy, float clusterHitDist, float clusterZBias, float minClusterHitMult);  // overloaded constructor
 
   std::vector<std::vector<const ldmx::CalorimeterHit*> > runDBSCAN( 
     const std::vector<const ldmx::CalorimeterHit*> &hits, bool debug);
@@ -51,6 +51,8 @@ class DBScanClusterBuilder {
   void setMinHitEnergy(float x){minHitEnergy_=x;}
 
   void setMinHitDistance(float x){clusterHitDist_=x;}
+
+  void setZBias(float x){clusterZBias_=x;} // set the z bias of the cluster
 
   void setMinHitMultiplicity(int x){minClusterHitMult_=x;}
 
@@ -64,10 +66,10 @@ class DBScanClusterBuilder {
   bool isIn(unsigned int i, std::vector<unsigned int> l){
     return std::find(l.begin(), l.end(), i) != l.end();
   }
-  float dist (const ldmx::CalorimeterHit* a, const ldmx::CalorimeterHit* b){
-    return sqrt( pow(a->getXPos() - b->getXPos(),2)
-		 + pow(a->getYPos() - b->getYPos(),2)
-		 + pow(a->getZPos() - b->getZPos(),2));
+  float dist(const ldmx::CalorimeterHit * a, const ldmx::CalorimeterHit * b){
+    return sqrt( pow(a->getXPos() - b->getXPos(),2)  // distance
+               + pow(a->getYPos() - b->getYPos(),2)
+               + pow(a->getZPos() - b->getZPos(),2)/clusterZBias_);  // divide by the z bias
   }
   
   // specific verbosity of this producer
@@ -77,6 +79,7 @@ class DBScanClusterBuilder {
 
   float minHitEnergy_{0};
   float clusterHitDist_{100.};
+  float clusterZBias_{1.};  // private parameter for z bias
   int minClusterHitMult_{2};
 
   // name of collection for hits to be passed as input
