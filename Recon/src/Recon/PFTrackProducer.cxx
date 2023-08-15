@@ -25,6 +25,7 @@ void PFTrackProducer::produce(framework::Event& event) {
   if(truthTracking_){ 
     for(const auto &spHit : ecalSpHits){
       if ( spHit.getTrackID()!=1 || fabs(240-spHit.getPosition()[2])>0.1  || spHit.getMomentum()[2] <= 0 ) continue;
+      if ( spHit.getPdgID() == 22 || spHit.getPdgID() == 2112 ) continue
       pfTracks.push_back(spHit);
       break;
     }
