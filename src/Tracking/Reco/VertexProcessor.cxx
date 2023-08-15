@@ -31,18 +31,13 @@ void VertexProcessor::onProcessStart() {
     // //zxy
   };
 
-  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), field_map_,
-      1. * Acts::UnitConstants::mm,    // default scale for axes length
-      1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
-      false,                           // not symmetrical
-      true                             // rotate the axes to tracking frame
-  );
-
-  sp_interpolated_bField_ =
-      std::make_shared<InterpolatedMagneticField3>(std::move(map));
-  ;
-
+  // Setup a interpolated bfield map
+  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(
+      loadDefaultBField(field_map_,
+                        default_transformPos,
+                        default_transformBField));
+  
+  
   std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
             << std::endl;
 }
