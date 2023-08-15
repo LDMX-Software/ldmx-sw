@@ -54,13 +54,9 @@ void CustomStatePropagator::onProcessStart() {
   
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
-      makeMagneticFieldMapXyzFromText(
-          std::move(localToGlobalBin_xyz), field_map_,
-          1. * Acts::UnitConstants::mm,    // default scale for axes length
-          1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
-          false,                           // not symmetrical
-          true                             // rotate the axes to tracking frame
-                                      ));
+      loadDefaultBField(field_map_,
+                        default_transformPos,
+                        default_transformBField));
   
   const auto stepper = Acts::EigenStepper<>{map};
 

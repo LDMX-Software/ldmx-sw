@@ -9,6 +9,7 @@
 #include "Acts/Utilities/Result.hpp"
 #include "Acts/Utilities/detail/Grid.hpp"
 
+#include <functional>
 #include <fstream>
 
 using InterpolatedMagneticField3 =
@@ -30,7 +31,8 @@ auto default_transformPos = [](const Acts::Vector3& pos, float offset=400.) {
   rot_pos(0)=pos(1);
   rot_pos(1)=pos(2);
   rot_pos(2)=pos(0) + offset;
-  
+
+  //std::cout<<"PF::DEFAULT TRANSFORM"<<std::endl;
   //std::cout<<"PF::Check:: transforming Pos"<<std::endl;
   //std::cout<<pos<<std::endl;
   //std::cout<<"TO"<<std::endl;
@@ -50,7 +52,8 @@ auto default_transformBField = [](const Acts::Vector3& field,
   rot_field(0) = field(2);
   rot_field(1) = field(0);
   rot_field(2) = field(1);
-  
+
+  //std::cout<<"PF::DEFAULT TRANSFORM"<<std::endl;
   //std::cout<<"PF::Check:: transforming"<<std::endl;
   //std::cout<<field<<std::endl;
   //std::cout<<"TO"<<std::endl;
@@ -82,11 +85,12 @@ Acts::Vector3, Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis,
     rotateFieldMapXYZ(const std::function<size_t(std::array<size_t, 3> binsXYZ,
                       std::array<size_t, 3> nBinsXYZ)>&
                       localToGlobalBin,
-                      //std::function<Acts::Vector3> transformPosition,
-                      //std::function<Acts::Vector3> transformMagneticField,
                       std::vector<double> xPos, std::vector<double> yPos,
                       std::vector<double> zPos, std::vector<Acts::Vector3> bField,
-                      double lengthUnit, double BFieldUnit, bool firstOctant) {
+                      double lengthUnit, double BFieldUnit, bool firstOctant,
+                      std::function<Acts::Vector3(Acts::Vector3)> transformPosition,
+                      std::function<Acts::Vector3(Acts::Vector3,Acts::Vector3)> transformMagneticField
+                      ) {
   // [1] Create Grid
   // Sort the values
   std::sort(xPos.begin(), xPos.end());
@@ -184,46 +188,45 @@ Acts::Vector3, Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis,
 
   // [3] Create the transformation for the position
   // map (z,x,y) -> (x,y,z)
-  // TODO:: Remove this hardcoded value!
+
+  /*
   auto transformPos = [](const Acts::Vector3& pos, float offset=400.) {
     
     Acts::Vector3 rot_pos;
     rot_pos(0)=pos(1);
     rot_pos(1)=pos(2);
     rot_pos(2)=pos(0) + offset;
-    
-    //std::cout<<"PF::Check:: transforming Pos"<<std::endl;
-    //std::cout<<pos<<std::endl;
-    //std::cout<<"TO"<<std::endl;
-    //std::cout<<rot_pos<<std::endl;
-    
+
     return rot_pos;
   };
 
+  */
+  
   // [4] Create the transformation for the bfield
   // map (Bx,By,Bz) -> (Bx,By,Bz)
-  auto transformBField = [](const Acts::Vector3& field,
-                            const Acts::Vector3& /*pos*/) {
-
+  
+  
+  //auto transformBField = [](const Acts::Vector3& field,
+  //                          const Acts::Vector3& /*pos*/) {
+  //
+  //  
+  //  Acts::Vector3 rot_field;
+  //  
+  //  rot_field(0) = field(2);
+  //  rot_field(1) = field(0);
+  //  rot_field(2) = field(1);
     
-    Acts::Vector3 rot_field;
-    
-    rot_field(0) = field(2);
-    rot_field(1) = field(0);
-    rot_field(2) = field(1);
+  //  return rot_field;
+  //};
 
-    //std::cout<<"PF::Check:: transforming"<<std::endl;
-    //std::cout<<field<<std::endl;
-    //std::cout<<"TO"<<std::endl;
-    //std::cout<<rot_field<<std::endl;
-    
-    return rot_field;
-  };
 
-  // [5] Create the mapper & BField Service
-  // create field mapping
+
+  // [5] Create the mapper and BField Service
+  // with the transformations passed from main producer
   return Acts::InterpolatedBFieldMap<Grid_t>(
-      {transformPos, transformBField, std::move(grid)});
+      {transformPosition, transformMagneticField, std::move(grid)});
+  
+  
 }
 
 
@@ -234,9 +237,9 @@ Acts::Vector3, Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis,
 
 inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(std::function<size_t(std::array<size_t, 3> binsXYZ,
                                                                   std::array<size_t, 3> nBinsXYZ)> localToGlobalBin,
-                                                                  //std::function<Acts::Vector3> transformPosition,
-                                                                  //std::function<Acts::Vector3> transformMagneticField,
-								  const std::string& fieldMapFile, Acts::ActsScalar lengthUnit,
+                                                                  std::function<Acts::Vector3(Acts::Vector3)> transformPosition,
+                                                                  std::function<Acts::Vector3(Acts::Vector3,Acts::Vector3)> transformMagneticField,
+                                                                  const std::string& fieldMapFile, Acts::ActsScalar lengthUnit,
 								  Acts::ActsScalar BFieldUnit, bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
   // Grid position points in x, y and z
@@ -276,9 +279,13 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(std::function<
   zPos.shrink_to_fit();
   bField.shrink_to_fit();
 
+
+  std::cout<<"DEFINING MAPS"<<std::endl;
+  
   if (rotateAxes) {
     return rotateFieldMapXYZ(localToGlobalBin, xPos, yPos, zPos, bField,
-                             lengthUnit, BFieldUnit, firstOctant);
+                             lengthUnit, BFieldUnit, firstOctant,
+                             transformPosition, transformMagneticField);
   }
   else
     return Acts::fieldMapXYZ(localToGlobalBin, xPos, yPos, zPos, bField,
@@ -288,12 +295,14 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(std::function<
 
 inline InterpolatedMagneticField3 loadDefaultBField(const std::string& fieldMapFile,
                                                     std::function<Acts::Vector3(Acts::Vector3)> transformPosition,
-                                                    std::function<Acts::Vector3(Acts::Vector3,
-                                                    Acts::Vector3)> trasformMagneticField
-                                             ) {
+                                                    std::function<Acts::Vector3(Acts::Vector3,Acts::Vector3)> transformMagneticField
+                                                    ) {
   
   return makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), fieldMapFile,
+      std::move(localToGlobalBin_xyz),
+      transformPosition,
+      transformMagneticField,
+      fieldMapFile,
       1. * Acts::UnitConstants::mm,    // default scale for axes length
       1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
       false,                           // not symmetrical
