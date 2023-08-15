@@ -101,7 +101,7 @@
 
 
 <!-- Trigger scintillator dimensions -->
-<constant name="TS_plastic_bar_gap" value="0.3*mm"/>
+<constant name="TS_plastic_bar_gap" value="0.17*mm"/>
 <constant name="TS_plastic_bar_dx" value="40*mm"/>
 <constant name="TS_plastic_bar_dy" value="3*mm"/>
 <constant name="TS_plastic_bar_dz" value="2*mm"/>
