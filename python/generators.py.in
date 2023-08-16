@@ -309,3 +309,29 @@ def single_8gev_e_upstream_tagger():
         [ 434.59663056485   , 0.0, 7988.698356992288],
         8.0
     )
+
+
+def single_backwards_positron(energy: float):
+    """A particle gun configured to shoot positrons backwards (i.e. upstream)
+    from the target at the input energy.
+
+    This generator is helpful for studying where electron guns of different energies should
+    be started from if they should end up at the center of the target.
+
+    Parameters
+    ----------
+    energy: float
+        energy in GeV of the positron
+    
+    Returns
+    -------
+    gun:
+        configured particle gun to shoot positrons backwards at the input energy
+    """
+    beam = gun(f'backwards-positron-{energy}GeV')
+    beam.particle = 'e+'
+    beam.position = [0., 0., 0.]
+    beam.direction = [0., 0., -1.]
+    beam.energy = energy
+    return beam
+
