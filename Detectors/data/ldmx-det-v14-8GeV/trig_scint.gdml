@@ -61,14 +61,14 @@
       <loop for="x" to="number_of_bars" step="1">
         <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad2_bar_volume" />
-          <position name="trigger_pad2_bar_layer1_pos" unit="mm" x="-38*mm" 
+          <position name="trigger_pad2_bar_layer1_pos" unit="mm" x="-19*mm" 
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
                 z="trig_scint_area_envelope_z/2 + trigger_pad2_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad2_bar_volume" />
-          <position name="trigger_pad2_bar_layer2_pos" unit="mm" x="-38*mm"
+          <position name="trigger_pad2_bar_layer2_pos" unit="mm" x="-19*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad2_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
@@ -76,14 +76,14 @@
 
         <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad1_bar_volume" />
-          <position name="trigger_pad1_bar_layer1_pos" unit="mm" x="-43*mm"
+          <position name="trigger_pad1_bar_layer1_pos" unit="mm" x="-21.5*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad1_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad1_bar_volume" />
-          <position name="trigger_pad1_bar_layer2_pos" unit="mm" x="-43*mm"
+          <position name="trigger_pad1_bar_layer2_pos" unit="mm" x="-21.5*mm"
                 y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset"
                 z="trig_scint_area_envelope_z/2+trigger_pad1_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
           <rotationref ref="identity" />
