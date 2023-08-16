@@ -24,12 +24,12 @@ collaboration.
 This defines what the different category names mean so that future
 collaborators understand what the detector is meant to describe.
 - `det`: the full LDMX detector
-- `ti-target`: the full detector but using a Ti target instead of W
+- `ti`: the full detector but using a Ti target instead of W
 - `lyso`: the full detector but using a LySO target instead of W
 - `hcal-prototype`: the HCal prototype detector used during testbeam
 
 ### Examples
 - `ldmx-det-v14` : version 14 of the full LDMX detector for the 4GeV beam
 - `ldmx-hcal-prototype-v2.0` : version 2.0 the HCal prototype detector used during testbeam
-- `ldmx-ti-target-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
-- `ldmx-det-v14-8GeV` : version 14 of the full LDMX detector updated for an 8GeV beam
+- `ldmx-ti-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
+- `ldmx-det-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam
