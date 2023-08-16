@@ -17,9 +17,8 @@ foreach(detector ${detectors})
       add_custom_command(
         OUTPUT ${output}
         COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/data/${detector}
-        COMMAND sed -E "s|\"(A-Za-z_0-9]*.gdml)\"|\"${detector_install_path}/${detector}/\\1\"|g;s|\"(Bmap.*dat)\"|\"${magmap_install_path}/\\1\"|g" ${input} > ${output}
+        COMMAND sed -E "'s|\"([A-Za-z_0-9]*.gdml)\"|\"${detector_install_path}/${detector}/\\1\"|g;s|\"(Bmap.*dat)\"|\"${magmap_install_path}/\\1\"|g'" ${input} > ${output}
         DEPENDS ${input}
-        VERBATIM
         COMMENT "Writing full paths to ${detector}/${gdml_file}"
       )
       add_custom_target(${detector}_${gdml_file} DEPENDS ${output})
