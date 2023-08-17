@@ -1,0 +1,25 @@
+#!/bin/bash
+#   formatting using the ldmx/dev image which has clang-format in it
+
+set -o errexit
+set -o nounset
+
+if [ -z "${GITHUB_WORKSPACE+x}" ]; then
+  # we are not in github actions so we need to error out
+  echo "ERROR: this script expects to be run in GitHub actions so should not be run locally."
+  exit 1
+fi
+
+ldmx() {
+  docker \
+    run \
+    --rm \
+    --volume ${GITHUB_WORKSPACE} \
+    --env LDMX_BASE=${GITHUB_WORKSPACE} \
+    ldmx/dev:latest \
+    ${PWD}
+    $@
+}
+find include/ -type f >  ${TMPDIR:-/tmp}/files-to-format.list
+find src/ -type f     >> ${TMPDIR:-/tmp}/files-to-format.list
+ldmx clang-format --verbose -Werror --dry-run $(cat ${TMPDIR:-/tmp}/files-to-format.list)
