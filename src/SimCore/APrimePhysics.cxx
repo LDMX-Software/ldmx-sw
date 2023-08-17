@@ -92,7 +92,7 @@ void APrimePhysics::ConstructProcess() {
           parameters_.getParameter<bool>("only_one_per_event"),
           1., /* global bias - should use bias operator instead */
           parameters_.getParameter<bool>("cache_xsec"));
-      proc->RegisterStorageMechanism(store_element_z);
+      process_->RegisterStorageMechanism(store_element_z);
     } else {
       EXCEPTION_RAISE("BadConf",
                       "Unrecognized model name '" + model_name + "'.");

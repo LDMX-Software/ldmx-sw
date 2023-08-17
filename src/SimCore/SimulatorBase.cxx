@@ -24,7 +24,7 @@ void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
                                 event_info->getPNEnergy());
   eventHeader.setFloatParameter("total_electronuclear_energy",
                                 event_info->getENEnergy());
-  event_header.setFloatParameter("db_material_z",
+  eventHeader.setFloatParameter("db_material_z",
                                 event_info->getDarkBremMaterialZ());
 }
 void SimulatorBase::onProcessEnd() {
