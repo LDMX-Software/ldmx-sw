@@ -29,13 +29,9 @@ class UserEventInformation : public G4VUserEventInformation {
    *
    * @param[in] z elemental z in which the dark brem ocurred
    */
-  void setDarkBremMaterialZ(double z) {
-    db_material_z_ = z;
-  }
+  void setDarkBremMaterialZ(double z) { db_material_z_ = z; }
 
-  double getDarkBremMaterialZ() const {
-    return db_material_z_;
-  }
+  double getDarkBremMaterialZ() const { return db_material_z_; }
 
   /**
    * Set the event weight.
