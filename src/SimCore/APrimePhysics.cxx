@@ -6,10 +6,10 @@
  */
 
 #include "SimCore/APrimePhysics.h"
-#include "SimCore/UserEventInformation.h"
 
 #include "G4DarkBreM/G4APrime.h"
 #include "G4DarkBreM/G4DarkBreMModel.h"
+#include "SimCore/UserEventInformation.h"
 
 // Geant4
 #include "G4Electron.hh"
@@ -32,11 +32,11 @@ const std::string APrimePhysics::NAME = "APrime";
  */
 static void store_element_z(const G4Element& element) {
   static_cast<UserEventInformation*>(
-      G4EventManager::GetEventManager()->GetUserInformation()
-      )->setDarkBremMaterialZ(element.GetZ());
+      G4EventManager::GetEventManager()->GetUserInformation())
+      ->setDarkBremMaterialZ(element.GetZ());
 }
 
-APrimePhysics::APrimePhysics(const framework::config::Parameters &params)
+APrimePhysics::APrimePhysics(const framework::config::Parameters& params)
     : G4VPhysicsConstructor(APrimePhysics::NAME),
       parameters_{params},
       process_{nullptr} {
