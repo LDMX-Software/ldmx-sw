@@ -1,9 +1,10 @@
 #include "TrigScint/TrigScintQIEDigiProducer.h"
+
+#include <iostream>
+
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 #include "Framework/RandomNumberSeedService.h"
-
-#include <iostream>
 
 namespace trigscint {
 
@@ -37,7 +38,7 @@ void TrigScintQIEDigiProducer::configure(
   sipm_gain_ = parameters.getParameter<double>("sipm_gain");
   s_freq_ = parameters.getParameter<double>("qie_sf");
   zeroSuppCut_ = parameters.getParameter<double>("zeroSupp_in_pe");
-  
+
   if (input_pulse_shape_ == "Expo") {
     pulse_params_.clear();
     pulse_params_.push_back(parameters.getParameter<double>("expo_k"));
