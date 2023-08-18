@@ -910,7 +910,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
     //  these ideas are only cell/module (must ignore layer)
     std::vector<ldmx::EcalID> cellNbrIds = geometry_->getNN(id);
 
-    for (int k = 0; k < 6; k++) {
+    for (int k = 0; k < cellNbrIds.size(); k++) {
       // update neighbor ID to the current layer
       cellNbrIds[k] = ldmx::EcalID(id.layer(), cellNbrIds[k].module(),
                                    cellNbrIds[k].cell());
