@@ -105,9 +105,9 @@ private:
    * The products are sorted by kinetic energy, in descending order.
    *
    **/
-  std::vector<const ldmx::SimParticle *>
-  findDaughters(const std::map<int, ldmx::SimParticle> particleMap,
-                const ldmx::SimParticle *parent) const;
+  std::vector<const ldmx::SimParticle *> findDaughters(
+      const std::map<int, ldmx::SimParticle> &particleMap,
+      const ldmx::SimParticle *parent) const;
 
   /**
    *
