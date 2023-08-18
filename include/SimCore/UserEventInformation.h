@@ -25,12 +25,20 @@ class UserEventInformation : public G4VUserEventInformation {
   void decBremCandidateCount() { bremCandidateCount_ -= 1; }
 
   /**
-   * Set the elemental Z in which the dark brem ocurred
+   * Set the Z of the element in which the dark brem ocurred
    *
-   * @param[in] z elemental z in which the dark brem ocurred
+   * @param[in] z atomic Z of element in which the dark brem ocurred
    */
   void setDarkBremMaterialZ(double z) { db_material_z_ = z; }
 
+  /**
+   * Get the Z of the element in which the dark brem ocurred
+   *
+   * @note This will return -1 if no dark brem ocurred within
+   * this event.
+   *
+   * @param[in] z atomic Z of element in which the dark brem ocurred
+   */
   double getDarkBremMaterialZ() const { return db_material_z_; }
 
   /**
@@ -151,7 +159,10 @@ class UserEventInformation : public G4VUserEventInformation {
   bool last_step_en_{false};
 
   /**
-   * elemental z in which dark brem occurred (-1 if didn't happen)
+   * atomic Z of the element in which dark brem occurred (-1 if didn't happen)
+   *
+   * The default is -1. and so will provide unphysical results if the
+   * dark brem did not occur within the event in question.
    */
   double db_material_z_{-1.};
 };
