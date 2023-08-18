@@ -14,7 +14,6 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
-
 class HcalGeometryVerifier : public framework::Analyzer {
  public:
   HcalGeometryVerifier(const std::string &name, framework::Process &process)
