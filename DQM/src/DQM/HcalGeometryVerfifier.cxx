@@ -19,7 +19,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
       hcalRecHitsCollection_, hcalRecHitsPassName_);
 
   for (const auto &hit : hcalSimHits) {
-    const ldmx::HcalID id{hit.getID()};
+    const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     const auto position{hit.getPosition()};
     auto ok{hit_ok(id, {position[0], position[1], position[2]})};
     histograms_.fill("passes_sim", ok);
@@ -42,7 +42,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
     }
   }
   for (const auto &hit : hcalRecHits) {
-    const ldmx::HcalID id{hit.getID()};
+    const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     auto ok{hit_ok(id, {hit.getXPos(), hit.getYPos(), hit.getZPos()})};
     histograms_.fill("passes_rec", ok);
     switch (id.section()) {
