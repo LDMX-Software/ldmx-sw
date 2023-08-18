@@ -15,10 +15,10 @@
 //----------//
 //   LDMX   //
 //----------//
+#include <TVector3.h>
+
 #include "Framework/Event.h"
 #include "Tools/AnalysisUtils.h"
-
-#include <TVector3.h>
 
 namespace dqm {
 
@@ -60,7 +60,6 @@ std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findDaughters(
   return pnDaughters;
 }
 void PhotoNuclearDQM::findRecoilProperties(const ldmx::SimParticle *recoil) {
-
   histograms_.fill("recoil_vertex_x", recoil->getVertex()[0]);
   histograms_.fill("recoil_vertex_y", recoil->getVertex()[1]);
   histograms_.fill("recoil_vertex_z", recoil->getVertex()[2]);
@@ -138,7 +137,6 @@ void PhotoNuclearDQM::findSubleadingKinematics(
     const ldmx::SimParticle *pnGamma,
     const std::vector<const ldmx::SimParticle *> &pnDaughters,
     const PhotoNuclearDQM::EventType eventType) {
-
   // Note: Assumes sorted by energy
 
   double subleading_ke{-9999};
@@ -177,27 +175,27 @@ void PhotoNuclearDQM::findSubleadingKinematics(
 }
 void PhotoNuclearDQM::onProcessStart() {
   std::vector<std::string> labels = {"",
-                                     "Nothing hard",  // 0
-                                     "1 n",           // 1
-                                     "2 n",           // 2
-                                     "#geq 3 n",      // 3
-                                     "1 #pi",         // 4
-                                     "2 #pi",         // 5
-                                     "1 #pi_{0}",     // 6
-                                     "1 #pi A",       // 7
-                                     "1 #pi 2 A",     // 8
-                                     "2 #pi A",       // 9
-                                     "1 #pi_{0} A",   // 10
-                                     "1 #pi_{0} 2 A", // 11
-                                     "#pi_{0} #pi A", // 12
-                                     "1 p",           // 13
-                                     "2 p",           // 14
-                                     "pn",            // 15
-                                     "K^{0}_{L} X",   // 16
-                                     "K X",           // 17
-                                     "K^{0}_{S} X",   // 18
-                                     "exotics",       // 19
-                                     "multi-body",    // 20
+                                     "Nothing hard",   // 0
+                                     "1 n",            // 1
+                                     "2 n",            // 2
+                                     "#geq 3 n",       // 3
+                                     "1 #pi",          // 4
+                                     "2 #pi",          // 5
+                                     "1 #pi_{0}",      // 6
+                                     "1 #pi A",        // 7
+                                     "1 #pi 2 A",      // 8
+                                     "2 #pi A",        // 9
+                                     "1 #pi_{0} A",    // 10
+                                     "1 #pi_{0} 2 A",  // 11
+                                     "#pi_{0} #pi A",  // 12
+                                     "1 p",            // 13
+                                     "2 p",            // 14
+                                     "pn",             // 15
+                                     "K^{0}_{L} X",    // 16
+                                     "K X",            // 17
+                                     "K^{0}_{S} X",    // 18
+                                     "exotics",        // 19
+                                     "multi-body",     // 20
                                      ""};
 
   std::vector<TH1 *> hists = {
@@ -214,12 +212,12 @@ void PhotoNuclearDQM::onProcessStart() {
   }
 
   labels = {"",
-            "1 n",     // 0
-            "K#pm X",  // 1
-            "1 K^{0}", // 2
-            "2 n",     // 3
-            "Soft",    // 4
-            "Other",   // 5
+            "1 n",      // 0
+            "K#pm X",   // 1
+            "1 K^{0}",  // 2
+            "2 n",      // 3
+            "Soft",     // 4
+            "Other",    // 5
             ""};
 
   hists = {
@@ -235,11 +233,11 @@ void PhotoNuclearDQM::onProcessStart() {
   }
 
   std::vector<std::string> n_labels = {"",
-                                       "nn",       // 0
-                                       "pn",       // 1
-                                       "#pi^{+}n", // 2
-                                       "#pi^{0}n", // 3
-                                       "other",    // 4
+                                       "nn",        // 0
+                                       "pn",        // 1
+                                       "#pi^{+}n",  // 2
+                                       "#pi^{0}n",  // 3
+                                       "other",     // 4
                                        ""};
 
   TH1 *hist = histograms_.get("1n_event_type");
@@ -305,38 +303,40 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
                    static_cast<int>(eventTypeComp2000MeV));
 
   switch (eventType) {
-  case EventType::single_neutron:
-    if (eventType == EventType::single_neutron) {
-      if (pnDaughters.size() > 1) {
-        auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
-        auto nEventType{-10};
-        if (secondHardestPdgID == 2112) {
-          nEventType = 0; // n + n
-        } else if (secondHardestPdgID == 2212) {
-          nEventType = 1; // p + n
-        } else if (secondHardestPdgID == 211) {
-          nEventType = 2; // Pi+/- + n
-        } else if (secondHardestPdgID == 111) {
-          nEventType = 3; // Pi0 + n
-        } else {
-          nEventType = 4; // other
+    case EventType::single_neutron:
+      if (eventType == EventType::single_neutron) {
+        if (pnDaughters.size() > 1) {
+          auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
+          auto nEventType{-10};
+          if (secondHardestPdgID == 2112) {
+            nEventType = 0;  // n + n
+          } else if (secondHardestPdgID == 2212) {
+            nEventType = 1;  // p + n
+          } else if (secondHardestPdgID == 211) {
+            nEventType = 2;  // Pi+/- + n
+          } else if (secondHardestPdgID == 111) {
+            nEventType = 3;  // Pi0 + n
+          } else {
+            nEventType = 4;  // other
+          }
+          histograms_.fill("1n_event_type", nEventType);
         }
-        histograms_.fill("1n_event_type", nEventType);
       }
-    }
-    [[fallthrough]]; // Remaining code is important for 1n as well
-  case EventType::two_neutrons:
-  case EventType::charged_kaon:
-  case EventType::klong:
-  case EventType::kshort:
-    findSubleadingKinematics(pnGamma, pnDaughters, eventType);
-    break;
+      [[fallthrough]];  // Remaining code is important for 1n as well
+    case EventType::two_neutrons:
+    case EventType::charged_kaon:
+    case EventType::klong:
+    case EventType::kshort:
+      findSubleadingKinematics(pnGamma, pnDaughters, eventType);
+      break;
+    default:  // Nothing to do
+      break;
   }
 }
 
 PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
     const std::vector<const ldmx::SimParticle *> daughters, double threshold) {
-  short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, lambda{0};
+  short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0};
 
   // Loop through all of the PN daughters and extract kinematic
   // information.
@@ -413,7 +413,7 @@ PhotoNuclearDQM::EventType PhotoNuclearDQM::classifyEvent(
       return EventType::single_charged_pion_and_two_nucleons;
     } else if (pi == 2 && nucleons == 1) {
       return EventType::two_charged_pions_and_nucleon;
-    } // else
+    }  // else
     else if (pi0 == 1 && nucleons == 2) {
       return EventType::single_neutral_pion_and_two_nucleons;
     } else if (pi0 == 1 && nucleons == 1 && pi == 1) {
@@ -498,6 +498,6 @@ PhotoNuclearDQM::CompactEventType PhotoNuclearDQM::classifyCompactEvent(
   return PhotoNuclearDQM::CompactEventType::other;
 }
 
-} // namespace dqm
+}  // namespace dqm
 
 DECLARE_ANALYZER_NS(dqm, PhotoNuclearDQM)
