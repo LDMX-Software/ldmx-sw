@@ -83,8 +83,11 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   }
 
   // To simulate multiple pulses coming at different times, SiPMS
-  float TrueEdep[stripsPerArray_];
-  Expo* ex[stripsPerArray_] = {0};
+  // Initialize with stripsPerArray_ zeros
+  std::vector<float> TrueEdep(stripsPerArray_, 0.);
+
+  // Initialize with stripsPerArray_ nullptrs
+  std::vector<Expo*> ex(stripsPerArray_, nullptr);
   for (int i = 0; i < stripsPerArray_; i++) {
     // Set the pulse shape with fixed parameters given by config. file
     ex[i] = new Expo(pulse_params_[0], pulse_params_[1]);
