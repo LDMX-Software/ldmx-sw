@@ -6,9 +6,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-
 #include "SimCore/Event/SimParticle.h"
-
 namespace dqm {
 
 // Forward declarations within the ldmx workspace
@@ -16,7 +14,6 @@ class Event;
 class SimParticle;
 
 class PhotoNuclearDQM : public framework::Analyzer {
-
   // Classification schemes for PN events
   enum class CompactEventType {
     single_neutron = 0,
@@ -50,12 +47,12 @@ class PhotoNuclearDQM : public framework::Analyzer {
     multibody = 20,
   };
 
-public:
+ public:
   /// Constructor
   PhotoNuclearDQM(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~PhotoNuclearDQM();
+  virtual ~PhotoNuclearDQM();
 
   /**
    * Configure this analyzer using the user specified parameters.
@@ -63,30 +60,28 @@ public:
    * @param parameters Set of parameters used to configure this
    *                   analyzer.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Process the event and create the histogram summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event &event) final override;
+  void analyze(const framework::Event &event) override;
 
   /// Method executed before processing of events begins.
-  void onProcessStart();
+  void onProcessStart() override;
 
-private:
+ private:
   /** Method used to classify events. Note: Assumes that daughters is sorted by
    * kinetic energy. */
-  EventType
-  classifyEvent(const std::vector<const ldmx::SimParticle *> daughters,
-                double threshold);
+  EventType classifyEvent(
+      const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
   /** Method used to classify events in a compact manner. */
-  CompactEventType
-  classifyCompactEvent(const ldmx::SimParticle *pnGamma,
-                       const std::vector<const ldmx::SimParticle *> daughters,
-                       double threshold);
+  CompactEventType classifyCompactEvent(
+      const ldmx::SimParticle *pnGamma,
+      const std::vector<const ldmx::SimParticle *> daughters, double threshold);
 
   /**
    * Fill the recoil electron-histograms
@@ -125,10 +120,10 @@ private:
    **/
   void findSubleadingKinematics(
       const ldmx::SimParticle *pnGamma,
-      const std::vector<const ldmx::SimParticle *> &pnDaughters, //
+      const std::vector<const ldmx::SimParticle *> &pnDaughters,  //
       const EventType eventType);
 
-public:
+ public:
   /**
    *  Check if the PDG code corresponds to a light ion.
    *
@@ -151,6 +146,6 @@ public:
   bool count_light_ions_;
 };
 
-} // namespace dqm
+}  // namespace dqm
 
-#endif // _DQM_ECAL_PN_H_
+#endif  // _DQM_ECAL_PN_H_
