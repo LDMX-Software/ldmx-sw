@@ -1,6 +1,5 @@
 #ifndef _DQM_HCAL_DQM_H_
 #define _DQM_HCAL_DQM_H_
-
 //----------//
 //   STL    //
 //----------//
@@ -14,6 +13,8 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include <map>
+
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
@@ -24,11 +25,10 @@
 #include "Hcal/Event/HcalVetoResult.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/AnalysisUtils.h"
-#include <map>
 namespace dqm {
 
 class HCalDQM : public framework::Analyzer {
-public:
+ public:
   /** Constructor */
   HCalDQM(const std::string &name, framework::Process &process);
 
@@ -40,7 +40,7 @@ public:
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Process the event and make histograms ro summaries.
@@ -66,7 +66,7 @@ public:
     return false;
   }
 
-private:
+ private:
   /// Hcal Sim Hits collection name
   std::string sim_coll_name_;
 
@@ -90,6 +90,6 @@ private:
   double max_hit_time_;
 };
 
-} // namespace dqm
+}  // namespace dqm
 
-#endif // _DQM_HCAL_DQM_H_
+#endif  // _DQM_HCAL_DQM_H_
