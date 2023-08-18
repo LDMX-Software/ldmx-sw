@@ -28,7 +28,7 @@ PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name,
 
 PhotoNuclearDQM::~PhotoNuclearDQM() {}
 std::vector<const ldmx::SimParticle *> PhotoNuclearDQM::findDaughters(
-    const std::map<int, ldmx::SimParticle> particleMap,
+    const std::map<int, ldmx::SimParticle> &particleMap,
     const ldmx::SimParticle *parent) const {
   std::vector<const ldmx::SimParticle *> pnDaughters;
   for (const auto &daughterTrackID : parent->getDaughters()) {
