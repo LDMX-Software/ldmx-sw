@@ -16,7 +16,7 @@ class ElectronCounter(ldmxcfg.Producer) :
     def __init__(self,nSimBeamElectrons,name="ElectronCounter") :
         super().__init__(name,'recon::ElectronCounter','Recon')
 
-        self.input_collection = "TriggerPadTracks"
+        self.input_collection = "TriggerPadTracksY"
         self.input_pass_name = "truth"
         self.output_collection = "BeamElectronCount"
         self.simulated_electron_number = nSimBeamElectrons
