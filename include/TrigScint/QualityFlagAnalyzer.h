@@ -58,7 +58,7 @@ namespace trigscint {
 	//plotting stuff 
 	int evNb;
     const int nEv{200};
-    const int nChannels{16};
+    static constexpr int nChannels{16};
     const int nFlags{6};
 	int peFillNb{0};
 	
