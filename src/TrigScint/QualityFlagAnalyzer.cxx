@@ -58,7 +58,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
     std::vector<float> q = chan.getQ();
     std::vector<float> qErr = chan.getQError();
     std::vector<int> tdc = chan.getTDC();
-    int nTimeSamp = q.size();
+    // int nTimeSamp = q.size();
     int bar = chan.getChanID();
 
     int flag = chan.getQualityFlag();
@@ -138,7 +138,7 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
       std::vector<float> q = chan.getQ();
       std::vector<float> qErr = chan.getQError();
       std::vector<int> tdc = chan.getTDC();
-      int nTimeSamp = q.size();
+      // int nTimeSamp = q.size();
       int bar = chan.getChanID();
       for (int iT = 0; iT < q.size(); iT++) {  // fill this plot with all q
         hOutPE[peFillNb][bar]->SetBinContent(iT + startSample_, q.at(iT));
@@ -154,7 +154,6 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
   return;
 }
 
-
 void QualityFlagAnalyzer::onProcessStart() {
   std::cout << "\n\n Process starts! My analyzer should do something -- like "
                "print this \n\n"
@@ -164,9 +163,9 @@ void QualityFlagAnalyzer::onProcessStart() {
   int nTimeSamp = 40;
   int PEmax = 100;
   int nPEbins = 5 * PEmax;
-  float Qmax = PEmax / (6250. / 4.e6);
-  float Qmin = -10;
-  int nQbins = (Qmax - Qmin) / 4;
+  // float Qmax = PEmax / (6250. / 4.e6);
+  // float Qmin = -10;
+  // int nQbins = (Qmax - Qmin) / 4;
 
   ldmx_log(debug) << "Setting up histograms... ";
 

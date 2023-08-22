@@ -17,6 +17,10 @@ namespace trigscint {
 class QIEInputPulse {
  public:
   /**
+   * Destructor
+   */
+  virtual ~QIEInputPulse() = default;
+  /**
    * Evaluate the pulse train at time T
    */
   float Eval(float T);
@@ -69,7 +73,7 @@ class QIEInputPulse {
  */
 class Bimoid : public QIEInputPulse {
  public:
-  /// Constructor 
+  /// Constructor
   Bimoid(float start, float qq);
 
   /// Default Destructor

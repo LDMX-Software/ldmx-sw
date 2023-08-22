@@ -1,20 +1,18 @@
 #ifndef TRIGSCINT_QIEENCODER_H
 #define TRIGSCINT_QIEENCODER_H
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
-                                             
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/Event/QIEStream.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 
-
-  class QIEEncoder : public framework::Producer{
+class QIEEncoder : public framework::Producer {
  public:
   QIEEncoder(const std::string &name, framework::Process &process)
       : Producer(name, process) {}
@@ -24,43 +22,39 @@ namespace trigscint {
    */
   virtual ~QIEEncoder() = default;
 
-	/**
-	 * Configure our converter based off the configuration parameters
-	 * decoded from the passed python script
-	 */
-	virtual void configure(framework::config::Parameters &ps);
+  /**
+   * Configure our converter based off the configuration parameters
+   * decoded from the passed python script
+   */
+  void configure(framework::config::Parameters &ps) override;
 
-  virtual void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
+  void onProcessStart() override;
 
+  void onProcessEnd() override;
 
-  virtual void onProcessStart();
+ private:
+  // electronics/detector ID channel map
+  std::string channelMapFileName_;
+  std::ifstream channelMapFile_;
+  std::map<int, int> channelMap_;
 
-  virtual void onProcessEnd();
+  // input collection name and pass name
+  std::string inputCollection_;
+  std::string inputPassName_;
+  // and output
+  std::string outputCollection_;
 
-	
-	
-  private:
-	// electronics/detector ID channel map
-	std::string channelMapFileName_;
-	std::ifstream  channelMapFile_;
-	std::map< int, int> channelMap_;
+  // verbosity for very specific printouts that don't play well with logger
+  // format
+  bool verbose_{false};
 
-	//input collection name and pass name
-	std::string inputCollection_;
-	std::string inputPassName_;
-	//and output
-	std::string outputCollection_;
+  // number of channels in the pad
+  int nChannels_{50};
 
-	// verbosity for very specific printouts that don't play well with logger format
-	bool verbose_{false};
+};  // encoder
 
-	// number of channels in the pad 
-	int nChannels_{50};
-	
-  }; //encoder
+}  // namespace trigscint
 
-}//namespace trigscint 
-                                                                                                 
-
-#endif // TRIGSCINT_QIEENCODER_H
+#endif  // TRIGSCINT_QIEENCODER_H
