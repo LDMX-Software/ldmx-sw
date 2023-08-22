@@ -12,8 +12,6 @@ TrigScintQIEDigiProducer::TrigScintQIEDigiProducer(const std::string& name,
                                                    framework::Process& process)
     : Producer(name, process) {}
 
-TrigScintQIEDigiProducer::~TrigScintQIEDigiProducer() {}
-
 void TrigScintQIEDigiProducer::configure(
     framework::config::Parameters& parameters) {
   // Configure this instance of the producer

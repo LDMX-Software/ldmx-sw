@@ -11,7 +11,6 @@ namespace trigscint {
   QIEAnalyzer::QIEAnalyzer(const std::string& name,
 						   framework::Process& process)
     : Analyzer(name, process) {}
-  QIEAnalyzer::~QIEAnalyzer() {}
   
   void QIEAnalyzer::configure(framework::config::Parameters &parameters){
 

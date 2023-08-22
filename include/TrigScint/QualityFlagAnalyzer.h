@@ -26,7 +26,6 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   QualityFlagAnalyzer(
       const std::string& name,
       framework::Process& process);  // : framework::Analyzer(name, process) {}
-  virtual ~QualityFlagAnalyzer();
   virtual void configure(framework::config::Parameters& parameters);
 
   virtual void analyze(const framework::Event& event) final override;

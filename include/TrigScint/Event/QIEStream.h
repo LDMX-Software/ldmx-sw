@@ -30,7 +30,7 @@ class QIEStream {
   QIEStream() = default;
 
   /// Default destructor
-  ~QIEStream() = default;
+  virtual ~QIEStream() = default;
 
   /**
    * Print ifo about the class
