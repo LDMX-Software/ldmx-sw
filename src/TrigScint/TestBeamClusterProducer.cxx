@@ -468,18 +468,6 @@ void TestBeamClusterProducer::addHit(uint idx, trigscint::TestBeamHit hit) {
   return;
 }
 
-void TestBeamClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TestBeamClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
 void TestBeamClusterProducer::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 

@@ -241,16 +241,6 @@ namespace trigscint {
   event.add(outputCollection_, outDigis);
   }
 
-void QIEDecoder::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-  
-  return;
-}
-
-void QIEDecoder::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
 }
 
 void QIEDecoder::onProcessStart() {
