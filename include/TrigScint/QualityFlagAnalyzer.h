@@ -26,15 +26,14 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   QualityFlagAnalyzer(
       const std::string& name,
       framework::Process& process);  // : framework::Analyzer(name, process) {}
-  virtual void configure(framework::config::Parameters& parameters);
+  virtual ~QualityFlagAnalyzer() = default;
+  void configure(framework::config::Parameters& parameters) override;
 
-  virtual void analyze(const framework::Event& event) final override;
+  void analyze(const framework::Event& event) override;
 
+  void onProcessStart() override;
 
-
-  virtual void onProcessStart() final override;
-
-  virtual void onProcessEnd() final override;
+  void onProcessEnd() override;
 
  private:
   std::vector<std::vector<TH1F*> > vChargeVsTime;

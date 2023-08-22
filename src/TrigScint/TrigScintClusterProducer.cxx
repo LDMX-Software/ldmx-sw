@@ -67,8 +67,8 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
     ampl:    _                   _                   _
             | |_                | |                 | |
-        ----| | |---------------| |-----------------| |------- cluster seed threshold 
-	    | | |_              | |_ _              | |_
+        ----| | |---------------| |-----------------| |------- cluster seed
+    threshold | | |_              | |_ _              | |_
            _| | | |            _| | | |            _| | |  _
           | | | | |     vs    | | | | |    vs     | | | | | |
 
@@ -173,9 +173,8 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
         }
       }
 
-      // don't add in late hits 
-      if (digi.getTime() > padTime_ + timeTolerance_ )
-	continue;
+      // don't add in late hits
+      if (digi.getTime() > padTime_ + timeTolerance_) continue;
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value
@@ -248,7 +247,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
       // 1.  add seeding hit to cluster
 
-      addHit(itr->first, (ldmx::TrigScintHit)digi);
+      addHit(itr->first, digi);
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "\t itr is pointing at hit with channel nb "
@@ -410,16 +409,17 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       cluster.setIDs(v_addedIndices_);
       cluster.setNHits(v_addedIndices_.size());
       cluster.setCentroid(centroid_);
-	  float cx;
-	  float cy = centroid_;
-	  float cz = -99999;  //set to nonsense for now. could be set to module nb
-	  if (centroid_ < vertBarStartIdx_) //then in horizontal bars --> we don't know X
-		cx = -1;  //set to nonsense in barID space. could translate to x=0 mm 
-	  else { 
-		cx = (int)((centroid_- vertBarStartIdx_)/4); //start at 0 
-		cy = (int)centroid_%4;
-	  }
-	  cluster.setCentroidXYZ(cx, cy, cz);
+      float cx;
+      float cy = centroid_;
+      float cz = -99999;  // set to nonsense for now. could be set to module nb
+      if (centroid_ <
+          vertBarStartIdx_)  // then in horizontal bars --> we don't know X
+        cx = -1;  // set to nonsense in barID space. could translate to x=0 mm
+      else {
+        cx = (int)((centroid_ - vertBarStartIdx_) / 4);  // start at 0
+        cy = (int)centroid_ % 4;
+      }
+      cluster.setCentroidXYZ(cx, cy, cz);
       cluster.setEnergy(valE_);
       cluster.setPE(val_);
       cluster.setTime(time_ / val_);
