@@ -32,9 +32,7 @@ namespace trigscint {
 
   virtual void produce(framework::Event &event);
 
-  virtual void onFileOpen();
 
-  virtual void onFileClose();
 
   virtual void onProcessStart();
 

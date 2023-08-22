@@ -35,9 +35,7 @@ class TrigScintClusterProducer : public framework::Producer {
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
-  virtual void onFileOpen();
 
-  virtual void onFileClose();
 
   virtual void onProcessStart();
 

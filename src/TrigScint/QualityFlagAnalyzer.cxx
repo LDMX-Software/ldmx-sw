@@ -155,15 +155,6 @@ void QualityFlagAnalyzer::analyze(const framework::Event& event) {
   return;
 }
 
-void QualityFlagAnalyzer::onFileOpen() {
-  std::cout << "\n\n File is opening! My analyzer should do something -- like "
-               "print this \n\n"
-            << std::endl;
-
-  return;
-}
-
-void QualityFlagAnalyzer::onFileClose() { return; }
 
 void QualityFlagAnalyzer::onProcessStart() {
   std::cout << "\n\n Process starts! My analyzer should do something -- like "

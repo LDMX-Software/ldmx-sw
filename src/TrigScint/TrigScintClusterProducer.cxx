@@ -502,18 +502,6 @@ void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   return;
 }
 
-void TrigScintClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigScintClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
 void TrigScintClusterProducer::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 

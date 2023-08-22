@@ -89,16 +89,10 @@ namespace trigscint {
 	return;
   }
 
-  void TestBeamHitAnalyzer::onFileOpen() {
-    std::cout << "\n\n File is opening! My analyzer should do something -- like print this \n\n" << std::endl;
 
-    return;
   }
 
-  void TestBeamHitAnalyzer::onFileClose() {
 
-    return;
-  }
   
   void TestBeamHitAnalyzer::onProcessStart() {
     std::cout << "\n\n Process starts! My analyzer should do something -- like print this \n\n" << std::endl;

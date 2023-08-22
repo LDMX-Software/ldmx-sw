@@ -29,11 +29,6 @@ namespace trigscint {
 
     virtual void analyze(const framework::Event &event) final override;
 
-	//
-	virtual void onFileOpen();
-
-	//
-	virtual void onFileClose();
 
     virtual void onProcessStart() final override;
 

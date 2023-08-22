@@ -213,18 +213,10 @@ namespace trigscint {
 	event.add(outputCollection_, outWord);
 
   }
-  
-void QIEEncoder::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
 
 
-return;
-}
 
-void QIEEncoder::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
 
-  return;
 }
 
 void QIEEncoder::onProcessStart() {

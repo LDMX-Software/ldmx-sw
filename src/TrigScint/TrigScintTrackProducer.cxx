@@ -793,16 +793,9 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
   
 }
   
-void TrigScintTrackProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
 
-  return;
-}
 
-void TrigScintTrackProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
 
-  return;
 }
 
 void TrigScintTrackProducer::onProcessStart() {

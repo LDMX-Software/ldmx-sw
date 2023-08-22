@@ -35,10 +35,6 @@ class TestBeamClusterProducer : public framework::Producer {
    */
   virtual void addHit(uint idx, trigscint::TestBeamHit hit);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
   virtual void onProcessStart();
 
   virtual void onProcessEnd();

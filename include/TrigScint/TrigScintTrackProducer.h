@@ -25,10 +25,6 @@ class TrigScintTrackProducer : public framework::Producer {
 
   virtual void produce(framework::Event &event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
   virtual void onProcessStart();
 
   virtual void onProcessEnd();
