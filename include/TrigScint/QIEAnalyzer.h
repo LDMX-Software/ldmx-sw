@@ -24,7 +24,6 @@ namespace trigscint {
   public:
 
 	QIEAnalyzer(const std::string& name, framework::Process& process); // : framework::Analyzer(name, process) {}
-	virtual ~QIEAnalyzer();
     virtual void configure(framework::config::Parameters &parameters);
 
     virtual void analyze( const framework::Event &event) final override;
@@ -72,5 +71,6 @@ namespace trigscint {
 
   };
 }
+  virtual ~QIEAnalyzer() = default;
 
 #endif /* TRIGSCINT_QIEANALYZER_H */

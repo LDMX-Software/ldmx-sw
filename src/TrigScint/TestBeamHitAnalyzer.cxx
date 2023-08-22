@@ -11,7 +11,6 @@ namespace trigscint {
   TestBeamHitAnalyzer::TestBeamHitAnalyzer(const std::string& name,
 						   framework::Process& process)
     : Analyzer(name, process) {}
-  TestBeamHitAnalyzer::~TestBeamHitAnalyzer() {}
   
   void TestBeamHitAnalyzer::configure(framework::config::Parameters &parameters){
 

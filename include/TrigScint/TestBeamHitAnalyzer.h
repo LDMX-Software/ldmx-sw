@@ -24,7 +24,6 @@ namespace trigscint {
   public:
 
 	TestBeamHitAnalyzer(const std::string& name, framework::Process& process); // : framework::Analyzer(name, process) {}
-	virtual ~TestBeamHitAnalyzer();
     virtual void configure(framework::config::Parameters &parameters);
 
     virtual void analyze(const framework::Event &event) final override;
@@ -67,5 +66,6 @@ namespace trigscint {
 
   };
 }
+  virtual ~TestBeamHitAnalyzer() = default;
 
 #endif /* TRIGSCINT_TESTBEAMHITANALYZER_H */

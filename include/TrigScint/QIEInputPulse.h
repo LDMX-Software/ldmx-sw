@@ -73,7 +73,7 @@ class Bimoid : public QIEInputPulse {
   Bimoid(float start, float qq);
 
   /// Default Destructor
-  ~Bimoid() = default;
+  virtual ~Bimoid() = default;
 
   /**
    * Evaluate the pulse at time T
@@ -129,6 +129,10 @@ class Expo : public QIEInputPulse {
    */
   Expo(float k, float tmax);  /// main constructor
 
+  /**
+   * Destructor
+   */
+  virtual ~Expo() = default;
   /**
    * Get Rise time of the pulse
    */

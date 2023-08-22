@@ -22,7 +22,7 @@ namespace trigscint {
   /**
    * Default destructor, closes up boost archive and input stream
    */
-	~QIEEncoder() = default;
+  virtual ~QIEEncoder() = default;
 
 	/**
 	 * Configure our converter based off the configuration parameters

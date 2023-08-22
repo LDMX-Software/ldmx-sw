@@ -17,7 +17,7 @@ class TrigScintQIEDigis {
   TrigScintQIEDigis() = default;
 
   /// Default destructor
-  ~TrigScintQIEDigis() = default;
+  virtual ~TrigScintQIEDigis() = default;
 
   /**
    * Print ifo about the class

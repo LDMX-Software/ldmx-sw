@@ -49,7 +49,7 @@ class TrigScintQIEDigiProducer : public framework::Producer {
  public:
   TrigScintQIEDigiProducer(const std::string& name,
                            framework::Process& process);
-  ~TrigScintQIEDigiProducer();
+  virtual ~TrigScintQIEDigiProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set

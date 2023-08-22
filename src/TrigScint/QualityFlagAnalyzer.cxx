@@ -12,7 +12,6 @@ namespace trigscint {
 QualityFlagAnalyzer::QualityFlagAnalyzer(const std::string& name,
                                          framework::Process& process)
     : Analyzer(name, process) {}
-QualityFlagAnalyzer::~QualityFlagAnalyzer() {}
 
 void QualityFlagAnalyzer::configure(framework::config::Parameters& parameters) {
   inputEventCol_ = parameters.getParameter<std::string>("inputEventCollection");
