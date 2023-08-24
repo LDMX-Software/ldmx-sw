@@ -223,10 +223,7 @@ class CKFProcessor final : public framework::Producer {
   //Stepping size (in mm)
   double propagator_step_size_{200.};
   int propagator_maxSteps_{1000};
-
-  //The perigee location used for the initial propagator states generation
-  std::vector<double> perigee_location_{0.,0.,0.};
-
+  
   //The extrapolation surface
   bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0.,0.,0.};

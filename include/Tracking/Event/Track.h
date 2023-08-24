@@ -33,6 +33,18 @@ class Track {
  public:
 
 
+  /*
+  struct TrackState {
+    
+    std::vector<double> refPoint;
+    std::vector<double> params;
+    std::vector<double> cov;
+    
+    // Store the surface ID in order to extract the transformation from the Geometry.
+    int surfaceID;
+    };
+  */
+  
   Track(){};
   
   /**
@@ -197,6 +209,9 @@ class Track {
 
   //pdgID
   int pdgID_{0};
+
+  //Track States
+  //std::vector<TrackState> trackStates;
   
   ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);

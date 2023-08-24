@@ -50,11 +50,73 @@ void CKFProcessor::onProcessStart() {
   // Setup a constant magnetic field
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
   
+  // Custom transformation of the interpolated bfield map
+  Acts::Vector3 offset{0.,0.,400.};
+  bool debugTransform = false;
+  auto transformPos = [offset,debugTransform](const Acts::Vector3& pos) {
+
+    Acts::Vector3 rot_pos;
+    rot_pos(0)=pos(1);
+    rot_pos(1)=pos(2);
+    rot_pos(2)=pos(0);
+
+    //Apply offset
+    rot_pos += offset;
+
+    //Apply A rotation around the center of the magnet. (I guess offset first and then rotation)
+
+    if (debugTransform) {
+      std::cout<<"PF::DEFAULT3 TRANSFORM"<<std::endl;
+      std::cout<<"PF::Check:: transforming Pos"<<std::endl;
+      std::cout<<pos<<std::endl;
+      std::cout<<"TO"<<std::endl;
+      std::cout<<rot_pos<<std::endl;
+    }
+
+    return rot_pos;
+  };
+
+
+  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
+  double scale = 1.;
+  
+  auto transformBField = [rotation, scale, debugTransform](const Acts::Vector3& field,
+                                           const Acts::Vector3& /*pos*/) {
+
+    //Rotate the field in tracking coordinates
+    Acts::Vector3 rot_field;
+    rot_field(0) = field(2);
+    rot_field(1) = field(0);
+    rot_field(2) = field(1);
+
+    
+    //Scale the field
+    rot_field = scale * rot_field;
+
+    //Rotate the field
+    rot_field = rotation * rot_field;
+
+    //A distortion scaled by position.
+    
+
+    if (debugTransform) {
+      std::cout<<"PF::DEFAULT3 TRANSFORM"<<std::endl;
+      std::cout<<"PF::Check:: transforming"<<std::endl;
+      std::cout<<field<<std::endl;
+      std::cout<<"TO"<<std::endl;
+      std::cout<<rot_field<<std::endl;
+    }
+    
+    return rot_field;
+  };
+  
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
       loadDefaultBField(field_map_,
-                        default_transformPos,
-                        default_transformBField));
+                        //default_transformPos,
+                        //default_transformBField));
+                        transformPos,
+                        transformBField));
   
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
@@ -96,51 +158,32 @@ void CKFProcessor::produce(framework::Event& event) {
 
   eventnr_++;
 
-
-  // int counter=0
-  // if (counter==0) {
-  // propagateENstates(event,
-  //                   "hadron_vars_piminus_1e6.txt",
-  //                   "hadron_vars_piminus_1e6_out.root");
-  // counter+=1;
-  // }
-
-
-  // TODO use global variable instead and call clear;
   std::vector<ldmx::Track> tracks;
-
+  
   auto start = std::chrono::high_resolution_clock::now();
 
   nevents_++;
   if (nevents_ % 1000 == 0)
     ldmx_log(info) << "events processed:" << nevents_;
-
-  /*
-  std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1),
-                        perigee_location_.at(2)));
-  */
-                        
+  
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
-
+  
   Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
-
+  
   propagator_options.pathLimit = std::numeric_limits<double>::max();
-
+  
   // Activate loop protection at some pt value
-  propagator_options.loopProtection =
-      false;  //(startParameters.transverseMomentum() < cfg.ptLoopers);
-
+  propagator_options.loopProtection = false;  //(startParameters.transverseMomentum() < cfg.ptLoopers);
+  
   // Switch the material interaction on/off & eventually into logging mode
   auto& mInteractor =
       propagator_options.actionList.get<Acts::MaterialInteractor>();
   mInteractor.multipleScattering = true;
   mInteractor.energyLoss = true;
   mInteractor.recordInteractions = false;
-
+  
   // The logger can be switched to sterile, e.g. for timing logging
   auto& sLogger =
       propagator_options.actionList.get<Acts::detail::SteppingLogger>();
@@ -149,7 +192,7 @@ void CKFProcessor::produce(framework::Event& event) {
   propagator_options.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps = propagator_maxSteps_;
-
+  
   // Electron hypothesis
   propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
@@ -197,7 +240,7 @@ void CKFProcessor::produce(framework::Event& event) {
   
   const std::vector<ldmx::Track> seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_);
-  
+
   // Run the CKF on each seed and produce a track candidate
   std::vector<Acts::BoundTrackParameters> startParameters;
   for (auto& seed : seed_tracks) {
@@ -210,7 +253,7 @@ void CKFProcessor::produce(framework::Event& event) {
     Acts::BoundVector paramVec;
     paramVec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
-
+    
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
@@ -565,8 +608,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<double>("propagator_step_size", 200.);
   propagator_maxSteps_ =
       parameters.getParameter<int>("propagator_maxSteps", 10000);
-  perigee_location_ = parameters.getParameter<std::vector<double>>(
-      "perigee_location", {0., 0., 0.});
   measurement_collection_ =
       parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
   outlier_pval_ = parameters.getParameter<double>("outlier_pval_",3.84);
