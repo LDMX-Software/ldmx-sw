@@ -36,7 +36,7 @@ __main__() {
 
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
-  ldmx fire config.py || return $?
+  ldmx fire config.py &> output.log || return $?
   end_group
 
   start_group Compare to Golden Histograms
@@ -46,6 +46,17 @@ __main__() {
     #    gold_f, gold_label, test_f, test_label
     ldmx python3 $GITHUB_ACTION_PATH/compare.py \
       gold.root $(ldmx_gold_label) hist.root ${GITHUB_REF} || return $?
+
+    # print log diff into output directory
+    cp -t ${_sample_dir}/plots gold.log output.log || return $?
+    diff gold.log output.log > ${_sample_dir}/plots/log.diff || return $?
+
+    # check character count of logs
+    ngold=$(wc --chars gold.log)
+    nnew=$(wc --chars output.log)
+    if (( ngold != nnew )); then
+      warn "Different character counts in logs for ${_sample}"
+    fi
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
