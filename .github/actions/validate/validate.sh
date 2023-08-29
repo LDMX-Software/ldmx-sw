@@ -72,6 +72,7 @@ __main__() {
   if [[ "${_no_comp}" == "false" ]]; then
     set_output plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
   fi
+  set_output log ${_sample_dir}/output.log
   set_output hists ${_sample_dir}/hist.root
   set_output events ${_sample_dir}/events.root
   end_group
