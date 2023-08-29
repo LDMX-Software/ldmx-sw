@@ -65,7 +65,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{matrix.sample}}-new-gold
-        path: ${{steps.validation.outputs.hists}}
+        path: |
+          ${{steps.validation.outputs.hists}}
+          ${{steps.validation.outputs.log}}
 
   pr-new-gold:
     needs: [generation]
@@ -107,8 +109,9 @@ jobs:
           sample=${sample%%-new-gold}
           echo ${sample}
           mv ${sample_d}/hist.root .github/validation_samples/${sample}/gold.root
+          mv ${sample_d}/output.log .github/validation_samples/${sample}/gold.log
         done
-        git add .github/validation_samples/*/gold.root
+        git add .github/validation_samples/*/gold.*
         end_group
         start_group Set Outputs
         set_output new-label $(ldmx_gold_label)
