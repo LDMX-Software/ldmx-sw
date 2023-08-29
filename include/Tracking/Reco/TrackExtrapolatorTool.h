@@ -23,7 +23,6 @@ namespace tracking{
 namespace reco{
 
 template <class propagator_t>
-
 class TrackExtrapolatorTool {
   
   
@@ -37,13 +36,43 @@ public:
     gctx_       = gctx;
     mctx_       = mctx;
   }
-  
+
+
+  /** Method to extrapolate to a target surface given a set of BoundTrackParameters
+   *
+   @param Bound Track Parameters
+   @param The target surface
+   @return optional with BoundTrackParameters
+  **/
   
   std::optional<Acts::BoundTrackParameters> extrapolate(const Acts::BoundTrackParameters pars,
-                                                        const std::shared_ptr<Acts::Surface>& target_surface);
+                                                        const std::shared_ptr<Acts::Surface>& target_surface) {
+    
+    //Just to make it explicit
+    bool boundaryCheck = false;
+    auto intersection = target_surface->intersect(gctx_,
+                                                  pars.position(gctx_),
+                                                  pars.unitDirection(),
+                                                  boundaryCheck);
+    
+    Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
+    pOptions.direction = intersection.intersection.pathLength >= 0
+                         ? Acts::NavigationDirection::Forward
+                         : Acts::NavigationDirection::Backward;
+    
+    
+    auto result = propagator_.propagate(pars,
+                                        *target_surface,
+                                        pOptions);
+    
+    
+    if (result.ok())
+      return *result->endParameters;
+    else
+      return std::nullopt;
+  }
   
-
-
+  
   /** Method to extrapolate to a target surface given a track
    * The method computes which track state is closest to the surface to choose which one to use to
    * extrapolate. This method doesn't use a measurement, but whatever first/last track state is defined. 
@@ -51,53 +80,70 @@ public:
    @param The target surface 
    @return optional containing the bound track parameters.
    **/
-
-
-  // TODO:: CHECK IF THE FIRST TRACK STATE IS THE TARGET STATE SURFACE
   
   template <class track_t>
   std::optional<Acts::BoundTrackParameters> extrapolate(track_t track,
-                                                        const std::shared_ptr<Acts::Surface>& target_surface);
-      
-  //template <class track_t>
-  //std::optional<Acts::BoundTrackParameters> extrapolateToEcal(track_t track,
-  //                                                            const std::shared_ptr<Acts::Surface>& target_surface);
+                                                        const std::shared_ptr<Acts::Surface>& target_surface) {
+    
+    // get first and last track state on surface
+    size_t nstates = track.nTrackStates();
+    auto& tsc       = track.container().trackStateContainer();
+    auto  ts_first  = tsc.getTrackState(0);
+    auto  ts_last   = tsc.getTrackState(nstates-1);
+    
+    
+    // I'm checking which track state is closer to the origin of the target surface to decide
+    // from where to start the extrapolation to the surface. I use the coordinate along the beam axis.
+    
+    double first_dis =  std::abs(ts_first.referenceSurface().transform(gctx_).translation()(0)
+                                 - target_surface->transform(gctx_).translation()(0));
+    
+    double last_dis =  std::abs(ts_last.referenceSurface().transform(gctx_).translation()(0)
+                                - target_surface->transform(gctx_).translation()(0));
+    
 
+    //This is the track state to use for the extrapolation
+    
+    const auto& ts = first_dis < last_dis ? ts_first : ts_last;
+
+    //Get the BoundTrackStateParameters
+    
+    const auto& surface  = ts.referenceSurface();
+    const auto& smoothed = ts.smoothed();
+    const auto& cov      = ts.smoothedCovariance();
+
+
+    Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
+                         : -1 * Acts::UnitConstants::e;
+    
+    Acts::BoundTrackParameters sp(surface.getSharedPtr(),
+                                  smoothed,
+                                  q,
+                                  cov);
+    
+    return extrapolate(sp,target_surface);
+    
+  }
+  
+  
+  
   template <class track_t>
   std::optional<Acts::BoundTrackParameters> extrapolateToEcal(track_t track,
                                                               const std::shared_ptr<Acts::Surface>& target_surface) {
-  
-  
+    
+    
     // get last track state on the track.
     // Now.. I'm taking whatever it is. I'm not checking here if it is a measurement.
-
-    size_t nstates = track.nTrackStates();
-    std::cout<<"ExtrapolateToEcal:: Getting the last meas::"<<std::endl;
     
-    /*
-    auto tsRange = track.trackStates();
-
-    for (auto ts : tsRange) {
-      const auto& surface = (ts).referenceSurface();
-      const auto& smoothed = (ts).smoothed();
-      const auto& cov = (ts).smoothedCovariance();
-      
-      std::cout<<"ExtrapolateToEcal:: Last Measurement surface::"<<std::endl;
-      std::cout<<surface.transform(gctx_).translation()<<std::endl;
-      std::cout<<surface.geometryId()<<std::endl;
-      std::cout<<smoothed<<std::endl;
-  
-    }
-    */
-
+    size_t nstates = track.nTrackStates();
+    
+    
     auto& tsc     = track.container().trackStateContainer();
     auto  ts_last = tsc.getTrackState(nstates-1);
     const auto& surface  = (ts_last).referenceSurface();
     const auto& smoothed = (ts_last).smoothed();
     const auto& cov      = (ts_last).smoothedCovariance();
-    
-    std::cout<<"ExtrapolateToEcal:: Got the last meas::"<<std::endl;
-    
+
     //Get the BoundTrackStateParameters
     
     Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
@@ -122,9 +168,8 @@ public:
       return *result->endParameters;
     else
       return std::nullopt;
-    
-    
   }
+
   
   
  private:
