@@ -61,6 +61,10 @@ error() {
   echo "::error::$@"
 }
 
+warn() {
+  echo "::warning::$@"
+}
+
 start_group Deduce Common Environment Variables
 export LDMX_GOLD_LABEL_FILE=${GITHUB_WORKSPACE}/.github/actions/validate/gold_label
 export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
