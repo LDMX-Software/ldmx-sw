@@ -80,6 +80,7 @@
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Reco/TrackExtrapolatorTool.h"
 
 
 //--- Interpolated magnetic field ---//
@@ -266,6 +267,9 @@ class CKFProcessor final : public framework::Producer {
 
   //The KF
   std::unique_ptr<const Acts::KalmanFitter<CkfPropagator,Acts::VectorMultiTrajectory>> kf_;
+
+  //Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>> trk_extrap_ ;
 
   //The GSF Fitter
   //std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;

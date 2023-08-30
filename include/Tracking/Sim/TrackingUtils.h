@@ -214,13 +214,6 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
 }
 
 
-/// Extrapolate a multi-trajectory to a custom surface
-
-//inline Acts::BoundTrackParameters extrapolateTrajectory(const Acts::BoundTrackParameters,
-//                                                        const Acts::
-//                                                        const std::shared_ptr<Acts::Surface>& surface, ) {
-
-
 //Return an unbound surface along the beam axis
 inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location) {
   
