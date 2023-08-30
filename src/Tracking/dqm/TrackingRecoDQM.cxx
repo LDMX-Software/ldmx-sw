@@ -109,8 +109,14 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"qop_err",  sigmaqop); 
     
     double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
-    histograms_.fill(title+"p_err",  sigmap); 
+    histograms_.fill(title+"p_err",  sigmap);
+
+
+    //Track states monitoring
+    auto& trackStates = track.getTrackStates();
     
+    for (auto& ts : trackStates) {}
+        
     if (doTruthComparison) {
 
       //Truth Comparison

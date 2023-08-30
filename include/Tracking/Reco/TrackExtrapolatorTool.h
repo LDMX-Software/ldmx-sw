@@ -11,6 +11,10 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 
+
+#include "Tracking/Event/Track.h"
+#include "Tracking/Sim/TrackingUtils.h"
+
 #include <iostream>
 #include <iterator>
 #include <optional>
@@ -170,6 +174,48 @@ public:
       return std::nullopt;
   }
 
+
+  /** 
+  
+  /** Create an ldmx::TrackState to the extrapolated position
+   @param Acts::Track
+   @param extrapolation surface
+   @param ldmx::Track::TrackState
+   @param TrackStateType
+   @return boolean to check if there was a problem in the extrapolation
+   *
+   */
+
+  template <class track_t>
+  bool TrackStateAtSurface(track_t track,
+                           const std::shared_ptr<Acts::Surface>& target_surface,
+                           ldmx::Track::TrackState& ts,
+                           ldmx::TrackStateType type) {
+
+    auto opt_pars = extrapolate(track,target_surface);
+    if (opt_pars) {
+      
+      //Reference point
+      Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
+      ts.refX = surf_loc(0);
+      ts.refY = surf_loc(1);
+      ts.refZ = surf_loc(2);
+      
+      //Parameters
+      ts.params = tracking::sim::utils::convertActsToLdmxPars((*opt_pars).parameters());
+
+      //Covariance
+      const Acts::BoundMatrix& trk_cov = *((*opt_pars).covariance());
+      tracking::sim::utils::flatCov(trk_cov,ts.cov);
+      
+      ts.ts_type = type;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  
   
   
  private:

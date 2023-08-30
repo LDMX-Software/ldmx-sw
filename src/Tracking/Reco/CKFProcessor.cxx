@@ -141,6 +141,9 @@ void CKFProcessor::onProcessStart() {
   //ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE));
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
+  trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
+                                                                       gctx_,
+                                                                       bctx_);
 
   //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
   //    std::move(gsf_propagator));
@@ -469,12 +472,11 @@ void CKFProcessor::produce(framework::Event& event) {
     
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
-
+    
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
-    
-    
+
     ldmx_log(debug)<<"Found track: nMeas "<< track.nMeasurements()<<std::endl
                    <<"Track states "<< track.nTrackStates()<<std::endl
                    <<perigee_pars[Acts::eBoundLoc0]<<" "
@@ -484,8 +486,6 @@ void CKFProcessor::produce(framework::Event& event) {
                    <<perigee_pars[Acts::eBoundQOverP]<<std::endl
                    <<"nHoles  "<<track.nHoles();
     
-    
-
     ldmx::Track trk = ldmx::Track();
     trk.setPerigeeLocation(perigee_surface.transform(gctx_).translation()(0),
                            perigee_surface.transform(gctx_).translation()(1),
@@ -523,6 +523,52 @@ void CKFProcessor::produce(framework::Event& event) {
       }
     }
 
+    // Extrapolations
+    
+    //Define the target surface - be careful:
+    // x - downstream
+    // y - left (when looking along x)
+    // z - up
+    // Passing identity here means that your target surface is oriented in the same way
+    Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
+    //u direction along +Y
+    surf_rotation(1,0) = 1;
+    //v direction along +Z
+    surf_rotation(2,1) = 1;
+    //w direction along +X
+    surf_rotation(0,2) = 1;
+    
+    Acts::Vector3 pos(200., 0., 0.);
+    Acts::Translation3 surf_translation(pos);
+    Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+    
+    //Unbounded surface
+    const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+    
+    trk_extrap_->extrapolate(track, ecal_surface);
+    
+    
+    Acts::Vector3 target_pos(0., 0., 0.);
+    Acts::Translation3 target_translation(target_pos);
+    Acts::Transform3 target_transform(target_translation * surf_rotation);
+    
+    //Unbounded surface
+    const std::shared_ptr<Acts::PlaneSurface> target_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
+    
+    ldmx::Track::TrackState tsAtTarget;
+    bool tsuccess = trk_extrap_->TrackStateAtSurface(track,
+                                                     target_surface,
+                                                     tsAtTarget,
+                                                     ldmx::TrackStateType::AtTarget);
+    
+    if (tsuccess)
+      trk.addTrackState(tsAtTarget);
+
+
+    
+    
     //Truth matching
     if (truthMatchingTool) {
       auto truthInfo = truthMatchingTool->TruthMatch(trk);
@@ -530,7 +576,7 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
-
+    
     //At least 8 hits and p > 50 MeV
     if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
       tracks.push_back(trk);
