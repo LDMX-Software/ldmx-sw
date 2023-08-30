@@ -183,7 +183,7 @@ class Track {
     trackStates_.push_back(ts);
   };
 
-  std::vector<TrackState>& getTrackStates() {return trackStates_; }
+  std::vector<TrackState> getTrackStates() const {return trackStates_; }
   
  protected:
     

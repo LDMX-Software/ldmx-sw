@@ -137,8 +137,8 @@ void CKFProcessor::onProcessStart() {
                     : std::make_unique<CkfPropagator>(stepper, navigator);
   //auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
-  // Setup the fitters // you can add a second argument with a unique pointer to the logger you want
-  //ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE));
+  
+  //Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
@@ -172,7 +172,9 @@ void CKFProcessor::produce(framework::Event& event) {
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
-  
+
+
+  // Move this to the start of the producer.
   Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
   
   propagator_options.pathLimit = std::numeric_limits<double>::max();
@@ -199,15 +201,12 @@ void CKFProcessor::produce(framework::Event& event) {
   // Electron hypothesis
   propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
-  // std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
-
   // #######################//
   // Kalman Filter algorithm//
   // #######################//
 
   // Step 1 - Form the source links
 
-  // std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   // a) Loop over the sim Hits
 
   auto setup = std::chrono::high_resolution_clock::now();
@@ -366,31 +365,6 @@ void CKFProcessor::produce(framework::Event& event) {
                                          &sourceLinkAccessor);
   
   
-  /*
-  ActsExamples::GeometryIdMultiset<ActsExamples::IndexSourceLink> geoId_flat_multimap;
-  
-  for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
-    ldmx::Measurement meas = measurements.at(i_meas);
-    unsigned int layerid = meas.getLayerID();
-    const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
-    if (hit_surface) {
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
-                                           i_meas);
-      
-      geoId_flat_multimap.emplace(hit_surface->geometryId(), idx_sl);
-    }
-  }
-
-  
-  ActsExamples::IndexSourceLinkAccessor slAccessor;
-  slAccessor.container = &geoId_flat_multiset;
-  Acts::SourceLinkAccessorDelegate<ActsExamples::IndexSourceLinkAccessor::Iterator>
-      slAccessorDelegate;
-  slAccessorDelegate.connect<&ActsExamples::IndexSourceLinkAccessor::range>(&slAccessor);
-  */
-  
-  
-  
   ldmx_log(debug) 
       << "Surfaces..." <<  std::endl;
   
@@ -472,6 +446,9 @@ void CKFProcessor::produce(framework::Event& event) {
     
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
+
+    if  (track.nMeasurements() < 9)
+      continue;
     
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
@@ -537,8 +514,9 @@ void CKFProcessor::produce(framework::Event& event) {
     surf_rotation(2,1) = 1;
     //w direction along +X
     surf_rotation(0,2) = 1;
-    
-    Acts::Vector3 pos(200., 0., 0.);
+
+    const double ECAL_SCORING_PLANE  = 240.5;
+    Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
     Acts::Translation3 surf_translation(pos);
     Acts::Transform3 surf_transform(surf_translation * surf_rotation);
     
@@ -556,17 +534,30 @@ void CKFProcessor::produce(framework::Event& event) {
     //Unbounded surface
     const std::shared_ptr<Acts::PlaneSurface> target_surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
-    
-    ldmx::Track::TrackState tsAtTarget;
-    bool tsuccess = trk_extrap_->TrackStateAtSurface(track,
-                                                     target_surface,
-                                                     tsAtTarget,
-                                                     ldmx::TrackStateType::AtTarget);
-    
-    if (tsuccess)
-      trk.addTrackState(tsAtTarget);
 
-
+    try {
+      
+      ldmx::Track::TrackState tsAtTarget;
+      bool success = trk_extrap_->TrackStateAtSurface(track,
+                                                      target_surface,
+                                                      tsAtTarget,
+                                                      ldmx::TrackStateType::AtTarget);
+      
+      if (success)
+        trk.addTrackState(tsAtTarget);
+      
+      
+      ldmx::Track::TrackState tsAtEcal;
+      success = trk_extrap_->TrackStateAtSurface(track,
+                                                 ecal_surface,
+                                                 tsAtEcal,
+                                                 ldmx::TrackStateType::AtECAL);
+      
+      
+      if (success)
+        trk.addTrackState(tsAtEcal);
+      
+    } catch (...) {}
     
     
     //Truth matching
@@ -582,18 +573,6 @@ void CKFProcessor::produce(framework::Event& event) {
       tracks.push_back(trk);
       ntracks_++;
     }
-    
-    /*
-      if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
-      std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0.
-      Chi2="<<trajState.chi2Sum<<std::endl; mj.visitBackwards(trackTip, [&](const
-      auto& state) { std::cout<<"Printing smoothed states"<<std::endl;
-      std::cout<<state.smoothed()<<std::endl;
-      std::cout<<"Printing filtered states"<<std::endl;
-      std::cout<<state.filtered()<<std::endl;
-      });
-      
-      }*/
     
   }    // loop seed track parameters
   

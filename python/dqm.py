@@ -204,3 +204,14 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("dup_nHoles",
                                   "dup nHoles",5,0,5)
                 
+            
+
+
+
+
+            #Ecal extrapolation
+            self.build1DHistogram("trk_ecal_loc0","trk_ecal_loc0 [mm]",200,-50,50)
+            self.build1DHistogram("sp_hit_Y","sp_hit_Y [mm]",200,-50,50)
+            
+            
+            
