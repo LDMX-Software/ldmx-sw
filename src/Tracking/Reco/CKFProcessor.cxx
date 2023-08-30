@@ -447,7 +447,7 @@ void CKFProcessor::produce(framework::Event& event) {
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
 
-    if  (track.nMeasurements() < 9)
+    if  (track.nMeasurements() < 8)
       continue;
     
     const Acts::BoundVector& perigee_pars =  track.parameters();
