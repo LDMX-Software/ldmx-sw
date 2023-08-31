@@ -139,7 +139,13 @@ void CKFProcessor::onProcessStart() {
 
   
   //Setup the finder / fitters
-  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
+  auto ckf_loggingLevel = Acts::Logging::FATAL;
+  if (debug_)
+    ckf_loggingLevel = Acts::Logging::VERBOSE;
+  const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
+  
+  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,
+                                                         Acts::getDefaultLogger("CKF", ckf_loggingLevel));
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
                                                                        gctx_,
@@ -393,10 +399,6 @@ void CKFProcessor::produce(framework::Event& event) {
     extr_surface = &(*seed_surface);
   }
 
-  auto ckf_loggingLevel = Acts::Logging::FATAL;
-  if (debug_)
-    ckf_loggingLevel = Acts::Logging::VERBOSE;
-  const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
   const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
       gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
       propagator_options, &(*extr_surface));
@@ -411,17 +413,22 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
   
 
+  int GoodResult = 0;
+  
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_run"] +=
+      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
+  
+  //I create a new container for every seed
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
   
-  int GoodResult = 0;
-
-  auto ckf_run = std::chrono::high_resolution_clock::now();
-    profiling_map_["ckf_run"] +=
-        std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
-  
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
+    
+
+    ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
+    
 
     auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
     
@@ -453,7 +460,7 @@ void CKFProcessor::produce(framework::Event& event) {
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
-
+    
     ldmx_log(debug)<<"Found track: nMeas "<< track.nMeasurements()<<std::endl
                    <<"Track states "<< track.nTrackStates()<<std::endl
                    <<perigee_pars[Acts::eBoundLoc0]<<" "
@@ -524,9 +531,6 @@ void CKFProcessor::produce(framework::Event& event) {
     const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
     
-    trk_extrap_->extrapolate(track, ecal_surface);
-    
-    
     Acts::Vector3 target_pos(0., 0., 0.);
     Acts::Translation3 target_translation(target_pos);
     Acts::Transform3 target_transform(target_translation * surf_rotation);
@@ -535,29 +539,30 @@ void CKFProcessor::produce(framework::Event& event) {
     const std::shared_ptr<Acts::PlaneSurface> target_surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
 
-    try {
-      
-      ldmx::Track::TrackState tsAtTarget;
-      bool success = trk_extrap_->TrackStateAtSurface(track,
-                                                      target_surface,
-                                                      tsAtTarget,
-                                                      ldmx::TrackStateType::AtTarget);
-      
-      if (success)
-        trk.addTrackState(tsAtTarget);
-      
-      
-      ldmx::Track::TrackState tsAtEcal;
-      success = trk_extrap_->TrackStateAtSurface(track,
-                                                 ecal_surface,
-                                                 tsAtEcal,
-                                                 ldmx::TrackStateType::AtECAL);
-      
-      
-      if (success)
-        trk.addTrackState(tsAtEcal);
-      
-    } catch (...) {}
+
+    ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
+
+    ldmx_log(debug)<<"Target extrapolation";
+    ldmx::Track::TrackState tsAtTarget;
+    bool success = trk_extrap_->TrackStateAtSurface(track,
+                                                    target_surface,
+                                                    tsAtTarget,
+                                                    ldmx::TrackStateType::AtTarget);
+    
+    if (success)
+      trk.addTrackState(tsAtTarget);
+    
+
+    ldmx_log(debug)<<"Ecal Extrapolation";
+    ldmx::Track::TrackState tsAtEcal;
+    success = trk_extrap_->TrackStateAtSurface(track,
+                                               ecal_surface,
+                                               tsAtEcal,
+                                               ldmx::TrackStateType::AtECAL);
+    
+    
+    if (success)
+      trk.addTrackState(tsAtEcal);
     
     
     //Truth matching

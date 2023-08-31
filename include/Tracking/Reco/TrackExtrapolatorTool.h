@@ -92,31 +92,42 @@ public:
     // get first and last track state on surface
     size_t nstates = track.nTrackStates();
     auto& tsc       = track.container().trackStateContainer();
-    auto  ts_first  = tsc.getTrackState(0);
-    auto  ts_last   = tsc.getTrackState(nstates-1);
-    
+    //auto  ts_first  = tsc.getTrackState(0);
+    //auto  ts_last   = tsc.getTrackState(nstates-1);
+    auto  outermost = *(track.trackStates().begin());
+    auto  begin  = track.trackStates().begin();
+    std::advance(begin, track.nTrackStates() - 1 );
+    auto  innermost  = *begin;
     
     // I'm checking which track state is closer to the origin of the target surface to decide
     // from where to start the extrapolation to the surface. I use the coordinate along the beam axis.
     
-    double first_dis =  std::abs(ts_first.referenceSurface().transform(gctx_).translation()(0)
+    double first_dis =  std::abs(innermost.referenceSurface().transform(gctx_).translation()(0)
                                  - target_surface->transform(gctx_).translation()(0));
     
-    double last_dis =  std::abs(ts_last.referenceSurface().transform(gctx_).translation()(0)
+    double last_dis =  std::abs(outermost.referenceSurface().transform(gctx_).translation()(0)
                                 - target_surface->transform(gctx_).translation()(0));
     
 
     //This is the track state to use for the extrapolation
     
-    const auto& ts = first_dis < last_dis ? ts_first : ts_last;
+    const auto& ts = first_dis < last_dis ? innermost : outermost;
 
+    //std::cout<<"Selected track state for extrapolation"<<std::endl;
+    
     //Get the BoundTrackStateParameters
     
     const auto& surface  = ts.referenceSurface();
     const auto& smoothed = ts.smoothed();
+    bool hasSmoothed = ts.hasSmoothed();
+    const auto& filtered = ts.filtered();
     const auto& cov      = ts.smoothedCovariance();
 
-
+    //std::cout<<"Surface::"<<     surface.transform(gctx_).translation()<<std::endl;
+    //std::cout<<"Smoothed::"<<    smoothed.transpose()<<std::endl;
+    //std::cout<<"HasSmoothed::"<< hasSmoothed<<std::endl;
+    //std::cout<<"Filtered::"<<    filtered.transpose()<<std::endl;
+    
     Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
                          : -1 * Acts::UnitConstants::e;
     
@@ -140,10 +151,9 @@ public:
     // Now.. I'm taking whatever it is. I'm not checking here if it is a measurement.
     
     size_t nstates = track.nTrackStates();
-    
-    
     auto& tsc     = track.container().trackStateContainer();
-    auto  ts_last = tsc.getTrackState(nstates-1);
+    auto begin = track.trackStates().begin();
+    auto ts_last = *begin;
     const auto& surface  = (ts_last).referenceSurface();
     const auto& smoothed = (ts_last).smoothed();
     const auto& cov      = (ts_last).smoothedCovariance();
