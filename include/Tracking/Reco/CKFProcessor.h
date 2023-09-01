@@ -81,6 +81,7 @@
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Reco/TrackExtrapolatorTool.h"
 
 
 //--- Interpolated magnetic field ---//
@@ -222,10 +223,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   //Stepping size (in mm)
   double propagator_step_size_{200.};
   int propagator_maxSteps_{1000};
-
-  //The perigee location used for the initial propagator states generation
-  std::vector<double> perigee_location_{0.,0.,0.};
-
+  
   //The extrapolation surface
   bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0.,0.,0.};
@@ -268,6 +266,9 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   //The KF
   std::unique_ptr<const Acts::KalmanFitter<CkfPropagator,Acts::VectorMultiTrajectory>> kf_;
+
+  //Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>> trk_extrap_ ;
 
   //The GSF Fitter
   //std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;

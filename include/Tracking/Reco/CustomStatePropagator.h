@@ -51,7 +51,7 @@ namespace tracking::reco{
                   int q,
                   const Acts::Vector3 gen_pos,
                   const Acts::Vector3 gen_mom,
-                  const Acts::BoundTrackParameters* endParams);
+                  const Acts::BoundTrackParameters& endParams);
     
     Acts::GeometryContext gctx_;
     Acts::MagneticFieldContext bctx_;

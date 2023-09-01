@@ -257,6 +257,8 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   
   std::vector<ldmx::TruthTrack> tagger_truth_tracks;
   std::vector<ldmx::TruthTrack> recoil_truth_tracks;
+  std::vector<ldmx::Track> recoil_truth_seeds;
+  
   //Define the perigee_surface at 0.0.0
   auto perigee_surface{Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(0.,0.,0.))};
   //Define the target_surface
@@ -296,7 +298,7 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     createTruthTrack(phit,hit,truth_recoil_track);
     recoil_truth_tracks.push_back(truth_recoil_track);
   }
-
+  
   /*
   std::cout<<"TAGGER TRUTH TRACKS"<<std::endl;
   for (auto tt : tagger_truth_tracks) {
@@ -310,9 +312,54 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   }
   std::cout<<"#########"<<std::endl;
   */
+
+
+  //Form a truth seed from a truth track
+
+  for ( auto& tt: recoil_truth_tracks) {
+    
+    ldmx::Track seed = ldmx::Track();
+    seed.setPerigeeLocation(tt.getPerigeeLocation()[0],
+                            tt.getPerigeeLocation()[1],
+                            tt.getPerigeeLocation()[2]);
+    seed.setChi2(0.);
+    seed.setNhits(0);
+    seed.setNdf(0);
+    seed.setNsharedHits(0);
+
+    Acts::BoundVector bound_params;
+    bound_params << tt.getD0(), tt.getZ0(), tt.getPhi(), tt.getTheta(),
+        tt.getQoP(), tt.getT();
+
+    std::vector<double> v_seed_params(
+        (bound_params).data(),
+        bound_params.data() + bound_params.rows() * bound_params.cols());
+    
+    Acts::BoundVector stddev;
+
+    double p = std::abs(1. / tt.getQoP());
+    
+    double sigma_p = 0.75 * p * Acts::UnitConstants::GeV;
+    stddev[Acts::eBoundLoc0] = 2 * Acts::UnitConstants::mm;
+    stddev[Acts::eBoundLoc1] = 5 * Acts::UnitConstants::mm;
+    stddev[Acts::eBoundTime] = 1000 * Acts::UnitConstants::ns;
+    stddev[Acts::eBoundPhi] = 5 * Acts::UnitConstants::degree;
+    stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
+    stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
+    
+    Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+
+    std::vector<double> v_seed_cov;
+    tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
+    seed.setPerigeeParameters(v_seed_params);
+    seed.setPerigeeCov(v_seed_cov);
+
+    recoil_truth_seeds.push_back(seed);
+  }
   
   event.add("TaggerTruthTracks",tagger_truth_tracks);
   event.add("RecoilTruthTracks",recoil_truth_tracks);
+  event.add("RecoilTruthSeeds" ,recoil_truth_seeds);
   
 }
 }  // namespace tracking::reco
