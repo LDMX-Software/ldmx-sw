@@ -3,12 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Documentation for ldmx-sw python API
-====================================
+ldmx-sw python configuration module
+===================================
+
+`Go Back to C++ Manual </ldmx-sw/index.html>`_
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:
+   :maxdepth: 4
 
    LDMX
 
