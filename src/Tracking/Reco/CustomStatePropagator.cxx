@@ -1,4 +1,4 @@
-#include "CustomStatePropagator.h"
+#include "Tracking/Reco/CustomStatePropagator.h"
 
 #include "Acts/Utilities/Logger.hpp"
 
@@ -40,16 +40,6 @@ void CustomStatePropagator::onProcessStart() {
   outTree_->Branch("end_px",&end_px);
   outTree_->Branch("end_py",&end_py);
   outTree_->Branch("end_pz",&end_pz);
-
-  
-  // TODO:: Move this to an external file
-  auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
-                                 std::array<size_t, 3> sizes) {
-    return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
-            bins[2]);  // xyz - field space
-    // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
-    // //zxy
-  };
 
   
   // Setup a interpolated bfield map
@@ -170,24 +160,21 @@ void CustomStatePropagator::onProcessStart() {
         Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
     
-    const Acts::BoundTrackParameters* endParams = nullptr;
-
     //Do the propagation to the surface
 
-    //auto result = propagator->propagate(startParams,*target_surface, propagator_options);
+    auto result = propagator->propagate(startParams,*target_surface, propagator_options);
 
-    //if (result.ok()) {
-    //  endParams = (*result).endParameters.get();
-    //  fillTree(i_state, q, gen_pos, gen_mom, endParams);
-      
-    //}
-    //else
-     // continue;
+    if (not result.ok()) {
+      return;
+    }
     
+    const auto& endParams = *result->endParameters;
+
+    fillTree(i_state, q, gen_pos, gen_mom, endParams);
+
     //loc0 // loc1 will give you the u-v location of the hit on the ecal face
     
   }//state propagation
-  
   
 }//on Process Start
 
@@ -210,7 +197,7 @@ void CustomStatePropagator::fillTree(int state,
                                      int q,
                                      const Acts::Vector3 gen_pos,
                                      const Acts::Vector3 gen_mom,
-                                     const Acts::BoundTrackParameters* endParams) {
+                                     const Acts::BoundTrackParameters& endParams) {
 
   state_nr = state;
   charge  = q;
@@ -222,16 +209,16 @@ void CustomStatePropagator::fillTree(int state,
   gen_py = gen_mom(1);
   gen_pz = gen_mom(2);
 
-  Acts::Vector3 end_pos = endParams->position(gctx_);
+  Acts::Vector3 end_pos = endParams.position(gctx_);
   end_x  = end_pos(0);
   end_y  = end_pos(1);
   end_z  = end_pos(2);
 
-  Acts::BoundVector bound_parameters = endParams->parameters();
+  Acts::BoundVector bound_parameters = endParams.parameters();
   end_loc0 = bound_parameters[Acts::eBoundLoc0];
   end_loc1 = bound_parameters[Acts::eBoundLoc1];
   
-  Acts::Vector3 end_mom = endParams->momentum();
+  Acts::Vector3 end_mom = endParams.momentum();
   end_px = end_mom(0);
   end_py = end_mom(1);
   end_pz = end_mom(2);

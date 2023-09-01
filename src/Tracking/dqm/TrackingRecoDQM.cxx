@@ -1,6 +1,7 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
+
 #include <algorithm>
 
 namespace tracking::dqm {
@@ -19,14 +20,40 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   
   if (!event.exists(trackCollection_)) return;
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-  
+
+  // The truth track collection
   if (event.exists(truthCollection_)) {
     truthTrackCollection_ =
         std::make_shared<std::vector<ldmx::TruthTrack>>(event.getCollection<ldmx::TruthTrack>(truthCollection_));
     doTruthComparison = true;
   }
 
+  // The scoring plane hits
+  if (event.exists("EcalScoringPlaneHits")) {
+    ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits"));
+  }
+
+  if (doTruthComparison) {
+    sortTracks(tracks,uniqueTracks, duplicateTracks,fakeTracks);
+  }
+  else {
+    uniqueTracks = tracks;
+  }
+  
+  // Track Monitoring - TODO ... FIX the truth matching
+  
   TrackMonitoring(tracks,title_);
+  
+  // Track Extrapolation to Ecal Monitoring
+  
+  TrackEcalScoringPlaneMonitoring(tracks);
+  
+  
+  // Clear the vectors
+  uniqueTracks.clear();
+  duplicateTracks.clear();
+  fakeTracks.clear();
+  
 }
 
 
@@ -40,18 +67,6 @@ void TrackingRecoDQM::onProcessEnd() {
 
 void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                                       const std::string title) {
-  
-  //If I have truth information, sort the tracks vector according to their trackID and truthProb
-  std::vector<ldmx::Track> uniqueTracks;     // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::Track> duplicateTracks;  // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::Track> fakeTracks;       // fake tracks (truth_prob < cut)
-  
-  if (doTruthComparison) {
-    sortTracks(tracks,uniqueTracks, duplicateTracks,fakeTracks);
-  }
-  else {
-    uniqueTracks = tracks;
-  }
   
   for (auto &track : uniqueTracks) {
     
@@ -109,8 +124,14 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"qop_err",  sigmaqop); 
     
     double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
-    histograms_.fill(title+"p_err",  sigmap); 
+    histograms_.fill(title+"p_err",  sigmap);
+
+
+    //Track states monitoring
+    auto trackStates = track.getTrackStates();
     
+    for (auto& ts : trackStates) {}
+        
     if (doTruthComparison) {
 
       //Truth Comparison
@@ -211,6 +232,69 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
   }
       
 }//Track Monitoring
+
+
+void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks) {
+  
+  // Select the scoring plane hits that belong to the front of the ECAL
+  // The front of the ecal is selected by checking that id_ & 0xfff is equal to 31.
+
+  std::vector<ldmx::SimTrackerHit> sel_ecal_spHits;
+
+  // TODO Use reference instead to avoid copy?
+
+  for (auto sp_hit : *(ecal_scoring_hits_)) {
+    
+    if (sp_hit.getMomentum()[2] > 0 && ((sp_hit.getID() & 0xfff) == 31)) {
+      
+      sel_ecal_spHits.push_back(sp_hit);
+    }
+    
+  }
+
+  for (auto& track : tracks) {
+    
+    for (auto& sp_hit : sel_ecal_spHits) {
+
+
+      if (track.getTrackID() == sp_hit.getTrackID()) {
+        
+        // Get the Track extrapolated position
+        // For the moment the trackState at the ECAL surface is the last in the vector
+        // And the size of the vector is 2. So I hardcoded 1. 
+
+        if (track.getTrackStates().size() < 2)
+          continue;
+                  
+        
+        ldmx::Track::TrackState ecalState = track.getTrackStates()[1];
+        
+
+        // Here is where you add the histograms
+        // This gets the track local position 0
+        // loc0 is along global X
+        // loc1 is along global Y
+        
+        //Check that the track state is filled
+        if (ecalState.params.size() < 5)
+          continue;
+        
+        histograms_.fill(title_+"trk_ecal_loc0", ecalState.params[0]);
+        
+        // This gets the hit global position Y
+        
+        auto scoring_plane_hit_pos = sp_hit.getPosition();
+        histograms_.fill(title_+"sp_hit_Y", scoring_plane_hit_pos[1]);
+        
+        
+      }
+      
+    } // loop on sp_hits
+  }// loop on tracks
+  
+}
+
+
 
 
 void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,

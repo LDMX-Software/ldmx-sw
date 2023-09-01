@@ -39,11 +39,73 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Setup a constant magnetic field
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
   
+  // Custom transformation of the interpolated bfield map
+  Acts::Vector3 offset{0.,0.,400.};
+  bool debugTransform = false;
+  auto transformPos = [offset,debugTransform](const Acts::Vector3& pos) {
+
+    Acts::Vector3 rot_pos;
+    rot_pos(0)=pos(1);
+    rot_pos(1)=pos(2);
+    rot_pos(2)=pos(0);
+
+    //Apply offset
+    rot_pos += offset;
+
+    //Apply A rotation around the center of the magnet. (I guess offset first and then rotation)
+
+    if (debugTransform) {
+      std::cout<<"PF::DEFAULT3 TRANSFORM"<<std::endl;
+      std::cout<<"PF::Check:: transforming Pos"<<std::endl;
+      std::cout<<pos<<std::endl;
+      std::cout<<"TO"<<std::endl;
+      std::cout<<rot_pos<<std::endl;
+    }
+
+    return rot_pos;
+  };
+
+
+  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
+  double scale = 1.;
+  
+  auto transformBField = [rotation, scale, debugTransform](const Acts::Vector3& field,
+                                           const Acts::Vector3& /*pos*/) {
+
+    //Rotate the field in tracking coordinates
+    Acts::Vector3 rot_field;
+    rot_field(0) = field(2);
+    rot_field(1) = field(0);
+    rot_field(2) = field(1);
+
+    
+    //Scale the field
+    rot_field = scale * rot_field;
+
+    //Rotate the field
+    rot_field = rotation * rot_field;
+
+    //A distortion scaled by position.
+    
+
+    if (debugTransform) {
+      std::cout<<"PF::DEFAULT3 TRANSFORM"<<std::endl;
+      std::cout<<"PF::Check:: transforming"<<std::endl;
+      std::cout<<field<<std::endl;
+      std::cout<<"TO"<<std::endl;
+      std::cout<<rot_field<<std::endl;
+    }
+    
+    return rot_field;
+  };
+  
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
       loadDefaultBField(field_map_,
-                        default_transformPos,
-                        default_transformBField));
+                        //default_transformPos,
+                        //default_transformBField));
+                        transformPos,
+                        transformBField));
   
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
@@ -64,10 +126,19 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                     : std::make_unique<CkfPropagator>(stepper, navigator);
   //auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
-  // Setup the fitters // you can add a second argument with a unique pointer to the logger you want
-  //ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,Acts::getDefaultLogger("CKF", Acts::Logging::VERBOSE));
-  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_);
+  
+  //Setup the finder / fitters
+  auto ckf_loggingLevel = Acts::Logging::FATAL;
+  if (debug_)
+    ckf_loggingLevel = Acts::Logging::VERBOSE;
+  const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
+  
+  ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,
+                                                         Acts::getDefaultLogger("CKF", ckf_loggingLevel));
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
+  trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
+                                                                       gctx_,
+                                                                       bctx_);
 
   //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
   //    std::move(gsf_propagator));
@@ -84,56 +155,42 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 void CKFProcessor::produce(framework::Event& event) {
 
   eventnr_++;
-
   // get the tracking geometry from conditions
   auto tg{geometry()};
 
-  // int counter=0
-  // if (counter==0) {
-  // propagateENstates(event,
-  //                   "hadron_vars_piminus_1e6.txt",
-  //                   "hadron_vars_piminus_1e6_out.root");
-  // counter+=1;
-  // }
-
-
   // TODO use global variable instead and call clear;
-  std::vector<ldmx::Track> tracks;
 
+  std::vector<ldmx::Track> tracks;
+  
   auto start = std::chrono::high_resolution_clock::now();
 
   nevents_++;
   if (nevents_ % 1000 == 0)
     ldmx_log(info) << "events processed:" << nevents_;
-
-  /*
-  std::shared_ptr<const Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(perigee_location_.at(0), perigee_location_.at(1),
-                        perigee_location_.at(2)));
-  */
-                        
+  
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
 
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options_geo(
       geometry_context(), magnetic_field_context()
       );
 
+  // Move this to the start of the producer.
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
+  
   propagator_options.pathLimit = std::numeric_limits<double>::max();
-
+  
   // Activate loop protection at some pt value
-  propagator_options.loopProtection =
-      false;  //(startParameters.transverseMomentum() < cfg.ptLoopers);
-
+  propagator_options.loopProtection = false;  //(startParameters.transverseMomentum() < cfg.ptLoopers);
+  
   // Switch the material interaction on/off & eventually into logging mode
   auto& mInteractor =
       propagator_options.actionList.get<Acts::MaterialInteractor>();
   mInteractor.multipleScattering = true;
   mInteractor.energyLoss = true;
   mInteractor.recordInteractions = false;
-
+  
   // The logger can be switched to sterile, e.g. for timing logging
   auto& sLogger =
       propagator_options.actionList.get<Acts::detail::SteppingLogger>();
@@ -142,11 +199,9 @@ void CKFProcessor::produce(framework::Event& event) {
   propagator_options.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps = propagator_maxSteps_;
-
+  
   // Electron hypothesis
   propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
-
-  // std::cout<<"Setting up the Kalman Filter Algorithm"<<std::endl;
 
   // #######################//
   // Kalman Filter algorithm//
@@ -154,7 +209,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Step 1 - Form the source links
 
-  // std::vector<ActsExamples::IndexSourceLink> sourceLinks;
   // a) Loop over the sim Hits
 
   auto setup = std::chrono::high_resolution_clock::now();
@@ -190,7 +244,7 @@ void CKFProcessor::produce(framework::Event& event) {
   
   const std::vector<ldmx::Track> seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_);
-  
+
   // Run the CKF on each seed and produce a track candidate
   std::vector<Acts::BoundTrackParameters> startParameters;
   for (auto& seed : seed_tracks) {
@@ -203,7 +257,7 @@ void CKFProcessor::produce(framework::Event& event) {
     Acts::BoundVector paramVec;
     paramVec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
-
+    
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
@@ -312,32 +366,6 @@ void CKFProcessor::produce(framework::Event& event) {
                                      decltype(sourceLinkAccessor)>(
                                          &sourceLinkAccessor);
   
-  
-  /*
-  ActsExamples::GeometryIdMultiset<ActsExamples::IndexSourceLink> geoId_flat_multimap;
-  
-  for (unsigned int i_meas = 0; i_meas < measurements.size(); i_meas++) {
-    ldmx::Measurement meas = measurements.at(i_meas);
-    unsigned int layerid = meas.getLayerID();
-    const Acts::Surface* hit_surface = tg.getSurface(layerid);
-    if (hit_surface) {
-      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
-                                           i_meas);
-      
-      geoId_flat_multimap.emplace(hit_surface->geometryId(), idx_sl);
-    }
-  }
-
-  
-  ActsExamples::IndexSourceLinkAccessor slAccessor;
-  slAccessor.container = &geoId_flat_multiset;
-  Acts::SourceLinkAccessorDelegate<ActsExamples::IndexSourceLinkAccessor::Iterator>
-      slAccessorDelegate;
-  slAccessorDelegate.connect<&ActsExamples::IndexSourceLinkAccessor::range>(&slAccessor);
-  */
-  
-  
-  
   ldmx_log(debug) 
       << "Surfaces..." <<  std::endl;
   
@@ -366,10 +394,6 @@ void CKFProcessor::produce(framework::Event& event) {
     extr_surface = &(*seed_surface);
   }
 
-  auto ckf_loggingLevel = Acts::Logging::FATAL;
-  if (debug_)
-    ckf_loggingLevel = Acts::Logging::VERBOSE;
-  const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
   const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
       geometry_context(), 
       magnetic_field_context(),
@@ -387,17 +411,22 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
   
 
+  int GoodResult = 0;
+  
+  auto ckf_run = std::chrono::high_resolution_clock::now();
+  profiling_map_["ckf_run"] +=
+      std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
+  
+  //I create a new container for every seed
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
   
-  int GoodResult = 0;
-
-  auto ckf_run = std::chrono::high_resolution_clock::now();
-    profiling_map_["ckf_run"] +=
-        std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
-  
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
+    
+
+    ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
+    
 
     auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
     
@@ -423,10 +452,12 @@ void CKFProcessor::produce(framework::Event& event) {
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
 
+    if  (track.nMeasurements() < 7)
+      continue;
+    
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
-    
     
     ldmx_log(debug)<<"Found track: nMeas "<< track.nMeasurements()<<std::endl
                    <<"Track states "<< track.nTrackStates()<<std::endl
@@ -437,8 +468,6 @@ void CKFProcessor::produce(framework::Event& event) {
                    <<perigee_pars[Acts::eBoundQOverP]<<std::endl
                    <<"nHoles  "<<track.nHoles();
     
-    
-
     ldmx::Track trk = ldmx::Track();
     trk.setPerigeeLocation(perigee_surface.transform(geometry_context()).translation()(0),
                            perigee_surface.transform(geometry_context()).translation()(1),
@@ -476,6 +505,64 @@ void CKFProcessor::produce(framework::Event& event) {
       }
     }
 
+    // Extrapolations
+    
+    //Define the target surface - be careful:
+    // x - downstream
+    // y - left (when looking along x)
+    // z - up
+    // Passing identity here means that your target surface is oriented in the same way
+    Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
+    //u direction along +Y
+    surf_rotation(1,0) = 1;
+    //v direction along +Z
+    surf_rotation(2,1) = 1;
+    //w direction along +X
+    surf_rotation(0,2) = 1;
+
+    const double ECAL_SCORING_PLANE  = 240.5;
+    Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
+    Acts::Translation3 surf_translation(pos);
+    Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+    
+    //Unbounded surface
+    const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+    
+    Acts::Vector3 target_pos(0., 0., 0.);
+    Acts::Translation3 target_translation(target_pos);
+    Acts::Transform3 target_transform(target_translation * surf_rotation);
+    
+    //Unbounded surface
+    const std::shared_ptr<Acts::PlaneSurface> target_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
+
+
+    ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
+
+    ldmx_log(debug)<<"Target extrapolation";
+    ldmx::Track::TrackState tsAtTarget;
+    bool success = trk_extrap_->TrackStateAtSurface(track,
+                                                    target_surface,
+                                                    tsAtTarget,
+                                                    ldmx::TrackStateType::AtTarget);
+    
+    if (success)
+      trk.addTrackState(tsAtTarget);
+    
+
+    ldmx_log(debug)<<"Ecal Extrapolation";
+    ldmx::Track::TrackState tsAtEcal;
+    success = trk_extrap_->TrackStateAtSurface(track,
+                                               ecal_surface,
+                                               tsAtEcal,
+                                               ldmx::TrackStateType::AtECAL);
+    
+    
+    if (success)
+      trk.addTrackState(tsAtEcal);
+    
+    
     //Truth matching
     if (truthMatchingTool) {
       auto truthInfo = truthMatchingTool->TruthMatch(trk);
@@ -483,24 +570,12 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
-
+    
     //At least 8 hits and p > 50 MeV
     if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
       tracks.push_back(trk);
       ntracks_++;
     }
-    
-    /*
-      if (ckf_result.fittedParameters.begin()->second.charge() > 0) {
-      std::cout<<getName()<<"::ERROR!!! ERROR!! Found track with q>0.
-      Chi2="<<trajState.chi2Sum<<std::endl; mj.visitBackwards(trackTip, [&](const
-      auto& state) { std::cout<<"Printing smoothed states"<<std::endl;
-      std::cout<<state.smoothed()<<std::endl;
-      std::cout<<"Printing filtered states"<<std::endl;
-      std::cout<<state.filtered()<<std::endl;
-      });
-      
-      }*/
     
   }    // loop seed track parameters
   
@@ -560,8 +635,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.getParameter<double>("propagator_step_size", 200.);
   propagator_maxSteps_ =
       parameters.getParameter<int>("propagator_maxSteps", 10000);
-  perigee_location_ = parameters.getParameter<std::vector<double>>(
-      "perigee_location", {0., 0., 0.});
   measurement_collection_ =
       parameters.getParameter<std::string>("measurement_collection","TaggerMeasurements");
   outlier_pval_ = parameters.getParameter<double>("outlier_pval_",3.84);

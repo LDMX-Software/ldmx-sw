@@ -90,6 +90,6 @@ setup_library(module Tracking
               sources ${SRC_FILES})
 
 
-include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
+#include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)
