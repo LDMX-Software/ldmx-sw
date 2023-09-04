@@ -123,7 +123,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   /**
    *
    */
-  void onProcessStart() override;
+void onProcessStart() override {};
 
   /**
    * onNewRun is the first function called for each processor

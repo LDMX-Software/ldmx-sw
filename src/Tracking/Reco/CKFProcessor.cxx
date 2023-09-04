@@ -137,8 +137,8 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                                                          Acts::getDefaultLogger("CKF", ckf_loggingLevel));
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
-                                                                       gctx_,
-                                                                       bctx_);
+                                                                       geometry_context(),
+                                                                       magnetic_field_context());
 
   //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
   //    std::move(gsf_propagator));
@@ -172,13 +172,12 @@ void CKFProcessor::produce(framework::Event& event) {
   ACTS_LOCAL_LOGGER(
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
 
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options_geo(
+
+  //Move this at the start of the producer
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
       geometry_context(), magnetic_field_context()
       );
 
-  // Move this to the start of the producer.
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
-  
   propagator_options.pathLimit = std::numeric_limits<double>::max();
   
   // Activate loop protection at some pt value
