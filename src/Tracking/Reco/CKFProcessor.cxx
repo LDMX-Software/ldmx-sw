@@ -5,7 +5,6 @@
 #include "Acts/EventData/TrackHelpers.hpp"
 #include "Tracking/Reco/TruthMatchingTool.h"
 
-
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
 #include <iostream>
@@ -17,29 +16,19 @@ namespace tracking {
 namespace reco {
 
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
-    : framework::Producer(name, process) {
+    : TrackingGeometryUser(name, process) {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 }
 
 CKFProcessor::~CKFProcessor() {}
 
-void CKFProcessor::onProcessStart() {
+void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["setup"] = 0.;
   profiling_map_["hits"] = 0.;
   profiling_map_["seeds"] = 0.;
   profiling_map_["ckf_setup"] = 0.;
   profiling_map_["ckf_run"] = 0.;
   profiling_map_["result_loop"] = 0.;
-
-  gctx_ = Acts::GeometryContext();
-  bctx_ = Acts::MagneticFieldContext();
-
-  // Load the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      detector_, &gctx_, false);
-  const auto tGeometry = ldmx_tg->getTG();
-
-  if (dumpobj_) ldmx_tg->dumpGeometry("./");
 
   // Seed the generator
   generator_.seed(1);
@@ -124,7 +113,7 @@ void CKFProcessor::onProcessStart() {
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
   // Setup the navigator
-  Acts::Navigator::Config navCfg{tGeometry};
+  Acts::Navigator::Config navCfg{geometry().getTG()};
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = true;
   navCfg.resolveSensitive = true;
@@ -148,8 +137,8 @@ void CKFProcessor::onProcessStart() {
                                                          Acts::getDefaultLogger("CKF", ckf_loggingLevel));
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
-                                                                       gctx_,
-                                                                       bctx_);
+                                                                       geometry_context(),
+                                                                       magnetic_field_context());
 
   //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
   //    std::move(gsf_propagator));
@@ -166,6 +155,10 @@ void CKFProcessor::onProcessStart() {
 void CKFProcessor::produce(framework::Event& event) {
 
   eventnr_++;
+  // get the tracking geometry from conditions
+  auto tg{geometry()};
+
+  // TODO use global variable instead and call clear;
 
   std::vector<ldmx::Track> tracks;
   
@@ -180,9 +173,11 @@ void CKFProcessor::produce(framework::Event& event) {
       Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
 
 
-  // Move this to the start of the producer.
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(gctx_, bctx_);
-  
+  //Move this at the start of the producer
+  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
+      geometry_context(), magnetic_field_context()
+      );
+
   propagator_options.pathLimit = std::numeric_limits<double>::max();
   
   // Activate loop protection at some pt value
@@ -234,7 +229,7 @@ void CKFProcessor::produce(framework::Event& event) {
   
   // The mapping between the geometry identifier
   // and the IndexsourceLink that points to the hit
-  const auto geoId_sl_map = makeGeoIdSourceLinkMap(measurements);
+  const auto geoId_sl_map = makeGeoIdSourceLinkMap(tg, measurements);
 
   auto hits = std::chrono::high_resolution_clock::now();
   profiling_map_["hits"] +=
@@ -370,7 +365,6 @@ void CKFProcessor::produce(framework::Event& event) {
                                      decltype(sourceLinkAccessor)>(
                                          &sourceLinkAccessor);
   
-  
   ldmx_log(debug) 
       << "Surfaces..." <<  std::endl;
   
@@ -390,7 +384,7 @@ void CKFProcessor::produce(framework::Event& event) {
   }
 
   Acts::Vector3 seed_perigee_surface_center =
-      startParameters.at(0).referenceSurface().center(gctx_);
+      startParameters.at(0).referenceSurface().center(geometry_context());
   std::shared_ptr<const Acts::PerigeeSurface> seed_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           seed_perigee_surface_center);
@@ -400,7 +394,10 @@ void CKFProcessor::produce(framework::Event& event) {
   }
 
   const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
-      gctx_, bctx_, cctx_, sourceLinkAccessorDelegate, ckf_extensions,
+      geometry_context(), 
+      magnetic_field_context(),
+      calibration_context(), 
+      sourceLinkAccessorDelegate, ckf_extensions,
       propagator_options, &(*extr_surface));
 
 
@@ -471,9 +468,9 @@ void CKFProcessor::produce(framework::Event& event) {
                    <<"nHoles  "<<track.nHoles();
     
     ldmx::Track trk = ldmx::Track();
-    trk.setPerigeeLocation(perigee_surface.transform(gctx_).translation()(0),
-                           perigee_surface.transform(gctx_).translation()(1),
-                           perigee_surface.transform(gctx_).translation()(2));
+    trk.setPerigeeLocation(perigee_surface.transform(geometry_context()).translation()(0),
+                           perigee_surface.transform(geometry_context()).translation()(1),
+                           perigee_surface.transform(geometry_context()).translation()(2));
     
     
     trk.setChi2(track.chi2());
@@ -623,7 +620,6 @@ void CKFProcessor::onProcessEnd() {
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
-  detector_ = parameters.getParameter<std::string>("detector");
   dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
   steps_outfile_path_ = parameters.getParameter<std::string>(
@@ -675,8 +671,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
 
 void CKFProcessor::testField(
     const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
-    const Acts::Vector3& eval_pos) const {
-  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx_);
+    const Acts::Vector3& eval_pos) {
+  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(magnetic_field_context());
   std::cout << "Pos::\n" << eval_pos << std::endl;
   std::cout << " BField::\n"
             << bfield->getField(eval_pos, cache).value() /
@@ -685,6 +681,7 @@ void CKFProcessor::testField(
 }
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
+    const geo::TrackersTrackingGeometry& tg,
     const std::vector<ldmx::Measurement>& measurements)
     -> std::unordered_multimap<Acts::GeometryIdentifier,
                                ActsExamples::IndexSourceLink> {
@@ -700,7 +697,7 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
     ldmx::Measurement meas = measurements.at(i_meas);
     unsigned int layerid = meas.getLayerID();
 
-    const Acts::Surface* hit_surface = ldmx_tg->getSurface(layerid);
+    const Acts::Surface* hit_surface = tg.getSurface(layerid);
     
     
     if (hit_surface) {
@@ -710,10 +707,10 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(),
                                            i_meas);
 
-      ldmx_log(debug)<<"Insert measurement on surface located at::"<<hit_surface->transform(gctx_).translation();
+      ldmx_log(debug)<<"Insert measurement on surface located at::"<<hit_surface->transform(geometry_context()).translation();
       ldmx_log(debug)<<"and geoId::"<<hit_surface->geometryId()<<std::endl;
       
-      ldmx_log(debug)<<"Surface info::"<<std::tie(*hit_surface, gctx_);
+      ldmx_log(debug)<<"Surface info::"<<std::tie(*hit_surface, geometry_context());
       
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 

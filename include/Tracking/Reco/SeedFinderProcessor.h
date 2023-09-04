@@ -34,13 +34,13 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Reco/TrackersTrackingGeometry.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
+#include "Tracking/Reco/TrackingGeometryUser.h"
 
 namespace tracking {
 namespace reco {
 
-class SeedFinderProcessor : public framework::Producer {
+class SeedFinderProcessor : public TrackingGeometryUser {
  public:
   /**
    * Constructor.
@@ -92,14 +92,6 @@ class SeedFinderProcessor : public framework::Producer {
                            Acts::ActsVector<5>& helix_parameters,
                            Acts::Vector3 ref);
 
-  /// The tracking geometry
-  std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
-
-  /// The contexts
-  Acts::GeometryContext gctx_;
-  Acts::MagneticFieldContext bctx_;
-  Acts::CalibrationContext cctx_;
-
   Acts::Vector3 bField_;
 
   /* This is a temporary (working) solution to estimate the track parameters out
@@ -112,9 +104,6 @@ class SeedFinderProcessor : public framework::Producer {
   double processing_time_{0.};
   long nevents_{0};
   unsigned int ntracks_{0};
-
-  /// The path to the GDML description of the detector
-  std::string detector_;
 
   /// The name of the output collection of seeds to be stored.
   std::string out_seed_collection_{"SeedTracks"};
