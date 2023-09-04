@@ -38,6 +38,15 @@ if (p) p->requestFinish();
  */
 void printUsage();
 
+/**
+ * @func fire main
+ * @param[in] argc int number of command line arguments
+ * @param[in] argv array of command line arguments
+ *
+ * We configure and run a framework::Process using the first command-line
+ * argument ending in '.py' as the configu script for the framework::Process.
+ * If no such argument is found, we error out.
+ */
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     printUsage();
