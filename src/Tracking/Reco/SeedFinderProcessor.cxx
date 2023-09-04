@@ -19,7 +19,7 @@ namespace reco {
 
 SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
                                          framework::Process& process)
-    : framework::Producer(name, process) {
+    : TrackingGeometryUser(name, process) {
   
   outputFile_ = new TFile("seeder.root", "RECREATE");
   outputTree_ = new TTree("seeder", "seeder");
@@ -39,20 +39,12 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
 SeedFinderProcessor::~SeedFinderProcessor() {}
 
 void SeedFinderProcessor::onProcessStart() {
-  // Build the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      detector_, &gctx_, false);
-
   truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
-
-  
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
 
   // Retrieve the path to the GDML description of the detector
-  detector_ = parameters.getParameter<std::string>("detector");
-  
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "SeedTracks");
   input_hits_collection_ = parameters.getParameter<std::string>(
@@ -74,6 +66,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
+  const auto& tg{geometry()};
   auto start = std::chrono::high_resolution_clock::now();
   std::vector<ldmx::Track> seed_tracks;
 
@@ -172,11 +165,11 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     double xmeas = meas.getGlobalPosition()[0] - xOrigin;
 
     // Get the surface
-    const Acts::Surface* hit_surface = ldmx_tg->getSurface(meas.getLayerID());
+    const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
 
     // Get the global to local transformation
-    auto rot = hit_surface->transform(gctx_).rotation();
-    auto tr = hit_surface->transform(gctx_).translation();
+    auto rot = hit_surface->transform(geometry_context()).rotation();
+    auto tr = hit_surface->transform(geometry_context()).translation();
 
     auto rotl2g = rot.transpose();
 
@@ -267,13 +260,13 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // the mean might not fulfill the perigee condition.
   
   auto intersection =
-      (*seed_perigee).intersect(gctx_, seed_pos, dir, false);
+      (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
   
   Acts::FreeVector seed_free =
       tracking::sim::utils::toFreeParameters(intersection.intersection.position, seed_mom, q);
   
   auto bound_params = Acts::detail::transformFreeToBoundParameters(
-                          seed_free, *seed_perigee, gctx_)
+                          seed_free, *seed_perigee, geometry_context())
                           .value();
 
   ldmx_log(debug) << "bound parameters at perigee location" << std::endl
@@ -404,7 +397,8 @@ bool SeedFinderProcessor::GroupStrips(
 // for each of those This will reshuffle all points. (issue?) Will sort the
 // meas_for_seed vector
 
-void SeedFinderProcessor::FindSeedsFromMap(std::vector<ldmx::Track>& seeds) {
+void SeedFinderProcessor::FindSeedsFromMap(
+    std::vector<ldmx::Track>& seeds) {
   std::vector<ldmx::Measurement> meas_for_seeds;
   meas_for_seeds.reserve(5);
 

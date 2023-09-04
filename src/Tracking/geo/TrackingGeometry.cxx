@@ -1,15 +1,15 @@
-#include "Tracking/Reco/BaseTrackingGeometry.h"
 
-namespace tracking {
-namespace reco {
+#include "Tracking/geo/TrackingGeometry.h"
 
-BaseTrackingGeometry::BaseTrackingGeometry(std::string gdmlfile,
-                                           Acts::GeometryContext* gctx,
-                                           bool debug) {
-  debug_ = debug;
-  gctx_ = gctx;
-  gdml_ = gdmlfile;
+namespace tracking::geo {
 
+TrackingGeometry::TrackingGeometry(
+    const std::string& name,
+    const Acts::GeometryContext& gctx,
+    const std::string& gdml,
+    bool debug)
+    : framework::ConditionsObject(name),
+    gctx_{gctx}, gdml_{gdml}, debug_{debug} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
   double rotationAngle = M_PI * 0.5;
@@ -46,7 +46,7 @@ BaseTrackingGeometry::BaseTrackingGeometry(std::string gdmlfile,
   fWorldPhysVol_ = parser.GetWorldVolume();
 }
 
-G4VPhysicalVolume* BaseTrackingGeometry::findDaughterByName(
+G4VPhysicalVolume* TrackingGeometry::findDaughterByName(
     G4VPhysicalVolume* pvol, G4String name) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
@@ -59,7 +59,7 @@ G4VPhysicalVolume* BaseTrackingGeometry::findDaughterByName(
   return nullptr;
 }
 
-void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
+void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
 
   if (debug_)
@@ -84,7 +84,7 @@ void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 }
 
 // Retrieve the layers from a physical volume
-// void BaseTrackingGeometry::getComponentLayer(G4VPhysicalVolume* pvol,
+// void TrackingGeometry::getComponentLayer(G4VPhysicalVolume* pvol,
 //                                              std::string layer_name,
 //                                              std::string component_type,
 //                                              std::vector<std::reference_wrapper<G4PhysicalVolume>>
@@ -97,7 +97,7 @@ void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 
 //}
 
-void BaseTrackingGeometry::dumpGeometry(const std::string& outputDir) {
+void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
   if (!tGeometry_) return;
 
   // Should fail if already exists
@@ -114,13 +114,13 @@ void BaseTrackingGeometry::dumpGeometry(const std::string& outputDir) {
   Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
 
   Acts::GeometryView3D::drawTrackingVolume(
-      objVis, *(tGeometry_->highestTrackingVolume()), *gctx_, containerView,
+      objVis, *(tGeometry_->highestTrackingVolume()), gctx_, containerView,
       volumeView, passiveView, sensitiveView, gridView, true, "", ".");
 }
 
 // This method gets the transform from the physical volume to the tracking frame
-Acts::Transform3 BaseTrackingGeometry::GetTransform(
-    const G4VPhysicalVolume& phex, bool toTrackingFrame) {
+Acts::Transform3 TrackingGeometry::GetTransform(
+    const G4VPhysicalVolume& phex, bool toTrackingFrame) const {
   Acts::Vector3 pos(phex.GetTranslation().x(), phex.GetTranslation().y(),
                     phex.GetTranslation().z());
   
@@ -144,8 +144,8 @@ Acts::Transform3 BaseTrackingGeometry::GetTransform(
 
 // This method returns the transformation to the tracker coordinates z->x x->y
 // y->z
-Acts::Transform3 BaseTrackingGeometry::toTracker(
-    const Acts::Transform3& trans) {
+Acts::Transform3 TrackingGeometry::toTracker(
+    const Acts::Transform3& trans) const {
   Acts::Vector3 pos{trans.translation()(2), trans.translation()(0),
                     trans.translation()(1)};
 
@@ -159,8 +159,8 @@ Acts::Transform3 BaseTrackingGeometry::toTracker(
 }
 
 // Convert rotation
-void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
-                                        Acts::RotationMatrix3& rot) {
+void TrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
+                                        Acts::RotationMatrix3& rot) const {
 
   //If the rotation is the identity then g4rot will be a null ptr.
   //So then check it and fill rot accordingly
@@ -187,7 +187,7 @@ void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
 
 // Convert translation
 
-Acts::Vector3 BaseTrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) {
+Acts::Vector3 TrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) const {
   Acts::Vector3 trans{g4pos.x(), g4pos.y(), g4pos.z()};
 
   if (debug_) {
@@ -199,11 +199,11 @@ Acts::Vector3 BaseTrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) {
   return trans;
 }
 
-void BaseTrackingGeometry::getSurfaces(
-    std::vector<const Acts::Surface*>& surfaces) {
+void TrackingGeometry::getSurfaces(
+    std::vector<const Acts::Surface*>& surfaces) const {
   if (!tGeometry_)
     throw std::runtime_error(
-        "BaseTrackingGeometry::getSurfaces tGeometry is null");
+        "TrackingGeometry::getSurfaces tGeometry is null");
 
   const Acts::TrackingVolume* tVolume = tGeometry_->highestTrackingVolume();
   if (tVolume->confinedVolumes()) {
@@ -223,7 +223,7 @@ void BaseTrackingGeometry::getSurfaces(
   }            // confined volumes
 }
 
-void BaseTrackingGeometry::makeLayerSurfacesMap() {
+void TrackingGeometry::makeLayerSurfacesMap() {
   std::vector<const Acts::Surface*> surfaces;
   getSurfaces(surfaces);
 
@@ -259,7 +259,7 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
     for (auto const& surfaceId : layer_surface_map_) {
       std::cout << " " << surfaceId.first << std::endl;
       std::cout << " Check the surface" << std::endl;
-      surfaceId.second->toStream(*gctx_, std::cout);
+      surfaceId.second->toStream(gctx_, std::cout);
       std::cout << " GeometryID::" << surfaceId.second->geometryId()
                 << std::endl;
       std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
@@ -268,5 +268,4 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
   }
 }
 
-}  // namespace reco
-}  // namespace tracking
+}  // namespace tracking::geo

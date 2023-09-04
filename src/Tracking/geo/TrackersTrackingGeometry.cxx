@@ -1,12 +1,12 @@
-#include "Tracking/Reco/TrackersTrackingGeometry.h"
+#include "Tracking/geo/TrackersTrackingGeometry.h"
 
-namespace tracking {
-namespace reco {
+namespace tracking::geo {
 
-TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
-                                                   Acts::GeometryContext* ctx,
-                                                   bool debug)
-    : BaseTrackingGeometry(gdmlfile, ctx, debug) {
+const std::string TrackersTrackingGeometry::NAME = "TrackersTrackingGeometry";
+
+TrackersTrackingGeometry::TrackersTrackingGeometry(
+    const Acts::GeometryContext& gctx, const std::string& gdml, bool debug)
+  : TrackingGeometry(NAME, gctx, gdml, debug) {
   if (debug_) std::cout << "Looking for Tagger and Recoil volumes" << std::endl;
 
   Tagger_ = findDaughterByName(fWorldPhysVol_, "tagger_PV");
@@ -42,7 +42,7 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(std::string gdmlfile,
       });
 
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
-  tGeometry_ = tgb.trackingGeometry(*gctx_);
+  tGeometry_ = tgb.trackingGeometry(gctx_);
 
   // dumpGeometry("./");
   makeLayerSurfacesMap();
@@ -192,7 +192,7 @@ TrackersTrackingGeometry::buildTrackerVolume() {
       std::cout << layer.first << " : surfaces==>" << layer.second.size()
                 << std::endl;
       for (auto& surface : layer.second)
-        surface->toStream(*gctx_,std::cout);
+        surface->toStream(gctx_,std::cout);
     }
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
@@ -448,7 +448,7 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
 }  // build the layout
 
 std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
-    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) {
+    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) const {
   if (!pvol)
     throw std::runtime_error(
         "TrackersTrackingGeometry::GetSurface:: pvol is nullptr");
@@ -537,5 +537,4 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
   return surface;
 }
 
-}  // namespace reco
-}  // namespace tracking
+}  // namespace tracking::geo
