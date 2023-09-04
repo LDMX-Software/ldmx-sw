@@ -54,10 +54,14 @@ jobs:
     #   sphinx-apidoc requires the python files to be packaged together
     #   like a python module would be. The simplest way to achieve
     #   this form is to build and install ldmx-sw.
+    #   we also need to create the __init__.py files which aren't required by
+    #   Python3 packages but is necessary for sphinx-apidoc to recognize a
+    #   directory as a module to document
     - name: Run Sphinx to build python Docs
       run: |
           python3 -m pip install -U pip
-          python3 -m pip install Sphinx Pillow groundwork-sphinx-theme
+          python3 -m pip install Sphinx Pillow
+          find install/python -type d -exec touch {}/__init__.py ';'
           sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
           sudo `which sphinx-build` docs/sphinx.conf docs/html/python
       shell: bash
