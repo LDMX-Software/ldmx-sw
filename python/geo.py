@@ -19,10 +19,10 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     __instance = None
 
     def get_instance(): 
-        if TrackingGeometryInstance.__instance == None:
-            TrackingGeometryProvider()
+        if TrackersTrackingGeometryProvider.__instance == None:
+            TrackersTrackingGeometryProvider()
 
-        return TrackingGeometryProvider.__instance
+        return TrackersTrackingGeometryProvider.__instance
 
     def setDetector(self, det_name):
         """Set the detector GDML based on the detector name
@@ -47,9 +47,9 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
             self.debug = False
             self.setDetector('ldmx-det-v14')
-            TrackingGeometryProvider.__instance = self
+            TrackersTrackingGeometryProvider.__instance = self
 
-TrackingGeometryProvider.get_instance()
+TrackersTrackingGeometryProvider.get_instance()
 
 class GeometryContextProvider(ldmxcfg.ConditionsObjectProvider):
     """provider of the geometry context condition"""
