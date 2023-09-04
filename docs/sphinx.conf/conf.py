@@ -45,6 +45,11 @@ extensions = [
 # This pattern also affects html_static_path and html_extra_path.
 #exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# put at the beginning of each rst file
+rst_prolog = """
+Go Back to: `C++ Manual </ldmx-sw/index.html>`_ `General Site </>`_
+"""
+
 
 # -- Options for HTML output -------------------------------------------------
 
