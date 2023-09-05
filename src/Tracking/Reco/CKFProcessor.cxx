@@ -110,7 +110,12 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         //default_transformBField));
                         transformPos,
                         transformBField));
-  
+
+
+  auto acts_loggingLevel = Acts::Logging::FATAL;
+  if (debug_)
+    acts_loggingLevel = Acts::Logging::VERBOSE;
+    
   // Setup the steppers
   const auto stepper = Acts::EigenStepper<>{map};
   const auto const_stepper = Acts::EigenStepper<>{constBField};
@@ -126,19 +131,14 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup the propagators
   propagator_ = const_b_field_
-                    ? std::make_unique<CkfPropagator>(const_stepper, navigator)
-                    : std::make_unique<CkfPropagator>(stepper, navigator);
+                ? std::make_unique<CkfPropagator>(const_stepper, navigator)
+                : std::make_unique<CkfPropagator>(stepper, navigator, Acts::getDefaultLogger("ACTS_PROP",acts_loggingLevel));
+  
   //auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
-
   
   //Setup the finder / fitters
-  auto ckf_loggingLevel = Acts::Logging::FATAL;
-  if (debug_)
-    ckf_loggingLevel = Acts::Logging::VERBOSE;
-  const auto ckflogger = Acts::getDefaultLogger("CKF", ckf_loggingLevel);
-  
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,
-                                                         Acts::getDefaultLogger("CKF", ckf_loggingLevel));
+                                                         Acts::getDefaultLogger("CKF", acts_loggingLevel));
   kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
                                                                        geometry_context(),
