@@ -3,7 +3,7 @@
 #   for the development image, look at the LDMX-Software/docker repo
 ###############################################################################
 
-FROM ldmx/dev:4.0.1
+FROM ldmx/dev:4.1.0
 
 # install ldmx-sw into the container at /usr/local
 COPY . /code
