@@ -62,8 +62,7 @@ def single_e_track_recon(sigma_u: float = 0.006,
     trk_tagger.sigma_u = sigma_u # mm
     trk_tagger.sigma_v = sigma_v # mm
 
-    vtx = tracking.Vertexer()
-
+    
     p.sequence = [ts_recoil, ts_tagger, trk_recoil, trk_tagger]
 
     return p
