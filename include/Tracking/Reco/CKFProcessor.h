@@ -288,6 +288,9 @@ void onProcessStart() override {};
   int ntracks_{0};
 
   int eventnr_{0};
+
+  //BField Systematics
+  std::vector<double> map_offset_{0.,0.,0.,};
   
 }; // CKFProcessor
     
