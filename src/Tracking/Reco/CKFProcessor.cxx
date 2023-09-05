@@ -40,18 +40,22 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   const auto constBField = std::make_shared<Acts::ConstantBField>(b_field);
   
   // Custom transformation of the interpolated bfield map
-  Acts::Vector3 offset{0.,0.,400.};
   bool debugTransform = false;
-  auto transformPos = [offset,debugTransform](const Acts::Vector3& pos) {
-
+  auto transformPos = [this,debugTransform](const Acts::Vector3& pos) {
+    
     Acts::Vector3 rot_pos;
     rot_pos(0)=pos(1);
     rot_pos(1)=pos(2);
-    rot_pos(2)=pos(0);
+    rot_pos(2)=pos(0) + DIPOLE_OFFSET;
 
-    //Apply offset
-    rot_pos += offset;
+    // Systematic effect
+    rot_pos(0) += this->map_offset_[0];
+    rot_pos(1) += this->map_offset_[1];
+    rot_pos(2) += this->map_offset_[2];
+    
+    
 
+    
     //Apply A rotation around the center of the magnet. (I guess offset first and then rotation)
 
     if (debugTransform) {
@@ -144,10 +148,10 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //    std::move(gsf_propagator));
 
   // Setup the propagator steps writer
-  tracking::sim::PropagatorStepWriter::Config cfg;
-  cfg.filePath = steps_outfile_path_;
+  //tracking::sim::PropagatorStepWriter::Config cfg;
+  //cfg.filePath = steps_outfile_path_;
 
-  writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
+  //writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
 
 
 }
@@ -410,8 +414,6 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(ckf_setup - seeds).count();
   
 
-  int GoodResult = 0;
-  
   auto ckf_run = std::chrono::high_resolution_clock::now();
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
@@ -441,8 +443,7 @@ void CKFProcessor::produce(framework::Event& event) {
     
 
     ldmx_log(debug)<<"Filling track info"<<std::endl;
-    GoodResult++;
-    
+
     // The track tips are the last measurement index 
     //Acts::MultiTrajectory<Acts::VectorMultiTrajectory> mj = tc.getTrack(trackId);
     //                                                        //.container()
@@ -451,9 +452,6 @@ void CKFProcessor::produce(framework::Event& event) {
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
 
-    if  (track.nMeasurements() < 7)
-      continue;
-    
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
@@ -622,8 +620,11 @@ void CKFProcessor::onProcessEnd() {
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
   dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
+  
+  //TODO Remove from default
   steps_outfile_path_ = parameters.getParameter<std::string>(
       "steps_file_path", "propagation_steps.root");
+  
   track_id_ = parameters.getParameter<int>("track_id", -1);
   pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
 
@@ -667,6 +668,13 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
 
   kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
   gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
+
+
+
+  //BField Systematics
+  map_offset_ = parameters.getParameter<std::vector<double>>("map_offset_",{0.,0.,0.});
+
+  
 }
 
 void CKFProcessor::testField(

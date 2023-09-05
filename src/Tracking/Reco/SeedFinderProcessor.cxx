@@ -20,7 +20,9 @@ namespace reco {
 SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
                                          framework::Process& process)
     : TrackingGeometryUser(name, process) {
-  
+
+  //TODO REMOVE FROM DEFAULT
+  /*
   outputFile_ = new TFile("seeder.root", "RECREATE");
   outputTree_ = new TTree("seeder", "seeder");
 
@@ -34,6 +36,7 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
   outputTree_->Branch("b2", &b2_);
   outputTree_->Branch("b3", &b3_);
   outputTree_->Branch("b4", &b4_);
+  */
 }
 
 SeedFinderProcessor::~SeedFinderProcessor() {}
@@ -100,7 +103,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   */
   groups_map.clear();
-  outputTree_->Fill();
+  //outputTree_->Fill();
   event.add(out_seed_collection_, seed_tracks);
   ntracks_ += seed_tracks.size();
 
@@ -337,9 +340,9 @@ void SeedFinderProcessor::LineParabolaToHelix(
 }
 
 void SeedFinderProcessor::onProcessEnd() {
-  outputFile_->cd();
-  outputTree_->Write();
-  outputFile_->Close();
+  //outputFile_->cd();
+  //outputTree_->Write();
+  //outputFile_->Close();
   std::cout << "PROCESSOR:: " << this->getName()
             << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
             << std::endl;
