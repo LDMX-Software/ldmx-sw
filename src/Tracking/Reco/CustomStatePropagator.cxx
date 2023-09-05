@@ -1,9 +1,10 @@
-#include "Tracking/Reco/CustomStatePropagator.h"
+#include "/sdf/group/ldmx/users/dongyi/ldmx-sw/Tracking/include/Tracking/Reco/CustomStatePropagator.h"
 
-#include "Acts/Utilities/Logger.hpp"
+#include "/sdf/group/ldmx/users/dongyi/ldmx-sw/Tracking/acts/Core/include/Acts/Utilities/Logger.hpp"
 
 
 #include <iostream>
+#include <cmath>
 
 namespace tracking {
 namespace reco {
@@ -21,7 +22,16 @@ void CustomStatePropagator::onProcessStart() {
 
   outFile_ = new TFile("prop_states.root","RECREATE");
   outTree_ = new TTree("prop_states","prop_states");
-  
+  histo_gen_p = std::make_shared<TH1F>("histo_gen_p","histo_gen_p",100,0,10);
+  histo_end_p = std::make_shared<TH1F>("histo_end_p","histo_end_p",100,0,10);//smart pointer
+  histo_end_px = std::make_shared<TH1F>("histo_end_px","histo_end_px",100,-50,50);
+  histo_end_py = std::make_shared<TH1F>("histo_end_py","histo_end_py",100,-50,50);
+  histo_end_pz = std::make_shared<TH1F>("histo_end_pz","histo_end_pz",100,-50,50);
+  histo_gen_px = std::make_shared<TH1F>("histo_gen_px","histo_gen_px",100,-50,50);
+  histo_gen_py = std::make_shared<TH1F>("histo_gen_py","histo_gen_py",100,-50,50);
+  histo_gen_pz = std::make_shared<TH1F>("histo_gen_pz","histo_gen_pz",100,-50,50);
+  histo_loc01 = std::make_shared<TH2F>("histo_loc01", "end_loc0-vs-end_loc1",100, -50, 50, 100, -50, 50);
+
   outTree_->Branch("state_nr",&state_nr);
   outTree_->Branch("charge",&charge);
   outTree_->Branch("gen_x",&gen_x);
@@ -222,17 +232,51 @@ void CustomStatePropagator::fillTree(int state,
   end_px = end_mom(0);
   end_py = end_mom(1);
   end_pz = end_mom(2);
-  
+ 
+  //Calculate magnatitude of generating & end momentum
+  const double gen_mag_p = sqrt(pow(gen_px, 2) + pow(gen_py, 2) + pow(gen_pz, 2));
+  const double end_mag_p = sqrt(pow(end_px, 2) + pow(end_py, 2) + pow(end_pz, 2));
+  std::cout << "gen_px " << gen_px << "-------------------------------------------------------" << std::endl;
+  std::cout << "gen_py " << gen_py << std::endl;
+  std::cout << "gen_pz " << gen_pz << std::endl;
+  std::cout << "gen_mag_p " << gen_mag_p << "++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << "end_px " << end_px << std::endl;
+  std::cout << "end_py " << end_py << std::endl;
+  std::cout << "end_pz " << end_pz << std::endl;
+  std::cout << "end_mag_p " << end_mag_p << "++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout << "end_loc1 " << end_loc1 << std::endl;
+  std::cout << "end_loc0 " << end_loc0 << std::endl;
   outTree_->Fill();
+  
+  histo_end_px->Fill(end_px);
+  histo_end_py->Fill(end_py);
+  histo_end_pz->Fill(end_pz);
+  histo_gen_px->Fill(gen_px/1000);
+  histo_gen_py->Fill(gen_py/1000);
+  histo_gen_pz->Fill(gen_pz/1000);
+  histo_gen_p->Fill(gen_mag_p/1000);
+  histo_end_p->Fill(end_mag_p);
+  histo_loc01->Fill(end_loc0, end_loc1);
 }
+
+
 
 
 void CustomStatePropagator::onProcessEnd() {
 
   outFile_->cd();
   outTree_->Write();
+  histo_end_px->Write();
+  histo_end_py->Write();
+  histo_end_pz->Write();
+  histo_gen_px->Write();
+  histo_gen_py->Write();
+  histo_gen_pz->Write();
+  histo_gen_p->Write();
+  histo_end_p->Write();
+  histo_loc01->Write();
   outFile_->Close();
-  
+  delete outFile_;  
 }
 
 
