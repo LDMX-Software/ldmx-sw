@@ -432,12 +432,12 @@ void CKFProcessor::produce(framework::Event& event) {
     auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
     
     if (not results.ok()) {
-      ldmx_log(warn)
+      ldmx_log(debug)
           <<"CKF Fit failed"<<std::endl;
       continue;
     }
     
-    //No track found
+    // No track found
     if (tc.size() < trackId + 1)
       continue;
     
