@@ -29,6 +29,10 @@
 //--- ROOT ---//
 #include "TFile.h"
 #include "TTree.h"
+#include "TH1F.h"
+
+
+#include <memory>
 
 
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
@@ -68,7 +72,15 @@ namespace tracking::reco{
     //Output ntuple
     TFile* outFile_;
     TTree* outTree_;
-    
+    std::shared_ptr<TH1F> histo_end_px;
+    std::shared_ptr<TH1F> histo_end_py;
+    std::shared_ptr<TH1F> histo_end_pz;
+    std::shared_ptr<TH1F> histo_gen_px;
+    std::shared_ptr<TH1F> histo_gen_py;
+    std::shared_ptr<TH1F> histo_gen_pz;
+    std::shared_ptr<TH1F> histo_gen_p;
+    std::shared_ptr<TH1F> histo_end_p;
+    std::shared_ptr<TH2F> histo_loc01;
     
     double state_nr{0.};
     int charge{0};
