@@ -3,24 +3,17 @@ Tracking
 
 An `ldmx-sw` submodule focused on the digitization of tracker hits and track finding/fitting using ACTS.
 
-#### Development
-
-Developing within this module requires cloning of `ldmx-sw` as outlined in the 
-[Quick Start](https://github.com/LDMX-Software/ldmx-sw#quick-start).  Once cloned, 
-a development branch can be created as follows
-```bash
-cd ldmx-sw/Tracking
-git checkout -b trk_dev_iss<#> 
-git push origin trk_dev_iss<#>
-```
-Where `<#>` represents the number of the associated issue.  After a branch has been created, developments 
-can be built using the instructions in the Quick Start pointed to above.
-
-Once developments have been tested and merged into the `main` tracking branch, the `trunk` of `ldmx-sw` 
-needs to be updated to point to the new `main` hash.  This done by creating a branch of `ldmx-sw`'s 
-trunk, committing the update `main` of the `Tracking` module and opening a pull request into `ldmx-sw`. 
-
 #### Track Reconstruction
+
+The module implements the full tracking chain, from hit smearing and digitization (wip) to the track finding and fitting. The module leverages the ACTS tracking library, which is imported as a submodule. 
+
+#### Tracks EDM
+
+Tracks are stored in the output file. The EDM provides access to the parameters and the covariance matrix at the target and at the ECAL via two track states stored for each track object. Additionally each track has a perigee representation at the target center. 
+
+#### Running reconstruction. 
+
+A jobOption `Tracking/python/reco.py` provides a standard flow for running track reconstruction within ldmx-sw
 
 ## Contributors
 
