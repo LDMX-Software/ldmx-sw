@@ -211,7 +211,21 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
             #Ecal extrapolation
             self.build1DHistogram("trk_ecal_loc0","trk_ecal_loc0 [mm]",200,-50,50)
+            self.build1DHistogram("trk_ecal_loc1","trk_ecal_loc1 [mm]",200,-50,50)
+            self.build1DHistogram("sp_hit_X","sp_hit_X [mm]",200,-50,50)
             self.build1DHistogram("sp_hit_Y","sp_hit_Y [mm]",200,-50,50)
-            
+            self.build1DHistogram("trk_ecal_loc0-sp_hit_X","diff loc0 and hit_X [mm]",200,-0.5,0.5)
+            self.build1DHistogram("trk_ecal_loc1-sp_hit_Y","diff loc1 and hit_Y [mm]",200,-5,5)
+            self.build1DHistogram("Pulls_of_loc0","pulls_of_loc0 [mm]",200,-50,50)
+            self.build1DHistogram("Pulls_of_loc1","pulls_of_loc1 [mm]",200,-50,50)
+           
+            self.build2DHistogram("res_loc0-vs-N_hits","N_hits",200,7,11,"res_loc0 [mm]",100,-10,10)
+            self.build2DHistogram("res_loc1-vs-N_hits","N_hits",200,7,11,"res_loc1 [mm]",100,-10,10)
+            self.build2DHistogram("pulls_loc0-vs-N_hits","N_hits",200,7,11,"pulls_loc0 [mm]",100,-50,50)
+            self.build2DHistogram("pulls_loc1-vs-N_hits","N_hits",200,7,11,"pulls_loc1 [mm]",100,-50,50)
+            self.build2DHistogram("res_loc0-vs-trk_p",  "trk_p",200,0,5,"res_loc0 [mm]",100,-10,10)
+            self.build2DHistogram("res_loc1-vs-trk_p",  "trk_p",200,0,5,"res_loc1 [mm]",100,-10,10)
+            self.build2DHistogram("pulls_loc0-vs-trk_p","trk_p",200,0,5,"pulls_loc0 [mm]",100,-50,50)
+            self.build2DHistogram("pulls_loc1-vs-trk_p","trk_p",200,0,5,"pulls_loc1 [mm]",100,-50,50)
             
             
