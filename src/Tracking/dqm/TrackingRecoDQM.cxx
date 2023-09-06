@@ -121,13 +121,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double sigmaloc0 = sqrt(cov(0));
     double sigmaloc1 = sqrt(cov(7));
 
-    std::cout << "================================================================\n";
-    std::cout << "sigma_d0 " << sigmad0 << std::endl;
-    std::cout << "sigma_z0 " << sigmaz0 << std::endl;
-    std::cout << "sigma_loc0 " << sigmaloc0 << std::endl;
-    std::cout << "sigma_loc1 " << sigmaloc1 << std::endl;
-
-
     histograms_.fill(title+"d0_err",   sigmad0); 
     histograms_.fill(title+"z0_err",   sigmaz0); 
     histograms_.fill(title+"phi_err",  sigmaphi); 
