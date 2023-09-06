@@ -61,8 +61,8 @@ public:
     
     Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
     pOptions.direction = intersection.intersection.pathLength >= 0
-                         ? Acts::NavigationDirection::Forward
-                         : Acts::NavigationDirection::Backward;
+                         ? Acts::Direction::Forward
+                         : Acts::Direction::Backward;
     
     
     auto result = propagator_.propagate(pars,
@@ -171,7 +171,7 @@ public:
     // One can also use directly the extrapolate method
     
     Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
-    pOptions.direction = Acts::NavigationDirection::Forward;
+    pOptions.direction = Acts::Direction::Forward;
     
     auto result = propagator_.propagate(state_parameters,
                                         *target_surface,
