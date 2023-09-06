@@ -318,11 +318,6 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
         // TH2F  residual vs Nhits
         histograms_.fill(title_+"res_loc0-vs-N_hits", track.getNhits(), ecalState.params[0]-scoring_plane_hit_pos[0]);
         histograms_.fill(title_+"res_loc1-vs-N_hits", track.getNhits(), ecalState.params[1]-scoring_plane_hit_pos[1]);
-
-        std::cout << "N_hits " << track.getNhits() << std::endl;
-        std::cout << "trk_p " << trk_p << std::endl;
-        std::cout << "res_loc0 " << ecalState.params[0]-scoring_plane_hit_pos[0] << std::endl;
-        std::cout << "res_loc1 " << ecalState.params[1]-scoring_plane_hit_pos[1] << std::endl;
         
         // TH2F  residual vs Nhits
         histograms_.fill(title_+"pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
@@ -344,9 +339,6 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
   }// loop on tracks
   
 }
-
-
-
 
 void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
                                  std::vector<ldmx::Track>& uniqueTracks,
