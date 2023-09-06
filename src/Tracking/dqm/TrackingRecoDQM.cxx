@@ -322,9 +322,7 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
         // TH2F  residual vs Nhits
         histograms_.fill(title_+"pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
         histograms_.fill(title_+"pulls_loc1-vs-N_hits", track.getNhits(), (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
-        std::cout << "pulls_loc0 " << (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0 << std::endl;
-        std::cout << "pulls_loc1 " << (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1 << std::endl;
-      
+              
         // TH2F  residual vs trk_p
         histograms_.fill(title_+"res_loc0-vs-trk_p",  trk_p,  ecalState.params[0]-scoring_plane_hit_pos[0]);
         histograms_.fill(title_+"res_loc1-vs-trk_p",  trk_p,  ecalState.params[1]-scoring_plane_hit_pos[1]);
