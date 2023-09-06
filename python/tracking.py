@@ -31,8 +31,6 @@ class DigitizationProcessor(Producer):
         Input hit collection to be smeared
     out_collection : string
         Output hit collection to be stored
-    detector: string
-        The path to the GDML description of the detector.
     """
     def __init__(self, instance_name="DigitizationProcessor"):
         super().__init__(instance_name,
@@ -45,8 +43,7 @@ class DigitizationProcessor(Producer):
         self.min_e_dep = 0.05
         self.hit_collection = 'TaggerSimHits'
         self.out_collection = 'OutputMeasurements'
-        self.detector = makeDetectorPath('ldmx-det-v14')
-
+                
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.
 
