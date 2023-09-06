@@ -235,16 +235,6 @@ void CustomStatePropagator::fillTree(int state,
   //Calculate magnatitude of generating & end momentum
   const double gen_mag_p = sqrt(pow(gen_px, 2) + pow(gen_py, 2) + pow(gen_pz, 2));
   const double end_mag_p = sqrt(pow(end_px, 2) + pow(end_py, 2) + pow(end_pz, 2));
-  std::cout << "gen_px " << gen_px << "-------------------------------------------------------" << std::endl;
-  std::cout << "gen_py " << gen_py << std::endl;
-  std::cout << "gen_pz " << gen_pz << std::endl;
-  std::cout << "gen_mag_p " << gen_mag_p << "++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-  std::cout << "end_px " << end_px << std::endl;
-  std::cout << "end_py " << end_py << std::endl;
-  std::cout << "end_pz " << end_pz << std::endl;
-  std::cout << "end_mag_p " << end_mag_p << "++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-  std::cout << "end_loc1 " << end_loc1 << std::endl;
-  std::cout << "end_loc0 " << end_loc0 << std::endl;
   outTree_->Fill();
   
   histo_end_px->Fill(end_px);
