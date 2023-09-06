@@ -59,7 +59,6 @@ void DigitizationProcessor::onProcessStart() {
 
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
-  detector_ = parameters.getParameter<std::string>("detector");
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   out_collection_ = parameters.getParameter<std::string>("out_collection",

@@ -79,7 +79,6 @@ seederRecoil = tracking.SeedFinderProcessor("SeedRecoil")
 seederRecoil.perigee_location = [0.,0.,0.]
 seederRecoil.input_hits_collection =  digiRecoil.out_collection
 seederRecoil.out_seed_collection = "RecoilRecoSeeds"
-seederRecoil.detector = "detector.gdml"
 seederRecoil.bfield = 1.5
 seederRecoil.pmin  = 0.1
 seederRecoil.pmax  = 4.

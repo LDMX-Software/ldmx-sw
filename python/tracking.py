@@ -1,6 +1,6 @@
 from LDMX.Framework.ldmxcfg import Producer
 from LDMX.Tracking.make_path import makeFieldMapPath
-from LDMX.Tracking.make_path import makeDetectorPath
+#from LDMX.Tracking.make_path import makeDetectorPath
 
 
 class DigitizationProcessor(Producer):
@@ -72,8 +72,6 @@ class SeedFinderProcessor(Producer):
         The name of the input collection of hits to be used for seed finding.
     out_seed_collection : string
         The name of the ouput collection of seeds to be stored.
-    detector: string
-        The path to the GDML description of the detector.
     """
 
     def __init__(self, instance_name="SeedFinderProcessor"):
@@ -88,8 +86,7 @@ class SeedFinderProcessor(Producer):
         self.strategies = []
         self.input_hits_collection = 'TaggerSimHits'
         self.out_seed_collection = 'SeedTracks'
-        self.detector = makeDetectorPath('ldmx-det-v14')
-
+        
 
 class CKFProcessor(Producer):
     """ Producer that runs the Combinatorial Kalman Filter for track finding and fitting.
@@ -168,8 +165,6 @@ class CKFProcessor(Producer):
     gsf_refit : bool
        <experimental>
        Refit tracks with Gaussian Sum Filter 
-    detector: string
-        The path to the GDML description of the detector.
         
     """
 
@@ -199,8 +194,7 @@ class CKFProcessor(Producer):
         self.kf_refit = False
         self.gsf_refit = False
         self.min_hits = 6
-        self.detector = makeDetectorPath('ldmx-det-v14')
-
+        
 
 class TruthSeedProcessor(Producer):
     """ Producer that returns truth seeds to feed the KF based track finding.

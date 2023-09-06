@@ -55,7 +55,6 @@ class DigitizationProcessor : public TrackingGeometryUser {
 
  private:
   /// The path to the GDML description of the detector
-  std::string detector_{""};
   /// Input hit collection to smear.
   std::string hit_collection_;
   /// Output hit collection name.
