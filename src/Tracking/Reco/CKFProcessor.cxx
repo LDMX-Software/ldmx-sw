@@ -593,28 +593,30 @@ void CKFProcessor::produce(framework::Event& event) {
   processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
 }
 
+void CKFProcessor::onProcessStart() {
+  if (use1Dmeasurements_)
+    ldmx_log(info) << "use1Dmeasurements = " << std::boolalpha << use1Dmeasurements_;
+  if (remove_stereo_)
+    ldmx_log(info) << "remove_stereo = " << std::boolalpha << remove_stereo_;
+}
+
 void CKFProcessor::onProcessEnd() {
-  std::cout << "Producer " << getName() << " found " << ntracks_
-            << " tracks  / " << nseeds_ << " nseeds" << std::endl;
-
-  
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
-            << std::endl;
-
-  std::cout << "Breakdown::" << std::endl;
-  std::cout << "setup       Avg Time/Event = "
-            << profiling_map_["setup"] / nevents_ << " ms" << std::endl;
-  std::cout << "hits        Avg Time/Event = "
-            << profiling_map_["hits"] / nevents_ << " ms" << std::endl;
-  std::cout << "seeds       Avg Time/Event = "
-            << profiling_map_["seeds"] / nevents_ << " ms" << std::endl;
-  std::cout << "cf_setup    Avg Time/Event = "
-            << profiling_map_["ckf_setup"] / nevents_ << " ms" << std::endl;
-  std::cout << "ckf_run     Avg Time/Event = "
-            << profiling_map_["ckf_run"] / nevents_ << " ms" << std::endl;
-  std::cout << "result_loop Avg Time/Event = "
-            << profiling_map_["result_loop"] / nevents_ << " ms" << std::endl;
+  ldmx_log(info) << "found " << ntracks_
+                 << " tracks  / " << nseeds_ << " nseeds";
+  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "Breakdown::" ;
+  ldmx_log(info) << "setup       Avg Time/Event = "
+                 << profiling_map_["setup"] / nevents_ << " ms" ;
+  ldmx_log(info) << "hits        Avg Time/Event = "
+                 << profiling_map_["hits"] / nevents_ << " ms" ;
+  ldmx_log(info) << "seeds       Avg Time/Event = "
+                 << profiling_map_["seeds"] / nevents_ << " ms" ;
+  ldmx_log(info) << "cf_setup    Avg Time/Event = "
+                 << profiling_map_["ckf_setup"] / nevents_ << " ms" ;
+  ldmx_log(info) << "ckf_run     Avg Time/Event = "
+                 << profiling_map_["ckf_run"] / nevents_ << " ms" ;
+  ldmx_log(info) << "result_loop Avg Time/Event = "
+                 << profiling_map_["result_loop"] / nevents_ << " ms" ;
 }
 
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
@@ -640,15 +642,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   outlier_pval_ = parameters.getParameter<double>("outlier_pval_",3.84);
   
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
-  if (remove_stereo_)
-    std::cout << "CONFIGURE::remove_stereo=" << (int)remove_stereo_ << std::endl;
-
   use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
-
-  if (use1Dmeasurements_)
-    std::cout << "CONFIGURE::use1Dmeasurements=" << (int)use1Dmeasurements_
-              << std::endl;
-
   min_hits_ = parameters.getParameter<int>("min_hits", 7);
 
   // Ckf specific options
@@ -673,8 +667,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
 
   //BField Systematics
   map_offset_ = parameters.getParameter<std::vector<double>>("map_offset_",{0.,0.,0.});
-
-  
 }
 
 void CKFProcessor::testField(
