@@ -172,8 +172,8 @@ from pathlib import Path
 input_filepath = Path(p.inputFiles[0])
 p.outputFiles = [str(input_filepath.with_suffix(''))+'_withTracking.root']
 
-# Reduce verbosity
-p.termLogLevel=2
+# lower log level so 'info' and above messages can be printed
+p.termLogLevel=1
 
 # Number of events
 p.maxEvents = 10000
