@@ -6,8 +6,6 @@ import os,math
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process("TrackerReco")
-p.libraries.append("libTracking.so")
-
 
 # Load the tracking module
 from LDMX.Tracking import tracking
@@ -31,7 +29,6 @@ truth_tracking.track_id          = -1
 truth_tracking.p_cut             = 0.05 # In MeV
 truth_tracking.pz_cut            = 0.03
 truth_tracking.p_cutEcal         = 0. # In MeV
-
 
 
 # These smearing quantities are default. We expect around 6um hit resolution in bending plane
@@ -153,12 +150,9 @@ p.sequence   = [digiTagger, digiRecoil,
                 recoil_dqm, seed_recoil_dqm]
 
 # The input file to be added.
-p.inputFiles = ["mc_v14-4.0GeV-1e-inclusive_run10001_t1671176108.root",
-                #"ldmx_genie_G18_02a_00_000_Ti_501.root",
-                ]
-
-
-#print(p.inputFiles)
+# for now, we just take the first argument on the command line
+import sys
+p.inputFiles = [sys.argv[1]]
 
 # Example about how to drop some of the collections in the output file.
 p.keep = [
@@ -173,10 +167,13 @@ p.keep = [
 ]
 
 # Output name
-p.outputFiles = ['mc_v14_withTracking.root']
+#   just append '_withTracking' to the name of the input file
+from pathlib import Path
+input_filepath = Path(p.inputFiles[0])
+p.outputFiles = [str(input_filepath.with_suffix(''))+'_withTracking.root']
 
-# Reduce verbosity
-p.termLogLevel=2
+# lower log level so 'info' and above messages can be printed
+p.termLogLevel=1
 
 # Number of events
 p.maxEvents = 10000
