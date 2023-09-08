@@ -343,27 +343,15 @@ void SeedFinderProcessor::onProcessEnd() {
   //outputFile_->cd();
   //outputTree_->Write();
   //outputFile_->Close();
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
-            << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   Total Seeds/Events: " << ntracks_ << "/" << nevents_
-            << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   Seeds discarded due to multiple hits on layers " << ndoubles_
-            << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName() << "   not enough seed points "
-            << nmissing_ << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   nfailpmin=" << nfailpmin_ << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   nfailpmax=" << nfailpmax_ << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   nfaild0max=" << nfaild0max_ << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   nfaild0min=" << nfaild0min_ << std::endl;
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   nfailz0max=" << nfailz0max_ << std::endl;
+  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
+  ldmx_log(info) << "Seeds discarded due to multiple hits on layers " << ndoubles_;
+  ldmx_log(info) << "not enough seed points " << nmissing_;
+  ldmx_log(info) << " nfailpmin=" << nfailpmin_;
+  ldmx_log(info) << "   nfailpmax=" << nfailpmax_;
+  ldmx_log(info) << "   nfaild0max=" << nfaild0max_;
+  ldmx_log(info) << "   nfaild0min=" << nfaild0min_;
+  ldmx_log(info) << "   nfailz0max=" << nfailz0max_;
 }
 
 // Given a strategy, group the hits according to some options

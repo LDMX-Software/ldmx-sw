@@ -38,8 +38,7 @@ void VertexProcessor::onProcessStart() {
                         default_transformBField));
   
   
-  std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
-            << std::endl;
+  ldmx_log(info) << "Check if nullptr::" << sp_interpolated_bField_.get();
 }
 
 void VertexProcessor::configure(framework::config::Parameters &parameters) {
@@ -194,9 +193,7 @@ void VertexProcessor::onProcessEnd() {
   outfile->Close();
   delete outfile;
 
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
-            << std::endl;
+  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
 }
 
 }  // namespace reco
