@@ -16,7 +16,7 @@ DigitizationProcessor::DigitizationProcessor(const std::string& name,
 void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
-  std::cout << "Loading the tracking geometry" << std::endl;
+  ldmx_log(info) << "Loading the tracking geometry";
 
   // Module Bounds => Take them from the tracking geometry TODO
   auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
@@ -51,7 +51,7 @@ void DigitizationProcessor::onProcessStart() {
   Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1, lAngle,
                                     eThresh, isAnalog);
 
-  std::cout << getName() << " Initialization done" << std::endl;
+  ldmx_log(info) << "Initialization done" << std::endl;
 
   // Seed the generator
   generator_.seed(1);
@@ -139,12 +139,11 @@ bool DigitizationProcessor::mergeHits(
     path += edep_hit * hit.getPathLength();
 
     if (hit.getPdgID() != pdgID) {
-      std::cout << "ERROR:: Found hits with compatible sensorID and track_id "
-                   "but different PDGID"
-                << std::endl;
-      std::cout << "TRACKID ==" << hit.getTrackID() << " vs "
-                << sihits[0].getTrackID() << std::endl;
-      std::cout << "PDGID== " << hit.getPdgID() << " vs " << pdgID << std::endl;
+      ldmx_log(error) << "ERROR:: Found hits with compatible sensorID and track_id "
+                         "but different PDGID";
+      ldmx_log(error) << "TRACKID ==" << hit.getTrackID() << " vs "
+                      << sihits[0].getTrackID();
+      ldmx_log(error) << "PDGID== " << hit.getPdgID() << " vs " << pdgID;
       return false;
     }
   }
@@ -247,7 +246,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                                           surface_thickness)
                           .value();
         } catch (const std::exception& e) {
-          std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
+          ldmx_log(warn) << "hit not on surface... Skipping.";
           continue;
         }
 
