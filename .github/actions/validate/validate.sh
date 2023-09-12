@@ -49,7 +49,10 @@ __main__() {
 
     # print log diff into output directory
     cp -t ${_sample_dir}/plots gold.log output.log || return $?
-    diff gold.log output.log > ${_sample_dir}/plots/log.diff || return $?
+    # do not error out if diff is non-zero, the timestamps printed out
+    # by some processors prevent a full text diff so we do the character
+    # count check below to look for big changes
+    diff gold.log output.log > ${_sample_dir}/plots/log.diff
 
     # check character count of logs
     ngold=$(wc --chars gold.log)
