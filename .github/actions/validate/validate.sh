@@ -55,8 +55,8 @@ __main__() {
     diff gold.log output.log > ${_sample_dir}/plots/log.diff || true
 
     # check character count of logs
-    ngold=$(wc --chars gold.log)
-    nnew=$(wc --chars output.log)
+    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
+    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
     if (( ngold != nnew )); then
       warn "Different character counts in logs for ${_sample}"
     fi
