@@ -36,7 +36,7 @@ __main__() {
 
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
-  ldmx fire config.py &> output.log || return $?
+  ldmx fire config.py | tee output.log || return $?
   end_group
 
   start_group Compare to Golden Histograms
@@ -52,7 +52,7 @@ __main__() {
     # do not error out if diff is non-zero, the timestamps printed out
     # by some processors prevent a full text diff so we do the character
     # count check below to look for big changes
-    diff gold.log output.log > ${_sample_dir}/plots/log.diff
+    diff gold.log output.log > ${_sample_dir}/plots/log.diff || true
 
     # check character count of logs
     ngold=$(wc --chars gold.log)
