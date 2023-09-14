@@ -17,8 +17,6 @@ HcalVetoProcessor::HcalVetoProcessor(const std::string &name,
                                      framework::Process &process)
     : Producer(name, process) {}
 
-HcalVetoProcessor::~HcalVetoProcessor() {}
-
 void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   totalPEThreshold_ = parameters.getParameter<double>("pe_threshold");
   maxTime_ = parameters.getParameter<double>("max_time");

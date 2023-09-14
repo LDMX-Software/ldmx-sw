@@ -25,12 +25,12 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Class constructor.
    */
-  HcalHit() {}
+  HcalHit() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~HcalHit() {}
+  virtual ~HcalHit() = default;
 
   /**
    * Clear the data in the object.

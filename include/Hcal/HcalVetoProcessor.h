@@ -28,7 +28,7 @@ class HcalVetoProcessor : public framework::Producer {
   HcalVetoProcessor(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~HcalVetoProcessor();
+  virtual ~HcalVetoProcessor() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
