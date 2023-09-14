@@ -22,7 +22,6 @@ HcalVetoProcessor::~HcalVetoProcessor() {}
 void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   totalPEThreshold_ = parameters.getParameter<double>("pe_threshold");
   maxTime_ = parameters.getParameter<double>("max_time");
-  maxDepth_ = parameters.getParameter<double>("max_depth");
   minPE_ = parameters.getParameter<double>("back_min_pe");
 }
 
@@ -38,10 +37,9 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   const ldmx::HcalHit *maxPEHit;
   for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
     // If the hit time is outside the readout window, don't consider it.
-    if (hcalHit.getTime() >= maxTime_) continue;
-
-    // If the hit z position is beyond the maximum HCal depth, skip it.
-    if (hcalHit.getZPos() > maxDepth_) continue;
+    if (hcalHit.getTime() >= maxTime_) {
+      continue;
+    }
 
     // Get the total PE in the bar
     float pe = hcalHit.getPE();
