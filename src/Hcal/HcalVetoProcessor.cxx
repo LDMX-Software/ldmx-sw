@@ -24,12 +24,17 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   maxTime_ = parameters.getParameter<double>("max_time");
   maxDepth_ = parameters.getParameter<double>("max_depth");
   minPE_ = parameters.getParameter<double>("back_min_pe");
+  outputCollName_ = parameters.getParameter<std::string>("output_coll_name");
+  inputHitCollName_ =
+      parameters.getParameter<std::string>("input_hit_coll_name");
+  inputHitPassName_ =
+      parameters.getParameter<std::string>("input_hit_pass_name");
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {
   // Get the collection of sim particles from the event
   const std::vector<ldmx::HcalHit> hcalRecHits =
-      event.getCollection<ldmx::HcalHit>("HcalRecHits");
+      event.getCollection<ldmx::HcalHit>(inputHitCollName_, inputHitPassName_);
 
   // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.
@@ -77,7 +82,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     setStorageHint(framework::hint_shouldDrop);
   }
 
-  event.add("HcalVeto", result);
+  event.add(outputCollName_, result);
 }
 }  // namespace hcal
 
