@@ -40,7 +40,8 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * with C++17 structured bindings, this tuple return can be bound to separate
    * variables:
    * ```cpp
-   * auto [ toa, sum_adc, sum_tot ] = extract_measurements(digi,pedestal,bx_shift);
+   * auto [ toa, sum_adc, sum_tot ] =
+   * extract_measurements(digi,pedestal,bx_shift);
    * ```
    * giving us the dual benefit of separate variable names while only having to
    * loop over the samples within a single digi once
@@ -54,7 +55,8 @@ class HcalSingleEndRecProducer : public framework::Producer {
    * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
    */
   std::tuple<double, double, int> extract_measurements(
-						       const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal, double bx_shift);
+      const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
+      double bx_shift);
 
  public:
   HcalSingleEndRecProducer(const std::string& n, framework::Process& p)
@@ -66,7 +68,8 @@ class HcalSingleEndRecProducer : public framework::Producer {
 };  // HcalSingleEndRecProducer
 
 std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
-      const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal, double bx_shift) {
+    const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
+    double bx_shift) {
   // sum_adc = total of all but first in-time adc measurements
   double sum_adc{0};
   // sum_tot = total of all tot measurements
@@ -88,16 +91,17 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
     // toa logic
     if (digi.at(i_sample).toa() > 0) {
       if (digi.at(i_sample).toa() >= bx_shift) {
-	toa_sample = i_sample;
-      }
-      else {
-	toa_sample = i_sample + 1;
+        toa_sample = i_sample;
+      } else {
+        toa_sample = i_sample + 1;
       }
 
-      // sum toa in given bx - given that multiple bx may be associated with the TOA measurement
-      toa_startbx += digi.at(i_sample).toa() * (clock_cycle_ / 1024) + (clock_cycle_ * toa_sample);
+      // sum toa in given bx - given that multiple bx may be associated with the
+      // TOA measurement
+      toa_startbx += digi.at(i_sample).toa() * (clock_cycle_ / 1024) +
+                     (clock_cycle_ * toa_sample);
     }
-    
+
     if (digi.at(i_sample).adc_t() - pedestal > max_meas) {
       max_meas = digi.at(i_sample).adc_t() - pedestal;
       max_sample = i_sample;
@@ -105,11 +109,11 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
   }
   // get toa
   double toa = toa_startbx;
-  
+
   // get toa w.r.t the peak
-  //double toa = (max_sample - toa_sample) * clock_cycle_ - toa_startbx;
+  // double toa = (max_sample - toa_sample) * clock_cycle_ - toa_startbx;
   // get toa w.r.t the SOI
-  //toa += ((int)isoi_ - max_sample) * clock_cycle_;
+  // toa += ((int)isoi_ - max_sample) * clock_cycle_;
 
   return std::make_tuple(toa, sum_adc, sum_tot);
 }
@@ -120,7 +124,7 @@ void HcalSingleEndRecProducer::configure(framework::config::Parameters& p) {
 
   rec_pass_name_ = p.getParameter("rec_pass_name", rec_pass_name_);
   rec_coll_name_ = p.getParameter("rec_coll_name", rec_coll_name_);
-  
+
   pe_per_mip_ = p.getParameter<double>("pe_per_mip");
   mip_energy_ = p.getParameter<double>("mip_energy");
   clock_cycle_ = p.getParameter<double>("clock_cycle");
@@ -147,7 +151,8 @@ void HcalSingleEndRecProducer::produce(framework::Event& event) {
     // amplitude/TOT reconstruction
     double num_mips_equivalent{0};
     auto [toa, sum_adc, sum_tot] =
-      extract_measurements(digi, conditions.adcPedestal(digi.id()), conditions.toaCalib(digi.id(), 0));
+        extract_measurements(digi, conditions.adcPedestal(digi.id()),
+                             conditions.toaCalib(digi.id(), 0));
     auto is_adc = conditions.is_adc(digi.id(), sum_tot);
     if (is_adc) {
       double adc_calib = sum_adc / conditions.adcGain(digi.id(), 0);
