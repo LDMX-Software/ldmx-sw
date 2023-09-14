@@ -52,11 +52,10 @@ class HcalVetoProcessor : public framework::Producer {
   /** Maximum hit time that should be considered by the veto. */
   float maxTime_{50};  // ns
 
-  /** Maximum z depth that a hit can have. */
-  float maxDepth_{4000};  // mm
+  /** The minimum number of PE in both bars needed for a hit to be considered in
+   * double ended readout mode. */
+  float backMinPE_{1};
 
-  /** The minimum number of PE needed for a hit. */
-  float minPE_{1};
   /*
    * A hit representing the case where we never reach the maxPE condition. This
    * is rare but can happen which previously would record uninitialized memory.
