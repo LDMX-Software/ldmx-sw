@@ -42,9 +42,9 @@ class HcalClusterProducer : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   bool verbose_{false};
