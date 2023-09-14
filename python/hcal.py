@@ -18,7 +18,6 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
 
         self.pe_threshold = 5.0
         self.max_time = 50.0
-        self.max_depth = 4000.0
         self.back_min_pe = 1.
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
