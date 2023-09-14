@@ -29,6 +29,23 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
       parameters.getParameter<std::string>("input_hit_coll_name");
   inputHitPassName_ =
       parameters.getParameter<std::string>("input_hit_pass_name");
+  // A fake-hit that gets added for the rare case where no hit actually reaches
+  // the maxPE < pe check to avoid producing uninitialized memory
+  //
+  // Default constructed hits have nonsense-but predictable values and are
+  // harder to mistake for real hits
+  defaultMaxHit_.Clear();
+  defaultMaxHit_.setPE(-9999);
+  defaultMaxHit_.setMinPE(-9999);
+  defaultMaxHit_.setSection(-9999);
+  defaultMaxHit_.setLayer(-9999);
+  defaultMaxHit_.setStrip(-9999);
+  defaultMaxHit_.setEnd(-999);
+  defaultMaxHit_.setTimeDiff(-9999);
+  defaultMaxHit_.setToaPos(-9999);
+  defaultMaxHit_.setToaNeg(-9999);
+  defaultMaxHit_.setAmplitudePos(-9999);
+  defaultMaxHit_.setAmplitudeNeg(-9999);
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {
@@ -40,7 +57,8 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   // in the event.
   float totalPe{0};
   float maxPE{-1000};
-  const ldmx::HcalHit *maxPEHit;
+
+  const ldmx::HcalHit *maxPEHit{defaultMaxHit_};
   for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
     // If the hit time is outside the readout window, don't consider it.
     if (hcalHit.getTime() >= maxTime_) continue;

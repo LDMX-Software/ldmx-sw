@@ -57,6 +57,22 @@ class HcalVetoProcessor : public framework::Producer {
 
   /** The minimum number of PE needed for a hit. */
   float minPE_{1};
+  /*
+   * A hit representing the case where we never reach the maxPE condition. This
+   * is rare but can happen which previously would record uninitialized memory.
+   * Stored inside of the producer so that it will have a valid lifetime when we
+   * persist it.
+   *
+   * See https://github.com/LDMX-Software/Hcal/issues/58 for details
+   *
+   * Ideally, this would just be stored as a part of the HcalVetoResult, but
+   * changing that would be breaking change so for now we work around it like
+   * this.
+   *
+   * It contains nonsense values but since they are predictable, they are harder
+   * to mistake for real hits. See constructor for the actual values.
+   */
+  ldmx::HcalHit defaultMaxHit_;
 
 };  // HcalVetoProcessor
 }  // namespace hcal
