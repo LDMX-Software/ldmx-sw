@@ -175,7 +175,6 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalDigiID id_negend(digi_negend.id());
 
       double voltage_posend, voltage_negend;
-      double amplT_posend_copy, amplT_negend_copy;
       if (digi_posend.isTOT()) {
         voltage_posend =
             (digi_posend.tot() - the_conditions.totCalib(id_posend, 0)) *
@@ -192,9 +191,6 @@ void HcalRecProducer::produce(framework::Event& event) {
             digi_negend.soi().adc_t() - the_conditions.adcPedestal(id_negend);
         amplTm1_negend =
             digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
-
-        amplT_posend_copy = amplT_posend;
-        amplT_negend_copy = amplT_negend;
 
         // correct amplitude (amplitude fractions from both ends need to be
         // above the boundary of the correction)
@@ -217,9 +213,6 @@ void HcalRecProducer::produce(framework::Event& event) {
 
       // get sign of position along the bar
       int position_bar_sign = (TOA_posend - TOA_negend) > 0 ? 1 : -1;
-
-      double TOA_posend_copy = TOA_posend;
-      double TOA_negend_copy = TOA_negend;
 
       // correct TOA
       // amplitudes from both ends need to be above the boundary of the
