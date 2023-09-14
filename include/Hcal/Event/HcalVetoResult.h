@@ -23,10 +23,10 @@ namespace ldmx {
 class HcalVetoResult {
  public:
   /** Constructor */
-  HcalVetoResult();
+  HcalVetoResult() = default;
 
   /** Destructor */
-  ~HcalVetoResult();
+  virtual ~HcalVetoResult() = default;
 
   /** Reset the object. */
   void Clear();

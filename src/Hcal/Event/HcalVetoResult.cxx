@@ -13,9 +13,6 @@
 ClassImp(ldmx::HcalVetoResult);
 
 namespace ldmx {
-HcalVetoResult::HcalVetoResult() {}
-
-HcalVetoResult::~HcalVetoResult() {}
 
 void HcalVetoResult::Clear() { passesVeto_ = false; }
 
