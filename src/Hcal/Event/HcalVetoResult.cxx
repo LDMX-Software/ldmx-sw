@@ -10,18 +10,18 @@
 //-------------//
 #include "Hcal/Event/HcalHit.h"
 
-ClassImp(ldmx::HcalVetoResult)
+ClassImp(ldmx::HcalVetoResult);
 
-    namespace ldmx {
-  HcalVetoResult::HcalVetoResult() {}
+namespace ldmx {
+HcalVetoResult::HcalVetoResult() {}
 
-  HcalVetoResult::~HcalVetoResult() {}
+HcalVetoResult::~HcalVetoResult() {}
 
-  void HcalVetoResult::Clear() { passesVeto_ = false; }
+void HcalVetoResult::Clear() { passesVeto_ = false; }
 
-  void HcalVetoResult::Print() const {
-    std::cout << "[ HcalVetoResult ]: Passes veto : "
-              << " Passes veto: " << passesVeto_ << std::endl;
-    maxPEHit_.Print();
-  }
+void HcalVetoResult::Print() const {
+  std::cout << "[ HcalVetoResult ]: Passes veto : "
+            << " Passes veto: " << passesVeto_ << std::endl;
+  maxPEHit_.Print();
+}
 }  // namespace ldmx
