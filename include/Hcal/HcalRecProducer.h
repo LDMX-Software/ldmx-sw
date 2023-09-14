@@ -61,7 +61,7 @@ class HcalRecProducer : public framework::Producer {
    * Gets Time of Arrival with respect to the SOI.
    */
   double getTOA(const ldmx::HgcrocDigiCollection::HgcrocDigi digi,
-                double pedestal, unsigned int iSOI);
+                double pedestal, unsigned int iSOI) const;
 
   /**
    * Produce HcalHits and put them into the event bus using the

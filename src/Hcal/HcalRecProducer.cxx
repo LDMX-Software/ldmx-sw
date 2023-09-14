@@ -82,7 +82,7 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
 
 double HcalRecProducer::getTOA(
     const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double pedestal,
-    unsigned int iSOI) {
+    unsigned int iSOI) const {
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
   int toaSample(0), maxSample(0), iADC(0);
@@ -205,7 +205,7 @@ void HcalRecProducer::produce(framework::Event& event) {
         }
 
         // set voltage
-	voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
+        voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
         voltage_negend = amplT_negend * the_conditions.adcGain(id_negend, 0);
       }
 
