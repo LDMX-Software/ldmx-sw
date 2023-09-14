@@ -49,17 +49,6 @@ __main__() {
 
     # print log diff into output directory
     cp -t ${_sample_dir}/plots gold.log output.log || return $?
-    # do not error out if diff is non-zero, the timestamps printed out
-    # by some processors prevent a full text diff so we do the character
-    # count check below to look for big changes
-    diff gold.log output.log > ${_sample_dir}/plots/log.diff || true
-
-    # check character count of logs
-    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
-    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
-    if (( ngold != nnew )); then
-      warn "Different character counts in logs for ${_sample}"
-    fi
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
