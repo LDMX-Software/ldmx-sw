@@ -50,12 +50,12 @@ class HcalRecProducer : public framework::Producer {
   /**
    * Destructor
    */
-  ~HcalRecProducer() = default;
+  virtual ~HcalRecProducer() = default;
 
   /**
    * Grabs configure parameters from the python config file.
    */
-  void configure(framework::config::Parameters&) final override;
+  void configure(framework::config::Parameters&) override;
 
   /**
    * Gets Time of Arrival with respect to the SOI.
@@ -71,7 +71,7 @@ class HcalRecProducer : public framework::Producer {
    * and reconstructs their energy using knowledge of how
    * the chip operates and the position using HcalGeometry.
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
  private:
   /// Digi Collection Name to use as input
