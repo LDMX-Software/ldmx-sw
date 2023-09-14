@@ -20,6 +20,9 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.max_time = 50.0
         self.max_depth = 4000.0
         self.back_min_pe = 1.
+        self.input_hit_coll_name= "HcalRecHits";
+        self.input_hit_pass_name = ''
+        self.output_coll_name= "HcalVeto";
 
 class HcalWABVetoProcessor(ldmxcfg.Producer) :
     """Configuration for WAB veto in HCal
