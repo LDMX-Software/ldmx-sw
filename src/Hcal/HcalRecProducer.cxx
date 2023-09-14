@@ -77,6 +77,7 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
     if (n == 0) minAmpl_ = ampl_t;
     n++;
   }
+  correctionTOA_.SetBit(TGraph::kIsSortedX);
 }
 
 double HcalRecProducer::getTOA(
