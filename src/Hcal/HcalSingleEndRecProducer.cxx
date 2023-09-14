@@ -1,71 +1,5 @@
-#include "Conditions/SimpleTableCondition.h"
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
-#include "Framework/EventDef.h"
-#include "Framework/EventProcessor.h"
-#include "Hcal/HcalReconConditions.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
-
+#include "Hcal/HcalSingleEndRecProducer.h"
 namespace hcal {
-
-class HcalSingleEndRecProducer : public framework::Producer {
-  /// name of pass of digis to use
-  std::string pass_name_{""};
-  /// name of digis to reconstruct
-  std::string coll_name_{"HcalDigis"};
-  /// name of pass of rechits to use
-  std::string rec_pass_name_{""};
-  /// name of rechits to reconstruct
-  std::string rec_coll_name_{"HcalRecHits"};
-
-  /// number of PEs per MIP
-  double pe_per_mip_;
-  /// energy per MIP [MeV]
-  double mip_energy_;
-  /// length of clock cycle [ns]
-  double clock_cycle_;
-  /// sample of interest index
-  unsigned int isoi_;
-
- private:
-  /**
-   * extract toa, sum adc, and sum tot from the input raw digi
-   *
-   * in the far future, we can make these member functions ofthe HgcrocDigi
-   * class; however, right now as we develop our reconstruction method it is
-   * helpful to have more flexible control on how we extract these measurements
-   *
-   * with C++17 structured bindings, this tuple return can be bound to separate
-   * variables:
-   * ```cpp
-   * auto [ toa, sum_adc, sum_tot ] =
-   * extract_measurements(digi,pedestal,bx_shift);
-   * ```
-   * giving us the dual benefit of separate variable names while only having to
-   * loop over the samples within a single digi once
-   *
-   * Uses isoi_ and clock_cycle_ member variables to convert TOA into ns since
-   * beginning of Sample Of Interest (SOI)
-   *
-   * @param[in] digi handle to HgcrocDigi to extract from
-   * @param[in] pedestal pedestal for this channel
-   * @param[in] shift in BX associated to TOA for this channel
-   * @return tuple of (toa [ns since SOI], sum_adc, sum_tot)
-   */
-  std::tuple<double, double, int> extract_measurements(
-      const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
-      double bx_shift);
-
- public:
-  HcalSingleEndRecProducer(const std::string& n, framework::Process& p)
-      : Producer(n, p) {}
-
-  virtual void configure(framework::config::Parameters& p) final override;
-  virtual void produce(framework::Event& event) final override;
-
-};  // HcalSingleEndRecProducer
 
 std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
     const ldmx::HgcrocDigiCollection::HgcrocDigi& digi, double pedestal,
@@ -77,9 +11,11 @@ std::tuple<double, double, int> HcalSingleEndRecProducer::extract_measurements(
   // first, get time of arrival w.r.t to start BX
   int toa_sample{0}, toa_startbx{0};
   // get the correction for the wrong BX assignment
-  int bx_to_time{0};
+  // TODO: Currently not used anywhere
+  [[maybe_unused]] int bx_to_time{0};
   // and figure out sample of maximum amplitude
-  int max_sample{0};
+  // TODO: Currently not used anywhere
+  [[maybe_unused]] int max_sample{0};
   double max_meas{0};
   for (std::size_t i_sample{0}; i_sample < digi.size(); i_sample++) {
     // adc logic
