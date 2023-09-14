@@ -35,7 +35,7 @@ class HcalVetoProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -43,11 +43,11 @@ class HcalVetoProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
  private:
   /** Total PE threshold. */
-  double totalPEThreshold_{8};
+  double totalPEThreshold_{5};
 
   /** Maximum hit time that should be considered by the veto. */
   float maxTime_{50};  // ns
@@ -73,6 +73,9 @@ class HcalVetoProcessor : public framework::Producer {
    */
   ldmx::HcalHit defaultMaxHit_;
 
+  std::string outputCollName_;
+  std::string inputHitCollName_;
+  std::string inputHitPassName_;
 };  // HcalVetoProcessor
 }  // namespace hcal
 

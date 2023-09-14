@@ -62,10 +62,10 @@ void HcalVetoProcessor::produce(framework::Event &event) {
 
   // Loop over all of the Hcal hits and calculate to total photoelectrons
   // in the event.
-  float totalPe{0};
+  [[maybe_unused]] float totalPe{0};
   float maxPE{-1000};
 
-  const ldmx::HcalHit *maxPEHit{defaultMaxHit_};
+  const ldmx::HcalHit *maxPEHit{&defaultMaxHit_};
   for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
     // If the hit time is outside the readout window, don't consider it.
     if (hcalHit.getTime() >= maxTime_) {
@@ -76,6 +76,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     float pe = hcalHit.getPE();
 
     // Keep track of the total PE
+    // TODO: This is currently not used anywhere
     totalPe += pe;
 
     // Check that both sides of the bar have a PE value above threshold.
@@ -83,7 +84,8 @@ void HcalVetoProcessor::produce(framework::Event &event) {
     // being used for the back HCal bars.  For the side HCal, just
     // use the maximum PE as before.
     ldmx::HcalID id(hcalHit.getID());
-    if ((id.section() == ldmx::HcalID::BACK) && (hcalHit.getMinPE() < minPE_))
+    if ((id.section() == ldmx::HcalID::BACK) &&
+        (hcalHit.getMinPE() < backMinPE_))
       continue;
 
     // Find the maximum PE in the list
