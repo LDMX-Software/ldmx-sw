@@ -22,7 +22,22 @@ HcalVetoProcessor::~HcalVetoProcessor() {}
 void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   totalPEThreshold_ = parameters.getParameter<double>("pe_threshold");
   maxTime_ = parameters.getParameter<double>("max_time");
-  minPE_ = parameters.getParameter<double>("back_min_pe");
+  outputCollName_ = parameters.getParameter<std::string>("output_coll_name");
+  inputHitCollName_ =
+      parameters.getParameter<std::string>("input_hit_coll_name");
+  inputHitPassName_ =
+      parameters.getParameter<std::string>("input_hit_pass_name");
+
+  double maxDepth_ = parameters.getParameter<double>("max_depth", 0.);
+  if (maxDepth_ != 0.) {
+    EXCEPTION_RAISE(
+        "InvalidParam",
+        "Earlier versions of the Hcal veto defined a max depth for "
+        "positions which is no longer implemented. Remove the "
+        "parameter (max_depth) from your configuration. See "
+        "https://github.com/LDMX-Software/Hcal/issues/61 for details");
+  }
+  backMinPE_ = parameters.getParameter<double>("back_min_pe");
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {
