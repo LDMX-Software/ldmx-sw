@@ -38,14 +38,14 @@ class HcalVetoResult {
   bool passesVeto() const { return passesVeto_; };
 
   /** @return The maximum PE HcalHit. */
-  inline ldmx::HcalHit getMaxPEHit() const { return maxPEHit_; }
+  ldmx::HcalHit getMaxPEHit() const { return maxPEHit_; }
 
   /**
    * Sets whether the Hcal veto was passed or not.
    *
    * @param passesVeto Veto result.
    */
-  inline void setVetoResult(const bool& passesVeto = true) {
+  void setVetoResult(const bool& passesVeto = true) {
     passesVeto_ = passesVeto;
   }
 
@@ -54,9 +54,7 @@ class HcalVetoResult {
    *
    * @param maxPEHit The maximum PE HcalHit
    */
-  inline void setMaxPEHit(const ldmx::HcalHit maxPEHit) {
-    maxPEHit_ = maxPEHit;
-  }
+  void setMaxPEHit(const ldmx::HcalHit maxPEHit) { maxPEHit_ = maxPEHit; }
 
  private:
   /** Reference to max PE hit. */
