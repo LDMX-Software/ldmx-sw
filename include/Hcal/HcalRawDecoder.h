@@ -300,9 +300,9 @@ class HcalRawDecoder : public framework::Producer {
         }
         uint32_t shift_in_word = 8 * (i_link % 4);
         [[maybe_unused]] bool rid_ok =
-            (w >> (shift_in_word + 7)) & packing::utility::mask<1> == 1;
+            ((w >> (shift_in_word + 7)) & packing::utility::mask<1>) == 1;
         [[maybe_unused]] bool cdc_ok =
-            (w >> (shift_in_word + 6)) & packing::utility::mask<1> == 1;
+            ((w >> (shift_in_word + 6)) & packing::utility::mask<1>) == 1;
         length_per_link[i_link] =
             (w >> shift_in_word) & packing::utility::mask<6>;
 #ifdef DEBUG
@@ -344,7 +344,7 @@ class HcalRawDecoder : public framework::Producer {
         [[maybe_unused]] uint32_t roc_id =
             (w >> 16) & packing::utility::mask<16>;
         [[maybe_unused]] bool crc_ok =
-            (w >> 15) & packing::utility::mask<1> == 1;
+            ((w >> 15) & packing::utility::mask<1>) == 1;
 #ifdef DEBUG
         std::cout << debug::hex(w) << " : roc_id " << roc_id
                   << ", crc_ok (v2 always false) " << std::boolalpha << crc_ok
