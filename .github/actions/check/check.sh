@@ -41,7 +41,7 @@ __main__() {
   ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
   nnew=$(wc --chars output.log | cut -f 1 -d ' ')
   if (( ngold != nnew )); then
-    error "Different character counts in logs for ${_sample}"
+    error "Different character counts in logs"
     rc=1
   fi
 
