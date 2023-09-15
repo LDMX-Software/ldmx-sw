@@ -143,9 +143,9 @@ void HcalGeometry::printPositionMap(int section) const {
 
 void HcalGeometry::buildStripPositionMap() {
   // We hard-code the number of sections as seen in HcalID
-  for (int section = 0; section < num_sections_; section++) {
-    for (int layer = 1; layer <= num_layers_[section]; layer++) {
-      for (int strip = 0; strip < getNumStrips(section, layer); strip++) {
+  for (unsigned int section = 0; section < num_sections_; section++) {
+    for (unsigned int layer = 1; layer <= num_layers_[section]; layer++) {
+      for (unsigned int strip = 0; strip < getNumStrips(section, layer); strip++) {
         // initialize values
         double x{-99999}, y{-99999}, z{-99999};
 
