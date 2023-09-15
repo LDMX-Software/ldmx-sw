@@ -1,6 +1,5 @@
 ---- LDMXSW: Loading configuration --------
-TypeError: 'float' object cannot be interpreted as an integer
-[2023-08-24 10:10:54.684138] [0x00007f749a1b5bc0] [info]    ElectronCounter is using parameters:  
+[2023-09-15 13:46:59.430351] [0x00007f33a707dbc0] [info]    ElectronCounter is using parameters:  
 	input_collection = TriggerPadTracksY 
 	input_pass_name =  
 	output_collection = BeamElectronCount 
@@ -12,10 +11,10 @@ In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
-[2023-08-24 10:10:54.691429] [0x00007f749a1b5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
-[2023-08-24 10:10:54.691437] [0x00007f749a1b5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
-[2023-08-24 10:10:54.691442] [0x00007f749a1b5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
-[2023-08-24 10:10:54.691450] [0x00007f749a1b5bc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+[2023-09-15 13:46:59.435425] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2023-09-15 13:46:59.435434] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2023-09-15 13:46:59.435584] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2023-09-15 13:46:59.435603] [0x00007f33a707dbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ RunManager ]: Parallel worlds physics list has been registered.
@@ -173,8 +172,6 @@ Process starts!
 [ EcalProcessFilter ]: 5 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 10 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
@@ -199,7 +196,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 28 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 29 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 30 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 31 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 32 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 33 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
@@ -266,8 +262,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 94 Brem photon produced 34 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 95 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 96 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 97 Brem photon produced 25 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 98 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 99 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -275,8 +269,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 101 Brem photon produced 53 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 102 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 103 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 104 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 105 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 106 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
@@ -315,8 +307,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 137 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 138 Brem photon produced 54 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 139 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 140 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 141 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 142 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -471,8 +461,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 286 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 287 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 288 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 289 Brem photon produced 49 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 290 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 291 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -714,7 +702,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 522 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 523 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 524 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 525 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 526 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 527 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
@@ -745,7 +732,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 552 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 553 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 554 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 555 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 556 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 557 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
@@ -828,8 +814,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 633 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 634 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 635 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 636 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 636 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 637 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
@@ -965,7 +949,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 763 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 764 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 765 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 766 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 767 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 768 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
@@ -1187,7 +1170,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 977 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 978 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 979 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 980 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 981 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 982 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
@@ -1199,8 +1181,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 988 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 989 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 990 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 991 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 992 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 993 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
@@ -1265,8 +1245,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1051 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1052 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1053 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1054 Brem photon produced 45 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1055 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1056 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
@@ -1277,15 +1255,12 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1061 Brem photon produced 29 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1062 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1063 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1064 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1065 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1066 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1067 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1068 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1069 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 1070 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1071 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1072 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -1317,8 +1292,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 1098 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1099 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1100 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1101 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1102 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1103 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
@@ -1660,8 +1633,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1425 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1426 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1427 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1428 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1428 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1429 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
@@ -1723,8 +1694,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1483 Brem photon produced 46 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1484 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1485 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1486 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1487 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1488 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -1770,8 +1739,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1528 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1528 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1529 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1530 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1531 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1532 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -1795,7 +1762,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1550 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1551 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1552 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 1553 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1554 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1555 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -1844,8 +1810,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 1596 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1597 Brem photon produced 45 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1598 Brem photon produced 62 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1599 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1600 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1601 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -1892,8 +1856,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1640 Brem photon produced 47 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1641 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1642 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1643 Brem photon produced 48 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1644 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1645 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
@@ -2096,8 +2058,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1838 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1839 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1840 Brem photon produced 60 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1841 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1842 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1842 Brem photon produced 53 particle via biasWrapper(photonNuclear) process.
@@ -2199,7 +2159,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 1936 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1937 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1938 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 1939 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1940 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 1941 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -2280,8 +2239,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2015 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2016 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2017 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2018 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2019 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2020 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
@@ -2308,8 +2265,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2041 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2042 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2043 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2044 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2045 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2046 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -2377,15 +2332,11 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2106 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2107 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2108 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2109 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2110 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2111 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2112 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2113 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2114 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2115 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2116 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
@@ -2406,7 +2357,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2131 Brem photon produced 40 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2132 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2133 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2134 Brem photon produced 28 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2135 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2136 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -2465,8 +2415,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2187 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2188 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2189 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2190 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2191 Brem photon produced 44 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2192 Brem photon produced 49 particle via biasWrapper(photonNuclear) process.
@@ -2522,8 +2470,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2241 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2242 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2243 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2244 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2245 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2246 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
@@ -2547,8 +2493,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2264 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2265 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2266 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2267 Brem photon produced 25 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2268 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2269 Brem photon produced 2 particle via biasWrapper(photonNuclear) process.
@@ -2764,8 +2708,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2475 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2476 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2476 Brem photon produced 25 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2477 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2478 Brem photon produced 41 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2479 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -2964,8 +2906,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2669 Brem photon produced 25 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2670 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2670 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2671 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2672 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2673 Brem photon produced 56 particle via biasWrapper(photonNuclear) process.
@@ -3000,8 +2940,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2701 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2702 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2703 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2704 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2704 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2705 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -3047,8 +2985,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2742 Brem photon produced 33 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2743 Brem photon produced 39 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2744 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2745 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2746 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2747 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -3135,7 +3071,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2826 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2827 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2828 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2829 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2830 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2831 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -3188,7 +3123,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2873 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2874 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2875 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2876 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2876 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2877 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -3259,8 +3193,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 2942 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2943 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2944 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 2945 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2945 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 2946 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -3350,8 +3282,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3026 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3027 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3028 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3029 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3030 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3031 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -3388,8 +3318,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3059 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3060 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3060 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3061 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3062 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3063 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -3443,8 +3371,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3110 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3111 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3112 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3113 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3114 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3115 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -3650,8 +3576,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3313 Brem photon produced 40 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3314 Brem photon produced 29 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3315 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3316 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3317 Brem photon produced 29 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3318 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -3849,7 +3773,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3506 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3507 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3508 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 3509 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3510 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3511 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -3923,8 +3846,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 3577 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3578 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3579 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3580 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3581 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3582 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
@@ -3932,7 +3853,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3584 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3584 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3585 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 3586 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3587 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3588 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
@@ -4008,8 +3928,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 3657 Brem photon produced 28 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3658 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3659 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3660 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3661 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3662 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -4120,8 +4038,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3762 Brem photon produced 51 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3763 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3764 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3765 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3766 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3767 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -4139,8 +4055,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3779 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3780 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3781 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3782 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3783 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3784 Brem photon produced 47 particle via biasWrapper(photonNuclear) process.
@@ -4314,12 +4228,8 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3941 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3942 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3943 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3944 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3945 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3946 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3947 Brem photon produced 45 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3948 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
@@ -4376,7 +4286,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 3998 Brem photon produced 41 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 3999 Brem photon produced 37 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4000 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4001 Brem photon produced 45 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4002 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4003 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -4471,8 +4380,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4086 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4087 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4088 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4089 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4090 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4091 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -4554,8 +4461,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4165 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4166 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4167 Brem photon produced 39 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4168 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4169 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4170 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
@@ -4719,7 +4624,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4322 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4323 Brem photon produced 44 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4324 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4325 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4326 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4327 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
@@ -4789,8 +4693,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4390 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4391 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4392 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4393 Brem photon produced 36 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4394 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4395 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -4872,14 +4774,10 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4469 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4470 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4471 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4472 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4473 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4474 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4475 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4476 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4477 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4478 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
@@ -4930,9 +4828,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4521 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4522 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4523 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4524 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4525 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4526 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
@@ -5021,7 +4916,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4609 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4610 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4611 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4612 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4613 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4614 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
@@ -5123,14 +5017,11 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4708 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4709 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4710 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 4711 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4712 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4713 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4714 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4715 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 4716 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4717 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 4718 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -5619,8 +5510,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5185 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5186 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5187 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5188 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5189 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5190 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -5686,7 +5575,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5250 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5251 Brem photon produced 25 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5252 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5253 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5254 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5255 Brem photon produced 63 particle via biasWrapper(photonNuclear) process.
@@ -5697,8 +5585,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5259 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5260 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5261 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5262 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5263 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5264 Brem photon produced 47 particle via biasWrapper(photonNuclear) process.
@@ -5744,8 +5630,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5302 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5303 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5304 Brem photon produced 57 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5305 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5306 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5307 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
@@ -5801,8 +5685,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5357 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5358 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5359 Brem photon produced 36 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5360 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5361 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5362 Brem photon produced 35 particle via biasWrapper(photonNuclear) process.
@@ -5859,7 +5741,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5411 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5412 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5413 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5414 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5415 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5416 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
@@ -6060,7 +5941,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5608 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5609 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5610 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5611 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5612 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5613 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -6092,8 +5972,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 5639 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5640 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5641 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5642 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5643 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5644 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
@@ -6120,8 +5998,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5665 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5666 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5667 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5668 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5669 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5670 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -6354,8 +6230,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5887 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5887 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5888 Brem photon produced 34 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5889 Brem photon produced 50 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5890 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5891 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
@@ -6390,10 +6264,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5919 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5920 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5921 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 5922 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5923 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 5924 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
@@ -6543,8 +6413,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6067 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6068 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6069 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6070 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6071 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6072 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -6652,8 +6520,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6169 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6170 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6171 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6172 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6173 Brem photon produced 53 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6174 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -6667,8 +6533,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6181 Brem photon produced 40 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6182 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6183 Brem photon produced 48 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6184 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6185 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6186 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
@@ -6692,8 +6556,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6204 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6205 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6206 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6207 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6208 Brem photon produced 27 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6209 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
@@ -6710,7 +6572,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6220 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6221 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6222 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6223 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6224 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6225 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -6763,8 +6624,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6271 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6272 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6273 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6274 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6275 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6276 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
@@ -6961,7 +6820,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6462 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6463 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6464 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6465 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6466 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6467 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
@@ -7085,8 +6943,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6582 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6583 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6584 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6585 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6586 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6587 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -7141,8 +6997,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6636 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6637 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6638 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6639 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6640 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6641 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -7154,7 +7008,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6647 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6648 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6649 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6650 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6651 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6652 Brem photon produced 28 particle via biasWrapper(photonNuclear) process.
@@ -7163,8 +7016,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6655 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6656 Brem photon produced 60 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6657 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6658 Brem photon produced 29 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6659 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6660 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -7205,10 +7056,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6693 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6694 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6695 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6696 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6697 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6698 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
@@ -7279,8 +7126,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 6762 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6763 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6764 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6765 Brem photon produced 56 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6766 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6767 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -7354,7 +7199,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6833 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6834 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6835 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 6836 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6837 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 6838 Brem photon produced 36 particle via biasWrapper(photonNuclear) process.
@@ -7635,7 +7479,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7107 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7108 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7109 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7110 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7111 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7112 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
@@ -7738,13 +7581,10 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7203 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7204 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7205 Brem photon produced 28 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7206 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7207 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7208 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7209 Brem photon produced 43 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7210 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7211 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7212 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -7754,7 +7594,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7216 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7217 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7218 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7219 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7220 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7221 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -7845,8 +7684,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7301 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7302 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7303 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7304 Brem photon produced 42 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7305 Brem photon produced 42 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7306 Brem photon produced 37 particle via biasWrapper(photonNuclear) process.
@@ -7932,8 +7769,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7384 Brem photon produced 48 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7385 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7386 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7387 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7388 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7389 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -7981,7 +7816,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7431 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7432 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7433 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7434 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7435 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7436 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -8103,14 +7937,11 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7550 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7551 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7552 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7553 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7554 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7555 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7556 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7557 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7558 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7559 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7560 Brem photon produced 41 particle via biasWrapper(photonNuclear) process.
@@ -8249,8 +8080,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7689 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7690 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7690 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7691 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7692 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7693 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
@@ -8266,8 +8095,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7703 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7704 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7705 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7706 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7707 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7708 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
@@ -8330,8 +8157,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7763 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7764 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7765 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7766 Brem photon produced 47 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7767 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7767 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -8370,8 +8195,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7798 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7799 Brem photon produced 52 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7800 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7801 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7802 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7803 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
@@ -8446,8 +8269,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7870 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7871 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7872 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7873 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7874 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7875 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
@@ -8460,7 +8281,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7882 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7882 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7883 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7884 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7885 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7886 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -8503,8 +8323,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 7922 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7923 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7924 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 7925 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7926 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 7927 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -8682,8 +8500,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8097 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8098 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8099 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8100 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8101 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8102 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
@@ -8714,8 +8530,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8126 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8127 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8128 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8129 Brem photon produced 44 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8130 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8131 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -8734,8 +8548,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8144 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8145 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8146 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8147 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8148 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8149 Brem photon produced 22 particle via biasWrapper(photonNuclear) process.
@@ -8840,8 +8652,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8245 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8246 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8247 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8248 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8249 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8250 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
@@ -9039,8 +8849,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8438 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8439 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8440 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8441 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8442 Brem photon produced 33 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8443 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
@@ -9064,8 +8872,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8459 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8460 Brem photon produced 35 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8461 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8462 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8462 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8463 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -9116,8 +8922,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8506 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8507 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8508 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8509 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8510 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8511 Brem photon produced 36 particle via biasWrapper(photonNuclear) process.
@@ -9231,8 +9035,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8616 Brem photon produced 32 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8617 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8618 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8619 Brem photon produced 45 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8619 Brem photon produced 57 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8620 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -9241,7 +9043,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8623 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8624 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8625 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 8626 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8627 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8628 Brem photon produced 57 particle via biasWrapper(photonNuclear) process.
@@ -9340,16 +9141,12 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 8718 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8719 Brem photon produced 57 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8720 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8721 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8722 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8722 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8723 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8724 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8725 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8726 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8727 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8728 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -9462,8 +9259,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8832 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8833 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8834 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8835 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8836 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8837 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -9620,8 +9415,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8986 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8987 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8988 Brem photon produced 17 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 8989 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8990 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 8991 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
@@ -9686,7 +9479,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9047 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9048 Brem photon produced 43 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9049 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9050 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9051 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9052 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
@@ -9757,8 +9549,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9116 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9117 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9118 Brem photon produced 44 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9119 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9120 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9121 Brem photon produced 33 particle via biasWrapper(photonNuclear) process.
@@ -9773,8 +9563,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9129 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9130 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9131 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9132 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9133 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9134 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
@@ -9788,8 +9576,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9142 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9143 Brem photon produced 30 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9144 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9145 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9146 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9147 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
@@ -9950,8 +9736,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9297 Brem photon produced 43 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9298 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9299 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9300 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9301 Brem photon produced 26 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9302 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -10022,8 +9806,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9365 Brem photon produced 55 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9366 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9367 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9368 Brem photon produced 44 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9369 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9369 Brem photon produced 24 particle via biasWrapper(photonNuclear) process.
@@ -10092,8 +9874,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9431 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9432 Brem photon produced 50 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9433 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9434 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9435 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9436 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
@@ -10108,7 +9888,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9444 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9445 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9446 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9447 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9448 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9449 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
@@ -10250,9 +10029,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9583 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9584 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9585 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9586 Brem photon produced 39 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9587 Brem photon produced 14 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9588 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
@@ -10260,8 +10036,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
 [ EcalProcessFilter ]: 9590 Brem photon produced 19 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9591 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9592 Brem photon produced 36 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9593 Brem photon produced 39 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9594 Brem photon produced 6 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9594 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -10352,8 +10126,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9677 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9678 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9679 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9680 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9681 Brem photon produced 35 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9682 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
@@ -10362,8 +10134,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9685 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9686 Brem photon produced 15 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9687 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9688 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9689 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9690 Brem photon produced 11 particle via biasWrapper(photonNuclear) process.
@@ -10427,8 +10197,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9746 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9747 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9748 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9749 Brem photon produced 16 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9750 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9751 Brem photon produced 50 particle via biasWrapper(photonNuclear) process.
@@ -10490,8 +10258,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9805 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9806 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9807 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9808 Brem photon produced 38 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9809 Brem photon produced 10 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9810 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
@@ -10563,8 +10329,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9873 Brem photon produced 55 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9874 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9875 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9876 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9877 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9878 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
@@ -10615,8 +10379,6 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9923 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9924 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9925 Brem photon produced 20 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9926 Brem photon produced 9 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9927 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9928 Brem photon produced 54 particle via biasWrapper(photonNuclear) process.
@@ -10685,16 +10447,12 @@ Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9990 Brem photon produced 21 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9991 Brem photon produced 13 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9992 Brem photon produced 5 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9993 Brem photon produced 3 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9994 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9995 Brem photon produced 7 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9996 Brem photon produced 23 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9997 Brem photon produced 18 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 9998 Brem photon produced 8 particle via biasWrapper(photonNuclear) process.
-Error in <TDecompSVD::Diagonalize>: no convergence after 31 steps
-Error in <TDecompSVD::Diagonalize>: no convergence after 32 steps
 [ EcalProcessFilter ]: 9999 Brem photon produced 4 particle via biasWrapper(photonNuclear) process.
 [ EcalProcessFilter ]: 10000 Brem photon produced 12 particle via biasWrapper(photonNuclear) process.
 [ Simulator ] : Started 823126 events to produce 10000 events.
