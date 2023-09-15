@@ -232,12 +232,12 @@ std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
   std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
   for (int iADC{0}; iADC<nADCs_; iADC++) {
     // gen noise for ADC samples
-    int adc_tm1{pedestal};
+    int adc_tm1{static_cast<int>(pedestal)};
     if (iADC > 0)
       adc_tm1 = noise_digi.at(iADC-1).adc_t();
     else
       adc_tm1 += noise(channel)/gain;
-    int adc_t{pedestal + noise(channel)/gain};
+    int adc_t{static_cast<int>(pedestal + noise(channel)/gain)};
 
     if (iADC == iSOI_)
       adc_t += soi_amplitude/gain;
