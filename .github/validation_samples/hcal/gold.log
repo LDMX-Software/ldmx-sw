@@ -1,5 +1,4 @@
 ---- LDMXSW: Loading configuration --------
-TypeError: 'float' object cannot be interpreted as an integer
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
