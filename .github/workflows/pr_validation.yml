@@ -18,7 +18,7 @@ jobs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: 'recursive'
         fetch-depth: 0
