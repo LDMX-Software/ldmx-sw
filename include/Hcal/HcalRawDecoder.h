@@ -201,6 +201,7 @@ class HcalRawDecoder : public framework::Producer {
        */
       packing::utility::CRC fpga_crc;
       fpga_crc << head1;
+
       [[maybe_unused]] uint32_t hgcroc_version =
           (head1 >> 28) & packing::utility::mask<4>;
       uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
@@ -299,8 +300,9 @@ class HcalRawDecoder : public framework::Producer {
             // v2
             eh.good_bxheader[i_link] = ((w & 0xff000000) == 0xaa000000);
             // v3
-            // Shadows a previous declaration
-            [[maybe_unused]] uint32_t bx_id =
+            //
+            // Shadows a previous declaration but is never used so renamed here
+            [[maybe_unused]] uint32_t v3_bx_id =
                 (w >> 16) & packing::utility::mask<12>;
             [[maybe_unused]] uint32_t short_event =
                 (w >> 10) & packing::utility::mask<6>;
