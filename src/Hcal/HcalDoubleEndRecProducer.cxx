@@ -122,7 +122,8 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     // position.Y() << " " << position.Z() << std::endl;
 
     // TODO: switch unique hit time for this pulse
-    double hitTime = (hitPosEnd.getTime() + hitNegEnd.getTime());
+    [[maybe_unused]] double hitTime =
+        (hitPosEnd.getTime() + hitNegEnd.getTime());
 
     // amplitude and PEs
     double num_mips_equivalent =
