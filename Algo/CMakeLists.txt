@@ -36,6 +36,6 @@ setup_library(module Trigger
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event Ecal::Ecal Hcal::Hcal
 )
-target_include_directories(Trigger_Trigger ../HLS_arbitrary_Precision_Types/include)
+target_include_directories(Trigger PUBLIC ../HLS_arbitrary_Precision_Types/include)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Trigger)
