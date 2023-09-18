@@ -214,6 +214,14 @@ class EventFile {
   void writeRunHeader(ldmx::RunHeader &runHeader);
 
   /**
+   * Update the RunHeader for a given run, if it exists in the input file.
+   * @param[in] runNumber The run number.
+   * @param[in,out] header pointer that should be reset to the one for the input run number
+   * @return true if run header was found, false otherwise
+   */
+  bool updateRunHeader(int runNumber, ldmx::RunHeader* runHeader);
+
+  /**
    * Get the RunHeader for a given run, if it exists in the input file.
    * @param runNumber The run number.
    * @return The RunHeader from the input file.

@@ -215,7 +215,7 @@ class Process {
   const ldmx::EventHeader *eventHeader_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
-  const ldmx::RunHeader *runHeader_{0};
+  ldmx::RunHeader *runHeader_{0};
 
   /** TFile for histograms and other user products */
   TFile *histoTFile_{0};
