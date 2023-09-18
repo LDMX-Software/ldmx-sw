@@ -77,11 +77,12 @@ void HcalRecProducer::configure(framework::config::Parameters& ps) {
     if (n == 0) minAmpl_ = ampl_t;
     n++;
   }
+  correctionTOA_.SetBit(TGraph::kIsSortedX);
 }
 
 double HcalRecProducer::getTOA(
     const ldmx::HgcrocDigiCollection::HgcrocDigi digi, double pedestal,
-    unsigned int iSOI) {
+    unsigned int iSOI) const {
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
   int toaSample(0), maxSample(0), iADC(0);
@@ -174,7 +175,6 @@ void HcalRecProducer::produce(framework::Event& event) {
       ldmx::HcalDigiID id_negend(digi_negend.id());
 
       double voltage_posend, voltage_negend;
-      double amplT_posend_copy, amplT_negend_copy;
       if (digi_posend.isTOT()) {
         voltage_posend =
             (digi_posend.tot() - the_conditions.totCalib(id_posend, 0)) *
@@ -192,9 +192,6 @@ void HcalRecProducer::produce(framework::Event& event) {
         amplTm1_negend =
             digi_negend.soi().adc_tm1() - the_conditions.adcPedestal(id_negend);
 
-        amplT_posend_copy = amplT_posend;
-        amplT_negend_copy = amplT_negend;
-
         // correct amplitude (amplitude fractions from both ends need to be
         // above the boundary of the correction)
         if (amplTm1_posend / amplT_posend > minAmplFraction_ &&
@@ -204,7 +201,7 @@ void HcalRecProducer::produce(framework::Event& event) {
         }
 
         // set voltage
-	voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
+        voltage_posend = amplT_posend * the_conditions.adcGain(id_posend, 0);
         voltage_negend = amplT_negend * the_conditions.adcGain(id_negend, 0);
       }
 
@@ -216,9 +213,6 @@ void HcalRecProducer::produce(framework::Event& event) {
 
       // get sign of position along the bar
       int position_bar_sign = (TOA_posend - TOA_negend) > 0 ? 1 : -1;
-
-      double TOA_posend_copy = TOA_posend;
-      double TOA_negend_copy = TOA_negend;
 
       // correct TOA
       // amplitudes from both ends need to be above the boundary of the

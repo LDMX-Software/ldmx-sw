@@ -11,8 +11,7 @@ HcalReconConditions::HcalReconConditions(
     const conditions::DoubleTableCondition& adc_ped,
     const conditions::DoubleTableCondition& adc_gain,
     const conditions::DoubleTableCondition& tot_calib,
-    const conditions::DoubleTableCondition& toa_calib
-					 )
+    const conditions::DoubleTableCondition& toa_calib)
     : framework::ConditionsObject(HcalReconConditions::CONDITIONS_NAME),
       adc_pedestals_{adc_ped},
       adc_gains_{adc_gain},
@@ -71,7 +70,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
   std::string tot_calib_;
   /// name of condition object for hcal toa calibrations
   std::string toa_calib_;
-  
+
  public:
   /**
    * Retrieve the name of the parent conditions from the configuration
@@ -123,11 +122,12 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
     auto [tot_calib_co, tot_calib_iov] =
         requestParentCondition(tot_calib_, context);
     auto [toa_calib_co, toa_calib_iov] =
-      requestParentCondition(toa_calib_, context);
+        requestParentCondition(toa_calib_, context);
 
     // deduce "minimum" IOV
-    //  Framework #56 : https://github.com/LDMX-Software/Framework/issues/56
-    auto min_iov = adc_ped_iov;
+    //  TODO: Framework #56 :
+    //  https://github.com/LDMX-Software/Framework/issues/56
+    [[maybe_unused]] auto min_iov = adc_ped_iov;
     // use std::move(min_iov) in return statement below
 
     // wrap
@@ -135,8 +135,7 @@ class HcalReconConditionsProvider : public framework::ConditionsObjectProvider {
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_ped_co),
         dynamic_cast<const conditions::DoubleTableCondition&>(*adc_gain_co),
         dynamic_cast<const conditions::DoubleTableCondition&>(*tot_calib_co),
-	dynamic_cast<const conditions::DoubleTableCondition&>(*toa_calib_co)
-								    );
+        dynamic_cast<const conditions::DoubleTableCondition&>(*toa_calib_co));
 
     return {co, framework::ConditionsIOV(context.getRun(), context.getRun())};
   }
