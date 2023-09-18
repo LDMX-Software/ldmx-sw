@@ -351,14 +351,22 @@ void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {
   return;
 }
 
-ldmx::RunHeader &EventFile::getRunHeader(int runNumber) {
+bool EventFile::updateRunHeader(int runNumber, ldmx::RunHeader* runHeader) {
   if (runMap_.find(runNumber) != runMap_.end()) {
-    return *(runMap_.at(runNumber).second);
-  } else {
-    EXCEPTION_RAISE("DataError", "No run header exists for " +
-                                     std::to_string(runNumber) +
-                                     " in the run map.");
+    runHeader = runMap_.at(runNumber).second;
+    return true;
   }
+  return false;
+}
+
+ldmx::RunHeader& EventFile::getRunHeader(int runNumber) {
+  ldmx::RunHeader* rh{nullptr};
+  if (this->updateRunHeader(runNumber, rh)) {
+    return *rh;
+  }
+  EXCEPTION_RAISE("RunHeader",
+      "Unable to find header for run "
+      +std::to_string(runNumber));
 }
 
 void EventFile::importRunHeaders() {

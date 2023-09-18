@@ -270,14 +270,12 @@ void Process::run() {
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {
           wasRun = theEvent.getEventHeader().getRun();
-          try {
-            auto runHeader = masterFile->getRunHeader(wasRun);
-            runHeader_ = &runHeader;  // save current run header for later
+          if (masterFile->updateRunHeader(wasRun, runHeader_)) {
             ldmx_log(info) << "Got new run header from '"
                            << masterFile->getFileName() << "' ...\n"
-                           << runHeader;
-            newRun(runHeader);
-          } catch (const framework::exception::Exception &) {
+                           << *runHeader_;
+            newRun(*runHeader_);
+          } else {
             ldmx_log(warn) << "Run header for run " << wasRun
                            << " was not found!";
           }
