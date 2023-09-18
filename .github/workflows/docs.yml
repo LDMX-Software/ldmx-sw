@@ -49,6 +49,8 @@ jobs:
     # sphinx is a python package, so we need to setup python on this runner
     - name: Setup Python for Sphinx
       uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
     
     # Runs sphinx-apidoc and sphinx-build in the docs/ directory
     #   sphinx-apidoc requires the python files to be packaged together
