@@ -30,7 +30,7 @@ class HcalCluster {
   /**
    * Class constructor.
    */
-  HcalCluster();
+  HcalCluster() = default;
 
   /**
    * Class destructor.

@@ -35,19 +35,19 @@ class HcalDigiProducer : public framework::Producer {
   HcalDigiProducer(const std::string& name, framework::Process& process);
 
   /// Default destructor
-  ~HcalDigiProducer() = default;
+  virtual ~HcalDigiProducer() = default;
 
   /**
    * Configure this producer from the python configuration.
    * Sets event constants and configures the noise generator, noise injector,
    * and pulse function. Creates digi collection
    */
-  void configure(framework::config::Parameters&) final override;
+  void configure(framework::config::Parameters&) override;
 
   /**
    * Simulates measurement of pulse and creates digi collection for input event.
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
  private:
   ///////////////////////////////////////////////////////////////////////////////////////

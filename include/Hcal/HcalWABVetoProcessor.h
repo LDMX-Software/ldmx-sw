@@ -30,14 +30,14 @@ class HcalWABVetoProcessor : public framework::Producer {
   HcalWABVetoProcessor(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~HcalWABVetoProcessor();
+  virtual ~HcalWABVetoProcessor();
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -45,7 +45,7 @@ class HcalWABVetoProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
  private:
   // Maximum sum of total ECAL and HCAL energy
