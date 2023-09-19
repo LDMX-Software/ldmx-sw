@@ -127,6 +127,11 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double sigmaloc0 = sqrt(cov(0));
     double sigmaloc1 = sqrt(cov(7));
 
+    histograms_.fill(title+"d0_err",   sigmad0); 
+    histograms_.fill(title+"z0_err",   sigmaz0); 
+    histograms_.fill(title+"phi_err",  sigmaphi); 
+    histograms_.fill(title+"theta_err",sigmatheta); 
+    histograms_.fill(title+"qop_err",  sigmaqop); 
     
     double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
     histograms_.fill(title+"p_err",  sigmap);
@@ -325,6 +330,7 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
         histograms_.fill(title_+"ecal_pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
         histograms_.fill(title_+"ecal_pulls_loc1-vs-N_hits", track.getNhits(), (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
       
+          
         // TH2F  residual vs trk_p
         histograms_.fill(title_+"ecal_res_loc0-vs-trk_p",  trk_p,  ecalState.params[0]-scoring_plane_hit_pos[0]);
         histograms_.fill(title_+"ecal_res_loc1-vs-trk_p",  trk_p,  ecalState.params[1]-scoring_plane_hit_pos[1]);

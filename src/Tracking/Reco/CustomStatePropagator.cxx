@@ -1,6 +1,5 @@
-#include "/sdf/group/ldmx/users/dongyi/ldmx-sw/Tracking/include/Tracking/Reco/CustomStatePropagator.h"
-
-#include "/sdf/group/ldmx/users/dongyi/ldmx-sw/Tracking/acts/Core/include/Acts/Utilities/Logger.hpp"
+#include "Tracking/Reco/CustomStatePropagator.h"
+#include "Acts/Utilities/Logger.hpp"
 
 
 #include <iostream>
