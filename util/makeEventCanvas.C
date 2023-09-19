@@ -4,6 +4,7 @@
 #include <TLine.h>
 #include <TTree.h>
 #include <TCanvas.h>
+#include <TLegend.h>
 #include <TGaxis.h>
 #include <TFile.h>
 #include <TGraphErrors.h>
