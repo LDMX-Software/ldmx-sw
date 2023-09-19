@@ -38,8 +38,7 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-namespace tracking {
-namespace reco {
+namespace tracking::geo {
 
 class EcalTrackingGeometry {
   
@@ -47,8 +46,6 @@ class EcalTrackingGeometry {
   EcalTrackingGeometry(std::string gdmlfile,
                        Acts::GeometryContext* gctx, bool debug = false);
   
-  std::shared_ptr<const Acts::TrackingGeometry> getTG(){return tGeometry_;};
-
   void dumpGeometry(const std::string& outputDir );
   
  private:
@@ -99,7 +96,6 @@ class Ring {
 };
 
 
-}
 }
 
 #endif

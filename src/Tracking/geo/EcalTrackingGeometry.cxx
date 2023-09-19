@@ -1,7 +1,6 @@
-#include "Tracking/Reco/EcalTrackingGeometry.h"
+#include "Tracking/geo/EcalTrackingGeometry.h"
 
-namespace tracking {
-namespace reco {
+namespace tracking::geo {
 
 EcalTrackingGeometry::EcalTrackingGeometry(std::string gdmlfile,
                                            Acts::GeometryContext* gctx,
@@ -410,5 +409,4 @@ Acts::CuboidVolumeBuilder::LayerConfig EcalTrackingGeometry::buildLayerConfig(
 
   return lcfg;
 }
-}  // namespace reco
-}  // namespace tracking
+}  // namespace tracking::geo
