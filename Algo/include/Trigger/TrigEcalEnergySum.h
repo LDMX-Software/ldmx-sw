@@ -1,5 +1,5 @@
 /**
- * @file TriggerEcalEnergySum.h
+ * @file TrigEcalEnergySum.h
  * @brief EcalEnergySum algo
  * @author Christian Herwig, Fermilab
  */
@@ -8,6 +8,7 @@
 #define TRIGGERECALENERGYSUM_H
 
 // LDMX Framework
+#include "TrigUtilities.h"
 #include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
@@ -18,13 +19,15 @@
 namespace trigger {
 
 /**
- * @class TriggerEcalEnergySum
+ * @class TrigEcalEnergySum
  * @brief
  */
-class TriggerEcalEnergySum : public framework::Producer {
+class TrigEcalEnergySum : public framework::Producer {
  public:
-  TriggerEcalEnergySum(const std::string& name, framework::Process& process)
-      : framework::Producer(name, process) {}
+  TrigEcalEnergySum(const std::string& name, framework::Process& process)
+      : framework::Producer(name, process) {
+    //std::cout << "c++ initializing TrigEcalEnergySum" << std::endl;
+  }
 
   virtual void configure(framework::config::Parameters& ps);
 
@@ -44,19 +47,22 @@ class TriggerEcalEnergySum : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
+  // name of collection for trigHits to be passed as input
+  std::string hitCollName_;
+
   // From:
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py
   // ECal/src/EcalRecProducer.cxx
-  float gain = 320. / 0.1 / 1024;                                    // mV/ADC
-  float mVtoMeV = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV
-  std::vector<float> layerWeights = {
-      1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,
-      9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364,
-      17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990};
-  float secondOrderEnergyCorrection = 4000. / 4010.;
-  float mipSiEnergy = 0.130;
+  /* float gain = 320. / 0.1 / 1024;                                    // mV/ADC */
+  /* float mVtoMeV = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV */
+  /* std::vector<float> layerWeights = { */
+  /*     1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630, */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630, */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364, */
+  /*     17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990}; */
+  /* float secondOrderEnergyCorrection = 4000. / 4010.; */
+  /* float mipSiEnergy = 0.130; */
 
   // ClusterGeometry myGeo;
 };
