@@ -33,6 +33,10 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   if (event.exists("EcalScoringPlaneHits")) {
     ecal_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits"));
   }
+  
+  if (event.exists("TargetScoringPlaneHits")) {
+    target_scoring_hits_ = std::make_shared<std::vector<ldmx::SimTrackerHit>>(event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits"));
+  }
 
   if (doTruthComparison) {
     sortTracks(tracks,uniqueTracks, duplicateTracks,fakeTracks);
@@ -48,6 +52,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   // Track Extrapolation to Ecal Monitoring
   
   TrackEcalScoringPlaneMonitoring(tracks);
+  
+  TrackTargetScoringPlaneMonitoring(tracks);
   
   
   // Clear the vectors
@@ -121,18 +127,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double sigmaloc0 = sqrt(cov(0));
     double sigmaloc1 = sqrt(cov(7));
 
-    std::cout << "================================================================\n";
-    std::cout << "sigma_d0 " << sigmad0 << std::endl;
-    std::cout << "sigma_z0 " << sigmaz0 << std::endl;
-    std::cout << "sigma_loc0 " << sigmaloc0 << std::endl;
-    std::cout << "sigma_loc1 " << sigmaloc1 << std::endl;
-
-
-    histograms_.fill(title+"d0_err",   sigmad0); 
-    histograms_.fill(title+"z0_err",   sigmaz0); 
-    histograms_.fill(title+"phi_err",  sigmaphi); 
-    histograms_.fill(title+"theta_err",sigmatheta); 
-    histograms_.fill(title+"qop_err",  sigmaqop); 
     
     double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
     histograms_.fill(title+"p_err",  sigmap);
@@ -311,39 +305,33 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
         // This gets the hit global position Y
         
         auto scoring_plane_hit_pos = sp_hit.getPosition();
-        histograms_.fill(title_+"sp_hit_X", scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"sp_hit_Y", scoring_plane_hit_pos[1]);
+        histograms_.fill(title_+"ecal_sp_hit_X", scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"ecal_sp_hit_Y", scoring_plane_hit_pos[1]);
 
         // TH1F  The difference(residual) between end_loc0 and sp_hit_X
         histograms_.fill(title_+"trk_ecal_loc0-sp_hit_X", ecalState.params[0]-scoring_plane_hit_pos[0]);
         histograms_.fill(title_+"trk_ecal_loc1-sp_hit_Y", ecalState.params[1]-scoring_plane_hit_pos[1]);
 
         // TH1F  The pulls of loc0 and loc1
-        histograms_.fill(title_+"Pulls_of_loc0", (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"Pulls_of_loc1", (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
+        histograms_.fill(title_+"ecal_Pulls_of_loc0", (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"ecal_Pulls_of_loc1", (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
         
         // TH2F  residual vs Nhits
-        histograms_.fill(title_+"res_loc0-vs-N_hits", track.getNhits(), ecalState.params[0]-scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"res_loc1-vs-N_hits", track.getNhits(), ecalState.params[1]-scoring_plane_hit_pos[1]);
+        histograms_.fill(title_+"ecal_res_loc0-vs-N_hits", track.getNhits(), ecalState.params[0]-scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"ecal_res_loc1-vs-N_hits", track.getNhits(), ecalState.params[1]-scoring_plane_hit_pos[1]);
 
-        std::cout << "N_hits " << track.getNhits() << std::endl;
-        std::cout << "trk_p " << trk_p << std::endl;
-        std::cout << "res_loc0 " << ecalState.params[0]-scoring_plane_hit_pos[0] << std::endl;
-        std::cout << "res_loc1 " << ecalState.params[1]-scoring_plane_hit_pos[1] << std::endl;
         
-        // TH2F  residual vs Nhits
-        histograms_.fill(title_+"pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"pulls_loc1-vs-N_hits", track.getNhits(), (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
-        std::cout << "pulls_loc0 " << (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0 << std::endl;
-        std::cout << "pulls_loc1 " << (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1 << std::endl;
+        // TH2F  pulls vs Nhits
+        histograms_.fill(title_+"ecal_pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"ecal_pulls_loc1-vs-N_hits", track.getNhits(), (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
       
         // TH2F  residual vs trk_p
-        histograms_.fill(title_+"res_loc0-vs-trk_p",  trk_p,  ecalState.params[0]-scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"res_loc1-vs-trk_p",  trk_p,  ecalState.params[1]-scoring_plane_hit_pos[1]);
+        histograms_.fill(title_+"ecal_res_loc0-vs-trk_p",  trk_p,  ecalState.params[0]-scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"ecal_res_loc1-vs-trk_p",  trk_p,  ecalState.params[1]-scoring_plane_hit_pos[1]);
 
-        // TH2F  residual vs trk_p
-        histograms_.fill(title_+"pulls_loc0-vs-trk_p",trk_p,  (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"pulls_loc1-vs-trk_p",trk_p,  (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
+        // TH2F  pulls vs trk_p
+        histograms_.fill(title_+"ecal_pulls_loc0-vs-trk_p",trk_p,  (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"ecal_pulls_loc1-vs-trk_p",trk_p,  (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
       
       }
       
@@ -352,6 +340,108 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
   
 }
 
+
+
+void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks) {
+  
+  // Select the scoring plane hits that belong to the front of the Target
+  // The front of the target is selected by checking that id_ & 0xfff is equal to 31.
+
+  std::vector<ldmx::SimTrackerHit> sel_target_spHits;
+
+  // TODO Use reference instead to avoid copy?
+
+  for (auto sp_hit : *(target_scoring_hits_)) {
+    
+    if (sp_hit.getMomentum()[2] > 0 ) {
+      
+      sel_target_spHits.push_back(sp_hit);
+    }
+    
+  }
+
+  for (auto& track : tracks) {
+    
+    //Covariance matrix
+    Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
+
+    double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
+    double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
+    double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
+    double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
+    double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
+
+    double sigmaloc0 = sqrt(cov(0));
+    double sigmaloc1 = sqrt(cov(7));
+    
+    double trk_qop    = track.getQoP();
+    double trk_p      = 1./abs(trk_qop);
+    
+    for (auto& sp_hit : sel_target_spHits) {
+
+
+      if (track.getTrackID() == sp_hit.getTrackID()) {
+        
+        // Get the Track extrapolated position
+        // For the moment the trackState at the Target surface is the last in the vector
+        // And the size of the vector is 2. So I hardcoded 1. 
+
+        if (track.getTrackStates().size() < 2)
+          continue;
+                  
+        
+        ldmx::Track::TrackState TargetState = track.getTrackStates()[0];
+        
+
+        // Here is where you add the histograms
+        // This gets the track local position 0
+        // loc0 is along global X
+        // loc1 is along global Y
+        
+        //Check that the track state is filled
+        if (TargetState.params.size() < 5)
+          continue;
+        
+        histograms_.fill(title_+"trk_target_loc0", TargetState.params[0]);
+        histograms_.fill(title_+"trk_target_loc1", TargetState.params[1]);
+        
+        // This gets the hit global position Y
+        
+        auto scoring_plane_hit_pos = sp_hit.getPosition();
+        histograms_.fill(title_+"target_sp_hit_X", scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"target_sp_hit_Y", scoring_plane_hit_pos[1]);
+
+        // TH1F  The difference(residual) between end_loc0 and sp_hit_X
+        histograms_.fill(title_+"trk_target_loc0-sp_hit_X", TargetState.params[0]-scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"trk_target_loc1-sp_hit_Y", TargetState.params[1]-scoring_plane_hit_pos[1]);
+
+        // TH1F  The pulls of loc0 and loc1
+        histograms_.fill(title_+"target_Pulls_of_loc0", (TargetState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"target_Pulls_of_loc1", (TargetState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
+        
+        // TH2F  residual vs Nhits
+        histograms_.fill(title_+"target_res_loc0-vs-N_hits", track.getNhits(), TargetState.params[0]-scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"target_res_loc1-vs-N_hits", track.getNhits(), TargetState.params[1]-scoring_plane_hit_pos[1]);
+
+        
+        // TH2F  pulls vs Nhits
+        histograms_.fill(title_+"target_pulls_loc0-vs-N_hits", track.getNhits(), (TargetState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"target_pulls_loc1-vs-N_hits", track.getNhits(), (TargetState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
+      
+        // TH2F  residual vs trk_p
+        histograms_.fill(title_+"target_res_loc0-vs-trk_p",  trk_p,  TargetState.params[0]-scoring_plane_hit_pos[0]);
+        histograms_.fill(title_+"target_res_loc1-vs-trk_p",  trk_p,  TargetState.params[1]-scoring_plane_hit_pos[1]);
+
+        // TH2F  pulls vs trk_p
+        histograms_.fill(title_+"target_pulls_loc0-vs-trk_p",trk_p,  (TargetState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
+        histograms_.fill(title_+"target_pulls_loc1-vs-trk_p",trk_p,  (TargetState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
+      
+      }
+      
+    } // loop on sp_hits
+  }// loop on tracks
+  
+}
 
 
 
