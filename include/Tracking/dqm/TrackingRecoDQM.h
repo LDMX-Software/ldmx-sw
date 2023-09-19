@@ -33,6 +33,7 @@ namespace tracking::dqm {
 
     void TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
 
+    void TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
     /**
      * Configure the analyzer using the given user specified parameters.
      *
@@ -63,6 +64,9 @@ namespace tracking::dqm {
 
     // Ecal scoring plane hits
     std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
+    
+    // Target  scoring plane hits
+    std::shared_ptr<std::vector<ldmx::SimTrackerHit>> target_scoring_hits_{nullptr};
     
     //If I have truth information, sort the tracks vector according to their trackID and truthProb
     std::vector<ldmx::Track> uniqueTracks;     // real tracks (truth_prob > cut), unique
