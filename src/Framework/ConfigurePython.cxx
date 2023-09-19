@@ -48,7 +48,7 @@ static std::string getPyString(PyObject* pyObj) {
  */
 std::string repr(PyObject* obj) {
   PyObject* py_repr = PyObject_Repr(obj);
-  if (repr == nullptr) return "";
+  if (py_repr == nullptr) return "";
   std::string str = getPyString(py_repr);
   Py_XDECREF(py_repr);
   return str;
