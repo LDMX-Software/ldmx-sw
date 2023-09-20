@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.12)
 # Set the project name
 project(
   Framework
-  VERSION 2.1.0
+  VERSION 1.3.6
   DESCRIPTION "Framework used to define processing pipelines and modules."
   LANGUAGES CXX)
 
@@ -44,8 +44,8 @@ string(REGEX REPLACE "\n$" "" GIT_SHA1 "${GIT_SHA1}")
 # Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and writes
 # it out to Version.h.
 configure_file(${PROJECT_SOURCE_DIR}/include/Framework/Version.h.in
-               ${PROJECT_SOURCE_DIR}/include/Framework/Version.h)
-install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h
+               ${PROJECT_BINARY_DIR}/include/Framework/Version.h)
+install(FILES ${PROJECT_BINARY_DIR}/include/Framework/Version.h
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
 # Register both the event and run headers with the event bus and ROOT dictionary
@@ -53,43 +53,6 @@ register_event_object(module_path "Framework" namespace "ldmx"
                       class "EventHeader")
 register_event_object(module_path "Framework" namespace "ldmx" 
                       class "RunHeader")
-
-build_event_bus(path ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h)
-
-# Build the ROOT dictionary from registered event objects
-build_dict(name "Event"
-           template ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h.in)
-
-# Unfortunately, the headers need to be included globably for the dictionary to
-# be generated correctly.
-include_directories(${include_paths})
-
-# Copy the files needed to generate the dictionary over to the installation
-# directory.  This is needed so the dictionary can be built even when the source
-# code is deleted.
-file(COPY ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h
-          ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h
-     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
-
-# Generate the ROOT dictionary
-root_generate_dictionary(
-  EventDic ${CMAKE_INSTALL_PREFIX}/include/Framework/EventDef.h LINKDEF
-  ${CMAKE_INSTALL_PREFIX}/include/Framework/EventLinkDef.h)
-
-# When issues the make clean command, remove both the EventDef and EventLinkDef
-# files.
-set_directory_properties(
-  PROPERTIES
-    ADDITIONAL_MAKE_CLEAN_FILES
-    "${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h;${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h"
-)
-
-# Install ROOT pcm file
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-
-# Need to define the sources here because of the addition of EventDic
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Framework/[a-zA-Z]*.cxx)
 
 # Setup the library
 setup_library(module Framework 
@@ -102,9 +65,7 @@ setup_library(module Framework
                Boost::regex
                Framework::Exception
                Framework::Configure
-               "${registered_targets}"
-  sources EventDic.cxx
-          ${SRC_FILES})
+               "${registered_targets}")
 
 # Compiling the Framework library requires features introduced by the cpp 17
 # standard.
@@ -113,6 +74,47 @@ set_target_properties(
   PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO)
+
+# the following writes the LinkDef file using the CMake global variables
+# namespaces and dict that are lists appended to by the register_event_object function
+message(STATUS "Building ROOT dictionary LinkDef")
+set(linkdef_filepath ${PROJECT_BINARY_DIR}/include/Framework/EventDictLinkDef.h)
+file(APPEND ${linkdef_filepath} "
+#ifdef __CINT__
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+#pragma link C++ nestedclass;
+#pragma link C++ nestedtypedef;
+
+")
+list(REMOVE_DUPLICATES namespaces)
+foreach(namespace ${namespaces})
+  file(APPEND ${linkdef_filepath} "#pragma link C++ namespace ${namespace};\n")
+endforeach()
+
+foreach(entry ${dict})
+  file(APPEND ${linkdef_filepath} "#pragma link C++ class ${entry}+;\n")
+endforeach()
+
+file(APPEND ${linkdef_filepath} "\n#endif\n")
+
+# need to update include directories so the dictionary generation knows
+# to use different paths at install time
+target_include_directories(Framework PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+  ${include_paths}
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>")
+
+# attach a ROOT dictionary to the Framework module with all the registered
+# headers in the event_headers list
+root_generate_dictionary(EventDict
+  ${event_headers}
+  LINKDEF ${linkdef_filepath}
+  MODULE Framework)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libFramework_rdict.pcm DESTINATION lib)
 
 # Add the fire executable
 add_executable(fire ${PROJECT_SOURCE_DIR}/app/fire.cxx)
