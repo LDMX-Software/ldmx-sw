@@ -1,5 +1,5 @@
 ---- LDMXSW: Loading configuration --------
-[2023-09-15 13:46:59.430351] [0x00007f33a707dbc0] [info]    ElectronCounter is using parameters:  
+[2023-09-20 16:35:12.182179] [0x00007f8552c3bbc0] [info]    ElectronCounter is using parameters:  
 	input_collection = TriggerPadTracksY 
 	input_pass_name =  
 	output_collection = BeamElectronCount 
@@ -11,10 +11,10 @@ In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
-[2023-09-15 13:46:59.435425] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
-[2023-09-15 13:46:59.435434] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
-[2023-09-15 13:46:59.435584] [0x00007f33a707dbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
-[2023-09-15 13:46:59.435603] [0x00007f33a707dbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+[2023-09-20 16:35:12.185661] [0x00007f8552c3bbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2023-09-20 16:35:12.185764] [0x00007f8552c3bbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2023-09-20 16:35:12.185771] [0x00007f8552c3bbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2023-09-20 16:35:12.185778] [0x00007f8552c3bbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ RunManager ]: Parallel worlds physics list has been registered.
