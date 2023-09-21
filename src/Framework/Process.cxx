@@ -129,6 +129,10 @@ void Process::run() {
 
   // event bus for this process
   Event theEvent(passname_);
+  // the EventHeader object is created with the event bus as
+  // one of its members, we obtain a pointer for the header
+  // here so we can share it with the conditions system
+  eventHeader_ = theEvent.getEventHeaderPtr();
 
   // Start by notifying everyone that modules processing is beginning
   conditions_.onProcessStart();
@@ -161,18 +165,15 @@ void Process::run() {
     runHeader.setRunStart(std::time(nullptr));  // set run starting
     runHeader_ = &runHeader;            // give handle to run header to process
     outFile.writeRunHeader(runHeader);  // add run header to file
+    theEvent.getEventHeader().setRun(runForGeneration_);
 
     newRun(runHeader);
 
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
       ldmx::EventHeader &eh = theEvent.getEventHeader();
-      eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
-
-      // event header pointer grab
-      eventHeader_ = theEvent.getEventHeaderPtr();
 
       numTries++;
 
@@ -263,9 +264,6 @@ void Process::run() {
              && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
         storageController_.resetEventState();
-
-        // event header pointer grab
-        eventHeader_ = theEvent.getEventHeaderPtr();
 
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {
