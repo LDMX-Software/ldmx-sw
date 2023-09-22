@@ -289,12 +289,15 @@ void Process::run() {
         n_events_processed++;
       }  // loop through events
 
+      bool leave_early{false};
       if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
         ldmx_log(info) << "Reached event limit of " << eventLimit_ << " events";
+        leave_early = true;
       }
 
       if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
         ldmx_log(warn) << "Processing interrupted";
+        leave_early = true;
       }
 
       ldmx_log(info) << "Closing file " << infilename;
@@ -312,6 +315,9 @@ void Process::run() {
         outFile = nullptr;
       }
 
+      if (leave_early) {
+        break;
+      }
     }  // loop through input files
 
     if (outFile) {
