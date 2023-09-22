@@ -133,6 +133,7 @@ void Process::run() {
   // one of its members, we obtain a pointer for the header
   // here so we can share it with the conditions system
   eventHeader_ = theEvent.getEventHeaderPtr();
+  theEvent.getEventHeader().setRun(runForGeneration_);
 
   // Start by notifying everyone that modules processing is beginning
   conditions_.onProcessStart();
@@ -165,7 +166,6 @@ void Process::run() {
     runHeader.setRunStart(std::time(nullptr));  // set run starting
     runHeader_ = &runHeader;            // give handle to run header to process
     outFile.writeRunHeader(runHeader);  // add run header to file
-    theEvent.getEventHeader().setRun(runForGeneration_);
 
     newRun(runHeader);
 
