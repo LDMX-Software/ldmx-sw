@@ -270,7 +270,9 @@ void Process::run() {
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {
           wasRun = theEvent.getEventHeader().getRun();
-          if (masterFile->updateRunHeader(wasRun, runHeader_)) {
+          ldmx::RunHeader* rh{masterFile->getRunHeaderPtr(wasRun)};
+          if (rh != nullptr) {
+            runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
                            << masterFile->getFileName() << "' ...\n"
                            << *runHeader_;
