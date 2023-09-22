@@ -351,17 +351,19 @@ void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {
   return;
 }
 
-bool EventFile::updateRunHeader(int runNumber, ldmx::RunHeader* runHeader) {
+ldmx::RunHeader* EventFile::getRunHeaderPtr(int runNumber) {
+  std::cout << "EventFile::getRunHeaderPtr(" << runNumber << ")" << std::endl;
   if (runMap_.find(runNumber) != runMap_.end()) {
-    runHeader = runMap_.at(runNumber).second;
-    return true;
+    std::cout << "  run " << runNumber << " is in runMap" << std::endl;
+    return runMap_.at(runNumber).second;
   }
-  return false;
+  return nullptr;
 }
 
 ldmx::RunHeader& EventFile::getRunHeader(int runNumber) {
-  ldmx::RunHeader* rh{nullptr};
-  if (this->updateRunHeader(runNumber, rh)) {
+  std::cout << "EventFile::getRunHeader(" << runNumber << ")" << std::endl;
+  ldmx::RunHeader* rh{this->getRunHeaderPtr(runNumber)};
+  if (rh != nullptr) {
     return *rh;
   }
   EXCEPTION_RAISE("RunHeader",

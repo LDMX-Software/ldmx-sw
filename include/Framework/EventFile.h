@@ -216,10 +216,10 @@ class EventFile {
   /**
    * Update the RunHeader for a given run, if it exists in the input file.
    * @param[in] runNumber The run number.
-   * @param[in,out] header pointer that should be reset to the one for the input run number
-   * @return true if run header was found, false otherwise
+   * @return pointer to the header corresponding to the run number
+   * @note the returned pointer will be nullptr if the run was not found
    */
-  bool updateRunHeader(int runNumber, ldmx::RunHeader* runHeader);
+  ldmx::RunHeader* getRunHeaderPtr(int runNumber);
 
   /**
    * Get the RunHeader for a given run, if it exists in the input file.
