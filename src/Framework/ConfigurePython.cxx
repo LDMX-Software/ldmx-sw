@@ -302,19 +302,30 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   // the name of the python script
   PySys_SetArgvEx(nargs + 1, targs, 1);
 
-  // the following line is what actually runs the script
-  PyObject* script = PyImport_ImportModule(cmd.c_str());
+  // load a handle to the config file into memory
+  FILE* config_file{fopen(pythonScript.c_str(),"r")};
+  // run the file as a python script
+  if (PyRun_AnyFile(config_file, pythonScript.c_str()) != 0) {
+    PyErr_Print();
+    EXCEPTION_RAISE("ConfigureError", "Problem running python script.");
+  }
 
   // script has been run so we can
   // free up arguments to python script
+  fclose(config_file);
   for (int i = 0; i < nargs + 1; i++) PyMem_RawFree(targs[i]);
   delete[] targs;
 
-  if (script == 0) {
+  // when a script runs in python, the script itself becomes the module
+  // named __main__, we retrieve a handle to that module by "importing"
+  // it (since it is already within the python interpreter, we are just
+  // getting the handle and not actually running anything here
+  PyObject* script = PyImport_ImportModule("__main__");
+  if (script == NULL) {
     PyErr_Print();
-    EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+    EXCEPTION_RAISE("ConfigureError",
+                    "Problem loading python script");
   }
-
   PyObject* pCMod = PyObject_GetAttrString(script, root_module.c_str());
   Py_DECREF(script);  // don't need the script anymore
   if (pCMod == 0) {
