@@ -64,8 +64,15 @@ class StorageControl {
   /**
    * Determine if the current event should be kept, based on the defined rules
    *
-   * @note If event_completed is false, we don't listen to **anything** and
-   * decide not to keep the event.
+   * Separating the 'must' keywords into their own tier helps give them
+   * greater importance that reflects their name. In order, the decision
+   * follows the criteria below only using hints that match one of the
+   * listening rules configured for the process.
+   * 
+   * 1. If any hint is mustDrop, drop the event.
+   * 2. If any hint is mustKeep (without any mustDrop), keep the event.
+   * 3. Simple majority decision of votes made for keep and drop.
+   * 4. The default decision is made in the event of a tie (or no votes).
    *
    * @param[in] event_completed did we complete processing of the current event?
    * @returns true if we should store the current event into the output file
@@ -109,7 +116,7 @@ class StorageControl {
    * operations.
    */
   struct Rule {
-    bool matches(const Hint& h);
+    bool matches(const Hint& h) const;
 
     /**
      * Event Processor Regex
