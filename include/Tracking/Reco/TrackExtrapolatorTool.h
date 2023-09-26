@@ -75,6 +75,41 @@ public:
     else
       return std::nullopt;
   }
+
+  
+  /** Method to extrapolate to a target surface given a set of BoundTrackParameters and custom options
+   *
+   @param Bound Track Parameters
+   @param The target surface
+   @param propagator options
+   @return optional with BoundTrackParameters
+  **/
+
+
+  template <class propagator_options>
+  std::optional<Acts::BoundTrackParameters> extrapolate(const Acts::BoundTrackParameters pars,
+                                                        const std::shared_ptr<Acts::Surface>& target_surface,
+                                                        propagator_options pOptions) {
+    
+    //Just to make it explicit
+    bool boundaryCheck = false;
+    auto intersection = target_surface->intersect(gctx_,
+                                                  pars.position(gctx_),
+                                                  pars.unitDirection(),
+                                                  boundaryCheck);
+    
+    auto result = propagator_.propagate(pars,
+                                        *target_surface,
+                                        pOptions);
+    
+    
+    if (result.ok())
+      return *result->endParameters;
+    else
+      return std::nullopt;
+  }
+
+  
   
   
   /** Method to extrapolate to a target surface given a track
@@ -116,7 +151,6 @@ public:
     //std::cout<<"Selected track state for extrapolation"<<std::endl;
     
     //Get the BoundTrackStateParameters
-    
     const auto& surface  = ts.referenceSurface();
     const auto& smoothed = ts.smoothed();
     bool hasSmoothed = ts.hasSmoothed();
@@ -217,6 +251,9 @@ public:
       //Covariance
       const Acts::BoundMatrix& trk_cov = *((*opt_pars).covariance());
       tracking::sim::utils::flatCov(trk_cov,ts.cov);
+
+      //LayerID - invalid in this context.
+      ts.layerid  = -999;
       
       ts.ts_type = type;
       return true;

@@ -19,6 +19,8 @@
 //--- C++ ---//
 #include <random>
 
+
+
 namespace ldmx {
 class Measurement;
 }
@@ -77,5 +79,6 @@ class DigitizationProcessor : public TrackingGeometryUser {
   std::default_random_engine generator_;
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
+  
 };  // Digitization Processor
 }  // namespace tracking::reco

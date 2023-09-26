@@ -10,6 +10,7 @@
 #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 #include "Acts/Plugins/Identification/Identifier.hpp"
 
+
 namespace tracking {
 namespace sim {
 
@@ -68,6 +69,71 @@ PropagatorStepWriter::~PropagatorStepWriter() {
   }
 }  // destructor
 
+
+
+
+json PropagatorStepWriter::StepPosition(const std::vector<PropagationSteps>& stepCollection) {
+
+  json jtrack = json::object();
+  json positions = json::array();
+  
+  // Each collection is a different track
+  // In our case the step collection has size 1
+
+  if (stepCollection.size() > 1) {
+    std::cout<<"PropagatorStepWriter::ERROR, the stepCollection has dimension > 1. Will Skip step dumping!!"<<std::endl;
+    return jtrack;
+  }
+  
+  for (auto& steps : stepCollection) {
+
+    //loop over each step
+
+    for (auto& step : steps) {
+
+      json position3d = json::array();
+      
+      Acts::GeometryIdentifier::Value approachID = 0;
+      Acts::GeometryIdentifier::Value sensitiveID = 0;
+      // get the identification from the surface first
+      if (step.surface) {
+        auto geoID = step.surface->geometryId();
+        sensitiveID = geoID.sensitive();
+        approachID = geoID.approach();   
+      }
+
+      // remove sensitive ID and approach steps
+
+      std::cout<<"Checking sensitive/approach"<<std::endl;
+      
+      if (sensitiveID != 0)
+        continue;
+      
+      // kinematic information
+
+
+      double posX = step.position.x();
+      double posY = step.position.y();
+      double posZ = step.position.z();
+
+      std::cout<<posX<<" " <<posY<<" "<<posZ<<std::endl;
+      
+      position3d.push_back(posY);
+      position3d.push_back(posZ);
+      position3d.push_back(posX);
+      
+      positions.push_back(position3d);
+      
+    } // Steps
+    
+  } // Step collection
+
+  jtrack = json::object({{"pos",positions}});
+  
+  return jtrack;
+  
+}
+                                             
 bool PropagatorStepWriter::WriteSteps(
     framework::Event& event,
     const std::vector<PropagationSteps>& stepCollection,

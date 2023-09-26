@@ -5,6 +5,8 @@
 #include "Acts/EventData/TrackHelpers.hpp"
 #include "Tracking/Reco/TruthMatchingTool.h"
 
+
+
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
 #include <iostream>
@@ -110,7 +112,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                         //default_transformBField));
                         transformPos,
                         transformBField));
-
+  
 
   auto acts_loggingLevel = Acts::Logging::FATAL;
   if (debug_)
@@ -146,14 +148,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   //gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
   //    std::move(gsf_propagator));
-
-  // Setup the propagator steps writer
-  //tracking::sim::PropagatorStepWriter::Config cfg;
-  //cfg.filePath = steps_outfile_path_;
-
-  //writer_ = std::make_unique<tracking::sim::PropagatorStepWriter>(cfg);
-
-
+  
 }
 
 void CKFProcessor::produce(framework::Event& event) {
@@ -485,11 +480,12 @@ void CKFProcessor::produce(framework::Event& event) {
     
     Acts::Vector3 trk_momentum = track.momentum();
     trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
+
+    std::vector<ldmx::Track::TrackState> trackStates;
     
     
     //Add measurements on track
     for (auto ts : track.trackStates()) {
-      
       //Check if the track state is a measurement
       auto typeFlags = ts.typeFlags();
       if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
@@ -499,7 +495,31 @@ void CKFProcessor::produce(framework::Event& event) {
         ldmx_log(debug)<<"SourceLink Index::"<<sl.index();
         ldmx_log(debug)<<"Measurement:\n"<<ldmx_meas<<"\n";
         trk.addMeasurementIndex(sl.index());
-      }
+
+                
+        if (addTrackStates_) {
+          ldmx::Track::TrackState trackState;
+          const auto& smoothed       = ts.smoothed();
+          const auto& cov            = ts.smoothedCovariance();
+          
+          trackState.params = tracking::sim::utils::convertActsToLdmxPars((smoothed));
+          tracking::sim::utils::flatCov(cov,trackState.cov);
+
+
+          // I store the layerid in order to be able to recover the surface from the
+          // tracking geometry
+          int layerid = ldmx_meas.getLayerID();
+          const Acts::Surface* hit_surface = tg.getSurface(layerid);
+          Acts::Vector3 surf_loc = hit_surface->transform(geometry_context()).translation();
+          trackState.layerid = layerid;
+          trackState.refX = surf_loc(0);
+          trackState.refY = surf_loc(1);
+          trackState.refZ = surf_loc(2);
+          trackState.ts_type = ldmx::TrackStateType::Meas;
+          trackStates.push_back(trackState);
+          
+        }
+      } // measurement on track
     }
 
     // Extrapolations
@@ -546,6 +566,12 @@ void CKFProcessor::produce(framework::Event& event) {
     
     if (success)
       trk.addTrackState(tsAtTarget);
+    
+
+    //Add all the measurement track states
+    if (addTrackStates_)
+      for (auto& ts : trackStates)
+        trk.addTrackState(ts);
     
 
     ldmx_log(debug)<<"Ecal Extrapolation";
@@ -660,10 +686,14 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "Tracks");
 
+
+  // add all track states on track.
+  addTrackStates_ = parameters.getParameter<bool>("add_track_states",false);
+
   kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
   gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
 
-
+  
 
   //BField Systematics
   map_offset_ = parameters.getParameter<std::vector<double>>("map_offset_",{0.,0.,0.});
