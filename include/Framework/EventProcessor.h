@@ -157,7 +157,7 @@ class EventProcessor {
    * module
    * @param controlhint The storage control hint to apply for the given event
    */
-  void setStorageHint(framework::StorageControlHint hint) {
+  void setStorageHint(framework::StorageControl::Hint hint) {
     setStorageHint(hint, "");
   }
 
@@ -167,7 +167,7 @@ class EventProcessor {
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
-  void setStorageHint(framework::StorageControlHint hint,
+  void setStorageHint(framework::StorageControl::Hint hint,
                       const std::string &purposeString);
 
   /**

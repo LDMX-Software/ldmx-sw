@@ -91,7 +91,7 @@ class TestProducer : public Producer {
     float test_float = i_event * 0.1;
     REQUIRE_NOTHROW(event.add("EventTenth", test_float));
 
-    if (res.passesVeto()) setStorageHint(hint_mustKeep);
+    if (res.passesVeto()) setStorageHint(StorageControl::Hint::MustKeep);
 
     return;
   }
