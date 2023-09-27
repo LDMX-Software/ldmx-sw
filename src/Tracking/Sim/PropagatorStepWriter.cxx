@@ -103,8 +103,6 @@ json PropagatorStepWriter::StepPosition(const std::vector<PropagationSteps>& ste
       }
 
       // remove sensitive ID and approach steps
-
-      std::cout<<"Checking sensitive/approach"<<std::endl;
       
       if (sensitiveID != 0)
         continue;
@@ -116,8 +114,6 @@ json PropagatorStepWriter::StepPosition(const std::vector<PropagationSteps>& ste
       double posY = step.position.y();
       double posZ = step.position.z();
 
-      std::cout<<posX<<" " <<posY<<" "<<posZ<<std::endl;
-      
       position3d.push_back(posY);
       position3d.push_back(posZ);
       position3d.push_back(posX);
@@ -127,7 +123,7 @@ json PropagatorStepWriter::StepPosition(const std::vector<PropagationSteps>& ste
     } // Steps
     
   } // Step collection
-
+  
   jtrack = json::object({{"pos",positions}});
   
   return jtrack;
