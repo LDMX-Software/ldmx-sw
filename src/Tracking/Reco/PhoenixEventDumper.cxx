@@ -119,8 +119,9 @@ void PhoenixEventDumper::produce(framework::Event & event) {
   
 
   std::cout<<"Found " + TaggerMeasurements_ + " with size " + tms.size()<<std::endl;
-  std::cout<<"Found " + RecoilMeasurements_ + " with size " + rms.size()<<std::endl; 
-  
+  std::cout<<"Found " + RecoilMeasurements_ + " with size " + rms.size()<<std::endl;
+  std::cout<<"Recoil tracks size "<< recoilTracks.size()<<std::endl;
+    
   evtjson_ = {};
     
   evtjson_["LDMX_Event"]["event number"] = eventnr_;
@@ -198,8 +199,6 @@ void PhoenixEventDumper::produce(framework::Event & event) {
 
   //Try to get tracks
 
-  std::cout<<"Recoil tracks size "<< recoilTracks.size()<<std::endl;
-
   json jtracks_recoil = json::array();
   
   for (auto& trk : recoilTracks) {
@@ -208,6 +207,19 @@ void PhoenixEventDumper::produce(framework::Event & event) {
                                trk,
                                rms,
                                tg);
+    
+    // Negative track
+    if (trk.getQoP() < 0 ) 
+      jtrack["color"] = "0xf1c716";
+
+
+    // Add the target track state for the track
+
+    jtrack["d0"] = trk.getD0();
+    jtrack["z0"] = trk.getZ0();
+    jtrack["phi"] = trk.getPhi();
+    jtrack["eta"] = -std::log(std::tan(trk.getTheta()/2));
+    jtrack["qOverP"] = trk.getQoP();
     
     jtracks_recoil.push_back(jtrack);
     
@@ -263,6 +275,7 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
   sLogger.sterile = false;
   pOptions.maxStepSize = 10 * Acts::UnitConstants::mm;
   pOptions.maxSteps    = 100;
+  pOptions.direction   = Acts::Direction::Forward;
   
   
   /// Using some short hands for Recorded Material
@@ -283,7 +296,6 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
   std::vector<Acts::BoundTrackParameters> prop_parameters;
 
 
-  std::cout<<"Looping on track states:: "<< track.getTrackStates().size()<<std::endl;
   for (auto& ts : track.getTrackStates()) {
 
     //Skip the one at the target for the moment
@@ -292,14 +304,11 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
       continue;
     
     //Get the surface from the tracking geometry
-    std::cout<<"Getting the surface from the track state"<<std::endl;
     
     const Acts::Surface* ts_surface = tg.getSurface(ts.layerid);
     if (!ts_surface)
       std::cout<<"ERROR:: Retrieving the surface in PhoenixEventDumper"<<std::endl;
 
-    std::cout<<"Forming the bound track state."<<std::endl;
-    
     Acts::BoundVector smoothed;
     smoothed << 
         ts.params[0],
@@ -318,14 +327,7 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
     
   }// get track states
 
-  //Dump something to check if I'm doing things right
   
-  for (auto & params : prop_parameters) {
-    std::cout<<(params.parameters()).transpose()<<std::endl;
-    std::cout<<params.position(geometry_context()).transpose()<<std::endl;
-    
-  }
-
   // Start from the first parameters
   // Propagate to next surface
   // Grab the next parameters
@@ -335,6 +337,11 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
   
   std::vector<Acts::detail::Step> steps;
 
+
+  // Define the ECAL face surface
+
+  double ecal_face = 247;
+  auto ecal_surf = tracking::sim::utils::unboundSurface(ecal_face);
   
   //compute first the perigee to first surface:
 
@@ -345,8 +352,6 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
                                        pOptions);
   
 
-  std::cout<<"Computed first extrapolation"<<std::endl;
-  
   if (result.ok()) {
     const auto& resultValue = result.value();
     auto steppingResults =
@@ -383,34 +388,28 @@ json PhoenixEventDumper::prepareTrack(framework::Event& event,
     
     else {
       auto result = propagator_->propagate(prop_parameters.at(i_params),
+                                           *(ecal_surf),
                                            pOptions);
       
       
-       if (result.ok()) {
+      if (result.ok()) {
         const auto& resultValue = result.value();
         auto steppingResults =
             resultValue.template get<Acts::detail::SteppingLogger::result_type>();
         // Set the stepping result
         pOutput.first = std::move(steppingResults.steps);
-
+        
         for (auto & step : pOutput.first)
           steps.push_back(std::move(step));
         
         // Record the propagator steps
         //tmpSteps.push_back(std::move(pOutput.first));
-       }
+      }
     }
   }
   
   propagationSteps.push_back(steps);
   
-  
-  prop_writer_-> WriteSteps(event,
-                            propagationSteps,
-                            measurements,
-                            Acts::Vector3(0.,0.,0.),
-                            Acts::Vector3(1.,0.,0.)
-                            );
   
   //This is called track by track, so only one track is coming out of here.
   
