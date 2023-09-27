@@ -77,16 +77,15 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 
 setup_library(module Tracking
               dependencies Framework::Configure 
-              Framework::Framework
-              ActsCore
-              ActsPluginIdentification
-              Geant4::Interface
-              ROOT::Physics
-              Tracking::Event
+                           Framework::Framework 
+                           ActsCore
+                           ActsPluginIdentification
+                           Geant4::Interface
+                           ROOT::Physics
+                           Tracking::Event
               sources ${SRC_FILES})
 
 
-include_directories(${PROJECT_SOURCE_DIR}/../)
-include_directories(${PROJECT_SOURCE_DIR}/../EventDisplay/json/include/)
+#include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)

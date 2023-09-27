@@ -35,9 +35,10 @@ namespace ldmx {
 enum TrackStateType {
   RefPoint              = 0,
   AtTarget              = 1,
-  Meas                  = 2,
-  AtECAL                = 3,
-  Invalid               = 4
+  AtFirstMeasurement    = 2,
+  AtLastMeasurement     = 3,
+  AtECAL                = 4,
+  Invalid               = 5
 };
 
 
@@ -63,7 +64,6 @@ class Track {
     std::vector<double> params;
     std::vector<double> cov;
     TrackStateType      ts_type;
-    int layerid;
     
   };
   

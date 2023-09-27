@@ -243,10 +243,6 @@ class CKFProcessor final : public TrackingGeometryUser {
   //The output track collection
   std::string out_trk_collection_{"Tracks"};
 
-  //Add track states on track
-
-  bool addTrackStates_{false};
-
   //Select the hits using TrackID and pdg_id__
   
   int track_id_{-1};
