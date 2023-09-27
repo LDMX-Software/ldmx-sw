@@ -40,6 +40,18 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif()
 
+# make sure the source and binary directories are different
+# this is here to prevent so-called "in-source" builds where the root directory of the source
+# is also the root directory of the build
+get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+if ("${srcdir}" STREQUAL "${bindir}")
+  message(FATAL_ERROR "ldmx-sw does not support in-source builds.\n"
+    "  Call 'ldmx cmake ..' from within a 'build/' subdirectory or\n"
+    "  Tell cmake to use a different build directory with 'ldmx cmake -B build -S .'"
+  )
+endif()
+
 # Clear any variables cached during previous configuration cycles. 
 clear_cache_variables()
 
