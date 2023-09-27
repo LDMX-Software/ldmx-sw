@@ -17,15 +17,12 @@
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
 
-//--- Event Display ---//
-#include "EventDisplay/json/include/nlohmann/json.hpp"
 
 //--- ROOT ---//
 #include "TFile.h"
 #include "TTree.h"
 
 using PropagationSteps = std::vector<Acts::detail::Step>;
-using json = nlohmann::json;
 
 namespace tracking {
 namespace sim {
@@ -53,9 +50,7 @@ class PropagatorStepWriter{
                   const std::vector<PropagationSteps>& stepCollection,
                   const std::vector<ldmx::Measurement>& measurements,
                   const Acts::Vector3 & start_pos, const Acts::Vector3& start_mom);
-
-  json StepPosition(const std::vector<PropagationSteps>& stepCollection);
-  
+                                 
  protected:
       
   Config m_cfg;                    ///< the configuration object

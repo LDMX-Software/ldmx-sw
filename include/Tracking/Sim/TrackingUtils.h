@@ -213,17 +213,6 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
   return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
 }
 
-inline Acts::BoundTrackParameters perigeeBoundParameters(const ldmx::Track& trk) {
-  
-
-  std::shared_ptr<Acts::PerigeeSurface> perigee =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(0.,0.,0.));
-    
-  return boundTrackParameters(trk, perigee);
-    
-}
-                                                         
-
 
 //Return an unbound surface along the beam axis
 inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location) {

@@ -250,24 +250,3 @@ class TruthSeedProcessor(Producer):
         self.p_cut = 0.  # MeV
         self.p_cut_max = 100000.  # MeV
         self.p_cut_ecal = -1.  # MeV
-
-
-
-
-class PhoenixEventDumper(Producer):
-
-
-    def __init__(self, instance_name="PhoenixEventDumper"):
-        super().__init__(instance_name, "tracking::reco::PhoenixEventDumper",
-                         "Tracking")
-
-        self.outfilename  = "event.json"
-        self.TaggerTracks = "TaggerTracks"
-        self.RecoilTracks = "RecoilTracks"
-        self.TaggerMeasurements = "TaggerMeasurements"
-        self.RecoilMeasurements = "RecoilMeasurements"
-        self.eventnr            = 1
-        self.field_map = makeFieldMapPath()
-        
-        
-        
