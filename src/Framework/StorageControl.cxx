@@ -1,7 +1,4 @@
 #include "Framework/StorageControl.h"
-#include <regex.h>
-#include <algorithm>
-#include <sys/types.h>
 #include "Framework/Exception/Exception.h"
 
 namespace framework {
@@ -9,53 +6,40 @@ namespace framework {
 void StorageControl::resetEventState() { hints_.clear(); }
 
 void StorageControl::addHint(const std::string& processor_name,
-                             framework::StorageControlHint hint,
+                             Hint hint,
                              const std::string& purposeString) {
-  hints_.push_back(Hint());
-  hints_.back().evpName_ = processor_name;
-  hints_.back().hint_ = hint;
-  hints_.back().purpose_ = purposeString;
+  for (const auto& [processor_rule, purpose_rule] : rules_) {
+    if (std::regex_match(processor_name, processor_rule) and
+        std::regex_match(purposeString, purpose_rule)) {
+      // cache hints that matched a rule for later tallying
+      hints_.push_back(hint);
+      // leave after first match to avoid double-counting
+      break;
+    }
+  }
 }
 
 void StorageControl::addRule(const std::string& processor_pat,
                              const std::string& purpose_pat) {
+  /**
+   * @note Rules that don't specify a processor pattern are ignored.
+   */
   if (processor_pat.empty()) return;
 
-  regex_t* preg = new regex_t;
-  int error = regcomp(preg, processor_pat.c_str(), REG_EXTENDED | REG_NOSUB);
-  if (error) {
-    char msg[1024];
-    regerror(error, preg, msg, 1024);
-    delete preg;
-    EXCEPTION_RAISE("SkimRuleException", msg);
+  try {
+    rules_.emplace_back(
+        std::piecewise_construct,
+        std::forward_as_tuple(
+          processor_pat, std::regex::extended | std::regex::nosubs),
+        std::forward_as_tuple(
+          purpose_pat.empty() ? ".*" : purpose_pat,
+          std::regex::extended | std::regex::nosubs));
+  } catch (const std::regex_error& e) {
+    // re-throw the regex error with our error
+    std::string msg{"Invalid regex configured for the storage control listening rules: "};
+    msg += e.what();
+    EXCEPTION_RAISE("ConfigureError", msg);
   }
-  // ok, then keep it
-  rules_.push_back(Rule());
-  rules_.back().evpNameRegex_ = preg;
-
-  if (!purpose_pat.empty()) {
-    preg = new regex_t;
-    int error = regcomp(preg, purpose_pat.c_str(), REG_EXTENDED | REG_NOSUB);
-    if (error) {
-      char msg[1024];
-      regerror(error, preg, msg, 1024);
-      delete preg;
-      EXCEPTION_RAISE("SkimRuleException", msg);
-    }
-    rules_.back().purposeRegex_ = preg;
-  }
-
-  rules_.back().evpNamePattern_ = processor_pat;
-  rules_.back().purposePattern_ = purpose_pat;
-}
-
-bool StorageControl::Rule::matches(const StorageControl::Hint& h) const {
-  if (regexec((const regex_t*)(evpNameRegex_), h.evpName_.c_str(), 0, 0, 0))
-    return false;
-  if (purposeRegex_ != 0 &&
-      regexec((const regex_t*)(purposeRegex_), h.purpose_.c_str(), 0, 0, 0))
-    return false;
-  return true;
 }
 
 bool StorageControl::keepEvent(bool event_completed) const {
@@ -66,38 +50,34 @@ bool StorageControl::keepEvent(bool event_completed) const {
   if (not event_completed) return false;
 
   /**
-   * loop over the hints provided by processors,
-   * if a hint matches any of the rules configured,
-   * we will listen to it.
+   * loop over the hints provided by processors we are listening to.
    */
   int votesKeep(0), votesDrop(0);
   bool mustDrop{false}, mustKeep{false};
   for (auto hint : hints_) {
-    if (std::any_of(rules_.begin(), rules_.end(), [&hint](const Rule& r) { return r.matches(hint); })) {
-      switch(hint.hint_) {
-        case hint_mustDrop:
-          mustDrop = true;
-          break;
-        case hint_mustKeep:
-          mustKeep = true;
-          break;
-        case hint_shouldDrop:
-          votesDrop++;
-          break;
-        case hint_shouldKeep:
-          votesKeep++;
-          break;
-        case hint_Undefined:
-        case hint_NoOpinion:
-          break;
-        default:
-          // how did I get here?
-          EXCEPTION_RAISE(
-              "SupaBad",
-              "This error comes from StorageControl and should never happen. "
-              "A storage hint should always be one of the members of the StorageControlHint enum."
-          );
-      }
+    switch(hint) {
+      case Hint::MustDrop:
+        mustDrop = true;
+        break;
+      case Hint::MustKeep:
+        mustKeep = true;
+        break;
+      case Hint::ShouldDrop:
+        votesDrop++;
+        break;
+      case Hint::ShouldKeep:
+        votesKeep++;
+        break;
+      case Hint::Undefined:
+      case Hint::NoOpinion:
+        break;
+      default:
+        // how did I get here?
+        EXCEPTION_RAISE(
+            "SupaBad",
+            "This error comes from StorageControl and should never happen. "
+            "A storage hint should always be one of the members of the StorageControlHint enum."
+        );
     }
   }
 

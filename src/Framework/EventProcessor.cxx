@@ -30,7 +30,7 @@ TDirectory *EventProcessor::getHistoDirectory() {
   return histoDir_;
 }
 
-void EventProcessor::setStorageHint(framework::StorageControlHint hint,
+void EventProcessor::setStorageHint(framework::StorageControl::Hint hint,
                                     const std::string &purposeString) {
   process_.getStorageController().addHint(name_, hint, purposeString);
 }

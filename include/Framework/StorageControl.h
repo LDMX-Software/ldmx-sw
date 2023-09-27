@@ -7,19 +7,11 @@
 #ifndef FRAMEWORK_STORAGECONTROL_H_
 #define FRAMEWORK_STORAGECONTROL_H_
 
+#include <regex>
 #include <string>
 #include <vector>
 
 namespace framework {
-
-typedef enum enum_StorageControlHint {
-  hint_Undefined = 0,
-  hint_NoOpinion,
-  hint_shouldKeep = 10,
-  hint_mustKeep = 11,
-  hint_shouldDrop = 20,
-  hint_mustDrop = 21
-} StorageControlHint;
 
 /**
  * @class StorageControl
@@ -34,6 +26,23 @@ typedef enum enum_StorageControlHint {
  */
 class StorageControl {
  public:
+  /**
+   * Hints that can be provided by processors to the storage controller
+   *
+   * Integer values of the hints are currently not used for anything,
+   * although one could imagine a "weighting" system being implemented
+   * where different Hints are weighted based on how "strong" the hint is.
+   */
+  enum class Hint {
+    NoOpinion = 0,
+    Undefined = -1,
+    ShouldKeep = 1,
+    MustKeep = 10,
+    ShouldDrop = 2,
+    MustDrop = 20
+  };  // enum Hint
+
+ public:
   /** Set the default state */
   void setDefaultKeep(bool keep) { defaultIsKeep_ = keep; }
 
@@ -43,18 +52,30 @@ class StorageControl {
   void resetEventState();
 
   /**
-   * Add a storage hint for a given module
+   * Add a storage hint for a given processor
+   *
+   * This is the function eventually called when a processor uses 
+   * EventProcessor::setStorageHint during processing.
+   * When a hint is added, we check it against our configured listening rules.
+   * If the hint does not match any of our listening rules, then we simply
+   * ignore it by not adding it to our internal cache that will be used later
+   * when deciding to keep the event.
+   *
    * @param processor_name Name of the event processor
    * @param controlhint The storage control hint to apply for the given event
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
   void addHint(const std::string& processor_name,
-               framework::StorageControlHint hint,
+               Hint hint,
                const std::string& purposeString);
 
   /**
-   * Add a rule
+   * Add a listening rule
+   *
+   * These listening rules are regex patterns to decide if a specific hint
+   * should be counted when deciding if an event should be kept.
+   *
    * @param processor_pattern Regex pattern to compare with event processor
    * @param purpose_pattern Regex pattern to compare with the purpose string
    */
@@ -86,64 +107,37 @@ class StorageControl {
   bool defaultIsKeep_{true};
 
   /**
-   * Structure to hold hints
-   */
-  struct Hint {
-    /**
-     * Event Processor name
-     */
-    std::string evpName_;
-    /**
-     * Hint level
-     */
-    StorageControlHint hint_;
-    /**
-     * Purpose string, if used
-     */
-    std::string purpose_;
-  };
-
-  /**
    * Collection of hints from the event processors
+   *
+   * These are only the hints that are from processors matching one
+   * of the listening rules.
    */
   std::vector<Hint> hints_;
 
   /**
-   * Structure to hold rules
+   * Collection of rules allowing certain processors
+   * or purposes to be considered ("listened to") during
+   * the storage decision.
    *
-   * Eventually need a cleanup function to remove the compiled regex buffers,
-   * but only in the _StorageControl_ destructor, not during regular vector
-   * operations.
+   * Each rule has two entries:
+   * 1. a processor regex to match hints coming 
+   *    from processors named a certain way
+   * 2. a purpose regex to match hints 
+   *    from all processors with a specific purpose
    */
-  struct Rule {
-    bool matches(const Hint& h) const;
-
-    /**
-     * Event Processor Regex
-     */
-    std::string evpNamePattern_;
-
-    /**
-     * Purpose string Regex
-     */
-    std::string purposePattern_;
-
-    /**
-     * Compiled event processor regex
-     */
-    void* evpNameRegex_{0};
-
-    /**
-     * Compiled event processor regex
-     */
-    void* purposeRegex_{0};
-  };
-
-  /**
-   * Collection of hints from the event processors
-   */
-  std::vector<Rule> rules_;
+  std::vector<std::pair<std::regex, std::regex>> rules_;
 };
+
+/**
+ * storage control hint alias for backwards compatibility
+ */
+constexpr StorageControl::Hint hint_shouldKeep = StorageControl::Hint::ShouldKeep;
+
+/**
+ * storage control hint alias for backwards compatibility
+ */
+constexpr StorageControl::Hint hint_shouldDrop = StorageControl::Hint::ShouldDrop;
+
 }  // namespace framework
 
 #endif
