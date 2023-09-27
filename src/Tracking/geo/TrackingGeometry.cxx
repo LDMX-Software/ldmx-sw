@@ -1,7 +1,25 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
+#include "G4RunManager.hh"
+#include "G4strstreambuf.hh"
+#include "G4UIsession.hh"
+
 namespace tracking::geo {
+
+/**
+ * This class throws away all of the messages from Geant4
+ *
+ * Copied from SimCore/include/SimCore/G4Session.h
+ */
+class SilentG4 : public G4UIsession {
+ public:
+  SilentG4() = default;
+  ~SilentG4() = default;
+  G4UIsession* SessionStart() { return nullptr; }
+  G4int ReceiveG4cout(const G4String&) { return 0; }
+  G4int ReceiveG4cerr(const G4String&) { return 0; }
+};
 
 TrackingGeometry::TrackingGeometry(
     const std::string& name,
@@ -37,6 +55,27 @@ TrackingGeometry::TrackingGeometry(
   x_rot_.col(1) = yPos2;
   x_rot_.col(2) = zPos2;
 
+  /**
+   * We are about to use the G4GDMLParser and would like to silence
+   * the output from parsing the geometry. This can only be done by
+   * redirecting G4cout and G4cerr via the G4UImanager.
+   *
+   * The Simulator (if it is running) will already do this redirection
+   * for us and we don't want to override it, so we check if there is
+   * a simulation running by seeing if the run manager is created. If
+   * it isn't, then we redirect G4cout and G4cerr to a G4Session that
+   * just throws away all those messages.
+   */
+  std::unique_ptr<SilentG4> silence;
+  if (G4RunManager::GetRunManager() == nullptr) {
+    // no run manager ==> no simulation
+    silence = std::make_unique<SilentG4>();
+    // these lines compied from G4UImanager::SetCoutDestination
+    // to avoid creating G4UImanager unnecessarily
+    G4coutbuf.SetDestination(silence.get());
+    G4cerrbuf.SetDestination(silence.get());
+  }
+
   // Get the world volume
   G4GDMLParser parser;
 
@@ -44,6 +83,14 @@ TrackingGeometry::TrackingGeometry(
   parser.Read(gdml_, false);
 
   fWorldPhysVol_ = parser.GetWorldVolume();
+
+  if (silence) {
+    // we created the session and silenced G4
+    // undo that now incase others have use for G4
+    // nullptr => standard (std::cout and std::cerr)
+    G4coutbuf.SetDestination(nullptr);
+    G4cerrbuf.SetDestination(nullptr);
+  }
 }
 
 G4VPhysicalVolume* TrackingGeometry::findDaughterByName(

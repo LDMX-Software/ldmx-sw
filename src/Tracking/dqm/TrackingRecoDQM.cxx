@@ -346,8 +346,6 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
   
 }
 
-
-
 void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks) {
   
   // Select the scoring plane hits that belong to the front of the Target
@@ -448,8 +446,6 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
   }// loop on tracks
   
 }
-
-
 
 void TrackingRecoDQM::sortTracks(const std::vector<ldmx::Track>& tracks,
                                  std::vector<ldmx::Track>& uniqueTracks,
