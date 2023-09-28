@@ -115,12 +115,8 @@ set_target_properties(
              CXX_EXTENSIONS NO)
 
 # Add the fire executable
-add_executable(fire ${PROJECT_SOURCE_DIR}/src/Framework/fire.cxx)
-
-# Link to the Framework library
+add_executable(fire ${PROJECT_SOURCE_DIR}/app/fire.cxx)
 target_link_libraries(fire PRIVATE Framework::Framework)
-
-# Install the fire executable
 install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Setup the test
