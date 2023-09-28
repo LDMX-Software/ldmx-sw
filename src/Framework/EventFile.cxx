@@ -83,6 +83,18 @@ EventFile::EventFile(const framework::config::Parameters &params,
                      bool isSingleOutput)
     : EventFile(params, filename, parent, true, isSingleOutput, false) {}
 
+EventFile::~EventFile() {
+  // Before an output file, the Event tree needs to be written.
+  if (isOutputFile_) {
+    // make sure we are in output file before writing
+    file_->cd();
+    tree_->Write();
+  }
+
+  // Close the file
+  file_->Close();
+}
+
 void EventFile::addDrop(const std::string &rule) {
   int offset;
   bool isKeep = false, isDrop = false, isIgnore = false;
@@ -292,50 +304,38 @@ void EventFile::updateParent(EventFile *parent) {
   return;
 }
 
-void EventFile::close() {
-  // MEMORY 'Conditional jump or move depends on uninitialised values' when
-  // closing TFile and/or writing TTree
-  //  TFile::Close --> TDirectoryFile::Close --> ~TTree
-  // MEMORY 'Syscall param write(buf) points to uninitialised byte(s)'
-  //  when writing TTree below
-  //  From filling TTree in nextEvent
-
-  // Before an output file, the Event tree needs to be written.
-  if (isOutputFile_) {
-    // make sure we are in output file before writing
-    file_->cd();
-    tree_->Write();
-    // store the run map into the output tree
-
-    // Check for the existence of the run tree in the file.
-    // If it already exists, throw an exception.
-    // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
-    auto runTree{static_cast<TTree *>(file_->Get("LDMX_Run"))};
-    if (runTree) {
-      EXCEPTION_RAISE("RunTree",
-                      "RunTree 'LDMX_Run' already exists in output file '" +
-                          fileName_ + "'.");
-    }
-
-    runTree = new TTree("LDMX_Run", "LDMX run header");
-
-    // create the branch on this tree
-    ldmx::RunHeader *theHandle = nullptr;
-    runTree->Branch("RunHeader", "ldmx::RunHeader", &theHandle, 32000, 3);
-
-    // copy over the run headers into the tree
-    for (auto &[num, header_pair] : runMap_) {
-      theHandle = header_pair.second;
-      runTree->Fill();
-      if (header_pair.first)
-        delete header_pair.second;
-    }
-
-    runTree->Write();
+void EventFile::writeRunTree() {
+  if (not isOutputFile_) {
+    EXCEPTION_RAISE("MisCall",
+        "Cannot write the run tree on an input event file.");
   }
 
-  // Close the file
-  file_->Close();
+  // store the run map into the output tree
+  // Check for the existence of the run tree in the file.
+  // If it already exists, throw an exception.
+  // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
+  auto runTree{static_cast<TTree *>(file_->Get("LDMX_Run"))};
+  if (runTree) {
+    EXCEPTION_RAISE("RunTree",
+                    "RunTree 'LDMX_Run' already exists in output file '" +
+                        fileName_ + "'.");
+  }
+
+  runTree = new TTree("LDMX_Run", "LDMX run header");
+
+  // create the branch on this tree
+  ldmx::RunHeader *theHandle = nullptr;
+  runTree->Branch("RunHeader", "ldmx::RunHeader", &theHandle, 32000, 3);
+
+  // copy over the run headers into the tree
+  for (auto &[num, header_pair] : runMap_) {
+    theHandle = header_pair.second;
+    runTree->Fill();
+    if (header_pair.first)
+      delete header_pair.second;
+  }
+
+  runTree->Write();
 }
 
 void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {

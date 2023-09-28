@@ -111,6 +111,11 @@ Process::~Process() {
   for (EventProcessor *ep : sequence_) {
     delete ep;
   }
+  if (histoTFile_) {
+    histoTFile_->Write();
+    delete histoTFile_;
+    histoTFile_ = 0;
+  }
 }
 
 void Process::run() {
@@ -198,7 +203,7 @@ void Process::run() {
 
     runHeader.setRunEnd(std::time(nullptr));
     ldmx_log(info) << runHeader;
-    outFile.close();
+    outFile.writeRunTree();
 
   } else {
     // there are input files
@@ -305,13 +310,11 @@ void Process::run() {
 
       for (auto module : sequence_) module->onFileClose(inFile);
 
-      inFile.close();
-
       // Reset the event in case of multiple input files
       theEvent.onEndOfFile();
 
       if (outFile and !singleOutput) {
-        outFile->close();
+        outFile->writeRunTree();
         delete outFile;
         outFile = nullptr;
       }
@@ -324,7 +327,7 @@ void Process::run() {
     if (outFile) {
       // close outFile
       //  outFile would survive to here in single output mode
-      outFile->close();
+      outFile->writeRunTree();
       delete outFile;
       outFile = nullptr;
     }
