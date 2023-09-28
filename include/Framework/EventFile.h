@@ -88,8 +88,12 @@ class EventFile {
   EventFile(const framework::config::Parameters &params,
             const std::string &fileName);
 
-  /// Defult destructor
-  ~EventFile() = default;
+  /**
+   * Destructor
+   *
+   * Make sure to close the file when we destruct
+   */
+  ~EventFile();
 
   /**
    * Add a rule for dropping collections from the output.
@@ -194,15 +198,6 @@ class EventFile {
   int skipToEvent(int offset);
 
   /**
-   * Close the file, writing the tree to disk if creating an output file.
-   *
-   * Deletes any RunHeaders that this instance of EventFile owns.
-   *
-   * @throw Exception if run tree already exists in output file.
-   */
-  void close();
-
-  /**
    * Write the run header into the run map
    *
    * Any RunHeader passed here is not owned or cleaned up
@@ -212,6 +207,15 @@ class EventFile {
    * @throw Exception if run number is already in run map
    */
   void writeRunHeader(ldmx::RunHeader &runHeader);
+  
+  /**
+   * Write the map of run headers to the file as a TTree of RunHeader.
+   *
+   * Deletes any RunHeaders that this instance of EventFile owns.
+   *
+   * @throw Exception if call this function on a non-output file.
+   */
+  void writeRunTree();
 
   /**
    * Update the RunHeader for a given run, if it exists in the input file.
