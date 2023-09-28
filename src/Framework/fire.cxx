@@ -47,7 +47,7 @@ void printUsage();
  * argument ending in '.py' as the configu script for the framework::Process.
  * If no such argument is found, we error out.
  */
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) try {
   if (argc < 2) {
     printUsage();
     return 1;
@@ -73,16 +73,11 @@ int main(int argc, char* argv[]) {
     framework::ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1,
                                    argc - ptrpy - 1);
     p = cfg.makeProcess();
-  } catch (framework::exception::Exception& e) {
+  } catch (const framework::exception::Exception& e) {
     // Error message currently printed twice since the stack trace code
     // sometimes crashes. Once this is fixed, the output above the stack trace
     // can be removed
     // https://github.com/LDMX-Software/Framework/issues/50
-    std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
-              << std::endl;
-    std::cerr << "  at " << e.module() << ":" << e.line() << " in "
-              << e.function() << std::endl;
-    std::cerr << "Stack trace: " << std::endl << e.stackTrace();
     std::cerr << "Configuration Error [" << e.name() << "] : " << e.message()
               << std::endl;
     std::cerr << "  at " << e.module() << ":" << e.line() << " in "
@@ -114,7 +109,7 @@ int main(int argc, char* argv[]) {
 
   try {
     p->run();
-  } catch (framework::exception::Exception& e) {
+  } catch (const framework::exception::Exception& e) {
     // Process::run opens up the logging using the parameters passed to it from
     // python
     //  if an Exception is thrown, we haven't gotten to the end of Process::run
@@ -124,15 +119,16 @@ int main(int argc, char* argv[]) {
         "fire")};  // ldmx_log macro needs this variable to be named 'theLog_'
     ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
                     << "  at " << e.module() << ":" << e.line() << " in "
-                    << e.function() << "\nStack trace: " << std::endl
-                    << e.stackTrace();
+                    << e.function() << std::endl;
     framework::logging::close();
-    return 127;  // return non-zero error-status
+    return 1;  // return non-zero error-status
   }
 
   std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
-
   return 0;
+} catch (const std::exception& e) {
+  std::cerr << "Unrecognized Exception: " << e.what() << std::endl;
+  return 127;
 }
 
 void printUsage() {
