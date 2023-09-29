@@ -293,6 +293,11 @@ class SimObjects(ldmxcfg.Analyzer) :
         self.sim_pass = sim_pass
 
 
+class DarkBremInteraction(ldmxcfg.Producer) :
+    def __init__(self) :
+        super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
+
+
 class HCalRawDigi(ldmxcfg.Analyzer) :
     def __init__(self, input_name) :
         super().__init__('hcal_pedestals','dqm::HCalRawDigi','DQM')
