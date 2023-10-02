@@ -28,8 +28,13 @@ class DarkBremInteraction : public framework::Producer {
  public:
   DarkBremInteraction(const std::string& n, framework::Process& p)
     : framework::Producer(n,p) {}
+  virtual void onProcessStart() final override;
   virtual void produce(framework::Event& e) final override;
  private:
+  /**
+   * Set the labels of the histogram of the input name with the input labels
+   */
+  void setHistLabels(const std::string& name, const std::vector<std::string>& labels);
   /**
    * the list of known materials assiging them to material ID numbers
    *
@@ -47,13 +52,14 @@ class DarkBremInteraction : public framework::Producer {
    * The inverse LUT that can be used on the plotting side is
    * 
    *    material_lut = {
-   *      -1 : 'Unknown',
+   *      0 : 'Unknown',
    *      1 : 'C',
    *      2 : 'PCB',
    *      3 : 'Glue',
    *      4 : 'Si',
    *      5 : 'Al',
-   *      6 : 'W'
+   *      6 : 'W',
+   *      7 : 'PVT'
    *    }
    *
    * This is kind of lazy, we could instead do a full LUT where we list all known
@@ -67,11 +73,48 @@ class DarkBremInteraction : public framework::Producer {
     { "Si", 4 },
     { "Al", 5 },
     { "W" , 6 },
+    { "target", 6 },
+    { "trigger_pad", 7 },
     { "strongback" , 5 }, // strongback is made of aluminum
     { "motherboard" , 2 }, // motherboards are PCB
     { "support" , 5 }, // support box is aluminum
     { "CFMix" , 3 }, // in v12, we called the Glue layers CFMix
     { "C_volume" , 1 } // in v12, we called the carbon cooling planes C but this is too general for substr matching
+  };
+
+  /**
+   * The list of known elements assigning them to the bins that we are putting them into.
+   *
+   * There are two failure modes for this:
+   * 1. The dark brem didn't happen, in which case, the element reported by the event header
+   *    will be -1. We give this an ID of 0.
+   * 2. The dark brem occurred within an element not listed here, in which case we give it
+   *    the last bin.
+   *
+   * The inverset LUT that can be used if studying the output tree is
+   *
+   *    element_lut = {
+   *      0 : 'did_not_happen',
+   *      1 : 'H 1',
+   *      2 : 'C 6',
+   *      3 : 'O 8',
+   *      4 : 'Na 11',
+   *      5 : 'Si 14',
+   *      6 : 'Ca 20',
+   *      7 : 'Cu 29',
+   *      8 : 'W 74',
+   *      9 : 'unlisted'
+   *    }
+   */
+  std::map<int, int> known_elements_ = {
+    {1, 1},
+    {6, 2},
+    {8, 3},
+    {11, 4},
+    {14, 5},
+    {20, 6},
+    {29, 7},
+    {74, 8}
   };
 };
 
@@ -84,6 +127,58 @@ class DarkBremInteraction : public framework::Producer {
  */
 static double energy(const std::vector<double>& p, const double& m) {
   return sqrt(p.at(0)*p.at(0)+ p.at(1)*p.at(1)+ p.at(2)*p.at(2)+ m*m);
+}
+
+/**
+ * calculate the sum in quadrature of the passed list of doubles
+ */
+static double quadsum(const std::initializer_list<double>& list) {
+  double sum{0};
+  for (const double& elem : list) sum += elem*elem;
+  return sqrt(sum);
+}
+
+
+void DarkBremInteraction::setHistLabels(
+    const std::string& name,
+    const std::vector<std::string>& labels) {
+  auto h{histograms_.get(name)};
+  for (std::size_t ibin{1}; ibin <= labels.size(); ibin++) {
+    h->GetXaxis()->SetBinLabel(ibin, labels[ibin-1].c_str());
+  }
+}
+
+/**
+ * update the labels of some categorical histograms
+ */
+void DarkBremInteraction::onProcessStart() {
+  setHistLabels(
+      "dark_brem_material",
+      {
+        "Unknown",
+        "C",
+        "PCB",
+        "Glue",
+        "Si",
+        "Al",
+        "W",
+        "PVT"
+      });
+
+  setHistLabels(
+      "dark_brem_element",
+      {
+        "did not happen",
+        "H 1",
+        "C 6",
+        "O 8",
+        "Na 11",
+        "Si 14",
+        "Ca 20",
+        "Cu 29",
+        "W 74",
+        "unlisted"
+      });
 }
 
 /**
@@ -166,7 +261,7 @@ void DarkBremInteraction::produce(framework::Event& event) {
       }
       );
   int ap_vertex_material = (ap_vertex_material_it != known_materials_.end()) ?
-                            ap_vertex_material_it->second : -1;
+                            ap_vertex_material_it->second : 0;
 
   int ap_parent_id{-1};
   if (aprime->getParents().size() > 0) {
@@ -185,6 +280,9 @@ void DarkBremInteraction::produce(framework::Event& event) {
   event.add("APrimeParentID", ap_parent_id);
   event.add("APrimeGenStatus", aprime_genstatus);
 
+  histograms_.fill("aprime_energy", aprime_energy);
+  histograms_.fill("aprime_pt", quadsum({aprime_px, aprime_py}));
+
   int recoil_genstatus = recoil->getGenStatus();
   double recoil_px{recoil_p.at(0)}, recoil_py{recoil_p.at(1)}, recoil_pz{recoil_p.at(2)};
   event.add("RecoilEnergy", recoil_energy);
@@ -193,11 +291,17 @@ void DarkBremInteraction::produce(framework::Event& event) {
   event.add("RecoilPz", recoil_pz);
   event.add("RecoilGenStatus", recoil_genstatus);
 
+  histograms_.fill("recoil_energy", recoil_energy);
+  histograms_.fill("recoil_pt", quadsum({recoil_px, recoil_py}));
+
   event.add("IncidentEnergy", incident_energy);
   double incident_px{incident_p.at(0)}, incident_py{incident_p.at(1)}, incident_pz{incident_p.at(2)};
   event.add("IncidentPx", incident_px);
   event.add("IncidentPy", incident_py);
   event.add("IncidentPz", incident_pz);
+
+  histograms_.fill("incident_energy", incident_energy);
+  histograms_.fill("incident_pt", quadsum({incident_px, incident_py}));
 
   double vtx_x{aprime->getVertex().at(0)},
          vtx_y{aprime->getVertex().at(1)},
@@ -208,6 +312,20 @@ void DarkBremInteraction::produce(framework::Event& event) {
   event.add("DarkBremVertexMaterial", ap_vertex_material);
   float db_material_z = event.getEventHeader().getFloatParameter("db_material_z");
   event.add("DarkBremVertexMaterialZ", db_material_z);
+
+  histograms_.fill("dark_brem_z", vtx_z);
+
+  int i_element = 0;
+  if (db_material_z > 0) {
+    if (known_elements_.find(static_cast<int>(db_material_z)) == known_elements_.end()) {
+      i_element = known_elements_.size();
+    } else {
+      i_element = known_elements_.at(static_cast<int>(db_material_z));
+    }
+  }
+
+  histograms_.fill("dark_brem_element", i_element);
+  histograms_.fill("dark_brem_material", ap_vertex_material);
 }
 
 }

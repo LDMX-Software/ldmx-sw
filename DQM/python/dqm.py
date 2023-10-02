@@ -297,6 +297,33 @@ class DarkBremInteraction(ldmxcfg.Producer) :
     def __init__(self) :
         super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
 
+        self.build1DHistogram('aprime_energy',
+            'Dark Photon Energy [MeV]',101,0,8080)
+        self.build1DHistogram('aprime_pt',
+            'Dark Photon pT [MeV]',100,0,2000)
+
+        self.build1DHistogram('recoil_energy',
+            'Recoil Electron Energy [MeV]',101,0,8080)
+        self.build1DHistogram('recoil_pt',
+            'Recoil Electron pT [MeV]',100,0,2000)
+
+        self.build1DHistogram('incident_energy',
+            'Incident Electron Energy [MeV]',101,0,8080)
+        self.build1DHistogram('incident_pt',
+            'Incident Electron pT [MeV]',100,0,2000)
+
+        # weird binning so we can see the target and trigger pads
+        self.build1DHistogram('dark_brem_z',
+            'Z Location of Dark Brem [mm]',
+            [-5.0, -4.6752, -3.5502, -2.4252, -1.3002, -0.1752, 0.1752, 1.]) 
+        # elements are hydrogen and carbon (for trigger pads) and tungsten target
+        self.build1DHistogram('dark_brem_element',
+            'Element in which Dark Brem Occurred',
+            10, 0, 10)
+        self.build1DHistogram('dark_brem_material',
+            'Material in which Dark Brem Occurred',
+            8, 0, 8)
+
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
     def __init__(self, input_name) :
