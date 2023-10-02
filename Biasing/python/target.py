@@ -177,7 +177,7 @@ def gamma_mumu( detector, generator ) :
 
     return sim
 
-def dark_brem( ap_mass , lhe, detector ) :
+def dark_brem( ap_mass , lhe, detector) :
     """Example configuration for producing dark brem interactions in the target.
 
     This configures the sim to fire a 4 GeV electron upstream of the
@@ -214,26 +214,29 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
-    sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.generators.append( generators.single_8gev_e_upstream_tagger() )
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 
     #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
     db_model = dark_brem.G4DarkBreMModel(lhe)
-    db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    db_model.threshold = 4. #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
+    import math
+    mass_power = max(math.log10(sim.dark_brem.ap_mass), 2.)
+
     #Biasing dark brem up inside of the target
     sim.biasing_operators = [
-            bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**2 / db_model.epsilon**2)
+            bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
             ]
 
     sim.actions.extend([
         #make sure electron reaches target with 3.5GeV
-        filters.TaggerVetoFilter(3500.),
+        filters.TaggerVetoFilter(7000.),
         #make sure dark brem occurs in the target where A' has at least 2GeV
-        filters.TargetDarkBremFilter(2000.),
+        filters.TargetDarkBremFilter(4000.),
         #keep all prodcuts of dark brem(A' and recoil electron)
         util.TrackProcessFilter.dark_brem()
         ])
