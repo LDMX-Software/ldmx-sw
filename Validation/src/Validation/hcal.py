@@ -42,7 +42,7 @@ def dqm(d: Differ, out_dir=None):
              tick_labels=['', 'Back', 'Top', 'Bottom',
                           'Right', 'Left', 'Any',
                           'Both', 'Back only', 'Side only',
-                          'Neither', '', ''],
+                          'Neither', ''],
              out_dir=out_dir,
              yscale='linear',
 )
