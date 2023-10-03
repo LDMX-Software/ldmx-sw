@@ -195,6 +195,7 @@ void DarkBremInteraction::onProcessStart() {
  * and then use the electron mass to calculate its total energy.
  */
 void DarkBremInteraction::produce(framework::Event& event) {
+  histograms_.setWeight(event.getEventHeader().getWeight());
   const auto& particle_map{event.getMap<int,ldmx::SimParticle>("SimParticles")};
   const ldmx::SimParticle *recoil{nullptr}, *aprime{nullptr}, *beam{nullptr};
   for (const auto& [track_id, particle] : particle_map) {
