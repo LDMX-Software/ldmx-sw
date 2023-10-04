@@ -103,10 +103,15 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "truth #phi", nbins, -3.14, 3.14)
             self.build1DHistogram("truth_theta",
                                   "truth #theta", nbins, 0.7,2.1)
-            self.build1DHistogram("truth_p",
-                                  "truth p [GeV]",nbins,0,pmax)
             self.build1DHistogram("truth_qop",
                                   "truth q/p [GeV^{-1}]",nbins,-20,20)
+            self.build1DHistogram("truth_p",
+                                  "truth p [GeV]",nbins,0,pmax)
+            self.build1DHistogram("truth_beam_angle",
+                                  "angle wrt beam axis",20,0,2)
+            self.build1DHistogram("truth_PID",
+                                  "Particles",8,-4,4)
+            
             
             #self.build1DHistogram("truth_pt_bending",
             #                  "pT bending plane [GeV]",100,-pmax,pmax)
@@ -151,9 +156,15 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "reco match #phi",    nbins, -3.14, 3.14)
             self.build1DHistogram("match_theta",
                                   "reco match #theta",  nbins, 0.7,2.1)
+            self.build1DHistogram("match_qop",
+                                  "match q/p [GeV^{-1}]",nbins,-20,20)
             self.build1DHistogram("match_p",
-                                  "reco match p [GeV]", nbins,0,pmax)
-            
+                                  "truth p [GeV]", nbins,0,pmax)
+            self.build1DHistogram("match_beam_angle",
+                                  "angle wrt beam axis", 20, 0, 2)
+            self.build1DHistogram("match_PID",
+                                  "Particles",8,-4,4)
+
             
             chi2Fake_max    = 500
             chi2NdfFake_max = 50
@@ -169,6 +180,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "fake #theta", nbins, 0.7,2.1)
             self.build1DHistogram("fake_p",
                                   "fake p [GeV]",nbins,0,pmax)
+            self.build1DHistogram("fake_qop",
+                                  "fake qOverP [GeV^{-1}]",nbins,-20,20)
             self.build1DHistogram("fake_nHits",
                                   "fake nHits",15,0,15)
             self.build1DHistogram("fake_Chi2",
@@ -193,6 +206,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "dup #theta", 100, 0.7,2.1)
             self.build1DHistogram("dup_p",
                                   "dup p [GeV]",100,0,pmax)
+            self.build1DHistogram("dup_qop",
+                                  "dup qOverP [GeV^{-1}]",nbins,-20,20)
             self.build1DHistogram("dup_nHits",
                                   "dup nHits",15,0,15)
             self.build1DHistogram("dup_Chi2",

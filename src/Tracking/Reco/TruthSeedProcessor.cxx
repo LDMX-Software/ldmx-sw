@@ -179,13 +179,38 @@ void TruthSeedProcessor::produce(framework::Event &event) {
   // Create a mapping from the selected scoring plane hit objects to the number
   // of hits they associated particle creates in the tracker.
   // In this way I can keep track of the amount of hits left by each trackID
+
+  // TODO::I probably should ask that the hits are left in different layers.
   
-  std::unordered_map<int, int> hit_count_map;
+  std::map<int,std::vector<ldmx::SimTrackerHit>> hit_count_map;
+  
   for (auto &sim_hit : sim_hits) {
-    if (!hit_count_map.count(sim_hit.getTrackID()))
-      hit_count_map[sim_hit.getTrackID()] = 1;
     
-    hit_count_map[sim_hit.getTrackID()]++;
+    // This track never left a hit before
+    if (!hit_count_map.count(sim_hit.getTrackID())) {
+      hit_count_map[sim_hit.getTrackID()].push_back(sim_hit);
+    }
+    
+    // This track left a hit before.
+    // Check if it's on a different sensor than the others
+    else {
+      int sensorID = tracking::sim::utils::getSensorID(sim_hit);
+      bool foundHit = false;
+      
+      for (auto& rhit : hit_count_map[sim_hit.getTrackID()]) {
+                            
+          int tmp_sensorID = tracking::sim::utils::getSensorID(rhit);
+          
+          if (sensorID == tmp_sensorID) {
+            foundHit = true;
+            break;
+          }
+        } // loop on the already recorded hits
+
+      if (!foundHit)
+        hit_count_map[sim_hit.getTrackID()].push_back(sim_hit);
+      
+    }
   }
     
   // to keep track of how many sim particles leave hits on the s-plane
@@ -269,10 +294,11 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(idx_taggerhit);
     const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
         
-    if (hit_count_map[hit.getTrackID()] > n_min_hits_) {
+    if (hit_count_map[hit.getTrackID()].size() > n_min_hits_) {
       
       ldmx::TruthTrack truth_tagger_track;
       createTruthTrack(phit, hit, truth_tagger_track);
+      truth_tagger_track.setNhits(hit_count_map[hit.getTrackID()].size());
       //get track state at the generation point
       //ldmx::TruthTrack::TrackState ts_beamOrigin(phit,"beam_origin");
       //propagate track to target
@@ -282,21 +308,23 @@ void TruthSeedProcessor::produce(framework::Event &event) {
       tagger_truth_tracks.push_back(truth_tagger_track);
     }
   }
-
-
+  
+  
   for (std::pair<int,std::vector<int>> element : recoil_sh_count_map) {
-
+    
     //Only take the first entry of the vector: it should be the scoring plane hit with the highest momentum. 
     const ldmx::SimTrackerHit& hit  = scoring_hits.at(element.second.at(0));
     const ldmx::SimParticle&   phit = particleMap[hit.getTrackID()];
     
     //Findable particle selection
-    if (hit_count_map[hit.getTrackID()] < n_min_hits_)
-      continue;
-    
-    ldmx::TruthTrack truth_recoil_track;
-    createTruthTrack(phit,hit,truth_recoil_track);
-    recoil_truth_tracks.push_back(truth_recoil_track);
+    if (hit_count_map[hit.getTrackID()].size() > n_min_hits_) {
+      
+      
+      ldmx::TruthTrack truth_recoil_track;
+      createTruthTrack(phit,hit,truth_recoil_track);
+      truth_recoil_track.setNhits(hit_count_map[hit.getTrackID()].size());
+      recoil_truth_tracks.push_back(truth_recoil_track);
+    }
   }
   
   /*
