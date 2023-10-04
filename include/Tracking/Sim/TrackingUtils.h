@@ -44,11 +44,30 @@ namespace tracking{
 namespace sim{
 namespace utils {
 
+
+/*
+  It looks like the recoil is subdetector ID 4 and tagger is subdetector ID 1
+https://github.com/LDMX-Software/ldmx-sw/blob/0476ccc407e068560518e0614aa83b6eda22e186/DetDescr/include/DetDescr/DetectorID.h#L11-L24
+So you could bit shift and mask to get these numbers
+https://github.com/LDMX-Software/ldmx-sw/blob/0476ccc407e068560518e0614aa83b6eda22e186/DetDescr/include/DetDescr/DetectorID.h#L38-L39
+(sim_tracker_hit.getID() >> 26)&0x3f
+or if you are in ldmx-sw, it is easier, more robust, and just as performant to wrap the ID in the helper class and use its accessors
+sd = TrackerID(sim_tracker_hit.getID()).subdet();
+if (sd == SubdetectorID::SD_TRACKER_RECOIL) {
+  // hit in recoil
+} else if (sd == SubdetectorID::SD_TRACKER_TAGGER) {
+  // hit in tagger
+} else {
+  // this should never happen since the TrackerID constructor checks for mal-formed IDs
+}
+*/
+
+
 //This method returns the sensor ID 
 inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 
   bool debug = false;
-
+  
   int vol = 2;
   
   //TODO!! FIX THIS HARDCODE!

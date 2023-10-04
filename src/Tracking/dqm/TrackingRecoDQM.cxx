@@ -2,18 +2,29 @@
 #include "Tracking/Sim/TrackingUtils.h"
 
 #include <iostream>
-
 #include <algorithm>
 
 namespace tracking::dqm {
 
 
 void TrackingRecoDQM::configure(framework::config::Parameters &parameters) {
-
+  
   trackCollection_ = parameters.getParameter<std::string>("track_collection","TaggerTracks");
   truthCollection_ = parameters.getParameter<std::string>("truth_collection","TaggerTruthTracks");
   title_           = parameters.getParameter<std::string>("title","tagger_trk_");
   trackProb_cut_   = parameters.getParameter<double>("trackProb_cut",0.5);
+
+
+  pidmap[-321]  = PIDBins::kminus;
+  pidmap[321]   = PIDBins::kplus;
+  pidmap[-211]  = PIDBins::piminus;
+  pidmap[211]   = PIDBins::piplus;
+  pidmap[11]    = PIDBins::electron;
+  pidmap[-11]   = PIDBins::positron;
+  pidmap[2212]  = PIDBins::proton;
+  pidmap[-2212] = PIDBins::antiproton;
+
+
   
 }
 
@@ -45,16 +56,23 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
     uniqueTracks = tracks;
   }
   
-  // Track Monitoring - TODO ... FIX the truth matching
+  TrackMonitoring(uniqueTracks,title_,true,true);
+
   
-  TrackMonitoring(tracks,title_);
+  // Fakes and duplicates
+  TrackMonitoring(duplicateTracks, title_ + "dup_", false, false);
+  TrackMonitoring(fakeTracks,title_ + "fake_", false, false);
   
+    
   // Track Extrapolation to Ecal Monitoring
   
   TrackEcalScoringPlaneMonitoring(tracks);
   
   TrackTargetScoringPlaneMonitoring(tracks);
-  
+
+
+  // Technical Efficiency plots
+  EfficiencyPlots(tracks,title_);
   
   // Clear the vectors
   uniqueTracks.clear();
@@ -67,15 +85,108 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 void TrackingRecoDQM::onProcessEnd() {
 
   //Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
-
-  //TH1* matchp = histograms_.get(title+"match_p");
+  
+  
 } 
 
 
-void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
-                                      const std::string title) {
+void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
+                                      const std::string& title) {
   
-  for (auto &track : uniqueTracks) {
+  // Do all truth track plots - denominator
+  
+  for (auto& truth_trk : *(truthTrackCollection_)) {
+
+    double truth_phi   = truth_trk.getPhi();
+    double truth_d0   = truth_trk.getD0();
+    double truth_z0   = truth_trk.getZ0();
+    double truth_theta = truth_trk.getTheta();
+    double truth_qop   = truth_trk.getQoP();
+    double truth_p     = 1. / abs(truth_trk.getQoP());
+    std::vector<double> truth_mom = truth_trk.getMomentum();
+
+    //Polar angle
+    //The momentum in the plane transverse wrt the beam axis
+    double truth_pt_beam    = std::sqrt(truth_mom[1]*truth_mom[1] + truth_mom[2]*truth_mom[2]);
+    
+    double truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
+    
+    histograms_.fill(title+"truth_d0",   truth_d0);
+    histograms_.fill(title+"truth_z0",   truth_z0);
+    histograms_.fill(title+"truth_phi",  truth_phi);
+    histograms_.fill(title+"truth_theta",truth_theta);
+    histograms_.fill(title+"truth_qop",  truth_qop);
+    histograms_.fill(title+"truth_p",    truth_p);
+    histograms_.fill(title+"truth_beam_angle", truth_beam_angle);
+    
+    if (pidmap.count(truth_trk.getPdgID()) != 0) {
+      histograms_.fill(title+"truth_PID", pidmap[truth_trk.getPdgID()]);
+    }
+  } // loop on truth tracks
+
+  
+  for (auto& track : tracks) {
+    
+    //Match the tracks to truth
+    ldmx::TruthTrack* truth_trk = nullptr;
+      
+    auto it = std::find_if(truthTrackCollection_->begin(),
+                           truthTrackCollection_->end(),[&](const ldmx::TruthTrack& tt) {
+                               return tt.getTrackID() == track.getTrackID();
+                           });
+    
+    double trackTruthProb = track.getTruthProb();
+    
+    if (it != truthTrackCollection_->end() && trackTruthProb >= trackProb_cut_)
+      truth_trk = &(*it);
+    
+    //Match not found
+    if (!truth_trk)
+      return;
+
+    double truth_phi   = truth_trk->getPhi();
+    double truth_d0    = truth_trk->getD0();
+    double truth_z0    = truth_trk->getZ0();
+    double truth_theta = truth_trk->getTheta();
+    double truth_qop   = truth_trk->getQoP();
+    double truth_p     = 1. / abs(truth_trk->getQoP());
+    std::vector<double> truth_mom = truth_trk->getMomentum();
+
+    //Polar angle
+    //The momentum in the plane transverse wrt the beam axis
+    double truth_pt_beam    = std::sqrt(truth_mom[1]*truth_mom[1] + truth_mom[2]*truth_mom[2]);
+    
+    double truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
+    
+    
+    //Fill reco plots for efficiencies - numerator. The quantities are truth
+    
+    histograms_.fill(title+"match_d0",         truth_d0);
+    histograms_.fill(title+"match_z0",         truth_z0);
+    histograms_.fill(title+"match_phi",        truth_phi);
+    histograms_.fill(title+"match_theta",      truth_theta);
+    histograms_.fill(title+"match_p",          truth_p);
+    histograms_.fill(title+"match_qop",        truth_qop);
+    histograms_.fill(title+"match_beam_angle", truth_beam_angle);
+    
+    // For some particles
+    
+    if (pidmap.count(truth_trk->getPdgID()) != 0) {
+      histograms_.fill(title+"match_PID", pidmap[truth_trk->getPdgID()]);
+      
+    }
+  } //Loop on tracks
+  
+}// Efficiency plots
+  
+
+
+void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
+                                      const std::string title,
+                                      const bool& doDetail,
+                                      const bool& doTruth) {
+  
+  for (auto &track : tracks) {
     
     //Perigee track parameters
     
@@ -93,58 +204,51 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     
     //The momentum in the plane transverse wrt the beam axis
     double pt_beam    = std::sqrt(trk_mom[1]*trk_mom[1] + trk_mom[2]*trk_mom[2]);
-    
-    histograms_.fill(title+"d0",trk_d0);
-    histograms_.fill(title+"z0",trk_z0);
-    histograms_.fill(title+"qop",trk_qop);
-    histograms_.fill(title+"phi",trk_phi);
-    histograms_.fill(title+"theta",trk_theta);
-    
-    histograms_.fill(title+"p",  std::abs(1./trk_qop));
-    histograms_.fill(title+"px", trk_mom[0]);
-    histograms_.fill(title+"py", trk_mom[1]);
-    histograms_.fill(title+"pz", trk_mom[2]);
-    
-    histograms_.fill(title+"pt_bending", pt_bending);
-    histograms_.fill(title+"pt_beam",    pt_beam);
-    
-    histograms_.fill(title+"nHits",    track.getNhits());
-    histograms_.fill(title+"Chi2",     track.getChi2());
-    histograms_.fill(title+"ndf", track.getNdf());
-    histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
-    histograms_.fill(title+"nShared",  track.getNsharedHits());
-    
-    
-    //Covariance matri
+
+    //Covariance matrix
     Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
 
     double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
     double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
     double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
     double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
-    double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
+    double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP));
+    double sigmap     = (1./trk_qop)*(1./trk_qop)*sigmaqop;
 
-    double sigmaloc0 = sqrt(cov(0));
-    double sigmaloc1 = sqrt(cov(7));
+    histograms_.fill(title+"d0",trk_d0);
+    histograms_.fill(title+"z0",trk_z0);
+    histograms_.fill(title+"qop",trk_qop);
+    histograms_.fill(title+"phi",trk_phi);
+    histograms_.fill(title+"theta",trk_theta);
 
-    histograms_.fill(title+"d0_err",   sigmad0); 
-    histograms_.fill(title+"z0_err",   sigmaz0); 
-    histograms_.fill(title+"phi_err",  sigmaphi); 
-    histograms_.fill(title+"theta_err",sigmatheta); 
-    histograms_.fill(title+"qop_err",  sigmaqop); 
+    if (doDetail) {
+      
+      histograms_.fill(title+"p",  std::abs(1./trk_qop));
+      histograms_.fill(title+"px", trk_mom[0]);
+      histograms_.fill(title+"py", trk_mom[1]);
+      histograms_.fill(title+"pz", trk_mom[2]);
+      
+      histograms_.fill(title+"pt_bending", pt_bending);
+      histograms_.fill(title+"pt_beam",    pt_beam);
+      
+      histograms_.fill(title+"nHits",    track.getNhits());
+      histograms_.fill(title+"Chi2",     track.getChi2());
+      histograms_.fill(title+"ndf", track.getNdf());
+      histograms_.fill(title+"Chi2/ndf", track.getChi2()/track.getNdf());
+      histograms_.fill(title+"nShared",  track.getNsharedHits());
     
-    double sigmap = (1./trk_qop)*(1./trk_qop)*sigmaqop;
-    histograms_.fill(title+"p_err",  sigmap);
-
-
-    //Track states monitoring
-    auto trackStates = track.getTrackStates();
     
-    for (auto& ts : trackStates) {}
-        
-    if (doTruthComparison) {
-
-      //Truth Comparison
+      histograms_.fill(title+"d0_err",   sigmad0); 
+      histograms_.fill(title+"z0_err",   sigmaz0); 
+      histograms_.fill(title+"phi_err",  sigmaphi); 
+      histograms_.fill(title+"theta_err",sigmatheta); 
+      histograms_.fill(title+"qop_err",  sigmaqop); 
+      histograms_.fill(title+"p_err",  sigmap);
+    }
+    
+    if (doTruth) {
+      
+      //Match to the truth track
       ldmx::TruthTrack* truth_trk = nullptr;
       
       auto it = std::find_if(truthTrackCollection_->begin(),
@@ -160,7 +264,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
       
       //Found matched track
       if (truth_trk) {
-
+        
         double truth_d0    = truth_trk->getD0();
         double truth_z0    = truth_trk->getZ0();
         double truth_phi   = truth_trk->getPhi();
@@ -168,12 +272,12 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         double truth_qop   = truth_trk->getQoP();
         double truth_p     = 1. / abs(truth_trk->getQoP());
         
-        histograms_.fill(title+"truth_d0",   truth_d0);
-        histograms_.fill(title+"truth_z0",   truth_z0);
-        histograms_.fill(title+"truth_phi",  truth_phi);
-        histograms_.fill(title+"truth_theta",truth_theta);
-        histograms_.fill(title+"truth_qop",  truth_qop);
-        histograms_.fill(title+"truth_p",    truth_p);
+        //histograms_.fill(title+"truth_d0",   truth_d0);
+        //histograms_.fill(title+"truth_z0",   truth_z0);
+        //histograms_.fill(title+"truth_phi",  truth_phi);
+        //histograms_.fill(title+"truth_theta",truth_theta);
+        //histograms_.fill(title+"truth_qop",  truth_qop);
+        //histograms_.fill(title+"truth_p",    truth_p);
 
         double res_d0    = trk_d0 - truth_d0;
         double res_z0    = trk_z0 - truth_z0;
@@ -202,45 +306,12 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         histograms_.fill(title+"pull_theta",pull_theta);
         histograms_.fill(title+"pull_qop",  pull_qop);
         histograms_.fill(title+"pull_p",    pull_p);
-
-
-        //Fill reco plots for efficiencies - numerator
         
-        histograms_.fill(title+"match_d0",   trk_d0);
-        histograms_.fill(title+"match_z0",   trk_z0);
-        histograms_.fill(title+"match_phi",  trk_phi);
-        histograms_.fill(title+"match_theta",trk_theta);
-        histograms_.fill(title+"match_p",    trk_p);
-
       } //found matched track
     }//do TruthComparison
-  }//loop on unique tracks (or not split)
+  }//loop on tracks
   
   
-  for (auto& ftrack : fakeTracks) {
-    histograms_.fill(title+"fake_d0",   ftrack.getD0());
-    histograms_.fill(title+"fake_z0",   ftrack.getZ0());
-    histograms_.fill(title+"fake_phi",  ftrack.getPhi());
-    histograms_.fill(title+"fake_theta",ftrack.getTheta());
-    histograms_.fill(title+"fake_p",    1. / abs(ftrack.getQoP()));
-    histograms_.fill(title+"fake_nHits",    ftrack.getNhits());
-    histograms_.fill(title+"fake_Chi2",     ftrack.getChi2());
-    histograms_.fill(title+"fake_Chi2/ndf", ftrack.getChi2()/ftrack.getNdf());
-    histograms_.fill(title+"fake_nShared",  ftrack.getNsharedHits());
-  }
-  
-  for (auto& dtrack : duplicateTracks) {
-    histograms_.fill(title+"dup_d0",   dtrack.getD0());
-    histograms_.fill(title+"dup_z0",   dtrack.getZ0());
-    histograms_.fill(title+"dup_phi",  dtrack.getPhi());
-    histograms_.fill(title+"dup_theta",dtrack.getTheta());
-    histograms_.fill(title+"dup_p",    1. / abs(dtrack.getQoP()));
-    histograms_.fill(title+"dup_nHits",    dtrack.getNhits());
-    histograms_.fill(title+"dup_Chi2",     dtrack.getChi2());
-    histograms_.fill(title+"dup_Chi2/ndf", dtrack.getChi2()/dtrack.getNdf());
-    histograms_.fill(title+"dup_nShared",  dtrack.getNsharedHits());
-  }
-      
 }//Track Monitoring
 
 

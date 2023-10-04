@@ -10,6 +10,20 @@
 
 namespace tracking::dqm {
 
+
+
+
+enum PIDBins {
+  kminus     = -4,
+  antiproton,
+  piminus,
+  positron,  
+  electron,   
+  piplus,       
+  proton,
+  kplus
+};
+
   class TrackingRecoDQM : public framework::Analyzer {
  public:
     
@@ -22,8 +36,14 @@ namespace tracking::dqm {
     void analyze(const framework::Event& event) final override;
 
     void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
-                         const std::string name);
+                         const std::string title,
+                         const bool& doDetail,
+                         const bool& doTruth);
+    
 
+
+    void EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
+                         const std::string& title);
     
     /** Monitoring plots for tracks extrapolated to the ECAL Scoring plane.
      *  This aims 
@@ -72,8 +92,15 @@ namespace tracking::dqm {
     std::vector<ldmx::Track> uniqueTracks;     // real tracks (truth_prob > cut), unique
     std::vector<ldmx::Track> duplicateTracks;  // real tracks (truth_prob > cut), duplicated
     std::vector<ldmx::Track> fakeTracks;       // fake tracks (truth_prob < cut)
-  
-   
+
+
+    //PID mapping
+    std::map<int,int> pidmap;
+        
+
+
+    
+    
     
   };
 }
