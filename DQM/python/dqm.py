@@ -594,6 +594,25 @@ class Trigger(ldmxcfg.Analyzer) :
         self.trigger_name = coll
         self.trigger_pass = ''
 
+
+class SampleValidation(ldmxcfg.Analyzer) :
+    def __init__(self, name='SampleValidation') :
+        super().__init__(name, 'dqm::SampleValidation', 'DQM')
+
+        # primary histograms
+        self.build1DHistogram("pdgid_primaries", "PDG ID of primary particles", 2714, -500, 2213)
+        self.build1DHistogram("energy_primaries", "Energy of primary particles", 50, 0, 5000) # range applicable for 4 GeV beam
+        self.build2DHistogram("beam_smear", "x", 30, -150, 150, "y", 30, -150, 150)
+
+        # primary daughter of interest (brem / dark brem) histograms
+        self.build1DHistogram("pdgid_primarydaughters", "PDG ID of primary daughters", 2714, -500, 2213)
+        self.build1DHistogram("startZ_hardbrem", "Start z position of hard primary daughter", 100, -500, 500)
+        self.build1DHistogram("endZ_hardbrem", "End z position of hard primary daughter", 100, -500, 500)
+        self.build1DHistogram("energy_hardbrem", "Energy spectrum of hard primary daughter", 50, 2000, 4500)
+
+        # daughters of hard brem histograms
+        self.build1DHistogram("pdgid_hardbremdaughters", "PDG ID of hard brem daughters", 2714, -500, 2213)
+        self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters", 200, -1000, 1000)
         
 
 ecal_dqm = [
