@@ -79,7 +79,7 @@ set_target_properties(
 # namespaces and dict that are lists appended to by the register_event_object function
 message(STATUS "Building ROOT dictionary LinkDef")
 set(linkdef_filepath ${PROJECT_BINARY_DIR}/include/Framework/EventDictLinkDef.h)
-file(APPEND ${linkdef_filepath} "
+file(WRITE ${linkdef_filepath} "
 #ifdef __CINT__
 
 #pragma link off all globals;
