@@ -286,57 +286,6 @@ function(register_event_object)
 
 endfunction()
 
-macro(build_event_bus)
-
-  set(oneValueArgs path)
-  cmake_parse_arguments(build_event_bus "${options}" "${oneValueArgs}"
-                        "${multiValueArgs}" ${ARGN})
-
-  if(build_event_bus_path AND NOT EXISTS ${build_event_bus_path})
-    foreach(header ${event_headers})
-      file(APPEND ${build_event_bus_path} "#include \"${header}\"\n")
-    endforeach()
-  endif()
-
-endmacro()
-
-macro(build_dict)
-
-  set(oneValueArgs name template)
-  cmake_parse_arguments(build_dict "${options}" "${oneValueArgs}"
-                        "${multiValueArgs}" ${ARGN})
-
-  get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
-  if(NOT EXISTS
-     ${PROJECT_SOURCE_DIR}/include/${header_dir}/${build_dict_name}LinkDef.h)
-
-    message(STATUS "Building ROOT dictionary.")
-    if(DEFINED build_dict_template)
-      configure_file(
-        ${build_dict_template}
-        ${PROJECT_SOURCE_DIR}/include/${header_dir}/${build_dict_name}LinkDef.h
-        COPYONLY)
-    endif()
-
-    set(file_path
-        ${PROJECT_SOURCE_DIR}/include/${header_dir}/${build_dict_name}LinkDef.h)
-    set(prefix "#pragma link C++")
-
-    list(REMOVE_DUPLICATES namespaces)
-    foreach(namespace ${namespaces})
-      file(APPEND ${file_path} "${prefix} namespace ${namespace};\n")
-    endforeach()
-
-    foreach(entry ${dict})
-      file(APPEND ${file_path} "${prefix} class ${entry}+;\n")
-    endforeach()
-
-    file(APPEND ${file_path} "\n#endif")
-
-  endif()
-
-endmacro()
-
 macro(setup_test)
 
   set(multiValueArgs dependencies)
