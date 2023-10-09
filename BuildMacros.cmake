@@ -263,7 +263,7 @@ function(register_event_object)
 
   if(NOT ${PROJECT_SOURCE_DIR}/include IN_LIST include_paths)
     set(include_paths
-        ${PROJECT_SOURCE_DIR}/include ${include_paths}
+        "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" ${include_paths}
         CACHE INTERNAL "include_paths")
   endif()
 
