@@ -49,6 +49,7 @@ class EventHeader {
     run_ = -1;
     timestamp_ = TTimeStamp(0, 0);
     weight_ = 1.0;
+    tries_ = 0;
     isRealData_ = false;
     intParameters_.clear();
     floatParameters_.clear();
@@ -61,7 +62,8 @@ class EventHeader {
   void Print(Option_t* = "") const {
     std::cout << "EventHeader {"
               << " eventNumber: " << eventNumber_ << ", run: " << run_
-              << ", timestamp: " << timestamp_ << ", weight: " << weight_;
+              << ", timestamp: " << timestamp_ << ", weight: " << weight_
+              << ", tries: " << tries_;
     if (isRealData_)
       std::cout << ", DATA";
     else
@@ -94,6 +96,17 @@ class EventHeader {
    * @return The event weight.
    */
   double getWeight() const { return weight_; }
+
+  /**
+   * Increment the number of events tried by one
+   */
+  void incrementTries() { tries_++; }
+
+  /**
+   * Get the number of events tried
+   * @return the number of tries
+   */
+  int getTries() const { return tries_; }
 
   /**
    * Is this a real data event?
@@ -210,6 +223,12 @@ class EventHeader {
   double weight_{1.0};
 
   /**
+   * The number of events that were begun before
+   * this event was generated and accepted by event filtering.
+   */
+  int tries_{0};
+
+  /**
    * Is this event real data?
    */
   bool isRealData_{false};
@@ -232,7 +251,7 @@ class EventHeader {
   /**
    * ROOT class definition.
    */
-  ClassDef(EventHeader, 2);
+  ClassDef(EventHeader, 3);
 };
 
 }  // namespace ldmx
