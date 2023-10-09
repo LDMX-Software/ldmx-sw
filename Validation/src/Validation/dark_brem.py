@@ -27,7 +27,7 @@ def kinematics(d : Differ, out_dir = None) :
     ]
     for h, name in features :
         log.info(f'plotting {h}')
-        d.plot1d(f'db_kinematics/db_kinematics_{h}', name, out_dir = out_dir)
+        d.plot1d(f'db_kinematics/db_kinematics_{h}', name, out_dir = out_dir, density=True, ylabel='Weighted Fraction')
 
     log.info('plotting dark_brem_element')
     d.plot1d(
@@ -45,7 +45,9 @@ def kinematics(d : Differ, out_dir = None) :
             "Cu 29",
             "W 74",
             "unlisted",
-        ]
+        ],
+        density=True,
+        ylabel='Weighted Fraction'
     )
 
     log.info('plotting dark_brem_material')
@@ -62,5 +64,7 @@ def kinematics(d : Differ, out_dir = None) :
             "Al",
             "W",
             "PVT"
-        ]
+        ],
+        density=True,
+        ylabel='Weighted Fraction'
     )
