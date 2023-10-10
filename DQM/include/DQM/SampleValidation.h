@@ -20,15 +20,6 @@ namespace dqm {
             virtual void configure(framework::config::Parameters& ps);
 
             virtual void analyze(const framework::Event& event);
-
-            virtual void onFileOpen(framework::EventFile&);
-
-            virtual void onFileClose(framework::EventFile&);
-
-            virtual void onProcessStart();
-
-            virtual void onProcessEnd();
-
         private:
 
     };
