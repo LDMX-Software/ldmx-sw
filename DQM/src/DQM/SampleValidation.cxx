@@ -72,26 +72,6 @@ namespace dqm {
 
     return;
   }
-
-  void SampleValidation::onFileOpen(framework::EventFile&) {
-
-    return;
-  }
-
-  void SampleValidation::onFileClose(framework::EventFile&) {
-
-    return;
-  }
-
-  void SampleValidation::onProcessStart() {
-
-    return;
-  }
-
-  void SampleValidation::onProcessEnd() {
-
-    return;
-  }
 }
 
 DECLARE_ANALYZER_NS(dqm, SampleValidation)
