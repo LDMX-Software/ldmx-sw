@@ -5,6 +5,10 @@ namespace dqm {
 /**
  * calculate total energy from 3-momentum and mass
  *
+ * Since the dark brem model does not include a nucleus, it only is able to 
+ * conserve momentum, so we need to reconstruct the incident particle's 3-momentum
+ * and then use the known particle mass to calculate its total energy.
+ *
  * @param[in] p 3-momentum
  * @param[in] m mass
  * @return total energy
