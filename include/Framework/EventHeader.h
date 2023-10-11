@@ -153,7 +153,7 @@ class EventHeader {
    * @param name The name of the parameter.
    * @return The parameter value.
    */
-  int getIntParameter(const std::string& name) { return intParameters_[name]; }
+  int getIntParameter(const std::string& name) const { return intParameters_[name]; }
 
   /**
    * Set an int parameter value.
@@ -170,7 +170,7 @@ class EventHeader {
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  float getFloatParameter(const std::string& name) {
+  float getFloatParameter(const std::string& name) const {
     return floatParameters_[name];
   }
 
@@ -188,7 +188,7 @@ class EventHeader {
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  std::string getStringParameter(const std::string& name) {
+  std::string getStringParameter(const std::string& name) const {
     return stringParameters_[name];
   }
 
