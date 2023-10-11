@@ -1,0 +1,38 @@
+# install magnetic fieldmaps only if the original tar-ball changes
+#
+# Assumptions
+#  - The magnetic fieldmaps are *.tar.gz files compressing a single file with the same name
+#    This assumption is necessary so that we can check for the existence of the unpacked
+#    file without having to inspect the contents of the tar-ball (only its file name).
+#
+# The fieldmaps are unpacked into the <install-path>/data/fieldmap directory and a timestamp
+# for when they were last installed is created within ${CMAKE_CURRENT_BINARY_DIRECTORY}/MagFieldMap
+# If the installed filed exists, this timestamp file exists and is newer than the original tar-ball, the unpacking
+# operation is not performed.
+# This logic allows for the tar-ball to only be unpacked when it is necessary (the tar-ball changes
+# due to e.g. a re-pull or the install hasn't happened yet).
+
+# retrieve list of the fieldmap files
+set(fieldmap_files "@fieldmap_files@")
+
+# define directory in which the files will be installed
+set(magfield_map_install $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/data/fieldmap)
+
+# make sure install location exists
+execute_process(COMMAND mkdir -p ${magfield_map_install})
+foreach(fieldmap_path ${fieldmap_files})
+  get_filename_component(fieldmap_file ${fieldmap_path} NAME)
+  string(REPLACE ".tar.gz" "" fieldmap_filename ${fieldmap_file})
+  set(fieldmap_install ${magfield_map_install}/${fieldmap_filename})
+  set(install_timestamp ${CMAKE_CURRENT_BINARY_DIR}/MagFieldMap/${fieldmap_filename}.stamp)
+  if (EXISTS ${fieldmap_install} AND EXISTS ${install_timestamp} AND ${install_timestamp} IS_NEWER_THAN ${fieldmap_path})
+    message(STATUS "Up-to-date: ${fieldmap_install}")
+  else()
+    message(STATUS "Installing: ${fieldmap_install}")
+    execute_process(
+      COMMAND tar -zxf ${fieldmap_path}
+      COMMAND touch ${install_timestamp}
+      WORKING_DIRECTORY ${magfield_map_install}
+    )
+  endif()
+endforeach()
