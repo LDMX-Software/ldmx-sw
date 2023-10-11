@@ -9,14 +9,8 @@ project(MagFieldMap VERSION 0.1.0
 
 message(STATUS "Installing all field map files.")
 
-# Retrieve all of the fieldmap files
+# retrieve list of the fieldmap files
 file(GLOB fieldmap_files *.tar.gz)
-
-# Check if the fieldmap has already been extracted.  If not, extract and install
-# the fieldmaps.
-install(CODE "execute_process(COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/data/fieldmap)")
-foreach(fieldmap_path ${fieldmap_files})
-  get_filename_component(fieldmap_file ${fieldmap_path} NAME)
-  install(CODE "message(STATUS \"unpacking ${fieldmap_file}\")")
-  install(CODE "execute_process(COMMAND tar -zxf ${fieldmap_path} WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/data/fieldmap)")
-endforeach()
+# pass this information to the install script
+configure_file(install.cmake.in ${PROJECT_BINARY_DIR}/install.cmake @ONLY)
+install(SCRIPT ${PROJECT_BINARY_DIR}/install.cmake)
