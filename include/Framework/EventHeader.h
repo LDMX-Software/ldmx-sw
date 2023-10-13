@@ -23,6 +23,37 @@ namespace ldmx {
  * @class EventHeader
  * @brief Provides header information an event such as event number and
  * timestamp
+ *
+ * The evolution of the EventHeader object has been pretty slow since
+ * the `*Parameter* members can be used to hold most additional information.
+ * ROOT's serialization infrastructure does define a class version and so
+ * the we document the versions here.
+ *
+ * ## v1
+ * This was the initial version of the EventHeader and should be considered
+ * a "beta" version. It is not even internally consistent in that some changes
+ * were made to the EventHeader and how it was serialized without modifying
+ * this version number. It has largely been lost to the sands of time as
+ * Framework has been moved into its own repository out of ldmx-sw.
+ *
+ * ## v2
+ * This is the main version currently and has all of the ldmx-sw necessary
+ * information except the number of tries it took to generate any given event.
+ * This is what motivated the update to v3.
+ *
+ * ## v3
+ * This version includes the number of tries it took to generate an event
+ * (from Framework's point of view) and updates the `get*Parameter` functions
+ * to be `const` so that they can be accessed from within analyzers.
+ *
+ * ### v3-v2 Interop
+ * The interoperability of the v2 and v3 event headers was studied during
+ * the merging process of the v3 updates. You can view the full details
+ * on GitHub: https://github.com/LDMX-Software/Framework/pull/80.
+ * In summary, reading v3 headers with v2 will print a warning message
+ * and write a file that includes an _empty_ `tries_` subbranch. Reading
+ * v2 headers with v3 will silently maintain the v2 structure (i.e. there
+ * will be no `tries_` subbranch).
  */
 class EventHeader {
  public:
@@ -99,6 +130,11 @@ class EventHeader {
 
   /**
    * Increment the number of events tried by one
+   *
+   * @note This modification function is used within
+   * Framework during Production Mode (i.e. no input files).
+   * A Producer also incrementing the number of tries during
+   * Production Mode is undefined behavior.
    */
   void incrementTries() { tries_++; }
 
@@ -124,18 +160,28 @@ class EventHeader {
 
   /**
    * Set the event number.
+   * @note This is used within Framework during Production Mode.
+   * It is untested but Producers can probably change the event number
+   * without issue since the tracking of the number of events processed
+   * is done separately within Framework.
    * @param eventNumber The event number.
    */
   void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
 
   /**
    * Set the run number.
+   * @note This is used within Framework during Production Mode.
+   * It is untested but Producers can probably change the run number
+   * without issue.
    * @param run The run number.
    */
   void setRun(int run) { this->run_ = run; }
 
   /**
    * Set the timestamp.
+   * @note This is used within Framework during Production Mode.
+   * It is untested but Producers can probably change the timestamp
+   * without issue.
    * @param timestamp The timestamp.
    */
   void setTimestamp(const TTimeStamp& timestamp) {
@@ -144,6 +190,12 @@ class EventHeader {
 
   /**
    * Set the event weight.
+   * 
+   * The event weight is by default 1. for all events. It is up to
+   * a downstream producer to update the event weight if their procedure
+   * demands it (for example, a simulation producer would copy its event
+   * weight here).
+   *
    * @param weight The event weight.
    */
   void setWeight(double weight) { this->weight_ = weight; }
