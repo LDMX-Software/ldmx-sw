@@ -27,7 +27,7 @@ namespace ldmx {
  * The evolution of the EventHeader object has been pretty slow since
  * the `*Parameter* members can be used to hold most additional information.
  * ROOT's serialization infrastructure does define a class version and so
- * the we document the versions here.
+ * we document the versions here.
  *
  * ## v1
  * This was the initial version of the EventHeader and should be considered
@@ -191,7 +191,7 @@ class EventHeader {
   /**
    * Set the event weight.
    * 
-   * The event weight is by default 1. for all events. It is up to
+   * The event weight is by default 1 for all events. It is up to
    * a downstream producer to update the event weight if their procedure
    * demands it (for example, a simulation producer would copy its event
    * weight here).
