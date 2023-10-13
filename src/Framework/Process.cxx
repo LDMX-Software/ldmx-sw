@@ -174,12 +174,15 @@ void Process::run() {
 
     newRun(runHeader);
 
+    int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
+      numTries++;
+
       ldmx::EventHeader &eh = theEvent.getEventHeader();
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
-      eh.incrementTries();
+      eh.setTries(numTries);
 
       // reset the storage controller state
       storageController_.resetEventState();
@@ -188,7 +191,12 @@ void Process::run() {
 
       outFile.nextEvent(storageController_.keepEvent(completed));
 
-      if (completed or eh.getTries() >= maxTries_) {
+      // reset try counter only on successfully completed events
+      if (completed) numTries = 0;
+
+      // we use modulo here insetad of >= because we want to carry
+      // the number of tries across the number of events processed boundary
+      if (completed or numTries % maxTries_ == 0) {
         n_events_processed++;                 // increment events made
         NtupleManager::getInstance().fill();  // fill ntuples
       }
