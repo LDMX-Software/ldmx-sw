@@ -112,14 +112,14 @@ class EventHeader {
   double getWeight() const { return weight_; }
 
   /**
-   * Increment the number of events tried by one
+   * Set the number of tries it took to generate this event
+   * @note This is used within Framework during Production Mode
+   * and so changing it in a downstream Producer will be confusing
+   * (even if it runs properly).
    *
-   * @note This modification function is used within
-   * Framework during Production Mode (i.e. no input files).
-   * A Producer also incrementing the number of tries during
-   * Production Mode is undefined behavior.
+   * @param[in] t the number of tries
    */
-  void incrementTries() { tries_++; }
+  void setTries(int t) { tries_ = t; }
 
   /**
    * Get the number of events tried
