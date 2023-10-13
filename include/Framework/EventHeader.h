@@ -65,42 +65,25 @@ class EventHeader {
   /**
    * Class constructor.
    */
-  EventHeader() {}
+  EventHeader() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~EventHeader() {}
+  virtual ~EventHeader() = default;
 
   /**
    * Clear information from this object.
+   *
+   * @param[in] o ROOT-style Option (ignored)
    */
-  void Clear(Option_t* = "") {
-    eventNumber_ = -1;
-    run_ = -1;
-    timestamp_ = TTimeStamp(0, 0);
-    weight_ = 1.0;
-    tries_ = 0;
-    isRealData_ = false;
-    intParameters_.clear();
-    floatParameters_.clear();
-    stringParameters_.clear();
-  }
+  void Clear(Option_t* o = "");
 
   /**
    * Print this object.
+   * @param[in] o ROOT-style Option (ignored)
    */
-  void Print(Option_t* = "") const {
-    std::cout << "EventHeader {"
-              << " eventNumber: " << eventNumber_ << ", run: " << run_
-              << ", timestamp: " << timestamp_ << ", weight: " << weight_
-              << ", tries: " << tries_;
-    if (isRealData_)
-      std::cout << ", DATA";
-    else
-      std::cout << ", MC";
-    std::cout << " }" << std::endl;
-  }
+  void Print(Option_t* o = "") const;
 
   /**
    * Return the event number.
@@ -202,10 +185,11 @@ class EventHeader {
 
   /**
    * Get an int parameter value.
+   * @throw Exception if parameter does not exist
    * @param name The name of the parameter.
    * @return The parameter value.
    */
-  int getIntParameter(const std::string& name) const { return intParameters_[name]; }
+  int getIntParameter(const std::string& name) const;
 
   /**
    * Set an int parameter value.
@@ -219,12 +203,11 @@ class EventHeader {
 
   /**
    * Get a float parameter value.
+   * @throw Exception if parameter does not exist
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  float getFloatParameter(const std::string& name) const {
-    return floatParameters_[name];
-  }
+  float getFloatParameter(const std::string& name) const;
 
   /**
    * Set a float parameter value.
@@ -237,12 +220,11 @@ class EventHeader {
 
   /**
    * Get a string parameter value.
+   * @throw Exception if parameter does not exist
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  std::string getStringParameter(const std::string& name) const {
-    return stringParameters_[name];
-  }
+  std::string getStringParameter(const std::string& name) const;
 
   /**
    * Set a string parameter value.
