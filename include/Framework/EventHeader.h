@@ -119,7 +119,7 @@ class EventHeader {
    *
    * @param[in] t the number of tries
    */
-  void setTries(int t) { tries_ = t; }
+  void setTries(int tries) { tries_ = tries; }
 
   /**
    * Get the number of events tried
