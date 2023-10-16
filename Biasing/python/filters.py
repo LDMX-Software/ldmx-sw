@@ -182,3 +182,20 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
         include.library()
 
         self.threshold = thresh
+
+class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
+    """ Configuration used to reject events that don't have enough energy given to muon conversion
+
+    Parameters
+    ----------
+    thresh : float
+        Minimum energy [MeV] that needs to go into creating the muons
+    """
+
+    def __init__(self,thresh) :
+        super().__init__('midshower_dimuon_min_%d_MeV'%(thresh),'biasing::MidShowerDiMuonBkgdFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = thresh
