@@ -15,7 +15,7 @@ from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 from LDMX.Biasing import util
 
-def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_energy ) :
+def midshower_nuclear( detector , generator, bias_factor , bias_threshold , min_nuclear_energy ) :
     """Example configuration for producing mid-shower nuclear interactions in
     the ECal that fake a missing energy (ME) signal.
        
@@ -28,6 +28,10 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
 
     detector : str
         Name of the detector
+    generator : simcfg.PrimaryGenerator
+        Beam generator for this simulation which should be a ParticleGun
+        so we can configure the PrimaryToEcalFilter to select events where
+        beam electrons retain 87.5% of their energy.
     bias_factor : float
         Factor to multiply EN/PN xsecs by
     bias_threshold : float
@@ -44,7 +48,14 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
     -------
 
         from LDMX.Biasing import eat
-        eat_pn_sim = eat.midshower_nuclear('ldmx-det-v12',1000.,1700.)
+        from LDMX.SimCore import generators
+        eat_dimuon = eat.midshower_nuclear(
+            'ldmx-det-v14',
+            generators.single_e_4gev_upstream_tagger(),
+            200,
+            1500.,
+            2500.
+        )
 
     """
 
@@ -60,8 +71,7 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
     sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
-    from LDMX.SimCore import generators
-    sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
+    sim.generators = [ generator ]
 
     #Enable and configure the biasing
     from LDMX.SimCore import bias_operators
@@ -72,8 +82,7 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
 
     #Configure the sequence in which user actions should be called.
     sim.actions = [
-            #get electron to ECal with 3500MeV
-            filters.PrimaryToEcalFilter(3500.),
+            filters.PrimaryToEcalFilter(0.875*generator.energy*1000),
             #Make sure all particles above 1500MeV are processed first
             util.PartialEnergySorter(bias_threshold),
             #Make sure a total of 1700MeV energy went PN in ECal
@@ -82,7 +91,81 @@ def midshower_nuclear( detector , bias_factor , bias_threshold , min_nuclear_ene
 
     return sim
 
-def dark_brem( ap_mass , lhe, detector ) :
+
+def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_dimuon_energy ) :
+    """Example configuration for producing mid-shower dimuon interactions in
+    the ECal that fake a missing energy (ME) signal.
+       
+    In this particular example, 4 GeV electrons are fired upstream of the 
+    tagger tracker. Then simulation events are then put through a series of
+    filters.
+
+    Parameters
+    ----------
+
+    detector : str
+        Name of the detector
+    generator : simcfg.PrimaryGenerator
+        Beam generator for this simulation which should be a ParticleGun
+        so we can configure the PrimaryToEcalFilter to select events where
+        beam electrons retain 87.5% of their energy.
+    bias_factor : float
+        Factor to multiply GammaToMuPair xsec by within the ECal
+    bias_threshold : float
+        Minium energy [MeV] to bias a photon
+    min_dimuon_energy : float
+        Minium total energy [MeV] that went to muons to keep event
+
+    Returns
+    -------
+    simulator :
+        configured for mid-shower dimuon interactions and far-upstream generator
+
+    Example
+    -------
+
+        from LDMX.Biasing import eat
+        from LDMX.SimCore import generators
+        eat_dimuon = eat.midshower_dimuon(
+            'ldmx-det-v14',
+            generators.single_e_4gev_upstream_tagger(),
+            1e4,
+            500.,
+            1000.
+        )
+
+    """
+
+    #Instantiate the simulator. 
+    sim = simulator.simulator("eat-midshower-dimuon")
+    from LDMX.Ecal import EcalGeometry
+
+    #Set the path to the detector to use.
+    #the second parameter says we want to include scoring planes
+    sim.setDetector( detector , True )
+
+    #Set run parameters
+    sim.description = "Biased Mid-Shower DiMuon Interactions ME Background"
+    sim.beamSpotSmear = [20., 80., 0.] #mm
+    
+    from LDMX.SimCore import generators
+    sim.generators = [ generator ]
+
+    #Enable and configure the biasing
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [ bias_operators.GammaToMuPair('ecal', bias_factor, bias_threshold) ]
+
+    #Configure the sequence in which user actions should be called.
+    sim.actions = [
+            filters.PrimaryToEcalFilter(0.875*generator.energy*1000),
+            util.PartialEnergySorter(bias_threshold),
+            filters.MidShowerDiMuonBkgdFilter(min_dimuon_energy),
+    ]
+
+    return sim
+
+
+def dark_brem( ap_mass , lhe, detector, generator) :
     """Example configuration for producing dark brem interactions in the ECal. 
 
     This configures the simulator to fire a 4 GeV electron upstream of the 
@@ -95,9 +178,13 @@ def dark_brem( ap_mass , lhe, detector ) :
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the LHE file to use as vertices of the dark brem. 
+        The path to the reference library to use as vertices of the dark brem. 
     detector : str
         Path to the detector.
+    generator : simcfg.PrimaryGenerator
+        Beam generator for this simulation which should be a ParticleGun
+        so we can configure the PrimaryToEcalFilter to select events where
+        beam electrons retain 87.5% of their energy.
 
     Return
     ------
@@ -105,11 +192,14 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     Example
     -------
-    Here we use the example vertex library. This should not be used
-    for large (>50k) event samples.
 
-        from LDMX.SimCore import makePath
-        eat_ap_sim = eat.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
+        from LDMX.SimCore import generators
+        eat_ap_sim = eat.dark_brem(
+            1000.,
+            'path/to/1GeV_mA_library',
+            'ldmx-det-v14',
+            generators.single_e_4gev_upstream_tagger()
+        )
 
     """
     
@@ -118,13 +208,13 @@ def dark_brem( ap_mass , lhe, detector ) :
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     sim.setDetector( detector , True )
-    sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.generators = [ generator ]
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
 
     #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
     db_model = dark_brem.G4DarkBreMModel( lhe )
-    db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    db_model.threshold = 0.5*generator.energy #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
@@ -137,13 +227,11 @@ def dark_brem( ap_mass , lhe, detector ) :
               )
             ]
     
+    beam_energy = generator.energy*1000
     sim.actions = [
-            #Make sure all particles above 2GeV are processed first
-            util.PartialEnergySorter(2000.),
-            #Abort events if the electron doesn't get to the ECal with 3.5GeV
-            filters.PrimaryToEcalFilter(3500.),
-            #Only keep events when a dark brem happens in the Ecal
-            filters.EcalDarkBremFilter(2000.)
+            util.PartialEnergySorter(0.5*beam_energy),
+            filters.PrimaryToEcalFilter(0.875*beam_energy),
+            filters.EcalDarkBremFilter(0.5*beam_energy)
     ]
     
     return sim
