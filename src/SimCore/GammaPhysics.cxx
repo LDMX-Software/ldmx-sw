@@ -9,31 +9,8 @@
 
 namespace simcore {
 
-// needed for GEANT4 10.3.0 and later
-//
-// TODO: I (Einar) don't think this really is necessary if we change
-// GetGammaProcessManager below
-#ifndef aParticleIterator
-#define aParticleIterator \
-  ((subInstanceManager.offset[g4vpcInstanceID])._aParticleIterator)
-#endif
-
 G4ProcessManager* GammaPhysics::GetGammaProcessManager() const {
-  /**
-   * Not entirely clear that there isn't a simpler way to do this, but to keep
-   * this function extraction to a pure refactoring, I'm leaving it here for
-   * now. /Einar
-   */
-  aParticleIterator->reset();
-
-  // Loop through all of the particles and find the "gamma".
-  while ((*aParticleIterator)()) {
-    auto particle{aParticleIterator->value()};
-    auto particleName{particle->GetParticleName()};
-    if (particleName == "gamma") {
-      return particle->GetProcessManager();
-    }
-  }
+  if (G4Gamma::Gamma()->GetProcessManager()) return G4Gamma::Gamma()->GetProcessManager();
   EXCEPTION_RAISE("GammaPhysics",
                   "Was unable to access the process manager for photons, "
                   "something is very wrong!");
