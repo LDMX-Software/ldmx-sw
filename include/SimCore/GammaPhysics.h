@@ -3,10 +3,12 @@
  * @brief Class used to enhanced the gamma physics list.
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Einar Elen, Lund University
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMCORE_GAMMAPHYSICS_H_
-#define SIMCORE_GAMMAPHYSICS_H 1_
+#define SIMCORE_GAMMAPHYSICS_H_
 
 //------------//
 //   Geant4   //
@@ -16,6 +18,7 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4VProcess.hh"
 #include "SimCore/PhotoNuclearModel.h"
+
 namespace simcore {
 
 /**
@@ -38,11 +41,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
    * @param parameters The python configuration
    */
   GammaPhysics(const G4String& name,
-               const framework::config::Parameters& parameters)
-      : G4VPhysicsConstructor(name),
-        modelParameters{parameters.getParameter<framework::config::Parameters>(
-            "photonuclear_model")} {}
-  GammaPhysics(const G4String& name = "GammaPhysics");
+               const framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -50,30 +49,26 @@ class GammaPhysics : public G4VPhysicsConstructor {
   virtual ~GammaPhysics() = default;
 
   /**
-   * Construct particles (no-op).
+   * Construct particles
+   *
+   * We don't do anything here since we are just attaching/updating
+   * the photon physics.
    */
-  void ConstructParticle() {}
+  void ConstructParticle() final override;
 
   /**
-   * Construct the process (gamma to muons).
+   * We do two things for this call back during initialization.
+   *
+   * 1. We add the muon-conversion process to the photon's process
+   *    table, enabling it to be one of the processes that can happen.
+   * 2. We move the photonNuclear process to be the first process in
+   *    the photon's ordering so that the bias operator has a chance
+   *    to lower its cross-section before any EM process is called
+   *    (if need be).
    */
-  void ConstructProcess();
-
-  /**
-   * Search the list for the process "photoNuclear".  When found,
-   * change the calling order so photonNuclear is called before
-   * EM processes. The biasing operator needs the photonNuclear
-   * process to be called first because the cross-section is
-   * needed to bias down other process.
-   */
-  void SetPhotonNuclearAsFirstProcess() const;
+  void ConstructProcess() final override;
 
  private:
-  /*
-   * Returns the process manager object for the G4Gamma class from the list of
-   * Geant4 particles.
-   */
-  G4ProcessManager* GetGammaProcessManager() const;
   /**
    * The gamma to muons process.
    */
