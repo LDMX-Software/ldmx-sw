@@ -41,7 +41,6 @@ public:
     mctx_       = mctx;
   }
 
-
   /** Method to extrapolate to a target surface given a set of BoundTrackParameters
    *
    @param Bound Track Parameters

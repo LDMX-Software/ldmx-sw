@@ -220,8 +220,6 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       // Get the layer ID.
       auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
       measurement.setLayerID(layer_id);
-
-      
       
       // Get the surface
       auto hit_surface{geometry().getSurface(layer_id)};

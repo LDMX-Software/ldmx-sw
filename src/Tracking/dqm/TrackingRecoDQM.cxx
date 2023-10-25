@@ -32,7 +32,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   
   if (!event.exists(trackCollection_)) return;
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-
+  
   // The truth track collection
   if (event.exists(truthCollection_)) {
     truthTrackCollection_ =
@@ -55,6 +55,11 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   else {
     uniqueTracks = tracks;
   }
+
+
+  //General Plots
+  histograms_.fill(title_+"N_tracks",tracks.size());
+
   
   TrackMonitoring(uniqueTracks,title_,true,true);
 
@@ -73,6 +78,11 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   // Technical Efficiency plots
   EfficiencyPlots(tracks,title_);
+
+
+  // Tagger Recoil Matching
+  
+  
   
   // Clear the vectors
   uniqueTracks.clear();
@@ -121,7 +131,48 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     
     if (pidmap.count(truth_trk.getPdgID()) != 0) {
       histograms_.fill(title+"truth_PID", pidmap[truth_trk.getPdgID()]);
+
+
+
+      //TODO do this properly.
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::kminus) {
+        
+        histograms_.fill(title+"truth_kminus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::kplus) {
+        
+        histograms_.fill(title+"truth_kplus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::piminus) {
+        
+        histograms_.fill(title+"truth_piminus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::piplus) {
+        
+        histograms_.fill(title+"truth_piplus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::electron) {
+        
+        histograms_.fill(title+"truth_electron_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::positron) {
+        
+        histograms_.fill(title+"truth_positron_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk.getPdgID()] == PIDBins::proton) {
+        
+        histograms_.fill(title+"truth_proton_p",truth_p);
+      }
+            
     }
+
   } // loop on truth tracks
 
   
@@ -173,6 +224,46 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     
     if (pidmap.count(truth_trk->getPdgID()) != 0) {
       histograms_.fill(title+"match_PID", pidmap[truth_trk->getPdgID()]);
+
+
+
+      //TODO do this properly.
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::kminus) {
+        
+        histograms_.fill(title+"match_kminus_p",truth_p);
+      }
+
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::kplus) {
+        
+        histograms_.fill(title+"match_kplus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::piminus) {
+        
+        histograms_.fill(title+"match_piminus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::piplus) {
+        
+        histograms_.fill(title+"match_piplus_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::electron) {
+        
+        histograms_.fill(title+"match_electron_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::positron) {
+        
+        histograms_.fill(title+"match_positron_p",truth_p);
+      }
+      
+      if (pidmap[truth_trk->getPdgID()] == PIDBins::proton) {
+        
+        histograms_.fill(title+"match_proton_p",truth_p);
+      }
+      
       
     }
   } //Loop on tracks
@@ -203,7 +294,8 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double pt_bending = std::sqrt(trk_mom[0]*trk_mom[0] + trk_mom[1]*trk_mom[1]);
     
     //The momentum in the plane transverse wrt the beam axis
-    double pt_beam    = std::sqrt(trk_mom[1]*trk_mom[1] + trk_mom[2]*trk_mom[2]);
+    double pt_beam    =
+        std::sqrt(trk_mom[1]*trk_mom[1] + trk_mom[2]*trk_mom[2]);
 
     //Covariance matrix
     Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
@@ -244,6 +336,24 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
       histograms_.fill(title+"theta_err",sigmatheta); 
       histograms_.fill(title+"qop_err",  sigmaqop); 
       histograms_.fill(title+"p_err",  sigmap);
+
+
+
+      //2D Error plots
+
+      double p = std::abs(1./trk_qop);
+      histograms_.fill(title+"d0_err_vs_p", p, sigmad0);
+      histograms_.fill(title+"z0_err_vs_p", std::abs(1./trk_qop), sigmaz0);
+      histograms_.fill(title+"p_err_vs_p",  std::abs(1./trk_qop), sigmap);
+      
+      
+      if (track.getNhits() == 8 )
+        histograms_.fill(title+"p_err_vs_p_8hits", p, sigmap);
+      else if (track.getNhits() == 9 )
+        histograms_.fill(title+"p_err_vs_p_9hits", p, sigmap);
+      else if (track.getNhits() == 10 )
+        histograms_.fill(title+"p_err_vs_p_10hits", p, sigmap);
+
     }
     
     if (doTruth) {
@@ -271,6 +381,12 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         double truth_theta = truth_trk->getTheta();
         double truth_qop   = truth_trk->getQoP();
         double truth_p     = 1. / abs(truth_trk->getQoP());
+
+        std::vector<double> truth_mom = truth_trk->getMomentum();
+        //Polar angle
+        //The momentum in the plane transverse wrt the beam axis
+        double truth_pt_beam    =
+            std::sqrt(truth_mom[1]*truth_mom[1] + truth_mom[2]*truth_mom[2]);
         
         //histograms_.fill(title+"truth_d0",   truth_d0);
         //histograms_.fill(title+"truth_z0",   truth_z0);
@@ -279,12 +395,13 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         //histograms_.fill(title+"truth_qop",  truth_qop);
         //histograms_.fill(title+"truth_p",    truth_p);
 
-        double res_d0    = trk_d0 - truth_d0;
-        double res_z0    = trk_z0 - truth_z0;
-        double res_phi   = trk_phi - truth_phi;
-        double res_theta = trk_theta - truth_theta;
-        double res_qop   = trk_qop - truth_qop;
-        double res_p     = trk_p - truth_p;
+        double res_d0      = trk_d0    - truth_d0;
+        double res_z0      = trk_z0    - truth_z0;
+        double res_phi     = trk_phi   - truth_phi;
+        double res_theta   = trk_theta - truth_theta;
+        double res_qop     = trk_qop   - truth_qop;
+        double res_p       = trk_p     - truth_p;
+        double res_pt_beam = pt_beam   - truth_pt_beam;
 
         histograms_.fill(title+"res_d0",   res_d0);
         histograms_.fill(title+"res_z0",   res_z0);
@@ -292,6 +409,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         histograms_.fill(title+"res_theta",res_theta);
         histograms_.fill(title+"res_qop",  res_qop);
         histograms_.fill(title+"res_p",    res_p);
+        histograms_.fill(title+"res_pt_beam", res_pt_beam);
         
         double pull_d0    = res_d0    / sigmad0;
         double pull_z0    = res_z0    / sigmaz0;
@@ -306,6 +424,22 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         histograms_.fill(title+"pull_theta",pull_theta);
         histograms_.fill(title+"pull_qop",  pull_qop);
         histograms_.fill(title+"pull_p",    pull_p);
+
+
+        // Error plots from residuals
+        
+        histograms_.fill(title+"res_p_vs_p", truth_p, res_p);
+        
+        if (track.getNhits() == 8 )
+          histograms_.fill(title+"res_p_vs_p_8hits", truth_p, res_p);
+        else if (track.getNhits() == 9 )
+          histograms_.fill(title+"res_p_vs_p_9hits", truth_p, res_p);
+        else if (track.getNhits() == 10 )
+          histograms_.fill(title+"res_p_vs_p_10hits", truth_p, res_p);
+
+
+        histograms_.fill(title+"res_pt_beam_vs_p", truth_pt_beam, res_pt_beam);
+        
         
       } //found matched track
     }//do TruthComparison
@@ -429,6 +563,20 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
   for (auto sp_hit : *(target_scoring_hits_)) {
     
     if (sp_hit.getMomentum()[2] > 0 ) {
+
+      // If tagger check only for scoring planes in thenegative side else check for the positive side
+      if (trackCollection_.find("Tagger") != std::string::npos) {
+        if (sp_hit.getPosition()[2] > 0 )
+          continue;
+      }
+      else if (trackCollection_.find("Recoil") != std::string::npos) {
+        if (sp_hit.getPosition()[2] < 0)
+          continue;
+      }
+      else {
+        std::cout<<"ERROR:: Unkown track collection to match to scoring plane hits"<<std::endl;
+            continue;
+      }
       
       sel_target_spHits.push_back(sp_hit);
     }

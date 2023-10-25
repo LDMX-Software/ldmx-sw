@@ -1,5 +1,4 @@
-#ifndef TRACKING_RECO_CKFPROCESSOR_H_
-#define TRACKING_RECO_CKFPROCESSOR_H_
+#pragma once
 
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
@@ -297,5 +296,3 @@ class CKFProcessor final : public TrackingGeometryUser {
 
 } // namespace reco
 } // namespace tracking
-
-#endif // CKFProcessor

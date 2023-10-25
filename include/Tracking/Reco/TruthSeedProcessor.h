@@ -11,6 +11,8 @@
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Reco/TrackExtrapolatorTool.h"
+#include "Tracking/Reco/TrackingGeometryUser.h"
 
 // --- ACTS --- //
 #include "Acts/Definitions/Algebra.hpp"
@@ -18,6 +20,12 @@
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
+#include <Acts/Propagator/StraightLineStepper.hpp>
+#include "Acts/Propagator/Navigator.hpp"
+
+#include <random>
+
+using LinPropagator = Acts::Propagator<Acts::StraightLineStepper, Acts::Navigator>;
 
 namespace tracking::reco {
 
@@ -31,7 +39,7 @@ namespace tracking::reco {
  * In this case, the target scoring plane hits are used to extract the
  * parameters above.
  */
-class TruthSeedProcessor : public framework::Producer {
+class TruthSeedProcessor : public TrackingGeometryUser {
  public:
   /**
    * Constructor.
@@ -62,7 +70,15 @@ class TruthSeedProcessor : public framework::Producer {
    * processing of events starts. For this class, the callback is used to
    * retrieve the GeometryContext from ACTS.
    */
-  void onProcessStart() final override;
+  void onProcessStart() final override {};
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    * Main loop that creates the seed tracks for both the tagger and recoil
@@ -73,6 +89,18 @@ class TruthSeedProcessor : public framework::Producer {
   void produce(framework::Event &event) final override;
 
  private:
+
+  /**
+   * Create a mapping from the selected scoring plane hit objects to the number
+   * of hits they associated particle creates in the tracker.
+   * @param sim_hits vector
+   * @param hit_count_map filled with the hits lefts by each track
+   */
+  
+  void makeHitCountMap(const std::vector<ldmx::SimTrackerHit>& sim_hits,
+                       std::map<int,std::vector<ldmx::SimTrackerHit>>& hit_count_map);
+  
+  
   /**
    * Use the vertex position of the SimParticle to extract
    * (x, y, z, px, py, pz, q) and create a track seed.
@@ -80,7 +108,8 @@ class TruthSeedProcessor : public framework::Producer {
    * @param particle The SimParticle to make a seed from.
    */
   void createTruthTrack(const ldmx::SimParticle &particle,
-                        ldmx::TruthTrack& trk);
+                        ldmx::TruthTrack& trk,
+                        const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
    * Use the scoring plane hit at the target to extract
@@ -92,7 +121,8 @@ class TruthSeedProcessor : public framework::Producer {
    */
   void createTruthTrack(const ldmx::SimParticle &particle,
                         const ldmx::SimTrackerHit &hit,
-                        ldmx::TruthTrack& trk);
+                        ldmx::TruthTrack& trk,
+                        const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
    * Create a seed track from the given position, momentum and charge.
@@ -100,10 +130,13 @@ class TruthSeedProcessor : public framework::Producer {
    * @param pos The position at which the particle was created.
    * @param p The momentum of the particle at the point of creation.
    * @param charge The charge of the particle.
+   * @param target_surface the surface to where to express the truth track
    */
+  
   void createTruthTrack(const std::vector<double> &pos_vec,
                         const std::vector<double> &p_vec, int charge,
-                        ldmx::TruthTrack& trk);
+                        ldmx::TruthTrack& trk,
+                        const std::shared_ptr<Acts::Surface>& target_surface);
   
   /**
    * Filter that checks if a scoring plane passes specified momentum cuts as
@@ -118,6 +151,13 @@ class TruthSeedProcessor : public framework::Producer {
       const std::vector<ldmx::SimTrackerHit> &ecal_sp_hits);
 
 
+  /** Create a track seed from a truth track applying a smearing to the truth parameters as well as an inflation to the covariance matrix.
+   * @param tt TruthTrack to be used to form a seed
+   * @return seed The seed track
+   */
+
+  ldmx::Track seedFromTruth(const ldmx::TruthTrack& tt);
+
   /// The ACTS geometry context properly
   Acts::GeometryContext gctx_;
 
@@ -128,13 +168,23 @@ class TruthSeedProcessor : public framework::Producer {
   std::string scoring_hits_coll_name_{"TargetScoringPlaneHits"};
 
   /// Sim hits to check if the truth seed is findable
+  std::string tagger_sim_hits_coll_name_{"TaggerSimHits"};
+  
+  /// Sim hits to check if the truth seed is findable
   std::string recoil_sim_hits_coll_name_{"RecoilSimHits"};
+
 
   /**
    * Minimum number of hits left in the recoil tracker to consider the seed
    * as findable
    */
-  int n_min_hits_{7};
+  int n_min_hits_tagger_{7};
+  
+  /**
+   * Minimum number of hits left in the recoil tracker to consider the seed
+   * as findable
+   */
+  int n_min_hits_recoil_{7};
 
   /**
    * Min cut on the z of the scoring hit. It could be used to clean the scoring
@@ -162,6 +212,20 @@ class TruthSeedProcessor : public framework::Producer {
 
   // Use scoring plane for target truth tracks
   bool target_sp_{true};
+
+  std::shared_ptr<LinPropagator> linpropagator_;
   
+  //Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<LinPropagator>> trk_extrap_ ;
+
+  //--- Smearing ---//
+
+  std::default_random_engine generator_;
+  std::shared_ptr<std::normal_distribution<float>> normal_;
+  
+  bool seedSmearing_{false};
+  std::vector<double> rel_smearfactors_;
+  std::vector<double> inflate_factors_;
+    
 };
 }  // namespace tracking::reco

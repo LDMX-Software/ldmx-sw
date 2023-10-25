@@ -219,8 +219,10 @@ class TruthSeedProcessor(Producer):
         parameters.
     recoil_sim_sim_hits_coll_name : string
         The name of the sim tracker hits collection.
-    n_min_hits : int
-        The minimum number of hits to create a seed from.
+    n_min_hits_tagger : int
+        The minimum number of hits to create a seed from in the tagger tracker.
+    n_min_hits_recoil : int
+        The minimum number of hits to create a seed from in the recoil tracker.
     z_min : double
         Request a minimum z (mm) for the scoring plane hits.
     track_id : int
@@ -243,6 +245,7 @@ class TruthSeedProcessor(Producer):
         self.pdg_ids = [11]
         self.scoring_hits_coll_name = 'TargetScoringPlaneHits'
         self.recoil_sim_hits_coll_name = 'RecoilSimHits'
+        self.tagger_sim_hits_coll_name = 'TaggerSimHits'
         self.n_min_hits = 7
         self.z_min = -9999.  # mm
         self.track_id = -9999

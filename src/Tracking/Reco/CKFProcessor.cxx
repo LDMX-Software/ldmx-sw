@@ -250,6 +250,10 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // Run the CKF on each seed and produce a track candidate
   std::vector<Acts::BoundTrackParameters> startParameters;
+
+  // Tune the reconstruction for different PDG ID 
+  std::vector<int> seedPDGID;
+  
   for (auto& seed : seed_tracks) {
 
     // Transform the seed track to bound parameters
@@ -276,7 +280,10 @@ void CKFProcessor::produce(framework::Event& event) {
 
     startParameters.push_back(
         Acts::BoundTrackParameters(perigeeSurface, paramVec, q, covMat));
-  
+
+
+    seedPDGID.push_back(seed.getPdgID());
+    
     nseeds_++;
   } // loop on seeds
   
@@ -397,14 +404,7 @@ void CKFProcessor::produce(framework::Event& event) {
     extr_surface = &(*seed_surface);
   }
 
-  const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
-      geometry_context(), 
-      magnetic_field_context(),
-      calibration_context(), 
-      sourceLinkAccessorDelegate, ckf_extensions,
-      propagator_options, &(*extr_surface));
-
-
+  
   ldmx_log(debug) 
       << "About to run CKF..." <<  std::endl;
     
@@ -424,6 +424,26 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::TrackContainer tc{vtc, mtj};
   
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
+    
+    
+    // The seed has a track PdgID associated
+    if (seedPDGID.at(trackId) != 0 ) {
+      int pdgID = seedPDGID.at(trackId);
+
+      if (pdgID == 2212 || pdgID == -2212)
+        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
+    }
+
+    // Define the CKF options here:
+    const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
+        geometry_context(), 
+        magnetic_field_context(),
+        calibration_context(), 
+        sourceLinkAccessorDelegate, ckf_extensions,
+        propagator_options, &(*extr_surface));
+    
+    
+    
     
 
     ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
@@ -533,7 +553,7 @@ void CKFProcessor::produce(framework::Event& event) {
     //Unbounded surface
     const std::shared_ptr<Acts::PlaneSurface> target_surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
-
+    
 
     ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
 
