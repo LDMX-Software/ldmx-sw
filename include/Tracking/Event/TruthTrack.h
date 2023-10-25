@@ -97,7 +97,7 @@ class TruthTrack {
 
 
   void setNhits(int nHits) {nHits_ = nHits; };
-  int getNhits() {return nHits_;} 
+  int getNhits() const {return nHits_;} 
 
   // in units of e
   int q() const { return perigee_pars_[4] > 0 ? 1 : -1; }
