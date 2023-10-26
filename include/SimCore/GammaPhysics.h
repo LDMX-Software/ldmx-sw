@@ -54,7 +54,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
    * We don't do anything here since we are just attaching/updating
    * the photon physics.
    */
-  void ConstructParticle() final override;
+  void ConstructParticle() final;
 
   /**
    * We do two things for this call back during initialization.
@@ -66,13 +66,14 @@ class GammaPhysics : public G4VPhysicsConstructor {
    *    to lower its cross-section before any EM process is called
    *    (if need be).
    */
-  void ConstructProcess() final override;
+  void ConstructProcess() final;
 
  private:
   /**
    * The gamma to muons process.
    */
   G4GammaConversionToMuons gammaConvProcess;
+
   /**
    * Parameters from the configuration to pass along to the photonuclear model.
    */
