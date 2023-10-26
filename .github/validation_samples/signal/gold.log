@@ -1,0 +1,116 @@
+---- LDMXSW: Loading configuration --------
+[2023-10-26 21:28:35.777091] [0x00007f0a07e0fbc0] [info]    ElectronCounter is using parameters:  
+	input_collection = TriggerPadTracksY 
+	input_pass_name =  
+	output_collection = BeamElectronCount 
+	simulated_electron_number = 1 
+	use_simulated_electron_number = 0
+In TrigScintDQM::configure, got parameters TriggerPad1SimHits and pad1
+In TrigScintDQM::configure, got parameters TriggerPad2SimHits and pad2
+In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
+[2023-10-26 21:28:35.783727] [0x00007f0a07e0fbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2023-10-26 21:28:35.783739] [0x00007f0a07e0fbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2023-10-26 21:28:35.783746] [0x00007f0a07e0fbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2023-10-26 21:28:35.783753] [0x00007f0a07e0fbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+---- LDMXSW: Configuration load complete  --------
+---- LDMXSW: Starting event processing --------
+[ RunManager ]: Parallel worlds physics list has been registered.
+[ RunManager ]: Biasing enabled with 1 operator(s).
+[ RunManager ]: Biasing operator 'target_region_bias_darkbrem' set to bias e-
+[ RunManager ]: Parallel worlds have been enabled.
+[ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintYVolume
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZYVolume
+[ DetectorConstruction ] : Attaching ecal_sd to Si_volume
+[ DetectorConstruction ] : Attaching trig_scint_Target_sd to target
+[ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_front_back
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_top_bot
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_left_right
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_front_back
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_top_bot
+[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_left_right
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_front_back
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_top_bot
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_left_right
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_front_back
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_top_bot
+[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_left_right
+[ DetectorConstruction ] : Attaching target_sp to sp_target
+[ DetectorConstruction ] : Attaching target_sp to sp_target
+[ DetectorConstruction ] : Attaching target_sp to sp_target
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
+[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_top_bot
+[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_left_right
+[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_top_bot
+[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_left_right
+[ DetectorConstruction ]: Attaching biasing operator target_region_bias_darkbrem to volume target
+[ DetectorConstruction ]: Attaching biasing operator target_region_bias_darkbrem to volume trigger_pad3_bar_volume
+[ DetectorConstruction ]: Attaching biasing operator target_region_bias_darkbrem to volume TS_trgt
+[ ParallelWorld ]: Adding : sp_target_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_target_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_magnet_gap_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_magnet_gap_left_right_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_magnet_gap_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_magnet_gap_left_right_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_front_back_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_left_right_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_front_back_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_ecal_left_right_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_front_back_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_left_right_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_front_back_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_top_bot_PV to parallel world.
+[ ParallelWorld ]: Adding : sp_hcal_left_right_PV to parallel world.
+[ XsecBiasingOperator ]: Biasing particles of type e-
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+[ Simulator ] : Started 76625 events to produce 10000 events.
+---- LDMXSW: Event processing complete  --------
