@@ -509,6 +509,17 @@ void CKFProcessor::produce(framework::Event& event) {
     
     //Add measurements on track
     for (auto ts : track.trackStates()) {
+
+      
+      //Check TrackStates Quality
+      ldmx_log(debug) << "Checking Track State at location " << ts.referenceSurface().transform(geometry_context()).translation().transpose()<<std::endl;
+
+
+      ldmx_log(debug) << "Smoothed? \n"<<ts.hasSmoothed()<<std::endl;
+      if (ts.hasSmoothed()){
+        ldmx_log(debug) << "Parameters \n"<<ts.smoothed().transpose()<<std::endl;
+        ldmx_log(debug) << "Covariance \n"<<ts.smoothedCovariance()<<std::endl;
+      }
       
       //Check if the track state is a measurement
       auto typeFlags = ts.typeFlags();

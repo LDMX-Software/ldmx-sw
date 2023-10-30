@@ -104,49 +104,89 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
 
 
         self.build2DHistogram("d0_err_vs_p",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{d0} [mm]", nbins, 0,0.2)
 
         self.build2DHistogram("z0_err_vs_p",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{z0} [mm]", nbins, 0,0.8)
 
         self.build2DHistogram("p_err_vs_p",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [mm]", nbins, 0,1)
 
         self.build2DHistogram("p_err_vs_p_8hits",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [mm]", nbins, 0,1)
 
         self.build2DHistogram("p_err_vs_p_9hits",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [mm]", nbins, 0,1)
 
         self.build2DHistogram("p_err_vs_p_10hits",
-                              "p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "#sigma_{p} [mm]", nbins, 0,1)
 
         self.build2DHistogram("res_p_vs_p",
-                              "p [GeV]", nbins, 0, 6,
-                              "res_{p} [mm]", nbins, -3,3)
-        
+                              "p [GeV]", nbins, 0, pmax,
+                              "res_{p} [GeV]", nbins, -3,3)
+
+        self.build2DHistogram("res_qop_vs_p",
+                              "p [GeV]", nbins, 0, pmax,
+                              "res_{qop} [1/GeV]", nbins, -0.5,0.5)
+
+        self.build2DHistogram("res_d0_vs_p",
+                              "p [GeV]"      , nbins, 0, pmax,
+                              "res_{d0} [mm]", nbins, -0.05,0.05)
+
+        self.build2DHistogram("res_z0_vs_p",
+                              "p [GeV]"      , nbins, 0, pmax,
+                              "res_{z0} [mm]", nbins,-0.5,0.5)
+
+        self.build2DHistogram("res_phi_vs_p",
+                              "p [GeV]"   , nbins, 0, pmax,
+                              "res_{#phi}", nbins, -0.005,0.005)
+
+        self.build2DHistogram("res_theta_vs_p",
+                              "p [GeV]"     , nbins, 0, pmax,
+                              "res_{#theta}", nbins, -0.01,0.01)
+
         self.build2DHistogram("res_p_vs_p_8hits",
-                              "p [GeV]", nbins, 0, 6,
-                              "res_{p} [mm]", nbins, -3,3)
+                              "p [GeV]",       nbins, 0, pmax,
+                              "res_{p} [GeV]", nbins, -3,3)
 
         self.build2DHistogram("res_p_vs_p_9hits",
-                              "truth p [GeV]", nbins, 0, 6,
-                              "res_p [mm]", nbins, -3,3)
+                              "p [GeV]", nbins, 0, pmax,
+                              "res_{p} [mm]", nbins, -3,3)
 
         self.build2DHistogram("res_p_vs_p_10hits",
-                              "truth p [GeV]", nbins, 0, 6,
+                              "p [GeV]", nbins, 0, pmax,
                               "res_{p} [mm]", nbins, -3,3)
 
 
+        self.build2DHistogram("pull_qop_vs_p",
+                              "p [GeV]"   , nbins, 0, pmax,
+                              "pull_{qop}", nbins, -5,5)
 
+        self.build2DHistogram("pull_d0_vs_p",
+                              "p [GeV]"      , nbins, 0, pmax,
+                              "pull_{d0}"    , nbins, -5,5)
+
+        self.build2DHistogram("pull_z0_vs_p",
+                              "p [GeV]"      , nbins, 0, pmax,
+                              "pull_{z0}"    , nbins,-5,5)
+
+        self.build2DHistogram("pull_phi_vs_p",
+                              "p [GeV]"   , nbins, 0, pmax,
+                              "pull_{#phi}", nbins, -5,5)
+
+        self.build2DHistogram("pull_theta_vs_p",
+                              "p [GeV]"      , nbins, 0, pmax,
+                              "pull_{#theta}", nbins, -5,5)
+                
+        
         self.build2DHistogram("res_pt_beam_vs_p",
-                              "truth p [GeV]", nbins, 0, 2,
+                              "truth p [GeV]", nbins, 0, pmax,
                               "res_{pt} beam", nbins, -0.5,0.5)
         
     
@@ -323,17 +363,17 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("ecal_sp_hit_Y","ecal_sp_hit_Y [mm]",200,-50,50)
             self.build1DHistogram("trk_ecal_loc0-sp_hit_X","ecal_diff loc0 and hit_X [mm]",200,-0.2,0.2)
             self.build1DHistogram("trk_ecal_loc1-sp_hit_Y","ecal_diff loc1 and hit_Y [mm]",200,-5,5)
-            self.build1DHistogram("ecal_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-50,50)
-            self.build1DHistogram("ecal_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-50,50)
+            self.build1DHistogram("ecal_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-5,5)
+            self.build1DHistogram("ecal_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-5,5)
            
             self.build2DHistogram("ecal_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,"ecal_res_loc0 [mm]",100,-0.2,0.2)
             self.build2DHistogram("ecal_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,"ecal_res_loc1 [mm]",100,-5,5)
             self.build2DHistogram("ecal_res_loc0-vs-trk_p",  "trk_p",200,0,5,"ecal_res_loc0 [mm]",100,-0.2,0.2)
             self.build2DHistogram("ecal_res_loc1-vs-trk_p",  "trk_p",200,0,5,"ecal_res_loc1 [mm]",100,-5,5)
-            self.build2DHistogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,"ecal_pulls_loc0 [mm]",100,-30,30)
-            self.build2DHistogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,"ecal_pulls_loc1 [mm]",100,-30,30)
-            self.build2DHistogram("ecal_pulls_loc0-vs-trk_p","trk_p",200,0,5,"ecal_pulls_loc0 [mm]",100,-30,30)
-            self.build2DHistogram("ecal_pulls_loc1-vs-trk_p","trk_p",200,0,5,"ecal_pulls_loc1 [mm]",100,-30,30)
+            self.build2DHistogram("ecal_pulls_loc0-vs-N_hits","N_hits",5,6.5,11.5,"ecal_pulls_loc0 [mm]",100,-3,3)
+            self.build2DHistogram("ecal_pulls_loc1-vs-N_hits","N_hits",5,6.5,11.5,"ecal_pulls_loc1 [mm]",100,-3,3)
+            self.build2DHistogram("ecal_pulls_loc0-vs-trk_p","trk_p",200,0,5,"ecal_pulls_loc0 [mm]",100,-3,3)
+            self.build2DHistogram("ecal_pulls_loc1-vs-trk_p","trk_p",200,0,5,"ecal_pulls_loc1 [mm]",100,-3,3)
             
             # Target extrapolation
             self.build1DHistogram("trk_target_loc0","trk_target_loc0 [mm]",200,-50,50)
