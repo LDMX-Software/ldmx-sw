@@ -343,8 +343,8 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
 
       double p = std::abs(1./trk_qop);
       histograms_.fill(title+"d0_err_vs_p", p, sigmad0);
-      histograms_.fill(title+"z0_err_vs_p", std::abs(1./trk_qop), sigmaz0);
-      histograms_.fill(title+"p_err_vs_p",  std::abs(1./trk_qop), sigmap);
+      histograms_.fill(title+"z0_err_vs_p",   std::abs(1./trk_qop), sigmaz0);
+      histograms_.fill(title+"p_err_vs_p",    std::abs(1./trk_qop), sigmap);
       
       
       if (track.getNhits() == 8 )
@@ -424,11 +424,24 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         histograms_.fill(title+"pull_theta",pull_theta);
         histograms_.fill(title+"pull_qop",  pull_qop);
         histograms_.fill(title+"pull_p",    pull_p);
-
+        
 
         // Error plots from residuals
         
-        histograms_.fill(title+"res_p_vs_p", truth_p, res_p);
+        histograms_.fill(title+"res_p_vs_p",   truth_p, res_p);
+
+        histograms_.fill(title+"res_qop_vs_p",   truth_p, res_qop);
+        histograms_.fill(title+"res_d0_vs_p",    truth_p, res_d0);
+        histograms_.fill(title+"res_z0_vs_p",    truth_p, res_z0);
+        histograms_.fill(title+"res_phi_vs_p",   truth_p, res_phi);
+        histograms_.fill(title+"res_theta_vs_p", truth_p, res_theta);
+        
+        histograms_.fill(title+"pull_qop_vs_p",   truth_p, pull_qop);
+        histograms_.fill(title+"pull_d0_vs_p",    truth_p, pull_d0);
+        histograms_.fill(title+"pull_z0_vs_p",    truth_p, pull_z0);
+        histograms_.fill(title+"pull_phi_vs_p",   truth_p, pull_phi);
+        histograms_.fill(title+"pull_theta_vs_p", truth_p, pull_theta);
+        
         
         if (track.getNhits() == 8 )
           histograms_.fill(title+"res_p_vs_p_8hits", truth_p, res_p);
@@ -469,21 +482,6 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
 
   for (auto& track : tracks) {
     
-    //Covariance matrix
-    Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
-
-    double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
-    double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
-    double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
-    double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
-    double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
-
-    double sigmaloc0 = sqrt(cov(0));
-    double sigmaloc1 = sqrt(cov(7));
-    
-    double trk_qop    = track.getQoP();
-    double trk_p      = 1./abs(trk_qop);
-    
     for (auto& sp_hit : sel_ecal_spHits) {
 
 
@@ -494,12 +492,25 @@ void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Tr
         // And the size of the vector is 2. So I hardcoded 1. 
 
         if (track.getTrackStates().size() < 2)
-          continue;
-                  
+          continue;                
         
         ldmx::Track::TrackState ecalState = track.getTrackStates()[1];
         
-
+        //Covariance matrix
+        Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(ecalState.cov);
+        
+        double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
+        double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
+        double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
+        double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
+        double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
+        
+        double sigmaloc0 = sqrt(cov(0));
+        double sigmaloc1 = sqrt(cov(7));
+                
+        double trk_qop    = track.getQoP();
+        double trk_p      = 1./abs(trk_qop);
+        
         // Here is where you add the histograms
         // This gets the track local position 0
         // loc0 is along global X
@@ -585,21 +596,6 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
 
   for (auto& track : tracks) {
     
-    //Covariance matrix
-    Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(track.getPerigeeCov());
-
-    double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
-    double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
-    double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
-    double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
-    double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
-
-    double sigmaloc0 = sqrt(cov(0));
-    double sigmaloc1 = sqrt(cov(7));
-    
-    double trk_qop    = track.getQoP();
-    double trk_p      = 1./abs(trk_qop);
-    
     for (auto& sp_hit : sel_target_spHits) {
 
 
@@ -614,6 +610,23 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
                   
         
         ldmx::Track::TrackState TargetState = track.getTrackStates()[0];
+
+        //Covariance matrix
+        Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
+        
+        double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
+        double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
+        double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
+        double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
+        double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
+        
+        double sigmaloc0 = sqrt(cov(0));
+        double sigmaloc1 = sqrt(cov(7));
+        
+        double trk_qop    = track.getQoP();
+        double trk_p      = 1./abs(trk_qop);
+        
+    
         
 
         // Here is where you add the histograms

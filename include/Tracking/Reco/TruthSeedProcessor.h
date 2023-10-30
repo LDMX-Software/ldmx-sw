@@ -224,6 +224,12 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   std::shared_ptr<std::normal_distribution<float>> normal_;
   
   bool seedSmearing_{false};
+
+  std::vector<double> d0smear_;
+  std::vector<double> z0smear_;
+  double phismear_;
+  double thetasmear_;
+  double relpsmear_;
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
     

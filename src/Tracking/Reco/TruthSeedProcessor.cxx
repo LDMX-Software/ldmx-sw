@@ -45,6 +45,13 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   
     
   ldmx_log(info)<<"Seed Smearing is set to "<< seedSmearing_;
+
+  d0smear_     = parameters.getParameter<std::vector<double>>("d0smear",{0.01, 0.01, 0.01});
+  z0smear_     = parameters.getParameter<std::vector<double>>("z0smear",{0.1, 0.1, 0.1});
+  phismear_    = parameters.getParameter<double>("phismear",0.001);
+  thetasmear_  = parameters.getParameter<double>("phismear",0.001);
+  relpsmear_   = parameters.getParameter<double>("relpsmear",0.1);
+  
   
   // Relative smear factor terms, only used if seedSmearing_ is true.
   rel_smearfactors_ = parameters.getParameter<std::vector<double>>(
@@ -167,13 +174,22 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::TruthTrack& tt) {
     Acts::BoundVector stddev;
  
     if (seedSmearing_) {
-    
+
+      /*
       double sigma_d0     = rel_smearfactors_[Acts::eBoundLoc0]   * tt.getD0();
       double sigma_z0     = rel_smearfactors_[Acts::eBoundLoc1]   * tt.getZ0();
       double sigma_phi    = rel_smearfactors_[Acts::eBoundPhi]    * tt.getPhi();
       double sigma_theta  = rel_smearfactors_[Acts::eBoundTheta]  * tt.getTheta();
       double sigma_p      = rel_smearfactors_[Acts::eBoundQOverP] * abs(1/tt.getQoP());
-      double sigma_t      = rel_smearfactors_[Acts::eBoundTime]   * tt.getT(); 
+      double sigma_t      = rel_smearfactors_[Acts::eBoundTime]   * tt.getT();
+      */
+      
+      double sigma_d0     = d0smear_[0];
+      double sigma_z0     = z0smear_[0];
+      double sigma_phi    = phismear_;
+      double sigma_theta  = thetasmear_;
+      double sigma_p      = relpsmear_ * abs(1/tt.getQoP());
+      double sigma_t      = 1. * Acts::UnitConstants::ns;
     
       double smear     = (*normal_)(generator_);
       double d0smear    = tt.getD0()         + smear * sigma_d0;

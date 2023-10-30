@@ -41,12 +41,21 @@ public:
     mctx_       = mctx;
   }
 
+  /**
+   * Turn on/off internal debug flag
+   * @param debug
+   */
+  
+  void setDebug(bool debug) {
+    debug_ = debug;
+  }
+
   /** Method to extrapolate to a target surface given a set of BoundTrackParameters
    *
    @param Bound Track Parameters
    @param The target surface
    @return optional with BoundTrackParameters
-  **/
+  */
   
   std::optional<Acts::BoundTrackParameters> extrapolate(const Acts::BoundTrackParameters pars,
                                                         const std::shared_ptr<Acts::Surface>& target_surface) {
@@ -67,6 +76,22 @@ public:
     auto result = propagator_.propagate(pars,
                                         *target_surface,
                                         pOptions);
+
+    
+    //CHECK THE EXTRAPOLATION COVARIANCE MATRIX
+
+    if (debug_) {
+      
+      if (result.ok()) {
+        std::cout<<"INITIAL COV MATRIX"<<std::endl;
+        std::cout<<(*(pars.covariance()))<<std::endl;
+        
+        std::cout<<"FINAL COV MATRIX"<<std::endl;
+        auto opt_pars = *result->endParameters;
+        std::cout<<*(opt_pars.covariance())<<std::endl;
+        
+      }
+    }
     
     
     if (result.ok())
@@ -87,7 +112,7 @@ public:
   template <class track_t>
   std::optional<Acts::BoundTrackParameters> extrapolate(track_t track,
                                                         const std::shared_ptr<Acts::Surface>& target_surface) {
-    
+
     // get first and last track state on surface
     size_t nstates = track.nTrackStates();
     auto& tsc       = track.container().trackStateContainer();
@@ -97,7 +122,7 @@ public:
     auto  begin  = track.trackStates().begin();
     std::advance(begin, track.nTrackStates() - 1 );
     auto  innermost  = *begin;
-    
+
     // I'm checking which track state is closer to the origin of the target surface to decide
     // from where to start the extrapolation to the surface. I use the coordinate along the beam axis.
     
@@ -232,6 +257,7 @@ public:
   propagator_t propagator_;
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext mctx_;
+  bool debug_{false};
   
 };
 
