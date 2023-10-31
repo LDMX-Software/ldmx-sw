@@ -304,23 +304,21 @@ void PhotoNuclearDQM::analyze(const framework::Event &event) {
 
   switch (eventType) {
     case EventType::single_neutron:
-      if (eventType == EventType::single_neutron) {
-        if (pnDaughters.size() > 1) {
-          auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
-          auto nEventType{-10};
-          if (secondHardestPdgID == 2112) {
-            nEventType = 0;  // n + n
-          } else if (secondHardestPdgID == 2212) {
-            nEventType = 1;  // p + n
-          } else if (secondHardestPdgID == 211) {
-            nEventType = 2;  // Pi+/- + n
-          } else if (secondHardestPdgID == 111) {
-            nEventType = 3;  // Pi0 + n
-          } else {
-            nEventType = 4;  // other
-          }
-          histograms_.fill("1n_event_type", nEventType);
+      if (pnDaughters.size() > 1) {
+        auto secondHardestPdgID{abs(pnDaughters[1]->getPdgID())};
+        auto nEventType{-10};
+        if (secondHardestPdgID == 2112) {
+          nEventType = 0;  // n + n
+        } else if (secondHardestPdgID == 2212) {
+          nEventType = 1;  // p + n
+        } else if (secondHardestPdgID == 211) {
+          nEventType = 2;  // Pi+/- + n
+        } else if (secondHardestPdgID == 111) {
+          nEventType = 3;  // Pi0 + n
+        } else {
+          nEventType = 4;  // other
         }
+        histograms_.fill("1n_event_type", nEventType);
       }
       [[fallthrough]];  // Remaining code is important for 1n as well
     case EventType::two_neutrons:
