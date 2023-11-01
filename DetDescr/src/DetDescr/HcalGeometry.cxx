@@ -56,7 +56,7 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[2], globalPosition[1], globalPosition[0]};
         case ScintillatorOrientation::vertical:
           return {globalPosition[2], globalPosition[0], globalPosition[1]};
-        case default:  // Should not be possible with current geometries
+        default:  // Should not be possible with current geometries
           break;
       }
     case ldmx::HcalID::HcalSection::TOP:
@@ -66,7 +66,7 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[1], globalPosition[2], globalPosition[0]};
         case ScintillatorOrientation::depth:
           return {globalPosition[1], globalPosition[0], globalPosition[2]};
-        case default:  // Should not be possible with current geometries
+        default:  // Should not be possible with current geometries
           break;
       }
     case ldmx::HcalID::HcalSection::LEFT:
