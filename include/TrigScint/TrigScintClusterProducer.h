@@ -26,22 +26,18 @@ class TrigScintClusterProducer : public framework::Producer {
   TrigScintClusterProducer(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
-  virtual void configure(framework::config::Parameters& ps);
+  void configure(framework::config::Parameters& ps) override;
 
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   /**
    * add a hit at index idx to a cluster
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
-  virtual void onFileOpen();
+  void onProcessStart() override;
 
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
+  void onProcessEnd() override;
 
  private:
   // collection of clusters produced
@@ -59,13 +55,13 @@ class TrigScintClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  //expected arrival time of hits in the pad [ns]
+  // expected arrival time of hits in the pad [ns]
   double padTime_{0.};
-  
-  //maximum allowed delay for hits to be considered for clustering
+
+  // maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
 
-  //input collection (hits)
+  // input collection (hits)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -74,7 +70,7 @@ class TrigScintClusterProducer : public framework::Producer {
   // specific pass name to use for track making
   std::string passName_{""};
 
-  // vertical bar start index 
+  // vertical bar start index
   int vertBarStartIdx_{52};
 
   // cluster channel nb centroid (will be content weighted)
