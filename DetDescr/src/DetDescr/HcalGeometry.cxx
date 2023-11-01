@@ -56,6 +56,8 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[2], globalPosition[1], globalPosition[0]};
         case ScintillatorOrientation::vertical:
           return {globalPosition[2], globalPosition[0], globalPosition[1]};
+        case default:  // Should not be possible with current geometries
+          break;
       }
     case ldmx::HcalID::HcalSection::TOP:
     case ldmx::HcalID::HcalSection::BOTTOM:
@@ -64,6 +66,8 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[1], globalPosition[2], globalPosition[0]};
         case ScintillatorOrientation::depth:
           return {globalPosition[1], globalPosition[0], globalPosition[2]};
+        case default:  // Should not be possible with current geometries
+          break;
       }
     case ldmx::HcalID::HcalSection::LEFT:
     case ldmx::HcalID::HcalSection::RIGHT:
@@ -72,8 +76,16 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[0], globalPosition[2], globalPosition[1]};
         case ScintillatorOrientation::depth:
           return globalPosition;
+        case default:  // Should not be possible with current geometries
+          break;
       }
   }
+  // Can only reach this part if we somehow didn't match any of the options
+  // above. This could happen if someone introduces a new geometry but doesn't
+  // patch this part.
+  EXCEPTION_RAISE("InvalidRotation",
+                  "Attempted to rotate into an invalid "
+                  "orientation for a scintillator bar!");
 }
 
 HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
@@ -145,7 +157,8 @@ void HcalGeometry::buildStripPositionMap() {
   // We hard-code the number of sections as seen in HcalID
   for (unsigned int section = 0; section < num_sections_; section++) {
     for (unsigned int layer = 1; layer <= num_layers_[section]; layer++) {
-      for (unsigned int strip = 0; strip < getNumStrips(section, layer); strip++) {
+      for (unsigned int strip = 0; strip < getNumStrips(section, layer);
+           strip++) {
         // initialize values
         double x{-99999}, y{-99999}, z{-99999};
 
@@ -202,6 +215,8 @@ void HcalGeometry::buildStripPositionMap() {
              *
              */
             switch (hcalsection) {
+              case ldmx::HcalID::HcalSection::BACK:
+                // Handled earlier in the code!
               case ldmx::HcalID::HcalSection::LEFT:
               case ldmx::HcalID::HcalSection::RIGHT:
                 if (orientation == ScintillatorOrientation::vertical) {
