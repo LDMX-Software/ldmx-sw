@@ -76,7 +76,7 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
           return {globalPosition[0], globalPosition[2], globalPosition[1]};
         case ScintillatorOrientation::depth:
           return globalPosition;
-        case default:  // Should not be possible with current geometries
+        default:  // Should not be possible with current geometries
           break;
       }
   }
