@@ -35,16 +35,16 @@ class HCalRawDigi : public framework::Analyzer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event& event);
+  void analyze(const framework::Event& event) override;
 
  private:
   std::string input_name_;
