@@ -33,7 +33,7 @@ class RecoilTrackerDQM : public framework::Analyzer {
   RecoilTrackerDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
-  ~RecoilTrackerDQM();
+  virtual ~RecoilTrackerDQM();
 
   /**
    * Configure the processor using the given user specified parameters.
