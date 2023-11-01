@@ -137,6 +137,12 @@ HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
                  ? ScintillatorOrientation::horizontal
                  : ScintillatorOrientation::vertical;
   }  // v13/v12 detector
+  // Can only reach this part if we somehow didn't match any of the options
+  // above. This could happen if someone introduces a new geometry but doesn't
+  // patch this part.
+  EXCEPTION_RAISE("InvalidRotation",
+                  "Attempted to rotate into an invalid "
+                  "orientation for a scintillator bar!");
 }
 void HcalGeometry::printPositionMap(int section) const {
   // Note that layer numbering starts at 1 rather than 0
