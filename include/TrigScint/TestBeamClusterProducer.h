@@ -5,15 +5,15 @@
  */
 
 #ifndef TRIGSCINT_TESTBEAMCLUSTERPRODUCER_H
-#define TRIGSCINT__TESTBEAMCLUSTERPRODUCER_H
+#define TRIGSCINT_TESTBEAMCLUSTERPRODUCER_H
 
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/TrigScintCluster.h"
 #include "TrigScint/Event/TestBeamHit.h"
+#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace trigscint {
 
@@ -34,10 +34,6 @@ class TestBeamClusterProducer : public framework::Producer {
    * add a hit at index idx to a cluster
    */
   virtual void addHit(uint idx, trigscint::TestBeamHit hit);
-
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
 
   virtual void onProcessStart();
 
@@ -62,13 +58,13 @@ class TestBeamClusterProducer : public framework::Producer {
   // specific verbosity of this producer
   int verbose_{0};
 
-  //expected arrival time of hits in the pad [ns]
+  // expected arrival time of hits in the pad [ns]
   double padTime_{0.};
-  
-  //maximum allowed delay for hits to be considered for clustering
+
+  // maximum allowed delay for hits to be considered for clustering
   double timeTolerance_{0.};
 
-  //input collection (hits)
+  // input collection (hits)
   std::string input_collection_;
 
   // output collection (clusters)
@@ -94,10 +90,12 @@ class TestBeamClusterProducer : public framework::Producer {
 
   // fraction of cluster energy deposition associated with beam electron sim
   // hits
-  // -- could convert this to instead be a "cleanb frac"; fraction of cluster energy coming from clean hits 
+  // -- could convert this to instead be a "cleanb frac"; fraction of cluster
+  // energy coming from clean hits
   float beamE_{0.};
 
-  /// boolean indicating whether we want to apply quality criteria from hit reconstruction
+  /// boolean indicating whether we want to apply quality criteria from hit
+  /// reconstruction
   bool doCleanHits_{false};
 
   // cluster time (energy weighted based on hit time)

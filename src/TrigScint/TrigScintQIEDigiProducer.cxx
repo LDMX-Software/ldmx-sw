@@ -1,17 +1,16 @@
 #include "TrigScint/TrigScintQIEDigiProducer.h"
+
+#include <iostream>
+
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 #include "Framework/RandomNumberSeedService.h"
-
-#include <iostream>
 
 namespace trigscint {
 
 TrigScintQIEDigiProducer::TrigScintQIEDigiProducer(const std::string& name,
                                                    framework::Process& process)
     : Producer(name, process) {}
-
-TrigScintQIEDigiProducer::~TrigScintQIEDigiProducer() {}
 
 void TrigScintQIEDigiProducer::configure(
     framework::config::Parameters& parameters) {
@@ -37,7 +36,7 @@ void TrigScintQIEDigiProducer::configure(
   sipm_gain_ = parameters.getParameter<double>("sipm_gain");
   s_freq_ = parameters.getParameter<double>("qie_sf");
   zeroSuppCut_ = parameters.getParameter<double>("zeroSupp_in_pe");
-  
+
   if (input_pulse_shape_ == "Expo") {
     pulse_params_.clear();
     pulse_params_.push_back(parameters.getParameter<double>("expo_k"));
@@ -83,8 +82,11 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   }
 
   // To simulate multiple pulses coming at different times, SiPMS
-  float TrueEdep[stripsPerArray_];
-  Expo* ex[stripsPerArray_] = {0};
+  // Initialize with stripsPerArray_ zeros
+  std::vector<float> TrueEdep(stripsPerArray_, 0.);
+
+  // Initialize with stripsPerArray_ nullptrs
+  std::vector<Expo*> ex(stripsPerArray_, nullptr);
   for (int i = 0; i < stripsPerArray_; i++) {
     // Set the pulse shape with fixed parameters given by config. file
     ex[i] = new Expo(pulse_params_[0], pulse_params_[1]);

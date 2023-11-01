@@ -2,7 +2,7 @@
 #define TRIGSCINT_EVENT_QIESTREAM_H
 
 //---< ROOT >---//
-#include "TObject.h" 
+#include "TObject.h"
 #include "TrigScint/Event/TrigScintQIEDigis.h"
 
 template <uint32_t N>
@@ -16,7 +16,6 @@ struct mask8 {
   static const uint8_t m = (one << n) - one;
 };
 
-
 namespace trigscint {
 
 /**
@@ -25,12 +24,11 @@ namespace trigscint {
  */
 class QIEStream {
  public:
-  
-   /// Default constructor
+  /// Default constructor
   QIEStream() = default;
 
   /// Default destructor
-  ~QIEStream() = default;
+  virtual ~QIEStream() = default;
 
   /**
    * Print ifo about the class
@@ -72,12 +70,11 @@ class QIEStream {
    */
   std::vector<int> getTDC() const { return tdcs_; }
 
-
   /**
    * Get Cap IDs of all time samples
    */
   std::vector<int> getCID() const { return cids_; }
-  
+
   /**
    * Store the channel ID
    */
@@ -100,42 +97,44 @@ class QIEStream {
    */
   void setTDC(const std::vector<int> tdc) { tdcs_ = tdc; }
 
-
   /**
    * Store cids of all time samples
    * @param cid_ array of cids
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
-
-public:
-
-  //use these to define positions and sizes of error flags etc other header words
-  //relative to each other 
+ public:
+  // use these to define positions and sizes of error flags etc other header
+  // words relative to each other
   // these simply state the order:
-  //{UTC time stamp, time stamp clock(), time since spill, triggerID, error, checksum == 0 (empty)}
-  const static int TIMESTAMP_POS{0}; 
+  //{UTC time stamp, time stamp clock(), time since spill, triggerID, error,
+  //checksum == 0 (empty)}
+  const static int TIMESTAMP_POS{0};
   const static int TIMESTAMP_LEN_BYTES{4};
-  const static int TIMESTAMPCLOCK_POS{TIMESTAMP_POS+TIMESTAMP_LEN_BYTES};
+  const static int TIMESTAMPCLOCK_POS{TIMESTAMP_POS + TIMESTAMP_LEN_BYTES};
   const static int TIMESTAMPCLOCK_LEN_BYTES{4};
-  const static int TIMESINCESPILL_POS{TIMESTAMPCLOCK_POS+TIMESTAMPCLOCK_LEN_BYTES};
+  const static int TIMESINCESPILL_POS{TIMESTAMPCLOCK_POS +
+                                      TIMESTAMPCLOCK_LEN_BYTES};
   const static int TIMESINCESPILL_LEN_BYTES{4};
-  const static int TRIGID_POS{TIMESINCESPILL_POS+TIMESINCESPILL_LEN_BYTES};
+  const static int TRIGID_POS{TIMESINCESPILL_POS + TIMESINCESPILL_LEN_BYTES};
   const static int TRIGID_LEN_BYTES{3};
-  const static int ERROR_POS{TRIGID_POS+TRIGID_LEN_BYTES};
+  const static int ERROR_POS{TRIGID_POS + TRIGID_LEN_BYTES};
   const static int ERROR_LEN_BYTES{1};
-  // and positions of error bits/flags in the errors word 
+  // and positions of error bits/flags in the errors word
   const static int FLAG_SIZE_BITS{1};
   const static int CRC0_ERR_POS{0};
   const static int CRC1_ERR_POS{1};
   const static int CID_UNSYNC_POS{2};
   const static int CID_SKIP_POS{3};
-  const static int CHECKSUM_POS{CID_SKIP_POS+FLAG_SIZE_BITS}; //+ERROR_LEN_BYTES}; //included it in the error word
-  const static int CHECKSUM_SIZE_BITS{4}; //+ERROR_LEN_BYTES}; //included it in the error word
+  const static int CHECKSUM_POS{
+      CID_SKIP_POS +
+      FLAG_SIZE_BITS};  //+ERROR_LEN_BYTES}; //included it in the error word
+  const static int CHECKSUM_SIZE_BITS{
+      4};  //+ERROR_LEN_BYTES}; //included it in the error word
   // the number of time samples making up a readout event
-  const static int NUM_SAMPLES{5}; 
+  const static int NUM_SAMPLES{5};
 
-private:
+ private:
   /// detector channel ID (bar nb)
   int chanID_;
   /// electronics ID
@@ -146,7 +145,7 @@ private:
   std::vector<int> tdcs_;
   /// Capacitor IDs
   std::vector<int> cids_;
-  
+
   ClassDef(QIEStream, 1);
 };
 }  // namespace trigscint

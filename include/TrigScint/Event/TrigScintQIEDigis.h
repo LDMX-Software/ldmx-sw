@@ -2,7 +2,7 @@
 #define TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
 
 //---< ROOT >---//
-#include "TObject.h" 
+#include "TObject.h"
 
 namespace trigscint {
 
@@ -12,12 +12,11 @@ namespace trigscint {
  */
 class TrigScintQIEDigis {
  public:
-  
-   /// Default constructor
+  /// Default constructor
   TrigScintQIEDigis() = default;
 
   /// Default destructor
-  ~TrigScintQIEDigis() = default;
+  virtual ~TrigScintQIEDigis() = default;
 
   /**
    * Print ifo about the class
@@ -64,18 +63,19 @@ class TrigScintQIEDigis {
    */
   std::vector<int> getCID() const { return cids_; }
 
-  
-  /**      
+  /**
    * Store the event time since spill counter
    */
-  void setTimeSinceSpill(const uint32_t timeSpill) { timeSinceSpillCounter_ = timeSpill; }
-  //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ = timeSpill; }
+  void setTimeSinceSpill(const uint32_t timeSpill) {
+    timeSinceSpillCounter_ = timeSpill;
+  }
+  //  void setTimeSinceSpill(const int timeSpill) { timeSinceSpillCounter_ =
+  //  timeSpill; }
 
-  /**      
+  /**
    * Store the event time since spill counter
    */
   uint32_t getTimeSinceSpill() const { return timeSinceSpillCounter_; }
-  
 
   /**
    * Store the channel ID
@@ -87,7 +87,6 @@ class TrigScintQIEDigis {
    */
   void setElecID(const int elecid) { elecID_ = elecid; }
 
-  
   /**
    * Store adcs of all time samples
    * @param adc_ array of adcs
@@ -106,7 +105,7 @@ class TrigScintQIEDigis {
    */
   void setCID(const std::vector<int> cid) { cids_ = cid; }
 
-protected:
+ protected:
   /// channel ID
   int chanID_;
   /// channel ID
@@ -114,13 +113,12 @@ protected:
 
   /// analog to digital counts
   std::vector<int> adcs_;
-  
+
   /// Time to Digital counts
   std::vector<int> tdcs_;
 
   /// Time since spill (a counter, to be divided by 125e6 or so)
   uint32_t timeSinceSpillCounter_;
-
 
  private:
   /// capacitor IDs

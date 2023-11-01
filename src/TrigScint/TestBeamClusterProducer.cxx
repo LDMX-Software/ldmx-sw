@@ -14,7 +14,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
   input_collection_ = ps.getParameter<std::string>("input_collection");
   passName_ = ps.getParameter<std::string>("input_pass_name");
   output_collection_ = ps.getParameter<std::string>("output_collection");
-  doCleanHits_  = ps.getParameter< bool >("doCleanHits");
+  doCleanHits_ = ps.getParameter<bool>("doCleanHits");
   verbose_ = ps.getParameter<int>("verbosity");
 
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
@@ -26,7 +26,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
                    << "\nMax cluster width: " << maxWidth_
                    << "\nExpected pad hit time: " << padTime_
                    << "\nMax hit time delay: " << timeTolerance_
-				   << "\n\t doCleanHits = " << doCleanHits_
+                   << "\n\t doCleanHits = " << doCleanHits_
                    << "\nInput collection:     " << input_collection_
                    << "\nInput pass name:     " << passName_
                    << "\nOutput collection:    " << output_collection_
@@ -96,8 +96,8 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
   // looper over digi hits and aggregate energy depositions for each detID
 
-  const auto digis{
-      event.getCollection<trigscint::TestBeamHit>(input_collection_, passName_)};
+  const auto digis{event.getCollection<trigscint::TestBeamHit>(
+      input_collection_, passName_)};
 
   if (verbose_) {
     ldmx_log(debug) << "Got digi collection " << input_collection_ << "_"
@@ -112,23 +112,27 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
   for (const auto &digi : digis) {
     // these are unordered hits, and this collection is zero-suppressed
     // map the index of the digi to the channel index
-	ldmx_log(debug) << "Digi has PE count " << digi.getPE() 
-					<< " and energy " << digi.getEnergy();
+    ldmx_log(debug) << "Digi has PE count " << digi.getPE() << " and energy "
+                    << digi.getEnergy();
 
-	if (doCleanHits_ && digi.getQualityFlag() ) {
-	  ldmx_log(debug) << "Skipping hit with non-zero quality flag  " << digi.getQualityFlag();
-	  continue;
-	}
-	
+    if (doCleanHits_ && digi.getQualityFlag()) {
+      ldmx_log(debug) << "Skipping hit with non-zero quality flag  "
+                      << digi.getQualityFlag();
+      continue;
+    }
+
     if (digi.getPE() >
         minThr_) {  // cut on a min threshold (for a non-seeding hit to be added
                     // to seeded clusters) already here
 
       int ID = digi.getBarID();
-	  if ( ID > maxChannelID_) { //test beam has some uninstrumented channels (could also consider setting these to 0 in hit producer)
-		ldmx_log(debug) << "Skipping channel with bar ID = " << ID <<" > " << maxChannelID_ << " (max instrumented nb)";
-		continue;
-	  }
+      if (ID >
+          maxChannelID_) {  // test beam has some uninstrumented channels (could
+                            // also consider setting these to 0 in hit producer)
+        ldmx_log(debug) << "Skipping channel with bar ID = " << ID << " > "
+                        << maxChannelID_ << " (max instrumented nb)";
+        continue;
+      }
       // first check if there is a (pure) noise hit at this channel,  and
       // replace it in that case. this is a protection against a problem that
       // shouldn't be there in the first place.
@@ -151,9 +155,8 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
         }
       }
 
-      // don't add in late hits 
-      if (digi.getTime() > padTime_ + timeTolerance_ )
-		continue;
+      // don't add in late hits
+      if (digi.getTime() > padTime_ + timeTolerance_) continue;
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value
@@ -226,7 +229,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
       // 1.  add seeding hit to cluster
 
-      addHit(itr->first, (trigscint::TestBeamHit)digi);
+      addHit(itr->first, digi);
 
       if (verbose_ > 1) {
         ldmx_log(debug) << "\t itr is pointing at hit with channel nb "
@@ -464,18 +467,6 @@ void TestBeamClusterProducer::addHit(uint idx, trigscint::TestBeamHit hit) {
                     << ". index vector now ends with "
                     << v_addedIndices_.back();
   }
-
-  return;
-}
-
-void TestBeamClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TestBeamClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
 
   return;
 }

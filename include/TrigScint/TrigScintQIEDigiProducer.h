@@ -40,7 +40,6 @@ enum TrigScintSection {
   DOWNSTREAM_TARGET,
   NUM_SECTIONS
 };
-
 /**
  * @class TrigScintQIEDigiProducer
  * @brief Class that simulates QIE chip of the trigger scintillator
@@ -49,7 +48,7 @@ class TrigScintQIEDigiProducer : public framework::Producer {
  public:
   TrigScintQIEDigiProducer(const std::string& name,
                            framework::Process& process);
-  ~TrigScintQIEDigiProducer();
+  virtual ~TrigScintQIEDigiProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -64,7 +63,7 @@ class TrigScintQIEDigiProducer : public framework::Producer {
    * @brief For each event, the SimHit information is converted to an
    * output format analogous to real QIE output.
    */
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   /// Random number generator
