@@ -29,7 +29,7 @@ class MyProcessor : public framework::Producer {
   MyProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~MyProcessor();
+  virtual ~MyProcessor() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -40,14 +40,14 @@ class MyProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
 };  // MyProcessor
 
