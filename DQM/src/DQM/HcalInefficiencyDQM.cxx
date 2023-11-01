@@ -16,7 +16,7 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   const std::vector<std::string> sectionNames{"back", "top", "bottom", "right",
                                               "left"};
   for (const auto hit : hcalRecHits) {
-    const ldmx::HcalID id{hit.getID()};
+    const ldmx::HcalID id{static_cast<ldmx::DetectorID::RawValue>(hit.getID())};
     const auto section{id.section()};
     const auto z{hit.getZPos()};
     const auto layer{id.layer()};
