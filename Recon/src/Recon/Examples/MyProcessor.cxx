@@ -6,7 +6,6 @@ namespace recon {
 MyProcessor::MyProcessor(const std::string &name, framework::Process &process)
     : framework::Producer(name, process) {}
 
-MyProcessor::~MyProcessor() {}
 
 void MyProcessor::configure(framework::config::Parameters &parameters) {
   /**

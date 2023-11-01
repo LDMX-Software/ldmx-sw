@@ -26,18 +26,18 @@ class OverlayProducer : public framework::Producer {
       : framework::Producer(name, process), overlayEvent_{"overlay"} {}
 
   // Destructor
-  ~OverlayProducer() = default;
+  virtual ~OverlayProducer() = default;
 
   /**
    * Configure the processor with input parameters from the python cofig
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * At the start of the run, the pileup overlay file is set up, and the
    * starting event number is chosen, using the RNSS.
    */
-  void onNewRun(const ldmx::RunHeader &);  // );    //
+  void onNewRun(const ldmx::RunHeader &) override;  // );    //
 
   /**
    * Based on the list of collections to overlay, and the desired number of
@@ -56,12 +56,12 @@ class OverlayProducer : public framework::Producer {
    * The resulting collections inherit the input collection name, with an
    * appended string "Overlay". This name is also currently hardwired.
    */
-  void produce(framework::Event &event) final override;
+  void produce(framework::Event &event) override;
 
   /**
    * At the start of processing, the pileup overlay file is set up.
    */
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
  private:
   /// The parameters used to configure this producer
