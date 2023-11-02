@@ -28,6 +28,7 @@ class File :
         self.__file = uproot.open(filepath, **open_kwargs)
         self.__colmod = colmod
         self.__df = None
+        self.path = filepath
 
         if 'histtype' not in hist_kwargs :
             hist_kwargs['histtype'] = 'step'
