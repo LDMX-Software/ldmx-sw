@@ -95,6 +95,10 @@ class TruthTrack {
   void setPdgID(int pdgID) { pdgID_ = pdgID; };
   int getPdgID() const { return pdgID_; };
 
+
+  void setNhits(int nHits) {nHits_ = nHits; };
+  int getNhits() const {return nHits_;} 
+
   // in units of e
   int q() const { return perigee_pars_[4] > 0 ? 1 : -1; }
 
@@ -159,6 +163,9 @@ class TruthTrack {
   // The 3-position at the perigee
   std::vector<double> position_{0., 0., 0.};
 
+  // N hits
+  int nHits_{0};
+  
   // ID of the matched particle in the SimParticles map
   int trackID_{-1};
 

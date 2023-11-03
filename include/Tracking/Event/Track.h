@@ -21,6 +21,29 @@
 
 namespace ldmx {
 
+
+
+/// This enum describes the type of TrackState
+/// RefPoint is wrt to a line parallel to the Z axis located at the refPoint stored in the TrackState
+/// AtTarget is wrt the target surface: i.e. a surface at the refPoint with orientation as the ACTS Tracking Frame
+/// AtFirstMeasurement: track state at the first measurment on track.
+/// For the recoil "first" means closest to the target, for the tagger it means farthest from the target
+
+/// AtLastMeasurement : track state at the last measurement on track.
+/// For the recoil it means closest to the ECAL, for the tagger closest to the target.
+
+enum TrackStateType {
+  RefPoint              = 0,
+  AtTarget              = 1,
+  AtFirstMeasurement    = 2,
+  AtLastMeasurement     = 3,
+  AtECAL                = 4,
+  Invalid               = 5
+};
+
+
+
+
 /**
  * Implementation of a track object.
  *
@@ -33,6 +56,18 @@ class Track {
  public:
 
 
+  // Track states won't be visualized in the root tree from the TBrowser, but it will be accessible
+  // when reading back the rootfile using for example the monitoring code.
+  struct TrackState {
+
+    double refX, refY, refZ;
+    std::vector<double> params;
+    std::vector<double> cov;
+    TrackStateType      ts_type;
+    
+  };
+  
+  
   Track(){};
   
   /**
@@ -143,8 +178,12 @@ class Track {
   double getTheta() const {return perigee_pars_[3];};
   double getQoP()   const {return perigee_pars_[4];};
   double getT()     const {return perigee_pars_[5];};
-
   
+  void addTrackState(const ldmx::Track::TrackState& ts ) {
+    trackStates_.push_back(ts);
+  };
+
+  std::vector<TrackState> getTrackStates() const {return trackStates_; }
   
  protected:
     
@@ -197,6 +236,9 @@ class Track {
 
   //pdgID
   int pdgID_{0};
+
+  //Track States
+  std::vector<TrackState> trackStates_;
   
   ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);

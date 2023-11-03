@@ -20,24 +20,20 @@ if(BUILD_EVENT_ONLY)
 
     # Register all of the classes with the event bus.
     register_event_object(module_path "Tracking/Event" 
-                    namespace "ldmx" 
-                    class "RawSiStripHit" )
+                          namespace "ldmx" 
+                          class "RawSiStripHit" )
 
     register_event_object(module_path "Tracking/Event" 
-                    namespace "ldmx" 
-                    class "Track" type "collection")
-
+                          namespace "ldmx" 
+                          class "Track" type "collection")
 
     register_event_object(module_path "Tracking/Event" 
-                    namespace "ldmx" 
-                    class "TruthTrack" type "collection")
-
+                          namespace "ldmx" 
+                          class "TruthTrack" type "collection")
 
     register_event_object(module_path "Tracking/Event"
- 		    namespace "ldmx"
-		    class "Measurement" type "collection")
-
-      
+                          namespace "ldmx"
+                          class "Measurement" type "collection")
 
     # Get all of the event sources that will be included in this library
     file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS 
@@ -76,19 +72,20 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/dqm/[a-zA-z]*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/geo/[a-zA-z]*.cxx
 )
 
 setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
                            ActsCore
-			   ActsPluginIdentification
+                           ActsPluginIdentification
                            Geant4::Interface
                            ROOT::Physics
                            Tracking::Event
               sources ${SRC_FILES})
 
 
-include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
+#include_directories(${PROJECT_SOURCE_DIR}/include/Tracking/Reco/)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tracking)

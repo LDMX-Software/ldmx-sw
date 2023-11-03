@@ -1,7 +1,6 @@
 #ifndef TRACKING_RECO_TRACKERSTRACKINGGEOMETRY_H_
 #define TRACKING_RECO_TRACKERSTRACKINGGEOMETRY_H_
 
-
 //Acts
 
 //geometry
@@ -32,21 +31,21 @@
 #include <G4Material.hh>
 
 //Tracking
-#include "Tracking/Reco/BaseTrackingGeometry.h"
+#include "Tracking/geo/TrackingGeometry.h"
 
 #include <string>
 #include <boost/filesystem.hpp>
 
-namespace tracking {
-namespace reco {
+namespace tracking::geo {
 
-class TrackersTrackingGeometry : public BaseTrackingGeometry {
-  
+/**
+ * forward declaration for friendship
+ */
+class TrackersTrackingGeometryProvider;
+
+class TrackersTrackingGeometry : public TrackingGeometry {
  public:
-  
-  TrackersTrackingGeometry(std::string gdmlfile,
-                           Acts::GeometryContext* gctx, bool debug = false);
-
+  static const std::string NAME;
   void BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
                             std::string surfacename);
 
@@ -54,17 +53,20 @@ class TrackersTrackingGeometry : public BaseTrackingGeometry {
                             std::string surfacename);
   
   // Provided a physical volume, extract a silicon rectangular plane surface
-  std::shared_ptr<Acts::PlaneSurface> GetSurface(G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans);
+  std::shared_ptr<Acts::PlaneSurface> GetSurface(G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) const;
 
   
   Acts::CuboidVolumeBuilder::VolumeConfig buildTrackerVolume();
   Acts::CuboidVolumeBuilder::VolumeConfig buildRecoilVolume();
 
   //TODO Implement these
-  Acts::CuboidVolumeBuilder::VolumeConfig buildTSVolume(){};
-  Acts::CuboidVolumeBuilder::VolumeConfig buildTargetVolume(){};
+  Acts::CuboidVolumeBuilder::VolumeConfig buildTSVolume() { return {}; }
+  Acts::CuboidVolumeBuilder::VolumeConfig buildTargetVolume() { return {}; }
   
  private:
+  friend TrackersTrackingGeometryProvider;
+  TrackersTrackingGeometry(const Acts::GeometryContext& gctx, const std::string& gdml, bool debug);
+
   G4VPhysicalVolume* Tagger_;
   G4VPhysicalVolume* Recoil_;
 
@@ -83,8 +85,6 @@ class TrackersTrackingGeometry : public BaseTrackingGeometry {
       
 };
 
-
-} //tracking
-}//reco
+} //tracking::reco
 
 #endif

@@ -95,7 +95,5 @@ TruthMatchingTool::TruthInfo TruthMatchingTool::TruthMatch(const ldmx::Track& tr
   
 }//Match Track
 
-
-
-}
-}
+} //sim
+} //tracking

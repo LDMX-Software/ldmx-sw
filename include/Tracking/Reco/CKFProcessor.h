@@ -1,5 +1,4 @@
-#ifndef TRACKING_RECO_CKFPROCESSOR_H_
-#define TRACKING_RECO_CKFPROCESSOR_H_
+#pragma once
 
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
@@ -14,7 +13,8 @@
 #include <memory>
 
 //--- LDMX ---//
-#include "Tracking/Reco/TrackersTrackingGeometry.h"
+#include "Tracking/Reco/TrackingGeometryUser.h"
+
 
 //--- ACTS ---//
 
@@ -80,6 +80,7 @@
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Reco/TrackExtrapolatorTool.h"
 
 
 //--- Interpolated magnetic field ---//
@@ -104,7 +105,7 @@ using GsfPropagator = Acts::Propagator<
 namespace tracking {
 namespace reco {
 
-class CKFProcessor final : public framework::Producer {
+class CKFProcessor final : public TrackingGeometryUser {
 
  public:
   /**
@@ -122,6 +123,14 @@ class CKFProcessor final : public framework::Producer {
    *
    */
   void onProcessStart() override;
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -144,7 +153,6 @@ class CKFProcessor final : public framework::Producer {
   
  private:
 
-
   //TODO move it away
 
   void propagateENstates(framework::Event &event,std::string inputFile, std::string outFile);
@@ -154,17 +162,15 @@ class CKFProcessor final : public framework::Producer {
   auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
 
   //Make geoid -> source link map Measurements
-  auto makeGeoIdSourceLinkMap(const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
+  auto makeGeoIdSourceLinkMap(
+      const geo::TrackersTrackingGeometry& tg,
+      const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
     
     
-  //Test the measurement calibrator (TODO::move it somewhere else)
-  void testMeasurmentCalibrator(const tracking::sim::LdmxMeasurementCalibrator& calibrator,
-                                const std::unordered_map<Acts::GeometryIdentifier, std::vector< ActsExamples::IndexSourceLink> > & map) const;
-
   //Test the magnetic field
 
   void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
-                 const Acts::Vector3& eval_pos) const;
+                 const Acts::Vector3& eval_pos);
   
   // Make a simple event display
   void writeEvent(framework::Event &event,
@@ -174,17 +180,6 @@ class CKFProcessor final : public framework::Producer {
                   const std::vector<ldmx::Measurement> meas);
 
   
-  /// The tracking geometry
-  std::shared_ptr<tracking::reco::TrackersTrackingGeometry> ldmx_tg;
-  
-  /// The contexts
-  Acts::GeometryContext gctx_;
-  Acts::MagneticFieldContext bctx_;
-  Acts::CalibrationContext cctx_;
-
-  /// The path to the GDML description of the detector
-  std::string detector_{""};
-
   //If we want to dump the tracking geometry
   bool dumpobj_ {false};
 
@@ -227,10 +222,7 @@ class CKFProcessor final : public framework::Producer {
   //Stepping size (in mm)
   double propagator_step_size_{200.};
   int propagator_maxSteps_{1000};
-
-  //The perigee location used for the initial propagator states generation
-  std::vector<double> perigee_location_{0.,0.,0.};
-
+  
   //The extrapolation surface
   bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0.,0.,0.};
@@ -274,6 +266,9 @@ class CKFProcessor final : public framework::Producer {
   //The KF
   std::unique_ptr<const Acts::KalmanFitter<CkfPropagator,Acts::VectorMultiTrajectory>> kf_;
 
+  //Track Extrapolator Tool
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>> trk_extrap_ ;
+
   //The GSF Fitter
   //std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
   
@@ -292,11 +287,12 @@ class CKFProcessor final : public framework::Producer {
   int ntracks_{0};
 
   int eventnr_{0};
+
+  //BField Systematics
+  std::vector<double> map_offset_{0.,0.,0.,};
   
 }; // CKFProcessor
     
 
 } // namespace reco
 } // namespace tracking
-
-#endif // CKFProcessor
