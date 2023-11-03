@@ -11,17 +11,12 @@ namespace tracking::reco {
 
 DigitizationProcessor::DigitizationProcessor(const std::string& name,
                                              framework::Process& process)
-    : framework::Producer(name, process) {}
+    : TrackingGeometryUser(name, process) {}
 
 void DigitizationProcessor::onProcessStart() {
-  gctx_ = Acts::GeometryContext();
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
-  std::cout << "Loading the tracking geometry" << std::endl;
-
-  // Load the tracking geometry
-  ldmx_tg = std::make_shared<tracking::reco::TrackersTrackingGeometry>(
-      detector_, &gctx_, false);
+  ldmx_log(info) << "Loading the tracking geometry";
 
   // Module Bounds => Take them from the tracking geometry TODO
   auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
@@ -56,7 +51,7 @@ void DigitizationProcessor::onProcessStart() {
   Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1, lAngle,
                                     eThresh, isAnalog);
 
-  std::cout << getName() << " Initialization done" << std::endl;
+  ldmx_log(info) << "Initialization done" << std::endl;
 
   // Seed the generator
   generator_.seed(1);
@@ -64,7 +59,6 @@ void DigitizationProcessor::onProcessStart() {
 
 void DigitizationProcessor::configure(
     framework::config::Parameters& parameters) {
-  detector_ = parameters.getParameter<std::string>("detector");
   hit_collection_ =
       parameters.getParameter<std::string>("hit_collection", "TaggerSimHits");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
@@ -78,11 +72,8 @@ void DigitizationProcessor::configure(
 }
 
 void DigitizationProcessor::produce(framework::Event& event) {
-  // Get the tracking geometry
 
-  const auto tGeometry = ldmx_tg->getTG();
-
-  ldmx_log(debug) << " Getting the tracking geometry:" << tGeometry;
+  ldmx_log(debug) << " Getting the tracking geometry:" << geometry().getTG();
 
   // Mode 0: Load simulated hits and produce smeared 1d measurements
   // Mode 1: Load simulated hits and produce digitized 1d measurements
@@ -148,12 +139,11 @@ bool DigitizationProcessor::mergeHits(
     path += edep_hit * hit.getPathLength();
 
     if (hit.getPdgID() != pdgID) {
-      std::cout << "ERROR:: Found hits with compatible sensorID and track_id "
-                   "but different PDGID"
-                << std::endl;
-      std::cout << "TRACKID ==" << hit.getTrackID() << " vs "
-                << sihits[0].getTrackID() << std::endl;
-      std::cout << "PDGID== " << hit.getPdgID() << " vs " << pdgID << std::endl;
+      ldmx_log(error) << "ERROR:: Found hits with compatible sensorID and track_id "
+                         "but different PDGID";
+      ldmx_log(error) << "TRACKID ==" << hit.getTrackID() << " vs "
+                      << sihits[0].getTrackID();
+      ldmx_log(error) << "PDGID== " << hit.getPdgID() << " vs " << pdgID;
       return false;
     }
   }
@@ -230,18 +220,16 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       // Get the layer ID.
       auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
       measurement.setLayerID(layer_id);
-
-      
       
       // Get the surface
-      auto hit_surface{ldmx_tg->getSurface(layer_id)};
+      auto hit_surface{geometry().getSurface(layer_id)};
 
       if (hit_surface) {
         // Transform from global to local coordinates.
-        // hit_surface->toStream(gctx_, std::cout);
+        // hit_surface->toStream(geometry_context(), std::cout);
         ldmx_log(debug) << "Local to global" << std::endl
-                        << hit_surface->transform(gctx_).rotation() << std::endl
-                        << hit_surface->transform(gctx_).translation();
+                        << hit_surface->transform(geometry_context()).rotation() << std::endl
+                        << hit_surface->transform(geometry_context()).translation();
 
         Acts::Vector3 dummy_momentum;
         Acts::Vector2 local_pos;
@@ -252,11 +240,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
         try {
           local_pos = hit_surface
-                          ->globalToLocal(gctx_, global_pos, dummy_momentum,
+                          ->globalToLocal(geometry_context(), global_pos, dummy_momentum,
                                           surface_thickness)
                           .value();
         } catch (const std::exception& e) {
-          std::cout << "WARNING:: hit not on surface.. Skipping." << std::endl;
+          ldmx_log(warn) << "hit not on surface... Skipping.";
           continue;
         }
 
@@ -274,7 +262,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
           // transform to global
           auto global_pos{
-              hit_surface->localToGlobal(gctx_, local_pos, dummy_momentum)};
+              hit_surface->localToGlobal(geometry_context(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
                                         global_pos(1), global_pos(2));
 

@@ -1,15 +1,33 @@
-#include "Tracking/Reco/BaseTrackingGeometry.h"
 
-namespace tracking {
-namespace reco {
+#include "Tracking/geo/TrackingGeometry.h"
 
-BaseTrackingGeometry::BaseTrackingGeometry(std::string gdmlfile,
-                                           Acts::GeometryContext* gctx,
-                                           bool debug) {
-  debug_ = debug;
-  gctx_ = gctx;
-  gdml_ = gdmlfile;
+#include "G4RunManager.hh"
+#include "G4strstreambuf.hh"
+#include "G4UIsession.hh"
 
+namespace tracking::geo {
+
+/**
+ * This class throws away all of the messages from Geant4
+ *
+ * Copied from SimCore/include/SimCore/G4Session.h
+ */
+class SilentG4 : public G4UIsession {
+ public:
+  SilentG4() = default;
+  ~SilentG4() = default;
+  G4UIsession* SessionStart() { return nullptr; }
+  G4int ReceiveG4cout(const G4String&) { return 0; }
+  G4int ReceiveG4cerr(const G4String&) { return 0; }
+};
+
+TrackingGeometry::TrackingGeometry(
+    const std::string& name,
+    const Acts::GeometryContext& gctx,
+    const std::string& gdml,
+    bool debug)
+    : framework::ConditionsObject(name),
+    gctx_{gctx}, gdml_{gdml}, debug_{debug} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
   double rotationAngle = M_PI * 0.5;
@@ -37,6 +55,27 @@ BaseTrackingGeometry::BaseTrackingGeometry(std::string gdmlfile,
   x_rot_.col(1) = yPos2;
   x_rot_.col(2) = zPos2;
 
+  /**
+   * We are about to use the G4GDMLParser and would like to silence
+   * the output from parsing the geometry. This can only be done by
+   * redirecting G4cout and G4cerr via the G4UImanager.
+   *
+   * The Simulator (if it is running) will already do this redirection
+   * for us and we don't want to override it, so we check if there is
+   * a simulation running by seeing if the run manager is created. If
+   * it isn't, then we redirect G4cout and G4cerr to a G4Session that
+   * just throws away all those messages.
+   */
+  std::unique_ptr<SilentG4> silence;
+  if (G4RunManager::GetRunManager() == nullptr) {
+    // no run manager ==> no simulation
+    silence = std::make_unique<SilentG4>();
+    // these lines compied from G4UImanager::SetCoutDestination
+    // to avoid creating G4UImanager unnecessarily
+    G4coutbuf.SetDestination(silence.get());
+    G4cerrbuf.SetDestination(silence.get());
+  }
+
   // Get the world volume
   G4GDMLParser parser;
 
@@ -44,9 +83,17 @@ BaseTrackingGeometry::BaseTrackingGeometry(std::string gdmlfile,
   parser.Read(gdml_, false);
 
   fWorldPhysVol_ = parser.GetWorldVolume();
+
+  if (silence) {
+    // we created the session and silenced G4
+    // undo that now incase others have use for G4
+    // nullptr => standard (std::cout and std::cerr)
+    G4coutbuf.SetDestination(nullptr);
+    G4cerrbuf.SetDestination(nullptr);
+  }
 }
 
-G4VPhysicalVolume* BaseTrackingGeometry::findDaughterByName(
+G4VPhysicalVolume* TrackingGeometry::findDaughterByName(
     G4VPhysicalVolume* pvol, G4String name) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
   for (G4int i = 0; i < lvol->GetNoDaughters(); i++) {
@@ -59,7 +106,7 @@ G4VPhysicalVolume* BaseTrackingGeometry::findDaughterByName(
   return nullptr;
 }
 
-void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
+void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
   G4LogicalVolume* lvol = pvol->GetLogicalVolume();
 
   if (debug_)
@@ -84,7 +131,7 @@ void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 }
 
 // Retrieve the layers from a physical volume
-// void BaseTrackingGeometry::getComponentLayer(G4VPhysicalVolume* pvol,
+// void TrackingGeometry::getComponentLayer(G4VPhysicalVolume* pvol,
 //                                              std::string layer_name,
 //                                              std::string component_type,
 //                                              std::vector<std::reference_wrapper<G4PhysicalVolume>>
@@ -97,7 +144,7 @@ void BaseTrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 
 //}
 
-void BaseTrackingGeometry::dumpGeometry(const std::string& outputDir) {
+void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
   if (!tGeometry_) return;
 
   // Should fail if already exists
@@ -114,13 +161,13 @@ void BaseTrackingGeometry::dumpGeometry(const std::string& outputDir) {
   Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
 
   Acts::GeometryView3D::drawTrackingVolume(
-      objVis, *(tGeometry_->highestTrackingVolume()), *gctx_, containerView,
+      objVis, *(tGeometry_->highestTrackingVolume()), gctx_, containerView,
       volumeView, passiveView, sensitiveView, gridView, true, "", ".");
 }
 
 // This method gets the transform from the physical volume to the tracking frame
-Acts::Transform3 BaseTrackingGeometry::GetTransform(
-    const G4VPhysicalVolume& phex, bool toTrackingFrame) {
+Acts::Transform3 TrackingGeometry::GetTransform(
+    const G4VPhysicalVolume& phex, bool toTrackingFrame) const {
   Acts::Vector3 pos(phex.GetTranslation().x(), phex.GetTranslation().y(),
                     phex.GetTranslation().z());
   
@@ -144,8 +191,8 @@ Acts::Transform3 BaseTrackingGeometry::GetTransform(
 
 // This method returns the transformation to the tracker coordinates z->x x->y
 // y->z
-Acts::Transform3 BaseTrackingGeometry::toTracker(
-    const Acts::Transform3& trans) {
+Acts::Transform3 TrackingGeometry::toTracker(
+    const Acts::Transform3& trans) const {
   Acts::Vector3 pos{trans.translation()(2), trans.translation()(0),
                     trans.translation()(1)};
 
@@ -159,8 +206,8 @@ Acts::Transform3 BaseTrackingGeometry::toTracker(
 }
 
 // Convert rotation
-void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
-                                        Acts::RotationMatrix3& rot) {
+void TrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
+                                        Acts::RotationMatrix3& rot) const {
 
   //If the rotation is the identity then g4rot will be a null ptr.
   //So then check it and fill rot accordingly
@@ -187,7 +234,7 @@ void BaseTrackingGeometry::ConvertG4Rot(const G4RotationMatrix* g4rot,
 
 // Convert translation
 
-Acts::Vector3 BaseTrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) {
+Acts::Vector3 TrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) const {
   Acts::Vector3 trans{g4pos.x(), g4pos.y(), g4pos.z()};
 
   if (debug_) {
@@ -199,11 +246,11 @@ Acts::Vector3 BaseTrackingGeometry::ConvertG4Pos(const G4ThreeVector& g4pos) {
   return trans;
 }
 
-void BaseTrackingGeometry::getSurfaces(
-    std::vector<const Acts::Surface*>& surfaces) {
+void TrackingGeometry::getSurfaces(
+    std::vector<const Acts::Surface*>& surfaces) const {
   if (!tGeometry_)
     throw std::runtime_error(
-        "BaseTrackingGeometry::getSurfaces tGeometry is null");
+        "TrackingGeometry::getSurfaces tGeometry is null");
 
   const Acts::TrackingVolume* tVolume = tGeometry_->highestTrackingVolume();
   if (tVolume->confinedVolumes()) {
@@ -223,7 +270,7 @@ void BaseTrackingGeometry::getSurfaces(
   }            // confined volumes
 }
 
-void BaseTrackingGeometry::makeLayerSurfacesMap() {
+void TrackingGeometry::makeLayerSurfacesMap() {
   std::vector<const Acts::Surface*> surfaces;
   getSurfaces(surfaces);
 
@@ -259,7 +306,7 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
     for (auto const& surfaceId : layer_surface_map_) {
       std::cout << " " << surfaceId.first << std::endl;
       std::cout << " Check the surface" << std::endl;
-      surfaceId.second->toStream(*gctx_, std::cout);
+      surfaceId.second->toStream(gctx_, std::cout);
       std::cout << " GeometryID::" << surfaceId.second->geometryId()
                 << std::endl;
       std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
@@ -268,5 +315,4 @@ void BaseTrackingGeometry::makeLayerSurfacesMap() {
   }
 }
 
-}  // namespace reco
-}  // namespace tracking
+}  // namespace tracking::geo

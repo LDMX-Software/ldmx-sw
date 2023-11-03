@@ -31,20 +31,14 @@ void VertexProcessor::onProcessStart() {
     // //zxy
   };
 
-  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), field_map_,
-      1. * Acts::UnitConstants::mm,    // default scale for axes length
-      1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
-      false,                           // not symmetrical
-      true                             // rotate the axes to tracking frame
-  );
-
-  sp_interpolated_bField_ =
-      std::make_shared<InterpolatedMagneticField3>(std::move(map));
-  ;
-
-  std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
-            << std::endl;
+  // Setup a interpolated bfield map
+  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(
+      loadDefaultBField(field_map_,
+                        default_transformPos,
+                        default_transformBField));
+  
+  
+  ldmx_log(info) << "Check if nullptr::" << sp_interpolated_bField_.get();
 }
 
 void VertexProcessor::configure(framework::config::Parameters &parameters) {
@@ -199,9 +193,7 @@ void VertexProcessor::onProcessEnd() {
   outfile->Close();
   delete outfile;
 
-  std::cout << "PROCESSOR:: " << this->getName()
-            << "   AVG Time/Event: " << processing_time_ / nevents_ << " ms"
-            << std::endl;
+  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
 }
 
 }  // namespace reco

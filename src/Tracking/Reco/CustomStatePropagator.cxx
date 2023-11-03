@@ -1,9 +1,9 @@
-#include "CustomStatePropagator.h"
-
+#include "Tracking/Reco/CustomStatePropagator.h"
 #include "Acts/Utilities/Logger.hpp"
 
 
 #include <iostream>
+#include <cmath>
 
 namespace tracking {
 namespace reco {
@@ -21,7 +21,16 @@ void CustomStatePropagator::onProcessStart() {
 
   outFile_ = new TFile("prop_states.root","RECREATE");
   outTree_ = new TTree("prop_states","prop_states");
-  
+  histo_gen_p = std::make_shared<TH1F>("histo_gen_p","histo_gen_p",100,0,10);
+  histo_end_p = std::make_shared<TH1F>("histo_end_p","histo_end_p",100,0,10);//smart pointer
+  histo_end_px = std::make_shared<TH1F>("histo_end_px","histo_end_px",100,-50,50);
+  histo_end_py = std::make_shared<TH1F>("histo_end_py","histo_end_py",100,-50,50);
+  histo_end_pz = std::make_shared<TH1F>("histo_end_pz","histo_end_pz",100,-50,50);
+  histo_gen_px = std::make_shared<TH1F>("histo_gen_px","histo_gen_px",100,-50,50);
+  histo_gen_py = std::make_shared<TH1F>("histo_gen_py","histo_gen_py",100,-50,50);
+  histo_gen_pz = std::make_shared<TH1F>("histo_gen_pz","histo_gen_pz",100,-50,50);
+  histo_loc01 = std::make_shared<TH2F>("histo_loc01", "end_loc0-vs-end_loc1",100, -50, 50, 100, -50, 50);
+
   outTree_->Branch("state_nr",&state_nr);
   outTree_->Branch("charge",&charge);
   outTree_->Branch("gen_x",&gen_x);
@@ -42,25 +51,11 @@ void CustomStatePropagator::onProcessStart() {
   outTree_->Branch("end_pz",&end_pz);
 
   
-  // TODO:: Move this to an external file
-  auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
-                                 std::array<size_t, 3> sizes) {
-    return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
-            bins[2]);  // xyz - field space
-    // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
-    // //zxy
-  };
-
-  
   // Setup a interpolated bfield map
   const auto map = std::make_shared<InterpolatedMagneticField3>(
-      makeMagneticFieldMapXyzFromText(
-          std::move(localToGlobalBin_xyz), field_map_,
-          1. * Acts::UnitConstants::mm,    // default scale for axes length
-          1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
-          false,                           // not symmetrical
-          true                             // rotate the axes to tracking frame
-                                      ));
+      loadDefaultBField(field_map_,
+                        default_transformPos,
+                        default_transformBField));
   
   const auto stepper = Acts::EigenStepper<>{map};
 
@@ -174,24 +169,21 @@ void CustomStatePropagator::onProcessStart() {
         Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
     
-    const Acts::BoundTrackParameters* endParams = nullptr;
-
     //Do the propagation to the surface
 
-    //auto result = propagator->propagate(startParams,*target_surface, propagator_options);
+    auto result = propagator->propagate(startParams,*target_surface, propagator_options);
 
-    //if (result.ok()) {
-    //  endParams = (*result).endParameters.get();
-    //  fillTree(i_state, q, gen_pos, gen_mom, endParams);
-      
-    //}
-    //else
-     // continue;
+    if (not result.ok()) {
+      return;
+    }
     
+    const auto& endParams = *result->endParameters;
+
+    fillTree(i_state, q, gen_pos, gen_mom, endParams);
+
     //loc0 // loc1 will give you the u-v location of the hit on the ecal face
     
   }//state propagation
-  
   
 }//on Process Start
 
@@ -214,7 +206,7 @@ void CustomStatePropagator::fillTree(int state,
                                      int q,
                                      const Acts::Vector3 gen_pos,
                                      const Acts::Vector3 gen_mom,
-                                     const Acts::BoundTrackParameters* endParams) {
+                                     const Acts::BoundTrackParameters& endParams) {
 
   state_nr = state;
   charge  = q;
@@ -226,30 +218,54 @@ void CustomStatePropagator::fillTree(int state,
   gen_py = gen_mom(1);
   gen_pz = gen_mom(2);
 
-  Acts::Vector3 end_pos = endParams->position(gctx_);
+  Acts::Vector3 end_pos = endParams.position(gctx_);
   end_x  = end_pos(0);
   end_y  = end_pos(1);
   end_z  = end_pos(2);
 
-  Acts::BoundVector bound_parameters = endParams->parameters();
+  Acts::BoundVector bound_parameters = endParams.parameters();
   end_loc0 = bound_parameters[Acts::eBoundLoc0];
   end_loc1 = bound_parameters[Acts::eBoundLoc1];
   
-  Acts::Vector3 end_mom = endParams->momentum();
+  Acts::Vector3 end_mom = endParams.momentum();
   end_px = end_mom(0);
   end_py = end_mom(1);
   end_pz = end_mom(2);
-  
+ 
+  //Calculate magnatitude of generating & end momentum
+  const double gen_mag_p = sqrt(pow(gen_px, 2) + pow(gen_py, 2) + pow(gen_pz, 2));
+  const double end_mag_p = sqrt(pow(end_px, 2) + pow(end_py, 2) + pow(end_pz, 2));
   outTree_->Fill();
+  
+  histo_end_px->Fill(end_px);
+  histo_end_py->Fill(end_py);
+  histo_end_pz->Fill(end_pz);
+  histo_gen_px->Fill(gen_px/1000);
+  histo_gen_py->Fill(gen_py/1000);
+  histo_gen_pz->Fill(gen_pz/1000);
+  histo_gen_p->Fill(gen_mag_p/1000);
+  histo_end_p->Fill(end_mag_p);
+  histo_loc01->Fill(end_loc0, end_loc1);
 }
+
+
 
 
 void CustomStatePropagator::onProcessEnd() {
 
   outFile_->cd();
   outTree_->Write();
+  histo_end_px->Write();
+  histo_end_py->Write();
+  histo_end_pz->Write();
+  histo_gen_px->Write();
+  histo_gen_py->Write();
+  histo_gen_pz->Write();
+  histo_gen_p->Write();
+  histo_end_p->Write();
+  histo_loc01->Write();
   outFile_->Close();
-  
+  delete outFile_;  
 }
 
 

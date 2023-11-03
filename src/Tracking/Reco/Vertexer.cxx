@@ -57,18 +57,11 @@ void Vertexer::onProcessStart() {
     // //zxy
   };
 
-  InterpolatedMagneticField3 map = makeMagneticFieldMapXyzFromText(
-      std::move(localToGlobalBin_xyz), field_map_,
-      1. * Acts::UnitConstants::mm,    // default scale for axes length
-      1000. * Acts::UnitConstants::T,  // The map is in kT, so scale it to T
-      false,                           // not symmetrical
-      true                             // rotate the axes to tracking frame
-  );
-
-  sp_interpolated_bField_ =
-      std::make_shared<InterpolatedMagneticField3>(std::move(map));
-  ;
-
+  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(
+      loadDefaultBField(field_map_,
+                        default_transformPos,
+                        default_transformBField));
+  
   // There is a sign issue between the vertexing and the perigee representation
   Acts::Vector3 b_field(0., 0., -1.5 * Acts::UnitConstants::T);
   bField_ = std::make_shared<Acts::ConstantBField>(b_field);
