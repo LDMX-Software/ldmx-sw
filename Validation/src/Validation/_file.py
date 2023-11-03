@@ -28,7 +28,6 @@ class File :
         self.__file = uproot.open(filepath, **open_kwargs)
         self.__colmod = colmod
         self.__df = None
-        self.path = filepath
 
         if 'histtype' not in hist_kwargs :
             hist_kwargs['histtype'] = 'step'
@@ -105,7 +104,12 @@ class File :
         Otherwise, we assume that it is a histogram file.
         """
         return 'LDMX_Events' in self.__file
-    
+
+    @property
+    def path(self):
+        """Retrun the path to the file on disk"""
+        return self.__file.file_path
+
     def events(self, **kwargs) :
         """Callback for retrieving a full in-memory data frame of the events
         
