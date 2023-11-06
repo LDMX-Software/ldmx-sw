@@ -174,8 +174,10 @@ void Process::run() {
 
     newRun(runHeader);
 
+    int totalTries = 0; // total number of tries for entire run
     int numTries = 0;  // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
+      totalTries++;
       numTries++;
 
       ldmx::EventHeader &eh = theEvent.getEventHeader();
@@ -206,6 +208,7 @@ void Process::run() {
     for (auto module : sequence_) module->onFileClose(outFile);
 
     runHeader.setRunEnd(std::time(nullptr));
+    runHeader.setNumTries(totalTries);
     ldmx_log(info) << runHeader;
     outFile.writeRunTree();
 
