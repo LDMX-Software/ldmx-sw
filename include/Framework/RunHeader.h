@@ -19,6 +19,37 @@
 
 namespace ldmx {
 
+/**
+ * Run-specific configuration and data stored in its own output TTree alongside the
+ * event TTree in the output file.
+ *
+ * Similar to the EventHeader, the evolution of this object has been pretty slow since
+ * the `*Parameter*` members have been used to hold most of the additional information
+ * (for example, a lot of the simulation configuration information). The versions of
+ * the RunHeader as defined by ROOT's serialization infrastructure are documented here.
+ *
+ * ## v1 
+ * An initial beta version now lost to the sands of time.
+ *
+ * ## v2 and v3
+ * There are no material (serialized data) changes that are different between v2 and
+ * v3, but this version was increased because we moved the Framework repo (and thus
+ * the RunHeader source) from being within ldmx-sw to its own stand-alone repo. With
+ * an abundance of caution (and lack of understanding of what ROOT's dictionary
+ * cares about), we increased the version number.
+ *
+ * ## v4
+ * Add the numTries_ member variable in order to store exactly how many events were
+ * started during the production of the run.
+ *
+ * ### Interop with v3
+ * When reading a file written with v3 RunHeader using software with v4 RunHeader,
+ * the numTries_ member will keep its default value of 0. This is a nice signal
+ * value since it conveys to the user the lack of information. If the user somehow
+ * gets into the situation of reading a v4 RunHeader with v3 software, the numTries_
+ * member is quietly ignored, maintaining the format of the v3 RunHeader in the
+ * resulting output file.
+ */
 class RunHeader {
  public:
   /**
