@@ -36,6 +36,7 @@ Process::Process(const framework::config::Parameters &configuration)
       configuration.getParameter<int>("compressionSetting", 9);
   termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
   fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
+  logPerformance_ = configuration.getParameter<bool>("logPerformance", false);
 
   inputFiles_ =
       configuration.getParameter<std::vector<std::string>>("inputFiles", {});

@@ -171,6 +171,9 @@ class Process {
   /** Integer form of logging level to print to file */
   int fileLevelInt_;
 
+  /** log performance data into a tree in the histogram file */
+  bool logPerformance_;
+
   /** Name of file to print logging to */
   std::string logFileName_;
 
