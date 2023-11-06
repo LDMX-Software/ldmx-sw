@@ -33,7 +33,7 @@ class RunHeader {
    *
    * @note This exists for filling the object from a ROOT branch.
    */
-  RunHeader() {}
+  RunHeader() = default;
 
   /** Destructor. */
   virtual ~RunHeader() {}
@@ -87,6 +87,26 @@ class RunHeader {
    * @param[in] runEnd the end time of the run.
    */
   void setRunEnd(const int runEnd) { runEnd_ = runEnd; }
+
+  /**
+   * Get the total number of tries that were done during the production
+   * of this run
+   *
+   * @return the number of tries
+   */
+  int getNumTries() const { return numTries_; }
+
+  /**
+   * Set the total number of tries that were done during the production
+   * of this run
+   *
+   * @note This function is called within framework::Process::run and
+   * so it should not be used elsewhere. Changing the number of tries
+   * during processing is undefined behavior.
+   *
+   * @param[in] numTries the number of tries in this run
+   */
+  void setNumTries(const int numTries) { numTries_ = numTries; }
 
   /**
    * Get an int parameter value.
@@ -208,6 +228,22 @@ class RunHeader {
   int runEnd_{0};
 
   /**
+   * Total number of events that were begun during the production
+   * of this run
+   *
+   * This value is only set at the end of processing so we can faithfully
+   * store the total number of events that were started. In the case where
+   * maxTriesPerEvent is set to 1, this will be the same as the configured
+   * maxEvents during Production Mode. If more than one try per event is allowed,
+   * this will not necessarily be maxEvents since processors could abort an event
+   * causing more than maxEvents to be started. This can be summarized by the
+   * following inequality
+   *
+   * maxEvents <= numTries <= maxEvents*maxTriesPerEvent
+   */
+  int numTries_{0};
+
+  /**
    * git SHA-1 hash associated with the software tag used to generate
    * this file.
    */
@@ -222,7 +258,7 @@ class RunHeader {
   /** Map of string parameters. */
   std::map<std::string, std::string> stringParameters_;
 
-  ClassDef(RunHeader, 3);
+  ClassDef(RunHeader, 4);
 
 };  // RunHeader
 
