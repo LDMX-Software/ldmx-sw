@@ -238,7 +238,6 @@ void ParticleFlow::produce(framework::Event& event) {
     // std::vector<ldmx::PFCandidate> chargedMatch;
     // std::vector<ldmx::PFCandidate> chargedUnmatch;
     for(int i=0; i<tracks.size(); i++){
-      //if (tracks[i].getPdgID()==22 || tracks[i].getPdgID()==2112) continue;  // abandon build track if photon or neutron
       ldmx::PFCandidate cand;
       FillCandTrack(cand, tracks[i]);  // append track info to candidate
       
@@ -259,7 +258,6 @@ void ParticleFlow::produce(framework::Event& event) {
     for(int i=0; i<ecalClusters.size(); i++){
       // already linked with ECal in the previous step
       if(EMIsTkLinked[i]) continue;
-      //if((EMIsTkLinked[i]) && (!(tracks[i].getPdgID()==22 || tracks[i].getPdgID()==2112))) continue;  // must also be charged for EMIsTkLinked to make sense
 
       ldmx::PFCandidate cand;
       FillCandEMCalo(cand, ecalClusters[i]);
