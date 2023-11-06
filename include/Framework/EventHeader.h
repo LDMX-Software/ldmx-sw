@@ -40,20 +40,6 @@ namespace ldmx {
  * This is the main version currently and has all of the ldmx-sw necessary
  * information except the number of tries it took to generate any given event.
  * This is what motivated the update to v3.
- *
- * ## v3
- * This version includes the number of tries it took to generate an event
- * (from Framework's point of view) and updates the `get*Parameter` functions
- * to be `const` so that they can be accessed from within analyzers.
- *
- * ### v3-v2 Interop
- * The interoperability of the v2 and v3 event headers was studied during
- * the merging process of the v3 updates. You can view the full details
- * on GitHub: https://github.com/LDMX-Software/Framework/pull/80.
- * In summary, reading v3 headers with v2 will print a warning message
- * and write a file that includes an _empty_ `tries_` subbranch. Reading
- * v2 headers with v3 will silently maintain the v2 structure (i.e. there
- * will be no `tries_` subbranch).
  */
 class EventHeader {
  public:
@@ -110,22 +96,6 @@ class EventHeader {
    * @return The event weight.
    */
   double getWeight() const { return weight_; }
-
-  /**
-   * Set the number of tries it took to generate this event
-   * @note This is used within Framework during Production Mode
-   * and so changing it in a downstream Producer will be confusing
-   * (even if it runs properly).
-   *
-   * @param[in] t the number of tries
-   */
-  void setTries(int tries) { tries_ = tries; }
-
-  /**
-   * Get the number of events tried
-   * @return the number of tries
-   */
-  int getTries() const { return tries_; }
 
   /**
    * Is this a real data event?
@@ -257,12 +227,6 @@ class EventHeader {
   double weight_{1.0};
 
   /**
-   * The number of events that were begun before
-   * this event was generated and accepted by event filtering.
-   */
-  int tries_{0};
-
-  /**
    * Is this event real data?
    */
   bool isRealData_{false};
@@ -285,7 +249,7 @@ class EventHeader {
   /**
    * ROOT class definition.
    */
-  ClassDef(EventHeader, 3);
+  ClassDef(EventHeader, 2);
 };
 
 }  // namespace ldmx

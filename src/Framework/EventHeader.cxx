@@ -12,7 +12,6 @@ void EventHeader::Clear(Option_t*) {
   run_ = -1;
   timestamp_ = TTimeStamp(0, 0);
   weight_ = 1.0;
-  tries_ = 0;
   isRealData_ = false;
   intParameters_.clear();
   floatParameters_.clear();
@@ -22,8 +21,7 @@ void EventHeader::Clear(Option_t*) {
 void EventHeader::Print(Option_t*) const {
   std::cout << "EventHeader {"
             << " eventNumber: " << eventNumber_ << ", run: " << run_
-            << ", timestamp: " << timestamp_ << ", weight: " << weight_
-            << ", tries: " << tries_;
+            << ", timestamp: " << timestamp_ << ", weight: " << weight_;
   if (isRealData_)
     std::cout << ", DATA";
   else

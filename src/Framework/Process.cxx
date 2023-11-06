@@ -182,7 +182,6 @@ void Process::run() {
       eh.setRun(runForGeneration_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
-      eh.setTries(numTries);
 
       // reset the storage controller state
       storageController_.resetEventState();
