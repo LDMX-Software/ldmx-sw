@@ -22,7 +22,7 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   //DBScan parameters
   minClusterHitMult_ = ps.getParameter<int>("minClusterHitMult");
   clusterHitDist_ = ps.getParameter<double>("clusterHitDist");
-  clusterZBias_ = ps.getParameter<double>("clusterZBias");
+  clusterZBias_ = ps.getParameter<double>("clusterZBias",1);
   minHitEnergy_ = ps.getParameter<double>("minHitEnergy");
 }
 
