@@ -20,6 +20,8 @@ namespace dqm {
             virtual void configure(framework::config::Parameters& ps);
 
             virtual void analyze(const framework::Event& event);
+
+	    int pdgid_label(const int pdgid);
         private:
 
     };
