@@ -36,7 +36,7 @@ namespace dqm {
 	if (parent_track_id == 0) {
 	  histograms_.fill("pdgid_primaries", pdgid_label(pdgid));
 	  histograms_.fill("energy_primaries", energy);
-	  if (energy > 4000) {
+	  if (energy > 4001) {
 	    hard_thresh = 5000;
 	  }
 	  primary_daughters = daughters;
