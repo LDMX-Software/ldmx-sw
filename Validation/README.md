@@ -1,40 +1,54 @@
 # Validation
 
-Python package forcused on comparing two or more "similar" LDMX event data files.
+Python package focused on comparing two or more "similar" LDMX event or histogram files.
 
 ## Installation
-Inside container...
+One may use this python module either inside or outside the ldmx-sw development container.
+
+### Inside `ldmx`
+Since the environment inside of the container is a bit more restrictive, we need to 
+specifically tell `pip` some extra information that it cannot deduce on its own.
 ```
-ldmx python3 -m pip install Validation/ --target install/python/ --no-cache
+ldmx python3 -m pip install Validation/ \
+  --upgrade \
+  --target install/python/ \
+  --no-cache
 ```
+`python3 -m pip install Validation/` is the standard `pip` install method.
+We add `--upgrade` to tell `pip` it should overwrite the package if it already has been
+installed before which is helpful in the case where someone is updating the code and running
+the new code within the container. The `--target install/python/` arguments tell `pip`
+where to install the package. This directory is where we currently store our python modules
+and is where the container expects them to be. The `--no-cache` argument tells `pip` to
+not use a cache for downloading any dependencies from the internet which is necessary since
+`pip` will not be able to write to the cache location within the container.
+
+### Outside `ldmx`
 Outside container it is helpful to put the Validation module inside a virtual environment.
-This makes it easier to keep track of what you are doing.
-Below, I make two different virtual environments. `valid` has the Validation module files are copied
-over (so it can be used even if ldmx-sw switches to a branch without the Validation files).
-`valid-ed` has an "editable" install of Validation so you can develop the Validation module.
+This makes it easier to keep track of what you are doing and isolate the dependencies of `Validation`
+from other python packages that may be on your system.
 ```
 python3 -m venv .venv/valid --prompt valid
-source .venv/valid/bin/activate
-python3 -m pip install Validation/
-# in new terminal
-python3 -m venv .venv/valid-ed --prompt valid-ed
-source .venv/valid-ed/bin/activate
-python3 -m pip install -e Validation/
+. .venv/valid/bin/activate
+pip install --editable Validation/
 ```
-Then if you are developing Validation you would `source <full-path>/ldmx-sw/.venv/valid-ed/bin/activate`
-and if not `source <full-path>/ldmx-sw/.venv/valid/bin/activate`.
+I store the virtual environment files in a directory called `.venv/valid` and tell `venv` to use
+`valid` as the prompt so I can see in my terminal that I have access to the Validation package.
+_After_ activating the virtual environment, I install an editable version of Validation.
+Using `--editable` means that `python` will look at the original source files when attempting to
+use the module while running which is helpful when planning to edit the Validation source files.
+You can omit the `--editable` option in which case the code will be copied and (slightly) optimized
+and you will need to re-`install` if you make changes to the source code.
 
-Other helpful options
-- Outside container: `--user` may need to be required
-- Both: `--editable` may be helpful if developing Validation which should be provided _before_ the path to Validation
-  e.g. `python3 -m pip install --editable Validation/ --user`
+Using Validation without a virtual environment and outside of the container is not recommended.
+
 
 ## Usage
-_Cannot_ run from ldmx-sw directory. `import Validation` prefers
-the local directory instead of the installed path so it tries to
+This module _cannot_ be run from ldmx-sw directory.
+`import Validation` prefers the local directory instead of the installed path so it tries to
 load from the `ldmx-sw/Validation` directory.
 
-Could fix this by renaming the package inside Validation.
+We could fix this by renaming the package inside Validation or renaming the directory.
 
 ### CLI
 The Validation module is constructed to do some common tasks quickly on the command line.
@@ -56,4 +70,5 @@ Again, accessing this module post-installation is the same as other modules `imp
 This can help you develop plots that don't come pre-made within the Validation module.
 **If you are developing Validation and testing within a notebook**, you will need to reboot
 the python kernel anytime you wish to test changes to the Validation module. This is necessary
-because Python keeps modules cached in memory during normal running.
+because Jupyter keeps modules cached in memory during normal running in order to save time
+when re-executing cells with `import` statements.
