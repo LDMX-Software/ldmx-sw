@@ -18,12 +18,11 @@ namespace framework::performance {
 class Measurement {
  public:
   Measurement() = default;
+  Measurement(bool do_sample);
   virtual ~Measurement() = default;
   void sample();
  private:
-  int time_;
-  int mem_;
-  int cpu_;
+  long unsigned int time_;
   ClassDef(Measurement, 1);
 };
 }
