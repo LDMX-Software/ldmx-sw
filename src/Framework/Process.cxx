@@ -16,6 +16,8 @@
 #include "TFile.h"
 #include "TROOT.h"
 
+#include "Framework/Performance/Tracker.h"
+
 namespace framework {
 
 Process::Process(const framework::config::Parameters &configuration)
@@ -119,6 +121,8 @@ Process::~Process() {
 }
 
 void Process::run() {
+  performance::Tracker perf(makeHistoDirectory("performance"));
+  perf.absolute_start();
   // set up the logging for this run
   logging::open(logging::convertLevel(termLevelInt_),
                 logging::convertLevel(fileLevelInt_),
@@ -141,8 +145,14 @@ void Process::run() {
   theEvent.getEventHeader().setRun(runForGeneration_);
 
   // Start by notifying everyone that modules processing is beginning
+  perf.begin_onProcessStart("ALL");
   conditions_.onProcessStart();
-  for (auto module : sequence_) module->onProcessStart();
+  for (auto module : sequence_) {
+    perf.begin_onProcessStart(module->getName());
+    module->onProcessStart();
+    perf.end_onProcessStart(module->getName());
+  }
+  perf.end_onProcessStart("ALL");
 
   // If we have no input files, but do have an event number, run for
   // that number of events and generate an output file.
@@ -341,13 +351,6 @@ void Process::run() {
 
   }  // are there input files? if-else tree
 
-  // close up histogram file if anything was put into it
-  if (histoTFile_) {
-    histoTFile_->Write();
-    delete histoTFile_;
-    histoTFile_ = 0;
-  }
-
   // finally, notify everyone that we are stopping
   for (auto module : sequence_) {
     module->onProcessEnd();
@@ -355,6 +358,7 @@ void Process::run() {
 
   // we're done so let's close up the logging
   logging::close();
+  perf.absolute_end();
 }
 
 int Process::getRunNumber() const {
