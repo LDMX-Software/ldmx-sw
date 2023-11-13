@@ -9,12 +9,20 @@ void ReSimulator::configure(framework::config::Parameters& parameters) {
   if (!resimulate_all_events) {
     events_to_resimulate_ =
         parameters.getParameter<std::vector<int>>("events_to_resimulate", {});
+    runs_to_resimulate_ = 
+        parameters.getParameter<std::vector<int>>("runs_to_resimulate", {});
     if (events_to_resimulate_.size() == 0) {
       EXCEPTION_RAISE(
           "ReSimNoEvents",
           "ReSim was configured with resimulate_all_events marked false but "
           "no event numbers were requested.\n\nDid you forget to configure "
           "the events_to_resimulate parameter?\n");
+    }
+    if (runs_to_resimulate_.size() > 1 and runs_to_resimulate_.size() != events_to_resimulate_.size()) {
+      EXCEPTION_RAISE(
+          "ReSimBadConf",
+          "ReSim needs the runs list to match the length of the events list if there is more than "
+          "one run that needs to be resimulated.");
     }
   }
 }
@@ -23,9 +31,28 @@ void ReSimulator::produce(framework::Event& event) {
   auto& eventHeader{event.getEventHeader()};
   const auto eventNumber{eventHeader.getEventNumber()};
   if (!resimulate_all_events) {
-    auto found = std::find(std::begin(events_to_resimulate_),
-                           std::end(events_to_resimulate_), eventNumber);
-    if (found == std::end(events_to_resimulate_)) {
+    auto found_event = std::find(std::begin(events_to_resimulate_),
+        std::end(events_to_resimulate_), eventNumber);
+    bool should_resim{found_event != std::end(events_to_resimulate_)};
+    if (should_resim and runs_to_resimulate_.size() > 0) {
+      // non-empty list of runs and event number in event list,
+      // we need to check run number is also requested
+      int run{event.getEventHeader().getRun()};
+      if (runs_to_resimulate_.size() == 1) {
+        // single run applied to all events requested
+        should_resim = runs_to_resimulate_.at(0) == run;
+      } else {
+        // more than one run, look for run corresponding to index
+        // of event number found
+        // developer note: this code has a high-liklihood of throwing
+        // the std::out_of_range error if the runs_to_resimulate_ vector
+        // isn't pre-checked to be the same size as events_to_resimulate_
+        should_resim = runs_to_resimulate_.at(
+            std::distance(events_to_resimulate_.begin(), found_event)
+        ) == run;
+      }
+    }
+    if (not should_resim) {
       if (verbosity_ > 1) {
         std::cout << "Skipping event: " << eventNumber
                   << " since it wasn't part of the requested events..."
