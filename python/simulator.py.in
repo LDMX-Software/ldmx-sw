@@ -138,7 +138,7 @@ class simulator(Producer):
                 sds.ScoringPlaneSD.magnet()
                 ])
 
-    def resimulate(self, which_events = None):
+    def resimulate(self, which_events = None, which_runs = None):
         """Create a resimulator based on the simulator configuration.
 
         This is intended to ensure that a resimulator has the same configuration
@@ -150,7 +150,7 @@ class simulator(Producer):
 
         Parameters
         ----------
-            which_events : list of event numbers, optional
+        which_events : list of event numbers, optional
             Which events from the input files to resimulate. If None,
             resimulate all events.
 
@@ -158,7 +158,19 @@ class simulator(Producer):
             ignored.
 
             For multiple input files, if an event number is present within more
-            than one input file all versions will be resimulated.
+            than one input file all versions will be resimulated unless the which_runs
+            parameters is used to distinguish them.
+
+        which_runs : list of run numbers, optional
+            Which runs from the input files to resimulate, ignored if no
+            events are listed. Runs not present in the input files will be
+            ignored.
+
+            If not provided, all runs will be resimulated (i.e. the run number
+            check is ignored). If only one value is provided, all events requested
+            are also required to have that value for their run number to be resimulated.
+            If more than one value is provided, it must be the same length as the
+            number of events requested so that the event/run number pair can be required.
 
         """
         resimulator = self
@@ -166,11 +178,24 @@ class simulator(Producer):
         if which_events is None:
             resimulator.resimulate_all_events = True
             resimulator.events_to_resimulate = [ ]
+            resimulator.runs_to_resimulate = [ ]
         elif isinstance(which_events, list):
             resimulator.resimulate_all_events = False
             resimulator.events_to_resimulate = which_events
             if len(which_events) == 0:
                 raise ValueError('which_events must contain at least one element if provided')
+            if which_runs is None:
+                resimulator.runs_to_resimulate = [ ]
+            elif isinstance(which_runs, int):
+                resimulator.runs_to_resimulate = [ which_runs ]
+            elif isinstance(which_runs, list):
+                if len(which_runs) == 0:
+                    raise ValueError('which_runs must have at least one value if provided as a list')
+                if len(which_runs) != len(which_events):
+                    raise ValueError('which_runs must have the same number of entries as which_events if more than one run is provided')
+                resimulator.runs_to_resimulate = which_runs
+            else:
+                raise ValueError('which_runs must be an int or a list of ints if provided')
         else:
             raise ValueError('which_events must be a list if provided')
         return resimulator
