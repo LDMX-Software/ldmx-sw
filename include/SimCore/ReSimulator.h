@@ -27,43 +27,33 @@ class ReSimulator : public SimulatorBase {
 
  private:
   /**
-   * List of event numbers in the input files that should be resimulated if
+   * List of events in the input files that should be resimulated if
    * `resimulate_all_events` is false.
    *
-   * @note: If an event number in `events_to_resimulate_` is not part of the
+   * Each event is identified uniquely by its run number and event number.
+   *
+   * @note: If an event in `events_to_resimulate_` is not part of the
    * input file, it will be ignored.
    */
-  std::vector<int> events_to_resimulate_;
-
-  /**
-   * List of run numbers in the input files that should be resimulated if
-   * `resimulate_all_events` is false.
-   *
-   * @note: If a run number in `runs_to_resimulate_` is not part of the
-   * input file, it will be ignored.
-   *
-   * The list of runs to resimulate comes in one of three forms:
-   * 1. Empty: If no runs are given, we only match based off the event number.
-   * 2. Single Entry: If only one run is given, then we require the run number
-   *    to be that entry for all events requested to resimulate.
-   * 3. More than one entry: In this case, we require the length of this list
-   *    to be the same as the length of the events to resimulate so that we 
-   *    only resimulate events where the event/run *pair* matches a corresponding
-   *    *pair* in the events and runs to resimulate lists.
-   */
-  std::vector<int> runs_to_resimulate_;
+  std::vector<std::pair<int,int>> events_to_resimulate_;
 
   /**
    * Whether to resimulate all events in the input files
    */
-  bool resimulate_all_events;
+  bool resimulate_all_events_;
+
+  /**
+   * Whether or not we should check the run number when seeing
+   * if a specific event should be resimulated
+   */
+  bool care_about_run_;
 
   /*
    * How many events have already been resimulated. This determines the event
    * number in the output file, since more than one input file can be used.
    *
    */
-  int events_resimulated = 0;
+  int events_resimulated_ = 0;
 };
 }  // namespace simcore
 

@@ -6,6 +6,25 @@ with several helpful member functions.
 
 from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Producer
 
+class _EventToReSim:
+    """A class to hold the information identifying a specific event we wish to re-simulate
+
+    This is an internal class used by simulator.resimulate in order to pass the event
+    identification to the ReSimulator class
+
+    Attributes
+    ----------
+    run: int
+        run number of the event to re-sim, -1 if we don't care about the run
+    event: int
+        event number to re-sim, required
+    """
+
+    def __init__(self, event, run = -1):
+        self.event = event
+        self.run = run
+
+
 class simulator(Producer):
     """A instance of the simulation configuration
 
@@ -177,23 +196,25 @@ class simulator(Producer):
         resimulator.className = 'simcore::ReSimulator'
         if which_events is None:
             resimulator.resimulate_all_events = True
+            resimulator.care_about_run = False
             resimulator.events_to_resimulate = [ ]
-            resimulator.runs_to_resimulate = [ ]
         elif isinstance(which_events, list):
             resimulator.resimulate_all_events = False
-            resimulator.events_to_resimulate = which_events
             if len(which_events) == 0:
                 raise ValueError('which_events must contain at least one element if provided')
             if which_runs is None:
-                resimulator.runs_to_resimulate = [ ]
+                resimulator.care_about_run = False
+                resimulator.events_to_resimulate = [ _EventToReSim(event) for event in which_events ]
             elif isinstance(which_runs, int):
-                resimulator.runs_to_resimulate = [ which_runs ]
+                resimulator.care_about_run = True
+                resimulator.events_to_resimulate = [ _EventToReSim(event, which_runs) for event in which_events ]
             elif isinstance(which_runs, list):
                 if len(which_runs) == 0:
                     raise ValueError('which_runs must have at least one value if provided as a list')
                 if len(which_runs) != len(which_events):
                     raise ValueError('which_runs must have the same number of entries as which_events if more than one run is provided')
-                resimulator.runs_to_resimulate = which_runs
+                resimulator.care_about_run = True
+                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs) ]
             else:
                 raise ValueError('which_runs must be an int or a list of ints if provided')
         else:
