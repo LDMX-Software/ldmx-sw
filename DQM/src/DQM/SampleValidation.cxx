@@ -57,7 +57,11 @@ namespace dqm {
       for (auto const& primary_daughter : primary_daughters) {
 	if (trackid == primary_daughter) {
 	  histograms_.fill("pdgid_primarydaughters", pdgid_label(p.getPdgID()));
+	  if (p.getPdgID() == 22) {
+	    histograms_.fill("energy_daughterphoton", p.getEnergy());
+	  }
 	  if (p.getEnergy() >= hard_thresh) {
+	    histograms_.fill("pdgid_harddaughters", pdgid_label(p.getPdgID()));
 	    histograms_.fill("startZ_hardbrem", p.getVertex()[2]);
 	    histograms_.fill("endZ_hardbrem", p.getEndPoint()[2]);
 	    histograms_.fill("energy_hardbrem", p.getEnergy());
@@ -117,6 +121,8 @@ namespace dqm {
     if (pdgid > 2300) label = 16; //exotic (e.g., baryon with strangeness)
     
     if (pdgid > 10000) label = 15; //nuclei
+
+    if (pdgid == 622) label = 17; // dark photon
     
     return label;
   }
