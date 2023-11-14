@@ -4,55 +4,41 @@ namespace simcore {
 
 void ReSimulator::configure(framework::config::Parameters& parameters) {
   SimulatorBase::configure(parameters);
-  resimulate_all_events =
+  resimulate_all_events_ =
       parameters.getParameter<bool>("resimulate_all_events");
-  if (!resimulate_all_events) {
-    events_to_resimulate_ =
-        parameters.getParameter<std::vector<int>>("events_to_resimulate", {});
-    runs_to_resimulate_ = 
-        parameters.getParameter<std::vector<int>>("runs_to_resimulate", {});
-    if (events_to_resimulate_.size() == 0) {
+  if (!resimulate_all_events_) {
+    care_about_run_ = parameters.getParameter<bool>("care_about_run");
+    auto configured_events{parameters.getParameter<std::vector<framework::config::Parameters>>("events_to_resimulate", {})};
+    if (configured_events.size() == 0) {
       EXCEPTION_RAISE(
           "ReSimNoEvents",
           "ReSim was configured with resimulate_all_events marked false but "
           "no event numbers were requested.\n\nDid you forget to configure "
           "the events_to_resimulate parameter?\n");
     }
-    if (runs_to_resimulate_.size() > 1 and runs_to_resimulate_.size() != events_to_resimulate_.size()) {
-      EXCEPTION_RAISE(
-          "ReSimBadConf",
-          "ReSim needs the runs list to match the length of the events list if there is more than "
-          "one run that needs to be resimulated.");
+    for (const auto& run_event : configured_events) {
+      events_to_resimulate_.emplace_back(
+            run_event.getParameter<int>("run"),
+            run_event.getParameter<int>("event")
+      );
     }
   }
 }
+
 void ReSimulator::produce(framework::Event& event) {
   /* numEventsBegan_++; */
   auto& eventHeader{event.getEventHeader()};
   const auto eventNumber{eventHeader.getEventNumber()};
-  if (!resimulate_all_events) {
-    auto found_event = std::find(std::begin(events_to_resimulate_),
-        std::end(events_to_resimulate_), eventNumber);
-    bool should_resim{found_event != std::end(events_to_resimulate_)};
-    if (should_resim and runs_to_resimulate_.size() > 0) {
-      // non-empty list of runs and event number in event list,
-      // we need to check run number is also requested
-      int run{event.getEventHeader().getRun()};
-      if (runs_to_resimulate_.size() == 1) {
-        // single run applied to all events requested
-        should_resim = runs_to_resimulate_.at(0) == run;
-      } else {
-        // more than one run, look for run corresponding to index
-        // of event number found
-        // developer note: this code has a high-liklihood of throwing
-        // the std::out_of_range error if the runs_to_resimulate_ vector
-        // isn't pre-checked to be the same size as events_to_resimulate_
-        should_resim = runs_to_resimulate_.at(
-            std::distance(events_to_resimulate_.begin(), found_event)
-        ) == run;
-      }
-    }
-    if (not should_resim) {
+  if (!resimulate_all_events_) {
+    auto found_event_to_resim = std::find_if(
+        std::begin(events_to_resimulate_), std::end(events_to_resimulate_),
+        [&](const std::pair<int,int>& run_event) -> bool {
+          bool runs_match = true;
+          if (care_about_run_) runs_match = (event.getEventHeader().getRun() == run_event.first);
+          return eventNumber == run_event.second and runs_match;
+        }
+    );
+    if (found_event_to_resim == std::end(events_to_resimulate_)) {
       if (verbosity_ > 1) {
         std::cout << "Skipping event: " << eventNumber
                   << " since it wasn't part of the requested events..."
@@ -83,7 +69,7 @@ void ReSimulator::produce(framework::Event& event) {
             std::to_string(eventNumber));
   }
 
-  eventHeader.setEventNumber(++events_resimulated);
+  eventHeader.setEventNumber(++events_resimulated_);
   updateEventHeader(eventHeader);
   saveTracks(event);
 
