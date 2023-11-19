@@ -62,6 +62,7 @@ void RunManager::setupPhysics() {
   pList->RegisterPhysics(new GammaPhysics{"GammaPhysics", parameters_});
   pList->RegisterPhysics(new APrimePhysics(
       parameters_.getParameter<framework::config::Parameters>("dark_brem")));
+  pList->RegisterPhysics(new KaonPhysics("KaonPhysics", parameters_.getParameter<framework::config::Parameters>("kaon_parameters")));
 
   auto biasing_operators{
       parameters_.getParameter<std::vector<framework::config::Parameters>>(
