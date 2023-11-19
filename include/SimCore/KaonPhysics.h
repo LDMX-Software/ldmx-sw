@@ -27,6 +27,34 @@ namespace simcore {
  */
 
 class KaonPhysics : public G4VPhysicsConstructor {
+ private:
+  /**
+   *
+   * Represents the 6 possible decay channels for charged kaons in Geant4 (See
+   * G4KaonMinus.cc and G4KaonPlus.cc in the Geant4 sources) in the order they
+   * appear in the decay table.
+   *
+   * The processes are
+   * K^+ -> \mu^+ + \nu_\mu
+   * K^+ -> \pi^+ + \pi^0
+   * K^+ -> \pi^+ + \pi^- + \pi^+
+   * K^+ -> \pi^+ + \pi^0 + \pi^0
+   * K^+ -> \pi^0 + e^+ + \nu_\mu
+   * K^+ -> \pi^0 + \mu^+ + \nu_\mu
+   *
+   * And vice versa for K^-.
+   * The indices here correspond to the position of the branching ratio for
+   * that process in the corresponding parameter as well as the position in
+   * the decay table.
+   */
+  enum KaonDecayChannel {
+    mu_nu = 0,
+    pi_pi0 = 1,
+    pi_pi_pi = 2,
+    pi_pi0_pi0 = 3,
+    pi0_e_nu = 4,
+    pi0_mu_nu = 5
+  };
 };
 }  // namespace simcore
 
