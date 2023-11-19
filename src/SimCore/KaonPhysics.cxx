@@ -35,5 +35,18 @@ void KaonPhysics::setDecayProperties(
   (*table)[KaonDecayChannel::pi0_mu_nu]->SetBR(
       branching_ratios[KaonDecayChannel::pi0_mu_nu]);
 }
+void KaonPhysics::ConstructParticle() {
+  auto kaonPlus{G4KaonPlus::Definition()};
+  auto kaonMinus{G4KaonMinus::Definition()};
+
+  if (!kaonPlus || !kaonMinus) {
+    EXCEPTION_RAISE("KaonPhysics",
+                    "Unable to get the charged kaon particle definitions, "
+                    "something is very wrong with the configuration.");
+  }
+  setDecayProperties(kaonPlus, kplus_branching_ratios, kplus_lifetime_factor);
+  setDecayProperties(kaonMinus, kminus_branching_ratios,
+                     kminus_lifetime_factor);
+}
 
 }  // namespace simcore
