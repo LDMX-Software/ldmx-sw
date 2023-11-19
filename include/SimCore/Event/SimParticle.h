@@ -38,6 +38,7 @@ class SimParticle {
     photonNuclear,
     GammaToMuPair,
     eDarkBrem,
+    Decay,
     // Only add additional processes to the end of this list!
   };
 
