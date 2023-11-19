@@ -69,6 +69,14 @@ class KaonPhysics : public G4VPhysicsConstructor {
   KaonPhysics(const G4String& name,
               const framework::config::Parameters& parameters);
   virtual ~KaonPhysics() = default;
+
+  /**
+   *  Set the lifetime and branching ratios for one of the charged kaon
+   *  species.
+   */
+  void setDecayProperties(G4ParticleDefinition* kaon,
+                          const std::vector<double>& branching_ratios,
+                          double lifetime_factor) const;
 };
 }  // namespace simcore
 
