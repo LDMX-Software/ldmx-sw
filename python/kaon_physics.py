@@ -46,7 +46,15 @@ class KaonPhysics():
         self.kplus_lifetime_factor = 1.
         self.kminus_lifetime_factor = 1.
 
+
     def upKaons():
+        """Returns a configuration of the kaon physics corresponding
+        to the changes that were made in
+        https://github.com/ldmx-software/geant4/tree/LDMX.upKaons_mod
+
+        Reduces the charged kaon lifetimes by a factor 1/50 and forces
+        decays to be into one of the leptonic decay modes.
+        """
         kaon_physics = KaonPhysics()
         kaon_physics.kplus_branching_ratios = [
             0.8831,  # K^+ -> mu^+ + nu_mu
