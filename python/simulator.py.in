@@ -92,6 +92,9 @@ class simulator(Producer):
         from LDMX.SimCore import photonuclear_models
         self.photonuclear_model = photonuclear_models.BertiniModel()
 
+        from LDMX.SimCore import kaon_physics
+        self.kaon_parameters = kaon_physics.KaonPhysics()
+
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
 
