@@ -24,6 +24,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "SimCore/KaonPhysics.h"
 
 namespace simcore {
 
