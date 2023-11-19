@@ -55,6 +55,15 @@ class KaonPhysics : public G4VPhysicsConstructor {
     pi0_e_nu = 4,
     pi0_mu_nu = 5
   };
+  // Factor to scale the K^+/K^- lifetimes by. To reduce the lifetime of all
+  // charged kaons by a factor 50, set these to 1/50.
+  double kplus_lifetime_factor{1};
+  double kminus_lifetime_factor{1};
+
+  // Branching ratios for each of the decay processes listed in the
+  // KaonDecayChannel enumerator
+  std::vector<double> kplus_branching_ratios;
+  std::vector<double> kminus_branching_ratios;
 };
 }  // namespace simcore
 
