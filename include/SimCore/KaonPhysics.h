@@ -64,6 +64,11 @@ class KaonPhysics : public G4VPhysicsConstructor {
   // KaonDecayChannel enumerator
   std::vector<double> kplus_branching_ratios;
   std::vector<double> kminus_branching_ratios;
+
+ public:
+  KaonPhysics(const G4String& name,
+              const framework::config::Parameters& parameters);
+  virtual ~KaonPhysics() = default;
 };
 }  // namespace simcore
 
