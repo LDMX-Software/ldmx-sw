@@ -77,6 +77,27 @@ class KaonPhysics : public G4VPhysicsConstructor {
   void setDecayProperties(G4ParticleDefinition* kaon,
                           const std::vector<double>& branching_ratios,
                           double lifetime_factor) const;
+
+  /**
+   * Construct/Update particles
+   *
+   * Update the particle definitions for charged kaons
+   *
+   * 1. Scale their lifetime by the corresponding lifetime factor
+   *
+   * 2. Set their branching ratios to those in the corresponding branching
+   * raito parameter
+   */
+
+  void ConstructParticle() override;
+
+  /**
+   * Construct processes
+   *
+   * We don't do anything here since we are just attaching/updating
+   * the kaon particle definitions.
+   */
+  void ConstructProcess() override{};
 };
 }  // namespace simcore
 
