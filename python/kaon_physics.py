@@ -1,6 +1,31 @@
 
 class KaonPhysics():
+    """Parameters that determine the physics of kaons in the simulation
 
+    Parameters
+    ----------
+    kplus_branching_ratios : list[float]
+    kminus_branching_ratios : list[float]
+        List of the desired branching ratios for charged kaons. The entries
+        correspond go the following processes
+
+        - 0: K -> mu + v
+        - 1: K -> pi + pi0
+        - 2: K -> 3 pi
+        - 3: K -> pi + 2 pi0
+        - 4: K -> pi0 + e + v
+        - 5: K -> pi0 + mu + v
+
+        See the sources for Geant4's definitions and branching ratios
+        (G4KaonMinus.cc, G4KaonPlus.cc). The default branching ratios
+        correspond to the Geant4 defaults.
+
+    kplus_lifetime_factor : float
+    kminus_lifetime_factor : float
+
+        Multiplicative factor to scale the lifetime of charged kaons by.
+        Default is to scale by 1 (no scaling)
+    """
     def __init__(self):
         self.kplus_branching_ratios = [
             0.6355,  # K^+ -> mu^+ + nu_mu
