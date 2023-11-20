@@ -36,9 +36,7 @@ namespace dqm {
 	if (parent_track_id == 0) {
 	  histograms_.fill("pdgid_primaries", pdgid_label(pdgid));
 	  histograms_.fill("energy_primaries", energy);
-	  if (energy > 4001) {
-	    hard_thresh = 5000;
-	  }
+	  hard_thresh = (2500/4000)*energy;
 	  primary_daughters = daughters;
 	  for (const ldmx::SimTrackerHit &sphit : targetSPHits) {
 	    if (sphit.getTrackID() == it.first && sphit.getPosition()[2] < 0) {
@@ -89,7 +87,7 @@ namespace dqm {
   }
 
   int SampleValidation::pdgid_label(const int pdgid) {
-    int label = 0;
+    int label = 18;
     if (pdgid == -11) label = 1; // e+
     
     if (pdgid == 11) label = 2; // e-
@@ -118,11 +116,11 @@ namespace dqm {
     
     if (pdgid == 310) label = 14; // K-Short
     
-    if (pdgid > 2300) label = 16; //exotic (e.g., baryon with strangeness)
+    if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 || pdgid == 3322 || pdgid == 3312) label = 16; // strange baryon
     
     if (pdgid > 10000) label = 15; //nuclei
 
-    if (pdgid == 622) label = 17; // dark photon
+    if (pdgid == 622) label = 17; // dark photon, need pdg id for other models like ALPs and SIMPs
     
     return label;
   }
