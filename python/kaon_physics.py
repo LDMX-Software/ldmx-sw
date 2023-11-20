@@ -86,6 +86,9 @@ class KaonPhysics():
 
         Reduces the charged kaon lifetimes by a factor 1/50 and forces
         decays to be into one of the leptonic decay modes.
+
+        See
+        https://github.com/LDMX-Software/geant4/commit/25228b8b1fbad913b4933b7c0d3951ebe36d404c
         """
         kaon_physics = KaonPhysics()
         kaon_physics.kplus_branching_ratios = [
@@ -107,3 +110,27 @@ class KaonPhysics():
         kaon_physics.kplus_lifetime_factor = 1/50.
         kaon_physics.kminus_lifetime_factor = 1/50.
         return kaon_physics
+
+    def __setattr__(self, key, value):
+        """Ensure that attempts to set the branching ratios give a total of
+        something close to 1 and that the lifetime factors are positive.
+
+        Note that Geant4's defaults are not exactly equal to one, but something
+        significantly different from one is likely to be a mistake.
+
+        """
+        if 'branching_ratios' in key:
+            # super().__setattr__(key, value)
+            if not isinstance(value, list):
+                raise TypeError(f'Values of branching ratios ({key}) need to be lists')
+            if abs(sum(value) - 1) > 0.95:
+                raise ValueError(f'Total of branching ratios in {key} significantly different from one, was {value}.')
+            super().__setattr__(key, value)
+        elif 'lifetime' in key:
+            if not isinstance(value, float):
+                raise TypeError(f'Lifetime parameter ({key}) needs to be floating-point')
+            if value < 0:
+                raise ValueError(f'Lifetime parameter ({key}) needs to be positive')
+            pass
+        else:
+            super().__setattr__(key, value)
