@@ -27,6 +27,13 @@ class ReSimulator : public SimulatorBase {
 
  private:
   /**
+   * Check if an event should be skipped during resimulation
+   *
+   * @param[in] event handle to the current event being processed
+   */
+  bool skip(framework::Event& event) const;
+
+  /**
    * List of events in the input files that should be resimulated if
    * `resimulate_all_events` is false.
    *
@@ -35,7 +42,7 @@ class ReSimulator : public SimulatorBase {
    * @note: If an event in `events_to_resimulate_` is not part of the
    * input file, it will be ignored.
    */
-  std::vector<std::pair<int,int>> events_to_resimulate_;
+  std::vector<std::pair<int, int>> events_to_resimulate_;
 
   /**
    * Whether to resimulate all events in the input files
