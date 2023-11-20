@@ -6,9 +6,12 @@ class KaonPhysics():
     ----------
     kplus_branching_ratios : list[float]
     kminus_branching_ratios : list[float]
-        List of the desired branching ratios for charged kaons. The entries
+    k0l_branching_ratios : list[float]
+    k0s_branching_ratios : list[float]
+        List of the desired branching ratios for kaons. The entries
         correspond go the following processes
 
+        For charged kaons
         - 0: K -> mu + v
         - 1: K -> pi + pi0
         - 2: K -> 3 pi
@@ -16,15 +19,30 @@ class KaonPhysics():
         - 4: K -> pi0 + e + v
         - 5: K -> pi0 + mu + v
 
+        For Klong
+        - 0: K -> 3 pi0
+        - 1: K -> pi0 + pi+ + pi-
+        - 2: K -> pi- + e+ + v
+        - 3: K -> pi+ + e- + v
+        - 4: K -> pi- + mu+ + v
+        - 5: K -> pi+ + mu- + v
+
+        For Kshort:
+        - 0: K -> pi+ + pi-
+        - 1: K -> 2 pi0
+
         See the sources for Geant4's definitions and branching ratios
-        (G4KaonMinus.cc, G4KaonPlus.cc). The default branching ratios
-        correspond to the Geant4 defaults.
+        (G4KaonMinus.cc, G4KaonPlus.cc, KaonZeroLong.cc, KaonZeroShort.cc). The
+        default branching ratios correspond to the Geant4 defaults.
 
     kplus_lifetime_factor : float
     kminus_lifetime_factor : float
+    k0l_lifetime_factor : float
+    k0s_lifetime_factor : float
 
-        Multiplicative factor to scale the lifetime of charged kaons by.
-        Default is to scale by 1 (no scaling)
+        Multiplicative factor to scale the lifetime of kaons by. Default is to
+        scale by 1 (no scaling)
+
     """
     def __init__(self):
         self.kplus_branching_ratios = [
@@ -43,8 +61,22 @@ class KaonPhysics():
             0.0507,  # K-+ -> pi^0 + e^- + anti_nu_e
             0.0335,  # K-+ -> pi^0 + mu^- + anti_nu_mu
         ]
+        self.k0l_branching_ratios = [
+            0.1952, # K^0_L -> pi^0 + pi^0 + pi^0
+            0.1254, # K^0_L -> pi^0 + pi^+ + pi^-
+            0.2027, # K^0_L -> pi^- + e^+ + nu_e
+            0.2027, # K^0_L -> pi^+ + e^- + anti_nu_e
+            0.1352, # K^0_L -> pi^- + mu^+ + nu_mu
+            0.1352, # K^0_L -> pi^+ + mu^- + anti_nu_mu
+        ]
+        self.k0s_branching_ratios = [
+            0.6920, # K^0_S -> pi^+ + pi^-
+            0.3069, # K^0_S -> pi^0 + pi^0
+        ]
         self.kplus_lifetime_factor = 1.
         self.kminus_lifetime_factor = 1.
+        self.k0l_lifetime_factor = 1.
+        self.k0s_lifetime_factor = 1.
 
 
     def upKaons():
