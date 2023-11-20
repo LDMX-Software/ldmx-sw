@@ -135,3 +135,17 @@ class KaonPhysics():
             pass
         else:
             super().__setattr__(key, value)
+
+    def __repr__(self):
+        return (
+            f"KaonPhysics(\n"
+            f"  kplus_branching_ratios={self.kplus_branching_ratios},\n"
+            f"  kminus_branching_ratios={self.kminus_branching_ratios},\n"
+            f"  k0l_branching_ratios={self.k0l_branching_ratios},\n"
+            f"  k0s_branching_ratios={self.k0s_branching_ratios},\n"
+            f"  kplus_lifetime_factor={self.kplus_lifetime_factor},\n"
+            f"  kminus_lifetime_factor={self.kminus_lifetime_factor},\n"
+            f"  k0l_lifetime_factor={self.k0l_lifetime_factor},\n"
+            f"  k0s_lifetime_factor={self.k0s_lifetime_factor}\n"
+            f")"
+        )
