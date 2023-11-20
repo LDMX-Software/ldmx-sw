@@ -123,8 +123,9 @@ class KaonPhysics():
             # super().__setattr__(key, value)
             if not isinstance(value, list):
                 raise TypeError(f'Values of branching ratios ({key}) need to be lists')
-            if abs(sum(value) - 1) > 0.95:
-                raise ValueError(f'Total of branching ratios in {key} significantly different from one, was {value}.')
+            total_branching_ratio = sum(value)
+            if abs(total_branching_ratio- 1) > 0.05:
+                raise ValueError(f'Total of branching ratios in {key} significantly different from one, was {total_branching_ratio}: {value}.')
             super().__setattr__(key, value)
         elif 'lifetime' in key:
             if not isinstance(value, float):
