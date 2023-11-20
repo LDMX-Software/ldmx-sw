@@ -35,8 +35,7 @@
 namespace simcore {
 
 RunManager::RunManager(framework::config::Parameters& parameters,
-                       ConditionsInterface& )
-{
+                       ConditionsInterface&) {
   parameters_ = parameters;
 
   // Set whether the ROOT primary generator should use the persisted seed.

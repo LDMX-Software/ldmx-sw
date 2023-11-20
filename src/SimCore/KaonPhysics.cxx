@@ -8,10 +8,16 @@ KaonPhysics::KaonPhysics(const G4String& name,
       parameters.getParameter<std::vector<double>>("kplus_branching_ratios");
   kminus_branching_ratios =
       parameters.getParameter<std::vector<double>>("kminus_branching_ratios");
+  k0l_branching_ratios =
+      parameters.getParameter<std::vector<double>>("k0l_branching_ratios");
+  k0s_branching_ratios =
+      parameters.getParameter<std::vector<double>>("k0s_branching_ratios");
   kplus_lifetime_factor =
       parameters.getParameter<double>("kplus_lifetime_factor");
   kminus_lifetime_factor =
       parameters.getParameter<double>("kminus_lifetime_factor");
+  k0l_lifetime_factor = parameters.getParameter<double>("k0l_lifetime_factor");
+  k0s_lifetime_factor = parameters.getParameter<double>("k0s_lifetime_factor");
 }
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,
@@ -22,24 +28,46 @@ void KaonPhysics::setDecayProperties(
     EXCEPTION_RAISE("KaonPhysics", "Unable to get the decay table from " +
                                        kaon->GetParticleName());
   }
-  (*table)[KaonDecayChannel::mu_nu]->SetBR(
-      branching_ratios[KaonDecayChannel::mu_nu]);
-  (*table)[KaonDecayChannel::pi_pi0]->SetBR(
-      branching_ratios[KaonDecayChannel::pi_pi0]);
-  (*table)[KaonDecayChannel::pi_pi_pi]->SetBR(
-      branching_ratios[KaonDecayChannel::pi_pi_pi]);
-  (*table)[KaonDecayChannel::pi_pi0_pi0]->SetBR(
-      branching_ratios[KaonDecayChannel::pi_pi0_pi0]);
-  (*table)[KaonDecayChannel::pi0_e_nu]->SetBR(
-      branching_ratios[KaonDecayChannel::pi0_e_nu]);
-  (*table)[KaonDecayChannel::pi0_mu_nu]->SetBR(
-      branching_ratios[KaonDecayChannel::pi0_mu_nu]);
+  if (kaon == G4KaonZeroLong::Definition()) {
+    (*table)[KaonZeroLongDecayChannel::pi0_pi0_pi0]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pi0_pi0_pi0]);
+    (*table)[KaonZeroLongDecayChannel::pi0_pip_pim]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pi0_pip_pim]);
+    (*table)[KaonZeroLongDecayChannel::pip_e_nu]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pip_e_nu]);
+    (*table)[KaonZeroLongDecayChannel::pim_e_nu]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pim_e_nu]);
+    (*table)[KaonZeroLongDecayChannel::pim_mu_nu]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pim_mu_nu]);
+    (*table)[KaonZeroLongDecayChannel::pip_mu_nu]->SetBR(
+        branching_ratios[KaonZeroLongDecayChannel::pip_mu_nu]);
+  } else if (kaon == G4KaonZeroShort::Definition()) {
+    (*table)[KaonZeroShortDecayChannel::pip_pim]->SetBR(
+        branching_ratios[KaonZeroShortDecayChannel::pip_pim]);
+    (*table)[KaonZeroShortDecayChannel::pi0_pi0]->SetBR(
+        branching_ratios[KaonZeroShortDecayChannel::pi0_pi0]);
+  } else {
+    (*table)[ChargedKaonDecayChannel::mu_nu]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::mu_nu]);
+    (*table)[ChargedKaonDecayChannel::pi_pi0]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::pi_pi0]);
+    (*table)[ChargedKaonDecayChannel::pi_pi_pi]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::pi_pi_pi]);
+    (*table)[ChargedKaonDecayChannel::pi_pi0_pi0]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::pi_pi0_pi0]);
+    (*table)[ChargedKaonDecayChannel::pi0_e_nu]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::pi0_e_nu]);
+    (*table)[ChargedKaonDecayChannel::pi0_mu_nu]->SetBR(
+        branching_ratios[ChargedKaonDecayChannel::pi0_mu_nu]);
+  }
 }
 void KaonPhysics::ConstructParticle() {
   auto kaonPlus{G4KaonPlus::Definition()};
   auto kaonMinus{G4KaonMinus::Definition()};
+  auto kaonLong{G4KaonZeroLong::Definition()};
+  auto kaonShort{G4KaonZeroShort::Definition()};
 
-  if (!kaonPlus || !kaonMinus) {
+  if (!kaonPlus || !kaonMinus || !kaonLong || !kaonShort) {
     EXCEPTION_RAISE("KaonPhysics",
                     "Unable to get the charged kaon particle definitions, "
                     "something is very wrong with the configuration.");
@@ -47,6 +75,8 @@ void KaonPhysics::ConstructParticle() {
   setDecayProperties(kaonPlus, kplus_branching_ratios, kplus_lifetime_factor);
   setDecayProperties(kaonMinus, kminus_branching_ratios,
                      kminus_lifetime_factor);
+  setDecayProperties(kaonLong, k0l_branching_ratios, k0l_lifetime_factor);
+  setDecayProperties(kaonShort, k0s_branching_ratios, k0s_lifetime_factor);
 }
 
 }  // namespace simcore

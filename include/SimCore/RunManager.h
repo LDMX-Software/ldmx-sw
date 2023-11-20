@@ -43,8 +43,7 @@ class RunManager : public G4RunManager {
   /**
    * Class constructor.
    */
-  RunManager(framework::config::Parameters& parameters,
-             ConditionsInterface&);
+  RunManager(framework::config::Parameters& parameters, ConditionsInterface&);
 
   /**
    * Class destructor.
@@ -108,7 +107,6 @@ class RunManager : public G4RunManager {
    * Should we use random seed from root file?
    */
   bool useRootSeed_{false};
-
 
 };  // RunManager
 }  // namespace simcore
