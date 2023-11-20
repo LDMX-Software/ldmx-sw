@@ -24,8 +24,6 @@ namespace simcore {
  * produced in the simulation, in particular setting their lifetime and
  * branching ratios
  *
- * @note Only affects charged kaons, but similar changes could be added for the
- * neutral ones in a rather straight-forward manner.
  */
 
 class KaonPhysics : public G4VPhysicsConstructor {
