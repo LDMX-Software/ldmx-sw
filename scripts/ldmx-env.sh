@@ -392,11 +392,17 @@ __ldmx_setenv() {
 
   local envName=$(echo $_env_to_set | cut -d= -f1)
 
-  for _already_set in ${LDMX_CONTAINER_ENVS[@]}; do
-    if [[ $(echo $_already_set | cut -d= -f1) = $envName ]]; then
-		echo "Already set a variable called $(echo $_already_set | cut -d= -f1);"
-		echo "Try a different name or re-source the setup script to clean your list."
-		return 1
+  # Loop over the indices of the array
+  for i in "${!LDMX_CONTAINER_ENVS[@]}"; do
+    # If the first part (the part before the =) matches the environment variable
+    # we are trying to update
+    #
+    # (cut -d= -f1) means cut the input using the = as delimeter and pick the first field
+    if [[ $(echo "${LDMX_CONTAINER_ENVS[$i]}" | cut -d= -f1) = $envName ]]; then
+      echo "Updating ${envName}: ${LDMX_CONTAINER_ENVS[$i]} -> $_env_to_set"
+      LDMX_CONTAINER_ENVS[$i]=$_env_to_set
+      export LDMX_CONTAINER_ENVS
+      return 0
     fi
   done
   LDMX_CONTAINER_ENVS+="$_env_to_set "
