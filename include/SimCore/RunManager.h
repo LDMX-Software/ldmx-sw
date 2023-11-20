@@ -109,9 +109,6 @@ class RunManager : public G4RunManager {
    */
   bool useRootSeed_{false};
 
-  /** ConditionsInterface
-   */
-  [[maybe_unused]] ConditionsInterface& conditionsIntf_;
 
 };  // RunManager
 }  // namespace simcore
