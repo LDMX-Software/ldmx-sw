@@ -44,7 +44,7 @@ class RunManager : public G4RunManager {
    * Class constructor.
    */
   RunManager(framework::config::Parameters& parameters,
-             ConditionsInterface& ci);
+             ConditionsInterface&);
 
   /**
    * Class destructor.
