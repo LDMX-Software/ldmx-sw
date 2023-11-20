@@ -55,7 +55,7 @@ class KaonPhysics : public G4VPhysicsConstructor {
     pi0_e_nu = 4,
     pi0_mu_nu = 5
   };
-  /*
+  /**
    *
    * Corresponding entries for the K^0_L. Note that K^0_L and K^0_S decays are
    * not symmetric like the charged ones so they need to be handled manually.
