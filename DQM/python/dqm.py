@@ -600,20 +600,20 @@ class SampleValidation(ldmxcfg.Analyzer) :
         super().__init__(name, 'dqm::SampleValidation', 'DQM')
 
         # primary histograms
-        self.build1DHistogram("pdgid_primaries", "PDG ID of primary particles", 18, 0, 18)
+        self.build1DHistogram("pdgid_primaries", "PDG ID of primary particles", 19, 0, 19)
         self.build1DHistogram("energy_primaries", "Energy of primary particles", 90, 0, 9000) # range applicable for 4 GeV beam
         self.build2DHistogram("beam_smear", "x", 30, -150, 150, "y", 30, -150, 150)
-        self.build1DHistogram("pdgid_primarydaughters", "PDG ID of primary daughtesr", 18, 0, 18)
+        self.build1DHistogram("pdgid_primarydaughters", "PDG ID of primary daughtesr", 19, 0, 19)
         self.build1DHistogram("energy_daughterphoton", "Energy spectrum of all photons from primary", 170, 0, 8500)
 
         # primary daughter of interest (brem / dark brem) histograms
-        self.build1DHistogram("pdgid_harddaughters", "PDG ID of primary daughters", 18, 0, 18)
+        self.build1DHistogram("pdgid_harddaughters", "PDG ID of primary daughters", 19, 0, 19)
         self.build1DHistogram("startZ_hardbrem", "Start z position of hard primary daughter", 100, -500, 500)
         self.build1DHistogram("endZ_hardbrem", "End z position of hard primary daughter", 100, -500, 500)
         self.build1DHistogram("energy_hardbrem", "Energy spectrum of hard primary daughter", 130, 2000, 8500)
 
         # daughters of hard brem histograms
-        self.build1DHistogram("pdgid_hardbremdaughters", "PDG ID of hard brem daughters", 18, 0, 18)
+        self.build1DHistogram("pdgid_hardbremdaughters", "PDG ID of hard brem daughters", 19, 0, 19)
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters", 200, -1000, 1000)
         
 
