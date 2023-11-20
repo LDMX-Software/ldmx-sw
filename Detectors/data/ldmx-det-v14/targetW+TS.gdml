@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constantsLYSO+TRG.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+
+  <define>
+
+   	&constants;
+   		
+  </define>
+
+  <materials>
+  
+    &materials;
+
+    <!-- Tungsten Target --> 
+	<material name="Tungsten" state="solid">
+		<MEE unit="eV" value="727"/>
+		<D unit="g/cm3" value="19.2999898451316"/>
+		<fraction n="1" ref="W"/>
+	</material>
+
+    <!-- LYSO Target -->
+    <material name="LYSO">
+		<D type="density" value="7.4" unit="g/cm3"/>
+		<composite n="9" ref="Lu"/>
+		<composite n="1" ref="Y"/>
+		<composite n="5" ref="Si"/>
+		<composite n="25" ref="O"/>
+    </material>
+
+	<!-- Scintillator -->
+	<material name="SCIN">
+		<D type="density" value="1.023" unit="g/cm3"/>
+		<composite n="27" ref="C"/>
+		<composite n="30" ref="H"/>
+	</material>
+
+  </materials>
+
+  <solids>
+
+    <box lunit="mm" name="W_plate" x="tungsten_plate_dx" y="tungsten_plate_dy" z="tungsten_plate_dz"/>
+    <box lunit="mm" name="Tungsten_box" x="tungsten_plate_dx" y="tungsten_plate_dy" z="lyso_target_dz"/>
+  
+    <box lunit="mm" name="LYSO_bar" x="lyso_bar_dx" y="lyso_bar_dy" z="lyso_bar_dz"/>
+    <box lunit="mm" name="LYSO_array" x="lyso_array_dx" y="lyso_array_dy" z="lyso_array_dz"/>
+    <box lunit="mm" name="LYSO_box" x="lyso_target_dx" y="lyso_target_dy" z="lyso_target_dz"/>
+
+    <box lunit="mm" name="SCIN_bar" x="scin_bar_dx" y="scin_bar_dy" z="scin_bar_dz"/>
+    <box lunit="mm" name="SCIN_array" x="scin_array_dx" y="scin_array_dy" z="scin_array_dz"/>
+    <box lunit="mm" name="SCIN_box" x="scin_trigger_dx" y="scin_trigger_dy" z="scin_trigger_dz"/>
+    
+    <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_dim_z"/> 
+    <box lunit="mm" name="TargetWorld" x="50" y="110" z="100"/>
+    
+  </solids>
+
+  <structure>
+
+    <!-- Tungsten Target -->  
+	<volume name="lvWplate">
+		<materialref ref="Tungsten"/>
+		<solidref ref="W_plate"/>
+		<auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
+		<auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+		<auxiliary auxtype="DetElem" auxvalue="Target"/>
+	</volume>
+    <volume name="lvWtarget">
+      <materialref ref="Vacuum"/>
+      <solidref ref="Tungsten_box"/>   
+      	<physvol>
+        	<volumeref ref="lvWplate"/>
+			<positionref ref="tungsten_plate_pos"/>
+        	<rotationref ref="identity" />
+        </physvol>         
+    </volume>
+
+    <!-- Trigger Scintillator -->
+    <volume name="lvSCINbar">
+      <materialref ref="SCIN"/>
+      <solidref ref="SCIN_bar"/>
+      <auxiliary auxtype="SensDet" auxvalue="scinTargetSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="scinPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="scinPad"/>      
+    </volume>    
+    <volume name="lvSCINarray">
+      <materialref ref="Vacuum"/>
+      <solidref ref="SCIN_array"/>
+      <replicavol number="num_scin_bar">
+        <volumeref ref="lvSCINbar"/>
+        <replicate_along_axis> 
+        	<direction  y="1" />
+         	<width value="scin_bar_height" unit="mm"/>
+         	<offset value="0" unit="mm"/>
+      	</replicate_along_axis>
+      </replicavol>      
+    </volume>    
+    <volume name="lvSCINtrigger">
+      <materialref ref="Vacuum"/>
+      <solidref ref="SCIN_box"/>   
+      	<physvol copynumber="1">
+        	<volumeref ref="lvSCINarray"/>
+			<positionref ref="scin_layer1_pos"/>
+        	<rotationref ref="identity" />
+        </physvol>     
+      	<physvol copynumber="2">
+        	<volumeref ref="lvSCINarray"/>
+			<positionref ref="scin_layer2_pos"/>
+        	<rotationref ref="identity" />
+        </physvol>     
+    </volume>
+    
+    <volume name="lvTarget">
+      <materialref ref="Vacuum"/>
+      <solidref ref="target_box"/>
+      <physvol name="lvWtarget_phys">
+        <volumeref ref="lvWtarget"/>
+        <positionref ref="tungsten_target_pos"/>
+      </physvol>
+      <physvol name="lvSCINtrigger_phys">
+        <volumeref ref="lvSCINtrigger"/>
+        <positionref ref="trigger_scin_pos"/>
+      </physvol>
+    </volume>
+ 
+<!--    <volume name="target">	-->
+    <volume name="TOP">
+      <materialref ref="Vacuum"/>
+      <solidref ref="TargetWorld"/>      
+      <physvol name="lvTarget_phys">
+        <volumeref ref="lvTarget"/>
+		<positionref ref="target_box_pos"/>
+      </physvol>      
+    </volume>
+ 
+  </structure>
+  
+  <!-- LDMX Target Region -->   
+  <setup name="Default" version="1.0">
+<!--    <world ref="target"/>	-->
+    <world ref="TOP"/>
+  </setup>
+
+</gdml>
