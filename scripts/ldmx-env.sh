@@ -391,21 +391,28 @@ __ldmx_setenv() {
   fi
 
   local envName=$(echo $_env_to_set | cut -d= -f1)
+  local KEY=$(echo $_env_to_set | cut -d= -f1)
+  local VALUE=$(echo $_env_to_set | cut -d= -f2-) # Field 2 and any further fields
+  local key_exists=false
 
-  # Loop over the indices of the array
-  for i in "${!LDMX_CONTAINER_ENVS[@]}"; do
-    # If the first part (the part before the =) matches the environment variable
-    # we are trying to update
-    #
-    # (cut -d= -f1) means cut the input using the = as delimeter and pick the first field
-    if [[ $(echo "${LDMX_CONTAINER_ENVS[$i]}" | cut -d= -f1) = $envName ]]; then
-      echo "Updating ${envName}: ${LDMX_CONTAINER_ENVS[$i]} -> $_env_to_set"
-      LDMX_CONTAINER_ENVS[$i]=$_env_to_set
-      export LDMX_CONTAINER_ENVS
-      return 0
+  for entry in "${!LDMX_CONTAINER_ENVS[@]}"; do
+    entry_key=$(echo "${LDMX_CONTAINER_ENVS[$entry]}" | cut -d= -f1)
+    if [ -z "${entry_key}" ]; then
+      continue
+    fi
+    if [ "${KEY}" == "${entry_key}" ]; then
+      echo "Updating environment variable ${KEY}: ${LDMX_CONTAINER_ENVS[$entry]} -> ${KEY}=${VALUE}"
+      LDMX_CONTAINER_ENVS[$entry]="${KEY}=${VALUE}"
+      key_exists=true
+      break
     fi
   done
-  LDMX_CONTAINER_ENVS+="$_env_to_set "
+  if [ "${key_exists}" == "false" ]; then
+    LDMX_CONTAINER_ENVS+=("${KEY}=${VALUE}")
+  fi
+
+
+  # Loop over the indices of the array
   export LDMX_CONTAINER_ENVS
   echo "Added container environment variable $_env_to_set"
   return 0
