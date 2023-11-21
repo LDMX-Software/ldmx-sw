@@ -36,6 +36,11 @@ ClassImp(ldmx::SimParticle)
     /// e- Z --> e- Z A'
     procMap["DarkBrem"] = ProcessType::eDarkBrem;
 
+    // Inelastic interactions
+    /// n + Z -> X
+    procMap["neutronInelastic"] = ProcessType::neutronInelastic;
+    /// n + Z -> Z*
+    procMap["neutronCapture"] = ProcessType::neutronCapture;
     // Decay
     procMap["Decay"] = ProcessType::Decay;
     return procMap;
