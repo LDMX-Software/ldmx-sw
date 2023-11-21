@@ -10,6 +10,7 @@ ClassImp(ldmx::SimParticle)
     namespace ldmx {
   SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
     ProcessTypeMap procMap;
+    /// Electromagnetic interactions
     /// e Z --> e Z gamma
     procMap["eBrem"] = ProcessType::eBrem;
     /// gamma --> e+ e-
@@ -26,6 +27,8 @@ ClassImp(ldmx::SimParticle)
     procMap["msc"] = ProcessType::msc;
     /// gamma Z --> Z + X
     procMap["photonNuclear"] = ProcessType::photonNuclear;
+    /// mu Z --> Z + X
+    procMap["muonNuclear"] = ProcessType::muonNuclear;
     /// e Z --> e Z + X
     procMap["electronNuclear"] = ProcessType::electronNuclear;
     /// gamma --> mu+ mu-
