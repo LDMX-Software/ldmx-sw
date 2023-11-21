@@ -51,6 +51,10 @@ ClassImp(ldmx::SimParticle)
     procMap["pion+Inelastic"] = ProcessType::pionInelastic;
     /// p + Z -> X
     procMap["protonInelastic"] = ProcessType::protonInelastic;
+
+    /// Other
+    /// Primary particle
+    procMap["Primary"] = ProcessType::Primary;
     // Decay
     procMap["Decay"] = ProcessType::Decay;
     return procMap;
