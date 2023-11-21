@@ -41,6 +41,11 @@ ClassImp(ldmx::SimParticle)
     procMap["neutronInelastic"] = ProcessType::neutronInelastic;
     /// n + Z -> Z*
     procMap["neutronCapture"] = ProcessType::neutronCapture;
+    /// K + Z -> X
+    procMap["kaon-Inelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon+Inelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon0LInelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon0SInelastic"] = ProcessType::kaonInelastic;
     // Decay
     procMap["Decay"] = ProcessType::Decay;
     return procMap;
