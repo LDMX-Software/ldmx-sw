@@ -87,7 +87,7 @@ namespace dqm {
   }
 
   int SampleValidation::pdgid_label(const int pdgid) {
-    int label = 18;
+    int label = 18; // initially assign label as "anything else"/overflow value, only change if the pdg id is something of interest
     if (pdgid == -11) label = 1; // e+
     
     if (pdgid == 11) label = 2; // e-
