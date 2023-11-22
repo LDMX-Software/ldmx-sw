@@ -70,7 +70,11 @@ void TrackMap::save(const G4Track* track) {
     const G4String& name{process->GetProcessName()};
     particle.setProcessType(ldmx::SimParticle::findProcessType(name));
   } else {
-    particle.setProcessType(ldmx::SimParticle::ProcessType::unknown);
+    if (track->GetParentID() == 0) {
+      particle.setProcessType(ldmx::SimParticle::ProcessType::Primary);
+    } else {
+      particle.setProcessType(ldmx::SimParticle::ProcessType::unknown);
+    }
   }
 
   // track's current kinematics is its end point kinematics

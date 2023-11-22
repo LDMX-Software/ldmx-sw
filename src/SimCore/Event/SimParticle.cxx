@@ -10,6 +10,7 @@ ClassImp(ldmx::SimParticle)
     namespace ldmx {
   SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
     ProcessTypeMap procMap;
+    /// Electromagnetic interactions
     /// e Z --> e Z gamma
     procMap["eBrem"] = ProcessType::eBrem;
     /// gamma --> e+ e-
@@ -26,6 +27,8 @@ ClassImp(ldmx::SimParticle)
     procMap["msc"] = ProcessType::msc;
     /// gamma Z --> Z + X
     procMap["photonNuclear"] = ProcessType::photonNuclear;
+    /// mu Z --> Z + X
+    procMap["muonNuclear"] = ProcessType::muonNuclear;
     /// e Z --> e Z + X
     procMap["electronNuclear"] = ProcessType::electronNuclear;
     /// gamma --> mu+ mu-
@@ -33,6 +36,25 @@ ClassImp(ldmx::SimParticle)
     /// e- Z --> e- Z A'
     procMap["DarkBrem"] = ProcessType::eDarkBrem;
 
+    // Inelastic interactions
+    /// n + Z -> X
+    procMap["neutronInelastic"] = ProcessType::neutronInelastic;
+    /// n + Z -> Z*
+    procMap["neutronCapture"] = ProcessType::neutronCapture;
+    /// K + Z -> X
+    procMap["kaon-Inelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon+Inelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon0LInelastic"] = ProcessType::kaonInelastic;
+    procMap["kaon0SInelastic"] = ProcessType::kaonInelastic;
+    /// pi + Z -> X
+    procMap["pion-Inelastic"] = ProcessType::pionInelastic;
+    procMap["pion+Inelastic"] = ProcessType::pionInelastic;
+    /// p + Z -> X
+    procMap["protonInelastic"] = ProcessType::protonInelastic;
+
+    /// Other
+    /// Primary particle
+    procMap["Primary"] = ProcessType::Primary;
     // Decay
     procMap["Decay"] = ProcessType::Decay;
     return procMap;
