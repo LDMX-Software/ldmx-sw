@@ -43,6 +43,12 @@ class KaonPhysics():
         Multiplicative factor to scale the lifetime of kaons by. Default is to
         scale by 1 (no scaling)
 
+    verbosity : int
+
+        If > 0: Dump details about the decay after the update
+        If > 1: Also dump details about the decay before the update to show the
+        difference
+
     """
     def __init__(self):
         self.kplus_branching_ratios = [
@@ -78,6 +84,8 @@ class KaonPhysics():
         self.k0l_lifetime_factor = 1.
         self.k0s_lifetime_factor = 1.
 
+        self.verbosity=0
+
 
     def upKaons():
         """Returns a configuration of the kaon physics corresponding
@@ -109,6 +117,7 @@ class KaonPhysics():
         ]
         kaon_physics.kplus_lifetime_factor = 1/50.
         kaon_physics.kminus_lifetime_factor = 1/50.
+        kaon_physics.verbosity = 2
         return kaon_physics
 
     def __setattr__(self, key, value):

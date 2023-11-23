@@ -104,6 +104,9 @@ class KaonPhysics : public G4VPhysicsConstructor {
   std::vector<double> k0l_branching_ratios;
   std::vector<double> k0s_branching_ratios;
 
+  // If > 0, dump details about what was changed
+  // If > 1, dump details about the initial branching ratios
+  int verbosity;
  public:
   KaonPhysics(const G4String& name,
               const framework::config::Parameters& parameters);
