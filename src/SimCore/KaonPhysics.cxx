@@ -18,6 +18,7 @@ KaonPhysics::KaonPhysics(const G4String& name,
       parameters.getParameter<double>("kminus_lifetime_factor");
   k0l_lifetime_factor = parameters.getParameter<double>("k0l_lifetime_factor");
   k0s_lifetime_factor = parameters.getParameter<double>("k0s_lifetime_factor");
+  verbosity = parameters.getParameter<int>("verbosity");
 }
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,
@@ -27,6 +28,11 @@ void KaonPhysics::setDecayProperties(
   if (!table) {
     EXCEPTION_RAISE("KaonPhysics", "Unable to get the decay table from " +
                                        kaon->GetParticleName());
+  }
+  if (verbosity > 1) {
+    std::cout << "Decay details after setting branching ratios and lifetimes"
+              << std::endl;
+    DumpDecayDetails(kaon);
   }
   if (kaon == G4KaonZeroLong::Definition()) {
     (*table)[KaonZeroLongDecayChannel::pi0_pi0_pi0]->SetBR(
@@ -59,6 +65,11 @@ void KaonPhysics::setDecayProperties(
         branching_ratios[ChargedKaonDecayChannel::pi0_e_nu]);
     (*table)[ChargedKaonDecayChannel::pi0_mu_nu]->SetBR(
         branching_ratios[ChargedKaonDecayChannel::pi0_mu_nu]);
+  }
+  if (verbosity > 0) {
+    std::cout << "Decay details after setting branching ratios and lifetimes"
+              << std::endl;
+    DumpDecayDetails(kaon);
   }
 }
 void KaonPhysics::ConstructParticle() {
