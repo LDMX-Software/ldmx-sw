@@ -40,22 +40,25 @@ class KaonPhysics : public G4VPhysicsConstructor {
    * K^+ -> \mu^+ + \nu_\mu
    * K^+ -> \pi^+ + \pi^0
    * K^+ -> \pi^+ + \pi^- + \pi^+
-   * K^+ -> \pi^+ + \pi^0 + \pi^0
    * K^+ -> \pi^0 + e^+ + \nu_e
    * K^+ -> \pi^0 + \mu^+ + \nu_\mu
+   * K^+ -> \pi^+ + \pi^0 + \pi^0
    *
    * And vice versa for K^-.
    * The indices here correspond to the position of the branching ratio for
    * that process in the corresponding parameter as well as the position in
    * the decay table.
+   *
+   * @note: The order in the the decay table is sorted by the branching ratios
+   * of the default physics settings!
    */
   enum ChargedKaonDecayChannel {
     mu_nu = 0,
     pi_pi0 = 1,
     pi_pi_pi = 2,
-    pi_pi0_pi0 = 3,
-    pi0_e_nu = 4,
-    pi0_mu_nu = 5
+    pi0_e_nu = 3,
+    pi0_mu_nu = 4,
+    pi_pi0_pi0 = 5,
   };
   /**
    *
@@ -64,26 +67,29 @@ class KaonPhysics : public G4VPhysicsConstructor {
    *
    * The processes are
    *
-   * K^0_L -> \pi^0 + \pi^0 + \pi^0
-   * K^0_L -> \pi^0 + \pi^+ + \pi^-
    * K^0_L -> \pi^- + e^+ + \nu_e
    * K^0_L -> \pi^+ + e^- + \nu_e
+   * K^0_L -> \pi^0 + \pi^0 + \pi^0
    * K^0_L -> \pi^- + \mu^+ + \nu_\mu
    * K^0_L -> \pi^+ + \mu^- + \nu_\mu
+   * K^0_L -> \pi^0 + \pi^+ + \pi^-
    *
    * and
    *
    * K^0_S -> \pi^+ + \pi^-
    * K^0_S -> \pi^0 + \pi^0
    *
+   * @note: The order in the the decay table is sorted by the branching ratios
+   * of the default physics settings!
+   *
    **/
   enum KaonZeroLongDecayChannel {
-    pi0_pi0_pi0 = 0,
-    pi0_pip_pim = 1,
-    pip_e_nu = 2,
-    pim_e_nu = 3,
-    pim_mu_nu = 4,
-    pip_mu_nu = 5,
+    pim_e_nu = 0,
+    pip_e_nu = 1,
+    pi0_pi0_pi0 = 2,
+    pim_mu_nu = 3,
+    pip_mu_nu = 4,
+    pi0_pip_pim = 5,
   };
   enum KaonZeroShortDecayChannel {
     pip_pim = 0,
@@ -107,6 +113,7 @@ class KaonPhysics : public G4VPhysicsConstructor {
   // If > 0, dump details about what was changed
   // If > 1, dump details about the initial branching ratios
   int verbosity;
+
  public:
   KaonPhysics(const G4String& name,
               const framework::config::Parameters& parameters);
