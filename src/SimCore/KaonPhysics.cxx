@@ -23,7 +23,6 @@ KaonPhysics::KaonPhysics(const G4String& name,
 void KaonPhysics::setDecayProperties(
     G4ParticleDefinition* kaon, const std::vector<double>& branching_ratios,
     double lifetime_factor) const {
-  kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   auto table{kaon->GetDecayTable()};
   if (!table) {
     EXCEPTION_RAISE("KaonPhysics", "Unable to get the decay table from " +
@@ -34,6 +33,7 @@ void KaonPhysics::setDecayProperties(
               << std::endl;
     DumpDecayDetails(kaon);
   }
+  kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   if (kaon == G4KaonZeroLong::Definition()) {
     (*table)[KaonZeroLongDecayChannel::pi0_pi0_pi0]->SetBR(
         branching_ratios[KaonZeroLongDecayChannel::pi0_pi0_pi0]);
@@ -112,4 +112,5 @@ void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
               << std::endl;
   }
 }
+
 }  // namespace simcore

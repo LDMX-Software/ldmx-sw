@@ -55,25 +55,25 @@ class KaonPhysics():
             0.6355,  # K^+ -> mu^+ + nu_mu
             0.2066,  # K^+ -> pi^+ + pi^0
             0.0559,  # K^+ -> pi^+ + pi^- + pi^+
-            0.01761, # K^+ -> pi^+ + pi^0 + pi^0
             0.0507,  # K^+ -> pi^0 + e^+ + nu_e
             0.0335,  # K^+ -> pi^0 + mu^+ + nu_mu
+            0.01761, # K^+ -> pi^+ + pi^0 + pi^0
         ]
         self.kminus_branching_ratios = [
             0.6355,  # K^- -> mu^- + anti_nu_mu
             0.2066,  # K^- -> pi^- + pi^0
             0.0559,  # K^- -> pi^- + pi^+ + pi^-
-            0.01761, # K-+ -> pi^- + pi^0 + pi^0
             0.0507,  # K-+ -> pi^0 + e^- + anti_nu_e
             0.0335,  # K-+ -> pi^0 + mu^- + anti_nu_mu
+            0.01761, # K-+ -> pi^- + pi^0 + pi^0
         ]
         self.k0l_branching_ratios = [
-            0.1952, # K^0_L -> pi^0 + pi^0 + pi^0
-            0.1254, # K^0_L -> pi^0 + pi^+ + pi^-
             0.2027, # K^0_L -> pi^- + e^+ + nu_e
             0.2027, # K^0_L -> pi^+ + e^- + anti_nu_e
+            0.1952, # K^0_L -> pi^0 + pi^0 + pi^0
             0.1352, # K^0_L -> pi^- + mu^+ + nu_mu
             0.1352, # K^0_L -> pi^+ + mu^- + anti_nu_mu
+            0.1254, # K^0_L -> pi^0 + pi^+ + pi^-
         ]
         self.k0s_branching_ratios = [
             0.6920, # K^0_S -> pi^+ + pi^-
@@ -101,19 +101,19 @@ class KaonPhysics():
         kaon_physics = KaonPhysics()
         kaon_physics.kplus_branching_ratios = [
             0.8831,  # K^+ -> mu^+ + nu_mu
-            0.,  # K^+ -> pi^+ + pi^0
-            0.,  # K^+ -> pi^+ + pi^- + pi^+
-            0., # K^+ -> pi^+ + pi^0 + pi^0
+            0.,      # K^+ -> pi^+ + pi^0
+            0.,      # K^+ -> pi^+ + pi^- + pi^+
             0.0704,  # K^+ -> pi^0 + e^+ + nu_e
             0.0465,  # K^+ -> pi^0 + mu^+ + nu_mu
+            0.,      # K^+ -> pi^+ + pi^0 + pi^0
         ]
         kaon_physics.kminus_branching_ratios = [
             0.8831,  # K^- -> mu^- + anti_nu_mu
-            0.,  # K^- -> pi^- + pi^0
-            0.,  # K^- -> pi^- + pi^+ + pi^-
-            0., # K-+ -> pi^- + pi^0 + pi^0
-            0.0704,  # K-+ -> pi^0 + e^- + anti_nu_e
-            0.0464,  # K-+ -> pi^0 + mu^- + anti_nu_mu
+            0.,      # K^- -> pi^- + pi^0
+            0.,      # K^- -> pi^- + pi^+ + pi^-
+            0.0704,  # K^- -> pi^0 + e^- + anti_nu_e
+            0.0464,  # K^- -> pi^0 + mu^- + anti_nu_mu
+            0.,      # K^- -> pi^- + pi^0 + pi^0
         ]
         kaon_physics.kplus_lifetime_factor = 1/50.
         kaon_physics.kminus_lifetime_factor = 1/50.
