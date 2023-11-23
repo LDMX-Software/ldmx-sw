@@ -9,6 +9,8 @@
 #include <G4ParticleDefinition.hh>
 #include <G4VDecayChannel.hh>
 #include <G4VPhysicsConstructor.hh>
+#include <iomanip>
+#include <iostream>
 #include <numeric>
 #include <vector>
 
@@ -126,6 +128,8 @@ class KaonPhysics : public G4VPhysicsConstructor {
    */
 
   void ConstructParticle() override;
+
+  void DumpDecayDetails(const G4ParticleDefinition* kaon) const;
 
   /**
    * Construct processes
