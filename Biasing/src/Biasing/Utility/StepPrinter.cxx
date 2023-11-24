@@ -32,10 +32,13 @@ void StepPrinter::stepping(const G4Step* step) {
   auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
 
   // Get the volume the particle is in.
-  auto volume{track->GetVolume()->GetName()};
+  auto volume{track->GetVolume()};
+  auto volumeName{volume->GetName()};
 
-  // Get the next volume
-  auto nextVolume{track->GetNextVolume()->GetName()};
+  // Get the next volume (can fail if current volume is WorldPV and next is
+  // outside the world)
+  auto nextVolume{track->GetNextVolume() ? track->GetNextVolume()->GetName()
+                                          : "undefined"};
 
   // Get the region
   auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
