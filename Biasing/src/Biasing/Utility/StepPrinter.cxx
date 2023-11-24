@@ -9,12 +9,13 @@
 namespace biasing {
 namespace utility {
 
-StepPrinter::StepPrinter(const std::string& name, framework::config::Parameters& parameters)
+StepPrinter::StepPrinter(const std::string& name,
+                         framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   trackID_ = parameters.getParameter<int>("track_id");
+  processName_ = parameters.getParameter<std::string>("process_name");
 }
 
-StepPrinter::~StepPrinter() {}
 
 void StepPrinter::stepping(const G4Step* step) {
   // Get the track associated with this step
