@@ -14,8 +14,8 @@ StepPrinter::StepPrinter(const std::string& name,
     : simcore::UserAction(name, parameters) {
   trackID_ = parameters.getParameter<int>("track_id");
   processName_ = parameters.getParameter<std::string>("process_name");
+  depth_ = parameters.getParameter<int>("depth");
 }
-
 
 void StepPrinter::stepping(const G4Step* step) {
   // Get the track associated with this step
@@ -35,7 +35,7 @@ void StepPrinter::stepping(const G4Step* step) {
   if (!((trackID == trackID_)  // We are the track of interest
         || (processName ==
             processName_)  // We were created by the process of interest
-        || (depth > 0 &&
+        || (depth_ > 0 &&
             parent == trackID_)  // Our parent was the track of interest
         )) {
     // We aren't an interesting track!
@@ -55,21 +55,22 @@ void StepPrinter::stepping(const G4Step* step) {
   // Get the next volume (can fail if current volume is WorldPV and next is
   // outside the world)
   auto nextVolume{track->GetNextVolume() ? track->GetNextVolume()->GetName()
-                                          : "undefined"};
+                                         : "undefined"};
 
   // Get the region
   auto regionName{volume->GetLogicalVolume()->GetRegion()->GetName()};
 
   std::cout << " Step " << track->GetCurrentStepNumber() << " ("
-            << track->GetParticleDefinition()->GetParticleName()
-            << ") {"
+            << track->GetParticleDefinition()->GetParticleName() << ") {"
             << " Energy: " << energy << " Track ID: " << track->GetTrackID()
-            << " Particle currently in: " << volumeName << " Region: " << regionName
-            << " Next volume: " << nextVolume
-            << " Weight: " << track->GetWeight() << " Parent: " << parent << " (" << processName << ") "
+            << " Particle currently in: " << volumeName
+            << " Region: " << regionName << " Next volume: " << nextVolume
+            << " Weight: " << track->GetWeight() << " Parent: " << parent
+            << " (" << processName << ") "
             << " Children:";
   for (auto const& child : *(step->GetSecondaryInCurrentStep())) {
-    std::cout << " (" << child->GetTotalEnergy() << "): "<< child->GetParticleDefinition()->GetPDGEncoding();
+    std::cout << " (" << child->GetTotalEnergy()
+              << "): " << child->GetParticleDefinition()->GetPDGEncoding();
   }
 
   std::cout << " }" << std::endl;
