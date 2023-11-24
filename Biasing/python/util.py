@@ -34,6 +34,7 @@ class StepPrinter(BiasingUtilityAction) :
         super().__init__('print_steps_%s'%track_id,'StepPrinter')
         self.process_name = process_name
         self.track_id = track_id
+        self.depth = 0
 
 class PartialEnergySorter(BiasingUtilityAction) :
     """Process particles such that all particles above
