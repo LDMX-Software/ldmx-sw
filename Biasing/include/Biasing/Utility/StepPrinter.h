@@ -44,7 +44,7 @@ class StepPrinter : public simcore::UserAction {
   /// The track ID to filter on
   int trackID_{-9999};
   std::string processName_{"UNDEFINED"};
-  int depth{0};
+  int depth_{0};
 
 };  // StepPrinter
 
