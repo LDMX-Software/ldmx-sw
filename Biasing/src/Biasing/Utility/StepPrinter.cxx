@@ -43,10 +43,10 @@ void StepPrinter::stepping(const G4Step* step) {
   }
 
   // Get the particle name.
-  auto particleName{track->GetParticleDefinition()->GetParticleName()};
+  const auto particleName{track->GetParticleDefinition()->GetParticleName()};
 
   // Get the energy of the particle
-  auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
+  const auto energy{step->GetPostStepPoint()->GetTotalEnergy()};
 
   // Get the volume the particle is in.
   auto volume{track->GetVolume()};
