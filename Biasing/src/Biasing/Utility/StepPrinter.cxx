@@ -58,15 +58,19 @@ void StepPrinter::stepping(const G4Step* step) {
                                           : "undefined"};
 
   // Get the region
-  auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+  auto regionName{volume->GetLogicalVolume()->GetRegion()->GetName()};
 
-  std::cout << " Step " << track->GetCurrentStepNumber() << " {"
+  std::cout << " Step " << track->GetCurrentStepNumber() << " ("
+            << track->GetParticleDefinition()->GetParticleName()
+            << ") {"
             << " Energy: " << energy << " Track ID: " << track->GetTrackID()
-            << " Particle currently in: " << volume << " Region: " << region
+            << " Particle currently in: " << volumeName << " Region: " << regionName
             << " Next volume: " << nextVolume
-            << " Weight: " << track->GetWeight() << " Children:";
-  for (auto const& track : *(step->GetSecondaryInCurrentStep()))
-    std::cout << " " << track->GetParticleDefinition()->GetPDGEncoding();
+            << " Weight: " << track->GetWeight() << " Parent: " << parent << " (" << processName << ") "
+            << " Children:";
+  for (auto const& child : *(step->GetSecondaryInCurrentStep())) {
+    std::cout << " (" << child->GetTotalEnergy() << "): "<< child->GetParticleDefinition()->GetPDGEncoding();
+  }
 
   std::cout << " }" << std::endl;
 }
