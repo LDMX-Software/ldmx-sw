@@ -30,9 +30,9 @@ class StepPrinter(BiasingUtilityAction) :
         Geant4 track ID to print each step of
     """
 
-    def __init__(self,track_id=1) :
+    def __init__(self,track_id=1, process_name='') :
         super().__init__('print_steps_%s'%track_id,'StepPrinter')
-
+        self.process_name = process_name
         self.track_id = track_id
 
 class PartialEnergySorter(BiasingUtilityAction) :
