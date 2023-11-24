@@ -21,9 +21,26 @@ void StepPrinter::stepping(const G4Step* step) {
   // Get the track associated with this step
   auto track{step->GetTrack()};
 
-  if (auto trackID{track->GetTrackID()};
-      (trackID_ > 0) && (trackID != trackID_))
+  const auto trackID{track->GetTrackID()};
+  const auto parent{track->GetParentID()};
+  auto process{track->GetCreatorProcess()};
+  std::string processName{process ? process->GetProcessName() : "Primary"};
+  // Unwrap biasing part of process name if present
+  if (processName.find("biasWrapper") != std::string::npos) {
+    std::size_t pos = processName.find_first_of("(") + 1;
+    processName = processName.substr(pos, processName.size() - pos - 1);
+  }
+
+  // Print if any of the following conditions are true
+  if (!((trackID == trackID_)  // We are the track of interest
+        || (processName ==
+            processName_)  // We were created by the process of interest
+        || (depth > 0 &&
+            parent == trackID_)  // Our parent was the track of interest
+        )) {
+    // We aren't an interesting track!
     return;
+  }
 
   // Get the particle name.
   auto particleName{track->GetParticleDefinition()->GetParticleName()};
