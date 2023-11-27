@@ -16,8 +16,6 @@
 #include "TFile.h"
 #include "TROOT.h"
 
-#include "Framework/Performance/Tracker.h"
-
 namespace framework {
 
 Process::Process(const framework::config::Parameters &configuration)
@@ -36,7 +34,6 @@ Process::Process(const framework::config::Parameters &configuration)
       configuration.getParameter<int>("compressionSetting", 9);
   termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
   fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
-  logPerformance_ = configuration.getParameter<bool>("logPerformance", false);
 
   inputFiles_ =
       configuration.getParameter<std::vector<std::string>>("inputFiles", {});
@@ -108,9 +105,17 @@ Process::Process(const framework::config::Parameters &configuration)
     conditions_.createConditionsObjectProvider(className, objectName, tagName,
                                                cop);
   }
+
+  bool logPerformance = configuration.getParameter<bool>("logPerformance", false);
+  if (logPerformance) {
+    performance_ = new performance::Tracker(makeHistoDirectory("performance"));
+  }
 }
 
 Process::~Process() {
+  // need to delete the performance object so that it is
+  // written before we close the histogram file below
+  if (performance_) delete performance_;
   for (EventProcessor *ep : sequence_) {
     delete ep;
   }
@@ -122,8 +127,7 @@ Process::~Process() {
 }
 
 void Process::run() {
-  performance::Tracker perf(makeHistoDirectory("performance"));
-  perf.absolute_start();
+  if (performance_) performance_->absolute_start();
   // set up the logging for this run
   logging::open(logging::convertLevel(termLevelInt_),
                 logging::convertLevel(fileLevelInt_),
@@ -146,14 +150,14 @@ void Process::run() {
   theEvent.getEventHeader().setRun(runForGeneration_);
 
   // Start by notifying everyone that modules processing is beginning
-  perf.begin_onProcessStart("ALL");
+  if (performance_) performance_->begin_onProcessStart(performance::Tracker::ALL);
   conditions_.onProcessStart();
   for (auto module : sequence_) {
-    perf.begin_onProcessStart(module->getName());
+    if (performance_) performance_->begin_onProcessStart(module->getName());
     module->onProcessStart();
-    perf.end_onProcessStart(module->getName());
+    if (performance_) performance_->end_onProcessStart(module->getName());
   }
-  perf.end_onProcessStart("ALL");
+  if (performance_) performance_->end_onProcessStart(performance::Tracker::ALL);
 
   // If we have no input files, but do have an event number, run for
   // that number of events and generate an output file.
@@ -171,9 +175,7 @@ void Process::run() {
     // Configure the event file to create an output file with no parent. This
     // requires setting the parameters isOutputFile and isSingleOutput to true.
     EventFile outFile(config_, outputFileName, nullptr, true, true, false); 
-
-    for (auto module : sequence_) module->onFileOpen(outFile);
-
+    onFileOpen(outFile);
     outFile.setupEvent(&theEvent);
 
     for (auto rule : dropKeepRules_) outFile.addDrop(rule);
@@ -216,7 +218,7 @@ void Process::run() {
       NtupleManager::getInstance().clear();
     }
 
-    for (auto module : sequence_) module->onFileClose(outFile);
+    onFileClose(outFile);
 
     runHeader.setRunEnd(std::time(nullptr));
     runHeader.setNumTries(totalTries);
@@ -245,8 +247,7 @@ void Process::run() {
       EventFile inFile(config_, infilename);
 
       ldmx_log(info) << "Opening file " << infilename;
-
-      for (auto module : sequence_) module->onFileOpen(inFile);
+      onFileOpen(inFile);
 
       // configure event file that will be iterated over
       EventFile *masterFile;
@@ -325,8 +326,7 @@ void Process::run() {
       }
 
       ldmx_log(info) << "Closing file " << infilename;
-
-      for (auto module : sequence_) module->onFileClose(inFile);
+      onFileClose(inFile);
 
       // Reset the event in case of multiple input files
       theEvent.onEndOfFile();
@@ -353,13 +353,17 @@ void Process::run() {
   }  // are there input files? if-else tree
 
   // finally, notify everyone that we are stopping
+  if(performance_) performance_->begin_onProcessEnd(performance::Tracker::ALL);
   for (auto module : sequence_) {
+    if(performance_) performance_->begin_onProcessEnd(module->getName());
     module->onProcessEnd();
+    if(performance_) performance_->end_onProcessEnd(module->getName());
   }
+  if(performance_) performance_->end_onProcessEnd(performance::Tracker::ALL);
 
   // we're done so let's close up the logging
   logging::close();
-  perf.absolute_end();
+  if (performance_) performance_->absolute_end();
 }
 
 int Process::getRunNumber() const {
@@ -380,7 +384,7 @@ TDirectory *Process::openHistoFile() {
     // trying to write histograms/ntuples but no file defined
     EXCEPTION_RAISE("NoHistFileName",
                     "You did not provide the necessary histogram file name to "
-                    "put your histograms (or ntuples) in.\n    Provide this "
+                    "put your histograms (or performance data) in.\n    Provide this "
                     "name in the python configuration with 'p.histogramFile = "
                     "\"myHistFile.root\"' where p is the Process object.");
   } else if (histoTFile_ == nullptr) {
@@ -396,14 +400,25 @@ TDirectory *Process::openHistoFile() {
 void Process::newRun(ldmx::RunHeader& header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
-  for (auto module : sequence_)
-    if (dynamic_cast<Producer *>(module))
+  if(performance_) performance_->begin_beforeNewRun(performance::Tracker::ALL);
+  for (auto module : sequence_) {
+    if (dynamic_cast<Producer *>(module)) {
+      if(performance_) performance_->begin_beforeNewRun(module->getName());
       dynamic_cast<Producer *>(module)->beforeNewRun(header);
+      if(performance_) performance_->end_beforeNewRun(module->getName());
+    }
+  }
+  if(performance_) performance_->end_beforeNewRun(performance::Tracker::ALL);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
+  if (performance_) performance_->begin_onNewRun(performance::Tracker::ALL);
   conditions_.onNewRun(header);
-  for (auto module : sequence_)
+  for (auto module : sequence_) {
+    if (performance_) performance_->begin_onNewRun(module->getName());
     module->onNewRun(header);
+    if (performance_) performance_->begin_onNewRun(module->getName());
+  }
+  if (performance_) performance_->begin_onNewRun(performance::Tracker::ALL);
 }
 
 bool Process::process(int n, Event& event) const {
@@ -416,18 +431,42 @@ bool Process::process(int n, Event& event) const {
                    << t.AsString("lc") << ")";
   }
 
+  if (performance_) performance_->begin_process(performance::Tracker::ALL);
   try {
     for (auto module : sequence_) {
+      if (performance_) performance_->begin_process(module->getName());
       if (dynamic_cast<Producer *>(module)) {
         (dynamic_cast<Producer *>(module))->produce(event);
       } else if (dynamic_cast<Analyzer *>(module)) {
         (dynamic_cast<Analyzer *>(module))->analyze(event);
       }
+      if (performance_) performance_->end_process(module->getName());
     }
   } catch (AbortEventException &) {
     return false;
   }
+  if (performance_) performance_->end_process(performance::Tracker::ALL);
   return true;
+}
+
+void Process::onFileOpen(EventFile& file) const {
+  if (performance_) performance_->begin_onFileOpen(performance::Tracker::ALL);
+  for (auto module : sequence_) {
+    if (performance_) performance_->begin_onFileOpen(module->getName());
+    module->onFileOpen(file);
+    if (performance_) performance_->end_onFileOpen(module->getName());
+  }
+  if (performance_) performance_->end_onFileOpen(performance::Tracker::ALL);
+}
+
+void Process::onFileClose(EventFile& file) const {
+  if (performance_) performance_->begin_onFileClose(performance::Tracker::ALL);
+  for (auto module : sequence_) {
+    if (performance_) performance_->begin_onFileClose(module->getName());
+    module->onFileClose(file);
+    if (performance_) performance_->end_onFileClose(module->getName());
+  }
+  if (performance_) performance_->end_onFileClose(performance::Tracker::ALL);
 }
 
 }  // namespace framework
