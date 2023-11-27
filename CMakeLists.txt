@@ -12,6 +12,7 @@ project(
 setup_library(module Framework name Performance dependencies ROOT::Core)
 root_generate_dictionary(PerfDict
   Framework/Performance/Measurement.h
+  Framework/Performance/Tracker.h
   LINKDEF ${PROJECT_SOURCE_DIR}/include/Framework/Performance/LinkDef.h
   MODULE Framework_Performance)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Framework_Performance_rdict.pcm DESTINATION lib)

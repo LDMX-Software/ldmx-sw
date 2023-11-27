@@ -10,6 +10,6 @@
 #pragma link C++ namespace framework::performance;
 
 #pragma link C++ class framework::performance::Measurement+;
-#pragma link C++ class std::map<std::string,framework::performance::Measurement>+;
+#pragma link C++ class std::map< std::string, framework::performance::Measurement >+;
 
 #endif
