@@ -29,9 +29,9 @@ void KaonPhysics::setDecayProperties(
                                        kaon->GetParticleName());
   }
   if (verbosity > 1) {
-    std::cout << "Decay details after setting branching ratios and lifetimes"
-              << std::endl;
-    DumpDecayDetails(kaon);
+    ldmx_log(debug)
+        << "Decay details before setting branching ratios and lifetimes"
+        << std::endl;
   }
   kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   if (kaon == G4KaonZeroLong::Definition()) {
@@ -67,8 +67,9 @@ void KaonPhysics::setDecayProperties(
         branching_ratios[ChargedKaonDecayChannel::pi0_mu_nu]);
   }
   if (verbosity > 0) {
-    std::cout << "Decay details after setting branching ratios and lifetimes"
-              << std::endl;
+    ldmx_log(debug)
+        << "Decay details after setting branching ratios and lifetimes"
+        << std::endl;
     DumpDecayDetails(kaon);
   }
 }
@@ -91,25 +92,25 @@ void KaonPhysics::ConstructParticle() {
 }
 
 void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
-  std::cout << "Decay table details for " << kaon->GetParticleName()
-            << std::endl
-            << std::scientific << std::setprecision(15);
-  std::cout << "PDG Lifetime " << kaon->GetPDGLifeTime() << std::endl;
+  ldmx_log(debug) << "Decay table details for " << kaon->GetParticleName()
+                  << std::endl
+                  << std::scientific << std::setprecision(15);
+  ldmx_log(debug) << "PDG Lifetime " << kaon->GetPDGLifeTime() << std::endl;
   const auto table{kaon->GetDecayTable()};
   const int entries{table->entries()};
   for (auto i{0}; i < entries; ++i) {
     const auto channel{(*table)[i]};
-    std::cout << "Channel " << i << " Kinematics type "
-              << channel->GetKinematicsName() << " with BR " << channel->GetBR()
-              << std::endl;
-    std::cout << kaon->GetParticleName() << " -> ";
+    ldmx_log(debug) << "Channel " << i << " Kinematics type "
+                    << channel->GetKinematicsName() << " with BR "
+                    << channel->GetBR() << std::endl;
+    ldmx_log(debug) << kaon->GetParticleName() << " -> ";
     const auto daughters{channel->GetNumberOfDaughters()};
     for (auto j{0}; j < daughters - 1; ++j) {
-      std::cout << channel->GetDaughter(j)->GetParticleName() << " + ";
+      ldmx_log(debug) << channel->GetDaughter(j)->GetParticleName() << " + ";
     }
     // Special formatting for last one :)
-    std::cout << channel->GetDaughter(daughters - 1)->GetParticleName()
-              << std::endl;
+    ldmx_log(debug) << channel->GetDaughter(daughters - 1)->GetParticleName()
+                    << std::endl;
   }
 }
 

@@ -16,6 +16,7 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
 
 namespace simcore {
 
@@ -148,6 +149,10 @@ class KaonPhysics : public G4VPhysicsConstructor {
    * the kaon particle definitions.
    */
   void ConstructProcess() override{};
+
+ private:
+  mutable framework::logging::logger theLog_{
+      framework::logging::makeLogger("KaonPhysics")};
 };
 }  // namespace simcore
 
