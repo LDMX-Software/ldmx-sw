@@ -15,7 +15,7 @@ void SimObjects::configure(framework::config::Parameters& ps) {
 
 void SimObjects::onProcessStart() {
   getHistoDirectory();
-  std::vector<std::string> labels = {
+  std::vector<std::string> creator_process_labels = {
       "Unknown",              // 0: Unknown
       "e+ e- ->  γγ",         // 1: annihil
       "γ e -> γ e",           // 2: compt
@@ -82,10 +82,11 @@ void SimObjects::onProcessStart() {
   histograms_.create("pn_child.children", "Track IDs of Children", 100, 0,
                      1000);
 
-  auto hist { histograms_.get("SimParticles.process") }
-  for (int i{0}; i < labels.size(); ++i) {
-    const auto& label{labels[i]};
-    hist->GetXaxis()->SetBinLabel(i, label.c_str());
+  // Add bin labels to category plots
+  auto hist{histograms_.get("SimParticles.process")};
+  for (int i{0}; i < creator_process_labels.size(); ++i) {
+    const auto& label{creator_process_labels[i]};
+    hist->GetXaxis()->SetBinLabel(i + 1, label.c_str());
   }
 }
 
