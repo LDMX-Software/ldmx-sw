@@ -16,6 +16,7 @@ namespace framework::performance {
  */
 class Tracker {
  public:
+  static const std::string ALL;
   // create it with the destination
   // e.g. with Process::makeHistoDirectory("performance")
   Tracker(TDirectory *storage_directory);
@@ -27,10 +28,21 @@ class Tracker {
   void absolute_start();
   /// literally last line of Process::run (if run compeletes without error)
   void absolute_end();
-  void begin_onProcessStart(const std::string& processor); // before processor specific onProcessStart
-  void end_onProcessStart(const std::string& processor); // after processor specific onProcessStart
-  
-  // similar callbacks for the different EventProcessor callbacks
+  void begin_onProcessStart(const std::string& processor);
+  void end_onProcessStart(const std::string& processor);
+  void begin_onFileOpen(const std::string& processor);
+  void end_onFileOpen(const std::string& processor);
+  void begin_onFileClose(const std::string& processor);
+  void end_onFileClose(const std::string& processor);
+  void begin_onProcessEnd(const std::string& processor);
+  void end_onProcessEnd(const std::string& processor);
+  void begin_beforeNewRun(const std::string& processor);
+  void end_beforeNewRun(const std::string& processor);
+  void begin_onNewRun(const std::string& processor);
+  void end_onNewRun(const std::string& processor);
+  void begin_process(const std::string& processor);
+  void end_process(const std::string& processor);
+
  private:
   // has some handle to the destination for the data
   TDirectory *storage_directory_;
@@ -40,7 +52,20 @@ class Tracker {
   Measurement absolute_start_, absolute_end_;
   std::map<std::string, Measurement> 
     begin_onProcessStart_,
-    end_onProcessStart_;
+    end_onProcessStart_,
+    begin_onProcessEnd_,
+    end_onProcessEnd_,
+    begin_onFileOpen_,
+    end_onFileOpen_,
+    begin_onFileClose_,
+    end_onFileClose_,
+    begin_beforeNewRun_,
+    end_beforeNewRun_,
+    begin_onNewRun_,
+    end_onNewRun_;
+  std::map<std::string, Measurement*>
+    begin_process_,
+    end_process_;
 };
 }
 
