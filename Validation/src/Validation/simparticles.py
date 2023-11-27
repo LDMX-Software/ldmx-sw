@@ -7,7 +7,7 @@ log = logging.getLogger('8GeV')
 @plotter(hist=True, event=False)
 def beamenergy_comp(d: Differ, out_dir=None):
 
-    pdgid_labels = ['', 'e+', 'e-', 'μ+', 'μ-', 'γ', 'p', 'n', 'π+', 'π-', 'π0', 'K+', 'K-', 'K-L', 'K-S', 'nucleus', 'strange baryon', "A\'", 'something else'] # finish later 
+    pdgid_labels = ['', 'e+', 'e-', 'μ+', 'μ-', 'γ', 'p', 'n', 'π+', 'π-', 'π0', 'K+', 'K-', 'K-L', 'K-S', 'light nucleus', 'heavy nucleus', 'strange baryon', "A\'", 'something else'] # finish later 
 
     d.plot1d("SampleValidation/SampleValidation_pdgid_primaries", "PDG ID, primaries",
              tick_labels=pdgid_labels,

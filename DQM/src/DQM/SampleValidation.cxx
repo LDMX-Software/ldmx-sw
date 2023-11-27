@@ -21,7 +21,7 @@ namespace dqm {
 
     std::vector<int> primary_daughters;
 
-    double hard_thresh = 2500;
+    double hard_thresh;
 
     //Loop over all SimParticles
     for (auto const& it : particle_map) {
@@ -87,7 +87,7 @@ namespace dqm {
   }
 
   int SampleValidation::pdgid_label(const int pdgid) {
-    int label = 18; // initially assign label as "anything else"/overflow value, only change if the pdg id is something of interest
+    int label = 19; // initially assign label as "anything else"/overflow value, only change if the pdg id is something of interest
     if (pdgid == -11) label = 1; // e+
     
     if (pdgid == 11) label = 2; // e-
@@ -116,11 +116,24 @@ namespace dqm {
     
     if (pdgid == 310) label = 14; // K-Short
     
-    if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 || pdgid == 3322 || pdgid == 3312) label = 16; // strange baryon
-    
-    if (pdgid > 10000) label = 15; //nuclei
+    if (pdgid == 3122 || pdgid == 3222 || pdgid == 3212 || pdgid == 3112 || pdgid == 3322 || pdgid == 3312) label = 17; // strange baryon
 
-    if (pdgid == 622) label = 17; // dark photon, need pdg id for other models like ALPs and SIMPs
+    /*
+     * Nuclear PDG codes are given by ±10LZZZAAAI so to find the atomic
+     * number, we divide by 10 (to lose I) and then take the modulo
+     * with 1000.
+     */
+    
+    if (pdgid > 1000000000) { //nuclei
+      if (((pdgid / 10) % 1000) <= 4) {
+	label = 15; // light nuclei
+      }
+      else {
+	label = 16; // heavy nuclei
+      }
+    }
+
+    if (pdgid == 622) label = 18; // dark photon, need pdg id for other models like ALPs and SIMPs
     
     return label;
   }
