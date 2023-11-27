@@ -27,10 +27,32 @@ void SimObjects::onProcessStart() {
   histograms_.create("SimParticles.x","Vertex x-Position [mm]",401,-200,200);
   histograms_.create("SimParticles.y","Vertex y-Position [mm]",401,-200,200);
   histograms_.create("SimParticles.z","Vertex z-Position [mm]",171,-700,1000.);
-  histograms_.create("SimParticles.process","Creator Process Type",12,0,12);
   histograms_.create("SimParticles.track_id","Track ID of Particle",100,0,1000);
   histograms_.create("SimParticles.parent","Track ID of Parent",100,0,1000);
   histograms_.create("SimParticles.children","Track IDs of Children",100,0,1000);
+  std::vector<std::string> labels = {
+      "Unknown",              // 0: Unknown
+      "e+ e- ->  γγ",         // 1: annihil
+      "γ e -> γ e",           // 2: compt
+      "γ -> e+ e- ",          // 3: conv
+      "e Z -> X (eN)",        //  4: electronNuclear
+      "e Z -> e Z γ",         //  5: eBrem
+      "e- ionization",        // 6: eIoni
+      "Multiple scattering",  //  7: msc
+      "γ Z -> e Z ",          //   8: phot
+      "γ Z -> X (PN)",        //  9: photonNuclear
+      "γ -> mumu",            //   10: GammaToMuPair
+      "e Z -> e Z A'",        //   11: eDarkBrem
+      "Decay",                //   12: Decay
+      "Primary",              //  13: Primary
+      "mu Z -> X",            //   14: muonNuclear
+      "n Z -> X",             //   15: neutronInelastic
+      "n Z -> Z*",            //   16: neutronCapture
+      "K Z -> X",             //   17: kaonInelastic
+      "pi Z -> X",            //  18: pionInelastic
+      "p Z -> X",             //  19: protonInelastic
+  };
+  histograms_.create("SimParticles.process", "Creator Process Type", 20, 0, 20);
 
   // create pn children histograms
   histograms_.create("pn_child.E","Vertex Total Energy [MeV]",800,0.,8000.);
@@ -45,6 +67,12 @@ void SimObjects::onProcessStart() {
   histograms_.create("pn_child.track_id","Track ID of Particle",100,0,1000);
   histograms_.create("pn_child.parent","Track ID of Parent",100,0,1000);
   histograms_.create("pn_child.children","Track IDs of Children",100,0,1000);
+
+  auto hist { histograms_.get("SimParticles.process") }
+  for (int i{0}; i < labels.size(); ++i) {
+    const auto& label{labels[i]};
+    hist->GetXaxis()->SetBinLabel(i, label.c_str());
+  }
 }
 
 void SimObjects::createCalorimeterHists(const std::string& coll_name) {
