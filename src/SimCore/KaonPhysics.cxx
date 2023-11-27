@@ -29,9 +29,10 @@ void KaonPhysics::setDecayProperties(
                                        kaon->GetParticleName());
   }
   if (verbosity > 1) {
-    ldmx_log(info)
-        << "Decay details before setting branching ratios and lifetimes"
-        << std::endl;
+    ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
+                   << ") before setting branching ratios and lifetimes"
+                   << std::endl;
+    DumpDecayDetails(kaon);
   }
   kaon->SetPDGLifeTime(kaon->GetPDGLifeTime() * lifetime_factor);
   if (kaon == G4KaonZeroLong::Definition()) {
@@ -67,9 +68,9 @@ void KaonPhysics::setDecayProperties(
         branching_ratios[ChargedKaonDecayChannel::pi0_mu_nu]);
   }
   if (verbosity > 0) {
-    ldmx_log(info)
-        << "Decay details after setting branching ratios and lifetimes"
-        << std::endl;
+    ldmx_log(info) << "Decay details (" << kaon->GetParticleName()
+                   << ") after setting branching ratios and lifetimes"
+                   << std::endl;
     DumpDecayDetails(kaon);
   }
 }
@@ -93,24 +94,26 @@ void KaonPhysics::ConstructParticle() {
 
 void KaonPhysics::DumpDecayDetails(const G4ParticleDefinition* kaon) const {
   ldmx_log(info) << "Decay table details for " << kaon->GetParticleName()
-                  << std::endl
-                  << std::scientific << std::setprecision(15);
-  ldmx_log(info) << "PDG Lifetime " << kaon->GetPDGLifeTime() << std::endl;
+                 << std::scientific << std::setprecision(15)
+                 << " (PDG Lifetime " << kaon->GetPDGLifeTime() << ")"
+                 << std::endl;
   const auto table{kaon->GetDecayTable()};
   const int entries{table->entries()};
   for (auto i{0}; i < entries; ++i) {
     const auto channel{(*table)[i]};
-    ldmx_log(info) << "Channel " << i << " Kinematics type "
-                    << channel->GetKinematicsName() << " with BR "
-                    << channel->GetBR() << std::endl;
-    ldmx_log(info) << kaon->GetParticleName() << " -> ";
     const auto daughters{channel->GetNumberOfDaughters()};
+    std::string products{};
+    // N-1 to avoid extra " + "
     for (auto j{0}; j < daughters - 1; ++j) {
-      ldmx_log(info) << channel->GetDaughter(j)->GetParticleName() << " + ";
+      products += channel->GetDaughter(j)->GetParticleName();
+      products += " + ";
     }
     // Special formatting for last one :)
-    ldmx_log(info) << channel->GetDaughter(daughters - 1)->GetParticleName()
-                    << std::endl;
+    products += channel->GetDaughter(daughters - 1)->GetParticleName();
+    ldmx_log(info) << "Channel " << i << " (" << kaon->GetParticleName()
+                   << " -> " << products << ") Kinematics type "
+                   << channel->GetKinematicsName() << " with BR "
+                   << channel->GetBR() << std::endl;
   }
 }
 
