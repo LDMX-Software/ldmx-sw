@@ -12,21 +12,70 @@ Tracker::Tracker(TDirectory *storage_directory)
 
 Tracker::~Tracker() {
   storage_directory_->cd();
+  event_data_->Write();
   storage_directory_->WriteObject(&absolute_start_, "absolute_start");
   storage_directory_->WriteObject(&absolute_end_, "absolute_end");
-  storage_directory_->WriteObject(&begin_onProcessStart_, "begin_onProcessStart");
-  storage_directory_->WriteObject(&end_onProcessStart_, "end_onProcessStart");
-  storage_directory_->WriteObject(&begin_onProcessEnd_, "begin_onProcessEnd");
-  storage_directory_->WriteObject(&end_onProcessEnd_, "end_onProcessEnd");
-  storage_directory_->WriteObject(&begin_onFileOpen_, "begin_onFileOpen");
-  storage_directory_->WriteObject(&end_onFileOpen_, "end_onFileOpen");
-  storage_directory_->WriteObject(&begin_onFileClose_, "begin_onFileClose");
-  storage_directory_->WriteObject(&end_onFileClose_, "end_onFileClose");
-  storage_directory_->WriteObject(&begin_beforeNewRun_, "begin_beforeNewRun");
-  storage_directory_->WriteObject(&end_beforeNewRun_, "end_beforeNewRun");
-  storage_directory_->WriteObject(&begin_onNewRun_, "begin_onNewRun");
-  storage_directory_->WriteObject(&end_onNewRun_, "end_onNewRun");
-  event_data_->Write();
+
+  TDirectory* onProcessStart_d = storage_directory_->mkdir("onProcessStart");
+  TDirectory* begin = onProcessStart_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_onProcessStart_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  TDirectory* end = onProcessStart_d->mkdir("end");
+  for (const auto& [name, meas] : end_onProcessStart_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
+  TDirectory* onProcessEnd_d = storage_directory_->mkdir("onProcessEnd");
+  begin = onProcessEnd_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_onProcessEnd_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  end = onProcessEnd_d->mkdir("end");
+  for (const auto& [name, meas] : end_onProcessEnd_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
+  TDirectory* onFileOpen_d = storage_directory_->mkdir("onFileOpen");
+  begin = onFileOpen_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_onFileOpen_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  end = onFileOpen_d->mkdir("end");
+  for (const auto& [name, meas] : end_onFileOpen_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
+  TDirectory* onFileClose_d = storage_directory_->mkdir("onFileClose");
+  begin = onFileClose_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_onFileClose_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  end = onFileClose_d->mkdir("end");
+  for (const auto& [name, meas] : end_onFileClose_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
+  TDirectory* beforeNewRun_d = storage_directory_->mkdir("beforeNewRun");
+  begin = beforeNewRun_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_beforeNewRun_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  end = beforeNewRun_d->mkdir("end");
+  for (const auto& [name, meas] : end_beforeNewRun_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
+  TDirectory* onNewRun_d = storage_directory_->mkdir("onNewRun");
+  begin = onNewRun_d->mkdir("begin");
+  for (const auto& [name, meas] : begin_onNewRun_) {
+    begin->WriteObject(&meas, name.c_str());
+  }
+  end = onNewRun_d->mkdir("end");
+  for (const auto& [name, meas] : end_onNewRun_) {
+    end->WriteObject(&meas, name.c_str());
+  }
+
   for (auto& [name, m] : begin_process_) {
     delete m;
   }
