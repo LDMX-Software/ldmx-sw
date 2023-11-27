@@ -51,7 +51,10 @@ class KaonPhysics : public G4VPhysicsConstructor {
    * the decay table.
    *
    * @note: The order in the the decay table is sorted by the branching ratios
-   * of the default physics settings!
+   * of the default physics settings since G4DecayTable::insert sorts its
+   * entries by branching ratio!
+   *
+   *
    */
   enum ChargedKaonDecayChannel {
     mu_nu = 0,
@@ -81,7 +84,8 @@ class KaonPhysics : public G4VPhysicsConstructor {
    * K^0_S -> \pi^0 + \pi^0
    *
    * @note: The order in the the decay table is sorted by the branching ratios
-   * of the default physics settings!
+   * of the default physics settings since G4DecayTable::insert sorts its
+   * entries by branching ratio!
    *
    **/
   enum KaonZeroLongDecayChannel {
