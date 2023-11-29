@@ -42,6 +42,7 @@ class Tracker {
   void end_onNewRun(const std::string& processor);
   void begin_process(const std::string& processor);
   void end_process(const std::string& processor);
+  void end_event();
 
  private:
   // has some handle to the destination for the data
