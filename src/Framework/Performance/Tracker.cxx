@@ -141,24 +141,29 @@ void Tracker::end_onNewRun(const std::string& processor) {
 }
 
 void Tracker::begin_process(const std::string& processor) {
-  if (begin_process_.find(processor) == begin_process_.end()) {
+  auto meas_it{begin_process_.find(processor)};
+  if (meas_it == begin_process_.end()) {
     auto meas = new Measurement(false);
     event_data_->Branch(("begin_"+processor).c_str(), meas);
-    begin_process_.emplace(processor, meas);
+    auto in = begin_process_.emplace(processor, meas);
+    meas_it = in.first;
   }
-  begin_process_[processor]->sample();
+  meas_it->second->sample();
 }
 
 void Tracker::end_process(const std::string& processor) {
-  if (end_process_.find(processor) == end_process_.end()) {
+  auto meas_it{end_process_.find(processor)};
+  if (meas_it == end_process_.end()) {
     auto meas = new Measurement(false);
-    event_data_->Branch(("end_"+processor).c_str(), &meas);
-    end_process_.emplace(processor, meas);
+    event_data_->Branch(("end_"+processor).c_str(), meas);
+    auto in = end_process_.emplace(processor, meas);
+    meas_it = in.first;
   }
-  end_process_[processor]->sample();
-  if (processor == ALL) {
-    event_data_->Fill();
-  }
+  meas_it->second->sample();
+}
+
+void Tracker::end_event() {
+  event_data_->Fill();
 }
 
 }

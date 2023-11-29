@@ -445,7 +445,10 @@ bool Process::process(int n, Event& event) const {
   } catch (AbortEventException &) {
     return false;
   }
-  if (performance_) performance_->end_process(performance::Tracker::ALL);
+  if (performance_) {
+    performance_->end_process(performance::Tracker::ALL);
+    performance_->end_event();
+  }
   return true;
 }
 
