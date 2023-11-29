@@ -134,7 +134,7 @@ void close();
  * in any class functions.
  */
 #define enableLogging(name) \
-  mutable logging::logger theLog_{logging::makeLogger(name)};
+  mutable ::framework::logging::logger theLog_{::framework::logging::makeLogger(name)};
 
 /**
  * @macro ldmx_log
@@ -142,6 +142,6 @@ void close();
  * Assumes to have access to a variable named theLog_ of type logger.
  * Input logging level (without namespace or enum).
  */
-#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_, framework::logging::level::lvl)
+#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_, ::framework::logging::level::lvl)
 
 #endif  // FRAMEWORK_LOGGER_H
