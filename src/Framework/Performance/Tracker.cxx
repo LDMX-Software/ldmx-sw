@@ -164,6 +164,8 @@ void Tracker::end_process(const std::string& processor) {
 
 void Tracker::end_event() {
   event_data_->Fill();
+  for (auto& [name, meas] : begin_process_) meas->invalidate();
+  for (auto& [name, meas] : end_process_  ) meas->invalidate();
 }
 
 }
