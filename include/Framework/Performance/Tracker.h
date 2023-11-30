@@ -11,17 +11,29 @@
 namespace framework::performance {
 
 /**
- * Class to interface between framework::Process and various Measurments
+ * Class to interface between framework::Process and various Measurements
  * that can eventually be written into the output histogram file.
+ *
+ * @see Measurement for what measurements are taken and how they are taken.
  */
 class Tracker {
  public:
+  /**
+   * Special name representing "all" processors in the sequence.
+   * For measurements related to beginning, this is before all
+   * processors and for measurements related to ending, this is
+   * after all processors.
+   */
   static const std::string ALL;
-  // create it with the destination
-  // e.g. with Process::makeHistoDirectory("performance")
+  /**
+   * Create the tracker with a specific destination for writing information
+   *
+   * @param[in] storage_directory directory in-which to write data when closing
+   */
   Tracker(TDirectory *storage_directory);
-  // destructor needs to make sure that the trees/objects are written
-  // so that Process can just delete it when closing
+  /**
+   * Close up tracking and write all of the data collected to the storage directory
+   */
   ~Tracker();
   /* begin list of callbacks for various points in Process::run */
   /// literally first line of Process::run
@@ -45,9 +57,9 @@ class Tracker {
   void end_event();
 
  private:
-  // has some handle to the destination for the data
+  /// handle to the destination for the data
   TDirectory *storage_directory_;
-  // has a TTree for event-by-event perf info
+  /// event-by-event perf info
   TTree *event_data_;
 
   Measurement absolute_start_, absolute_end_;
