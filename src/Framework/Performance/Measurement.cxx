@@ -17,7 +17,12 @@ Measurement::Measurement(bool do_sample) {
 }
 
 void Measurement::sample() {
+  valid_ = true;
   time_ = get_current_time();
+}
+
+void Measurement::invalidate() {
+  valid_ = false;
 }
 
 }
