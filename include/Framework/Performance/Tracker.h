@@ -62,23 +62,16 @@ class Tracker {
   /// event-by-event perf info
   TTree *event_data_;
 
-  Measurement absolute_start_, absolute_end_;
+  Measurement absolute_;
   std::map<std::string, Measurement> 
-    begin_onProcessStart_,
-    end_onProcessStart_,
-    begin_onProcessEnd_,
-    end_onProcessEnd_,
-    begin_onFileOpen_,
-    end_onFileOpen_,
-    begin_onFileClose_,
-    end_onFileClose_,
-    begin_beforeNewRun_,
-    end_beforeNewRun_,
-    begin_onNewRun_,
-    end_onNewRun_;
+    onProcessStart_,
+    onProcessEnd_,
+    onFileOpen_,
+    onFileClose_,
+    beforeNewRun_,
+    onNewRun_;
   std::map<std::string, Measurement*>
-    begin_process_,
-    end_process_;
+    process_;
 };
 }
 

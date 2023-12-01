@@ -12,13 +12,17 @@ static long unsigned int get_current_time() {
   return system_clock::to_time_t(current_time);
 }
 
-Measurement::Measurement(bool do_sample) {
-  if (do_sample) sample();
+Measurement::Measurement(bool do_start) {
+  if (do_start) start();
 }
 
-void Measurement::sample() {
+void Measurement::start() {
+  start_ = get_current_time();
+}
+
+void Measurement::end() {
   valid_ = true;
-  time_ = get_current_time();
+  duration_ = get_current_time() - start_;
 }
 
 void Measurement::invalidate() {

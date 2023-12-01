@@ -443,6 +443,10 @@ bool Process::process(int n, Event& event) const {
       if (performance_) performance_->end_process(module->getName());
     }
   } catch (AbortEventException &) {
+    if (performance_) {
+      performance_->end_process(performance::Tracker::ALL);
+      performance_->end_event();
+    }
     return false;
   }
   if (performance_) {
