@@ -108,7 +108,11 @@ Process::Process(const framework::config::Parameters &configuration)
 
   bool logPerformance = configuration.getParameter<bool>("logPerformance", false);
   if (logPerformance) {
-    performance_ = new performance::Tracker(makeHistoDirectory("performance"));
+    std::vector<std::string> names{sequence_.size()};
+    for (std::size_t i{0}; i < sequence_.size(); i++) {
+      names[i] = sequence_[i]->getName();
+    }
+    performance_ = new performance::Tracker(makeHistoDirectory("performance"), names);
   }
 }
 
@@ -150,14 +154,16 @@ void Process::run() {
   theEvent.getEventHeader().setRun(runForGeneration_);
 
   // Start by notifying everyone that modules processing is beginning
-  if (performance_) performance_->begin_onProcessStart(performance::Tracker::ALL);
+  std::size_t i_proc{0};
+  if (performance_) performance_->start(performance::Callback::onProcessStart, 0);
   conditions_.onProcessStart();
   for (auto module : sequence_) {
-    if (performance_) performance_->begin_onProcessStart(module->getName());
+    i_proc++;
+    if (performance_) performance_->start(performance::Callback::onProcessStart, i_proc);
     module->onProcessStart();
-    if (performance_) performance_->end_onProcessStart(module->getName());
+    if (performance_) performance_->end(performance::Callback::onProcessStart, i_proc);
   }
-  if (performance_) performance_->end_onProcessStart(performance::Tracker::ALL);
+  if (performance_) performance_->end(performance::Callback::onProcessStart, 0);
 
   // If we have no input files, but do have an event number, run for
   // that number of events and generate an output file.
@@ -353,13 +359,15 @@ void Process::run() {
   }  // are there input files? if-else tree
 
   // finally, notify everyone that we are stopping
-  if(performance_) performance_->begin_onProcessEnd(performance::Tracker::ALL);
+  if(performance_) performance_->start(performance::Callback::onProcessEnd, 0);
+  i_proc = 0;
   for (auto module : sequence_) {
-    if(performance_) performance_->begin_onProcessEnd(module->getName());
+    i_proc++;
+    if(performance_) performance_->start(performance::Callback::onProcessEnd, i_proc);
     module->onProcessEnd();
-    if(performance_) performance_->end_onProcessEnd(module->getName());
+    if(performance_) performance_->end(performance::Callback::onProcessEnd, i_proc);
   }
-  if(performance_) performance_->end_onProcessEnd(performance::Tracker::ALL);
+  if(performance_) performance_->end(performance::Callback::onProcessEnd, 0);
 
   // we're done so let's close up the logging
   logging::close();
@@ -400,25 +408,29 @@ TDirectory *Process::openHistoFile() {
 void Process::newRun(ldmx::RunHeader& header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
-  if(performance_) performance_->begin_beforeNewRun(performance::Tracker::ALL);
+  if(performance_) performance_->start(performance::Callback::beforeNewRun, 0);
+  std::size_t i_proc{0};
   for (auto module : sequence_) {
+    i_proc++;
     if (dynamic_cast<Producer *>(module)) {
-      if(performance_) performance_->begin_beforeNewRun(module->getName());
+      if(performance_) performance_->start(performance::Callback::beforeNewRun, i_proc);
       dynamic_cast<Producer *>(module)->beforeNewRun(header);
-      if(performance_) performance_->end_beforeNewRun(module->getName());
+      if(performance_) performance_->end(performance::Callback::beforeNewRun, i_proc);
     }
   }
-  if(performance_) performance_->end_beforeNewRun(performance::Tracker::ALL);
+  if(performance_) performance_->end(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
-  if (performance_) performance_->begin_onNewRun(performance::Tracker::ALL);
+  if (performance_) performance_->start(performance::Callback::onNewRun, 0);
   conditions_.onNewRun(header);
+  i_proc = 0;
   for (auto module : sequence_) {
-    if (performance_) performance_->begin_onNewRun(module->getName());
+    i_proc++;
+    if (performance_) performance_->start(performance::Callback::onNewRun, i_proc);
     module->onNewRun(header);
-    if (performance_) performance_->begin_onNewRun(module->getName());
+    if (performance_) performance_->end(performance::Callback::onNewRun, i_proc);
   }
-  if (performance_) performance_->begin_onNewRun(performance::Tracker::ALL);
+  if (performance_) performance_->end(performance::Callback::onNewRun, 0);
 }
 
 bool Process::process(int n, Event& event) const {
@@ -431,49 +443,55 @@ bool Process::process(int n, Event& event) const {
                    << t.AsString("lc") << ")";
   }
 
-  if (performance_) performance_->begin_process(performance::Tracker::ALL);
+  if (performance_) performance_->start(performance::Callback::process, 0);
   try {
+    std::size_t i_proc{0};
     for (auto module : sequence_) {
-      if (performance_) performance_->begin_process(module->getName());
+      i_proc++;
+      if (performance_) performance_->start(performance::Callback::process, i_proc);
       if (dynamic_cast<Producer *>(module)) {
         (dynamic_cast<Producer *>(module))->produce(event);
       } else if (dynamic_cast<Analyzer *>(module)) {
         (dynamic_cast<Analyzer *>(module))->analyze(event);
       }
-      if (performance_) performance_->end_process(module->getName());
+      if (performance_) performance_->end(performance::Callback::process, i_proc);
     }
   } catch (AbortEventException &) {
     if (performance_) {
-      performance_->end_process(performance::Tracker::ALL);
-      performance_->end_event();
+      performance_->end(performance::Callback::process, 0);
+      performance_->end_event(false);
     }
     return false;
   }
   if (performance_) {
-    performance_->end_process(performance::Tracker::ALL);
-    performance_->end_event();
+    performance_->end(performance::Callback::process, 0);
+    performance_->end_event(true);
   }
   return true;
 }
 
 void Process::onFileOpen(EventFile& file) const {
-  if (performance_) performance_->begin_onFileOpen(performance::Tracker::ALL);
+  if (performance_) performance_->start(performance::Callback::onFileOpen, 0);
+  std::size_t i_proc{0};
   for (auto module : sequence_) {
-    if (performance_) performance_->begin_onFileOpen(module->getName());
+    i_proc++;
+    if (performance_) performance_->start(performance::Callback::onFileOpen, i_proc);
     module->onFileOpen(file);
-    if (performance_) performance_->end_onFileOpen(module->getName());
+    if (performance_) performance_->end(performance::Callback::onFileOpen, i_proc);
   }
-  if (performance_) performance_->end_onFileOpen(performance::Tracker::ALL);
+  if (performance_) performance_->end(performance::Callback::onFileOpen, 0);
 }
 
 void Process::onFileClose(EventFile& file) const {
-  if (performance_) performance_->begin_onFileClose(performance::Tracker::ALL);
+  if (performance_) performance_->start(performance::Callback::onFileClose, 0);
+  std::size_t i_proc{0};
   for (auto module : sequence_) {
-    if (performance_) performance_->begin_onFileClose(module->getName());
+    i_proc++;
+    if (performance_) performance_->start(performance::Callback::onFileClose, i_proc);
     module->onFileClose(file);
-    if (performance_) performance_->end_onFileClose(module->getName());
+    if (performance_) performance_->end(performance::Callback::onFileClose, i_proc);
   }
-  if (performance_) performance_->end_onFileClose(performance::Tracker::ALL);
+  if (performance_) performance_->end(performance::Callback::onFileClose, 0);
 }
 
 }  // namespace framework
