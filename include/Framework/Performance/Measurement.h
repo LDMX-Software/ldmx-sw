@@ -20,18 +20,22 @@ class Measurement {
   /// default constructor (i.e. initialize values to defaults)
   Measurement() = default;
   /**
-   * constructor giving caller ability to do the sampling immediately
+   * constructor giving caller ability to start the timer immediately
    *
-   * @see sample for how sampling is done
-   * @param[in] do_sample if true, call sample immediately
+   * @see start for how the timer is started
+   * @param[in] start if true, call begin immediately
    */
-  Measurement(bool do_sample);
+  Measurement(bool start);
   /// virtual destructor for ROOT serialization
   virtual ~Measurement() = default;
   /**
-   * Take and store the measurment
+   * Start the timer
    */
-  void sample();
+  void start();
+  /**
+   * End the timer
+   */
+  void end();
   /**
    * Set the validity of this measurement to false
    *
@@ -41,10 +45,12 @@ class Measurement {
    */
   void invalidate();
  private:
-  /// validity of this measurement (true if `sample` was called, false otherwise)
+  /// validity of this measurement (true if `end` was called, false otherwise)
   bool valid_{false};
-  /// the time stamp of this measurement (as measured by system clock)
-  long unsigned int time_;
+  /// the time stamp of when this timer started (as measured by system clock)
+  long unsigned int start_;
+  /// how long the timer ran in ns
+  long unsigned int duration_;
   ClassDef(Measurement, 1);
 };
 }
