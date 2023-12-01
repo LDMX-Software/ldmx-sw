@@ -4,34 +4,44 @@ namespace framework::performance {
 
 const std::string Tracker::ALL = "__ALL__";
 
-Tracker::Tracker(TDirectory *storage_directory)
+Tracker::Tracker(TDirectory *storage_directory, const std::vector<std::string>& names)
   : storage_directory_{storage_directory} {
   storage_directory_->cd();
   event_data_ = new TTree("by_event","by_event");
+
+  names_.reserve(names.size()+1);
+  names_.push_back(Tracker::ALL);
+  for (const std::string& name : names) {
+    names_.push_back(name);
+  }
+
+  event_data_->Branch("completed", &event_completed_);
+  event_times_.resize(names_.size());
+  for (std::size_t i{0}; i < names_.size(); i++) {
+    event_data_->Branch(names_[i].c_str(), &(event_times_[i]));
+  }
+
+  processor_timers_.resize(7);
+  for (std::vector<Timer>& timer_set : processor_timers_) {
+    timer_set.resize(names_.size());
+  }
 }
 
 Tracker::~Tracker() {
   storage_directory_->cd();
-  event_data_->Write();
-  storage_directory_->WriteObject(&absolute_, "absolute");
+  //event_data_->Write();
+  absolute_.write(storage_directory_, "absolute");
 
-  std::vector<std::pair<std::string,std::map<std::string,Measurement>>> callbacks = {
-    { "onProcessStart", onProcessStart_ },
-    { "onProcessEnd", onProcessEnd_ },
-    { "onFileOpen", onFileOpen_ },
-    { "onFileClose", onFileClose_ },
-    { "beforeNewRun", beforeNewRun_ },
-    { "onNewRun", onNewRun_ }
+  std::vector<Callback> non_event_callbacks = {
+    Callback::onProcessStart, Callback::onProcessEnd,
+    Callback::onFileOpen, Callback::onFileClose,
+    Callback::beforeNewRun, Callback::onNewRun
   };
-  for (auto& [name, measurements] : callbacks) {
-    TDirectory* callback_d = storage_directory_->mkdir(name.c_str());
-    for (const auto& [procname, measurement] : measurements) {
-      callback_d->WriteObject(&measurement, procname.c_str());
+  for (auto& callback : non_event_callbacks) {
+    TDirectory* callback_d = storage_directory_->mkdir(to_name(callback));
+    for (std::size_t i_proc{0}; i_proc < names_.size(); i_proc++) {
+      processor_timers_[to_index(callback)][i_proc].write(callback_d, names_[i_proc]);
     }
-  }
-
-  for (auto& [name, m] : process_) {
-    delete m;
   }
 }
 
@@ -43,76 +53,20 @@ void Tracker::absolute_end() {
   absolute_.end();
 }
 
-void Tracker::begin_onProcessStart(const std::string& processor) {
-  onProcessStart_.emplace(processor, true);
+void Tracker::start(Callback callback, std::size_t i_proc) {
+  processor_timers_[to_index(callback)][i_proc].start();
 }
 
-void Tracker::end_onProcessStart(const std::string& processor) {
-  onProcessStart_[processor].end();
+void Tracker::end(Callback callback, std::size_t i_proc) {
+  processor_timers_[to_index(callback)][i_proc].end();
 }
 
-void Tracker::begin_onProcessEnd(const std::string& processor) {
-  onProcessEnd_.emplace(processor, true);
-}
-
-void Tracker::end_onProcessEnd(const std::string& processor) {
-  onProcessEnd_[processor].end();
-}
-
-void Tracker::begin_onFileOpen(const std::string& processor) {
-  onFileOpen_.emplace(processor, true);
-}
-
-void Tracker::end_onFileOpen(const std::string& processor) {
-  onFileOpen_[processor].end();
-}
-
-void Tracker::begin_onFileClose(const std::string& processor) {
-  onFileClose_.emplace(processor, true);
-}
-
-void Tracker::end_onFileClose(const std::string& processor) {
-  onFileClose_[processor].end();
-}
-
-void Tracker::begin_beforeNewRun(const std::string& processor) {
-  beforeNewRun_.emplace(processor, true);
-}
-
-void Tracker::end_beforeNewRun(const std::string& processor) {
-  beforeNewRun_[processor].end();
-}
-
-void Tracker::begin_onNewRun(const std::string& processor) {
-  onNewRun_.emplace(processor, true);
-}
-
-void Tracker::end_onNewRun(const std::string& processor) {
-  onNewRun_[processor].end();
-}
-
-void Tracker::begin_process(const std::string& processor) {
-  auto meas_it{process_.find(processor)};
-  if (meas_it == process_.end()) {
-    auto meas = new Measurement(false);
-    event_data_->Branch(("begin_"+processor).c_str(), meas);
-    auto in = process_.emplace(processor, meas);
-    meas_it = in.first;
+void Tracker::end_event(bool completed) {
+  event_completed_ = completed;
+  for (std::size_t i_proc{0}; i_proc < names_.size(); i_proc++) {
+    event_times_[i_proc] = processor_timers_[to_index(Callback::process)][i_proc].duration();
   }
-  meas_it->second->start();
-}
-
-void Tracker::end_process(const std::string& processor) {
-  /**
-   * We assume the callers of this tracker correctly call begin_*
-   * before any end_* calls.
-   */
-  process_[processor]->end();
-}
-
-void Tracker::end_event() {
   event_data_->Fill();
-  for (auto& [name, meas] : process_) meas->invalidate();
 }
 
 }
