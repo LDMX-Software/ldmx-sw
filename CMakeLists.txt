@@ -10,6 +10,12 @@ project(
 
 
 setup_library(module Framework name Performance dependencies ROOT::Core)
+root_generate_dictionary(PerfDict
+  Framework/Performance/Timer.h
+  LINKDEF ${PROJECT_SOURCE_DIR}/include/Framework/Performance/LinkDef.h
+  MODULE Framework_Performance)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Framework_Performance_rdict.pcm DESTINATION lib)
+
 
 setup_library(module Framework name Exception sources
               ${PROJECT_SOURCE_DIR}/src/Framework/Exception/Exception.cxx)
