@@ -1,8 +1,6 @@
 
 #include "Framework/Performance/Timer.h"
 
-#include "TVectorD.h"
-
 ClassImp(framework::performance::Timer);
 
 namespace framework::performance {
