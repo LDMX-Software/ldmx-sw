@@ -30,7 +30,6 @@ class Tracker {
    * Close up tracking and write all of the data collected to the storage directory
    */
   ~Tracker();
-  /* begin list of callbacks for various points in Process::run */
   /// literally first line of Process::run
   void absolute_start();
   /// literally last line of Process::run (if run compeletes without error)
@@ -54,13 +53,14 @@ class Tracker {
   TDirectory *storage_directory_;
   /// event-by-event perf info
   TTree *event_data_;
-  /// buffer for time measurements within each event
-  std::vector<double> event_times_;
   /// buffer for bool flag on if event completed
   bool event_completed_;
 
-  Timer absolute_{false};
+  /// timer from the first line of Process::run to the last line
+  Timer absolute_;
+  /// a timer for each processor in the sequence and each callback
   std::vector<std::vector<Timer>> processor_timers_;
+  /// names of the processors in the sequence for serialization
   std::vector<std::string> names_;
 };
 }
