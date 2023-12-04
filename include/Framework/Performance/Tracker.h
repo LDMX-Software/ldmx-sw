@@ -12,10 +12,10 @@
 namespace framework::performance {
 
 /**
- * Class to interface between framework::Process and various Measurements
+ * Class to interface between framework::Process and various measurements
  * that can eventually be written into the output histogram file.
  *
- * @see Measurement for what measurements are taken and how they are taken.
+ * @see Timer for the data format of timing measurements
  */
 class Tracker {
  public:
