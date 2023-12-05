@@ -36,7 +36,7 @@ namespace dqm {
 	if (parent_track_id == 0) {
 	  histograms_.fill("pdgid_primaries", pdgid_label(pdgid));
 	  histograms_.fill("energy_primaries", energy);
-	  hard_thresh = (2500/4000)*energy;
+	  hard_thresh = (2500./4000.)*energy;
 	  primary_daughters = daughters;
 	  for (const ldmx::SimTrackerHit &sphit : targetSPHits) {
 	    if (sphit.getTrackID() == it.first && sphit.getPosition()[2] < 0) {
