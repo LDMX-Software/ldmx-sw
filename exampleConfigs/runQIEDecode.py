@@ -10,6 +10,8 @@ nEv=400000
 nChan=16
 #mapFile="channelMapFrontBack_"+str(nChan)+"channels.txt" #../TrigScint/data/channelMapFrontBack.txt")
 
+#p.maxEvents = nEv
+
 p.inputFiles=[sys.argv[1]]
 p.outputFiles = [sys.argv[2]]
 inputPass=sys.argv[3]
@@ -41,7 +43,6 @@ p.sequence = [
     dec
     ]
 
-p.maxEvents = nEv
 p.termLogLevel = 1
 p.logFileName = logName
 p.fileLogLevel = logVerbosity

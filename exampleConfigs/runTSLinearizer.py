@@ -6,6 +6,8 @@ import sys
 inputPassName="unpack"
 nEv=400000
 
+#p.maxEvents = nEv
+
 if len(sys.argv) > 2 :
     timeOffset=int(sys.argv[2])
 else :
@@ -38,7 +40,6 @@ outname=outname.replace("_reco.root", ".root")
 outname=outname.replace(".root", "_linearize.root")
 p.outputFiles = [ outname ]
 
-p.maxEvents = nEv
 
 p.logFileName=p.outputFiles[0].replace(".root",".log")
 p.termLogLevel = 2

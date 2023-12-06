@@ -6,6 +6,7 @@ import sys
 
 inputPassName="hits"
 nEv=400000
+#p.maxEvents = nEv
 
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
@@ -29,7 +30,6 @@ p.sequence = [
 #generate on the fly
 p.inputFiles = [sys.argv[1]]
 p.outputFiles = [ sys.argv[1].replace(".root", "_clusters.root") ]
-p.maxEvents = nEv
 
 p.termLogLevel = 2
 p.logFileName = p.outputFiles[0].replace(".root", ".log") 
