@@ -13,7 +13,7 @@ else :
     nTimeSamples=24 #default
 
 if len(sys.argv) > 4 :
-    nEv=int(sys.argv[4])
+    nEv=sys.argv[4] #int(sys.argv[4])
 else :
     nEv=4e6 #default         
 
@@ -29,7 +29,7 @@ p.sequence = [
     rawio.SingleSubsystemUnpacker(raw_file = RAWfileName, output_name = "QIEstreamUp", detector_name="ldmx-hcal-prototype-v1.0", num_bytes_per_event = nWords)
         ]
 
-p.maxEvents = nEv # apparently this HAS TO be set! single subsystem unpacker will abort all events when it runs out of data
+p.maxEvents = int(nEv) # apparently this HAS TO be set! single subsystem unpacker will abort all events when it runs out of data
 
 p.termLogLevel = 0 #1 
 p.logFileName = logName

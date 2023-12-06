@@ -115,7 +115,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 	ldmx_log(debug) << "Digi has PE count " << digi.getPE() 
 					<< " and energy " << digi.getEnergy();
 
-	if (doCleanHits_ && digi.getQualityFlag() ) {
+	if (doCleanHits_ && digi.getQualityFlag() && digi.getQualityFlag() != 4 ) { //allow for long pulse hits 
 	  ldmx_log(debug) << "Skipping hit with non-zero quality flag  " << digi.getQualityFlag();
 	  continue;
 	}
