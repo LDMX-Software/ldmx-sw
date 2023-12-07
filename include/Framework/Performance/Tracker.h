@@ -58,7 +58,16 @@ class Tracker {
 
   /// timer from the first line of Process::run to the last line
   Timer absolute_;
-  /// a timer for each processor in the sequence and each callback
+  /**
+   * a timer for each processor in the sequence and each callback
+   *
+   * The timers for the process Callback (Producer::produce or Analyzer::analyze)
+   * need to stay in the same memory location during the lifetime of this
+   * object. This is because the address of those timers is given
+   * to event_data_ to watch (and eventually serialize) while processing.
+   * Effectively, this means the size and shape of this member should be
+   * set in the constructor and then it should not be changed.
+   */
   std::vector<std::vector<Timer>> processor_timers_;
   /// names of the processors in the sequence for serialization
   std::vector<std::string> names_;
