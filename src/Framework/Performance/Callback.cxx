@@ -4,10 +4,6 @@
 
 namespace framework::performance {
 
-std::size_t to_index(Callback c) {
-  return static_cast<std::size_t>(c);
-}
-
 std::string to_name(Callback c) {
   switch (c) {
     case Callback::onProcessStart:
