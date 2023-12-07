@@ -35,7 +35,27 @@ namespace framework::performance {
  * {'start_time_': 1701704424941358702, 'duration_': 0.078910213}
  * ```
  *
- *
+ * The event-by-event Timer data is stored in a TTree where the branches
+ * are named after the processor being timed (or the "__ALL__" representing
+ * all of the processors in the sequence). Since each of these branches
+ * has the same substructure, the default loading (which attempts to shorten names)
+ * of the data by uproot's `arrays` method overlays them all into the 
+ * same place making it seem like data has been lost.
+ * We can avoid this issue by explicitly asking for the branches so no name-shortening is done.
+ * ```python
+ * >>> f = uproot.open('test_performance.root')
+ * >>> t = f['performance/by_event']
+ * >>> times = t.arrays(expressions = t.keys(recursive=False))
+ * ```
+ * This works for `library='ak'` (the default) and `library='np'`, but a slightly
+ * different solution is necessary for `library='pd'` since pandas does not support
+ * this ragged style of data. Instead of forcing uproot to use the ragged data, we
+ * only grab the branches that correspond to fundamental types. We do this by looking
+ * for a namespace colon in the typename which won't be there for fundamental types.
+ * ```python
+ * # t is same as before
+ * >>> times =  t.arrays(expressions=t.keys(filter_typename=lambda tn: '::' not in tn), library='pd')
+ * ```
  */
 class Timer {
   using clock = std::chrono::high_resolution_clock;
