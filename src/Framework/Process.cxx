@@ -444,8 +444,8 @@ bool Process::process(int n, Event& event) const {
   }
 
   if (performance_) performance_->start(performance::Callback::process, 0);
+  std::size_t i_proc{0};
   try {
-    std::size_t i_proc{0};
     for (auto module : sequence_) {
       i_proc++;
       if (performance_) performance_->start(performance::Callback::process, i_proc);
@@ -458,6 +458,7 @@ bool Process::process(int n, Event& event) const {
     }
   } catch (AbortEventException &) {
     if (performance_) {
+      performance_->end(performance::Callback::process, i_proc);
       performance_->end(performance::Callback::process, 0);
       performance_->end_event(false);
     }
