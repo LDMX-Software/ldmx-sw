@@ -45,9 +45,9 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
   // plotting stuff
   int nChannels{16};
   // match nchan above
-  TH1F* hN3N2;
-  TH1F* hN3N1;
-  TH1F* hN2N1;
+  TH2F* hN3N2;
+  TH2F* hN3N1;
+  TH2F* hN2N1;
   TH1F* hNClusters;
   TH1F* hNHits;
   TH1F* hNhitsInClusters;
