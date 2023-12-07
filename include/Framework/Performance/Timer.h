@@ -18,8 +18,9 @@ namespace framework::performance {
  * time how long things take and transparently convert the resulting duration
  * into seconds (including sub-second increments). Since ROOT doesn't have a
  * dictionary for serializing these std::chrono classes (and I'm not interested
- * in making one), I simply mark those helper-members as "transient" so they
- * are ignored by the dictionary generation. The atomic members start_time_ and
+ * in making one), I simply mark those helper-members as "transient" 
+ * (have `//!` on the line they are declared in) so they
+ * are ignored by the dictionary generation. The fundamental members start_time_ and
  * duration_ are what end up being written to disk.
  *
  * Below is an example of reading the absolute timer from a test run of this
@@ -38,7 +39,19 @@ namespace framework::performance {
  */
 class Timer {
   using clock = std::chrono::high_resolution_clock;
+  /**
+   * The time_point when the timer is started.
+   *
+   * The comment beginning with `//!` is what marks this member
+   * as "transient" for ROOT  I/O.
+   */
   std::chrono::time_point<clock> start_; //! not serialized, just for measurement purposes
+  /**
+   * The time_point when the timer is ended.
+   *
+   * The comment beginning with `//!` is what marks this member
+   * as "transient" for ROOT  I/O.
+   */
   std::chrono::time_point<clock> end_; //! not serialized, just for measurement purposes
   /**
    * starting time of timer in nanoseconds since UNIX epoch
