@@ -161,9 +161,9 @@ void Process::run() {
     i_proc++;
     if (performance_) performance_->start(performance::Callback::onProcessStart, i_proc);
     module->onProcessStart();
-    if (performance_) performance_->end(performance::Callback::onProcessStart, i_proc);
+    if (performance_) performance_->stop(performance::Callback::onProcessStart, i_proc);
   }
-  if (performance_) performance_->end(performance::Callback::onProcessStart, 0);
+  if (performance_) performance_->stop(performance::Callback::onProcessStart, 0);
 
   // If we have no input files, but do have an event number, run for
   // that number of events and generate an output file.
@@ -365,13 +365,13 @@ void Process::run() {
     i_proc++;
     if(performance_) performance_->start(performance::Callback::onProcessEnd, i_proc);
     module->onProcessEnd();
-    if(performance_) performance_->end(performance::Callback::onProcessEnd, i_proc);
+    if(performance_) performance_->stop(performance::Callback::onProcessEnd, i_proc);
   }
-  if(performance_) performance_->end(performance::Callback::onProcessEnd, 0);
+  if(performance_) performance_->stop(performance::Callback::onProcessEnd, 0);
 
   // we're done so let's close up the logging
   logging::close();
-  if (performance_) performance_->absolute_end();
+  if (performance_) performance_->absolute_stop();
 }
 
 int Process::getRunNumber() const {
@@ -415,10 +415,10 @@ void Process::newRun(ldmx::RunHeader& header) {
     if (dynamic_cast<Producer *>(module)) {
       if(performance_) performance_->start(performance::Callback::beforeNewRun, i_proc);
       dynamic_cast<Producer *>(module)->beforeNewRun(header);
-      if(performance_) performance_->end(performance::Callback::beforeNewRun, i_proc);
+      if(performance_) performance_->stop(performance::Callback::beforeNewRun, i_proc);
     }
   }
-  if(performance_) performance_->end(performance::Callback::beforeNewRun, 0);
+  if(performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
   if (performance_) performance_->start(performance::Callback::onNewRun, 0);
@@ -428,9 +428,9 @@ void Process::newRun(ldmx::RunHeader& header) {
     i_proc++;
     if (performance_) performance_->start(performance::Callback::onNewRun, i_proc);
     module->onNewRun(header);
-    if (performance_) performance_->end(performance::Callback::onNewRun, i_proc);
+    if (performance_) performance_->stop(performance::Callback::onNewRun, i_proc);
   }
-  if (performance_) performance_->end(performance::Callback::onNewRun, 0);
+  if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
 }
 
 bool Process::process(int n, Event& event) const {
@@ -454,18 +454,18 @@ bool Process::process(int n, Event& event) const {
       } else if (dynamic_cast<Analyzer *>(module)) {
         (dynamic_cast<Analyzer *>(module))->analyze(event);
       }
-      if (performance_) performance_->end(performance::Callback::process, i_proc);
+      if (performance_) performance_->stop(performance::Callback::process, i_proc);
     }
   } catch (AbortEventException &) {
     if (performance_) {
-      performance_->end(performance::Callback::process, i_proc);
-      performance_->end(performance::Callback::process, 0);
+      performance_->stop(performance::Callback::process, i_proc);
+      performance_->stop(performance::Callback::process, 0);
       performance_->end_event(false);
     }
     return false;
   }
   if (performance_) {
-    performance_->end(performance::Callback::process, 0);
+    performance_->stop(performance::Callback::process, 0);
     performance_->end_event(true);
   }
   return true;
@@ -478,9 +478,9 @@ void Process::onFileOpen(EventFile& file) const {
     i_proc++;
     if (performance_) performance_->start(performance::Callback::onFileOpen, i_proc);
     module->onFileOpen(file);
-    if (performance_) performance_->end(performance::Callback::onFileOpen, i_proc);
+    if (performance_) performance_->stop(performance::Callback::onFileOpen, i_proc);
   }
-  if (performance_) performance_->end(performance::Callback::onFileOpen, 0);
+  if (performance_) performance_->stop(performance::Callback::onFileOpen, 0);
 }
 
 void Process::onFileClose(EventFile& file) const {
@@ -490,9 +490,9 @@ void Process::onFileClose(EventFile& file) const {
     i_proc++;
     if (performance_) performance_->start(performance::Callback::onFileClose, i_proc);
     module->onFileClose(file);
-    if (performance_) performance_->end(performance::Callback::onFileClose, i_proc);
+    if (performance_) performance_->stop(performance::Callback::onFileClose, i_proc);
   }
-  if (performance_) performance_->end(performance::Callback::onFileClose, 0);
+  if (performance_) performance_->stop(performance::Callback::onFileClose, 0);
 }
 
 }  // namespace framework
