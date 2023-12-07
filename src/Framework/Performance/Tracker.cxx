@@ -81,16 +81,16 @@ void Tracker::absolute_start() {
   absolute_.start();
 }
 
-void Tracker::absolute_end() {
-  absolute_.end();
+void Tracker::absolute_stop() {
+  absolute_.stop();
 }
 
 void Tracker::start(Callback callback, std::size_t i_proc) {
   processor_timers_[to_index(callback)][i_proc].start();
 }
 
-void Tracker::end(Callback callback, std::size_t i_proc) {
-  processor_timers_[to_index(callback)][i_proc].end();
+void Tracker::stop(Callback callback, std::size_t i_proc) {
+  processor_timers_[to_index(callback)][i_proc].stop();
 }
 
 void Tracker::end_event(bool completed) {

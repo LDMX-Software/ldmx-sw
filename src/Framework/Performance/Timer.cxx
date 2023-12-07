@@ -6,20 +6,20 @@ ClassImp(framework::performance::Timer);
 namespace framework::performance {
 
 void Timer::reset() {
-  start_ = {};
+  begin_ = {};
   end_ = {};
   start_time_ = -1;
   duration_ = -1;
 }
 
 void Timer::start() {
-  start_ = clock::now();
-  start_time_ = std::chrono::duration_cast<std::chrono::nanoseconds>(start_.time_since_epoch()).count();
+  begin_ = clock::now();
+  start_time_ = std::chrono::duration_cast<std::chrono::nanoseconds>(begin_.time_since_epoch()).count();
 }
 
-void Timer::end() {
+void Timer::stop() {
   end_ = clock::now();
-  duration_ = std::chrono::duration<double>(end_ - start_).count();
+  duration_ = std::chrono::duration<double>(end_ - begin_).count();
 }
 
 double Timer::duration() const {
