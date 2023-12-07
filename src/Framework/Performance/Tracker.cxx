@@ -70,7 +70,7 @@ Tracker::~Tracker() {
     Callback::beforeNewRun, Callback::onNewRun
   };
   for (auto& callback : non_event_callbacks) {
-    TDirectory* callback_d = storage_directory_->mkdir(to_name(callback));
+    TDirectory* callback_d = storage_directory_->mkdir(to_name(callback).c_str());
     for (std::size_t i_proc{0}; i_proc < names_.size(); i_proc++) {
       processor_timers_[to_index(callback)][i_proc].write(callback_d, names_[i_proc]);
     }
