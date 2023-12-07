@@ -139,7 +139,7 @@ namespace trigscint {
 		//		int isLongPulse=(nSampAboveThr < 2 || nSampAboveThr > width + 2);
 		int isLongPulse=( nSampAboveThr > width );  //the short ones we'll have to single out otherwise (like spike flag or low Q) or live with
 		flag += 4*isLongPulse;
-		  if ( maxQ > 2e3 && nSampAboveThr < 3 && flag%2==0 ) //this was not flagged as a spike but is eerily narrow and with highQ; flag it as a spike. 
+		  if ( maxQ > 2e5 && nSampAboveThr < 3 && flag%2==0 ) //this was not flagged as a spike but is eerily narrow and with high Q; flag it as a spike. 
 			flag +=1;
 		if ( flag == 0 )
 			isClean=1;
