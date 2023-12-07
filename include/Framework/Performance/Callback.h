@@ -25,7 +25,10 @@ enum class Callback {
 /**
  * Convert the Callback enum into an index for lookup
  */
-std::size_t to_index(Callback c);
+constexpr std::size_t to_index(Callback c) {
+  return static_cast<std::size_t>(c);
+}
+
 
 /**
  * Convert the Callback enum into a human-readable name
