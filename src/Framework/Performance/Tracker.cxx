@@ -45,11 +45,19 @@ Tracker::Tracker(TDirectory *storage_directory, const std::vector<std::string>& 
    * to the TTree for serialization. This effectively means that
    * the vector of processor_timers_ should not be moved or changed
    * in size to avoid breaking this I/O connection.
+   *
+   * We add an extra `.` character after the branch name to tell ROOT
+   * to make sure to fully-specify the names of the sub-branches. This
+   * makes it a bit easier for other tools (e.g. `uproot`) to load the
+   * data into memory without clashes.
+   *
+   * Section 14.10.4
+   * https://root.cern.ch/root/htmldoc/guides/users-guide/Trees.html#adding-a-tbranch-to-hold-an-object
    */
   event_data_->Branch("completed", &event_completed_);
   for (std::size_t i{0}; i < names_.size(); i++) {
     event_data_->Branch(
-        names_[i].c_str(), 
+        (names_[i]+".").c_str(), 
         &(processor_timers_[to_index(Callback::process)][i])
     );
   }
