@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_PERFORMANCE_CALLBACK
 #define FRAMEWORK_PERFORMANCE_CALLBACK
 
-#include <vector>
+#include <string>
 
 namespace framework::performance {
 
@@ -28,9 +28,9 @@ enum class Callback {
 std::size_t to_index(Callback c);
 
 /**
- * Conver the Callback enum into a human-readable name
+ * Convert the Callback enum into a human-readable name
  */
-const char* to_name(Callback c);
+std::string to_name(Callback c);
 
 }
 
