@@ -283,10 +283,9 @@ class Event {
       //if no passName, then find branchName by looking over known products
       if (knownLookups_.find(collectionName)==knownLookups_.end()) {
         //this collectionName hasn't been found before
-        //  wrap collection name in regex specifying that
         //  this collection name is the whole name and not a partial name
-        std::string coll_regex{"^"+collectionName+"$"};
-        auto matches = searchProducts(coll_regex,"","");
+        //  so we search products with a full-string match required
+        auto matches = searchProducts(collectionName,"","",true);
         if (matches.empty()) {
           // no matches found
           EXCEPTION_RAISE("ProductNotFound",
