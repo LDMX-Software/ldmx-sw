@@ -85,8 +85,9 @@ std::vector<ProductTag> Event::searchProducts(
 }
 
 bool Event::exists(const std::string &name, const std::string &passName,
-    bool unique, bool full_string) const {
-  auto matches = searchProducts(name, passName, "", full_string);
+    bool unique) const {
+  static const bool require_full_string_match = true;
+  auto matches = searchProducts(name, passName, "", require_full_string_match);
   if (unique) return (matches.size() == 1);
   else return (matches.size() > 0);
 }
