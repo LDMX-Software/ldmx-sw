@@ -88,10 +88,13 @@ class Event {
    * @param namematch Regular expression to compare with the product name
    * @param passmatch Regular expression to compare with the pass name
    * @param typematch Regular expression to compare with the type name
+   * @param full_string_match require all non-empty regular expressions to match
+   * the full string and not a sub-string
    */
   std::vector<ProductTag> searchProducts(const std::string &namematch,
                                          const std::string &passmatch,
-                                         const std::string &typematch) const;
+                                         const std::string &typematch,
+                                         bool full_string_match = false) const;
 
   /**
    * Check for the existence of an object or collection with the
@@ -102,8 +105,10 @@ class Event {
    * was put into the event, such as "sim" or "rerecov2".
    * @return True if the object or collection *uniquely* exists in the event.
    */
-  bool exists(const std::string &name, const std::string &passName = "") const {
-    return (searchProducts(name, passName, "").size() == 1);
+  bool exists(const std::string &name, const std::string &passName = "", bool unique = true, bool full_string = false) const;
+
+  bool exists(const std::string& name, bool unique, bool full_string) const {
+    return exists(name, "", unique, full_string);
   }
 
   /**
