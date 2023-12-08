@@ -83,8 +83,14 @@ class Event {
 
   /**
    * Get a list of products which match the given POSIX-Extended,
-   * case-insenstive regular-expressions. An empty argument is interpreted as
-   * ".*", which matches everything.
+   * case-insenstive regular-expressions.
+   *
+   * An empty argument is interpreted as ".*", which matches everything.
+   *
+   * By default (with full_string_match = false), the pattern can match
+   * the full string or any substring within it. One can require the pattern
+   * to match teh full string by changing that parameter.
+   *
    * @param namematch Regular expression to compare with the product name
    * @param passmatch Regular expression to compare with the pass name
    * @param typematch Regular expression to compare with the type name
@@ -99,17 +105,32 @@ class Event {
   /**
    * Check for the existence of an object or collection with the
    * given name and pass name in the event.
+   *
+   * This function just uses the searchProducts function **while requiring
+   * the input name and pass to match the full string**.
+   *
+   * @see searchProducts for a more flexible method for existence checking.
+   * If you have any situation more complicated than simply checking if a
+   * collection with exactly the input name, it is recommended to use
+   * the searchProducts function directly. Within a processor, one can access
+   * and print the products from a search relatively easily.
+   * ```cpp
+   * auto matches{event.searchProducts("MyCollection","","")};
+   * std::cout << matches.size() << " event objects match pattern" << std::endl;
+   * for (const auto& match : matches) { std::cout << match << std::endl; }
+   * ```
+   * searchProducts returns a list of ProductTag objects that store the name,
+   * pass, and type of the objects matching the search.
+   *
    * @param name Name (label, not class name) given to the object when it was
    * put into the event.
    * @param passName The process pass label which was in use when this object
    * was put into the event, such as "sim" or "rerecov2".
-   * @return True if the object or collection *uniquely* exists in the event.
+   * @param unique true if requiring one and only one matching object,
+   * false if allowing for one or more matching objects
+   * @return True if the object or collection exists in the event.
    */
-  bool exists(const std::string &name, const std::string &passName = "", bool unique = true, bool full_string = false) const;
-
-  bool exists(const std::string& name, bool unique, bool full_string) const {
-    return exists(name, "", unique, full_string);
-  }
+  bool exists(const std::string &name, const std::string &passName = "", bool unique = true) const;
 
   /**
    * Add a drop rule to the list of regex expressions to drop.
