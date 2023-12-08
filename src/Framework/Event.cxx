@@ -28,49 +28,67 @@ void Event::addDrop(const std::string& exp) {
   }
 }
 
+/**
+ * Construct an actual regex from the pass pattern (and full-string flag)
+ *
+ * If the pattern is the empty string, then we generate the match-all regex `.*`.
+ *
+ * If the pattern is not empty and we want to match on full-strings, then
+ * we prepend the pattern with `^` and append the pattern with `$` to inform
+ * regex that the pattern should match the entire string.
+ *
+ * @param[in] pattern a regex pattern string
+ * @param[in] full_string_match flag if we want full-string matches only (true)
+ * or if we can include sub-strings (false)
+ * @return generated regex structure, expecting user to call regfree on it when done
+ */
+static regex_t construct_regex(const std::string& pattern, bool full_string_match) {
+  std::string pattern_regex{pattern};
+  if (pattern_regex.empty()) pattern_regex = ".*";
+  else if (full_string_match) pattern_regex = "^"+pattern_regex+"$";
+
+  regex_t reg;
+  if (regcomp(&reg, pattern_regex.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
+    // use input value in exception since we expect our code above evolving
+    // the regex to be accurate
+    EXCEPTION_RAISE(
+        "InvalidRegex",
+        "The passed regex '"+pattern+"' is not a valid regular expression."
+    );
+  }
+  return reg;
+}
+
 std::vector<ProductTag> Event::searchProducts(
     const std::string& namematch, const std::string& passmatch,
-    const std::string& typematch) const {
+    const std::string& typematch, bool full_string_match) const {
   std::vector<ProductTag> retval;
+  regex_t reg_name{construct_regex(namematch, full_string_match)},
+          reg_pass{construct_regex(passmatch, full_string_match)},
+          reg_type{construct_regex(typematch, full_string_match)};
 
-  regex_t reg_name, reg_pass, reg_type;
-
-  if (!regcomp(&reg_name, (namematch.empty() ? (".*") : (namematch.c_str())),
-               REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
-    if (!regcomp(&reg_pass, (passmatch.empty() ? (".*") : (passmatch.c_str())),
-                 REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
-      if (!regcomp(&reg_type,
-                   (typematch.empty() ? (".*") : (typematch.c_str())),
-                   REG_EXTENDED | REG_ICASE | REG_NOSUB)) {
-        // all passed expressions are valid regular expressions
-        const std::vector<ProductTag>& products = getProducts();
-        for (std::vector<ProductTag>::const_iterator i = products.begin();
-             i != products.end(); i++) {
-          if (!regexec(&reg_name, i->name().c_str(), 0, 0, 0) &&
-              !regexec(&reg_pass, i->passname().c_str(), 0, 0, 0) &&
-              !regexec(&reg_type, i->type().c_str(), 0, 0, 0))
-            retval.push_back(*i);
-        }
-
-        regfree(&reg_type);
-      } else {
-        EXCEPTION_RAISE("InvalidRegex",
-                        "The passed type regex '" + typematch +
-                            "' is not a valid regular expression");
-      }
-      regfree(&reg_pass);
-    } else {
-      EXCEPTION_RAISE("InvalidRegex",
-                      "The passed name regex '" + namematch +
-                          "' is not a valid regular expression");
-    }
-    regfree(&reg_name);
-  } else {
-    EXCEPTION_RAISE("RegexErr", "The passed passname regex '" + passmatch +
-                                    "' is not a valid regular expression.");
+  // all passed expressions are valid regular expressions
+  const std::vector<ProductTag>& products = getProducts();
+  for (std::vector<ProductTag>::const_iterator i = products.begin();
+       i != products.end(); i++) {
+    if (!regexec(&reg_name, i->name().c_str(), 0, 0, 0) &&
+        !regexec(&reg_pass, i->passname().c_str(), 0, 0, 0) &&
+        !regexec(&reg_type, i->type().c_str(), 0, 0, 0))
+      retval.push_back(*i);
   }
 
+  regfree(&reg_type);
+  regfree(&reg_pass);
+  regfree(&reg_name);
+
   return retval;
+}
+
+bool Event::exists(const std::string &name, const std::string &passName,
+    bool unique, bool full_string) const {
+  auto matches = searchProducts(name, passName, "", full_string);
+  if (unique) return (matches.size() == 1);
+  else return (matches.size() > 0);
 }
 
 TTree* Event::createTree() {
