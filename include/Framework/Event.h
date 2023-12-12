@@ -89,7 +89,7 @@ class Event {
    *
    * By default (with full_string_match = false), the pattern can match
    * the full string or any substring within it. One can require the pattern
-   * to match teh full string by changing that parameter.
+   * to match the full string by changing that parameter.
    *
    * @param namematch Regular expression to compare with the product name
    * @param passmatch Regular expression to compare with the pass name
