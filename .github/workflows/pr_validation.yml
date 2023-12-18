@@ -34,7 +34,7 @@ jobs:
       run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
@@ -69,7 +69,7 @@ jobs:
         sample: ${{matrix.sample}}
 
     - name: Upload Validation Plots
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.sample}}-pr-validation
         path: ${{ steps.validation.outputs.plots }}
