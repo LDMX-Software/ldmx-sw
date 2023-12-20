@@ -273,8 +273,8 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
         self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 16
-        self.number_vertical_bars = 8
+        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
+        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
         self.horizontal_bar_width = 3.
         self.horizontal_bar_gap = 0.3
         self.vertical_bar_width = 3.
