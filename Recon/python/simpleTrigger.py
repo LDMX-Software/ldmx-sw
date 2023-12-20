@@ -39,8 +39,8 @@ class TriggerProcessor(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,'recon::TriggerProcessor','Recon')
 
-        self.beamEnergy = 4000.
-        self.thresholds = [ 1500.0, 1000. + self.beamEnergy, 500. + 2*self.beamEnergy, 100. + 3*self.beamEnergy ]  #toy something up 
+        self.beamEnergy = 8000.
+        self.thresholds = [ self.beamEnergy/4000.*1500.0, self.beamEnergy/4000.*1000. + self.beamEnergy, self.beamEnergy/4000.*500. + 2*self.beamEnergy, self.beamEnergy/4000.*100. + 3*self.beamEnergy ]  #toy something up 
         self.mode = 0
         self.start_layer = 0
         self.end_layer = 20
