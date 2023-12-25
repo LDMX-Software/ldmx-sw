@@ -71,7 +71,7 @@ jobs:
     # Copy the generated documentation to github as a pages artifact
     #   This copies all the html files in the docs/html directory
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: ./docs/html
 
