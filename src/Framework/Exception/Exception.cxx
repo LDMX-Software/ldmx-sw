@@ -131,8 +131,9 @@ static std::string Backtrace(int skip = 1) throw() {
 
       snprintf(buf, sizeof(buf), "%5d %s + %zd %s\n",
                i - skip,  // int(2 + sizeof(void*) * 2), callstack[i],
-               status == 0 ? demangled
-                           : info.dli_sname == 0 ? symbols[i] : info.dli_sname,
+               status == 0           ? demangled
+               : info.dli_sname == 0 ? symbols[i]
+                                     : info.dli_sname,
                (char *)callstack[i] - (char *)info.dli_saddr, line);
 
       free(demangled);

@@ -14,14 +14,14 @@ namespace framework::performance {
  * the result with ROOT
  *
  * Under-the-hood, we use std::chrono::time_point and std::chrono::duration
- * along with std::chrono::high_resolution_clock so we can clearly and faithfully
- * time how long things take and transparently convert the resulting duration
- * into seconds (including sub-second increments). Since ROOT doesn't have a
- * dictionary for serializing these std::chrono classes (and I'm not interested
- * in making one), I simply mark those helper-members as "transient" 
+ * along with std::chrono::high_resolution_clock so we can clearly and
+ * faithfully time how long things take and transparently convert the resulting
+ * duration into seconds (including sub-second increments). Since ROOT doesn't
+ * have a dictionary for serializing these std::chrono classes (and I'm not
+ * interested in making one), I simply mark those helper-members as "transient"
  * (have `//!` on the line they are declared in) so they
- * are ignored by the dictionary generation. The fundamental members start_time_ and
- * duration_ are what end up being written to disk.
+ * are ignored by the dictionary generation. The fundamental members start_time_
+ * and duration_ are what end up being written to disk.
  *
  * Below is an example of reading the absolute timer from a test run of this
  * performance logging infrastructure. As you can see, the two atomic types
@@ -43,14 +43,16 @@ class Timer {
    * The comment beginning with `//!` is what marks this member
    * as "transient" for ROOT  I/O.
    */
-  std::chrono::time_point<clock> begin_; //! not serialized, just for measurement purposes
+  std::chrono::time_point<clock>
+      begin_;  //! not serialized, just for measurement purposes
   /**
    * The time_point when the timer is stopped.
    *
    * The comment beginning with `//!` is what marks this member
    * as "transient" for ROOT  I/O.
    */
-  std::chrono::time_point<clock> end_; //! not serialized, just for measurement purposes
+  std::chrono::time_point<clock>
+      end_;  //! not serialized, just for measurement purposes
   /**
    * Time stamp for when timer was started in nanoseconds since UNIX epoch
    *
@@ -67,6 +69,7 @@ class Timer {
    * Set to -1 if timer was not ended
    */
   double duration_{-1};
+
  public:
   /// create a timer but don't start it yet
   Timer() = default;
@@ -91,6 +94,6 @@ class Timer {
   ClassDef(Timer, 1);
 };
 
-}
+}  // namespace framework::performance
 
 #endif

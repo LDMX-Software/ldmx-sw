@@ -1,13 +1,13 @@
 #ifndef FRAMEWORK_PERFORMANCE_TRACKER
 #define FRAMEWORK_PERFORMANCE_TRACKER
 
+#include <TDirectory.h>
+#include <TTree.h>
+
 #include <map>
 
-#include <TTree.h>
-#include <TDirectory.h>
-
-#include "Framework/Performance/Timer.h"
 #include "Framework/Performance/Callback.h"
+#include "Framework/Performance/Timer.h"
 
 namespace framework::performance {
 
@@ -25,9 +25,10 @@ class Tracker {
    * @param[in] storage_directory directory in-which to write data when closing
    * @param[in] names sequence of processor names we will be tracking
    */
-  Tracker(TDirectory *storage_directory, const std::vector<std::string>& names);
+  Tracker(TDirectory *storage_directory, const std::vector<std::string> &names);
   /**
-   * Close up tracking and write all of the data collected to the storage directory
+   * Close up tracking and write all of the data collected to the storage
+   * directory
    */
   ~Tracker();
   /// literally first line of Process::run
@@ -61,10 +62,10 @@ class Tracker {
   /**
    * a timer for each processor in the sequence and each callback
    *
-   * The timers for the process Callback (Producer::produce or Analyzer::analyze)
-   * need to stay in the same memory location during the lifetime of this
-   * object. This is because the address of those timers is given
-   * to event_data_ to watch (and eventually serialize) while processing.
+   * The timers for the process Callback (Producer::produce or
+   * Analyzer::analyze) need to stay in the same memory location during the
+   * lifetime of this object. This is because the address of those timers is
+   * given to event_data_ to watch (and eventually serialize) while processing.
    * Effectively, this means the size and shape of this member should be
    * set in the constructor and then it should not be changed.
    */
@@ -72,6 +73,6 @@ class Tracker {
   /// names of the processors in the sequence for serialization
   std::vector<std::string> names_;
 };
-}
+}  // namespace framework::performance
 
 #endif

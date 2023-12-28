@@ -133,8 +133,9 @@ void close();
  * Makes theLog_ mutable so that the log can be used
  * in any class functions.
  */
-#define enableLogging(name) \
-  mutable ::framework::logging::logger theLog_{::framework::logging::makeLogger(name)};
+#define enableLogging(name)                     \
+  mutable ::framework::logging::logger theLog_{ \
+      ::framework::logging::makeLogger(name)};
 
 /**
  * @macro ldmx_log

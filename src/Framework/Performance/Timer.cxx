@@ -14,7 +14,9 @@ void Timer::reset() {
 
 void Timer::start() {
   begin_ = clock::now();
-  start_time_ = std::chrono::duration_cast<std::chrono::nanoseconds>(begin_.time_since_epoch()).count();
+  start_time_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    begin_.time_since_epoch())
+                    .count();
 }
 
 void Timer::stop() {
@@ -22,12 +24,10 @@ void Timer::stop() {
   duration_ = std::chrono::duration<double>(end_ - begin_).count();
 }
 
-double Timer::duration() const {
-  return duration_;
-}
+double Timer::duration() const { return duration_; }
 
 void Timer::write(TDirectory* location, const std::string& name) const {
   location->WriteObject(this, name.c_str());
 }
 
-}
+}  // namespace framework::performance

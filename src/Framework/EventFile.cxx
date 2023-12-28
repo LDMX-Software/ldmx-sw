@@ -13,9 +13,11 @@ namespace framework {
 EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput, bool isLoopable)
-    : fileName_(filename), parent_(parent), isOutputFile_(isOutputFile),
-      isSingleOutput_(isSingleOutput), isLoopable_(isLoopable) {
-
+    : fileName_(filename),
+      parent_(parent),
+      isOutputFile_(isOutputFile),
+      isSingleOutput_(isSingleOutput),
+      isLoopable_(isLoopable) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");
@@ -70,8 +72,8 @@ EventFile::EventFile(const framework::config::Parameters &params,
   importRunHeaders();
 }
 
-EventFile::EventFile(const framework::config::Parameters &params, 
-    const std::string &filename, bool isLoopable)
+EventFile::EventFile(const framework::config::Parameters &params,
+                     const std::string &filename, bool isLoopable)
     : EventFile(params, filename, nullptr, false, false, isLoopable) {}
 
 EventFile::EventFile(const framework::config::Parameters &params,
@@ -115,8 +117,7 @@ void EventFile::addDrop(const std::string &rule) {
   }
 
   // more than one of (keep,drop,ignore) was provided => not valid rule
-  if (int(isKeep) + int(isDrop) + int(isIgnore) != 1)
-    return;
+  if (int(isKeep) + int(isDrop) + int(isIgnore) != 1) return;
 
   std::string srule = rule.substr(offset);
   for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos;
@@ -124,12 +125,10 @@ void EventFile::addDrop(const std::string &rule) {
     srule.erase(i, 1);
 
   // name of branch is not given
-  if (srule.length() == 0)
-    return;
+  if (srule.length() == 0) return;
 
   // add wild card at end for matching purposes
-  if (srule.back() != '*')
-    srule += ".*"; // add wildcard to back
+  if (srule.back() != '*') srule += ".*";  // add wildcard to back
 
   if (isKeep) {
     // turn both the input and output tree's on
@@ -146,7 +145,7 @@ void EventFile::addDrop(const std::string &rule) {
   } else if (isDrop) {
     // drop means allowing it on reading but not writing
     // pass these regex to event bus so Event::add knows
-    event_->addDrop(srule); // requires event_ to be set
+    event_->addDrop(srule);  // requires event_ to be set
 
     // root needs . removed otherwise it gets cranky
     srule.erase(std::remove(srule.begin(), srule.end(), '.'), srule.end());
@@ -178,23 +177,23 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
         for (auto const &rulePair : preCloneRules_)
           parent_->tree_->SetBranchStatus(rulePair.first.c_str(),
                                           rulePair.second);
-  
+
         tree_ = parent_->tree_->CloneTree(0);
-  
+
         // reactivate any drop branches (drop) on input tree
         for (auto const &rule : reactivateRules_)
           parent_->tree_->SetBranchStatus(rule.c_str(), 1);
       }
       event_->setInputTree(parent_->tree_);
       event_->setOutputTree(tree_);
-    } //we have a parent file
+    }  // we have a parent file
   } else {
-    //later than first entry of file
+    // later than first entry of file
     if (isOutputFile_) {
       event_->beforeFill();
-      if (storeCurrentEvent) // we should store before moving on
-        tree_->Fill();  // fill the clones...
-    } // we are an output file
+      if (storeCurrentEvent)  // we should store before moving on
+        tree_->Fill();        // fill the clones...
+    }                         // we are an output file
 
     // the event bus may not be defined
     //  for this file if we are input file and
@@ -202,8 +201,8 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     if (event_) {
       event_->Clear();
       event_->onEndOfEvent();
-    } // event bus defined
-  } // first or not first entry in this file
+    }  // event bus defined
+  }    // first or not first entry in this file
 
   if (parent_) {
     // we have a parent, follow their lead
@@ -224,11 +223,11 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
     //  we aren't an output file
     // try to load another entry from our tree
     if (ientry_ + 1 >= entries_) {
-        if (isLoopable_) {
-          // reset the event counter: reuse events from start of pileup tree
-          ientry_ = -1; 
-        } else
-          return false;
+      if (isLoopable_) {
+        // reset the event counter: reuse events from start of pileup tree
+        ientry_ = -1;
+      } else
+        return false;
     }
     ientry_++;
     tree_->GetEntry(ientry_);
@@ -242,7 +241,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 void EventFile::setupEvent(Event *evt) {
   event_ = evt;
   if (isOutputFile_) {
-    //we are an output file
+    // we are an output file
     if (!tree_ && !parent_) {
       // we don't have a tree and we don't have a parent
       //  ==> *Production Mode* create a new tree
@@ -257,14 +256,14 @@ void EventFile::setupEvent(Event *evt) {
       //  as the input tree
       event_->setInputTree(parent_->tree_);
     }
-    
+
     // give our tree to the event as the output tree
     event_->setOutputTree(tree_);
   } else {
     // we are an input file
     //  so give our tree to the event as input tree
     event_->setInputTree(tree_);
-  } //output or input file
+  }  // output or input file
 }
 
 int EventFile::skipToEvent(int offset) {
@@ -307,7 +306,7 @@ void EventFile::updateParent(EventFile *parent) {
 void EventFile::writeRunTree() {
   if (not isOutputFile_) {
     EXCEPTION_RAISE("MisCall",
-        "Cannot write the run tree on an input event file.");
+                    "Cannot write the run tree on an input event file.");
   }
 
   // store the run map into the output tree
@@ -331,8 +330,7 @@ void EventFile::writeRunTree() {
   for (auto &[num, header_pair] : runMap_) {
     theHandle = header_pair.second;
     runTree->Fill();
-    if (header_pair.first)
-      delete header_pair.second;
+    if (header_pair.first) delete header_pair.second;
   }
 
   runTree->Write();
@@ -351,30 +349,29 @@ void EventFile::writeRunHeader(ldmx::RunHeader &runHeader) {
   return;
 }
 
-ldmx::RunHeader* EventFile::getRunHeaderPtr(int runNumber) {
+ldmx::RunHeader *EventFile::getRunHeaderPtr(int runNumber) {
   if (runMap_.find(runNumber) != runMap_.end()) {
     return runMap_.at(runNumber).second;
   }
   return nullptr;
 }
 
-ldmx::RunHeader& EventFile::getRunHeader(int runNumber) {
-  ldmx::RunHeader* rh{this->getRunHeaderPtr(runNumber)};
+ldmx::RunHeader &EventFile::getRunHeader(int runNumber) {
+  ldmx::RunHeader *rh{this->getRunHeaderPtr(runNumber)};
   if (rh != nullptr) {
     return *rh;
   }
   EXCEPTION_RAISE("RunHeader",
-      "Unable to find header for run "
-      +std::to_string(runNumber));
+                  "Unable to find header for run " + std::to_string(runNumber));
 }
 
 void EventFile::importRunHeaders() {
   // choose which file to import from
-  auto theImportFile{file_}; // if this is an input file
+  auto theImportFile{file_};  // if this is an input file
   if (isOutputFile_ and parent_ and parent_->file_)
     theImportFile = parent_->file_;  // output file with input parent
   else if (isOutputFile_)
-    return; // output file, no input parent to read from
+    return;  // output file, no input parent to read from
 
   if (theImportFile) {
     // the file exist
@@ -390,4 +387,4 @@ void EventFile::importRunHeaders() {
 
   return;
 }
-} // namespace framework
+}  // namespace framework

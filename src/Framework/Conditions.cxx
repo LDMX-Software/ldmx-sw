@@ -1,5 +1,7 @@
 #include "Framework/Conditions.h"
+
 #include <sstream>
+
 #include "Framework/PluginFactory.h"
 #include "Framework/Process.h"
 

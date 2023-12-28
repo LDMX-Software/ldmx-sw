@@ -102,14 +102,12 @@ class EventHeader {
    * @return True if this is a real data event.
    */
   bool isRealData() const { return isRealData_; }
-  
+
   /**
    * set whether this event is real or MC data
    * @param[in] yes True if this event is real data
    */
-  void setRealData(bool yes = true) {
-    isRealData_ = yes;
-  }
+  void setRealData(bool yes = true) { isRealData_ = yes; }
 
   /**
    * Set the event number.
@@ -143,7 +141,7 @@ class EventHeader {
 
   /**
    * Set the event weight.
-   * 
+   *
    * The event weight is by default 1 for all events. It is up to
    * a downstream producer to update the event weight if their procedure
    * demands it (for example, a simulation producer would copy its event

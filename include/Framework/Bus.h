@@ -146,7 +146,7 @@ class Bus {
    *
    * @param[in] s ostream to write to
    */
-  void stream(std::ostream &s) const {
+  void stream(std::ostream& s) const {
     for (auto& [n, handle] : passengers_)
       s << n << " : " << handle << std::endl;
   }
@@ -160,7 +160,7 @@ class Bus {
    * @param[in] b Bus to write out
    * @return modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &s, const framework::Bus &b) {
+  friend std::ostream& operator<<(std::ostream& s, const framework::Bus& b) {
     b.stream(s);
     return s;
   }
@@ -219,7 +219,7 @@ class Bus {
      *
      * @param[in] s ostream to write to
      */
-    virtual void stream(std::ostream &s) const = 0;
+    virtual void stream(std::ostream& s) const = 0;
 
     /**
      * Stream this object to the output stream
@@ -234,7 +234,8 @@ class Bus {
      * @param[in] seat Seat to write out
      * @return modified ostream
      */
-    friend std::ostream& operator<<(std::ostream& s, const std::unique_ptr<framework::Bus::Seat>& seat) {
+    friend std::ostream& operator<<(
+        std::ostream& s, const std::unique_ptr<framework::Bus::Seat>& seat) {
       seat->stream(s);
       return s;
     }
@@ -257,7 +258,8 @@ class Bus {
    *  1. Define the type of "baggage" that is being carried on the event bus
    *  2. "Attach" the baggage to a output or input TTree for writing or reading
    *  3. "Update" the contents of the baggage
-   *  4. "Clear" the baggage to a default or empty state at the end of each event
+   *  4. "Clear" the baggage to a default or empty state at the end of each
+   * event
    *  5. "Print" the baggage to a ostream (via the operator<<)
    *
    * ## Basic Structure
@@ -266,7 +268,7 @@ class Bus {
    * to the different types of passenger's baggage is derived from
    * <a
    * href="https://www.fluentcpp.com/2017/08/15/function-templates-partial-specialization-cpp/"
-   * >a helpful blog post</a>. 
+   * >a helpful blog post</a>.
    * Basically, the idea is to add a parameter input into
    * the functions that "stores" the type that we are currently carrying. This
    * allows the compiler to choose the best method from the overloaded functions
@@ -380,7 +382,7 @@ class Bus {
      * allows the compiler to deduce which implementation
      * to use depending on the type of baggage we are carrying.
      */
-    virtual void stream(std::ostream& s) const { 
+    virtual void stream(std::ostream& s) const {
       stream(the_type<BaggageType>{}, s);
     }
 
@@ -394,7 +396,8 @@ class Bus {
      * @param[in] p Passenger to write out
      * @return modified ostream
      */
-    friend std::ostream& operator<<(std::ostream& s, const framework::Bus::Passenger<BaggageType>& p) {
+    friend std::ostream& operator<<(
+        std::ostream& s, const framework::Bus::Passenger<BaggageType>& p) {
       p.stream(s);
       return s;
     }
@@ -421,10 +424,9 @@ class Bus {
     class DeleteObjectStatus : public TBranchElement {
       DeleteObjectStatus() = delete;
       DeleteObjectStatus(const DeleteObjectStatus&) = delete;
+
      public:
-      static int bit() {
-        return TBranchElement::EStatusBits::kDeleteObject;
-      }
+      static int bit() { return TBranchElement::EStatusBits::kDeleteObject; }
     };
 
     /**
@@ -465,7 +467,7 @@ class Bus {
          * you own an object by using a non-null pointer passed to SetObject
          * (or its descendent SetAddress); however, in the implementation
          * of TBranchElement::SetAddressImpl, the kDeleteObject status bit
-         * is merely tested and the validity of the passed reference is 
+         * is merely tested and the validity of the passed reference is
          * never checked. This means the bits value is leftover from however
          * the branch was initialized which when reading is ROOT-owned objects.
          */
@@ -681,21 +683,27 @@ class Bus {
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename T>
-    void clear(the_type<T> t) { baggage_->Clear(); }
+    void clear(the_type<T> t) {
+      baggage_->Clear();
+    }
 
     /**
      * Clear a vector by calling the std::vector::clear method.
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename Content>
-    void clear(the_type<std::vector<Content>> t) { baggage_->clear(); }
+    void clear(the_type<std::vector<Content>> t) {
+      baggage_->clear();
+    }
 
     /**
      * Clear a map by calling the std::map::clear method.
      * @param t Unused, only helping compiler choose the correct method
      */
     template <typename Key, typename Val>
-    void clear(the_type<std::map<Key, Val>> t) { baggage_->clear(); }
+    void clear(the_type<std::map<Key, Val>> t) {
+      baggage_->clear();
+    }
 
    private:  // specializations of post_update
     /**
@@ -718,7 +726,7 @@ class Bus {
     }
      */
 
-   private: //specializations of stream
+   private:  // specializations of stream
     /**
      * Stream a basic type that has its own
      * definition of 'operator<<'.
@@ -732,7 +740,7 @@ class Bus {
      */
     template <typename T>
     void stream(the_type<T> t, std::ostream& s) const {
-      //s << *baggagage_;
+      // s << *baggagage_;
     }
 
     /**
@@ -765,7 +773,7 @@ class Bus {
      * @param s ostream to write to
      */
     template <typename Key, typename Val>
-    void stream(the_type<std::map<Key,Val>> t, std::ostream& s) const {
+    void stream(the_type<std::map<Key, Val>> t, std::ostream& s) const {
       s << baggage_->size();
       /*
       s << "{ ";
@@ -780,7 +788,6 @@ class Bus {
     /// A pointer to the baggage we own and created
     BaggageType* baggage_;
   };  // Passenger
-
 
  private:
   /**

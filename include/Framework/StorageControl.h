@@ -54,7 +54,7 @@ class StorageControl {
   /**
    * Add a storage hint for a given processor
    *
-   * This is the function eventually called when a processor uses 
+   * This is the function eventually called when a processor uses
    * EventProcessor::setStorageHint during processing.
    * When a hint is added, we check it against our configured listening rules.
    * If the hint does not match any of our listening rules, then we simply
@@ -66,8 +66,7 @@ class StorageControl {
    * @param purposeString A purpose string which can be used in the skim control
    * configuration
    */
-  void addHint(const std::string& processor_name,
-               Hint hint,
+  void addHint(const std::string& processor_name, Hint hint,
                const std::string& purposeString);
 
   /**
@@ -89,7 +88,7 @@ class StorageControl {
    * greater importance that reflects their name. In order, the decision
    * follows the criteria below only using hints that match one of the
    * listening rules configured for the process.
-   * 
+   *
    * 1. If any hint is mustDrop, drop the event.
    * 2. If any hint is mustKeep (without any mustDrop), keep the event.
    * 3. Simple majority decision of votes made for keep and drop.
@@ -120,9 +119,9 @@ class StorageControl {
    * the storage decision.
    *
    * Each rule has two entries:
-   * 1. a processor regex to match hints coming 
+   * 1. a processor regex to match hints coming
    *    from processors named a certain way
-   * 2. a purpose regex to match hints 
+   * 2. a purpose regex to match hints
    *    from all processors with a specific purpose
    */
   std::vector<std::pair<std::regex, std::regex>> rules_;
@@ -131,12 +130,14 @@ class StorageControl {
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint hint_shouldKeep = StorageControl::Hint::ShouldKeep;
+constexpr StorageControl::Hint hint_shouldKeep =
+    StorageControl::Hint::ShouldKeep;
 
 /**
  * storage control hint alias for backwards compatibility
  */
-constexpr StorageControl::Hint hint_shouldDrop = StorageControl::Hint::ShouldDrop;
+constexpr StorageControl::Hint hint_shouldDrop =
+    StorageControl::Hint::ShouldDrop;
 
 }  // namespace framework
 
