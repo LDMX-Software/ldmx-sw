@@ -24,12 +24,12 @@ void NtupleManager::create(const std::string& name) {
 
 void NtupleManager::fill() {
   // Loop over all the trees and fill them
-  for (const auto& [name, tree]: trees_) tree->Fill();
+  for (const auto& [name, tree] : trees_) tree->Fill();
 }
 
 void NtupleManager::clear() { bus_.clear(); }
 
-void NtupleManager::reset() { 
+void NtupleManager::reset() {
   // we assume that ROOT handles clean-up
   //  of the TTrees when they are written to the output histogram file
   trees_.clear();

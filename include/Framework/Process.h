@@ -11,9 +11,9 @@
 #include "Framework/Conditions.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
+#include "Framework/Performance/Tracker.h"
 #include "Framework/RunHeader.h"
 #include "Framework/StorageControl.h"
-#include "Framework/Performance/Tracker.h"
 
 // STL
 #include <map>
@@ -143,7 +143,7 @@ class Process {
    * @param[in,out] event reference to event we are going to process
    * @returns true if event was full processed (false if aborted)
    */
-  bool process(int n,Event& event) const;
+  bool process(int n, Event &event) const;
 
   /**
    * Run through the processors and let them know
@@ -151,21 +151,21 @@ class Process {
    *
    * @param[in] header RunHeader for the new run
    */
-  void newRun(ldmx::RunHeader& header);
+  void newRun(ldmx::RunHeader &header);
 
   /**
    * File is being opened
    */
-  void onFileOpen(EventFile& file) const;
+  void onFileOpen(EventFile &file) const;
 
   /**
    * File is begin closed
    */
-  void onFileClose(EventFile& file) const;
+  void onFileClose(EventFile &file) const;
 
  private:
   /// The parameters used to configure this class.
-  framework::config::Parameters config_; 
+  framework::config::Parameters config_;
 
   /** Processing pass name. */
   std::string passname_;
@@ -232,7 +232,7 @@ class Process {
   TFile *histoTFile_{0};
 
   /** class with calls backs to track performance measurements of software */
-  performance::Tracker* performance_{0};
+  performance::Tracker *performance_{0};
 
   /// Turn on logging for our process
   enableLogging("Process");

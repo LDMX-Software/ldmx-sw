@@ -17,9 +17,9 @@
 /*~~~~~~~~~~*/
 /*   Core   */
 /*~~~~~~~~~~*/
+#include "Framework/Bus.h"
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
-#include "Framework/Bus.h"
 
 namespace framework {
 
@@ -56,7 +56,6 @@ class NtupleManager {
    */
   template <typename VarType>
   void addVar(const std::string& tname, const std::string& vname) {
-
     // Check if a tree named 'tname' has already been created.  If
     // not, throw an exception.
     if (trees_.count(tname) == 0)
@@ -102,7 +101,7 @@ class NtupleManager {
 
     // Set the value of the variable
     try {
-      bus_.update(vname,value);
+      bus_.update(vname, value);
     } catch (const std::bad_cast&) {
       EXCEPTION_RAISE("TypeMismatch", "Ntuple variable '" + vname +
                                           "' is being set by the wrong type '" +

@@ -1,15 +1,13 @@
 
-#include <fstream>  // ifstream, ofstream
-
-#include "Python.h"
-
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <fstream>  // ifstream, ofstream
 
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
+#include "Python.h"
 
 using Catch::Approx;
 using Catch::Matchers::ContainsSubstring;
@@ -87,13 +85,13 @@ class TestConfig : public framework::Producer {
 
     // check 2d vector
     std::vector<std::vector<int>> twod_vec{
-      {11,12,13},{21,22},{31,32,33,34}
-    };
-    auto test_2d_vec{parameters.getParameter<std::vector<std::vector<int>>>("test_2dlist")};
+        {11, 12, 13}, {21, 22}, {31, 32, 33, 34}};
+    auto test_2d_vec{
+        parameters.getParameter<std::vector<std::vector<int>>>("test_2dlist")};
     REQUIRE(test_2d_vec.size() == twod_vec.size());
     for (std::size_t i{0}; i < twod_vec.size(); i++) {
       REQUIRE(test_2d_vec.at(i).size() == twod_vec.at(i).size());
-      for(std::size_t j{0}; j < twod_vec.at(i).size(); j++) {
+      for (std::size_t j{0}; j < twod_vec.at(i).size(); j++) {
         CHECK(test_2d_vec.at(i).at(j) == twod_vec.at(i).at(j));
       }
     }
@@ -151,7 +149,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   in_file.open(config_file_name.c_str(), std::ios::in | std::ios::binary);
 
-  const std::string config_file_name_arg{"/tmp/config_python_test_config_arg.py"};
+  const std::string config_file_name_arg{
+      "/tmp/config_python_test_config_arg.py"};
   out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
   out_file << in_file.rdbuf();
   out_file << "import sys" << std::endl;
@@ -176,7 +175,8 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
 
   out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
   out_file << in_file.rdbuf();
-  out_file << "p.sequence[0].bad_param = ('tuples','are','not','supported')" << std::endl;
+  out_file << "p.sequence[0].bad_param = ('tuples','are','not','supported')"
+           << std::endl;
 
   in_file.close();
   out_file.close();
@@ -184,12 +184,11 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // warning: this test will fail if the repr of a tuple changes format
   SECTION("Bad parameter exception test") {
     REQUIRE_THROWS_WITH(
-      std::make_unique<framework::ConfigurePython>(config_file_name_arg, args, 0),
-      ContainsSubstring("('tuples', 'are', 'not', 'supported')")
-    );
+        std::make_unique<framework::ConfigurePython>(config_file_name_arg, args,
+                                                     0),
+        ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
     // we need to manually close up our python interpreter
     // because we left during an exception without closing it above
     Py_FinalizeEx();
   }
-
 }

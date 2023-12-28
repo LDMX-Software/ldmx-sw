@@ -1,12 +1,12 @@
 #include "Framework/StorageControl.h"
+
 #include "Framework/Exception/Exception.h"
 
 namespace framework {
 
 void StorageControl::resetEventState() { hints_.clear(); }
 
-void StorageControl::addHint(const std::string& processor_name,
-                             Hint hint,
+void StorageControl::addHint(const std::string& processor_name, Hint hint,
                              const std::string& purposeString) {
   for (const auto& [processor_rule, purpose_rule] : rules_) {
     if (std::regex_match(processor_name, processor_rule) and
@@ -29,14 +29,14 @@ void StorageControl::addRule(const std::string& processor_pat,
   try {
     rules_.emplace_back(
         std::piecewise_construct,
-        std::forward_as_tuple(
-          processor_pat, std::regex::extended | std::regex::nosubs),
-        std::forward_as_tuple(
-          purpose_pat.empty() ? ".*" : purpose_pat,
-          std::regex::extended | std::regex::nosubs));
+        std::forward_as_tuple(processor_pat,
+                              std::regex::extended | std::regex::nosubs),
+        std::forward_as_tuple(purpose_pat.empty() ? ".*" : purpose_pat,
+                              std::regex::extended | std::regex::nosubs));
   } catch (const std::regex_error& e) {
     // re-throw the regex error with our error
-    std::string msg{"Invalid regex configured for the storage control listening rules: "};
+    std::string msg{
+        "Invalid regex configured for the storage control listening rules: "};
     msg += e.what();
     EXCEPTION_RAISE("ConfigureError", msg);
   }
@@ -55,7 +55,7 @@ bool StorageControl::keepEvent(bool event_completed) const {
   int votesKeep(0), votesDrop(0);
   bool mustDrop{false}, mustKeep{false};
   for (auto hint : hints_) {
-    switch(hint) {
+    switch (hint) {
       case Hint::MustDrop:
         mustDrop = true;
         break;
@@ -76,8 +76,8 @@ bool StorageControl::keepEvent(bool event_completed) const {
         EXCEPTION_RAISE(
             "SupaBad",
             "This error comes from StorageControl and should never happen. "
-            "A storage hint should always be one of the members of the StorageControlHint enum."
-        );
+            "A storage hint should always be one of the members of the "
+            "StorageControlHint enum.");
     }
   }
 
@@ -87,7 +87,8 @@ bool StorageControl::keepEvent(bool event_completed) const {
   if (mustDrop) return false;
 
   /**
-   * mustKeep is second highest, if it exists when mustDrop does not, the event is kept
+   * mustKeep is second highest, if it exists when mustDrop does not, the event
+   * is kept
    */
   if (mustKeep) return true;
 

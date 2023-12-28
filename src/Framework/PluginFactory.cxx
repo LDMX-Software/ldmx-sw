@@ -1,5 +1,7 @@
 #include "Framework/PluginFactory.h"
+
 #include <dlfcn.h>
+
 #include "Framework/EventProcessor.h"
 
 framework::PluginFactory framework::PluginFactory::theFactory_

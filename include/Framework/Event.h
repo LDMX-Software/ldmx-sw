@@ -12,19 +12,20 @@
 #include "TTree.h"
 
 // LDMX
+#include "Framework/Bus.h"
+#include "Framework/EventHeader.h"
 #include "Framework/Exception/Exception.h"
 #include "Framework/ProductTag.h"
-#include "Framework/EventHeader.h"
-#include "Framework/Bus.h"
 
 // STL
 #include <regex.h>
+
 #include <algorithm>
 #include <iostream>
 #include <map>
 #include <set>
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace framework {
 
@@ -130,7 +131,8 @@ class Event {
    * false if allowing for one or more matching objects
    * @return True if the object or collection exists in the event.
    */
-  bool exists(const std::string &name, const std::string &passName = "", bool unique = true) const;
+  bool exists(const std::string &name, const std::string &passName = "",
+              bool unique = true) const;
 
   /**
    * Add a drop rule to the list of regex expressions to drop.
@@ -146,10 +148,10 @@ class Event {
    * Adds an object to the event bus
    *
    * @throws Exception if there is an underscore in the collection name.
-   * @throws Exception if there already has been a branch filled with 
+   * @throws Exception if there already has been a branch filled with
    * the constructed name.
-   * @throws Exception if the type we are putting in mis-matches the type in the bus
-   * under the input name.
+   * @throws Exception if the type we are putting in mis-matches the type in the
+   * bus under the input name.
    *
    * @see makeBranchName
    * The branch name is constructed from the collection name
@@ -195,7 +197,7 @@ class Event {
     //  TTree::BranchImpRef or TTree::BronchExec
     if (not bus_.isOnBoard(branchName)) {
       // create a new branch for this collection
-      
+
       // have type T board bus under name 'branchName'
       bus_.board<T>(branchName);
 
@@ -214,8 +216,7 @@ class Event {
 
       // check for cache entry to remove
       auto it_known{knownLookups_.find(collectionName)};
-      if (it_known != knownLookups_.end())
-        knownLookups_.erase(it_known); 
+      if (it_known != knownLookups_.end()) knownLookups_.erase(it_known);
 
       // add us to list of products
       products_.emplace_back(collectionName, passName_, tname);
@@ -224,7 +225,7 @@ class Event {
     // copy input contents into bus passenger
     try {
       bus_.update(branchName, obj);
-    } catch(const std::bad_cast&) {
+    } catch (const std::bad_cast &) {
       EXCEPTION_RAISE("TypeMismatch",
                       "Attempting to add an object whose type '" +
                           std::string(typeid(obj).name()) +
@@ -242,8 +243,8 @@ class Event {
    * we try to find a matching collection under the list of branch names.
    * We will throw an exception if we don't find a unique branch corresponding
    * to the collection. We also employ a rudimentary caching system for mapping
-   * collection names to branches (if no pass name is given) so this looping only
-   * needs to happen once.
+   * collection names to branches (if no pass name is given) so this looping
+   * only needs to happen once.
    * @see EventHeader::BRANCH for the name of the event header branch
    * @see makeBranchName for how we make branch names from object/pass names
    * @throws Exception if unable to uniquely determine the branch name
@@ -273,19 +274,19 @@ class Event {
    * @return const reference to requested object
    */
   template <typename T>
-  const T& getObject(const std::string &collectionName,
-            const std::string &passName = "") const {
+  const T &getObject(const std::string &collectionName,
+                     const std::string &passName = "") const {
     // get branch name
     std::string branchName;
     if (collectionName == ldmx::EventHeader::BRANCH) {
       branchName = collectionName;
     } else if (passName.empty()) {
-      //if no passName, then find branchName by looking over known products
-      if (knownLookups_.find(collectionName)==knownLookups_.end()) {
-        //this collectionName hasn't been found before
-        //  this collection name is the whole name and not a partial name
-        //  so we search products with a full-string match required
-        auto matches = searchProducts(collectionName,"","",true);
+      // if no passName, then find branchName by looking over known products
+      if (knownLookups_.find(collectionName) == knownLookups_.end()) {
+        // this collectionName hasn't been found before
+        //   this collection name is the whole name and not a partial name
+        //   so we search products with a full-string match required
+        auto matches = searchProducts(collectionName, "", "", true);
         if (matches.empty()) {
           // no matches found
           EXCEPTION_RAISE("ProductNotFound",
@@ -293,17 +294,19 @@ class Event {
         } else if (matches.size() > 1) {
           // more than one branch found
           std::stringstream names;
-          for (auto strs : matches) { names << "\n" << strs; }
+          for (auto strs : matches) {
+            names << "\n" << strs;
+          }
           EXCEPTION_RAISE("ProductAmbiguous",
                           "Multiple products found for name '" +
                               collectionName +
-                              "' without specified pass name :" + names.str() );
+                              "' without specified pass name :" + names.str());
         } else {
           // exactly one branch found -> cache for later
-          knownLookups_[collectionName] = 
-            makeBranchName(collectionName, matches.at(0).passname());
-        } //different options for number of possible branch matches
-      } //collection not in known lookups
+          knownLookups_[collectionName] =
+              makeBranchName(collectionName, matches.at(0).passname());
+        }  // different options for number of possible branch matches
+      }    // collection not in known lookups
       branchName = knownLookups_.at(collectionName);
     } else {
       branchName = makeBranchName(collectionName, passName);
@@ -321,35 +324,31 @@ class Event {
       bus_.board<T>(branchName);
 
       // attempt to attach the new passenger to the input tree
-      TBranch* branch = bus_.attach(inputTree_,branchName,false);
+      TBranch *branch = bus_.attach(inputTree_, branchName, false);
       if (branch == 0) {
-          //inputTree doesn't have that branch
-          EXCEPTION_RAISE(
-                  "ProductNotFound", 
-                  "No product found for branch '" 
-                  + branchName
-                  + "' on input tree."
-                  );
-      } 
+        // inputTree doesn't have that branch
+        EXCEPTION_RAISE("ProductNotFound", "No product found for branch '" +
+                                               branchName + "' on input tree.");
+      }
       // ooh, new branch!
-      branch->SetStatus(1); //overrides any 'ignore' rules
+      branch->SetStatus(1);  // overrides any 'ignore' rules
       /**
        * Load in the current entry
-       *    This is necessary because getObject is called _after_ 
+       *    This is necessary because getObject is called _after_
        *    EventFile::nextEvent loads the current entry of the inputTree.
        *    Many branches are turned "off" (status == 0), so they aren't
        *    loaded when the entire TTree is updated to a specific entry.
        *
-       *    We shouldn't end up here before inputTree's read entry is unset, 
+       *    We shouldn't end up here before inputTree's read entry is unset,
        *    but we check anyways because ROOT will just seg-fault like a chump.
        */
       long long int ientry{inputTree_->GetReadEntry()};
-      if (ientry<0) {
-        //reached getObject without initializing inputTree's read entry
+      if (ientry < 0) {
+        // reached getObject without initializing inputTree's read entry
         EXCEPTION_RAISE("InTreeInit",
-            "The input tree was un-initialized with read entry "
-            + std::to_string(ientry) + " when attempting to get '"
-            + branchName + "'.");
+                        "The input tree was un-initialized with read entry " +
+                            std::to_string(ientry) +
+                            " when attempting to get '" + branchName + "'.");
       }
       branch->GetEntry(ientry);
     } else if (not already_on_board) {
@@ -365,15 +364,11 @@ class Event {
     //  has been updated
     // let's return the object that the passenger is carrying
     try {
-      const T& obj = bus_.get<T>(branchName);
+      const T &obj = bus_.get<T>(branchName);
       return obj;
-    } catch(const std::bad_cast&) {
-      EXCEPTION_RAISE(
-          "BadType",
-          "Trying to get product from '"
-          + branchName
-          + "' but asking for wrong type."
-          );
+    } catch (const std::bad_cast &) {
+      EXCEPTION_RAISE("BadType", "Trying to get product from '" + branchName +
+                                     "' but asking for wrong type.");
     }
   }  // getObject
 
@@ -479,13 +474,13 @@ class Event {
   /** @return The beam electron count. */
   int getElectronCount() const { return electronCount_; }
 
-  /** 
+  /**
    * Set the beam electron count.
-   * 
+   *
    * @param electronCount The beam electron count.
    */
-  void setElectronCount(const int &electronCount) { 
-    electronCount_ = electronCount; 
+  void setElectronCount(const int &electronCount) {
+    electronCount_ = electronCount;
   }
 
  private:
@@ -537,7 +532,7 @@ class Event {
   TTree *inputTree_{nullptr};
 
   /// The total number of electrons in the event
-  int electronCount_{1}; 
+  int electronCount_{1};
 
   /**
    * The Bus

@@ -1,5 +1,6 @@
 
 #include "Framework/EventHeader.h"
+
 #include "Framework/Exception/Exception.h"
 
 ClassImp(ldmx::EventHeader);
@@ -31,26 +32,27 @@ void EventHeader::Print(Option_t*) const {
 
 int EventHeader::getIntParameter(const std::string& name) const {
   if (intParameters_.find(name) == intParameters_.end()) {
-    EXCEPTION_RAISE("NoParam",
-        "Parameter '"+name+"' does not exist in the int parameters.");
+    EXCEPTION_RAISE("NoParam", "Parameter '" + name +
+                                   "' does not exist in the int parameters.");
   }
   return intParameters_.at(name);
 }
 
 float EventHeader::getFloatParameter(const std::string& name) const {
   if (floatParameters_.find(name) == floatParameters_.end()) {
-    EXCEPTION_RAISE("NoParam",
-        "Parameter '"+name+"' does not exist in the float parameters.");
+    EXCEPTION_RAISE("NoParam", "Parameter '" + name +
+                                   "' does not exist in the float parameters.");
   }
   return floatParameters_.at(name);
 }
 
 std::string EventHeader::getStringParameter(const std::string& name) const {
   if (stringParameters_.find(name) == stringParameters_.end()) {
-    EXCEPTION_RAISE("NoParam",
-        "Parameter '"+name+"' does not exist in the string parameters.");
+    EXCEPTION_RAISE(
+        "NoParam",
+        "Parameter '" + name + "' does not exist in the string parameters.");
   }
   return stringParameters_.at(name);
 }
 
-}
+}  // namespace ldmx

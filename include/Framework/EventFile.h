@@ -165,7 +165,7 @@ class EventFile {
    *
    * We do the necessary set-up if ientry_ < 0.
    *  This means if we are an output file with a parent file,
-   *  we clone our parent tree to our tree so we have the 
+   *  we clone our parent tree to our tree so we have the
    *  same branches.
    *
    * After the first entry (when ientry_ >= 0), we "close up"
@@ -181,11 +181,11 @@ class EventFile {
    *    Just increment the number of entries and the entry index.
    * 3. We are an input file. Now we need to load the next entry
    *    of the our tree into the event bus objects.
-   *    If we are configured to be "loopable", then we will 
+   *    If we are configured to be "loopable", then we will
    *    reset ientry_ to -1 when we reach the last event.
    *    Otherwise, we will return false as a stopping condition.
    *
-   * @param[in] storeCurrentEvent Should we save the current event 
+   * @param[in] storeCurrentEvent Should we save the current event
    *  to the output (if we are an output file)?
    * @return If event was prepared/read successfully.
    */
@@ -207,7 +207,7 @@ class EventFile {
    * @throw Exception if run number is already in run map
    */
   void writeRunHeader(ldmx::RunHeader &runHeader);
-  
+
   /**
    * Write the map of run headers to the file as a TTree of RunHeader.
    *
@@ -223,7 +223,7 @@ class EventFile {
    * @return pointer to the header corresponding to the run number
    * @note the returned pointer will be nullptr if the run was not found
    */
-  ldmx::RunHeader* getRunHeaderPtr(int runNumber);
+  ldmx::RunHeader *getRunHeaderPtr(int runNumber);
 
   /**
    * Get the RunHeader for a given run, if it exists in the input file.
@@ -237,7 +237,7 @@ class EventFile {
   /// @return the name of the ROOT file being managed.
   const std::string &getFileName() { return fileName_; }
 
-private:
+ private:
   /**
    * Fill the internal map of run numbers to RunHeader objects from the input
    * file.
@@ -256,7 +256,7 @@ private:
    */
   void importRunHeaders();
 
-private:
+ private:
   /// The number of entries in the tree.
   Long64_t entries_{-1};
 
@@ -316,6 +316,6 @@ private:
    */
   std::map<int, std::pair<bool, ldmx::RunHeader *>> runMap_;
 };
-} // namespace framework
+}  // namespace framework
 
-#endif // FRAMEWORK_EVENT_EVENTFILE_H
+#endif  // FRAMEWORK_EVENT_EVENTFILE_H

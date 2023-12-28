@@ -9,6 +9,6 @@
 
 #pragma link C++ namespace framework::performance;
 
-#pragma link C++ class framework::performance::Timer+;
+#pragma link C++ class framework::performance::Timer + ;
 
 #endif

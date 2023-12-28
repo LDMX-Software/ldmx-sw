@@ -4,7 +4,9 @@
  */
 
 #include "Framework/Process.h"
+
 #include <iostream>
+
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
@@ -20,8 +22,7 @@ namespace framework {
 
 Process::Process(const framework::config::Parameters &configuration)
     : conditions_{*this} {
-
-  config_ = configuration; 
+  config_ = configuration;
 
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
@@ -106,13 +107,15 @@ Process::Process(const framework::config::Parameters &configuration)
                                                cop);
   }
 
-  bool logPerformance = configuration.getParameter<bool>("logPerformance", false);
+  bool logPerformance =
+      configuration.getParameter<bool>("logPerformance", false);
   if (logPerformance) {
     std::vector<std::string> names{sequence_.size()};
     for (std::size_t i{0}; i < sequence_.size(); i++) {
       names[i] = sequence_[i]->getName();
     }
-    performance_ = new performance::Tracker(makeHistoDirectory("performance"), names);
+    performance_ =
+        new performance::Tracker(makeHistoDirectory("performance"), names);
   }
 }
 
@@ -155,15 +158,19 @@ void Process::run() {
 
   // Start by notifying everyone that modules processing is beginning
   std::size_t i_proc{0};
-  if (performance_) performance_->start(performance::Callback::onProcessStart, 0);
+  if (performance_)
+    performance_->start(performance::Callback::onProcessStart, 0);
   conditions_.onProcessStart();
   for (auto module : sequence_) {
     i_proc++;
-    if (performance_) performance_->start(performance::Callback::onProcessStart, i_proc);
+    if (performance_)
+      performance_->start(performance::Callback::onProcessStart, i_proc);
     module->onProcessStart();
-    if (performance_) performance_->stop(performance::Callback::onProcessStart, i_proc);
+    if (performance_)
+      performance_->stop(performance::Callback::onProcessStart, i_proc);
   }
-  if (performance_) performance_->stop(performance::Callback::onProcessStart, 0);
+  if (performance_)
+    performance_->stop(performance::Callback::onProcessStart, 0);
 
   // If we have no input files, but do have an event number, run for
   // that number of events and generate an output file.
@@ -180,7 +187,7 @@ void Process::run() {
 
     // Configure the event file to create an output file with no parent. This
     // requires setting the parameters isOutputFile and isSingleOutput to true.
-    EventFile outFile(config_, outputFileName, nullptr, true, true, false); 
+    EventFile outFile(config_, outputFileName, nullptr, true, true, false);
     onFileOpen(outFile);
     outFile.setupEvent(&theEvent);
 
@@ -193,8 +200,8 @@ void Process::run() {
 
     newRun(runHeader);
 
-    int totalTries = 0; // total number of tries for entire run
-    int numTries = 0;  // number of tries for the current event number
+    int totalTries = 0;  // total number of tries for entire run
+    int numTries = 0;    // number of tries for the current event number
     while (n_events_processed < eventLimit_) {
       totalTries++;
       numTries++;
@@ -207,7 +214,7 @@ void Process::run() {
       // reset the storage controller state
       storageController_.resetEventState();
 
-      bool completed = process(n_events_processed,theEvent);
+      bool completed = process(n_events_processed, theEvent);
 
       outFile.nextEvent(storageController_.keepEvent(completed));
 
@@ -263,7 +270,8 @@ void Process::run() {
         // 2) this is the first input file
         if (!singleOutput or ifile == 0) {
           // setup new output file
-          outFile = new EventFile(config_, outputFiles_[ifile], &inFile, singleOutput);
+          outFile = new EventFile(config_, outputFiles_[ifile], &inFile,
+                                  singleOutput);
           ifile++;
 
           // setup theEvent we will iterate over
@@ -291,15 +299,16 @@ void Process::run() {
       }
 
       bool event_completed = true;
-      while (masterFile->nextEvent(storageController_.keepEvent(event_completed))
-             && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+      while (masterFile->nextEvent(
+                 storageController_.keepEvent(event_completed)) &&
+             (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
         storageController_.resetEventState();
 
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {
           wasRun = theEvent.getEventHeader().getRun();
-          ldmx::RunHeader* rh{masterFile->getRunHeaderPtr(wasRun)};
+          ldmx::RunHeader *rh{masterFile->getRunHeaderPtr(wasRun)};
           if (rh != nullptr) {
             runHeader_ = rh;
             ldmx_log(info) << "Got new run header from '"
@@ -312,7 +321,7 @@ void Process::run() {
           }
         }
 
-        event_completed = process(n_events_processed,theEvent);
+        event_completed = process(n_events_processed, theEvent);
 
         if (event_completed) NtupleManager::getInstance().fill();
         NtupleManager::getInstance().clear();
@@ -359,15 +368,17 @@ void Process::run() {
   }  // are there input files? if-else tree
 
   // finally, notify everyone that we are stopping
-  if(performance_) performance_->start(performance::Callback::onProcessEnd, 0);
+  if (performance_) performance_->start(performance::Callback::onProcessEnd, 0);
   i_proc = 0;
   for (auto module : sequence_) {
     i_proc++;
-    if(performance_) performance_->start(performance::Callback::onProcessEnd, i_proc);
+    if (performance_)
+      performance_->start(performance::Callback::onProcessEnd, i_proc);
     module->onProcessEnd();
-    if(performance_) performance_->stop(performance::Callback::onProcessEnd, i_proc);
+    if (performance_)
+      performance_->stop(performance::Callback::onProcessEnd, i_proc);
   }
-  if(performance_) performance_->stop(performance::Callback::onProcessEnd, 0);
+  if (performance_) performance_->stop(performance::Callback::onProcessEnd, 0);
 
   // we're done so let's close up the logging
   logging::close();
@@ -390,11 +401,12 @@ TDirectory *Process::openHistoFile() {
 
   if (histoFilename_.empty()) {
     // trying to write histograms/ntuples but no file defined
-    EXCEPTION_RAISE("NoHistFileName",
-                    "You did not provide the necessary histogram file name to "
-                    "put your histograms (or performance data) in.\n    Provide this "
-                    "name in the python configuration with 'p.histogramFile = "
-                    "\"myHistFile.root\"' where p is the Process object.");
+    EXCEPTION_RAISE(
+        "NoHistFileName",
+        "You did not provide the necessary histogram file name to "
+        "put your histograms (or performance data) in.\n    Provide this "
+        "name in the python configuration with 'p.histogramFile = "
+        "\"myHistFile.root\"' where p is the Process object.");
   } else if (histoTFile_ == nullptr) {
     histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
     owner = histoTFile_;
@@ -405,20 +417,22 @@ TDirectory *Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(ldmx::RunHeader& header) {
+void Process::newRun(ldmx::RunHeader &header) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
-  if(performance_) performance_->start(performance::Callback::beforeNewRun, 0);
+  if (performance_) performance_->start(performance::Callback::beforeNewRun, 0);
   std::size_t i_proc{0};
   for (auto module : sequence_) {
     i_proc++;
     if (dynamic_cast<Producer *>(module)) {
-      if(performance_) performance_->start(performance::Callback::beforeNewRun, i_proc);
+      if (performance_)
+        performance_->start(performance::Callback::beforeNewRun, i_proc);
       dynamic_cast<Producer *>(module)->beforeNewRun(header);
-      if(performance_) performance_->stop(performance::Callback::beforeNewRun, i_proc);
+      if (performance_)
+        performance_->stop(performance::Callback::beforeNewRun, i_proc);
     }
   }
-  if(performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
+  if (performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
   if (performance_) performance_->start(performance::Callback::onNewRun, 0);
@@ -426,18 +440,19 @@ void Process::newRun(ldmx::RunHeader& header) {
   i_proc = 0;
   for (auto module : sequence_) {
     i_proc++;
-    if (performance_) performance_->start(performance::Callback::onNewRun, i_proc);
+    if (performance_)
+      performance_->start(performance::Callback::onNewRun, i_proc);
     module->onNewRun(header);
-    if (performance_) performance_->stop(performance::Callback::onNewRun, i_proc);
+    if (performance_)
+      performance_->stop(performance::Callback::onNewRun, i_proc);
   }
   if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
 }
 
-bool Process::process(int n, Event& event) const {
-  if ((logFrequency_ != -1) &&
-      ((n+1) % logFrequency_ == 0)) {
+bool Process::process(int n, Event &event) const {
+  if ((logFrequency_ != -1) && ((n + 1) % logFrequency_ == 0)) {
     TTimeStamp t;
-    ldmx_log(info) << "Processing " << n+1 << " Run "
+    ldmx_log(info) << "Processing " << n + 1 << " Run "
                    << event.getEventHeader().getRun() << " Event "
                    << event.getEventHeader().getEventNumber() << "  ("
                    << t.AsString("lc") << ")";
@@ -448,13 +463,15 @@ bool Process::process(int n, Event& event) const {
   try {
     for (auto module : sequence_) {
       i_proc++;
-      if (performance_) performance_->start(performance::Callback::process, i_proc);
+      if (performance_)
+        performance_->start(performance::Callback::process, i_proc);
       if (dynamic_cast<Producer *>(module)) {
         (dynamic_cast<Producer *>(module))->produce(event);
       } else if (dynamic_cast<Analyzer *>(module)) {
         (dynamic_cast<Analyzer *>(module))->analyze(event);
       }
-      if (performance_) performance_->stop(performance::Callback::process, i_proc);
+      if (performance_)
+        performance_->stop(performance::Callback::process, i_proc);
     }
   } catch (AbortEventException &) {
     if (performance_) {
@@ -471,26 +488,30 @@ bool Process::process(int n, Event& event) const {
   return true;
 }
 
-void Process::onFileOpen(EventFile& file) const {
+void Process::onFileOpen(EventFile &file) const {
   if (performance_) performance_->start(performance::Callback::onFileOpen, 0);
   std::size_t i_proc{0};
   for (auto module : sequence_) {
     i_proc++;
-    if (performance_) performance_->start(performance::Callback::onFileOpen, i_proc);
+    if (performance_)
+      performance_->start(performance::Callback::onFileOpen, i_proc);
     module->onFileOpen(file);
-    if (performance_) performance_->stop(performance::Callback::onFileOpen, i_proc);
+    if (performance_)
+      performance_->stop(performance::Callback::onFileOpen, i_proc);
   }
   if (performance_) performance_->stop(performance::Callback::onFileOpen, 0);
 }
 
-void Process::onFileClose(EventFile& file) const {
+void Process::onFileClose(EventFile &file) const {
   if (performance_) performance_->start(performance::Callback::onFileClose, 0);
   std::size_t i_proc{0};
   for (auto module : sequence_) {
     i_proc++;
-    if (performance_) performance_->start(performance::Callback::onFileClose, i_proc);
+    if (performance_)
+      performance_->start(performance::Callback::onFileClose, i_proc);
     module->onFileClose(file);
-    if (performance_) performance_->stop(performance::Callback::onFileClose, i_proc);
+    if (performance_)
+      performance_->stop(performance::Callback::onFileClose, i_proc);
   }
   if (performance_) performance_->stop(performance::Callback::onFileClose, 0);
 }

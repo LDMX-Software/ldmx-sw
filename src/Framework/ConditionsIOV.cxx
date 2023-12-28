@@ -1,8 +1,9 @@
 #include "Framework/ConditionsIOV.h"
-#include "Framework/EventHeader.h"
 
 #include <iostream>
 #include <sstream>
+
+#include "Framework/EventHeader.h"
 
 std::ostream& operator<<(std::ostream& s, const framework::ConditionsIOV& iov) {
   iov.stream(s);

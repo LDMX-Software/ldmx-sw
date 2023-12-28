@@ -14,12 +14,12 @@ namespace framework::performance {
  */
 enum class Callback {
   onProcessStart = 0,
-  onProcessEnd   = 1,
-  onFileOpen     = 2,
-  onFileClose    = 3,
-  beforeNewRun   = 4,
-  onNewRun       = 5,
-  process        = 6
+  onProcessEnd = 1,
+  onFileOpen = 2,
+  onFileClose = 3,
+  beforeNewRun = 4,
+  onNewRun = 5,
+  process = 6
 };
 
 /**
@@ -29,13 +29,11 @@ constexpr std::size_t to_index(Callback c) {
   return static_cast<std::size_t>(c);
 }
 
-
 /**
  * Convert the Callback enum into a human-readable name
  */
 std::string to_name(Callback c);
 
-}
+}  // namespace framework::performance
 
 #endif
-

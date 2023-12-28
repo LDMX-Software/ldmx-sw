@@ -303,7 +303,7 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   PySys_SetArgvEx(nargs + 1, targs, 1);
 
   // load a handle to the config file into memory
-  FILE* config_file{fopen(pythonScript.c_str(),"r")};
+  FILE* config_file{fopen(pythonScript.c_str(), "r")};
   // run the file as a python script
   if (PyRun_AnyFile(config_file, pythonScript.c_str()) != 0) {
     PyErr_Print();
@@ -323,8 +323,7 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   PyObject* script = PyImport_ImportModule("__main__");
   if (script == NULL) {
     PyErr_Print();
-    EXCEPTION_RAISE("ConfigureError",
-                    "Problem loading python script");
+    EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
   }
   PyObject* pCMod = PyObject_GetAttrString(script, root_module.c_str());
   Py_DECREF(script);  // don't need the script anymore
