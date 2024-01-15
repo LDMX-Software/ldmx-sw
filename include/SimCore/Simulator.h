@@ -20,7 +20,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/DetectorConstruction.h"
