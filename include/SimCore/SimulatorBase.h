@@ -7,7 +7,6 @@
 #include <G4UIsession.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventDef.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventHeader.h"
 #include "Framework/EventProcessor.h"
