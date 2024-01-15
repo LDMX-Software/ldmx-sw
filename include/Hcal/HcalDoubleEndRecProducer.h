@@ -9,6 +9,8 @@
 #include "Framework/EventProcessor.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Hcal/Event/HcalHit.h"
+
 namespace hcal {
 
 class HcalDoubleEndRecProducer : public framework::Producer {
