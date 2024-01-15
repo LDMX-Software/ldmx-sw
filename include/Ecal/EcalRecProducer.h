@@ -19,7 +19,6 @@
 //----------//
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
-#include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 
 namespace ecal {

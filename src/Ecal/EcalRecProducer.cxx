@@ -7,6 +7,9 @@
 #include "Ecal/EcalRecProducer.h"
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/EcalReconConditions.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace ecal {
 
