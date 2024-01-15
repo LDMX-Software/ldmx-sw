@@ -9,6 +9,8 @@
 #include "Framework/EventProcessor.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Hcal/Event/HcalHit.h"
+
 namespace hcal {
 class HcalSingleEndRecProducer : public framework::Producer {
   /// name of pass of digis to use
