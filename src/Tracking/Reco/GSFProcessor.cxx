@@ -296,7 +296,7 @@ void GSFProcessor::produce(framework::Event& event) {
     std::shared_ptr<Acts::Surface> beamOrigin_surface = tracking::sim::utils::unboundSurface(-700);
     
     if (!track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).has_value()) {
-      lmdx_log(warn)<<"Failed retreiving AtBeamOrigin TrackState for track. Skipping..";
+      ldmx_log(warn)<<"Failed retreiving AtBeamOrigin TrackState for track. Skipping..";
       continue;
     }
 
