@@ -76,6 +76,7 @@ enum PIDBins {
     std::string truthCollection_{"TaggerTruthTracks"};
     std::string title_{"tagger_trk_"};
     double trackProb_cut_{0.5};
+    std::string subdetector_{"Tagger"};
     bool doTruthComparison{false};
     bool debug_{false};
 

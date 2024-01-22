@@ -17,7 +17,6 @@ namespace reco {
 
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
     : TrackingGeometryUser(name, process) {
-  normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 }
 
 CKFProcessor::~CKFProcessor() {}
@@ -30,9 +29,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["ckf_run"] = 0.;
   profiling_map_["result_loop"] = 0.;
 
-  // Seed the generator
-  generator_.seed(1);
-
+  
   // Generate a constant magnetic field
   Acts::Vector3 b_field(0., 0., bfield_ * Acts::UnitConstants::T);
 
@@ -75,7 +72,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   
   auto transformBField = [rotation, scale, debugTransform](const Acts::Vector3& field,
                                            const Acts::Vector3& /*pos*/) {
-
+    
     //Rotate the field in tracking coordinates
     Acts::Vector3 rot_field;
     rot_field(0) = field(2);
@@ -139,7 +136,6 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(*propagator_,
                                                          Acts::getDefaultLogger("CKF", acts_loggingLevel));
-  kf_ = std::make_unique<std::decay_t<decltype(*kf_)>>(*propagator_);
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(*propagator_,
                                                                        geometry_context(),
                                                                        magnetic_field_context());
@@ -418,7 +414,7 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["ckf_run"] +=
       std::chrono::duration<double, std::milli>(ckf_run - ckf_setup).count();
   
-  //I create a new container for every seed
+  
   Acts::VectorTrackContainer vtc;
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
@@ -483,6 +479,11 @@ void CKFProcessor::produce(framework::Event& event) {
                    <<perigee_pars[Acts::eBoundPhi]<<" "
                    <<perigee_pars[Acts::eBoundTheta]<<" "
                    <<perigee_pars[Acts::eBoundQOverP]<<std::endl
+                   <<"Reference Surface"<<std::endl
+                   <<" "<<perigee_surface.transform(geometry_context()).translation()(0)
+                   <<" "<<perigee_surface.transform(geometry_context()).translation()(1)
+                   <<" "<<perigee_surface.transform(geometry_context()).translation()(2)
+                   <<std::endl
                    <<"nHoles  "<<track.nHoles();
     
     ldmx::Track trk = ldmx::Track();
@@ -565,9 +566,12 @@ void CKFProcessor::produce(framework::Event& event) {
     const std::shared_ptr<Acts::PlaneSurface> target_surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
     
-
+    // Beam Origin unbounded surface
+    const std::shared_ptr<Acts::Surface> beamOrigin_surface =
+        tracking::sim::utils::unboundSurface(-700);
+    
     ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
-
+    
     ldmx_log(debug)<<"Target extrapolation";
     ldmx::Track::TrackState tsAtTarget;
     bool success = trk_extrap_->TrackStateAtSurface(track,
@@ -577,18 +581,34 @@ void CKFProcessor::produce(framework::Event& event) {
     
     if (success)
       trk.addTrackState(tsAtTarget);
-    
 
-    ldmx_log(debug)<<"Ecal Extrapolation";
-    ldmx::Track::TrackState tsAtEcal;
-    success = trk_extrap_->TrackStateAtSurface(track,
-                                               ecal_surface,
-                                               tsAtEcal,
-                                               ldmx::TrackStateType::AtECAL);
+    if (taggerTracking_) {
+      ldmx_log(debug)<<"Beam Origin Extrapolation";
+      ldmx::Track::TrackState tsAtBeamOrigin;
+      bool success = trk_extrap_->TrackStateAtSurface(track,
+                                                      beamOrigin_surface,
+                                                      tsAtBeamOrigin,
+                                                      ldmx::TrackStateType::AtBeamOrigin);
+      
+      if (success)
+        trk.addTrackState(tsAtBeamOrigin);
+      
+    }
+
+    // Recoil Extrapolation to ECAL only
+    if (!taggerTracking_) {
+    
+      ldmx_log(debug)<<"Ecal Extrapolation";
+      ldmx::Track::TrackState tsAtEcal;
+      success = trk_extrap_->TrackStateAtSurface(track,
+                                                 ecal_surface,
+                                                 tsAtEcal,
+                                                 ldmx::TrackStateType::AtECAL);
     
     
-    if (success)
-      trk.addTrackState(tsAtEcal);
+      if (success)
+        trk.addTrackState(tsAtEcal);
+    }
     
     
     //Truth matching
@@ -658,9 +678,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   steps_outfile_path_ = parameters.getParameter<std::string>(
       "steps_file_path", "propagation_steps.root");
   
-  track_id_ = parameters.getParameter<int>("track_id", -1);
-  pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
-
   bfield_ = parameters.getParameter<double>("bfield", -1.5);
   const_b_field_ = parameters.getParameter<bool>("const_b_field", false);
   field_map_ = parameters.getParameter<std::string>("field_map");
@@ -682,20 +699,22 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   extrapolate_location_ = parameters.getParameter<std::vector<double>>(
       "extrapolate_location", {0., 0., 0.});
   use_seed_perigee_ = parameters.getParameter<bool>("use_seed_perigee", false);
-
+  
+  ldmx_log(debug)<<" use_extrapolate_location ? " <<use_extrapolate_location_;
+  ldmx_log(debug)<<" use_seed_perigee ? " <<use_seed_perigee_;
+  
   // seeds from the event
   seed_coll_name_ =
       parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
-
+  
   // output track collection
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "Tracks");
-
-  kf_refit_ = parameters.getParameter<bool>("kf_refit", false);
-  gsf_refit_ = parameters.getParameter<bool>("gsf_refit", false);
-
-
-
+  
+  
+  // keep track on which system tracking is running
+  taggerTracking_ = parameters.getParameter<bool>("taggerTracking",true);
+  
   //BField Systematics
   map_offset_ = parameters.getParameter<std::vector<double>>("map_offset_",{0.,0.,0.});
 }

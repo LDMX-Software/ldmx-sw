@@ -225,6 +225,18 @@ inline Acts::BoundVector boundState(const ldmx::Track& trk) {
   return paramVec;
 }
 
+inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
+  Acts::BoundVector paramVec;
+  paramVec << ts.params[0],
+      ts.params[1],
+      ts.params[2],
+      ts.params[3],
+      ts.params[4],
+      ts.params[5];
+  return paramVec;
+}
+
+
 inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
                                                        std::shared_ptr<Acts::PerigeeSurface> perigee) {
   Acts::BoundVector paramVec  = boundState(trk);
@@ -233,8 +245,20 @@ inline Acts::BoundTrackParameters boundTrackParameters(const ldmx::Track& trk,
 }
 
 
-//Return an unbound surface along the beam axis
-inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location) {
+inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
+                                      std::shared_ptr<Acts::Surface> surf) {
+  
+  Acts::BoundVector paramVec = boundState(ts);
+  Acts::BoundSymMatrix covMat = unpackCov(ts.cov);
+  return Acts::BoundTrackParameters(surf,paramVec,std::move(covMat));
+  
+}
+
+
+//Return an unbound surface 
+inline const std::shared_ptr<Acts::Surface> unboundSurface(double xloc,
+                                                           double yloc = 0.,
+                                                           double zloc = 0.) {
   
   //Define the target surface - be careful:
   // x - downstream
@@ -249,7 +273,7 @@ inline const std::shared_ptr<Acts::Surface> unboundSurface(double surf_location)
   //w direction along +X
   surf_rotation(0,2) = 1;
   
-  Acts::Vector3 pos(surf_location, 0., 0.);
+  Acts::Vector3 pos(xloc, yloc, zloc);
   Acts::Translation3 surf_translation(pos);
   Acts::Transform3 surf_transform(surf_translation * surf_rotation);
   

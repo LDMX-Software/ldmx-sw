@@ -7,6 +7,7 @@
 //----------------------//
 #include <iostream>
 #include <vector>
+#include <optional>
 
 //----------//
 //   ROOT   //
@@ -20,7 +21,6 @@
 
 
 namespace ldmx {
-
 
 
 /// This enum describes the type of TrackState
@@ -38,7 +38,8 @@ enum TrackStateType {
   AtFirstMeasurement    = 2,
   AtLastMeasurement     = 3,
   AtECAL                = 4,
-  Invalid               = 5
+  AtBeamOrigin          = 5,
+  Invalid               = 6
 };
 
 
@@ -64,7 +65,7 @@ class Track {
     std::vector<double> params;
     std::vector<double> cov;
     TrackStateType      ts_type;
-    
+
   };
   
   
@@ -87,9 +88,20 @@ class Track {
   void setNhits(int nhits) {n_hits_ = nhits;}
   int getNhits() const { return n_hits_;}
 
+
+  std::optional<TrackState> getTrackState(TrackStateType tstype) {
+    
+    for (auto ts : trackStates_) 
+      if (ts.ts_type == tstype)
+        return std::optional<TrackState>(ts);
+    
+    return std::nullopt;
+  }
+  
+  
   //void setNholes(int nholes) {n_holes_ = nholes;}
   //int  getNholes() const {return n_holes_;}
-
+  
   void setNoutliers(int nout) {n_outliers_ = nout;}
   int getNoutliers() const {return n_outliers_;}
   
