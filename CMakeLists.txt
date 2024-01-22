@@ -96,6 +96,9 @@ set_target_properties(SimCore
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
 
+# run all *.py files in test during testing
+setup_test(config_dir test)
+
 # add visualization executable
 add_executable(g4-vis ${PROJECT_SOURCE_DIR}/src/SimCore/g4_vis.cxx)
 target_link_libraries(g4-vis PRIVATE Geant4::Interface SimCore::SimCore)
