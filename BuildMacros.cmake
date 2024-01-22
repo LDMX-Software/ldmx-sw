@@ -300,21 +300,24 @@ macro(setup_test)
     file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z]*.cxx)
   endif()
 
-  # Add all test to the global list of test sources
-  set(test_sources
-      ${test_sources} ${src_files}
-      CACHE INTERNAL "test_sources")
-
-  # Add all of the dependencies to the global list of dependencies
-  set(test_dep
-      ${test_dep} ${setup_test_dependencies}
-      CACHE INTERNAL "test_dep")
-
-  # Add the module to the list of tags
   get_filename_component(module ${PROJECT_SOURCE_DIR} NAME)
-  set(test_modules
-      ${test_modules} ${module}
-      CACHE INTERNAL "test_modules")
+
+  if (src_files)
+    # Add all test to the global list of test sources
+    set(test_sources
+        ${test_sources} ${src_files}
+        CACHE INTERNAL "test_sources")
+  
+    # Add all of the dependencies to the global list of dependencies
+    set(test_dep
+        ${test_dep} ${setup_test_dependencies}
+        CACHE INTERNAL "test_dep")
+  
+    # Add the module to the list of tags
+    set(test_modules
+        ${test_modules} ${module}
+        CACHE INTERNAL "test_modules")
+  endif()
 
   if(DEFINED setup_test_configs)
     set(new_test_configs ${setup_test_configs})
@@ -322,9 +325,12 @@ macro(setup_test)
     file(GLOB new_test_configs CONFIGURE ${setup_test_config_dir}/[a-zA-Z]*.py)
   endif()
 
-  set(test_configs
-      ${test_configs} ${new_test_configs}
-      CACHE INTERNAL "test_configs")
+  foreach(new_config ${new_test_configs})
+    set(test_configs
+        ${test_configs} "${module}:${new_config}"
+        CACHE INTERNAL "test_configs"
+        )
+  endforeach()
 
 endmacro()
 
@@ -352,22 +358,30 @@ macro(build_test)
   add_executable(run_test ${test_sources})
   target_link_libraries(run_test PRIVATE Catch2::Catch2WithMain ${test_dep})
 
-  # Install the run_test  executable
   foreach(entry ${test_modules})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test)
+    file(GLOB test_contents ${PROJECT_SOURCE_DIR}/${entry}/test/**)
+    foreach(file ${test_contents})
+      get_filename_component(filename ${file} NAME)
+      file(CREATE_LINK ${file} ${CMAKE_BINARY_DIR}/${entry}/test/${filename} SYMBOLIC)
+    endforeach()
     add_test(
       NAME ${entry} 
       COMMAND run_test "[${entry}]" 
-      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/${entry}
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test
       )
   endforeach()
 
   foreach(config ${test_configs})
-    get_filename_component(c_name ${config} NAME)
-    get_filename_component(c_dir  ${config} DIRECTORY)
+    string(REPLACE ":" ";" config_list ${config})
+    list(GET config_list 0 module)
+    list(GET config_list 1 config_filepath)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${module}/test)
+    get_filename_component(config_name ${config_filepath} NAME)
     add_test(
-        NAME "Run_${config}"
-        COMMAND fire ${c_name}
-        WORKING_DIRECTORY ${c_dir}
+        NAME "Run_${module}_${config_name}"
+        COMMAND fire ${config_filepath}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test
         )
   endforeach()
 endmacro()
