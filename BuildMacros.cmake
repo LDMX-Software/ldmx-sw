@@ -381,7 +381,7 @@ macro(build_test)
     add_test(
         NAME "Run_${module}_${config_name}"
         COMMAND fire ${config_filepath}
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${entry}/test
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${module}/test
         )
   endforeach()
 endmacro()
