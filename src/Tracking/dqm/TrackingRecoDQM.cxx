@@ -13,8 +13,8 @@ void TrackingRecoDQM::configure(framework::config::Parameters &parameters) {
   truthCollection_ = parameters.getParameter<std::string>("truth_collection","TaggerTruthTracks");
   title_           = parameters.getParameter<std::string>("title","tagger_trk_");
   trackProb_cut_   = parameters.getParameter<double>("trackProb_cut",0.5);
-
-
+  subdetector_     = parameters.getParameter<std::string>("subdetector","Tagger");
+  
   pidmap[-321]  = PIDBins::kminus;
   pidmap[321]   = PIDBins::kplus;
   pidmap[-211]  = PIDBins::piminus;
@@ -23,8 +23,6 @@ void TrackingRecoDQM::configure(framework::config::Parameters &parameters) {
   pidmap[-11]   = PIDBins::positron;
   pidmap[2212]  = PIDBins::proton;
   pidmap[-2212] = PIDBins::antiproton;
-
-
   
 }
 
@@ -574,19 +572,19 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
   for (auto sp_hit : *(target_scoring_hits_)) {
     
     if (sp_hit.getMomentum()[2] > 0 ) {
-
+      
       // If tagger check only for scoring planes in thenegative side else check for the positive side
-      if (trackCollection_.find("Tagger") != std::string::npos) {
+      if (subdetector_.find("Tagger") != std::string::npos) {
         if (sp_hit.getPosition()[2] > 0 )
           continue;
       }
-      else if (trackCollection_.find("Recoil") != std::string::npos) {
+      else if (subdetector_.find("Recoil") != std::string::npos) {
         if (sp_hit.getPosition()[2] < 0)
           continue;
       }
       else {
-        std::cout<<"ERROR:: Unkown track collection to match to scoring plane hits"<<std::endl;
-            continue;
+        ldmx_log(error)<<"Unkown subdetector to match the scoring plane hist to tracks";
+        continue;
       }
       
       sel_target_spHits.push_back(sp_hit);

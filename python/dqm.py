@@ -29,7 +29,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
     def __init__(self, name="TrackingRecoDQM"):
         super().__init__(name, 'tracking::dqm::TrackingRecoDQM',
                          'Tracking')
-
+        
         nbins    = 400
         d0min    = -15.
         d0max    =  15.
