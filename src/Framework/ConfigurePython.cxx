@@ -275,6 +275,17 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   // assumes that nargs >= 0
   //  this is true always because we error out if no python script has been
   //  found
+ 
+  // load a handle to the config file into memory (and check that it exists)
+  FILE* config_file{fopen(pythonScript.c_str(), "r")};
+  if (config_file == NULL) {
+    EXCEPTION_RAISE(
+        "ConfigDNE",
+        "Passed config script '"+pythonScript+"' is not accessible.\n"
+        "    Did you make a typo in the path to the script?\n"
+        "    Are you referencing a directory that is not mounted to the container?"
+        );
+  }
 
   std::string cmd = pythonScript;
   if (pythonScript.rfind("/") != std::string::npos) {
@@ -302,8 +313,6 @@ ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],
   // the name of the python script
   PySys_SetArgvEx(nargs + 1, targs, 1);
 
-  // load a handle to the config file into memory
-  FILE* config_file{fopen(pythonScript.c_str(), "r")};
   // run the file as a python script
   if (PyRun_AnyFile(config_file, pythonScript.c_str()) != 0) {
     PyErr_Print();
