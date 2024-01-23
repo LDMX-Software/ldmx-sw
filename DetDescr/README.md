@@ -65,9 +65,9 @@ def to_layer(rawid):
 # id is a np.array of raw ID numbers e.g. read in from the EcalSimHits_test.id_ branch of LDMX_Events
 layer = to_layer(id)
 ```
-This isn't very performant on larger arrays; however, it does allow the user to use some internal
-optimizations that NumPy has and avoid a raw python `for` loop. We could look at incorporating
-numpy into our Python bindings
+This isn't very performant on larger arrays; however, it does allow the user to avoid a raw python `for` loop.
+Effectively, we are using a [non-ufunc extension](https://numpy.org/doc/stable/user/c-info.ufunc-tutorial.html#example-non-ufunc-extension).
+We could look at incorporating numpy into our Python bindings
 (via [Boost.Python NumPy](https://live.boost.org/doc/libs/1_65_1/libs/python/doc/html/numpy/index.html))
 to make this as performant as possible.
 
