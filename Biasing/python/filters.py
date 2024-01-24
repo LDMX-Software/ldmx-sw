@@ -182,3 +182,13 @@ class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
         include.library()
 
         self.threshold = thresh
+
+class EndZFilter(simcfg.UserAction) :
+    def __init__(self,end_z=250.) :
+        super().__init__("end_z_filter", "biasing::EndZFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.end_z = end_z
+
