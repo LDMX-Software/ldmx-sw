@@ -47,7 +47,7 @@ class TriggerProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the trigger algorithm and create a TriggerResult
@@ -56,7 +56,7 @@ class TriggerProcessor : public framework::Producer {
    * etc.
    * param event The event to run trigger algorithm on.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   /// The energy sum to make cut on.

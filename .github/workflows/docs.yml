@@ -48,7 +48,7 @@ jobs:
 
     # sphinx is a python package, so we need to setup python on this runner
     - name: Setup Python for Sphinx
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.11
     
@@ -71,7 +71,7 @@ jobs:
     # Copy the generated documentation to github as a pages artifact
     #   This copies all the html files in the docs/html directory
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: ./docs/html
 
@@ -85,4 +85,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
