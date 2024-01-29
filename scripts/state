@@ -1,0 +1,41 @@
+#!/bin/sh
+# scripts/state
+#   display the state of ldmx-sw
+#
+# REQUIREMENTS
+# - awk availabe
+# - git has the '-C' flag (>= 1.8.5)
+# - all the submodules have their remotes named 'origin'
+
+set -o errexit
+set -o nounset
+
+git submodule foreach --recursive git fetch --tags
+git submodule status --recursive | awk '{
+# git submodule status returns lines of the form
+#  <commit> <submodule> (<version>)
+# where <version> is either the tag, branch name, or something else
+# $1 - commit
+# $2 - submodule
+# $3 - version
+# strip the parentheses from the version string
+gsub(/\(|\)/,"",$3);
+# retrieve the URL to the repo
+#  assumes the remote is named "origin" in all the submodules
+git_repo_url="git -C "$2" remote get-url origin";
+git_repo_url | getline repo_url;
+close(git_repo_url);
+# change any SSH remote links back to https
+gsub(/.git$/,"",repo_url);
+gsub(/^git@/,"https://",repo_url);
+gsub(/com:/,"com/",repo_url);
+# if the version matches a version string, link to a release page,
+# otherwise just link to the commit page
+# this is where we use the fact that GitHub links are formulaic
+# across repositories
+if ($3 ~ /^v[0-9]*\.[0-9]*\.[0-9]*$/)
+  printf "- [%s %s](%s/releases/tag/%s)\n", $2, $3, repo_url, $3
+else
+  printf "- [%s %s](%s/commit/%s)\n", $2, substr($1,1,8), repo_url, $1
+}'
+
