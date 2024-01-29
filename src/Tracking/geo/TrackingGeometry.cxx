@@ -276,11 +276,11 @@ void TrackingGeometry::makeLayerSurfacesMap() {
   getSurfaces(surfaces);
 
   for (auto& surface : surfaces) {
-
+    
     // Layers from 1 to 14 - for the tagger
     // unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1
     // sensor per layer
-
+    
     unsigned int volumeId = surface->geometryId().volume();
     unsigned int layerId = (surface->geometryId().layer() /
                             2);  // set layer ID  from 1 to 7 for the tagger and
@@ -292,11 +292,10 @@ void TrackingGeometry::makeLayerSurfacesMap() {
 
     if (debug_)
       std::cout<<"VolumeID "<<volumeId<<" LayerId "<<layerId<<" sensorId "<<sensorId<<std::endl; 
-
-    // surface ID = vol * 1000 + ly * 100 + sensor
     
+    // surface ID = vol * 1000 + ly * 100 + sensor
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
-
+    
     layer_surface_map_[surfaceId] = surface;
     
   }  // surfaces loop
