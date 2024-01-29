@@ -36,7 +36,12 @@ sim.generators = [
         '/gps/pos/type Point', # beamSpotSmear will smear for us
         '/gps/pos/centre 0 0 0 mm', # shoot from center of target
         # angular distribution, isotropic with maximum polar angle relative to z-axis
-        '/gps/ang/type iso', # isotropic angular distribution
+        '/gps/direction 0 0 1',
+        # the default direction is negative z (like cosmics coming down from the sky)
+        # so we need to rotate the frame of the angular distribution to be pointed along positive z
+        '/gps/ang/rot1 1 0 0',
+        '/gps/ang/rot2 0 -1 0',
+        '/gps/ang/type cos', # isotropic angular distribution
         '/gps/ang/mintheta 0 deg', # minimum polar angle
         f'/gps/ang/maxtheta {args.angle} deg', # maximum polar angle
         '/gps/ang/minphi 0 deg', # minimum azimuthal angle
