@@ -28,6 +28,8 @@ class DetectorElement : public Acts::DetectorElementBase {
                   double thickness) {
     m_surface   = surface;
     m_thickness = thickness;
+
+    //This is the local to global transformation
     m_transform = default_transform;
   }
   
@@ -40,6 +42,12 @@ class DetectorElement : public Acts::DetectorElementBase {
   // This method will load the transformation from the geometry context if found
   // otherwise will return the default transform
 
+  // CAUTION:: The tracking geometry + geometry context machinery
+  // assumes large enough envelopes / gaps between sensors
+  // to allow for not breaking the layers overlaps.
+  // In case the corrections to the stored transformations will be too large this
+  // assumption will be broken. 
+  
   // TODO Current implementation implies always checking the stored map of corrections
   // Could be interesting to cache the transformations and re-update all of them when IoV changes
   
@@ -47,31 +55,41 @@ class DetectorElement : public Acts::DetectorElementBase {
     
     if (!m_surface)
       throw std::logic_error("DetectorElement:: Sensor/Element ID not set");
-
-
+    
+    // The elementId will be valid only after tracking geometry is built
+    // I will use this fact to return the default transform in order to build always
+    // the same default tracking geometry and modify later the sensor transformations.
+    
     unsigned int elementId = unpackGeometryIdentifier(m_surface->geometryId());
     
-    std::cout<<"casting to GeometryContext* for sensor "<< elementId<<std::endl;
+    // Check if the elementId is valid
+    if (elementId > 9999 ) {
+      // elementId not valid: return default transformation
+      return m_transform;
+    }
     
     auto ctx = gctx.get<GeometryContext*>();
     
     if ((ctx->alignment_map).count(elementId) > 0) {
       
-      std::cout<<"Retrieving corrections for "<<elementId<<std::endl;
-      
       Acts::Transform3 correction = ctx->alignment_map.at(elementId);
-      std::cout<<"Successfully obtained corrections for "<<elementId<<std::endl;
+
+      // qaligned = dR*R(t0 + dt0)
+      Acts::Transform3 c_transform(m_transform);
+      c_transform.rotate(correction.rotation());
+      c_transform.translate(correction.translation());
       
-      std::cout<<"Local translation correction"<<std::endl;
-      std::cout<<correction.translation()<<std::endl;
-      std::cout<<"Local rotation correction"<<std::endl;
-      std::cout<<correction.rotation()<<std::endl;
+      //std::cout<<"Aligned transform"<<std::endl;
+      //std::cout<<c_transform.translation()<<std::endl;
+      //std::cout<<c_transform.rotation()<<std::endl;
+      //std::cout<<"Original transform"<<std::endl;
+      //std::cout<<m_transform.translation()<<std::endl;
+      //std::cout<<m_transform.rotation()<<std::endl;
       
-      return m_transform;
+      return c_transform;
     }
     else
       return m_transform;
-    
   }
   
   const Acts::Surface& surface() const override {

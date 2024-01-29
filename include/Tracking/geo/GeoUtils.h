@@ -6,27 +6,26 @@
 
 namespace tracking::geo {
 
+/**
+ * The geometry identifier will return vol=0 and lay=0 when it is not valid.
+ * The geometry identifier is only valid after building the tracking geometry.
+ */
+
 inline unsigned int unpackGeometryIdentifier(const Acts::GeometryIdentifier& geoId) {
   
   unsigned int volumeId = geoId.volume();
   unsigned int layerId  = geoId.layer() / 2;
   unsigned int sensorId = geoId.sensitive() - 1;
-
-  std::cout<<"VolumeID "<<volumeId<<std::endl;
-  std::cout<<"layerID "<<layerId<<std::endl;
-  std::cout<<"sensorID "<<sensorId<<std::endl;
-  
   unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
   
   return surfaceId;
 }
 
-
+// I use the same ATLAS convention (opposite to MPII)
 //deltaR = (ru, rv, rw)
-
-//         /  1    -rw   rv  \
-//deltaR = |  rw    1   -ru  |
-//         \ -rv    ru   1   /
+//          /  1    -rw   rv  \
+//deltaR => |  rw    1   -ru  |
+//          \ -rv    ru   1   /
 
 inline Acts::RotationMatrix3 deltaRot(Acts::Vector3 deltaR) {
 
