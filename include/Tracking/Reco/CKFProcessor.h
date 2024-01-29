@@ -158,9 +158,6 @@ class CKFProcessor final : public TrackingGeometryUser {
   void propagateENstates(framework::Event &event,std::string inputFile, std::string outFile);
 
   
-  //Forms the layer to acts map
-  auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
-
   //Make geoid -> source link map Measurements
   auto makeGeoIdSourceLinkMap(
       const geo::TrackersTrackingGeometry& tg,
@@ -278,10 +275,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   //Outname of the propagator test
   std::string steps_outfile_path_{""};
 
-  //This could be a vector
-  //The mapping between layers and Acts::Surface
-  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
-  
+    
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};

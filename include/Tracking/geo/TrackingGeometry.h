@@ -34,6 +34,8 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
 
+#include "Tracking/geo/DetectorElement.h"
+
 namespace tracking::geo {
 
 /**
@@ -93,6 +95,9 @@ class TrackingGeometry : public framework::ConditionsObject {
   
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
+  // Global vector holding all the alignable detector elements of the tracking geometry.
+  std::vector<std::shared_ptr<DetectorElement>> detElements;
+    
  protected:
   const Acts::GeometryContext& gctx_;
   std::string gdml_{""};
