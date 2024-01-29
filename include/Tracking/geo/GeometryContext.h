@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Acts/Geometry/TrackingGeometry.hpp>
-
+#include "Acts/Definitions/Algebra.hpp"
+#include "Tracking/geo/GeoUtils.h"
 #include "Framework/ConditionsObject.h"
 
 namespace tracking::geo {
@@ -12,14 +13,6 @@ class GeometryContextProvider;
 /**
  * The context for a specific geometry
  *
- * This connects the Acts::GeometryContext object to
- * our conditions system so that it can be loaded from
- * it. The GeometryContext is what holds things like
- * alignment constants within ACTS. Currently, we don't
- * have any alignment constants so this just holds a
- * default-constructed object for the entire run
- * without doing anything else.
- *
  * The context is both the object used as a condition
  * and the provider of that condition. We could separate
  * the two if a new context needs to be constructed when
@@ -28,10 +21,49 @@ class GeometryContextProvider;
  */
 class GeometryContext : public framework::ConditionsObject {
  public:
+
+
+  /** TODO it should be private == KEEPING IT PUBLIC FOR TESTING PURPOSE*/
+  /**
+   * This constructor is where parameters would be passed into the
+   * Geometry context from the provider. Right now, there aren't
+   * any parameters to pass and so it is just default constructed.
+   * We still have it be private so that only the provider can
+   * make a new one.
+   */
+  
+
+  GeometryContext();
+
+  //Some testing functionality
+  
+  //deltaT = (tu, tv, tw)
+  //deltaR = (ru, rv, rw)
+  
+  //         /  1    -rw   rv  \
+  //deltaR = |  rw    1   -ru  |
+  //         \ -rv    ru   1   /
+  
+  void addAlignCorrection(unsigned int sensorId,
+                          const Acts::Vector3 deltaT,
+                          const Acts::Vector3 deltaR) {
+    
+    Acts::Translation3 deltaTranslation{deltaT};
+    Acts::RotationMatrix3 rot = deltaRot(deltaR);
+    
+    Acts::Transform3 correction(deltaTranslation * rot);
+    
+    alignment_map[sensorId] = correction;
+  }
+  
+  std::unordered_map<unsigned int, Acts::Transform3> alignment_map;
+  
+  
   /// Conditions object name
   static const std::string NAME;
   /**
-   * get a reference to the actual geometry context ACTS object
+   * get an Acts::GeometryContext wrapping the pointer to the instance
+   * of this GeometryContext
    *
    * @note For future developers, the conditions object should handle
    * the validity of the geometry context. In other words, if someone
@@ -42,25 +74,13 @@ class GeometryContext : public framework::ConditionsObject {
  private:
   /// the provider is a friend and so it can make one
   friend class GeometryContextProvider;
-  /**
-   * This constructor is where parameters would be passed into the
-   * Geometry context from the provider. Right now, there aren't
-   * any parameters to pass and so it is just default constructed.
-   * We still have it be private so that only the provider can
-   * make a new one.
-   */
-  GeometryContext();
 
   /**
-   * the actual geometry context we are wrapping
-   *
-   * For now, this is just a regular object but if we want to actually
-   * modify the geometry context by re-constructing it in the future,
-   * it may need to evolve into some smart pointer so that it can be
-   * reconstructed at need OR we separate the conditions object which
-   * would be recreated whenever this object needs to be recreated.
+   * Wrap this instance in an Acts::GeometryContext any object for passing
+   * it down to the various acts tools
    */
-  Acts::GeometryContext geometry_context_;
+  Acts::GeometryContext acts_gc_;
+
 };
 
 }

@@ -1,5 +1,6 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
+#include "Tracking/geo/GeoUtils.h"
 
 #include "G4RunManager.hh"
 #include "G4strstreambuf.hh"
@@ -293,11 +294,11 @@ void TrackingGeometry::makeLayerSurfacesMap() {
       std::cout<<"VolumeID "<<volumeId<<" LayerId "<<layerId<<" sensorId "<<sensorId<<std::endl; 
 
     // surface ID = vol * 1000 + ly * 100 + sensor
-
+    
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
 
     layer_surface_map_[surfaceId] = surface;
-
+    
   }  // surfaces loop
 
   if (debug_) {

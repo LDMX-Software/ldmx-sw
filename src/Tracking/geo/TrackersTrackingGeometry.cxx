@@ -1,4 +1,5 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
+#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 
@@ -448,7 +449,7 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
 }  // build the layout
 
 std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
-    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) const {
+    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) {
   if (!pvol)
     throw std::runtime_error(
         "TrackersTrackingGeometry::GetSurface:: pvol is nullptr");
@@ -534,6 +535,24 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
   surface->assignSurfaceMaterial(
       std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab));
 
+
+  // Create an alignable detector element and assign it to the surface.
+  // The default transformation is the surface parsed transformation
+    
+  auto detElement = std::make_shared<DetectorElement>(surface,
+                                                      surface_transform_tracker,
+                                                      thickness);
+  
+  // Assign the detectorElement ID
+  detElement->assignElementId(unpackGeometryIdentifier(surface->geometryId()));
+    
+  // This is the call that modify the behaviour of surface->transform(gctx)
+  // After this call each surface will use the underlying detectorElement transformation
+  // which will take care of effectively reading the gctx
+  
+  surface->assignDetectorElement(std::move(*detElement)); 
+  detElements.push_back(detElement);
+    
   return surface;
 }
 

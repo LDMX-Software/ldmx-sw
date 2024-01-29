@@ -1,5 +1,4 @@
-#ifndef TRACKING_RECO_SEEDFINDERPROCESSOR_H_
-#define TRACKING_RECO_SEEDFINDERPROCESSOR_H_
+#pragma once
 
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
@@ -160,4 +159,4 @@ class SeedFinderProcessor : public TrackingGeometryUser {
 }  // namespace reco
 }  // namespace tracking
 
-#endif  // TRACKING_SIM_SEEDFINDERPROCESSOR_H_
+
