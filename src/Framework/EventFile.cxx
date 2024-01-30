@@ -320,6 +320,17 @@ void EventFile::writeRunTree() {
                         fileName_ + "'.");
   }
 
+  /**
+   * ROOT requires us to be in the correct directory when we create
+   * the output TTree for us to have it written into the correct
+   * location.
+   *
+   * In order to allow downstream processors to getHistoDirectory()
+   * and enter that directory for this histograms we need to enter
+   * the output event file again here so that our run tree ends up
+   * in the correct location.
+   */
+  file_->cd();
   runTree = new TTree("LDMX_Run", "LDMX run header");
 
   // create the branch on this tree
