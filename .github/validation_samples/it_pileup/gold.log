@@ -1,6 +1,6 @@
 ---- LDMXSW: Loading configuration --------
-[2024-01-23 21:22:59.351870] [0x00007f13bdcf1bc0] [info]    Running configure() 
-[2024-01-23 21:23:03.479092] [0x00007f13bdcf1bc0] [info]    ElectronCounter is using parameters:  
+[2024-01-30 21:07:14.585799] [0x00007f4783857bc0] [info]    Running configure() 
+[2024-01-30 21:07:18.701773] [0x00007f4783857bc0] [info]    ElectronCounter is using parameters:  
 	input_collection = TriggerPadTracksY 
 	input_pass_name =  
 	output_collection = BeamElectronCount 
