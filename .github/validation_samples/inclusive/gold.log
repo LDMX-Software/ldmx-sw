@@ -1,5 +1,5 @@
 ---- LDMXSW: Loading configuration --------
-[2024-01-23 20:13:37.003775] [0x00007f703373ebc0] [info]    ElectronCounter is using parameters:  
+[2024-01-30 19:56:36.044227] [0x00007f6d6e8edbc0] [info]    ElectronCounter is using parameters:  
 	input_collection = TriggerPadTracksY 
 	input_pass_name =  
 	output_collection = BeamElectronCount 
@@ -11,10 +11,10 @@ In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
 In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
-[2024-01-23 20:13:37.007721] [0x00007f703373ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
-[2024-01-23 20:13:37.007728] [0x00007f703373ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
-[2024-01-23 20:13:37.007737] [0x00007f703373ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
-[2024-01-23 20:13:37.007745] [0x00007f703373ebc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+[2024-01-30 19:56:36.047184] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2024-01-30 19:56:36.047194] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2024-01-30 19:56:36.047201] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2024-01-30 19:56:36.047208] [0x00007f6d6e8edbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
