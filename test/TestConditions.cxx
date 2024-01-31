@@ -60,7 +60,7 @@ using Catch::Matchers::ContainsSubstring;
  *  - Correct creation, filling, and access to various implementations of
  * conditions tables
  */
-TEST_CASE("Conditions", "[Framework][Conditions]") {
+TEST_CASE("Conditions", "[Conditions]") {
   // create a simple table
 
   std::vector<std::string> columns({"A", "Q", "V"});
@@ -323,7 +323,7 @@ TEST_CASE("Conditions", "[Framework][Conditions]") {
  * What does this test?
  *  - CSVLoader
  */
-TEST_CASE("CSVLoader", "[Framework][Conditions][CSVLoader]") {
+TEST_CASE("CSVLoader", "[Conditions][CSVLoader]") {
 
   std::string testA("A,B,C\n1,2,3\n5,\"6\",7\n");
   
