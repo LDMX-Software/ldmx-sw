@@ -241,7 +241,7 @@ TEST_CASE("Conditions", "[Conditions]") {
         "p.testMode=True\n"
         "columns=[\"A\",\"Q\",\"V\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_http\",columns)\n"
-        "cop.validForever(\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\")\n";
+        "cop.validForever(\"http://www-users.cse.umn.edu/~jmmans/test_table.csv\")\n";
     
     FILE* f=fopen("/tmp/test_cond.py","w");
     fputs(cfg,f);
@@ -266,7 +266,7 @@ TEST_CASE("Conditions", "[Conditions]") {
         "p.testMode=True\n"
         "columns=[\"PEDESTAL_ADC\"]\n"
         "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_pedestals\",columns)\n"
-        "cop.conditions_baseURL='http://webusers.physics.umn.edu/~jmmans/ldmx/condtest/'\n"
+        "cop.conditions_baseURL='http://www-users.cse.umn.edu/~jmmans/ldmx/condtest/'\n"
         "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
     
     FILE* f=fopen("/tmp/test_cond.py","w");
