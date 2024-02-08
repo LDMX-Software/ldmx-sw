@@ -23,7 +23,7 @@
 - Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
   - **Note**: You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
-  - **Note**: If you are working with ldmx-sw at SLAC's SDF, you will need to set the `TMPDIR` environment variable so that program running the container has more than ~5GB of space to write intermediate files. The default temporary space (`/tmp`) is often full of other files already. A decent replacement is `TMPDIR=/scratch/$USER` which gives the program plenty of room for the files it needs to manipulate.
+  - **Note**: If you are working with ldmx-sw at SLAC's SDF, you will need to set the `TMPDIR` environment variable so that program running the container has more than ~5GB of space to write intermediate files. The default temporary space (`/tmp`) is often full of other files already. A decent replacement is `TMPDIR=${SCRATCH}` which gives the program plenty of room for the files it needs to manipulate.
 - Make a build directory: `cd ldmx-sw; mkdir build; cd build;`
 - Configure the build: `ldmx cmake ..`
 - Build and Install: `ldmx make install -j2`
