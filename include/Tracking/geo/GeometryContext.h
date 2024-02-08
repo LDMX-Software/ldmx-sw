@@ -7,6 +7,8 @@
 
 namespace tracking::geo {
 
+using tgSurfMap = std::unordered_map<unsigned int, const Acts::Surface*>;
+
 /// class name of provider
 class GeometryContextProvider;
 
@@ -35,29 +37,24 @@ class GeometryContext : public framework::ConditionsObject {
 
   GeometryContext();
 
-  //Some testing functionality
-  
-  //deltaT = (tu, tv, tw)
-  //deltaR = (ru, rv, rw)
-  
-  //         /  1    -rw   rv  \
-  //deltaR = |  rw    1   -ru  |
-  //         \ -rv    ru   1   /
-  
+  void loadTransformations(const tgSurfMap& surf_map);
+
+
+  /**
+   *
+   * Fill an internal map holding the alignment transformations
+   * 
+   */
   void addAlignCorrection(unsigned int sensorId,
                           const Acts::Vector3 deltaT,
-                          const Acts::Vector3 deltaR) {
-    
-    Acts::Translation3 deltaTranslation{deltaT};
-    Acts::RotationMatrix3 rot = deltaRot(deltaR);
-    
-    Acts::Transform3 correction(deltaTranslation * rot);
-    
-    alignment_map[sensorId] = correction;
-  }
+                          const Acts::Vector3 deltaR);
   
+
+  // This holds all the transformations of the Tracking Geometry and 
+  // the alignment corrections already applied
+
   std::unordered_map<unsigned int, Acts::Transform3> alignment_map;
-  
+
   
   /// Conditions object name
   static const std::string NAME;
