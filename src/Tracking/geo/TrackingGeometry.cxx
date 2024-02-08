@@ -28,7 +28,7 @@ TrackingGeometry::TrackingGeometry(
     const std::string& gdml,
     bool debug)
     : framework::ConditionsObject(name),
-    gctx_{gctx}, gdml_{gdml}, debug_{debug} {
+      gctx_{gctx}, gdml_{gdml}, debug_{debug} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
   double rotationAngle = M_PI * 0.5;
@@ -145,9 +145,26 @@ void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 
 //}
 
-void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
+void TrackingGeometry::dumpGeometry(const std::string& outputDir,
+                                    const Acts::GeometryContext& gctx) const  {
+  
   if (!tGeometry_) return;
 
+  
+  if (debug_) {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
+    for (auto const& surfaceId : layer_surface_map_) {
+      std::cout << " " << surfaceId.first << std::endl;
+      std::cout << " Check the surface" << std::endl;
+      surfaceId.second->toStream(gctx, std::cout);
+      std::cout << " GeometryID::" << surfaceId.second->geometryId()
+                << std::endl;
+      std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
+                << std::endl;
+    }
+  }
+  
   // Should fail if already exists
   boost::filesystem::create_directory(outputDir);
 
@@ -162,7 +179,7 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
   Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
 
   Acts::GeometryView3D::drawTrackingVolume(
-      objVis, *(tGeometry_->highestTrackingVolume()), gctx_, containerView,
+      objVis, *(tGeometry_->highestTrackingVolume()), gctx, containerView,
       volumeView, passiveView, sensitiveView, gridView, true, "", ".");
 }
 
@@ -298,21 +315,7 @@ void TrackingGeometry::makeLayerSurfacesMap() {
     
     layer_surface_map_[surfaceId] = surface;
     
-  }  // surfaces loop
-
-  if (debug_) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-
-    for (auto const& surfaceId : layer_surface_map_) {
-      std::cout << " " << surfaceId.first << std::endl;
-      std::cout << " Check the surface" << std::endl;
-      surfaceId.second->toStream(gctx_, std::cout);
-      std::cout << " GeometryID::" << surfaceId.second->geometryId()
-                << std::endl;
-      std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
-                << std::endl;
-    }
-  }
+  }  // surfaces loop 
 }
 
 }  // namespace tracking::geo

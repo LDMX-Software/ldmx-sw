@@ -6,6 +6,7 @@
 #include "Acts/Geometry/GeometryContext.hpp"
 #include "Tracking/geo/GeometryContext.h"
 #include "Tracking/geo/GeoUtils.h"
+#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include <stdexcept> // Include for std::logic_error
 #include <iostream>
 
@@ -31,16 +32,19 @@ class DetectorElement : public Acts::DetectorElementBase {
 
     //This is the local to global transformation
     m_transform = default_transform;
+    
   }
   
-  // This method will always return the uncorrected transformation
+  // This method will always return a copy to the uncorrected transformation
   
-  const Acts::Transform3& uncorrectedTransform(const Acts::GeometryContext& gctx) const {
+  Acts::Transform3 uncorrectedTransform() const {
     return m_transform;
   }
   
   // This method will load the transformation from the geometry context if found
   // otherwise will return the default transform
+  // This is very *hot* code, do not place computations in this function in order to keep performance under
+  // control.
 
   // CAUTION:: The tracking geometry + geometry context machinery
   // assumes large enough envelopes / gaps between sensors
@@ -51,46 +55,7 @@ class DetectorElement : public Acts::DetectorElementBase {
   // TODO Current implementation implies always checking the stored map of corrections
   // Could be interesting to cache the transformations and re-update all of them when IoV changes
   
-  const Acts::Transform3& transform(const Acts::GeometryContext& gctx) const override {
-    
-    if (!m_surface)
-      throw std::logic_error("DetectorElement:: Sensor/Element ID not set");
-    
-    // The elementId will be valid only after tracking geometry is built
-    // I will use this fact to return the default transform in order to build always
-    // the same default tracking geometry and modify later the sensor transformations.
-    
-    unsigned int elementId = unpackGeometryIdentifier(m_surface->geometryId());
-    
-    // Check if the elementId is valid
-    if (elementId > 9999 ) {
-      // elementId not valid: return default transformation
-      return m_transform;
-    }
-    
-    auto ctx = gctx.get<GeometryContext*>();
-    
-    if ((ctx->alignment_map).count(elementId) > 0) {
-      
-      Acts::Transform3 correction = ctx->alignment_map.at(elementId);
-
-      // qaligned = dR*R(t0 + dt0)
-      Acts::Transform3 c_transform(m_transform);
-      c_transform.rotate(correction.rotation());
-      c_transform.translate(correction.translation());
-      
-      //std::cout<<"Aligned transform"<<std::endl;
-      //std::cout<<c_transform.translation()<<std::endl;
-      //std::cout<<c_transform.rotation()<<std::endl;
-      //std::cout<<"Original transform"<<std::endl;
-      //std::cout<<m_transform.translation()<<std::endl;
-      //std::cout<<m_transform.rotation()<<std::endl;
-      
-      return c_transform;
-    }
-    else
-      return m_transform;
-  }
+  const Acts::Transform3& transform(const Acts::GeometryContext& gctx) const override;
   
   const Acts::Surface& surface() const override {
     if (!m_surface)
@@ -106,7 +71,9 @@ class DetectorElement : public Acts::DetectorElementBase {
   // The thickness of the detector element is taken from the center of the associated surface
   double thickness() const override {
     //return m_thickness;
-    return m_surface->surfaceMaterial()->materialSlab(Acts::Vector2{0.,0.}).thickness();
+    auto material = static_cast<const Acts::HomogeneousSurfaceMaterial*>(m_surface->surfaceMaterial());
+    return material->materialSlab(Acts::Vector2{0.,0.}).thickness();
+    
   };
   
   
@@ -119,10 +86,13 @@ class DetectorElement : public Acts::DetectorElementBase {
   }
   
  private:
-  
+
+  //cache
   Acts::Transform3 m_transform = Acts::Transform3::Identity();
+  
   std::shared_ptr<Acts::Surface> m_surface;
   double m_thickness;
+  bool m_debug{true};
 };
 
 } //namespace

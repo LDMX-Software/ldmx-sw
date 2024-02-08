@@ -73,7 +73,8 @@ class TrackingGeometry : public framework::ConditionsObject {
   void ConvertG4Rot(const G4RotationMatrix* g4rot, Acts::RotationMatrix3& rot) const;
   Acts::Vector3 ConvertG4Pos(const G4ThreeVector& g4pos) const;
   
-  void dumpGeometry(const std::string& outputDir) const;
+  void dumpGeometry(const std::string& outputDir,
+                    const Acts::GeometryContext& gctx) const;
   
   std::shared_ptr<const Acts::TrackingGeometry> getTG() const {return tGeometry_;};
 
@@ -91,15 +92,18 @@ class TrackingGeometry : public framework::ConditionsObject {
   const Acts::Surface* getSurface(int layerid) const {
     return layer_surface_map_.at(layerid);
   }
-  
-  
+    
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
   // Global vector holding all the alignable detector elements of the tracking geometry.
   std::vector<std::shared_ptr<DetectorElement>> detElements;
     
  protected:
+  
+  // This is not actually used anywhere
+  // TODO:: Remove this.
   const Acts::GeometryContext& gctx_;
+  
   std::string gdml_{""};
   bool debug_{false};
   //The rotation matrices to go from global to tracking frame.
