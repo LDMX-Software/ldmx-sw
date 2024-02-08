@@ -7,6 +7,7 @@ import sys
 
 inputPassName="conv"
 nEv=400000
+#p.maxEvents = nEv
 
 if len(sys.argv) > 2 :
     timeSample=int(sys.argv[2])
@@ -36,7 +37,7 @@ if exists(gainFileName) :
     with open(gainFileName) as f:
         for line in f.readlines() :
             line=line.split(',')  #values are comma separated, one channel per line: channelNB, gain
-            gainList[ int(line[0].strip()) ] = float(line[1].strip())
+            gainList[ int(line[0].strip()) ] = float(line[1].strip()) #don't assume ordered
 
 print("Using this list of gains:")
 print(gainList)
@@ -45,12 +46,12 @@ pedList=[
             -4.6,  #0.6,
             -2.6, #4.4,
             -0.6, #-1.25,
-            4.4,  #3.9, 	 # #3
+            4.4,  #3.9,    # #3
             1.9,  #10000., # #4: (used to be) dead channel during test beam
             -2.3, #-2.1,   # #5 
             1.0,  #2.9,    # #6
             -1.2, #-2,     # #7
-            4.9,  #-0.4,   # #8
+            4.9,  #-0.4,   # #8  dead channel in spring 2022 testbeam at CERN, most of the runs 
             -4.4, #-1.1,   # #9: dead channel in TTU teststand setup
             -0.1, #1.5,    # #10
             -1.7, #2.0,    # #11
@@ -79,12 +80,12 @@ print(pedList)
 
 tbHitsUp  =TestBeamHitProducer("tbHits")
 tbHitsUp.input_pass_name=inputPassName
-tbHitsUp.input_collection="QIEsamplesUp"
+tbHitsUp.input_collection="QIEsamplesPad1" #"QIEsamplesUp"
 tbHitsUp.pedestals=pedList
 tbHitsUp.gain=gainList 
 tbHitsUp.startSample=timeSample
 tbHitsUp.pulseWidth=7 #5 
-tbHitsUp.pulseWidthLYSO=9 #7 
+tbHitsUp.pulseWidthLYSO=7 #9 #7 for plastic, 9 for LYSO 
 tbHitsUp.doCleanHits=True
 tbHitsUp.nInstrumentedChannels=12
 p.sequence = [
@@ -95,6 +96,5 @@ p.sequence = [
 #generate on the fly
 p.inputFiles = [sys.argv[1]]
 p.outputFiles = [ sys.argv[1].replace(".root", "_hits.root") ]
-p.maxEvents = nEv
 
 p.termLogLevel = 2
