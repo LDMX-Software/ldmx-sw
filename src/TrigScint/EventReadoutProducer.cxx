@@ -200,8 +200,10 @@ void EventReadoutProducer::produce(framework::Event &event) {
 		 nHigh++;
 	}
 	  
-	
-	uint flagSpike = (maxQ/outEvent.getTotQ() > 0.9 ) || (charge[charge.size()-2]/maxQ < 0.25) ; // skip "unnaturally" narrow hits (all charge in one sample or huge drop to second highest)
+	/* used to be: >0.9, > 0.25. But this really killed MC pulses which
+	   all end up in 0.90-0.94, and somewhere >0.05 (at least >0.15)
+	*/
+	uint flagSpike = (maxQ/outEvent.getTotQ() > 0.95 ) || (charge[charge.size()-2]/maxQ < 0.05) ; // skip "unnaturally" narrow hits (all charge in one sample or huge drop to second highest)
 	uint flagPlateau = ( ped>15 || nHigh >= 5); //( fabs(ped) > 15 ); //threshold //   //skip events that have strange plateaus   
 	uint flagLongPulse = 0; //easier to deal with in hit reconstruction directly. copy channel flags to hit flags and add this one there
 	uint flagNoise= (outEvent.getNoise() > 3.5 || outEvent.getNoise()==0);  // =0 is typically from funky events but could be too harsh maybe 

@@ -50,7 +50,7 @@ Double_t fitFunction(Double_t *x, Double_t *par) {
   return gaussianPeak(x,par) + background(x,&par[3]);
 }
 
-void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassName = "conv", int nSamples = 30, int verbosity=2, bool isSim=false, bool doClean=false)
+void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassName = "conv", int nSamples = 30, int verbosity=2, bool isSim=false, bool doClean=false, string digiName="QIEsamplesUp")
 {
   // macro extracting the per-channel gain and pedestal based on total Q histograms, and single PE peak fitting
 
@@ -61,7 +61,7 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   fIn->ls();
   int exampleEvNb = 1;
 
-  string digiName="QIEsamplesUp";
+
   int nChannels = 12;
   
   vector<string> vars = {"avgQ"}; // this variable is totQ/nSamp
@@ -133,9 +133,11 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
 	std::cout<< "----> Fitting gain for channel " << iH << std::endl;
 	//	TGraphErrors * g= findAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim); 
 	TGraphErrors * g= isolateAndFitPeaks( v_hOut.at(iH), fitRangeWidth, verbosePrint, isSim, nSamples); 
-	if (!g) { //null pointer reutrned --> didn't get enough peaks to fit; skip this channel
+	if (!g) { //null pointer returned --> didn't get enough peaks to fit; skip this channel
 	  std::cout<< "----> No gain curve for channel " << iH << std::endl;
 	  skippedGraphs.push_back(iH);
+	  std::cout << "Storing skip index " << iH <<	" at position " << skippedGraphs.size()-1 << std::endl;
+
 	  continue;
 	}
 	nChanToWrite++;
@@ -170,14 +172,14 @@ void extractPedsAndGains(string inFile, int deadChannel=-1, string decodePassNam
   fOut->cd();
   fOut->ls();
   std::cout << "Got " << v_hOut.size() << " histograms" << std::endl;
-  //  int nChanToWrite = deadChannel > -1 ? nChannels - 1 : nChannels; //adjust for if we have a dead channel in this run
+
   for (unsigned int iH = 0;  iH < v_hOut.size(); iH++) {
 	v_hOut[iH]->Write();
 	if (iH < nChanToWrite) 
 	  v_g[iH]->Write();
   }
-  int startN=gGains->GetN()-1;
-  for (uint iP=startN; iP>startN-skippedGraphs.size(); iP--) { // if (deadChannel > -1 ) { //if there in fact is one (TODO: allow for list?)
+  for (int iP=(int)skippedGraphs.size()-1; iP>-1; iP--) { //if there in fact are empty points
+	std::cout << "Removing point " << iP << " associated with dead channel " << skippedGraphs[iP] << std::endl;
 	gGains->RemovePoint(skippedGraphs[iP]);
 	gPeds->RemovePoint(skippedGraphs[iP]);
   }
