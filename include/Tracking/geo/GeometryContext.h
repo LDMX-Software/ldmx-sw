@@ -44,11 +44,24 @@ class GeometryContext : public framework::ConditionsObject {
   /**
    *
    * Fill an internal map holding the alignment transformations
-   * 
+   * sensorId : id of the alignable element in the alignment_map
+   * deltaT   : translation correction
+   * deltaR   : rotation correction
+   * active   : true="rotate, then translate", false = viceversa.
+   *
+   * Note::If active is used for original transformation, passive
+   * should be used for the inverse.
+   * For small corrections, active/passive order is not important
+   * (small transformations commute at first order)
+   * For rw=10mrad tu=100um using this property causes a global Y shift
+   * wrt inverting active/passive order correctly
+   * (tested on one tagger axial sensor)
    */
+  
   void addAlignCorrection(unsigned int sensorId,
                           const Acts::Vector3 deltaT,
-                          const Acts::Vector3 deltaR);
+                          const Acts::Vector3 deltaR,
+                          const bool active = true);
   
 
   // This holds all the transformations of the Tracking Geometry and 

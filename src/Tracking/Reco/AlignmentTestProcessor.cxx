@@ -41,8 +41,8 @@ void AlignmentTestProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
 
   // Try to correct back 2100
-
-  test_gctx_.addAlignCorrection(2100, -deltaT, -deltaR);
+  // translate, then rotate
+  test_gctx_.addAlignCorrection(2100, -deltaT, -deltaR,false);
     
   
 }

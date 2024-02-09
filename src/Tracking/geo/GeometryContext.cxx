@@ -39,11 +39,13 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
   //deltaR = |  rw    1   -ru  |
   //         \ -rv    ru   1   /
 
-// I use the "rotate, then translate" convention
+// "active"  means "rotate, then translate"
+// "passive" means "translate, then rotate"
 
 void GeometryContext::addAlignCorrection(unsigned int sensorId,
-                        const Acts::Vector3 deltaT,
-                        const Acts::Vector3 deltaR) {
+                                         const Acts::Vector3 deltaT,
+                                         const Acts::Vector3 deltaR,
+                                         bool active) {
   
 
   Acts::Translation3 deltaTranslation{deltaT};
@@ -51,18 +53,28 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
   Acts::Transform3 correction(deltaTranslation * rot);
   
   // Add the correction to the alignment map
-
+  
   if (alignment_map.count(sensorId) < 1)  {
     throw std::logic_error("GeometryContext:: could not addAlignCorrection");
   }
+  
 
-
-  // qaligned = dR*R(t0 + dt0).
-  // ==> rotate, then translate.
-  alignment_map[sensorId].rotate(correction.rotation());
-  alignment_map[sensorId].translate(correction.translation());
-
+  if (active) {
+    // qaligned = dR*R(t0 + dt0).
+    // ==> rotate, then translate.
+    alignment_map[sensorId].rotate(correction.rotation());
+    alignment_map[sensorId].translate(correction.translation());
+  }
+  else {
+    alignment_map[sensorId].translate(correction.translation());
+    alignment_map[sensorId].rotate(correction.rotation());
+  }
+    
 }
+
+
+
+void GeometrtyContext::
 
 
 class GeometryContextProvider : public framework::ConditionsObjectProvider {
