@@ -3,6 +3,7 @@
 #include <Acts/Geometry/TrackingGeometry.hpp>
 #include "Acts/Definitions/Algebra.hpp"
 #include "Tracking/geo/GeoUtils.h"
+#include "Tracking/geo/DetectorElement.h"
 #include "Framework/ConditionsObject.h"
 
 namespace tracking::geo {

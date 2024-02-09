@@ -30,11 +30,21 @@ void AlignmentTestProcessor::onNewRun(const ldmx::RunHeader& rh) {
   //100um in tu
   Acts::Vector3 deltaT{0.1  ,0., 0.};
   
-  //10 mrad in rw
+  // 10 mrad in rw.
+  // rw is applied following the right-hand rule
+  // In this case, w points towards -X.
+  // Looking downstream the rotation is counterclockwise.
+  
   Acts::Vector3 deltaR{0.   ,0., 0.01};
   test_gctx_.addAlignCorrection(2100, deltaT, deltaR);
   test_gctx_.addAlignCorrection(2101, deltaT, deltaR);
 
+
+  // Try to correct back 2100
+
+  test_gctx_.addAlignCorrection(2100, -deltaT, -deltaR);
+    
+  
 }
 
 
@@ -62,8 +72,7 @@ void AlignmentTestProcessor::produce(framework::Event& event) {
 
 
 void AlignmentTestProcessor::onProcessStart() {
-  
-  
+
 }
 
 

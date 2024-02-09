@@ -1,5 +1,5 @@
 #include "Tracking/geo/GeometryContext.h"
-#include "Tracking/geo/DetectorElement.h"
+
 
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/Configure/Parameters.h"
@@ -21,14 +21,13 @@ const Acts::GeometryContext& GeometryContext::get() const {
 }
 
 void GeometryContext::loadTransformations(const tgSurfMap& surf_map) { 
-
+  
   //Always clear the map before reloading the transformations. 
   alignment_map.clear();
-
+  
   for (auto entry : surf_map) {
     alignment_map[entry.first] = static_cast<const DetectorElement*>((entry.second)->associatedDetectorElement())->uncorrectedTransform();
   }
-
 }
 
 // Some testing functionality
@@ -39,7 +38,9 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
   //         /  1    -rw   rv  \
   //deltaR = |  rw    1   -ru  |
   //         \ -rv    ru   1   /
-  
+
+// I use the "rotate, then translate" convention
+
 void GeometryContext::addAlignCorrection(unsigned int sensorId,
                         const Acts::Vector3 deltaT,
                         const Acts::Vector3 deltaR) {
@@ -56,7 +57,8 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
   }
 
 
-  // qaligned = dR*R(t0 + dt0). 
+  // qaligned = dR*R(t0 + dt0).
+  // ==> rotate, then translate.
   alignment_map[sensorId].rotate(correction.rotation());
   alignment_map[sensorId].translate(correction.translation());
 
