@@ -74,9 +74,6 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
 
 
 
-void GeometrtyContext::
-
-
 class GeometryContextProvider : public framework::ConditionsObjectProvider {
  public:
   /**
