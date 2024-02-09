@@ -3,8 +3,8 @@
 #include "Acts/Geometry/DetectorElementBase.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Definitions/Algebra.hpp"
+#include "Acts/Surfaces/Surface.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
-#include "Tracking/geo/GeometryContext.h"
 #include "Tracking/geo/GeoUtils.h"
 #include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include <stdexcept> // Include for std::logic_error
@@ -34,6 +34,9 @@ class DetectorElement : public Acts::DetectorElementBase {
     m_transform = default_transform;
     
   }
+
+
+  ~DetectorElement() override;
   
   // This method will always return a copy to the uncorrected transformation
   
@@ -45,7 +48,7 @@ class DetectorElement : public Acts::DetectorElementBase {
   // otherwise will return the default transform
   // This is very *hot* code, do not place computations in this function in order to keep performance under
   // control.
-
+  
   // CAUTION:: The tracking geometry + geometry context machinery
   // assumes large enough envelopes / gaps between sensors
   // to allow for not breaking the layers overlaps.
@@ -57,24 +60,12 @@ class DetectorElement : public Acts::DetectorElementBase {
   
   const Acts::Transform3& transform(const Acts::GeometryContext& gctx) const override;
   
-  const Acts::Surface& surface() const override {
-    if (!m_surface)
-      throw std::logic_error("DetectorElement::Attempted to return reference of null ptr");
-    return *m_surface;
-  };
-  Acts::Surface& surface() override {
-    if (!m_surface)
-      throw std::logic_error("DetectorElement::Attempted to return reference of null ptr");
-    return *m_surface;
-  };
+  const Acts::Surface& surface() const override;
+
+  Acts::Surface& surface() override;
   
   // The thickness of the detector element is taken from the center of the associated surface
-  double thickness() const override {
-    //return m_thickness;
-    auto material = static_cast<const Acts::HomogeneousSurfaceMaterial*>(m_surface->surfaceMaterial());
-    return material->materialSlab(Acts::Vector2{0.,0.}).thickness();
-    
-  };
+  double thickness() const override;
   
   
   Acts::GeometryIdentifier geometryId() const {
