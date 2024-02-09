@@ -41,6 +41,19 @@ Acts::Vector3 default_transformPos(const Acts::Vector3& pos);
 Acts::Vector3 default_transformBField(const Acts::Vector3& field,
                                       const Acts::Vector3& /*pos*/);
 
+
+void testField(
+    const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
+    const Acts::Vector3& eval_pos) {
+  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(magnetic_field_context());
+  std::cout << "Pos::\n" << eval_pos << std::endl;
+  std::cout << " BField::\n"
+            << bfield->getField(eval_pos, cache).value() /
+      Acts::UnitConstants::T
+            << std::endl;
+}
+
+
 /**
  * The default mapping between local to global bins of the map
  * it transforms the local xyz binning to the global binning

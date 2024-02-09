@@ -5,9 +5,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/RandomNumberSeedService.h"
 
-//--- Tracking I/O---//
-#include "Tracking/Sim/PropagatorStepWriter.h"
-
 //--- C++ ---//
 #include <random>
 #include <memory>
@@ -153,29 +150,12 @@ class CKFProcessor final : public TrackingGeometryUser {
   
  private:
 
-  //TODO move it away
 
-  void propagateENstates(framework::Event &event,std::string inputFile, std::string outFile);
-
-  
   //Make geoid -> source link map Measurements
   auto makeGeoIdSourceLinkMap(
       const geo::TrackersTrackingGeometry& tg,
       const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
     
-    
-  //Test the magnetic field
-
-  void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bField,
-                 const Acts::Vector3& eval_pos);
-  
-  // Make a simple event display
-  void writeEvent(framework::Event &event,
-		  const Acts::BoundTrackParameters& perigeeParameters,
-		  const Acts::MultiTrajectory<Acts::VectorMultiTrajectory>& mj,
-                  const int& trackTip,
-                  const std::vector<ldmx::Measurement> meas);
-
   
   //If we want to dump the tracking geometry
   bool dumpobj_ {false};
@@ -253,9 +233,10 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   //The interpolated bfield
   std::string field_map_{""};
-
-  //The Propagators
+  
+  //The Propagator 
   std::unique_ptr<const CkfPropagator> propagator_;
+  
 
   //The CKF
   std::unique_ptr<const Acts::CombinatorialKalmanFilter<CkfPropagator,Acts::VectorMultiTrajectory>> ckf_;
@@ -266,20 +247,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   //Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>> trk_extrap_ ;
 
-  //The GSF Fitter
-  //std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator>> gsf_;
-  
-  //The propagator steps writer
-  std::unique_ptr<tracking::sim::PropagatorStepWriter> writer_;
-
-  //Outname of the propagator test
-  std::string steps_outfile_path_{""};
-
-    
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
-
   int eventnr_{0};
 
   //BField Systematics
