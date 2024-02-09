@@ -4,6 +4,7 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Utilities/detail/AxisFwd.hpp"
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
+#include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/Utilities/Interpolation.hpp"
 #include "Acts/Utilities/Result.hpp"
 #include "Acts/Utilities/detail/Grid.hpp"
@@ -44,15 +45,8 @@ Acts::Vector3 default_transformBField(const Acts::Vector3& field,
 
 void testField(
     const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
-    const Acts::Vector3& eval_pos) {
-  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(magnetic_field_context());
-  std::cout << "Pos::\n" << eval_pos << std::endl;
-  std::cout << " BField::\n"
-            << bfield->getField(eval_pos, cache).value() /
-      Acts::UnitConstants::T
-            << std::endl;
-}
-
+    const Acts::Vector3& eval_pos,
+    const Acts::MagneticFieldContext& bctx);
 
 /**
  * The default mapping between local to global bins of the map

@@ -18,12 +18,12 @@ void AlignmentTestProcessor::configure(framework::config::Parameters &parameters
 
 
 void AlignmentTestProcessor::onNewRun(const ldmx::RunHeader& rh) {
-
+  
   // Load the tracking geometry
-  auto tg(geometry());
-
+  tg_ = std::make_shared<geo::TrackersTrackingGeometry>(geometry());
+  
   // Load the tracking geometry default transformations
-  test_gctx_.loadTransformations(tg.layer_surface_map_);
+  test_gctx_.loadTransformations(tg_->layer_surface_map_);
 
   std::cout<<"Storing corrections to default transformations" <<std::endl;
   
@@ -43,7 +43,6 @@ void AlignmentTestProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Try to correct back 2100
   // translate, then rotate
   test_gctx_.addAlignCorrection(2100, -deltaT, -deltaR,false);
-    
   
 }
 
@@ -56,18 +55,16 @@ void AlignmentTestProcessor::produce(framework::Event& event) {
   Acts::GeometryContext align_gctx(&test_gctx_);
   
   std::cout<<"Loading the tracking geometry"<<std::endl;
-    
-  auto tg(geometry());
   
   std::cout<<"Layers in Tracking Geometry"<<std::endl;
-  for (auto entry : tg.layer_surface_map_) {
+  for (auto entry : tg_->layer_surface_map_) {
     std::cout<<entry.first<<std::endl;
     
     std::cout<<"Dumping surfaces information"<<std::endl;
     (entry.second)->toStream(align_gctx,std::cout);
     
   }
-    
+  
 }
 
 

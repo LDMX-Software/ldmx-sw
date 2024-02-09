@@ -39,7 +39,8 @@ namespace tracking::reco {
     std::unordered_map<unsigned int, Acts::Transform3> alignmentTransforms;
     
     tracking::geo::GeometryContext test_gctx_;
-    
-    
+    //The Trackers Tracking geometry
+    std::shared_ptr<geo::TrackersTrackingGeometry> tg_;
+        
   };
 }
