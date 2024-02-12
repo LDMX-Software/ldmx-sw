@@ -1,5 +1,6 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
+#include "Tracking/geo/GeoUtils.h"
 
 #include "G4RunManager.hh"
 #include "G4strstreambuf.hh"
@@ -27,7 +28,7 @@ TrackingGeometry::TrackingGeometry(
     const std::string& gdml,
     bool debug)
     : framework::ConditionsObject(name),
-    gctx_{gctx}, gdml_{gdml}, debug_{debug} {
+      gctx_{gctx}, gdml_{gdml}, debug_{debug} {
   // Build The rotation matrix to the tracking frame
   // Rotate the sensors to be orthogonal to X
   double rotationAngle = M_PI * 0.5;
@@ -144,9 +145,26 @@ void TrackingGeometry::getAllDaughters(G4VPhysicalVolume* pvol) {
 
 //}
 
-void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
+void TrackingGeometry::dumpGeometry(const std::string& outputDir,
+                                    const Acts::GeometryContext& gctx) const  {
+  
   if (!tGeometry_) return;
 
+  
+  if (debug_) {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
+    for (auto const& surfaceId : layer_surface_map_) {
+      std::cout << " " << surfaceId.first << std::endl;
+      std::cout << " Check the surface" << std::endl;
+      surfaceId.second->toStream(gctx, std::cout);
+      std::cout << " GeometryID::" << surfaceId.second->geometryId()
+                << std::endl;
+      std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
+                << std::endl;
+    }
+  }
+  
   // Should fail if already exists
   boost::filesystem::create_directory(outputDir);
 
@@ -161,7 +179,7 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir) const {
   Acts::ViewConfig gridView = Acts::ViewConfig({220, 0, 0});
 
   Acts::GeometryView3D::drawTrackingVolume(
-      objVis, *(tGeometry_->highestTrackingVolume()), gctx_, containerView,
+      objVis, *(tGeometry_->highestTrackingVolume()), gctx, containerView,
       volumeView, passiveView, sensitiveView, gridView, true, "", ".");
 }
 
@@ -275,11 +293,11 @@ void TrackingGeometry::makeLayerSurfacesMap() {
   getSurfaces(surfaces);
 
   for (auto& surface : surfaces) {
-
+    
     // Layers from 1 to 14 - for the tagger
     // unsigned int layerId = (surface->geometryId().layer() / 2) ;  // Old 1
     // sensor per layer
-
+    
     unsigned int volumeId = surface->geometryId().volume();
     unsigned int layerId = (surface->geometryId().layer() /
                             2);  // set layer ID  from 1 to 7 for the tagger and
@@ -291,28 +309,13 @@ void TrackingGeometry::makeLayerSurfacesMap() {
 
     if (debug_)
       std::cout<<"VolumeID "<<volumeId<<" LayerId "<<layerId<<" sensorId "<<sensorId<<std::endl; 
-
+    
     // surface ID = vol * 1000 + ly * 100 + sensor
-
     unsigned int surfaceId = volumeId * 1000 + layerId * 100 + sensorId;
-
+    
     layer_surface_map_[surfaceId] = surface;
-
-  }  // surfaces loop
-
-  if (debug_) {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-
-    for (auto const& surfaceId : layer_surface_map_) {
-      std::cout << " " << surfaceId.first << std::endl;
-      std::cout << " Check the surface" << std::endl;
-      surfaceId.second->toStream(gctx_, std::cout);
-      std::cout << " GeometryID::" << surfaceId.second->geometryId()
-                << std::endl;
-      std::cout << " GeometryID::" << surfaceId.second->geometryId().value()
-                << std::endl;
-    }
-  }
+    
+  }  // surfaces loop 
 }
 
 }  // namespace tracking::geo

@@ -36,3 +36,18 @@ size_t localToGlobalBin_xyz(std::array<size_t, 3> bins,
   // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
   // //zxy
 }
+
+
+void testField(
+    const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
+    const Acts::Vector3& eval_pos,
+    const Acts::MagneticFieldContext bctx) {
+  
+  Acts::MagneticFieldProvider::Cache cache = bfield->makeCache(bctx);
+  std::cout << "Pos::\n" << eval_pos << std::endl;
+  std::cout << " BField::\n"
+            << bfield->getField(eval_pos, cache).value() /
+      Acts::UnitConstants::T
+            << std::endl;
+}
+
