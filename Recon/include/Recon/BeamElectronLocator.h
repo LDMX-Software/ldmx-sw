@@ -8,6 +8,7 @@
 
 //---< Recon >---//
 #include "Recon/Event/BeamElectronTruth.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace recon {
 
@@ -70,11 +71,11 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * The granularity of the TS in X, in mm 
    **/
-  float TSgranularityXmm_;
+  float granularityXmm_;
   /**
    * The granularity of the TS in Y, in mm 
    **/
-  float TSgranularityYmm_;
+  float granularityYmm_;
 
   /**
    * The tolerance within which simhits are considered to belong to 
@@ -82,6 +83,7 @@ class BeamElectronLocator : public framework::Producer {
    **/
   float tolerance_;
 
+  int bin(float coordinate, float binWidth, float min, float max);
   
 };  // BeamElectronLocator
 }  // namespace recon
