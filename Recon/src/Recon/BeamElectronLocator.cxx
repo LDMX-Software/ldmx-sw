@@ -23,9 +23,9 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
                   << " \n\tinput_collection = " << inputColl_
                   << " \n\tinput_pass_name = " << inputPassName_
                   << " \n\toutput_collection = " << outputColl_
-                  << " \n\tgranularity_X_mm = " << TSgranularityXmm_
-                  << " \n\tgranularity_Y_mm = " << TSgranularityYmm_
-                  << " \n\tmin_granularity_mm = " << tolerance_
+                  << " \n\tgranularity_X_mm = " << granularityXmm_
+                  << " \n\tgranularity_Y_mm = " << granularityYmm_
+                  << " \n\tmin_granularity_mm = " << tolerance_ ;
 }
 
   void BeamElectronLocator::produce(framework::Event &event) {
@@ -64,26 +64,26 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 	// 
 
 
-	// group the sim hits. loop over them.
-	vector <float> coordX;
-	vector <float> coordY;
-
 	std::vector<ldmx::BeamElectronTruth> beamElectronInfo;
-	
+	const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      inputColl_, inputPassName_)};
+
 	for (const auto &simHit : simHits) {
 	  //check if we already caught this position, else, add it 
 	  bool isMatched = false;
+	  std::vector<float> pos=simHit.getPosition();
 	  for (auto foundElectrons : beamElectronInfo ) {
-		//this check makes it square rather than a dR circle 
-		if ( fabs( simHit.getXpos() - foundElectrons,getX() )> tolerance_
-			 && fabs( simHit.getYpos() - foundElectrons,getY() )> tolerance_ ) {
+		//this check makes it square rather than a dR circle
+		if ( fabs( pos[0] - foundElectrons.getX() )> tolerance_
+			 && fabs( pos[1] - foundElectrons.getY() )> tolerance_ ) {
 		  isMatched=true;
 		} // if coordinates match something we already found 
 	  }// over found electrons 
 	  if (!isMatched) {		  
 		ldmx::BeamElectronTruth electronInfo;
-		electronInfo.SetXYZ(simHit.getXpos(), simHit.getYpos(), simHit.getZpos()); 
-		electronInfo.SetThreeMomentum(simHit.getPx(), simHit.getPy(), simHit.getPz()); 
+		electronInfo.setXYZ( pos[0], pos[1], pos[2]);
+		//find a way to do this later
+		//electronInfo.setThreeMomentum(simHit.getPx(), simHit.getPy(), simHit.getPz()); 
 		beamElectronInfo.push_back(electronInfo);
 	  }
 	}// over simhits in the collection 
