@@ -26,7 +26,7 @@ class BeamElectronTruth {
   /**
    * Class constructor.
    */
-  BeamElectronTruth();
+  BeamElectronTruth()  = default;
 
   /**
    * Class destructor.
