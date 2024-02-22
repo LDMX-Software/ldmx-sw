@@ -207,32 +207,32 @@ class BeamElectronTruth {
   /* Algorithm variable results from simhit associations. */
 
   /** x coordinate ("truth" resolution, but within merging tolerance) **/
-  double x_;
+  double x_{-999};
 
   /** y coordinate ("truth" resolution, but within merging tolerance) **/
-  double y_;
+  double y_{-999};
 
   /** z coordinate ("truth" resolution, in practice, set to taget z = 0 **/
-  double z_;
+  double z_{-9999};
 
   /** x coordinate (with TS resolution) **/
-  double binnedX_;
+  double binnedX_{-999};
 
   /** y coordinate (with TS resolution) **/
-  double binnedY_;
+  double binnedY_{-999};
 
   /** TS vertical bar number overlapping with x coordinate **/
-  double barX_;
+  double barX_{-1};
   
   /** TS horizontal bar number overlapping with y coordinate **/
-  double barY_;
+  double barY_{-1};
 
   /** x momentum component **/
-  double px_;
+  double px_{-999};
   /** y momentum component **/
-  double py_;
+  double py_{-999};
   /** z momentum component **/
-  double pz_;
+  double pz_{-999};
 
 
   ClassDef(BeamElectronTruth, 1);
