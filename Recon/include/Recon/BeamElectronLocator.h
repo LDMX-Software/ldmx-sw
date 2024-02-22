@@ -71,18 +71,20 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * The granularity of the TS in X, in mm 
    **/
-  float granularityXmm_;
+  double granularityXmm_;
   /**
    * The granularity of the TS in Y, in mm 
    **/
-  float granularityYmm_;
+  double granularityYmm_;
 
   /**
    * The tolerance within which simhits are considered to belong to 
    * the same electron.
    **/
-  float tolerance_;
+  double tolerance_;
 
+  bool verbose_{false};
+  
   int bin(float coordinate, float binWidth, float min, float max);
   
 };  // BeamElectronLocator

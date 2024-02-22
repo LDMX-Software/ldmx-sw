@@ -40,9 +40,10 @@ class BeamElectronLocator(ldmxcfg.Producer) :
         super().__init__( name , "recon::BeamElectronLocator" , 'Recon' )
 
         self.input_collection = "TruthBeamElectronsTarget"
-        self.input_passname  = ""
+        self.input_pass_name  = ""
         self.output_collection = "BeamElectronTruthInfo"
-        self.granularity_X_mm = 1.
-        self.granularity_Y_mm = 1.
+        self.granularity_X_mm = 0.9
+        self.granularity_Y_mm = 0.9
         self.min_granularity_mm = 0.1
+        self.verbose = False
 
