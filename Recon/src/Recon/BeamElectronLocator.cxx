@@ -31,27 +31,7 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 }
 
   void BeamElectronLocator::produce(framework::Event &event) {
-	//* steps
-	//1. find those hits in the target sim hit collection that are associated with the electron
-	//            -- this can be done using the existing truth hit producer 
-	//2. figure out how to select only one location per electron
-	//3. if using TS granularity, send to function binning them in X and Y, depending on choice in config
-	//4. set the hit coordinates and add "nice-to-haves" like its momentum 
-	//*/
-	
-	// this relies on having run the electron counter, 
-	int nElectrons = event.getElectronCount();
-  
-	if (nElectrons < 0) {
-	  ldmx_log(fatal)
-		<< "Can't use unset number of counted electrons as electron count! "
-		"Run the electron counter first!";
-	  // TODO: throw an exeption instead
-	  // TODO decide if this umber is actually used in some clustering, or remove 
-	  return;
-
-	}
-  
+	  
    
 	// Check if the input collection exists. If not,
 	// don't bother processing the event.
@@ -62,8 +42,9 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 	  return;
 	}
 
-	// the simhits have approximately infinite resolution. run some sort of grouping.
-	// 
+	
+	// the simhits have approximately infinite resolution.
+	// this processor's raison d'être is to run some sort of grouping.
 
 
 	std::vector<ldmx::BeamElectronTruth> beamElectronInfo;
@@ -98,9 +79,6 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 	    electronInfo.setXYZ( pos[0], pos[1], pos[2]);
 	    //find a way to do this later
 	    //electronInfo.setThreeMomentum(simHit.getPx(), simHit.getPy(), simHit.getPz()); 
-
-	    //for these, i should 	
-	    //set up a 2d array, with some n number of bins set by the total width and granularity
 
 	    //TODO make min and max configurable 
 	    electronInfo.setBarX( bin(pos[0], granularityXmm_, -10, 10) );
