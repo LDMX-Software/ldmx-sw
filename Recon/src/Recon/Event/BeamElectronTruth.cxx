@@ -5,7 +5,7 @@
 
 ClassImp(ldmx::BeamElectronTruth)
 
-namespace ldmx {
+    namespace ldmx {
   void BeamElectronTruth::Clear() {
     x_ = -999;
     y_ = -999;
@@ -17,8 +17,8 @@ namespace ldmx {
     binnedY_ = -999;
   }
 
-  
-  //  std::ostream &operator<<(std::ostream &s, const ldmx::BeamElectronTruth &b) {
+  //  std::ostream &operator<<(std::ostream &s, const ldmx::BeamElectronTruth
+  //  &b) {
   //   s << "BeamElectronTruth { "
   // 	  << "(x = " << b.getX()
   // 	  << ", y = " << b.getY()
@@ -26,17 +26,12 @@ namespace ldmx {
   //   return s;
   // }
 
-  
   void BeamElectronTruth::Print() const {
     std::cout << "BeamElectronTruth { "
-              << "(x: " << x_ 
-              << ", y: " << y_ 
-              << ", z: " << z_ << ")" 
-              << "; (binned X: " << binnedX_ 
-              << ", binned Y: " << binnedY_ << ")" 
-              << "; (px: " << px_ 
-              << ", py: " << py_ 
-              << ", pz: " << pz_ << ")" 
-			  << std::endl;
+              << "(x: " << x_ << ", y: " << y_ << ", z: " << z_ << ")"
+              << "; (binned X: " << binnedX_ << ", binned Y: " << binnedY_
+              << ")"
+              << "; (px: " << px_ << ", py: " << py_ << ", pz: " << pz_ << ")"
+              << std::endl;
   }
 }  // namespace ldmx
