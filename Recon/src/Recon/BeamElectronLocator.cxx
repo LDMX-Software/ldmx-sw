@@ -87,9 +87,9 @@ void BeamElectronLocator::produce(framework::Event &event) {
       electronInfo.setBarX(bin(pos[0], granularityXmm_, minXmm_, maxXmm_));
       electronInfo.setBarY(bin(pos[1], granularityYmm_, minYmm_, maxYmm_));
       // set coordinates to bin center
-      electronInfo.setBinnedX(minXmm_ + (electronInfo.getBarX() + 1 / 2.) *
+      electronInfo.setBinnedX(minXmm_ + (electronInfo.getBarX() + 0.5) *
                                             granularityXmm_);
-      electronInfo.setBinnedY(minYmm_ + (electronInfo.getBarY() + 1 / 2.) *
+      electronInfo.setBinnedY(minYmm_ + (electronInfo.getBarY() + 0.5) *
                                             granularityYmm_);
 
       beamElectronInfo.push_back(electronInfo);
