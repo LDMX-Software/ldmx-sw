@@ -17,8 +17,19 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
       parameters.getParameter<double>("granularity_Y_mm");
   tolerance_ =
       parameters.getParameter<double>("min_granularity_mm");
+  minXmm_ =
+      parameters.getParameter<double>("min_X_mm");
+  maxXmm_ =
+      parameters.getParameter<double>("max_X_mm");
+  minYmm_ =
+      parameters.getParameter<double>("min_Y_mm");
+  maxYmm_ =
+      parameters.getParameter<double>("max_Y_mm");
   verbose_ =  
     parameters.getParameter<bool>("verbose");
+
+}
+  void BeamElectronLocator::onProcessStart() {
 
   ldmx_log(debug) << "BeamElectronLocator is using parameters: "
                   << " \n\tinput_collection = " << inputColl_
@@ -27,6 +38,10 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
                   << " \n\tgranularity_X_mm = " << granularityXmm_
                   << " \n\tgranularity_Y_mm = " << granularityYmm_
                   << " \n\tmin_granularity_mm = " << tolerance_ 
+                  << " \n\tmin_X_mm = " << minXmm_
+                  << " \n\tmax_X_mm = " << maxXmm_
+                  << " \n\tmin_Y_mm = " << minYmm_
+                  << " \n\tmax_Y_mm = " << maxYmm_
                   << " \n\tverbose = " << verbose_ ;
 }
 
@@ -43,9 +58,6 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 	}
 
 	
-	// the simhits have approximately infinite resolution.
-	// this processor's raison d'être is to run some sort of grouping.
-
 
 	std::vector<ldmx::BeamElectronTruth> beamElectronInfo;
 	const auto simHits{event.getCollection<ldmx::SimCalorimeterHit>(
@@ -80,14 +92,12 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
 	    //find a way to do this later
 	    //electronInfo.setThreeMomentum(simHit.getPx(), simHit.getPy(), simHit.getPz()); 
 
-	    //TODO make min and max configurable 
-	    electronInfo.setBarX( bin(pos[0], granularityXmm_, -10, 10) );
-	    electronInfo.setBarY( bin(pos[1], granularityYmm_, -40, 40) );
+	    electronInfo.setBarX( bin(pos[0], granularityXmm_, minXmm_, maxXmm_) );
+	    electronInfo.setBarY( bin(pos[1], granularityYmm_, minYmm_, maxYmm_) );
 	    //set coordinates to bin center 
-	    electronInfo.setBinnedX( -10. + (electronInfo.getBarX()+1/2.)*granularityXmm_ );
-	    electronInfo.setBinnedY( -40. + (electronInfo.getBarY()+1/2.)*granularityYmm_ );
+	    electronInfo.setBinnedX( minXmm_ + (electronInfo.getBarX()+1/2.)*granularityXmm_ );
+	    electronInfo.setBinnedY( minYmm_ + (electronInfo.getBarY()+1/2.)*granularityYmm_ );
 
-	    
 	    beamElectronInfo.push_back(electronInfo);
 	  }
 	}// over simhits in the collection 
@@ -97,25 +107,22 @@ void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
   }
 
 
-  //rethink this... i want a grid with 0 and 1, simply. hit or no hit. 
-  
   int BeamElectronLocator::bin(float coordinate, float binWidth, float min, float max) {
-	// a function to discretize floating points to some precision 
 	int n=0;
 	while (coordinate > min + n*binWidth ) {
 	  n++;
 	  if  (min + n*binWidth > max) {
-		//n--; // this moves the point back, but, perhaps better to see that we go out of bounds on return 
+		// don't go out of bounds, but, still indicate overflow by increasing n once more.
+		// this compensates for the stepping back that happens in the return which
+		// would otherwise always give us the last bin before max.
+		n++; 
 		break;
 	  }
 	}
-	// the n we have is the first bin which is too large. 
-	// the resulting coordinate is between n which is the upper edge, and the previous
-	// return the lower edge 
+	// the n we have now is the first bin beyond our coordinate.
+	// better aligned with conventions to return the lower edge.
 	return n-1;
   }
-
-
 
   
 }  // namespace recon    
