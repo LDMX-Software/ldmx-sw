@@ -15,9 +15,13 @@ namespace recon {
 /**
  * Electron counting processor.
  *
- * This processor will use objects reconstructed in the trigger scintillators,
- * or truth info on the number of electrons, and set the electron count in the
- * event.
+ * This processor uses calo simhits in e.g. the target to get truth info
+ * about beam electrons. The hits associated with beam electrons can already
+ * be isolated by the truth hit collection producer. However, the simhits
+ * have approximately infinite resolution. This processor's raison d'être 
+ * is to run some sort of  grouping, to ensure we have at most one 
+ * reconstructed truth information object per electron.
+ *
  */
 class BeamElectronLocator : public framework::Producer {
  public:
@@ -37,13 +41,18 @@ class BeamElectronLocator : public framework::Producer {
    * Configure the processor using the given user specified parameters.
    *
    * The user specified parameters that are availabed are defined
-   * in the python configuration class. Look at the my_processor.py
-   * module of the EventProc python for the python structure.
+   * in the python configuration class. Look at the beamElecronLocator.py
+   * in Recon/python for the python structure.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
   void configure(framework::config::Parameters &parameters) final override;
 
+  /**
+   * Prints the configuration to log in debug mode
+   */
+  void onProcessStart() ;
+  
   /**
    * Process the event and put new data products into it.
    *
@@ -67,13 +76,31 @@ class BeamElectronLocator : public framework::Producer {
    * variables
    */
   std::string outputColl_;
-
+  
   /**
-   * The granularity of the TS in X, in mm 
+   * The min value measured by the system (edge) in X, in mm 
+   **/
+  double minXmm_;
+  /**
+   * The max value measured by the system (edge) in X, in mm 
+   **/
+  double maxXmm_;
+  
+  /**
+   * The min value measured by the system (edge) in Y, in mm 
+   **/
+  double minYmm_;
+  /**
+   * The max value measured by the system (edge) in Y, in mm 
+   **/
+  double maxYmm_;
+  
+  /**
+   * The granularity of the detector (e.g. TS) in X, in mm 
    **/
   double granularityXmm_;
   /**
-   * The granularity of the TS in Y, in mm 
+   * The granularity of the detector (e.g. TS) in Y, in mm 
    **/
   double granularityYmm_;
 
@@ -83,8 +110,19 @@ class BeamElectronLocator : public framework::Producer {
    **/
   double tolerance_;
 
+  /** 
+   * Indicate verbose printout to log according to log level. 
+   */
   bool verbose_{false};
-  
+
+  /**
+   * Bins coordinates according to some given granularity (passed as argument).
+   * Returns the lower bin edge. -1 for underflow (coordinate < min_in_mm); 
+   * with a system of N bins, returns n = N if coordinate > max_in_mm.
+   * 
+   * TODO also implement a function that returns the grid of non-empty hit coordinates,
+   * which accounts for that we don't know the multiplicity at a location
+   */
   int bin(float coordinate, float binWidth, float min, float max);
   
 };  // BeamElectronLocator
