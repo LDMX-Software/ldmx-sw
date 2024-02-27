@@ -40,7 +40,7 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * Configure the processor using the given user specified parameters.
    *
-   * The user specified parameters that are availabed are defined
+   * The user specified parameters that are available are defined
    * in the python configuration class. Look at the beamElecronLocator.py
    * in Recon/python for the python structure.
    *
@@ -51,7 +51,7 @@ class BeamElectronLocator : public framework::Producer {
   /**
    * Prints the configuration to log in debug mode
    */
-  void onProcessStart();
+  void onProcessStart() final override;
 
   /**
    * Process the event and put new data products into it.
