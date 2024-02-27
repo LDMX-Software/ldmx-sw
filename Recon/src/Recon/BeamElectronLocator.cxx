@@ -107,9 +107,7 @@ int BeamElectronLocator::bin(float coordinate, double binWidth, double min,
     n++;
     if (min + n * binWidth > max) {
       // don't go out of bounds, but, still indicate overflow by increasing n
-      // once more. this compensates for the stepping back that happens in the
-      // return which would otherwise always give us the last bin before max.
-      //n++;
+	  // before breaking
       break;
     }
   }
