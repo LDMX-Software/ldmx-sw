@@ -124,7 +124,7 @@ class BeamElectronLocator : public framework::Producer {
    * coordinates, which accounts for that we don't know the multiplicity at a
    * location
    */
-  int bin(float coordinate, float binWidth, float min, float max);
+  int bin(float coordinate, double binWidth, double min, double max);
 
 };  // BeamElectronLocator
 }  // namespace recon

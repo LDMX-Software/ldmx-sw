@@ -100,8 +100,8 @@ void BeamElectronLocator::produce(framework::Event &event) {
   event.add(outputColl_, beamElectronInfo);
 }
 
-int BeamElectronLocator::bin(float coordinate, float binWidth, float min,
-                             float max) {
+int BeamElectronLocator::bin(float coordinate, double binWidth, double min,
+                             double max) {
   int n = 0;
   while (coordinate > min + n * binWidth) {
     n++;
@@ -109,7 +109,7 @@ int BeamElectronLocator::bin(float coordinate, float binWidth, float min,
       // don't go out of bounds, but, still indicate overflow by increasing n
       // once more. this compensates for the stepping back that happens in the
       // return which would otherwise always give us the last bin before max.
-      n++;
+      //n++;
       break;
     }
   }
