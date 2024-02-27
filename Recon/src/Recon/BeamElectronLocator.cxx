@@ -63,12 +63,13 @@ void BeamElectronLocator::produce(framework::Event &event) {
       // this check makes it square rather than a dR circle
       if (fabs(pos[0] - foundElectrons.getX()) < tolerance_ &&
           fabs(pos[1] - foundElectrons.getY()) < tolerance_) {
-        if (verbose_)
+        if (verbose_) {
           ldmx_log(debug) << "\tHit at (x = " << pos[0] << ", y = " << pos[1]
                           << " matches electron found at (x = "
                           << foundElectrons.getX()
                           << ", y = " << foundElectrons.getY()
                           << "); skip this simhit";
+		}
         isMatched = true;
         break;  // finding a match means Move on
       }         // if coordinates match something we already found
