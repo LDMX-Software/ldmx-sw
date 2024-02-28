@@ -1,3 +1,9 @@
+###############################################################################
+# ldmx-denv-transition.sh
+#   Replicate some of the `ldmx` commands by simply wrapping the equivalent
+#   `denv` commands along with printouts explaining what is being done.
+#   so that users know that the same procedures can be done with `denv`.
+###############################################################################
 
 # make sure denv is initialized
 . "$(dirname "${BASH_SOURCE[0]}")/ldmx-denv-init.sh"
@@ -29,15 +35,9 @@ fi
 __ldmx_use() {
   local _repo_name="$1"
   local _image_tag="$2"
-  denv config image "ldmx/${_repo_name}:${_image_tag}"
-  return $?
-}
-
-# Run the container
-#   we could drop this in favor of just using the '.profile' copied into ${LDMX_BASE}
-#   by denv at runtime.
-__ldmx_run() {
-  denv /etc/entry.sh "$@"
+  cmd="denv config image \"ldmx/${_repo_name}:${_image_tag}\""
+  echo "${cmd}"
+  ${cmd}
   return $?
 }
 
@@ -49,26 +49,9 @@ __ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
   echo "Bash version: ${BASH_VERSION}"
+  echo "denv config print"
   denv config print
   return $?
-}
-
-###############################################################################
-# __ldmx_run_here
-#   Call the run method with some fancy directory movement around it
-###############################################################################
-__ldmx_run_here() {
-  #store last directory to resume history later
-  local _old_pwd=$OLDPWD
-  #store current working directory relative to ldmx base
-  local _pwd=$(pwd -P)/.
-  cd ${LDMX_BASE} # go to ldmx base directory outside container
-  # go to working directory inside container
-  __ldmx_run $_pwd "$@"
-  local rc=$?
-  cd - &> /dev/null
-  export OLDPWD=$_old_pwd
-  return ${rc}
 }
 
 ###############################################################################
@@ -78,6 +61,7 @@ __ldmx_run_here() {
 #   its subdirectories need to (or should be) specified.
 ###############################################################################
 __ldmx_mount() {
+  echo "denv config mounts $*"
   denv config mounts $@
   return $?
 }
@@ -90,6 +74,7 @@ __ldmx_mount() {
 #   so none of these need to (or should be) specified.
 ###############################################################################
 __ldmx_setenv() {
+  echo "denv config env copy $*"
   denv config env copy $@
   return $?
 }
@@ -181,11 +166,14 @@ ldmx() {
       return $?
       ;;
     run)
-      __ldmx_${1} ${@:2}
+      shift
+      echo "denv \"cd $1 && ${@:2}\""
+      denv "cd $1 && ${@:2}"
       return $?
       ;;
     *)
-      __ldmx_run_here $@
+      echo "denv $@"
+      denv $@
       return $?
       ;;
   esac
