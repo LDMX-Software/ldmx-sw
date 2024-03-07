@@ -123,6 +123,21 @@ class EcalGeometry() :
         # shift by a single cell diameter
         eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
+        
+        
+    def reduced() :
+        eg = EcalGeometry(detectors_valid = ["ldmx-reduced","ldmx-reduced[.].*"],
+                gap = 1.5,
+                layerZPositions = [
+                      7.932, 14.532, 32.146, 40.746, 58.110, 67.710, 86.574
+                      ],
+                ecalFrontZ = 240.0,
+                cornersSideUp = True,
+                layer_shift_odd = True,
+                )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
 
     def geometries() :
-        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14()]
+        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced()]
