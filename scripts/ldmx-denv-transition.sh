@@ -12,7 +12,7 @@
 # doesn't need bash anymore if they use denv directly
 if [[ -z ${BASH} ]]; then
   echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
-  [[ "$SHELL" = *"bash"* ]] || echo "  You're default shell '$SHELL' isn't bash."
+  [[ "$SHELL" = *"bash"* ]] || echo "  Your default shell '$SHELL' isn't bash."
   cat <<\HELP
   If you'd prefer to not use bash, you can use 'denv' directly rather than
   this wrapper script.
