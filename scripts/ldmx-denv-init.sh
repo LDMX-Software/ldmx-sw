@@ -43,14 +43,14 @@ _user_confirm() {
   done
 }
 
-if ! command -v denv &> /dev/null; then
+if ! command -v denv > /dev/null 2>&1; then
   _error "'denv' is not installed."
   if _user_confirm "Do you wish to try to install 'denv' now?"; then
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh 
   else
     printf "Not attempting to install 'denv'. Please follow the instructions at\n  %s\n" \
       "https://tomeichlersmith.github.io/denv/getting_started.html#installation"
-    unset -f _error
+    unset -f _error _user_confirm
     return 1
   fi
 fi
@@ -61,19 +61,19 @@ if ! denv check --quiet; then
   denv check
   _error "'denv' unable to find a supported container runner." \
     "Install one of the container runners 'denv' checked for above."
-  unset -f _error
+  unset -f _error _user_confirm
   return 2
 fi
 
 ###############################################################################
 # Check if the LDMX denv is initialized. If not, do a default initialization.
 ###############################################################################
-_default_denv_workspace="$(dirname ${BASH_SOURCE[0]} )/../../"
+_default_denv_workspace="$(dirname "${BASH_SOURCE[0]}" )/../../"
 _default_denv_workspace="$(cd "${_default_denv_workspace}" && pwd -P)"
 if [ -z "${LDMX_BASE+x}" ]; then
   export LDMX_BASE="${_default_denv_workspace}"
 fi
-if [[ ! -f ${LDMX_BASE}/.denv/config ]]; then
+if [ ! -f "${LDMX_BASE}/.denv/config" ]; then
   denv init --clean-env --name "ldmx" "ldmx/dev:latest" "${LDMX_BASE}"
 fi
-unset -f _error
+unset -f _error _user_confirm
