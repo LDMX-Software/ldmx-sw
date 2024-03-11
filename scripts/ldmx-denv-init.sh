@@ -66,13 +66,58 @@ if ! denv check --quiet; then
 fi
 
 ###############################################################################
+# Attempt to deduce LDMX_BASE
+# Unfortunately, deducing the path to a script being sourced is not possible
+# using POSIX-compliant methods[1], so we need to fallback to separating
+# different running scenarios.
+#
+# [1]: https://stackoverflow.com/a/29835459
+#
+# Users can avoid all of this complication by pre-defining the LDMX_BASE
+# environment variable.
+###############################################################################
+if [ -z "${LDMX_BASE+x}" ]; then
+  _full_path() (
+    CDPATH=
+    cd -- "${1}" && pwd -P
+  )
+  _base_from_script() {
+    _full_path "$(dirname -- "${1}")/../../" 
+  } 
+  if [ -n "${ZSH_VERSION}" ]; then
+    # zsh defines ZSH_EVAL_CONTEXT holding the details on how
+    # this code is being executed
+    # disable warnings about undefined variable and string indexing
+    # shellcheck disable=SC2154,SC3057
+    LDMX_BASE="$(_base_from_script "${ZSH_EVAL_CONTEXT:file}")"
+  elif [ -n "${KSH_VERSION}" ]; then
+    # Korn defines the _ variable to the the file being sourced
+    # disable warning about undefined '_'
+    # shellcheck disable=SC3028
+    LDMX_BASE="$(_base_from_script "${_}")"
+  elif [ -n "${BASH_VERSION}" ]; then
+    # running from bash, bash defines the BASH_SOURCE array to help us
+    # find the location of this file
+    # disable warning about undefined variable and array references
+    # shellcheck disable=SC3028,SC3054
+    LDMX_BASE="$(_base_from_script "${BASH_SOURCE[0]}")"
+  else
+    # unable to deduce shell, resort to pwd
+    if expr "${PWD}" : ".*ldmx-sw$"; then
+      LDMX_BASE="$(_full_path ..)"
+    elif expr "${PWD}" : ".*ldmx-sw/scripts$"; then
+      LDMX_BASE="$(_full_path ../..)"
+    fi
+  fi
+  unset -f _full_path _base_from_script
+fi
+# re-export LDMX_BASE in case of user does inline variable definition like
+#   LDMX_BASE=/path/to/ldmx/base source /full/path/to/ldmx-denv-init.sh
+export LDMX_BASE
+
+###############################################################################
 # Check if the LDMX denv is initialized. If not, do a default initialization.
 ###############################################################################
-_default_denv_workspace="$(dirname "${BASH_SOURCE[0]}" )/../../"
-_default_denv_workspace="$(cd "${_default_denv_workspace}" && pwd -P)"
-if [ -z "${LDMX_BASE+x}" ]; then
-  export LDMX_BASE="${_default_denv_workspace}"
-fi
 if [ ! -f "${LDMX_BASE}/.denv/config" ]; then
   denv init --clean-env --name "ldmx" "ldmx/dev:latest" "${LDMX_BASE}"
 fi
