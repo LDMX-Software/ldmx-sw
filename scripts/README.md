@@ -34,10 +34,29 @@ within the shell of their choice.
 ### Initialization
 ```
 denv \
+  init \ # use denv special sub-command for initialization
   --clean-env \ # avoid passing environment variables
   --name "ldmx" \ # name this denv after our experiment :)
   "ldmx/dev:latest" \ # use the dev image
-  "${LDMX_BASE}" # path to directory containing ldmx-sw
+  <path-to-ldmx-base> # path to directory containing ldmx-sw
+```
+For example, if you are in the ldmx-sw directory,
+```
+denv init --clean-env --name ldmx ldmx/dev:latest ..
+```
+The default path is the current directory, so you could also init immediately
+after cloning ldmx-sw.
+```
+git clone --recursive git@github.com:ldmx-software/ldmx-sw.git
+denv init --clean-env --name ldmx ldmx/dev:latest
+```
+The default `--name` of a denv is the directory where `init` was run,
+so the final example (and the one I use on most of my machines) is
+```
+mkdir ldmx
+cd ldmx
+git clone --recursive git@github.com:ldmx-software/ldmx-sw.git
+denv init --clean-env ldmx/dev:latest
 ```
 
 ### Wrapping
