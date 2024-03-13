@@ -33,7 +33,8 @@ LHEEvent* LHEReader::readNextEvent() {
   LHEEvent* nextEvent = new LHEEvent(line);
 
   while (getline(ifs_, line)) {
-    if (line == "</event>") {
+    if (line == "</event>" || line == "<mgrwt>") {
+      // break if the event ended or in LHE 3.0 if we reach the mgrwt block
       break;
     }
 
