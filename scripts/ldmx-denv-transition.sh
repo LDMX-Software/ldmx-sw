@@ -12,7 +12,7 @@
 # doesn't need bash anymore if they use denv directly
 if [[ -z ${BASH} ]]; then
   echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
-  [[ "$SHELL" = *"bash"* ]] || echo "  Your default shell '$SHELL' isn't bash."
+  [[ "${SHELL}" = *"bash"* ]] || echo "  Your default shell '${SHELL}' isn't bash."
   cat <<\HELP
   If you'd prefer to not use bash, you can use 'denv' directly rather than
   this wrapper script.
@@ -62,6 +62,8 @@ __ldmx_config() {
 ###############################################################################
 __ldmx_mount() {
   echo "denv config mounts $*"
+  # intentionally re-splitting elements of an array
+  #shellcheck disable=SC2068
   denv config mounts $@
   return $?
 }
@@ -75,6 +77,8 @@ __ldmx_mount() {
 ###############################################################################
 __ldmx_setenv() {
   echo "denv config env copy $*"
+  # intentionally re-splitting elements of an array
+  #shellcheck disable=SC2068
   denv config env copy $@
   return $?
 }
@@ -126,14 +130,15 @@ ldmx() {
   # if there are no arguments, print the help
   [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
   # divide commands by number of arguments
-  case $1 in
+  cmd="__ldmx_${1}"
+  case "${1}" in
     help|config)
       if [[ "$#" != "1" ]]; then
-        __ldmx_${1}
-        echo "ERROR: 'ldmx ${1}' takes no arguments."
+        ${cmd}
+        echo "ERROR: 'ldmx ${1}' takes no arguments. (It was ignored.)"
         return 1
       fi
-      __ldmx_${1}
+      ${cmd}
       return $?
       ;;
     list|mount|setenv|source)
@@ -142,7 +147,7 @@ ldmx() {
         echo "ERROR: ldmx ${1} takes one argument."
         return 1
       fi
-      __ldmx_${1} "$2"
+      ${cmd} "$2"
       return $?
       ;;
     pull)
@@ -167,6 +172,8 @@ ldmx() {
       ;;
     *)
       echo "denv $*"
+      # intentionally re-splitting elements of an array
+      #shellcheck disable=SC2068
       denv $@
       return $?
       ;;
@@ -199,6 +206,7 @@ ldmx() {
 ###############################################################################
 __ldmx_complete_directory() {
   local _num_words="1"
+  #shellcheck disable=SC2206
   COMP_WORDS=(${COMP_WORDS[@]:_num_words})
   COMP_CWORD=$((COMP_CWORD - _num_words))
   _cd
@@ -217,13 +225,14 @@ __ldmx_complete_directory() {
 ###############################################################################
 __ldmx_complete_command() {
   # generate up-to-date list of options
-  local _options="$@ cmake make python3 root rootbrowse"
-  for ldmx_executable in ${LDMX_BASE}/ldmx-sw/install/bin/*; do
-    _options="$_options $(basename $ldmx_executable)"
+  local _options="$* cmake make python3 root rootbrowse"
+  for ldmx_executable in "${LDMX_BASE}/ldmx-sw/install/bin"/*; do
+    _options="${_options} $(basename "${ldmx_executable}")"
   done
 
   # match current word (perhaps empty) to the list of options
-  COMPREPLY=($(compgen -W "$_options" "$curr_word"))
+  #shellcheck disable=SC2207
+  COMPREPLY=($(compgen -W "${_options}" "${curr_word}"))
 }
 
 ###############################################################################
@@ -260,12 +269,12 @@ __ldmx_complete() {
   # disable readline filename completion
   compopt +o default
 
-  local curr_word="${COMP_WORDS[$COMP_CWORD]}"
+  local curr_word="${COMP_WORDS[${COMP_CWORD}]}"
 
-  if [[ "$COMP_CWORD" = "1" ]]; then
+  if [[ "${COMP_CWORD}" = "1" ]]; then
     # tab completing a main argument
     __ldmx_complete_command "config pull use run mount setenv"
-  elif [[ "$COMP_CWORD" = "2" ]]; then
+  elif [[ "${COMP_CWORD}" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
@@ -275,7 +284,8 @@ __ldmx_complete() {
         ;;
       pull|use)
         # container repositories after these commands
-        COMPREPLY=($(compgen -W "dev pro local" "$_curr_word"))
+        #shellcheck disable=SC2207
+        COMPREPLY=($(compgen -W "dev pro" "${_curr_word}"))
         ;;
       run|mount)
         #directories only after these commands
@@ -296,7 +306,7 @@ __ldmx_complete() {
         __ldmx_dont_complete
         ;;
       run)
-        if [[ "$COMP_CWORD" = "3" ]]; then
+        if [[ "${COMP_CWORD}" = "3" ]]; then
           # third argument to run should be an inside-container command
           __ldmx_complete_command
         else
