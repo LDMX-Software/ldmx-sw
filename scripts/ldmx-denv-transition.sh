@@ -151,7 +151,9 @@ ldmx() {
         echo "ERROR: 'ldmx pull' takes two arguments: <repo> <tag>."
         return 1
       fi
-      __ldmx_use "$2" "$3" "PULL_NO_MATTER_WHAT"
+      __ldmx_use "$2" "$3"
+      echo "denv config image pull"
+      denv config image pull
       return $?
       ;;
     use)
