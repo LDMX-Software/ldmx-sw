@@ -35,7 +35,7 @@ fi
 __ldmx_use() {
   local _repo_name="$1"
   local _image_tag="$2"
-  cmd="denv config image \"ldmx/${_repo_name}:${_image_tag}\""
+  cmd="denv config image ldmx/${_repo_name}:${_image_tag}"
   echo "${cmd}"
   ${cmd}
   return $?
