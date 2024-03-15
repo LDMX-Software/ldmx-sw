@@ -69,7 +69,7 @@ scripts wrapping denv for a specific shell should do the following.
 - Define the `ldmx` function with CLI defined below
 
 ### `ldmx` CLI Specification
-v0.0.0
+v0.0.0: just an idea
 
 - `ldmx`
   - `help` : print help message describing the CLI

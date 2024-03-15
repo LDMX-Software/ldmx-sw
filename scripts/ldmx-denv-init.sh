@@ -117,6 +117,8 @@ export LDMX_BASE
 
 ###############################################################################
 # Check if the LDMX denv is initialized. If not, do a default initialization.
+# TODO: update to `denv check --workspace` introduced in denv v0.7.0 to avoid
+#       reliance on internal implementation on how denv stores its config
 ###############################################################################
 if [ ! -f "${LDMX_BASE}/.denv/config" ]; then
   denv init --clean-env --name "ldmx" "ldmx/dev:latest" "${LDMX_BASE}"
