@@ -166,7 +166,7 @@ ldmx() {
       return $?
       ;;
     *)
-      echo "denv $@"
+      echo "denv $*"
       denv $@
       return $?
       ;;
