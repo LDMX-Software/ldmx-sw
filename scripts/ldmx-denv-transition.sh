@@ -102,8 +102,6 @@ __ldmx_help() {
       ldmx mount <dir>
     setenv   : Set an environment variable in the container when running
       ldmx setenv <environmentVariableName=value>
-    run     : Run a command at an input location in the container
-      ldmx run <directory> <sub-command> [<argument> ...]
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
       ldmx cmake ..
@@ -163,12 +161,6 @@ ldmx() {
         return 1
       fi
       __ldmx_use "$2" "$3"
-      return $?
-      ;;
-    run)
-      shift
-      echo "denv \"cd $1 && ${@:2}\""
-      denv "cd $1 && ${@:2}"
       return $?
       ;;
     *)
