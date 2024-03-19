@@ -17,7 +17,6 @@ const Acts::Transform3& DetectorElement::transform(const Acts::GeometryContext& 
   
   unsigned int elementId = unpackGeometryIdentifier(m_surface->geometryId());
   
-  std::cout<<"casting to GeometryContext* for sensor "<< elementId<<std::endl;
   // Check if the elementId is valid
   if (elementId > 9999 ) {
     // elementId not valid: return default transformation

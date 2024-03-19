@@ -659,8 +659,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
   
 
-  track_id_ = parameters.getParameter<int>("track_id", -1);
-  pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
+  //track_id_ = parameters.getParameter<int>("track_id", -1);
+  //pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
 
 
   bfield_ = parameters.getParameter<double>("bfield", -1.5);
