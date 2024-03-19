@@ -83,7 +83,7 @@ class DetectorElement : public Acts::DetectorElementBase {
   
   std::shared_ptr<Acts::Surface> m_surface;
   double m_thickness;
-  bool m_debug{true};
+  bool m_debug{false};
 };
 
 } //namespace
