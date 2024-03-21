@@ -80,13 +80,15 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
 
-  void FindSeedsFromMap(std::vector<ldmx::Track>& seeds);
+  void FindSeedsFromMap(ldmx::Tracks& seeds,
+                        const ldmx::Measurements& pmeas);
 
  private:
-  ldmx::Track SeedTracker(const std::vector<ldmx::Measurement>& vmeas,
+  ldmx::Track SeedTracker(const ldmx::Measurements& vmeas,
                           double xOrigin,
-                          const Acts::Vector3& perigee_location);
-
+                          const Acts::Vector3& perigee_location,
+                          const ldmx::Measurements& pmeas_tgt);
+  
   void LineParabolaToHelix(const Acts::ActsVector<5> parameters,
                            Acts::ActsVector<5>& helix_parameters,
                            Acts::Vector3 ref);
@@ -108,18 +110,38 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::string out_seed_collection_{"SeedTracks"};
   /// The name of the input hits collection to use in finding seeds..
   std::string input_hits_collection_{"TaggerSimHits"};
+  /// The name of the tagger Tracks (only for Recoil Seeding)
+  std::string tagger_trks_collection_{"TaggerTracks"};
   /// Location of the perigee for the helix track parameters.
   std::vector<double> perigee_location_{-700., 0., 0};
   /// Minimum cut on the momentum of the seeds.
   double pmin_{0.05};
+
   /// Maximum cut on the momentum of the seeds.
   double pmax_{8};
+
   /// Max d0 allowed for the seeds.
   double d0max_{20.};
+
   /// Min d0 allowed for the seeds.
   double d0min_{20.};
+
   /// Max z0 allowed for the seeds.
   double z0max_{60.};
+
+  double piover2_{1.5708};
+  
+  /// PhiRange
+  double phicut_{0.1};
+  
+  /// ThetaRange
+  double thetacut_{0.2};
+
+  /// loc0 / loc1 cuts
+  double loc0cut_{0.1};
+  double loc1cut_{0.3};
+  
+  
   /// List of stragies for seed finding.
   std::vector<std::string> strategies_{};
   double bfield_{1.5};
@@ -145,6 +167,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nfaild0min_{0};
   long nfaild0max_{0};
   long nfailz0max_{0};
+  long nfailphi_{0};
+  long nfailtheta_{0};
 
   // The measurements groups
 
