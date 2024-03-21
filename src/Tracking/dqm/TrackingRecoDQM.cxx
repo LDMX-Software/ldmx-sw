@@ -310,10 +310,10 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title+"qop",trk_qop);
     histograms_.fill(title+"phi",trk_phi);
     histograms_.fill(title+"theta",trk_theta);
-
+    histograms_.fill(title+"p",  std::abs(1./trk_qop));
+    
     if (doDetail) {
-      
-      histograms_.fill(title+"p",  std::abs(1./trk_qop));
+            
       histograms_.fill(title+"px", trk_mom[0]);
       histograms_.fill(title+"py", trk_mom[1]);
       histograms_.fill(title+"pz", trk_mom[2]);

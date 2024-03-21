@@ -254,8 +254,12 @@ class Track {
   
   ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);
-    
+  
 }; //Track
+
+typedef std::vector<ldmx::Track> Tracks;
+//typedef std::vector<std::reference_wrapper<const ldmx::Track>> Tracks;
+
 }//namespace ldmx
   
 #endif // TRACKING_EVENT_TRACK_H_
