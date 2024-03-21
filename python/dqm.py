@@ -30,18 +30,18 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         super().__init__(name, 'tracking::dqm::TrackingRecoDQM',
                          'Tracking')
         
-        nbins    = 400
-        d0min    = -15.
-        d0max    =  15.
-        z0min    = -45.
-        z0max    =  45.
-        phimin   = -0.2
-        phimax   = 0.2
-        thetamin = 1.4
-        thetamax = 1.7
-        qopmin   = -10
-        qopmax   = 10
-        pmax  =  8.
+        nbins    = 1000
+        d0min    = -50#-15.
+        d0max    = 50# 15.
+        z0min    = -200#-45.
+        z0max    = 200# 45.
+        phimin   = -2#-0.2
+        phimax   = 2#0.2
+        thetamin = -2#1.4
+        thetamax = 4#1.7
+        qopmin   = -50#-10
+        qopmax   = 50#10
+        pmax     =  8.
         self.doTruth= True
 
         self.build1DHistogram("N_tracks",
@@ -300,20 +300,21 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             
             chi2Fake_max    = 500
             chi2NdfFake_max = 50
+            scaling = 1.
             
             #Fake Plots
             self.build1DHistogram("fake_d0",
-                                  "fake d0 [mm]", nbins, d0min,d0max)
+                                  "fake d0 [mm]", nbins, scaling*d0min,scaling*d0max)
             self.build1DHistogram("fake_z0",
-                                  "fake z0 [mm]", nbins, z0min,z0max)
+                                  "fake z0 [mm]", nbins, scaling*z0min,scaling*z0max)
             self.build1DHistogram("fake_phi",
-                                  "fake #phi", nbins, phimin, phimax)
+                                  "fake #phi", nbins, scaling*phimin, scaling*phimax)
             self.build1DHistogram("fake_theta",
-                                  "fake #theta", nbins, thetamin,thetamax)
+                                  "fake #theta", nbins, scaling*thetamin,scaling*thetamax)
             self.build1DHistogram("fake_p",
                                   "fake p [GeV]",nbins,0,pmax)
             self.build1DHistogram("fake_qop",
-                                  "fake qOverP [GeV^{-1}]",nbins,-20,20)
+                                  "fake qOverP [GeV^{-1}]",nbins,-40,40)
             self.build1DHistogram("fake_nHits",
                                   "fake nHits",15,0,15)
             self.build1DHistogram("fake_Chi2",
