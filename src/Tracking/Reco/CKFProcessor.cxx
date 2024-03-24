@@ -235,7 +235,7 @@ void CKFProcessor::produce(framework::Event& event) {
   std::vector<int> seedPDGID;
   
   for (auto& seed : seed_tracks) {
-
+    
     // Transform the seed track to bound parameters
     std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
@@ -421,10 +421,7 @@ void CKFProcessor::produce(framework::Event& event) {
         calibration_context(), 
         sourceLinkAccessorDelegate, ckf_extensions,
         propagator_options, &(*extr_surface));
-    
-    
-    
-    
+        
 
     ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
     
@@ -551,8 +548,9 @@ void CKFProcessor::produce(framework::Event& event) {
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
     
     // Beam Origin unbounded surface
+    // TODO Fix the extrapolation surfaces configuration
     const std::shared_ptr<Acts::Surface> beamOrigin_surface =
-        tracking::sim::utils::unboundSurface(-700);
+        tracking::sim::utils::unboundSurface(-900);
     
     ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
     
@@ -565,7 +563,7 @@ void CKFProcessor::produce(framework::Event& event) {
     
     if (success)
       trk.addTrackState(tsAtTarget);
-
+    
     if (taggerTracking_) {
       ldmx_log(debug)<<"Beam Origin Extrapolation";
       ldmx::Track::TrackState tsAtBeamOrigin;
@@ -657,7 +655,6 @@ void CKFProcessor::onProcessEnd() {
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
   dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
-  
 
   //track_id_ = parameters.getParameter<int>("track_id", -1);
   //pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
@@ -684,7 +681,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   extrapolate_location_ = parameters.getParameter<std::vector<double>>(
       "extrapolate_location", {0., 0., 0.});
   use_seed_perigee_ = parameters.getParameter<bool>("use_seed_perigee", false);
-  
+
   ldmx_log(debug)<<" use_extrapolate_location ? " <<use_extrapolate_location_;
   ldmx_log(debug)<<" use_seed_perigee ? " <<use_seed_perigee_;
   
@@ -695,7 +692,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // output track collection
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "Tracks");
-  
   
   // keep track on which system tracking is running
   taggerTracking_ = parameters.getParameter<bool>("taggerTracking",true);

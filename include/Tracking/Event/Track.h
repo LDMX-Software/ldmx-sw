@@ -84,6 +84,9 @@ class Track {
    * This class is needed by ROOT when building the dictionary. 
    */
   void Print() const;
+
+  // To match the Framework Bus clear. It's doing nothing
+  void Clear() {};
     
   void setNhits(int nhits) {n_hits_ = nhits;}
   int getNhits() const { return n_hits_;}
@@ -128,7 +131,10 @@ class Track {
   //in units of e 
   int q() const {return perigee_pars_[4] > 0 ? 1 : -1;}
   
-  //Add measurement to track
+  // Add measurement indices to tracks
+  // For reco  tracks they corresponds to the indices in the measurement container
+  // For truth tracks they corresponds to the indices of the SimHitCointainer
+  
   void addMeasurementIndex(unsigned int measIdx) {meas_idxs_.push_back(measIdx);}
   std::vector<unsigned int> getMeasurementsIdxs() const{return meas_idxs_;} 
   
