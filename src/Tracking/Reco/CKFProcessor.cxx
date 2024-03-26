@@ -404,7 +404,9 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::TrackContainer tc{vtc, mtj};
   
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
-    
+
+    ldmx_log(debug)<< "Starting loop to find tracks from seeds "<<trackId<<std::endl;
+
     
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0 ) {
@@ -414,6 +416,9 @@ void CKFProcessor::produce(framework::Event& event) {
         propagator_options.mass = 938 * Acts::UnitConstants::MeV;
     }
 
+
+    ldmx_log(debug)<<"CKF Options"<<std::endl;
+    
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
         geometry_context(), 
@@ -425,7 +430,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
     ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
     
-
     auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
     
     if (not results.ok()) {
@@ -433,6 +437,8 @@ void CKFProcessor::produce(framework::Event& event) {
           <<"CKF Fit failed"<<std::endl;
       continue;
     }
+
+    ldmx_log(debug)<<"Track container size "<<tc.size()<<" trackId "<<trackId<<std::endl;
     
     // No track found
     if (tc.size() < trackId + 1)
@@ -576,7 +582,7 @@ void CKFProcessor::produce(framework::Event& event) {
         trk.addTrackState(tsAtBeamOrigin);
       
     }
-
+    
     // Recoil Extrapolation to ECAL only
     if (!taggerTracking_) {
     
@@ -591,6 +597,8 @@ void CKFProcessor::produce(framework::Event& event) {
       if (success)
         trk.addTrackState(tsAtEcal);
     }
+
+    ldmx_log(debug)<<"Done with extrapolations"<<std::endl;
     
     
     //Truth matching
@@ -600,12 +608,17 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
+
+
+    ldmx_log(debug)<<"Checking nhits on track"<<std::endl;
     
     //At least 8 hits and p > 50 MeV
     if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
       tracks.push_back(trk);
       ntracks_++;
     }
+
+    ldmx_log(debug)<<"Track passed. Added to container. Tracks Reco in Event "<< ntracks_<<std::endl;
     
   }    // loop seed track parameters
   

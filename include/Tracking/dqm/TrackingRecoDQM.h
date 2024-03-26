@@ -10,9 +10,6 @@
 
 namespace tracking::dqm {
 
-
-
-
 enum PIDBins {
   kminus     = -4,
   antiproton,
@@ -34,7 +31,7 @@ enum PIDBins {
     ~TrackingRecoDQM() = default;
 
     void analyze(const framework::Event& event) final override;
-
+    
     void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                          const std::string title,
                          const bool& doDetail,
@@ -81,7 +78,7 @@ enum PIDBins {
     bool debug_{false};
 
     // Truth Track collection
-    std::shared_ptr<std::vector<ldmx::TruthTrack>> truthTrackCollection_{nullptr};
+    std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};
 
     // Ecal scoring plane hits
     std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
