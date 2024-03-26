@@ -92,7 +92,7 @@ class Track {
   int getNhits() const { return n_hits_;}
 
 
-  std::optional<TrackState> getTrackState(TrackStateType tstype) {
+  std::optional<TrackState> getTrackState(TrackStateType tstype) const {
     
     for (auto ts : trackStates_) 
       if (ts.ts_type == tstype)
