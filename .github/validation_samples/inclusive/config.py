@@ -20,8 +20,8 @@ import sys
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
-p.histogramFile = 'hist_8gev.root'
-p.outputFiles = ['events_8gev.root']
+p.histogramFile = 'hist.root'
+p.outputFiles = ['events.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
