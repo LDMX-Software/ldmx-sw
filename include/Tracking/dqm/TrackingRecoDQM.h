@@ -48,9 +48,9 @@ enum PIDBins {
      *
      */
 
-    void TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
-
-    void TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
+    void TrackStateMonitoring(const ldmx::Tracks& tracks,
+                              ldmx::TrackStateType ts_type,
+                              const std::string& ts_title);
     /**
      * Configure the analyzer using the given user specified parameters.
      *
@@ -76,6 +76,7 @@ enum PIDBins {
     std::string subdetector_{"Tagger"};
     bool doTruthComparison{false};
     bool debug_{false};
+    std::vector<std::string> trackStates_;
 
     // Truth Track collection
     std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};

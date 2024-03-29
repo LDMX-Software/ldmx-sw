@@ -1,6 +1,7 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
+
 #include <iostream>
 #include <algorithm>
 
@@ -14,7 +15,11 @@ void TrackingRecoDQM::configure(framework::config::Parameters &parameters) {
   title_           = parameters.getParameter<std::string>("title","tagger_trk_");
   trackProb_cut_   = parameters.getParameter<double>("trackProb_cut",0.5);
   subdetector_     = parameters.getParameter<std::string>("subdetector","Tagger");
-  
+  trackStates_     = parameters.getParameter<std::vector<std::string>>("trackStates",{});
+
+  ldmx_log(info)<<"Track Collection "<<trackCollection_<<std::endl;
+  ldmx_log(info)<<"Truth Collection "<<truthCollection_<<std::endl;
+    
   pidmap[-321]  = PIDBins::kminus;
   pidmap[321]   = PIDBins::kplus;
   pidmap[-211]  = PIDBins::piminus;
@@ -30,7 +35,10 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   
   ldmx_log(debug)<<"DQM Reading in::"<<trackCollection_<<std::endl;
   
-  if (!event.exists(trackCollection_)) return;
+  if (!event.exists(trackCollection_)) {
+    ldmx_log(error)<<"ERROR:: trackCollection " <<trackCollection_<<" not in event"<<std::endl;
+    return;
+  }
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
   
   // The truth track collection
@@ -75,12 +83,31 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   
     
   // Track Extrapolation to Ecal Monitoring
+
+
+
   
-  //TrackEcalScoringPlaneMonitoring(tracks);
-  TrackTargetScoringPlaneMonitoring(tracks);
+  if (std::find(trackStates_.begin(),trackStates_.end(),"target") != trackStates_.end()) {
+    TrackStateMonitoring(tracks,
+                         ldmx::TrackStateType::AtTarget,
+                         "target");
+  }
+
+  if (std::find(trackStates_.begin(),trackStates_.end(),"ecal") != trackStates_.end()) {
+    TrackStateMonitoring(tracks,
+                         ldmx::TrackStateType::AtECAL,
+                         "ecal");
+  }
+
+  if (std::find(trackStates_.begin(),trackStates_.end(),"beamOrigin") != trackStates_.end()) {
+    TrackStateMonitoring(tracks,
+                         ldmx::TrackStateType::AtBeamOrigin,
+                         "beamOrigin");
+  }
+
   
   // Technical Efficiency plots
-   EfficiencyPlots(tracks,title_);
+  EfficiencyPlots(tracks,title_);
   
   // Tagger Recoil Matching
     
@@ -95,8 +122,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 void TrackingRecoDQM::onProcessEnd() {
 
   //Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
-  
-  
+    
 } 
 
 
@@ -108,8 +134,8 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
   for (auto& truth_trk : *(truthTrackCollection_)) {
 
     double truth_phi   = truth_trk.getPhi();
-    double truth_d0   = truth_trk.getD0();
-    double truth_z0   = truth_trk.getZ0();
+    double truth_d0    = truth_trk.getD0();
+    double truth_z0    = truth_trk.getZ0();
     double truth_theta = truth_trk.getTheta();
     double truth_qop   = truth_trk.getQoP();
     double truth_p     = 1. / abs(truth_trk.getQoP());
@@ -131,8 +157,6 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     
     if (pidmap.count(truth_trk.getPdgID()) != 0) {
       histograms_.fill(title+"truth_PID", pidmap[truth_trk.getPdgID()]);
-
-
 
       //TODO do this properly.
       
@@ -170,9 +194,8 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
         
         histograms_.fill(title+"truth_proton_p",truth_p);
       }
-            
     }
-
+    
   } // loop on truth tracks
   
   
@@ -194,7 +217,7 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     //Match not found
     if (!truth_trk)
       return;
-
+    
     double truth_phi   = truth_trk->getPhi();
     double truth_d0    = truth_trk->getD0();
     double truth_z0    = truth_trk->getZ0();
@@ -224,8 +247,6 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     
     if (pidmap.count(truth_trk->getPdgID()) != 0) {
       histograms_.fill(title+"match_PID", pidmap[truth_trk->getPdgID()]);
-
-
 
       //TODO do this properly.
       
@@ -462,110 +483,12 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
 }//Track Monitoring
 
 
-void TrackingRecoDQM::TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks) {
+void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
+                                           ldmx::TrackStateType ts_type,
+                                           const std::string& ts_title) {
   
-  // Select the scoring plane hits that belong to the front of the ECAL
-  // The front of the ecal is selected by checking that id_ & 0xfff is equal to 31.
-
-  std::vector<ldmx::SimTrackerHit> sel_ecal_spHits;
-
-  // TODO Use reference instead to avoid copy?
-
-  for (auto sp_hit : *(ecal_scoring_hits_)) {
-    
-    if (sp_hit.getMomentum()[2] > 0 && ((sp_hit.getID() & 0xfff) == 31)) {
-      
-      sel_ecal_spHits.push_back(sp_hit);
-    }
-    
-  }
-
   for (auto& track : tracks) {
     
-    for (auto& sp_hit : sel_ecal_spHits) {
-
-
-      if (track.getTrackID() == sp_hit.getTrackID()) {
-        
-        // Get the Track extrapolated position
-        // For the moment the trackState at the ECAL surface is the last in the vector
-        // And the size of the vector is 2. So I hardcoded 1. 
-
-        if (track.getTrackStates().size() < 2)
-          continue;                
-        
-        ldmx::Track::TrackState ecalState = track.getTrackStates()[1];
-        
-        //Covariance matrix
-        Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(ecalState.cov);
-        
-        double sigmad0    = sqrt(cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0));
-        double sigmaz0    = sqrt(cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1));
-        double sigmaphi   = sqrt(cov(Acts::BoundIndices::eBoundPhi ,Acts::BoundIndices::eBoundPhi));
-        double sigmatheta = sqrt(cov(Acts::BoundIndices::eBoundTheta,Acts::BoundIndices::eBoundTheta));
-        double sigmaqop   = sqrt(cov(Acts::BoundIndices::eBoundQOverP,Acts::BoundIndices::eBoundQOverP)); 
-        
-        double sigmaloc0 = sqrt(cov(0));
-        double sigmaloc1 = sqrt(cov(7));
-                
-        double trk_qop    = track.getQoP();
-        double trk_p      = 1./abs(trk_qop);
-        
-        // Here is where you add the histograms
-        // This gets the track local position 0
-        // loc0 is along global X
-        // loc1 is along global Y
-        
-        //Check that the track state is filled
-        if (ecalState.params.size() < 5)
-          continue;
-        
-        histograms_.fill(title_+"trk_ecal_loc0", ecalState.params[0]);
-        histograms_.fill(title_+"trk_ecal_loc1", ecalState.params[1]);
-        
-        // This gets the hit global position Y
-        
-        auto scoring_plane_hit_pos = sp_hit.getPosition();
-        histograms_.fill(title_+"ecal_sp_hit_X", scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"ecal_sp_hit_Y", scoring_plane_hit_pos[1]);
-
-        // TH1F  The difference(residual) between end_loc0 and sp_hit_X
-        histograms_.fill(title_+"trk_ecal_loc0-sp_hit_X", ecalState.params[0]-scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"trk_ecal_loc1-sp_hit_Y", ecalState.params[1]-scoring_plane_hit_pos[1]);
-
-        // TH1F  The pulls of loc0 and loc1
-        histograms_.fill(title_+"ecal_Pulls_of_loc0", (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"ecal_Pulls_of_loc1", (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
-        
-        // TH2F  residual vs Nhits
-        histograms_.fill(title_+"ecal_res_loc0-vs-N_hits", track.getNhits(), ecalState.params[0]-scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"ecal_res_loc1-vs-N_hits", track.getNhits(), ecalState.params[1]-scoring_plane_hit_pos[1]);
-
-        
-        // TH2F  pulls vs Nhits
-        histograms_.fill(title_+"ecal_pulls_loc0-vs-N_hits", track.getNhits(),(ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"ecal_pulls_loc1-vs-N_hits", track.getNhits(), (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
-      
-          
-        // TH2F  residual vs trk_p
-        histograms_.fill(title_+"ecal_res_loc0-vs-trk_p",  trk_p,  ecalState.params[0]-scoring_plane_hit_pos[0]);
-        histograms_.fill(title_+"ecal_res_loc1-vs-trk_p",  trk_p,  ecalState.params[1]-scoring_plane_hit_pos[1]);
-
-        // TH2F  pulls vs trk_p
-        histograms_.fill(title_+"ecal_pulls_loc0-vs-trk_p",trk_p,  (ecalState.params[0]-scoring_plane_hit_pos[0])/sigmaloc0);
-        histograms_.fill(title_+"ecal_pulls_loc1-vs-trk_p",trk_p,  (ecalState.params[1]-scoring_plane_hit_pos[1])/sigmaloc1);
-      
-      }
-      
-    } // loop on sp_hits
-  }// loop on tracks
-  
-}
-
-void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks) {
-
-  for (auto& track : tracks) {
-
     //Match the tracks to truth
     ldmx::Track* truth_trk = nullptr;
     
@@ -585,8 +508,8 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
 
     // TruthTrack doesn't have the right amount of states
     
-    auto trk_ts   = track.getTrackState(ldmx::TrackStateType::AtTarget);
-    auto truth_ts = truth_trk->getTrackState(ldmx::TrackStateType::AtTarget);
+    auto trk_ts   = track.getTrackState(ts_type);
+    auto truth_ts = truth_trk->getTrackState(ts_type);
         
     if (!trk_ts.has_value())
       continue;
@@ -626,36 +549,36 @@ void TrackingRecoDQM::TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::
     if (TargetState.params.size() < 5)
       continue;
     
-    histograms_.fill(title_+"trk_target_loc0", track_state_loc0);
-    histograms_.fill(title_+"trk_target_loc1", track_state_loc1);
-    histograms_.fill(title_+"target_sp_hit_X", truth_state_loc0);
-    histograms_.fill(title_+"target_sp_hit_Y", truth_state_loc1);
+    histograms_.fill(title_+"trk_"+ts_title+"_loc0", track_state_loc0);
+    histograms_.fill(title_+"trk_"+ts_title+"_loc1", track_state_loc1);
+    histograms_.fill(title_+ts_title+"_sp_hit_X", truth_state_loc0);
+    histograms_.fill(title_+ts_title+"_sp_hit_Y", truth_state_loc1);
     
     // TH1F  The difference(residual) between end_loc0 and sp_hit_X
-    histograms_.fill(title_+"trk_target_loc0-sp_hit_X", track_state_loc0-truth_state_loc0);
-    histograms_.fill(title_+"trk_target_loc1-sp_hit_Y", track_state_loc1-truth_state_loc1);
+    histograms_.fill(title_+"trk_"+ts_title+"_loc0-sp_hit_X", track_state_loc0-truth_state_loc0);
+    histograms_.fill(title_+"trk_"+ts_title+"_loc1-sp_hit_Y", track_state_loc1-truth_state_loc1);
     
     // TH1F  The pulls of loc0 and loc1
-    histograms_.fill(title_+"target_Pulls_of_loc0", (track_state_loc0-truth_state_loc0)/sigmaloc0);
-    histograms_.fill(title_+"target_Pulls_of_loc1", (track_state_loc1-truth_state_loc1)/sigmaloc1);
+    histograms_.fill(title_+ts_title+"_Pulls_of_loc0", (track_state_loc0-truth_state_loc0)/sigmaloc0);
+    histograms_.fill(title_+ts_title+"_Pulls_of_loc1", (track_state_loc1-truth_state_loc1)/sigmaloc1);
     
     // TODO:: TH1F The pulls of phi, theta, qop
     
     // TH2F  residual vs Nhits
-    histograms_.fill(title_+"target_res_loc0-vs-N_hits", track.getNhits(), track_state_loc0-truth_state_loc0);
-    histograms_.fill(title_+"target_res_loc1-vs-N_hits", track.getNhits(), track_state_loc1-truth_state_loc1);
+    histograms_.fill(title_+ts_title+"_res_loc0-vs-N_hits", track.getNhits(), track_state_loc0-truth_state_loc0);
+    histograms_.fill(title_+ts_title+"_res_loc1-vs-N_hits", track.getNhits(), track_state_loc1-truth_state_loc1);
         
     // TH2F  pulls vs Nhits
-    histograms_.fill(title_+"target_pulls_loc0-vs-N_hits", track.getNhits(), (track_state_loc0-truth_state_loc0)/sigmaloc0);
-    histograms_.fill(title_+"target_pulls_loc1-vs-N_hits", track.getNhits(), (track_state_loc1-truth_state_loc1)/sigmaloc1);
+    histograms_.fill(title_+ts_title+"_pulls_loc0-vs-N_hits", track.getNhits(), (track_state_loc0-truth_state_loc0)/sigmaloc0);
+    histograms_.fill(title_+ts_title+"_pulls_loc1-vs-N_hits", track.getNhits(), (track_state_loc1-truth_state_loc1)/sigmaloc1);
     
     // TH2F  residual vs trk_p
-    histograms_.fill(title_+"target_res_loc0-vs-trk_p",  trk_p,  track_state_loc0-truth_state_loc0);
-    histograms_.fill(title_+"target_res_loc1-vs-trk_p",  trk_p,  track_state_loc1-truth_state_loc1);
+    histograms_.fill(title_+ts_title+"_res_loc0-vs-trk_p",  trk_p,  track_state_loc0-truth_state_loc0);
+    histograms_.fill(title_+ts_title+"_res_loc1-vs-trk_p",  trk_p,  track_state_loc1-truth_state_loc1);
 
     // TH2F  pulls vs trk_p
-    histograms_.fill(title_+"target_pulls_loc0-vs-trk_p",trk_p,  (track_state_loc0-truth_state_loc0)/sigmaloc0);
-    histograms_.fill(title_+"target_pulls_loc1-vs-trk_p",trk_p,  (track_state_loc1-truth_state_loc1)/sigmaloc1);
+    histograms_.fill(title_+ts_title+"_pulls_loc0-vs-trk_p",trk_p,  (track_state_loc0-truth_state_loc0)/sigmaloc0);
+    histograms_.fill(title_+ts_title+"_pulls_loc1-vs-trk_p",trk_p,  (track_state_loc1-truth_state_loc1)/sigmaloc1);
     
     
     
