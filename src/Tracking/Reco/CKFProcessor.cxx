@@ -536,7 +536,7 @@ void CKFProcessor::produce(framework::Event& event) {
     //w direction along +X
     surf_rotation(0,2) = 1;
 
-    const double ECAL_SCORING_PLANE  = 240.5;
+    const double ECAL_SCORING_PLANE  = 240.;
     Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
     Acts::Translation3 surf_translation(pos);
     Acts::Transform3 surf_transform(surf_translation * surf_rotation);
@@ -556,7 +556,7 @@ void CKFProcessor::produce(framework::Event& event) {
     // Beam Origin unbounded surface
     // TODO Fix the extrapolation surfaces configuration
     const std::shared_ptr<Acts::Surface> beamOrigin_surface =
-        tracking::sim::utils::unboundSurface(-900);
+        tracking::sim::utils::unboundSurface(-800.1,-44.,0.);
     
     ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
     
@@ -694,7 +694,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   extrapolate_location_ = parameters.getParameter<std::vector<double>>(
       "extrapolate_location", {0., 0., 0.});
   use_seed_perigee_ = parameters.getParameter<bool>("use_seed_perigee", false);
-
+  
   ldmx_log(debug)<<" use_extrapolate_location ? " <<use_extrapolate_location_;
   ldmx_log(debug)<<" use_seed_perigee ? " <<use_seed_perigee_;
   

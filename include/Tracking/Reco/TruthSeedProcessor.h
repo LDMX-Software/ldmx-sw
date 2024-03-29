@@ -108,7 +108,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @param particle The SimParticle to make a seed from.
    */
   void createTruthTrack(const ldmx::SimParticle &particle,
-                        ldmx::TruthTrack& trk,
+                        ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
@@ -121,7 +121,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    */
   void createTruthTrack(const ldmx::SimParticle &particle,
                         const ldmx::SimTrackerHit &hit,
-                        ldmx::TruthTrack& trk,
+                        ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
   /**
@@ -135,7 +135,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   
   void createTruthTrack(const std::vector<double> &pos_vec,
                         const std::vector<double> &p_vec, int charge,
-                        ldmx::TruthTrack& trk,
+                        ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
   
   /**
@@ -156,11 +156,20 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    * @return seed The seed track
    */
 
-  ldmx::Track seedFromTruth(const ldmx::TruthTrack& tt,
+  ldmx::Track seedFromTruth(const ldmx::Track& tt,
                             bool seed_smearing);
   
 
 
+  ldmx::Track RecoilFullSeed(const ldmx::SimParticle &particle,
+                             const int trackID, 
+                             const ldmx::SimTrackerHit& hit,
+                             const ldmx::SimTrackerHit& ecal_hit,
+                             const std::map<int,std::vector<int>>& hit_count_map,
+                             const std::shared_ptr<Acts::Surface>& origin_surface,
+                             const std::shared_ptr<Acts::Surface>& target_surface,
+                             const std::shared_ptr<Acts::Surface>& ecal_surface);
+  
   /**
    * This method retrieves the beam electron and forms a full seed
    * The seed parameters are the truth parameters from the beam electron stored at the beam origin
@@ -258,6 +267,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   double relpsmear_;
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
+  std::vector<double> beamOrigin_{-880.1,-44.,0.};
     
 };
 }  // namespace tracking::reco
