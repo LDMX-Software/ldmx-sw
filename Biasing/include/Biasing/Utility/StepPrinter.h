@@ -45,6 +45,12 @@ class StepPrinter : public simcore::UserAction {
   int trackID_{-9999};
   std::string processName_{"UNDEFINED"};
   int depth_{0};
+  std::unordered_map<int,int> trackParents_{};
+
+
+  /// Check if the given track is a descendent of the track we are interested in
+  /// up to a certain depth
+  bool isDescendent(int trackID) const;
 
 };  // StepPrinter
 
