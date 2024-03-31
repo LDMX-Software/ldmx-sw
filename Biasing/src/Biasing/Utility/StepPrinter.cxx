@@ -43,6 +43,11 @@ void StepPrinter::stepping(const G4Step* step) {
 
   const auto trackID{track->GetTrackID()};
   const auto parent{track->GetParentID()};
+  // Don't bother filling the map if we aren't going to use it
+  if (depth > 0) {
+    trackParents_[trackID] = parent;
+  }
+
   auto process{track->GetCreatorProcess()};
   std::string processName{process ? process->GetProcessName() : "Primary"};
   // Unwrap biasing part of process name if present
@@ -51,17 +56,16 @@ void StepPrinter::stepping(const G4Step* step) {
     processName = processName.substr(pos, processName.size() - pos - 1);
   }
 
-  // Print if any of the following conditions are true
-  if (!((trackID == trackID_)  // We are the track of interest
-        || (processName ==
-            processName_)  // We were created by the process of interest
-        || (depth_ > 0 &&
-            parent == trackID_)  // Our parent was the track of interest
-        )) {
-    // We aren't an interesting track!
+  // This could be a negated condition, but it is easier to read this way
+  //
+  if (trackID == trackID_ || // We are the track of interest
+      isDescendent(trackID_) || // We are a descendent of the track of interest
+      processName == processName_ // The parent process was the process of interest
+  ) {
+    // This is an interesting track -> Carry on processing
+  }  else {
     return;
   }
-
   // Get the particle name.
   const auto particleName{track->GetParticleDefinition()->GetParticleName()};
 
