@@ -56,6 +56,8 @@ function(
         -Wno-sign-compare
         # Do we care about this one?
         -Wno-double-promotion # warn if float is implicit promoted to double
+        # ABI-related warnings that we can't do much about
+        -Wno-psabi
       )
       list(APPEND CLANG_WARNINGS
         ${DISABLED_WARNINGS}
