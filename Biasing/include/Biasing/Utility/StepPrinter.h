@@ -50,7 +50,7 @@ class StepPrinter : public simcore::UserAction {
 
   /// Check if the given track is a descendent of the track we are interested in
   /// up to a certain depth
-  bool isDescendent(int trackID) const;
+  bool isDescendent(const G4Track* track) const;
 
 };  // StepPrinter
 
