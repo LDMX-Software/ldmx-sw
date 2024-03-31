@@ -23,6 +23,7 @@ PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   productsPdgID_ = parameters.getParameter<std::vector<int> >("pdg_ids");
+  min_e = parameters.getParameter<double>("min_e");
 }
 
 PhotoNuclearProductsFilter::~PhotoNuclearProductsFilter() {}
@@ -54,7 +55,9 @@ void PhotoNuclearProductsFilter::stepping(const G4Step* step) {
     // Check if the PDG ID is in the list of products of interest
     if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdgID) !=
         productsPdgID_.end()) {
-      productFound = true;
+      if (secondary->GetKineticEnergy() > min_e) {
+        productFound = true;
+      }
       break;
     }
   }
