@@ -17,7 +17,8 @@ StepPrinter::StepPrinter(const std::string& name,
   depth_ = parameters.getParameter<int>("depth");
 }
 
-bool isDescendent(int trackID) const {
+bool StepPrinter::isDescendent(const G4Track* track) const {
+  auto trackID{track->GetTrackID()};
   int currentDepth{0};
   int currentTrackID{trackID};
   // Walk the tree until we either no longer have a parent or we reach the
@@ -44,7 +45,7 @@ void StepPrinter::stepping(const G4Step* step) {
   const auto trackID{track->GetTrackID()};
   const auto parent{track->GetParentID()};
   // Don't bother filling the map if we aren't going to use it
-  if (depth > 0) {
+  if (depth_ > 0) {
     trackParents_[trackID] = parent;
   }
 
@@ -59,7 +60,7 @@ void StepPrinter::stepping(const G4Step* step) {
   // This could be a negated condition, but it is easier to read this way
   //
   if (trackID == trackID_ || // We are the track of interest
-      isDescendent(trackID_) || // We are a descendent of the track of interest
+      isDescendent(track) || // We are a descendent of the track of interest
       processName == processName_ // The parent process was the process of interest
   ) {
     // This is an interesting track -> Carry on processing
