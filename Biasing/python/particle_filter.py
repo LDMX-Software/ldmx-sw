@@ -25,6 +25,7 @@ class PhotoNuclearProductsFilter(simcfg.UserAction) :
         include.library()
 
         self.pdg_ids = [ ]
+        self.min_e = 0.
 
     def kaon() :
         """ Configuration for filtering photo-nuclear events whose products don't contain a kaon.
