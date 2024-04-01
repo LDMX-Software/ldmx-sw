@@ -12,6 +12,20 @@ function(
   option(PEDANTIC_WARNINGS "Build LDMX-sw with pedantic compiler warnings enabled" OFF)
   option(ADDITIONAL_WARNINGS "Build LDMX-sw with additional compiler warnings enabled" OFF)
 
+  if("${DISABLED_WARNINGS}" STREQUAL "")
+    set(DISABLED_WARNINGS
+      # These are used so much in ldmx-sw that we can't warn on them
+      -Wno-old-style-cast # warn for c-style casts
+      -Wno-unused-parameter
+      -Wno-sign-conversion # warn on sign conversions
+      -Wno-conversion # warn on type conversions that may lose data
+      -Wno-sign-compare
+      # Do we care about this one?
+      -Wno-double-promotion # warn if float is implicit promoted to double
+      # ABI-related warnings that we can't do much about
+      -Wno-psabi
+    )
+  endif()
   if (ADDITIONAL_WARNINGS)
     if(PEDANTIC_WARNINGS)
       set(PEDANTIC_WARNINGS_ENABLED
@@ -19,7 +33,7 @@ function(
       )
     else()
       set(PEDANTIC_WARNINGS_ENABLED "")
-    endif()
+    endif() # PEDANTIC_WARNINGS
     if("${CLANG_WARNINGS}" STREQUAL "")
       set(CLANG_WARNINGS
         -Wall
@@ -36,28 +50,16 @@ function(
         ${DISABLED_WARNINGS}
         ${PEDANTIC_WARNINGS_ENABLED}
       )
-    endif()
+    endif() # CLANG_WARNINGS is not set
 
     if("${GCC_WARNINGS}" STREQUAL "")
+
       set(GCC_WARNINGS
         ${CLANG_WARNINGS}
         -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
         -Wduplicated-cond # warn if if / else chain has duplicated conditions
         -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
         -Wuseless-cast # warn if you perform a cast to the same type
-      )
-    if("${DISABLED_WARNINGS}" STREQUAL "")
-      set(DISABLED_WARNINGS
-        # These are used so much in ldmx-sw that we can't warn on them
-        -Wno-old-style-cast # warn for c-style casts
-        -Wno-unused-parameter
-        -Wno-sign-conversion # warn on sign conversions
-        -Wno-conversion # warn on type conversions that may lose data
-        -Wno-sign-compare
-        # Do we care about this one?
-        -Wno-double-promotion # warn if float is implicit promoted to double
-        # ABI-related warnings that we can't do much about
-        -Wno-psabi
       )
       list(APPEND CLANG_WARNINGS
         ${DISABLED_WARNINGS}
@@ -79,12 +81,14 @@ function(
         # https://stackoverflow.com/questions/50646334/maybe-unused-on-member-variable-gcc-warns-incorrectly-that-attribute-is
         -Wno-attributes
       )
-    endif()
 
-    endif()
+    endif() # GCC_WARNINGS is not set
 
-  endif()
 
+  else()
+    SET(CLANG_WARNINGS "${DISABLED_WARNINGS}")
+    SET(GCC_WARNINGS "${DISABLED_WARNINGS}")
+  endif() # ADDITIONAL_WARNINGS
 
   if(WARNINGS_AS_ERRORS)
     list(APPEND CLANG_WARNINGS -Werror)
