@@ -74,7 +74,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   
   ldmx_log(debug)<<"Track Monitoring on Unique Tracks"<<std::endl;
-  TrackMonitoring(uniqueTracks,title_,true,false);
+  TrackMonitoring(uniqueTracks,title_,true,true);
 
   ldmx_log(debug)<<"Track Monitoring on duplicates and fakes"<<std::endl;
   // Fakes and duplicates
