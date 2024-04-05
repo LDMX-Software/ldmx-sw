@@ -5,6 +5,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
+#include "SimCore/G4User/TrackingAction.h"
 
 namespace biasing {
 namespace utility {
@@ -48,9 +49,6 @@ class StepPrinter : public simcore::UserAction {
   std::unordered_map<int,int> trackParents_{};
 
 
-  /// Check if the given track is a descendent of the track we are interested in
-  /// up to a certain depth
-  bool isDescendent(const G4Track* track) const;
 
 };  // StepPrinter
 
