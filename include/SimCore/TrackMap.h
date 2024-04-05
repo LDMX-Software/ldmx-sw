@@ -42,6 +42,12 @@ class TrackMap {
   }
 
   /**
+   * Check if the track with the given ID is a descendant of the track with
+   * the given ancestor ID up to a given depth.
+   */
+  bool isDescendant(int trackID, int ancestorID, int maximum_depth) const;
+
+  /**
    * Find a trajectory's nearest parent that is incident on the calorimeter
    * region. We assume that the primary particles have a parent ID of 0.
    *
