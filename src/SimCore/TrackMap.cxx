@@ -6,13 +6,20 @@
 
 namespace simcore {
 
-void TrackMap::isDescendant(int trackID, int ancestorID,
+bool TrackMap::isDescendant(int trackID, int ancestorID,
                             int maximum_depth) const {
   int current_depth{0};
   int current_track{trackID};
-  while (current_depth < maximum_depth) {
+  // Walk the tree until we either no longer have a parent or we reach the
+  // desired depth
+  while (current_depth < maximum_depth &&
+         (ancestry_.find(current_track) != ancestry_.end())) {
+    // See if we have encountered the parent of the current track
+    //
+    // operator[] is not const, so we need to use at()
     current_track = ancestry_.at(current_track).first;
     if (current_track == ancestorID) {
+      // If one of the parents is the track of interest, we are done!
       return true;
     }
     current_depth++;
