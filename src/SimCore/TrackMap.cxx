@@ -6,6 +6,19 @@
 
 namespace simcore {
 
+void TrackMap::isDescendant(int trackID, int ancestorID,
+                            int maximum_depth) const {
+  int current_depth{0};
+  int current_track{trackID};
+  while (current_depth < maximum_depth) {
+    current_track = ancestry_.at(current_track).first;
+    if (current_track == ancestorID) {
+      return true;
+    }
+    current_depth++;
+  }
+  return false;
+}
 void TrackMap::insert(const G4Track* track) {
   ancestry_[track->GetTrackID()] =
       std::make_pair(track->GetParentID(), isInCalorimeterRegion(track));
