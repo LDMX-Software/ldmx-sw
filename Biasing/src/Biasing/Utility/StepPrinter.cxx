@@ -38,12 +38,17 @@ void StepPrinter::stepping(const G4Step* step) {
 
   // This could be a negated condition, but it is easier to read this way
   //
-  if (trackID == trackID_ || // We are the track of interest
-      isDescendent(track) || // We are a descendent of the track of interest
-      processName == processName_ // The parent process was the process of interest
+  auto trackMap{simcore::g4user::TrackingAction::get()->getTrackMap()};
+  auto found{isDescendent(track)};
+  if (trackID == trackID_ ||  // We are the track of interest
+      trackMap.isDescendant(
+          trackID, trackID_,
+          depth_) ||  // We are a descendent of the track of interest
+      processName ==
+          processName_  // The parent process was the process of interest
   ) {
     // This is an interesting track -> Carry on processing
-  }  else {
+  } else {
     return;
   }
   // Get the particle name.
