@@ -39,7 +39,6 @@ void StepPrinter::stepping(const G4Step* step) {
   // This could be a negated condition, but it is easier to read this way
   //
   auto trackMap{simcore::g4user::TrackingAction::get()->getTrackMap()};
-  auto found{isDescendent(track)};
   if (trackID == trackID_ ||  // We are the track of interest
       trackMap.isDescendant(
           trackID, trackID_,
