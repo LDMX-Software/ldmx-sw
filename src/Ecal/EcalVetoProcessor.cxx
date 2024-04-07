@@ -549,9 +549,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if(ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
     // Create TVector3s marking the start and endpoints of each projected trajectory
     e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,   geometry_->getZPosition(0));
-    e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second, geometry_->getZPosition(33));
+    e_traj_end.SetXYZ(  ele_trajectory[(nEcalLayers_-1)].first,    ele_trajectory[(nEcalLayers_-1)].second, geometry_->getZPosition((nEcalLayers_-1)));
     p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, geometry_->getZPosition(0));
-    p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, geometry_->getZPosition(33));
+    p_traj_end.SetXYZ(  photon_trajectory[(nEcalLayers_-1)].first, photon_trajectory[(nEcalLayers_-1)].second, geometry_->getZPosition((nEcalLayers_-1)));
 
     TVector3 evec   = e_traj_end - e_traj_start;
     TVector3 e_norm = evec.Unit();
@@ -567,9 +567,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     // Electron trajectory is missing, so all hits in the Ecal are fair game.
     // Pick e/ptraj so that they won't restrict the tracking algorithm (place them far outside the ECal).
     e_traj_start = TVector3(999,999,geometry_->getZPosition(0)); //0);
-    e_traj_end = TVector3(999,999,geometry_->getZPosition(33)); // 999);
+    e_traj_end = TVector3(999,999,geometry_->getZPosition((nEcalLayers_-1))); // 999);
     p_traj_start = TVector3(1000,1000,geometry_->getZPosition(0)); //0);
-    p_traj_end = TVector3(1000,1000,geometry_->getZPosition(33)); //1000);
+    p_traj_end = TVector3(1000,1000,geometry_->getZPosition((nEcalLayers_-1))); //1000);
     epAng_ = 3.0 + 1.0;  /*ensures event will not be vetoed by angle/separation cut  */
     epSep_ = 10.0 + 1.0;
   }
@@ -577,7 +577,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Near photon step:  Find the first layer of the ECal where a hit near the projected
   // photon trajectory is found
   // Currently unusued pending further study; performance has dropped between v9 and v12.
-  firstNearPhLayer_ = geometry_->getZPosition(33);
+  firstNearPhLayer_ = geometry_->getZPosition((nEcalLayers_-1));
 
   if(photon_trajectory.size() != 0) {  //If no photon trajectory, leave this at the default (ECal back)
     for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
