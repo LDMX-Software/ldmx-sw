@@ -239,8 +239,8 @@ elif hash singularity &> /dev/null; then
     done
     singularity run --no-home --cleanenv \
       --env LDMX_BASE=${LDMX_BASE},DISPLAY=${LDMX_CONTAINER_DISPLAY}:0${env_list} \
-	--bind /scratch/therwig,/sdf/group/ldmx/data,${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
-      # --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
+      --bind ${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
+#	--bind /scratch/therwig,/sdf/group/ldmx/data,${csv_list} ${LDMX_SINGULARITY_IMG} "$@"
     return $?
   }
 fi
