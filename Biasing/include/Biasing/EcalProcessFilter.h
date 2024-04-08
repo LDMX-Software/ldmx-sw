@@ -15,6 +15,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
 
 // Forward declaration
 class G4Step;
@@ -62,6 +63,9 @@ class EcalProcessFilter : public simcore::UserAction {
 
   /// Process to filter
   std::string process_{""};
+  
+  /// Enable logging
+  enableLogging("EcalProcessFilter")
 
 };  // EcalProcessFilter
 }  // namespace biasing
