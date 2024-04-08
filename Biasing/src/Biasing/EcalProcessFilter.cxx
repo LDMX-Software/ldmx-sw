@@ -166,12 +166,12 @@ void EcalProcessFilter::stepping(const G4Step* step) {
       return;
     }
 
-    std::cout << "[ EcalProcessFilter ]: "
+    ldmx_log(debug) << "[ EcalProcessFilter ]: "
               << G4EventManager::GetEventManager()
                      ->GetConstCurrentEvent()
                      ->GetEventID()
               << " Brem photon produced " << secondaries->size()
-              << " particle via " << processName << " process." << std::endl;
+              << " particle via " << processName << " process.";
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();
