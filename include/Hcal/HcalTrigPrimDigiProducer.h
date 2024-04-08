@@ -20,6 +20,7 @@ class HcalTrigPrimDigiProducer : public framework::Producer {
   HcalTrigPrimDigiProducer(const std::string& name,
                            framework::Process& process);
 
+  virtual ~HcalTrigPrimDigiProducer() = default;
   /**
    * Grabs configure parameters from the python config file.
    *
@@ -28,13 +29,13 @@ class HcalTrigPrimDigiProducer : public framework::Producer {
    * digiPassName     "" <-- blank means take any pass if only one
    * collection exists
    */
-  virtual void configure(framework::config::Parameters&);
+  void configure(framework::config::Parameters&) override;
 
   /**
    * Produce HcalTrigPrimDigis and put them into the event bus using the
    * HcalDigis as input.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   /** Digi Collection Name to use as input */
