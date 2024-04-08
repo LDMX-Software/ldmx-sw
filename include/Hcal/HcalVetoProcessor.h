@@ -28,14 +28,14 @@ class HcalVetoProcessor : public framework::Producer {
   HcalVetoProcessor(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~HcalVetoProcessor();
+  virtual ~HcalVetoProcessor() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -43,21 +43,39 @@ class HcalVetoProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) override;
 
  private:
   /** Total PE threshold. */
-  double totalPEThreshold_{8};
+  double totalPEThreshold_{5};
 
   /** Maximum hit time that should be considered by the veto. */
   float maxTime_{50};  // ns
 
-  /** Maximum z depth that a hit can have. */
-  float maxDepth_{4000};  // mm
+  /** The minimum number of PE in both bars needed for a hit to be considered in
+   * double ended readout mode. */
+  float backMinPE_{1};
 
-  /** The minimum number of PE needed for a hit. */
-  float minPE_{1};
+  /*
+   * A hit representing the case where we never reach the maxPE condition. This
+   * is rare but can happen which previously would record uninitialized memory.
+   * Stored inside of the producer so that it will have a valid lifetime when we
+   * persist it.
+   *
+   * See https://github.com/LDMX-Software/Hcal/issues/58 for details
+   *
+   * Ideally, this would just be stored as a part of the HcalVetoResult, but
+   * changing that would be breaking change so for now we work around it like
+   * this.
+   *
+   * It contains nonsense values but since they are predictable, they are harder
+   * to mistake for real hits. See constructor for the actual values.
+   */
+  ldmx::HcalHit defaultMaxHit_;
 
+  std::string outputCollName_;
+  std::string inputHitCollName_;
+  std::string inputHitPassName_;
 };  // HcalVetoProcessor
 }  // namespace hcal
 

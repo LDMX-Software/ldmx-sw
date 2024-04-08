@@ -1,40 +1,26 @@
 #include "Hcal/Event/HcalCluster.h"
 
-ClassImp(ldmx::HcalCluster)
+ClassImp(ldmx::HcalCluster);
 
-    namespace ldmx {
-  HcalCluster::HcalCluster() {}
+namespace ldmx {
+HcalCluster::~HcalCluster() { Clear(); }
 
-  HcalCluster::~HcalCluster() { Clear(); }
+void HcalCluster::Print() const {
+  std::cout << "HcalCluster { "
+            << "Energy: " << energy_ << ", "
+            << "Number of hits: " << nHits_ << " }" << std::endl;
+}
 
-  // void HcalCluster::Print() const {
-  //   std::cout << "HcalCluster { "
-  //             << "Energy: " << energy_ << ", "
-  //             << "Number of hits: " << nHits_ << " }" << std::endl;
-  // }
+void HcalCluster::Clear() {
+  this->Clear();
+  time_ = 0;
+}
 
-  void HcalCluster::Clear() {
-    hitIDs_.clear();
-    energy_ = 0;
-    nHits_ = 0;
-    centroidX_ = 0;
-    centroidY_ = 0;
-    centroidZ_ = 0;
-    rmsX_ = 0;
-    rmsY_ = 0;
-    rmsZ_ = 0;
-    DXDZ_ = 0;
-    DYDZ_ = 0;
-    errDXDZ_ = 0;
-    errDYDZ_ = 0;
-    time_ = 0;
+void HcalCluster::addHits(const std::vector<const HcalHit *> hitsVec) {
+  std::vector<unsigned int> vecIDs;
+  for (unsigned int iHit = 0; iHit < hitsVec.size(); iHit++) {
+    vecIDs.push_back(hitsVec[iHit]->getID());
   }
-
-  void HcalCluster::addHits(const std::vector<const HcalHit *> hitsVec) {
-    std::vector<unsigned int> vecIDs;
-    for (unsigned int iHit = 0; iHit < hitsVec.size(); iHit++) {
-      vecIDs.push_back(hitsVec[iHit]->getID());
-    }
-    setIDs(vecIDs);
-  }
+  setIDs(vecIDs);
+}
 }  // namespace ldmx

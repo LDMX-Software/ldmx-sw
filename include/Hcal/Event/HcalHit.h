@@ -25,12 +25,12 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Class constructor.
    */
-  HcalHit() {}
+  HcalHit() = default;
 
   /**
    * Class destructor.
    */
-  virtual ~HcalHit() {}
+  virtual ~HcalHit() = default;
 
   /**
    * Clear the data in the object.
@@ -196,11 +196,14 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * Set original position
    */
-  void setPositionUnchanged(double position, int isX) { position_ = position; isX_ = isX; }
+  void setPositionUnchanged(double position, int isX) {
+    position_ = position;
+    isX_ = isX;
+  }
 
-  double getPosition() const { return position_;}
-  int getIsX() const { return isX_;}
-  double getTimeDiff() const { return timeDiff_;}
+  double getPosition() const { return position_; }
+  int getIsX() const { return isX_; }
+  double getTimeDiff() const { return timeDiff_; }
 
  private:
   /** The number of PE estimated for this hit. */
