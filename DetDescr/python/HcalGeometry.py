@@ -485,5 +485,7 @@ class HcalGeometry:
             zero_strip_side[2],
             zero_strip_side[3],
         ]
-        self.v14.detectors_valid = ["ldmx-det-v14"]
+        # added the reduced geometry temporarily, for the final geometry
+        # we should have a new function "reduced()" with the prototype geom
+        self.v14.detectors_valid = ["ldmx-det-v14", "ldmx-reduced"]
         self.v14.y_offset = 19.05
