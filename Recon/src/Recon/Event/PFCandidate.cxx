@@ -14,7 +14,7 @@ namespace ldmx {
 	      << trackPx_ << ", "
 	      << trackPy_ << ", "
 	      << trackPz_ << ") MeV/c, "
-              << "Ecal energy: " << ecalEnergy_ << "MeV, "
+              << "Ecal energy: " << ecalEnergy_ << " MeV, "
               << "Hcal energy: " << hcalEnergy_ << "MeV, "
 	      << std::endl;
   }
