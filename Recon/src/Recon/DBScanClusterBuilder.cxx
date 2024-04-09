@@ -33,7 +33,7 @@ namespace recon {
     for(unsigned int i=0;i<n;i++){
       if( isIn(i,tried) ) continue;
       tried.push_back(i);
-      if (debug) cout << "trying " << i << endl;
+      ldmx_log(debug) << "trying " << i;
       if (hits[i]->getEnergy() < minHitEnergy_) continue;
       std::set<unsigned int> neighbors;
       unsigned int nNearby=1;
