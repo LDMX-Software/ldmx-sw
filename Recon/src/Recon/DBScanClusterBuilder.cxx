@@ -71,7 +71,7 @@ namespace recon {
       }
     }
     return idx_clusters;
-    if (debug)
+   ldmx_log(debug)
       cout << "done. writing this many clusters out: " 
 	   << idx_clusters.size() << endl;
 
