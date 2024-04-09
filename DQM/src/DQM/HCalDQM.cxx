@@ -24,11 +24,8 @@ void HCalDQM::analyze(const framework::Event &event) {
       sim_coll_name_, sim_pass_name_)};
   analyzeSimHits(hcalSimHits);
   analyzeRecHits(hcalHits);
-  const auto &geometry = getCondition<ldmx::HcalGeometry>(
-      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 }
 void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
-
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
@@ -36,7 +33,6 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
   int hitMultiplicity{0};
 
   for (const auto &hit : hits) {
-
     ldmx::HcalID id(hit.getID());
     if (skipHit(id)) {
       continue;
@@ -48,7 +44,6 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
       simEnergyPerBar[id] += energy;
     }
     const auto orientation{geometry.getScintillatorOrientation(id)};
-    const auto section{id.section()};
     const auto layer{id.layer()};
     const auto strip{id.strip()};
     const auto pos{hit.getPosition()};
@@ -62,15 +57,15 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
     histograms_.fill("sim_layer:strip", layer, strip);
     histograms_.fill("sim_energy", energy);
     switch (orientation) {
-    case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
-      histograms_.fill("sim_along_x", x);
-      break;
-    case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
-      histograms_.fill("sim_along_y", y);
-      break;
-    case ldmx::HcalGeometry::ScintillatorOrientation::depth:
-      histograms_.fill("sim_along_z", z);
-      break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
+        histograms_.fill("sim_along_x", x);
+        break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
+        histograms_.fill("sim_along_y", y);
+        break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::depth:
+        histograms_.fill("sim_along_z", z);
+        break;
     }
   }
 
@@ -85,14 +80,12 @@ void HCalDQM::analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits) {
   histograms_.fill("sim_total_energy", total_energy);
 }
 void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
-
   const auto &geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
 
   float totalPE{0};
   float maxPE{-1};
   float maxPETime{-1};
-  float E{0};
   float totalE{0};
   int vetoableHitMultiplicity{0};
   int hitMultiplicity{0};
@@ -125,17 +118,16 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
     const auto y{hit.getYPos()};
     const auto z{hit.getZPos()};
     switch (orientation) {
-    case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
-      histograms_.fill("along_x", x);
-      break;
-    case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
-      histograms_.fill("along_y", y);
-      break;
-    case ldmx::HcalGeometry::ScintillatorOrientation::depth:
-      histograms_.fill("along_z", z);
-      break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::horizontal:
+        histograms_.fill("along_x", x);
+        break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::vertical:
+        histograms_.fill("along_y", y);
+        break;
+      case ldmx::HcalGeometry::ScintillatorOrientation::depth:
+        histograms_.fill("along_z", z);
+        break;
     }
-
     totalE += e;
     totalPE += pe;
 
@@ -159,6 +151,6 @@ void HCalDQM::analyzeRecHits(const std::vector<ldmx::HcalHit> &hits) {
   histograms_.fill("vetoable_hit_multiplicity", vetoableHitMultiplicity);
 }
 
-} // namespace dqm
+}  // namespace dqm
 
 DECLARE_ANALYZER_NS(dqm, HCalDQM)

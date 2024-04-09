@@ -45,6 +45,12 @@ if __name__ == '__main__' :
     parser.add_argument('--param',
                         nargs='+',
                         help='parameter(s) in filename to use as file labels')
+    parser.add_argument('--input-file-filter', type=str,
+                        help="""Filter which root files in the input data directory to
+                        use using a regular expression""")
+    parser.add_argument('--input-files', nargs='+', type=str,
+                        help="""Specify the name of the root files directly (either
+                        full/relative path or name of files in the input data directory)""")
 
     arg = parser.parse_args()
 
@@ -79,8 +85,23 @@ if __name__ == '__main__' :
 
     logging.debug(f'Deduced Args: label = {label} out_dir = {out_dir}')
 
-    root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param) 
-        for f in os.listdir(data) if f.endswith('.root') ]
+    if arg.input_files:
+        input_files = [os.path.join(data, f)
+                       if not f.startswith(data)
+                       else f
+                       for f in arg.input_files
+                       ]
+        root_files = [File.from_path(f, legendlabel_parameter=arg.param)
+                      for f in input_files]
+    else:
+        root_files = [ File.from_path(os.path.join(data,f), legendlabel_parameter = arg.param)
+                       for f in os.listdir(data) if f.endswith('.root') ]
+
+    if arg.input_file_filter:
+        # Not sure if this can be done in one step so doing it in two
+        filtered_files = [f for f in root_files
+                          if re.search(arg.input_file_filter, f.path) ]
+        root_files = filtered_files
 
     logging.debug(f'ROOT Files: {root_files}')
 

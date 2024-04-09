@@ -36,7 +36,7 @@ __main__() {
 
   # assume sample directory has its config called 'config.py'
   start_group Run config.py
-  ldmx fire config.py || return $?
+  ldmx fire config.py | tee output.log || return $?
   end_group
 
   start_group Compare to Golden Histograms
@@ -46,6 +46,9 @@ __main__() {
     #    gold_f, gold_label, test_f, test_label
     ldmx python3 $GITHUB_ACTION_PATH/compare.py \
       gold.root $(ldmx_gold_label) hist.root ${GITHUB_REF} || return $?
+
+    # print log diff into output directory
+    cp -t ${_sample_dir}/plots gold.log output.log || return $?
 
     # compare.py puts plots into the plots/ directory
     #   Package them up for upload
@@ -61,6 +64,7 @@ __main__() {
   if [[ "${_no_comp}" == "false" ]]; then
     set_output plots $(pwd)/${_sample}_recon_validation_plots.tar.gz
   fi
+  set_output log ${_sample_dir}/output.log
   set_output hists ${_sample_dir}/hist.root
   set_output events ${_sample_dir}/events.root
   end_group

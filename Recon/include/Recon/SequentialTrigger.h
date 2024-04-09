@@ -42,14 +42,14 @@ class SequentialTrigger : public framework::Producer {
   /**
    * Class destructor.
    */
-  virtual ~SequentialTrigger() {}
+    virtual ~SequentialTrigger() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the doOR or doAND check and create a SequentialTrigger
@@ -57,7 +57,7 @@ class SequentialTrigger : public framework::Producer {
    * Storage Hint.
    * param event The event to run skimmer on.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   /** The name of the input collection of triggers */

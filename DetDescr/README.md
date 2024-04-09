@@ -1,9 +1,9 @@
+# Accessing DetectorIDs from Python 
 
 <p align="center">
-    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/trunk/img/ldmx_logo_dark.png" width="500">
+    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/trunk/src/img/ldmx_logo_dark.png" width="500">
 </p>
 
-# Accessing DetectorIDs from Python 
 ## Building DetDescr with DetectorID binding support 
 The DetDescr repository can optionally be built to enable Python bindings to most of the functionalities of the various DetectorID classes. This requires Boost.Python to be installed, which is part of the [the LDMX-software container distribution](https://github.com/LDMX-Software/docker) since [version 3.3](https://github.com/LDMX-Software/docker/releases/tag/v3.3). Since older versions of the container environment don't come with this library, the feature needs to be explicitly enabled as a CMake option. 
 
@@ -50,9 +50,28 @@ HcalDigiID [raw, section, layer, strip, end]  (411042050, 0, 1, 2, 0)
         ->HcalID [raw, section, layer, strip] (402654210, 0, 1, 2)
 ```
 
-## Getting documentation from within a Python session
-``` python
+### Usage with `numpy`
+Many python-based analyses use `numpy` or `numpy`-like libraries (e.g. `pandas` and `awkward`) which
+"vectorize" the operation of applying the same function to all of the elements of an array. We can do
+the same thing here in order to leverage the translation of raw ID numbers (which are stored in the data files)
+into different detector information. Below is an example of using this class to extract the layer index
+for each raw id.
+```python
+from libDetDescr import EcalID
+import numpy as np
+@np.vectorize
+def to_layer(rawid):
+    return EcalID(int(rawid)).layer()
+# id is a np.array of raw ID numbers e.g. read in from the EcalSimHits_test.id_ branch of LDMX_Events
+layer = to_layer(id)
 ```
+This isn't very performant on larger arrays; however, it does allow the user to avoid a raw python `for` loop.
+Effectively, we are using a [non-ufunc extension](https://numpy.org/doc/stable/user/c-info.ufunc-tutorial.html#example-non-ufunc-extension).
+We could look at incorporating numpy into our Python bindings
+(via [Boost.Python NumPy](https://live.boost.org/doc/libs/1_65_1/libs/python/doc/html/numpy/index.html))
+to make this as performant as possible.
+
+## Getting documentation from within a Python session
 
 Boost.Python will automatically generate some documentation for each kind of
 DetectorID that you can access through the built-in help system in Python.

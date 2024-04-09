@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/trunk/img/ldmx_logo_dark.png" width="500">
+    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/trunk/src/img/ldmx_logo_dark.png" width="500">
 </p>
 
 <p align="center">
@@ -10,7 +10,9 @@
     <a href="http://perso.crans.org/besson/LICENSE.html" alt="GPLv3 license">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Docker%20Image/badge.svg" />
+    <a href="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/build_production_image.yml" alt="Build Production Image">
+        <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/build_production_image.yml/badge.svg"/>
+    </a>
     <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
@@ -21,6 +23,7 @@
 - Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
   - **Note**: You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
+  - **Note**: If you are working with ldmx-sw at SLAC's SDF, you will need to set the `TMPDIR` environment variable so that program running the container has more than ~5GB of space to write intermediate files. The default temporary space (`/tmp`) is often full of other files already. A decent replacement is `TMPDIR=${SCRATCH}` which gives the program plenty of room for the files it needs to manipulate.
 - Make a build directory: `cd ldmx-sw; mkdir build; cd build;`
 - Configure the build: `ldmx cmake ..`
 - Build and Install: `ldmx make install -j2`

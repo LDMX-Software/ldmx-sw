@@ -33,24 +33,24 @@ class RecoilTrackerDQM : public framework::Analyzer {
   RecoilTrackerDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
-  ~RecoilTrackerDQM();
+  virtual ~RecoilTrackerDQM();
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event& event);
+  void analyze(const framework::Event& event) override;
 
   /** Method executed before processing of events begins. */
-  void onProcessStart();
+  void onProcessStart() override;
 
 };  // RecoilTrackerDQM
 

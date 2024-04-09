@@ -22,6 +22,9 @@ outputs:
   hists:
     description: 'Generated Histogram File'
     value: ${{ steps.run-val.outputs.hists }}
+  log:
+    description: 'Generated Log File'
+    value: ${{ steps.run-val.outputs.log }}
 
 runs:
   using: 'composite'

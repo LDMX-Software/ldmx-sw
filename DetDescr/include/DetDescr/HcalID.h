@@ -73,37 +73,37 @@ class HcalID : public HcalAbstractID {
    * Get the value of the 'section' field from the ID.
    * @return The value of the 'strip' field.
    */
-  int getSection() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
+  unsigned int getSection() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
   /*
    * Get the value of the 'section' field from the ID.
    * @return The value of the 'strip' field.
    */
-  int section() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
+  unsigned int section() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
 
   /**
    * Get the value of the layer field from the ID.
    * @return The value of the layer field.
    */
-  int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
+  unsigned int layer() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
    * Get the value of the layer field from the ID.
    * @return The value of the layer field.
    */
-  int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
+  unsigned int getLayerID() const { return (id_ >> LAYER_SHIFT) & LAYER_MASK; }
 
   /**
    * Get the value of the 'strip' field from the ID.
    * @return The value of 'strip' field.
    */
-  int getStrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
+  unsigned int getStrip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
 
   /**
    * Get the value of the 'strip' field from the ID.
    * @return The value of 'strip' field.
    */
-  int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
+  unsigned int strip() const { return (id_ >> STRIP_SHIFT) & STRIP_MASK; }
 
   static void createInterpreters();
 };

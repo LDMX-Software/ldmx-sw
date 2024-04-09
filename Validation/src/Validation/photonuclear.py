@@ -11,10 +11,10 @@ def pndqm(d: Differ, out_dir=None):
     event_type_labels = ['', 'Nothing hard', 'n', 'nn', '≥ 3n', 'π', 'ππ',
                'π₀', 'πA', 'π2A', 'ππA', 'π₀A',
                'π₀2A', 'π₀πA', 'p', 'pp', 'pn', 'K_L⁰X', 'KX',
-                         'K_S⁰X', 'exotics', 'multi-body', '', '', '']
+                         'K_S⁰X', 'exotics', 'multi-body', '', '']
 
-    compact_event_type_labels = ['', 'n', 'K^{±}X', 'K⁰', 'nn', 'soft', 'other', '','']
-    neutron_event_type_labels = ['', '', 'nn', 'pn', 'π^+n', 'π⁰n', '', '']
+    compact_event_type_labels = ['', 'n', 'K^{±}X', 'K⁰', 'nn', 'soft', 'other', '']
+    neutron_event_type_labels = ['', '', 'nn', 'pn', 'π^+n', 'π⁰n', '']
 
     d.plot1d("PN/PN_event_type",  "Event category (200 MeV cut)",
              tick_labels=event_type_labels,

@@ -30,8 +30,10 @@ if(BUILD_EVENT_ONLY)
                        register_event_object( module_path "Recon/Event" 
                          namespace "ldmx" class "CaloTrigPrim" 
                          type "collection" )
-  register_event_object(module_path "Recon/Event" namespace "ldmx" 
+		       register_event_object(module_path "Recon/Event" namespace "ldmx" 
                         class "PFCandidate" type "collection" )
+		      register_event_object( module_path "Recon/Event" namespace "ldmx"
+  						 class "BeamElectronTruth" type "collection" )
    setup_library(module Recon name Event
                  dependencies ROOT::Core
                  register_target)

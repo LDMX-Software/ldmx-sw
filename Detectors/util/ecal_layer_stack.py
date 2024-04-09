@@ -21,9 +21,37 @@ def enumerate_absorber_dz(sections) :
     return cooling_tungsten_dz, front_tungsten_dz, bilayer_absorber_cumulative
 
 class Layer :
-    # dictionary of properties for material layers
-    # Units: MeV/mm
-    # Calculations are (dEdx [MeV cm^2/g] * density [g/cm^3]) / 10 [mm/cm]
+    """class representing a single layer of a single material
+
+    In order to align with Geant4, we use the following units
+    - Energy: MeV
+    - Distance: mm
+
+    Class Attributes
+    ----------------
+    We keep a few reference tables stored within the class so that all layers
+    can access the properties of their materials. The materials that are single elements,
+    we obtain their properties from [Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+    from the PDG. The composite materials are also found from this link, but we may
+    be forced to use a similar material rather than one that perfectly matches our
+    GDML definiton. The unit-conversion calculations is left here for transparency.
+
+    dEdx : dict[str, float]
+        material name to average energy loss per unit distance (MeV/mm) of a MIP.
+        If listed in the PDG, they are the "Minimum ionization" line.
+        The calculation is (dEdx [MeV cm^2/g] * density [g/cm^3]) / 10 [mm/cm]
+
+    X0 : dict[str, float]
+        material name to radiation length (mm)
+        These values are taken from the "Radiation length" line of the PDG if possible.
+        The calculation is (X0 [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
+
+    nuclen : dict[str, float]
+        material name to nuclear interaction length (mm)
+        These values are taken from the "Nuclear interaction length" line of the PDG if possible.
+        The calculation is (nuclen [g/cm^2] / density [g/cm^3]) * 10 [mm/cm].
+    """
+
     dEdx = {
         'Al'     : (2.699 * 1.615) / 10,
         'Air'    : (1.815 * 1.205) / 10,
@@ -34,8 +62,6 @@ class Layer :
         'Glue'   : (1.815 * 1.205) / 10
     }
     
-    # Units: mm
-    # Calculations are (X0 [g/cm^2] / density [g/cm^3]) * 10 [mm/cm]
     X0 = {
         'Al'     : ( 24.01 / 2.699 ) * 10,
         'Air'    : ( 36.62 / 1.205 ) * 10,
@@ -46,8 +72,6 @@ class Layer :
         'Glue'   : ( 36.62 / 1.205 ) * 10
     }
     
-    # Units: mm
-    # Calculations are (NucLen [g/cm^2] / density [g/cm^3]) * 10 [mm/cm]
     nuclen = {
         'Al'     : ( 107.2 / 2.699 ) * 10,
         'Air'    : ( 90.1  / 1.205 ) * 10,

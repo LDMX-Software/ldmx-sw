@@ -444,7 +444,7 @@ class HgcrocDigiCollection {
    public:
     /// Connect the parent collection with an index to this iterator
     explicit iterator(HgcrocDigiCollection& c, long index = 0)
-        : coll_{c}, digi_index_{index} {}
+	  : digi_index_{index}, coll_{c} {}
     /// Increment the digi index and return the iterator afterwards
     iterator& operator++() {
       digi_index_++;
