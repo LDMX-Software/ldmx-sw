@@ -47,7 +47,7 @@ namespace recon {
       if (nNearby >= minClusterHitMult_){
 	std::vector<const ldmx::CalorimeterHit*> idx_cluster{hits[i]}; // start a cluster
 	used.push_back(i);
-	if (debug) cout << "- starting a cluster from " << i << endl;
+	 ldmx_log(debug) << "- starting a cluster from " << i;
 	for(unsigned int j : neighbors){
 	  if ( !isIn(j,tried) ){
 	    tried.push_back(j);
