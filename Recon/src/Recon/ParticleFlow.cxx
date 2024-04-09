@@ -23,7 +23,7 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
 }
 
 // produce candidate track info
-void ParticleFlow::FillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk){
+void ParticleFlow::fillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk){
   // TODO: smear
   std::vector<float> xyz = tk.getPosition();
   std::vector<double> pxyz = tk.getMomentum();
@@ -43,7 +43,7 @@ void ParticleFlow::FillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTracker
   cand.setPID( cand.getPID() | 1 );  // OR with 001
 }
 // produce candidate ECal info
-void ParticleFlow::FillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em){
+void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em){
   float corr = 1.;
   float e = em.getEnergy();
   if (e<eCorr_->GetX()[0]){
@@ -68,7 +68,7 @@ void ParticleFlow::FillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloClust
   cand.setPID( cand.getPID() | 2 );  // OR with 010
 }
 // produce candidate HCal info
-void ParticleFlow::FillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had){
+void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had){
   float corr = 1.;
   float e = had.getEnergy();
   if (e<hCorr_->GetX()[0]){
@@ -239,14 +239,14 @@ void ParticleFlow::produce(framework::Event& event) {
     // std::vector<ldmx::PFCandidate> chargedUnmatch;
     for(int i=0; i<tracks.size(); i++){
       ldmx::PFCandidate cand;
-      FillCandTrack(cand, tracks[i]);  // append track info to candidate
+      fillCandTrack(cand, tracks[i]);  // append track info to candidate
       
       if(!tkIsEMLinked[i]){
         //chargedUnmatch.push_back(cand);
       } else {  // if track is linked with ECal cluster
-        FillCandEMCalo(cand, ecalClusters[tkEMPairs[i]]);
+        fillCandEMCalo(cand, ecalClusters[tkEMPairs[i]]);
         if(EMIsHadLinked[tkEMPairs[i]]){  // if ECal is linked with HCal cluster
-          FillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);
+          fillCandHadCalo(cand, hcalClusters[EMHadPairs[tkEMPairs[i]]]);
         }
         //chargedMatch.push_back(cand);	
       }
@@ -260,9 +260,9 @@ void ParticleFlow::produce(framework::Event& event) {
       if(EMIsTkLinked[i]) continue;
 
       ldmx::PFCandidate cand;
-      FillCandEMCalo(cand, ecalClusters[i]);
+      fillCandEMCalo(cand, ecalClusters[i]);
       if(EMIsHadLinked[tkEMPairs[i]]){
-        FillCandHadCalo(cand, hcalClusters[EMHadPairs[i]]);
+        fillCandHadCalo(cand, hcalClusters[EMHadPairs[i]]);
         //emMatch.push_back(cand);	
       } else {
         //emUnmatch.push_back(cand);	
@@ -274,7 +274,7 @@ void ParticleFlow::produce(framework::Event& event) {
     for(int i=0; i<hcalClusters.size(); i++){
       if(HadIsEMLinked[i]) continue;
       ldmx::PFCandidate cand;
-      FillCandHadCalo(cand, hcalClusters[i]);
+      fillCandHadCalo(cand, hcalClusters[i]);
       // hadOnly.push_back(cand);
       pfCands.push_back(cand);
     }
@@ -286,7 +286,7 @@ void ParticleFlow::produce(framework::Event& event) {
     // std::vector<bool> emUsed (ecalClusters.size(), false);
     // for(int i=0; i<tracks.size(); i++){
     //   ldmx::PFCandidate cand;
-    //   FillCandTrack(cand, tracks[i]);
+    //   fillCandTrack(cand, tracks[i]);
     //   if( tkCaloMap.count(i)==0 ){
     // 	unmatchedTks.push_back(cand);
     //   } else { 
@@ -294,7 +294,7 @@ void ParticleFlow::produce(framework::Event& event) {
     // 	bool linked=false;
     // 	for(int em_idx : tkCaloMap[i]){
     // 	  if(!emUsed[em_idx]){
-    // 	    FillCandEMCalo(cand, tkCaloMap[i][0]);
+    // 	    fillCandEMCalo(cand, tkCaloMap[i][0]);
     // 	    caloMatchedTks.push_back(cand);
     // 	    emUsed[ em_idx ] = true;
     // 	    linked = true;
@@ -315,7 +315,7 @@ void ParticleFlow::produce(framework::Event& event) {
     // 	bool linked=false;
     // 	for(int em_idx : tkCaloMap[i]){
     // 	  if(!emUsed[em_idx]){
-    // 	    FillCandEMCalo(cand, tkCaloMap[i][0]);
+    // 	    fillCandEMCalo(cand, tkCaloMap[i][0]);
     // 	    caloMatchedTks.push_back(cand);
     // 	    emUsed[ em_idx ] = true;
     // 	    linked = true;
@@ -331,21 +331,21 @@ void ParticleFlow::produce(framework::Event& event) {
     // for(int i=0; i<ecalClusters.size(); i++){
     //   if(emUsed[i]) continue;
     //   ldmx::PFCandidate cand;
-    //   FillCandEMCalo(cand, ecalClusters[i]);
+    //   fillCandEMCalo(cand, ecalClusters[i]);
     // }
       
 	  
     // 	}
     // 	if( tkCaloMap[i].size()==1 ){
     // 	if(!emUsed[ tkCaloMap[i][0] ]){
-    // 	  FillCandEMCalo(cand, tkCaloMap[i][0]);
+    // 	  fillCandEMCalo(cand, tkCaloMap[i][0]);
     // 	  caloMatchedTks.push_back(cand);
     // 	  emUsed[ tkCaloMap[i][0] ] = true;
     // 	}
     //   }
     //   } else if( tkCaloMap[i].size()==1 ){
     // 	if(!emUsed[ tkCaloMap[i][0] ]){
-    // 	  FillCandEMCalo(cand, tkCaloMap[i][0]);
+    // 	  fillCandEMCalo(cand, tkCaloMap[i][0]);
     // 	  caloMatchedTks.push_back(cand);
     // 	  emUsed[ tkCaloMap[i][0] ] = true;
     // 	}
@@ -357,15 +357,15 @@ void ParticleFlow::produce(framework::Event& event) {
     ldmx::PFCandidate pf;
     int pid=0;  // initialize pid to add
     if (tracks.size()){
-      FillCandTrack(pf, tracks[0]);
+      fillCandTrack(pf, tracks[0]);
       pid += 1;
     }
     if (ecalClusters.size()){
-      FillCandEMCalo(pf, ecalClusters[0]);
+      fillCandEMCalo(pf, ecalClusters[0]);
       pid += 2;
     }
     if (hcalClusters.size()){
-      FillCandHadCalo(pf, hcalClusters[0]);
+      fillCandHadCalo(pf, hcalClusters[0]);
       pid += 4;
     }
     pf.setPID(pid);
@@ -396,6 +396,8 @@ void ParticleFlow::onProcessStart() {
 
 void ParticleFlow::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
+  delete eCorr_;
+  delete hCorr_;
 
   return;
 }

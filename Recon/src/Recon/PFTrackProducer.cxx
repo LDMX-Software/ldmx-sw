@@ -17,7 +17,10 @@ double getP(const ldmx::SimTrackerHit &tk){
 
 void PFTrackProducer::produce(framework::Event& event) {
 
-  if (!event.exists(inputTrackCollName_)) return;
+  if (!event.exists(inputTrackCollName_)){
+    ldmx_log(fatal) << "Input track collection not found";
+    return;
+  }
   const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
 
   std::vector<ldmx::SimTrackerHit> pfTracks;

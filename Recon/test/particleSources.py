@@ -1,9 +1,9 @@
 
 
 def get_cmds(part='e-', energyRange=(0.1,3.), thetaRangeDeg=(0.,20.), zpos=0.):
-    PI = 3.1415
-    radNearBeam = PI - PI/180. * thetaRangeDeg[0]
-    radFarBeam  = PI - PI/180. * thetaRangeDeg[1]
+    from math import pi
+    radNearBeam = pi - pi/180. * thetaRangeDeg[0]
+    radFarBeam  = pi - pi/180. * thetaRangeDeg[1]
     
     return [
     "/gps/particle "+part,

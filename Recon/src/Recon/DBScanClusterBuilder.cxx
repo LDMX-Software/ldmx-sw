@@ -4,9 +4,6 @@
 #include <set>
 #include "Recon/DBScanClusterBuilder.h"
 
-using std::cout;
-using std::endl;
-
 namespace recon {
 
   DBScanClusterBuilder::DBScanClusterBuilder(){
@@ -70,11 +67,8 @@ namespace recon {
 	idx_clusters.push_back( idx_cluster );
       }
     }
+    ldmx_log(debug) << "done. writing this many clusters out: " << idx_clusters.size();
     return idx_clusters;
-   ldmx_log(debug)
-      cout << "done. writing this many clusters out: " 
-	   << idx_clusters.size() << endl;
-
 }
 
  void DBScanClusterBuilder::fillClusterInfoFromHits(ldmx::CaloCluster *cl,
