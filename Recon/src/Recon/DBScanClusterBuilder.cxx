@@ -62,7 +62,7 @@ namespace recon {
 	      neighbors.insert(k);
 	  }
 	  if ( !isIn(j,used) ) {
-	    if (debug) cout << "== used " << j << endl;
+	     ldmx_log(debug) << "== used " << j;
 	    used.push_back(j);
 	    idx_cluster.push_back(hits[j]);
 	  }
