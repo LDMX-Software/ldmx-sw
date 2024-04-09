@@ -43,9 +43,9 @@ class ParticleFlow : public framework::Producer {
 
   virtual void onProcessEnd();
 
-  void FillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk);
-  void FillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em);
-  void FillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had);
+  void fillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk);
+  void fillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em);
+  void fillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had);
 
  private:
   // specific verbosity of this producer

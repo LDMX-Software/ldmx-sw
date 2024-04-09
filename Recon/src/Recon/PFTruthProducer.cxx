@@ -2,8 +2,6 @@
 
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
-using std::cout;
-using std::endl;
 
 namespace recon {
 

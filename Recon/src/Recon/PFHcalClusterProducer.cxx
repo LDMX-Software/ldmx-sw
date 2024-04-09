@@ -8,9 +8,6 @@
 #include "TGraph.h"
 #include "TFitResult.h"
 
-using std::cout;
-using std::endl;
-
 namespace recon {
 
 void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {

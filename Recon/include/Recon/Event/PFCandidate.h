@@ -21,7 +21,7 @@ class PFCandidate {
   PFCandidate() {}
   virtual ~PFCandidate() {}
 
-  void Print() const;
+  void print() const;
   bool operator<(const PFCandidate &rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }

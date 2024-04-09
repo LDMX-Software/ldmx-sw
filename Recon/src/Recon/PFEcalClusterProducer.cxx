@@ -4,9 +4,6 @@
 #include "Recon/Event/CalorimeterHit.h"
 #include "Recon/Event/CaloCluster.h"
 
-using std::cout;
-using std::endl;
-
 namespace recon {
 
 void PFEcalClusterProducer::configure(framework::config::Parameters& ps) {

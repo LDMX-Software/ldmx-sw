@@ -7,7 +7,7 @@ ClassImp(ldmx::PFCandidate)
 
 namespace ldmx {
 
-  void PFCandidate::Print() const {
+  void PFCandidate::print() const {
     std::cout << "PFCandidate ( "
               << "id: " << pid_ << "), "
               << "Pxyz: (" 
