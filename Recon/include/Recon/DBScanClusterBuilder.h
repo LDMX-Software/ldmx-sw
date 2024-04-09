@@ -11,7 +11,7 @@
 #include "Recon/Event/CaloCluster.h"
 #include "TGraph.h"
 #include "TFitResult.h"
-
+#include "Framework/EventProcessor.h"
 namespace recon {
 
 /**
