@@ -6,7 +6,6 @@ __pycache__/
 .project
 .settings
 .pydevproject
-/docs/doxygen.conf
 *~
 *#
 *.pyc

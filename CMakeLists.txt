@@ -2,6 +2,17 @@
 # Set the minimum version of CMake that's required 
 cmake_minimum_required(VERSION 3.12)
 
+# make sure the source and binary directories are different
+# this is here to prevent so-called "in-source" builds where the root directory of the source
+# is also the root directory of the build
+get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+if ("${srcdir}" STREQUAL "${bindir}")
+  message(FATAL_ERROR "ldmx-sw does not support in-source builds.
+  Call 'ldmx cmake ..' from within a 'build/' subdirectory or
+  Tell cmake to use a different build directory with 'ldmx cmake -B build -S .'")
+endif()
+
 # Set the project name
 project(LDMX_SW VERSION 3.1.1
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
@@ -70,6 +81,7 @@ add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
 add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
 add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 add_subdirectory(Tracking ${CMAKE_BINARY_DIR}/TrackingEvent)
+add_subdirectory(Trigger/Algo ${CMAKE_BINARY_DIR}/TriggerEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -110,6 +122,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     # This module is focused on track reconstruction
     add_subdirectory(Tracking)
+
+    # This module contains trigger algorithms.
+    add_subdirectory(Trigger/Algo)
 
 endif()
 

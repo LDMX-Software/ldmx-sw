@@ -1,0 +1,11 @@
+---- LDMXSW: Loading configuration --------
+[2024-01-30 21:07:14.585799] [0x00007f4783857bc0] [info]    Running configure() 
+[2024-01-30 21:07:18.701773] [0x00007f4783857bc0] [info]    ElectronCounter is using parameters:  
+	input_collection = TriggerPadTracksY 
+	input_pass_name =  
+	output_collection = BeamElectronCount 
+	simulated_electron_number = 1 
+	use_simulated_electron_number = 0
+---- LDMXSW: Configuration load complete  --------
+---- LDMXSW: Starting event processing --------
+---- LDMXSW: Event processing complete  --------

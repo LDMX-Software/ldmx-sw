@@ -32,7 +32,7 @@ class HcalGeometryProvider;
  *
  */
 class HcalGeometry : public framework::ConditionsObject {
-public:
+ public:
   /**
    * Conditions object:
    *  The name of the python configuration calling this class
@@ -60,8 +60,8 @@ public:
    */
   ~HcalGeometry() = default;
 
-  ScintillatorOrientation
-  getScintillatorOrientation(const ldmx::HcalID id) const;
+  ScintillatorOrientation getScintillatorOrientation(
+      const ldmx::HcalID id) const;
 
   /**
    * Get a strip center position from a combined hcal ID.
@@ -114,6 +114,11 @@ public:
    * Get the scitillator width
    */
   double getScintillatorWidth() const { return scint_width_; }
+
+  /**
+   * Get the scitillator thickness
+   */
+  double getScintillatorThickness() const { return scint_thickness_; }
 
   /**
    * Get the number of sections.
@@ -187,11 +192,10 @@ public:
    * does not have a dependency on Geant4/CLHEP so we are taking the position
    * as a vector of floats (which is what is used by SimCalorimeterHit)
    **/
-  std::vector<double>
-  rotateGlobalToLocalBarPosition(const std::vector<double> &globalPosition,
-                                 const ldmx::HcalID &id) const;
+  std::vector<double> rotateGlobalToLocalBarPosition(
+      const std::vector<double> &globalPosition, const ldmx::HcalID &id) const;
 
-private:
+ private:
   /**
    * Class constructor, for use only by the provider
    *
@@ -230,7 +234,7 @@ private:
     }
   }
 
-private:
+ private:
   /// Parameters that apply to all types of geometries
   /// Verbosity, not configurable but helpful if developing
   int verbose_{0};
@@ -256,6 +260,9 @@ private:
   /// Lenght of the Ecal (in x and y)
   double ecal_dx_;
   double ecal_dy_;
+
+  // Offset of the entire Hcal geometry in y (mm)
+  double y_offset_;
 
   // Defines what parity (0/1, i.e. even/odd parity) of a layer number in the
   // geometry that corresponds to a horizontal layer (scintillator bar length
@@ -283,6 +290,6 @@ private:
   std::map<ldmx::HcalID, TVector3> strip_position_map_;
 };
 
-} // namespace ldmx
+}  // namespace ldmx
 
 #endif

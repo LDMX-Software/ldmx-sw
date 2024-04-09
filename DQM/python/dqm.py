@@ -1,6 +1,72 @@
 """Configuration for DQM analyzers"""
 
 from LDMX.Framework import ldmxcfg
+
+class HCalGeometryVerifier(ldmxcfg.Analyzer) :
+    """Configured HCalGeometryVerifier python object
+
+    Contains an instance of the verifier that has already been configured.
+
+    This analyzer verifies that all simhits and rechits for the hcal are within
+    the bounds of the scintillator strips as set in the geometry condition.
+
+    If the analyzer encounters an error and `stop_on_error` is true, raises an
+    exception with details about the issue. Otherwise, the error is logged and
+    histograms for each section is produced.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.HcalGeometryVerifier() )
+
+    """
+    def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        super().__init__(name,'dqm::HcalGeometryVerifier','DQM')
+        self.rec_coll_name = 'HcalRecHits'
+        self.rec_pass_name = ''
+        self.sim_coll_name = 'HcalSimHits'
+        self.sim_pass_name = ''
+        self.stop_on_error=stop_on_error
+        self.tolerance=1e-3 # mm
+        self.build1DHistogram('passes_sim', 'Simulated hits within scintillator bounds?', 2, 0,2)
+        self.build1DHistogram('passes_rec', 'Reconstructed hits within scintillator bounds?', 2, 0,2)
+        section_names = ['back', 'top', 'bottom', 'right', 'left']
+        for name in section_names:
+            self.build1DHistogram(f'passes_sim_{name}', f'Simulated hits within scintillator bounds? ({name})', 2, 0,2)
+            self.build1DHistogram(f'passes_rec_{name}', f'Reconstructed hits within scintillator bounds? Passing ({name})', 2, 0,2)
+
+
+class ReSimVerifier(ldmxcfg.Analyzer) :
+    """Configured ReSimVerifier python object
+
+    Contains an instance of the verifier that has already been configured. This
+    analyzer does not produce anything, it just checks that the sim hits and sim
+    particles between two different passes are the same.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.ReSimVerifier() )
+
+    """
+
+    def __init__(self,name="hcal_geometry_verifier", stop_on_error=False) :
+        super().__init__(name,'dqm::ReSimVerifier','DQM')
+        self.collections = [
+            'HcalSimHits',
+            'EcalSimHits',
+            'TargetSimHits',
+            'TriggerPad1SimHits',
+            'TriggerPad2SimHits',
+            'TriggerPad3SimHits',
+            'RecoilSimHits',
+            'TaggerSimHits',
+        ]
+        self.sim_pass_name = ''
+        self.resim_pass_name = 'resim'
+        self.stop_on_error=stop_on_error
+
 class HCalDQM(ldmxcfg.Analyzer) :
     """Configured HCalDQM python object
 
@@ -132,7 +198,7 @@ class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
         for section in range(num_sections):
             section_name = section_names[section]
             self.build1DHistogram(f"inefficiency_{section_name}",
-                                  "fInefficiency ({section_name})",
+                                  f"Inefficiency ({section_name})",
                                   *inefficiency_layer_bins
                                   )
 
@@ -225,6 +291,38 @@ class SimObjects(ldmxcfg.Analyzer) :
     def __init__(self,name='sim_dqm',sim_pass='') :
         super().__init__(name,'dqm::SimObjects','DQM')
         self.sim_pass = sim_pass
+
+
+class DarkBremInteraction(ldmxcfg.Producer) :
+    def __init__(self) :
+        super().__init__('db_kinematics','dqm::DarkBremInteraction','DQM')
+
+        self.build1DHistogram('aprime_energy',
+            'Dark Photon Energy [MeV]',101,0,8080)
+        self.build1DHistogram('aprime_pt',
+            'Dark Photon pT [MeV]',100,0,2000)
+
+        self.build1DHistogram('recoil_energy',
+            'Recoil Electron Energy [MeV]',101,0,8080)
+        self.build1DHistogram('recoil_pt',
+            'Recoil Electron pT [MeV]',100,0,2000)
+
+        self.build1DHistogram('incident_energy',
+            'Incident Electron Energy [MeV]',101,0,8080)
+        self.build1DHistogram('incident_pt',
+            'Incident Electron pT [MeV]',100,0,2000)
+
+        # weird binning so we can see the target and trigger pads
+        self.build1DHistogram('dark_brem_z',
+            'Z Location of Dark Brem [mm]',
+            [-5.0, -4.6752, -3.5502, -2.4252, -1.3002, -0.1752, 0.1752, 1.]) 
+        # elements are hydrogen and carbon (for trigger pads) and tungsten target
+        self.build1DHistogram('dark_brem_element',
+            'Element in which Dark Brem Occurred',
+            10, 0, 10)
+        self.build1DHistogram('dark_brem_material',
+            'Material in which Dark Brem Occurred',
+            8, 0, 8)
 
 
 class HCalRawDigi(ldmxcfg.Analyzer) :
@@ -496,6 +594,27 @@ class Trigger(ldmxcfg.Analyzer) :
         self.trigger_name = coll
         self.trigger_pass = ''
 
+
+class SampleValidation(ldmxcfg.Analyzer) :
+    def __init__(self, name='SampleValidation') :
+        super().__init__(name, 'dqm::SampleValidation', 'DQM')
+
+        # primary histograms
+        self.build1DHistogram("pdgid_primaries", "PDG ID of primary particles", 20, 0, 20)
+        self.build1DHistogram("energy_primaries", "Energy of primary particles", 90, 0, 9000) # range applicable for 4 GeV beam
+        self.build2DHistogram("beam_smear", "x", 30, -150, 150, "y", 30, -150, 150)
+        self.build1DHistogram("pdgid_primarydaughters", "PDG ID of primary daughtesr", 20, 0, 20)
+        self.build1DHistogram("energy_daughterphoton", "Energy spectrum of all photons from primary", 170, 0, 8500)
+
+        # primary daughter of interest (brem / dark brem) histograms
+        self.build1DHistogram("pdgid_harddaughters", "PDG ID of primary daughters", 20, 0, 20)
+        self.build1DHistogram("startZ_hardbrem", "Start z position of hard primary daughter", 100, -500, 500)
+        self.build1DHistogram("endZ_hardbrem", "End z position of hard primary daughter", 100, -500, 500)
+        self.build1DHistogram("energy_hardbrem", "Energy spectrum of hard primary daughter", 130, 2000, 8500)
+
+        # daughters of hard brem histograms
+        self.build1DHistogram("pdgid_hardbremdaughters", "PDG ID of hard brem daughters", 20, 0, 20)
+        self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters", 200, -1000, 1000)
         
 
 ecal_dqm = [

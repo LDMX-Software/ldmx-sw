@@ -1,0 +1,48 @@
+---- LDMXSW: Loading configuration --------
+[2024-01-30 19:56:36.044227] [0x00007f6d6e8edbc0] [info]    ElectronCounter is using parameters:  
+	input_collection = TriggerPadTracksY 
+	input_pass_name =  
+	output_collection = BeamElectronCount 
+	simulated_electron_number = 1 
+	use_simulated_electron_number = 0
+In TrigScintDQM::configure, got parameters TriggerPad1SimHits and pad1
+In TrigScintDQM::configure, got parameters TriggerPad2SimHits and pad2
+In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
+In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
+[2024-01-30 19:56:36.047184] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2024-01-30 19:56:36.047194] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2024-01-30 19:56:36.047201] [0x00007f6d6e8edbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2024-01-30 19:56:36.047208] [0x00007f6d6e8edbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+---- LDMXSW: Configuration load complete  --------
+---- LDMXSW: Starting event processing --------
+[ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintYVolume
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZYVolume
+[ DetectorConstruction ] : Attaching ecal_sd to Si_volume
+[ DetectorConstruction ] : Attaching trig_scint_Target_sd to target
+[ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+Process starts!
+ [ ElectronCounter ] 4 : Attemping to use non-existing input collection TriggerPadTracksY_ to count electrons! Exiting.
+[ Simulator ] : Started 10000 events to produce 10000 events.
+---- LDMXSW: Event processing complete  --------

@@ -6,3 +6,6 @@ from . import ecal
 from . import trigscint
 from . import hcal
 from . import photonuclear
+from . import dark_brem
+from . import simparticles
+from . import performance

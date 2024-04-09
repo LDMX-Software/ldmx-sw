@@ -7,6 +7,7 @@ import re
 # external dependencies
 import matplotlib.pyplot as plt
 import matplotlib
+import uproot
 # us
 from ._file import File
 
@@ -110,7 +111,11 @@ class Differ :
         ax = fig.subplots()
 
         for f in self.files :
-            weights, bins, patches = f.plot1d(ax, column, **hist_kwargs)
+            try:
+                weights, bins, patches = f.plot1d(ax, column, **hist_kwargs)
+            except uproot.KeyInFileError:
+                f.log.warn(f"Key {column} doesn't exist in {self}, skipping")
+                continue
 
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
@@ -121,7 +126,7 @@ class Differ :
             legend_kw['title'] = self.grp_name
 
         if tick_labels is not None:
-            ax.set_xticks(bins)
+            ax.set_xticks((bins[1:]+bins[:-1])/2)
             ax.set_xticklabels(tick_labels)
             ax.tick_params(axis='x', rotation=90)
 

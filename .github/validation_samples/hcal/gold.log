@@ -1,0 +1,25 @@
+---- LDMXSW: Loading configuration --------
+---- LDMXSW: Configuration load complete  --------
+---- LDMXSW: Starting event processing --------
+[ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
+[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintYVolume
+[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_0Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_1Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_2Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_3Volume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZXVolume
+[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZYVolume
+[ DetectorConstruction ] : Attaching ecal_sd to Si_volume
+[ DetectorConstruction ] : Attaching trig_scint_Target_sd to target
+[ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
+[ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
+[ Simulator ] : Started 10000 events to produce 10000 events.
+---- LDMXSW: Event processing complete  --------
