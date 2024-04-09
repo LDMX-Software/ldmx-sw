@@ -373,23 +373,6 @@ void ParticleFlow::produce(framework::Event& event) {
     pfCands.push_back(pf);  
   }
 
-  // // Super-simple builder
-  // for(int i=0; i<tracks.size(); i++){
-  //   const auto& tk = tracks[i];
-  //   ldmx::PFCandidate pf;
-    
-  //   if (emHadCaloMap.count(i)){ // tk matches em
-  //     int iem = emHadCaloMap[i];
-  //     const auto& em = ecalClusters[iem];
-      
-  //     if (emHadCaloMap.count(iem)){ // tk matches em
-  // 	int ihad = emHadCaloMap[iem];
-  // 	const auto& had = hcalClusters[ihad];
-	
-  //     }
-  //   }
-  // }
-
   event.add(outputCollName_, pfCands);
 }
 

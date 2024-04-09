@@ -22,7 +22,6 @@ class PFCandidate {
   virtual ~PFCandidate() {}
 
   void Print() const;
-  /* Sort by Pz */
   bool operator<(const PFCandidate &rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }

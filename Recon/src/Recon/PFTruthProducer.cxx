@@ -19,11 +19,6 @@ void sortHits( std::vector<T> spHits){
 	    [](T a, T b) {
 	      return a.getEnergy() > b.getEnergy();
 	    });
-// void sortHits( std::vector<ldmx::SimTrackerHit> spHits){
-//   std::sort(spHits.begin(), spHits.end(),
-// 	    [](ldmx::SimTrackerHit a, ldmx::SimTrackerHit b) {
-// 	      return a.getEnergy() > b.getEnergy();
-// 	    });
 }
 
 void PFTruthProducer::produce(framework::Event& event) {
@@ -34,21 +29,6 @@ void PFTruthProducer::produce(framework::Event& event) {
   const auto targSpHits = event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
   const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
   const auto particle_map = event.getMap<int,ldmx::SimParticle>("SimParticles");
-
-  // for(const auto &pm : particle_map){
-  //   const auto &p = pm.second;
-  //   cout << pm.first << endl;
-  //   p.Print();
-  //   for(const auto &d : p.getParents()){
-  //     cout << " parent: " << d << endl;;
-  //     // d.Print();
-  //   }
-  //   for(const auto &d : p.getDaughters()){
-  //     cout << " daughter: " << d << endl;;
-  //     // d.Print();
-  //   }
-  // }
-  // return ;
 
   std::map<int, ldmx::SimParticle> primaries;
   std::set<int> simIDs;
