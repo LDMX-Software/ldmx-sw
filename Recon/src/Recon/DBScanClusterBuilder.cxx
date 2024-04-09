@@ -84,9 +84,6 @@ namespace recon {
   float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
   float w = 1; // weight
   float sumw = 0;
-  // std::vector<float> xvals{};
-  // std::vector<float> yvals{};
-  // std::vector<float> zvals{};
   std::vector<float> raw_xvals{};
   std::vector<float> raw_yvals{};
   std::vector<float> raw_zvals{};
@@ -104,9 +101,6 @@ namespace recon {
     zz += w * h->getZPos() * h->getZPos();
     n += 1;
     sumw += w;
-    // xvals.push_back(x); // unused
-    // yvals.push_back(y);
-    // zvals.push_back(z);
     raw_xvals.push_back(h->getXPos());
     raw_yvals.push_back(h->getYPos());
     raw_zvals.push_back(h->getZPos());

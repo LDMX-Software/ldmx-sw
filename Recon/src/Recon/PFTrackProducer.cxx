@@ -19,7 +19,6 @@ void PFTrackProducer::produce(framework::Event& event) {
 
   if (!event.exists(inputTrackCollName_)) return;
   const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(inputTrackCollName_);
-  // std::cout << "found " << ecalSpHits.size() << " hits" << std::endl;
 
   std::vector<ldmx::SimTrackerHit> pfTracks;
   if(truthTracking_){ 

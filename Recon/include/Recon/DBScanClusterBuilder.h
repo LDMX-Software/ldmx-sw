@@ -7,26 +7,10 @@
 #ifndef DBSCANCLUSTERBUILDER_H
 #define DBSCANCLUSTERBUILDER_H
 
-// LDMX Framework
-/* #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file */
-/* #include "Framework/Event.h" */
-/* #include "Framework/EventProcessor.h"  //Needed to declare processor */
-
-/* #include "DetDescr/EcalGeometry.h" */
-/* #include "Ecal/Event/EcalHit.h" */
-/* #include "Ecal/Event/EcalCluster.h" */
-/* #include "Hcal/Event/HcalHit.h" */
-/* #include "Hcal/Event/HcalCluster.h" */
 #include "Recon/Event/CalorimeterHit.h"
 #include "Recon/Event/CaloCluster.h"
-/* #include "Ecal/MyClusterWeight.h" */
-/* #include "Ecal/TemplatedClusterFinder.h" */
-/* #include "Ecal/WorkingCluster.h" */
 #include "TGraph.h"
 #include "TFitResult.h"
-
-/* using std::cout; */
-/* using std::endl; */
 
 namespace recon {
 
@@ -72,25 +56,13 @@ class DBScanClusterBuilder {
 	       + pow((a->getZPos() - b->getZPos())/clusterZBias_,2) );  // divide by the z bias
   }
   
-  // specific verbosity of this producer
-  /* int verbose_{0}; */
-  /* bool singleCluster_{true}; */
-  /* bool logEnergyWeight_{true}; */
-
   float minHitEnergy_{0};
   float clusterHitDist_{100.};
   float clusterZBias_{1.};  // private parameter for z bias
   int minClusterHitMult_{2};
 
-  // name of collection for hits to be passed as input
-  /* std::string hitCollName_; */
-  /* // name of collection for pfCluster to be output */
-  /* std::string clusterCollName_; */
-  /* std::string suffix_; */
 };
 }  // namespace recon
 
-/* typedef DBScanClusterBuilder<ECalCluster, ECalHit> EcalDBScanClusterBuilder; */
-/* typedef DBScanClusterBuilder<HcalCluster, HcalHit> HcalDBScanClusterBuilder; */
 
 #endif /* DBSCANCLUSTERBUILDER_H */
