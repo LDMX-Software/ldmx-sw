@@ -60,7 +60,8 @@ class DBScanClusterBuilder {
   float clusterHitDist_{100.};
   float clusterZBias_{1.};  // private parameter for z bias
   int minClusterHitMult_{2};
-
+  /// Enable logging
+  enableLogging("DBScanClusterBuilder")
 };
 }  // namespace recon
 
