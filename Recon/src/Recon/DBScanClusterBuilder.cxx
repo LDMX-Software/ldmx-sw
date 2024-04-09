@@ -51,7 +51,7 @@ namespace recon {
 	for(unsigned int j : neighbors){
 	  if ( !isIn(j,tried) ){
 	    tried.push_back(j);
-	    if (debug) cout << "== tried " << j << endl;
+	    ldmx_log(debug) << "== tried " << j;
 	    std::vector<unsigned int> neighbors2;
 	    for(unsigned int k=0;k<n;k++){
 	      if( dist(hits[k],hits[j]) < clusterHitDist_){
