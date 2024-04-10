@@ -52,7 +52,7 @@ void DarkBremInteraction::onProcessStart() {
         "Glue",
         "Si",
         "Al",
-        "W",
+        "W / LYSO",
         "PVT"
       });
 
@@ -67,7 +67,7 @@ void DarkBremInteraction::onProcessStart() {
         "Si 14",
         "Ca 20",
         "Cu 29",
-        "W 74",
+        "W / LYSO 74",
         "unlisted"
       });
 }
