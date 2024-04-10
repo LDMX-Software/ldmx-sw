@@ -14,6 +14,7 @@ p=ldmxcfg.Process(thisPassName)
 
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+p.termLogLevel = 0
 
 from LDMX.Recon.overlay import OverlayProducer
 overlay=OverlayProducer('pileup.root')

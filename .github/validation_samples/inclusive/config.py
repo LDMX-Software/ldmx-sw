@@ -22,6 +22,7 @@ p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']
+p.termLogLevel = 0
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
