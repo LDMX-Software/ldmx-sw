@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+    <position name="nohole_motherboard6_assembly_v0" unit="mm" x="106.2316" y="8.166" z="10.69263"/>
+    <position name="nohole_motherboard6_assembly_v1" unit="mm" x="204.4361" y="8.166" z="67.39101"/>
+    <position name="nohole_motherboard6_assembly_v2" unit="mm" x="106.2316" y="6.666" z="10.69263"/>
+    <position name="nohole_motherboard6_assembly_v3" unit="mm" x="204.4361" y="6.666" z="67.39101"/>
+    <position name="nohole_motherboard6_assembly_v4" unit="mm" x="15.35848" y="8.166" z="168.0895"/>
+    <position name="nohole_motherboard6_assembly_v5" unit="mm" x="15.35848" y="6.666" z="168.0895"/>
+    <position name="nohole_motherboard6_assembly_v6" unit="mm" x="15.35848" y="8.166" z="271.4943"/>
+    <position name="nohole_motherboard6_assembly_v7" unit="mm" x="15.35848" y="6.666" z="271.4943"/>
+    <position name="nohole_motherboard6_assembly_v8" unit="mm" x="120.4637" y="8.166" z="271.4943"/>
+    <position name="nohole_motherboard6_assembly_v9" unit="mm" x="120.4637" y="6.666" z="271.4943"/>
+    <position name="nohole_motherboard6_assembly_v10" unit="mm" x="171.2637" y="8.166" z="300.8237"/>
+    <position name="nohole_motherboard6_assembly_v11" unit="mm" x="171.2637" y="6.666" z="300.8237"/>
+    <position name="nohole_motherboard6_assembly_v12" unit="mm" x="204.4361" y="8.166" z="358.2799"/>
+    <position name="nohole_motherboard6_assembly_v13" unit="mm" x="204.4361" y="6.666" z="358.2799"/>
+    <position name="nohole_motherboard6_assembly_v14" unit="mm" x="204.4361" y="8.166" z="416.9387"/>
+    <position name="nohole_motherboard6_assembly_v15" unit="mm" x="204.4361" y="6.666" z="416.9387"/>
+    <position name="nohole_motherboard6_assembly_v16" unit="mm" x="255.2361" y="8.166" z="446.2681"/>
+    <position name="nohole_motherboard6_assembly_v17" unit="mm" x="255.2361" y="6.666" z="446.2681"/>
+    <position name="nohole_motherboard6_assembly_v18" unit="mm" x="306.0361" y="8.166" z="416.9387"/>
+    <position name="nohole_motherboard6_assembly_v19" unit="mm" x="306.0361" y="6.666" z="416.9387"/>
+    <position name="nohole_motherboard6_assembly_v20" unit="mm" x="306.0361" y="8.166" z="358.2799"/>
+    <position name="nohole_motherboard6_assembly_v21" unit="mm" x="306.0361" y="6.666" z="358.2799"/>
+    <position name="nohole_motherboard6_assembly_v22" unit="mm" x="309.8791" y="8.166" z="292.9649"/>
+    <position name="nohole_motherboard6_assembly_v23" unit="mm" x="309.8791" y="6.666" z="292.9649"/>
+    <position name="nohole_motherboard6_assembly_v24" unit="mm" x="368.5379" y="8.166" z="292.9649"/>
+    <position name="nohole_motherboard6_assembly_v25" unit="mm" x="368.5379" y="6.666" z="292.9649"/>
+    <position name="nohole_motherboard6_assembly_v26" unit="mm" x="397.8673" y="8.166" z="242.1649"/>
+    <position name="nohole_motherboard6_assembly_v27" unit="mm" x="397.8673" y="6.666" z="242.1649"/>
+    <position name="nohole_motherboard6_assembly_v28" unit="mm" x="368.5379" y="8.166" z="191.3649"/>
+    <position name="nohole_motherboard6_assembly_v29" unit="mm" x="368.5379" y="6.666" z="191.3649"/>
+    <position name="nohole_motherboard6_assembly_v30" unit="mm" x="309.8791" y="8.166" z="191.3649"/>
+    <position name="nohole_motherboard6_assembly_v31" unit="mm" x="309.8791" y="6.666" z="191.3649"/>
+    <position name="nohole_motherboard6_assembly_v32" unit="mm" x="306.0361" y="8.166" z="126.0498"/>
+    <position name="nohole_motherboard6_assembly_v33" unit="mm" x="306.0361" y="6.666" z="126.0498"/>
+    <position name="nohole_motherboard6_assembly_v34" unit="mm" x="306.0361" y="8.166" z="67.39101"/>
+    <position name="nohole_motherboard6_assembly_v35" unit="mm" x="306.0361" y="6.666" z="67.39101"/>
+    <position name="nohole_motherboard6_assembly_v36" unit="mm" x="255.2361" y="8.166" z="38.06162"/>
+    <position name="nohole_motherboard6_assembly_v37" unit="mm" x="255.2361" y="6.666" z="38.06162"/>
+    <position name="nohole_motherboard6_assembly_v38" unit="mm" x="103.0566" y="6.666" z="16.19189"/>
+    <position name="nohole_motherboard6_assembly_v39" unit="mm" x="109.9848" y="6.666" z="20.1919"/>
+    <position name="nohole_motherboard6_assembly_v40" unit="mm" x="103.0566" y="1.666" z="16.19189"/>
+    <position name="nohole_motherboard6_assembly_v41" unit="mm" x="109.9848" y="1.666" z="20.1919"/>
+    <position name="nohole_motherboard6_assembly_v42" unit="mm" x="72.05662" y="6.666" z="69.88547"/>
+    <position name="nohole_motherboard6_assembly_v43" unit="mm" x="72.05662" y="1.666" z="69.88547"/>
+    <position name="nohole_motherboard6_assembly_v44" unit="mm" x="78.98482" y="6.666" z="73.88547"/>
+    <position name="nohole_motherboard6_assembly_v45" unit="mm" x="78.98482" y="1.666" z="73.88547"/>
+    <position name="nohole_motherboard6_assembly_v46" unit="mm" x="107.596" y="4.666" z="41.32939"/>
+    <position name="nohole_motherboard6_assembly_v47" unit="mm" x="127.5146" y="4.666" z="52.82939"/>
+    <position name="nohole_motherboard6_assembly_v48" unit="mm" x="107.596" y="1.666" z="41.32939"/>
+    <position name="nohole_motherboard6_assembly_v49" unit="mm" x="127.5146" y="1.666" z="52.82939"/>
+    <position name="nohole_motherboard6_assembly_v50" unit="mm" x="96.09604" y="4.666" z="61.24797"/>
+    <position name="nohole_motherboard6_assembly_v51" unit="mm" x="96.09604" y="1.666" z="61.24797"/>
+    <position name="nohole_motherboard6_assembly_v52" unit="mm" x="116.0146" y="4.666" z="72.74797"/>
+    <position name="nohole_motherboard6_assembly_v53" unit="mm" x="116.0146" y="1.666" z="72.74797"/>
+    <position name="nohole_motherboard6_assembly_v54" unit="mm" x="144.6258" y="6.666" z="40.19189"/>
+    <position name="nohole_motherboard6_assembly_v55" unit="mm" x="151.554" y="6.666" z="44.1919"/>
+    <position name="nohole_motherboard6_assembly_v56" unit="mm" x="144.6258" y="1.666" z="40.19189"/>
+    <position name="nohole_motherboard6_assembly_v57" unit="mm" x="151.554" y="1.666" z="44.1919"/>
+    <position name="nohole_motherboard6_assembly_v58" unit="mm" x="113.6258" y="6.666" z="93.88547"/>
+    <position name="nohole_motherboard6_assembly_v59" unit="mm" x="113.6258" y="1.666" z="93.88547"/>
+    <position name="nohole_motherboard6_assembly_v60" unit="mm" x="120.554" y="6.666" z="97.88547"/>
+    <position name="nohole_motherboard6_assembly_v61" unit="mm" x="120.554" y="1.666" z="97.88547"/>
+    <position name="nohole_motherboard6_assembly_v62" unit="mm" x="97.16431" y="1.666" z="2.397666"/>
+    <position name="nohole_motherboard6_assembly_v63" unit="mm" x="166.4463" y="1.666" z="42.39767"/>
+    <position name="nohole_motherboard6_assembly_v64" unit="mm" x="97.16431" y="0.066" z="2.397666"/>
+    <position name="nohole_motherboard6_assembly_v65" unit="mm" x="166.4463" y="0.066" z="42.39767"/>
+    <position name="nohole_motherboard6_assembly_v66" unit="mm" x="57.16431" y="1.666" z="71.6797"/>
+    <position name="nohole_motherboard6_assembly_v67" unit="mm" x="57.16431" y="0.066" z="71.6797"/>
+    <position name="nohole_motherboard6_assembly_v68" unit="mm" x="126.4463" y="1.666" z="111.6797"/>
+    <position name="nohole_motherboard6_assembly_v69" unit="mm" x="126.4463" y="0.066" z="111.6797"/>
+    <position name="nohole_motherboard6_assembly_v70" unit="mm" x="15.35848" y="6.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v71" unit="mm" x="23.35848" y="6.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v72" unit="mm" x="15.35848" y="1.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v73" unit="mm" x="23.35848" y="1.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v74" unit="mm" x="15.35848" y="6.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v75" unit="mm" x="15.35848" y="1.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v76" unit="mm" x="23.35848" y="6.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v77" unit="mm" x="23.35848" y="1.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v78" unit="mm" x="31.85848" y="4.666" z="227.3941"/>
+    <position name="nohole_motherboard6_assembly_v79" unit="mm" x="54.85848" y="4.666" z="227.3941"/>
+    <position name="nohole_motherboard6_assembly_v80" unit="mm" x="31.85848" y="1.666" z="227.3941"/>
+    <position name="nohole_motherboard6_assembly_v81" unit="mm" x="54.85848" y="1.666" z="227.3941"/>
+    <position name="nohole_motherboard6_assembly_v82" unit="mm" x="31.85848" y="4.666" z="250.3941"/>
+    <position name="nohole_motherboard6_assembly_v83" unit="mm" x="31.85848" y="1.666" z="250.3941"/>
+    <position name="nohole_motherboard6_assembly_v84" unit="mm" x="54.85848" y="4.666" z="250.3941"/>
+    <position name="nohole_motherboard6_assembly_v85" unit="mm" x="54.85848" y="1.666" z="250.3941"/>
+    <position name="nohole_motherboard6_assembly_v86" unit="mm" x="63.35848" y="6.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v87" unit="mm" x="71.35848" y="6.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v88" unit="mm" x="63.35848" y="1.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v89" unit="mm" x="71.35848" y="1.666" z="207.8941"/>
+    <position name="nohole_motherboard6_assembly_v90" unit="mm" x="63.35848" y="6.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v91" unit="mm" x="63.35848" y="1.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v92" unit="mm" x="71.35848" y="6.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v93" unit="mm" x="71.35848" y="1.666" z="269.8941"/>
+    <position name="nohole_motherboard6_assembly_v94" unit="mm" x="3.358484" y="1.666" z="198.8941"/>
+    <position name="nohole_motherboard6_assembly_v95" unit="mm" x="83.35848" y="1.666" z="198.8941"/>
+    <position name="nohole_motherboard6_assembly_v96" unit="mm" x="3.358484" y="0.066" z="198.8941"/>
+    <position name="nohole_motherboard6_assembly_v97" unit="mm" x="83.35848" y="0.066" z="198.8941"/>
+    <position name="nohole_motherboard6_assembly_v98" unit="mm" x="3.358484" y="1.666" z="278.8941"/>
+    <position name="nohole_motherboard6_assembly_v99" unit="mm" x="3.358484" y="0.066" z="278.8941"/>
+    <position name="nohole_motherboard6_assembly_v100" unit="mm" x="83.35848" y="1.666" z="278.8941"/>
+    <position name="nohole_motherboard6_assembly_v101" unit="mm" x="83.35848" y="0.066" z="278.8941"/>
+    <position name="nohole_motherboard6_assembly_v102" unit="mm" x="58.60662" y="6.666" z="93.18155"/>
+    <position name="nohole_motherboard6_assembly_v103" unit="mm" x="65.53482" y="6.666" z="97.18155"/>
+    <position name="nohole_motherboard6_assembly_v104" unit="mm" x="58.60662" y="1.666" z="93.18155"/>
+    <position name="nohole_motherboard6_assembly_v105" unit="mm" x="65.53482" y="1.666" z="97.18155"/>
+    <position name="nohole_motherboard6_assembly_v106" unit="mm" x="27.60662" y="6.666" z="146.8751"/>
+    <position name="nohole_motherboard6_assembly_v107" unit="mm" x="27.60662" y="1.666" z="146.8751"/>
+    <position name="nohole_motherboard6_assembly_v108" unit="mm" x="34.53482" y="6.666" z="150.8751"/>
+    <position name="nohole_motherboard6_assembly_v109" unit="mm" x="34.53482" y="1.666" z="150.8751"/>
+    <position name="nohole_motherboard6_assembly_v110" unit="mm" x="63.14604" y="4.666" z="118.319"/>
+    <position name="nohole_motherboard6_assembly_v111" unit="mm" x="83.06462" y="4.666" z="129.819"/>
+    <position name="nohole_motherboard6_assembly_v112" unit="mm" x="63.14604" y="1.666" z="118.319"/>
+    <position name="nohole_motherboard6_assembly_v113" unit="mm" x="83.06462" y="1.666" z="129.819"/>
+    <position name="nohole_motherboard6_assembly_v114" unit="mm" x="51.64604" y="4.666" z="138.2376"/>
+    <position name="nohole_motherboard6_assembly_v115" unit="mm" x="51.64604" y="1.666" z="138.2376"/>
+    <position name="nohole_motherboard6_assembly_v116" unit="mm" x="71.56462" y="4.666" z="149.7376"/>
+    <position name="nohole_motherboard6_assembly_v117" unit="mm" x="71.56462" y="1.666" z="149.7376"/>
+    <position name="nohole_motherboard6_assembly_v118" unit="mm" x="100.1758" y="6.666" z="117.1816"/>
+    <position name="nohole_motherboard6_assembly_v119" unit="mm" x="107.104" y="6.666" z="121.1816"/>
+    <position name="nohole_motherboard6_assembly_v120" unit="mm" x="100.1758" y="1.666" z="117.1816"/>
+    <position name="nohole_motherboard6_assembly_v121" unit="mm" x="107.104" y="1.666" z="121.1816"/>
+    <position name="nohole_motherboard6_assembly_v122" unit="mm" x="69.17584" y="6.666" z="170.8751"/>
+    <position name="nohole_motherboard6_assembly_v123" unit="mm" x="69.17584" y="1.666" z="170.8751"/>
+    <position name="nohole_motherboard6_assembly_v124" unit="mm" x="76.10404" y="6.666" z="174.8751"/>
+    <position name="nohole_motherboard6_assembly_v125" unit="mm" x="76.10404" y="1.666" z="174.8751"/>
+    <position name="nohole_motherboard6_assembly_v126" unit="mm" x="52.71431" y="1.666" z="79.38732"/>
+    <position name="nohole_motherboard6_assembly_v127" unit="mm" x="121.9963" y="1.666" z="119.3873"/>
+    <position name="nohole_motherboard6_assembly_v128" unit="mm" x="52.71431" y="0.066" z="79.38732"/>
+    <position name="nohole_motherboard6_assembly_v129" unit="mm" x="121.9963" y="0.066" z="119.3873"/>
+    <position name="nohole_motherboard6_assembly_v130" unit="mm" x="12.71431" y="1.666" z="148.6694"/>
+    <position name="nohole_motherboard6_assembly_v131" unit="mm" x="12.71431" y="0.066" z="148.6694"/>
+    <position name="nohole_motherboard6_assembly_v132" unit="mm" x="81.99634" y="1.666" z="188.6694"/>
+    <position name="nohole_motherboard6_assembly_v133" unit="mm" x="81.99634" y="0.066" z="188.6694"/>
+  </define>
+
+  <solids>
+    <tessellated aunit="deg" lunit="mm" name="nohole_motherboard6_assembly-SOL">
+       <triangular vertex1="nohole_motherboard6_assembly_v0" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v2"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v2" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v3"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v4" vertex2="nohole_motherboard6_assembly_v0" vertex3="nohole_motherboard6_assembly_v5"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v5" vertex2="nohole_motherboard6_assembly_v0" vertex3="nohole_motherboard6_assembly_v2"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v6" vertex2="nohole_motherboard6_assembly_v4" vertex3="nohole_motherboard6_assembly_v7"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v7" vertex2="nohole_motherboard6_assembly_v4" vertex3="nohole_motherboard6_assembly_v5"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v8" vertex2="nohole_motherboard6_assembly_v6" vertex3="nohole_motherboard6_assembly_v9"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v9" vertex2="nohole_motherboard6_assembly_v6" vertex3="nohole_motherboard6_assembly_v7"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v10" vertex2="nohole_motherboard6_assembly_v8" vertex3="nohole_motherboard6_assembly_v11"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v11" vertex2="nohole_motherboard6_assembly_v8" vertex3="nohole_motherboard6_assembly_v9"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v12" vertex2="nohole_motherboard6_assembly_v10" vertex3="nohole_motherboard6_assembly_v13"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v13" vertex2="nohole_motherboard6_assembly_v10" vertex3="nohole_motherboard6_assembly_v11"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v14" vertex2="nohole_motherboard6_assembly_v12" vertex3="nohole_motherboard6_assembly_v15"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v15" vertex2="nohole_motherboard6_assembly_v12" vertex3="nohole_motherboard6_assembly_v13"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v16" vertex2="nohole_motherboard6_assembly_v14" vertex3="nohole_motherboard6_assembly_v17"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v17" vertex2="nohole_motherboard6_assembly_v14" vertex3="nohole_motherboard6_assembly_v15"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v18" vertex2="nohole_motherboard6_assembly_v16" vertex3="nohole_motherboard6_assembly_v19"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v19" vertex2="nohole_motherboard6_assembly_v16" vertex3="nohole_motherboard6_assembly_v17"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v20" vertex2="nohole_motherboard6_assembly_v18" vertex3="nohole_motherboard6_assembly_v21"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v21" vertex2="nohole_motherboard6_assembly_v18" vertex3="nohole_motherboard6_assembly_v19"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v22" vertex2="nohole_motherboard6_assembly_v20" vertex3="nohole_motherboard6_assembly_v23"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v23" vertex2="nohole_motherboard6_assembly_v20" vertex3="nohole_motherboard6_assembly_v21"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v24" vertex2="nohole_motherboard6_assembly_v22" vertex3="nohole_motherboard6_assembly_v25"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v25" vertex2="nohole_motherboard6_assembly_v22" vertex3="nohole_motherboard6_assembly_v23"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v26" vertex2="nohole_motherboard6_assembly_v24" vertex3="nohole_motherboard6_assembly_v27"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v27" vertex2="nohole_motherboard6_assembly_v24" vertex3="nohole_motherboard6_assembly_v25"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v28" vertex2="nohole_motherboard6_assembly_v26" vertex3="nohole_motherboard6_assembly_v29"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v29" vertex2="nohole_motherboard6_assembly_v26" vertex3="nohole_motherboard6_assembly_v27"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v30" vertex2="nohole_motherboard6_assembly_v28" vertex3="nohole_motherboard6_assembly_v31"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v31" vertex2="nohole_motherboard6_assembly_v28" vertex3="nohole_motherboard6_assembly_v29"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v32" vertex2="nohole_motherboard6_assembly_v30" vertex3="nohole_motherboard6_assembly_v33"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v33" vertex2="nohole_motherboard6_assembly_v30" vertex3="nohole_motherboard6_assembly_v31"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v34" vertex2="nohole_motherboard6_assembly_v32" vertex3="nohole_motherboard6_assembly_v35"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v35" vertex2="nohole_motherboard6_assembly_v32" vertex3="nohole_motherboard6_assembly_v33"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v36" vertex2="nohole_motherboard6_assembly_v34" vertex3="nohole_motherboard6_assembly_v37"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v37" vertex2="nohole_motherboard6_assembly_v34" vertex3="nohole_motherboard6_assembly_v35"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v1" vertex2="nohole_motherboard6_assembly_v36" vertex3="nohole_motherboard6_assembly_v3"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v3" vertex2="nohole_motherboard6_assembly_v36" vertex3="nohole_motherboard6_assembly_v37"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v16" vertex2="nohole_motherboard6_assembly_v18" vertex3="nohole_motherboard6_assembly_v20"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v24" vertex2="nohole_motherboard6_assembly_v26" vertex3="nohole_motherboard6_assembly_v22"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v22" vertex2="nohole_motherboard6_assembly_v26" vertex3="nohole_motherboard6_assembly_v28"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v34" vertex2="nohole_motherboard6_assembly_v36" vertex3="nohole_motherboard6_assembly_v32"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v32" vertex2="nohole_motherboard6_assembly_v36" vertex3="nohole_motherboard6_assembly_v1"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v32" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v30"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v30" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v10"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v1" vertex2="nohole_motherboard6_assembly_v0" vertex3="nohole_motherboard6_assembly_v4"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v10" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v8"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v8" vertex2="nohole_motherboard6_assembly_v1" vertex3="nohole_motherboard6_assembly_v4"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v8" vertex2="nohole_motherboard6_assembly_v4" vertex3="nohole_motherboard6_assembly_v6"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v14" vertex2="nohole_motherboard6_assembly_v16" vertex3="nohole_motherboard6_assembly_v12"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v12" vertex2="nohole_motherboard6_assembly_v16" vertex3="nohole_motherboard6_assembly_v20"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v12" vertex2="nohole_motherboard6_assembly_v20" vertex3="nohole_motherboard6_assembly_v10"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v10" vertex2="nohole_motherboard6_assembly_v20" vertex3="nohole_motherboard6_assembly_v22"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v10" vertex2="nohole_motherboard6_assembly_v22" vertex3="nohole_motherboard6_assembly_v30"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v30" vertex2="nohole_motherboard6_assembly_v22" vertex3="nohole_motherboard6_assembly_v28"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v5" vertex2="nohole_motherboard6_assembly_v2" vertex3="nohole_motherboard6_assembly_v3"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v17" vertex2="nohole_motherboard6_assembly_v15" vertex3="nohole_motherboard6_assembly_v13"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v37" vertex2="nohole_motherboard6_assembly_v35" vertex3="nohole_motherboard6_assembly_v3"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v3" vertex2="nohole_motherboard6_assembly_v35" vertex3="nohole_motherboard6_assembly_v33"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v27" vertex2="nohole_motherboard6_assembly_v25" vertex3="nohole_motherboard6_assembly_v29"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v29" vertex2="nohole_motherboard6_assembly_v25" vertex3="nohole_motherboard6_assembly_v23"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v29" vertex2="nohole_motherboard6_assembly_v23" vertex3="nohole_motherboard6_assembly_v31"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v7" vertex2="nohole_motherboard6_assembly_v5" vertex3="nohole_motherboard6_assembly_v9"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v9" vertex2="nohole_motherboard6_assembly_v5" vertex3="nohole_motherboard6_assembly_v3"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v9" vertex2="nohole_motherboard6_assembly_v3" vertex3="nohole_motherboard6_assembly_v11"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v11" vertex2="nohole_motherboard6_assembly_v3" vertex3="nohole_motherboard6_assembly_v33"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v17" vertex2="nohole_motherboard6_assembly_v13" vertex3="nohole_motherboard6_assembly_v19"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v33" vertex2="nohole_motherboard6_assembly_v31" vertex3="nohole_motherboard6_assembly_v11"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v11" vertex2="nohole_motherboard6_assembly_v31" vertex3="nohole_motherboard6_assembly_v23"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v11" vertex2="nohole_motherboard6_assembly_v23" vertex3="nohole_motherboard6_assembly_v13"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v13" vertex2="nohole_motherboard6_assembly_v23" vertex3="nohole_motherboard6_assembly_v21"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v13" vertex2="nohole_motherboard6_assembly_v21" vertex3="nohole_motherboard6_assembly_v19"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v38" vertex2="nohole_motherboard6_assembly_v39" vertex3="nohole_motherboard6_assembly_v40"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v40" vertex2="nohole_motherboard6_assembly_v39" vertex3="nohole_motherboard6_assembly_v41"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v42" vertex2="nohole_motherboard6_assembly_v38" vertex3="nohole_motherboard6_assembly_v43"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v43" vertex2="nohole_motherboard6_assembly_v38" vertex3="nohole_motherboard6_assembly_v40"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v44" vertex2="nohole_motherboard6_assembly_v42" vertex3="nohole_motherboard6_assembly_v45"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v45" vertex2="nohole_motherboard6_assembly_v42" vertex3="nohole_motherboard6_assembly_v43"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v39" vertex2="nohole_motherboard6_assembly_v44" vertex3="nohole_motherboard6_assembly_v41"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v41" vertex2="nohole_motherboard6_assembly_v44" vertex3="nohole_motherboard6_assembly_v45"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v42" vertex2="nohole_motherboard6_assembly_v44" vertex3="nohole_motherboard6_assembly_v38"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v38" vertex2="nohole_motherboard6_assembly_v44" vertex3="nohole_motherboard6_assembly_v39"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v45" vertex2="nohole_motherboard6_assembly_v43" vertex3="nohole_motherboard6_assembly_v41"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v41" vertex2="nohole_motherboard6_assembly_v43" vertex3="nohole_motherboard6_assembly_v40"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v46" vertex2="nohole_motherboard6_assembly_v47" vertex3="nohole_motherboard6_assembly_v48"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v48" vertex2="nohole_motherboard6_assembly_v47" vertex3="nohole_motherboard6_assembly_v49"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v50" vertex2="nohole_motherboard6_assembly_v46" vertex3="nohole_motherboard6_assembly_v51"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v51" vertex2="nohole_motherboard6_assembly_v46" vertex3="nohole_motherboard6_assembly_v48"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v52" vertex2="nohole_motherboard6_assembly_v50" vertex3="nohole_motherboard6_assembly_v53"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v53" vertex2="nohole_motherboard6_assembly_v50" vertex3="nohole_motherboard6_assembly_v51"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v47" vertex2="nohole_motherboard6_assembly_v52" vertex3="nohole_motherboard6_assembly_v49"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v49" vertex2="nohole_motherboard6_assembly_v52" vertex3="nohole_motherboard6_assembly_v53"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v50" vertex2="nohole_motherboard6_assembly_v52" vertex3="nohole_motherboard6_assembly_v46"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v46" vertex2="nohole_motherboard6_assembly_v52" vertex3="nohole_motherboard6_assembly_v47"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v53" vertex2="nohole_motherboard6_assembly_v51" vertex3="nohole_motherboard6_assembly_v49"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v49" vertex2="nohole_motherboard6_assembly_v51" vertex3="nohole_motherboard6_assembly_v48"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v54" vertex2="nohole_motherboard6_assembly_v55" vertex3="nohole_motherboard6_assembly_v56"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v56" vertex2="nohole_motherboard6_assembly_v55" vertex3="nohole_motherboard6_assembly_v57"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v58" vertex2="nohole_motherboard6_assembly_v54" vertex3="nohole_motherboard6_assembly_v59"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v59" vertex2="nohole_motherboard6_assembly_v54" vertex3="nohole_motherboard6_assembly_v56"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v60" vertex2="nohole_motherboard6_assembly_v58" vertex3="nohole_motherboard6_assembly_v61"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v61" vertex2="nohole_motherboard6_assembly_v58" vertex3="nohole_motherboard6_assembly_v59"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v55" vertex2="nohole_motherboard6_assembly_v60" vertex3="nohole_motherboard6_assembly_v57"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v57" vertex2="nohole_motherboard6_assembly_v60" vertex3="nohole_motherboard6_assembly_v61"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v58" vertex2="nohole_motherboard6_assembly_v60" vertex3="nohole_motherboard6_assembly_v54"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v54" vertex2="nohole_motherboard6_assembly_v60" vertex3="nohole_motherboard6_assembly_v55"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v61" vertex2="nohole_motherboard6_assembly_v59" vertex3="nohole_motherboard6_assembly_v57"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v57" vertex2="nohole_motherboard6_assembly_v59" vertex3="nohole_motherboard6_assembly_v56"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v62" vertex2="nohole_motherboard6_assembly_v63" vertex3="nohole_motherboard6_assembly_v64"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v64" vertex2="nohole_motherboard6_assembly_v63" vertex3="nohole_motherboard6_assembly_v65"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v66" vertex2="nohole_motherboard6_assembly_v62" vertex3="nohole_motherboard6_assembly_v67"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v67" vertex2="nohole_motherboard6_assembly_v62" vertex3="nohole_motherboard6_assembly_v64"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v68" vertex2="nohole_motherboard6_assembly_v66" vertex3="nohole_motherboard6_assembly_v69"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v69" vertex2="nohole_motherboard6_assembly_v66" vertex3="nohole_motherboard6_assembly_v67"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v63" vertex2="nohole_motherboard6_assembly_v68" vertex3="nohole_motherboard6_assembly_v65"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v65" vertex2="nohole_motherboard6_assembly_v68" vertex3="nohole_motherboard6_assembly_v69"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v66" vertex2="nohole_motherboard6_assembly_v68" vertex3="nohole_motherboard6_assembly_v62"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v62" vertex2="nohole_motherboard6_assembly_v68" vertex3="nohole_motherboard6_assembly_v63"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v69" vertex2="nohole_motherboard6_assembly_v67" vertex3="nohole_motherboard6_assembly_v65"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v65" vertex2="nohole_motherboard6_assembly_v67" vertex3="nohole_motherboard6_assembly_v64"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v70" vertex2="nohole_motherboard6_assembly_v71" vertex3="nohole_motherboard6_assembly_v72"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v72" vertex2="nohole_motherboard6_assembly_v71" vertex3="nohole_motherboard6_assembly_v73"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v74" vertex2="nohole_motherboard6_assembly_v70" vertex3="nohole_motherboard6_assembly_v75"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v75" vertex2="nohole_motherboard6_assembly_v70" vertex3="nohole_motherboard6_assembly_v72"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v76" vertex2="nohole_motherboard6_assembly_v74" vertex3="nohole_motherboard6_assembly_v77"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v77" vertex2="nohole_motherboard6_assembly_v74" vertex3="nohole_motherboard6_assembly_v75"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v71" vertex2="nohole_motherboard6_assembly_v76" vertex3="nohole_motherboard6_assembly_v73"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v73" vertex2="nohole_motherboard6_assembly_v76" vertex3="nohole_motherboard6_assembly_v77"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v74" vertex2="nohole_motherboard6_assembly_v76" vertex3="nohole_motherboard6_assembly_v70"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v70" vertex2="nohole_motherboard6_assembly_v76" vertex3="nohole_motherboard6_assembly_v71"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v77" vertex2="nohole_motherboard6_assembly_v75" vertex3="nohole_motherboard6_assembly_v73"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v73" vertex2="nohole_motherboard6_assembly_v75" vertex3="nohole_motherboard6_assembly_v72"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v78" vertex2="nohole_motherboard6_assembly_v79" vertex3="nohole_motherboard6_assembly_v80"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v80" vertex2="nohole_motherboard6_assembly_v79" vertex3="nohole_motherboard6_assembly_v81"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v82" vertex2="nohole_motherboard6_assembly_v78" vertex3="nohole_motherboard6_assembly_v83"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v83" vertex2="nohole_motherboard6_assembly_v78" vertex3="nohole_motherboard6_assembly_v80"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v84" vertex2="nohole_motherboard6_assembly_v82" vertex3="nohole_motherboard6_assembly_v85"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v85" vertex2="nohole_motherboard6_assembly_v82" vertex3="nohole_motherboard6_assembly_v83"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v79" vertex2="nohole_motherboard6_assembly_v84" vertex3="nohole_motherboard6_assembly_v81"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v81" vertex2="nohole_motherboard6_assembly_v84" vertex3="nohole_motherboard6_assembly_v85"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v82" vertex2="nohole_motherboard6_assembly_v84" vertex3="nohole_motherboard6_assembly_v78"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v78" vertex2="nohole_motherboard6_assembly_v84" vertex3="nohole_motherboard6_assembly_v79"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v85" vertex2="nohole_motherboard6_assembly_v83" vertex3="nohole_motherboard6_assembly_v81"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v81" vertex2="nohole_motherboard6_assembly_v83" vertex3="nohole_motherboard6_assembly_v80"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v86" vertex2="nohole_motherboard6_assembly_v87" vertex3="nohole_motherboard6_assembly_v88"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v88" vertex2="nohole_motherboard6_assembly_v87" vertex3="nohole_motherboard6_assembly_v89"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v90" vertex2="nohole_motherboard6_assembly_v86" vertex3="nohole_motherboard6_assembly_v91"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v91" vertex2="nohole_motherboard6_assembly_v86" vertex3="nohole_motherboard6_assembly_v88"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v92" vertex2="nohole_motherboard6_assembly_v90" vertex3="nohole_motherboard6_assembly_v93"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v93" vertex2="nohole_motherboard6_assembly_v90" vertex3="nohole_motherboard6_assembly_v91"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v87" vertex2="nohole_motherboard6_assembly_v92" vertex3="nohole_motherboard6_assembly_v89"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v89" vertex2="nohole_motherboard6_assembly_v92" vertex3="nohole_motherboard6_assembly_v93"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v90" vertex2="nohole_motherboard6_assembly_v92" vertex3="nohole_motherboard6_assembly_v86"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v86" vertex2="nohole_motherboard6_assembly_v92" vertex3="nohole_motherboard6_assembly_v87"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v93" vertex2="nohole_motherboard6_assembly_v91" vertex3="nohole_motherboard6_assembly_v89"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v89" vertex2="nohole_motherboard6_assembly_v91" vertex3="nohole_motherboard6_assembly_v88"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v94" vertex2="nohole_motherboard6_assembly_v95" vertex3="nohole_motherboard6_assembly_v96"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v96" vertex2="nohole_motherboard6_assembly_v95" vertex3="nohole_motherboard6_assembly_v97"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v98" vertex2="nohole_motherboard6_assembly_v94" vertex3="nohole_motherboard6_assembly_v99"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v99" vertex2="nohole_motherboard6_assembly_v94" vertex3="nohole_motherboard6_assembly_v96"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v100" vertex2="nohole_motherboard6_assembly_v98" vertex3="nohole_motherboard6_assembly_v101"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v101" vertex2="nohole_motherboard6_assembly_v98" vertex3="nohole_motherboard6_assembly_v99"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v95" vertex2="nohole_motherboard6_assembly_v100" vertex3="nohole_motherboard6_assembly_v97"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v97" vertex2="nohole_motherboard6_assembly_v100" vertex3="nohole_motherboard6_assembly_v101"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v98" vertex2="nohole_motherboard6_assembly_v100" vertex3="nohole_motherboard6_assembly_v94"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v94" vertex2="nohole_motherboard6_assembly_v100" vertex3="nohole_motherboard6_assembly_v95"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v101" vertex2="nohole_motherboard6_assembly_v99" vertex3="nohole_motherboard6_assembly_v97"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v97" vertex2="nohole_motherboard6_assembly_v99" vertex3="nohole_motherboard6_assembly_v96"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v102" vertex2="nohole_motherboard6_assembly_v103" vertex3="nohole_motherboard6_assembly_v104"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v104" vertex2="nohole_motherboard6_assembly_v103" vertex3="nohole_motherboard6_assembly_v105"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v106" vertex2="nohole_motherboard6_assembly_v102" vertex3="nohole_motherboard6_assembly_v107"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v107" vertex2="nohole_motherboard6_assembly_v102" vertex3="nohole_motherboard6_assembly_v104"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v108" vertex2="nohole_motherboard6_assembly_v106" vertex3="nohole_motherboard6_assembly_v109"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v109" vertex2="nohole_motherboard6_assembly_v106" vertex3="nohole_motherboard6_assembly_v107"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v103" vertex2="nohole_motherboard6_assembly_v108" vertex3="nohole_motherboard6_assembly_v105"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v105" vertex2="nohole_motherboard6_assembly_v108" vertex3="nohole_motherboard6_assembly_v109"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v106" vertex2="nohole_motherboard6_assembly_v108" vertex3="nohole_motherboard6_assembly_v102"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v102" vertex2="nohole_motherboard6_assembly_v108" vertex3="nohole_motherboard6_assembly_v103"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v109" vertex2="nohole_motherboard6_assembly_v107" vertex3="nohole_motherboard6_assembly_v105"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v105" vertex2="nohole_motherboard6_assembly_v107" vertex3="nohole_motherboard6_assembly_v104"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v110" vertex2="nohole_motherboard6_assembly_v111" vertex3="nohole_motherboard6_assembly_v112"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v112" vertex2="nohole_motherboard6_assembly_v111" vertex3="nohole_motherboard6_assembly_v113"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v114" vertex2="nohole_motherboard6_assembly_v110" vertex3="nohole_motherboard6_assembly_v115"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v115" vertex2="nohole_motherboard6_assembly_v110" vertex3="nohole_motherboard6_assembly_v112"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v116" vertex2="nohole_motherboard6_assembly_v114" vertex3="nohole_motherboard6_assembly_v117"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v117" vertex2="nohole_motherboard6_assembly_v114" vertex3="nohole_motherboard6_assembly_v115"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v111" vertex2="nohole_motherboard6_assembly_v116" vertex3="nohole_motherboard6_assembly_v113"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v113" vertex2="nohole_motherboard6_assembly_v116" vertex3="nohole_motherboard6_assembly_v117"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v114" vertex2="nohole_motherboard6_assembly_v116" vertex3="nohole_motherboard6_assembly_v110"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v110" vertex2="nohole_motherboard6_assembly_v116" vertex3="nohole_motherboard6_assembly_v111"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v117" vertex2="nohole_motherboard6_assembly_v115" vertex3="nohole_motherboard6_assembly_v113"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v113" vertex2="nohole_motherboard6_assembly_v115" vertex3="nohole_motherboard6_assembly_v112"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v118" vertex2="nohole_motherboard6_assembly_v119" vertex3="nohole_motherboard6_assembly_v120"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v120" vertex2="nohole_motherboard6_assembly_v119" vertex3="nohole_motherboard6_assembly_v121"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v122" vertex2="nohole_motherboard6_assembly_v118" vertex3="nohole_motherboard6_assembly_v123"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v123" vertex2="nohole_motherboard6_assembly_v118" vertex3="nohole_motherboard6_assembly_v120"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v124" vertex2="nohole_motherboard6_assembly_v122" vertex3="nohole_motherboard6_assembly_v125"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v125" vertex2="nohole_motherboard6_assembly_v122" vertex3="nohole_motherboard6_assembly_v123"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v119" vertex2="nohole_motherboard6_assembly_v124" vertex3="nohole_motherboard6_assembly_v121"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v121" vertex2="nohole_motherboard6_assembly_v124" vertex3="nohole_motherboard6_assembly_v125"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v122" vertex2="nohole_motherboard6_assembly_v124" vertex3="nohole_motherboard6_assembly_v118"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v118" vertex2="nohole_motherboard6_assembly_v124" vertex3="nohole_motherboard6_assembly_v119"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v125" vertex2="nohole_motherboard6_assembly_v123" vertex3="nohole_motherboard6_assembly_v121"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v121" vertex2="nohole_motherboard6_assembly_v123" vertex3="nohole_motherboard6_assembly_v120"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v126" vertex2="nohole_motherboard6_assembly_v127" vertex3="nohole_motherboard6_assembly_v128"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v128" vertex2="nohole_motherboard6_assembly_v127" vertex3="nohole_motherboard6_assembly_v129"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v130" vertex2="nohole_motherboard6_assembly_v126" vertex3="nohole_motherboard6_assembly_v131"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v131" vertex2="nohole_motherboard6_assembly_v126" vertex3="nohole_motherboard6_assembly_v128"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v132" vertex2="nohole_motherboard6_assembly_v130" vertex3="nohole_motherboard6_assembly_v133"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v133" vertex2="nohole_motherboard6_assembly_v130" vertex3="nohole_motherboard6_assembly_v131"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v127" vertex2="nohole_motherboard6_assembly_v132" vertex3="nohole_motherboard6_assembly_v129"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v129" vertex2="nohole_motherboard6_assembly_v132" vertex3="nohole_motherboard6_assembly_v133"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v130" vertex2="nohole_motherboard6_assembly_v132" vertex3="nohole_motherboard6_assembly_v126"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v126" vertex2="nohole_motherboard6_assembly_v132" vertex3="nohole_motherboard6_assembly_v127"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v133" vertex2="nohole_motherboard6_assembly_v131" vertex3="nohole_motherboard6_assembly_v129"/>
+       <triangular vertex1="nohole_motherboard6_assembly_v129" vertex2="nohole_motherboard6_assembly_v131" vertex3="nohole_motherboard6_assembly_v128"/>
+    </tessellated>
+  </solids>
+
+  <structure>
+    <volume name="nohole_motherboard6_assembly">
+      <materialref ref="FR40x27264f0"/>
+      <solidref ref="nohole_motherboard6_assembly-SOL"/>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="nohole_motherboard6_assembly"/>
+  </setup>
+</gdml>
