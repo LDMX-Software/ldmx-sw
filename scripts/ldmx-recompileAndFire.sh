@@ -4,7 +4,7 @@
 # ldmx ./scripts/ldmx-recompileAndFire.sh
 # for changing the defaults
 # ldmx setenv LDMX_COMPILE_CORES=<num cores to be used>, i.e.
-# ldmx setenv LDMX_COMPILE_CORES=8
+# ldmx setenv LDMX_COMPILE_CORES=16
 # or
 # ldmx setenv LDMX_COMPILE_BUILD=<build location>
 
@@ -21,7 +21,7 @@ fi
 echo "-- Compiling ldmx-sw in ${LDMX_COMPILE_BUILD} with ${LDMX_COMPILE_CORES} cores, and running "
 
 # Compile ldmx-sw
-cmake -B ${LDMX_COMPILE_BUILD}/build -S .
+cmake -B ${LDMX_COMPILE_BUILD}/build -S ${LDMX_COMPILE_BUILD}
 cmake --build ${LDMX_COMPILE_BUILD}/build --target install -j=${LDMX_COMPILE_CORES}
 # Run fire on the input config
 fire $FIREINPUT
