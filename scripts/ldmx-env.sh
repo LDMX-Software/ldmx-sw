@@ -465,6 +465,8 @@ __ldmx_clean() {
   return ${rc}
 }
 
+
+
 ###############################################################################
 # __ldmx_source
 #   Run all the sub-commands in the provided file from the directory it is in.
@@ -538,6 +540,24 @@ __ldmx_checkout() {
 }
 
 ###############################################################################
+# __ldmx_compile
+#   Compile ldmx-sw
+###############################################################################
+
+__ldmx_compile() {
+  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-compile.sh
+}
+
+###############################################################################
+# __ldmx_recompFire
+#   Recompile ldmx-sw and run fire on the first argument
+###############################################################################
+
+__ldmx_recompFire() {
+  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-compile.sh $1
+}
+
+###############################################################################
 # __ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
@@ -599,7 +619,7 @@ ldmx() {
   [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
   # divide commands by number of arguments
   case $1 in
-    help|config)
+    help|config|compile)
       if [[ "$#" != "1" ]]; then
         __ldmx_${1}
         echo "ERROR: 'ldmx ${1}' takes no arguments."
@@ -608,7 +628,7 @@ ldmx() {
       __ldmx_${1}
       return $?
       ;;
-    list|base|clean|mount|setenv|source)
+    list|base|clean|mount|setenv|recompFire|source)
       if [[ "$#" != "2" ]]; then
         __ldmx_help
         echo "ERROR: ldmx ${1} takes one argument."
