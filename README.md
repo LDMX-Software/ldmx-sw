@@ -24,10 +24,9 @@
   - **Note**: You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
   - **Note**: If you are working with ldmx-sw at SLAC's SDF, you will need to set the `TMPDIR` environment variable so that program running the container has more than ~5GB of space to write intermediate files. The default temporary space (`/tmp`) is often full of other files already. A decent replacement is `TMPDIR=${SCRATCH}` which gives the program plenty of room for the files it needs to manipulate.
-- Make a build directory: `cd ldmx-sw; mkdir build; cd build;`
-- Configure the build: `ldmx cmake ..`
-- Build and Install: `ldmx make install -j2`
+- Configure and compile: `ldmx compile`
 - Now you can run any processor in _ldmx-sw_ through `ldmx fire myconfig.py`
+- If you are developing and need to recompile and run `ldmx fire`, you can use `ldmx recompFire myconfig.py`
 
 ## Documentation 
 The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
@@ -40,7 +39,9 @@ Command | Purpose
 `ldmx cmake ..` | Configure the ldmx-sw build
 `ldmx make` | Compile/build ldmx-sw
 `ldmx make install` | Install ldmx-sw
+`ldmx compile` | Configure and compile ldmx-sw
 `ldmx fire config.py` | Use ldmx-sw application and processors with input python configuration
+`ldmx recompFire config.py` | Recompile and run fire on a config file
 `ldmx python3 analysis.py` | Run python-based analysis
 `ldmx ./bin/mg5_aMC` | Run MadGraph5 inside (ubuntu-based) container
 
