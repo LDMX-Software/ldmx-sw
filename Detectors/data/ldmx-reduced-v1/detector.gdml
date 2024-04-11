@@ -94,11 +94,6 @@
         <positionref ref="hadron_calorimeter_pos"/> 
         <rotationref ref="identity"/> 
       </physvol>
-      <physvol>
-        <file name="magnet.gdml"/> 
-        <positionref ref="magnet_pos"/> 
-        <rotationref ref="identity"/> 
-      </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
@@ -107,17 +102,9 @@
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced"/>
+      <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam"/>
       <auxiliary auxtype="Description" 
                  auxvalue="The reduced geometry for a 2025 summer running"/>
-    </auxiliary>
-
-    <!-- magnetic field with global field map definition -->     
-    <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
-      <auxiliary auxtype="MagneticFieldType" auxvalue="MagneticFieldMap3D"/>
-      <auxiliary auxtype="File" auxvalue="BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
-      <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
-      <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
-      <auxiliary auxtype="OffsetZ" auxvalue="-400.0" auxunit="mm"/>
     </auxiliary>
 
     <!-- define regions -->
