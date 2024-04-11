@@ -1,33 +1,23 @@
+#!/bin/bash
+
 ############################# Usage #############################
-# source scripts/ldmx-compile.sh.sh [-j <numCores>] [-b <buildLocation>]
-# e.g. source scripts/ldmx-compile.sh
-# or   source scripts/ldmx-compile.sh -j 16 -b ${LDMX_BASE}/ldmx-sw
+# ldmx ./scripts/ldmx-compile.sh
+# for changing the defaults
+# ldmx setenv LDMX_COMPILE_CORES=<num cores to be used>, i.e.
+# ldmx setenv LDMX_COMPILE_CORES=8
+# or
+# ldmx setenv LDMX_COMPILE_BUILD=<build location>
 
-# set number of cores to be used, build location
-while [[ $# -gt 0 ]]; do
-  # number of cores
-  if [[ $1 == "-j"* ]]; then
-      if [[ $1 =~ ^-j\s*[=]?\s*([0-9]+)$ ]]; then
-          CORES=${BASH_REMATCH[1]}
-      fi
-  else
-    CORES=$(nproc)
-  fi
-  # build directory
-  if [[ $1 == "-b"* ]]; then
-      if [[ $1 =~ ^-b\s*[=]?\s*([a-zA-Z0-9]+)$ ]]; then
-          BUILD=${BASH_REMATCH[1]}
-      fi
-  else
-      BUILD=${LDMX_BASE}/ldmx-sw
-  fi
-  shift
-done
+if [ -z "$LDMX_COMPILE_CORES" ]; then
+    LDMX_COMPILE_CORES=$(nproc)
+fi
 
-echo "-- Compiling ldmx-sw in ${BUILD} with ${CORES} cores"
+if [ -z "$LDMX_COMPILE_BUILD" ]; then
+    LDMX_COMPILE_BUILD=${LDMX_BASE}/ldmx-sw/
+fi
+
+echo "-- Compiling ldmx-sw in ${LDMX_COMPILE_BUILD} with ${LDMX_COMPILE_CORES} cores"
 
 # Compile ldmx-sw
-cd ${BUILD}
-ldmx cmake -B ${BUILD}/build -S .
-ldmx cmake --build ${BUILD}/build --target install -j=$CORES
-cd -
+cmake -B ${LDMX_COMPILE_BUILD}/build -S .
+cmake --build ${LDMX_COMPILE_BUILD}/build --target install -j=${LDMX_COMPILE_CORES}
