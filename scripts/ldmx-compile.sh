@@ -19,5 +19,5 @@ fi
 echo "-- Compiling ldmx-sw in ${LDMX_COMPILE_BUILD} with ${LDMX_COMPILE_CORES} cores"
 
 # Compile ldmx-sw
-cmake -B ${LDMX_COMPILE_BUILD}/build -S ${LDMX_COMPILE_BUILD}
+cmake -B ${LDMX_COMPILE_BUILD}/build -S ${LDMX_COMPILE_BUILD} $@
 cmake --build ${LDMX_COMPILE_BUILD}/build --target install -j=${LDMX_COMPILE_CORES}

@@ -8,7 +8,6 @@
 # or
 # ldmx setenv LDMX_COMPILE_BUILD=<build location>
 
-FIREINPUT=$1
 
 if [ -z "$LDMX_COMPILE_CORES" ]; then
     LDMX_COMPILE_CORES=$(nproc)
@@ -24,4 +23,4 @@ echo "-- Compiling ldmx-sw in ${LDMX_COMPILE_BUILD} with ${LDMX_COMPILE_CORES} c
 cmake -B ${LDMX_COMPILE_BUILD}/build -S ${LDMX_COMPILE_BUILD}
 cmake --build ${LDMX_COMPILE_BUILD}/build --target install -j=${LDMX_COMPILE_CORES}
 # Run fire on the input config
-fire $FIREINPUT
+fire $@
