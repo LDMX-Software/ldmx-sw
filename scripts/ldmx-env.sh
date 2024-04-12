@@ -554,7 +554,7 @@ __ldmx_compile() {
 ###############################################################################
 
 __ldmx_recompFire() {
-  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompileAndFire.sh $1
+  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompileAndFire.sh $@
 }
 
 ###############################################################################
