@@ -7,9 +7,13 @@ from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 
-myGun = gen.single_4gev_e_upstream_tagger()
-myGun.vertex = [ 0., 0., -880] # mm 
-myGun.momentum = [0,0,4000] # MeV
+#myGun = gen.single_4gev_e_upstream_tagger()
+myGun = gen.multi( "mgpGen" )
+myGun.vertex = [ 0., 0., -880] # mm
+myGun.momentum = [0.,0.,4000.] # MeV
+myGun.nParticles = 1
+myGun.pdgID = 11
+myGun.enablePoisson = False #True   
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
 mySim.setDetector( 'ldmx-reduced-v1', True )
@@ -18,12 +22,8 @@ mySim.description = 'Reduced ECal Electron Gun Test Simulation'
 
 mySim.generators = [ myGun ]
 p.sequence = [ mySim ]
+p.termLogLevel = 0
 
-##################################################################
-# Below should be the same for all sim scenarios
-
-import os
-import sys
 
 p.maxEvents = 100
 p.run = 200
@@ -73,4 +73,5 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger'),
-        ] + dqm.all_dqm)
+#        ] + dqm.all_dqm)
+        ])
