@@ -554,12 +554,9 @@ void CKFProcessor::produce(framework::Event& event) {
     const std::shared_ptr<Acts::Surface> beamOrigin_surface =
         tracking::sim::utils::unboundSurface(-700);
     
-    ldmx_log(debug)<<"Starting the extrapolations to target and ecal ....  does this change????";
     
-    ldmx_log(debug)<<"Target extrapolation";
+    ldmx_log(debug)<<"Target extrapolation  ...  this should not change anything since track is stored at target plane";
     ldmx::Track::TrackState tsAtTarget;
-    ldmx_log(debug)<<"...doing it now...";
-    ldmx_log(debug)<<"...this is really dumb...";
     bool success = trk_extrap_->TrackStateAtSurface(track,
                                                     target_surface,
                                                     tsAtTarget,
