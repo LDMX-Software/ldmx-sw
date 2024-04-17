@@ -5,7 +5,6 @@
 #include "G4Track.hh"
 #include "G4VUserTrackInformation.hh"
 
-
 namespace simcore {
 
 /**
@@ -84,7 +83,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
     isBremCandidate_ = isBremCandidate;
   }
 
-/**
+  /**
    * Check whether this track is a recoil electron.
    *
    * @return true if this track is a recoil electron, false otherwise.
@@ -149,7 +148,7 @@ class UserTrackInformation : public G4VUserTrackInformation {
   /// Flag indicating whether this track is a brem candidate
   bool isBremCandidate_{false};
 
-    /// Flag indicating whether this track is a recoil electron
+  /// Flag indicating whether this track is a recoil electron
   bool isRecoilElectron_{false};
 
   /**
