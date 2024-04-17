@@ -5,6 +5,7 @@
 #include "G4Track.hh"
 #include "G4VUserTrackInformation.hh"
 
+
 namespace simcore {
 
 /**
@@ -83,6 +84,23 @@ class UserTrackInformation : public G4VUserTrackInformation {
     isBremCandidate_ = isBremCandidate;
   }
 
+/**
+   * Check whether this track is a recoil electron.
+   *
+   * @return true if this track is a recoil electron, false otherwise.
+   */
+  bool isRecoilElectron() const { return isRecoilElectron_; }
+
+  /**
+   * Tag this track as a recoil electron by the biasing filters.
+   *
+   * @param[in] isRecoilElectron flag indicating whether this track is
+   *      a recoil electron or not.
+   */
+  void tagRecoilElectron(bool isRecoilElectron = true) {
+    isRecoilElectron_ = isRecoilElectron;
+  }
+
   /**
    * Check whether this track is a photon that has undergone a
    * photo-nuclear reaction.
@@ -130,6 +148,9 @@ class UserTrackInformation : public G4VUserTrackInformation {
 
   /// Flag indicating whether this track is a brem candidate
   bool isBremCandidate_{false};
+
+    /// Flag indicating whether this track is a recoil electron
+  bool isRecoilElectron_{false};
 
   /**
    * Flag indicating whether this track has undergone a photo-nuclear
