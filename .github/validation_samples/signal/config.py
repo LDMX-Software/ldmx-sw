@@ -27,6 +27,7 @@ p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
+p.termLogLevel = 0
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions

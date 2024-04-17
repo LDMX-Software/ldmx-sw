@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+  <define>
+    &constants;  
+
+    <variable name="i" value="1" />                            
+
+    <!-- layer positions in x assuming a 4GeV electron in a 1.5 T field. -->
+    <matrix name="tagger_layer_x" coldim="1" values=" -0.006*mm
+                              -0.681*mm
+                              -2.481*mm
+                              -5.407*mm
+                              -9.461*mm
+                              -14.643*mm
+                              -20.955*mm" />
+                             
+                                  
+    <!-- Position of the downstream face of the tagger envelope. -->
+    <variable name="tagger_envelope_down_face_z" value="tagger_envelope_dz/2"/>
+    
+    <!-- Positions in z of each layer. -->
+    <variable name="tagger_l7_mid_z" value="tagger_envelope_down_face_z - tracker_envelope_clearance"/>
+    <matrix name="tagger_layer_z" coldim="1" values=" tagger_l7_mid_z
+                              tagger_l7_mid_z-tagger_layer_delta
+                              tagger_l7_mid_z-2*tagger_layer_delta
+                              tagger_l7_mid_z-3*tagger_layer_delta
+                              tagger_l7_mid_z-4*tagger_layer_delta
+                              tagger_l7_mid_z-5*tagger_layer_delta
+                              tagger_l7_mid_z-6*tagger_layer_delta" />
+  
+    <!-- Rotation of stereo layer. -->
+    <matrix name="tagger_rot" coldim="1" values=" stereo_angle
+                            -stereo_angle
+                            stereo_angle
+                            -stereo_angle
+                            stereo_angle
+                            -stereo_angle
+                            stereo_angle" />
+  
+  
+  </define>
+  <materials> 
+    &materials;
+  </materials>
+  <solids>
+    <box lunit="mm" name="tagger_active_sensor_box" 
+       x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="tagger_sensor_box" 
+       x="si_sensor_dx" y="si_sensor_dy" z="si_sensor_thickness"/>
+    <box lunit="mm" name="tagger_box" 
+       x="tagger_envelope_dx" y="tagger_envelope_dy" z="tagger_envelope_dz"/>
+  </solids>
+  <structure>
+    <!-- define tagger sensor as a active box inside an inactive box -->  
+    <volume name="Tagger_active_Sensor_vol">
+      <materialref ref="Silicon"/>
+      <solidref ref="tagger_active_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+    </volume>
+    <volume name="tagger_sensor_vol">
+      <materialref ref="Silicon"/>
+      <solidref ref="tagger_sensor_box"/>
+      <physvol name="tagger_active_sensor">
+      <volumeref ref="Tagger_active_Sensor_vol"/>
+      <position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
+      </physvol>
+    </volume>
+    
+    <!-- define tagger physical volumes inside envelope volume --> 
+    <volume name="tagger">
+      <materialref ref="Air"/>
+      <solidref ref="tagger_box"/>
+      <!-- removing the sensors since reduced-LDMX will not have a tagger tracker --> 
+      <auxiliary auxtype="Region" auxvalue="tagger"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="tagger"/>
+    </volume>
+  </structure>
+  <setup name="Default" version="1.0">
+    <world ref="tagger"/>
+  </setup>
+</gdml>

@@ -465,6 +465,8 @@ __ldmx_clean() {
   return ${rc}
 }
 
+
+
 ###############################################################################
 # __ldmx_source
 #   Run all the sub-commands in the provided file from the directory it is in.
@@ -538,6 +540,24 @@ __ldmx_checkout() {
 }
 
 ###############################################################################
+# __ldmx_compile
+#   Compile ldmx-sw
+###############################################################################
+
+__ldmx_compile() {
+  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-compile.sh
+}
+
+###############################################################################
+# __ldmx_recompFire
+#   Recompile ldmx-sw and run fire on the first argument
+###############################################################################
+
+__ldmx_recompFire() {
+  ldmx . ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompileAndFire.sh $@
+}
+
+###############################################################################
 # __ldmx_help
 #   Print some helpful message to the terminal
 ###############################################################################
@@ -550,6 +570,8 @@ __ldmx_help() {
   COMMANDS:
     help    : print this help message and exit
       ldmx help
+    compile : Compile ldmx-sw
+      ldmx compile
     list    : List the tag options for the input container repository
       ldmx list (dev | pro | local)
     clean   : Reset ldmx computing environment
@@ -579,6 +601,7 @@ __ldmx_help() {
       ldmx cmake ..
       ldmx make install
       ldmx fire config.py
+      ldmx recompFire config.py
       ldmx python3 ana.py
 
 HELP
@@ -599,7 +622,7 @@ ldmx() {
   [[ "$#" == "0" ]] && { __ldmx_help; return $?; }
   # divide commands by number of arguments
   case $1 in
-    help|config)
+    help|config|compile)
       if [[ "$#" != "1" ]]; then
         __ldmx_${1}
         echo "ERROR: 'ldmx ${1}' takes no arguments."
@@ -635,7 +658,7 @@ ldmx() {
       __ldmx_use "$2" "$3"
       return $?
       ;;
-    run|checkout)
+    run|checkout|recompFire)
       __ldmx_${1} ${@:2}
       return $?
       ;;
@@ -775,12 +798,12 @@ __ldmx_complete() {
 
   if [[ "$COMP_CWORD" = "1" ]]; then
     # tab completing a main argument
-    __ldmx_complete_command "list clean config checkout pull use run mount setenv base source"
+    __ldmx_complete_command "list clean config checkout pull use run mount setenv base source compile recompFire"
   elif [[ "$COMP_CWORD" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument
     case "${COMP_WORDS[1]}" in
-      config|setenv)
+      config|setenv|compile)
         # no more arguments
         __ldmx_dont_complete
         ;;
@@ -809,7 +832,7 @@ __ldmx_complete() {
     #   check base argument to see if we should continue
     case "${COMP_WORDS[1]}" in
       list|base|clean|config|pull|use|mount|setenv|source)
-        # these commands shouldn't have tab complete for the third argument 
+        # these commands shouldn't have tab complete for the third argument
         #   (or shouldn't have the third argument at all)
         __ldmx_dont_complete
         ;;
