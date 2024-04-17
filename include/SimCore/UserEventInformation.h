@@ -118,6 +118,7 @@ class UserEventInformation : public G4VUserEventInformation {
   bool wasLastStepEN() const { return last_step_en_; }
 
  private:
+
   /// Total number of brem candidates in the event
   int bremCandidateCount_{0};
 
