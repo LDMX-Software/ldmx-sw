@@ -21,5 +21,42 @@
 [ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
 [ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
 [ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
+ [ Process ] 1 : RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14, description: Hcal Muons and Neutrons
+  intParameters: 
+    Included Scoring Planes = 0
+    RandomNumberMasterSeed[test] = 1
+    Use Random Seed from Event Header = 0
+  floatParameters: 
+  stringParameters: 
+    Geant4 revision = 
+    Gen0 Class = simcore::generators::GeneralParticleSource
+    Gen0 Init Cmd 0 = /gps/particle mu-
+    Gen0 Init Cmd 1 = /gps/ene/type Lin
+    Gen0 Init Cmd 10 = /gps/pos/halfx 500 mm
+    Gen0 Init Cmd 11 = /gps/pos/halfy 500 mm
+    Gen0 Init Cmd 12 = /gps/source/add 1
+    Gen0 Init Cmd 13 = /gps/particle neutron
+    Gen0 Init Cmd 14 = /gps/ene/type Lin
+    Gen0 Init Cmd 15 = /gps/ene/min 1 GeV
+    Gen0 Init Cmd 16 = /gps/ene/max 4 GeV
+    Gen0 Init Cmd 17 = /gps/ene/gradient 0.
+    Gen0 Init Cmd 18 = /gps/ene/intercept 1.
+    Gen0 Init Cmd 19 = /gps/ang/type cos
+    Gen0 Init Cmd 2 = /gps/ene/min 1 GeV
+    Gen0 Init Cmd 20 = /gps/pos/type Plane
+    Gen0 Init Cmd 21 = /gps/pos/shape Square
+    Gen0 Init Cmd 22 = /gps/pos/centre 0 0 220. mm
+    Gen0 Init Cmd 23 = /gps/pos/halfx 500 mm
+    Gen0 Init Cmd 24 = /gps/pos/halfy 500 mm
+    Gen0 Init Cmd 25 = /gps/source/multiplevertex True
+    Gen0 Init Cmd 3 = /gps/ene/max 4 GeV
+    Gen0 Init Cmd 4 = /gps/ene/gradient 0.
+    Gen0 Init Cmd 5 = /gps/ene/intercept 1.
+    Gen0 Init Cmd 6 = /gps/ang/type cos
+    Gen0 Init Cmd 7 = /gps/pos/type Plane
+    Gen0 Init Cmd 8 = /gps/pos/shape Square
+    Gen0 Init Cmd 9 = /gps/pos/centre 0 0 220. mm
+    ldmx-sw revision = 
+}
 [ Simulator ] : Started 10000 events to produce 10000 events.
 ---- LDMXSW: Event processing complete  --------

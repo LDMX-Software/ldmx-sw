@@ -3,9 +3,9 @@ p = ldmxcfg.Process('test')
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14' )
+mySim.setDetector( 'ldmx-det-v14-8gev', True )
 from LDMX.SimCore import generators as gen
-mySim.generators.append( gen.single_4gev_e_upstream_tagger() )
+mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Basic test Simulation'
 
@@ -22,6 +22,7 @@ p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 
 p.histogramFile = 'hist.root'
 p.outputFiles = ['events.root']
+p.termLogLevel = 0
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
