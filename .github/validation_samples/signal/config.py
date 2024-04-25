@@ -4,6 +4,7 @@ p = ldmxcfg.Process('test')
 p.maxTriesPerEvent = 10000
 
 from LDMX.Biasing import target
+det = 'ldmx-det-v14-8gev'
 mySim = target.dark_brem(
     #A' mass in MeV - set in init.sh to same value in GeV
     10.0,
@@ -11,7 +12,7 @@ mySim = target.dark_brem(
     #   easiest way to find this path out is by running `. init.sh` locally to see what
     #   is produced
     'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_0.01_run_1',
-    'ldmx-det-v14-8gev'
+    det
 )
 
 p.sequence = [ mySim ]
@@ -67,6 +68,6 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
-        count, TriggerProcessor('trigger'),
+        count, TriggerProcessor('trigger', 8000.),
         dqm.DarkBremInteraction()
         ] + dqm.all_dqm)
