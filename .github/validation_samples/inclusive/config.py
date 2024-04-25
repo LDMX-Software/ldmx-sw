@@ -3,7 +3,8 @@ p = ldmxcfg.Process('test')
 
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
-mySim.setDetector( 'ldmx-det-v14-8gev', True )
+det = 'ldmx-det-v14-8gev'
+mySim.setDetector(det, True )
 from LDMX.SimCore import generators as gen
 mySim.generators.append( gen.single_8gev_e_upstream_tagger() )
 mySim.beamSpotSmear = [20.,80.,0.]
@@ -62,6 +63,6 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trigScintTrack,
-        count, TriggerProcessor('trigger'),
+        count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(verbose=False),
         ] + dqm.all_dqm)

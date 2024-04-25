@@ -16,7 +16,8 @@ myGun.pdgID = 11
 myGun.enablePoisson = False #True   
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
-mySim.setDetector( 'ldmx-reduced-v1', True )
+det = 'ldmx-reduced-v1'
+mySim.setDetector(det, True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun Test Simulation'
 
@@ -72,6 +73,6 @@ p.sequence.extend([
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
-        count, TriggerProcessor('trigger'),
+        count, TriggerProcessor('trigger', 4000.),
 #        ] + dqm.all_dqm)
         ])
