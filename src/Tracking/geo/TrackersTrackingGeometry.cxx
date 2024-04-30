@@ -1,4 +1,5 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
+#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 
@@ -16,12 +17,13 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
   BuildTaggerLayoutMap(Tagger_, "tagger");
   Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg =
       buildTrackerVolume();
+
   
   Recoil_ = findDaughterByName(fWorldPhysVol_, "recoil_PV");
   BuildRecoilLayoutMap(Recoil_, "recoil");
   Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg =
       buildRecoilVolume();
-  
+
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> volBuilderConfigs{
     tagger_volume_cfg, recoil_volume_cfg};
   
@@ -40,10 +42,10 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
       [=](const auto& cxt, const auto& inner, const auto&) {
         return cvb.trackingVolume(cxt, inner, nullptr);
       });
-
+  
   Acts::TrackingGeometryBuilder tgb(tgbCfg);
   tGeometry_ = tgb.trackingGeometry(gctx_);
-
+  
   // dumpGeometry("./");
   makeLayerSurfacesMap();
 }
@@ -448,7 +450,7 @@ void TrackersTrackingGeometry::BuildTaggerLayoutMap(G4VPhysicalVolume* pvol,
 }  // build the layout
 
 std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
-    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) const {
+    G4VPhysicalVolume* pvol, Acts::Transform3 ref_trans) {
   if (!pvol)
     throw std::runtime_error(
         "TrackersTrackingGeometry::GetSurface:: pvol is nullptr");
@@ -526,14 +528,28 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::GetSurface(
       std::make_shared<const Acts::RectangleBounds>(Acts::RectangleBounds(
           surfaceSolid->GetXHalfLength() * Acts::UnitConstants::mm,
           surfaceSolid->GetYHalfLength() * Acts::UnitConstants::mm));
-
+  
   // Form the active sensor surface
   std::shared_ptr<Acts::PlaneSurface> surface =
       Acts::Surface::makeShared<Acts::PlaneSurface>(surface_transform_tracker,
                                                     rect_bounds);
   surface->assignSurfaceMaterial(
       std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab));
-
+  
+  // Create an alignable detector element and assign it to the surface.
+  // The default transformation is the surface parsed transformation
+  
+  auto detElement = std::make_shared<DetectorElement>(surface,
+                                                      surface_transform_tracker,
+                                                      thickness);
+  
+  // This is the call that modify the behaviour of surface->transform(gctx)
+  // After this call each surface will use the underlying detectorElement transformation
+  // which will take care of effectively reading the gctx
+  
+  surface->assignDetectorElement(std::move(*detElement));
+  detElements.push_back(detElement);
+  
   return surface;
 }
 

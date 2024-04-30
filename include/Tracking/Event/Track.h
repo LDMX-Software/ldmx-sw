@@ -7,6 +7,7 @@
 //----------------------//
 #include <iostream>
 #include <vector>
+#include <optional>
 
 //----------//
 //   ROOT   //
@@ -20,7 +21,6 @@
 
 
 namespace ldmx {
-
 
 
 /// This enum describes the type of TrackState
@@ -38,7 +38,8 @@ enum TrackStateType {
   AtFirstMeasurement    = 2,
   AtLastMeasurement     = 3,
   AtECAL                = 4,
-  Invalid               = 5
+  AtBeamOrigin          = 5,
+  Invalid               = 6
 };
 
 
@@ -64,7 +65,7 @@ class Track {
     std::vector<double> params;
     std::vector<double> cov;
     TrackStateType      ts_type;
-    
+
   };
   
   
@@ -83,13 +84,27 @@ class Track {
    * This class is needed by ROOT when building the dictionary. 
    */
   void Print() const;
+
+  // To match the Framework Bus clear. It's doing nothing
+  void Clear() {};
     
   void setNhits(int nhits) {n_hits_ = nhits;}
   int getNhits() const { return n_hits_;}
 
+
+  std::optional<TrackState> getTrackState(TrackStateType tstype) const {
+    
+    for (auto ts : trackStates_) 
+      if (ts.ts_type == tstype)
+        return std::optional<TrackState>(ts);
+    
+    return std::nullopt;
+  }
+  
+  
   //void setNholes(int nholes) {n_holes_ = nholes;}
   //int  getNholes() const {return n_holes_;}
-
+  
   void setNoutliers(int nout) {n_outliers_ = nout;}
   int getNoutliers() const {return n_outliers_;}
   
@@ -116,7 +131,10 @@ class Track {
   //in units of e 
   int q() const {return perigee_pars_[4] > 0 ? 1 : -1;}
   
-  //Add measurement to track
+  // Add measurement indices to tracks
+  // For reco  tracks they corresponds to the indices in the measurement container
+  // For truth tracks they corresponds to the indices of the SimHitCointainer
+  
   void addMeasurementIndex(unsigned int measIdx) {meas_idxs_.push_back(measIdx);}
   std::vector<unsigned int> getMeasurementsIdxs() const{return meas_idxs_;} 
   
@@ -242,8 +260,12 @@ class Track {
   
   ///Class declaration needed by the ROOT dictionary.
   ClassDef(Track, 1);
-    
+  
 }; //Track
+
+typedef std::vector<ldmx::Track> Tracks;
+//typedef std::vector<std::reference_wrapper<const ldmx::Track>> Tracks;
+
 }//namespace ldmx
   
 #endif // TRACKING_EVENT_TRACK_H_
