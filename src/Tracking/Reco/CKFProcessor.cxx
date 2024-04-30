@@ -254,6 +254,10 @@ void CKFProcessor::produce(framework::Event& event) {
         << seed.getPerigeeZ() << std::endl
         << "start Parameters" << std::endl
         << paramVec;
+
+    ldmx_log(debug)
+        << "cov matrix" <<std::endl
+        << covMat<<std::endl;
     
     Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
                                            : Acts::UnitConstants::e;

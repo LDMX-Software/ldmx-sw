@@ -106,6 +106,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nevents_{0};
   unsigned int ntracks_{0};
 
+  std::vector<double> inflate_factors_{1.,1.,1.,1.,1.};
+  
   /// The name of the output collection of seeds to be stored.
   std::string out_seed_collection_{"SeedTracks"};
   /// The name of the input hits collection to use in finding seeds..
