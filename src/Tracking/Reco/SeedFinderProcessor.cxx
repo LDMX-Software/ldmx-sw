@@ -85,7 +85,10 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   
   strategies_ = parameters.getParameter<std::vector<std::string>>(
       "strategies", {"0,1,2,3,4"});
-
+  
+  inflate_factors_  = parameters.getParameter<std::vector<double>>(
+      "inflate_factors",{10., 10., 10., 10., 10., 10.});
+  
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
 }
 
@@ -354,12 +357,19 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
 
   Acts::BoundVector stddev;
   double sigma_p = 0.75 * p * Acts::UnitConstants::GeV;
-  stddev[Acts::eBoundLoc0] = 2 * Acts::UnitConstants::mm;
-  stddev[Acts::eBoundLoc1] = 5 * Acts::UnitConstants::mm;
-  stddev[Acts::eBoundTime] = 1000 * Acts::UnitConstants::ns;
-  stddev[Acts::eBoundPhi] = 5 * Acts::UnitConstants::degree;
-  stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
-  stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
+  stddev[Acts::eBoundLoc0] =
+      inflate_factors_[Acts::eBoundLoc0] * 2 * Acts::UnitConstants::mm;
+  stddev[Acts::eBoundLoc1] =
+      inflate_factors_[Acts::eBoundLoc1] * 5 * Acts::UnitConstants::mm;
+  stddev[Acts::eBoundPhi] =
+      inflate_factors_[Acts::eBoundPhi] * 5 * Acts::UnitConstants::degree;
+  stddev[Acts::eBoundTheta] =
+      inflate_factors_[Acts::eBoundTheta] * 5 * Acts::UnitConstants::degree;
+  stddev[Acts::eBoundQOverP] =
+      inflate_factors_[Acts::eBoundQOverP] * (1. / p) * (1. / p) * sigma_p;
+  stddev[Acts::eBoundTime] =
+      inflate_factors_[Acts::eBoundTime] * 1000 * Acts::UnitConstants::ns;
+  
   
   Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
 

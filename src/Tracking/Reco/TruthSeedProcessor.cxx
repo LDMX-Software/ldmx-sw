@@ -49,7 +49,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters &parameters) {
   d0smear_     = parameters.getParameter<std::vector<double>>("d0smear",{0.01, 0.01, 0.01});
   z0smear_     = parameters.getParameter<std::vector<double>>("z0smear",{0.1, 0.1, 0.1});
   phismear_    = parameters.getParameter<double>("phismear",0.001);
-  thetasmear_  = parameters.getParameter<double>("phismear",0.001);
+  thetasmear_  = parameters.getParameter<double>("thetasmear",0.001);
   relpsmear_   = parameters.getParameter<double>("relpsmear",0.1);
   
   
@@ -332,6 +332,9 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
   
   if (seed_smearing) {
 
+
+    ldmx_log(info)<<"Smear track and inflate covariance"<<std::endl;
+
     /*
       double sigma_d0     = rel_smearfactors_[Acts::eBoundLoc0]   * tt.getD0();
       double sigma_z0     = rel_smearfactors_[Acts::eBoundLoc1]   * tt.getZ0();
@@ -386,6 +389,9 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
         inflate_factors_[Acts::eBoundQOverP] * (1. / p) * (1. / p) * sigma_p;
     stddev[Acts::eBoundTime] =
         inflate_factors_[Acts::eBoundTime] * sigma_t * Acts::UnitConstants::ns;
+
+
+    ldmx_log(info)<<stddev<<std::endl;
     
     
     std::vector<double> v_seed_params(
@@ -402,7 +408,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
   }
   else  {
     // Do not smear the seed
-    
+
     bound_params << tt.getD0(), tt.getZ0(), tt.getPhi(), tt.getTheta(),
         tt.getQoP(), tt.getT();
     
@@ -742,20 +748,23 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     }
     
   }
+
   
-  for (std::pair<int,std::vector<int>> element : recoil_sh_count_map) {
+  /*
+    for (std::pair<int,std::vector<int>> element : recoil_sh_count_map) {
     
     const ldmx::SimTrackerHit& hit  = scoring_hits.at(element.second.at(0));
     const ldmx::SimParticle&   phit = particleMap[hit.getTrackID()];
     
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_) {
-      ldmx::Track truth_recoil_track;
-      createTruthTrack(phit,hit,truth_recoil_track,targetSurface);
-      truth_recoil_track.setNhits(hit_count_map_recoil[hit.getTrackID()].size());
-      recoil_truth_tracks.push_back(truth_recoil_track);
+    ldmx::Track truth_recoil_track;
+    createTruthTrack(phit,hit,truth_recoil_track,targetSurface);
+    truth_recoil_track.setNhits(hit_count_map_recoil[hit.getTrackID()].size());
+    recoil_truth_tracks.push_back(truth_recoil_track);
     }
-  }
-    
+    }
+  */
+  
   
   // Form a truth seed from a truth track
   
@@ -765,14 +774,21 @@ void TruthSeedProcessor::produce(framework::Event &event) {
     
     tagger_truth_seeds.push_back(seed);
   }
+
   
+  ldmx_log(info)<<"Forming seeds from truth"<<std::endl;
   for ( auto& tt: recoil_truth_tracks) {
+    ldmx_log(info)<<"Smearing truth track"<<std::endl;
+    
     ldmx::Track seed =  seedFromTruth(tt,
                                       seedSmearing_);
     
     recoil_truth_seeds.push_back(seed);
   }
 
+
+
+  
   event.add("beamElectrons", beam_electrons);
   event.add("TaggerTruthTracks",tagger_truth_tracks);
   event.add("RecoilTruthTracks",recoil_truth_tracks);
