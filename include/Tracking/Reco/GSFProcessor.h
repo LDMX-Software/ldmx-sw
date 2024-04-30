@@ -12,7 +12,6 @@
 //--- LDMX ---//
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
-
 //--- ACTS ---//
 
 //Utils and Definitions
@@ -32,7 +31,6 @@
 
 //geometry
 #include <Acts/Geometry/TrackingGeometry.hpp>
-
 
 //propagation testing
 #include "Acts/Propagator/Navigator.hpp"
@@ -68,7 +66,8 @@
 
 
 //GSF
-//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+#include "Acts/TrackFitting/BetheHeitlerApprox.hpp"
+#include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//
@@ -86,23 +85,24 @@
 using ActionList = Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 
-using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
-using GsfPropagator = Acts::Propagator<
-                        Acts::MultiEigenStepperLoop<
-                          Acts::StepperExtensionList<
-                            Acts::detail::GenericDefaultExtension<double> >,
-                          Acts::WeightedComponentReducerLoop,
-                          Acts::detail::VoidAuctioneer>,
-                        Acts::Navigator>;
+//using GsfPropagator = Acts::Propagator<
+//                        Acts::MultiEigenStepperLoop<
+//                          Acts::StepperExtensionList<
+//                           Acts::detail::GenericDefaultExtension<double> >,
+//                          Acts::WeightedComponentReducerLoop,
+//                          Acts::detail::VoidAuctioneer>,
+//                        Acts::Navigator>;
 
-//?!
-//using PropagatorOptions =
-//    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
+
+using MultiStepper  = Acts::MultiEigenStepperLoop<>;
+using Propagator    = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
+using BetheHeitlerApprox = Acts::Experimental::AtlasBetheHeitlerApprox<6, 5>;
 
 namespace tracking {
 namespace reco {
 
-class CKFProcessor final : public TrackingGeometryUser {
+class GSFProcessor final : public TrackingGeometryUser {
 
  public:
   /**
@@ -111,10 +111,10 @@ class CKFProcessor final : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  CKFProcessor(const std::string &name, framework::Process &process);
+  GSFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~CKFProcessor();
+  ~GSFProcessor();
   
   /**
    *
@@ -150,13 +150,15 @@ class CKFProcessor final : public TrackingGeometryUser {
   
  private:
 
-
-  //Make geoid -> source link map Measurements
-  auto makeGeoIdSourceLinkMap(
-      const geo::TrackersTrackingGeometry& tg,
-      const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
-    
+  //Forms the layer to acts map
+  //auto makeLayerSurfacesMap(std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry) const -> std::unordered_map<unsigned int, const Acts::Surface*>;
   
+  //Make geoid -> source link map Measurements
+  //auto makeGeoIdSourceLinkMap(
+  //    const geo::TrackersTrackingGeometry& tg,
+  //    const std::vector<ldmx::Measurement > &ldmxsps) -> std::unordered_multimap<Acts::GeometryIdentifier, ActsExamples::IndexSourceLink>;
+  
+    
   //If we want to dump the tracking geometry
   bool dumpobj_ {false};
 
@@ -170,8 +172,18 @@ class CKFProcessor final : public TrackingGeometryUser {
   //time profiling
   std::map<std::string, double> profiling_map_;
   
+  //refitting of tracks
+  bool kf_refit_{false};
+  bool gsf_refit_{false};
+
   bool debug_{false};
+
+
+  //--- Smearing ---//
   
+  std::default_random_engine generator_;
+  std::shared_ptr<std::normal_distribution<float>> normal_;
+
   //Constant BField
   double bfield_{0};
   //Use constant bfield
@@ -186,10 +198,6 @@ class CKFProcessor final : public TrackingGeometryUser {
   //Minimum number of hits on tracks
   int min_hits_{7};
   
-  //Stepping size (in mm)
-  double propagator_step_size_{200.};
-  int propagator_maxSteps_{1000};
-  
   //The extrapolation surface
   bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0.,0.,0.};
@@ -197,17 +205,16 @@ class CKFProcessor final : public TrackingGeometryUser {
   
   //The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
-
-  // Outlier removal pvalue
-  // The Chi2Cut is applied at filtering stage.
-  // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005 = 7.879
-  // The probability to reject a good measurement is pvalue
-  // The probability to reject an outlier is given in NIM A262 (1987) 444-450
-
+  
   double outlier_pval_{3.84};
   
   //The output track collection
-  std::string out_trk_collection_{"Tracks"};
+  std::string out_trk_collection_{"GSFTracks"};
+
+  //Select the hits using TrackID and pdg_id__
+  
+  int track_id_{-1};
+  int pdg_id_{11};
 
   //Mass for the propagator hypothesis in MeV
   double mass_{0.511};
@@ -215,32 +222,43 @@ class CKFProcessor final : public TrackingGeometryUser {
   //The seed track collection
   std::string seed_coll_name_{"seedTracks"};
 
-  //The interpolated bfield
-  std::string field_map_{""};
   
-  //The Propagator 
-  std::unique_ptr<const CkfPropagator> propagator_;
-  
+  //The GSF Fitter
+  std::unique_ptr<
+    const Acts::Experimental::GaussianSumFitter<
+      GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>> gsf_;
 
-  //The CKF
-  std::unique_ptr<const Acts::CombinatorialKalmanFilter<CkfPropagator,Acts::VectorMultiTrajectory>> ckf_;
+  //Configuration
+  
+  std::string trackCollection_{"TaggerTracks"};
+  std::string measCollection_{"DigiTaggerSimHits"};
+    
+  size_t maxComponents_{4};
+  bool abortOnError_{false};
+  bool disableAllMaterialHandling_{false};
+  double weightCutoff_{1.0e-4};
+
+  double propagator_step_size_{200.}; //mm
+  int propagator_maxSteps_{1000};
+  std::string field_map_{""};
+
+  bool usePerigee_{false};
+  bool usePlaneSurface_{false};
+
+  //The Propagators
+  std::unique_ptr<const Propagator> propagator_;
+
+  //The GSF Fitter
+  
+  //This could be a vector
+  //The mapping between layers and Acts::Surface
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
+
   
   //Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>> trk_extrap_ ;
-
-  /// n seeds and n tracks
-  int nseeds_{0};
-  int ntracks_{0};
-  int eventnr_{0};
-
-  // BField Systematics
-  std::vector<double> map_offset_{0.,0.,0.,};
-  
-  // Keep track on which system this processor is running on
-  bool taggerTracking_{true};
-  
-  
-}; // CKFProcessor
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>> trk_extrap_ ;
+      
+}; // GSFProcessor
     
 
 } // namespace reco

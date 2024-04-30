@@ -110,12 +110,6 @@ class CKFProcessor(Producer):
         debugging purposes. <functionality to be moved>
     steps_output_file_path_ : string
         DEPRECATED TO BE REMOVED
-    track_id : int
-        <functionality to be removed>
-        Only keep the simulated hits with that particular track ID.
-    pdg_id : int
-        <functionality to be removed>
-        Only keep the simulated hits with that particular pdg ID.
     bfield : float
         <functionality to be removed>
         If using a constant bfield, this is the BZ component. 
@@ -194,6 +188,54 @@ class CKFProcessor(Producer):
         self.kf_refit = False
         self.gsf_refit = False
         self.min_hits = 6
+
+
+
+class GSFProcessor(Producer):
+    """ Producer that runs Gaussian Sum Fitter on a specific track collection
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ---------
+    trackCollection : string
+        Track collection to be refitted with GSF
+    measCollection  : string
+        Measurements collection in the tracker
+    maxComponents   : int
+        How many gaussians to use to sample the BetheHeitler
+    abortOnError    : bool
+        Abort fitting if an error occurred
+    disableAllMaterialHandling : bool
+        Disable material effects on surfaces. True only for debug purpose
+    weightCutOff    : double
+        Kill a component if its weight is smaller than a certain treshold.
+    propagator_step_size : float
+        Size of each RK propagator step.
+    propagator_maxSteps : int
+        Maximum number of steps for the propagator
+    field_map_ : string
+        Path to the location of the magnetic field map.
+    """
+
+    def __init__(self, instance_name='GSFProcessor'):
+        super().__init__(instance_name, 'tracking::reco::GSFProcessor',
+                         'Tracking')
+
+        self.trackCollection = "TaggerTracks"
+        self.measCollection  = "DigiTaggerSimHits"
+        self.maxComponent    = 4
+        self.abortOnError    = False
+        self.disableAllMaterialHandling = False
+        self.weightCutoff    = 1.0e-4
+
+        self.propagator_step_size = 200.
+        self.propagator_maxSteps  = 1000
+        self.field_map = makeFieldMapPath()
+
         
 
 class TruthSeedProcessor(Producer):

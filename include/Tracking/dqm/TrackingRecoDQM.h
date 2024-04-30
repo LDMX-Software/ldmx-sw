@@ -10,9 +10,6 @@
 
 namespace tracking::dqm {
 
-
-
-
 enum PIDBins {
   kminus     = -4,
   antiproton,
@@ -34,7 +31,7 @@ enum PIDBins {
     ~TrackingRecoDQM() = default;
 
     void analyze(const framework::Event& event) final override;
-
+    
     void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                          const std::string title,
                          const bool& doDetail,
@@ -51,9 +48,9 @@ enum PIDBins {
      *
      */
 
-    void TrackEcalScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
-
-    void TrackTargetScoringPlaneMonitoring(const std::vector<ldmx::Track>& tracks);
+    void TrackStateMonitoring(const ldmx::Tracks& tracks,
+                              ldmx::TrackStateType ts_type,
+                              const std::string& ts_title);
     /**
      * Configure the analyzer using the given user specified parameters.
      *
@@ -76,11 +73,13 @@ enum PIDBins {
     std::string truthCollection_{"TaggerTruthTracks"};
     std::string title_{"tagger_trk_"};
     double trackProb_cut_{0.5};
+    std::string subdetector_{"Tagger"};
     bool doTruthComparison{false};
     bool debug_{false};
+    std::vector<std::string> trackStates_;
 
     // Truth Track collection
-    std::shared_ptr<std::vector<ldmx::TruthTrack>> truthTrackCollection_{nullptr};
+    std::shared_ptr<ldmx::Tracks> truthTrackCollection_{nullptr};
 
     // Ecal scoring plane hits
     std::shared_ptr<std::vector<ldmx::SimTrackerHit>> ecal_scoring_hits_{nullptr};
