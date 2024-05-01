@@ -1,0 +1,19 @@
+.cproject
+.project
+.settings
+.pydevproject
+/docs/doxygen.conf
+*~
+*#
+*.pyc
+/bin
+/lib
+/data
+/build*
+/install*
+*.root
+
+#ignore auto-generated files
+include/Framework/EventDef.h
+include/Framework/EventLinkDef.h
+include/Framework/Version.h

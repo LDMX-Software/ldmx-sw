@@ -1,0 +1,14 @@
+name: Check Format
+on:
+  push:
+    branches:
+      - 'trunk'
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run format check
+        run: ./.github/format-check
