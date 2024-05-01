@@ -1,9 +1,6 @@
 [submodule "SimCore"]
 	path = SimCore
 	url = https://github.com/LDMX-Software/SimCore
-[submodule "cmake"]
-	path = cmake
-	url = https://github.com/LDMX-Software/cmake.git
 [submodule "Tracking"]
 	path = Tracking
 	url = https://github.com/LDMX-Software/Tracking
