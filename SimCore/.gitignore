@@ -1,0 +1,22 @@
+# Byte-compiled files
+__pycache__/
+
+# ROOT files
+*.root
+
+.cproject
+.project
+.settings
+.pydevproject
+/docs/doxygen.conf
+*~
+*#
+*.pyc
+/bin
+/lib
+/data
+/build*
+/install*
+
+# auto-generated test file
+test/DarkBremProcessTest.cxx
