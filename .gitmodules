@@ -1,6 +1,3 @@
-[submodule "SimCore"]
-	path = SimCore
-	url = https://github.com/LDMX-Software/SimCore
 [submodule "Tracking"]
 	path = Tracking
 	url = https://github.com/LDMX-Software/Tracking
@@ -10,3 +7,6 @@
 [submodule "Trigger"]
 	path = Trigger
 	url = https://github.com/LDMX-Software/Trigger.git
+[submodule "SimCore/G4DarkBreM"]
+	path = SimCore/G4DarkBreM
+	url = https://github.com/LDMX-Software/G4DarkBreM.git
