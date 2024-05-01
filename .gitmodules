@@ -7,9 +7,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/LDMX-Software/cmake.git
-[submodule "Hcal"]
-	path = Hcal
-	url = https://github.com/LDMX-Software/Hcal.git
 [submodule "TrigScint"]
 	path = TrigScint
 	url = https://github.com/LDMX-Software/TrigScint
