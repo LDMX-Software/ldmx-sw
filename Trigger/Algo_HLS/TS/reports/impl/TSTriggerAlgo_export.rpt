@@ -1,0 +1,20 @@
+
+
+Implementation tool: Xilinx Vivado v.2020.1
+Project:             TS_project
+Solution:            solution1
+Device target:       xcvu9p-flgc2104-1-e
+Report date:         Wed Jan 13 12:18:16 PST 2021
+
+#=== Post-Synthesis Resource usage ===
+SLICE:            0
+LUT:           5880
+FF:            5700
+DSP:              0
+BRAM:             0
+SRL:              0
+URAM:             0
+#=== Final timing ===
+CP required:    2.778
+CP achieved post-synthesis:    2.231
+Timing met
