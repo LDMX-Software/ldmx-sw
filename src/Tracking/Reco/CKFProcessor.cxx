@@ -154,7 +154,7 @@ void CKFProcessor::produce(framework::Event& event) {
   
   auto loggingLevel = Acts::Logging::DEBUG;
   ACTS_LOCAL_LOGGER(
-      Acts::getDefaultLogger("LDMX Tracking Goemetry Maker", loggingLevel));
+      Acts::getDefaultLogger("LDMX Tracking Geometry Maker", loggingLevel));
 
   
   //Move this at the start of the producer
@@ -206,6 +206,7 @@ void CKFProcessor::produce(framework::Event& event) {
   std::map<int, ldmx::SimParticle> particleMap;
   
   if(event.exists("SimParticles")) {
+    ldmx_log(debug)<< "Setting up track truth matching tool";
     particleMap = event.getMap<int,ldmx::SimParticle>("SimParticles");
     truthMatchingTool = std::make_shared<tracking::sim::TruthMatchingTool>(particleMap,measurements);
     
@@ -235,16 +236,21 @@ void CKFProcessor::produce(framework::Event& event) {
   std::vector<int> seedPDGID;
   
   for (auto& seed : seed_tracks) {
-    
+
     // Transform the seed track to bound parameters
+    // MG ... make these into pararamers at target surface
     std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
             seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
 
+    // MG ... make these into pararamers at target surface
+    // MG ... do I need to extrapolate from perigee to target z? 
     Acts::BoundVector paramVec;
     paramVec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
-    
+
+    // MG ... make these into bound pararamers at target surface
+    // MG ... do I need to extrapolate from perigee to target z? 
     Acts::BoundSymMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
@@ -261,7 +267,7 @@ void CKFProcessor::produce(framework::Event& event) {
     
     Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
                                            : Acts::UnitConstants::e;
-
+    //MG ... if the above is at target surface, this should just work    
     startParameters.push_back(
         Acts::BoundTrackParameters(perigeeSurface, paramVec, q, covMat));
 
@@ -363,31 +369,29 @@ void CKFProcessor::produce(framework::Event& event) {
   ldmx_log(debug) 
       << "Surfaces..." <<  std::endl;
   
-  std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(0., 0., 0.));
+  Acts::RotationMatrix3 target_surf_rotation = Acts::RotationMatrix3::Zero();
+  //u direction along +Y
+  target_surf_rotation(1,0) = 1;
+  //v direction along +Z
+  target_surf_rotation(2,1) = 1;
+  //w direction along +X
+  target_surf_rotation(0,2) =1;
+  //
+  Acts::Vector3 target_center_unbound(0., 0., 0.);
+  Acts::Translation3 target_center_translation(target_center_unbound);
+  Acts::Transform3 target_center_transform(target_center_translation * target_surf_rotation);
+    
+  //Unbounded surface...different from above tgt_surface is that this is a plane and not perigee surface (cylinder) 
+  const std::shared_ptr<Acts::PlaneSurface> tgt_surface_unbound =
+    Acts::Surface::makeShared<Acts::PlaneSurface>(target_center_transform);
 
-  auto extr_surface = &(*origin_surface);
+  auto extr_surface = &(*tgt_surface_unbound);    
 
-  std::shared_ptr<const Acts::PerigeeSurface> tgt_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          Acts::Vector3(extrapolate_location_[0], extrapolate_location_[1],
-                        extrapolate_location_[2]));
 
-  if (use_extrapolate_location_) {
-    extr_surface = &(*tgt_surface);
-  }
-
-  Acts::Vector3 seed_perigee_surface_center =
-      startParameters.at(0).referenceSurface().center(geometry_context());
-  std::shared_ptr<const Acts::PerigeeSurface> seed_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(
-          seed_perigee_surface_center);
-
-  if (use_seed_perigee_) {
-    extr_surface = &(*seed_surface);
-  }
-
+  //  std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
+  //  Acts::Surface::makeShared<Acts::PerigeeSurface>(
+  //						    Acts::Vector3(0., 0., 0.));  
+  // auto extr_surface = &(*origin_surface);
   
   ldmx_log(debug) 
       << "About to run CKF..." <<  std::endl;
@@ -408,9 +412,7 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::TrackContainer tc{vtc, mtj};
   
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
-
-    ldmx_log(debug)<< "Starting loop to find tracks from seeds "<<trackId<<std::endl;
-
+    
     
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0 ) {
@@ -420,9 +422,6 @@ void CKFProcessor::produce(framework::Event& event) {
         propagator_options.mass = 938 * Acts::UnitConstants::MeV;
     }
 
-
-    ldmx_log(debug)<<"CKF Options"<<std::endl;
-    
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,Acts::VectorMultiTrajectory> ckfOptions(
         geometry_context(), 
@@ -430,10 +429,10 @@ void CKFProcessor::produce(framework::Event& event) {
         calibration_context(), 
         sourceLinkAccessorDelegate, ckf_extensions,
         propagator_options, &(*extr_surface));
-        
-
+    
     ldmx_log(debug)<<"Running CKF on seed params "<<startParameters.at(trackId).parameters().transpose()<<std::endl; 
     
+
     auto results = ckf_->findTracks(startParameters.at(trackId), ckfOptions,tc);
     
     if (not results.ok()) {
@@ -441,8 +440,6 @@ void CKFProcessor::produce(framework::Event& event) {
           <<"CKF Fit failed"<<std::endl;
       continue;
     }
-
-    ldmx_log(debug)<<"Track container size "<<tc.size()<<" trackId "<<trackId<<std::endl;
     
     // No track found
     if (tc.size() < trackId + 1)
@@ -458,7 +455,7 @@ void CKFProcessor::produce(framework::Event& event) {
     
     auto track = tc.getTrack(trackId);
     calculateTrackQuantities(track);
-
+    //MG ... if I converted above to target surface, these should be parameters at target (should change names)
     const Acts::BoundVector& perigee_pars =  track.parameters();
     const Acts::BoundMatrix& trk_cov  = track.covariance();
     const Acts::Surface& perigee_surface = track.referenceSurface();
@@ -540,7 +537,7 @@ void CKFProcessor::produce(framework::Event& event) {
     //w direction along +X
     surf_rotation(0,2) = 1;
 
-    const double ECAL_SCORING_PLANE  = 240.;
+    const double ECAL_SCORING_PLANE  = 240.5;
     Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
     Acts::Translation3 surf_translation(pos);
     Acts::Transform3 surf_transform(surf_translation * surf_rotation);
@@ -558,22 +555,29 @@ void CKFProcessor::produce(framework::Event& event) {
         Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
     
     // Beam Origin unbounded surface
-    // TODO Fix the extrapolation surfaces configuration
     const std::shared_ptr<Acts::Surface> beamOrigin_surface =
-        tracking::sim::utils::unboundSurface(-800.1,-44.,0.);
+        tracking::sim::utils::unboundSurface(-700);
     
-    ldmx_log(debug)<<"Starting the extrapolations to target and ecal";
     
-    ldmx_log(debug)<<"Target extrapolation";
+    ldmx_log(debug)<<"Target extrapolation  ...  this should not change anything since track is stored at target plane";
     ldmx::Track::TrackState tsAtTarget;
     bool success = trk_extrap_->TrackStateAtSurface(track,
                                                     target_surface,
                                                     tsAtTarget,
                                                     ldmx::TrackStateType::AtTarget);
-    
-    if (success)
+    ldmx_log(debug)<<"target extrapolation success??? "<<success; 
+    if (success){
+      ldmx_log(debug)<<"Successfully obtained TS at target";
+      ldmx_log(debug) << "Parameters At Target:  \n"
+		      <<tsAtTarget.params[0]<<" "
+		      <<tsAtTarget.params[1]<<" "
+		      <<tsAtTarget.params[2]<<" "
+		      <<tsAtTarget.params[3]<<" "
+		      <<tsAtTarget.params[4];
+	
+	
       trk.addTrackState(tsAtTarget);
-    
+    }
     if (taggerTracking_) {
       ldmx_log(debug)<<"Beam Origin Extrapolation";
       ldmx::Track::TrackState tsAtBeamOrigin;
@@ -582,11 +586,12 @@ void CKFProcessor::produce(framework::Event& event) {
                                                       tsAtBeamOrigin,
                                                       ldmx::TrackStateType::AtBeamOrigin);
       
-      if (success)
+      if (success){
         trk.addTrackState(tsAtBeamOrigin);
-      
+	ldmx_log(debug)<<"Successfully obtained TS at beam origin";
+      }
     }
-    
+
     // Recoil Extrapolation to ECAL only
     if (!taggerTracking_) {
     
@@ -598,11 +603,19 @@ void CKFProcessor::produce(framework::Event& event) {
                                                  ldmx::TrackStateType::AtECAL);
     
     
-      if (success)
+      if (success){
         trk.addTrackState(tsAtEcal);
-    }
+	ldmx_log(debug)<<"Successfully obtained TS at Ecal";
+	ldmx_log(debug) << "Parameters At Ecal:  \n"
+		      <<tsAtEcal.params[0]<<" "
+		      <<tsAtEcal.params[1]<<" "
+		      <<tsAtEcal.params[2]<<" "
+		      <<tsAtEcal.params[3]<<" "
+		      <<tsAtEcal.params[4];
 
-    ldmx_log(debug)<<"Done with extrapolations"<<std::endl;
+
+      }
+    }
     
     
     //Truth matching
@@ -612,17 +625,12 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPdgID(truthInfo.pdgID);
       trk.setTruthProb(truthInfo.truthProb);
     }
-
-
-    ldmx_log(debug)<<"Checking nhits on track"<<std::endl;
     
     //At least 8 hits and p > 50 MeV
     if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
       tracks.push_back(trk);
       ntracks_++;
     }
-
-    ldmx_log(debug)<<"Track passed. Added to container. Tracks Reco in Event "<< ntracks_<<std::endl;
     
   }    // loop seed track parameters
   
@@ -672,10 +680,7 @@ void CKFProcessor::onProcessEnd() {
 void CKFProcessor::configure(framework::config::Parameters& parameters) {
   dumpobj_ = parameters.getParameter<bool>("dumpobj", 0);
   pionstates_ = parameters.getParameter<int>("pionstates", 0);
-
-  //track_id_ = parameters.getParameter<int>("track_id", -1);
-  //pdg_id_ = parameters.getParameter<int>("pdg_id", 11);
-
+  
 
   bfield_ = parameters.getParameter<double>("bfield", -1.5);
   const_b_field_ = parameters.getParameter<bool>("const_b_field", false);
@@ -701,7 +706,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   
   ldmx_log(debug)<<" use_extrapolate_location ? " <<use_extrapolate_location_;
   ldmx_log(debug)<<" use_seed_perigee ? " <<use_seed_perigee_;
-  
+
   // seeds from the event
   seed_coll_name_ =
       parameters.getParameter<std::string>("seed_coll_name", "seedTracks");
@@ -709,6 +714,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // output track collection
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "Tracks");
+  
   
   // keep track on which system tracking is running
   taggerTracking_ = parameters.getParameter<bool>("taggerTracking",true);
