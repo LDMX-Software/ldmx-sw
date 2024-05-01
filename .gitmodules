@@ -10,9 +10,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/LDMX-Software/cmake.git
-[submodule "Ecal"]
-	path = Ecal
-	url = https://github.com/LDMX-Software/Ecal.git
 [submodule "Hcal"]
 	path = Hcal
 	url = https://github.com/LDMX-Software/Hcal.git
