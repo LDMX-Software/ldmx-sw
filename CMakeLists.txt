@@ -36,7 +36,7 @@ endif()
 
 # If a user is building outside of a Docker or Singularity environment, 
 # warn them. 
-if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
+if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity AND NOT EXISTS /run/.containerenv)
     message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
