@@ -75,6 +75,30 @@ class EcalProcessFilter(simcfg.UserAction):
         include.library()
 
         self.process = process
+        
+class DeepEcalProcessFilter(simcfg.UserAction):
+    """ Configuration for keeping events where the pn happens deep in the ECAL.
+
+    Parameters
+    ----------
+    bias_threshold: double
+        Threshold for minimum energy that the products should have
+    processes: vector of str
+        The allowed processes that can happen deep inside the ECAL, default is
+        conversion (conv) and photoelectron (photo)
+    ecal_min_Z: double
+        Minimum Z location where the deep process should happen
+    """
+
+    def __init__(self, bias_threshold, processes, ecal_min_Z) :
+        super().__init__("deepecal_filter", "biasing::DeepEcalProcessFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.bias_threshold = bias_threshold
+        self.processes = processes
+        self.ecal_min_Z = ecal_min_Z
 
 class TargetENFilter(simcfg.UserAction) :
     """ Configuration for filtering electro-nuclear events in the target. 

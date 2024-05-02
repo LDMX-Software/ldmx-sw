@@ -163,3 +163,38 @@ def gamma_mumu(detector, generator) :
     ])
 
     return sim
+
+def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min_Z) :
+
+    # Instantiate the simulator. 
+    sim = simulator.simulator("photo-nuclear")
+    
+    # Set the path to the detector to use.
+    #   the second parameter says we want to include scoring planes
+    sim.setDetector( detector , True )
+    
+    # Set run parameters
+    sim.description = "deep ECal photo-nuclear, xsec bias 450"
+    sim.beamSpotSmear = [20., 80., 0.] #mm
+    
+    sim.generators.append( generator )
+    
+    # Enable and configure the biasing
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.,only_children_of_primary = True) ]
+
+    # the following filters are in a library that needs to be included
+    includeBiasing.library()
+
+    # Configure the sequence in which user actions should be called.
+    sim.actions.extend([
+            #Make sure all particles above a given threshold are processed first
+            util.PartialEnergySorter(0.8*bias_threshold),
+            # Make sure the primary electron with a given energy reaches the ECAL
+            filters.PrimaryToEcalFilter(0.2*generator.energy*1000),
+            # Only considers events when the interaction happend deep in the ECAL
+            filters.DeepEcalProcessFilter(bias_threshold, processes, ecal_min_Z),
+            # Keep intersting particles in the output
+            util.TrackProcessFilter.conversion()
+    ])
+
+    return sim
