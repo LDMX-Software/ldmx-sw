@@ -7,25 +7,22 @@
 
 namespace dqm {
 
-    /**
-     * @class SampleValidation
-     * @brief
-     */
+/**
+ * @class SampleValidation
+ * @brief
+ */
 
-    class SampleValidation : public framework::Analyzer {
-        public:
+class SampleValidation : public framework::Analyzer {
+  public:
+    SampleValidation(const std::string& name, framework::Process& process) : Analyzer(name, process) {}
+    virtual void configure(framework::config::Parameters& ps);
+    virtual void analyze(const framework::Event& event);
+    int pdgid_label(const int pdgid);
+    /// Method executed before processing of events begins.
+    void onProcessStart() override;
+    private:
 
-            SampleValidation(const std::string& name, framework::Process& process) : Analyzer(name, process) {}
-
-            virtual void configure(framework::config::Parameters& ps);
-
-            virtual void analyze(const framework::Event& event);
-
-	    int pdgid_label(const int pdgid);
-        private:
-
-    };
-
-}
+};
+} // namespace dqm
 
 #endif
