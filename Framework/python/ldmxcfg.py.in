@@ -328,10 +328,15 @@ class Process:
     lastProcess : Process
         Class-wide reference to the last Process object to be constructed
     maxEvents : int
-        Maximum number events to process
+        Maximum number events to process.
+        If totalEvents is set, this will be ignored.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
+        If totalEvents is set, this will be ignored.
+    totalEvents : int
+        Number of events we'd like to produce independetly of the number of tries it would take.
+        Both maxEvents and maxTriesPerEvent will be ignored. Be warned about infinite loops!
     run : int
         Run number for this process
     inputFiles : list of strings
