@@ -16,4 +16,4 @@ setup_library(module DQM
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/DQM)
+setup_python(package_name LDMX/DQM)

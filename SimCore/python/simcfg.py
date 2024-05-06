@@ -64,7 +64,7 @@ class PrimaryGenerator:
         self.class_name    = class_name
         self.instance_name = instance_name
 
-        from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+        from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)
 
     def __str__(self): 
@@ -112,7 +112,7 @@ class SensitiveDetector:
         self.class_name    = class_name
         self.instance_name = instance_name
 
-        from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+        from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)
 
     def __str__(self): 
@@ -160,5 +160,5 @@ class PhotoNuclearModel():
         self.class_name    = class_name
         self.instance_name = instance_name
 
-        from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+        from LDMX.Framework import ldmxcfg
         ldmxcfg.Process.addModule(module_name)

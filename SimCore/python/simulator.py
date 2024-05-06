@@ -4,7 +4,7 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Producer
+from LDMX.Framework.ldmxcfg import Producer
 
 class _EventToReSim:
     """A class to hold the information identifying a specific event we wish to re-simulate
@@ -126,11 +126,11 @@ class simulator(Producer):
 
         See Also
         --------
-        @PYTHON_PACKAGE_NAME@.Detectors.makePath for definitions of the path making functions.
+        LDMX.Detectors.makePath for definitions of the path making functions.
         sensitive_detectors for configuring the SDs
         """
 
-        from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
+        from LDMX.Detectors import makePath as mP
         from . import sensitive_detectors as sds
         self.detector = mP.makeDetectorPath( det_name )
         if 'v12' in det_name :
