@@ -172,6 +172,11 @@ class Process {
 
   /** Limit on events to process. */
   int eventLimit_;
+  
+  /** Number of events we'd like to produce
+   independetly of the number of tries it would take.
+   Be warned about infinite loops!*/
+  int totalEvents_;
 
   /** The frequency with which event info is printed. */
   int logFrequency_;
