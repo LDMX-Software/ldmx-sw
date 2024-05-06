@@ -3,6 +3,9 @@
 Basic python configuration for ldmx-sw application
 """
 
+from pathlib import Path
+
+
 class EventProcessor:
     """An EventProcessor object
 
@@ -18,6 +21,7 @@ class EventProcessor:
         Name (including namespace) of the C++ class that this processor should be
     moduleName : str
         Name of module the C++ class is in (e.g. Ecal or SimCore)
+        or full path to the library that should be loaded
 
     Attributes
     ----------
@@ -36,7 +40,90 @@ class EventProcessor:
         self.className=className
         self.histograms=[]
 
-        Process.addModule(moduleName)
+        if moduleName.endswith('.so'):
+            # assume user passed full path to library
+            Process.addLibrary(moduleName)
+        else:
+            # assume user passed name of module processor is compiled into
+            Process.addModule(moduleName)
+
+
+    def from_file(self, source_file, class_name = None, instance_name = None, compile_notice = True, **config_kwargs):
+        """Construct an event processor "in place" from the passed source file
+
+        Since Framework dynamically loads libraries containing processors after
+        the python script has been fully run, we can compile a single-file processor
+        into its own library that can then be loaded and run. This function puts
+        the library next to the source file and only re-compiles if the source file's
+        last modified time is newer than the library.
+
+        This function **only works from production images** because it relies on the ldmx-sw
+        headers and libraries to be within a system location so that the compiler can find
+        them easily.
+
+        Parameters
+        ----------
+        source_file: str | Path
+            path to source file to build into a processor (can be relative to where config is being run)
+        class_name: str, default is name of source file
+            name of C++ class that is the processor
+            defaults to the name of the source file without an extension
+        instance_name: str, default is class_name
+            name to give to instance of this C++ processor
+        compile_notice: bool, default is True
+            print a notice when compilation is triggered
+        config_kwargs: dict[str, Any]
+            configuration parameters to give to the processor
+
+
+        Returns
+        -------
+        EventProcessor
+            built from the C++ source file and configured with the passed arguments
+        """
+
+        if Path(__file__).parent != Path('/usr/local/python'):
+            raise NotImplemented(
+                    'from_file is not functional when compiling ldmx-sw from source.\n'
+                    'If you wish to use this function, run from a production image where ldmx-sw'
+                    ' is accessible from a system location.'
+            )
+
+        if not isinstance(source_file, Path):
+            source_file = Path(source_file)
+        if not source_file.is_file():
+            raise ValueError(f'{source_file} is not accessible.')
+
+        src = source_file.resolve()
+
+        if class_name is None:
+            # assume class name is name of file (no extension) if not provided
+            class_name = src.stem
+
+        if instance_name is None:
+            # use class name for instance name if not provided
+            instance_name = class_name
+
+        lib = src.parent / f'lib{src.stem}.so'
+        if not lib.is_file() or src.stat().st_mtime > lib.stat().st_mtime:
+            if compile_notice:
+                print(
+                    f'Processor source file {src} is newer than its compiled library {lib}'
+                    ' (or library does not exist), recompiling...'
+                )
+            import subprocess
+            subprocess.run([
+                'g++', '-fPIC', '-shared', '-o', str(lib),
+                '-lFramework', '-I/usr/local/include/root', str(src)
+                ], check=True)
+            if compile_notice:
+                print(f'done compiling {src}')
+
+        instance = EventProcessor(instance_name, class_name, str(lib))
+        for cfg_name, cfg_val in config_kwargs:
+            setattr(instance, cfg_name, cfg_val)
+        return instance
+
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
