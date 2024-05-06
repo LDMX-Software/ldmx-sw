@@ -58,6 +58,14 @@ class EventProcessor:
         the library next to the source file and only re-compiles if the source file's
         last modified time is newer than the library (or the library does not exist).
 
+        Note
+        ----
+        We only link the compiled library with the Framework library. This means the single-file
+        processor only can access Framework and the event objects. If you desire your processor
+        to access other code from other modules within ldmx-sw, you should put your processor
+        within a module in ldmx-sw rather than running it stand-alone.
+
+
         Parameters
         ----------
         source_file: str | Path
