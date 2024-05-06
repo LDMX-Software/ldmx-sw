@@ -21,7 +21,7 @@ class XsecBiasingOperator:
         self.class_name    = class_name
         self.instance_name = instance_name
 
-        from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Process
+        from LDMX.Framework.ldmxcfg import Process
         Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%module_name )
 
     def __str__(self):

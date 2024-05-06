@@ -24,6 +24,6 @@ setup_library(module Packing
                            DetDescr::DetDescr
                            Packing::RawDataFile)
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Packing)
+setup_python(package_name LDMX/Packing)
 
 setup_test(dependencies Packing::Packing)

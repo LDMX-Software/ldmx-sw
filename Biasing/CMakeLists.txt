@@ -23,4 +23,4 @@ setup_library(
                SimCore::SimCore
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Biasing)
+setup_python(package_name LDMX/Biasing)
