@@ -48,18 +48,15 @@ class EventProcessor:
             Process.addModule(moduleName)
 
 
-    def from_file(self, source_file, class_name = None, instance_name = None, compile_notice = True, **config_kwargs):
+    @classmethod
+    def from_file(cls, source_file, class_name = None, instance_name = None, compile_notice = True, **config_kwargs):
         """Construct an event processor "in place" from the passed source file
 
         Since Framework dynamically loads libraries containing processors after
         the python script has been fully run, we can compile a single-file processor
         into its own library that can then be loaded and run. This function puts
         the library next to the source file and only re-compiles if the source file's
-        last modified time is newer than the library.
-
-        This function **only works from production images** because it relies on the ldmx-sw
-        headers and libraries to be within a system location so that the compiler can find
-        them easily.
+        last modified time is newer than the library (or the library does not exist).
 
         Parameters
         ----------
@@ -81,13 +78,6 @@ class EventProcessor:
         EventProcessor
             built from the C++ source file and configured with the passed arguments
         """
-
-        if Path(__file__).parent != Path('/usr/local/python'):
-            raise NotImplemented(
-                    'from_file is not functional when compiling ldmx-sw from source.\n'
-                    'If you wish to use this function, run from a production image where ldmx-sw'
-                    ' is accessible from a system location.'
-            )
 
         if not isinstance(source_file, Path):
             source_file = Path(source_file)
@@ -113,13 +103,17 @@ class EventProcessor:
                 )
             import subprocess
             subprocess.run([
-                'g++', '-fPIC', '-shared', '-o', str(lib),
-                '-lFramework', '-I/usr/local/include/root', str(src)
+                'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                '-o', str(lib), str(src), # define output file and input source file
+                '-lFramework', # link to Framework library (and the event dictionary)
+                '-I/usr/local/include/root', # include ROOT's non-system headers
+                '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
+                '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
                 ], check=True)
             if compile_notice:
                 print(f'done compiling {src}')
 
-        instance = EventProcessor(instance_name, class_name, str(lib))
+        instance = cls(instance_name, class_name, str(lib))
         for cfg_name, cfg_val in config_kwargs:
             setattr(instance, cfg_name, cfg_val)
         return instance
