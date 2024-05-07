@@ -18,7 +18,7 @@ if [[ -z ${BASH} ]]; then
   this wrapper script.
   From the ldmx-sw directory, you can setup a denv to use our development image.
   
-    . scripts/ldmx-denv-init.sh
+    denv init ldmx/dev:latest ..
 
   And then run commands within it by prefixing them with 'denv':
 

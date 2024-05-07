@@ -120,7 +120,7 @@ export LDMX_BASE
 # TODO: update to `denv check --workspace` introduced in denv v0.7.0 to avoid
 #       reliance on internal implementation on how denv stores its config
 ###############################################################################
-if [ ! -f "${LDMX_BASE}/.denv/config" ]; then
+if ! denv check --workspace --quiet; then
   denv init --clean-env --name "ldmx" "ldmx/dev:latest" "${LDMX_BASE}"
 fi
 unset -f _error _user_confirm
