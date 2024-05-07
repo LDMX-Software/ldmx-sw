@@ -88,9 +88,12 @@ class DeepEcalProcessFilter(simcfg.UserAction):
         conversion (conv) and photoelectron (photo)
     ecal_min_Z: double
         Minimum Z location where the deep process should happen
+    require_photon_fromTarget: bool
+        Require that the hard brem photon originates from the target
+        Default is False
     """
 
-    def __init__(self, bias_threshold, processes, ecal_min_Z) :
+    def __init__(self, bias_threshold, processes, ecal_min_Z, require_photon_fromTarget) :
         super().__init__("deepecal_filter", "biasing::DeepEcalProcessFilter")
 
         from LDMX.Biasing import include
@@ -99,6 +102,7 @@ class DeepEcalProcessFilter(simcfg.UserAction):
         self.bias_threshold = bias_threshold
         self.processes = processes
         self.ecal_min_Z = ecal_min_Z
+        self.require_photon_fromTarget = require_photon_fromTarget
 
 class TargetENFilter(simcfg.UserAction) :
     """ Configuration for filtering electro-nuclear events in the target. 

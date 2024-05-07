@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p=ldmxcfg.Process("v14_pn_deep_resim")
+p=ldmxcfg.Process("v14_conv_deep")
 
 from LDMX.Ecal import EcalGeometry
 from LDMX.Hcal import HcalGeometry
@@ -7,13 +7,11 @@ import LDMX.Ecal.ecal_hardcoded_conditions as ecal_conditions
 import LDMX.Hcal.hcal_hardcoded_conditions as hcal_conditions
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators
-from LDMX.Biasing import filters
 
 det = 'ldmx-det-v14-8gev'
-#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 300.)
-mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 3000., processes=['conv','phot)'], ecal_min_Z = 400.)
-mysim.description = "ECal Non-Fiducial Test Re-Simulation"
-#mysim.actions.extend([filters.TargetBremFilter()]),
+mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 400.)
+#mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 200.)
+mysim.description = "ECal Deep conversion Test Simulation"
 
 from LDMX.Biasing import util
 #mysim.actions.append( util.StepPrinter(1) )
@@ -22,20 +20,17 @@ from LDMX.Biasing import util
 
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.vetos as ecal_vetos
-import LDMX.Biasing.filters as filters
 
-p.inputFiles = [f'events_pn_deep_test.root'] 
-p.outputFiles = [f'events_pn_deep_test_resim.root']
-p.histogramFile = f'hist_pn_deep_test_resim.root'
+p.outputFiles = [f'events_pn_deep_test.root']
+p.histogramFile = f'hist_pn_deep_test.root'
 
 p.maxTriesPerEvent = 10000
-p.maxEvents = 1000
+p.maxEvents = 10
 p.run = 20
 p.logFrequency = 100
 p.termLogLevel = 0
 
-p.sequence=[mysim.resimulate(which_events = [1]),
-#        mysim.actions.extend([filters.TargetBremFilter()]),
+p.sequence=[ mysim,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_vetos.EcalVetoProcessor()
