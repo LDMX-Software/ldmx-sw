@@ -71,6 +71,8 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   std::vector<std::string> processes_{"conv","phot"};
   /// Minimum Z location where the deep process should happen
   double ecal_min_Z_{400.};
+  /// Require that the hard brem photon originates from the target
+  bool require_photon_fromTarget_{false};
   /// Enable logging
   enableLogging("DeepEcalProcessFilter")
 
