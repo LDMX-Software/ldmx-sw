@@ -18,6 +18,7 @@
 namespace biasing {
 
 bool hasProcessNeeded_{false};
+bool photonFromTarget_{false};
 bool hasDeepEcalProcess_{false};
 
 DeepEcalProcessFilter::DeepEcalProcessFilter(const std::string& name,
@@ -26,11 +27,13 @@ DeepEcalProcessFilter::DeepEcalProcessFilter(const std::string& name,
   bias_threshold_ = parameters.getParameter<double>("bias_threshold");
   processes_ = parameters.getParameter<std::vector<std::string>>("processes");
   ecal_min_Z_ = parameters.getParameter<double>("ecal_min_Z");
+  require_photon_fromTarget_ = parameters.getParameter<bool>("require_photon_fromTarget");
 }
 
 
 void DeepEcalProcessFilter::BeginOfEventAction(const G4Event* event) {
   hasDeepEcalProcess_ = false;
+  photonFromTarget_ = false;
 }
 
 void DeepEcalProcessFilter::stepping(const G4Step* step) {
@@ -51,15 +54,30 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   if (track->GetKineticEnergy() < bias_threshold_) {
     return;
   }
-    
+  
+  // Check in which volume the particle is currently
+  auto volume{track->GetVolume()->GetLogicalVolume()
+    ? track->GetVolume()->GetLogicalVolume()->GetName()
+    : "undefined"};
+  
   auto trackInfo{simcore::UserTrackInformation::get(track)};
   // Tag the brem photon from the primary electron
   if (processName.contains("eBrem") and (track->GetParentID() == 1)) {
     trackInfo->tagBremCandidate();
     getEventInfo()->incBremCandidateCount();
     trackInfo->setSaveFlag(true);
+    if (volume.contains("target")) {
+      photonFromTarget_ = true;
+    }
+  }
+  
+  // If we require that the photon comes from the target and
+  // and if it does not, let's skip the event
+  if (require_photon_fromTarget_ and !photonFromTarget_) {
+    return;
   }
 
+  // Tag if the event has the processes we are looking for
   for (auto& process : processes_) {
     // ldmx_log(debug) << "Allowed processed " << process << " now we have " << processName;
     if (processName.contains(process)) {
@@ -67,11 +85,6 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
       break;
     }
   }
-  
-  // Check in which volume the particle is currently
-  auto volume{track->GetVolume()->GetLogicalVolume()
-    ? track->GetVolume()->GetLogicalVolume()->GetName()
-    : "undefined"};
   
   // isInEcal should be taken from
   // simcore::logical_volume_tests::isInEcal(volume) but for now it's under
