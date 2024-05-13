@@ -95,14 +95,6 @@ class Simulator : public SimulatorBase {
    */
   virtual void produce(framework::Event& event) final override;
 
-  /**
-   * Callback for the EventProcessor to take any necessary action
-   * when a file is closed.
-   *
-   * @param eventFile The intput/output file.
-   */
-  void onFileClose(framework::EventFile& eventFile) final override;
-
   /// Callback called once processing is complete.
   void onProcessEnd() final override;
 
