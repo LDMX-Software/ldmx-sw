@@ -166,13 +166,6 @@ void Simulator::produce(framework::Event& event) {
   return;
 }
 
-void Simulator::onFileClose(framework::EventFile& file) {
-  // Pass the **real** number of events to the persistency manager
-  auto rh = file.getRunHeader(run_);
-  rh.setIntParameter("Event Count", numEventsCompleted_);
-  rh.setIntParameter("Events Began", numEventsBegan_);
-}
-
 void Simulator::onProcessEnd() {
   SimulatorBase::onProcessEnd();
   std::cout << "[ Simulator ] : "
