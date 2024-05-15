@@ -15,6 +15,12 @@
 #include "Framework/RandomNumberSeedService.h"
 #include "Framework/Version.h"  //for LDMX_INSTALL path
 
+
+/*~~~~~~~~~~~~~*/
+/*   GENIE     */
+/*~~~~~~~~~~~~~*/
+#include "GENIE/Framework/GHEP/GHepParticle.h"
+
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
@@ -27,6 +33,8 @@
 #include "SimCore/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/XsecBiasingOperator.h"
+#include "SimCore/Event/GTruth.h"
+#include "SimCore/Event/GHepParticle.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -128,6 +136,141 @@ void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
   run_ = runHeader.getRunNumber();
 }
 
+void Simulator::FillGHepParticles(const genie::EventRecord* record,
+				  std::vector<ldmx::GHepParticle>& ghep_particle_list)
+{
+  for(int position=0; position< record->GetEntries(); ++position)
+    {
+      const genie::GHepParticle* particle = record->Particle(position);
+
+      ldmx::GHepParticle my_particle;
+
+      my_particle.fPosition = position;
+      
+      my_particle.fPdgCode = particle->Pdg();
+      my_particle.fStatus = particle->Status();
+      my_particle.fRescatterCode = particle->RescatterCode();
+      my_particle.fFirstMother = particle->FirstMother();
+      my_particle.fLastMother = particle->LastMother();
+      my_particle.fFirstDaugher = particle->FirstDaughter();
+      my_particle.fLastDaughter = particle->LastDaughter();
+      
+      my_particle.fP_x = particle->P4()->Px();
+      my_particle.fP_y = particle->P4()->Py();
+      my_particle.fP_z = particle->P4()->Pz();
+      my_particle.fP_t = particle->P4()->E();
+      
+      my_particle.fX_x = particle->X4()->X();
+      my_particle.fX_y = particle->X4()->Y();
+      my_particle.fX_z = particle->X4()->Z();
+      my_particle.fX_t = particle->X4()->T();
+
+      my_particle.fPolzTheta = particle->PolzPolarAngle();
+      my_particle.fPolzPhi = particle->PolzAzimuthAngle();
+
+      my_particle.fRemovalEnergy = particle->RemovalEnergy();
+      my_particle.fIsBound = particle->IsBound();
+
+      ghep_particle_list.push_back(my_particle);
+    }
+}
+  
+void Simulator::FillGTruth(const genie::EventRecord* record,
+			   ldmx::GTruth& truth) {
+
+  //interactions info
+  genie::Interaction *inter = record->Summary();
+  const genie::ProcessInfo  &procInfo = inter->ProcInfo();
+  truth.fGint = (int)procInfo.InteractionTypeId();
+  truth.fGscatter = (int)procInfo.ScatteringTypeId();
+  
+  //Event info
+  truth.fweight = record->Weight();
+  truth.fprobability = record->Probability();
+  truth.fXsec = record->XSec();
+  truth.fDiffXsec = record->DiffXSec();
+  truth.fGPhaseSpace = (int)record->DiffXSecVars();
+
+  //Initial State info
+  const genie::InitialState &initState  = inter->InitState();
+  truth.fProbePDG = initState.ProbePdg();
+  truth.fProbe_px = initState.GetProbeP4()->Px();
+  truth.fProbe_py = initState.GetProbeP4()->Py();
+  truth.fProbe_pz = initState.GetProbeP4()->Pz();
+  truth.fProbe_e = initState.GetProbeP4()->E();
+
+  truth.fTgt_px = initState.GetTgtP4()->Px();
+  truth.fTgt_py = initState.GetTgtP4()->Py();
+  truth.fTgt_pz = initState.GetTgtP4()->Pz();
+  truth.fTgt_e = initState.GetTgtP4()->E();
+
+  //Target info
+  const genie::Target &tgt = initState.Tgt();
+  truth.ftgtZ = tgt.Z();
+  truth.ftgtA = tgt.A();
+  truth.ftgtPDG = tgt.Pdg();
+  truth.fHitNucPDG = tgt.HitNucPdg();
+  truth.fHitQrkPDG = tgt.HitQrkPdg();
+  truth.fIsSeaQuark = tgt.HitSeaQrk();
+  truth.fHitNuc_px = tgt.HitNucP4Ptr()->Px();
+  truth.fHitNuc_py = tgt.HitNucP4Ptr()->Py();
+  truth.fHitNuc_pz = tgt.HitNucP4Ptr()->Pz();
+  truth.fHitNuc_e = tgt.HitNucP4Ptr()->E();
+  truth.fHitNucPos = tgt.HitNucPosition();
+
+  
+  truth.fVertex_x = record->Vertex()->X();
+  truth.fVertex_y = record->Vertex()->Y();
+  truth.fVertex_z = record->Vertex()->Z();
+  truth.fVertex_t = record->Vertex()->T();
+
+  //true reaction information and byproducts
+  //(PRE FSI)
+  const genie::XclsTag &exclTag = inter->ExclTag();
+  truth.fIsCharm          = exclTag.IsCharmEvent();
+  truth.fCharmHadronPdg   = exclTag.CharmHadronPdg();
+  truth.fIsStrange        = exclTag.IsStrangeEvent();
+  truth.fStrangeHadronPdg = exclTag.StrangeHadronPdg();
+  truth.fResNum           = (int)exclTag.Resonance();
+  truth.fDecayMode        = exclTag.DecayMode();
+
+  truth.fNumPiPlus = exclTag.NPiPlus();
+  truth.fNumPiMinus = exclTag.NPiMinus();
+  truth.fNumPi0 = exclTag.NPi0();
+  truth.fNumProton = exclTag.NProtons();
+  truth.fNumNeutron = exclTag.NNeutrons();
+  truth.fNumSingleGammas = exclTag.NSingleGammas();
+
+  truth.fNumSingleGammas = exclTag.NSingleGammas();
+  truth.fNumRho0         = exclTag.NRho0();
+  truth.fNumRhoPlus      = exclTag.NRhoPlus();
+  truth.fNumRhoMinus     = exclTag.NRhoMinus();
+
+  truth.fIsFinalQuarkEvent = exclTag.IsFinalQuarkEvent();
+  truth.fFinalQuarkPdg  = exclTag.FinalQuarkPdg();
+  truth.fIsFinalLeptonEvent = exclTag.IsFinalLeptonEvent();
+  truth.fFinalLeptonPdg = exclTag.FinalLeptonPdg();
+
+  // Get the GENIE kinematics info
+  const genie::Kinematics &kine = inter->Kine();
+  for(int kvar=genie::KineVar_t::kKVNull; kvar!=genie::KineVar_t::kNumOfKineVar; ++kvar)
+    truth.fKV[kvar] = kine.GetKV((genie::KineVar_t)kvar);
+
+  truth.fFSlepton_px = kine.FSLeptonP4().Px();
+  truth.fFSlepton_py = kine.FSLeptonP4().Py();
+  truth.fFSlepton_pz = kine.FSLeptonP4().Pz();
+  truth.fFSlepton_e = kine.FSLeptonP4().E();
+
+  truth.fFShadSyst_px = kine.HadSystP4().Px();
+  truth.fFShadSyst_py = kine.HadSystP4().Py();
+  truth.fFShadSyst_pz = kine.HadSystP4().Pz();
+  truth.fFShadSyst_e = kine.HadSystP4().E();
+
+  return;
+
+}
+
+  
 void Simulator::produce(framework::Event& event) {
   // Generate and process a Geant4 event.
   numEventsBegan_++;
@@ -157,6 +300,26 @@ void Simulator::produce(framework::Event& event) {
 
   event_header.setStringParameter("eventSeed", stream.str());
 
+  /*
+  PrimaryGenerator::Factory::get().apply([](auto gen){
+    std::cout << gen->Name() << std::endl;
+  });
+  */
+  
+  auto event_info = static_cast<UserEventInformation*>(
+      runManager_->GetCurrentEvent()->GetUserInformation());
+  if(event_info->getGENIEEventRecord()){
+    //event_info->getGENIEEventRecord()->Print();
+
+    ldmx::GTruth gtruth;
+    std::vector<ldmx::GHepParticle> ghep_particles;
+
+    FillGTruth(event_info->getGENIEEventRecord(),gtruth);
+    FillGHepParticles(event_info->getGENIEEventRecord(),ghep_particles);
+
+    event.add("SimGTruth", gtruth);
+    event.add("SimGHepParticles", ghep_particles);
+  }
   saveTracks(event);
 
   saveSDHits(event);

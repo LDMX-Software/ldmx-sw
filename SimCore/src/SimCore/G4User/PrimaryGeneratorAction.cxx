@@ -70,12 +70,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
   }
 
   // Make our information container and give it to geant4
-  //    G4Event owns the event information and will delete it
+  // G4Event owns the event information and will delete it
   auto event_info = new UserEventInformation;
-  event->SetUserInformation(event_info);
-
+  
   PrimaryGenerator::Factory::get().apply([event](const auto& generator) {
-    generator->GeneratePrimaryVertex(event);
+      generator->GeneratePrimaryVertex(event);
   });
 
   // smear all primary vertices (if activated)
