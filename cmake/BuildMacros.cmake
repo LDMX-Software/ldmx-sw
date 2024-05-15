@@ -213,9 +213,9 @@ SET( GENIE_LIBS
 	     Genie::GPhHEDISEG
 	     Genie::GTlGeo
 	     Genie::GTlFlx
-       Genie::GRwFwk
-       Genie::GRwClc
-       Genie::GRwIO
+#       Genie::GRwFwk
+#       Genie::GRwClc
+#       Genie::GRwIO
 	     blas)
 message(STATUS "Setting GENIE_LIBS to ${GENIE_LIBS}")
 endif()
