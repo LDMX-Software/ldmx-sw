@@ -150,6 +150,7 @@ class EcalVetoProcessor : public framework::Producer {
   std::string bdtFileName_;
   std::string cellFileNamexy_;
   std::vector<float> bdtFeatures_;
+  std::string featureListName_;
 
   std::string rec_pass_name_;
   std::string rec_coll_name_;

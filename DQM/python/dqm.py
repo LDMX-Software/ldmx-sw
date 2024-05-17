@@ -278,6 +278,41 @@ class EcalShowerFeatures(ldmxcfg.Analyzer) :
                 'Avg Layer Hit',40,0.,40.)
         self.build1DHistogram('std_layer_hit',
                 'Std Dev Layer Hit',20,0.,20.)
+        self.build1DHistogram('e_containment_energy',
+                'Electron Containment Energy [MeV]',200,0.,8000.)
+        self.build1DHistogram('ph_containment_energy',
+                'Photon Containment Energy [MeV]',200,0.,8000.)
+        self.build1DHistogram('out_containment_energy',
+                'Outside Containment Energy [MeV]',200,0.,8000.)
+
+class EcalMipTrackingFeatures(ldmxcfg.Analyzer) :
+    """Configured EcalMipTrackingFeatures python object """
+
+    def __init__(self,name="EcalMipTrackingFeatures") :
+        super().__init__(name,'dqm::EcalMipTrackingFeatures','DQM')
+
+        self.ecal_veto_name = 'EcalVeto'
+        self.ecal_veto_pass = ''
+
+        self.build1DHistogram('n_straight_tracks',
+                'Num Straight Tracks',30,0,30)
+        self.build1DHistogram('n_linreg_tracks',
+                'Num Linear Regression Tracks',15,0,15)
+        self.build1DHistogram('first_near_photon_layer',
+                'First Near Photon Layer',34,0,34)
+        self.build1DHistogram('ep_ang',
+                'Electron Photon Angle',90,0.,90.)
+        self.build1DHistogram('ep_sep',
+                'Electron Photon Separation',180,0.,180.)
+        self.build1DHistogram('recoil_pz',
+                'Recoil electron pz',200,-200.,8000.)
+        self.build1DHistogram('recoil_pt',
+                'Recoil electron p_{T}',200,0,2000.)
+        self.build1DHistogram('recoil_x',
+                'Recoil electron x',100,-300.,300.)
+        self.build1DHistogram('recoil_y',
+                'Recoil electron y',100,-300.,300.)
+        
 
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
@@ -627,7 +662,8 @@ class SampleValidation(ldmxcfg.Analyzer) :
 
 ecal_dqm = [
         EcalDigiVerify(),
-        EcalShowerFeatures()
+        EcalShowerFeatures(),
+        EcalMipTrackingFeatures()
         ]
 
 hcal_dqm = [
