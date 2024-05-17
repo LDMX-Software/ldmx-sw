@@ -17,6 +17,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath
         self.num_ecal_layers = 34
         self.do_bdt = True
+        self.feature_list_name = "features"
         self.bdt_file = makeBDTPath( "gabrielle" )
         self.cellxy_file = makeCellXYPath()
         self.disc_cut = 0.99

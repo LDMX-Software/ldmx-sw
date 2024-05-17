@@ -129,6 +129,7 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   doBdt_ = parameters.getParameter<bool>("do_bdt");
+  featureListName_ = parameters.getParameter<std::string>("feature_list_name");
   if (doBdt_) {
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
         parameters.getParameter<std::string>("bdt_file"));
@@ -920,9 +921,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   if (doBdt_) {
     buildBDTFeatureVector(result);
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-    float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
-    // Removing electron-photon separation step, near photon step due to lower
-    // v12 performance; may reconsider
+    float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+    // Removing electron-photon separation step, near photon step due to lower v12 performance; may reconsider
     bool passesTrackingVeto = (nStraightTracks_ < 3) && (nLinregTracks_ == 0);
     //&&  //Commenting the remainder for now
     //(firstNearPhLayer_ >= 6); //&& (epAng_ > 3.0 || epSep_ > 10.0);
