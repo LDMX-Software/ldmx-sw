@@ -14,7 +14,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'ecalVeto') :
         super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
-        from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath
+        from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath, makeRoCPath
         self.num_ecal_layers = 34
         self.do_bdt = True
         self.feature_list_name = "features"
