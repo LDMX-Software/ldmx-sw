@@ -128,6 +128,8 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
+  beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
@@ -245,7 +247,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                     ? recoilPosAtTarget
                                     : std::vector<float>{0.0, 0.0, 0.0};
     photon_trajectory =
-        getTrajectory({-pvec[0], -pvec[1], 4000.0 - pvec[2]}, posvec);
+        getTrajectory({-pvec[0], -pvec[1], beamEnergyMeV_ - pvec[2]}, posvec);
   }
 
   float recoilPMag =
