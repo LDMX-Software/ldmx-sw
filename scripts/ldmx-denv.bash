@@ -128,16 +128,19 @@ fi
 __ldmx_use() {
   local _repo_name="$1"
   local _image_tag="$2"
-  cmd="denv config image ldmx/${_repo_name}:${_image_tag}"
+  local image="ldmx/${_repo_tag}:${_image_tag}"
+  local cvmfs_base="/cvmfs/unpacked.cern.ch/registry.hub.docker.com/"
+  if [[ -e "${cvmfs_base}/${image}" ]]; then
+    image="${cvmfs_base}/${image}"
+  elif [[ -e "${LDMX_BASE}/ldmx_${_repo_name}_${image_tag}.sif" ]]; then
+    image="${LDMX_BASE}/ldmx_${_repo_name}_${image_tag}.sif"
+  fi
+  cmd="denv config image ${image}"
   echo "${cmd}"
   ${cmd}
   return $?
 }
 
-###############################################################################
-# __ldmx_config
-#   Print the configuration of the current setup
-###############################################################################
 __ldmx_config() {
   echo "LDMX base directory: ${LDMX_BASE}"
   echo "uname: $(uname -a)"
@@ -147,12 +150,6 @@ __ldmx_config() {
   return $?
 }
 
-###############################################################################
-# __ldmx_mount
-#   Tell us to mount the passed directory to the container when we run
-#   By default, we already mount the LDMX_BASE directory, so none of
-#   its subdirectories need to (or should be) specified.
-###############################################################################
 __ldmx_mount() {
   echo "denv config mounts $*"
   # intentionally re-splitting elements of an array
@@ -161,13 +158,6 @@ __ldmx_mount() {
   return $?
 }
 
-###############################################################################
-# __ldmx_setenv
-#   Tell us to pass an environment variable to the container when we run
-#   By default, we pass the LDMX_BASE and DISPLAY variables explicitly, 
-#   because their syntax is too different between docker and singularity,
-#   so none of these need to (or should be) specified.
-###############################################################################
 __ldmx_setenv() {
   echo "denv config env copy $*"
   # intentionally re-splitting elements of an array
