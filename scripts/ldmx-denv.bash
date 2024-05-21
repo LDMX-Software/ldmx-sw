@@ -128,7 +128,7 @@ fi
 __ldmx_use() {
   local _repo_name="$1"
   local _image_tag="$2"
-  local image="ldmx/${_repo_tag}:${_image_tag}"
+  local image="ldmx/${_repo_name}:${_image_tag}"
   local cvmfs_base="/cvmfs/unpacked.cern.ch/registry.hub.docker.com/"
   if [[ -e "${cvmfs_base}/${image}" ]]; then
     image="${cvmfs_base}/${image}"
@@ -272,7 +272,6 @@ ldmx() {
       return $?
       ;;
     compile|recompFire)
-      cmd="__ldmx_${1}"
       shift
       # intentionally re-splitting elements of an array
       #shellcheck disable=SC2068
