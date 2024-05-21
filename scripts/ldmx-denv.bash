@@ -1,17 +1,110 @@
 ###############################################################################
-# ldmx-denv-transition.sh
+# ldmx-env.bash
 #   Replicate some of the `ldmx` commands by simply wrapping the equivalent
 #   `denv` commands along with printouts explaining what is being done.
 #   so that users know that the same procedures can be done with `denv`.
 ###############################################################################
 
-# make sure denv is initialized
-. "$(dirname "${BASH_SOURCE[0]}")/ldmx-denv-init.sh"
+# print each argument on its own line with the first line
+# prefixed with "ERROR [ldmx-denv.bash]: ".
+_error() {
+  printf >&2 "\033[1;31mERROR [ldmx-denv.bash]: \033[0m\033[31m%s\n" "$1"
+  shift
+  while [ "$#" -gt "0" ]; do
+    printf >&2 "       %s\n" "$1"
+    shift
+  done
+  printf >&2 "\033[0m"
+}
+
+# print the question passed to us and process user input
+# continues in infinite loop if user is not explicitly answering yes or no
+# Arguments
+#  1 - question to ask the user (yes or no)
+# Output
+#  returns 0 if user answers yes and 1 if user answers no
+_user_confirm() {
+  question="$*"
+  while true; do
+    printf "\033[1m%s\033[0m [Y/n] " "${question}"
+    read -r ans
+    case "${ans}" in
+      Y|y|yes)
+        return 0
+        ;;
+      N|n|no)
+        return 1
+        ;;
+      *)
+        _error "${ans} is not one of Y, y, yes, N, n, or no."
+        ;;
+    esac
+  done
+}
+
+if ! command -v denv > /dev/null 2>&1; then
+  _error "'denv' is not installed."
+  if _user_confirm "Do you wish to try to install 'denv' now?"; then
+    curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh 
+  else
+    printf "Not attempting to install 'denv'. Please follow the instructions at\n  %s\n" \
+      "https://tomeichlersmith.github.io/denv/getting_started.html#installation"
+    unset -f _error _user_confirm
+    return 1
+  fi
+fi
+
+if ! denv check --quiet; then
+  # maybe try loading apptainer via the 'module' command?
+  # https://github.com/LDMX-Software/ldmx-sw/issues/1248#issuecomment-1896618339
+  denv check
+  _error "'denv' unable to find a supported container runner." \
+    "Install one of the container runners 'denv' checked for above."
+  unset -f _error _user_confirm
+  return 2
+fi
+
+###############################################################################
+# Attempt to deduce LDMX_BASE
+# Unfortunately, deducing the path to a script being sourced is not possible
+# using POSIX-compliant methods[1], so we need to fallback to separating
+# different running scenarios.
+#
+# [1]: https://stackoverflow.com/a/29835459
+#
+# Users can avoid all of this complication by pre-defining the LDMX_BASE
+# environment variable.
+###############################################################################
+if [ -z "${LDMX_BASE+x}" ]; then
+  _full_path() (
+    CDPATH=
+    cd -- "${1}" && pwd -P
+  )
+  _base_from_script() {
+    _full_path "$(dirname -- "${1}")/../../" 
+  } 
+  # running from bash, bash defines the BASH_SOURCE array to help us
+  # find the location of this file
+  # disable warning about undefined variable and array references
+  LDMX_BASE="$(_base_from_script "${BASH_SOURCE[0]}")"
+  unset -f _full_path _base_from_script
+fi
+# re-export LDMX_BASE in case of user does inline variable definition like
+#   LDMX_BASE=/path/to/ldmx/base source /full/path/to/ldmx-env.bash
+export LDMX_BASE
+
+###############################################################################
+# Check if the LDMX denv is initialized. If not, do a default initialization.
+# This requires denv v0.7.0.
+###############################################################################
+if ! denv check --workspace --quiet; then
+  denv init --clean-env --name "ldmx" "ldmx/dev:latest" "${LDMX_BASE}"
+fi
 
 # mimicing the ldmx bash function requires bash, point out user
 # doesn't need bash anymore if they use denv directly
 if [[ -z ${BASH} ]]; then
-  echo "[ldmx-env.sh] [ERROR] You aren't in a bash shell. You are in '$0'."
+  _error "You aren't in a bash shell. You are in '$0'."
   [[ "${SHELL}" = *"bash"* ]] || echo "  Your default shell '${SHELL}' isn't bash."
   cat <<\HELP
   If you'd prefer to not use bash, you can use 'denv' directly rather than
@@ -324,3 +417,4 @@ __ldmx_complete() {
 
 # Tell bash the tab-complete options for our main function ldmx
 complete -F __ldmx_complete ldmx
+unset -f _error _user_confirm
