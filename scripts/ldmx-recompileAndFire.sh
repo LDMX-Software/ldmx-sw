@@ -8,19 +8,17 @@
 # or
 # ldmx setenv LDMX_COMPILE_BUILD=<build location>
 
-
-if [ -z "$LDMX_COMPILE_CORES" ]; then
-    LDMX_COMPILE_CORES=$(nproc)
+if [[ -z "${LDMX_COMPILE_BUILD}" ]]; then
+    if [[ -z "${LDMX_BASE}" ]]; then
+        echo "ERROR: LDMX_BASE is undefined." \
+          " This script should be run within the containerized environment."
+        exit 1
+    fi
+    LDMX_COMPILE_BUILD="${LDMX_BASE}/ldmx-sw"
 fi
 
-if [ -z "$LDMX_COMPILE_BUILD" ]; then
-    LDMX_COMPILE_BUILD=${LDMX_BASE}/ldmx-sw/
-fi
-
-echo "-- Compiling ldmx-sw in ${LDMX_COMPILE_BUILD} with ${LDMX_COMPILE_CORES} cores, and running "
-
-# Compile ldmx-sw
-cmake -B ${LDMX_COMPILE_BUILD}/build -S ${LDMX_COMPILE_BUILD}
-cmake --build ${LDMX_COMPILE_BUILD}/build --target install -j=${LDMX_COMPILE_CORES}
+# compile with default arguments
+"${LDMX_COMPILE_BUILD}"/scripts/ldmx-compile.sh
 # Run fire on the input config
+# shellcheck disable=SC2068
 fire $@
