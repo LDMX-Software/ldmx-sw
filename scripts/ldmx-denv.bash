@@ -10,7 +10,7 @@
 _error() {
   printf >&2 "\033[1;31mERROR [ldmx-denv.bash]: \033[0m\033[31m%s\n" "$1"
   shift
-  while [ "$#" -gt "0" ]; do
+  while [[ "$#" -gt "0" ]]; do
     printf >&2 "       %s\n" "$1"
     shift
   done
@@ -75,7 +75,7 @@ fi
 # Users can avoid all of this complication by pre-defining the LDMX_BASE
 # environment variable.
 ###############################################################################
-if [ -z "${LDMX_BASE+x}" ]; then
+if [[ -z "${LDMX_BASE+x}" ]]; then
   _full_path() (
     CDPATH=
     cd -- "${1}" && pwd -P
@@ -176,6 +176,20 @@ __ldmx_setenv() {
   return $?
 }
 
+__ldmx_compile() {
+  echo "denv ${LDMX_BASE}/ldmx-sw/scripts/ldmx-compile.sh $*"
+  # intentionally re-splitting elements of an array
+  #shellcheck disable=SC2068
+  denv "${LDMX_BASE}/ldmx-sw/scripts/ldmx-compile.sh" $@
+}
+
+__ldmx_recompFire() {
+  echo "denv ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompFire.sh $*"
+  # intentionally re-splitting elements of an array
+  #shellcheck disable=SC2068
+  denv "${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompFire.sh" $@
+}
+
 ###############################################################################
 # __ldmx_help
 #   Print some helpful message to the terminal
@@ -197,8 +211,12 @@ __ldmx_help() {
       ldmx pull (dev | pro | local) <tag>
     mount   : Attach the input directory to the container when running
       ldmx mount <dir>
-    setenv   : Set an environment variable in the container when running
+    setenv  : Set an environment variable in the container when running
       ldmx setenv <environmentVariableName=value>
+    compile : Configure and compile ldmx-sw
+      ldmx compile
+    recompFire : re-compile ldmx-sw and run fire with the input arguments
+      ldmx recompFire config.py
     <other> : Run the input command in your current directory in the container
       ldmx <other> [<argument> ...]
       ldmx cmake ..
@@ -261,6 +279,14 @@ ldmx() {
         return 1
       fi
       __ldmx_use "$2" "$3"
+      return $?
+      ;;
+    compile|recompFire)
+      cmd="__ldmx_${1}"
+      shift
+      # intentionally re-splitting elements of an array
+      #shellcheck disable=SC2068
+      ${cmd} $@
       return $?
       ;;
     *)
@@ -366,7 +392,7 @@ __ldmx_complete() {
 
   if [[ "${COMP_CWORD}" = "1" ]]; then
     # tab completing a main argument
-    __ldmx_complete_command "config pull use run mount setenv"
+    __ldmx_complete_command "config pull use run mount setenv compile recompFire"
   elif [[ "${COMP_CWORD}" = "2" ]]; then
     # tab complete a sub-argument,
     #   depends on the main argument

@@ -83,4 +83,6 @@ v0.0.0: just an idea
   - `pull` : call `ldmx use` and then `denv config image pull`
   - `mount` : pass arguments to `denv config mounts`
   - `setenv` : pass arguments to `denv config env copy`
+  - `compile` : pass arguments to `denv ${LDMX_BASE}/ldmx-sw/ldmx-compile.sh`
+  - `recompFire` : pass arguments to `denv ${LDMX_BASE}/ldmx-sw/ldmx-recompFire.sh`
   - `<cmd>` : pass directly to `denv`
