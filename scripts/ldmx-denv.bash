@@ -184,10 +184,10 @@ __ldmx_compile() {
 }
 
 __ldmx_recompFire() {
-  echo "denv ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompFire.sh $*"
+  echo "denv ${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompileAndFire.sh $*"
   # intentionally re-splitting elements of an array
   #shellcheck disable=SC2068
-  denv "${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompFire.sh" $@
+  denv "${LDMX_BASE}/ldmx-sw/scripts/ldmx-recompileAndFire.sh" $@
 }
 
 ###############################################################################
