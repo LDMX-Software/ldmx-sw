@@ -32,6 +32,9 @@ help anyone interested in developing a wrapping script to be used
 within the shell of their choice.
 
 ### Initialization
+In order to properly mimic the environment as defined by the `ldmx`
+suite of bash functions, we need to initialize a denv with a few
+options.
 ```
 denv \
   init \ # use denv special sub-command for initialization
@@ -81,4 +84,3 @@ v0.0.0: just an idea
   - `mount` : pass arguments to `denv config mounts`
   - `setenv` : pass arguments to `denv config env copy`
   - `<cmd>` : pass directly to `denv`
-
