@@ -1,7 +1,7 @@
 /**
  * @file EcalVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
- * @author Owen Colegrove, UCSB
+ * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
  */
 
 #ifndef EVENTPROC_ECALVETOPROCESSOR_H_
@@ -157,6 +157,9 @@ class EcalVetoProcessor : public framework::Producer {
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
+  
+  /// Enable logging
+  enableLogging("EcalVetoProcessor")
 };
 
 }  // namespace ecal
