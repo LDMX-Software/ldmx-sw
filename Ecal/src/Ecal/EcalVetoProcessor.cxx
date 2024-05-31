@@ -603,7 +603,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     for (int i = 0; i < trackingHitList.size(); i++) {
       std::cout << "[" << trackingHitList[i].pos.X() << ", "
       << trackingHitList[i].pos.Y() << ", "
-      << trackingHitList[i].layer << "] ";
+      << trackingHitList[i].layer << "], ";
     }
     std::cout << std::endl;
     ldmx_log(debug) << "====== END OF Tracking hit list ======";
@@ -626,8 +626,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     while (jHit < trackingHitList.size()) {
       if ((trackingHitList[jHit].layer == trackingHitList[currenthit].layer - 1 ||
            trackingHitList[jHit].layer == trackingHitList[currenthit].layer - 2) &&
-          trackingHitList[jHit].pos.X() == trackingHitList[currenthit].pos.X() &&
-          trackingHitList[jHit].pos.Y() == trackingHitList[currenthit].pos.Y()) {
+          abs(trackingHitList[jHit].pos.X() - trackingHitList[currenthit].pos.X()) <= 0.5*cellWidth &&
+          abs(trackingHitList[jHit].pos.Y() - trackingHitList[currenthit].pos.Y()) <= 0.5*cellWidth  ) {
         track[trackLen] = jHit;
         trackLen++;
         currenthit = jHit;
