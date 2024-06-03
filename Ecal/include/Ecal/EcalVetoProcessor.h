@@ -157,9 +157,6 @@ class EcalVetoProcessor : public framework::Producer {
 
   /// handle to current geometry (to share with member functions)
   const ldmx::EcalGeometry* geometry_;
-  
-  /// Enable logging
-  enableLogging("EcalVetoProcessor")
 };
 
 }  // namespace ecal
