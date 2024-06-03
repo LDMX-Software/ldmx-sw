@@ -75,7 +75,10 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   bool require_photon_fromTarget_{false};
   /// Enable logging
   enableLogging("DeepEcalProcessFilter")
-
+  /// member used to help tag events where the photon comes from the target
+  bool photonFromTarget_{false};
+  /// member used to help tag events that have a deep-ecal process ocurr
+  bool hasDeepEcalProcess_{false};
 };  // DeepEcalProcessFilter
 }  // namespace biasing
 

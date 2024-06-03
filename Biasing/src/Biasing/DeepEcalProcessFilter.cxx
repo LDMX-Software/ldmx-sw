@@ -17,9 +17,6 @@
 
 namespace biasing {
 
-bool hasProcessNeeded_{false};
-bool photonFromTarget_{false};
-bool hasDeepEcalProcess_{false};
 
 DeepEcalProcessFilter::DeepEcalProcessFilter(const std::string& name,
                                      framework::config::Parameters& parameters)
@@ -37,8 +34,6 @@ void DeepEcalProcessFilter::BeginOfEventAction(const G4Event* event) {
 }
 
 void DeepEcalProcessFilter::stepping(const G4Step* step) {
-  hasProcessNeeded_ = false;
-  
   // Get the track associated with this step.
   auto track{step->GetTrack()};
   
@@ -78,14 +73,17 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   }
 
   // Tag if the event has the processes we are looking for
+  bool hasProcessNeeded{false};
   for (auto& process : processes_) {
     // ldmx_log(debug) << "Allowed processed " << process << " now we have " << processName;
     if (processName.contains(process)) {
-      hasProcessNeeded_ = true;
+      hasProcessNeeded = true;
       break;
     }
   }
-  
+  // skip this step if it does not have any of the processes needed
+  if (not hasProcessNeeded) return;
+
   // isInEcal should be taken from
   // simcore::logical_volume_tests::isInEcal(volume) but for now it's under
   // its own namespace so I cannot reach it here, see issue
@@ -99,7 +97,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   
   // Skip this step if it does not have the processes needed
   // or if it's not in the ECAL
-  if (!hasProcessNeeded_ or !isInEcal) return;
+  if (not isInEcal) return;
   
   // Check the z position of the particle, and
   // flag if it is deeper than the min Z we are considering (but in ECAL)
