@@ -36,4 +36,9 @@ collaborators understand what the detector is meant to describe.
 - `ldmx-det-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam
 
 ### Archived geometries
-Previously used geometries can be found under the `archived` directory. In case you need to use any of these, ran `tar -xf` on them and move them back under `data`.
+Previously used geometries can be found under the `archived` directory. In case you need to use any of these, ran `tar -xf` on them and move them back under `data` and then re-configure and re-install ldmx-sw (all detector directories under `data/` are included in the install location):
+```
+cd ldmx-sw/Detectors/data
+tar -xzf archived/<detector>.tar.gz
+ldmx compile # even if you've already done this before!
+```
