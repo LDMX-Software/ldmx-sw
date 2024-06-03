@@ -10,6 +10,7 @@ from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 
 det = 'ldmx-det-v14-8gev'
+# Please make sure that the simulator here matches the simulator in the original config
 #mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 5010., processes=['conv','phot)'], ecal_min_Z = 300.)
 mysim = ecal.deep_photo_nuclear(det, generators.single_8gev_e_upstream_tagger(), bias_threshold = 3000., processes=['conv','phot)'], ecal_min_Z = 400.)
 mysim.description = "ECal Deep Donversion Test Re-Simulation"
