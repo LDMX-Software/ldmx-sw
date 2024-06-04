@@ -28,7 +28,7 @@ namespace ecal {
 
 void EcalVetoProcessor::buildBDTFeatureVector(
     const ldmx::EcalVetoResult &result) {
-  bdtFeatures_.clear();
+  // Base variables
   bdtFeatures_.push_back(result.getNReadoutHits());
   bdtFeatures_.push_back(result.getSummedDet());
   bdtFeatures_.push_back(result.getSummedTightIso());
@@ -37,36 +37,51 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getXStd());
   bdtFeatures_.push_back(result.getYStd());
   bdtFeatures_.push_back(result.getAvgLayerHit());
-  bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getStdLayerHit());
-  // MIP tracking (unused but could be uncommented)
-  // bdtFeatures.push_back(result.getNStraightTracks());
-  // bdtFeatures.push_back(result.getNLinregTracks());
-  // bdtFeatures.push_back(result.getFirstNearPhLayer());
-
-  for (int ireg = 0; ireg < result.getElectronContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getElectronContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getPhotonContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getPhotonContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentNHits().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentNHits()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentXStd().size(); ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentXStd()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentYStd().size(); ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentYStd()[ireg]);
-  }
+  bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
+  // MIP tracking
+  bdtFeatures_.push_back(result.getNStraightTracks());
+  // bdtFeatures_.push_back(result.getNLinregTracks());
+  bdtFeatures_.push_back(result.getFirstNearPhLayer());
+  bdtFeatures_.push_back(result.getNNearPhHits());
+  bdtFeatures_.push_back(result.getPhotonTerritoryHits());
+  bdtFeatures_.push_back(result.getEPSep());
+  bdtFeatures_.push_back(result.getEPDot());
+  // Longitudinal segment variables
+  bdtFeatures_.push_back(result.getEnergySeg()[0]);
+  bdtFeatures_.push_back(result.getXMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getYMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getLayerMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getEnergySeg()[1]);
+  bdtFeatures_.push_back(result.getYMeanSeg()[2]);
+  /// Electron RoC variables
+  bdtFeatures_.push_back(result.getEleContEnergy()[0][0]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[1][0]);
+  bdtFeatures_.push_back(result.getEleContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[0][1]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[1][1]);
+  bdtFeatures_.push_back(result.getEleContYMean()[0][1]);
+  /// Photon RoC variables
+  bdtFeatures_.push_back(result.getPhContNHits()[0][0]);
+  bdtFeatures_.push_back(result.getPhContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getPhContNHits()[0][1]);
+  /// Outside RoC variables
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[1][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[3][0]);
+  bdtFeatures_.push_back(result.getOutContNHits()[0][0]);
+  bdtFeatures_.push_back(result.getOutContXMean()[0][0]);
+  bdtFeatures_.push_back(result.getOutContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getOutContYMean()[1][0]);
+  bdtFeatures_.push_back(result.getOutContYStd()[0][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[1][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[2][1]);
+  bdtFeatures_.push_back(result.getOutContLayerMean()[0][1]);
+  bdtFeatures_.push_back(result.getOutContLayerStd()[0][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][2]);
+  bdtFeatures_.push_back(result.getOutContLayerMean()[0][2]);
 }
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
