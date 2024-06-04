@@ -57,11 +57,10 @@ void Vertexer::onProcessStart() {
     // //zxy
   };
 
-  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        default_transformPos,
-                        default_transformBField));
-  
+  sp_interpolated_bField_ =
+      std::make_shared<InterpolatedMagneticField3>(loadDefaultBField(
+          field_map_, default_transformPos, default_transformBField));
+
   // There is a sign issue between the vertexing and the perigee representation
   Acts::Vector3 b_field(0., 0., -1.5 * Acts::UnitConstants::T);
   bField_ = std::make_shared<Acts::ConstantBField>(b_field);
@@ -75,12 +74,11 @@ void Vertexer::onProcessStart() {
   // Set up propagator with void navigator
 
   // propagator_ = std::make_shared<VoidPropagator>(stepper);
-  
+
   propagator_ = std::make_shared<VoidPropagator>(stepper_const);
 }
 
 void Vertexer::configure(framework::config::Parameters& parameters) {
-  
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.getParameter<std::string>("field_map");
 
@@ -100,7 +98,6 @@ void Vertexer::produce(framework::Event& event) {
   Linearizer::Config linearizerConfig(bField_, propagator_);
   Linearizer linearizer(linearizerConfig);
 
-  
   // Set up Billoir Vertex Fitter
   using VertexFitter =
       Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
@@ -109,7 +106,6 @@ void Vertexer::produce(framework::Event& event) {
   // using VertexFitter =
   //  Acts::FullBilloirVertexFitter<tracking::sim::utils::boundTrackParameters,Linearizer>;
 
-  
   VertexFitter::Config vertexFitterCfg;
   VertexFitter billoirFitter(vertexFitterCfg);
 
@@ -129,11 +125,10 @@ void Vertexer::produce(framework::Event& event) {
   const std::vector<ldmx::Track> tracks_2 =
       event.getCollection<ldmx::Track>(trk_c_name_2);
 
-  ldmx_log(debug) 
-      << "Retrieved track collections" << std::endl
-      << "Track 1 size:" << tracks_1.size() << std::endl
-      << "Track 2 size:" << tracks_2.size() << std::endl;
-  
+  ldmx_log(debug) << "Retrieved track collections" << std::endl
+                  << "Track 1 size:" << tracks_1.size() << std::endl
+                  << "Track 2 size:" << tracks_2.size() << std::endl;
+
   if (tracks_1.size() < 1 || tracks_2.size() < 1) return;
 
   std::vector<Acts::BoundTrackParameters> billoir_tracks_1, billoir_tracks_2;
@@ -164,26 +159,23 @@ void Vertexer::produce(framework::Event& event) {
 
   std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
 
-  
   for (auto& b_trk_1 : billoir_tracks_1) {
     std::vector<const Acts::BoundTrackParameters*> fit_tracks_ptr;
 
     for (auto& b_trk_2 : billoir_tracks_2) {
       fit_tracks_ptr.push_back(&b_trk_1);
       fit_tracks_ptr.push_back(&b_trk_2);
-      
-      ldmx_log(debug) 
-          << "Calling vertex fitter" << std::endl
-          << "Track 1 parameters" << std::endl
-          << b_trk_1 << std::endl
-          << "Track 2 parameters" << std::endl
-          << b_trk_2 << std::endl;
-      
+
+      ldmx_log(debug) << "Calling vertex fitter" << std::endl
+                      << "Track 1 parameters" << std::endl
+                      << b_trk_1 << std::endl
+                      << "Track 2 parameters" << std::endl
+                      << b_trk_2 << std::endl;
+
       //  std::cout << "Perigee Surface" << std::endl;
       //  perigeeSurface->toStream(gctx_, std::cout);
       //  std::cout << std::endl;
-      
-      
+
     }  // loop on second set of tracks
 
     nreconstructable_++;
@@ -194,22 +186,21 @@ void Vertexer::produce(framework::Event& event) {
       nvertices_++;
 
     } catch (...) {
-      ldmx_log(warn) << "Vertex fit failed"<< std::endl;
+      ldmx_log(warn) << "Vertex fit failed" << std::endl;
     }
-    
+
   }  // loop on first set
-  
+
   // Convert the vertices in the ldmx EDM and store them
 }
 
 void Vertexer::onProcessEnd() {
   ldmx_log(info) << "Reconstructed " << nvertices_ << " vertices over "
                  << nreconstructable_ << " reconstructable" << std::endl;
-  
-  
+
   TFile* outfile_ = new TFile((getName() + ".root").c_str(), "RECREATE");
   outfile_->cd();
-  
+
   h_delta_d0->Write();
   h_delta_z0->Write();
   h_delta_p->Write();
