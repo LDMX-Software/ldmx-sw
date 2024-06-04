@@ -39,6 +39,7 @@ class CalibrationContext : public framework::ConditionsObject {
    * call this function without worry.
    */
   const Acts::CalibrationContext& get() const;
+
  private:
   /// the provider is a friend and so it can make one
   friend class CalibrationContextProvider;
@@ -63,4 +64,4 @@ class CalibrationContext : public framework::ConditionsObject {
   Acts::CalibrationContext calibration_context_;
 };
 
-}
+}  // namespace tracking::geo
