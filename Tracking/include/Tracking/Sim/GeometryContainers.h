@@ -8,20 +8,19 @@
 
 #pragma once
 
-#include "Acts/EventData/SourceLink.hpp"
-#include "Acts/Geometry/GeometryIdentifier.hpp"
-#include "Acts/Surfaces/Surface.hpp"
-#include "Tracking/Sim/GroupBy.h"
-#include "Tracking/Sim/Range.h"
-
 #include <algorithm>
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
 #include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <utility>
 
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
+#include "Acts/EventData/SourceLink.hpp"
+#include "Acts/Geometry/GeometryIdentifier.hpp"
+#include "Acts/Surfaces/Surface.hpp"
+#include "Tracking/Sim/GroupBy.h"
+#include "Tracking/Sim/Range.h"
 
 namespace ActsExamples {
 namespace detail {
@@ -228,6 +227,5 @@ struct GeometryIdMultisetAccessor {
   // pointer to the container
   const Container* container = nullptr;
 };
-
 
 }  // namespace ActsExamples

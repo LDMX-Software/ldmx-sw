@@ -96,7 +96,7 @@ bool PropagatorStepWriter::WriteSteps(
     m_hit_y.push_back(meas.getGlobalPosition()[1]);
     m_hit_z.push_back(meas.getGlobalPosition()[2]);
   }
-  
+
   for (unsigned int i = 0; i < 3; i++) {
     m_start_pos.push_back(start_pos(i));
     m_start_mom.push_back(start_mom(i));
