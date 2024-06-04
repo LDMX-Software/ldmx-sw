@@ -69,7 +69,7 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   /// Outside RoC variables
   bdtFeatures_.push_back(result.getOutContEnergy()[0][0]);
   bdtFeatures_.push_back(result.getOutContEnergy()[1][0]);
-  bdtFeatures_.push_back(result.getOutContEnergy()[3][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[2][0]);
   bdtFeatures_.push_back(result.getOutContNHits()[0][0]);
   bdtFeatures_.push_back(result.getOutContXMean()[0][0]);
   bdtFeatures_.push_back(result.getOutContYMean()[0][0]);
