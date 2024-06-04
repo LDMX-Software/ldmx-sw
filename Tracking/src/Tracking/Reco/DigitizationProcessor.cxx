@@ -52,9 +52,6 @@ void DigitizationProcessor::onProcessStart() {
                                     eThresh, isAnalog);
 
   ldmx_log(info) << "Initialization done" << std::endl;
-
-  // Seed the generator
-  generator_.seed(1);
 }
 
 void DigitizationProcessor::configure(
@@ -69,6 +66,12 @@ void DigitizationProcessor::configure(
   sigma_u_ = parameters.getParameter<double>("sigma_u", 0.01);
   sigma_v_ = parameters.getParameter<double>("sigma_v", 0.);
   merge_hits_ = parameters.getParameter<bool>("merge_hits", false);
+}
+
+void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+                                                                       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  generator_.seed(rseed.getSeed("Tracking::DigitizationProcessor"));
 }
 
 void DigitizationProcessor::produce(framework::Event& event) {
