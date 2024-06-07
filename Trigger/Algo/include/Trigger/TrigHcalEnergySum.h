@@ -48,7 +48,6 @@ class TrigHcalEnergySum : public framework::Producer {
   std::string inProc_;
   std::string quadCollName_;
   std::string combinedQuadCollName_;
-
 };
 }  // namespace trigger
 
