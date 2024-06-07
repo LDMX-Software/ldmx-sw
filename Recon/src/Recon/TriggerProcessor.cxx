@@ -25,7 +25,7 @@ void TriggerProcessor::configure(framework::config::Parameters& parameters) {
 void TriggerProcessor::produce(framework::Event& event) {
   /** Grab the Ecal hit collection for the given event */
   const std::vector<ldmx::EcalHit> ecalRecHits =
-      event.getCollection<ldmx::EcalHit>(inputColl_,inputPass_);
+      event.getCollection<ldmx::EcalHit>(inputColl_, inputPass_);
 
   // number of electrons in this event
   const int nElectrons{event.getElectronCount()};
@@ -33,7 +33,7 @@ void TriggerProcessor::produce(framework::Event& event) {
   /**
    * There are three scenarios:
    *  1. No Incoming Electrons - If the electron count is 0 or negative
-   *     (undetermined), then we set the sum-energy cut to zero 
+   *     (undetermined), then we set the sum-energy cut to zero
    *     so the event always fails.
    *  2. Num Electrons Listed in Thresholds - Pull cut from list
    *  3. More electrons than listed - Set threshold as
@@ -42,12 +42,12 @@ void TriggerProcessor::produce(framework::Event& event) {
    *     It should be a
    *      fct( nElectrons, 1e_thr, beamE),
    *     taking how sigma evolves with multiplicity into account.
-   *     a simple scaling might suffice there too assuming 
+   *     a simple scaling might suffice there too assuming
    *     energy cuts are listed as [ Ecut_1e, Ecut_2e, ... ]
    */
   double layerESumCut{0.};
   if (nElectrons <= 0)
-    layerESumCut = 0.; // always fail if no electrons
+    layerESumCut = 0.;  // always fail if no electrons
   else if (nElectrons <= layerESumCuts_.size())
     layerESumCut = layerESumCuts_.at(nElectrons - 1);
   else
