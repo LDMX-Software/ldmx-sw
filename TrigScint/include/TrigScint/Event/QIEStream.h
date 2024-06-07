@@ -108,7 +108,7 @@ class QIEStream {
   // words relative to each other
   // these simply state the order:
   //{UTC time stamp, time stamp clock(), time since spill, triggerID, error,
-  //checksum == 0 (empty)}
+  // checksum == 0 (empty)}
   const static int TIMESTAMP_POS{0};
   const static int TIMESTAMP_LEN_BYTES{4};
   const static int TIMESTAMPCLOCK_POS{TIMESTAMP_POS + TIMESTAMP_LEN_BYTES};
