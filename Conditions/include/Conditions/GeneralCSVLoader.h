@@ -1,25 +1,26 @@
 /**
- * @file The GeneralCSVLoader parses a CSV file and provides the rows one at a time to a user
+ * @file The GeneralCSVLoader parses a CSV file and provides the rows one at a
+ * time to a user
  */
 #ifndef CONDITIONS_GENERALCSVLOADER_H_
 #define CONDITIONS_GENERALCSVLOADER_H_
 
+#include <istream>
 #include <string>
 #include <vector>
-#include <istream>
 
 namespace conditions {
 
-/** @brief Class which parses a CSV file and provides the rows one at a time to a user
- * The parser ignores any line which begins with a '#' character
- * The parser uses the first non-comment row to determine column names
- * The parser handles quotation marks in a standard manner
+/** @brief Class which parses a CSV file and provides the rows one at a time to
+ * a user The parser ignores any line which begins with a '#' character The
+ * parser uses the first non-comment row to determine column names The parser
+ * handles quotation marks in a standard manner
  */
 class GeneralCSVLoader {
  public:
   /** Destructor */
-  virtual ~GeneralCSVLoader()  { }
-  
+  virtual ~GeneralCSVLoader() {}
+
   /** Get the column names */
   std::vector<std::string> columnNames() const { return colNames_; }
 
@@ -27,16 +28,17 @@ class GeneralCSVLoader {
   bool nextRow();
 
   /** Get the value for the given column in the current row */
-  const std::string& get(const std::string& colname, bool ignore_case=true) const;
+  const std::string& get(const std::string& colname,
+                         bool ignore_case = true) const;
 
   /** Get the value for the given column in the current row as an integer*/
-  int getInteger(const std::string& colname, bool ignore_case=true) const;
+  int getInteger(const std::string& colname, bool ignore_case = true) const;
 
  protected:
+  GeneralCSVLoader() {}
 
-  GeneralCSVLoader() { }
-
-  /** Get the next line, returning an empty string when there is no further data */
+  /** Get the next line, returning an empty string when there is no further data
+   */
   virtual std::string getNextLine() = 0;
 
  private:
@@ -55,10 +57,12 @@ class GeneralCSVLoader {
 class StringCSVLoader : public GeneralCSVLoader {
  public:
   /** Constructor */
-  StringCSVLoader(const std::string& source, const std::string lineseparators="\n");
+  StringCSVLoader(const std::string& source,
+                  const std::string lineseparators = "\n");
 
  protected:
-  /** Get the next line, returning an empty string when there is no further data */
+  /** Get the next line, returning an empty string when there is no further data
+   */
   virtual std::string getNextLine();
 
  private:
@@ -66,7 +70,7 @@ class StringCSVLoader : public GeneralCSVLoader {
    * The original string
    */
   const std::string& source_;
-  /** 
+  /**
    * The separators
    */
   const std::string linesep_;
@@ -80,14 +84,14 @@ class StringCSVLoader : public GeneralCSVLoader {
  */
 class StreamCSVLoader : public GeneralCSVLoader {
  public:
-  /** 
+  /**
    * Constructor a loader from the provided file name
    *
    * We expand the file-name using wordexp and then open an
    * input file stream to it. We own the stream in this case.
    */
   StreamCSVLoader(const std::string& filename);
-  /** 
+  /**
    * Construct a loader from the provided input stream
    *
    * We are given an already-created stream, so
@@ -97,9 +101,10 @@ class StreamCSVLoader : public GeneralCSVLoader {
 
   /// Clean-up the stream if we own it
   virtual ~StreamCSVLoader();
-  
+
  protected:
-  /** Get the next line, returning an empty string when there is no further data */
+  /** Get the next line, returning an empty string when there is no further data
+   */
   virtual std::string getNextLine();
 
  private:
@@ -107,15 +112,15 @@ class StreamCSVLoader : public GeneralCSVLoader {
    * The stream
    */
   std::istream* source_;
-  /** 
+  /**
    * Own stream?
    */
   bool ownStream_;
-  /** 
+  /**
    * Line buffer
    */
   std::string line_;
 };
 
-}
-#endif // CONDITIONS_GENERALCSVLOADER_H_
+}  // namespace conditions
+#endif  // CONDITIONS_GENERALCSVLOADER_H_

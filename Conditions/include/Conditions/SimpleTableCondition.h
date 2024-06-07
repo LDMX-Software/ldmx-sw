@@ -6,8 +6,8 @@
 #ifndef FRAMEWORK_SIMPLETABLECONDITION_H_
 #define FRAMEWORK_SIMPLETABLECONDITION_H_
 
-#include <vector>
 #include <ostream>
+#include <vector>
 
 #include "Framework/ConditionsObject.h"
 #include "Framework/Exception/Exception.h"
@@ -90,8 +90,10 @@ class BaseTableCondition : public framework::ConditionsObject {
   /**
    * Streams a given row of this table
    */
-  virtual std::ostream& streamRow(std::ostream& s, int irow) const { return s << keys_[irow]; }
-  
+  virtual std::ostream& streamRow(std::ostream& s, int irow) const {
+    return s << keys_[irow];
+  }
+
  protected:
   std::size_t findKey(unsigned int id) const;
 
@@ -191,11 +193,11 @@ class HomogenousTableCondition : public BaseTableCondition {
                       "Row out of range: " + std::to_string(irow));
     }
     s << keys_[irow];
-    for (int i=0; i<columnCount_; i++) 
-      s << ',' << values_[irow*columnCount_+i];
+    for (int i = 0; i < columnCount_; i++)
+      s << ',' << values_[irow * columnCount_ + i];
     return s << std::endl;
   }
-  
+
  private:
   std::vector<T> values_;  // unrolled array
 };
