@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "Framework/EventProcessor.h"
-
 #include "Packing/RawDataFile/File.h"
 
 namespace packing {
@@ -21,7 +20,7 @@ class RawIO : public framework::Producer {
  public:
   /// normal constructor
   RawIO(const std::string& name, framework::Process& p)
-    : framework::Producer(name, p) {}
+      : framework::Producer(name, p) {}
   /// empty destructor
   virtual ~RawIO() {}
 
