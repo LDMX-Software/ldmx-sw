@@ -1,5 +1,6 @@
 #include <regex.h>
 #include <sys/types.h>
+
 #include "DetDescr/EcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
@@ -72,10 +73,12 @@ EcalGeometryProvider::EcalGeometryProvider(
     const std::string& name, const std::string& tagname,
     const framework::config::Parameters& parameters,
     framework::Process& process)
-    : framework::
-          ConditionsObjectProvider{ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME,
-                                   tagname, parameters, process} {
-  geometries_ = parameters.getParameter<std::vector<framework::config::Parameters>>("geometries");
+    : framework::ConditionsObjectProvider{
+          ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME, tagname, parameters,
+          process} {
+  geometries_ =
+      parameters.getParameter<std::vector<framework::config::Parameters>>(
+          "geometries");
   ecalGeometry_ = 0;
 }
 
@@ -92,8 +95,8 @@ EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
     // search through the subtrees
     for (auto pver : geometries_) {
       if (!pver.exists(KEYNAME)) {
-        ldmx_log(warn) << "No parameter " << KEYNAME 
-          << " found one of the detector vesrsions.";
+        ldmx_log(warn) << "No parameter " << KEYNAME
+                       << " found one of the detector vesrsions.";
         // log strange situation and continue
         continue;
       }
