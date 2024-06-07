@@ -2,9 +2,9 @@
 #define PACKING_RAWDATAFILE_EVENTPACKET_H_
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "Packing/RawDataFile/SubsystemPacket.h"
 
@@ -20,7 +20,9 @@ class EventPacket {
   EventPacket() = default;
 
   /// define event id for reading
-  EventPacket(uint32_t id, const std::map<uint16_t,std::vector<uint32_t>>& unwrapped_subsys_data);
+  EventPacket(
+      uint32_t id,
+      const std::map<uint16_t, std::vector<uint32_t>>& unwrapped_subsys_data);
 
   /// Get the header words
   std::vector<uint32_t> header() const;

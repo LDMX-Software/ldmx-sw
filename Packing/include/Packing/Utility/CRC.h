@@ -32,7 +32,7 @@ namespace utility {
  *    }
  *   private:
  *    uint64_t my_member_int_;
- *  } my_object; 
+ *  } my_object;
  *
  *  CRC c;
  *  c << 0xffff << std::vector<uint16_t>({0xffff, 0x00ff}) << my_object;
@@ -60,8 +60,9 @@ class CRC {
    * @param w integral-type word to insert into calculator
    * @return CRC modified calculator
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
-  CRC& operator<<(const WordType& w) { 
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
+  CRC& operator<<(const WordType& w) {
     crc.process_bytes(&w, sizeof(WordType));
     return *this;
   }
@@ -80,11 +81,12 @@ class CRC {
    * @param o instance of an arbitrary class
    * @return CRC modified calculator
    */
-  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  template <typename ObjectType,
+            std::enable_if_t<std::is_class<ObjectType>::value, bool> = true>
   CRC& operator<<(const ObjectType& o) {
     return o.add(*this);
   }
-  
+
   /**
    * Stream a vector of objects into the calculator
    *
@@ -96,7 +98,7 @@ class CRC {
    * @return CRC modified calculator
    */
   template <typename ContentType>
-  CRC& operator<<(const std::vector<ContentType>& vec) { 
+  CRC& operator<<(const std::vector<ContentType>& vec) {
     for (auto const& w : vec) *this << w;
     return *this;
   }
@@ -106,6 +108,7 @@ class CRC {
    * @return uint32_t checksum
    */
   uint32_t get() { return crc.checksum(); }
+
  private:
   /// the object from Boost doing the summing
   boost::crc_32_type crc;
