@@ -11,8 +11,8 @@
 namespace biasing {
 namespace utility {
 
-PartialEnergySorter::PartialEnergySorter(const std::string& name,
-                                         framework::config::Parameters& parameters)
+PartialEnergySorter::PartialEnergySorter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
