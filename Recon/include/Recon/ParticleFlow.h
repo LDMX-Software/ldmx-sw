@@ -8,17 +8,16 @@
 #define PARTICLEFLOW_H
 
 // LDMX Framework
+#include "Ecal/Event/EcalCluster.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TGraph.h"
-
+#include "Hcal/Event/HcalCluster.h"
+#include "Recon/Event/CaloCluster.h"
+#include "Recon/Event/PFCandidate.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "Recon/Event/CaloCluster.h"
-#include "Ecal/Event/EcalCluster.h"
-#include "Hcal/Event/HcalCluster.h"
-#include "Recon/Event/PFCandidate.h"
+#include "TGraph.h"
 
 namespace recon {
 
@@ -43,9 +42,9 @@ class ParticleFlow : public framework::Producer {
 
   virtual void onProcessEnd();
 
-  void fillCandTrack(ldmx::PFCandidate &cand, const ldmx::SimTrackerHit &tk);
-  void fillCandEMCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &em);
-  void fillCandHadCalo(ldmx::PFCandidate &cand, const ldmx::CaloCluster &had);
+  void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
+  void fillCandEMCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& em);
+  void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
  private:
   // specific verbosity of this producer

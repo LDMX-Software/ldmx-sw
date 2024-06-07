@@ -26,119 +26,139 @@ class PFCandidate {
     return this->getEnergy() < rhs.getEnergy();
   }
 
-  /* 
+  /*
      Setters
    */
-  void setPID(int x) {pid_ = x;}
-  void setMass(float x) {mass_ = x;}
-  void setEnergy(float x) {energy_ = x;}
+  void setPID(int x) { pid_ = x; }
+  void setMass(float x) { mass_ = x; }
+  void setEnergy(float x) { energy_ = x; }
 
-  void setTargetPositionXYZ(float x, float y, float z){
-      posTargX_=x; posTargY_=y; posTargZ_=z;
+  void setTargetPositionXYZ(float x, float y, float z) {
+    posTargX_ = x;
+    posTargY_ = y;
+    posTargZ_ = z;
   }
-  void setEcalPositionXYZ(float x, float y, float z){
-      posEcalX_=x; posEcalY_=y; posEcalZ_=z;
+  void setEcalPositionXYZ(float x, float y, float z) {
+    posEcalX_ = x;
+    posEcalY_ = y;
+    posEcalZ_ = z;
   }
-  void setHcalPositionXYZ(float x, float y, float z){
-      posHcalX_=x; posHcalY_=y; posHcalZ_=z;
+  void setHcalPositionXYZ(float x, float y, float z) {
+    posHcalX_ = x;
+    posHcalY_ = y;
+    posHcalZ_ = z;
   }
 
-  void setTrackPxPyPz(float x, float y, float z){
-      trackPx_=x; trackPy_=y; trackPz_=z;
+  void setTrackPxPyPz(float x, float y, float z) {
+    trackPx_ = x;
+    trackPy_ = y;
+    trackPz_ = z;
   }
 
-  void setEcalEnergy(float x) {ecalEnergy_ = x;}
-  void setEcalRawEnergy(float x) {ecalRawEnergy_ = x;}
-  void setEcalClusterXYZ(float x, float y, float z){
-      ecalClusterX_=x; ecalClusterY_=y; ecalClusterZ_=z;
+  void setEcalEnergy(float x) { ecalEnergy_ = x; }
+  void setEcalRawEnergy(float x) { ecalRawEnergy_ = x; }
+  void setEcalClusterXYZ(float x, float y, float z) {
+    ecalClusterX_ = x;
+    ecalClusterY_ = y;
+    ecalClusterZ_ = z;
   }
-  void setEcalClusterEXYZ(float x, float y, float z){
-      ecalClusterEX_=x; ecalClusterEY_=y; ecalClusterEZ_=z;
+  void setEcalClusterEXYZ(float x, float y, float z) {
+    ecalClusterEX_ = x;
+    ecalClusterEY_ = y;
+    ecalClusterEZ_ = z;
   }
-  void setEcalClusterDXDZ(float x){ ecalClusterDXDZ_=x; }
-  void setEcalClusterDYDZ(float x){ ecalClusterDYDZ_=x; }
-  void setEcalClusterEDXDZ(float x){ ecalClusterEDXDZ_=x; }
-  void setEcalClusterEDYDZ(float x){ ecalClusterEDYDZ_=x; }
+  void setEcalClusterDXDZ(float x) { ecalClusterDXDZ_ = x; }
+  void setEcalClusterDYDZ(float x) { ecalClusterDYDZ_ = x; }
+  void setEcalClusterEDXDZ(float x) { ecalClusterEDXDZ_ = x; }
+  void setEcalClusterEDYDZ(float x) { ecalClusterEDYDZ_ = x; }
 
-  void setHcalEnergy(float x) {hcalEnergy_ = x;}
-  void setHcalRawEnergy(float x) {hcalRawEnergy_ = x;}
-  void setHcalClusterXYZ(float x, float y, float z){
-      hcalClusterX_=x; hcalClusterY_=y; hcalClusterZ_=z;
+  void setHcalEnergy(float x) { hcalEnergy_ = x; }
+  void setHcalRawEnergy(float x) { hcalRawEnergy_ = x; }
+  void setHcalClusterXYZ(float x, float y, float z) {
+    hcalClusterX_ = x;
+    hcalClusterY_ = y;
+    hcalClusterZ_ = z;
   }
-  void setHcalClusterEXYZ(float x, float y, float z){
-      hcalClusterEX_=x; hcalClusterEY_=y; hcalClusterEZ_=z;
+  void setHcalClusterEXYZ(float x, float y, float z) {
+    hcalClusterEX_ = x;
+    hcalClusterEY_ = y;
+    hcalClusterEZ_ = z;
   }
-  void setHcalClusterDXDZ(float x){ hcalClusterDXDZ_=x; }
-  void setHcalClusterDYDZ(float x){ hcalClusterDYDZ_=x; }
-  void setHcalClusterEDXDZ(float x){ hcalClusterEDXDZ_=x; }
-  void setHcalClusterEDYDZ(float x){ hcalClusterEDYDZ_=x; }
+  void setHcalClusterDXDZ(float x) { hcalClusterDXDZ_ = x; }
+  void setHcalClusterDYDZ(float x) { hcalClusterDYDZ_ = x; }
+  void setHcalClusterEDXDZ(float x) { hcalClusterEDXDZ_ = x; }
+  void setHcalClusterEDYDZ(float x) { hcalClusterEDYDZ_ = x; }
 
-  void setTruthEcalXYZ(double x, double y, double z){
-      truthEcalX_=x; truthEcalY_=y; truthEcalZ_=z;
+  void setTruthEcalXYZ(double x, double y, double z) {
+    truthEcalX_ = x;
+    truthEcalY_ = y;
+    truthEcalZ_ = z;
   }
-  void setTruthPxPyPz(double x, double y, double z){
-      truthPx_=x; truthPy_=y; truthPz_=z;
+  void setTruthPxPyPz(double x, double y, double z) {
+    truthPx_ = x;
+    truthPy_ = y;
+    truthPz_ = z;
   }
-  void setTruthMass(double x){ truthMass_=x; }
-  void setTruthEnergy(double x){ truthEnergy_=x; }
-  void setTruthPdgId(int x){ truthPdgId_=x; }
+  void setTruthMass(double x) { truthMass_ = x; }
+  void setTruthEnergy(double x) { truthEnergy_ = x; }
+  void setTruthPdgId(int x) { truthPdgId_ = x; }
 
-  /* 
+  /*
      Getters
    */
-  int getPID() const {return pid_;}
-  float getMass() const { return mass_;}
-  float getEnergy() const { return energy_;}
+  int getPID() const { return pid_; }
+  float getMass() const { return mass_; }
+  float getEnergy() const { return energy_; }
 
   std::vector<float> getTargetPositionXYZ() const {
-      return {posTargX_, posTargY_, posTargZ_};
+    return {posTargX_, posTargY_, posTargZ_};
   }
   std::vector<float> getEcalPositionXYZ() const {
-      return {posEcalX_, posEcalY_, posEcalZ_};
+    return {posEcalX_, posEcalY_, posEcalZ_};
   }
   std::vector<float> getHcalPositionXYZ() const {
-      return {posHcalX_, posHcalY_, posHcalZ_};
+    return {posHcalX_, posHcalY_, posHcalZ_};
   }
 
   std::vector<float> getTrackPxPyPz() const {
-      return {trackPx_, trackPy_, trackPz_};
+    return {trackPx_, trackPy_, trackPz_};
   }
 
-  float getEcalEnergy() const { return ecalEnergy_;}
-  float getEcalRawEnergy() const { return ecalRawEnergy_;}
+  float getEcalEnergy() const { return ecalEnergy_; }
+  float getEcalRawEnergy() const { return ecalRawEnergy_; }
   std::vector<float> getEcalClusterXYZ() const {
-      return {ecalClusterX_, ecalClusterY_, ecalClusterZ_};
+    return {ecalClusterX_, ecalClusterY_, ecalClusterZ_};
   }
   std::vector<float> getEcalClusterEXYZ() const {
-      return {ecalClusterEX_, ecalClusterEY_, ecalClusterEZ_};
+    return {ecalClusterEX_, ecalClusterEY_, ecalClusterEZ_};
   }
   float getEcalClusterDXDZ() const { return ecalClusterDXDZ_; }
   float getEcalClusterDYDZ() const { return ecalClusterDYDZ_; }
   float getEcalClusterEDXDZ() const { return ecalClusterEDXDZ_; }
   float getEcalClusterEDYDZ() const { return ecalClusterEDYDZ_; }
 
-  float getHcalEnergy() const { return hcalEnergy_;}
-  float getHcalRawEnergy() const { return hcalRawEnergy_;}
+  float getHcalEnergy() const { return hcalEnergy_; }
+  float getHcalRawEnergy() const { return hcalRawEnergy_; }
   std::vector<float> getHcalClusterXYZ() const {
-      return {hcalClusterX_, hcalClusterY_, hcalClusterZ_};
+    return {hcalClusterX_, hcalClusterY_, hcalClusterZ_};
   }
   std::vector<float> getHcalClusterEXYZ() const {
-      return {hcalClusterEX_, hcalClusterEY_, hcalClusterEZ_};
+    return {hcalClusterEX_, hcalClusterEY_, hcalClusterEZ_};
   }
   float getHcalClusterDXDZ() const { return hcalClusterDXDZ_; }
   float getHcalClusterDYDZ() const { return hcalClusterDYDZ_; }
   float getHcalClusterEDXDZ() const { return hcalClusterEDXDZ_; }
   float getHcalClusterEDYDZ() const { return hcalClusterEDYDZ_; }
 
-  std::vector<double> const getTruthEcalXYZ(){
+  std::vector<double> const getTruthEcalXYZ() {
     return {truthEcalX_, truthEcalY_, truthEcalZ_};
   }
-  std::vector<double> const getTruthPxPyPz(){
+  std::vector<double> const getTruthPxPyPz() {
     return {truthPx_, truthPy_, truthPz_};
   }
-  double getTruthMass(){ return truthMass_; }
-  double getTruthEnergy(){ return truthEnergy_; }
-  int getTruthPdgId(){ return truthPdgId_; }
+  double getTruthMass() { return truthMass_; }
+  double getTruthEnergy() { return truthEnergy_; }
+  int getTruthPdgId() { return truthPdgId_; }
 
  private:
   /* Particle ID enum */

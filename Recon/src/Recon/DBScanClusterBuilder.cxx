@@ -1,91 +1,98 @@
 // #include "DetDescr/EcalGeometry.h"
 // #include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/DBScanClusterBuilder.h"
+
 #include <iostream>
 #include <set>
-#include "Recon/DBScanClusterBuilder.h"
 
 namespace recon {
 
-  DBScanClusterBuilder::DBScanClusterBuilder(){
-    minHitEnergy_      = 0;
-    clusterHitDist_    = 100;
-    clusterZBias_      = 1;  // defaults to 1
-    minClusterHitMult_ = 2;
-  }
-
-  DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy, float clusterHitDist, float clusterZBias, float minClusterHitMult){
-    minHitEnergy_      = minHitEnergy;
-    clusterHitDist_    = clusterHitDist;
-    clusterZBias_      = clusterZBias;  // clustering bias in the z direction
-    minClusterHitMult_ = minClusterHitMult;
-  }
-
-  std::vector<std::vector<const ldmx::CalorimeterHit*> > DBScanClusterBuilder::runDBSCAN( 
-    const std::vector<const ldmx::CalorimeterHit*> &hits, bool debug = false){
-  
-    const int n = hits.size();
-    std::vector<std::vector<const ldmx::CalorimeterHit*> > idx_clusters;
-    std::vector<unsigned int> tried; tried.reserve(n);
-    std::vector<unsigned int> used; used.reserve(n);
-    for(unsigned int i=0;i<n;i++){
-      if( isIn(i,tried) ) continue;
-      tried.push_back(i);
-      ldmx_log(debug) << "trying " << i;
-      if (hits[i]->getEnergy() < minHitEnergy_) continue;
-      std::set<unsigned int> neighbors;
-      unsigned int nNearby=1;
-      // find neighbors
-      for(unsigned int j=0;j<n;j++){
-	if(i!=j && dist(hits[i],hits[j]) < clusterHitDist_){  // pair-wise distance
-	  neighbors.insert(j);
-	  if (hits[j]->getEnergy() >= minHitEnergy_) nNearby++;
-	}
-      }
-      if (nNearby >= minClusterHitMult_){
-	std::vector<const ldmx::CalorimeterHit*> idx_cluster{hits[i]}; // start a cluster
-	used.push_back(i);
-	 ldmx_log(debug) << "- starting a cluster from " << i;
-	for(unsigned int j : neighbors){
-	  if ( !isIn(j,tried) ){
-	    tried.push_back(j);
-	    ldmx_log(debug) << "== tried " << j;
-	    std::vector<unsigned int> neighbors2;
-	    for(unsigned int k=0;k<n;k++){
-	      if( dist(hits[k],hits[j]) < clusterHitDist_){
-		neighbors2.push_back(k);
-	      }
-	    }
-	    for(unsigned int k : neighbors2)
-	      neighbors.insert(k);
-	  }
-	  if ( !isIn(j,used) ) {
-	     ldmx_log(debug) << "== used " << j;
-	    used.push_back(j);
-	    idx_cluster.push_back(hits[j]);
-	  }
-	}
-	idx_clusters.push_back( idx_cluster );
-      }
-    }
-    ldmx_log(debug) << "done. writing this many clusters out: " << idx_clusters.size();
-    return idx_clusters;
+DBScanClusterBuilder::DBScanClusterBuilder() {
+  minHitEnergy_ = 0;
+  clusterHitDist_ = 100;
+  clusterZBias_ = 1;  // defaults to 1
+  minClusterHitMult_ = 2;
 }
 
- void DBScanClusterBuilder::fillClusterInfoFromHits(ldmx::CaloCluster *cl,
-    std::vector<const ldmx::CalorimeterHit*> hits,
-    bool logEnergyWeight){
-			      
-  float e(0),x(0),y(0),z(0),xx(0),yy(0),zz(0),n(0);
-  float w = 1; // weight
+DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
+                                           float clusterHitDist,
+                                           float clusterZBias,
+                                           float minClusterHitMult) {
+  minHitEnergy_ = minHitEnergy;
+  clusterHitDist_ = clusterHitDist;
+  clusterZBias_ = clusterZBias;  // clustering bias in the z direction
+  minClusterHitMult_ = minClusterHitMult;
+}
+
+std::vector<std::vector<const ldmx::CalorimeterHit *> >
+DBScanClusterBuilder::runDBSCAN(
+    const std::vector<const ldmx::CalorimeterHit *> &hits, bool debug = false) {
+  const int n = hits.size();
+  std::vector<std::vector<const ldmx::CalorimeterHit *> > idx_clusters;
+  std::vector<unsigned int> tried;
+  tried.reserve(n);
+  std::vector<unsigned int> used;
+  used.reserve(n);
+  for (unsigned int i = 0; i < n; i++) {
+    if (isIn(i, tried)) continue;
+    tried.push_back(i);
+    ldmx_log(debug) << "trying " << i;
+    if (hits[i]->getEnergy() < minHitEnergy_) continue;
+    std::set<unsigned int> neighbors;
+    unsigned int nNearby = 1;
+    // find neighbors
+    for (unsigned int j = 0; j < n; j++) {
+      if (i != j &&
+          dist(hits[i], hits[j]) < clusterHitDist_) {  // pair-wise distance
+        neighbors.insert(j);
+        if (hits[j]->getEnergy() >= minHitEnergy_) nNearby++;
+      }
+    }
+    if (nNearby >= minClusterHitMult_) {
+      std::vector<const ldmx::CalorimeterHit *> idx_cluster{
+          hits[i]};  // start a cluster
+      used.push_back(i);
+      ldmx_log(debug) << "- starting a cluster from " << i;
+      for (unsigned int j : neighbors) {
+        if (!isIn(j, tried)) {
+          tried.push_back(j);
+          ldmx_log(debug) << "== tried " << j;
+          std::vector<unsigned int> neighbors2;
+          for (unsigned int k = 0; k < n; k++) {
+            if (dist(hits[k], hits[j]) < clusterHitDist_) {
+              neighbors2.push_back(k);
+            }
+          }
+          for (unsigned int k : neighbors2) neighbors.insert(k);
+        }
+        if (!isIn(j, used)) {
+          ldmx_log(debug) << "== used " << j;
+          used.push_back(j);
+          idx_cluster.push_back(hits[j]);
+        }
+      }
+      idx_clusters.push_back(idx_cluster);
+    }
+  }
+  ldmx_log(debug) << "done. writing this many clusters out: "
+                  << idx_clusters.size();
+  return idx_clusters;
+}
+
+void DBScanClusterBuilder::fillClusterInfoFromHits(
+    ldmx::CaloCluster *cl, std::vector<const ldmx::CalorimeterHit *> hits,
+    bool logEnergyWeight) {
+  float e(0), x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
+  float w = 1;  // weight
   float sumw = 0;
   std::vector<float> raw_xvals{};
   std::vector<float> raw_yvals{};
   std::vector<float> raw_zvals{};
   std::vector<float> raw_evals{};
 
-  for(const ldmx::CalorimeterHit* h : hits){
+  for (const ldmx::CalorimeterHit *h : hits) {
     if (h->getEnergy() < minHitEnergy_) continue;
-    if (logEnergyWeight) w = log( h->getEnergy() - log(minHitEnergy_) );
+    if (logEnergyWeight) w = log(h->getEnergy() - log(minHitEnergy_));
     e += h->getEnergy();
     x += w * h->getXPos();
     y += w * h->getYPos();
@@ -100,49 +107,47 @@ namespace recon {
     raw_zvals.push_back(h->getZPos());
     raw_evals.push_back(h->getEnergy());
   }
-  x /= sumw; // now is <x>
+  x /= sumw;  // now is <x>
   y /= sumw;
   z /= sumw;
-  xx /= sumw; // now is <x^2>
+  xx /= sumw;  // now is <x^2>
   yy /= sumw;
   zz /= sumw;
-  xx = sqrt(xx - x * x); //now is sqrt(<x^2>-<x>^2)
-  yy = sqrt(yy - y * y); 
+  xx = sqrt(xx - x * x);  // now is sqrt(<x^2>-<x>^2)
+  yy = sqrt(yy - y * y);
   zz = sqrt(zz - z * z);
   cl->setEnergy(e);
   cl->setNHits(n);
-  cl->setCentroidXYZ(x,y,z);
-  cl->setRMSXYZ(xx,yy,zz);
+  cl->setCentroidXYZ(x, y, z);
+  cl->setRMSXYZ(xx, yy, zz);
   cl->setHitValsX(raw_xvals);
   cl->setHitValsY(raw_yvals);
   cl->setHitValsZ(raw_zvals);
   cl->setHitValsE(raw_evals);
 
-  if (raw_xvals.size()>2){
+  if (raw_xvals.size() > 2) {
     // skip fits for 'vertical' clusters
     std::vector<float> sortedZ = raw_zvals;
     std::sort(sortedZ.begin(), sortedZ.end());
-    if (sortedZ[sortedZ.size()-1] - sortedZ[0] > 1e3){
-
-      for(int i=0; i<raw_xvals.size();i++){ // mean subtract
-	raw_xvals[i] = raw_xvals[i] - x;
-	raw_yvals[i] = raw_yvals[i] - y;
-	raw_zvals[i] = raw_zvals[i] - z;
+    if (sortedZ[sortedZ.size() - 1] - sortedZ[0] > 1e3) {
+      for (int i = 0; i < raw_xvals.size(); i++) {  // mean subtract
+        raw_xvals[i] = raw_xvals[i] - x;
+        raw_yvals[i] = raw_yvals[i] - y;
+        raw_zvals[i] = raw_zvals[i] - z;
       }
 
       TGraph gxz(raw_zvals.size(), raw_zvals.data(), raw_xvals.data());
-      auto r_xz = gxz.Fit("pol1","SQ"); // p0 + x*p1
-      cl->setDXDZ( r_xz->Value(1) );
-      cl->setEDXDZ( r_xz->ParError(1) );
-    
+      auto r_xz = gxz.Fit("pol1", "SQ");  // p0 + x*p1
+      cl->setDXDZ(r_xz->Value(1));
+      cl->setEDXDZ(r_xz->ParError(1));
+
       TGraph gyz(raw_zvals.size(), raw_zvals.data(), raw_yvals.data());
-      auto r_yz = gyz.Fit("pol1","SQ"); // p0 + x*p1
-      cl->setDYDZ( r_yz->Value(1) );
-      cl->setEDYDZ( r_yz->ParError(1) );
+      auto r_yz = gyz.Fit("pol1", "SQ");  // p0 + x*p1
+      cl->setDYDZ(r_yz->Value(1));
+      cl->setEDYDZ(r_yz->ParError(1));
     }
   }
   return;
 }
 
 }  // namespace recon
-
