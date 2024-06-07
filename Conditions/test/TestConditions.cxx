@@ -1,13 +1,14 @@
+#include <stdlib.h>
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
-
-#include <stdlib.h>
 #include <fstream>
 #include <sstream>
+
+#include "Conditions/GeneralCSVLoader.h"
 #include "Conditions/SimpleCSVTableProvider.h"
 #include "Conditions/SimpleTableCondition.h"
 #include "Conditions/SimpleTableStreamers.h"
-#include "Conditions/GeneralCSVLoader.h"
 #include "Conditions/URLStreamer.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/HcalID.h"
@@ -15,7 +16,6 @@
 #include "Framework/EventHeader.h"
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"
-
 
 namespace conditions {
 namespace test {
@@ -87,7 +87,7 @@ TEST_CASE("Conditions", "[Conditions]") {
     vals.push_back(log(key));
     dtable.add(id.raw(), vals);
   }
-  
+
   SECTION("Testing simple table construction") {
     REQUIRE(itable.getRowCount() == 10);
 
@@ -114,30 +114,26 @@ TEST_CASE("Conditions", "[Conditions]") {
 
     CHECK(itable.getByName(id2.raw(), "Q") == 30);
 
-
-    const char* expected="[ TableCondition: ITable\n"
-      "  DetID,id:\"A\",id:\"Q\",id:\"V\"\n"
-      "  335679498,20,5,100\n"
-      "  335679508,40,10,400\n"
-      "  335679518,60,15,900\n"
-      "  335679528,80,20,1600\n"
-      "  335679538,100,25,2500\n"
-      "  335679548,120,30,3600\n"
-      "  335679558,140,35,4900\n"
-      "  335679568,160,40,6400\n"
-      "  335679578,180,45,8100\n"
-      "  335679588,200,50,10000\n"
-      "]";
+    const char* expected =
+        "[ TableCondition: ITable\n"
+        "  DetID,id:\"A\",id:\"Q\",id:\"V\"\n"
+        "  335679498,20,5,100\n"
+        "  335679508,40,10,400\n"
+        "  335679518,60,15,900\n"
+        "  335679528,80,20,1600\n"
+        "  335679538,100,25,2500\n"
+        "  335679548,120,30,3600\n"
+        "  335679558,140,35,4900\n"
+        "  335679568,160,40,6400\n"
+        "  335679578,180,45,8100\n"
+        "  335679588,200,50,10000\n"
+        "]";
     std::stringstream ss;
-    ss <<itable;
+    ss << itable;
     std::string image = ss.str();
-    CHECK(image == expected);    
-
-
+    CHECK(image == expected);
   }
 
-
-  
   SECTION("Testing CSV IO") {
     std::stringstream ss;
     conditions::utility::SimpleTableStreamerCSV::store(itable, ss, true);
@@ -167,7 +163,8 @@ TEST_CASE("Conditions", "[Conditions]") {
     std::stringstream ss_read2(image2);
     REQUIRE_THROWS_WITH(
         conditions::utility::SimpleTableStreamerCSV::load(itable2, ss_read2),
-        ContainsSubstring("Malformed CSV file with no DetId or subdetector column"));
+        ContainsSubstring(
+            "Malformed CSV file with no DetId or subdetector column"));
 
     // missing column example
     std::string image3(
@@ -256,89 +253,97 @@ TEST_CASE("Conditions", "[Conditions]") {
     matchesAll(dtable, fTable2);
   }
 
-
-  
-  SECTION( "Testing HTTP loading" ) {
-    const char* cfg="#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
+  SECTION("Testing HTTP loading") {
+    const char* cfg =
+        "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
         "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
         "p.testMode=True\n"
         "columns=[\"A\",\"Q\",\"V\"]\n"
-        "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_http\",columns)\n"
-        "cop.validForever(\"http://www-users.cse.umn.edu/~jmmans/test_table.csv\")\n";
-    
-    FILE* f=fopen("/tmp/test_cond.py","w");
-    fputs(cfg,f);
+        "cop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_"
+        "http\",columns)\n"
+        "cop.validForever(\"http://www-users.cse.umn.edu/~jmmans/"
+        "test_table.csv\")\n";
+
+    FILE* f = fopen("/tmp/test_cond.py", "w");
+    fputs(cfg, f);
     fclose(f);
-    
-    framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
-    framework::ProcessHandle hp=cp.makeProcess();
+
+    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
+    framework::ProcessHandle hp = cp.makeProcess();
     ldmx::EventHeader cxt;
     hp->setEventHeader(&cxt);
-    
-    const IntegerTableCondition&
-        httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http");
-    matchesAll(httpTable,itable);
+
+    const IntegerTableCondition& httpTable =
+        hp->getConditions().getCondition<IntegerTableCondition>(
+            "test_table_http");
+    matchesAll(httpTable, itable);
   }
-  
 
   SECTION("Testing CSV metatable") {
-    
-    const char* cfg="#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
+    const char* cfg =
+        "#!/usr/bin/python3\n\nimport sys\n\nfrom LDMX.Framework "
         "import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n"
         "p=ldmxcfg.Process(\"test\")\n"
         "p.testMode=True\n"
         "columns=[\"PEDESTAL_ADC\"]\n"
-        "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_pedestals\",columns)\n"
-        "cop.conditions_baseURL='http://www-users.cse.umn.edu/~jmmans/ldmx/condtest/'\n"
+        "cop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"testbeam22_"
+        "pedestals\",columns)\n"
+        "cop.conditions_baseURL='http://www-users.cse.umn.edu/~jmmans/ldmx/"
+        "condtest/'\n"
         "cop.entriesURL='${LDMX_CONDITION_BASEURL}/testbeam22_pedestals.csv'\n";
-    
-    FILE* f=fopen("/tmp/test_cond.py","w");
-    fputs(cfg,f);
+
+    FILE* f = fopen("/tmp/test_cond.py", "w");
+    fputs(cfg, f);
     fclose(f);
-    
-    framework::ConfigurePython cp("/tmp/test_cond.py",0,0);
-    framework::ProcessHandle hp=cp.makeProcess();
+
+    framework::ConfigurePython cp("/tmp/test_cond.py", 0, 0);
+    framework::ProcessHandle hp = cp.makeProcess();
     ldmx::EventHeader cxt;
 
     hp->setEventHeader(&cxt);
 
     unsigned int http_requests[2], http_failures[2];
 
-    conditions::urlstatistics(http_requests[0],http_failures[0]);
-    
+    conditions::urlstatistics(http_requests[0], http_failures[0]);
+
     cxt.setRun(128);
-    
-    const DoubleTableCondition& httpTable128=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
 
-    hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+    const DoubleTableCondition& httpTable128 =
+        hp->getConditions().getCondition<DoubleTableCondition>(
+            "testbeam22_pedestals");
 
-    conditions::urlstatistics(http_requests[1],http_failures[1]);
-    REQUIRE(((http_requests[1]-http_requests[0])==1 && (http_failures[1]-http_failures[0])==0));
-    
+    hp->getConditions().getCondition<DoubleTableCondition>(
+        "testbeam22_pedestals");
+
+    conditions::urlstatistics(http_requests[1], http_failures[1]);
+    REQUIRE(((http_requests[1] - http_requests[0]) == 1 &&
+             (http_failures[1] - http_failures[0]) == 0));
+
     cxt.setRun(129);
 
-    hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
+    hp->getConditions().getCondition<DoubleTableCondition>(
+        "testbeam22_pedestals");
 
-    conditions::urlstatistics(http_requests[1],http_failures[1]);
-    REQUIRE(((http_requests[1]-http_requests[0])==1 && (http_failures[1]-http_failures[0])==0));
-        
+    conditions::urlstatistics(http_requests[1], http_failures[1]);
+    REQUIRE(((http_requests[1] - http_requests[0]) == 1 &&
+             (http_failures[1] - http_failures[0]) == 0));
+
     cxt.setRun(140);
-    
-    const DoubleTableCondition&
-        httpTable140=hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals");
 
-    conditions::urlstatistics(http_requests[1],http_failures[1]);
-    REQUIRE(((http_requests[1]-http_requests[0])==2 && (http_failures[1]-http_failures[0])==0));
-    
+    const DoubleTableCondition& httpTable140 =
+        hp->getConditions().getCondition<DoubleTableCondition>(
+            "testbeam22_pedestals");
+
+    conditions::urlstatistics(http_requests[1], http_failures[1]);
+    REQUIRE(((http_requests[1] - http_requests[0]) == 2 &&
+             (http_failures[1] - http_failures[0]) == 0));
+
     cxt.setRun(10);
 
-    REQUIRE_THROWS(
-        hp->getConditions().getCondition<DoubleTableCondition>("testbeam22_pedestals")
-                   );
-    
+    REQUIRE_THROWS(hp->getConditions().getCondition<DoubleTableCondition>(
+        "testbeam22_pedestals"));
   }
-  
 }
 
 /**
@@ -348,43 +353,42 @@ TEST_CASE("Conditions", "[Conditions]") {
  *  - CSVLoader
  */
 TEST_CASE("CSVLoader", "[Conditions][CSVLoader]") {
-
   std::string testA("A,B,C\n1,2,3\n5,\"6\",7\n");
-  
+
   StringCSVLoader loaderA(testA);
-  
+
   REQUIRE(loaderA.nextRow());
-  REQUIRE(loaderA.get("A")=="1");
-  REQUIRE(loaderA.getInteger("B")==2);
-  REQUIRE(loaderA.get("C")=="3");
+  REQUIRE(loaderA.get("A") == "1");
+  REQUIRE(loaderA.getInteger("B") == 2);
+  REQUIRE(loaderA.get("C") == "3");
   REQUIRE(loaderA.nextRow());
-  REQUIRE(loaderA.get("A")=="5");
-  REQUIRE(loaderA.getInteger("B")==6);
-  REQUIRE(loaderA.get("C")=="7");
+  REQUIRE(loaderA.get("A") == "5");
+  REQUIRE(loaderA.getInteger("B") == 6);
+  REQUIRE(loaderA.get("C") == "7");
   REQUIRE(!loaderA.nextRow());
 
   std::string testB("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7");
-  
+
   StringCSVLoader loaderB(testB);
-  
+
   REQUIRE(loaderB.nextRow());
-  REQUIRE(loaderB.get("A")=="1");
-  REQUIRE(loaderB.getInteger("B")==2);
-  REQUIRE(loaderB.get("C")=="3");
+  REQUIRE(loaderB.get("A") == "1");
+  REQUIRE(loaderB.getInteger("B") == 2);
+  REQUIRE(loaderB.get("C") == "3");
   REQUIRE(loaderB.nextRow());
-  REQUIRE(loaderB.get("A")=="5");
-  REQUIRE(loaderB.getInteger("B")==6);
-  REQUIRE(loaderB.get("C")=="7");
+  REQUIRE(loaderB.get("A") == "5");
+  REQUIRE(loaderB.getInteger("B") == 6);
+  REQUIRE(loaderB.get("C") == "7");
   REQUIRE(!loaderB.nextRow());
 
   std::string testC("#Ignore me, dude\nA,B,C\n\n1,2,3\n5,\"6\",7,9");
-  
+
   StringCSVLoader loaderC(testC);
-  
+
   REQUIRE(loaderC.nextRow());
-  REQUIRE(loaderC.get("A")=="1");
-  REQUIRE(loaderC.getInteger("B")==2);
-  REQUIRE(loaderC.get("C")=="3");
+  REQUIRE(loaderC.get("A") == "1");
+  REQUIRE(loaderC.getInteger("B") == 2);
+  REQUIRE(loaderC.get("C") == "3");
   REQUIRE_THROWS(loaderC.nextRow());
 
   std::ofstream fxB("test.csv");
@@ -394,16 +398,14 @@ TEST_CASE("CSVLoader", "[Conditions][CSVLoader]") {
   StreamCSVLoader loaderB2("test.csv");
 
   REQUIRE(loaderB2.nextRow());
-  REQUIRE(loaderB2.get("A")=="1");
-  REQUIRE(loaderB2.getInteger("B")==2);
-  REQUIRE(loaderB2.get("C")=="3");
+  REQUIRE(loaderB2.get("A") == "1");
+  REQUIRE(loaderB2.getInteger("B") == 2);
+  REQUIRE(loaderB2.get("C") == "3");
   REQUIRE(loaderB2.nextRow());
-  REQUIRE(loaderB2.get("A")=="5");
-  REQUIRE(loaderB2.getInteger("B")==6);
-  REQUIRE(loaderB2.get("C")=="7");
+  REQUIRE(loaderB2.get("A") == "5");
+  REQUIRE(loaderB2.getInteger("B") == 6);
+  REQUIRE(loaderB2.get("C") == "7");
   REQUIRE(!loaderB2.nextRow());
-
-  
 }
 
 }  // namespace test
