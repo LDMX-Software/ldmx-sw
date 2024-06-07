@@ -71,8 +71,6 @@ class EcalAbstractID : public DetectorID {
    * @return The value of the payload field.
    */
   int payload() const { return id_ & ECAL_PAYLOAD_MASK; }
-
-  
 };
 
 }  // namespace ldmx
