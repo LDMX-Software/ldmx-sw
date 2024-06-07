@@ -9,15 +9,15 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
-#include "G4LogicalVolumeStore.hh"      //for the store
-#include "G4DarkBreM/G4APrime.h"  //checking if particles match A'
+#include "G4DarkBreM/G4APrime.h"              //checking if particles match A'
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
-#include "SimCore/UserTrackInformation.h"            //make sure A' is saved
+#include "G4LogicalVolumeStore.hh"            //for the store
+#include "SimCore/UserTrackInformation.h"     //make sure A' is saved
 
 namespace biasing {
 
-EcalDarkBremFilter::EcalDarkBremFilter(const std::string& name,
-                                       framework::config::Parameters& parameters)
+EcalDarkBremFilter::EcalDarkBremFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 
@@ -97,10 +97,11 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
   */
 
   const G4VProcess* creator = track->GetCreatorProcess();
-  if (creator and creator->GetProcessName().contains(
-                      G4DarkBremsstrahlung::PROCESS_NAME)) {
+  if (creator and
+      creator->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
-    simcore::UserTrackInformation* userInfo = simcore::UserTrackInformation::get(track);
+    simcore::UserTrackInformation* userInfo =
+        simcore::UserTrackInformation::get(track);
     // make sure A' is persisted into output file
     userInfo->setSaveFlag(true);
     if (track->GetParticleDefinition() == G4APrime::APrime()) {

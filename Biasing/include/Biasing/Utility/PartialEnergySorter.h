@@ -46,7 +46,8 @@ class PartialEnergySorter : public simcore::UserAction {
    * @param[in] name the name of the instance of this UserAction.
    * @param[in] parameters the parameters used to configure this UserAction.
    */
-  PartialEnergySorter(const std::string& name, framework::config::Parameters& parameters);
+  PartialEnergySorter(const std::string& name,
+                      framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~PartialEnergySorter() {}
@@ -98,7 +99,8 @@ class PartialEnergySorter : public simcore::UserAction {
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() {
-    return {simcore::TYPE::STEPPING, simcore::TYPE::STACKING, simcore::TYPE::EVENT};
+    return {simcore::TYPE::STEPPING, simcore::TYPE::STACKING,
+            simcore::TYPE::EVENT};
   }
 
   /**
