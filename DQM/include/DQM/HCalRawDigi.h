@@ -17,7 +17,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-
 #include "Tools/AnalysisUtils.h"
 
 namespace dqm {
@@ -25,7 +24,8 @@ namespace dqm {
 class HCalRawDigi : public framework::Analyzer {
  public:
   /** Constructor */
-  HCalRawDigi(const std::string& name, framework::Process& process) : framework::Analyzer(name, process) {}
+  HCalRawDigi(const std::string& name, framework::Process& process)
+      : framework::Analyzer(name, process) {}
 
   /** Destructor */
   ~HCalRawDigi() {}
