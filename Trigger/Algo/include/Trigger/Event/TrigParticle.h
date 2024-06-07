@@ -15,7 +15,8 @@ class TrigParticle;
 typedef std::vector<TrigParticle> TrigParticleCollection;
 
 // move to a central location?
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > XYZTLorentzVector;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
+    XYZTLorentzVector;
 typedef XYZTLorentzVector LorentzVector;
 typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double> > Point;
 
@@ -25,7 +26,6 @@ typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double> > Point;
  */
 class TrigParticle {
  public:
-
   TrigParticle() = default;
   TrigParticle(LorentzVector p4);
   TrigParticle(LorentzVector p4, Point vtx);
@@ -61,18 +61,12 @@ class TrigParticle {
   /* const TrigCaloCluster& getCluster() const {return clus_;} */
 
   // setters
-  void setP4(const LorentzVector& p4) {
-      p4_ = p4;
-  }
-  void setVertex(const Point& v) {
-      vtx_ = v;
-  }
-  void setEndPoint(const Point& v) {
-      end_ = v;
-  }
-  void setClusEnergy(const float n){ emClusE_ = n; }
-  void setClusTP(const int n){ emClusNTP_ = n; }
-  void setClusDepth(const int n){ emClusDepth_ = n; }
+  void setP4(const LorentzVector& p4) { p4_ = p4; }
+  void setVertex(const Point& v) { vtx_ = v; }
+  void setEndPoint(const Point& v) { end_ = v; }
+  void setClusEnergy(const float n) { emClusE_ = n; }
+  void setClusTP(const int n) { emClusNTP_ = n; }
+  void setClusDepth(const int n) { emClusDepth_ = n; }
 
   /* void setCluster(const TrigCaloCluster& c) { */
   /*     clus_ = c; */
@@ -91,12 +85,11 @@ class TrigParticle {
   int hwPhi() const { return hwPhi_; }
   int hwQual() const { return hwQual_; }
   int hwIso() const { return hwIso_; }
-  
- private:
 
+ private:
   XYZTLorentzVector p4_{};
   /* TrigCaloCluster clus_; */
-  
+
   Point vtx_{};
   Point end_{};
   int pdgId_{0};
@@ -107,12 +100,11 @@ class TrigParticle {
   int hwQual_{0};
   int hwIso_{0};
 
-  // cluster attributes  
+  // cluster attributes
   float emClusE_{0};
   int emClusNTP_{0};
   int emClusDepth_{0};
-  
-  
+
   /// ROOT Dictionary class definition macro
   ClassDef(TrigParticle, 1);
 };

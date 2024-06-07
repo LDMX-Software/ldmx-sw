@@ -9,13 +9,13 @@
 namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
-  //std::cout << "c++ configuring TrigEcalEnergySum" << std::endl;
+  // std::cout << "c++ configuring TrigEcalEnergySum" << std::endl;
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
 }
 
 void TrigEcalEnergySum::produce(framework::Event& event) {
-  //std::cout << "c++ producing TrigEcalEnergySum" << std::endl;
-  
+  // std::cout << "c++ producing TrigEcalEnergySum" << std::endl;
+
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
@@ -38,7 +38,7 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
   for (const auto& trigDigi : ecalTrigDigis) {
     // HgcrocTrigDigi
 
-    ldmx::EcalTriggerID tid(trigDigi.getId() ); // raw value
+    ldmx::EcalTriggerID tid(trigDigi.getId());  // raw value
     float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
     // // compressed ECal digis are 8xADCs (HCal will be 4x)
     // float sie = 8 * trigDigi.linearPrimitive() * gain *
