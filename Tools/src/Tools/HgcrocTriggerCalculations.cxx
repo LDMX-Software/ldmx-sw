@@ -1,6 +1,7 @@
 #include "Tools/HgcrocTriggerCalculations.h"
 
 #include <iostream>
+
 #include "Recon/Event/HgcrocTrigDigi.h"
 
 namespace ldmx {

@@ -5,6 +5,7 @@
  */
 
 #include "Tools/NoiseGenerator.h"
+
 #include "Framework/Exception/Exception.h"
 
 namespace ldmx {
