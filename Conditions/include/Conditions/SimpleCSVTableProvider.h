@@ -21,11 +21,14 @@ namespace conditions {
  * "DataType may be "int" or "double".
  * The "columns" parameter is the list of names of data columns to be read out.
 
- * The mapping of CSV files to IOVs can be provided either through the python code 
- * (appropriate mostly for rather small sets of conditions information) or through 
+ * The mapping of CSV files to IOVs can be provided either through the python
+ code
+ * (appropriate mostly for rather small sets of conditions information) or
+ through
  * a CSV file which indentifies the mapping.
  *
- * The "entries" array in python is an array of parameter sets used for direct configuration from python.
+ * The "entries" array in python is an array of parameter sets used for direct
+ configuration from python.
  * Each entry must contain a "URL"
  * The entry _may_ contain "firstRun", "lastRun", "runType", and "values".
  * If "firstRun" is not provided, -1 is assumed.  If "lastRun" is not provided,
@@ -37,14 +40,18 @@ namespace conditions {
  * column will be taken from the values array and the configuration is expected
  to be independend of id.
  *
- * The "entriesURL" is a URL pointing to a CSV file containing the following columns:
- * "FIRST_RUN" which is an integer column indicating the first run of the IOV, or -1 for no lower limit
- * "LAST_RUN" which is an integer column indicating the last run of the IOV, or -1 for no upper limit
- * "RUNTYPE" which is a string column with the expected values "data", "MC" or "any".  This column is not case-sensitive.
+ * The "entriesURL" is a URL pointing to a CSV file containing the following
+ columns:
+ * "FIRST_RUN" which is an integer column indicating the first run of the IOV,
+ or -1 for no lower limit
+ * "LAST_RUN" which is an integer column indicating the last run of the IOV, or
+ -1 for no upper limit
+ * "RUNTYPE" which is a string column with the expected values "data", "MC" or
+ "any".  This column is not case-sensitive.
  * "URL" which is a string column indicating the location of the table.
  *
  * In any URL, envrironment variables in the format ${VARNAME} will be expanded.
- * In addition, there are some special 'environment' variables: 
+ * In addition, there are some special 'environment' variables:
  *  * ${LDMX_CONDITION_BASEURL} will be replaced with
  *  the parameter 'conditions_baseURL' set in the python configuration.
  *  * ${LDMX_CONDITION_TAG} will be replaced with the
@@ -74,8 +81,10 @@ class SimpleCSVTableProvider : public framework::ConditionsObjectProvider {
   struct Entry {
     framework::ConditionsIOV iov_;
     std::string url_;
-    std::vector<int> ivalues_; // values for python-set common (channel-independent) parameters
-    std::vector<double> dvalues_; // values for python-set common (channel-independent) parameters
+    std::vector<int> ivalues_;     // values for python-set common
+                                   // (channel-independent) parameters
+    std::vector<double> dvalues_;  // values for python-set common
+                                   // (channel-independent) parameters
   };
 
   std::vector<Entry> entries_;
