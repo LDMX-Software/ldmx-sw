@@ -3,6 +3,7 @@
 #define ECAL_MYCLUSTERWEIGHT_H_
 
 #include <iostream>
+
 #include "Ecal/WorkingCluster.h"
 
 namespace ecal {

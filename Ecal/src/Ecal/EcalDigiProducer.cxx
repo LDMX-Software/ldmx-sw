@@ -6,6 +6,7 @@
  */
 
 #include "Ecal/EcalDigiProducer.h"
+
 #include "DetDescr/EcalGeometry.h"
 #include "Framework/RandomNumberSeedService.h"
 
@@ -81,7 +82,8 @@ void EcalDigiProducer::produce(framework::Event& event) {
     hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
   }
 
-  hgcroc_->condition(getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
+  hgcroc_->condition(
+      getCondition<conditions::DoubleTableCondition>("EcalHgcrocConditions"));
 
   // Empty collection to be filled
   ldmx::HgcrocDigiCollection ecalDigis;
@@ -109,7 +111,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
    */
 
   for (auto const& simHit : ecalSimHits) {
-    std::vector<std::pair<double,double>> pulses_at_chip;
+    std::vector<std::pair<double, double>> pulses_at_chip;
     for (int iContrib = 0; iContrib < simHit.getNumberOfContribs();
          iContrib++) {
       /* debug printout
@@ -122,10 +124,10 @@ void EcalDigiProducer::produce(framework::Event& event) {
        * to target), so the time shifting should be at the emulator level.
        */
       pulses_at_chip.emplace_back(
-        simHit.getContrib(iContrib).edep * MeV_,
-        simHit.getContrib(iContrib).time  // global time (t=0ns at target)
-          - simHit.getPosition().at(2) /
-                299.702547  // shift light-speed particle traveling along z
+          simHit.getContrib(iContrib).edep * MeV_,
+          simHit.getContrib(iContrib).time  // global time (t=0ns at target)
+              - simHit.getPosition().at(2) /
+                    299.702547  // shift light-speed particle traveling along z
       );
     }
 
@@ -134,7 +136,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
 
     /* debug printout
     std::cout << hitID << " "
-        << simHit.getEdep() 
+        << simHit.getEdep()
         << " MeV at "
         << simHit.getTime() - simHit.getPosition().at(2)/299.702547
         << std::endl;
@@ -170,7 +172,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
       // populate the empty channels and are above the readout threshold
       auto noiseHitAmplitudes{
           noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-      std::vector<std::pair<double,double>> fake_pulse(1,{0.,0.});
+      std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
       for (double noiseHit : noiseHitAmplitudes) {
         // generate detector ID for noise hit
         // making sure that it is in an empty channel
@@ -199,10 +201,9 @@ void EcalDigiProducer::produce(framework::Event& event) {
       for (int layer{0}; layer < nEcalLayers; layer++) {
         for (int module{0}; module < nModulesPerLayer; module++) {
           for (int cell{0}; cell < nCellsPerModule; cell++) {
-            unsigned int channel{ldmx::EcalID(layer,module,cell).raw()};
+            unsigned int channel{ldmx::EcalID(layer, module, cell).raw()};
             // check if channel already has a (real) hit in it
-            if (filledDetIDs.find(channel) != filledDetIDs.end())
-              continue;
+            if (filledDetIDs.find(channel) != filledDetIDs.end()) continue;
             // create a digi as put it into the collection
             ecalDigis.addDigi(channel, hgcroc_->noiseDigi(channel));
           }  // cells in each module

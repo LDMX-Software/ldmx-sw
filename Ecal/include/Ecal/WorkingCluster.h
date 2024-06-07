@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <vector>
+
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "TLorentzVector.h"
