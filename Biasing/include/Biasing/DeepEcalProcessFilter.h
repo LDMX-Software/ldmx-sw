@@ -29,17 +29,18 @@
 namespace biasing {
 
 /**
- * User action that allows a user to filter out events where the interaction happened deep in the ECAL
+ * User action that allows a user to filter out events where the interaction
+ * happened deep in the ECAL
  */
 class DeepEcalProcessFilter : public simcore::UserAction {
  public:
   /// Constructor
   DeepEcalProcessFilter(const std::string& name,
-                    framework::config::Parameters& parameters);
+                        framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~DeepEcalProcessFilter() = default;
-  
+
   /// Method to set flags in the beginning of the event
   void BeginOfEventAction(const G4Event* event) final override;
 
@@ -49,18 +50,18 @@ class DeepEcalProcessFilter : public simcore::UserAction {
    */
   void stepping(const G4Step* step) final override;
 
-//  /**
-//   * Method called at the end of every event.
-//   * @param event Geant4 event object.
-//   */
-//  void EndOfEventAction(const G4Event*) final override;
-  
+  //  /**
+  //   * Method called at the end of every event.
+  //   * @param event Geant4 event object.
+  //   */
+  //  void EndOfEventAction(const G4Event*) final override;
+
   void NewStage() final override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
-    return {simcore::TYPE::STACKING,
-            simcore::TYPE::STEPPING,simcore::TYPE::EVENT};
+    return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING,
+            simcore::TYPE::EVENT};
   }
 
  private:
@@ -68,15 +69,15 @@ class DeepEcalProcessFilter : public simcore::UserAction {
   double bias_threshold_{1500.};
   ///  The allowed processes that can happen deep inside the ECAL, default is
   ///  conversion (conv) and photoelectron (photo)
-  std::vector<std::string> processes_{"conv","phot"};
+  std::vector<std::string> processes_{"conv", "phot"};
   /// Minimum Z location where the deep process should happen
   double ecal_min_Z_{400.};
   /// Require that the hard brem photon originates from the target
   bool require_photon_fromTarget_{false};
   /// Enable logging
   enableLogging("DeepEcalProcessFilter")
-  /// member used to help tag events where the photon comes from the target
-  bool photonFromTarget_{false};
+      /// member used to help tag events where the photon comes from the target
+      bool photonFromTarget_{false};
   /// member used to help tag events that have a deep-ecal process ocurr
   bool hasDeepEcalProcess_{false};
 };  // DeepEcalProcessFilter

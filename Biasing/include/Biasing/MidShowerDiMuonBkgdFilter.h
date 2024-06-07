@@ -16,7 +16,7 @@ namespace biasing {
  *
  * The basic premis of this filter is to add up all of the
  * energy "lost" to muons created within the calorimeters.
- * When the PartialEnergySorter has run out of "high" energy 
+ * When the PartialEnergySorter has run out of "high" energy
  * particles to process (when NewStage is called)
  * we check if the running total is high enough to keep the event.
  *
@@ -32,7 +32,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    * Retrieve the necessary configuration parameters
    */
   MidShowerDiMuonBkgdFilter(const std::string& name,
-                             framework::config::Parameters& parameters);
+                            framework::config::Parameters& parameters);
 
   /**
    * Class destructor.
