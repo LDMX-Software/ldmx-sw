@@ -5,6 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
+
 #include "DetDescr/EcalGeometry.h"
 #include "Ecal/EcalReconConditions.h"
 #include "Ecal/Event/EcalHit.h"
@@ -51,13 +52,12 @@ void EcalRecProducer::produce(framework::Event& event) {
       event.getObject<ldmx::HgcrocDigiCollection>(digiCollName_, digiPassName_);
   // loop through digis
   for (auto digi : ecalDigis) {
-
     // ID from first digi sample
     //  assuming rest of samples have same ID
     ldmx::EcalID id(digi.id());
 
     // ID to real space position
-    auto [x,y,z] = geometry.getPosition(id);
+    auto [x, y, z] = geometry.getPosition(id);
 
     // TOA is the time of arrival with respect to the 25ns clock window
     //  TODO what to do if hit NOT in first clock cycle?
@@ -119,7 +119,7 @@ void EcalRecProducer::produce(framework::Event& event) {
      * our front-end (the digi emulator or the digitizer itself)
      * will suppress any signals that are below the readout
      * threshold. Nevertheless, in some running modes, we
-     * don't have this zero suppression, so we need to 
+     * don't have this zero suppression, so we need to
      * check that the reconstruction charge (count of electrons)
      * is non-negative.
      */
