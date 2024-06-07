@@ -93,12 +93,18 @@ class DarkBremInteraction : public framework::Producer {
    * isn't as important so I haven't invested that much time in it yet.
    */
   std::map<std::string, int> known_materials_ = {
-      {"Carbon", 1},      {"PCB", 2},  // in v12, the motherboards were simple
-                                       // rectangles with 'PCB' in the name
-      {"Glue", 3},        {"Si", 4},          {"Al", 5},         {"W", 6},
-      {"target", 6},      {"trigger_pad", 7}, {"strongback", 5},  // strongback
-                                                                  // is made of
-                                                                  // aluminum
+      {"Carbon", 1},
+      {"PCB", 2},  // in v12, the motherboards were simple
+                   // rectangles with 'PCB' in the name
+      {"Glue", 3},
+      {"Si", 4},
+      {"Al", 5},
+      {"W", 6},
+      {"target", 6},
+      {"trigger_pad", 7},
+      {"strongback", 5},   // strongback
+                           // is made of
+                           // aluminum
       {"motherboard", 2},  // motherboards are PCB
       {"support", 5},      // support box is aluminum
       {"CFMix", 3},        // in v12, we called the Glue layers CFMix
