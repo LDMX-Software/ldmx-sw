@@ -37,12 +37,14 @@ void EveDetectorGeometry::drawECAL() {
 
 void EveDetectorGeometry::drawHCAL() {
   TEveGeoShape* backHcal = EveShapeDrawer::getInstance().drawRectPrism(
-      DetectorGeometry::getInstance().getBoundingBox(ldmx::HcalID::HcalSection::BACK),
+      DetectorGeometry::getInstance().getBoundingBox(
+          ldmx::HcalID::HcalSection::BACK),
       0, 0, 0, kCyan, 90, "Back HCal");
   hcal_->AddElement(backHcal);
 
   TEveGeoShape* sideTopHcal = EveShapeDrawer::getInstance().drawRectPrism(
-      DetectorGeometry::getInstance().getBoundingBox(ldmx::HcalID::HcalSection::TOP),
+      DetectorGeometry::getInstance().getBoundingBox(
+          ldmx::HcalID::HcalSection::TOP),
       0, 0, 0, kCyan, 90, "Module 1");
 
   sidehcal_->AddElement(sideTopHcal);
@@ -55,7 +57,8 @@ void EveDetectorGeometry::drawHCAL() {
   sidehcal_->AddElement(sideBottomHcal);
 
   TEveGeoShape* sideLeftHcal = EveShapeDrawer::getInstance().drawRectPrism(
-      DetectorGeometry::getInstance().getBoundingBox(ldmx::HcalID::HcalSection::LEFT),
+      DetectorGeometry::getInstance().getBoundingBox(
+          ldmx::HcalID::HcalSection::LEFT),
       0, 0, 0, kCyan, 90, "Module 2");
 
   sidehcal_->AddElement(sideLeftHcal);
