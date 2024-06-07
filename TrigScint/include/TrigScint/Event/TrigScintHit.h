@@ -53,14 +53,14 @@ class TrigScintHit : public ldmx::HcalHit {
   /// Get the bar ID
   int getBarID() const { return barID_; }
 
-    /**
+  /**
    * Set hit pe.
    *
    * @param PE The photoelectron count of the hit.
    */
   void setPE(const float PE) { pe_ = PE; };
 
-  /// Get the hit pe 
+  /// Get the hit pe
   float getPE() const { return pe_; }
 
   /**

@@ -1,6 +1,8 @@
 #include "TrigScint/SimQIE.h"
+
 #include <exception>
 #include <iostream>
+
 #include "Framework/Exception/Exception.h"
 #include "TMath.h"
 
@@ -129,20 +131,21 @@ std::vector<int> SimQIE::CapID(QIEInputPulse* pp) {
   return OP;
 }
 
-  bool SimQIE::PulseCut(QIEInputPulse* pulse, float cut) {
+bool SimQIE::PulseCut(QIEInputPulse* pulse, float cut) {
   if (pulse->GetNPulses() == 0) return false;
 
-  //  float thr_in_pes = 1.0; instead make configurable 
+  //  float thr_in_pes = 1.0; instead make configurable
 
   // Only keep the pulse if it produces 1 PE (or whatever the cutoff is set to)
-  //integrate over entire pulse so we catch also single-PE pulses 
-  float integral=0;
+  // integrate over entire pulse so we catch also single-PE pulses
+  float integral = 0;
   for (int i = 0; i < maxts_; i++) {
-	//    if (pulse->Integrate(i * tau_, i * tau_ + tau_) >= thr_in_pes) return true;
-	integral+= pulse->Integrate(i * tau_, i * tau_ + tau_);
+    //    if (pulse->Integrate(i * tau_, i * tau_ + tau_) >= thr_in_pes) return
+    //    true;
+    integral += pulse->Integrate(i * tau_, i * tau_ + tau_);
   }
-  if ( integral >= cut) return true;
-  
+  if (integral >= cut) return true;
+
   return false;
 }
 }  // namespace trigscint
