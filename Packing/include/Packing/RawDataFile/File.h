@@ -1,13 +1,12 @@
 #ifndef PACKING_RAWDATAFILE_FILE_H_
 #define PACKING_RAWDATAFILE_FILE_H_
 
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
+#include "Framework/RunHeader.h"
 #include "Packing/RawDataFile/EventPacket.h"
 #include "Packing/Utility/Reader.h"
 #include "Packing/Utility/Writer.h"
-
-#include "Framework/Event.h"
-#include "Framework/Configure/Parameters.h"
-#include "Framework/RunHeader.h"
 
 namespace packing {
 namespace rawdatafile {
@@ -23,7 +22,7 @@ class File {
    * @param[in] params parameters use to configure this file
    * @param[in] filename name of the file to read/write
    */
-  File(const framework::config::Parameters &params);
+  File(const framework::config::Parameters& params);
 
   /**
    * Connect the passed event bus to this event file.
@@ -38,7 +37,7 @@ class File {
   /**
    * Write the run header
    */
-  void writeRunHeader(ldmx::RunHeader &header);
+  void writeRunHeader(ldmx::RunHeader& header);
 
   /// close this file
   void close();
@@ -76,7 +75,7 @@ class File {
   utility::CRC crc_;
 };  // File
 
-}
-}
+}  // namespace rawdatafile
+}  // namespace packing
 
 #endif  // PACKING_RAWDATAFILE_FILE_H_
