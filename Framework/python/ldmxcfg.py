@@ -49,7 +49,7 @@ class EventProcessor:
 
 
     @classmethod
-    def from_file(cls, source_file, class_name = None, instance_name = None, compile_notice = True, **config_kwargs):
+    def from_file(cls, source_file, class_name = None, needs = [], instance_name = None, compile_notice = True, **config_kwargs):
         """Construct an event processor "in place" from the passed source file
 
         Since Framework dynamically loads libraries containing processors after
@@ -60,11 +60,7 @@ class EventProcessor:
 
         Note
         ----
-        We only link the compiled library with the Framework library. This means the single-file
-        processor only can access Framework and the event objects. If you desire your processor
-        to access other code from other modules within ldmx-sw, you should put your processor
-        within a module in ldmx-sw rather than running it stand-alone.
-
+        
 
         Parameters
         ----------
@@ -73,6 +69,10 @@ class EventProcessor:
         class_name: str, default is name of source file
             name of C++ class that is the processor
             defaults to the name of the source file without an extension
+        needs: list[str]
+            Names of libraries that should be linked to the compiled processor in addition to 'Framework'
+            which is linked be default.
+            For example, one can gain access to the detector ID infrastructure with 'DetDescr'.
         instance_name: str, default is class_name
             name to give to instance of this C++ processor
         compile_notice: bool, default is True
@@ -80,6 +80,25 @@ class EventProcessor:
         config_kwargs: dict[str, Any]
             configuration parameters to give to the processor
 
+        Examples
+        --------
+        A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
+        
+        If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
+
+            p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
+
+        In our config script to run the analyzer on its own in the sequence.
+        This default configuration only links the Framework library and so the analyzer
+        would only be able to access the Framework and event objects.
+        If you needed another library (for example, the 'DetDescr' library has the ID classes),
+        one can also
+
+            p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx', needs = ['DetDescr']) ]
+
+        To inform the compiler that it should link your analyzer with the 'DetDescr' library.
+        **No removal of the library is done** so if you change the `needs` or some other parameter
+        to `from_file` you should also remove the library file (`*.so`) before attempting to re-run.
 
         Returns
         -------
@@ -110,14 +129,17 @@ class EventProcessor:
                     ' (or library does not exist), recompiling...'
                 )
             import subprocess
+            libs_to_link = set(['Framework']+needs)
             subprocess.run([
                 'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
                 '-o', str(lib), str(src), # define output file and input source file
-                '-lFramework', # link to Framework library (and the event dictionary)
+            ]+[
+                f'-l{lib}' for lib in libs_to_link
+            ]+[
                 '-I/usr/local/include/root', # include ROOT's non-system headers
                 '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
                 '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
-                ], check=True)
+            ], check=True)
             if compile_notice:
                 print(f'done compiling {src}')
 
