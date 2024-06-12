@@ -60,7 +60,12 @@ class EventProcessor:
 
         Note
         ----
-        
+        Developing processors in this way is incredible inefficient, especially since it
+        does not allow for code to be well organized and split across many files nor does it
+        allow for two processors to share common code.
+        If you find yourself defining more than one `class` within your new C++ processor,
+        it is highly recommended to transition your workflow to including your processor as a
+        part of ldmx-sw so that it can fully benefit from a build system.
 
         Parameters
         ----------
