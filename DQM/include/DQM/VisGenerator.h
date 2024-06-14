@@ -35,6 +35,11 @@ class VisGenerator : public framework::Analyzer {
     // Pass Name for RecHits
     std::string ecalRecHitPass_;
 
+    // Collection name for Ecal Clusters
+    std::string ecalClusterColl_;
+
+    std::string ecalClusterPass_;
+
     // Output filename
     std::string filename_;
 
