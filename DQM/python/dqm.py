@@ -671,6 +671,9 @@ class VisGenerator(ldmxcfg.Analyzer) :
         self.ecalRecHitColl = "EcalRecHits"
         self.ecalRecHitPass = "" #use whatever pass is available
 
+        self.ecalClusterColl = "ecalClusters"
+        self.ecalClusterPass = ""
+
         self.filename = "vis.json"
 
         self.runNumber = 1

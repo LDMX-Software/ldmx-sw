@@ -1,10 +1,9 @@
 #include "DQM/VisGenerator.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalCluster.h"
 
-// #include <iostream>
 #include <fstream>
-// #include <algorithm>
 
 namespace dqm {
 
@@ -13,6 +12,8 @@ namespace dqm {
     ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
     ecalRecHitColl_ = ps.getParameter<std::string>("ecalRecHitColl");
     ecalRecHitPass_ = ps.getParameter<std::string>("ecalRecHitPass");
+    ecalClusterColl_ = ps.getParameter<std::string>("ecalClusterColl");
+    ecalClusterPass_ = ps.getParameter<std::string>("ecalClusterPass");
     filename_ = ps.getParameter<std::string>("filename");
     runNbr_ = ps.getParameter<int>("runNumber");
     return;
@@ -32,17 +33,20 @@ namespace dqm {
     
     // ----- HITS -----
     eventJSON += l2 + "\"Hits\": {\n";
+
     // RECONSTRUCTED ECAL HITS
     std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
     eventJSON += l3 + "\"" + ecalRecHitColl_ + "\": [\n"; // opens ecal rechits
-    double boxSize = 5.0;
-    bool firstHit = true;
+    double boxSize = 1.0;
+    bool first = true;
+    std::string hex = "\"0xd61a1a\"";
     for(auto const& hit : ecalRecHits){
       // each hit is hit object of type Box, with "pos": [x,y,z]
       if (!hit.isNoise()) {
-        if (firstHit) firstHit = false;
+        if (first) first = false;
         else eventJSON += ",\n";
-        eventJSON += l4 + "{ \"type\": \"Box\", \"pos\": ["
+        eventJSON += l4 + "{ \"type\": \"Box\", \"color\":" + hex
+                + ", \"pos\": ["
                 + std::to_string(hit.getXPos()) + ","
                 + std::to_string(hit.getYPos()) + ","
                 + std::to_string(hit.getZPos()) + ","
@@ -51,7 +55,29 @@ namespace dqm {
                 + std::to_string(boxSize) + "]}";
       }
     }
+    eventJSON += "\n" + l3 + "],\n";
+
+    // CLUSTER CENTROIDS
+    std::vector<ldmx::EcalCluster> ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
+    eventJSON += l3 + "\"" + ecalClusterColl_ + "\": [\n"; // opens ecal rechits
+    first = true;
+    boxSize = 5.0;
+    // hex = "\"0x10e8ab\"";
+    hex = "\"0xff00ff\"";
+    for (auto const& cl : ecalClusters) {
+      if (first) first = false;
+      else eventJSON += ",\n";
+      eventJSON += l4 + "{ \"type\": \"Box\", \"color\":" + hex
+                + ", \"pos\": ["
+                + std::to_string(cl.getCentroidX()) + ","
+                + std::to_string(cl.getCentroidY()) + ","
+                + std::to_string(cl.getCentroidZ()) + ","
+                + std::to_string(boxSize) + ","
+                + std::to_string(boxSize) + ","
+                + std::to_string(boxSize) + "]}";
+    }
     eventJSON += "\n" + l3 + "]";
+
 
     // Add other hit formats here
 
@@ -59,16 +85,18 @@ namespace dqm {
 
     // ----- TRACKS -----
     eventJSON += l2 + "\"Tracks\": {\n"; // opens tracks
+
     // GROUND TRUTH (SIMULATED) PATHS
     eventJSON += l3 + "\"GroundTruthTracks\": [\n"; // opens ground truth tracks
     auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-    bool firstTrack = true;
+    first = true;
+    hex = "\"0xff00ff\"";
     for (const auto& it : particle_map) {
-      if (firstTrack) firstTrack = false;
+      if (first) first = false;
       else eventJSON += ",\n";
       std::vector<double> start = it.second.getVertex();
       std::vector<double> end = it.second.getEndPoint();
-      eventJSON += l4 + "{ \"pos\": [["
+      eventJSON += l4 + "{ \"color\":" + hex + ", \"pos\": [["
               + std::to_string(start[0]) + ","
               + std::to_string(start[1]) + ","
               + std::to_string(start[2]) + "],"
