@@ -112,18 +112,18 @@
                 <positionref ref="center" />
                 <rotationref ref="identity"   /> 
             </physvol>
-
+	    
             <physvol copynumber="5">
                 <file name="recoil.gdml"/>
                 <positionref ref="recoil_pos"/>
                 <rotationref ref="identity"/>
             </physvol>
-
+	    
             <physvol copynumber="6"> 
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol>  
+            </physvol> 
             <physvol copynumber="7"> 
                 <file name="hcal.gdml"/> 
                 <positionref ref="hadron_calorimeter_pos"/> 

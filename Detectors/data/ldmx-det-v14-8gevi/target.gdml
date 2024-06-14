@@ -11,11 +11,15 @@
     &constants;   
     
     <variable name="x" value="1"/>
+    <variable name="xx" value="0"/>
+		<variable name="xy" value="1"/>
+    <constant name="vertical_pad_start_x" value="-( number_of_bars_back_x)*(trigger_vertical_bar_dx+trigger_pad_bar_back_gap_x )/2" />
+
 
     <!-- Parent volume dimensions --> 
     <constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
     <constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
-    <constant name="target_area_envelope_z" value="2*(target_thickness/2 + 2*clearance + trigger_pad_thickness)" />
+    <constant name="target_area_envelope_z" value="2*(target_thickness/2 + 2*clearance + trigger_pad_thickness) + 6.0" />
 
   </define>
 
@@ -24,6 +28,8 @@
     <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
     <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/> 
     <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
+    <box lunit="mm" name="trigger_vertical_bar_box" x="trigger_vertical_bar_dx" y="trigger_vertical_bar_dy" z="trigger_pad_bar_thickness" /> 
+
 
 
   </solids>
@@ -69,28 +75,50 @@
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
 
+    <volume name="trigger_pad3_bar_volume_vertical">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_vertical_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
+
     <volume name="TS_trgt">
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
-      <loop for="x" to="number_of_bars" step="1">
+      <loop for="x" to="number_of_bars_back_y" step="1">
         <physvol copynumber="2*x-2">
           <volumeref ref="trigger_pad3_bar_volume" />
           <position name="trigger_pad3_bar_layer1_pos" unit="mm" x="0" 
-                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" /> 
+                y="-target_dim_y/2 + trigger_bar_back_dy*(x - 0.5) + trigger_pad_bar_back_gap*(x - 1) + trigger_pad_offset" 
+                z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2 - trigger_pad_bar_thickness - trigger_pad_bar_gap" />
           <rotationref ref="identity" />
         </physvol>
         <physvol copynumber="2*x - 1">
           <volumeref ref="trigger_pad3_bar_volume" />
           <position name="trigger_pad3_bar_layer2_pos" unit="mm" x="0" 
-                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                y="-target_dim_y/2 + trigger_bar_back_dy*(x + 0.5) + trigger_pad_bar_back_gap*(x - 1) + trigger_pad_offset" 
+                z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2 - trigger_pad_bar_thickness - trigger_pad_bar_gap" />
+                <!-- z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2 - trigger_pad_bar_thickness - trigger_pad_bar_gap" /> -->
           <rotationref ref="identity" />
         </physvol>
       </loop>
+       
+      <loop for="xy" from="1" to="number_of_rows_back_x" step="1">
+			  <loop for="xx" from="0" to="number_of_bars_back_x - 1" step="1">
+				  <physvol copynumber="52+2*(xy-1) + 4*xx">
+				    <volumeref ref="trigger_pad3_bar_volume_vertical" /> 
+              <position name="trigger_pad3_bar_layer3_pos" unit="mm" 
+                x= "vertical_pad_start_x + trigger_vertical_bar_dx*(xx + 0.5) + trigger_pad_bar_back_gap_x*xx "
+                y="(xy-(number_of_rows_back_x+1)/2)*(trigger_vertical_bar_dy+trigger_pad_bar_back_gap_x)" 
+                z= "trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2"  />
+				    	<rotationref ref="identity" />
+				  </physvol>
+			  </loop>
+			</loop>
 
-      <physvol copynumber="3">
+
+     <physvol copynumber="3">
         <volumeref ref="target"/>
         <positionref ref="center"/>
         <rotationref ref="identity"/>

@@ -8,6 +8,8 @@ namespace trigscint {
 void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
   maxDelta_ = ps.getParameter<double>(
       "delta_max");  // max distance to consider adding in a cluster to track
+  maxDeltaLastPad_ = ps.getParameter<double>(
+      "delta_max_last_pad");  // max distance to consider adding in a cluster to track
   seeding_collection_ = ps.getParameter<std::string>(
       "seeding_collection");  // probably tagger pad, "TriggerPadTagClusters"
   input_collections_ = ps.getParameter<std::vector<std::string>>(
@@ -160,6 +162,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         }
         if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
             (centroid >= vertBarStartIdx_  // then in vertical bars
+             //&& fabs(seed.getCentroidX() - cluster1.getCentroidX()) < maxDelta_)) {
              && seed.getCentroidX() == cluster1.getCentroidX())) {
           // use geometry y overlap scheme to see if this is really a match in x
           // should be done in a map
@@ -194,9 +197,10 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
                               << cluster2.getCentroid();
             }
 
-            if (fabs(cluster2.getCentroid() - centroid) < maxDelta_ ||
+            if (fabs(cluster2.getCentroid() - centroid) < maxDeltaLastPad_ ||
                 (centroid >= vertBarStartIdx_  // then in vertical bars
-                 && seed.getCentroidX() == cluster2.getCentroidX())) {
+                 && fabs(seed.getCentroidX() - cluster2.getCentroidX()) < maxDeltaLastPad_)) {
+                 //&& seed.getCentroidX() == cluster2.getCentroidX())) {
               // use geometry y overlap scheme to see if this is really a match
               // in x
 
