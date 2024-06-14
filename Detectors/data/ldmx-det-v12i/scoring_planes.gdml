@@ -26,7 +26,7 @@
         <constant name="sp_thickness" value="0.001*mm"/>
 
         <!-- Surround the ecal with scoring planes -->
-        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2 + clearance" /> 
+        <variable name="sp_ecal_front_z" value="ecal_front_z - sp_thickness/2 + clearance" /> 
         <variable name="sp_ecal_back_z"  value="ecal_front_z + ECal_dz + (ecal_envelope_z - ECal_dz)/2 + sp_thickness/2" />
         <variable name="sp_ecal_top_y"   value="ECal_dy/2 + sp_thickness/2" />
         <variable name="sp_ecal_bot_y"   value="-ECal_dy/2 - sp_thickness/2" />
@@ -91,14 +91,13 @@
         
         <!-- Place scoring planes downstream of each trigger scintillator array --> 
         <variable name="sp_trigger_pad_down_l1_z" 
-                  value="trigger_pad_down_z - trigger_pad_z_gap/2 + sp_thickness/2 + clearance" />
+                  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_down_l2_z" 
-                  value="trigger_pad_down_z + trigger_pad_z_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+                  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_up_l1_z" 
-				  <!--                  value="trigger_pad_up_z - trigger_pad_z_gap/2 + sp_thickness/2 + clearance" /> -->
-                  value="trigger_pad_up_z - trigger_pad_z_gap/2 + sp_thickness/2 + clearance" />
+				  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_up_l2_z" 
-                 value="trigger_pad_up_z + trigger_pad_z_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
 
         <!-- Matrix with target area positions --> 
         <matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z

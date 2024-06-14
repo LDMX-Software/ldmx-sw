@@ -77,7 +77,7 @@
             <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
 
-		<volume name="trigger_pad_up_vertical_bar_volume">
+		<volume name="trigger_pad_up_bar_volume_vertical">
             <materialref ref="Polyvinyltoluene"/>
             <solidref ref="trigger_vertical_bar_box"/>
             <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
@@ -85,8 +85,8 @@
             <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
 
-		<volume name="trigger_pad_dn_vertical_bar_volume">
-            <materialref ref="Polyvinyltoluene"/>
+		<volume name="trigger_pad_dn_bar_volume_vertical">
+            <materialref ref="Polyvinyltoluene"/> 
             <solidref ref="trigger_vertical_bar_box"/>
             <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
             <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
@@ -114,14 +114,14 @@
                               z="trigger_pad_up_z + trigger_pad_bar_thickness/2 + trigger_pad_z_gap/2" />
                     <rotationref ref="identity" />
                 </physvol>
-            </loop>
+            </loop> 
 			<!-- then, a no-overlap layer of vertical bars, in one or two rows (y will be slightly off but no biggie)-->
 			<!-- this is now v12d -->
 			<loop for="xy" from="1" to="number_of_rows_back_x" step="1">
 			  <loop for="xx" from="0" to="number_of_bars_back_x - 1" step="1">
 				<physvol copynumber="52+2*(xy-1) + 4*xx">
 				  <!--				  				  <volumeref ref="trigger_pad_up_bar_volume" /> -->
-				  <volumeref ref="trigger_pad_up_vertical_bar_volume" /> 
+				  <volumeref ref="trigger_pad_up_bar_volume_vertical" /> 
 				  <position name="trigger_pad_up_bar_layer3_pos" unit="mm"
 							x="vertical_pad_start_x + trigger_vertical_bar_dx*(xx + 0.5) + trigger_pad_bar_back_gap_x*xx "
 							y="(xy-(number_of_rows_back_x+1)/2)*(trigger_vertical_bar_dy+trigger_pad_bar_back_gap_x) + beam_spot_dim_y/4"
@@ -130,8 +130,9 @@
 				</physvol>
 			  </loop>
 			</loop>
+            <!-- same for  downstream -->
 			<loop for="y" to="number_of_bars_back_y" step="1">
-				<!-- same for  downstream -->
+				
                 <physvol copynumber="2*y-2">
                     <volumeref ref="trigger_pad_dn_bar_volume" />
                     <position name="trigger_pad_dn_bar_layer1_pos" unit="mm" x="0" 
@@ -146,11 +147,11 @@
                               z="trigger_pad_down_z + trigger_pad_bar_thickness/2 + trigger_pad_z_gap/2" />
                     <rotationref ref="identity" />
                 </physvol>
-            </loop>
-			<loop for="xy" from="1" to="number_of_rows_back_x" step="1">
+            </loop> 
+			<!-- <loop for="xy" from="1" to="number_of_rows_back_x" step="1">
 			  <loop for="xx" from="0" to="number_of_bars_back_x - 1" step="1">
 				<physvol copynumber="52+2*(xy-1) + 4*xx">
-				  <volumeref ref="trigger_pad_dn_vertical_bar_volume" />
+				  <volumeref ref="trigger_pad_dn_bar_volume_vertical" />
 				  <position name="trigger_pad_dn_bar_layer3_pos" unit="mm"
 							x="vertical_pad_start_x + trigger_vertical_bar_dx*(xx + 0.5) + trigger_pad_bar_back_gap_x*xx "
 							y="(xy-(number_of_rows_back_x+1)/2)*(trigger_vertical_bar_dy+trigger_pad_bar_back_gap_x)"
@@ -158,7 +159,7 @@
 				  <rotationref ref="identity" />
 				</physvol>
 			  </loop>
-			</loop>
+			</loop> -->
 
             <physvol copynumber="3">
                 <volumeref ref="target"/>

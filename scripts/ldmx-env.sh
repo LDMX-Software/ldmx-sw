@@ -229,7 +229,7 @@ elif hash singularity &> /dev/null; then
 
   # Run the container
   __ldmx_run() {
-    local csv_list="/tmp/.X11-unix"
+    local csv_list="/tmp"
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
