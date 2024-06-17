@@ -39,14 +39,14 @@ namespace dqm {
     eventJSON += l3 + "\"" + ecalRecHitColl_ + "\": [\n"; // opens ecal rechits
     double boxSize = 1.0;
     bool first = true;
-    std::string hex = "\"0xd61a1a\"";
+    std::string hex = "\"0xE9E317\"";
     for(auto const& hit : ecalRecHits){
       // each hit is hit object of type Box, with "pos": [x,y,z]
       if (!hit.isNoise()) {
         if (first) first = false;
         else eventJSON += ",\n";
-        eventJSON += l4 + "{ \"type\": \"Box\", \"color\":" + hex
-                + ", \"pos\": ["
+        eventJSON += l4 + "{ \"color\":" + hex + ", \"type\": \"Box\", "
+                + "\"pos\": ["
                 + std::to_string(hit.getXPos()) + ","
                 + std::to_string(hit.getYPos()) + ","
                 + std::to_string(hit.getZPos()) + ","
@@ -62,13 +62,12 @@ namespace dqm {
     eventJSON += l3 + "\"" + ecalClusterColl_ + "\": [\n"; // opens ecal rechits
     first = true;
     boxSize = 5.0;
-    // hex = "\"0x10e8ab\"";
-    hex = "\"0xff00ff\"";
+    hex = "\"0x34E2D7\"";
     for (auto const& cl : ecalClusters) {
       if (first) first = false;
       else eventJSON += ",\n";
-      eventJSON += l4 + "{ \"type\": \"Box\", \"color\":" + hex
-                + ", \"pos\": ["
+      eventJSON += l4 + "{ \"color\":" + hex + ", \"type\": \"Box\", "
+                + "\"pos\": ["
                 + std::to_string(cl.getCentroidX()) + ","
                 + std::to_string(cl.getCentroidY()) + ","
                 + std::to_string(cl.getCentroidZ()) + ","
