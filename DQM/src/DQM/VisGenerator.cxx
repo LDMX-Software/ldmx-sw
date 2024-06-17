@@ -21,6 +21,7 @@ namespace dqm {
 
   void VisGenerator::analyze(const framework::Event& event) {
     std::string eventJSON = "";
+    int colorIt = 0;
 
     // ----- EVENT HEADER -----
     if (firstEvent) firstEvent = false;
@@ -39,7 +40,8 @@ namespace dqm {
     eventJSON += l3 + "\"" + ecalRecHitColl_ + "\": [\n"; // opens ecal rechits
     double boxSize = 1.0;
     bool first = true;
-    std::string hex = "\"0xE9E317\"";
+    // std::string hex = "\"0xE9E317\"";
+    std::string& hex =  colors[colorIt];
     for(auto const& hit : ecalRecHits){
       // each hit is hit object of type Box, with "pos": [x,y,z]
       if (!hit.isNoise()) {
@@ -56,13 +58,14 @@ namespace dqm {
       }
     }
     eventJSON += "\n" + l3 + "],\n";
-
+    colorIt++;
     // CLUSTER CENTROIDS
     std::vector<ldmx::EcalCluster> ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
     eventJSON += l3 + "\"" + ecalClusterColl_ + "\": [\n"; // opens ecal rechits
     first = true;
     boxSize = 5.0;
-    hex = "\"0x34E2D7\"";
+    // hex = "\"0xE9E317\"";
+    hex =  colors[colorIt];
     for (auto const& cl : ecalClusters) {
       if (first) first = false;
       else eventJSON += ",\n";
@@ -89,13 +92,13 @@ namespace dqm {
     eventJSON += l3 + "\"GroundTruthTracks\": [\n"; // opens ground truth tracks
     auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
     first = true;
-    hex = "\"0xff00ff\"";
+    // hex = "\"0xff00ff\"";
     for (const auto& it : particle_map) {
       if (first) first = false;
       else eventJSON += ",\n";
       std::vector<double> start = it.second.getVertex();
       std::vector<double> end = it.second.getEndPoint();
-      eventJSON += l4 + "{ \"color\":" + hex + ", \"pos\": [["
+      eventJSON += l4 + "{ \"pos\": [["
               + std::to_string(start[0]) + ","
               + std::to_string(start[1]) + ","
               + std::to_string(start[2]) + "],"
