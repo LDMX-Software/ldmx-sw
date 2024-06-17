@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { EventDisplayService } from 'phoenix-ui-components';
-import { Configuration, PhoenixLoader, PresetView, ClippingSetting, PhoenixMenuNode, JSRootEventLoader } from 'phoenix-event-display';
+import { Configuration, PhoenixLoader, PresetView, ClippingSetting, PhoenixMenuNode } from 'phoenix-event-display';
 
 @Component({
   selector: 'app-ldmx-experiment',
   templateUrl: './ldmx-experiment.component.html',
   styleUrl: './ldmx-experiment.component.scss'
 })
-export class LdmxExperimentComponent implements OnInit {
+export class LDMXExperimentComponent implements OnInit {
   /** The root Phoenix menu node. */
   phoenixMenuRoot = new PhoenixMenuNode("Phoenix Menu");
-
   constructor(private eventDisplay: EventDisplayService) { }
 
   ngOnInit() {

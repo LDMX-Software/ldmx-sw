@@ -6,21 +6,21 @@ import { AppComponent } from './app.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PhoenixUIModule } from 'phoenix-ui-components';
-import { LdmxExperimentComponent } from './ldmx-experiment/ldmx-experiment.component';
+import { LDMXExperimentComponent } from './ldmx-experiment/ldmx-experiment.component';
 
 import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LdmxExperimentComponent
+    LDMXExperimentComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     PhoenixUIModule,
-    RouterModule.forRoot([{ path: '', component: LdmxExperimentComponent }])
+    RouterModule.forRoot([{ path: '', component: LDMXExperimentComponent }])
   ],
   providers: [
     provideClientHydration()
