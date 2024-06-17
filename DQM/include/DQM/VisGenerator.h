@@ -54,6 +54,8 @@ class VisGenerator : public framework::Analyzer {
     std::string l2{"    "};
     std::string l3{"      "};
     std::string l4{"        "};
+
+    std::vector<std::string> colors { "\"0xFFBF00\"", "\"0xE9E317\"", "\"0xE9E317\"", "\"0xFF00FF\"", "\"0x#FF7F50\"", "\"0xDE3163\"", "\"0x#9FE2BF\"", "\"0x#CCCCFF\""};
 };
 
 }
