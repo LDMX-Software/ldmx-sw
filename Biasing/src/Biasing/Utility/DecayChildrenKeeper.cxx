@@ -14,8 +14,8 @@
 namespace biasing {
 namespace utility {
 
-DecayChildrenKeeper::DecayChildrenKeeper(const std::string& name,
-                                       framework::config::Parameters& parameters)
+DecayChildrenKeeper::DecayChildrenKeeper(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   parents_ = parameters.getParameter<std::vector<int>>("parents");
 }
@@ -30,9 +30,9 @@ void DecayChildrenKeeper::PostUserTrackingAction(const G4Track* track) {
       if (parent_pdg == parent) {
         simcore::UserTrackInformation::get(track)->setSaveFlag(true);
         break;
-      } //parent is an interesting one
-    } // loop through interesting parent options
-  } // parent is in particle map
+      }  // parent is an interesting one
+    }    // loop through interesting parent options
+  }      // parent is in particle map
 }
 
 }  // namespace utility

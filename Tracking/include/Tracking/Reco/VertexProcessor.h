@@ -33,31 +33,29 @@
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
-//Root
-#include "TH1F.h"
+// Root
 #include "TFile.h"
+#include "TH1F.h"
 #include "TLorentzVector.h"
 
-//Propagator with void navigator
+// Propagator with void navigator
 using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
 
 namespace tracking {
 namespace reco {
 
-
 class VertexProcessor : public framework::Producer {
  public:
-
   /**
    * Constructor.
    *
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  
+
   VertexProcessor(const std::string &name, framework::Process &process);
-    
-  ///Destructor
+
+  /// Destructor
   ~VertexProcessor();
 
   /**
@@ -84,40 +82,36 @@ class VertexProcessor : public framework::Producer {
    */
   void produce(framework::Event &event);
 
-
  private:
-  ///The contexts - TODO: they should move to some global location, I guess
+  /// The contexts - TODO: they should move to some global location, I guess
   Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
-  
-  //Event counter
+
+  // Event counter
   int nevents_{0};
-  
-  //The interpolated bfield
+
+  // The interpolated bfield
   std::shared_ptr<InterpolatedMagneticField3> sp_interpolated_bField_;
-  
+
   /// Path to the magnetic field map.
   std::string field_map_{""};
 
-  //Track collection name
+  // Track collection name
 
   std::string trk_coll_name_{"Tracks"};
 
-  //The propagator
+  // The propagator
   std::shared_ptr<VoidPropagator> propagator_;
 
-  //Processing time counter
+  // Processing time counter
   double processing_time_{0.};
 
-
-  TH1F* h_m_;
-  TH1F* h_m_truthFilter_;
-  TH1F* h_m_truth_;
-  
+  TH1F *h_m_;
+  TH1F *h_m_truthFilter_;
+  TH1F *h_m_truth_;
 };
 
-                  
-} // namespace reco
-} // namespace tracking
+}  // namespace reco
+}  // namespace tracking
 
-#endif // TRACKING_RECO_VERTEXPROCESSOR_H_
+#endif  // TRACKING_RECO_VERTEXPROCESSOR_H_

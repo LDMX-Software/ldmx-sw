@@ -1,5 +1,5 @@
-#include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 using Catch::Approx;
 
@@ -22,7 +22,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_ZPOSITION = 20;
 static const double MAX_ENERGY_PERCENT_ERROR_XPOSITION = 50;
 static const double MAX_ENERGY_PERCENT_ERROR_YPOSITION = 50;
 static const double MAX_ENERGY_PERCENT_ERROR_ZPOSITION_SIDE = 100;
-  
+
 /**
  * @class HcalCheckPositionMap
  * Checks:
@@ -55,8 +55,9 @@ class HcalCheckPositionMap : public framework::Analyzer {
       int section = detID.section();
       int layer = detID.layer();
       int strip = detID.strip();
-      // std::cout	<< "ihit " << ihit << " section " << detID.section() << " layer " << detID.layer() << " strip " << detID.strip() << std::endl;
-      
+      // std::cout	<< "ihit " << ihit << " section " << detID.section() <<
+      // " layer " << detID.layer() << " strip " << detID.strip() << std::endl;
+
       // get the Hcal geometry
       const auto &hcalGeometry = getCondition<ldmx::HcalGeometry>(
           ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
@@ -65,30 +66,38 @@ class HcalCheckPositionMap : public framework::Analyzer {
       auto positionMap = hcalGeometry.getStripCenterPosition(detID);
 
       if (section == ldmx::HcalID::HcalSection::BACK) {
-	auto target_z =
-          Approx(z).epsilon(MAX_ENERGY_PERCENT_ERROR_ZPOSITION / 100);
-	//CHECK(positionMap.Z() == target_z);      
-	//std::cout << " BACK " << "x sim hit " << x << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " x " << positionMap.X() << std::endl;
-        //std::cout << " BACK " << "y sim hit " << y << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " y " << positionMap.Y() << std::endl;
-	//std::cout << " BACK " << "z sim hit " << z << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " z " << positionMap.Z() << std::endl;
+        auto target_z =
+            Approx(z).epsilon(MAX_ENERGY_PERCENT_ERROR_ZPOSITION / 100);
+        // CHECK(positionMap.Z() == target_z);
+        // std::cout << " BACK " << "x sim hit " << x << " (Sec,strip,layer) "
+        // << section << " " << strip << " " << layer << " x " <<
+        // positionMap.X() << std::endl; std::cout << " BACK " << "y sim hit "
+        // << y << " (Sec,strip,layer) " << section << " " << strip << " " <<
+        // layer << " y " << positionMap.Y() << std::endl; std::cout << " BACK "
+        // << "z sim hit " << z << " (Sec,strip,layer) " << section << " " <<
+        // strip << " " << layer << " z " << positionMap.Z() << std::endl;
 
         if (layer % 2 == 1) {
           auto target_y =
               Approx(y).epsilon(MAX_ENERGY_PERCENT_ERROR_YPOSITION / 100);
-          //CHECK(positionMap.Y() == target_y);
+          // CHECK(positionMap.Y() == target_y);
         } else {
           auto target_x =
               Approx(x).epsilon(MAX_ENERGY_PERCENT_ERROR_YPOSITION / 100);
-          //CHECK(positionMap.X() == target_x);
+          // CHECK(positionMap.X() == target_x);
         }
       } else {
-	auto target_z =
-	  Approx(z).epsilon(MAX_ENERGY_PERCENT_ERROR_ZPOSITION_SIDE / 100);
-	// CHECK(positionMap.Z() == target_z);
-	//std::cout << " SIDE " << "x sim hit " << x << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " x " << positionMap.X() << std::endl;
-        //std::cout << " SIDE " << "y sim hit " << y << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " y " << positionMap.Y() << std::endl;
-	//std::cout << " SIDE " << "z sim hit " << z << " (Sec,strip,layer) " << section << " " << strip << " " << layer << " z " << positionMap.Z() << std::endl;
-	
+        auto target_z =
+            Approx(z).epsilon(MAX_ENERGY_PERCENT_ERROR_ZPOSITION_SIDE / 100);
+        // CHECK(positionMap.Z() == target_z);
+        // std::cout << " SIDE " << "x sim hit " << x << " (Sec,strip,layer) "
+        // << section << " " << strip << " " << layer << " x " <<
+        // positionMap.X() << std::endl; std::cout << " SIDE " << "y sim hit "
+        // << y << " (Sec,strip,layer) " << section << " " << strip << " " <<
+        // layer << " y " << positionMap.Y() << std::endl; std::cout << " SIDE "
+        // << "z sim hit " << z << " (Sec,strip,layer) " << section << " " <<
+        // strip << " " << layer << " z " << positionMap.Z() << std::endl;
+
         if ((section == ldmx::HcalID::HcalSection::TOP) ||
             (section == ldmx::HcalID::HcalSection::BOTTOM)) {
           auto target_y =
@@ -101,7 +110,6 @@ class HcalCheckPositionMap : public framework::Analyzer {
           // CHECK(positionMap.X() == target_x);
         }
       }
-
     }
     return;
   }

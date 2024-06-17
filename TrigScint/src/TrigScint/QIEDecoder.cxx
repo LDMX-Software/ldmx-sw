@@ -190,10 +190,10 @@ void QIEDecoder::produce(framework::Event &event) {
   // checksum
   uint8_t referenceChecksum = 0;  // really, this is just empty for now. TODO>
                                   // implement a checksum set/get
-  int checksum{
-      (flags >> QIEStream::CHECKSUM_POS) &
-      mask8<QIEStream::CHECKSUM_SIZE_BITS>::m};  // eventStream.at(QIEStream::CRC0_ERR_POS)
-                                                 // QIEStream::CHECKSUM_POS);
+  int checksum{(flags >> QIEStream::CHECKSUM_POS) &
+               mask8<QIEStream::CHECKSUM_SIZE_BITS>::
+                   m};  // eventStream.at(QIEStream::CRC0_ERR_POS)
+                        // QIEStream::CHECKSUM_POS);
   if (checksum != referenceChecksum)
     ldmx_log(fatal) << "Got checksum mismatch: expected "
                     << (int)referenceChecksum << ", stream says " << checksum;

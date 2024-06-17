@@ -1,9 +1,9 @@
 #include "Ecal/DNNEcalVetoProcessor.h"
 
 // LDMX
-#include "Ecal/Event/EcalHit.h"
-
 #include <algorithm>
+
+#include "Ecal/Event/EcalHit.h"
 
 namespace ecal {
 
@@ -84,7 +84,7 @@ void DNNEcalVetoProcessor::make_inputs(
   for (const auto& hit : ecalRecHits) {
     if (hit.getEnergy() <= 0) continue;
     ldmx::EcalID id(hit.getID());
-    auto [x,y,z] = geom.getPosition(id);
+    auto [x, y, z] = geom.getPosition(id);
 
     data_[0].at(coordinate_x_offset_ + idx) = x;
     data_[0].at(coordinate_y_offset_ + idx) = y;

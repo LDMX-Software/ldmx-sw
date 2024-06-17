@@ -14,6 +14,7 @@
 
 // STL
 #include <stdint.h>  //32bit words
+
 #include <iostream>  //Print method
 #include <vector>    //vector lists
 
@@ -123,11 +124,11 @@ class HgcrocDigiCollection {
      *
      * @return 10-bit measurement of TOA
      */
-    int toa() const { 
+    int toa() const {
       if (version_ == 2) {
         return secon();
       } else {
-        return third(); 
+        return third();
       }
     }
 
@@ -236,8 +237,7 @@ class HgcrocDigiCollection {
      * @param[in] collection const reference to the collection this DIGI
      * references
      */
-    HgcrocDigi(unsigned int id,
-               std::vector<uint32_t>::const_iterator first,
+    HgcrocDigi(unsigned int id, std::vector<uint32_t>::const_iterator first,
                const HgcrocDigiCollection& collection)
         : id_(id), first_(first), collection_(collection) {}
 
@@ -299,9 +299,7 @@ class HgcrocDigiCollection {
       return at(collection_.getSampleOfInterestIndex());
     }
 
-    unsigned int size() const {
-      return collection_.getNumSamplesPerDigi();
-    }
+    unsigned int size() const { return collection_.getNumSamplesPerDigi(); }
 
    private:
     /// channel ID where this signal is coming from
@@ -444,7 +442,7 @@ class HgcrocDigiCollection {
    public:
     /// Connect the parent collection with an index to this iterator
     explicit iterator(HgcrocDigiCollection& c, long index = 0)
-	  : digi_index_{index}, coll_{c} {}
+        : digi_index_{index}, coll_{c} {}
     /// Increment the digi index and return the iterator afterwards
     iterator& operator++() {
       digi_index_++;

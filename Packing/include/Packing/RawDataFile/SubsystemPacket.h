@@ -3,9 +3,9 @@
 
 #include <vector>
 
+#include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Reader.h"
 #include "Packing/Utility/Writer.h"
-#include "Packing/Utility/CRC.h"
 
 namespace packing {
 namespace rawdatafile {
@@ -29,9 +29,7 @@ class SubsystemPacket {
   /**
    * Get data
    */
-  std::vector<uint32_t>& data() {
-    return data_;
-  }
+  std::vector<uint32_t>& data() { return data_; }
   const uint16_t& id() const { return id_; }
 
   /**

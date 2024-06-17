@@ -1,8 +1,8 @@
 
 #include "DQM/EcalDigiVerifier.h"
 
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Ecal/Event/EcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
 

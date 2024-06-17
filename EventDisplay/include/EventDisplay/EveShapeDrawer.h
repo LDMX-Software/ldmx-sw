@@ -7,15 +7,15 @@
 #ifndef EVENTDISPLAY_EVESHAPEDRAWER_H_
 #define EVENTDISPLAY_EVESHAPEDRAWER_H_
 
+#include <math.h>
+
+#include <iostream>
+
+#include "EventDisplay/DetectorGeometry.h"  //for BoundingBox
 #include "TEveGeoShape.h"
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
 #include "TGeoTube.h"
-
-#include "EventDisplay/DetectorGeometry.h"  //for BoundingBox
-
-#include <math.h>
-#include <iostream>
 #include "TVector3.h"
 
 namespace eventdisplay {

@@ -1,4 +1,5 @@
 #include "DetDescr/SimSpecialID.h"
+
 #include "DetDescr/DetectorIDInterpreter.h"
 
 std::ostream& operator<<(std::ostream& s, const ldmx::SimSpecialID& id) {

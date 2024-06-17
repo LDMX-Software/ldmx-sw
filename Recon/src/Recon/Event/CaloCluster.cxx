@@ -2,7 +2,7 @@
 
 ClassImp(ldmx::CaloCluster)
 
-namespace ldmx {
+    namespace ldmx {
   CaloCluster::CaloCluster() {}
 
   CaloCluster::~CaloCluster() { Clear(); }

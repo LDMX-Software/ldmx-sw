@@ -2,7 +2,7 @@
 
 ClassImp(ldmx::EcalCluster)
 
-namespace ldmx {
+    namespace ldmx {
   EcalCluster::EcalCluster() {}
 
   EcalCluster::~EcalCluster() { Clear(); }

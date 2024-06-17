@@ -12,7 +12,6 @@ namespace eventdisplay {
 
 Display::Display(TEveManager* manager, bool verbose)
     : TGMainFrame(gClient->GetRoot(), 320, 320), verbose_(verbose) {
-
   /****************************************************************************
    * GUI Set Up
    ***************************************************************************/
@@ -24,8 +23,7 @@ Display::Display(TEveManager* manager, bool verbose)
   viewer->UseLightColorSet();
 
   if (verbose_) {
-    std::cout << "[ Display ] : Drawing detector geometry... "
-              << std::flush;
+    std::cout << "[ Display ] : Drawing detector geometry... " << std::flush;
   }
 
   // when the first TGeoShape (a TGeoTube) is drawn, ROOT creates a default
@@ -75,7 +73,8 @@ Display::Display(TEveManager* manager, bool verbose)
       new TGTextButton(commandFrameNextEvent, "Next Event >>>");
   commandFrameNextEvent->AddFrame(buttonNext,
                                   new TGLayoutHints(kLHintsExpandX));
-  buttonNext->Connect("Pressed()", "eventdisplay::Display", this, "NextEvent()");
+  buttonNext->Connect("Pressed()", "eventdisplay::Display", this,
+                      "NextEvent()");
 
   textBoxClustersCollName_ =
       new TGTextEntry(commandFrameEcalClusterBranch, new TGTextBuffer(100));
@@ -142,12 +141,12 @@ Display::Display(TEveManager* manager, bool verbose)
   commandFrameEcalScorePlaneBranch->AddFrame(textBoxEcalScorePlaneBranch_,
                                              new TGLayoutHints(kLHintsExpandX));
 
-  TGButton* buttonSetSimParticlesBranch = new TGTextButton(
-      commandFrameEcalScorePlaneBranch, "Set Ecal SP Branch");
+  TGButton* buttonSetSimParticlesBranch =
+      new TGTextButton(commandFrameEcalScorePlaneBranch, "Set Ecal SP Branch");
   commandFrameEcalScorePlaneBranch->AddFrame(buttonSetSimParticlesBranch,
                                              new TGLayoutHints(kLHintsExpandX));
-  buttonSetSimParticlesBranch->Connect("Pressed()", "eventdisplay::Display", this,
-                                       "GetEcalSimParticlesCollInput()");
+  buttonSetSimParticlesBranch->Connect("Pressed()", "eventdisplay::Display",
+                                       this, "GetEcalSimParticlesCollInput()");
 
   // Order from top to bottom here
   contents->AddFrame(commandFrameEcalHitBranch,
@@ -181,11 +180,11 @@ Display::Display(TEveManager* manager, bool verbose)
 }
 
 bool Display::SetFile(const TString file) {
-
   try {
     framework::config::Parameters file_config;
-    file_config.addParameter("tree_name",std::string("LDMX_Events"));
-    the_file_ = std::make_unique<framework::EventFile>(file_config,file.Data());
+    file_config.addParameter("tree_name", std::string("LDMX_Events"));
+    the_file_ =
+        std::make_unique<framework::EventFile>(file_config, file.Data());
     the_file_->setupEvent(&the_event_);
     if (verbose_) {
       std::cout << "[ Display ] : Input root file opened successfully."
@@ -194,12 +193,12 @@ bool Display::SetFile(const TString file) {
   } catch (const framework::exception::Exception& e) {
     std::cerr << "[ Display ] : Input root file cannot be opened." << std::endl;
     std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-      << "  at " << e.module() << ":" << e.line() << " in "
-      << e.function() << "\nStack trace: " << std::endl
-      << e.stackTrace();
+              << "  at " << e.module() << ":" << e.line() << " in "
+              << e.function() << "\nStack trace: " << std::endl
+              << e.stackTrace();
     return false;
   }
-  
+
   return true;
 }
 
@@ -207,31 +206,33 @@ void Display::NextEvent() {
   if (the_file_->nextEvent(false)) {
     manager_->GetCurrentEvent()->DestroyElements();
     objects_.Initialize();
-  
+
     if (verbose_) {
-      std::cout << "[ Display ] : Loading new event " << "... " << std::endl;
+      std::cout << "[ Display ] : Loading new event "
+                << "... " << std::endl;
     }
 
-    //draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
-    //draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
-    //draw<std::vector<ldmx::EcalCluster>>(clustersCollName_);
+    // draw<std::vector<ldmx::EcalHit>>(ecalRecHitsCollName_);
+    // draw<std::vector<ldmx::HcalHit>>(hcalRecHitsCollName_);
+    // draw<std::vector<ldmx::EcalCluster>>(clustersCollName_);
     draw<std::vector<ldmx::SimTrackerHit>>(trackerHitsCollName_);
     draw<std::vector<ldmx::SimTrackerHit>>(ecalSimParticlesCollName_);
     draw<std::vector<ldmx::SimCalorimeterHit>>("EcalSimHits");
     draw<std::vector<ldmx::SimCalorimeterHit>>("HcalSimHits");
-    draw<std::map<int,ldmx::SimParticle>>("SimParticles");
+    draw<std::map<int, ldmx::SimParticle>>("SimParticles");
 
-    if (verbose_) std::cout << "[ Display ] : Done loading event objects into EVE objects." << std::endl;
-  
+    if (verbose_)
+      std::cout << "[ Display ] : Done loading event objects into EVE objects."
+                << std::endl;
+
     manager_->AddElement(objects_.getSimObjects());
     manager_->AddElement(objects_.getRecObjects());
     manager_->Redraw3D(kFALSE);
-  
+
     if (verbose_) std::cout << "[ Display ] : Done redrawing." << std::endl;
 
   } else {
-    std::cout << "[ Display ] : Already at last event in file."
-              << std::endl;
+    std::cout << "[ Display ] : Already at last event in file." << std::endl;
     return;
   }
 }

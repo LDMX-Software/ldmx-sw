@@ -487,5 +487,5 @@ class HcalGeometry:
         ]
         # added the reduced geometry temporarily, for the final geometry
         # we should have a new function "reduced()" with the prototype geom
-        self.v14.detectors_valid = ["ldmx-det-v14", "ldmx-reduced","ldmx-lyso-r1-v14", "ldmx-lyso-r1-v14[.].*"]
+        self.v14.detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-reduced","ldmx-lyso-r1-v14", "ldmx-lyso-r1-v14.*"]
         self.v14.y_offset = 19.05

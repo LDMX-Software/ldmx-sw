@@ -21,7 +21,7 @@ namespace dqm {
  * Incident{Px,Py,Pz} - 3-vector momentum of electron incident to dark brem
  * IncidentEnergy   - energy of incident electron at dark brem
  * APrimeParentID - TrackID of A' parent
- * DarkBremVertexMaterial - integer corresponding to index of known_materials 
+ * DarkBremVertexMaterial - integer corresponding to index of known_materials
  *                          parameter OR -1 if not found in known_materials
  * DarkBremVertexMaterialZ - elemental Z value for element chosen by random from
  *                           the elements in the material
@@ -30,7 +30,7 @@ namespace dqm {
 class DarkBremInteraction : public framework::Producer {
  public:
   DarkBremInteraction(const std::string& n, framework::Process& p)
-    : framework::Producer(n,p) {}
+      : framework::Producer(n, p) {}
   /**
    * update the labels of some categorial histograms
    *
@@ -42,22 +42,24 @@ class DarkBremInteraction : public framework::Producer {
   /**
    * extract the kinematics of the dark brem interaction from the SimParticles
    *
-   * Sometimes the electron that undergoes the dark brem is not in a region 
+   * Sometimes the electron that undergoes the dark brem is not in a region
    * where it should be saved (i.e. it is a shower electron inside of the ECal).
-   * In this case, we need to reconstruct the incident momentum from the outgoing
-   * products (the recoil electron and the dark photon) which should be saved by
-   * the biasing filter used during the simulation.
+   * In this case, we need to reconstruct the incident momentum from the
+   * outgoing products (the recoil electron and the dark photon) which should be
+   * saved by the biasing filter used during the simulation.
    *
-   * Since the dark brem model does not include a nucleus, it only is able to 
-   * conserve momentum, so we need to reconstruct the incident particle's 3-momentum
-   * and then use the electron mass to calculate its total energy.
+   * Since the dark brem model does not include a nucleus, it only is able to
+   * conserve momentum, so we need to reconstruct the incident particle's
+   * 3-momentum and then use the electron mass to calculate its total energy.
    */
   virtual void produce(framework::Event& e) final override;
+
  private:
   /**
    * Set the labels of the histogram of the input name with the input labels
    */
-  void setHistLabels(const std::string& name, const std::vector<std::string>& labels);
+  void setHistLabels(const std::string& name,
+                     const std::vector<std::string>& labels);
 
   /**
    * the list of known materials assigning them to material ID numbers
@@ -74,7 +76,7 @@ class DarkBremInteraction : public framework::Producer {
    * the integer ID is set to -1.
    *
    * The inverse LUT that can be used on the plotting side is
-   * 
+   *
    *    material_lut = {
    *      0 : 'Unknown',
    *      1 : 'C',
@@ -86,34 +88,39 @@ class DarkBremInteraction : public framework::Producer {
    *      7 : 'PVT'
    *    }
    *
-   * This is kind of lazy, we could instead do a full LUT where we list all known
-   * logical volume names and their associated materials but this analysis isn't
-   * as important so I haven't invested that much time in it yet.
+   * This is kind of lazy, we could instead do a full LUT where we list all
+   * known logical volume names and their associated materials but this analysis
+   * isn't as important so I haven't invested that much time in it yet.
    */
   std::map<std::string, int> known_materials_ = {
-    { "Carbon", 1 },
-    { "PCB", 2 }, // in v12, the motherboards were simple rectangles with 'PCB' in the name
-    { "Glue", 3 },
-    { "Si", 4 },
-    { "Al", 5 },
-    { "W" , 6 },
-    { "target", 6 },
-    { "trigger_pad", 7 },
-    { "strongback" , 5 }, // strongback is made of aluminum
-    { "motherboard" , 2 }, // motherboards are PCB
-    { "support" , 5 }, // support box is aluminum
-    { "CFMix" , 3 }, // in v12, we called the Glue layers CFMix
-    { "C_volume" , 1 } // in v12, we called the carbon cooling planes C but this is too general for substr matching
+      {"Carbon", 1},
+      {"PCB", 2},  // in v12, the motherboards were simple
+                   // rectangles with 'PCB' in the name
+      {"Glue", 3},
+      {"Si", 4},
+      {"Al", 5},
+      {"W", 6},
+      {"target", 6},
+      {"trigger_pad", 7},
+      {"strongback", 5},   // strongback
+                           // is made of
+                           // aluminum
+      {"motherboard", 2},  // motherboards are PCB
+      {"support", 5},      // support box is aluminum
+      {"CFMix", 3},        // in v12, we called the Glue layers CFMix
+      {"C_volume", 1}  // in v12, we called the carbon cooling planes C but this
+                       // is too general for substr matching
   };
 
   /**
-   * The list of known elements assigning them to the bins that we are putting them into.
+   * The list of known elements assigning them to the bins that we are putting
+   * them into.
    *
    * There are two failure modes for this:
-   * 1. The dark brem didn't happen, in which case, the element reported by the event header
-   *    will be -1. We give this an ID of 0.
-   * 2. The dark brem occurred within an element not listed here, in which case we give it
-   *    the last bin.
+   * 1. The dark brem didn't happen, in which case, the element reported by the
+   * event header will be -1. We give this an ID of 0.
+   * 2. The dark brem occurred within an element not listed here, in which case
+   * we give it the last bin.
    *
    * The inverset LUT that can be used if studying the output tree is
    *
@@ -130,16 +137,8 @@ class DarkBremInteraction : public framework::Producer {
    *      9 : 'unlisted'
    *    }
    */
-  std::map<int, int> known_elements_ = {
-    {1, 1},
-    {6, 2},
-    {8, 3},
-    {11, 4},
-    {14, 5},
-    {20, 6},
-    {29, 7},
-    {74, 8}
-  };
+  std::map<int, int> known_elements_ = {{1, 1},  {6, 2},  {8, 3},  {11, 4},
+                                        {14, 5}, {20, 6}, {29, 7}, {74, 8}};
 };
 
-}
+}  // namespace dqm
