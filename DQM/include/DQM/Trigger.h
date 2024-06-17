@@ -26,24 +26,22 @@ class Trigger : public framework::Analyzer {
    */
   virtual void configure(framework::config::Parameters& ps);
 
-  /** 
-   * Method executed before processing of events begins. 
+  /**
+   * Method executed before processing of events begins.
    */
   virtual void onProcessStart();
 
-  
   /**
    * Fills histograms
    */
   virtual void analyze(const framework::Event& event);
 
  private:
-  /// Trigger collection name 
+  /// Trigger collection name
   std::string trigger_collName_;
 
   /// Trigger collection pass name
   std::string trigger_passName_;
-
 };
 }  // namespace dqm
 

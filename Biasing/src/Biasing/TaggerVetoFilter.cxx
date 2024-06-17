@@ -32,8 +32,7 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   auto track{step->GetTrack()};
 
   // Only process the primary electron track
-  if (track->GetParentID() != 0)
-    return;
+  if (track->GetParentID() != 0) return;
 
   // Get the PDG ID of the track and make sure it's an electron. If
   // another particle type is found, thrown an exception.
@@ -65,6 +64,6 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
   }
 }
 
-} // namespace biasing
+}  // namespace biasing
 
 DECLARE_ACTION(biasing, TaggerVetoFilter)

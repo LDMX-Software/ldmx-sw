@@ -32,17 +32,14 @@ void VertexProcessor::onProcessStart() {
   };
 
   // Setup a interpolated bfield map
-  sp_interpolated_bField_ = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        default_transformPos,
-                        default_transformBField));
-  
-  
+  sp_interpolated_bField_ =
+      std::make_shared<InterpolatedMagneticField3>(loadDefaultBField(
+          field_map_, default_transformPos, default_transformBField));
+
   ldmx_log(info) << "Check if nullptr::" << sp_interpolated_bField_.get();
 }
 
 void VertexProcessor::configure(framework::config::Parameters &parameters) {
-  
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.getParameter<std::string>("field_map");
 

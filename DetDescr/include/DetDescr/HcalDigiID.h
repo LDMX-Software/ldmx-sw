@@ -116,9 +116,8 @@ class HcalDigiID : public HcalAbstractID {
   }
 
   static void createInterpreters();
-
 };
-} // namespace ldmx
+}  // namespace ldmx
 
 /**
  * Overload the stream insertion operator to output a string representation

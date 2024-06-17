@@ -5,11 +5,12 @@
 #ifndef ECAL_TEMPLATEDCLUSTERFINDER_H_
 #define ECAL_TEMPLATEDCLUSTERFINDER_H_
 
+#include <math.h>
+
+#include <map>
+
 #include "Ecal/WorkingCluster.h"
 #include "TH2F.h"
-
-#include <math.h>
-#include <map>
 
 namespace ecal {
 

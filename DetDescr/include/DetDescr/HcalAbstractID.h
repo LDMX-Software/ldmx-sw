@@ -71,7 +71,6 @@ class HcalAbstractID : public DetectorID {
    * @return The value of the payload field.
    */
   int payload() const { return id_ & HCAL_PAYLOAD_MASK; }
-
 };
 
 }  // namespace ldmx

@@ -4,8 +4,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
 #include "SimCore/G4User/TrackingAction.h"
+#include "SimCore/UserAction.h"
 
 namespace biasing {
 namespace utility {
@@ -46,9 +46,7 @@ class StepPrinter : public simcore::UserAction {
   int trackID_{-9999};
   std::string processName_{"UNDEFINED"};
   int depth_{0};
-  std::unordered_map<int,int> trackParents_{};
-
-
+  std::unordered_map<int, int> trackParents_{};
 
 };  // StepPrinter
 

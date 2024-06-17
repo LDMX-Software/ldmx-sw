@@ -97,7 +97,8 @@ DetectorGeometry::DetectorGeometry() {
 
   framework::config::Parameters hexReadout;
   hexReadout.setParameters(hexReadoutParams);
-  ecalHexReader_ = std::unique_ptr<ldmx::EcalHexReadout>(ldmx::EcalHexReadout::debugMake(hexReadout));
+  ecalHexReader_ = std::unique_ptr<ldmx::EcalHexReadout>(
+      ldmx::EcalHexReadout::debugMake(hexReadout));
 
   /////////////////////////////////////////////////////////////
   // RECOIL TRACKER
@@ -411,7 +412,8 @@ BoundingBox DetectorGeometry::getBoundingBox(
       X.first = X.second - total_thickness;
 
       Y.first = -hcalZeroLayer_.at(ldmx::HcalID::HcalSection::BOTTOM);
-      Y.second = Y.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::RIGHT);
+      Y.second =
+          Y.first + hcalLengthScint_.at(ldmx::HcalID::HcalSection::RIGHT);
 
     } else if (section == ldmx::HcalID::HcalSection::TOP) {
       Y.first = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::TOP);
@@ -425,7 +427,8 @@ BoundingBox DetectorGeometry::getBoundingBox(
       Y.first = Y.second - total_thickness;
 
       X.second = hcalZeroLayer_.at(ldmx::HcalID::HcalSection::LEFT);
-      X.first = X.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::BOTTOM);
+      X.first =
+          X.second - hcalLengthScint_.at(ldmx::HcalID::HcalSection::BOTTOM);
 
     } else {
       std::cerr << "[ Warning ] : Unrecognized ldmx::HcalID::HcalSection in "

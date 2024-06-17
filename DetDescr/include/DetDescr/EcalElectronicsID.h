@@ -12,11 +12,11 @@
 #include "DetDescr/PackedIndex.h"
 
 namespace ldmx {
-    
+
 /**
  * @class EcalElectronicsID
  * @brief Identifies a location in the Ecal readout chain
- * 
+ *
  *    -- fiber : optical fiber number (backend number), range assumed O(0-96)
  *    -- elink : electronic link number, range assumed O(0-47)
  *    -- channel : channel-on-elink, range O(0-37)
@@ -26,13 +26,12 @@ namespace ldmx {
  */
 class EcalElectronicsID : public DetectorID {
  public:
-
   static const RawValue INDEX_MASK{0xFFFFFF};
   // PackedIndex for channel (field 0) and elink (field 1), fiber (field 2)
-  typedef PackedIndex<38,48,97> Index;
+  typedef PackedIndex<38, 48, 97> Index;
   // Maximum value of any packed index here
-  static const unsigned int MAX_INDEX{38*48*200};
-  
+  static const unsigned int MAX_INDEX{38 * 48 * 200};
+
   /**
    * Empty ECAL id (but not null!)
    */
@@ -58,14 +57,15 @@ class EcalElectronicsID : public DetectorID {
   /**
    * Create from pieces
    */
-  EcalElectronicsID(unsigned int fiber, unsigned int elink, unsigned int channel)
+  EcalElectronicsID(unsigned int fiber, unsigned int elink,
+                    unsigned int channel)
       : DetectorID(EID_ECAL, 0) {
-    Index index(channel,elink,fiber);
+    Index index(channel, elink, fiber);
     id_ |= index.value();
   }
 
   /**
-   * Construct an electronics id from an index 
+   * Construct an electronics id from an index
    *
    * This looks ugly (and it is) because we already have a constructor
    * that uses the unsigned int type. This means we need a different
@@ -74,36 +74,34 @@ class EcalElectronicsID : public DetectorID {
    */
   static EcalElectronicsID idFromIndex(unsigned int index) {
     EcalElectronicsID eid;
-    eid.id_|=index;
+    eid.id_ |= index;
     return eid;
   }
-  
+
   /**
    * Get the value of the fiber from the ID.
    * @return The value of the fiber field.
    */
-  int fiber() const { return Index(id_&INDEX_MASK).field2(); }
+  int fiber() const { return Index(id_ & INDEX_MASK).field2(); }
   /**
    * Get the value of the elink from the ID.
    * @return The value of the elink field.
    */
-  int elink() const { return Index(id_&INDEX_MASK).field1(); }
+  int elink() const { return Index(id_ & INDEX_MASK).field1(); }
   /**
    * Get the value of the channel from the ID.
    * @return The value of the channel field.
    */
-  int channel() const { return Index(id_&INDEX_MASK).field0(); }
+  int channel() const { return Index(id_ & INDEX_MASK).field0(); }
 
-  /** 
+  /**
    * Get the compact index value
    */
-  unsigned int index() const { return id_&INDEX_MASK; }
-  
+  unsigned int index() const { return id_ & INDEX_MASK; }
 };
 
-}
+}  // namespace ldmx
 
 std::ostream& operator<<(std::ostream& s, const ldmx::EcalElectronicsID& id);
 
-
-#endif // DETDESCR_ECALELECTRONICSID_H_
+#endif  // DETDESCR_ECALELECTRONICSID_H_

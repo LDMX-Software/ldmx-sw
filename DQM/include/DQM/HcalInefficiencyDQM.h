@@ -1,17 +1,19 @@
 #ifndef HCALINEFFICIENCYDQM_H
 #define HCALINEFFICIENCYDQM_H
+#include <DetDescr/HcalID.h>
+#include <Hcal/Event/HcalHit.h>
+#include <TCanvas.h>
+
+#include <string>
+#include <vector>
+
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include <DetDescr/HcalID.h>
-#include <Hcal/Event/HcalHit.h>
-#include <TCanvas.h>
-#include <string>
-#include <vector>
 namespace dqm {
 class HcalInefficiencyAnalyzer : public framework::Analyzer {
-public:
+ public:
   HcalInefficiencyAnalyzer(const std::string &name, framework::Process &process)
       : framework::Analyzer{name, process} {}
 
@@ -41,7 +43,7 @@ public:
 
   void analyze(const framework::Event &event) override;
 
-private:
+ private:
   std::string hcalSimHitsCollection_{"HcalSimHits"};
   std::string hcalRecHitsCollection_{"HcalRecHits"};
   std::string hcalSimHitsPassName_{""};
@@ -52,6 +54,6 @@ private:
   double max_hit_time_;
 };
 
-} // namespace dqm
+}  // namespace dqm
 
 #endif /* HCALINEFFICIENCYDQM_H */
