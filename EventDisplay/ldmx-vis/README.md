@@ -1,27 +1,27 @@
-# LdmxVis
+# LDMX Visualisation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.3.
+## Installation
 
-## Development server
+For running the visualiser, you need Node.js and Yarn.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Once you have Node.js, run
 
-## Code scaffolding
+```npm install --global yarn```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+You might need to set your Yarn version to Yarn 2 and beyond with
 
-## Build
+```yarn set version berry```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Then run
 
-## Running unit tests
+```yarn install```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+and
 
-## Running end-to-end tests
+```yarn start```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+The visualiser can now be accessed at localhost:4200.
 
-## Further help
+## Known issues
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Different clusters are supposed to have different colors, and cluster centroids are supposed to be the same color as the hits included in that cluster. However, Phoenix has a bug where it cannot load colors from a JSON file for a Box type object. Waiting for this to be fixed, meanwhile the different cluster collections can still be manually set to different colors using the Phoenix menu at the top right.
