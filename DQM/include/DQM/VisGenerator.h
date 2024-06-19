@@ -5,6 +5,9 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
+// JSON
+#include "DQM/json.hpp"
+
 namespace dqm {
 
 /**
@@ -45,18 +48,11 @@ class VisGenerator : public framework::Analyzer {
 
     // Run number
     int runNbr_;
+    
+    nlohmann::json j;
 
-    bool firstEvent{true};
-    std::string JSONstr{"{"};
-
-    // Indentation levels for JSON file; two spaces per level
-    std::string l1{"  "};
-    std::string l2{"    "};
-    std::string l3{"      "};
-    std::string l4{"        "};
-
-    std::vector<std::string> colors { "\"0xFFB6C1\"", "\"0xFFA500\"", "\"0xFFFF00\"", 
-                                      "\"0x7FFF00\"", "\"0x00FFFF\"", "\"0xBC8F8F\"", "\"0xFFF0F5\"", "\"0x663399\""};
+    std::vector<std::string> colors { "0xFFB6C1", "0xFFA500", "0xFFFF00", 
+                                      "0x7FFF00", "0x00FFFF", "0xBC8F8F", "0xFFF0F5", "0x663399"};
 };
 
 }

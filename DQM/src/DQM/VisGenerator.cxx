@@ -2,8 +2,11 @@
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalCluster.h"
+// #include "DQM/json.hpp"
 
 #include <fstream>
+#include <iostream>
+using json = nlohmann::json;
 
 namespace dqm {
 
@@ -20,66 +23,15 @@ namespace dqm {
   }
 
   void VisGenerator::analyze(const framework::Event& event) {
-    std::string eventJSON = "";
-    int colorIt = 0;
-    bool first = true;
+    int colorIt = 0; // keeping this in case we need it for other objects    
 
     // ----- EVENT HEADER -----
-    if (firstEvent) firstEvent = false;
-    else eventJSON += ",";
-    // Corresponds to LDMX_event
-    eventJSON += "\n" + l1 + "\"EVENT_KEY_" + std::to_string(event.getEventNumber()) + "\": {\n"; // opens event
-    // Event info (event number + run number)
-    eventJSON += l2 + "\"event number\": " + std::to_string(event.getEventNumber()) + ",\n"
-          + l2 + "\"run number\": " + std::to_string(runNbr_) + ",\n";
-    
-    // ----- HITS -----
-    eventJSON += l2 + "\"Hits\": {\n";
+    std::string eKey = "EVENT_KEY_" + std::to_string(event.getEventNumber());
+    j[eKey]["event number"] = event.getEventNumber();
+    j[eKey]["run number"] = runNbr_;
 
-    // RECONSTRUCTED ECAL HITS
-    // std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
-    // eventJSON += l3 + "\"" + ecalRecHitColl_ + "\": [\n"; // opens ecal rechits
-    // double boxSize = 1.0;
-    // bool first = true;
-    // // std::string hex = "\"0xE9E317\"";
-    // std::string& hex =  colors[colorIt];
-    // for(auto const& hit : ecalRecHits){
-    //   // each hit is hit object of type Box, with "pos": [x,y,z]
-    //   if (!hit.isNoise()) {
-    //     if (first) first = false;
-    //     else eventJSON += ",\n";
-    //     eventJSON += l4 + "{ \"color\":" + hex + ", \"type\": \"Box\", "
-    //             + "\"pos\": ["
-    //             + std::to_string(hit.getXPos()) + ","
-    //             + std::to_string(hit.getYPos()) + ","
-    //             + std::to_string(hit.getZPos()) + ","
-    //             + std::to_string(boxSize) + ","
-    //             + std::to_string(boxSize) + ","
-    //             + std::to_string(boxSize) + "]}";
-    //   }
-    // }
-    // eventJSON += "\n" + l3 + "],\n";
-    // colorIt++;
-    // // CLUSTER CENTROIDS
-    // std::vector<ldmx::EcalCluster> ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
-    // eventJSON += l3 + "\"" + ecalClusterColl_ + "\": [\n"; // opens ecal rechits
-    // first = true;
-    // boxSize = 5.0;
-    // // hex = "\"0xE9E317\"";
-    // hex =  colors[colorIt];
-    // for (auto const& cl : ecalClusters) {
-    //   if (first) first = false;
-    //   else eventJSON += ",\n";
-    //   eventJSON += l4 + "{ \"color\":" + hex + ", \"type\": \"Box\", "
-    //             + "\"pos\": ["
-    //             + std::to_string(cl.getCentroidX()) + ","
-    //             + std::to_string(cl.getCentroidY()) + ","
-    //             + std::to_string(cl.getCentroidZ()) + ","
-    //             + std::to_string(boxSize) + ","
-    //             + std::to_string(boxSize) + ","
-    //             + std::to_string(boxSize) + "]}";
-    // }
-    // eventJSON += "\n" + l3 + "]";
+    // ----- HITS -----
+    j[eKey]["Hits"] = json::object();
 
     // ----- CLUSTER-RECHIT CONNECTION -----
     std::vector<ldmx::EcalCluster> ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
@@ -88,112 +40,84 @@ namespace dqm {
     std::unordered_map<int, int> hitToCluster;
     hitToCluster.reserve(ecalRecHits.size());
 
-    std::unordered_map<int, std::string> clusterToJSON;
-    // clusterToJSON.reserve(ecalClusters.size());
-
     int clusterID = 1;
-    int clusterSize = 15.0;
-    int clusterHitSize = 5.0;
-    int hitBoxSize = 2.0;
+    double clusterSize = 15.0; // scale to energy?
+    double singleClusterSize = 2.0;
+    float clusterHitSize = 5.0;
+    float clusterlessHitSize = 2.0;
 
-    std::string clusterless = l3 + "\"clusterless\": [\n";
-    first = true;
+    j[eKey]["Hits"]["single_clusters"] = json::array();
 
     for (auto const& cl : ecalClusters) {
+      json cluster = json::object();
+      cluster["type"] = "Box";
       if (cl.getHitIDs().size() != 0) { // if cluster is larger than just one hit
+        // create collection for cluster
         std::string& hex = colors[colorIt % colors.size()];
-        std::string coll = l3 + "\"cluster_" + std::to_string(clusterID) + "\": [\n";
-        coll += l4 + "{ \"color\":" + hex + ", \"type\": \"Box\", "
-                + "\"pos\": ["
-                + std::to_string(cl.getCentroidX()) + ","
-                + std::to_string(cl.getCentroidY()) + ","
-                + std::to_string(cl.getCentroidZ()) + ","
-                + std::to_string(clusterSize) + ","
-                + std::to_string(clusterSize) + ","
-                + std::to_string(clusterSize) + "]}";
+        std::string cKey = "cluster_" + std::to_string(clusterID);
+        j[eKey]["Hits"][cKey] = json::array();
+        // create centroid object
+        cluster["color"] = hex;
+        cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
+                            clusterSize, clusterSize, clusterSize };
+        j[eKey]["Hits"][cKey].push_back(cluster);
         for (auto const& clHitID : cl.getHitIDs()) {
-          // tried out finding multiplicities, did not seem to happen
+          // map hit id to cluster it belongs to
           hitToCluster.insert({clHitID, clusterID});
         }
-        clusterToJSON.insert({clusterID, coll});
         clusterID++;
         colorIt++;
       } else {
-        if (first) first = false;
-        else clusterless += ",\n";
-        clusterless += l4 + "{ \"color\": \"0xFF0000\", \"type\": \"Box\", "
-                + "\"pos\": ["
-                + std::to_string(cl.getCentroidX()) + ","
-                + std::to_string(cl.getCentroidY()) + ","
-                + std::to_string(cl.getCentroidZ()) + ","
-                + std::to_string(hitBoxSize) + ","
-                + std::to_string(hitBoxSize) + ","
-                + std::to_string(hitBoxSize) + "]}";
+        cluster["color"] = "0xFF0000";
+        cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
+                          singleClusterSize, singleClusterSize, singleClusterSize };
+        j[eKey]["Hits"]["single_clusters"].push_back(cluster);
       }
     }
+
+    j[eKey]["Hits"]["clusterless_hits"] = json::array();
 
     for (auto const& hit : ecalRecHits) {
-      auto& id = hitToCluster[hit.getID()];
-      if (id != 0) {
-        std::string& json = clusterToJSON[id];
-        json += ",\n" + l4 + "{ \"type\": \"Box\", "
-                + "\"pos\": ["
-                + std::to_string(hit.getXPos()) + ","
-                + std::to_string(hit.getYPos()) + ","
-                + std::to_string(hit.getZPos()) + ","
-                + std::to_string(clusterHitSize) + ","
-                + std::to_string(clusterHitSize) + ","
-                + std::to_string(clusterHitSize) + "]}";
+      if (!hit.isNoise()) {
+        auto& id = hitToCluster[hit.getID()];
+        json h = json::object();
+        h["type"] = "Box";
+        if (id != 0) { // if hit is associated to a cluster
+          // add hit to cluster collection
+          // color will automatically be set to same as centroid
+          std::string cKey = "cluster_" + std::to_string(id);
+          h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                          clusterHitSize, clusterHitSize, clusterHitSize };
+          j[eKey]["Hits"][cKey].push_back(h);
+        } else {
+          h["color"] = "0x000000";
+          h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                          clusterlessHitSize, clusterlessHitSize, clusterlessHitSize };
+          j[eKey]["Hits"]["clusterless_hits"].push_back(h);
+        }
       }
     }
 
-    eventJSON += clusterless + "\n" + l3 + "]";
-    for (auto const& kv : clusterToJSON) {
-      eventJSON += ",\n" + kv.second + "\n" + l3 + "]";
-    }
-    // Add other hit formats here
-
-    eventJSON += "\n" + l2 + "},\n"; // closes hits
-
-    // ----- TRACKS -----
-    eventJSON += l2 + "\"Tracks\": {\n"; // opens tracks
+    // // ----- TRACKS -----
+    j[eKey]["Tracks"] = json::object();
 
     // GROUND TRUTH (SIMULATED) PATHS
-    eventJSON += l3 + "\"GroundTruthTracks\": [\n"; // opens ground truth tracks
+    j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
     auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-    first = true;
-    // hex = "\"0xff00ff\"";
     for (const auto& it : particle_map) {
-      if (first) first = false;
-      else eventJSON += ",\n";
-      std::vector<double> start = it.second.getVertex();
-      std::vector<double> end = it.second.getEndPoint();
-      eventJSON += l4 + "{ \"pos\": [["
-              + std::to_string(start[0]) + ","
-              + std::to_string(start[1]) + ","
-              + std::to_string(start[2]) + "],"
-            + "[" 
-              + std::to_string(end[0]) + ","
-              + std::to_string(end[1]) + ","
-              + std::to_string(end[2]) + "]"
-            + "]}";
+      json track = json::object();
+      const auto& start = it.second.getVertex();
+      const auto& end = it.second.getEndPoint();
+      track["pos"] = { { start[0], start[1], start[2] },
+                        { end[0], end[1], end[2] } };
+      j[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
     }
-    eventJSON += "\n" + l3 + "]"; // closes ground truth tracks
-
-    // Add other tracks here
-
-    eventJSON += "\n" + l2 + "}"; // closes tracks
-
-    // Add other types of objects here (vertices, clusters...)
-
-    eventJSON += "\n" + l1 + "}"; // closes event
-    JSONstr += eventJSON;
     return;
   }
 
 void VisGenerator::onProcessEnd(){
     std::ofstream file(filename_);
-    file << JSONstr + "\n}" << std::endl;
+    file << std::setw(2) << j << std::endl;
     file.close();
     return;
 };
