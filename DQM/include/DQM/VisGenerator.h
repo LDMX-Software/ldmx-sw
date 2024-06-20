@@ -32,11 +32,17 @@ class VisGenerator : public framework::Analyzer {
     // Pass Name for SimHits
     std::string ecalSimHitPass_;
 
+    // Include ecal rec hits
+    bool includeEcalRecHits_;
+
     // Collection Name for RecHits
     std::string ecalRecHitColl_;
 
     // Pass Name for RecHits
     std::string ecalRecHitPass_;
+
+    // Include ecal clusters
+    bool includeEcalClusters_;
 
     // Collection name for Ecal Clusters
     std::string ecalClusterColl_;

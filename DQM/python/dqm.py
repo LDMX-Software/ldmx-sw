@@ -633,9 +633,11 @@ class VisGenerator(ldmxcfg.Analyzer) :
         self.ecalSimHitColl = "EcalSimHits"
         self.ecalSimHitPass = "" #use whatever pass is available
 
+        self.includeEcalRecHits = True
         self.ecalRecHitColl = "EcalRecHits"
         self.ecalRecHitPass = "" #use whatever pass is available
 
+        self.includeEcalClusters = True
         self.ecalClusterColl = "ecalClusters"
         self.ecalClusterPass = ""
 
