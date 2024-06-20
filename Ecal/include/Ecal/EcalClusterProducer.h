@@ -60,7 +60,9 @@ class EcalClusterProducer : public framework::Producer {
  private:
   double seedThreshold_{0};
   double cutoff_{0};
+  std::string digiCollName_;
   std::string digisPassName_;
+  std::string recHitCollName_;
   std::string algoCollName_;
   std::string clusterCollName_;
 
