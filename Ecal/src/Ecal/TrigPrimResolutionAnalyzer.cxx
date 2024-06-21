@@ -66,9 +66,8 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
       1.24, 1.248, 1.256, 1.264, 1.272, 1.28, 1.288, 1.296, 1.304, 1.312,
       1.32, 1.328, 1.336, 1.344, 1.352, 1.36, 1.368, 1.376, 1.384, 1.392,
       1.4};
-
-  std::vector<double> binsx_fin = {0., 10., 20., 30., 40., 50., 60., 70.,
-	                           80., 90., 100., 150., 300., 575., 1000.};
+  std::vector<double> binsx_fin = {0.,  10., 20.,  30.,  40.,  50.,  60.,  70.,
+                                   80., 90., 100., 150., 300., 575., 1000.};
 
   // initialize processing by making histograms and such
   // first, we get the directory for this processor in the histogram file
@@ -122,7 +121,7 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      100, 0, 8000, "total trigger / total precision ampl", 100,
                      0.9, 1.1);
   histograms_.create("trig_ampl_v_ampl_total_first20", "Full readout sum [MeV]",
-                     50, 0, 6000, "Trigger / Full readout", 100, 0.95, 1.05);
+                     100, 0, 6000, "Trigger / Full readout", 100, 0.95, 1.05);
   histograms_.create("trig_group", "trigger group total precision hits [MeV]",
                      100, 0, 2000);
   histograms_.create("trig_group_trigger", "trigger group trigger [MeV]", 100,
