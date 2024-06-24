@@ -7,8 +7,8 @@
 
 #include <math.h>
 
-#include <map>
 #include <iostream>
+#include <map>
 
 #include "Ecal/WorkingCluster.h"
 #include "TH2F.h"
@@ -31,6 +31,7 @@ class TemplatedClusterFinder {
     int ncluster = clusters_.size();
     double minwgt = cutoff;
 
+    // Sort after highest energy
     std::sort(clusters_.begin(), clusters_.end(), compClusters);
     loops_ = 0;
     do {
@@ -53,7 +54,8 @@ class TemplatedClusterFinder {
 
         for (size_t j = i + 1; j < clusters_.size(); j++) {
           if (clusters_[j].empty() ||
-              (!iseed && clusters_[j].centroid().E() < seed_threshold))
+              (!iseed && clusters_[j].centroid().E() <
+                             seed_threshold))  // this never happens
             continue;
           double wgt = wgt_(clusters_[i], clusters_[j]);
           if (!any || wgt < minwgt) {
@@ -82,10 +84,11 @@ class TemplatedClusterFinder {
       loops_++;
     } while (minwgt < cutoff && ncluster > 1);
     finalwgt_ = minwgt;
-    std::cout << "cluster loops: " << loops_ << std::endl;
     for (const auto& cl : clusters_) {
-      if (!cl.empty() && cl.centroid().E() >= seed_threshold) finalClusters_.push_back(cl);
-      else if (cl.centroid().E() < seed_threshold) break; // clusters are sorted, so should be safe to break
+      if (!cl.empty() && cl.centroid().E() >= seed_threshold)
+        finalClusters_.push_back(cl);
+      else if (cl.centroid().E() < seed_threshold)
+        break;  // clusters are sorted, so should be safe to break
     }
   }
 
