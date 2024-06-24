@@ -30,6 +30,7 @@ class TemplatedClusterFinder {
     int ncluster = clusters_.size();
     double minwgt = cutoff;
 
+    // Sort after highest energy
     std::sort(clusters_.begin(), clusters_.end(), compClusters);
     do {
       bool any = false;
@@ -50,8 +51,8 @@ class TemplatedClusterFinder {
         }
 
         for (size_t j = i + 1; j < clusters_.size(); j++) {
-          if (clusters_[j].empty() ||
-              (!iseed && clusters_[j].centroid().E() < seed_threshold))
+          if (clusters_[j].empty() || 
+              (!iseed && clusters_[j].centroid().E() < seed_threshold)) // this never happens
             continue;
           double wgt = wgt_(clusters_[i], clusters_[j]);
           if (!any || wgt < minwgt) {
@@ -80,6 +81,8 @@ class TemplatedClusterFinder {
 
     } while (minwgt < cutoff && ncluster > 1);
     finalwgt_ = minwgt;
+    
+    clusters_.erase(std::remove_if(clusters_.begin(), clusters_.end(), [](WorkingCluster w){ return w.empty(); }), clusters_.end());
   }
 
   double getYMax() const { return finalwgt_; }

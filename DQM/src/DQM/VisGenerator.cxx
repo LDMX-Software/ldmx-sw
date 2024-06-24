@@ -39,83 +39,86 @@ namespace dqm {
     j[eKey]["Hits"] = json::object();
 
     // ----- CLUSTER-RECHIT CONNECTION -----
-    std::vector<ldmx::EcalCluster> ecalClusters;
-    std::vector<ldmx::EcalHit> ecalRecHits;
-    std::unordered_map<int, int> hitToCluster;
-    if (includeEcalClusters_) ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
-    if (includeEcalRecHits_) {
-      ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
-      hitToCluster.reserve(ecalRecHits.size());
-    }
+    if (includeEcalClusters_ || includeEcalRecHits_) {
+      std::vector<ldmx::EcalCluster> ecalClusters;
+      std::vector<ldmx::EcalHit> ecalRecHits;
+      std::unordered_map<int, int> hitToCluster;
+      if (includeEcalClusters_) ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
+      if (includeEcalRecHits_) {
+        ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
+        if (includeEcalClusters_) hitToCluster.reserve(ecalRecHits.size());
+      }
 
-    int clusterID = 1;
-    double clusterSize = 15.0; // scale to energy?
-    double singleClusterSize = 2.0;
-    float clusterHitSize = 5.0;
-    float clusterlessHitSize = 2.0;
+      int clusterID = 1;
+      double clusterSize = 15.0; // scale to energy?
+      double singleClusterSize = 2.0;
+      float clusterHitSize = 5.0;
+      float clusterlessHitSize = 2.0;
 
-    if (includeEcalClusters_) {
-      j[eKey]["Hits"]["single_clusters"] = json::array();
+      if (includeEcalClusters_) {
+        // Clusters with zero hits should be removed, this is for debug
+        j[eKey]["Hits"]["empty_clusters"] = json::array();
 
-      for (auto const& cl : ecalClusters) {
-        json cluster = json::object();
-        cluster["type"] = "Box";
-        if (cl.getHitIDs().size() != 0) { // if cluster is larger than just one hit
-          // create collection for cluster
-          std::string& hex = colors[colorIt % colors.size()];
-          std::string cKey = "cluster_" + std::to_string(clusterID);
-          j[eKey]["Hits"][cKey] = json::array();
-          // create centroid object
-          cluster["color"] = hex;
-          cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
-                              clusterSize, clusterSize, clusterSize };
-          j[eKey]["Hits"][cKey].push_back(cluster);
-          if (includeEcalRecHits_) {
-            for (auto const& clHitID : cl.getHitIDs()) {
-              // map hit id to cluster it belongs to
-              hitToCluster.insert({clHitID, clusterID});
+        for (auto const& cl : ecalClusters) {
+          json cluster = json::object();
+          cluster["type"] = "Box";
+          if (cl.getHitIDs().size() != 0) { // if cluster is larger than just one hit
+            // create collection for cluster
+            std::string& hex = colors[colorIt % colors.size()];
+            std::string cKey = "cluster_" + std::to_string(clusterID);
+            j[eKey]["Hits"][cKey] = json::array();
+            // create centroid object
+            cluster["color"] = hex;
+            cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
+                                clusterSize, clusterSize, clusterSize };
+            j[eKey]["Hits"][cKey].push_back(cluster);
+            if (includeEcalRecHits_) {
+              for (auto const& clHitID : cl.getHitIDs()) {
+                // map hit id to cluster it belongs to
+                hitToCluster.insert({clHitID, clusterID});
+              }
             }
+            clusterID++;
+            colorIt++;
+          } else {
+            cluster["color"] = "0x000000";
+            cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
+                              singleClusterSize, singleClusterSize, singleClusterSize };
+            j[eKey]["Hits"]["empty_clusters"].push_back(cluster);
           }
-          clusterID++;
-          colorIt++;
-        } else {
-          cluster["color"] = "0xFF0000";
-          cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
-                            singleClusterSize, singleClusterSize, singleClusterSize };
-          j[eKey]["Hits"]["single_clusters"].push_back(cluster);
         }
       }
-    }
 
-    
-    if (includeEcalRecHits_) {
+      
+      if (includeEcalRecHits_) {
 
-      std::string hit_coll_name;
-      if (includeEcalClusters_) hit_coll_name = "clusterless_hits";
-      else hit_coll_name = "ecal_rec_hits";
-      j[eKey]["Hits"][hit_coll_name] = json::array();
+        std::string hit_coll_name;
+        if (includeEcalClusters_) hit_coll_name = "clusterless_hits";
+        else hit_coll_name = "ecal_rec_hits";
+        j[eKey]["Hits"][hit_coll_name] = json::array();
 
-      for (auto const& hit : ecalRecHits) {
-        if (!hit.isNoise()) {
-          json h = json::object();
-          h["type"] = "Box";
-          if (includeEcalClusters_) {
-            auto& id = hitToCluster[hit.getID()];
-            if (id != 0) { // if hit is associated to a cluster
-              // add hit to cluster collection
-              // color will automatically be set to same as centroid
-              std::string cKey = "cluster_" + std::to_string(id);
-              h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
-                              clusterHitSize, clusterHitSize, clusterHitSize };
-              j[eKey]["Hits"][cKey].push_back(h);
-              continue;
+        for (auto const& hit : ecalRecHits) {
+          // if (!hit.isNoise()) {
+            json h = json::object();
+            h["type"] = "Box";
+            if (includeEcalClusters_) {
+              auto& id = hitToCluster[hit.getID()];
+              if (id != 0) { // if hit is associated to a cluster
+                // add hit to cluster collection
+                // color will automatically be set to same as centroid
+                std::string cKey = "cluster_" + std::to_string(id);
+                h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                                clusterHitSize, clusterHitSize, clusterHitSize };
+                j[eKey]["Hits"][cKey].push_back(h);
+                continue;
+              }
             }
-          }
-          // if hit is not associated to a cluster
-          h["color"] = "0x000000";
-          h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
-                        clusterlessHitSize, clusterlessHitSize, clusterlessHitSize };
-          j[eKey]["Hits"][hit_coll_name].push_back(h);
+            // if hit is not associated to a cluster
+            h["color"] = "0xFF0000";
+            h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                          clusterlessHitSize, clusterlessHitSize, clusterlessHitSize };
+            j[eKey]["Hits"][hit_coll_name].push_back(h);
+          // }
         }
       }
     }
