@@ -51,9 +51,11 @@ namespace dqm {
 
       int clusterID = 1;
       double clusterSize = 15.0; // scale to energy?
-      double singleClusterSize = 2.0;
-      float clusterHitSize = 5.0;
-      float clusterlessHitSize = 2.0;
+      double singleClusterSize = 1.0;
+      float clusterHitSize = 2.0;
+      float clusterlessHitSize = 1.0;
+
+      int singleHitClusters = 0;
 
       if (includeEcalClusters_) {
         // Clusters with zero hits should be removed, this is for debug
@@ -67,7 +69,15 @@ namespace dqm {
             std::string& hex = colors[colorIt % colors.size()];
             std::string cKey = "cluster_" + std::to_string(clusterID);
             j[eKey]["Hits"][cKey] = json::array();
+            if (cl.getEnergy() > 1000) {
+              clusterSize = 25.;
+            } else if (cl.getEnergy() > 100) {
+              clusterSize = 15.;
+            } else {
+              clusterSize = 5.;
+            }
             // create centroid object
+            cluster["energy"] = cl.getEnergy();
             cluster["color"] = hex;
             cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
                                 clusterSize, clusterSize, clusterSize };
@@ -76,6 +86,9 @@ namespace dqm {
               for (auto const& clHitID : cl.getHitIDs()) {
                 // map hit id to cluster it belongs to
                 hitToCluster.insert({clHitID, clusterID});
+              }
+              if (cl.getHitIDs().size() == 1) {
+                singleHitClusters++;
               }
             }
             clusterID++;
@@ -89,6 +102,7 @@ namespace dqm {
         }
       }
 
+      // std::cout << "Single hit clusters: " << singleHitClusters << std::endl;
       
       if (includeEcalRecHits_) {
 
