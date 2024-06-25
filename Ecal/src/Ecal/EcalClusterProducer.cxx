@@ -17,7 +17,9 @@ EcalClusterProducer::~EcalClusterProducer() {}
 void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   cutoff_ = parameters.getParameter<double>("cutoff");
   seedThreshold_ = parameters.getParameter<double>("seedThreshold");
+  digiCollName_ = parameters.getParameter<std::string>("digiCollName");
   digisPassName_ = parameters.getParameter<std::string>("digisPassName");
+  recHitCollName_ = parameters.getParameter<std::string>("recHitCollName");
   algoCollName_ = parameters.getParameter<std::string>("algoCollName");
   algoName_ = parameters.getParameter<std::string>("algoName");
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
@@ -31,7 +33,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
   TemplatedClusterFinder<MyClusterWeight> cf;
 
   std::vector<ldmx::EcalHit> ecalHits =
-      event.getCollection<ldmx::EcalHit>("ecalDigis", digisPassName_);
+      event.getCollection<ldmx::EcalHit>(recHitCollName_, digisPassName_);
   int nEcalDigis = ecalHits.size();
 
   // Don't do anything if there are no ECal digis!
