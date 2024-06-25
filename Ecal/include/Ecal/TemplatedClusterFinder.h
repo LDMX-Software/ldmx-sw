@@ -29,7 +29,6 @@ class TemplatedClusterFinder {
   void cluster(double seed_threshold, double cutoff) {
     int ncluster = clusters_.size();
     double minwgt = cutoff;
-
     // Sort after highest energy
     std::sort(clusters_.begin(), clusters_.end(), compClusters);
     do {
@@ -81,8 +80,11 @@ class TemplatedClusterFinder {
 
     } while (minwgt < cutoff && ncluster > 1);
     finalwgt_ = minwgt;
-    
-    clusters_.erase(std::remove_if(clusters_.begin(), clusters_.end(), [](WorkingCluster w){ return w.empty(); }), clusters_.end());
+
+    for (const auto& cl : clusters_) {
+      if (!cl.empty() && cl.centroid().E() >= seed_threshold) finalClusters_.push_back(cl);
+      else if (cl.centroid().E() < seed_threshold) break; // clusters are sorted, so should be safe to break
+    }
   }
 
   double getYMax() const { return finalwgt_; }
@@ -91,7 +93,7 @@ class TemplatedClusterFinder {
 
   std::map<int, double> getWeights() const { return transitionWeights_; }
 
-  std::vector<WorkingCluster> getClusters() const { return clusters_; }
+  std::vector<WorkingCluster> getClusters() const { return finalClusters_; }
 
  private:
   WeightClass wgt_;
@@ -99,6 +101,7 @@ class TemplatedClusterFinder {
   int nseeds_;
   std::map<int, double> transitionWeights_;
   std::vector<WorkingCluster> clusters_;
+  std::vector<WorkingCluster> finalClusters_;
 };
 }  // namespace ecal
 
