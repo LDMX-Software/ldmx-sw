@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+
 #include <vector>
 
 namespace trigger {

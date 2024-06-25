@@ -206,7 +206,9 @@ void Process::run() {
     int event_limit = eventLimit_;
     if (totalEvents_ > 0) {
       // Have a warning at the first event
-      if (numTries == 0) ldmx_log(warn) << "The totalEvents was set, so maxEvents and maxTriesPerEvent will be ignored!";
+      if (numTries == 0)
+        ldmx_log(warn) << "The totalEvents was set, so maxEvents and "
+                          "maxTriesPerEvent will be ignored!";
       event_limit = totalEvents_;
     }
     while (n_events_processed < event_limit) {
@@ -245,11 +247,14 @@ void Process::run() {
     runHeader.setNumTries(totalTries);
     ldmx_log(info) << runHeader;
     outFile.writeRunTree();
-    
+
     // Give a warning that this filter has very low efficiency
-    if (n_events_processed < totalTries / 10000) { // integer division is okay
-      ldmx_log(warn) << "Less than 1 event out of every 10k events tried was accepted!";
-      ldmx_log(warn) << "This could be an issue with your filtering and biasing procedure since this is incredibly inefficient.";
+    if (n_events_processed < totalTries / 10000) {  // integer division is okay
+      ldmx_log(warn)
+          << "Less than 1 event out of every 10k events tried was accepted!";
+      ldmx_log(warn)
+          << "This could be an issue with your filtering and biasing procedure "
+             "since this is incredibly inefficient.";
     }
 
   } else {

@@ -42,7 +42,7 @@ class SequentialTrigger : public framework::Producer {
   /**
    * Class destructor.
    */
-    virtual ~SequentialTrigger() = default;
+  virtual ~SequentialTrigger() = default;
 
   /**
    * Configure the processor using the given user specified parameters.

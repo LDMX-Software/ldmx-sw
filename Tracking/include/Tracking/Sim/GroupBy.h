@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "Tracking/Sim/Range.h"
-
 #include <algorithm>
 #include <iterator>
 #include <utility>
+
+#include "Tracking/Sim/Range.h"
 
 namespace ActsExamples {
 

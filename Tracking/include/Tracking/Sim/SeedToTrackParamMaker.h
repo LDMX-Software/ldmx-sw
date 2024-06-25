@@ -1,62 +1,64 @@
 #pragma once
 
-#include "Acts/Seeding/Seed.hpp"
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/Seeding/Seed.hpp"
 //#include "Acts/Utilities/VectorHelpers.hpp"
+#include <optional>
+
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/Utilities/Helpers.hpp"
 
-
-#include <optional>
-
-namespace tracking{
-namespace sim{
+namespace tracking {
+namespace sim {
 
 class SeedToTrackParamMaker {
  public:
-  
   SeedToTrackParamMaker(){};
-  
+
   template <typename external_spacepoint_t>
-  bool KarimakiFit(const std::vector<external_spacepoint_t*>&sp, std::array<double,9>& data, const Acts::Vector2 refPoint);
-  
-  //We assume that a track propagates from point r1 to point r2
-  //If the test function returns negative means that we need to transform 
-  //rho -> -rho 
-  //phi -> phi+pi, 
-  //d->-d
-  
-  bool transformRhoPhid(const Acts::Vector2 &r1, const Acts::Vector2 &r2, 
-                        double &phi,double& rho, double& d) {
-            
-    float trackDir = cos(phi)*(r1[0] - r2[0]) + sin(phi)*(r1[1]-r2[1]);
-            
+  bool KarimakiFit(const std::vector<external_spacepoint_t*>& sp,
+                   std::array<double, 9>& data, const Acts::Vector2 refPoint);
+
+  // We assume that a track propagates from point r1 to point r2
+  // If the test function returns negative means that we need to transform
+  // rho -> -rho
+  // phi -> phi+pi,
+  // d->-d
+
+  bool transformRhoPhid(const Acts::Vector2& r1, const Acts::Vector2& r2,
+                        double& phi, double& rho, double& d) {
+    float trackDir = cos(phi) * (r1[0] - r2[0]) + sin(phi) * (r1[1] - r2[1]);
+
     if (trackDir < 0) {
       phi = M_PI + phi;
       rho = -rho;
-      d   = -d;
+      d = -d;
       return true;
     }
-            
+
     else
       return false;
-
   }
 
   /// This resembles the method used in ATLAS for the seed fitting
-  /// L811 https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
+  /// L811
+  /// https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
   template <typename external_spacepoint_t>
-  bool FitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed, std::array<double, 9>& data, const Acts::Transform3& Tp, const double& bFieldZ);
-  
-  template <typename external_spacepoint_t>
-  bool FitSeedAtlas(const std::vector<external_spacepoint_t>& sp, std::array<double,9>& data, const Acts::Transform3& Tp, const double& bFieldZ);
-  
-  /// This is a simple Line and Parabola fit (from HPS reconstruction by Robert Johnson)
-  template <typename external_spacepoint_t>
-  bool FitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed, std::vector<double>& data);
+  bool FitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed,
+                    std::array<double, 9>& data, const Acts::Transform3& Tp,
+                    const double& bFieldZ);
 
+  template <typename external_spacepoint_t>
+  bool FitSeedAtlas(const std::vector<external_spacepoint_t>& sp,
+                    std::array<double, 9>& data, const Acts::Transform3& Tp,
+                    const double& bFieldZ);
 
+  /// This is a simple Line and Parabola fit (from HPS reconstruction by Robert
+  /// Johnson)
+  template <typename external_spacepoint_t>
+  bool FitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed,
+                     std::vector<double>& data);
 
   /// Estimate the full track parameters from three space points
   ///
@@ -77,8 +79,8 @@ class SeedToTrackParamMaker {
   /// @param tp the local to global transformation
   /// @param spBegin is the begin iterator for the space points
   /// @param spEnd is the end iterator for the space points
-  /// @param surface is the surface of the bottom space point. The estimated bound
-  /// track parameters will be represented also at this surface
+  /// @param surface is the surface of the bottom space point. The estimated
+  /// bound track parameters will be represented also at this surface
   /// @param bField is the magnetic field vector
   /// @param bFieldMin is the minimum magnetic field required to trigger the
   /// estimation of q/pt
@@ -86,17 +88,16 @@ class SeedToTrackParamMaker {
   ///
   /// @return optional bound parameters
 
-  
   template <typename spacepoint_iterator_t>
   std::optional<Acts::BoundVector> estimateTrackParamsFromSeed(
       const Acts::Transform3& Tp, spacepoint_iterator_t spBegin,
       spacepoint_iterator_t spEnd, Acts::Vector3 bField,
-      Acts::ActsScalar bFieldMin, Acts::ActsScalar mass = 139.57018 * Acts::UnitConstants::MeV) {
-  
+      Acts::ActsScalar bFieldMin,
+      Acts::ActsScalar mass = 139.57018 * Acts::UnitConstants::MeV) {
     // Check the number of provided space points
     size_t numSP = std::distance(spBegin, spEnd);
     if (numSP != 3) {
-      std::cout<<"ERROR::less than 3 point provided"<<std::endl;
+      std::cout << "ERROR::less than 3 point provided" << std::endl;
       return std::nullopt;
     }
 
@@ -105,34 +106,36 @@ class SeedToTrackParamMaker {
     Acts::ActsScalar bFieldMinInTesla = bFieldMin / Acts::UnitConstants::T;
     // Check if magnetic field is too small
     if (bFieldInTesla < bFieldMinInTesla) {
-      // @todo shall we use straight-line estimation and use default q/pt in such
-      // case?
-      std::cout<<"The magnetic field at the bottom space point: B = "
-               << bFieldInTesla << " T is smaller than |B|_min = "
-               << bFieldMinInTesla << " T. Estimation is not performed."<<std::endl;
+      // @todo shall we use straight-line estimation and use default q/pt in
+      // such case?
+      std::cout << "The magnetic field at the bottom space point: B = "
+                << bFieldInTesla
+                << " T is smaller than |B|_min = " << bFieldMinInTesla
+                << " T. Estimation is not performed." << std::endl;
       return std::nullopt;
     }
 
     // The global positions of the bottom, middle and space points
-    std::array<Acts::Vector3, 3> spGlobalPositions = {Acts::Vector3::Zero(), Acts::Vector3::Zero(),
-      Acts::Vector3::Zero()};
+    std::array<Acts::Vector3, 3> spGlobalPositions = {
+        Acts::Vector3::Zero(), Acts::Vector3::Zero(), Acts::Vector3::Zero()};
     // The first, second and third space point are assumed to be bottom, middle
     // and top space point, respectively
     for (size_t isp = 0; isp < 3; ++isp) {
       spacepoint_iterator_t it = std::next(spBegin, isp);
       if (*it == nullptr) {
-        std::cout<<"Empty space point found. This should not happen."<<std::endl;
+        std::cout << "Empty space point found. This should not happen."
+                  << std::endl;
         return std::nullopt;
       }
       const auto& sp = *it;
       spGlobalPositions[isp] = Acts::Vector3(sp->x(), sp->y(), sp->z());
     }
 
-    // Define a new coordinate frame with its origin at the bottom space point, z
-    // axis along the magnetic field direction and y axis perpendicular to vector
-    // from the bottom to middle space point. Hence, the projection of the middle
-    // space point on the tranverse plane will be located at the x axis of the new
-    // frame.
+    // Define a new coordinate frame with its origin at the bottom space point,
+    // z axis along the magnetic field direction and y axis perpendicular to
+    // vector from the bottom to middle space point. Hence, the projection of
+    // the middle space point on the tranverse plane will be located at the x
+    // axis of the new frame.
     Acts::Vector3 relVec = spGlobalPositions[1] - spGlobalPositions[0];
     Acts::Vector3 newZAxis = bField.normalized();
     Acts::Vector3 newYAxis = newZAxis.cross(relVec).normalized();
@@ -153,7 +156,8 @@ class SeedToTrackParamMaker {
     // Lambda to transform the coordinates to the (u, v) space
     auto uvTransform = [](const Acts::Vector3& local) -> Acts::Vector2 {
       Acts::Vector2 uv;
-      Acts::ActsScalar denominator = local.x() * local.x() + local.y() * local.y();
+      Acts::ActsScalar denominator =
+          local.x() * local.x() + local.y() * local.y();
       uv.x() = local.x() / denominator;
       uv.y() = local.y() / denominator;
       return uv;
@@ -184,18 +188,19 @@ class SeedToTrackParamMaker {
     Acts::BoundVector params = Acts::BoundVector::Zero();
 
     // The estimated phi and theta
-    //params[Acts::eBoundPhi] = Acts::VectorHelpers::phi(direction);
-    //params[Acts::eBoundTheta] = Acts::VectorHelpers::theta(direction);
+    // params[Acts::eBoundPhi] = Acts::VectorHelpers::phi(direction);
+    // params[Acts::eBoundTheta] = Acts::VectorHelpers::theta(direction);
 
     Acts::Vector3 bottomLocalPos = Tp.inverse() * spGlobalPositions[0];
-        
+
     // The estimated loc0 and loc1
     params[Acts::eBoundLoc0] = bottomLocalPos.x();
     params[Acts::eBoundLoc1] = bottomLocalPos.y();
 
     // The estimated q/pt in [GeV/c]^-1 (note that the pt is the projection of
     // momentum on the transverse plane of the new frame)
-    Acts::ActsScalar qOverPt = rho * (Acts::UnitConstants::m) / (0.3 * bFieldInTesla);
+    Acts::ActsScalar qOverPt =
+        rho * (Acts::UnitConstants::m) / (0.3 * bFieldInTesla);
     // The estimated q/p in [GeV/c]^-1
     params[Acts::eBoundQOverP] = qOverPt / std::hypot(1., invTanTheta);
 
@@ -221,9 +226,8 @@ class SeedToTrackParamMaker {
 
     return params;
   }
-  
 };
-}
-}
+}  // namespace sim
+}  // namespace tracking
 
 #include "SeedToTrackParamMaker.ipp"

@@ -1,8 +1,8 @@
 #include "Recon/OverlayProducer.h"
-#include "Framework/RandomNumberSeedService.h"
 
-#include "SimCore/Event/SimTrackerHit.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace recon {
 

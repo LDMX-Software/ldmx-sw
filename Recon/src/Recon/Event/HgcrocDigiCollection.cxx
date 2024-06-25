@@ -3,19 +3,20 @@
 
 ClassImp(ldmx::HgcrocDigiCollection)
 
-namespace ldmx {
+    namespace ldmx {
   HgcrocDigiCollection::Sample::Sample(bool tot_progress, bool tot_complete,
-                                       int firstMeas, int seconMeas, int toa, int version) {
-
+                                       int firstMeas, int seconMeas, int toa,
+                                       int version) {
     version_ = version;
     if (version_ == 2) {
       // version 2 HGC ROC had a much simpler word structure
       // 12-bit TOT | 10-bit TOA | 10-bit ADCt
       // we assume that firstMeas is adct and secondMeas is tot
-      word_ = 
-         (((seconMeas > 0xfff ? 0xfff : seconMeas) & 0xfff) << 20)
-        +(((firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) & TEN_BIT_MASK) << 10)
-        +((toa > TEN_BIT_MASK ? TEN_BIT_MASK : toa) & TEN_BIT_MASK);
+      word_ = (((seconMeas > 0xfff ? 0xfff : seconMeas) & 0xfff) << 20) +
+              (((firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) &
+                TEN_BIT_MASK)
+               << 10) +
+              ((toa > TEN_BIT_MASK ? TEN_BIT_MASK : toa) & TEN_BIT_MASK);
 
     } else {
       if (not tot_progress and tot_complete) {
@@ -25,17 +26,19 @@ namespace ldmx {
           seconMeas =
               512 + seconMeas / 8;  // lost some precision but can go higher
       }
-  
+
       // check if over largest number possible ==> set to largest if over (don't
-      // want wrapping) and then do bit shifting nonsense to code the measurements
-      // into the 32-bit word set last measurement to TOA
-      word_ =
-          (tot_progress << FIRSTFLAG_POS) + (tot_complete << SECONFLAG_POS) +
-          (((firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) & TEN_BIT_MASK)
-           << FIRSTMEAS_POS) +
-          (((seconMeas > TEN_BIT_MASK ? TEN_BIT_MASK : seconMeas) & TEN_BIT_MASK)
-           << SECONMEAS_POS) +
-          (((toa > TEN_BIT_MASK ? TEN_BIT_MASK : toa) & TEN_BIT_MASK));
+      // want wrapping) and then do bit shifting nonsense to code the
+      // measurements into the 32-bit word set last measurement to TOA
+      word_ = (tot_progress << FIRSTFLAG_POS) +
+              (tot_complete << SECONFLAG_POS) +
+              (((firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) &
+                TEN_BIT_MASK)
+               << FIRSTMEAS_POS) +
+              (((seconMeas > TEN_BIT_MASK ? TEN_BIT_MASK : seconMeas) &
+                TEN_BIT_MASK)
+               << SECONMEAS_POS) +
+              (((toa > TEN_BIT_MASK ? TEN_BIT_MASK : toa) & TEN_BIT_MASK));
     }
   }
 
@@ -79,8 +82,8 @@ namespace ldmx {
     return;
   }
 
-  void HgcrocDigiCollection::addDigi(
-      unsigned int id, const std::vector<uint32_t> &digi) {
+  void HgcrocDigiCollection::addDigi(unsigned int id,
+                                     const std::vector<uint32_t> &digi) {
     if (digi.size() != this->getNumSamplesPerDigi()) {
       std::cerr << "[ WARN ] [ HgcrocDigiCollection ] Input list of samples "
                    "has size '"

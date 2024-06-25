@@ -36,7 +36,8 @@ class TrackProcessFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TrackProcessFilter(const std::string& name, framework::config::Parameters& parameters);
+  TrackProcessFilter(const std::string& name,
+                     framework::config::Parameters& parameters);
 
   /// Destructor
   ~TrackProcessFilter();

@@ -9,14 +9,14 @@
 
 #include "Biasing/TargetDarkBremFilter.h"
 
+#include "G4DarkBreM/G4APrime.h"           //checking if particles match A'
 #include "G4Electron.hh"                   //to check if track is electron
-#include "G4DarkBreM/G4APrime.h"     //checking if particles match A'
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
 
-TargetDarkBremFilter::TargetDarkBremFilter(const std::string& name,
-                                           framework::config::Parameters& parameters)
+TargetDarkBremFilter::TargetDarkBremFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }

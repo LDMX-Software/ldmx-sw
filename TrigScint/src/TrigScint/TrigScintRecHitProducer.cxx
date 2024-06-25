@@ -1,8 +1,9 @@
 #include "TrigScint/TrigScintRecHitProducer.h"
-#include "Framework/Exception/Exception.h"
-#include "Framework/RandomNumberSeedService.h"
 
 #include <iostream>
+
+#include "Framework/Exception/Exception.h"
+#include "Framework/RandomNumberSeedService.h"
 
 namespace trigscint {
 
@@ -31,15 +32,15 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   SimQIE qie;
 
   // Ensure the sample of interest <4
-  /* // this assumes we are in well-behaved simulation land, not test beam wilderness  
-  if(sample_of_interest_>3) {
-    ldmx_log(error)<<"sample_of_interest_ should be one of 0,1,2,3\n"
-		   <<"Currently, sample_of_interest = "<<sample_of_interest_
-		   <<"\n";
+  /* // this assumes we are in well-behaved simulation land, not test beam
+  wilderness if(sample_of_interest_>3) { ldmx_log(error)<<"sample_of_interest_
+  should be one of 0,1,2,3\n"
+                   <<"Currently, sample_of_interest = "<<sample_of_interest_
+                   <<"\n";
     return;
   }
   */
-  
+
   // looper over sim hits and aggregate energy depositions
   // for each detID
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
@@ -55,24 +56,25 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     hit.setBarID(digi.getChanID());
     hit.setBeamEfrac(-1.);
 
-	//leave amplitude as sum of the first two 
-    hit.setAmplitude(qie.ADC2Q(adc[sample_of_interest_]) +
-                     qie.ADC2Q(adc[sample_of_interest_+1]));  // femptocoulombs
+    // leave amplitude as sum of the first two
+    hit.setAmplitude(
+        qie.ADC2Q(adc[sample_of_interest_]) +
+        qie.ADC2Q(adc[sample_of_interest_ + 1]));  // femptocoulombs
 
     if (tdc[sample_of_interest_] > 49)
       hit.setTime(-999.);
     else
       hit.setTime(tdc[sample_of_interest_] * 0.5);
 
-	float integratedCharge=0;
-	//integrate pulse over all time samples. will subtract pedestal next
-	for (const auto &adcVal : adc ) {
-	  integratedCharge+=qie.ADC2Q(adcVal);
-	}
-	uint nSamp=adc.size();
-	float pedSubtrQ=integratedCharge-nSamp*pedestal_;
-    hit.setEnergy(pedSubtrQ*6250./gain_ *mevPerMip_/pePerMip_);  // MeV
-    hit.setPE(pedSubtrQ*6250./gain_);
+    float integratedCharge = 0;
+    // integrate pulse over all time samples. will subtract pedestal next
+    for (const auto &adcVal : adc) {
+      integratedCharge += qie.ADC2Q(adcVal);
+    }
+    uint nSamp = adc.size();
+    float pedSubtrQ = integratedCharge - nSamp * pedestal_;
+    hit.setEnergy(pedSubtrQ * 6250. / gain_ * mevPerMip_ / pePerMip_);  // MeV
+    hit.setPE(pedSubtrQ * 6250. / gain_);
     trigScintHits.push_back(hit);
   }
   // Create the container to hold the

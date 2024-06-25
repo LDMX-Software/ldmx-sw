@@ -33,8 +33,8 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
+#include "Tracking/Reco/TruthMatchingTool.h"
 
 namespace tracking {
 namespace reco {
@@ -80,15 +80,13 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
 
-  void FindSeedsFromMap(ldmx::Tracks& seeds,
-                        const ldmx::Measurements& pmeas);
+  void FindSeedsFromMap(ldmx::Tracks& seeds, const ldmx::Measurements& pmeas);
 
  private:
-  ldmx::Track SeedTracker(const ldmx::Measurements& vmeas,
-                          double xOrigin,
+  ldmx::Track SeedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
                           const ldmx::Measurements& pmeas_tgt);
-  
+
   void LineParabolaToHelix(const Acts::ActsVector<5> parameters,
                            Acts::ActsVector<5>& helix_parameters,
                            Acts::Vector3 ref);
@@ -106,8 +104,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nevents_{0};
   unsigned int ntracks_{0};
 
-  std::vector<double> inflate_factors_{1.,1.,1.,1.,1.};
-  
+  std::vector<double> inflate_factors_{1., 1., 1., 1., 1.};
+
   /// The name of the output collection of seeds to be stored.
   std::string out_seed_collection_{"SeedTracks"};
   /// The name of the input hits collection to use in finding seeds..
@@ -132,18 +130,17 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   double z0max_{60.};
 
   double piover2_{1.5708};
-  
+
   /// PhiRange
   double phicut_{0.1};
-  
+
   /// ThetaRange
   double thetacut_{0.2};
 
   /// loc0 / loc1 cuts
   double loc0cut_{0.1};
   double loc1cut_{0.3};
-  
-  
+
   /// List of stragies for seed finding.
   std::vector<std::string> strategies_{};
   double bfield_{1.5};
@@ -178,11 +175,10 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::array<const ldmx::Measurement*, 5> groups_array;
 
   // Truth Matching tool
-  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ = nullptr;
+  std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =
+      nullptr;
 
 };  // SeedFinderProcessor
 
 }  // namespace reco
 }  // namespace tracking
-
-

@@ -1,8 +1,8 @@
 #ifndef PACKING_UTILITY_READER_H_
 #define PACKING_UTILITY_READER_H_
 
-#include <iostream> //debuggin
 #include <fstream>
+#include <iostream>  //debuggin
 #include <string>
 #include <type_traits>
 
@@ -23,9 +23,7 @@ class Reader {
    *
    * We make sure that our input file stream will not skip white space.
    */
-  Reader() {
-    file_.unsetf(std::ios::skipws);
-  }
+  Reader() { file_.unsetf(std::ios::skipws); }
 
   /**
    * Open a file with this reader
@@ -36,7 +34,7 @@ class Reader {
    */
   void open(const std::string& file_name) {
     file_.open(file_name, std::ios::in | std::ios::binary);
-    file_.seekg(0,std::ios::end);
+    file_.seekg(0, std::ios::end);
     file_size_ = file_.tellg();
     file_.seekg(0);
   }
@@ -46,9 +44,7 @@ class Reader {
    * @see open
    * @param[in] file_name full path to the file we are going to open
    */
-  Reader(const std::string& file_name) : Reader() {
-    this->open(file_name);
-  }
+  Reader(const std::string& file_name) : Reader() { this->open(file_name); }
 
   /// destructor, close the input file stream
   ~Reader() = default;
@@ -77,9 +73,10 @@ class Reader {
    * @param[in] off number of words to move relative to dir
    * @param[in] dir location flag for the file, default is beginning
    */
-  template<typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   void seek(int off, std::ios_base::seekdir dir = std::ios::beg) {
-    seek(off*sizeof(WordType), dir);
+    seek(off * sizeof(WordType), dir);
   }
 
   /**
@@ -94,32 +91,36 @@ class Reader {
    *
    * @return int number of words relative to beginning of file
    */
-  template<typename WordType>
-  int tell() { return tell()/sizeof(WordType); }
+  template <typename WordType>
+  int tell() {
+    return tell() / sizeof(WordType);
+  }
 
   /**
    * Read the next 'count' words into the input handle.
    *
-   * This implementation of read is only available to pointers to integral types.
-   * We assume that whatever space pointed to by w already has the space reserved
-   * necessary for the input words.
+   * This implementation of read is only available to pointers to integral
+   * types. We assume that whatever space pointed to by w already has the space
+   * reserved necessary for the input words.
    *
    * @tparam[in] WordType integral-type word to read out
    * @param[in] w pointer to WordType array to write data to
    * @param[in] count number of words to read
    * @return (*this)
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   Reader& read(WordType* w, std::size_t count) {
-    file_.read(reinterpret_cast<char*>(w), sizeof(WordType)*count);
+    file_.read(reinterpret_cast<char*>(w), sizeof(WordType) * count);
     return *this;
   }
 
   /**
    * Stream the next word into the input handle
    *
-   * This implementation of the stream operator is only available to handles of integral types.
-   * Helps for shorthand of only grabbing a single word from the reader.
+   * This implementation of the stream operator is only available to handles of
+   * integral types. Helps for shorthand of only grabbing a single word from the
+   * reader.
    *
    * @see read
    *
@@ -127,7 +128,8 @@ class Reader {
    * @param[in] w reference to word to read into
    * @return handle to modified reader
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   Reader& operator>>(WordType& w) {
     return read(&w, 1);
   }
@@ -145,17 +147,18 @@ class Reader {
    * @param[in] o instance of object to read into
    * @return *this
    */
-  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  template <typename ObjectType,
+            std::enable_if_t<std::is_class<ObjectType>::value, bool> = true>
   Reader& operator>>(ObjectType& o) {
     return o.read(*this);
   }
-  
+
   /**
    * Read the next 'count' objects into the input vector.
-   *  
+   *
    * This is common enough, I wanted to specialize the read function.
    *
-   * The std::vector::resize is helpful for avoiding additional 
+   * The std::vector::resize is helpful for avoiding additional
    * copies while the vector is being expanded. After allocating the space
    * for each entry in the vector, we call the stream operator from
    * *this into each entry in order, leaving early if a failure occurs.
@@ -169,7 +172,7 @@ class Reader {
   Reader& read(std::vector<ContentType>& vec, std::size_t count) {
     vec.resize(count);
     for (auto& w : vec) {
-      if(!(*this >> w)) return *this;
+      if (!(*this >> w)) return *this;
     }
     return *this;
   }
@@ -182,9 +185,7 @@ class Reader {
    *
    * @return bool true if ifstream is in fail state
    */
-  bool operator!() const {
-    return file_.fail();
-  }
+  bool operator!() const { return file_.fail(); }
 
   /**
    * Check if reader is in good/bad state
@@ -201,9 +202,7 @@ class Reader {
    *
    * @return bool true if ifstream is in good state
    */
-  operator bool() const {
-    return !file_.fail();
-  }
+  operator bool() const { return !file_.fail(); }
 
   /**
    * check if file is done
@@ -212,9 +211,7 @@ class Reader {
    *
    * @return true if we have reached the end of file.
    */
-  bool eof() {
-    return file_.eof() or file_.tellg() == file_size_;
-  }
+  bool eof() { return file_.eof() or file_.tellg() == file_size_; }
 
  private:
   /// file stream we are reading from

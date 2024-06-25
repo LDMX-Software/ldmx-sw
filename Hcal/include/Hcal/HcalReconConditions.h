@@ -46,13 +46,12 @@ class HcalReconConditions : public framework::ConditionsObject {
    * @param[in] adc_ped double table of ADC pedestals
    * @param[in] adc_gain double table of ADC gains
    * @param[in] tot_calib double table of TOT calibrations
-   * @param[in] toa_calib double table of TOA calibrations 
+   * @param[in] toa_calib double table of TOA calibrations
    */
   HcalReconConditions(const conditions::DoubleTableCondition& adc_ped,
                       const conditions::DoubleTableCondition& adc_gain,
                       const conditions::DoubleTableCondition& tot_calib,
-		      const conditions::DoubleTableCondition& toa_calib
-		      );
+                      const conditions::DoubleTableCondition& toa_calib);
 
   /**
    * get the ADC pedestal

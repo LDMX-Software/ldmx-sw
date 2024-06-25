@@ -1,10 +1,10 @@
 
-#include "DetDescr/HcalElectronicsID.h"
-#include "DetDescr/HcalDigiID.h"
-#include "Hcal/HcalDetectorMap.h"
-#include "Framework/EventProcessor.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
 #include "Conditions/SimpleTableCondition.h"
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalElectronicsID.h"
+#include "Framework/EventProcessor.h"
+#include "Hcal/HcalDetectorMap.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace dqm {
 
@@ -70,23 +70,27 @@ class NtuplizeHgcrocDigiCollection : public framework::Analyzer {
 };
 
 void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
-  // get the reconstruction parameters 
-  auto pedestal_table{getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
-  auto detmap{getCondition<hcal::HcalDetectorMap>(hcal::HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
+  // get the reconstruction parameters
+  auto pedestal_table{
+      getCondition<conditions::IntegerTableCondition>(pedestal_table_)};
+  auto detmap{getCondition<hcal::HcalDetectorMap>(
+      hcal::HcalDetectorMap::CONDITIONS_OBJECT_NAME)};
 
   ldmxsw_event_ = event.getEventNumber();
   if (already_aligned_) {
-    aligned_ = event.getObject<bool>(input_name_+"Aligned", input_pass_);
+    aligned_ = event.getObject<bool>(input_name_ + "Aligned", input_pass_);
   } else {
     aligned_ = false;
-    version_ = event.getObject<int>(input_name_+"Version", input_pass_);
-    pf_event_ = event.getObject<int>(input_name_+"Number", input_pass_);
-    pf_ticks_ = event.getObject<int>(input_name_+"Ticks", input_pass_);
-    pf_spill_ = event.getObject<int>(input_name_+"Spill", input_pass_);
+    version_ = event.getObject<int>(input_name_ + "Version", input_pass_);
+    pf_event_ = event.getObject<int>(input_name_ + "Number", input_pass_);
+    pf_ticks_ = event.getObject<int>(input_name_ + "Ticks", input_pass_);
+    pf_spill_ = event.getObject<int>(input_name_ + "Spill", input_pass_);
   }
 
-  const auto& good_bxheader{event.getCollection<bool>(input_name_+"GoodLinkHeader", input_pass_)};
-  const auto& good_trailer{event.getCollection<bool>(input_name_+"GoodLinkTrailer", input_pass_)};
+  const auto& good_bxheader{
+      event.getCollection<bool>(input_name_ + "GoodLinkHeader", input_pass_)};
+  const auto& good_trailer{
+      event.getCollection<bool>(input_name_ + "GoodLinkTrailer", input_pass_)};
 
   auto const& digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
@@ -119,7 +123,7 @@ void NtuplizeHgcrocDigiCollection::analyze(const framework::Event& event) {
       toa_ = d.at(i_sample_).toa();
       int adc_t = d.at(i_sample_).adc_t();
       raw_adc_ = adc_t;
-      adc_ =  adc_t - pedestal_table.get(d.id(), 0);
+      adc_ = adc_t - pedestal_table.get(d.id(), 0);
       flat_tree_->Fill();
     }
   }

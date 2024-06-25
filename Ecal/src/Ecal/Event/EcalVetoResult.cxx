@@ -51,8 +51,8 @@ ClassImp(ldmx::EcalVetoResult)
       int nReadoutHits, int deepestLayerHit, float summedDet,
       float summedTightIso, float maxCellDep, float showerRMS, float xStd,
       float yStd, float avgLayerHit, float stdLayerHit, float ecalBackEnergy,
-      int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-      float epAng, float epSep,
+      int nStraightTracks, int nLinregTracks, int firstNearPhLayer, float epAng,
+      float epSep,
 
       std::vector<float> electronContainmentEnergy,
       std::vector<float> photonContainmentEnergy,

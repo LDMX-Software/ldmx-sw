@@ -23,9 +23,8 @@ ClassImp(ldmx::Measurement)
     cov_uu_ = sigma_u * sigma_u;
     cov_vv_ = sigma_v * sigma_v;
 
-    //Store the trackID
+    // Store the trackID
     addTrackId(hit.getTrackID());
-    
   }
 
   std::ostream& operator<<(std::ostream& output,

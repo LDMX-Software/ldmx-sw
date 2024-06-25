@@ -1,29 +1,32 @@
 #include "DetDescr/EcalGeometry.h"
 
+#include <assert.h>
+
+#include <iomanip>
+#include <iostream>
+
 #include "TGeoPolygon.h"
 #include "TGraph.h"
 #include "TList.h"
 #include "TMath.h"
 #include "TMultiGraph.h"
 
-#include <assert.h>
-#include <iomanip>
-#include <iostream>
-
 namespace ldmx {
 
-static double distance(const std::pair<double,double>& p1, const std::pair<double,double>& p2) {
-  return sqrt( (p1.first-p2.first)*(p1.first-p2.first) 
-      + (p1.second-p2.second)*(p1.second-p2.second));
+static double distance(const std::pair<double, double>& p1,
+                       const std::pair<double, double>& p2) {
+  return sqrt((p1.first - p2.first) * (p1.first - p2.first) +
+              (p1.second - p2.second) * (p1.second - p2.second));
 }
 
-static double distance(const std::tuple<double,double,double>& p1, 
-                       const std::tuple<double,double,double>& p2) {
-  return sqrt(
-      (std::get<0>(p1)-std::get<0>(p2))*(std::get<0>(p1)-std::get<0>(p2))
-      +(std::get<1>(p1)-std::get<1>(p2))*(std::get<1>(p1)-std::get<1>(p2))
-      +(std::get<2>(p1)-std::get<2>(p2))*(std::get<2>(p1)-std::get<2>(p2))
-      );
+static double distance(const std::tuple<double, double, double>& p1,
+                       const std::tuple<double, double, double>& p2) {
+  return sqrt((std::get<0>(p1) - std::get<0>(p2)) *
+                  (std::get<0>(p1) - std::get<0>(p2)) +
+              (std::get<1>(p1) - std::get<1>(p2)) *
+                  (std::get<1>(p1) - std::get<1>(p2)) +
+              (std::get<2>(p1) - std::get<2>(p2)) *
+                  (std::get<2>(p1) - std::get<2>(p2)));
 }
 
 /**
@@ -60,9 +63,9 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
 
   if (layer_shift_odd_ and layer_shift_odd_bilayer_) {
     EXCEPTION_RAISE("BadConf",
-        "Cannot shift both odd sensitive layers and odd bilayers");
+                    "Cannot shift both odd sensitive layers and odd bilayers");
   }
-  
+
   moduleR_ = moduler_ * (2 / sqrt(3));
   cellR_ = 2 * moduler_ / nCellRHeight_;
   cellr_ = (sqrt(3.) / 2.) * cellR_;
@@ -83,32 +86,33 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   buildCellModuleMap();
   buildNeighborMaps();
 
-  if (verbose_ > 0) std::cout << "[EcalGeometry] : fully constructed" << std::endl;
+  if (verbose_ > 0)
+    std::cout << "[EcalGeometry] : fully constructed" << std::endl;
 }
 
 EcalID EcalGeometry::getID(double x, double y, double z) const {
-  static const double tolerance = 0.5; // thickness of Si
+  static const double tolerance = 0.5;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
-    if (abs(std::get<2>(layer_xyz)-z) < tolerance) {
+    if (abs(std::get<2>(layer_xyz) - z) < tolerance) {
       layer_id = lid;
       break;
     }
   }
   if (layer_id < 0) {
-    EXCEPTION_RAISE("BadConf",
-        "z = "+std::to_string(z)+" mm is not within any"
-        " of the configured layers.");
+    EXCEPTION_RAISE("BadConf", "z = " + std::to_string(z) +
+                                   " mm is not within any"
+                                   " of the configured layers.");
   }
-  return getID(x,y,layer_id);
+  return getID(x, y, layer_id);
 }
 
 EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   // now assume we know the layer
   // shift to center of layer
   // and convert to flower coordinates
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id))}, 
-         q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id))},
+      q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
 
   // deduce module ID
   //    there are only 7 modules so we just loop through them
@@ -116,55 +120,62 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
 
   int module_id{-1};
   for (auto const& [mid, module_xy] : module_pos_xy_) {
-    double probe_x{p-module_xy.first}, probe_y{q-module_xy.second};
+    double probe_x{p - module_xy.first}, probe_y{q - module_xy.second};
     if (cornersSideUp_) rotate(probe_x, probe_y);
-    if (isInside(probe_x/moduleR_, probe_y/moduleR_)) {
+    if (isInside(probe_x / moduleR_, probe_y / moduleR_)) {
       module_id = mid;
       break;
     }
   }
 
-
   if (module_id < 0) {
-    EXCEPTION_RAISE("BadConf",
-        TString::Format("Coordinates relative to layer (p,q) = (%.2f, %.2f) mm "
-          "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
-          "are not inside any module.",
-          p,q,x,y,layer_id).Data());
+    EXCEPTION_RAISE(
+        "BadConf",
+        TString::Format(
+            "Coordinates relative to layer (p,q) = (%.2f, %.2f) mm "
+            "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+            "are not inside any module.",
+            p, q, x, y, layer_id)
+            .Data());
   }
 
-  return getID(x,y,layer_id, module_id);
+  return getID(x, y, layer_id, module_id);
 }
 
-EcalID EcalGeometry::getID(double x, double y, int layer_id, int module_id) const {
+EcalID EcalGeometry::getID(double x, double y, int layer_id,
+                           int module_id) const {
   // now assume we know the layer and module
   // shift to center of layer and then center of module
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) - module_pos_xy_.at(module_id).first}, 
-         q{y - std::get<1>(layer_pos_xy_.at(layer_id)) - module_pos_xy_.at(module_id).second};
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) -
+           module_pos_xy_.at(module_id).first},
+      q{y - std::get<1>(layer_pos_xy_.at(layer_id)) -
+        module_pos_xy_.at(module_id).second};
 
   // need to rotate
-  if (cornersSideUp_) rotate(p,q);
+  if (cornersSideUp_) rotate(p, q);
 
   // deduce cell ID
-  int cell_id = cell_id_in_module_.FindBin(p,q) - 1;
-  
+  int cell_id = cell_id_in_module_.FindBin(p, q) - 1;
+
   if (cell_id < 0) {
-    EXCEPTION_RAISE("BadConf",
-        TString::Format("Relative cell coordinates (%.2f, %.2f) mm "
-          "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
-          "and module = %d are outside module hexagon",
-          p,q,x,y,layer_id,module_id).Data());
+    EXCEPTION_RAISE(
+        "BadConf",
+        TString::Format(
+            "Relative cell coordinates (%.2f, %.2f) mm "
+            "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+            "and module = %d are outside module hexagon",
+            p, q, x, y, layer_id, module_id)
+            .Data());
   }
 
-  return EcalID(layer_id,module_id,cell_id);
+  return EcalID(layer_id, module_id, cell_id);
 }
 
-
-std::tuple<double,double,double> EcalGeometry::getPosition(EcalID id) const {
+std::tuple<double, double, double> EcalGeometry::getPosition(EcalID id) const {
   return cell_global_pos_.at(id);
 }
 
-std::pair<double,double> EcalGeometry::getPositionInModule(int cell_id) const {
+std::pair<double, double> EcalGeometry::getPositionInModule(int cell_id) const {
   auto pq = cell_pos_in_module_.at(cell_id);
 
   // going from (p,q) to (x,y) is a unrotate
@@ -176,44 +187,46 @@ std::pair<double,double> EcalGeometry::getPositionInModule(int cell_id) const {
 void EcalGeometry::buildLayerMap() {
   if (verbose_ > 0) {
     std::cout << "[EcalGeometry::buildLayerMap] "
-      << " Building layer map with " 
-      << layerZPositions_.size() << " layers" << std::endl;;
+              << " Building layer map with " << layerZPositions_.size()
+              << " layers" << std::endl;
+    ;
     if (layer_shift_odd_ or layer_shift_odd_bilayer_) {
       std::cout << "  shifting odd ";
-      if (layer_shift_odd_) std::cout << "layers";
-      else std::cout << "bilayers";
-      std::cout << " by (x,y) = (" 
-        << layer_shift_x_ << ", " << layer_shift_y_ << ") mm"
-        << std::endl;
+      if (layer_shift_odd_)
+        std::cout << "layers";
+      else
+        std::cout << "bilayers";
+      std::cout << " by (x,y) = (" << layer_shift_x_ << ", " << layer_shift_y_
+                << ") mm" << std::endl;
     } else {
       std::cout << "  without any shifting" << std::endl;
     }
   }
   for (std::size_t i_layer{0}; i_layer < layerZPositions_.size(); ++i_layer) {
     // default is centered on z-axis
-    double x{0},y{0},z{ecalFrontZ_+layerZPositions_.at(i_layer)};
+    double x{0}, y{0}, z{ecalFrontZ_ + layerZPositions_.at(i_layer)};
     if (layer_shift_odd_ and (i_layer % 2 == 1)) {
       x += layer_shift_x_;
       y += layer_shift_y_;
-    } else if (layer_shift_odd_bilayer_ and ((i_layer/2) % 2 == 1)) {
+    } else if (layer_shift_odd_bilayer_ and ((i_layer / 2) % 2 == 1)) {
       x += layer_shift_x_;
       y += layer_shift_y_;
     }
     if (verbose_ > 2) {
-      std::cout << "    Layer " << i_layer
-        << " has center at (" << x << ", " << y << ", " << z << ") mm"
-        << std::endl;
+      std::cout << "    Layer " << i_layer << " has center at (" << x << ", "
+                << y << ", " << z << ") mm" << std::endl;
     }
-    layer_pos_xy_[i_layer] = std::make_tuple(x,y,z);  
-  } 
+    layer_pos_xy_[i_layer] = std::make_tuple(x, y, z);
+  }
 }
 
 void EcalGeometry::buildModuleMap() {
-  static double C_PI = 3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
+  static double C_PI =
+      3.14159265358979323846;  // or TMath::Pi(), #define, atan(), ...
   if (verbose_ > 0) {
     std::cout << "[EcalGeometry::buildModuleMap] "
-      << "Building module position map for module min r of "
-      << moduler_ << " and gap of " << gap_ << std::endl;
+              << "Building module position map for module min r of " << moduler_
+              << " and gap of " << gap_ << std::endl;
   }
 
   // the center module (module_id == 0) has always been (and will always be?)
@@ -232,23 +245,24 @@ void EcalGeometry::buildModuleMap() {
     if (cornersSideUp_) {
       // re-calculating to make sure centers match GDML
       x = (2. * moduler_ + gap_) * cos((id - 1) * (C_PI / 3.));
-      y = - (2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
+      y = -(2. * moduler_ + gap_) * sin((id - 1) * (C_PI / 3.));
     }
     module_pos_xy_[id] = std::pair<double, double>(x, y);
     if (verbose_ > 2)
       std::cout << "    Module " << id << " is centered at (x,y) = "
-        << "(" << x << ", " << y << ") mm" << std::endl;
+                << "(" << x << ", " << y << ") mm" << std::endl;
   }
 }
 
 void EcalGeometry::buildCellMap() {
   /** STRATEGY
-   * use ROOT HoneyComb method (build large hex grid, copy polygons that cover module)
-   * 
-   * the sneaky bit is that the center of TH2Poly::HoneyComb is the center of a cell
-   * while the center of one of our modules is the corner between three cells. 
-   * This means some of the hexagons along the edges of the module will _not_ be regular
-   * and need to stretched/squashed a bit.
+   * use ROOT HoneyComb method (build large hex grid, copy polygons that cover
+   * module)
+   *
+   * the sneaky bit is that the center of TH2Poly::HoneyComb is the center of a
+   * cell while the center of one of our modules is the corner between three
+   * cells. This means some of the hexagons along the edges of the module will
+   * _not_ be regular and need to stretched/squashed a bit.
    *
    * REMEMBER:
    * We are in p,q space for the cells_in_module_ map. i.e.
@@ -258,14 +272,14 @@ void EcalGeometry::buildCellMap() {
    *   __
    *  /  \ -- > p axis
    *  \__/
-   *   
+   *
    */
   TH2Poly gridMap;
-    
+
   // make hexagonal grid [boundary is rectangle] larger than the module
   double gridMinP = 0., gridMinQ = 0.;  // start at the origin
   int numPCells = 0, numQCells = 0;
-    
+
   // first x-cell is only a half
   gridMinP -= cellr_;
   numPCells++;
@@ -277,30 +291,31 @@ void EcalGeometry::buildCellMap() {
     // decrement y by cell center-to-corner radius
     //  alternate between a full corner-to-corner diameter
     //  and a side of a cell (center-to-corner radius)
-    if (numQCells % 2 == 0) gridMinQ -= 1 * cellR_;
-    else gridMinQ -= 2 * cellR_;
+    if (numQCells % 2 == 0)
+      gridMinQ -= 1 * cellR_;
+    else
+      gridMinQ -= 2 * cellR_;
     numQCells++;
   }
   // only counted one half of the cells
   numPCells *= 2;
   numQCells *= 2;
-  
+
   gridMap.Honeycomb(gridMinP, gridMinQ, cellR_, numPCells, numQCells);
-  
+
   if (verbose_ > 0) {
-    std::cout << std::setprecision(2) 
-      << "[EcalGeometry::buildCellMap] cell rmin: " << cellr_
-      << " cell rmax: " << cellR_ 
-      << " (gridMinP,gridMinQ) = ("
-      << gridMinP << "," << gridMinQ << ")"
-      << " (numPCells,numQCells) = (" << numPCells << "," << numQCells
-      << ")" << std::endl;
+    std::cout << std::setprecision(2)
+              << "[EcalGeometry::buildCellMap] cell rmin: " << cellr_
+              << " cell rmax: " << cellR_ << " (gridMinP,gridMinQ) = ("
+              << gridMinP << "," << gridMinQ << ")"
+              << " (numPCells,numQCells) = (" << numPCells << "," << numQCells
+              << ")" << std::endl;
   }
-        
+
   // copy cells lying within module boundaries to a module grid
   TListIter next(gridMap.GetBins());  // a TH2Poly is a TList of TH2PolyBin
   TH2PolyBin* polyBin = 0;
-  TGraph* poly = 0;   // a polygon returned by TH2Poly is a TGraph
+  TGraph* poly = 0;  // a polygon returned by TH2Poly is a TGraph
   // cells_in_module_ IDs go from 0 to N-1, not equal to original grid cell ID
   int cell_id = 0;
   while ((polyBin = (TH2PolyBin*)next())) {
@@ -308,7 +323,7 @@ void EcalGeometry::buildCellMap() {
     //  grid so we assume that they are regular
     //  hexagons i.e. has 6 vertices
     poly = (TGraph*)polyBin->GetPolygon();
-      
+
     // decide whether to copy polygon to new map.
     // use all vertices in case of cut-off edge polygons.
     int numVerticesInside = 0;
@@ -320,12 +335,12 @@ void EcalGeometry::buildCellMap() {
       if (verbose_ > 2) {
         std::cout << "      vtx # " << i << std::endl;
         std::cout << "      vtx p,q " << vertex_p[i] << " " << vertex_q[i]
-          << std::endl;
+                  << std::endl;
       }
       isinside[i] = isInside(vertex_p[i] / moduleR_, vertex_q[i] / moduleR_);
       if (isinside[i]) numVerticesInside++;
     }
-      
+
     if (numVerticesInside > 1) {
       // Include this cell if more than one of its vertices is inside the module
       // hexagon
@@ -334,13 +349,13 @@ void EcalGeometry::buildCellMap() {
       if (numVerticesInside < 6) {
         // This cell is stradling the edge of the module
         // and is NOT cleanly cut by module edge
-      
+
         if (verbose_ > 1) {
           std::cout << "    Polygon " << cell_id
-            << " has vertices poking out of module hexagon."
-            << std::endl;
+                    << " has vertices poking out of module hexagon."
+                    << std::endl;
         }
-      
+
         // loop through vertices
         for (int i = 0; i < 6; i++) {
           int up = i == 5 ? 0 : i + 1;
@@ -350,7 +365,7 @@ void EcalGeometry::buildCellMap() {
             // vertex outside
             // ==> project this vertex onto the nearest edge of the module
             // hexagon
-          
+
             // determine which side of hexagon we should project onto
             double edge_origin_p, edge_origin_q;
             double edge_dest_p, edge_dest_q;
@@ -378,31 +393,32 @@ void EcalGeometry::buildCellMap() {
               edge_dest_q *= -1;
               edge_origin_q *= -1;
             }
-            
+
             // get edge slope vector
             double edge_slope_p = edge_dest_p - edge_origin_p;
             double edge_slope_q = edge_dest_q - edge_origin_q;
-            
+
             if (verbose_ > 2) {
-                  std::cout << "Vertex " << i
-                    << " is inside and adjacent to a vertex outside the module."
-                    << std::endl;
-                  std::cout << "Working on edge with slope (" << edge_slope_p << ","
-                            << edge_slope_q << ")"
-                            << " and origin (" << edge_origin_p << ","
-                            << edge_origin_q << ")" << std::endl;
+              std::cout
+                  << "Vertex " << i
+                  << " is inside and adjacent to a vertex outside the module."
+                  << std::endl;
+              std::cout << "Working on edge with slope (" << edge_slope_p << ","
+                        << edge_slope_q << ")"
+                        << " and origin (" << edge_origin_p << ","
+                        << edge_origin_q << ")" << std::endl;
             }
-            
+
             // project vertices adjacent to the vertex outside the module onto
             // the module edge
             double projection_factor =
-                    ((vertex_p[i] - edge_origin_p) * edge_slope_p +
-                     (vertex_q[i] - edge_origin_q) * edge_slope_q) /
-                    (edge_slope_p * edge_slope_p + edge_slope_q * edge_slope_q);
-            
+                ((vertex_p[i] - edge_origin_p) * edge_slope_p +
+                 (vertex_q[i] - edge_origin_q) * edge_slope_q) /
+                (edge_slope_p * edge_slope_p + edge_slope_q * edge_slope_q);
+
             double proj_p = edge_origin_p + projection_factor * edge_slope_p;
             double proj_q = edge_origin_q + projection_factor * edge_slope_q;
-            
+
             if (not isinside[up]) {
               // the next point is outside
               actual_p[num_vertices] = vertex_p[i];
@@ -417,10 +433,10 @@ void EcalGeometry::buildCellMap() {
               actual_q[num_vertices + 1] = vertex_q[i];
             }
             num_vertices += 2;
-            
+
             if (verbose_ > 2) {
               std::cout << "New Vertex " << i << " : (" << vertex_p[i] << ","
-                << vertex_q[i] << ")" << std::endl;
+                        << vertex_q[i] << ")" << std::endl;
             }
           } else {
             actual_p[num_vertices] = vertex_p[i];
@@ -436,35 +452,36 @@ void EcalGeometry::buildCellMap() {
           actual_q[i] = vertex_q[i];
         }
       }  // if numVerticesInside is less than 5
-  
+
       // TH2Poly needs to have its own copy of the polygon TGraph
       //  otherwise, we get a seg fault when EcalGeometry is destructed
       //  because the polygon that was copied over from gridMap is deleted at
       //  the end of this function
       cell_id_in_module_.AddBin(num_vertices, actual_p, actual_q);
-      
+
       /**
        * TODO is this needed?
        */
       double p = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
       double q = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
       if (verbose_ > 1) {
-        std::cout << "    Copying poly with ID "
-            << polyBin->GetBinNumber() << " and (p,q) ("
-            << std::setprecision(2) << p << "," << q << ")" << std::endl;
+        std::cout << "    Copying poly with ID " << polyBin->GetBinNumber()
+                  << " and (p,q) (" << std::setprecision(2) << p << "," << q
+                  << ")" << std::endl;
       }
       // save cell location as center of ENTIRE hexagon
       cell_pos_in_module_[cell_id] = std::pair<double, double>(p, q);
-      ++cell_id; // incrememnt cell ID
-    } // if num vertices inside is > 1
-  }   // loop over larger grid spanning module hexagon
+      ++cell_id;  // incrememnt cell ID
+    }             // if num vertices inside is > 1
+  }               // loop over larger grid spanning module hexagon
   return;
 }
 
 void EcalGeometry::buildCellModuleMap() {
   if (verbose_ > 0)
-    std::cout << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
-              << std::endl;
+    std::cout
+        << "[EcalGeometry::buildCellModuleMap] Building cellModule position map"
+        << std::endl;
   /// construct map of cell centers relative to layer center
   for (auto const& [module_id, module_xy] : module_pos_xy_) {
     for (auto const& [cell_id, cell_pq] : cell_pos_in_module_) {
@@ -473,12 +490,10 @@ void EcalGeometry::buildCellModuleMap() {
       // when the corners are not up, x = p and y = q
       // so no transformation needs to be done
       if (cornersSideUp_) unrotate(cell_x, cell_y);
-      
+
       // calculate cell's pq relative to entire layer center
-      auto cell_rel_to_layer = std::make_pair(
-          module_xy.first + cell_x,
-          module_xy.second + cell_y
-          );
+      auto cell_rel_to_layer =
+          std::make_pair(module_xy.first + cell_x, module_xy.second + cell_y);
 
       // now add the layer-center values to get the global position
       // of the cell
@@ -491,11 +506,10 @@ void EcalGeometry::buildCellModuleMap() {
     for (auto const& [flat_id, rel_to_layer] : cell_pos_in_layer_) {
       // now add the layer-center values to get the global position
       // of the cell
-      cell_global_pos_[EcalID(layer_id, flat_id.module(), flat_id.cell())]
-        = std::make_tuple(
-            rel_to_layer.first + std::get<0>(layer_xyz),
-            rel_to_layer.second + std::get<1>(layer_xyz),
-            std::get<2>(layer_xyz));
+      cell_global_pos_[EcalID(layer_id, flat_id.module(), flat_id.cell())] =
+          std::make_tuple(rel_to_layer.first + std::get<0>(layer_xyz),
+                          rel_to_layer.second + std::get<1>(layer_xyz),
+                          std::get<2>(layer_xyz));
     }
   }
 
@@ -521,8 +535,7 @@ void EcalGeometry::buildNeighborMaps() {
    */
   if (verbose_ > 0)
     std::cout << "[EcalGeometry::buildNeighborMaps] : "
-      << "Building Nearest and Next-Nearest Neighbor maps"
-      << std::endl;
+              << "Building Nearest and Next-Nearest Neighbor maps" << std::endl;
 
   NNMap_.clear();
   NNNMap_.clear();
@@ -538,8 +551,8 @@ void EcalGeometry::buildNeighborMaps() {
     }
     if (verbose_ > 1)
       std::cout << "  Found " << NNMap_[center_id].size() << " NN and "
-        << NNNMap_[center_id].size() << " NNN for cell " << center_id
-        << std::endl;
+                << NNNMap_[center_id].size() << " NNN for cell " << center_id
+                << std::endl;
   }
   /*
    * DEBUG CHECK HERE

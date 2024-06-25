@@ -6,7 +6,6 @@ namespace recon {
 MyProcessor::MyProcessor(const std::string &name, framework::Process &process)
     : framework::Producer(name, process) {}
 
-
 void MyProcessor::configure(framework::config::Parameters &parameters) {
   /**
    * You access configuration parameters set in the python

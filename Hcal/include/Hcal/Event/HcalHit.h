@@ -41,7 +41,7 @@ class HcalHit : public ldmx::CalorimeterHit {
    * Print out the object.
    */
   void Print() const;
-  
+
   /**
    * Get the number of photoelectrons estimated for this hit.
    * @return Number of photoelectrons, including noise which affects the
@@ -222,7 +222,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   double toaNeg_;
   double amplitudePos_;
   double amplitudeNeg_;
-  
+
   /**
    * The ROOT class definition.
    */
