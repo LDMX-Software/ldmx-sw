@@ -625,6 +625,27 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         
 
+class VisGenerator(ldmxcfg.Analyzer) :
+
+    def __init__(self,name="VisGenerator") :
+        super().__init__(name,'dqm::VisGenerator','DQM')
+
+        self.ecalSimHitColl = "EcalSimHits"
+        self.ecalSimHitPass = "" #use whatever pass is available
+
+        self.includeEcalRecHits = True
+        self.ecalRecHitColl = "EcalRecHits"
+        self.ecalRecHitPass = "" #use whatever pass is available
+
+        self.includeEcalClusters = True
+        self.ecalClusterColl = "ecalClusters"
+        self.ecalClusterPass = ""
+
+        self.filename = "vis.json"
+
+        self.runNumber = 1
+
+
 ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures()
