@@ -3,6 +3,7 @@
    */
 
 #include "Ecal/WorkingCluster.h"
+
 #include <iostream>
 
 namespace ecal {

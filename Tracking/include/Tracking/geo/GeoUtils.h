@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Definitions/Algebra.hpp"
-
+#include "Acts/Geometry/GeometryIdentifier.hpp"
 
 namespace tracking::geo {
 
@@ -13,21 +12,14 @@ namespace tracking::geo {
 
 unsigned int unpackGeometryIdentifier(const Acts::GeometryIdentifier& geoId);
 
-
 // I use the same ATLAS convention (opposite to MPII)
-//deltaR = (ru, rv, rw)
-//          /  1    -rw   rv  \
-//deltaR => |  rw    1   -ru  |
-//          \ -rv    ru   1   /
+/*
+deltaR = (ru, rv, rw)
+          /  1    -rw   rv  \
+deltaR => |  rw    1   -ru  |
+          \ -rv    ru   1   /
+ */
 
 Acts::RotationMatrix3 deltaRot(const Acts::Vector3& deltaR);
 
-}
-//Acts::GeometryIdentifier packGeometryIdentifier(const unsigned int surfaceId) {}
-
-
-
-
-
-
-
+}  // namespace tracking::geo

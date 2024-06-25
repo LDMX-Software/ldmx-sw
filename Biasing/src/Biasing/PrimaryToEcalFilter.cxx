@@ -10,8 +10,8 @@
 
 namespace biasing {
 
-PrimaryToEcalFilter::PrimaryToEcalFilter(const std::string& name,
-                                         framework::config::Parameters& parameters)
+PrimaryToEcalFilter::PrimaryToEcalFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }

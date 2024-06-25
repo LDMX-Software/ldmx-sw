@@ -17,7 +17,7 @@
 namespace framework {
 
 HistogramPool::HistogramPool() {
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
   gStyle->SetGridColor(17);
   gStyle->SetFrameBorderMode(0);
   gStyle->SetTitleOffset(1.2, "yx");

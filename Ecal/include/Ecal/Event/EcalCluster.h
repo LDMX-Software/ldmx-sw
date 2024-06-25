@@ -42,7 +42,7 @@ class EcalCluster : public ldmx::CaloCluster {
 
  private:
   // Could add further ECal-specific info here...
-  
+
   ClassDef(EcalCluster, 1);
 };
 }  // namespace ldmx

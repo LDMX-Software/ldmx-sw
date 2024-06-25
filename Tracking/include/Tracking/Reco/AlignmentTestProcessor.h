@@ -13,34 +13,27 @@
 
 namespace tracking::reco {
 
-  class AlignmentTestProcessor final : public TrackingGeometryUser {
-
+class AlignmentTestProcessor final : public TrackingGeometryUser {
  public:
-    
-    AlignmentTestProcessor(const std::string& name,
-                           framework::Process& process);
-    
-    
-    ~AlignmentTestProcessor();
-        
-    void onProcessStart() override ;
+  AlignmentTestProcessor(const std::string& name, framework::Process& process);
 
-    void onNewRun(const ldmx::RunHeader& rh) override;
+  ~AlignmentTestProcessor();
 
-    void onProcessEnd() override;
+  void onProcessStart() override;
 
-    void configure(framework::config::Parameters &parameters) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
-    void produce(framework::Event &event) override;
-    
+  void onProcessEnd() override;
+
+  void configure(framework::config::Parameters& parameters) override;
+
+  void produce(framework::Event& event) override;
 
  private:
+  std::unordered_map<unsigned int, Acts::Transform3> alignmentTransforms;
 
-    std::unordered_map<unsigned int, Acts::Transform3> alignmentTransforms;
-    
-    tracking::geo::GeometryContext test_gctx_;
-    //The Trackers Tracking geometry
-    std::shared_ptr<geo::TrackersTrackingGeometry> tg_;
-        
-  };
-}
+  tracking::geo::GeometryContext test_gctx_;
+  // The Trackers Tracking geometry
+  std::shared_ptr<geo::TrackersTrackingGeometry> tg_;
+};
+}  // namespace tracking::reco

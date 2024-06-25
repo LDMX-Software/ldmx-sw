@@ -1,14 +1,15 @@
 
+#include <math.h>
+
+#include <any>
+#include <map>
+#include <string>
+
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalTriggerID.h"
 #include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"
-
-#include <math.h>
-#include <any>
-#include <map>
-#include <string>
 #include "TCanvas.h"  //for dumping map to file
 #include "TLine.h"    //for module hex border
 #include "TStyle.h"   //for no stats box
@@ -47,7 +48,8 @@ int main() {
   ldmx::EcalGeometry* geometry_ptr = ldmx::EcalGeometry::debugMake(params);
   ldmx::EcalGeometry& geometry(*geometry_ptr);
 
-  /// fills the poly map with the corresponding IDs and then returns a handle to it
+  /// fills the poly map with the corresponding IDs and then returns a handle to
+  /// it
   auto polyMap = geometry.getCellPolyMap();
 
   TCanvas* c = new TCanvas("c", "c", 900, 900);  // make square canvas

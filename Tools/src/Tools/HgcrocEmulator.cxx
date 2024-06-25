@@ -176,7 +176,7 @@ bool HgcrocEmulator::digitize(
           toa                     // TOA is third measurement
       );
 
-      // TODO: properly handle saturation and recovery, eventually.  
+      // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
       while (digiToAdd.size() < nADCs_) {
         digiToAdd.emplace_back(true, false,  // flags to mark type of sample
@@ -222,29 +222,27 @@ bool HgcrocEmulator::digitize(
   return digiToAdd.at(iSOI_).adc_t() >= readoutThreshold;
 }  // HgcrocEmulator::digitize
 
-
 std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
-      const int& channel, const double& soi_amplitude) const {
+    const int &channel, const double &soi_amplitude) const {
   // get chip conditions from emulator
   double pedestal{this->pedestal(channel)};
   double gain{this->gain(channel)};
   // fill a digi with noise samples
   std::vector<ldmx::HgcrocDigiCollection::Sample> noise_digi;
-  for (int iADC{0}; iADC<nADCs_; iADC++) {
+  for (int iADC{0}; iADC < nADCs_; iADC++) {
     // gen noise for ADC samples
     int adc_tm1{static_cast<int>(pedestal)};
     if (iADC > 0)
-      adc_tm1 = noise_digi.at(iADC-1).adc_t();
+      adc_tm1 = noise_digi.at(iADC - 1).adc_t();
     else
-      adc_tm1 += noise(channel)/gain;
-    int adc_t{static_cast<int>(pedestal + noise(channel)/gain)};
+      adc_tm1 += noise(channel) / gain;
+    int adc_t{static_cast<int>(pedestal + noise(channel) / gain)};
 
-    if (iADC == iSOI_)
-      adc_t += soi_amplitude/gain;
+    if (iADC == iSOI_) adc_t += soi_amplitude / gain;
 
     // set toa to 0 (not determined)
     // put new sample into noise digi
-    noise_digi.emplace_back(false,false,adc_tm1,adc_t,0);
+    noise_digi.emplace_back(false, false, adc_tm1, adc_t, 0);
   }  // samples in noise digi
   return noise_digi;
 }

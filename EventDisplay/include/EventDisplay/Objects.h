@@ -11,14 +11,12 @@
 #include "Ecal/Event/EcalCluster.h"
 #include "Ecal/Event/EcalHit.h"
 #include "EventDisplay/DetectorGeometry.h"
-#include "Hcal/Event/HcalHit.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-
 #include "EventDisplay/EveDetectorGeometry.h"
 #include "EventDisplay/EveShapeDrawer.h"
-
+#include "Hcal/Event/HcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
 #include "TColor.h"
 #include "TEveArrow.h"
 #include "TEveBox.h"
@@ -60,7 +58,9 @@ class Objects {
    * Not implemented
    */
   template <typename T>
-  void draw(T o) { EXCEPTION_RAISE("NotImp","Drawing not implemented for the input type."); }
+  void draw(T o) {
+    EXCEPTION_RAISE("NotImp", "Drawing not implemented for the input type.");
+  }
 
   /**
    * Drawing EcalHit
@@ -91,7 +91,7 @@ class Objects {
   /**
    * Draws the sim particles
    */
-  void draw(std::map<int,ldmx::SimParticle> particles);
+  void draw(std::map<int, ldmx::SimParticle> particles);
 
   /**
    * Sets the energy threshold for a sim particle to be drawn.

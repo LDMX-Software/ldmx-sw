@@ -25,11 +25,20 @@ This defines what the different category names mean so that future
 collaborators understand what the detector is meant to describe.
 - `det`: the full LDMX detector
 - `ti`: the full detector but using a Ti target instead of W
-- `lyso`: the full detector but using a LySO target instead of W
+- `lyso`: the full detector but using a LYSO target instead of W
 - `hcal-prototype`: the HCal prototype detector used during testbeam
+- `reduced`: reduced LDMX to be ran in 2024
 
 ### Examples
 - `ldmx-det-v14` : version 14 of the full LDMX detector for the 4GeV beam
 - `ldmx-hcal-prototype-v2.0` : version 2.0 the HCal prototype detector used during testbeam
 - `ldmx-ti-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
 - `ldmx-det-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam
+
+### Archived geometries
+Previously used geometries can be found under the `archived` directory. In case you need to use any of these, ran `tar -xf` on them and move them back under `data` and then re-configure and re-install ldmx-sw (all detector directories under `data/` are included in the install location):
+```
+cd ldmx-sw/Detectors/data
+tar -xzf archived/<detector>.tar.gz
+ldmx compile # even if you've already done this before!
+```

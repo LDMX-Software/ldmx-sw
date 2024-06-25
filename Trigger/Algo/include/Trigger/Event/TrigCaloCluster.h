@@ -16,30 +16,37 @@ typedef std::vector<TrigCaloCluster> TrigCaloClusterCollection;
  */
 class TrigCaloCluster {
  public:
-
   TrigCaloCluster() = default;
 
-  TrigCaloCluster(float x, float y, float z, float e=0);
+  TrigCaloCluster(float x, float y, float z, float e = 0);
 
   virtual ~TrigCaloCluster() = default;
 
   bool operator<(const TrigCaloCluster &h) { return e_ < h.e_; }
 
   void Clear();
-  
+
   void setEnergy(float e) { e_ = e; }
-  void setXYZ(float x, float y, float z) { x_=x;  y_=y;  z_=z; }
-  void setXYZerr(float xe, float ye, float ze) { xe_=xe;  ye_=ye;  ze_=ze; }
-  void setdxdz(float dxdz){ dxdz_=dxdz; }
-  void setdydz(float dydz){ dydz_=dydz; }
-  void setdxdze(float dxdze){ dxdze_=dxdze; }
-  void setdydze(float dydze){ dydze_=dydze; }
-  void set3D(bool x){ is3D_=x; }
-  void setLayer(int l){ layer_=l; }
-  void setFirstLayer(int l){ firstLayer_=l; }
-  void setLastLayer(int l){ lastLayer_=l; }
-  void setDepth(int d){ depth_=d; }
-  void setNTP(int n){ nTP_=n; }
+  void setXYZ(float x, float y, float z) {
+    x_ = x;
+    y_ = y;
+    z_ = z;
+  }
+  void setXYZerr(float xe, float ye, float ze) {
+    xe_ = xe;
+    ye_ = ye;
+    ze_ = ze;
+  }
+  void setdxdz(float dxdz) { dxdz_ = dxdz; }
+  void setdydz(float dydz) { dydz_ = dydz; }
+  void setdxdze(float dxdze) { dxdze_ = dxdze; }
+  void setdydze(float dydze) { dydze_ = dydze; }
+  void set3D(bool x) { is3D_ = x; }
+  void setLayer(int l) { layer_ = l; }
+  void setFirstLayer(int l) { firstLayer_ = l; }
+  void setLastLayer(int l) { lastLayer_ = l; }
+  void setDepth(int d) { depth_ = d; }
+  void setNTP(int n) { nTP_ = n; }
 
   float x() const { return x_; }
   float y() const { return y_; }
@@ -53,9 +60,8 @@ class TrigCaloCluster {
   float dydz() const { return dydz_; }
   int nTP() const { return nTP_; }
   int depth() const { return depth_; }
-  
+
  private:
-  
   float x_{0};
   float y_{0};
   float z_{0};

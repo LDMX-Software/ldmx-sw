@@ -16,23 +16,28 @@ using namespace ::Ort;
 // version used when first integrated onnx into ldmx-sw
 // and version downloaded by cmake infrastructure
 // only support x86_64 architectures
-std::string get_input_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+std::string get_input_name(std::unique_ptr<Session>& s, size_t i,
+                           AllocatorWithDefaultOptions a) {
   return s->GetInputName(i, a);
 }
-std::string get_output_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+std::string get_output_name(std::unique_ptr<Session>& s, size_t i,
+                            AllocatorWithDefaultOptions a) {
   return s->GetOutputName(i, a);
 }
 #else
 // latest version with prebuilds for both x86_64 and arm64
 // architectures but contains a slight API change
-std::string get_input_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+std::string get_input_name(std::unique_ptr<Session>& s, size_t i,
+                           AllocatorWithDefaultOptions a) {
   return s->GetInputNameAllocated(i, a).get();
 }
-std::string get_output_name(std::unique_ptr<Session>& s, size_t i, AllocatorWithDefaultOptions a) {
+std::string get_output_name(std::unique_ptr<Session>& s, size_t i,
+                            AllocatorWithDefaultOptions a) {
   return s->GetOutputNameAllocated(i, a).get();
 }
 #if ORT_API_VERSION != 15
-#pragma warning ("Untested ONNX version, not certain of API, assuming API version 15.")
+#pragma warning( \
+    "Untested ONNX version, not certain of API, assuming API version 15.")
 #endif
 #endif
 

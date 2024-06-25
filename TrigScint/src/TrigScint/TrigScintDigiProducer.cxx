@@ -1,8 +1,9 @@
 #include "TrigScint/TrigScintDigiProducer.h"
-#include "Framework/Exception/Exception.h"
-#include "Framework/RandomNumberSeedService.h"
 
 #include <iostream>
+
+#include "Framework/Exception/Exception.h"
+#include "Framework/RandomNumberSeedService.h"
 
 namespace trigscint {
 
