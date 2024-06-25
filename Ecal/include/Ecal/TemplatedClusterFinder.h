@@ -30,7 +30,6 @@ class TemplatedClusterFinder {
   void cluster(double seed_threshold, double cutoff) {
     int ncluster = clusters_.size();
     double minwgt = cutoff;
-
     // Sort after highest energy
     std::sort(clusters_.begin(), clusters_.end(), compClusters);
     loops_ = 0;
@@ -100,7 +99,7 @@ class TemplatedClusterFinder {
 
   std::map<int, double> getWeights() const { return transitionWeights_; }
 
-  std::vector<WorkingCluster> getClusters() const { return clusters_; }
+  std::vector<WorkingCluster> getClusters() const { return finalClusters_; }
 
  private:
   WeightClass wgt_;
@@ -109,6 +108,7 @@ class TemplatedClusterFinder {
   int loops_;
   std::map<int, double> transitionWeights_;
   std::vector<WorkingCluster> clusters_;
+  std::vector<WorkingCluster> finalClusters_;
 };
 }  // namespace ecal
 
