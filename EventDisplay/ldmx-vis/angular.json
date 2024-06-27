@@ -2,7 +2,8 @@
   "$schema": "./schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {

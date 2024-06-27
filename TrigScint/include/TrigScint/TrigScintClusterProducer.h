@@ -35,6 +35,14 @@ class TrigScintClusterProducer : public framework::Producer {
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
+  /**
+   * set centroid physicsal position in x,y,z [mm] given a cluster and its position in barID space
+   * cluster: cluster to set position of
+   * cx: unweighted average of position of x in barID space
+   * cy: unweighted average of position of y in barID space
+   */
+  void TrigScintClusterProducer::setCentroidPosition(float cx, float cy, ldmx::TrigScintCluster cluster);
+
   void onProcessStart() override;
 
   void onProcessEnd() override;
@@ -76,11 +84,14 @@ class TrigScintClusterProducer : public framework::Producer {
   // cluster channel nb centroid (will be content weighted)
   float centroid_{0.};
 
-  // cluster channel nb horizontal centroid (will be content weighted)
-  float centroidX_{-1};
+  // cluster x position
+  double x_{-99999.};
 
-  // cluster channel nb vertical centroid (will be content weighted)
-  float centroidY_{-1};
+  // cluster y position
+  double y_{-99999.};
+
+  // cluster z position
+  double z_{-99999.};
 
   // energy (edep), PE, or sth
   float val_{0.};
