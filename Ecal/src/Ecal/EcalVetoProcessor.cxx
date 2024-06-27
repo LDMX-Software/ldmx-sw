@@ -272,7 +272,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       recoilP.size()
           ? sqrt(pow(recoilP[0], 2) + pow(recoilP[1], 2) + pow(recoilP[2], 2))
           : -1.0;
-  float recoilTheta = recoilPMag > 0 ? recoilP[2] / recoilPMag : -1.0;
+  float recoilTheta = recoilPMag > 0 ? acos(recoilP[2] / recoilPMag) * 180.0 / M_PI : -1.0;
 
   // Use the appropriate containment radii for the recoil electron
   std::vector<double> roc_values_bin0(roc_range_values_[0].begin() + 4, 
