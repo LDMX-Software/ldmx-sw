@@ -236,6 +236,23 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.output_collection="TriggerPad1Clusters"
         self.verbosity = 0
 
+        # Standard values of a TS pad for trigScint geometry in
+        # detector ldmx-det-v14-8gevi
+        # note that the padPosition_z is defined as the position of
+        # the center of th eback horizontal bar row,
+        # i.e the middle of tha bad in z.
+        # This value is dependant on where we place our TS pads
+        self.barWidth_x = 3             # 1 bar (vert.) width in x [mm]
+        self.barWidth_y = 3             # 1 bar (hor.) width in y [mm]
+        self.barDepth_horizontal = 0    # 1 bar (hor.) depth in z [mm]
+        self.barDepth_vertical = 0      # 1 bar (vert.) depth in z [mm]
+        self.barGap_x = 2.1             # dist. between bars (vert.) [mm]
+        self.barGap_y = 0.1             # dist. between bars (hor.) [mm]
+        self.barGap_z = 0               # dist. between bar rows [mm]
+        self.nBarsX_ = 16               # number of vertical bars [mm]
+        self.nBarsY_ = 8                # number of horizontal bars [mm]
+        self.padPosition_z = -99999.    # centr of back (hor.) row [mm]
+
     def pad1() :
         """Get the cluster producer for the trigger pad most upstream of tagger"""
         cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
