@@ -79,15 +79,27 @@ class TrigScintCluster {
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
   /**
-   *The cluster centroid in x,y,z
+   *The cluster centroid position in x,y,z (barID space)
+   * @param cx Cluster x coordinate
+   * @param cy Cluster y coordinate
+   * @param cz Cluster z coordinate
+   */
+  void setCentroidXYZ(double cx, double cy, double cz) {
+    centroidX_ = cx;
+    centroidY_ = cy;
+    centroidZ_ = cz;
+  }
+
+  /**
+   *The cluster centroid position in x,y,z (real space)
    * @param x Cluster x coordinate
    * @param y Cluster y coordinate
-   * @param z Cluster z coordinate (not implemented)
+   * @param z Cluster z coordinate
    */
-  void setCentroidXYZ(double x, double y, double z) {
-    centroidX_ = x;
-    centroidY_ = y;
-    centroidZ_ = z;
+  void setPositionXYZ(double x, double y, double z) {
+    x_ = x;
+    y_ = y;
+    z_ = z;
   }
 
   /**
@@ -128,6 +140,15 @@ class TrigScintCluster {
   /** Get cluster centroid in z [mm] (not implmented) */
   double getCentroidZ() const { return centroidZ_; }
 
+  /** Get cluster centroid in x [mm] (not implmented) */
+  double getPositionX() const {return x_;}
+
+  /** Get cluster centroid in y [mm] (not implmented) */
+  double getPositionY() const {return y_;}
+
+  /** Get cluster centroid in z [mm] (not implmented) */
+  double getPositionZ() const {return z_;}
+
   /** Get vector of channel IDs of hits forming the cluster */
   const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
 
@@ -158,14 +179,23 @@ class TrigScintCluster {
   // the hits forming the cluster
   double centroid_{-1};
 
-  // hit centroid in x [mm] (not implemented)
-  double centroidX_{0};
+  // Centroid x position in barID space (not implemented)
+  double centroidX_{-1};
 
-  // hit centroid in y [mm] (not implemented)
-  double centroidY_{0};
+  // Centroid y position in barID space (not implemented)
+  double centroidY_{-1};
 
-  // hit centroid in z [mm] (not implemented)
-  double centroidZ_{0};
+  // Centroid z position in barID space (not implemented)
+  double centroidZ_{-1};
+
+  // Centroid position in x [mm]
+  double x_{-99999.};
+
+  // Centroid position in y [mm]
+  double y_{-99999.};
+
+  // Centroid position in z [mm]
+  double z_{-99999.};
 
   // fraction of cluster energy deposited in a sim hit associated with beam
   // electrons
