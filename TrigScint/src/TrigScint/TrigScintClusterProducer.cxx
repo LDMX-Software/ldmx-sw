@@ -442,7 +442,70 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       cluster.setTime(time_ / val_);
       cluster.setBeamEfrac(beamE_ / valE_);
 
-      setCentroidPosition(cx,cy,cluster);
+      /* The method below takes geometry of the bars in the new trigScintSetup
+        (two horizontal rows, one vertical row)
+        and calculates the physical position of the cluster
+        and stores it in member variables x_, y_ and z_ of the cluster
+      */
+      
+      // Conversion factors x,y,z:
+      // Horizontal:  *each bar only goes half this distance up (overlap/zig-zag)
+      //                and starts at half height of bar
+      // Vertical:    *each bar goes entire distance sideways (no overlap)
+      //                and starts at half width of bar
+      // Depth:       *each horizontal bar row separated by one horizontal bar depth and gap
+      //              *each vertical bar row separated by 1/2 vertical bar depth
+      //                and 1/2 horizontal bar depth and gap
+      double yConvFactor_ = (barWidth_y_ + barGap_y_)/ 2.;
+      double yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) / 2.;
+      double xConvFactor_ = barWidth_x_ + barGap_x_;  				// 
+      double xStart_ = -(nBarsX_ * (barWidth_x_ + barGap_x_) - barGap_x_) / 2.;
+      double zConvFactor_horizontal = barDepth_horizontal + barGap_z;			
+      double zConvFacotr_vertical = (barDepth_vertical+barDepth_horizontal)/2 + barGap_z;	
+
+      double x = -99999.;                 // Initialise x at nonsense value
+      double y = -99999.;;                // Initialise y at nonsense value
+      double z = -99999.;;								// Initialise z at nonsense value
+
+      if (cluster.getCentroid() < vertBarStartIdx_) {		  // if we are looking at horizontal bar centroid
+        y = cy*yConvFactor_ + yStart_;		      // calculate y
+        // How many horizontal bars are hit
+        hitY = 0;							                  // Initialize number of horizontal bars hit
+        for (auto hitID : cluster.getID() ) {   // Loop through all barID hits in the cluster
+          if (hitID < vertBarStartIdx_) {			    // If horizontal bar
+            hitY++;								                // Increase with 1
+          }}
+        
+        // Set z-position
+        if (hitY == 1) {							          // if hit on 1 horizontal bar
+          if (std::fmod(cy,2) != 0) {					    // if barID is odd (front horizontal row)
+            z = padPosition_z - zConvFactor;	    // move negative direction from pad
+          } else {								                // if barID is even (back horizontal row)
+            z = padPosition_z;}						        // padPosition is z-position
+        } else if (hitY == 2) {								  // if hits 2 horizontal bars
+          z = padPosition_z - zConvFactor/2;	    // z-position between horizontal rows
+        } else {								                // if hits 3 horizontal bars
+          // The idea here is that if hitIDsum is even it must be 2 front row hits + 1 back row hits
+          int hitIDsum = 0;						          // Sum of IDs
+          for (auto i : cluster.getHitIDs()) {hitIDsum += i;} // Calculate sum
+          
+          if (hitIDsum%2 != 0) {						      // If 1 front row hit + 2 back row hits
+            z = padPosition_z - zConvFactor*1/3;    // move 1/3 zConvFactor due to mostly back row hits
+          } else {							                  // If 2 front row hits + 1 back row hit
+            z = padPosition_z - zConvFacotr*2/3;	  // move 2/3 zConvFactor due to mostly front row hits
+          }}
+      } else {								          // if we are looking at vertical bar centroid
+        x = cx*xConvFactor_ + xStart_;		// calculate x
+        z = padPosition_z + zConvFactor;  // all vertical bars are one zConvFactor in front of padPosition_z
+      }
+
+      // Add cluster position
+      cluster.setPositionXYZ(x,y,z)		  // add cluster position to cluster
+
+      /* Here the clustering position calculation ends
+      Note: This could (and probably should) be added to
+            a separate method for nicer code
+      */
 
       trigScintClusters.push_back(cluster);
 
@@ -530,73 +593,6 @@ void TrigScintClusterProducer::onProcessStart() {
 void TrigScintClusterProducer::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
 
-  return;
-}
-
-/* The method below takes geometry of the bars in the new trigScintSetup
-  (two horizontal rows, one vertical row)
-  and calculates the physical position of the cluster
-  and stores it in member variables x_, y_ and z_ of the cluster
-*/
-void TrigScintClusterProducer::setCentroidPosition(float cx, float cy, ldmx::TrigScintCluster cluster) {
-  // Conversion factors x,y,z:
-  // Horizontal:  *each bar only goes half this distance up (overlap/zig-zag)
-  //                and starts at half height of bar
-  // Vertical:    *each bar goes entire distance sideways (no overlap)
-  //                and starts at half width of bar
-  // Depth:       *each horizontal bar row separated by one horizontal bar depth and gap
-  //              *each vertical bar row separated by 1/2 vertical bar depth
-  //                and 1/2 horizontal bar depth and gap
-  double yConvFactor_ = (barWidth_y_ + barGap_y_)/ 2.;
-  double yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) / 2.;
-  double xConvFactor_ = barWidth_x_ + barGap_x_;  				// 
-  double xStart_ = -(nBarsX_ * (barWidth_x_ + barGap_x_) - barGap_x_) / 2.;
-  double zConvFactor_horizontal = barDepth_horizontal + barGap_z;			
-  double zConvFacotr_vertical = (barDepth_vertical+barDepth_horizontal)/2 + barGap_z;	
-
-  double x = -99999.;                 // Initialise x at nonsense value
-  double y = -99999.;;                // Initialise y at nonsense value
-  double z = -99999.;;								// Initialise z at nonsense value
-
-  if (cluster.getCentroid() < vertBarStartIdx_) {		  // if we are looking at horizontal bar centroid
-    y = cy*yConvFactor_ + yStart_;		      // calculate y
-    // How many horizontal bars are hit
-    hitY = 0;							                  // Initialize number of horizontal bars hit
-    for (auto hitID : cluster.getID() ) {   // Loop through all barID hits in the cluster
-      if (hitID < vertBarStartIdx_) {			    // If horizontal bar
-        hitY++;								                // Increase with 1
-      }}
-    
-    // Set z-position
-    if (hitY == 1) {							          // if hit on 1 horizontal bar
-      if (std::fmod(cy,2) != 0) {					    // if barID is odd (front horizontal row)
-        z = padPosition_z - zConvFactor;	    // move negative direction from pad
-      } else {								                // if barID is even (back horizontal row)
-        z = padPosition_z;}						        // padPosition is z-position
-    } else if (hitY == 2) {								  // if hits 2 horizontal bars
-      z = padPosition_z - zConvFactor/2;	    // z-position between horizontal rows
-    } else {								                // if hits 3 horizontal bars
-      // The idea here is that if hitIDsum is even it must be 2 front row hits + 1 back row hits
-      int hitIDsum = 0;						          // Sum of IDs
-      for (auto i : cluster.getHitIDs()) {hitIDsum += i;} // Calculate sum
-      
-      if (hitIDsum%2 != 0) {						      // If 1 front row hit + 2 back row hits
-        z = padPosition_z - zConvFactor*1/3;    // move 1/3 zConvFactor due to mostly back row hits
-      } else {							                  // If 2 front row hits + 1 back row hit
-        z = padPosition_z - zConvFacotr*2/3;	  // move 2/3 zConvFactor due to mostly front row hits
-      }}
-  } else {								          // if we are looking at vertical bar centroid
-    x = cx*xConvFactor_ + xStart_;		// calculate x
-    z = padPosition_z + zConvFactor;  // all vertical bars are one zConvFactor in front of padPosition_z
-  }
-
-      // Add cluster position
-      cluster.setPositionXYZ(x,y,z)		  // add cluster position to cluster
-
-      /* Here the clustering position calculation ends
-      Note: This could (and probably should) be added to
-            a separate method for nicer code
-      */
   return;
 }
 

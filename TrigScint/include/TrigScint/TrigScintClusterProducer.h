@@ -35,14 +35,6 @@ class TrigScintClusterProducer : public framework::Producer {
    */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
-  /**
-   * set centroid physicsal position in x,y,z [mm] given a cluster and its position in barID space
-   * cluster: cluster to set position of
-   * cx: unweighted average of position of x in barID space
-   * cy: unweighted average of position of y in barID space
-   */
-  void TrigScintClusterProducer::setCentroidPosition(float cx, float cy, ldmx::TrigScintCluster cluster);
-
   void onProcessStart() override;
 
   void onProcessEnd() override;
