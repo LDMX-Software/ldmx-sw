@@ -31,13 +31,10 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Name of the cluster algo collection to make
         self.algoCollName = "ClusterAlgoResult"
 
-        # self.loopHist = 300
-        # self.clusterHist = 20
-
-        # self.build1DHistogram("nLoops", "No of loops for clustering", self.loopHist, 50, self.loopHist)
-        # self.build1DHistogram("nClusters", "No of clusters", self.clusterHist, 0, self.clusterHist)
-        # self.build1DHistogram("nHits", "Hits per cluster", 140, 0, 140)
-        # self.build1DHistogram("cluster_energy", "Energy [MeV] per cluster", 1000, 0, 10000)
+        self.build1DHistogram("nLoops", "No of loops for clustering", 50, 0, 300)
+        self.build1DHistogram("nClusters", "No of clusters", 20, 0, 20)
+        self.build1DHistogram("nHits", "Hits per cluster", 20, 0, 200)
+        self.build1DHistogram("cluster_energy", "Energy [MeV] per cluster", 100, 0, 10000)
 
 class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     """Analyze clustering"""
@@ -55,6 +52,12 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.clusterCollName = 'ecalClusters'
         self.clusterPassName = ''
 
-        self.depth = 100
+        # self.depth = 100
 
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
+        self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced majority of hits", 20, 50, 100)
+        self.build1DHistogram("UF_same_ancestor", "Percentage of hits in cluster coming from the electron that produced majority of hits", 20, 0, 100)
+        self.build1DHistogram("mixed_ancestry", "Percentage of hits in cluster being contributed to by both electron 1 and 2", 20, 0, 100)
+        self.build1DHistogram("UF_mixed_ancestry", "Percentage of hits in cluster being contributed to by both electron 1 and 2", 20, 0, 100)
+        self.build1DHistogram("unclear_ancestry", "Percentage of hits in cluster where ancestry is unclear", 20, 0, 100)
+        self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
