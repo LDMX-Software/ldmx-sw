@@ -629,7 +629,8 @@ class VisGenerator(ldmxcfg.Analyzer) :
 
     def __init__(self,name="VisGenerator") :
         super().__init__(name,'dqm::VisGenerator','DQM')
-
+        
+        self.includeGroundTruth = True
         self.ecalSimHitColl = "EcalSimHits"
         self.ecalSimHitPass = "" #use whatever pass is available
 
