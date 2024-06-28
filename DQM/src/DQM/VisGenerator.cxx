@@ -11,6 +11,7 @@ using json = nlohmann::json;
 namespace dqm {
 
   void VisGenerator::configure(framework::config::Parameters& ps) {
+    includeGroundTruth_ = ps.getParameter<bool>("includeGroundTruth");
     ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
     ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
 
@@ -38,7 +39,10 @@ namespace dqm {
     // ----- HITS -----
     j[eKey]["Hits"] = json::object();
 
-    // ----- CLUSTER-RECHIT CONNECTION -----
+    // GROUND TRUTH HIT INFO
+    auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_)};
+
+    // CLUSTER-RECHIT CONNECTION
     if (includeEcalClusters_ || includeEcalRecHits_) {
       std::vector<ldmx::EcalCluster> ecalClusters;
       std::vector<ldmx::EcalHit> ecalRecHits;
@@ -77,6 +81,8 @@ namespace dqm {
               clusterSize = 5.;
             }
             // create centroid object
+            cluster["parentID"] = -1;
+            cluster["pdgID"] = -1;
             cluster["energy"] = cl.getEnergy();
             cluster["color"] = hex;
             cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
@@ -115,9 +121,22 @@ namespace dqm {
           // if (!hit.isNoise()) {
             json h = json::object();
             h["type"] = "Box";
+            h["energy"] = hit.getEnergy();
+            if (includeGroundTruth_) {
+              auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
+              if (it != ecalSimHits.end()) {
+                h["parentID"] = json::array();
+                for (int i = 0; i < it->getNumberOfContribs(); i++) {
+                  auto c = it->getContrib(i);
+                  h["parentID"].push_back(c.incidentID);
+                  h["pdgID"].push_back(c.pdgCode);
+                }
+              }
+            }
             if (includeEcalClusters_) {
-              auto& id = hitToCluster[hit.getID()];
-              if (id != 0) { // if hit is associated to a cluster
+              auto it = hitToCluster.find(hit.getID());
+              if (it != hitToCluster.end()) { // if hit is associated to a cluster
+                auto id = it->second;
                 // add hit to cluster collection
                 // color will automatically be set to same as centroid
                 std::string cKey = "cluster_" + std::to_string(id);
@@ -141,15 +160,18 @@ namespace dqm {
     j[eKey]["Tracks"] = json::object();
 
     // GROUND TRUTH (SIMULATED) PATHS
-    j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
-    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
-    for (const auto& it : particle_map) {
-      json track = json::object();
-      const auto& start = it.second.getVertex();
-      const auto& end = it.second.getEndPoint();
-      track["pos"] = { { start[0], start[1], start[2] },
-                        { end[0], end[1], end[2] } };
-      j[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
+    if (includeGroundTruth_) {
+      j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
+      auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+      for (const auto& it : particle_map) {
+        json track = json::object();
+        const auto& start = it.second.getVertex();
+        const auto& end = it.second.getEndPoint();
+        track["parentID"] = {it.second.getParents()};
+        track["pos"] = { { start[0], start[1], start[2] },
+                          { end[0], end[1], end[2] } };
+        j[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
+      }
     }
     return;
   }
