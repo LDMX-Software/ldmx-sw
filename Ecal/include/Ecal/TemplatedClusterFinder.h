@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include <map>
+#include <iostream>
 
 #include "Ecal/WorkingCluster.h"
 #include "TH2F.h"
@@ -31,6 +32,7 @@ class TemplatedClusterFinder {
     double minwgt = cutoff;
 
     std::sort(clusters_.begin(), clusters_.end(), compClusters);
+    loops_ = 0;
     do {
       bool any = false;
       size_t mi(0), mj(0);
@@ -77,14 +79,21 @@ class TemplatedClusterFinder {
         // decrement cluster count
         ncluster--;
       }
-
+      loops_++;
     } while (minwgt < cutoff && ncluster > 1);
     finalwgt_ = minwgt;
+    std::cout << "cluster loops: " << loops_ << std::endl;
+    for (const auto& cl : clusters_) {
+      if (!cl.empty() && cl.centroid().E() >= seed_threshold) finalClusters_.push_back(cl);
+      else if (cl.centroid().E() < seed_threshold) break; // clusters are sorted, so should be safe to break
+    }
   }
 
   double getYMax() const { return finalwgt_; }
 
   int getNSeeds() const { return nseeds_; }
+
+  int getNLoops() const { return loops_; }
 
   std::map<int, double> getWeights() const { return transitionWeights_; }
 
@@ -94,6 +103,7 @@ class TemplatedClusterFinder {
   WeightClass wgt_;
   double finalwgt_;
   int nseeds_;
+  int loops_;
   std::map<int, double> transitionWeights_;
   std::vector<WorkingCluster> clusters_;
 };

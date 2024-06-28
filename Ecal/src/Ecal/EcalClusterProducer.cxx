@@ -23,6 +23,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   algoCollName_ = parameters.getParameter<std::string>("algoCollName");
   algoName_ = parameters.getParameter<std::string>("algoName");
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
+  // fullHistory_ = parameters.getParameter<bool>("fullHistory");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
@@ -53,6 +54,12 @@ void EcalClusterProducer::produce(framework::Event& event) {
   cf.cluster(seedThreshold_, cutoff_);
   std::vector<WorkingCluster> wcVec = cf.getClusters();
 
+  auto nLoops = cf.getNLoops();
+  histograms_.fill("nLoops", nLoops);
+  histograms_.fill("nClusters", wcVec.size());
+  // auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+  //     inputCollName_, inputPassName_)};
+
   std::map<int, double> cWeights = cf.getWeights();
 
   ldmx::ClusterAlgoResult algoResult;
@@ -76,6 +83,9 @@ void EcalClusterProducer::produce(framework::Event& event) {
                            wcVec[aWC].centroid().Pz());
     cluster.setNHits(wcVec[aWC].getHits().size());
     cluster.addHits(wcVec[aWC].getHits());
+
+    histograms_.fill("nHits", wcVec[aWC].getHits().size());
+    histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
 
     ecalClusters.push_back(cluster);
   }
