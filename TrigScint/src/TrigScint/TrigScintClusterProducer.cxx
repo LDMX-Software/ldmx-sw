@@ -638,7 +638,6 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
           }}
       } else {								                        // if we are looking at vertical bar centroid
         int cx = std::floor((centroid_ - vertBarStartIdx_) / 4.); // conversion from centroid_ ID to barID (starting at 0)
-        ldmx_log(debug) << cx;
         x = xStart_ + padPosition_x_ +                            // calculate x
             cx*xConvFactor_ + 0.5*barWidth_x_;
         z = padPosition_z_ + zConvFactor_vertical;                // calculate z
