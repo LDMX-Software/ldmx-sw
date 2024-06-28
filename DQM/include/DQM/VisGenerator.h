@@ -26,6 +26,9 @@ class VisGenerator : public framework::Analyzer {
     virtual void onProcessEnd();
 
   private:
+    // Include ground truth (simulated) info
+    bool includeGroundTruth_;
+
     // Collection Name for SimHits
     std::string ecalSimHitColl_;
 
