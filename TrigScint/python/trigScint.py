@@ -238,20 +238,26 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
 
         # Standard values of a TS pad for trigScint geometry in
         # detector ldmx-det-v14-8gevi
-        # note that the padPosition_z is defined as the position of
-        # the center of th eback horizontal bar row,
-        # i.e the middle of tha bad in z.
-        # This value is dependant on where we place our TS pads
-        self.barWidth_x = 3             # 1 bar (vert.) width in x [mm]
-        self.barWidth_y = 3             # 1 bar (hor.) width in y [mm]
-        self.barDepth_horizontal = 0    # 1 bar (hor.) depth in z [mm]
-        self.barDepth_vertical = 0      # 1 bar (vert.) depth in z [mm]
-        self.barGap_x = 2.1             # dist. between bars (vert.) [mm]
-        self.barGap_y = 0.1             # dist. between bars (hor.) [mm]
-        self.barGap_z = 0               # dist. between bar rows [mm]
-        self.nBarsX_ = 16               # number of vertical bars [mm]
-        self.nBarsY_ = 8                # number of horizontal bars [mm]
-        self.padPosition_z = -99999.    # centr of back (hor.) row [mm]
+        # Note: The padPosition_z_ is defined as the position of
+        #       the center of the back horizontal bar row,
+        #       i.e the middle of tha bad in z.
+        #       This value is dependant on where we place our TS pads
+        # Note: The number of bars define HALF of the number of bars
+        #       due to there being two horizontal rows and
+        #       the vertical row is segmented in the y-direction
+        self.vertical_bar_width = 3.        # 1 bar (vert.) width in x [mm]
+        self.horizontal_bar_width = 3.05    # 1 bar (hor.) width in y [mm]
+        self.vertical_bar_depth = 2.        # 1 bar (vert.) depth in z [mm]
+        self.horizontal_bar_depth = 2.      # 1 bar (hor.) depth in z [mm]
+        self.vertical_bar_gap = 0.1         # dist. between bars (vert.) [mm]
+        self.horizontal_bar_gap = 0.3       # dist. between bars (hor.) [mm]
+        self.depth_bar_gap_horizontal = 0.3 # dist. between bar rows [mm]
+        self.depth_bar_gap_vertical = 0.2   # dist. between bar rows [mm]
+        self.number_vertical_bars = 8       # number of vertical bars [mm]
+        self.number_horizontal_bars = 16    # number of horizontal bars [mm]
+        self.pad_position_x = -99999.       # centr of back (hor.) row [mm]
+        self.pad_position_y = -99999.       # centr of back (hor.) row [mm]
+        self.pad_position_z = -99999.       # centr of back (hor.) row [mm]
 
     def pad1() :
         """Get the cluster producer for the trigger pad most upstream of tagger"""
@@ -259,6 +265,10 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad1'
         cluster.output_collection= 'TriggerPad1Clusters'
         cluster.pad_time= -2.9
+        cluster.pad_position_x = -21.5      # Pad offset in x
+        cluster.pad_position_y = 0.         # Pad offset in y
+        cluster.pad_position_z = -875.5     # Pad offset in z
+
         return cluster
 
     def pad2() :
@@ -267,6 +277,10 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad2'
         cluster.output_collection= 'TriggerPad2Clusters'
         cluster.pad_time= -2.7
+        cluster.pad_position_x = -19.   # Pad offset in x
+        cluster.pad_position_y = 0.     # Pad offset in y
+        cluster.pad_position_z = -815.5 # Pad offset in z
+
         return cluster
 
     def pad3() :
@@ -275,6 +289,9 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad3'
         cluster.output_collection= 'TriggerPad3Clusters'
         cluster.pad_time= 0.
+        cluster.pad_position_x = 0.         # Pad offset in x
+        cluster.pad_position_y = 0.         # Pad offset in y
+        cluster.pad_position_z = -2.4262    # Pad offset in z
         return cluster
 
 

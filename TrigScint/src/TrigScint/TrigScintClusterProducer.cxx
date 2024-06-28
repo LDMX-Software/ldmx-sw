@@ -22,17 +22,20 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   // Bar sizes
   barWidth_x_ = ps.getParameter<double>("vertical_bar_width");
   barWidth_y_ = ps.getParameter<double>("horizontal_bar_width");
-  barDepth_horizontal = ps.getParameter<double>("horizontal_bar_depth");
-  barDepth_vertical = ps.getParameter<double>("vertical_bar_depth");
+  barDepth_horizontal_ = ps.getParameter<double>("horizontal_bar_depth");
+  barDepth_vertical_ = ps.getParameter<double>("vertical_bar_depth");
   // Bar gaps
   barGap_x_ = ps.getParameter<double>("vertical_bar_gap");
   barGap_y_ = ps.getParameter<double>("horizontal_bar_gap");
-  barGap_z = ps.getParameter<double>("depth_bar_gap");
+  barGap_z_horizontal_ = ps.getParameter<double>("depth_bar_gap_horizontal");
+  barGap_z_vertical_ = ps.getParameter<double>("depth_bar_gap_vertical");
   // Number of horizontal and vertical bars
   nBarsX_ = ps.getParameter<int>("number_vertical_bars");
   nBarsY_ = ps.getParameter<int>("number_horizontal_bars");
   // Position of current pad (in relation to the back horizontal row (middle))
-  padPosition_z = ps.getParameter<double>('pad_position_z');
+  padPosition_x_ = ps.getParameter<double>("pad_position_x");
+  padPosition_y_ = ps.getParameter<double>("pad_position_y");
+  padPosition_z_ = ps.getParameter<double>("pad_position_z");
 
   if (verbose_) {
     ldmx_log(info) << "In TrigScintClusterProducer: configure done!";
@@ -82,19 +85,19 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     with hits in channels after digi looking something like this
 
 
-    ampl:    _                   _                   _
-            | |_                | |                 | |
-        ----| | |---------------| |-----------------| |------- cluster seed
+    ampl:      _                   _                   _
+              | |_                | |                 | |
+          ----| | |---------------| |-----------------| |------- cluster seed
     threshold | | |_              | |_ _              | |_
-           _| | | |            _| | | |            _| | |  _
-          | | | | |     vs    | | | | |    vs     | | | | | |
+             _| | | |            _| | | |            _| | |  _
+            | | | | |     vs    | | | | |    vs     | | | | | |
 
 
-              |                   |                   |
-        split | seeds        keep | disregard   keep! | just move on
-              | next cl.          | (later seed       | (no explicit splitting)
-                                  might pick
-                                  it up)
+                |                   |                   |
+          split | seeds        keep | disregard   keep! | just move on
+                | next cl.          | (later seed       | (no explicit splitting)
+                                    might pick
+                                    it up)
 
 
     The idea being that while there could be good reasons for an electron to
@@ -243,8 +246,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       ldmx_log(debug) << "\t At hit with channel nb " << itr->first << ".";
     }
 
-    if (hitChannelMap_.size() ==
-        0)  // we removed them all..? shouldn't ever happen
+    if (hitChannelMap_.size() == 0)  // we removed them all..? shouldn't ever happen
     {
       if (verbose_)
         ldmx_log(warn) << "Time flies, and all clusters have already been "
@@ -436,90 +438,26 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
         cx = (int)((centroid_ - vertBarStartIdx_) / 4);  // start at 0
         cy = (int)centroid_ % 4;
       }
+
+      setPosition(cluster);     // calculates physical position of cluster in x,y,z [mm]
+
       cluster.setCentroidXYZ(cx, cy, cz);
       cluster.setEnergy(valE_);
       cluster.setPE(val_);
       cluster.setTime(time_ / val_);
       cluster.setBeamEfrac(beamE_ / valE_);
 
-      /* The method below takes geometry of the bars in the new trigScintSetup
-        (two horizontal rows, one vertical row)
-        and calculates the physical position of the cluster
-        and stores it in member variables x_, y_ and z_ of the cluster
-      */
-      
-      // Conversion factors x,y,z:
-      // Horizontal:  *each bar only goes half this distance up (overlap/zig-zag)
-      //                and starts at half height of bar
-      // Vertical:    *each bar goes entire distance sideways (no overlap)
-      //                and starts at half width of bar
-      // Depth:       *each horizontal bar row separated by one horizontal bar depth and gap
-      //              *each vertical bar row separated by 1/2 vertical bar depth
-      //                and 1/2 horizontal bar depth and gap
-      double yConvFactor_ = (barWidth_y_ + barGap_y_)/ 2.;
-      double yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) / 2.;
-      double xConvFactor_ = barWidth_x_ + barGap_x_;  				// 
-      double xStart_ = -(nBarsX_ * (barWidth_x_ + barGap_x_) - barGap_x_) / 2.;
-      double zConvFactor_horizontal = barDepth_horizontal + barGap_z;			
-      double zConvFacotr_vertical = (barDepth_vertical+barDepth_horizontal)/2 + barGap_z;	
-
-      double x = -99999.;                 // Initialise x at nonsense value
-      double y = -99999.;;                // Initialise y at nonsense value
-      double z = -99999.;;								// Initialise z at nonsense value
-
-      if (cluster.getCentroid() < vertBarStartIdx_) {		  // if we are looking at horizontal bar centroid
-        y = cy*yConvFactor_ + yStart_;		      // calculate y
-        // How many horizontal bars are hit
-        hitY = 0;							                  // Initialize number of horizontal bars hit
-        for (auto hitID : cluster.getID() ) {   // Loop through all barID hits in the cluster
-          if (hitID < vertBarStartIdx_) {			    // If horizontal bar
-            hitY++;								                // Increase with 1
-          }}
-        
-        // Set z-position
-        if (hitY == 1) {							          // if hit on 1 horizontal bar
-          if (std::fmod(cy,2) != 0) {					    // if barID is odd (front horizontal row)
-            z = padPosition_z - zConvFactor;	    // move negative direction from pad
-          } else {								                // if barID is even (back horizontal row)
-            z = padPosition_z;}						        // padPosition is z-position
-        } else if (hitY == 2) {								  // if hits 2 horizontal bars
-          z = padPosition_z - zConvFactor/2;	    // z-position between horizontal rows
-        } else {								                // if hits 3 horizontal bars
-          // The idea here is that if hitIDsum is even it must be 2 front row hits + 1 back row hits
-          int hitIDsum = 0;						          // Sum of IDs
-          for (auto i : cluster.getHitIDs()) {hitIDsum += i;} // Calculate sum
-          
-          if (hitIDsum%2 != 0) {						      // If 1 front row hit + 2 back row hits
-            z = padPosition_z - zConvFactor*1/3;    // move 1/3 zConvFactor due to mostly back row hits
-          } else {							                  // If 2 front row hits + 1 back row hit
-            z = padPosition_z - zConvFacotr*2/3;	  // move 2/3 zConvFactor due to mostly front row hits
-          }}
-      } else {								          // if we are looking at vertical bar centroid
-        x = cx*xConvFactor_ + xStart_;		// calculate x
-        z = padPosition_z + zConvFactor;  // all vertical bars are one zConvFactor in front of padPosition_z
-      }
-
-      // Add cluster position
-      cluster.setPositionXYZ(x,y,z)		  // add cluster position to cluster
-
-      /* Here the clustering position calculation ends
-      Note: This could (and probably should) be added to
-            a separate method for nicer code
-      */
-
-      trigScintClusters.push_back(cluster);
-
-      if (verbose_) cluster.Print();
-
       centroid_ = 0;
-      centroidX_ = -1;
-      centroidY_ = -1;
       val_ = 0;
       valE_ = 0;
       beamE_ = 0;
       time_ = 0;
       v_addedIndices_.resize(
           0);  // book keep which channels have already been added to a cluster
+
+      trigScintClusters.push_back(cluster);
+
+      if (verbose_) cluster.Print();
 
       if (verbose_ > 1) {
         ldmx_log(debug)
@@ -545,6 +483,63 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       0);  // book keep which channels have already been added to a cluster
 
   return;
+
+  // /*
+  // * New version of the produce script!
+  // */
+  
+  // if (verbose_) {
+  //   ldmx_log(debug)
+  //       << "TrigScintClusterProducer: produce() starts! Event number: "
+  //       << event.getEventHeader().getEventNumber();
+  // }
+
+  // std::vector<ldmx::TrigScintCluster> trigScintClusters;    // Initialise container for found clusters
+  // const auto digis{                                         // All simHits
+  //     event.getCollection<ldmx::TrigScintHit>(input_collection_, passName_)};
+
+  // if (verbose_) {
+  //   ldmx_log(debug) << "Got digi collection " << input_collection_ << "_"
+  //                   << passName_ << " with " << digis.size() << " entries ";
+  // }
+
+  // // Find and store all hits above threshold
+  // std::map<int,int> hitChannelMap_;         // vector with all barIDs in order. first is seed
+  // int iDigi{};
+  // for (const auto &digi : digis) {          // Loop through all simHits
+  //     if (digi.getPE() > minThr_) {           // If above threshold
+  //       int ID = digi.getBarID()                // Get barId of hit
+
+  //       // Don't add in late hits
+  //       if (digi.getTime() > padTime_ + timeTolerance_) continue;
+
+  //       hitChannel_[ID] = iDigi;            // Add barID last in vector
+  //     }
+  //     iDigi++;
+  // }
+
+  // for (const auto &[barID,iDig] : hitChannel_) {  // Loop over all found hit's barIDs
+  //     if (hitChannel_.find(barID) == hitChannel_.end()) { // this hit may have disappeared
+  //       if (verbose_ > 1) {
+  //         ldmx_log(debug) << "Attempting to use removed hit at channel "
+  //                         << itr->first << "; skipping.";
+  //       }
+  //       continue;
+  //     }
+
+  //     ldmx::TrigScintHit digi = (ldmx::TrigScintHit)digis.at(itr->second);
+
+  //     // skip all until hit a seed
+  //     if (digi.getPE() >= seed_) {
+  //       if (verbose_ > 1) {
+  //         ldmx_log(debug) << "Seeding cluster with channel " << itr->first
+  //                         << "; content " << digi.getPE();
+  //       }
+
+      
+  // }
+
+
 }
 
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
@@ -580,8 +575,79 @@ void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
                     << ". index vector now ends with "
                     << v_addedIndices_.back();
   }
-
+  
   return;
+}
+
+/* The method below takes geometry of the bars in the new trigScintSetup
+  (two horizontal rows, one vertical row)
+  and calculates the physical position of the cluster
+  and stores it in member variables x_, y_ and z_ of the cluster
+*/
+void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
+      // Conversion factors x,y,z:
+      // Horizontal:  *each bar only goes half this distance up (overlap/zig-zag)
+      //                and starts at half height of bar
+      // Vertical:    *each bar goes entire distance sideways (no overlap)
+      //                and starts at half width of bar
+      // Depth:       *each horizontal bar row separated by one horizontal bar depth and gap
+      //              *each vertical bar row separated by 1/2 vertical bar depth
+      //                and 1/2 horizontal bar depth and gap
+      double yConvFactor_ = (barWidth_y_ + barGap_y_)/ 2.;
+      double yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) / 2.;
+      double xConvFactor_ = barWidth_x_ + barGap_x_;  				// 
+      double xStart_ = -(nBarsX_ * (barWidth_x_ + barGap_x_) - barGap_x_) / 2.;
+      double zConvFactor_horizontal = barDepth_horizontal_ + barGap_z_horizontal_;			
+      double zConvFactor_vertical = (barDepth_vertical_ + barDepth_horizontal_) / 2
+                                    + barGap_z_vertical_;	
+
+      double x = -99999.;                 // Initialise x at nonsense value
+      double y = -99999.;                 // Initialise y at nonsense value
+      double z = -99999.;								  // Initialise z at nonsense value
+
+      centroid_ = cluster.getCentroid();  // Get cluster centroid
+
+
+      if (centroid_ < vertBarStartIdx_) {		  // if we are looking at horizontal bar centroid
+        y = yStart_ + padPosition_y_ +          // calculate y
+            centroid_*yConvFactor_ +            0.5*barWidth_y_;
+        // How many horizontal bars are hit
+        int hitY = 0;							                // Initialize number of horizontal bars hit
+        for (auto hitID : cluster.getHitIDs() ) { // Loop through all barID hits in the cluster
+          if (hitID < vertBarStartIdx_) {			    // If horizontal bar
+            hitY++;								                // Increase with 1
+          }}
+        
+        // Set z-position
+        if (hitY == 1) {							                            // if hit on 1 horizontal bar
+          if (std::fmod(centroid_ - vertBarStartIdx_,2) != 0) {     // if barID is odd (front horizontal row)
+            z = padPosition_z_ - zConvFactor_horizontal;              // move negative direction from pad
+          } else {								                                  // if barID is even (back horizontal row)
+            z = padPosition_z_;}						                          // padPosition is z-position
+        } else if (hitY == 2) {								                      // if hits 2 horizontal bars
+          z = padPosition_z_ - zConvFactor_horizontal/2;              // z-position between horizontal rows
+        } else {								                                    // if hits 3 horizontal bars
+          // The idea here is that if hitIDsum is even it must be 2 front row hits + 1 back row hits
+          int hitIDsum = 0;						                                // Sum of IDs
+          for (auto i : cluster.getHitIDs()) {hitIDsum += i;}         // Calculate sum
+          
+          if (hitIDsum%2 != 0) {						                          // If 1 front row hit + 2 back row hits
+            z = padPosition_z_ - zConvFactor_horizontal*1/3;            // move 1/3 zConvFactor due to mostly back row hits
+          } else {							                                      // If 2 front row hits + 1 back row hit
+            z = padPosition_z_ - zConvFactor_horizontal*2/3;            // move 2/3 zConvFactor due to mostly front row hits
+          }}
+      } else {								                        // if we are looking at vertical bar centroid
+        int cx = std::floor((centroid_ - vertBarStartIdx_) / 4.); // conversion from centroid_ ID to barID (starting at 0)
+        ldmx_log(debug) << cx;
+        x = xStart_ + padPosition_x_ +                            // calculate x
+            cx*xConvFactor_ + 0.5*barWidth_x_;
+        z = padPosition_z_ + zConvFactor_vertical;                // calculate z
+      }
+
+      // Add cluster position
+      cluster.setPositionXYZ(x,y,z);    // add cluster position to cluster
+
+      return;
 }
 
 void TrigScintClusterProducer::onProcessStart() {
