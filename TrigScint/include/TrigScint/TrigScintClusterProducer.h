@@ -31,8 +31,8 @@ class TrigScintClusterProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
   /**
-   * add a hit at index idx to a cluster
-   */
+  * add a hit at index idx to a cluster
+  */
   virtual void addHit(uint idx, ldmx::TrigScintHit hit);
 
   void onProcessStart() override;
@@ -74,7 +74,7 @@ class TrigScintClusterProducer : public framework::Producer {
   int vertBarStartIdx_{52};
 
   // cluster channel nb centroid (will be content weighted)
-  float centroid_{0.};
+  double centroid_{0.};
 
   // cluster x position
   double x_{-99999.};
@@ -106,6 +106,26 @@ class TrigScintClusterProducer : public framework::Producer {
 
   // empty map container
   std::map<int, int> hitChannelMap_;
+
+  /**
+  * calculates and sets physical position of cluster in x,y,z [mm]
+  */
+  void setPosition(ldmx::TrigScintCluster &cluster);
+
+  // TS pad and bar specifications
+  double barWidth_x_{0};
+  double barWidth_y_{0};
+  double barDepth_horizontal_{0};
+  double barDepth_vertical_{0};
+  double barGap_x_{0};
+  double barGap_y_{0};
+  double barGap_z_horizontal_{0};
+  double barGap_z_vertical_{0};
+  int nBarsX_{0};
+  int nBarsY_{0};
+  double padPosition_x_{-99999.};
+  double padPosition_y_{-99999.};
+  double padPosition_z_{-99999.};
 };
 
 }  // namespace trigscint
