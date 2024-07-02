@@ -44,7 +44,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       int tag = 0;
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         const auto& c = it->getContrib(i);
-        if (c.incidentID != 1 && c.incidentID != 2) {
+        if (c.originID != 1 && c.originID != 2) {
           // trace back to 1/2
           // bool dec1 = trackMap.isDescendant(c.incidentID, 1, depth_);
           // bool dec2 = trackMap.isDescendant(c.incidentID, 2, depth_);
@@ -60,7 +60,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
           tag = 0;
           tagged = true;
           break;
-        } else ancestor = c.incidentID;
+        } else ancestor = c.originID;
         if (i != 0 && prevAncestor != ancestor) {
           // mixed case
           tag = 3;

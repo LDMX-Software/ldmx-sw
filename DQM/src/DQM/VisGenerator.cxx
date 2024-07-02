@@ -81,7 +81,7 @@ namespace dqm {
               clusterSize = 5.;
             }
             // create centroid object
-            cluster["parentID"] = -1;
+            cluster["originID"] = -1;
             cluster["pdgID"] = -1;
             cluster["energy"] = cl.getEnergy();
             cluster["color"] = hex;
@@ -125,10 +125,10 @@ namespace dqm {
             if (includeGroundTruth_) {
               auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
               if (it != ecalSimHits.end()) {
-                h["parentID"] = json::array();
+                h["originID"] = json::array();
                 for (int i = 0; i < it->getNumberOfContribs(); i++) {
                   auto c = it->getContrib(i);
-                  h["parentID"].push_back(c.incidentID);
+                  h["originID"].push_back(c.originID);
                   h["pdgID"].push_back(c.pdgCode);
                 }
               }
