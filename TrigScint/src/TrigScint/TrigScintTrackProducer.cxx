@@ -27,6 +27,10 @@ void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
   barGap_x_ = ps.getParameter<double>("vertical_bar_gap");
   skipLast_ = ps.getParameter<bool>("allow_skip_last_collection");
 
+  padPosition_x_ = ps.getParameter<std::vector<double>>("pad_position_x");
+  padPosition_y_ = ps.getParameter<std::vector<double>>("pad_position_y");
+  padPosition_z_ = ps.getParameter<std::vector<double>>("pad_position_z");
+
   // TO DO: allow any number of input collections
 
   if (verbose_) {
@@ -550,6 +554,13 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
                       << (clusters.at(i)).getCentroid();
   }
 
+  // Set track z position
+  std::vector<double> z{};
+  for (int i = 0; i < clusters.size(); i++) {
+    z.push_back(clusters.at(i).getPositionZ() - padPosition_z_[i]);
+  }
+  tr.setPositionZ(z);
+
   return tr;
 }
 
@@ -686,9 +697,9 @@ void TrigScintTrackProducer::matchXYTracks(
         // other b1) special case: no x tracks; then x, sx have been set above
         auto xidx = xIdxQuadMap.find((*yitr).first);
         auto yidx = yIdxQuadMap.find((*yitr).first);
-        tracks.at((*xidx).second).setPosition(x, y);
+        tracks.at((*xidx).second).setPositionXY(x, y);
         tracks.at((*xidx).second).setSigmaXY(sx, sy);
-        tracks.at((*yidx).second).setPosition(x, y);
+        tracks.at((*yidx).second).setPositionXY(x, y);
         tracks.at((*yidx).second).setSigmaXY(sx, sy);
         if (verbose_)
           ldmx_log(debug) << "\t\t\t in quad " << (*yitr).first
@@ -727,7 +738,7 @@ void TrigScintTrackProducer::matchXYTracks(
       // first: set the y track coordinates to x  = the mid of x tracks, y = y
       // of y track
       auto yidx = yIdxQuadMap.find((*yitr).first);
-      tracks.at((*yidx).second).setPosition(x, y);
+      tracks.at((*yidx).second).setPositionXY(x, y);
       tracks.at((*yidx).second).setSigmaXY(sx, sy);
 
       int minOverlapPE_ = 250;
@@ -761,9 +772,9 @@ void TrigScintTrackProducer::matchXYTracks(
       auto xidx1 = xIdxQuadMap.lower_bound((*yitr).first);
       auto xidx2 = xIdxQuadMap.upper_bound((*yitr).first);
       xidx2--;  // upper_bound points to (last+1) element
-      tracks.at((*xidx1).second).setPosition(x1, y);
+      tracks.at((*xidx1).second).setPositionXY(x1, y);
       tracks.at((*xidx1).second).setSigmaXY(sx1, sy);
-      tracks.at((*xidx2).second).setPosition(x2, y);
+      tracks.at((*xidx2).second).setPositionXY(x2, y);
       tracks.at((*xidx2).second).setSigmaXY(sx2, sy);
 
     }  // 1 y, 2 x tracks in the quadrant
@@ -773,7 +784,7 @@ void TrigScintTrackProducer::matchXYTracks(
       // first: set the x track coordinates to x = x of x track, y = the mid of
       // y tracks
       auto xidx = xIdxQuadMap.find((*yitr).first);
-      tracks.at((*xidx).second).setPosition(x, y);
+      tracks.at((*xidx).second).setPositionXY(x, y);
       tracks.at((*xidx).second).setSigmaXY(sx, sy);
 
       auto xitr = xQuadMap.lower_bound((*yitr).first);
@@ -805,9 +816,9 @@ void TrigScintTrackProducer::matchXYTracks(
       auto yidx1 = yIdxQuadMap.lower_bound((*yitr).first);
       auto yidx2 = yIdxQuadMap.upper_bound((*yitr).first);
       yidx2--;  // upper_bound points to next element
-      tracks.at((*yidx1).second).setPosition(x, y1);
+      tracks.at((*yidx1).second).setPositionXY(x, y1);
       tracks.at((*yidx1).second).setSigmaXY(sx, sy1);
-      tracks.at((*yidx2).second).setPosition(x, y2);
+      tracks.at((*yidx2).second).setPositionXY(x, y2);
       tracks.at((*yidx2).second).setSigmaXY(sx, sy2);
 
     }  // 2 y and 1 x track in quad
@@ -828,14 +839,14 @@ void TrigScintTrackProducer::matchXYTracks(
                         << (*yidx1).first
                         << " and  yidx2.first = " << (*yidx2).first;
       else {
-        tracks.at((*xidx1).second).setPosition(x1, y);
+        tracks.at((*xidx1).second).setPositionXY(x1, y);
         tracks.at((*xidx1).second).setSigmaXY(sx1, sy);
-        tracks.at((*xidx2).second).setPosition(x2, y);
+        tracks.at((*xidx2).second).setPositionXY(x2, y);
         tracks.at((*xidx2).second).setSigmaXY(sx2, sy);
 
-        tracks.at((*yidx1).second).setPosition(x, y1);
+        tracks.at((*yidx1).second).setPositionXY(x, y1);
         tracks.at((*yidx1).second).setSigmaXY(sx, sy1);
-        tracks.at((*yidx2).second).setPosition(x, y2);
+        tracks.at((*yidx2).second).setPositionXY(x, y2);
         tracks.at((*yidx2).second).setSigmaXY(sx, sy2);
 
         if (verbose_)

@@ -96,6 +96,10 @@ class TrigScintTrackProducer : public framework::Producer {
   float xStart_;
   float yConvFactor_;
   float yStart_;
+
+  std::vector<double> padPosition_x_; // x position of pads 1,2,3
+  std::vector<double> padPosition_y_; // y position of pads 1,2,3
+  std::vector<double> padPosition_z_; // z position of pads 1,2,3
 };
 
 }  // namespace trigscint

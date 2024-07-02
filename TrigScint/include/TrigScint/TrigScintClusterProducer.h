@@ -113,16 +113,14 @@ class TrigScintClusterProducer : public framework::Producer {
   void setPosition(ldmx::TrigScintCluster &cluster);
 
   // TS pad and bar specifications
-  double barWidth_x_{0};
-  double barWidth_y_{0};
-  double barDepth_horizontal_{0};
-  double barDepth_vertical_{0};
-  double barGap_x_{0};
-  double barGap_y_{0};
-  double barGap_z_horizontal_{0};
-  double barGap_z_vertical_{0};
-  int nBarsX_{0};
-  int nBarsY_{0};
+  double barWidth_x_{3.};
+  double barWidth_y_{3.};
+  double barDepth_z_{2.};
+  double barGap_x_{0.1};
+  double barGap_y_{0.3};
+  double barGap_z_{0.3};
+  int nBarsX_{8};
+  int nBarsY_{16};
   double padPosition_x_{-99999.};
   double padPosition_y_{-99999.};
   double padPosition_z_{-99999.};
