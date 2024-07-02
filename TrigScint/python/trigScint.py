@@ -239,22 +239,19 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         # Standard values of a TS pad for trigScint geometry in
         # detector ldmx-det-v14-8gevi
         # Note: The padPosition_z_ is defined as the position of
-        #       the center of the back horizontal bar row,
-        #       i.e the middle of tha bad in z.
-        #       This value is dependant on where we place our TS pads
+        #       the surface of the vertical bar row,
+        #       i.e the surface of the row the electron hits last (if it hits)
         # Note: The number of bars define HALF of the number of bars
         #       due to there being two horizontal rows and
         #       the vertical row is segmented in the y-direction
         self.vertical_bar_width = 3.        # 1 bar (vert.) width in x [mm]
         self.horizontal_bar_width = 3.05    # 1 bar (hor.) width in y [mm]
-        self.vertical_bar_depth = 2.        # 1 bar (vert.) depth in z [mm]
-        self.horizontal_bar_depth = 2.      # 1 bar (hor.) depth in z [mm]
+        self.bar_depth = 2.                 # 1 bar (vert.) depth in z [mm]
         self.vertical_bar_gap = 0.1         # dist. between bars (vert.) [mm]
         self.horizontal_bar_gap = 0.3       # dist. between bars (hor.) [mm]
-        self.depth_bar_gap_horizontal = 0.3 # dist. between bar rows [mm]
-        self.depth_bar_gap_vertical = 0.2   # dist. between bar rows [mm]
-        self.number_vertical_bars = 8       # number of vertical bars [mm]
-        self.number_horizontal_bars = 16    # number of horizontal bars [mm]
+        self.depth_bar_gap = 0.3            # dist. between bar rows [mm]
+        self.number_vertical_bars = 8       # number of vertical bars (one row) [mm]
+        self.number_horizontal_bars = 16    # number of horizontal bars (one row) [mm]
         self.pad_position_x = -99999.       # centr of back (hor.) row [mm]
         self.pad_position_y = -99999.       # centr of back (hor.) row [mm]
         self.pad_position_z = -99999.       # centr of back (hor.) row [mm]
@@ -267,7 +264,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.pad_time= -2.9
         cluster.pad_position_x = -21.5      # Pad offset in x
         cluster.pad_position_y = 0.         # Pad offset in y
-        cluster.pad_position_z = -875.5     # Pad offset in z
+        cluster.pad_position_z = -876.      # Pad offset in z
 
         return cluster
 
@@ -279,7 +276,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.pad_time= -2.7
         cluster.pad_position_x = -19.   # Pad offset in x
         cluster.pad_position_y = 0.     # Pad offset in y
-        cluster.pad_position_z = -815.5 # Pad offset in z
+        cluster.pad_position_z = -816.  # Pad offset in z
 
         return cluster
 
@@ -308,8 +305,8 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
         self.allow_skip_last_collection = False
         self.vertical_bar_start_index = 52
-        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
-        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
+        self.number_horizontal_bars = 16  #16 for x,y segmented geometry only (otherwise 24)
+        self.number_vertical_bars = 8     #8 for x,y segmented geometry only (otherwise 0)
         self.horizontal_bar_width = 3.
         self.horizontal_bar_gap = 0.3
         self.vertical_bar_width = 3.
@@ -317,6 +314,9 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
+        self.pad_position_x = [-21.5, -18.5, 0.]        # x position of pads 1,2,3
+        self.pad_position_y = [0., 0., 0.]              # y position of pads 1,2,3
+        self.pad_position_z = [-876., -816., -2.4262]   # z position of pads 1,2,3
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 

@@ -104,13 +104,19 @@ class TrigScintTrack {
    * Get the x coordinate of the track.
    * @return The x coordinate of the track in mm [mm].
    */
-  float getX() const { return x_; };
+  double getX() const { return x_; };
 
   /**
    * Get the y coordinate of the track.
    * @return The y coordinate of the track [mm].
    */
-  float getY() const { return y_; };
+  double getY() const { return y_; };
+
+  /**
+   * Get the z coordinate of the track.
+   * @return The z coordinate of the track [mm].
+   */
+  std::vector<double> getZ() const { return z_; };
 
   /**
    * Get the uncertainty on the x coordinate of the track.
@@ -207,15 +213,23 @@ class TrigScintTrack {
    * @param x The X position.
    * @param y The Y position.
    */
-  void setPosition(const float x, const float y) {
+  void setPositionXY(const double x, const double y) {
     x_ = x;
     y_ = y;
   };
 
   /**
+   * Set the position of the track [mm].
+  * @param z The Z position.
+  */
+  void setPositionZ(const std::vector<double> z) {
+    z_ = z;
+  }
+  
+  /**
    * Set the uncertainty on the position of the track [mm].
-   * @param x The X position uncertainty.
-   * @param y The Y position uncertainty.
+   * @param sx The X position uncertainty.
+   * @param sy The Y position uncertainty.
    */
   void setSigmaXY(const float sx, const float sy) {
     sx_ = sx;
@@ -224,13 +238,13 @@ class TrigScintTrack {
 
   /**
    * Set the uncertainty on the position of the track [mm].
-   * @param x The X position uncertainty.
+   * @param sx The X position uncertainty.
    */
   void setSigmaX(const float sx) { sx_ = sx; }
 
   /**
    * Set the uncertainty on the position of the track [mm].
-   * @param y The Y position uncertainty.
+   * @param sy The Y position uncertainty.
    */
   void setSigmaY(const float sy) { sy_ = sy; }
 
@@ -317,12 +331,17 @@ class TrigScintTrack {
   /**
    * The X position.
    */
-  float x_{-99999.};
+  double x_{-99999.};
 
   /**
    * The Y position.
    */
-  float y_{-99999.};
+  double y_{-99999.};
+
+  /**
+   * The Z position.
+   */
+  std::vector<double> z_{};
 
   /**
    * The uncertainty on the X position.
@@ -350,11 +369,6 @@ class TrigScintTrack {
    * The Z momentum.
    */
   float pz_{0};
-
-  /**
-   * The Z position.
-   */
-  float z_{0};
 
   /**
    * The ROOT class definition.

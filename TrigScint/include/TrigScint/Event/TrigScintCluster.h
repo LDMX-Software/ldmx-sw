@@ -140,13 +140,13 @@ class TrigScintCluster {
   /** Get cluster centroid in z [mm] (not implmented) */
   double getCentroidZ() const { return centroidZ_; }
 
-  /** Get cluster centroid in x [mm] (not implmented) */
+  /** Get cluster centroid in x [mm] */
   double getPositionX() const {return x_;}
 
-  /** Get cluster centroid in y [mm] (not implmented) */
+  /** Get cluster centroid in y [mm] */
   double getPositionY() const {return y_;}
 
-  /** Get cluster centroid in z [mm] (not implmented) */
+  /** Get cluster centroid in z [mm] */
   double getPositionZ() const {return z_;}
 
   /** Get vector of channel IDs of hits forming the cluster */
