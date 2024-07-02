@@ -112,8 +112,20 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (compressHitContribs_ and contrib_i != -1) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
+      int origin;
+      if (getTrackMap().findIncident(track_id) != 1 && getTrackMap().findIncident(track_id) != 2) {
+        if (getTrackMap().isDescendant(track_id, 1, 100)) {
+          origin = 1;
+        } else if (getTrackMap().isDescendant(track_id, 2, 100)) {
+          origin = 2;
+        } else {
+          origin = -1;
+        }
+      } else {
+        origin = getTrackMap().findIncident(track_id);
+      }
       hit.addContrib(getTrackMap().findIncident(track_id), track_id, pdg, edep,
-                     time);
+                     time, origin);
     }
   } else {
     // no hit contribs and hit already exists
