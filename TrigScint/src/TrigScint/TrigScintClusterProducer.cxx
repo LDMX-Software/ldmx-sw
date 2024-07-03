@@ -18,7 +18,6 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
 
-  // Stuff I added to test position calculation (need to add in python file as well)
   // Bar sizes
   barWidth_x_ = ps.getParameter<double>("vertical_bar_width");
   barWidth_y_ = ps.getParameter<double>("horizontal_bar_width");
@@ -30,10 +29,6 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   // Number of horizontal and vertical bars
   nBarsX_ = ps.getParameter<int>("number_vertical_bars");
   nBarsY_ = ps.getParameter<int>("number_horizontal_bars");
-  // Position of current pad (in relation to the back horizontal row (middle))
-  padPosition_x_ = ps.getParameter<double>("pad_position_x");
-  padPosition_y_ = ps.getParameter<double>("pad_position_y");
-  padPosition_z_ = ps.getParameter<double>("pad_position_z");
 
   if (verbose_) {
     ldmx_log(info) << "In TrigScintClusterProducer: configure done!";
@@ -532,7 +527,7 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
       // Vertical:    *each bar goes entire distance sideways (no overlap)
       //                and starts at half width of bar
       // Depth:       *each bar row separated by one bar depth and gap
-      //                and starts surface of vertical bar??
+      //                and starts surface of vertical bar
       double yConvFactor_ = (barWidth_y_ + barGap_y_) / 2.;
       double yStart_ = -(nBarsY_ * (barWidth_y_ + barGap_y_) - barGap_y_) / 2.;
       double xConvFactor_ = barWidth_x_ + barGap_x_;
@@ -550,8 +545,8 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
         if (std::fmod(centroid_,2.) != 0) {     // If barID odd (front horizontal row)
 
         }
-        y = yStart_ + padPosition_y_ +          // calculate y
-            centroid_*yConvFactor_ + 0.5*barWidth_y_;
+        y = yStart_ + centroid_*yConvFactor_ +
+            0.5*barWidth_y_;                    // calculate y
         // How many horizontal bars are hit
         int hitY = 0;							                // Initialize number of horizontal bars hit
         for (auto hitID : cluster.getHitIDs() ) { // Loop through all barID hits in the cluster
@@ -562,30 +557,28 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
         // Set z-position
         if (hitY == 1) {							                        // if hit on 1 horizontal bar
           if (std::fmod(centroid_,2) != 0) {                    // if barID is odd (front horizontal row)
-            z = padPosition_z_ - 2*zConvFactor_ + zStart;         // move negative direction from pad
+            z = zStart - 2*zConvFactor_;                          // z-position is middle of front horizontal row
           } else {								                              // if barID is even (back horizontal row)
-            z = padPosition_z_ - zConvFactor_ + zStart;}				  // padPosition is z-position
+            z = zStart - zConvFactor_;}				                    // z-position is middle of back horizontal row
         } else if (hitY == 2) {								                  // if hits 2 horizontal bars
-          z = padPosition_z_ - zConvFactor_*3/2 + zStart;         // z-position between horizontal rows
+          z = zStart - zConvFactor_*3/2;                          // z-position between horizontal rows
         } else {								                                // if hits 3 horizontal bars
           // The idea here is that if hitIDsum is even it must be 2 front row hits + 1 back row hits
           int hitIDsum = 0;						                          // Sum of IDs
           for (auto i : cluster.getHitIDs()) {hitIDsum += i;}     // Calculate sum
           
           if (hitIDsum%2 != 0) {						                      // If 1 front row hit + 2 back row hits
-            z = padPosition_z_ - zConvFactor_*4/3 + zStart;         // move 1/3 zConvFactor due to mostly back row hits
+            z = zStart - zConvFactor_*4/3;                          // z-position is back row minus 1/3*(bar_width + bar_gap)
           } else {							                                  // If 2 front row hits + 1 back row hit
-            z = padPosition_z_ - zConvFactor_*5/3 + zStart;         // move 2/3 zConvFactor due to mostly front row hits
+            z = zStart - zConvFactor_*5/3;                          // z-position is back row minus 2/3*(bar_width + bar_gap)
           }}
       } else {								                                  // if we are looking at vertical bar centroid
         int cx = std::floor((centroid_ - vertBarStartIdx_) / 4.); // conversion from centroid_ ID to barID (starting at 0)
-        x = xStart_ + padPosition_x_ +                            // calculate x
-            cx*xConvFactor_ + 0.5*barWidth_x_;
-        z = padPosition_z_ + zStart;                              // calculate z
+        x = xStart_ + cx*xConvFactor_ + 0.5*barWidth_x_;          // calculate x
+        z = zStart;                                               // calculate z
       }
 
-      // Add cluster position
-      cluster.setPositionXYZ(x,y,z);    // add cluster position to cluster
+      cluster.setPositionXYZ(x,y,z);    // Add cluster position to cluster
 
       return;
 }

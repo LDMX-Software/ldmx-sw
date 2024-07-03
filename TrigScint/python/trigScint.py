@@ -238,23 +238,14 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
 
         # Standard values of a TS pad for trigScint geometry in
         # detector ldmx-det-v14-8gevi
-        # Note: The padPosition_z_ is defined as the position of
-        #       the surface of the vertical bar row,
-        #       i.e the surface of the row the electron hits last (if it hits)
-        # Note: The number of bars define HALF of the number of bars
-        #       due to there being two horizontal rows and
-        #       the vertical row is segmented in the y-direction
         self.vertical_bar_width = 3.        # 1 bar (vert.) width in x [mm]
-        self.horizontal_bar_width = 3.#05    # 1 bar (hor.) width in y [mm]
+        self.horizontal_bar_width = 3.      # 1 bar (hor.) width in y [mm]
         self.bar_depth = 2.                 # 1 bar (vert.) depth in z [mm]
         self.vertical_bar_gap = 0.1         # dist. between bars (vert.) [mm]
         self.horizontal_bar_gap = 2.1       # dist. between bars (hor.) [mm]
         self.depth_bar_gap = 0.3            # dist. between bar rows [mm]
         self.number_vertical_bars = 8       # number of vertical bars (one row) [mm]
         self.number_horizontal_bars = 16    # number of horizontal bars (one row) [mm]
-        self.pad_position_x = -99999.       # centr of back (hor.) row [mm]
-        self.pad_position_y = -99999.       # centr of back (hor.) row [mm]
-        self.pad_position_z = -99999.       # centr of back (hor.) row [mm]
 
     def pad1() :
         """Get the cluster producer for the trigger pad most upstream of tagger"""
@@ -262,9 +253,6 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad1'
         cluster.output_collection= 'TriggerPad1Clusters'
         cluster.pad_time= -2.9
-        cluster.pad_position_x = -21.5      # Pad offset in x
-        cluster.pad_position_y = 0.         # Pad offset in y
-        cluster.pad_position_z = -876.      # Pad offset in z
 
         return cluster
 
@@ -274,9 +262,6 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad2'
         cluster.output_collection= 'TriggerPad2Clusters'
         cluster.pad_time= -2.7
-        cluster.pad_position_x = -19.   # Pad offset in x
-        cluster.pad_position_y = 0.     # Pad offset in y
-        cluster.pad_position_z = -816.  # Pad offset in z
 
         return cluster
 
@@ -286,9 +271,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         cluster.input_collection = 'trigScintDigisPad3'
         cluster.output_collection= 'TriggerPad3Clusters'
         cluster.pad_time= 0.
-        cluster.pad_position_x = 0.         # Pad offset in x
-        cluster.pad_position_y = 0.         # Pad offset in y
-        cluster.pad_position_z = -2.4262    # Pad offset in z
+
         return cluster
 
 
@@ -314,9 +297,6 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
-        self.pad_position_x = [-21.5, -18.5, 0.]        # x position of pads 1,2,3
-        self.pad_position_y = [0., 0., 0.]              # y position of pads 1,2,3
-        self.pad_position_z = [-876., -816., -2.4262]   # z position of pads 1,2,3
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 

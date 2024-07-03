@@ -121,9 +121,6 @@ class TrigScintClusterProducer : public framework::Producer {
   double barGap_z_{0.3};
   int nBarsX_{8};
   int nBarsY_{16};
-  double padPosition_x_{-99999.};
-  double padPosition_y_{-99999.};
-  double padPosition_z_{-99999.};
 };
 
 }  // namespace trigscint
