@@ -3,7 +3,6 @@
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-// #include "SimCore/G4User/TrackingAction.h"
 
 #include <algorithm>
 #include <fstream>
@@ -20,8 +19,6 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
 
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   clusterPassName_ = ps.getParameter<std::string>("clusterPassName");
-
-  // depth_ = ps.getParameter<int>("depth");
   return;
 }
 
@@ -30,10 +27,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_)};
   auto ecalClusters{event.getCollection<ldmx::EcalCluster>(clusterCollName_, clusterPassName_)};
 
-  std::unordered_map<int, int> ancestorTag;
-  ancestorTag.reserve(ecalRecHits.size());
-
-  // auto trackMap{simcore::g4user::TrackingAction::get()->getTrackMap()};
+  std::unordered_map<int, std::tuple<int, double, double, double>> hitInfo;
+  hitInfo.reserve(ecalRecHits.size());
 
   for (const auto& hit : ecalRecHits) {
     auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
@@ -42,30 +37,23 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       int prevAncestor = 0;
       bool tagged = false;
       int tag = 0;
+      double edep1 = 0;
+      double edep2 = 0;
+      double elost = 0;
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         const auto& c = it->getContrib(i);
-        if (c.originID != 1 && c.originID != 2) {
-          // trace back to 1/2
-          // bool dec1 = trackMap.isDescendant(c.incidentID, 1, depth_);
-          // bool dec2 = trackMap.isDescendant(c.incidentID, 2, depth_);
-          // if (dec1 && dec2) {
-          //   ancestor = 3;
-          // } else if (dec1) {
-          //   ancestor = 1;
-          // } else if (dec2) {
-          //   ancestor = 2;
-          // } else {
-          //   search was not deep enough -- while loop, update depth? Or just make depth huge?
-          // }
+        if (!tagged && c.originID != 1 && c.originID != 2) {
+          // should not happen anymore
           tag = 0;
           tagged = true;
-          break;
         } else ancestor = c.originID;
-        if (i != 0 && prevAncestor != ancestor) {
+        if (ancestor == 1) edep1 += c.edep;
+        else if (ancestor == 2) edep2 += c.edep;
+        else elost += c.edep;
+        if (!tagged && i != 0 && prevAncestor != ancestor) {
           // mixed case
           tag = 3;
           tagged = true;
-          break;
         }
         prevAncestor = ancestor;
       }
@@ -73,7 +61,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         tag = prevAncestor;        
       }
       histograms_.fill("ancestors", tag);
-      ancestorTag.insert({hit.getID(), tag});
+      hitInfo.insert({hit.getID(), {tag, edep1, edep2, elost}});
     }
   }
 
@@ -84,11 +72,15 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     double n1 = 0;
     double n2 = 0;
     double m = 0;
+    double e1 = 0;
+    double e2 = 0;
+    double elost = 0;
     const auto& hitIDs = cl.getHitIDs();
     for (const auto& id : hitIDs) {
-      auto it = ancestorTag.find(id);
-      if (it != ancestorTag.end()) {
-        switch(it->second) {
+      auto it = hitInfo.find(id);
+      if (it != hitInfo.end()) {
+        auto t = it->second;
+        switch(std::get<0>(t)) {
           case 0:
             unclear++;
             break;
@@ -104,28 +96,49 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
           default:
             break;
         }
+        
+        e1 += std::get<1>(t);
+        e2 += std::get<2>(t);
+        elost += std::get<3>(t);
       }
       clusteredHits++;
     }
     if ((n1 + n2) > 0) {
       double percentage;
       double unfiltered;
+      double eperc;
+      double eunfiltered;
       if (n1 >= n2) {
         percentage = 100.*(n1/(n1+n2));
         unfiltered = 100.*(n1/(n1+n2+m+unclear));
+        eperc = 100.*(e1/(e1+e2));
+        eunfiltered = 100.*(e1/(e1+e2+elost));
       } else {
         percentage = 100.*(n2/(n1+n2));
         unfiltered = 100.*(n2/(n1+n2+m+unclear));
+        eperc = 100.*(e2/(e1+e2));
+        eunfiltered = 100.*(e2/(e1+e2+elost));
       }
       histograms_.fill("same_ancestor", percentage);
-      histograms_.fill("UF_same_ancestor", unfiltered);
+      if (unclear > 0) {
+        histograms_.fill("UF_same_ancestor", unfiltered);
+      }
+      histograms_.fill("energy_percentage", eperc);
+      if (elost > 0) {
+        histograms_.fill("UF_energy_percentage", eunfiltered);
+      }
     }
     if ((n1 + n2 + m) > 0) {
       histograms_.fill("mixed_ancestry", 100.*(m/(n1+n2+m)));
-      histograms_.fill("UF_mixed_ancestry", 100.*(m/(n1+n2+m+unclear)));
+      if (unclear > 0) {
+        histograms_.fill("UF_mixed_ancestry", 100.*(m/(n1+n2+m+unclear)));
+      }
     }
-    if ((n1 + n2 + m + unclear) > 0) {
+    if (unclear > 0 && (n1 + n2 + m + unclear) > 0) {
       histograms_.fill("unclear_ancestry", 100.*(unclear/(n1+n2+m+unclear)));
+    }
+    if (elost > 0) {
+      histograms_.fill("lost_energy", 100.*(elost/(e1+e2+elost)));
     }
   }
 
