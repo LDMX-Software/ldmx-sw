@@ -245,10 +245,10 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         #       due to there being two horizontal rows and
         #       the vertical row is segmented in the y-direction
         self.vertical_bar_width = 3.        # 1 bar (vert.) width in x [mm]
-        self.horizontal_bar_width = 3.05    # 1 bar (hor.) width in y [mm]
+        self.horizontal_bar_width = 3.#05    # 1 bar (hor.) width in y [mm]
         self.bar_depth = 2.                 # 1 bar (vert.) depth in z [mm]
         self.vertical_bar_gap = 0.1         # dist. between bars (vert.) [mm]
-        self.horizontal_bar_gap = 0.3       # dist. between bars (hor.) [mm]
+        self.horizontal_bar_gap = 2.1       # dist. between bars (hor.) [mm]
         self.depth_bar_gap = 0.3            # dist. between bar rows [mm]
         self.number_vertical_bars = 8       # number of vertical bars (one row) [mm]
         self.number_horizontal_bars = 16    # number of horizontal bars (one row) [mm]
@@ -308,9 +308,9 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.number_horizontal_bars = 16  #16 for x,y segmented geometry only (otherwise 24)
         self.number_vertical_bars = 8     #8 for x,y segmented geometry only (otherwise 0)
         self.horizontal_bar_width = 3.
-        self.horizontal_bar_gap = 0.3
+        self.horizontal_bar_gap = 2.1
         self.vertical_bar_width = 3.
-        self.vertical_bar_gap = 0.3
+        self.vertical_bar_gap = 0.1
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0

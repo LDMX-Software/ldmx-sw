@@ -546,7 +546,10 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
 
       centroid_ = cluster.getCentroid();  // Get cluster centroid
 
-      if (centroid_ < vertBarStartIdx_) {		  // if we are looking at horizontal bar centroid
+      if (centroid_ < vertBarStartIdx_) {		  // If we are looking at horizontal bar centroid
+        if (std::fmod(centroid_,2.) != 0) {     // If barID odd (front horizontal row)
+
+        }
         y = yStart_ + padPosition_y_ +          // calculate y
             centroid_*yConvFactor_ + 0.5*barWidth_y_;
         // How many horizontal bars are hit
@@ -558,7 +561,7 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
         
         // Set z-position
         if (hitY == 1) {							                        // if hit on 1 horizontal bar
-          if (std::fmod(centroid_ - vertBarStartIdx_,2) != 0) { // if barID is odd (front horizontal row)
+          if (std::fmod(centroid_,2) != 0) {                    // if barID is odd (front horizontal row)
             z = padPosition_z_ - 2*zConvFactor_ + zStart;         // move negative direction from pad
           } else {								                              // if barID is even (back horizontal row)
             z = padPosition_z_ - zConvFactor_ + zStart;}				  // padPosition is z-position
