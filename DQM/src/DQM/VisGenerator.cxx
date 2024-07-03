@@ -23,6 +23,8 @@ namespace dqm {
     ecalClusterColl_ = ps.getParameter<std::string>("ecalClusterColl");
     ecalClusterPass_ = ps.getParameter<std::string>("ecalClusterPass");
 
+    visualizeElectronTruth_ = ps.getParameter<bool>("visualizeElectronTruth");
+    truthFilename_ = ps.getParameter<std::string>("truthFilename");
     filename_ = ps.getParameter<std::string>("filename");
     runNbr_ = ps.getParameter<int>("runNumber");
     return;
@@ -46,11 +48,17 @@ namespace dqm {
     if (includeEcalClusters_ || includeEcalRecHits_) {
       std::vector<ldmx::EcalCluster> ecalClusters;
       std::vector<ldmx::EcalHit> ecalRecHits;
-      std::unordered_map<int, int> hitToCluster;
+      std::unordered_map<int, std::vector<int>> hitToCluster;
       if (includeEcalClusters_) ecalClusters = event.getCollection<ldmx::EcalCluster>(ecalClusterColl_, ecalClusterPass_);
       if (includeEcalRecHits_) {
         ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
         if (includeEcalClusters_) hitToCluster.reserve(ecalRecHits.size());
+        // ----- CLUSTER TRUTH VISUALISATION -----
+        if (visualizeElectronTruth_) {
+          truth[eKey]["event number"] = event.getEventNumber();
+          truth[eKey]["run number"] = runNbr_;
+          truth[eKey]["Hits"] = json::object();
+        }
       }
 
       int clusterID = 1;
@@ -81,8 +89,10 @@ namespace dqm {
               clusterSize = 5.;
             }
             // create centroid object
+            cluster["ID"] = -1;
             cluster["originID"] = -1;
-            cluster["pdgID"] = -1;
+            cluster["E from e1 (%)"] = -1.;
+            cluster["E from e2 (%)"] = -1.;
             cluster["energy"] = cl.getEnergy();
             cluster["color"] = hex;
             cluster["pos"] = { cl.getCentroidX(), cl.getCentroidY(), cl.getCentroidZ(),
@@ -91,7 +101,14 @@ namespace dqm {
             if (includeEcalRecHits_) {
               for (auto const& clHitID : cl.getHitIDs()) {
                 // map hit id to cluster it belongs to
-                hitToCluster.insert({clHitID, clusterID});
+                auto it = hitToCluster.find(clHitID);
+                if (it != hitToCluster.end()) {
+                  auto& vec = it->second;
+                  vec.push_back(clusterID);
+                  // std::cout << "adding id " << clHitID << std::endl;
+                } else {
+                  hitToCluster.insert({clHitID, {clusterID}});
+                }
               }
               if (cl.getHitIDs().size() == 1) {
                 singleHitClusters++;
@@ -113,45 +130,101 @@ namespace dqm {
       if (includeEcalRecHits_) {
 
         std::string hit_coll_name;
-        if (includeEcalClusters_) hit_coll_name = "clusterless_hits";
+        if (includeEcalClusters_) {
+          hit_coll_name = "clusterless_hits";
+          j[eKey]["Hits"]["shared_hits"] = json::array();
+        }
         else hit_coll_name = "ecal_rec_hits";
         j[eKey]["Hits"][hit_coll_name] = json::array();
 
+        if (visualizeElectronTruth_) {
+          truth[eKey]["Hits"]["e1"] = json::array();
+          truth[eKey]["Hits"]["e2"] = json::array();
+          truth[eKey]["Hits"]["mixed"] = json::array();
+        }
+
         for (auto const& hit : ecalRecHits) {
-          // if (!hit.isNoise()) {
-            json h = json::object();
-            h["type"] = "Box";
-            h["energy"] = hit.getEnergy();
-            if (includeGroundTruth_) {
-              auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
-              if (it != ecalSimHits.end()) {
-                h["originID"] = json::array();
-                for (int i = 0; i < it->getNumberOfContribs(); i++) {
-                  auto c = it->getContrib(i);
-                  h["originID"].push_back(c.originID);
-                  h["pdgID"].push_back(c.pdgCode);
+          json h = json::object();
+          h["ID"] = hit.getID();
+          h["time"] = hit.getTime();
+          h["type"] = "Box";
+          h["energy"] = hit.getEnergy();
+          if (includeGroundTruth_) {
+            auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
+            if (it != ecalSimHits.end()) {
+              double e1 = 0;
+              double e2 = 0;
+              int tag = 0;
+              h["originID"] = json::array();
+              for (int i = 0; i < it->getNumberOfContribs(); i++) {
+                auto c = it->getContrib(i);
+                h["originID"].push_back(c.originID);
+                if (i != 0 && c.originID != tag) tag = 3;
+                else tag = c.originID;
+                if (c.originID == 1) e1 += c.edep;
+                else if (c.originID == 2) e2 += c.edep;
+              }
+              if (e1+e2 > 0) {
+                h["E from e1 (%)"] = 100.*e1/(e1+e2);
+                h["E from e2 (%)"] = 100.*e2/(e1+e2);
+              }
+              if (visualizeElectronTruth_) {
+                clusterHitSize = 2.0;
+                json t = json::object();
+                t["ID"] = hit.getID();
+                t["time"] = hit.getTime();
+                t["type"] = "Box";
+                t["energy"] = hit.getEnergy();
+                t["originID"] = tag;
+                t["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                              clusterHitSize, clusterHitSize, clusterHitSize };
+                if (tag == 1) {
+                  t["color"] = "0xEADE76";
+                  truth[eKey]["Hits"]["e1"].push_back(t);
+                } else if (tag == 2) {
+                  t["color"] = "0x76BDEA";
+                  truth[eKey]["Hits"]["e2"].push_back(t);
+                } else {
+                  t["color"] = "0x76EA84";
+                  truth[eKey]["Hits"]["mixed"].push_back(t);
                 }
               }
             }
-            if (includeEcalClusters_) {
-              auto it = hitToCluster.find(hit.getID());
-              if (it != hitToCluster.end()) { // if hit is associated to a cluster
-                auto id = it->second;
-                // add hit to cluster collection
-                // color will automatically be set to same as centroid
-                std::string cKey = "cluster_" + std::to_string(id);
-                h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
-                                clusterHitSize, clusterHitSize, clusterHitSize };
-                j[eKey]["Hits"][cKey].push_back(h);
-                continue;
+          }
+          if (includeEcalClusters_) {
+            auto it = hitToCluster.find(hit.getID());
+            if (it != hitToCluster.end()) { // if hit is associated to a cluster
+              auto& vec = it->second;
+              
+              if (vec.size() != 1) {
+                json sh = json::object();
+                clusterHitSize = 4.0;
+                sh["ID"] = hit.getID();
+                sh["time"] = hit.getTime();
+                sh["type"] = "Box";
+                sh["energy"] = hit.getEnergy();
+                sh["color"] = "0xA9A9A9";
+                sh["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                              clusterHitSize, clusterHitSize, clusterHitSize };
+                j[eKey]["Hits"]["shared_hits"].push_back(sh);
               }
+              // add hit to cluster collection
+              // color will automatically be set to same as centroid
+              clusterHitSize = 2.0;
+              h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                              clusterHitSize, clusterHitSize, clusterHitSize };
+              for (int i = 0; i < vec.size(); i++) {
+                std::string cKey = "cluster_" + std::to_string(vec[0]);
+                j[eKey]["Hits"][cKey].push_back(h);
+              }
+              continue;
             }
-            // if hit is not associated to a cluster
-            h["color"] = "0xFF0000";
-            h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
-                          clusterlessHitSize, clusterlessHitSize, clusterlessHitSize };
-            j[eKey]["Hits"][hit_coll_name].push_back(h);
-          // }
+          }
+          // if hit is not associated to a cluster
+          h["color"] = "0xFF0000";
+          h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                        clusterlessHitSize, clusterlessHitSize, clusterlessHitSize };
+          j[eKey]["Hits"][hit_coll_name].push_back(h);
         }
       }
     }
@@ -162,15 +235,23 @@ namespace dqm {
     // GROUND TRUTH (SIMULATED) PATHS
     if (includeGroundTruth_) {
       j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
+      if (visualizeElectronTruth_) {
+        truth[eKey]["Tracks"] = json::object();
+        truth[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
+      }
       auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
       for (const auto& it : particle_map) {
         json track = json::object();
         const auto& start = it.second.getVertex();
         const auto& end = it.second.getEndPoint();
+        track["trackID"] = it.first;
         track["parentID"] = {it.second.getParents()};
         track["pos"] = { { start[0], start[1], start[2] },
                           { end[0], end[1], end[2] } };
         j[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
+        if (it.second.getParents()[0] == 0) {
+          truth[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
+        }
       }
     }
     return;
@@ -180,6 +261,10 @@ void VisGenerator::onProcessEnd(){
     std::ofstream file(filename_);
     file << std::setw(2) << j << std::endl;
     file.close();
+
+    std::ofstream truthfile(truthFilename_);
+    truthfile << std::setw(2) << truth << std::endl;
+    truthfile.close();
     return;
 };
 
