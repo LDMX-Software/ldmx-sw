@@ -36,6 +36,8 @@ class EcalCluster : public ldmx::CaloCluster {
    */
   void addHits(const std::vector<const ldmx::EcalHit*> hitsVec);
 
+  void addHits(const std::vector<ldmx::EcalHit> hitsVec);
+
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
