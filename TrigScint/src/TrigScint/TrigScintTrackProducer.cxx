@@ -27,10 +27,6 @@ void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
   barGap_x_ = ps.getParameter<double>("vertical_bar_gap");
   skipLast_ = ps.getParameter<bool>("allow_skip_last_collection");
 
-  padPosition_x_ = ps.getParameter<std::vector<double>>("pad_position_x");
-  padPosition_y_ = ps.getParameter<std::vector<double>>("pad_position_y");
-  padPosition_z_ = ps.getParameter<std::vector<double>>("pad_position_z");
-
   // TO DO: allow any number of input collections
 
   if (verbose_) {
@@ -557,7 +553,7 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
   // Set track z position
   std::vector<double> z{};
   for (int i = 0; i < clusters.size(); i++) {
-    z.push_back(clusters.at(i).getPositionZ() - padPosition_z_[i]);
+    z.push_back(clusters.at(i).getPositionZ());
   }
   tr.setPositionZ(z);
 
