@@ -538,13 +538,13 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
       double x = -99999.;                 // Initialise x at nonsense value
       double y = -99999.;                 // Initialise y at nonsense value
       double z = -99999.;								  // Initialise z at nonsense value
+      double sx = xConvFactor_ / 2.;      // Set uncertainty in x position
+      double sy = yConvFactor_ / 2.;      // Set uncertainty in y position
+      double sz = zConvFactor_ / 2.;      // Set uncertainty in z position
 
       centroid_ = cluster.getCentroid();  // Get cluster centroid
 
       if (centroid_ < vertBarStartIdx_) {		  // If we are looking at horizontal bar centroid
-        if (std::fmod(centroid_,2.) != 0) {     // If barID odd (front horizontal row)
-
-        }
         y = yStart_ + centroid_*yConvFactor_ +
             0.5*barWidth_y_;                    // calculate y
         // How many horizontal bars are hit
@@ -556,9 +556,9 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
         
         // Set z-position
         if (hitY == 1) {							                        // if hit on 1 horizontal bar
-          if (std::fmod(centroid_,2) != 0) {                    // if barID is odd (front horizontal row)
+          if (std::fmod(centroid_,2) == 0) {                    // if barID is even (front horizontal row)
             z = zStart - 2*zConvFactor_;                          // z-position is middle of front horizontal row
-          } else {								                              // if barID is even (back horizontal row)
+          } else {								                              // if barID is odd (back horizontal row)
             z = zStart - zConvFactor_;}				                    // z-position is middle of back horizontal row
         } else if (hitY == 2) {								                  // if hits 2 horizontal bars
           z = zStart - zConvFactor_*3/2;                          // z-position between horizontal rows
@@ -578,7 +578,8 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
         z = zStart;                                               // calculate z
       }
 
-      cluster.setPositionXYZ(x,y,z);    // Add cluster position to cluster
+      cluster.setPositionXYZ(x,y,z);        // Set cluster centroid position
+      cluster.setUncertaintyXYZ(sx,sy,sz);  // Set uncertainty of cluster position
 
       return;
 }
