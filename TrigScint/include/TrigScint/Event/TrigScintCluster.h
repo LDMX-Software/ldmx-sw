@@ -103,6 +103,18 @@ class TrigScintCluster {
   }
 
   /**
+   *The cluster centroid position uncertainty in x,y,z (real space)
+   * @param sx Cluster x coordinate uncertainty
+   * @param sy Cluster y coordinate uncertainty
+   * @param sz Cluster z coordinate uncertainty
+   */
+  void setUncertaintyXYZ(double sx, double sy, double sz) {
+    sx_ = sx;
+    sy_ = sy;
+    sz_ = sz;
+  }
+
+  /**
    * @param centroid The channel ID centroid
    */
   void setCentroid(double centroid) { centroid_ = centroid; }
@@ -148,6 +160,15 @@ class TrigScintCluster {
 
   /** Get cluster centroid in z [mm] */
   double getPositionZ() const {return z_;}
+
+  /** Get cluster centroid position uncertainty in x [mm] */
+  double getUncertaintyX() const {return sx_;}
+
+  /** Get cluster centroid position uncertainty in y [mm] */
+  double getUncertaintyY() const {return sy_;}
+
+  /** Get cluster centroid position uncertainty in z [mm] */
+  double getUncertaintyZ() const {return sz_;}
 
   /** Get vector of channel IDs of hits forming the cluster */
   const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
@@ -196,6 +217,15 @@ class TrigScintCluster {
 
   // Centroid position in z [mm]
   double z_{-99999.};
+
+  // Centroid uncertainty in x position [mm]
+  double sx_{-99999.};
+
+  // Centroid uncertainty in y position [mm]
+  double sy_{-99999.};
+
+  // Centroid uncertainty in z position [mm]
+  double sz_{-99999.};
 
   // fraction of cluster energy deposited in a sim hit associated with beam
   // electrons
