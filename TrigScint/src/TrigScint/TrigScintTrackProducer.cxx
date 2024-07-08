@@ -158,15 +158,20 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
       for (const auto &cluster1 : clusters_pad1) {
         if (verbose_ > 1) {
           ldmx_log(debug) << "\tGot pad1 cluster with centroid "
-                          << cluster1.getCentroid();
+                          << cluster1.getCentroid() << " " << cluster1.getCentroidX() << " " << cluster1.getCentroidY();
         }
+        //std::cout << centroid << std::endl;
+        //if (cluster1.getCentroid() >= vertBarStartIdx_) std::cout << seed.getCentroidX() << " " << cluster1.getCentroidX() << std::endl;
+
         if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
             (centroid >= vertBarStartIdx_  // then in vertical bars
-             //&& fabs(seed.getCentroidX() - cluster1.getCentroidX()) < maxDelta_)) {
-             && seed.getCentroidX() == cluster1.getCentroidX())) {
+             && fabs(seed.getCentroidX() - cluster1.getCentroidX()) < maxDelta_)) {
+             //&& seed.getCentroidX() == cluster1.getCentroidX())) {
           // use geometry y overlap scheme to see if this is really a match in x
           // should be done in a map
 
+          //std::cout << centroid << " " << seed.getCentroidY() << " " << cluster1.getCentroid() << " " << cluster1.getCentroidY() << std::endl;
+          //std::cout << centroid << " " << seed.getTime() << " " << cluster1.getTime() << std::endl;
           if (centroid >= vertBarStartIdx_ &&
               seed.getCentroidY() < cluster1.getCentroidY()) {
             // impossible combination
@@ -194,7 +199,7 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
           for (const auto &cluster2 : clusters_pad2) {
             if (verbose_ > 1) {
               ldmx_log(debug) << "\tGot pad2 cluster with centroid "
-                              << cluster2.getCentroid();
+                              << cluster2.getCentroid() << " " << cluster2.getCentroidX() << " " << cluster2.getCentroidY();
             }
 
             if (fabs(cluster2.getCentroid() - centroid) < maxDeltaLastPad_ ||

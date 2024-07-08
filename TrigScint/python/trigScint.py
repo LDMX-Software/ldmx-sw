@@ -235,7 +235,8 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPad1Clusters"
         self.verbosity = 0
-
+        self.two_vertical_layers = 0
+        
     def pad1() :
         """Get the cluster producer for the trigger pad most upstream of tagger"""
         cluster = TrigScintClusterProducer( 'trigScintClustersPad1' )
