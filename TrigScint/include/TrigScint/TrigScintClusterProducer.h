@@ -101,6 +101,8 @@ class TrigScintClusterProducer : public framework::Producer {
   // cluster time (energy weighted based on hit time)
   float time_{0.};
 
+  int twoVertLayers_{0};
+
   // empty map container
   std::map<int, int> hitChannelMap_;
 };

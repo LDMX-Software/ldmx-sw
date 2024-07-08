@@ -17,6 +17,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   vertBarStartIdx_ = ps.getParameter<int>("vertical_bar_start_index");
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
+  twoVertLayers_ = ps.getParameter<int>("two_vertical_layers");
   if (verbose_) {
     ldmx_log(info) << "In TrigScintClusterProducer: configure done!";
     ldmx_log(info) << "Got parameters: \nSeed threshold:   " << seed_
@@ -416,8 +417,15 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
           vertBarStartIdx_)  // then in horizontal bars --> we don't know X
         cx = -1;  // set to nonsense in barID space. could translate to x=0 mm
       else {
-        cx = (int)((centroid_ - vertBarStartIdx_) / 4);  // start at 0
-        cy = (int)centroid_ % 4;
+        if (twoVertLayers_ == 0) {  
+          cx = (int)((centroid_ - vertBarStartIdx_) / 4);  // start at 0
+          cy = (int)centroid_ % 4;
+        }
+        else {
+          //cx = (int)(centroid_ - vertBarStartIdx_);
+          centroid_ > 100 ? cy = 2 : cy = 0;
+          centroid_ > 100 ? cx = (float)(centroid_ - 104) : cx = (float)(centroid_ - vertBarStartIdx_);
+        }
       }
       cluster.setCentroidXYZ(cx, cy, cz);
       cluster.setEnergy(valE_);
