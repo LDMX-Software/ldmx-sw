@@ -23,6 +23,10 @@ class VisGenerator : public framework::Analyzer {
 
     virtual void analyze(const framework::Event& event);
 
+    void ecalClusterRecHit(const framework::Event& event, const std::string& eKey);
+
+    void groundTruthTracks(const framework::Event& event, const std::string& eKey);
+
     virtual void onProcessEnd();
 
   private:
@@ -47,12 +51,14 @@ class VisGenerator : public framework::Analyzer {
     // Include ecal clusters
     bool includeEcalClusters_;
 
-    // Collection name for Ecal Clusters
+    // Collection name for ecal clusters
     std::string ecalClusterColl_;
 
+    // Pass name for ecal clusters
     std::string ecalClusterPass_;
 
-    bool visualizeElectronTruth_;
+    // Generate json file visualizing hit origins
+    bool visHitOrigin_;
     std::string truthFilename_;
 
     // Output filename
@@ -66,7 +72,10 @@ class VisGenerator : public framework::Analyzer {
     nlohmann::json truth;
 
     std::vector<std::string> colors { "0xFFB6C1", "0xFFA500", "0xFFFF00", 
-                                      "0x7FFF00", "0x00FFFF", "0xBC8F8F", "0xFFF0F5", "0x663399"};
+                                      "0x7FFF00", "0x00FFFF", "0x663399"};
+
+    std::vector<std::string> colorstrings { "pink", "orange", "yellow", 
+                                      "green", "blue", "purple"};
 };
 
 }
