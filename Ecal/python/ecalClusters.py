@@ -60,12 +60,20 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         # self.depth = 100
 
         self.build1DHistogram("ancestors", "Ancestors of particles", 4, 0, 3)
+
         self.build1DHistogram("same_ancestor", "Percentage of hits in cluster coming from the electron that produced majority of hits", 10, 50, 100)
         self.build1DHistogram("UF_same_ancestor", "Percentage of hits in cluster coming from the electron that produced majority of hits", 10, 0, 100)
-        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced majority of hits", 10, 0, 100)
-        self.build1DHistogram("UF_energy_percentage", "Percentage of energy in cluster coming from the electron that produced majority of hits", 10, 0, 100)
+        self.build1DHistogram("energy_percentage", "Percentage of energy in cluster coming from the electron that produced majority of energy", 10, 50, 100)
+        self.build1DHistogram("UF_energy_percentage", "Percentage of energy in cluster coming from the electron that produced majority of energy", 10, 0, 100)
+        self.build1DHistogram("mixed_hit_energy", "Percentage of total energy coming from hits with energy contributions from both electrons", 10, 0, 100)
         self.build1DHistogram("mixed_ancestry", "Percentage of hits in cluster being contributed to by both electron 1 and 2", 20, 0, 100)
         self.build1DHistogram("UF_mixed_ancestry", "Percentage of hits in cluster being contributed to by both electron 1 and 2", 20, 0, 100)
         self.build1DHistogram("unclear_ancestry", "Percentage of hits in cluster where ancestry is unclear", 20, 0, 100)
         self.build1DHistogram("lost_energy", "Percentage of energy not from electron 1 and 2 (should be zero)", 20, 0, 100)
         self.build1DHistogram("clusterless_hits", "Number of hits not in a cluster", 10, 0, 200)
+
+        self.build2DHistogram("total_energy_vs_hits", "Total energy", 30, 0, 150, "Hits in cluster", 20, 0, 200)
+        self.build2DHistogram("total_energy_vs_purity", "Total energy", 30, 0, 150, "Energy purity %", 10, 50, 100)
+        self.build2DHistogram("cluster_energy_vs_calculated", "Cluster energy", 100, 0, 10000, "Calculated energy", 100, 0, 150)
+        self.build2DHistogram("distance_purity", "Distance in xy-plane", 20, 0, 220, "Purity %", 10, 50, 100)
+        self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 10, 50, 100)
