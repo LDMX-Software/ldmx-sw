@@ -3,6 +3,8 @@
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "DetDescr/SimSpecialID.h"
 
 #include <algorithm>
 #include <fstream>
@@ -29,6 +31,23 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
 
   std::unordered_map<int, std::tuple<int, double, double, double>> hitInfo;
   hitInfo.reserve(ecalRecHits.size());
+
+  std::vector<float> pos1;
+  std::vector<float> pos2;
+  bool p1 = false;
+  bool p2 = false;
+  double dist;
+  auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+  for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
+    if (spHit.getTrackID() == 1) {
+      pos1 = spHit.getPosition();
+      p1 = true;
+    } else if (spHit.getTrackID() == 2) {
+      pos2 = spHit.getPosition();
+      p2 = true;
+    }
+  }
+  if (p1 && p2) dist = std::sqrt(std::pow((pos1[0]-pos2[0]), 2) + std::pow((pos1[1]-pos2[1]), 2));
 
   for (const auto& hit : ecalRecHits) {
     auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
@@ -74,6 +93,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     double m = 0;
     double e1 = 0;
     double e2 = 0;
+    double em = 0;
     double elost = 0;
     const auto& hitIDs = cl.getHitIDs();
     for (const auto& id : hitIDs) {
@@ -92,6 +112,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
             break;
           case 3:
             m++;
+            em += std::get<1>(t) + std::get<2>(t);
             break;
           default:
             break;
@@ -103,30 +124,47 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       }
       clusteredHits++;
     }
-    if ((n1 + n2) > 0) {
-      double percentage;
-      double unfiltered;
+    if ((e1 + e2) > 0) {
       double eperc;
       double eunfiltered;
-      if (n1 >= n2) {
-        percentage = 100.*(n1/(n1+n2));
-        unfiltered = 100.*(n1/(n1+n2+m+unclear));
+      double emixed;
+      if (e1 >= e2) {
         eperc = 100.*(e1/(e1+e2));
         eunfiltered = 100.*(e1/(e1+e2+elost));
       } else {
-        percentage = 100.*(n2/(n1+n2));
-        unfiltered = 100.*(n2/(n1+n2+m+unclear));
         eperc = 100.*(e2/(e1+e2));
         eunfiltered = 100.*(e2/(e1+e2+elost));
+      }
+
+      histograms_.fill("energy_percentage", eperc);
+      if (elost > 0) {
+        histograms_.fill("UF_energy_percentage", eunfiltered);
+      }
+      if (em > 0) {
+        histograms_.fill("mixed_hit_energy", 100.*(m/(e1+e2)));
+      }
+
+      histograms_.fill("total_energy_vs_hits", e1+e2, cl.getHitIDs().size());
+      histograms_.fill("total_energy_vs_purity", (e1+e2), eperc);
+      histograms_.fill("cluster_energy_vs_calculated", cl.getEnergy(), (e1+e2));
+
+      histograms_.fill("distance_energy_purity", dist, eperc);
+    }
+    if ((n1 + n2) > 0) {
+      double percentage;
+      double unfiltered;
+      if (n1 >= n2) {
+        percentage = 100.*(n1/(n1+n2));
+        unfiltered = 100.*(n1/(n1+n2+m+unclear));
+      } else {
+        percentage = 100.*(n2/(n1+n2));
+        unfiltered = 100.*(n2/(n1+n2+m+unclear));
       }
       histograms_.fill("same_ancestor", percentage);
       if (unclear > 0) {
         histograms_.fill("UF_same_ancestor", unfiltered);
       }
-      histograms_.fill("energy_percentage", eperc);
-      if (elost > 0) {
-        histograms_.fill("UF_energy_percentage", eunfiltered);
-      }
+      histograms_.fill("distance_purity", dist, percentage);
     }
     if ((n1 + n2 + m) > 0) {
       histograms_.fill("mixed_ancestry", 100.*(m/(n1+n2+m)));
@@ -143,7 +181,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   }
 
   histograms_.fill("clusterless_hits", (ecalRecHits.size()-clusteredHits));
-}
 
+  
+}
 }
 DECLARE_ANALYZER_NS(ecal, EcalClusterAnalyzer)
