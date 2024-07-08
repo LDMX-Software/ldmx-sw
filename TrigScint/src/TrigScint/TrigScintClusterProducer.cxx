@@ -539,7 +539,7 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
       double y = -99999.;                 // Initialise y at nonsense value
       double z = -99999.;								  // Initialise z at nonsense value
       double sx = xConvFactor_ / 2.;      // Set uncertainty in x position
-      double sy = yConvFactor_ / 2;       // Set uncertainty in y position
+      double sy = yConvFactor_ / 2.;      // Set uncertainty in y position
       double sz = zConvFactor_ / 2.;      // Set uncertainty in z position
 
       centroid_ = cluster.getCentroid();  // Get cluster centroid
