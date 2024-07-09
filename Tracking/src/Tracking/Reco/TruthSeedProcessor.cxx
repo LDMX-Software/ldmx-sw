@@ -575,7 +575,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       // Tagger selection cuts
       // Negative scoring plane hit, with momentum > p_cut
       if (p_vec(2) < 0. || p_vec.norm() < p_cut_) continue;
-      
+
       // Check that the hit was left by a charged particle
       if (abs(particleMap[hit.getTrackID()].getCharge()) < 1e-8) continue;
 
@@ -614,9 +614,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         });
   }
 
-
   // Sort tagger hits. TO DO: simplify/merge with above
-    for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
+  for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
     std::sort(
         element.second.begin(), element.second.end(),
         [&](const int idx1, int idx2) -> bool {
@@ -655,16 +654,16 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   auto beamOriginSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(beamOrigin_[0], beamOrigin_[1], beamOrigin_[2]))};
 
-    // For tagger scoring plane hits
+  // For tagger scoring plane hits
     if (!skip_tagger_) {
-    for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
+  for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
     const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
     if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
-      
-      ldmx::Track truth_tagger_track = TaggerFullSeed(particleMap[hit.getTrackID()], hit.getTrackID(),
-              hit, hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+      ldmx::Track truth_tagger_track = TaggerFullSeed(
+          particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+          hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
 
       truth_tagger_track.setNhits(
           hit_count_map_tagger[hit.getTrackID()].size());
@@ -674,9 +673,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         beam_electrons.push_back(truth_tagger_track);
       }
     }
-
- 
-    }
+  }
     }
 
   // Recover the EcalScoring hits
