@@ -60,9 +60,8 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // In tracking frame
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
       "beamOrigin", {-880.1, -44., 0.});
-  skip_tagger_=parameters.getParameter<bool>("skip_tagger", false);
-  skip_recoil_=parameters.getParameter<bool>("skip_recoil", false);
-
+  skip_tagger_ = parameters.getParameter<bool>("skip_tagger", false);
+  skip_recoil_ = parameters.getParameter<bool>("skip_recoil", false);
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -531,13 +530,13 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // If sim hit collections are empty throw a warning
   if (tagger_sim_hits.size() == 0 && !skip_tagger_)
     ldmx_log(error) << "Tagger sim hits collection empty for event "
-		    << event.getEventNumber() << " in run "
-		    << event.getEventHeader().getRun() << std::endl;
+                    << event.getEventNumber() << " in run "
+                    << event.getEventHeader().getRun() << std::endl;
   if (recoil_sim_hits.size() == 0 && !skip_recoil_)
     ldmx_log(error) << "Recoil sim hits collection empty for event "
-		    << event.getEventNumber() << " in run "
-		    << event.getEventHeader().getRun() << std::endl;
-  
+                    << event.getEventNumber() << " in run "
+                    << event.getEventHeader().getRun() << std::endl;
+
   // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
   makeHitCountMap(recoil_sim_hits, hit_count_map_recoil);
@@ -654,7 +653,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // Form the tagger full seed.
   // TODO This won't work for multiple electrons sample. Fix.
 
-  if (idx_taggerhit != -1  && !skip_tagger_ ) {
+  if (idx_taggerhit != -1 && !skip_tagger_) {
     ldmx::Track beamETruthSeed = TaggerFullSeed(
         particleMap[1], 1, scoring_hits.at(idx_taggerhit), hit_count_map_tagger,
         beamOriginSurface, targetUnboundSurface);
@@ -694,7 +693,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
     // Findable particle selection
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
-        foundEcalHit && ! skip_recoil_) {
+        foundEcalHit && !skip_recoil_) {
       ldmx::Track truth_recoil_track =
           RecoilFullSeed(particleMap[hit.getTrackID()], hit.getTrackID(), hit,
                          ecal_hit, hit_count_map_recoil, targetSurface,
@@ -735,8 +734,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     recoil_truth_seeds.push_back(seed);
   }
 
-
-  //even if skip_tagger/recoil_ is true, still make the collections in the event
+  // even if skip_tagger/recoil_ is true, still make the collections in the
+  // event
   event.add("beamElectrons", beam_electrons);
   event.add("TaggerTruthTracks", tagger_truth_tracks);
   event.add("RecoilTruthTracks", recoil_truth_tracks);

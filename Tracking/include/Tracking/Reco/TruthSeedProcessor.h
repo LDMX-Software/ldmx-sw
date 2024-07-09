@@ -243,12 +243,12 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   // Use scoring plane for target truth tracks
   bool target_sp_{true};
 
-  //skip the tagger tracker
+  // skip the tagger tracker
   bool skip_tagger_{false};
 
-  //skip the recoil tracker
+  // skip the recoil tracker
   bool skip_recoil_{false};
-  
+
   std::shared_ptr<LinPropagator> linpropagator_;
 
   // Track Extrapolator Tool :: TODO Use the real extrapolator!
