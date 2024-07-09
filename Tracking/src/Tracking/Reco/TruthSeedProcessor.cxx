@@ -57,9 +57,11 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   inflate_factors_ = parameters.getParameter<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
-  // In tracking frame
+  // In tracking frame:  MG where do these numbers come from?
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
       "beamOrigin", {-880.1, -44., 0.});
+
+  // Skip the tagger or recoil trackers if wanted
   skip_tagger_ = parameters.getParameter<bool>("skip_tagger", false);
   skip_recoil_ = parameters.getParameter<bool>("skip_recoil", false);
 }
@@ -145,8 +147,9 @@ void TruthSeedProcessor::createTruthTrack(
 
   if (abs(tgt_surf_center(0) - gen_surf_center(0)) > tol)
     ldmx_log(error) << "Linear extrapolation to a far away surface in B field."
-                    << "This will cause inaccuracies in track parameters"
-                    << std::endl;
+                    << "  This will cause inaccuracies in track parameters"
+                    << "  Distance extrapolated = "
+                    << (tgt_surf_center(0) - gen_surf_center(0)) << std::endl;
 
   auto propBoundState = trk_extrap_->extrapolate(boundTrkPars, target_surface);
 
@@ -375,7 +378,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTime] =
         inflate_factors_[Acts::eBoundTime] * sigma_t * Acts::UnitConstants::ns;
 
-    ldmx_log(info) << stddev << std::endl;
+    ldmx_log(debug) << stddev << std::endl;
 
     std::vector<double> v_seed_params(
         (bound_params).data(),
