@@ -278,6 +278,8 @@ class TruthSeedProcessor(Producer):
     p_cut_ecal : double 
         Minimum seed track momentum(MeV) at the ECAL scoring plane 
     skip_tagger : bool 
+    max_track_id : double
+        Maximum track ID for a hit to be selected in the target scoring plane.
         Ignore the tagger tracker(makes empty collections). 
     skip_recoil : bool 
         Ignore the recoil tracker(makes empty collections)
@@ -299,3 +301,4 @@ class TruthSeedProcessor(Producer):
         self.p_cut_ecal = -1. #MeV
         self.skip_tagger = False
         self.skip_recoil = False
+        self.max_track_id = 5
