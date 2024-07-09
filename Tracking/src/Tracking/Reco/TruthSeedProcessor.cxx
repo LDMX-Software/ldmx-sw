@@ -60,6 +60,9 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   // In tracking frame
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
       "beamOrigin", {-880.1, -44., 0.});
+  skip_tagger_=parameters.getParameter<bool>("skip_tagger", false);
+  skip_recoil_=parameters.getParameter<bool>("skip_recoil", false);
+
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -318,7 +321,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
   Acts::BoundVector stddev;
 
   if (seed_smearing) {
-    ldmx_log(info) << "Smear track and inflate covariance" << std::endl;
+    ldmx_log(debug) << "Smear track and inflate covariance" << std::endl;
 
     /*
       double sigma_d0     = rel_smearfactors_[Acts::eBoundLoc0]   * tt.getD0();
@@ -525,20 +528,16 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_);
 
-  // If sim hit collections are empty throw an exception
-  if (tagger_sim_hits.size() == 0 || recoil_sim_hits.size() == 0) {
-    if (tagger_sim_hits.size() == 0)
-      ldmx_log(error) << "Tagger sim hits collection empty for event "
-                      << event.getEventNumber() << " in run "
-                      << event.getEventHeader().getRun() << std::endl;
-    if (recoil_sim_hits.size() == 0)
-      ldmx_log(error) << "Recoil sim hits collection empty for event "
-                      << event.getEventNumber() << " in run "
-                      << event.getEventHeader().getRun() << std::endl;
-    ldmx_log(error) << "Skip event reconstruction" << std::endl;
-    return;
-  }
-
+  // If sim hit collections are empty throw a warning
+  if (tagger_sim_hits.size() == 0 && !skip_tagger_)
+    ldmx_log(error) << "Tagger sim hits collection empty for event "
+		    << event.getEventNumber() << " in run "
+		    << event.getEventHeader().getRun() << std::endl;
+  if (recoil_sim_hits.size() == 0 && !skip_recoil_)
+    ldmx_log(error) << "Recoil sim hits collection empty for event "
+		    << event.getEventNumber() << " in run "
+		    << event.getEventHeader().getRun() << std::endl;
+  
   // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
   makeHitCountMap(recoil_sim_hits, hit_count_map_recoil);
@@ -634,7 +633,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       Acts::Vector3(beamOrigin_[0], beamOrigin_[1], beamOrigin_[2]))};
 
   // I found a tagger scoring plane hit
-  if (idx_taggerhit != -1) {
+  if (idx_taggerhit != -1 && !skip_tagger_) {
     const ldmx::SimTrackerHit& hit = scoring_hits.at(idx_taggerhit);
     const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
@@ -655,7 +654,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // Form the tagger full seed.
   // TODO This won't work for multiple electrons sample. Fix.
 
-  if (idx_taggerhit != -1) {
+  if (idx_taggerhit != -1  && !skip_tagger_ ) {
     ldmx::Track beamETruthSeed = TaggerFullSeed(
         particleMap[1], 1, scoring_hits.at(idx_taggerhit), hit_count_map_tagger,
         beamOriginSurface, targetUnboundSurface);
@@ -695,7 +694,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
     // Findable particle selection
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
-        foundEcalHit) {
+        foundEcalHit && ! skip_recoil_) {
       ldmx::Track truth_recoil_track =
           RecoilFullSeed(particleMap[hit.getTrackID()], hit.getTrackID(), hit,
                          ecal_hit, hit_count_map_recoil, targetSurface,
@@ -727,15 +726,17 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     tagger_truth_seeds.push_back(seed);
   }
 
-  ldmx_log(info) << "Forming seeds from truth" << std::endl;
+  ldmx_log(debug) << "Forming seeds from truth" << std::endl;
   for (auto& tt : recoil_truth_tracks) {
-    ldmx_log(info) << "Smearing truth track" << std::endl;
+    ldmx_log(debug) << "Smearing truth track" << std::endl;
 
     ldmx::Track seed = seedFromTruth(tt, seedSmearing_);
 
     recoil_truth_seeds.push_back(seed);
   }
 
+
+  //even if skip_tagger/recoil_ is true, still make the collections in the event
   event.add("beamElectrons", beam_electrons);
   event.add("TaggerTruthTracks", tagger_truth_tracks);
   event.add("RecoilTruthTracks", recoil_truth_tracks);
