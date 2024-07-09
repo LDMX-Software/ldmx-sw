@@ -574,10 +574,10 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     if (zhit < 0.) {
       // Tagger selection cuts
       // Negative scoring plane hit, with momentum > p_cut
-      if (p_vec(2) < 0. || p_vec.norm() < p_cut_)
-      {
-        continue;
-      }
+      if (p_vec(2) < 0. || p_vec.norm() < p_cut_) continue;
+      
+      // Check that the hit was left by a charged particle
+      if (abs(particleMap[hit.getTrackID()].getCharge()) < 1e-8) continue;
 
       if (p_vec.norm() > tagger_p_max) {
         tagger_sh_count_map[hit.getTrackID()].push_back(i_sh);
