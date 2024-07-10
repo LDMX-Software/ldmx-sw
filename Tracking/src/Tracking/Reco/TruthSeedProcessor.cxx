@@ -57,7 +57,12 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   inflate_factors_ = parameters.getParameter<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
-  // In tracking frame:  MG where do these numbers come from?
+  // In tracking frame: where do these numbers come from?
+  // These numbers come from approximating the path of the beam up
+  // until it is about to enter the first detector volume (TriggerPad1).
+  // In detector coordinates, (x,y,z) = (-44,0,-880) is _roughly_
+  // where the beam arrives (if no smearing is applied) and we simply
+  // reorder these values so that they are in tracking coordinates.
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
       "beamOrigin", {-880.1, -44., 0.});
 
