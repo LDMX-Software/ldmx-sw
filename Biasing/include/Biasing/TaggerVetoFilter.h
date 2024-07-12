@@ -5,7 +5,8 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <string>
-
+#include "G4RegionStore.hh"
+#include "G4Electron.hh"
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
@@ -82,6 +83,8 @@ class TaggerVetoFilter : public simcore::UserAction {
   // Should the EndOfEventAction reject events where the primary particle never
   // entered the tagger region?
   bool reject_primaries_missing_tagger_{true};
+
+    G4Region* region{};
 
 };  // TaggerVetoFilter
 

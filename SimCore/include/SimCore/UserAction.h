@@ -15,6 +15,7 @@
 /*~~~~~~~~~~~~*/
 #include "G4EventManager.hh"
 #include "G4UserStackingAction.hh"
+#include "G4ParticleDefinition.hh"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -48,6 +49,23 @@ class UserAction {
    */
   UserAction(const std::string& name,
              framework::config::Parameters& parameters);
+
+    G4VProcess* FindProcess(G4ParticleDefinition* particle, std::string processName) const {
+      const auto manager {particle->GetProcessManager()};
+      const auto processes {manager->GetProcessList()};
+      for (int i{0}; i < processes->size(); ++i) {
+        const auto process {(*processes)[i]};
+        const auto name {process->GetProcessName()};
+        if (name.contains(processName)) {
+          return process;
+        }
+      }
+      return nullptr;
+    }
+    // G4VProcessList* GetProcessList(G4ParticleDefinition* particle ) {
+    //   auto manager {particle->GetProcessManager()};
+    //   return manager->GetProcessList();
+    // }
 
   /// factory for user actions
   using Factory =

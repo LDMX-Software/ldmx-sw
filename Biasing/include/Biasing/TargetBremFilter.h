@@ -16,6 +16,10 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
 
+#include "G4LogicalVolumeStore.hh"
+#include "G4RegionStore.hh"
+#include "G4Electron.hh"
+
 namespace biasing {
 
 /**
@@ -69,6 +73,10 @@ class TargetBremFilter : public simcore::UserAction {
 
   /// Flag indicating if the recoil electron track should be killed
   bool killRecoil_{false};
+
+    G4VProcess* bremProcess_;
+    G4LogicalVolume* recoilPV{};
+    G4Region* region{};
 
 };  // TargetBremFilter
 }  // namespace biasing

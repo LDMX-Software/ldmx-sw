@@ -28,15 +28,7 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
   region_ = G4RegionStore::GetInstance()->GetRegion("CalorimeterRegion");
   hcal_lv_ = G4LogicalVolumeStore::GetInstance()->GetVolume(
       "hadronic_calorimeter", true);
-  auto pman{G4Gamma::Definition()->GetProcessManager()};
-  auto procs{pman->GetProcessList()};
-  for (int i{0}; i < procs->size(); ++i) {
-    auto proc{(*procs)[i]};
-    auto pname{proc->GetProcessName()};
-    if (pname.contains(process_)) {
-      processPtr_ = proc;
-    }
-  }
+processPtr_ = FindProcess(G4Gamma::Definition(), process_);
 }
 
 EcalProcessFilter::~EcalProcessFilter() {}

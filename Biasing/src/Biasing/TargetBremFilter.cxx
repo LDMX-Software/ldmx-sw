@@ -23,6 +23,12 @@ TargetBremFilter::TargetBremFilter(const std::string& name,
   bremEnergyThreshold_ =
       parameters.getParameter<double>("brem_min_energy_threshold");
   killRecoil_ = parameters.getParameter<bool>("kill_recoil_track");
+  recoilPV = G4LogicalVolumeStore::GetInstance()->GetVolume("recoil");
+  if (recoilPV == nullptr) {
+    throw 32;
+  }
+  bremProcess_ = FindProcess(G4Electron::Definition(), "eBrem");
+  region = G4RegionStore::GetInstance()->GetRegion("target");
 }
 
 TargetBremFilter::~TargetBremFilter() {}
@@ -33,7 +39,8 @@ G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
   G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
 
   // Get the particle type.
-  G4String particleName = track->GetParticleDefinition()->GetParticleName();
+  // Never used lol
+  // G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
   // Use current classification by default so values from other plugins are not
   // overridden.
@@ -60,10 +67,13 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the target region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("target") != 0)
+  if (region != track->GetVolume()->GetLogicalVolume()->GetRegion()) {
     return;
+  }
+  // if (auto region{
+  //         track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+  //     region.compareTo("target") != 0)
+  //   return;
 
   /*
   std::cout << "[TargetBremFilter] : Stepping primary electron in 'target'
@@ -84,8 +94,19 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * We also check if the next volume is World_PV because in some geometries
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
-  if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0 or volume.compareTo("World_PV") == 0) {
+  auto v {track->GetNextVolume()};
+
+  auto volume{v->GetName()};
+
+
+  if ( recoilPV->IsAncestor(v) ||
+      // volume.compareTo("recoil_PV") == 0 ||
+       volume.compareTo("World_PV") == 0
+                                         )
+                                         {
+  // std::cout << "Volume is " << volume << " at " << v << std::endl;
+  // std::cout << "The recoil pv is " << recoilPV->GetName() << " at " << recoilPV << std::endl;
+  //  G4cin.get();
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -101,11 +122,12 @@ void TargetBremFilter::stepping(const G4Step* step) {
       return;
     } else {
       for (auto& secondary_track : *secondaries) {
-        G4String processName =
-            secondary_track->GetCreatorProcess()->GetProcessName();
-
-        if (processName.compareTo("eBrem") == 0 &&
-            secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+        auto process {secondary_track->GetCreatorProcess()};
+        // G4String processName =
+        //     secondary_track->GetCreatorProcess()->GetProcessName();
+        if (process == bremProcess_ && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+        // if (processName.compareTo("eBrem") == 0 &&
+        //     secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
           auto trackInfo{simcore::UserTrackInformation::get(secondary_track)};
           trackInfo->tagBremCandidate();
 
