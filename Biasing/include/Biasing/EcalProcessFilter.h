@@ -20,6 +20,12 @@
 // Forward declaration
 class G4Step;
 class G4Track;
+#include "G4Gamma.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4ProcessTable.hh"
+#include "G4RegionStore.hh"
+#include "G4LogicalVolume.hh"
 
 namespace biasing {
 
@@ -67,9 +73,13 @@ class EcalProcessFilter : public simcore::UserAction {
   /// Enable logging
   enableLogging("EcalProcessFilter")
 
-  G4Region* region_;
-    G4VPhysicalVolume* hcal_pv_;
-    G4VProcess* processPtr_;
+      G4Region* region_;
+  G4VPhysicalVolume* hcal_pv_;
+  G4LogicalVolume* hcal_lv_;
+  G4VProcess* processPtr_;
+    G4bool IsHcalVolume(G4VPhysicalVolume * vol) {
+      return hcal_lv_->IsAncestor(vol);
+    }
 
 };  // EcalProcessFilter
 }  // namespace biasing

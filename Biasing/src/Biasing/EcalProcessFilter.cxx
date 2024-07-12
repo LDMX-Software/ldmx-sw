@@ -24,22 +24,19 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
                                      framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   process_ = parameters.getParameter<std::string>("process");
-  region_ = G4RegionStore::GetInstance()->GetRegion("CalorimeterRegion");
 
-  hcal_pv_ = G4PhysicalVolumeStore::GetInstance()->GetVolume("hcal_PV");
-  if (region_ == nullptr) {
-    throw 32;
+  region_ = G4RegionStore::GetInstance()->GetRegion("CalorimeterRegion");
+  hcal_lv_ = G4LogicalVolumeStore::GetInstance()->GetVolume(
+      "hadronic_calorimeter", true);
+  auto pman{G4Gamma::Definition()->GetProcessManager()};
+  auto procs{pman->GetProcessList()};
+  for (int i{0}; i < procs->size(); ++i) {
+    auto proc{(*procs)[i]};
+    auto pname{proc->GetProcessName()};
+    if (pname.contains(process_)) {
+      processPtr_ = proc;
+    }
   }
-  if (hcal_pv_ == nullptr) {
-    throw 'c';
-  }
-  G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
-  processPtr_ = processTable->FindProcess(process_, G4Gamma::Definition());
-  if (processPtr_ == nullptr) {
-    throw "cs";
-  }
-  G4cout << "Found process " << processPtr_->GetProcessName() << G4endl;
-  G4cin.get();
 }
 
 EcalProcessFilter::~EcalProcessFilter() {}
@@ -70,8 +67,9 @@ void EcalProcessFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
-  if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted())
+  if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted()) {
     return;
+  }
 
   if (track->GetParticleDefinition() != G4Gamma::Definition()) {
     return;
@@ -79,7 +77,9 @@ void EcalProcessFilter::stepping(const G4Step* step) {
 
   // Get the track info and check if this track is a brem candidate
   auto trackInfo{simcore::UserTrackInformation::get(track)};
-  if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) return;
+  if ((trackInfo != nullptr) && !trackInfo->isBremCandidate()) {
+    return;
+  }
 
   // Get the particles daughters.
   auto secondaries{step->GetSecondary()};
@@ -134,24 +134,24 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      */
     // if (auto volume{track->GetNextVolume()->GetName()};
     //     volume.compareTo("hcal_PV") == 0) {
-    if (track->GetNextVolume() == hcal_pv_) {
-      /*
-        std::cout << "[ EcalProcessFilter ]: "
-              <<
-        G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
-              << " no secondaries when leaving ecal...";
-        */
+
+    if (IsHcalVolume(track->GetNextVolume())) {
+      std::cout << "[ EcalProcessFilter ]: "
+                << G4EventManager::GetEventManager()
+                       ->GetConstCurrentEvent()
+                       ->GetEventID()
+                << " no secondaries when leaving ecal...";
+      throw 32;
+      G4cin.get();
       if (getEventInfo()->bremCandidateCount() == 1) {
-        // std::cout << "aborting the event." << std::endl;
+        std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
       } else {
-        /*
-        std::cout << "suspending the track " << track->GetTrackID()
-            << " , " << getEventInfo()->bremCandidateCount() << " brems left."
-            << std::endl;
-        */
+        std::cout << "suspending the track " << track->GetTrackID() << " , "
+                  << getEventInfo()->bremCandidateCount() << " brems left."
+                  << std::endl;
         currentTrack_ = track;
         track->SetTrackStatus(fSuspend);
         getEventInfo()->decBremCandidateCount();
@@ -166,23 +166,8 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     // auto
     // processName{secondaries->at(0)->GetCreatorProcess()->GetProcessName()};
     const G4VProcess* process{secondaries->at(0)->GetCreatorProcess()};
-    const G4VProcess* unwrapped_process{process};
-    auto wrapped_process {dynamic_cast<const G4BiasingProcessInterface*>(process)};
-
-    if (wrapped_process != nullptr) {
-      unwrapped_process = wrapped_process->GetWrappedProcess();
-    }
-    // Only record the process that is being biased
-    // if (!processName.contains(process_)) {
-    if (unwrapped_process != processPtr_) {
-      /*
-          std::cout << "[ EcalProcessFilter ]: "
-                <<
-          G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
-                << " not PN products...";
-          */
+    if (process != processPtr_) {
       if (getEventInfo()->bremCandidateCount() == 1) {
-        // std::cout << "aborting the event." << std::endl;
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         currentTrack_ = nullptr;
@@ -197,19 +182,21 @@ void EcalProcessFilter::stepping(const G4Step* step) {
         getEventInfo()->decBremCandidateCount();
         trackInfo->tagBremCandidate(false);
       }
-    return;
-  }
+      return;
+    }
 
-  // ldmx_log(debug)
-  //     << "[ EcalProcessFilter ]: "
-  //     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
-  //     << " Brem photon produced " << secondaries->size() << " particle via "
-  //     << process->GetProcessName() << " process.";
-  trackInfo->tagBremCandidate(false);
-  trackInfo->setSaveFlag(true);
-  trackInfo->tagPNGamma();
-  getEventInfo()->decBremCandidateCount();
-}
+    ldmx_log(info) << "[ EcalProcessFilter ]: "
+                    << G4EventManager::GetEventManager()
+                           ->GetConstCurrentEvent()
+                           ->GetEventID()
+                    << " Brem photon produced " << secondaries->size()
+                    << " particle via " << processPtr_->GetProcessName()
+                    << " process.";
+    trackInfo->tagBremCandidate(false);
+    trackInfo->setSaveFlag(true);
+    trackInfo->tagPNGamma();
+    getEventInfo()->decBremCandidateCount();
+  }
 }
 }  // namespace biasing
 
