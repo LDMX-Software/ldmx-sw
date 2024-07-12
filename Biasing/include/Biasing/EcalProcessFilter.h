@@ -67,6 +67,10 @@ class EcalProcessFilter : public simcore::UserAction {
   /// Enable logging
   enableLogging("EcalProcessFilter")
 
+  G4Region* region_;
+    G4VPhysicalVolume* hcal_pv_;
+    G4VProcess* processPtr_;
+
 };  // EcalProcessFilter
 }  // namespace biasing
 
