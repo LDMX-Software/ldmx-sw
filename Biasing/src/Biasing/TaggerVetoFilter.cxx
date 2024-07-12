@@ -15,6 +15,7 @@ TaggerVetoFilter::TaggerVetoFilter(const std::string &name,
   threshold_ = parameters.getParameter<double>("threshold");
   reject_primaries_missing_tagger_ =
       parameters.getParameter<bool>("reject_events_missing_tagger");
+  region = G4RegionStore::GetInstance()->GetRegion("tagger");
 }
 
 TaggerVetoFilter::~TaggerVetoFilter() {}
@@ -41,11 +42,13 @@ void TaggerVetoFilter::stepping(const G4Step *step) {
 
   // Get the region the particle is currently in.  Continue processing
   // the particle only if it's in the tagger region.
-  if (auto region{
-          track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-      region.compareTo("tagger") != 0)
+  // if (auto region{
+  //         track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+  //     region.compareTo("tagger") != 0)
+  //   return;
+  if (region != track->GetVolume()->GetLogicalVolume()->GetRegion()) {
     return;
-
+  }
   primary_entered_tagger_region_ = true;
   // If the energy of the particle falls below threshold, stop
   // processing the event.
