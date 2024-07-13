@@ -10,14 +10,18 @@ XsecBiasingOperator::XsecBiasingOperator(
 
 void XsecBiasingOperator::StartRun() {
   if (this->getParticleToBias().compare("gamma") == 0) {
-    processManager_ = G4Gamma::GammaDefinition()->GetProcessManager();
+    theParticle = G4Gamma::Definition();
+    processManager_ = theParticle->GetProcessManager();
   } else if (this->getParticleToBias().compare("e-") == 0) {
-    processManager_ = G4Electron::ElectronDefinition()->GetProcessManager();
+    theParticle = G4Electron::Definition();
+    processManager_ = theParticle->GetProcessManager();
   } else if (this->getParticleToBias().compare("neutron") == 0) {
-    processManager_ = G4Neutron::NeutronDefinition()->GetProcessManager();
+    theParticle = G4Neutron::Definition();
+    processManager_ = theParticle->GetProcessManager();
   } else if (this->getParticleToBias().compare("kaon0L") == 0) {
+    theParticle = G4KaonZeroLong::KaonZeroLongDefinition();
     processManager_ =
-        G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
+        theParticle->GetProcessManager();
   } else {
     EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
                                      this->getParticleToBias() + "'.");
@@ -34,6 +38,7 @@ void XsecBiasingOperator::StartRun() {
                     this->getProcessToBias() +
                         " is not found in list of biased processes!");
   }
+  theProcess = FindProcess(theParticle, getProcessToBias());
 }
 
 bool XsecBiasingOperator::processIsBiased(std::string process) {

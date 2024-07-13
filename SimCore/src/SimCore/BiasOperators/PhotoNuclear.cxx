@@ -25,6 +25,7 @@ void PhotoNuclear::StartRun() {
         "PhotoNuclearBiasing",
         "Gamma Conversion process '" + CONVERSION_PROCESS + "' is not biased!");
   }
+  conversionProcess_ = FindProcess(theParticle, CONVERSION_PROCESS);
 }
 
 G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
@@ -40,9 +41,11 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
     return nullptr;
   }
 
-  std::string currentProcess =
-      callingProcess->GetWrappedProcess()->GetProcessName();
-  if (currentProcess.compare(this->getProcessToBias()) == 0) {
+  auto currentProcess {callingProcess};
+  // std::string currentProcess =
+  //     callingProcess->GetWrappedProcess()->GetProcessName();
+  // if (currentProcess.compare(this->getProcessToBias()) == 0)
+  if (currentProcess == theProcess){
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
@@ -52,7 +55,9 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
 
     return BiasedXsec(pnXsecBiased_);
   }
-  if ((currentProcess.compare(CONVERSION_PROCESS) == 0) and down_bias_conv_) {
+  // if ((currentProcess.compare(CONVERSION_PROCESS) == 0) and down_bias_conv_)
+  if ((currentProcess == conversionProcess_) and down_bias_conv_)
+  {
     G4double interactionLength =
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 

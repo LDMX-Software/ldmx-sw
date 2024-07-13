@@ -70,6 +70,7 @@ class PhotoNuclear : public XsecBiasingOperator {
 
   /// Should we down-bias the gamma conversion process?
   bool down_bias_conv_;
+  G4VProcess* conversionProcess_{nullptr};
 
   /// Should we restrict biasing to only children of primary?
   bool only_children_of_primary_;
