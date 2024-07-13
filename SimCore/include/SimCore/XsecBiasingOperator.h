@@ -13,6 +13,7 @@
 #include "G4BiasingProcessSharedData.hh"
 #include "G4Electron.hh"
 #include "G4Gamma.hh"
+#include "G4VProcess.hh"
 #include "G4KaonZeroLong.hh"
 #include "G4Neutron.hh"
 #include "G4ParticleDefinition.hh"
@@ -62,6 +63,19 @@ class XsecBiasingOperator : public G4VBiasingOperator {
   /** Destructor */
   virtual ~XsecBiasingOperator() = default;
 
+    G4VProcess* FindProcess(const G4ParticleDefinition* particle, std::string name) {
+      const auto processManager = particle->GetProcessManager();
+      const auto processList = processManager->GetProcessList();
+      for (G4int i = 0; i < processList->size(); i++) {
+
+        const auto process = (*processList)[i];
+        if (process->GetProcessName().contains(name) ) {
+          return process;
+        }
+      }
+      return nullptr;
+    }
+
   /**
    * Propose a biasing operation for the current track and calling process.
    *
@@ -98,6 +112,8 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * was biased before creating the biasing operator.
    */
   virtual std::string getProcessToBias() const = 0;
+    G4VProcess* GetProcessToBias() const {return theProcess;}
+    G4VProcess* theProcess;
 
   /**
    * Return the particle which should be biased.
@@ -107,6 +123,10 @@ class XsecBiasingOperator : public G4VBiasingOperator {
    * @see RunManager::setupPhysics
    */
   virtual std::string getParticleToBias() const = 0;
+    const G4ParticleDefinition* GetParticleToBias() {
+      return theParticle;
+    }
+    G4ParticleDefinition* theParticle;
 
   /**
    * Return the volume which should be biased.
