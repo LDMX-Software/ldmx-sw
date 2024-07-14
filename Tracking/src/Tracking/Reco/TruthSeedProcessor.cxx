@@ -40,7 +40,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   recoil_sp_ = parameters.getParameter<double>("recoil_sp", true);
   target_sp_ = parameters.getParameter<double>("tagger_sp", true);
   seedSmearing_ = parameters.getParameter<bool>("seedSmearing", false);
-  max_track_id_ = parameters.getParameter<int>("seedSmearing", 5);
+  max_track_id_ = parameters.getParameter<int>("max_track_id", 5);
 
   ldmx_log(info) << "Seed Smearing is set to " << seedSmearing_;
 
@@ -615,9 +615,9 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   }
 
   // Sort tagger hits. TO DO: simplify/merge with above
-  for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
+  for (auto& [ _track_id, hit_indices ] : tagger_sh_count_map) {
     std::sort(
-        element.second.begin(), element.second.end(),
+        hit_indices.begin(), hit_indices.end(),
         [&](const int idx1, int idx2) -> bool {
           const ldmx::SimTrackerHit& hit1 = scoring_hits.at(idx1);
           const ldmx::SimTrackerHit& hit2 = scoring_hits.at(idx2);
@@ -654,10 +654,9 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   auto beamOriginSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(beamOrigin_[0], beamOrigin_[1], beamOrigin_[2]))};
 
-  // For tagger scoring plane hits
     if (!skip_tagger_) {
-  for (std::pair<int, std::vector<int>> element : tagger_sh_count_map) {
-    const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
+  for (const auto& [track_id, hit_indices] : tagger_sh_count_map) {
+    const ldmx::SimTrackerHit& hit = scoring_hits.at(hit_indices.at(0));
     const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
     if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
