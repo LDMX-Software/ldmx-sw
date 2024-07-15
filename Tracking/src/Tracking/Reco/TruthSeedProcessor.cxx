@@ -614,7 +614,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         });
   }
 
-  // Sort tagger hits. TO DO: simplify/merge with above
+  // Sort tagger hits.
   for (auto& [ _track_id, hit_indices ] : tagger_sh_count_map) {
     std::sort(
         hit_indices.begin(), hit_indices.end(),
@@ -660,16 +660,19 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
     if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
-      ldmx::Track truth_tagger_track = TaggerFullSeed(
-          particleMap[hit.getTrackID()], hit.getTrackID(), hit,
-          hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
 
+      ldmx::Track truth_tagger_track;
+      createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
       truth_tagger_track.setNhits(
           hit_count_map_tagger[hit.getTrackID()].size());
       tagger_truth_tracks.push_back(truth_tagger_track);
 
+
       if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
-        beam_electrons.push_back(truth_tagger_track);
+        ldmx::Track beamETruthSeed = TaggerFullSeed(
+          particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+          hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+        beam_electrons.push_back(beamETruthSeed);
       }
     }
   }
