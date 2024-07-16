@@ -35,12 +35,11 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
   void onProcessEnd() override;
 
  private:
-
   // configurable parameters
-  std::string inputCol_;       // input coll. containing 2-hit clusters (standard)
+  std::string inputCol_;  // input coll. containing 2-hit clusters (standard)
   std::string inputPassName_{""};
-  //  std::string wideInputCol_;   // input coll. containing 3-hit clusters 
-  //  std::string wideInputPassName_{inputPassName};  // default to same pass 
+  //  std::string wideInputCol_;   // input coll. containing 3-hit clusters
+  //  std::string wideInputPassName_{inputPassName};  // default to same pass
 
   // plotting stuff
   int nChannels{16};
@@ -55,7 +54,6 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
   TH1F* hPEinClusters[16];
   TH1F* hDeltaCentroids;
   TH2F* hDeltaVsSeed;
-
 };
 }  // namespace trigscint
 

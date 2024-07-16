@@ -1,16 +1,15 @@
+#include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <catch2/catch_approx.hpp>
 
 #include "DetDescr/EcalID.h"  //creating unique cell IDs
+#include "Ecal/Event/EcalHit.h"
 #include "Framework/ConfigurePython.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
-
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "Recon/Event/HgcrocTrigDigi.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
-#include "Ecal/Event/EcalHit.h"
+#include "Recon/Event/HgcrocTrigDigi.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 using Catch::Approx;
 
@@ -124,17 +123,14 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
 
   /**
    * Performs the test for this matcher
-   * 
+   *
    * We check that the input energy is **either**
    * within the absolute difference or the relative
    * difference.
    */
-  bool match(const double& daq_energy) const override {
-    return (
-        daq_energy == Approx(truth_).epsilon(max_relative_diff_)
-        or
-        daq_energy == Approx(truth_).margin(max_absolute_diff_)
-        );
+  bool match(const double &daq_energy) const override {
+    return (daq_energy == Approx(truth_).epsilon(max_relative_diff_) or
+            daq_energy == Approx(truth_).margin(max_absolute_diff_));
   }
 
   /**
@@ -142,9 +138,9 @@ class isCloseEnough : public Catch::Matchers::MatcherBase<double> {
    */
   virtual std::string describe() const override {
     std::ostringstream ss;
-    ss << "is within an absolute difference of "
-      << max_absolute_diff_ << "MeV OR a relative difference of "
-      << max_relative_diff_ << " with " << truth_ << " MeV.";
+    ss << "is within an absolute difference of " << max_absolute_diff_
+       << "MeV OR a relative difference of " << max_relative_diff_ << " with "
+       << truth_ << " MeV.";
     return ss.str();
   }
 };
@@ -283,8 +279,8 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     CHECK(id.raw() == simHits.at(0).getID());
 
     double daq_energy{hit.getAmplitude()};
-    CHECK_THAT(daq_energy,
-        isCloseEnough(truth_energy,MAX_ENERGY_ERROR_DAQ,MAX_ENERGY_PERCENT_ERROR_DAQ));
+    CHECK_THAT(daq_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
+                                         MAX_ENERGY_PERCENT_ERROR_DAQ));
     ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
 
     const auto trigDigis{
@@ -294,8 +290,8 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     auto trigDigi = trigDigis.at(0);
     float tp_energy = 8 * trigDigi.linearPrimitive() * 320. / 1024 * MeV_per_fC;
 
-    CHECK_THAT(tp_energy ,
-        isCloseEnough(truth_energy,MAX_ENERGY_ERROR_TP,MAX_ENERGY_PERCENT_ERROR_TP));
+    CHECK_THAT(tp_energy, isCloseEnough(truth_energy, MAX_ENERGY_ERROR_TP,
+                                        MAX_ENERGY_PERCENT_ERROR_TP));
     ntuple_.setVar<float>("TrigPrimEnergy", tp_energy);
     ntuple_.setVar<int>("TrigPrimDigiEncoded", trigDigi.getPrimitive());
     ntuple_.setVar<int>("TrigPrimDigiLinear", trigDigi.linearPrimitive());

@@ -1,7 +1,7 @@
 /**
  * @file EventReadoutProducer.h
  * @brief Class that builds linearized full event readout
- * @author Lene Kristian Bryngemark, Stanford University 
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef TRIGSCINT_EVENTREADOUTPRODUCER_H
@@ -9,8 +9,8 @@
 
 // LDMX
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/Event/EventReadout.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -27,11 +27,11 @@ namespace trigscint {
 
 /**
  * @class EventReadoutProducer
- * @brief Linearizes ADC info to charge, calculates channel 
+ * @brief Linearizes ADC info to charge, calculates channel
  * pedestal and noise levels (in charge)
  */
 
-  class EventReadoutProducer : public framework::Producer {
+class EventReadoutProducer : public framework::Producer {
  public:
   EventReadoutProducer(const std::string& name, framework::Process& process);
 
@@ -62,17 +62,16 @@ namespace trigscint {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string outputCollection_;
-  
+
   /// Number of initial time samples averaged over in the pedestal calculation
   int nPedSamples_{5};
 
-  /// Number of time samples to shift readout by, to align fibers if there is an offset
+  /// Number of time samples to shift readout by, to align fibers if there is an
+  /// offset
   int timeShift_{5};
 
   /// Which of the fibers to set the time shift for (0 or 1)
   int fiberToShift_{1};
-	
-	
 };
 
 }  // namespace trigscint

@@ -33,7 +33,8 @@ class DecayChildrenKeeper : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  DecayChildrenKeeper(const std::string& name, framework::config::Parameters& parameters);
+  DecayChildrenKeeper(const std::string& name,
+                      framework::config::Parameters& parameters);
 
   /// Destructor
   ~DecayChildrenKeeper();

@@ -102,7 +102,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
      * Check if the photon will be exiting the ecal
      *
      * The 'hcal_PV' volume name is automatically constructed by Geant4's
-     * GDML parser and was found by inspecting the geometry using a 
+     * GDML parser and was found by inspecting the geometry using a
      * visualization. This Physical Volume (PV) is associated with the
      * hcal parent volume and so it will break if the hcal parent volume
      * changes its name.
@@ -167,11 +167,11 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     }
 
     ldmx_log(debug) << "[ EcalProcessFilter ]: "
-              << G4EventManager::GetEventManager()
-                     ->GetConstCurrentEvent()
-                     ->GetEventID()
-              << " Brem photon produced " << secondaries->size()
-              << " particle via " << processName << " process.";
+                    << G4EventManager::GetEventManager()
+                           ->GetConstCurrentEvent()
+                           ->GetEventID()
+                    << " Brem photon produced " << secondaries->size()
+                    << " particle via " << processName << " process.";
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();

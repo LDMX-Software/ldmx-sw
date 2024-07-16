@@ -1,10 +1,11 @@
 #pragma once
 
 #include <Acts/Geometry/TrackingGeometry.hpp>
+
 #include "Acts/Definitions/Algebra.hpp"
-#include "Tracking/geo/GeoUtils.h"
-#include "Tracking/geo/DetectorElement.h"
 #include "Framework/ConditionsObject.h"
+#include "Tracking/geo/DetectorElement.h"
+#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 
@@ -24,8 +25,6 @@ class GeometryContextProvider;
  */
 class GeometryContext : public framework::ConditionsObject {
  public:
-
-
   /** TODO it should be private == KEEPING IT PUBLIC FOR TESTING PURPOSE*/
   /**
    * This constructor is where parameters would be passed into the
@@ -34,12 +33,10 @@ class GeometryContext : public framework::ConditionsObject {
    * We still have it be private so that only the provider can
    * make a new one.
    */
-  
 
   GeometryContext();
 
   void loadTransformations(const tgSurfMap& surf_map);
-
 
   /**
    *
@@ -57,19 +54,15 @@ class GeometryContext : public framework::ConditionsObject {
    * wrt inverting active/passive order correctly
    * (tested on one tagger axial sensor)
    */
-  
-  void addAlignCorrection(unsigned int sensorId,
-                          const Acts::Vector3 deltaT,
-                          const Acts::Vector3 deltaR,
-                          const bool active = true);
-  
 
-  // This holds all the transformations of the Tracking Geometry and 
+  void addAlignCorrection(unsigned int sensorId, const Acts::Vector3 deltaT,
+                          const Acts::Vector3 deltaR, const bool active = true);
+
+  // This holds all the transformations of the Tracking Geometry and
   // the alignment corrections already applied
 
   std::unordered_map<unsigned int, Acts::Transform3> alignment_map;
 
-  
   /// Conditions object name
   static const std::string NAME;
   /**
@@ -82,6 +75,7 @@ class GeometryContext : public framework::ConditionsObject {
    * call this function without worry.
    */
   const Acts::GeometryContext& get() const;
+
  private:
   /// the provider is a friend and so it can make one
   friend class GeometryContextProvider;
@@ -91,7 +85,6 @@ class GeometryContext : public framework::ConditionsObject {
    * it down to the various acts tools
    */
   Acts::GeometryContext acts_gc_;
-
 };
 
-}
+}  // namespace tracking::geo

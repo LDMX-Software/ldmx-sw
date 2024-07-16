@@ -3,7 +3,6 @@
 
 #include "Framework/EventProcessor.h"
 #include "Framework/Exception/Exception.h"
-
 #include "Packing/Utility/Reader.h"
 
 namespace packing {
@@ -19,7 +18,7 @@ class SingleSubsystemUnpacker : public framework::Producer {
  public:
   /// normal constructor
   SingleSubsystemUnpacker(const std::string& name, framework::Process& p)
-    : framework::Producer(name, p) {}
+      : framework::Producer(name, p) {}
   /// empty destructor
   virtual ~SingleSubsystemUnpacker() {}
 

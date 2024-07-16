@@ -83,6 +83,26 @@ class TrackProcessFilter(BiasingUtilityAction):
     
         """
         return TrackProcessFilter('electronNuclear')
+        
+    def electron_brem() :
+        """ Configuration used to tag all electron brem tracks to persist them to the event.
+    
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag eBrem tracks.
+    
+        """
+        return TrackProcessFilter('eBrem')
+        
+    def conversion() :
+        """ Configuration used to tag all electron conversion tracks to persist them to the event.
+    
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag conversion tracks.
+    
+        """
+        return TrackProcessFilter('conv')
 
     def dark_brem() :
         """ Configuration used to tag all dark brem tracks to persist them to the event. 

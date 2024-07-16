@@ -6,9 +6,8 @@
 
 #include "DQM/RecoilTrackerDQM.h"
 
-#include "TVector3.h"
-
 #include "SimCore/Event/SimTrackerHit.h"
+#include "TVector3.h"
 
 namespace dqm {
 

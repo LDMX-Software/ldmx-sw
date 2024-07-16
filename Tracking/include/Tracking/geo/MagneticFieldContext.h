@@ -39,6 +39,7 @@ class MagneticFieldContext : public framework::ConditionsObject {
    * call this function without worry.
    */
   const Acts::MagneticFieldContext& get() const;
+
  private:
   /// the provider is a friend and so it can make one
   friend class MagneticFieldContextProvider;
@@ -63,4 +64,4 @@ class MagneticFieldContext : public framework::ConditionsObject {
   Acts::MagneticFieldContext magnetic_field_context_;
 };
 
-}
+}  // namespace tracking::geo
