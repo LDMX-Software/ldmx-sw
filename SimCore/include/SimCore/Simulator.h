@@ -25,12 +25,13 @@
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/SimulatorBase.h"
-#include "SimCore/Event/GTruth.h"
-#include "SimCore/Event/GHepParticle.h"
 
 namespace genie {
-    class EventRecord;
-    class GHepParticle;
+    class Interaction;
+}
+
+namespace ldmx {
+    class HepMC3GenEvent;
 }
 
 class G4UImanager;
@@ -115,12 +116,6 @@ class Simulator : public SimulatorBase {
    */
   void setSeeds(std::vector<int> seeds);
 
-  void FillGTruth(const genie::EventRecord* record,
-		  ldmx::GTruth& truth);
-
-  void FillGHepParticles(const genie::EventRecord* record,
-			 std::vector<ldmx::GHepParticle>& ghep_particle_list);
-  
  private:
   /// Number of events started
   int numEventsBegan_{0};

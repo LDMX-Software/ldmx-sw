@@ -3,7 +3,8 @@
 
 #include "G4VUserEventInformation.hh"
 
-#include "GENIE/Framework/EventGen/EventRecord.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
+#include <vector>
 
 namespace simcore {
 
@@ -16,8 +17,7 @@ class UserEventInformation : public G4VUserEventInformation {
   UserEventInformation() = default;
 
   /// Destructor
-  virtual ~UserEventInformation()
-  { if(genie_event_) delete genie_event_;}
+  virtual ~UserEventInformation() {}
 
   /// Print the information associated with the track
   void Print() const final override;
@@ -121,9 +121,9 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool wasLastStepEN() const { return last_step_en_; }
   
-  void setGENIEEventRecord(genie::EventRecord *event) { genie_event_ = event; }
-  genie::EventRecord* getGENIEEventRecord() { return genie_event_; }
-  
+  void addHepMC3GenEvent(ldmx::HepMC3GenEvent event) { hepmc3_events_.push_back(event); }
+  std::vector<ldmx::HepMC3GenEvent> getHepMC3GenEvents() { return hepmc3_events_; }
+
  private:
   /// Total number of brem candidates in the event
   int bremCandidateCount_{0};
@@ -174,9 +174,9 @@ class UserEventInformation : public G4VUserEventInformation {
   double db_material_z_{-1.};
 
   /**
-   * Pointer for a GENIE event record.
+   * a collection of HepMC3 event records.
    */
-  genie::EventRecord* genie_event_{NULL};
+  std::vector< ldmx::HepMC3GenEvent > hepmc3_events_;
 
 };
 }  // namespace simcore

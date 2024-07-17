@@ -18,6 +18,7 @@
 //   GENIE   //
 //------------//
 #include "GENIE/Framework/EventGen/GEVGDriver.h"
+#include "GENIE/Framework/EventGen/HepMC3Converter.h"
 
 //------------//
 //   LDMX     //
@@ -71,9 +72,10 @@ class GenieGenerator : public simcore::PrimaryGenerator {
 
  private:
   /**
-   * The GENIE event generator driver
+   * The GENIE event generator driver and convertor to HepMC3GenEvent
    */
   genie::GEVGDriver evg_driver_;
+  genie::HepMC3Converter hepMC3Converter_;
 
   int verbosity_;
   double energy_;
