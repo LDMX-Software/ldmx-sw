@@ -91,6 +91,12 @@ class APrimePhysics : public G4VPhysicsConstructor {
   /// is dark brem enabled for this run?
   bool enable_;
 
+  /// the decay mode (see G4DarkBreM/G4APrime.h)
+  std::string decay_mode_;
+
+  /// the proper decay lifetime (seconds) for the A'
+  G4double ap_tau_;
+
   /**
    * Dark brem parameters to pass to the process (if enabled)
    *
