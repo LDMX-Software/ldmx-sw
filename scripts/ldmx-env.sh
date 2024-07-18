@@ -28,6 +28,25 @@ if [[ -z ${BASH} ]]; then
 fi
 
 ###############################################################################
+# Deprecation Notice
+#   We are transitioning into using just+denv rather than the bash functions
+#   defined here. This area just checks for just+denv and if both exist,
+#   switches to them. If either or both are missing, a warning is issued.
+###############################################################################
+__have() {
+  command -v ${1} &> /dev/null
+}
+if __have just && __have denv; then
+  # make alias and leave
+  alias ldmx=just
+  return 0
+else
+  echo "[ldmx-env.sh] [WARNING] The bash functions that you will be using are deprecated."
+  echo "  Please install the commands 'denv' and 'just' to update to the new development workflow."
+fi
+
+
+###############################################################################
 # __ldmx_has_required_engine
 #   Checks if user has any of the supported engines for running containers
 ###############################################################################
