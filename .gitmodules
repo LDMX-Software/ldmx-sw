@@ -3,7 +3,7 @@
 	url = https://github.com/jothepro/doxygen-awesome-css
 [submodule "SimCore/G4DarkBreM"]
 	path = SimCore/G4DarkBreM
-	url = https://github.com/LDMX-Software/G4DarkBreM.git
+	url = git@github.com:RobMina/G4DarkBreM_visdecay.git
 [submodule "Tracking/acts"]
 	path = Tracking/acts
 	url = https://github.com/acts-project/acts
