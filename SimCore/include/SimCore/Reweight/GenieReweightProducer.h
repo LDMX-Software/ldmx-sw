@@ -55,6 +55,9 @@ namespace simcore {
         // number of weights to be calculated per event
         size_t n_weights_;
 
+        // GENIE tune
+        std::string tune_;
+
         //variations to run
         std::map< ldmx::EventWeights::VariationType, std::vector<double> > variation_map_;
 

@@ -52,6 +52,7 @@
 #include <TParticle.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
+#include "Math/Interpolator.h"
 
 // standard
 #include <iostream>

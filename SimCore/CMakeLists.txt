@@ -77,8 +77,8 @@ file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-
 setup_library(module SimCore
               dependencies Geant4::Interface
                            ROOT::Physics
+                           ROOT::MathMore
                            HepMC3
-                           ${GENIE_LIBS}
                            Framework::Configure
                            Framework::Framework
                            SimCore::G4User
@@ -97,12 +97,12 @@ setup_library(module SimCore
 # Primary Generators library
 setup_library(module SimCore
               name Generators
-              dependencies SimCore::SimCore SimCore::LHE ROOT::MathMore ${GENIE_LIBS} HepMC3)
+              dependencies SimCore::SimCore SimCore::LHE SimCore::Event ${GENIE_LIBS} HepMC3)
 
 # Reweight Library
 setup_library(module SimCore
     name Reweight
-    dependencies SimCore::SimCore SimCore::Generators Framework::Framework ${GENIE_LIBS} HepMC3)
+    dependencies SimCore::SimCore SimCore::Generators SimCore::Event Framework::Framework ${GENIE_LIBS} HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore

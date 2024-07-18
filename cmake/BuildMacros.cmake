@@ -159,9 +159,12 @@ SET( GENIE_LIBS
 #	     Genie::GFwMsg
 #	     Genie::GFwReg
 #	     Genie::GFwAlg
-       ROOT::MathCore
-       ROOT::MathMore
-	     Genie::GFwInt
+
+    Genie::GRwFwk
+    Genie::GRwClc
+    Genie::GRwIO
+
+    Genie::GFwInt
 #	     Genie::GFwGHEP
 	     Genie::GFwNum
 	     Genie::GFwUtl
@@ -213,9 +216,8 @@ SET( GENIE_LIBS
 	     Genie::GPhHEDISEG
 	     Genie::GTlGeo
 	     Genie::GTlFlx
-       Genie::GRwFwk
-       Genie::GRwClc
-       Genie::GRwIO
+    ROOT::MathCore
+    ROOT::MathMore
 	     blas)
 message(STATUS "Setting GENIE_LIBS to ${GENIE_LIBS}")
 endif()

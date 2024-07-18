@@ -9,6 +9,7 @@
 #include "Framework/EventGen/HepMC3Converter.h"
 #include "Framework/EventGen/EventRecord.h"
 #include "Framework/Interaction/Interaction.h"
+#include "Framework/Utils/RunOpt.h"
 
 #include "RwFramework/GReWeightI.h"
 #include "RwFramework/GSystSet.h"
@@ -64,6 +65,7 @@ namespace simcore {
         eventWeightsCollName_  = ps.getParameter<std::string>("eventWeightsCollName");
         seed_                  = ps.getParameter<int>("seed");
         n_weights_             = (size_t)(ps.getParameter<int>("n_weights"));
+        tune_                  = ps.getParameter<std::string>("tune");
         auto var_types_strings = ps.getParameter< std::vector<std::string> >("var_types");
 
         std::default_random_engine generator(seed_);
@@ -74,6 +76,13 @@ namespace simcore {
             for(size_t i_w=0; i_w<n_weights_; ++i_w)
                 variation_map_[vtype].push_back(normal_distribution(generator));
         }
+
+        genie::RunOpt::Instance()->SetTuneName(tune_);
+        if ( ! genie::RunOpt::Instance()->Tune() ) {
+          EXCEPTION_RAISE("ConfigurationException","No TuneId in RunOption.");
+        }
+        genie::RunOpt::Instance()->BuildTune();
+
         genie_rw_->AdoptWghtCalc( "hadro_fzone",     new genie::rew::GReWeightFZone           );
         genie_rw_->AdoptWghtCalc( "hadro_intranuke", new genie::rew::GReWeightINuke           );
         auto & syst = genie_rw_->Systematics();
