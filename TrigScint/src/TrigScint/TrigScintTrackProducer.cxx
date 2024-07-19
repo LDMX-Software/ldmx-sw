@@ -27,6 +27,10 @@ void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
   barGap_x_ = ps.getParameter<double>("vertical_bar_gap");
   skipLast_ = ps.getParameter<bool>("allow_skip_last_collection");
 
+  // Test implementation of sigma_scatt x and y
+  sigma_scatt_x = ps.getParameter<double>("sigma_scatt_x");
+  sigma_scatt_y = ps.getParameter<double>("sigma_scatt_y");
+
   // TO DO: allow any number of input collections
 
   if (verbose_) {
@@ -141,34 +145,107 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
     // the dn pad immediately
     //	if (! clusters_pad2.size())
     // skipDn = true ;
-    for (const auto &seed : seeds) {
-      // for each seed, search through the other two pads to match all clusters
-      // with centroids within tolerance to tracks
-      float centroid = seed.getCentroid();
+    // for (const auto &seed : seeds) {
+    //   // for each seed, search through the other two pads to match all clusters
+    //   // with centroids within tolerance to tracks
+    //   float centroid = seed.getCentroid();
 
-      std::vector<ldmx::TrigScintTrack> trackCandidates;
+    //   std::vector<ldmx::TrigScintTrack> trackCandidates;
 
-      if (verbose_ > 1) {
-        ldmx_log(debug) << "Got seed with centroid " << centroid;
-      }
+    //   if (verbose_ > 1) {
+    //     ldmx_log(debug) << "Got seed with centroid " << centroid;
+    //   }
 
-      // reset for each seed
-      // bool madeTrack = false;
+    //   // reset for each seed
+    //   // bool madeTrack = false;
 
-      for (const auto &cluster1 : clusters_pad1) {
-        if (verbose_ > 1) {
-          ldmx_log(debug) << "\tGot pad1 cluster with centroid "
-                          << cluster1.getCentroid();
-        }
-        if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
-            (centroid >= vertBarStartIdx_  // then in vertical bars
-             //&& fabs(seed.getCentroidX() - cluster1.getCentroidX()) < maxDelta_)) {
-             && seed.getCentroidX() == cluster1.getCentroidX())) {
-          // use geometry y overlap scheme to see if this is really a match in x
-          // should be done in a map
+    //   for (const auto &cluster1 : clusters_pad1) {
+    //     if (verbose_ > 1) {
+    //       ldmx_log(debug) << "\tGot pad1 cluster with centroid "
+    //                       << cluster1.getCentroid();
+    //     }
+    //     if (fabs(cluster1.getCentroid() - centroid) < maxDelta_ ||
+    //         (centroid >= vertBarStartIdx_  // then in vertical bars
+    //          //&& fabs(seed.getCentroidX() - cluster1.getCentroidX()) < maxDelta_)) {
+    //          && seed.getCentroidX() == cluster1.getCentroidX())) {
+    //       // use geometry y overlap scheme to see if this is really a match in x
+    //       // should be done in a map
 
-          if (centroid >= vertBarStartIdx_ &&
-              seed.getCentroidY() < cluster1.getCentroidY()) {
+    //       if (centroid >= vertBarStartIdx_ &&
+    //           seed.getCentroidY() < cluster1.getCentroidY()) {
+    //         // impossible combination
+    //         if (verbose_ > 1) {
+    //           ldmx_log(debug) << "\tSkipping impossible x cluster combination "
+    //                              "with y flags (tag up) ("
+    //                           << seed.getCentroidY() << " "
+    //                           << cluster1.getCentroidY() << ")";
+    //         }
+    //         continue;
+    //       }
+
+    //       // else: first (possible) match! loop through next pad too
+
+    //       if (verbose_ > 1) {
+    //         ldmx_log(debug) << "\t\tIt is close enough!. Check pad2";
+    //       }
+
+    //       // try making third pad clusters an optional part of track
+
+    //       std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1};
+
+    //       bool hasMatchDn = false;
+
+    //       for (const auto &cluster2 : clusters_pad2) {
+    //         if (verbose_ > 1) {
+    //           ldmx_log(debug) << "\tGot pad2 cluster with centroid "
+    //                           << cluster2.getCentroid();
+    //         }
+
+            // if (fabs(cluster2.getCentroid() - centroid) < maxDeltaLastPad_ ||
+            //     (centroid >= vertBarStartIdx_  // then in vertical bars
+            //      && fabs(seed.getCentroidX() - cluster2.getCentroidX()) < maxDeltaLastPad_)) {
+            //      //&& seed.getCentroidX() == cluster2.getCentroidX())) {
+            //   // use geometry y overlap scheme to see if this is really a match
+            //   // in x
+
+            //   if (centroid >= vertBarStartIdx_ &&
+            //       (seed.getCentroidY() < cluster2.getCentroidY() ||
+            //        cluster1.getCentroidY() >
+            //            cluster2.getCentroidY())) {  // impossible
+            //     if (verbose_ > 1) {
+            //       ldmx_log(debug)
+            //           << "\tSkipping impossible x cluster combination with y "
+            //              "flags (tag up dn) ("
+            //           << seed.getCentroidY() << " " << cluster1.getCentroidY()
+            //           << " " << cluster2.getCentroidY() << ")";
+            //     }
+            //     continue;
+            //   }
+
+    for (const auto &seed : seeds) {						// Loop through seeds (pad 1)
+	    bool isSeedHorizontal = seed.getCentroid() < vertBarStartIdx_;			// Is seed horizontal cluster or not
+
+	    std::vector<ldmx::TrigScintTrack> trackCandidates;	  // Track candidates
+
+	    for (const auto &cluster1 : clusters_pad1) {					// Loop through clusters 1 (pad 2)
+
+		    bool isCluster1Horizontal = cluster1.getCentroid() <  // Is cluster1 horizontal cluster
+                                    vertBarStartIdx_;	
+		    bool matchY1 = fabs(seed.getPositionY() -				      // Bool to see if seed&cluster1 within
+            cluster1.getPositionY() ) <				// tolerance in y direction.
+            ( seed.getUncertaintyY() +
+            cluster1.getUncertaintyY() +
+            2*sigma_scatt_y);
+        bool matchX1 = fabs(seed.getPositionX() -				      // Bool to see if seed&cluster1 within
+            cluster1.getPositionX() ) <				// tolerance in x direction
+            ( seed.getUncertaintyX() +
+            cluster1.getUncertaintyX() +
+            2*sigma_scatt_x);
+        if ( ( matchY1 && isSeedHorizontal && isCluster1Horizontal ) ||       // If match in y && all clusters horizontal
+            ( matchX1 && !isSeedHorizontal && !isCluster1Horizontal ) ) {	    // If match in x && all clusters vertical
+          
+          // Take care of impposible case mixing x and y clusters
+          if (!isSeedHorizontal && seed.getCentroidY() < cluster1.getCentroidY()) {
             // impossible combination
             if (verbose_ > 1) {
               ldmx_log(debug) << "\tSkipping impossible x cluster combination "
@@ -179,43 +256,61 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
             continue;
           }
 
-          // else: first (possible) match! loop through next pad too
+          // First possible match
+          std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1};		// Set two cluster vector
+          
+          bool hasMatchDn = false;							// Bool has found match in cluster2 yet
 
-          if (verbose_ > 1) {
-            ldmx_log(debug) << "\t\tIt is close enough!. Check pad2";
-          }
+          for (const auto &cluster2 : clusters_pad2) {					// For every cluster 2 (pad 3)
 
-          // try making third pad clusters an optional part of track
+            bool isCluster2Horizontal = cluster2.getCentroid() < vertBarStartIdx_;		// Is cluster2 horizontal cluster
+            bool seedCluster2MatchY = fabs(seed.getPositionY() -				  // Bool to see if seed&cluster2 within
+                                          cluster2.getPositionY() ) <			  // tolerance in y direction.
+                                              ( seed.getUncertaintyY() +
+                                          cluster2.getUncertaintyY() +
+                                          2*sigma_scatt_y);
+            bool seedCluster2MatchX = fabs(seed.getPositionX() -				  // Bool to see if seed&cluster2 within
+                                          cluster2.getPositionX() ) <			  // tolerance in x direction.
+                                          ( seed.getUncertaintyX() +
+                                          cluster2.getUncertaintyX() +
+                                          2*sigma_scatt_x);
+            bool cluster1Cluster2MatchY = fabs(cluster1.getPositionY() -  // Bool to see if cluster1&cluster2 within
+                                          cluster2.getPositionY() ) <			  // tolerance in y direction.
+                                          ( cluster1.getUncertaintyY() +			
+                                          cluster2.getUncertaintyY() +
+                                          2*sigma_scatt_y);
+            bool cluster1Cluster2MatchX = fabs(cluster1.getPositionX() -	// Bool to see if cluster1&cluster2 within
+                                                cluster2.getPositionX() ) <	// tolerance in x direction.
+                                                ( cluster1.getUncertaintyX() +
+                                                cluster2.getUncertaintyX() +
+                                                2*sigma_scatt_x);
+            bool matchY2 = ( seedCluster2MatchY &&                        // All clusters match in y
+                            cluster1Cluster2MatchY &&
+                            matchY1);		
+            bool matchX2 = ( seedCluster2MatchX &&                        // All clusters match in x
+                            cluster1Cluster2MatchX &&
+                            matchX1);		
+            bool allHorizontal = ( isSeedHorizontal &&					          // Bool, are all clusters horizontal
+                                  isCluster1Horizontal &&
+                                  isCluster2Horizontal );
+            bool allVertical = ( !isSeedHorizontal  &&					          // Bool, are all clusters vertical
+                                !isCluster1Horizontal &&
+                                !isCluster2Horizontal );
 
-          std::vector<ldmx::TrigScintCluster> clusterVec = {seed, cluster1};
+            if ( ( matchY2 && allHorizontal ) ||						// If y match && all horizontal clusters
+                ( matchX2 && allVertical ) ) {						// If x match && all vertical clusters
 
-          bool hasMatchDn = false;
-
-          for (const auto &cluster2 : clusters_pad2) {
-            if (verbose_ > 1) {
-              ldmx_log(debug) << "\tGot pad2 cluster with centroid "
-                              << cluster2.getCentroid();
-            }
-
-            if (fabs(cluster2.getCentroid() - centroid) < maxDeltaLastPad_ ||
-                (centroid >= vertBarStartIdx_  // then in vertical bars
-                 && fabs(seed.getCentroidX() - cluster2.getCentroidX()) < maxDeltaLastPad_)) {
-                 //&& seed.getCentroidX() == cluster2.getCentroidX())) {
-              // use geometry y overlap scheme to see if this is really a match
-              // in x
-
-              if (centroid >= vertBarStartIdx_ &&
-                  (seed.getCentroidY() < cluster2.getCentroidY() ||
-                   cluster1.getCentroidY() >
-                       cluster2.getCentroidY())) {  // impossible
+              // Take care of impposible case mixing x and y clusters
+              if (!isSeedHorizontal && (seed.getCentroidY() < cluster2.getCentroidY() ||
+           		  cluster1.getCentroidY() > cluster2.getCentroidY())) {  // impossible
                 if (verbose_ > 1) {
-                  ldmx_log(debug)
+                    ldmx_log(debug)
                       << "\tSkipping impossible x cluster combination with y "
-                         "flags (tag up dn) ("
+                        "flags (tag up dn) ("
                       << seed.getCentroidY() << " " << cluster1.getCentroidY()
                       << " " << cluster2.getCentroidY() << ")";
-                }
-                continue;
+                 }
+        		    continue;
               }
 
               // first match! loop through next pad too
@@ -550,12 +645,152 @@ ldmx::TrigScintTrack TrigScintTrackProducer::makeTrack(
                       << (clusters.at(i)).getCentroid();
   }
 
+
+  // Set track x, y position and uncertainty
+  double x = -9999.;                          // Declare x-position
+  double y = -9999.;                          // Declare y-position
+  bool samePos = true;                        // If all clusters have same position
+  if (tr.getCentroid() < vertBarStartIdx_) {  // If horizontal track
+    for (int i = 1; i < clusters.size(); i++) { // Check if the clusters are not at the same position
+      if (clusters[0].getPositionY() != clusters[i].getPositionY()) {
+        samePos = false;
+      }
+    }
+    // If they are not at the same position
+    // Set track y uncertainty
+    double sy;
+    if (!samePos) {
+      double sy_upper = clusters[0].getPositionY() +                          // Declare y-uncertainty positive direction
+                clusters[0].getUncertaintyY() +
+                sigma_scatt_y;                        
+      double sy_lower = clusters[0].getPositionY() -                          // Declare y-uncertainty negative direction
+                        clusters[0].getUncertaintyY() -
+                        sigma_scatt_y;                        
+      double sy_upper_idx = 0;                                                // Declare index of best y-uncertainty upper bound
+      double sy_lower_idx = 0;                                                // Declare index of best y-uncertainty lower bound
+      for (int i = 1; i < clusters.size(); i++) {                             // For all other clusters
+        if (sy_upper > (clusters[i].getPositionY() +                             // If there exists upper bound at larger y-position
+                        clusters[i].getUncertaintyY() +
+                        sigma_scatt_y)) {                        
+          sy_upper = clusters[i].getPositionY() +                                 // Set new upper bound
+                      clusters[i].getUncertaintyY() +
+                      sigma_scatt_y;                              
+          sy_upper_idx = i;                                                       // Log new upper bound index
+        }
+        if(sy_lower < (clusters[i].getPositionY() -                              // If there exists lower bound at larger y-position
+                      clusters[i].getUncertaintyY() -
+                      sigma_scatt_y)) {                          
+          sy_lower = clusters[i].getPositionY() -                                 // Set new lower bound
+                      clusters[i].getUncertaintyY() -
+                      sigma_scatt_y;                              
+          sy_lower_idx = i;                                                       // Log new lower bound index
+        }
+      }
+
+      sy = (fabs(clusters[sy_upper_idx].getUncertaintyY() +        // New y-uncertainty
+                      clusters[sy_lower_idx].getUncertaintyY() +
+                      2*sigma_scatt_y) -
+                  fabs(clusters[sy_upper_idx].getPositionY() -
+                      clusters[sy_lower_idx].getPositionY())) / 2.;
+
+      // Set track y position
+      y = clusters[sy_upper_idx].getPositionY() +
+          clusters[sy_upper_idx].getUncertaintyY() +
+          sigma_scatt_y - sy;
+    } else{
+      // If all clusters on the same position
+      // Set track y uncertainty
+      sy = clusters[0].getUncertaintyY();                          // Largest uncertainty in y
+      for (int i = 1; i < clusters.size(); i++) {
+        if (sy < clusters[i].getUncertaintyY()) {
+          sy = clusters[i].getUncertaintyY();
+        }
+      }
+      // Set track y position
+      y = clusters[0].getPositionY();
+    }
+    tr.setSigmaY(sy);                       // Set track y-uncertainty
+
+  } else {                                  // If vertical track
+    for (int i = 1; i < clusters.size(); i++) { // Check if the clusters are not at the same position
+      if (clusters[0].getPositionX() != clusters[i].getPositionX()) {
+        samePos = false;
+      }
+    }
+
+    // Set track x uncertainty
+    // If they are not at the same position
+    double sx;
+    if (!samePos) {
+      double sx_upper = clusters[0].getPositionX() +                          // Declare x-uncertainty positive direction
+                        clusters[0].getUncertaintyX() +
+                        sigma_scatt_x;                        
+      double sx_lower = clusters[0].getPositionX() -                          // Declare x-uncertainty negative direction
+                        clusters[0].getUncertaintyX() -
+                        sigma_scatt_x;                        
+      double sx_upper_idx = 0;                                                // Declare index of best x-uncertainty upper bound
+      double sx_lower_idx = 0;                                                // Declare index of best x-uncertainty lower bound
+      for (int i = 1; i< clusters.size(); i++) {                              // For all other clusters
+        if (sx_upper > (clusters[i].getPositionX() +                             // If there exists upper bound at larger x-position
+                        clusters[i].getUncertaintyX() +
+                        sigma_scatt_x)) {    
+          sx_upper = clusters[i].getPositionX() +                                 // Set new upper bound
+                      clusters[i].getUncertaintyX() +
+                      sigma_scatt_x;          
+          sx_upper_idx = i;                                                       // Log new upper bound index
+        }
+        if(sx_lower < (clusters[i].getPositionX() -                              // If there exists lower bound at larger x-position
+                      clusters[i].getUncertaintyX() -
+                      sigma_scatt_x)) {     
+          sx_lower = clusters[i].getPositionX() -                                 // Set new lower bound
+                      clusters[i].getUncertaintyX() -
+                      sigma_scatt_x;          
+          sx_lower_idx = i;                                                       // Log new lower bound index
+        }
+      }
+
+      sx = (fabs(clusters[sx_upper_idx].getUncertaintyX() +        // New x-uncertainty
+                  clusters[sx_lower_idx].getUncertaintyX() + 
+                  2*sigma_scatt_x) -
+              fabs(clusters[sx_upper_idx].getPositionX() -
+                  clusters[sx_lower_idx].getPositionX())) / 2.;
+
+      // Set track x position
+      x = clusters[sx_upper_idx].getPositionX() +
+          clusters[sx_upper_idx].getUncertaintyX() +
+          sigma_scatt_x - sx;
+    } else {
+      // If all clusters on the same position
+      // Set track x uncertainty
+      sx = clusters[0].getUncertaintyX();           // Largest uncertainty in x
+      for (int i = 1; i < clusters.size(); i++) {
+        if (sx < clusters[i].getUncertaintyX()) {
+          sx = clusters[i].getUncertaintyX();
+        }
+      }
+      // Set track x position
+      x = clusters[0].getPositionX();
+    }
+    tr.setSigmaX(sx);                               // Set track x-uncertainty
+  }
+  // Set track x,y position
+  tr.setPositionXY(x,y);
+
   // Set track z position
   std::vector<double> z{};
   for (int i = 0; i < clusters.size(); i++) {
     z.push_back(clusters.at(i).getPositionZ());
   }
   tr.setPositionZ(z);
+
+  // Set track z uncertainty
+  double max_sz = clusters.at(0).getUncertaintyZ();
+  for (int i = 1; i < clusters.size(); i++) {
+    if (clusters.at(i).getUncertaintyZ() > max_sz) {
+      max_sz = clusters.at(i).getUncertaintyZ();
+    }
+  }
+  tr.setSigmaZ(max_sz);
 
   return tr;
 }
@@ -648,7 +883,9 @@ void TrigScintTrackProducer::matchXYTracks(
                    // think about overlaps. but in overlap case, just
                    // revert to setting x0 and sx0, when we know
       auto xitr = xQuadMap.find((*yitr).first);
-      x = ((*xitr).second).getCentroidX() * xConvFactor_ + xStart_;
+      x = ((*xitr).second).getX();
+      sx = ((*xitr).second).getSigmaX();
+      // x = ((*xitr).second).getCentroidX() * xConvFactor_ + xStart_;
 
       if (verbose_)
         ldmx_log(debug) << "\t\t\t 1 x in quad " << (*yitr).first
@@ -664,13 +901,19 @@ void TrigScintTrackProducer::matchXYTracks(
       xitr2--;  // upper_bound points to next element
 
       if (xitr1 != xitr2) {  // should be true already but...
-        x1 = ((*xitr1).second).getCentroidX() * xConvFactor_ + xStart_;
-        x2 = ((*xitr2).second).getCentroidX() * xConvFactor_ + xStart_;
-        sx1 = xConvFactor_ / 2.;  // 1 bar width
-        sx2 = sx1;
-        x = (x1 + x2) / 2.;
-        sx = fabs(x1 - x2) / 2 *
-             xConvFactor_;  // rely on x precision being one single pad width
+        // x1 = ((*xitr1).second).getCentroidX() * xConvFactor_ + xStart_;
+        // x2 = ((*xitr2).second).getCentroidX() * xConvFactor_ + xStart_;
+        // sx1 = xConvFactor_ / 2.;  // 1 bar width
+        // sx2 = sx1;
+        // x = (x1 + x2) / 2.;
+        // sx = fabs(x1 - x2) / 2 *
+        //      xConvFactor_;  // rely on x precision being one single pad width
+        x1 = ((*xitr1).second).getX();              // x position of first track in quad
+        x2 = ((*xitr2).second).getX();              // x position of second track in quad
+        sx1 = ((*xitr1).second).getSigmaX();        // x uncertainty of first track in quad
+        sx2 = ((*xitr2).second).getSigmaX();        // x uncertainty of second track in quad
+        x = (x1+x2 + sx2 - sx1)/2.;                 // Set x position between x1 and x2
+        sx = (fabs(x1-x2) + sx1 + sx2) / 2.;        // Uncertainty is individual uncertainties + distance between tracks
         if (verbose_)
           ldmx_log(debug) << "\t\t -- 2 x in quad: setting y track x "
                              "coordinate to midpoint";
@@ -681,9 +924,11 @@ void TrigScintTrackProducer::matchXYTracks(
     // can skip 0 y case by construction
     if (nYinQuad == 1) {  // we can already now tell what the y coordinate and
                           // its precision is
-      y = ((*yitr).second).getCentroidY() * yConvFactor_ + yStart_;
-      sy = ((*yitr).second).getResidual() * yConvFactor_;
-      if (sy == 0)
+      // y = ((*yitr).second).getCentroidY() * yConvFactor_ + yStart_;
+      // sy = ((*yitr).second).getResidual() * yConvFactor_;
+      y = ((*yitr).second).getY();
+      sy = ((*yitr).second).getSigmaY();
+      if (sy == 0.)
         sy = 1. / 2 * yConvFactor_;  // if all clusters lined up, assign
                                      // precision of 1 bar width
 
@@ -716,12 +961,18 @@ void TrigScintTrackProducer::matchXYTracks(
       auto yitr1 = yQuadMap.lower_bound((*yitr).first);
       auto yitr2 = yQuadMap.upper_bound((*yitr).first);
       yitr2--;  // back up once
-      y1 = ((*yitr1).second).getCentroidY() * yConvFactor_ + yStart_;
-      y2 = ((*yitr2).second).getCentroidY() * yConvFactor_ + yStart_;
-      sy1 = ((*yitr1).second).getResidual() * yConvFactor_;
-      sy2 = ((*yitr2).second).getResidual() * yConvFactor_;
-      y = (y1 + y2) / 2.;
-      sy = fabs(y1 - y2) / 2 * yConvFactor_;
+      // y1 = ((*yitr1).second).getCentroidY() * yConvFactor_ + yStart_;
+      // y2 = ((*yitr2).second).getCentroidY() * yConvFactor_ + yStart_;
+      // sy1 = ((*yitr1).second).getResidual() * yConvFactor_;
+      // sy2 = ((*yitr2).second).getResidual() * yConvFactor_;
+      // y = (y1 + y2) / 2.;
+      // sy = fabs(y1 - y2) / 2 * yConvFactor_;
+      y1 = ((*yitr1).second).getY();
+      y2 = ((*yitr2).second).getY();
+      sy1 = ((*yitr1).second).getSigmaY();
+      sy2 = ((*yitr2).second).getSigmaY();
+      y = (y1+y2+sy2-sy1) / 2.;
+      sy = (fabs(y1 - y2) + sy1 + sy2) / 2.;
       if (verbose_)
         ldmx_log(debug)
             << "\t\t -- 2 y in quad: setting x track y coordinate to midpoint";

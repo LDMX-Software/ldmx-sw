@@ -131,6 +131,12 @@ class TrigScintTrack {
   float getSigmaY() const { return sy_; };
 
   /**
+   * Get the uncertainty on the y coordinate of the track.
+   * @return The uncertainty on the z coordinate of the track in mm [mm].
+   */
+  float getSigmaZ() const { return sz_; }
+
+  /**
    * Get the cluster constituents of the track.
    * @return The list of track constituents.
    */
@@ -225,7 +231,7 @@ class TrigScintTrack {
   void setPositionZ(const std::vector<double> z) {
     z_ = z;
   }
-  
+
   /**
    * Set the uncertainty on the position of the track [mm].
    * @param sx The X position uncertainty.
@@ -247,6 +253,12 @@ class TrigScintTrack {
    * @param sy The Y position uncertainty.
    */
   void setSigmaY(const float sy) { sy_ = sy; }
+
+  /**
+   * Set the uncertainty on the position of the track [mm].
+   * @param sz The Z position uncertainty
+   */
+  void setSigmaZ(const float sz) { sz_ = sz; }
 
   /**
    * Set the momentum of the particle at the position at which
@@ -352,6 +364,11 @@ class TrigScintTrack {
    * The uncertainty on the Y position.
    */
   float sy_{-9999.};
+
+  /**
+   * The uncertainty on the Z position.
+   */
+  float sz_{-9999.};
 
   // these below here i don't think i'll use.
 

@@ -97,6 +97,13 @@ class TrigScintTrackProducer : public framework::Producer {
   float yConvFactor_;
   float yStart_;
 
+  // padding in uncertainty x
+  double sigma_scatt_x{0.};
+
+  // padding in uncertainty y
+  double sigma_scatt_y{0.};
+
+
 };
 
 }  // namespace trigscint
