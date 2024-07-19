@@ -442,6 +442,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event)
 
 void GenieGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
   rh.setStringParameter(id+" Class", "simcore::generators::GenieGenerator");
+  rh.setStringParameter(id+"GenieTune",tune_);
 }
 
 }  // namespace generators

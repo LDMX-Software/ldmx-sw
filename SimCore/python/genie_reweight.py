@@ -8,6 +8,5 @@ class GenieReweightProducer(ldmxcfg.Producer) :
         self.seed = 10
         self.n_weights = 100
         self.var_types = ["GENIE_GENERIC"]
-        self.tune = "G18_02a_02_11b"
 
         self.eventWeightsCollName = "genieEventWeights"

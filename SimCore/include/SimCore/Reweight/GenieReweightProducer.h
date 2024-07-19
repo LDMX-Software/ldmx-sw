@@ -35,6 +35,9 @@ namespace simcore {
         //configuration
         virtual void configure(framework::config::Parameters&);
 
+        //on new run
+        virtual void onNewRun(const ldmx::RunHeader &runHeader);
+
         //produce on the event
         virtual void produce(framework::Event& event);
 
@@ -65,6 +68,8 @@ namespace simcore {
         genie::HepMC3Converter* hepMC3Converter_;
 
         genie::rew::GReWeight* genie_rw_;
+
+        void reconfigureGenieReweight();
 
     };
 

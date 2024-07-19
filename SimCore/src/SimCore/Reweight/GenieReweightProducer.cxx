@@ -37,7 +37,6 @@
 #include "RwCalculators/GReWeightXSecMEC.h"
 #include "RwCalculators/GReWeightDeltaradAngle.h"
 
-
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/Print.h"
 
@@ -65,7 +64,6 @@ namespace simcore {
         eventWeightsCollName_  = ps.getParameter<std::string>("eventWeightsCollName");
         seed_                  = ps.getParameter<int>("seed");
         n_weights_             = (size_t)(ps.getParameter<int>("n_weights"));
-        tune_                  = ps.getParameter<std::string>("tune");
         auto var_types_strings = ps.getParameter< std::vector<std::string> >("var_types");
 
         std::default_random_engine generator(seed_);
@@ -77,16 +75,42 @@ namespace simcore {
                 variation_map_[vtype].push_back(normal_distribution(generator));
         }
 
-        genie::RunOpt::Instance()->SetTuneName(tune_);
-        if ( ! genie::RunOpt::Instance()->Tune() ) {
-          EXCEPTION_RAISE("ConfigurationException","No TuneId in RunOption.");
-        }
-        genie::RunOpt::Instance()->BuildTune();
+    }
 
-        genie_rw_->AdoptWghtCalc( "hadro_fzone",     new genie::rew::GReWeightFZone           );
-        genie_rw_->AdoptWghtCalc( "hadro_intranuke", new genie::rew::GReWeightINuke           );
-        auto & syst = genie_rw_->Systematics();
-        syst.Init(genie::rew::GSyst::FromString("FrInel_pi"));
+    void GenieReweightProducer::reconfigureGenieReweight()
+    {
+      delete genie_rw_;
+      genie_rw_ = new genie::rew::GReWeight;
+
+      genie::RunOpt::Instance()->SetTuneName(tune_);
+      if ( ! genie::RunOpt::Instance()->Tune() ) {
+        EXCEPTION_RAISE("ConfigurationException","No TuneId in RunOption.");
+      }
+      genie::RunOpt::Instance()->BuildTune();
+
+      genie_rw_->AdoptWghtCalc( "hadro_fzone",     new genie::rew::GReWeightFZone           );
+      genie_rw_->AdoptWghtCalc( "hadro_intranuke", new genie::rew::GReWeightINuke           );
+      auto & syst = genie_rw_->Systematics();
+      syst.Init(genie::rew::GSyst::FromString("FrInel_pi"));
+    }
+
+    void GenieReweightProducer::onNewRun(const ldmx::RunHeader &runHeader) {
+
+      const std::string genie_tune_par = "GenieTune";
+      std::string new_tune;
+      for (auto par : runHeader.getStringParameters())
+        if (par.first.size() >= genie_tune_par.size() &&
+            par.first.compare(par.first.size() - genie_tune_par.size(),
+                              genie_tune_par.size(), genie_tune_par) == 0) {
+          new_tune = par.second;
+          break;
+        }
+
+      if (tune_ != new_tune) {
+        std::cout << "Found new tune " << new_tune << " (used to be " << tune_ << ")" << std::endl;
+        tune_ = new_tune;
+        reconfigureGenieReweight();
+      }
     }
 
     void GenieReweightProducer::produce(framework::Event &event) {
@@ -134,7 +158,7 @@ namespace simcore {
 
         } //end loop over weights
 
-        ev_weights.Print();
+        //ev_weights.Print();
 
         event.add(eventWeightsCollName_, ev_weights);
 
