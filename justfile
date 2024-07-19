@@ -15,16 +15,16 @@ configure *CONFIG:
     denv cmake -B build -S . {{ CONFIG }}
 
 # compile and install ldmx-sw
-build ncpu=num_cpus() *CONFIG="": (configure CONFIG)
+build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
 
 # run the ldmx-sw tests
-test *ARGS: build
+test *ARGS:
     cd build && denv ctest {{ ARGS }}
 
 # run ldmx-sw with the input configuration script
-fire config *ARGS: build
-    denv fire {{ config }} {{ ARGS }}
+fire config_py *ARGS:
+    denv fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
@@ -89,5 +89,6 @@ mount DIR:
 setenv +ENVVAR:
     denv config env copy {{ ENVVAR }}
 
-alias compile := build
-alias recompAndFire := fire
+compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
+
+recompAndFire config_py *ARGS: build (fire config_py ARGS)
