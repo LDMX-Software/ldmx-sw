@@ -27,6 +27,8 @@ if(BUILD_EVENT_ONLY)
                          class "TrigScintCluster" type "collection" )
   register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
                          class "TrigScintTrack" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "PositionDifference" type "collection" )
   
   # Generate the files needed to build the event classes.
   setup_library(module TrigScint name Event
