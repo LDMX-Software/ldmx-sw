@@ -1,13 +1,22 @@
 # Developer Notes
 #   If you are looking at this file there are a few helpful things to note.
 #   - `@` is used to alter what `just` chooses to print.
-#     It can largely be ignored during development.
+#     It can largely be ignored during development and inserted after when tuning the UI.
 #   - Double curly braces `{{...}}` are used for evaluating `just` variables and functions
 #   - By default, these recipes are run from the directory of this file.
-#     This can be changed but is very helpful for us.
+#     This can be changed but is helpful for us.
 #   - `just --fmt --unstable` is used to apply the canonical justfile format
+#   - just does support splitting recipes across multiple files, but
+#     should be avoided for our use case to keep it as a single reference.
+#
+# other recipe ideas:
+#   - production image building
+#   - format python
 
 help_message := "shared recipes for ldmx-sw development
+
+    Some folks use 'ldmx' as an alias for 'just' in which case you can
+    replace 'just' with 'ldmx' in the examples below.
 
   USAGE:
     just <cmd> [arguments...]
@@ -76,10 +85,6 @@ format-cpp *ARGS='-i':
     denv clang-format {{ ARGS }} $(cat ${format_list})
     rm ${format_list}
 
-# other recipe ideas:
-# - production image building
-# - run test config scripts
-# - format python
 # below are the mimics of ldmx <cmd>
 
 # change which image is used for the denv
