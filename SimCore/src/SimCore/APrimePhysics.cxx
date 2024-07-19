@@ -42,27 +42,28 @@ APrimePhysics::APrimePhysics(const framework::config::Parameters& params)
       process_{nullptr} {
   ap_mass_ = parameters_.getParameter<double>("ap_mass", 0.) * MeV;
   enable_ = parameters_.getParameter<bool>("enable", false);
-  decay_mode_ = parameters_.getParameter<std::string>("decay_mode", "no_decay");
-  ap_tau_ = parameters_.getParameter<double>("ap_tau", -1.0) * s;
 }
 
 void APrimePhysics::ConstructParticle() {
+  auto model{
+      parameters_.getParameter<framework::config::Parameters>("model")};
   static const std::map<std::string, G4APrime::DecayMode>
-        decay_lut = {
-            {"no_decay",
-              G4APrime::DecayMode::NoDecay},
+      decay_lut = {
+            {"no_decay", G4APrime::DecayMode::NoDecay},
             {"flat_decay", G4APrime::DecayMode::FlatDecay},
             {"geant_decay", G4APrime::DecayMode::GeantDecay}};
   auto decay_it{
-    decay_lut.find(decay_mode_)};
+      decay_lut.find(model.getParameter<std::string>("decay_mode", "no_decay"))};
   if (decay_it == decay_lut.end()) {
       EXCEPTION_RAISE(
           "BadConf",
           "Unrecognized decay mode '" +
-              decay_mode_ +
+              model.getParameter<std::string>("decay_mode") +
               "',"
               " options are 'no_decay', 'flat_decay', or 'geant_decay'.");
   }
+
+  double ap_tau = model.getParameter<double>("ap_tau", -1.0);
 
   /**
    * Insert A-prime into the Geant4 particle table.
@@ -71,7 +72,7 @@ void APrimePhysics::ConstructParticle() {
    * deletes them at the end of the run. We configure the A' to have
    * the input mass and the PDG ID number of 622.
    */
-  G4APrime::Initialize(ap_mass_, 622, ap_tau_, decay_it->second);
+  G4APrime::Initialize(ap_mass_, 622, ap_tau, decay_it->second);
 }
 
 void APrimePhysics::ConstructProcess() {
