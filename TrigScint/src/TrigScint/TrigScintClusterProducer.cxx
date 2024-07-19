@@ -535,16 +535,17 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
       double zConvFactor_ = barDepth_z_ + barGap_z_;
       double zStart = (barDepth_z_ + barGap_z_ ) / 2.;
 
-      double x = -99999.;                 // Initialise x at nonsense value
-      double y = -99999.;                 // Initialise y at nonsense value
-      double z = -99999.;								  // Initialise z at nonsense value
-      double sx = xConvFactor_ / 2.;      // Set uncertainty in x position
-      double sy = yConvFactor_ / 2.;      // Set uncertainty in y position
-      double sz = zConvFactor_ / 2.;      // Set uncertainty in z position
+      double x = -99999.;             // Initialise x at nonsense value
+      double y = -99999.;             // Initialise y at nonsense value
+      double z = -99999.;							// Initialise z at nonsense value
+      double sx = -99999.;            // Set uncertainty in x position
+      double sy = -99999.;            // Set uncertainty in y position
+      double sz = zConvFactor_ / 2.;  // Set uncertainty in z position
 
       centroid_ = cluster.getCentroid();  // Get cluster centroid
 
       if (centroid_ < vertBarStartIdx_) {		  // If we are looking at horizontal bar centroid
+        sy = yConvFactor_ / 2.;  
         y = yStart_ + centroid_*yConvFactor_ +
             0.5*barWidth_y_;                    // calculate y
         // How many horizontal bars are hit
@@ -573,6 +574,7 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
             z = zStart - zConvFactor_*5/3;                          // z-position is back row minus 2/3*(bar_width + bar_gap)
           }}
       } else {								                                  // if we are looking at vertical bar centroid
+        sx = xConvFactor_ / 2.;
         int cx = std::floor((centroid_ - vertBarStartIdx_) / 4.); // conversion from centroid_ ID to barID (starting at 0)
         x = xStart_ + cx*xConvFactor_ + 0.5*barWidth_x_;          // calculate x
         z = zStart;                                               // calculate z

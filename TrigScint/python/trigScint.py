@@ -239,7 +239,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         # Standard values of a TS pad for trigScint geometry in
         # detector ldmx-det-v14-8gevi
         self.vertical_bar_width = 3.        # 1 bar (vert.) width in x [mm]
-        self.horizontal_bar_width = 3.      # 1 bar (hor.) width in y [mm]
+        self.horizontal_bar_width = 3.05    # 1 bar (hor.) width in y [mm]
         self.bar_depth = 2.                 # 1 bar (vert.) depth in z [mm]
         self.vertical_bar_gap = 0.1         # dist. between bars (vert.) [mm]
         self.horizontal_bar_gap = 2.1       # dist. between bars (hor.) [mm]
@@ -297,6 +297,10 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTracks"
         self.verbosity = 0
+
+        # Test implementation of sigma_scatt x and y
+        self.sigma_scatt_x = 0.5
+        self.sigma_scatt_y = 0.0
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
