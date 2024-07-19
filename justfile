@@ -7,8 +7,20 @@
 #     This can be changed but is very helpful for us.
 #   - `just --fmt --unstable` is used to apply the canonical justfile format
 
+help_message := "shared recipes for ldmx-sw development
+
+  USAGE:
+    just <cmd> [arguments...]
+
+  Multiple commands can be provided at once and they will be run in sequence.
+
+    just configure build test
+
+  COMMANDS:
+"
+
 _default:
-    @just --list --justfile {{ justfile() }}
+    @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
 # configure how ldmx-sw will be built
 configure *CONFIG:
@@ -52,8 +64,6 @@ check:
 clean:
     rm -r build install
 
-alias fmt := format
-
 # format the ldmx-sw source code
 format: format-cpp
 
@@ -68,7 +78,6 @@ format-cpp *ARGS='-i':
 
 # other recipe ideas:
 # - production image building
-# - testing
 # - run test config scripts
 # - format python
 # below are the mimics of ldmx <cmd>
