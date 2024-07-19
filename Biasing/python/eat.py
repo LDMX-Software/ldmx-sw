@@ -165,7 +165,10 @@ def midshower_dimuon( detector , generator, bias_factor , bias_threshold , min_d
     return sim
 
 
-def dark_brem( ap_mass , lhe, detector, generator) :
+def dark_brem(ap_mass, db_event_lib, detector, generator, 
+              scale_APrime = False, decay_mode = 'no_decay',
+              ap_tau = -1.0, dist_decay_min = 0.0,
+              dist_decay_max = 1.0) :
     """Example configuration for producing dark brem interactions in the ECal. 
 
     This configures the simulator to fire a 4 GeV electron upstream of the 
@@ -177,7 +180,7 @@ def dark_brem( ap_mass , lhe, detector, generator) :
     ----------
     ap_mass : float
         The mass of the A' in MeV.
-    lhe : str
+    db_event_lib : str
         The path to the reference library to use as vertices of the dark brem. 
     detector : str
         Path to the detector.
@@ -185,6 +188,16 @@ def dark_brem( ap_mass , lhe, detector, generator) :
         Beam generator for this simulation which should be a ParticleGun
         so we can configure the PrimaryToEcalFilter to select events where
         beam electrons retain 87.5% of their energy.
+    scale_APrime : bool
+        Whether to scale the A' momentum along with the recoil electron.
+    decay_mode : str
+        The A' decay mode. Either no_decay, flat_decay, or geant_decay
+    ap_tau : float
+        The A' decay lifetime in seconds
+    dist_decay_min : float
+        The minimum lab-frame distance at which to decay the A'
+    dist_decay_max : float
+        The maximum lab-frame distance at which to decay the A'
 
     Return
     ------
@@ -213,9 +226,14 @@ def dark_brem( ap_mass , lhe, detector, generator) :
 
     #Activiate dark bremming with a certain A' mass and LHE library
     from LDMX.SimCore import dark_brem
-    db_model = dark_brem.G4DarkBreMModel( lhe )
+    db_model = dark_brem.G4DarkBreMModel( db_event_lib )
     db_model.threshold = 0.5*generator.energy #GeV - minimum energy electron needs to have to dark brem
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    db_model.scale_APrime = scale_APrime
+    db_model.decay_mode = decay_mode
+    db_model.ap_tau = ap_tau
+    db_model.dist_decay_min = dist_decay_min
+    db_model.dist_decay_max = dist_decay_max
     sim.dark_brem.activate( ap_mass , db_model )
 
     #Biasing dark brem up inside of the ecal volumes
@@ -229,6 +247,7 @@ def dark_brem( ap_mass , lhe, detector, generator) :
     
     beam_energy = generator.energy*1000
     sim.actions = [
+            util.DecayChildrenKeeper([622]), # keep children of A' decay
             util.PartialEnergySorter(0.5*beam_energy),
             filters.PrimaryToEcalFilter(0.875*beam_energy),
             filters.EcalDarkBremFilter(0.5*beam_energy)
