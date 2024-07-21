@@ -615,7 +615,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   }
 
   // Sort tagger hits.
-  for (auto& [ _track_id, hit_indices ] : tagger_sh_count_map) {
+  for (auto& [_track_id, hit_indices] : tagger_sh_count_map) {
     std::sort(
         hit_indices.begin(), hit_indices.end(),
         [&](const int idx1, int idx2) -> bool {
@@ -654,29 +654,27 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   auto beamOriginSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(beamOrigin_[0], beamOrigin_[1], beamOrigin_[2]))};
 
-    if (!skip_tagger_) {
-  for (const auto& [track_id, hit_indices] : tagger_sh_count_map) {
-    const ldmx::SimTrackerHit& hit = scoring_hits.at(hit_indices.at(0));
-    const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
+  if (!skip_tagger_) {
+    for (const auto& [track_id, hit_indices] : tagger_sh_count_map) {
+      const ldmx::SimTrackerHit& hit = scoring_hits.at(hit_indices.at(0));
+      const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
-    if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
+      if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
+        ldmx::Track truth_tagger_track;
+        createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
+        truth_tagger_track.setNhits(
+            hit_count_map_tagger[hit.getTrackID()].size());
+        tagger_truth_tracks.push_back(truth_tagger_track);
 
-      ldmx::Track truth_tagger_track;
-      createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
-      truth_tagger_track.setNhits(
-          hit_count_map_tagger[hit.getTrackID()].size());
-      tagger_truth_tracks.push_back(truth_tagger_track);
-
-
-      if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
-        ldmx::Track beamETruthSeed = TaggerFullSeed(
-          particleMap[hit.getTrackID()], hit.getTrackID(), hit,
-          hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
-        beam_electrons.push_back(beamETruthSeed);
+        if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
+          ldmx::Track beamETruthSeed = TaggerFullSeed(
+              particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+              hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+          beam_electrons.push_back(beamETruthSeed);
+        }
       }
     }
   }
-    }
 
   // Recover the EcalScoring hits
   std::vector<ldmx::SimTrackerHit> ecal_spHits =
