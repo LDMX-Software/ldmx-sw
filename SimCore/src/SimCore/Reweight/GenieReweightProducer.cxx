@@ -62,6 +62,7 @@ namespace simcore {
         hepmc3CollName_        = ps.getParameter<std::string>("hepmc3CollName");
         hepmc3PassName_        = ps.getParameter<std::string>("hepmc3PassName");
         eventWeightsCollName_  = ps.getParameter<std::string>("eventWeightsCollName");
+        verbosity_             = ps.getParameter<int>("verbosity");
         seed_                  = ps.getParameter<int>("seed");
         n_weights_             = (size_t)(ps.getParameter<int>("n_weights"));
         auto var_types_strings = ps.getParameter< std::vector<std::string> >("var_types");
@@ -77,7 +78,7 @@ namespace simcore {
 
     }
 
-    void GenieReweightProducer::reconfigureGenieReweight()
+    void GenieReweightProducer::reinitializeGenieReweight()
     {
       delete genie_rw_;
       genie_rw_ = new genie::rew::GReWeight;
@@ -90,8 +91,10 @@ namespace simcore {
 
       genie_rw_->AdoptWghtCalc( "hadro_fzone",     new genie::rew::GReWeightFZone           );
       genie_rw_->AdoptWghtCalc( "hadro_intranuke", new genie::rew::GReWeightINuke           );
+
       auto & syst = genie_rw_->Systematics();
-      syst.Init(genie::rew::GSyst::FromString("FrInel_pi"));
+      for (auto var : variation_map_)
+        syst.Init(variation_type_to_genie_dial(var.first));
     }
 
     void GenieReweightProducer::onNewRun(const ldmx::RunHeader &runHeader) {
@@ -107,10 +110,43 @@ namespace simcore {
         }
 
       if (tune_ != new_tune) {
-        std::cout << "Found new tune " << new_tune << " (used to be " << tune_ << ")" << std::endl;
+        if(verbosity_>=0)
+          std::cout << "Found new tune " << new_tune << " (used to be " << tune_ << ")" << std::endl;
         tune_ = new_tune;
-        reconfigureGenieReweight();
+        reinitializeGenieReweight();
       }
+    }
+
+    void GenieReweightProducer::reconfigureGenieReweight(size_t i_w)
+    {
+      auto & syst = genie_rw_->Systematics();
+      for(auto var : variation_map_){
+        if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_MFP_pi)
+            syst.Set(genie::rew::GSyst::FromString("MFP_pi"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_MFP_N)
+          syst.Set(genie::rew::GSyst::FromString("MFP_N"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrCEx_pi)
+          syst.Set(genie::rew::GSyst::FromString("FrCEx_pi"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrInel_pi)
+          syst.Set(genie::rew::GSyst::FromString("FrInel_pi"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrAbs_pi)
+          syst.Set(genie::rew::GSyst::FromString("FrAbs_pi"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrPiProd_pi)
+          syst.Set(genie::rew::GSyst::FromString("FrPiProd_pi"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrCEx_N)
+          syst.Set(genie::rew::GSyst::FromString("FrCEx_N"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrInel_N)
+          syst.Set(genie::rew::GSyst::FromString("FrInel_N"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrAbs_N)
+          syst.Set(genie::rew::GSyst::FromString("FrAbs_N"), var.second[i_w]);
+        else if(var.first==ldmx::EventWeights::VariationType::kGENIE_INukeTwkDial_FrPiProd_N)
+          syst.Set(genie::rew::GSyst::FromString("FrPiProd_N"), var.second[i_w]);
+        else if (var.first==ldmx::EventWeights::VariationType::kGENIE_HadrNuclTwkDial_FormZone)
+          syst.Set(genie::rew::GSyst::FromString("FormZone"), var.second[i_w]);
+
+      }
+      genie_rw_->Reconfigure();
+
     }
 
     void GenieReweightProducer::produce(framework::Event &event) {
@@ -125,10 +161,7 @@ namespace simcore {
 
             double running_weight=1;
 
-            auto & syst = genie_rw_->Systematics();
-            auto var_value = variation_map_[ldmx::EventWeights::kGENIE_GENERIC][i_w];
-            syst.Set(genie::rew::GSyst::FromString("FrInel_pi"), var_value);
-            genie_rw_->Reconfigure();
+            reconfigureGenieReweight(i_w);
 
             //setup a loop here ... but we're going to force only looping over one interaction if it exists for now.
             for (size_t i_ev=0; i_ev<1; ++i_ev) {
@@ -158,7 +191,8 @@ namespace simcore {
 
         } //end loop over weights
 
-        //ev_weights.Print();
+        if(verbosity_>=1)
+          ev_weights.Print();
 
         event.add(eventWeightsCollName_, ev_weights);
 
