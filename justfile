@@ -44,6 +44,7 @@ test *ARGS:
     cd build && denv ctest {{ ARGS }}
 
 # run ldmx-sw with the input configuration script
+[no-cd]
 fire config_py *ARGS:
     denv fire {{ config_py }} {{ ARGS }}
 
