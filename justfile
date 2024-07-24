@@ -76,16 +76,20 @@ clean:
     rm -r build install
 
 # format the ldmx-sw source code
-format: format-cpp
+format: format-cpp format-just
 
 # format the C++ source code of ldmx-sw
 format-cpp *ARGS='-i':
     #!/usr/bin/env sh
-    set -eu
+    set -exu
     format_list=$(mktemp)
     git ls-tree -r HEAD --name-only | egrep '(\.h|\.cxx)$' > ${format_list}
     denv clang-format {{ ARGS }} $(cat ${format_list})
     rm ${format_list}
+
+# format the justfile
+format-just:
+    just --fmt --unstable
 
 # below are the mimics of ldmx <cmd>
 
