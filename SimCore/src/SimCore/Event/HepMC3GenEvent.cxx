@@ -3,8 +3,11 @@
 //
 
 #include "SimCore/Event/HepMC3GenEvent.h"
-#include "HepMC3/GenEvent.h"
 #include "HepMC3/Print.h"
+#include "HepMC3/WriterAscii.h"
+
+#include <string>
+#include <sstream>
 
 namespace ldmx{
 
@@ -23,4 +26,19 @@ namespace ldmx{
         HepMC3::Print::line(ev,true); //print attributes
     }
 
+    HepMC3::GenEvent HepMC3GenEvent::getHepMCGenEvent() const {
+      HepMC3::GenEvent ev; ev.read_data(*this);
+      return ev;
+    }
+
+    std::string HepMC3GenEvent::get_as_string() const {
+      HepMC3::GenEvent ev; ev.read_data(*this);
+
+      std::stringstream ss;
+      HepMC3::WriterAscii writer(ss);
+
+      writer.write_event(ev);
+      return ss.str();
+
+    }
 }
