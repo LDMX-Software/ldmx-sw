@@ -4,8 +4,7 @@
 #     It can largely be ignored during development and inserted after when tuning the UI.
 #   - Double curly braces `{{...}}` are used for evaluating `just` variables and functions
 #   - By default, these recipes are run from the directory of this file.
-#     This can be changed but is helpful for us.
-#   - `just --fmt --unstable` is used to apply the canonical justfile format
+#     This can be changed but is helpful for us in most recipes.
 #   - just does support splitting recipes across multiple files, but
 #     should be avoided for our use case to keep it as a single reference.
 #
@@ -89,7 +88,7 @@ format-cpp *ARGS='-i':
 
 # format the justfile
 format-just:
-    just --fmt --unstable
+    @just --fmt --unstable --justfile {{ justfile() }}
 
 # below are the mimics of ldmx <cmd>
 
@@ -109,6 +108,8 @@ mount DIR:
 setenv +ENVVAR:
     denv config env copy {{ ENVVAR }}
 
+# configure and build ldmx-sw
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
 
+# re-build ldmx-sw and then run a config
 recompAndFire config_py *ARGS: build (fire config_py ARGS)
