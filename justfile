@@ -27,6 +27,21 @@ help_message := "shared recipes for ldmx-sw development
   COMMANDS:
 "
 
+# inherited from ldmx-env bash functions
+# the denv workspace is colloquially known as LDMX_BASE
+export LDMX_BASE := parent_directory( justfile_directory() )
+
+# tell denv where the workspace is
+# usually, denv deduces where the workspace is by finding the .denv directory,
+# but we want to set where the denv is so users could (for example) run their
+# ldmx-sw build from within some other denv by invoking fire from just
+export denv_workspace := LDMX_BASE
+
+# make sure APPTAINER_CACHEDIR is not in the home directory
+# unless the user has already defined it
+#   just 1.15
+export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
+
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
@@ -43,7 +58,7 @@ test *ARGS:
     cd build && denv ctest {{ ARGS }}
 
 # run ldmx-sw with the input configuration script
-[no-cd]
+[no-cd] # just 1.9
 fire config_py *ARGS:
     denv fire {{ config_py }} {{ ARGS }}
 
@@ -54,7 +69,7 @@ init:
       echo "\033[32mWorkspace already initialized.\033[0m"
       denv config print
     else
-      denv init --clean-env --name ldmx ldmx/dev:latest ..
+      denv init --clean-env --name ldmx ldmx/dev:latest ${LDMX_BASE}
     fi
 
 # check that the necessary programs for running ldmx-sw are present
@@ -69,6 +84,7 @@ check:
     # denv can check for container runners it needs
     denv check
 
+# confirm(PROMPT) just 1.23
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
