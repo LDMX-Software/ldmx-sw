@@ -16,50 +16,60 @@
     <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
-## Quick Start
+## Start Up
+ldmx-sw is a large software project and so it is helpful to separate _using_ it to
+perform physics studies from _developing_ it to fix/improve/enable other studies.
+In both cases, we use containers to share a fixed software environment, so everyone
+will need a method for running these containers.
 
 - [Install the docker engine](https://docs.docker.com/engine/install/)
-- (on Linux systems) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
-- (on MacOS systems) Make sure `git lfs` is installed. (Test: `git lfs` prints out a help message instead of an error about `lfs` not being found.)
-  - The default installation of `git` that is included with Apple's developer tools does not include `git lfs` which is required by acts to download and unpack one of its own submodules. [GitHub has a nice tutorial](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=mac) on how to install `git lfs` on MacOS.
-  - This is only an issue observed on MacOS systems. Linux repositories (used in WSL and Linux systems) include `git lfs` within their installed versions of `git`.
-- Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
-  - **Note**: You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
-- Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`
-  - **Note**: If you are working with ldmx-sw at SLAC's SDF, you will need to set the `TMPDIR` environment variable so that program running the container has more than ~5GB of space to write intermediate files. The default temporary space (`/tmp`) is often full of other files already. A decent replacement is `TMPDIR=${SCRATCH}` which gives the program plenty of room for the files it needs to manipulate.
-- Configure and compile: `ldmx compile`
-- Now you can run any processor in _ldmx-sw_ through `ldmx fire myconfig.py`
-- If you are developing and need to recompile and run `ldmx fire`, you can use `ldmx recompFire myconfig.py`
+  - Only necessary on personal computers. Shared computing clusters should have `apptainer` installed.
+  - (on Linux personal computers) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
+- [Install `denv`](https://tomeichlersmith.github.io/denv/getting_started.html#installation)
 
-## Documentation 
-The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
-A brief description of common commands is given below.
+### Users
+In order to use ldmx-sw, no more dependencies are required!
+Simply choose the version of ldmx-sw you wish to use with your project.
+```
+mkdir my-project
+denv init ldmx/pro:v4.0.1 # or some other ldmx-sw version
+```
+And then you can run ldmx-sw with a configuration script of your choice.
+```
+denv fire my-config.py
+```
+More detail on configuration scripts and analyzing the output files
+is given in the first section of the [online manual](ldmx-software.github.io).
 
-### Common Commands inside Container
+### Developers
+For development, we use a few more tools to help track our changes and share commands
+that we use regularly.
 
-Command | Purpose
----|---
-`ldmx cmake ..` | Configure the ldmx-sw build
-`ldmx make` | Compile/build ldmx-sw
-`ldmx make install` | Install ldmx-sw
-`ldmx compile` | Configure and compile ldmx-sw
-`ldmx fire config.py` | Use ldmx-sw application and processors with input python configuration
-`ldmx recompFire config.py` | Recompile and run fire on a config file
-`ldmx python3 analysis.py` | Run python-based analysis
-`ldmx ./bin/mg5_aMC` | Run MadGraph5 inside (ubuntu-based) container
+> [!WARNING]
+> If you are on Windows, make sure to install these tools _inside_ WSL where `docker`
+> will be run and ldmx-sw will be developed. Since WSL is often a virtual Ubuntu machine,
+> following the instructions for Ubuntu or Linux can be appropriate.
 
-### Other Container Configuration Commands
+- Make sure `git` is installed.
+  - `git` is a very common tool used by software developers and so it may already be available.
+  - (on MacOS systems) Make sure `git lfs` is installed. (Test: `git lfs` prints out a help message instead of an error about `lfs` not being found.) The default installation of `git` that is included with Apple's developer tools does not include `git lfs` which is required by acts to download and unpack one of its own submodules. [GitHub has a nice tutorial](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=mac) on how to install `git lfs` on MacOS.
+- [Install `just`](https://just.systems/man/en/chapter_5.html)
+  - This tool is not required but it is highly encouraged. The recipes we share via the [justfile](justfile) can be run without `just` but are longer to type.
 
-The environment script defines several other shell commands to help configure and debug the container environment.
+Then, with these additional tools, developers can clone the repository and start development.
+```
+git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git
+```
 
-- `ldmx list repo` : List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
-- `ldmx use repo tag` : Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
-- `ldmx config` : Print out how the container environment is currently configured
-- `ldmx clean all` : Reset environment to a blank state
+> [!NOTE]
+> You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
 
-Use `ldmx help` for a full listing of these commands.
-If we don't define a command outside of the container,
-then the command is given to the container to run inside the current directory.
+```
+cd ldmx-sw
+just # no arguments prints out the possible options
+just init # initialize a new development environment
+just configure build test # configure ldmx-sw, build it, then test it
+```
 
 ## Maintainer 
 
