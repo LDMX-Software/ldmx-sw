@@ -639,6 +639,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // TODO remove the truthtracks in the future as the truth seeds are enough
 
   std::vector<ldmx::Track> tagger_truth_tracks;
+  std::vector<ldmx::Track> tagger_layer_tracks;
+
   std::vector<ldmx::Track> tagger_truth_seeds;
   std::vector<ldmx::Track> recoil_truth_tracks;
   std::vector<ldmx::Track> recoil_truth_seeds;
@@ -648,6 +650,9 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   // Define the perigee_surface at 0.0.0
   auto targetSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(0., 0., 0.))};
+
+  auto layerSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
+      Acts::Vector3(-616., 0., 0.))};
 
   // Define the target_surface
   auto targetUnboundSurface = tracking::sim::utils::unboundSurface(0.);
@@ -663,21 +668,53 @@ void TruthSeedProcessor::produce(framework::Event& event) {
       const ldmx::SimTrackerHit& hit = scoring_hits.at(hit_indices.at(0));
       const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
-      if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
-        ldmx::Track truth_tagger_track;
-        createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
-        truth_tagger_track.setNhits(
-            hit_count_map_tagger[hit.getTrackID()].size());
-        tagger_truth_tracks.push_back(truth_tagger_track);
+    if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
 
-        if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
-          ldmx::Track beamETruthSeed = TaggerFullSeed(
-              particleMap[hit.getTrackID()], hit.getTrackID(), hit,
-              hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
-          beam_electrons.push_back(beamETruthSeed);
-        }
+          std::sort(
+        hit_count_map_tagger[hit.getTrackID()].begin(),  hit_count_map_tagger[hit.getTrackID()].end(),
+        [&](const int idx1, int idx2) -> bool {
+          const ldmx::SimTrackerHit& hit1 = tagger_sim_hits.at(idx1);
+          const ldmx::SimTrackerHit& hit2 = tagger_sim_hits.at(idx2);
+
+          auto zpos1 = hit1.getPosition()[2];
+          auto zpos2 = hit1.getPosition()[2];
+
+          return zpos2 > zpos1;
+        });
+
+   
+      ldmx::Track truth_tagger_track;
+      createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
+      truth_tagger_track.setNhits(
+          hit_count_map_tagger[hit.getTrackID()].size());
+      tagger_truth_tracks.push_back(truth_tagger_track);
+
+      const ldmx::SimTrackerHit& min_layer_hit = tagger_sim_hits.at(hit_count_map_tagger[hit.getTrackID()].at(0));
+      if (min_layer_hit.getPosition()[2] < -610) {
+        ldmx::Track truth_layer_track;
+        createTruthTrack(phit, min_layer_hit, truth_layer_track, layerSurface);
+        tagger_layer_tracks.push_back(truth_layer_track);
+      }
+        
+      //std::cout << "CORRECT HIT??? " << std::endl;
+      //std::cout << tagger_sim_hits.at(hit_count_map_tagger[hit.getTrackID()].at(0)).getPosition()[2] << std::endl;
+
+      //ldmx::Track truth_tagger_track = TaggerFullSeed(
+       //   particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+       //   hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+
+      //truth_tagger_track.setNhits(
+      //    hit_count_map_tagger[hit.getTrackID()].size());
+      //tagger_truth_tracks.push_back(truth_tagger_track);
+
+      if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
+        ldmx::Track beamETruthSeed = TaggerFullSeed(
+          particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+          hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+        beam_electrons.push_back(beamETruthSeed);
       }
     }
+  }
   }
 
   // Recover the EcalScoring hits
@@ -739,7 +776,13 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
   // Form a truth seed from a truth track
 
-  for (auto& tt : tagger_truth_tracks) {
+  //for (auto& tt : tagger_truth_tracks) {
+  //  ldmx::Track seed = seedFromTruth(tt, seedSmearing_);
+
+   // tagger_truth_seeds.push_back(seed);
+ // }
+
+  for (auto& tt : tagger_layer_tracks) {
     ldmx::Track seed = seedFromTruth(tt, seedSmearing_);
 
     tagger_truth_seeds.push_back(seed);
