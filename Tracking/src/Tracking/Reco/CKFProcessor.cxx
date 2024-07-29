@@ -4,6 +4,8 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
+#include "Tracking/Reco/AmbiguitySolver.h"
+
 
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
@@ -14,6 +16,16 @@
 
 namespace tracking {
 namespace reco {
+
+std::size_t sourceLinkHash(const Acts::SourceLink& a) {
+  return static_cast<std::size_t>(
+      a.get<ActsExamples::IndexSourceLink>().index());
+}
+
+bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
+  return a.get<ActsExamples::IndexSourceLink>().index() ==
+         b.get<ActsExamples::IndexSourceLink>().index();
+}
 
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
     : TrackingGeometryUser(name, process) {}
@@ -129,6 +141,16 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       *propagator_, Acts::getDefaultLogger("CKF", acts_loggingLevel));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometry_context(), magnetic_field_context());
+
+  // Setup the greedy solver
+  tracking::reco::GreedyAmbiguityResolution::Config greedy_config;
+  greedy_config.maximumSharedHits = 1;
+  greedy_config.maximumIterations = 1000;
+  greedy_config.nMeasurementsMin = min_hits_;
+
+  greedy_solver_ = std::make_unique<std::decay_t<decltype(*greedy_solver_)>>(
+    greedy_config, Acts::getDefaultLogger("CKF", acts_loggingLevel));
+
 }
 
 void CKFProcessor::produce(framework::Event& event) {
@@ -139,6 +161,12 @@ void CKFProcessor::produce(framework::Event& event) {
   // TODO use global variable instead and call clear;
 
   std::vector<ldmx::Track> tracks;
+
+  std::vector<ldmx::Track> all_tracks;
+
+
+  std::vector<ldmx::Track> cleaned_tracks;
+
 
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -267,6 +295,7 @@ void CKFProcessor::produce(framework::Event& event) {
   if (startParameters.size() < 1) {
     std::vector<ldmx::Track> empty;
     event.add(out_trk_collection_, empty);
+    event.add(out_trk_collection_+"Clean", empty);
     return;
   }
 
@@ -396,6 +425,9 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
 
+  int failed_fits = 0;
+  int prev_tc_size = 0;
+
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
@@ -421,11 +453,14 @@ void CKFProcessor::produce(framework::Event& event) {
 
     if (not results.ok()) {
       ldmx_log(debug) << "CKF Fit failed" << std::endl;
+      failed_fits++;
       continue;
     }
 
     // No track found
-    if (tc.size() < trackId + 1) continue;
+    //if (tc.size() < trackId + 1) continue;
+    if (tc.size() == prev_tc_size) continue;
+    
 
     ldmx_log(debug) << "Filling track info" << std::endl;
 
@@ -435,7 +470,8 @@ void CKFProcessor::produce(framework::Event& event) {
     //                                                        //.container()
     //                                                        //.trackStateContainer();
 
-    auto track = tc.getTrack(trackId);
+    auto track = tc.getTrack(prev_tc_size);
+    prev_tc_size++;
     calculateTrackQuantities(track);
     // MG ... if I converted above to target surface, these should be parameters
     // at target (should change names)
@@ -501,6 +537,7 @@ void CKFProcessor::produce(framework::Event& event) {
       // Check if the track state is a measurement
       auto typeFlags = ts.typeFlags();
       if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+        
         ActsExamples::IndexSourceLink sl =
             ts.getUncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         ldmx::Measurement ldmx_meas = measurements.at(sl.index());
@@ -605,15 +642,45 @@ void CKFProcessor::produce(framework::Event& event) {
       tracks.push_back(trk);
       ntracks_++;
     }
+    all_tracks.push_back(trk);
+    //std::cout << trackId << std::endl;
 
   }  // loop seed track parameters
 
+  // Setting up ambiguity solver
+  tracking::reco::GreedyAmbiguityResolution::State state;
+  greedy_solver_->computeInitialState(tc, state, &sourceLinkHash, &sourceLinkEquality);
+
+  greedy_solver_->resolve(state);
+  ldmx_log(debug) << "Resolved to " << state.selectedTracks.size() << " tracks from "
+                           << tc.size() << " " << tracks.size() << " " << all_tracks.size() << " " << startParameters.size()
+                           << " " << failed_fits;
+
+  // Now saving all of the track info
+  for (auto iTrack : state.selectedTracks) {
+    //std::cout << " Saving good tracks: " << iTrack << std::endl;
+    auto good_track = tc.getTrack(state.trackTips.at(iTrack));
+    auto clean_trk = all_tracks[good_track.index()];
+    if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
+      cleaned_tracks.push_back(clean_trk);
+    }
+
+    //std::cout << " Comparing Saved Tracks: " << std::endl;
+    //std::cout << good_track.chi2() << " " << all_tracks[good_track.index()].getChi2() << std::endl;
+    //std::cout << good_track.nMeasurements() << " " << all_tracks[good_track.index()].getNhits() << std::endl;
+    //Acts::Vector3 good_track_momentum = good_track.momentum();
+    //std::cout << good_track_momentum(0) << " " << good_track_momentum(1) << " " << good_track_momentum(2) << " " << tracks[iTrack].getMomentum() << std::endl;
+  }
+
+ 
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
 
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
+  event.add(out_trk_collection_+"Clean", cleaned_tracks);
+
 
   auto end = std::chrono::high_resolution_clock::now();
   // long long microseconds =

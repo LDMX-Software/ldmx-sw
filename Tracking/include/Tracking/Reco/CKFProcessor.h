@@ -62,6 +62,9 @@
 //--- Refit with backward propagation ---//
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
+//-- Ambiguity Solving --//
+#include "Tracking/Reco/AmbiguitySolver.h"
+
 // GSF
 //#include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
@@ -220,6 +223,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
       trk_extrap_;
+
+  // The Greedy Solver
+  std::unique_ptr<const tracking::reco::GreedyAmbiguityResolution> greedy_solver_;
 
   /// n seeds and n tracks
   int nseeds_{0};
