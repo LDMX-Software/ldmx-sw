@@ -35,8 +35,8 @@ class EcalClusterProducer(ldmxcfg.Producer) :
 
         self.CLUE = True
         self.dc = 0.
-        self.rhoc = 200.
-        self.deltac = 20.
+        self.rhoc = 550.
+        self.deltac = 10.
         self.deltao = 40.
 
         self.debug = False
