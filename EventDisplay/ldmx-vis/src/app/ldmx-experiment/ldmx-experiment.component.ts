@@ -29,7 +29,7 @@ export class LDMXExperimentComponent implements OnInit {
       // Event data to load by default
       defaultEventFile: {
         // (Assuming the file exists in the `src/assets` directory of the app)
-        eventFile: 'assets/test_data/clusters.json',
+        eventFile: 'assets/test_data/truth.json',
         eventType: 'json'
       },
     }
