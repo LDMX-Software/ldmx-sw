@@ -27,9 +27,8 @@
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
 #include "Ecal/WorkingCluster.h"
-#include "Ecal/EcalClusterWeight.h"
-#include "Ecal/TemplatedEcalClusterFinder.h"
 #include "Ecal/WorkingEcalCluster.h"
+#include "Ecal/CLUE.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -65,13 +64,21 @@ class EcalClusterProducer : public framework::Producer {
   double cutoff_{0};
   double growthThreshold_{0};
   double cellFilter_{0};
+
+  double dc_{0};
+  double rhoc_{0};
+  double deltac_{0};
+  double deltao_{0};
+
   std::string digiCollName_;
   std::string digisPassName_;
   std::string recHitCollName_;
   std::string algoCollName_;
   std::string clusterCollName_;
 
-  bool old_;
+  bool CLUE_;
+
+  bool debug_;
 
   /** The name of the cluster algorithm used. */
   TString algoName_;
