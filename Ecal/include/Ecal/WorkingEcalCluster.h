@@ -7,7 +7,6 @@
 #include <iostream>
 #include <vector>
 
-#include "DetDescr/EcalGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "TLorentzVector.h"
 
@@ -15,7 +14,9 @@ namespace ecal {
 
 class WorkingEcalCluster {
  public:
-  WorkingEcalCluster(const ldmx::EcalHit& eh);
+  WorkingEcalCluster(const ldmx::EcalHit& eh, int layer = -1);
+
+  WorkingEcalCluster(){};
 
   ~WorkingEcalCluster(){};
 
@@ -31,7 +32,10 @@ class WorkingEcalCluster {
 
   void clear() { hits_.clear(); }
 
+  int getLayer() const { return layer_; }
+
  private:
+  int layer_;
   std::vector<ldmx::EcalHit> hits_;
   TLorentzVector centroid_;
 };

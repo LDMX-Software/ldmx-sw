@@ -29,7 +29,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_)};
   auto ecalClusters{event.getCollection<ldmx::EcalCluster>(clusterCollName_, clusterPassName_)};
 
-  std::unordered_map<int, std::tuple<int, double, double, double>> hitInfo;
+  std::unordered_map<int, std::tuple<int, double, double>> hitInfo;
   hitInfo.reserve(ecalRecHits.size());
 
   std::vector<float> pos1;
@@ -58,17 +58,18 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       int tag = 0;
       double edep1 = 0;
       double edep2 = 0;
-      double elost = 0;
+      // double elost = 0;
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         const auto& c = it->getContrib(i);
-        if (!tagged && c.originID != 1 && c.originID != 2) {
-          // should not happen anymore
-          tag = 0;
-          tagged = true;
-        } else ancestor = c.originID;
+        // if (!tagged && c.originID != 1 && c.originID != 2) {
+        //   // should not happen anymore
+        //   tag = 0;
+        //   tagged = true;
+        // } else 
+        ancestor = c.originID;
         if (ancestor == 1) edep1 += c.edep;
         else if (ancestor == 2) edep2 += c.edep;
-        else elost += c.edep;
+        // else elost += c.edep;
         if (!tagged && i != 0 && prevAncestor != ancestor) {
           // mixed case
           tag = 3;
@@ -80,30 +81,30 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         tag = prevAncestor;        
       }
       histograms_.fill("ancestors", tag);
-      hitInfo.insert({hit.getID(), {tag, edep1, edep2, elost}});
+      hitInfo.insert({hit.getID(), {tag, edep1, edep2}});
     }
   }
 
   int clusteredHits = 0;
 
   for (const auto& cl : ecalClusters) {
-    double unclear = 0;
+    // double unclear = 0;
     double n1 = 0;
     double n2 = 0;
     double m = 0;
     double e1 = 0;
     double e2 = 0;
     double em = 0;
-    double elost = 0;
+    // double elost = 0;
     const auto& hitIDs = cl.getHitIDs();
     for (const auto& id : hitIDs) {
       auto it = hitInfo.find(id);
       if (it != hitInfo.end()) {
         auto t = it->second;
         switch(std::get<0>(t)) {
-          case 0:
-            unclear++;
-            break;
+          // case 0:
+          //   unclear++;
+          //   break;
           case 1:
             n1++;
             break;
@@ -120,63 +121,47 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         
         e1 += std::get<1>(t);
         e2 += std::get<2>(t);
-        elost += std::get<3>(t);
+        // elost += std::get<3>(t);
       }
       clusteredHits++;
     }
     if ((e1 + e2) > 0) {
       double eperc;
-      double eunfiltered;
+      // double eunfiltered;
       double emixed;
       if (e1 >= e2) {
         eperc = 100.*(e1/(e1+e2));
-        eunfiltered = 100.*(e1/(e1+e2+elost));
+        // eunfiltered = 100.*(e1/(e1+e2));
       } else {
         eperc = 100.*(e2/(e1+e2));
-        eunfiltered = 100.*(e2/(e1+e2+elost));
+        // eunfiltered = 100.*(e2/(e1+e2));
       }
 
       histograms_.fill("energy_percentage", eperc);
-      if (elost > 0) {
-        histograms_.fill("UF_energy_percentage", eunfiltered);
-      }
       if (em > 0) {
         histograms_.fill("mixed_hit_energy", 100.*(m/(e1+e2)));
       }
 
       histograms_.fill("total_energy_vs_hits", e1+e2, cl.getHitIDs().size());
       histograms_.fill("total_energy_vs_purity", (e1+e2), eperc);
-      histograms_.fill("cluster_energy_vs_calculated", cl.getEnergy(), (e1+e2));
 
       histograms_.fill("distance_energy_purity", dist, eperc);
     }
     if ((n1 + n2) > 0) {
       double percentage;
-      double unfiltered;
+      // double unfiltered;
       if (n1 >= n2) {
         percentage = 100.*(n1/(n1+n2));
-        unfiltered = 100.*(n1/(n1+n2+m+unclear));
+        // unfiltered = 100.*(n1/(n1+n2+m+unclear));
       } else {
         percentage = 100.*(n2/(n1+n2));
-        unfiltered = 100.*(n2/(n1+n2+m+unclear));
+        // unfiltered = 100.*(n2/(n1+n2+m+unclear));
       }
       histograms_.fill("same_ancestor", percentage);
-      if (unclear > 0) {
-        histograms_.fill("UF_same_ancestor", unfiltered);
-      }
       histograms_.fill("distance_purity", dist, percentage);
     }
     if ((n1 + n2 + m) > 0) {
       histograms_.fill("mixed_ancestry", 100.*(m/(n1+n2+m)));
-      if (unclear > 0) {
-        histograms_.fill("UF_mixed_ancestry", 100.*(m/(n1+n2+m+unclear)));
-      }
-    }
-    if (unclear > 0 && (n1 + n2 + m + unclear) > 0) {
-      histograms_.fill("unclear_ancestry", 100.*(unclear/(n1+n2+m+unclear)));
-    }
-    if (elost > 0) {
-      histograms_.fill("lost_energy", 100.*(elost/(e1+e2+elost)));
     }
   }
 
