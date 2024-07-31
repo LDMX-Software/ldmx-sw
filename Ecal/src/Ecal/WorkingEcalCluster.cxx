@@ -8,7 +8,8 @@
 
 namespace ecal {
 
-WorkingEcalCluster::WorkingEcalCluster(const ldmx::EcalHit& eh) {
+WorkingEcalCluster::WorkingEcalCluster(const ldmx::EcalHit& eh, int layer) {
+  layer_ = layer;
   add(eh);
 }
 

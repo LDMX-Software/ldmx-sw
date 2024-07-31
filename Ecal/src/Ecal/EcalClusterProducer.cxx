@@ -6,6 +6,8 @@
 
 #include "Ecal/EcalClusterProducer.h"
 
+#include <iostream>
+
 namespace ecal {
 
 EcalClusterProducer::EcalClusterProducer(const std::string& name,
@@ -19,13 +21,22 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   seedThreshold_ = parameters.getParameter<double>("seedThreshold");
   growthThreshold_ = parameters.getParameter<double>("growthThreshold");
   cellFilter_ = parameters.getParameter<double>("cellFilter");
+
+  dc_ = parameters.getParameter<double>("dc");
+  rhoc_ = parameters.getParameter<double>("rhoc");
+  deltac_ = parameters.getParameter<double>("deltac");
+  deltao_ = parameters.getParameter<double>("deltao");
+
   digiCollName_ = parameters.getParameter<std::string>("digiCollName");
   digisPassName_ = parameters.getParameter<std::string>("digisPassName");
   recHitCollName_ = parameters.getParameter<std::string>("recHitCollName");
   algoCollName_ = parameters.getParameter<std::string>("algoCollName");
   algoName_ = parameters.getParameter<std::string>("algoName");
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
-  old_ = parameters.getParameter<bool>("old");
+
+  CLUE_ = parameters.getParameter<bool>("CLUE");
+
+  debug_ = parameters.getParameter<bool>("debug");
   // fullHistory_ = parameters.getParameter<bool>("fullHistory");
 }
 
@@ -39,8 +50,38 @@ void EcalClusterProducer::produce(framework::Event& event) {
   if (!(nEcalDigis > 0)) {
     return;
   }
+  if (CLUE_) {
+    CLUE cf;
 
-  if (old_) {
+    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, debug_);
+    std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
+
+    auto nLoops = cf.getNLoops();
+    histograms_.fill("nLoops", nLoops);
+    histograms_.fill("nClusters", wcVec.size());
+    const auto& dist = cf.getCentroidDistances();
+
+    for (const auto& d : dist) histograms_.fill("centroid_distances", d);
+
+    std::vector<ldmx::EcalCluster> ecalClusters;
+    for (int aWC = 0; aWC < wcVec.size(); aWC++) {
+      ldmx::EcalCluster cluster;
+
+      cluster.setEnergy(wcVec[aWC].centroid().E());
+      cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
+                            wcVec[aWC].centroid().Py(),
+                            wcVec[aWC].centroid().Pz());
+      cluster.setNHits(wcVec[aWC].getHits().size());
+      cluster.addHits(wcVec[aWC].getHits());
+
+      histograms_.fill("nHits", wcVec[aWC].getHits().size());
+      histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
+
+      ecalClusters.push_back(cluster);
+    }
+
+    event.add(clusterCollName_, ecalClusters);
+  } else {
     // Get the Ecal Geometry
     const auto& geometry = getCondition<ldmx::EcalGeometry>(
         ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
@@ -96,40 +137,6 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     event.add(clusterCollName_, ecalClusters);
     event.add(algoCollName_, algoResult);
-  } else {
-    TemplatedEcalClusterFinder<EcalClusterWeight> cf;
-
-    cf.cluster(ecalHits, seedThreshold_, growthThreshold_, cellFilter_, cutoff_);
-    std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
-
-    auto nLoops = cf.getNLoops();
-    histograms_.fill("nLoops", nLoops);
-    histograms_.fill("nClusters", wcVec.size());
-
-    const auto& cWeights = cf.getWeights();
-
-    for (auto& [hitsLeft, weight]: cWeights) {
-      histograms_.fill("seed_weights", hitsLeft, weight);
-    }
-
-    std::vector<ldmx::EcalCluster> ecalClusters;
-    for (int aWC = 0; aWC < wcVec.size(); aWC++) {
-      ldmx::EcalCluster cluster;
-
-      cluster.setEnergy(wcVec[aWC].centroid().E());
-      cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
-                            wcVec[aWC].centroid().Py(),
-                            wcVec[aWC].centroid().Pz());
-      cluster.setNHits(wcVec[aWC].getHits().size());
-      cluster.addHits(wcVec[aWC].getHits());
-
-      histograms_.fill("nHits", wcVec[aWC].getHits().size());
-      histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
-
-      ecalClusters.push_back(cluster);
-    }
-
-    event.add(clusterCollName_, ecalClusters);
   }
 }
 }  // namespace ecal
