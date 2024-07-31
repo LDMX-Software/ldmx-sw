@@ -27,6 +27,10 @@ class VisGenerator : public framework::Analyzer {
 
     void groundTruthTracks(const framework::Event& event, const std::string& eKey);
 
+    void extractLayers(const framework::Event& event, const std::string& eKey);
+
+    // void caloCells(const framework::Event& event, const std::string& eKey);
+
     virtual void onProcessEnd();
 
   private:
@@ -61,6 +65,10 @@ class VisGenerator : public framework::Analyzer {
     bool visHitOrigin_;
     std::string truthFilename_;
 
+     // Generate json file visualizing ecal layers
+    bool visLayers_;
+    std::string layerFilename_;
+
     // Output filename
     std::string filename_;
 
@@ -70,6 +78,10 @@ class VisGenerator : public framework::Analyzer {
     nlohmann::json j;
 
     nlohmann::json truth;
+
+    nlohmann::json layer;
+
+    // nlohmann::json c;
 
     std::vector<std::string> colors { "0xFFB6C1", "0xFFA500", "0xFFFF00", 
                                       "0x7FFF00", "0x00FFFF", "0x663399"};
