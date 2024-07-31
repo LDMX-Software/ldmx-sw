@@ -645,6 +645,9 @@ class VisGenerator(ldmxcfg.Analyzer) :
         self.visHitOrigin = False
         self.truthFilename = "truth.json"
 
+        self.visLayers = False
+        self.layerFilename = "layers.json"
+
         self.filename = "vis.json"
 
         self.runNumber = 1

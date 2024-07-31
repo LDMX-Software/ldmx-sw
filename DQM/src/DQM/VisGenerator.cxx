@@ -26,6 +26,9 @@ namespace dqm {
 
     visHitOrigin_ = ps.getParameter<bool>("visHitOrigin");
     truthFilename_ = ps.getParameter<std::string>("truthFilename");
+
+    visLayers_ = ps.getParameter<bool>("visLayers");
+    layerFilename_ = ps.getParameter<std::string>("layerFilename");
     
     filename_ = ps.getParameter<std::string>("filename");
     runNbr_ = ps.getParameter<int>("runNumber");
@@ -56,7 +59,7 @@ namespace dqm {
     }
 
     int clusterID = 1;
-    double clusterSize = 15.0; // scale to energy?
+    double clusterSize = 5.0; // scale to energy?
     double singleClusterSize = 1.0;
     float clusterHitSize = 2.0;
     float clusterlessHitSize = 1.0;
@@ -73,13 +76,13 @@ namespace dqm {
           std::string& hex = colors[clusterID % colors.size()];
           std::string cKey = "cluster_" + std::to_string(clusterID);
           j[eKey]["Hits"][cKey] = json::array();
-          if (cl.getEnergy() > 1000) {
-            clusterSize = 25.;
-          } else if (cl.getEnergy() > 100) {
-            clusterSize = 15.;
-          } else {
-            clusterSize = 5.;
-          }
+          // if (cl.getEnergy() > 1000) {
+          //   clusterSize = 25.;
+          // } else if (cl.getEnergy() > 100) {
+          //   clusterSize = 15.;
+          // } else {
+          //   clusterSize = 5.;
+          // }
           // create centroid object
           cluster["energy"] = cl.getEnergy();
           cluster["color"] = hex;
@@ -162,7 +165,6 @@ namespace dqm {
               clusterHitSize = 2.0;
               json t = json::object();
               t["ID"] = hit.getID();
-              t["time"] = hit.getTime();
               t["type"] = "Box";
               t["energy"] = hit.getEnergy();
               t["originID"] = tag;
@@ -192,7 +194,6 @@ namespace dqm {
               json sh = json::object();
               clusterHitSize = 4.0;
               sh["ID"] = hit.getID();
-              sh["time"] = hit.getTime();
               sh["type"] = "Box";
               sh["energy"] = hit.getEnergy();
               sh["color"] = "0xA9A9A9";
@@ -220,41 +221,115 @@ namespace dqm {
       }
     }
 
-    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
-    j[eKey]["Hits"]["plane_hits"] = json::array();
-    truth[eKey]["Hits"]["plane_hits"] = json::array();
-    for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
-      // std::cout << hit_id.plane() << std::endl;
-      if ((spHit.getTrackID() == 1 || spHit.getTrackID() == 2)) {
-        json ph = json::object();
-        ph["ID"] = spHit.getTrackID();
-        ph["type"] = "Box";
-        std::vector<float> pos = spHit.getPosition();
-        ph["pos"] = { double(pos[0]), double(pos[1]), double(pos[2]), 5.0, 5.0, 5.0 };
-        if (spHit.getTrackID() == 1) {
-          ph["color"] = "0xEADE76";
-        } else {
-          ph["color"] = "0x76BDEA";
-        }
-        j[eKey]["Hits"]["plane_hits"].push_back(ph);
-        truth[eKey]["Hits"]["plane_hits"].push_back(ph);
-        // std::cout << hit_id.plane() << std::endl;
-        // std::cout << pos[0] << ":" << pos[1] << ":" << pos[2] << std::endl;
-      }
-      // if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
+    // auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    // j[eKey]["Hits"]["plane_hits"] = json::array();
+    // truth[eKey]["Hits"]["plane_hits"] = json::array();
+    // for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
+    //   // std::cout << hit_id.plane() << std::endl;
+    //   if ((spHit.getTrackID() == 1 || spHit.getTrackID() == 2)) {
+    //     json ph = json::object();
+    //     ph["ID"] = spHit.getTrackID();
+    //     ph["type"] = "Box";
+    //     std::vector<float> pos = spHit.getPosition();
+    //     ph["pos"] = { double(pos[0]), double(pos[1]), double(pos[2]), 5.0, 5.0, 5.0 };
+    //     if (spHit.getTrackID() == 1) {
+    //       ph["color"] = "0xEADE76";
+    //     } else {
+    //       ph["color"] = "0x76BDEA";
+    //     }
+    //     j[eKey]["Hits"]["plane_hits"].push_back(ph);
+    //     truth[eKey]["Hits"]["plane_hits"].push_back(ph);
+    //     // std::cout << hit_id.plane() << std::endl;
+    //     // std::cout << pos[0] << ":" << pos[1] << ":" << pos[2] << std::endl;
+    //   }
+    //   if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
-      // if (spHit.getTrackID() == recoilTrackID) {
-      //   if (sqrt(pow(spHit.getMomentum()[0], 2) +
-      //             pow(spHit.getMomentum()[1], 2) +
-      //             pow(spHit.getMomentum()[2], 2)) > pmax) {
-      //     recoilP = spHit.getMomentum();
-      //     recoilPos = spHit.getPosition();
-      //     pmax = sqrt(pow(recoilP[0], 2) + pow(recoilP[1], 2) +
-      //                 pow(recoilP[2], 2));
-      //   }
-      // }
-    }
+    //   if (spHit.getTrackID() == recoilTrackID) {
+    //     if (sqrt(pow(spHit.getMomentum()[0], 2) +
+    //               pow(spHit.getMomentum()[1], 2) +
+    //               pow(spHit.getMomentum()[2], 2)) > pmax) {
+    //       recoilP = spHit.getMomentum();
+    //       recoilPos = spHit.getPosition();
+    //       pmax = sqrt(pow(recoilP[0], 2) + pow(recoilP[1], 2) +
+    //                   pow(recoilP[2], 2));
+    //     }
+    //   }
+    // }
   }
+
+  // void VisGenerator::caloCells(const framework::Event& event, const std::string& eKey) {
+  //   c[eKey]["event number"] = event.getEventNumber();
+  //   c[eKey]["run number"] = runNbr_;
+  //   c[eKey]["Tracks"] = json::object();
+  //   c[eKey]["Tracks"]["ground_truth"] = json::array();
+  //   c[eKey]["PlanarCaloCells"] = json::object();
+  //   if (includeGroundTruth_) {
+  //     c[eKey]["PlanarCaloCells"]["e1"] = json::object();
+  //     c[eKey]["PlanarCaloCells"]["e1"]["plane"] = { 0, 0, 0, 250 };
+  //     c[eKey]["PlanarCaloCells"]["e1"]["cells"] = json::array();
+  //     c[eKey]["PlanarCaloCells"]["e2"] = json::object();
+  //     c[eKey]["PlanarCaloCells"]["e2"]["plane"] = { 0, 0, 0, 0 };
+  //     c[eKey]["PlanarCaloCells"]["e2"]["cells"] = json::array();
+  //     c[eKey]["PlanarCaloCells"]["mixed"] = json::object();
+  //     c[eKey]["PlanarCaloCells"]["mixed"]["plane"] = { 0, 0, 0, -250 };
+  //     c[eKey]["PlanarCaloCells"]["mixed"]["cells"] = json::array();
+  //   } else {
+  //     c[eKey]["PlanarCaloCells"]["Ecal"] = json::object();
+  //     c[eKey]["PlanarCaloCells"]["Ecal"]["plane"] = { 0, 0, 0, 250 };
+  //     c[eKey]["PlanarCaloCells"]["Ecal"]["cells"] = json::array();
+  //   }
+  //   std::vector<ldmx::SimCalorimeterHit> ecalSimHits;
+  //   if (includeGroundTruth_) {
+  //     ecalSimHits = event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
+  //   }
+  //   std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
+  //   int cellsize = 2.0;
+  //   for (const auto& hit : ecalRecHits) {
+  //     json h = json::object();
+  //     h["pos"] = { hit.getXPos(), hit.getYPos() };
+  //     h["cellSize"] = cellsize;
+  //     h["energy"] = hit.getEnergy();
+
+  //     if (includeGroundTruth_) {
+  //       auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
+  //       if (it != ecalSimHits.end()) {
+  //         double e1 = 0;
+  //         double e2 = 0;
+  //         int tag = 0;
+  //         bool immediate_child = true;
+  //         h["originID"] = json::array();
+  //         for (int i = 0; i < it->getNumberOfContribs(); i++) {
+  //           auto c = it->getContrib(i);
+  //           h["originID"].push_back(c.originID);
+  //           if (i != 0 && c.originID != tag) tag = 3;
+  //           else tag = c.originID;
+  //           if (c.originID == 1) e1 += c.edep;
+  //           else if (c.originID == 2) e2 += c.edep;
+  //           if (c.incidentID != 1 && c.incidentID != 2) {
+  //             immediate_child = false;
+  //           }
+  //         }
+  //         h["immediate_child"] = immediate_child;
+  //         if (e1+e2 > 0) {
+  //           h["E from e1 (%)"] = 100.*e1/(e1+e2);
+  //           h["E from e2 (%)"] = 100.*e2/(e1+e2);
+  //         }
+  //         if (tag == 1) {
+  //           h["color"] = "0xEADE76";
+  //           c[eKey]["PlanarCaloCells"]["e1"]["cells"].push_back(h);
+  //         } else if (tag == 2) {
+  //           h["color"] = "0x76BDEA";
+  //           c[eKey]["PlanarCaloCells"]["e2"]["cells"].push_back(h);
+  //         } else {
+  //           h["color"] = "0x76EA84";
+  //           c[eKey]["PlanarCaloCells"]["mixed"]["cells"].push_back(h);
+  //         }
+  //         }
+  //     } else {
+  //       c[eKey]["PlanarCaloCells"]["Ecal"]["cells"].push_back(h);
+  //     }
+  //   }
+  // }
 
   void VisGenerator::groundTruthTracks(const framework::Event& event, const std::string& eKey) {
     j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
@@ -277,7 +352,50 @@ namespace dqm {
         if (visHitOrigin_) {
           truth[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
         }
+        // c[eKey]["Tracks"]["ground_truth"].push_back(track);
       }
+    }
+  }
+
+  static bool compZ(const ldmx::EcalHit& a, const ldmx::EcalHit& b) {
+    return a.getZPos() < b.getZPos();
+  }
+
+  void VisGenerator::extractLayers(const framework::Event& event, const std::string& eKey){
+    layer[eKey]["event number"] = event.getEventNumber();
+    layer[eKey]["run number"] = runNbr_;
+    layer[eKey]["Hits"] = json::object();
+    std::vector<double> layerThickness = { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5, 10.5 };
+    // std::vector<double> absorberBefore = { 0., 3., 8., 15.1, 22.2, 29.3, 36.4, 43.5, 50.6, 57.7, 64.8, 71.9, 85.9, 99.9, 113.9, 127.9, 141.9 };
+    std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
+    std::sort(ecalRecHits.begin(), ecalRecHits.end(), compZ);
+    int layerTag = 0;
+    double z0 = ecalRecHits[0].getZPos();
+    // double cumulativeZ = ecalRecHits[0].getZPos();
+    double layerZ = ecalRecHits[0].getZPos();
+    std::string hex = colors[layerTag % colors.size()];
+    std::string col = colorstrings[layerTag % colorstrings.size()];
+    std::string layerKey = "layer_0";
+    layer[eKey]["Hits"][layerKey] = json::array();
+    double air = 10.;
+    for (const auto& hit : ecalRecHits) {
+      if (layerTag != 17 && hit.getZPos() > layerZ + layerThickness[layerTag] + air) {
+        layerZ = hit.getZPos();
+        layerTag++;
+        layerKey = "layer_" + std::to_string(layerTag);
+        hex = colors[layerTag % colors.size()];
+        col = colorstrings[layerTag % colorstrings.size()];
+        layer[eKey]["Hits"][layerKey] = json::array();
+      }
+      json h = json::object();
+      h["ID"] = hit.getID();
+      h["type"] = "Box";
+      h["energy"] = hit.getEnergy();
+      h["color"] = hex;
+      h["col"] = col;
+      h["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
+                    2.0, 2.0, 2.0 };
+      layer[eKey]["Hits"][layerKey].push_back(h);
     }
   }
 
@@ -294,6 +412,9 @@ namespace dqm {
     if (includeEcalClusters_ || includeEcalRecHits_) {
       ecalClusterRecHit(event, eKey);
     }
+
+    if (visLayers_) extractLayers(event, eKey);
+    // caloCells(event, eKey);
 
     // ----- TRACKS -----
     j[eKey]["Tracks"] = json::object();
@@ -314,6 +435,16 @@ void VisGenerator::onProcessEnd(){
       truthfile << std::setw(2) << truth << std::endl;
       truthfile.close();
     }
+
+    if (visLayers_) {
+      std::ofstream layerfile(layerFilename_);
+      layerfile << std::setw(2) << layer << std::endl;
+      layerfile.close();
+    }
+
+    // std::ofstream caloCellFile("calocells.json");
+    // caloCellFile << std::setw(2) << c << std::endl;
+    // caloCellFile.close();
     return;
 };
 
