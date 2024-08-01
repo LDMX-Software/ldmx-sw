@@ -33,10 +33,20 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Name of the cluster algo collection to make
         self.algoCollName = "ClusterAlgoResult"
 
+        # Enable CLUE algorithm
         self.CLUE = True
+        # Nbr of layers to perform CLUE on
+        # = 1 collapses all hits into same z-dimension, gives best results atm
+        self.nbrOfLayers = 1
+        # Cutoff distance in calculation of local density
+        # = 0 means hits need to have same x,y to be in same local density
+        # works well with nbrOfLayers = 1
         self.dc = 0.
+        # Minimum seed energy/maximum outlier energy
         self.rhoc = 550.
+        # Minimum seed separation
         self.deltac = 10.
+        # Minimum outlier separation
         self.deltao = 40.
 
         self.debug = False
