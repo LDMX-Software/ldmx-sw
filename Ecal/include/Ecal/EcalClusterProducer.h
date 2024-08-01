@@ -77,6 +77,7 @@ class EcalClusterProducer : public framework::Producer {
   std::string clusterCollName_;
 
   bool CLUE_;
+  int nbrOfLayers_;
 
   bool debug_;
 

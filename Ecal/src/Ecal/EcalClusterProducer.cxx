@@ -35,6 +35,7 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 
   CLUE_ = parameters.getParameter<bool>("CLUE");
+  nbrOfLayers_ = parameters.getParameter<int>("nbrOfLayers");
 
   debug_ = parameters.getParameter<bool>("debug");
   // fullHistory_ = parameters.getParameter<bool>("fullHistory");
@@ -53,7 +54,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
   if (CLUE_) {
     CLUE cf;
 
-    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, debug_);
+    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_, debug_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
 
     auto nLoops = cf.getNLoops();

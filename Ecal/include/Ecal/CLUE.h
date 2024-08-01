@@ -34,19 +34,17 @@ class CLUE {
     int followerOf;
     // separation distance to density that this is follower of
     double delta;
-    
-    bool overloaded;
+
     int clusterId;
     std::vector<ldmx::EcalHit> hits;
 
     Density() {}
 
-    Density(double xx, double yy, double dm) : x(xx), y(yy) {
+    Density(double xx, double yy) : x(xx), y(yy) {
       totalEnergy = 0.;
       index = -1;
       followerOf = -1;
       delta = std::numeric_limits<double>::max();
-      overloaded = false;
       clusterId = -1;
       hits = {};
     }
@@ -105,7 +103,51 @@ class CLUE {
   //   }
   // }
 
-  void setup(std::vector<ldmx::EcalHit> hits) {
+  // double rhocFactor(int trueLayer) {
+  //   return trueLayer*trueLayer - 
+  // }
+
+  std::vector<std::vector<ldmx::EcalHit>> createLayers(std::vector<ldmx::EcalHit>& hits) {
+    if (debug_) std::cout << "--- LAYER CREATION ---" << std::endl;
+    std::vector<std::vector<ldmx::EcalHit>> layers;
+    std::sort(hits.begin(), hits.end(), [](const ldmx::EcalHit& a, const ldmx::EcalHit& b) {
+      return a.getZPos() < b.getZPos();
+    });
+    int layerTag = 0;
+    int trueLayer = 0;
+    double layerZ = hits[0].getZPos();
+    double trueLayerZ = layerZ;
+    double maxZ = hits[hits.size()-1].getZPos();
+    layers.push_back({});
+    double layerSeparation = (maxZ-layerZ)/nbrOfLayers_;
+    if (debug_) std::cout << "  Layer separation: " << layerSeparation << std::endl << "  Creating layer 0" << std::endl;
+
+    double highestEnergy = 0.;
+    int rhocFactor = 2.;
+    for (const auto& hit : hits) {      
+      // If z of hit is in new layer, both calculated and real (we don't want to split in the middle of actual ecal layer)
+      if (layerTag != nbrOfLayers_ && hit.getZPos() > (layerZ + layerSeparation) && hit.getZPos() > trueLayerZ + layerThickness_[trueLayer] + air_) {
+        layerZ = hit.getZPos();
+        layers.push_back({ });
+        // Set seed threshold for layer to highest energy of layer / factor
+        layerRhoC_.push_back(highestEnergy/rhocFactor); // TODO: decide division factor
+        layerTag++;
+        if (debug_) std::cout << "    Highest energy: " << highestEnergy << std::endl << "  Creating layer " << layerTag << std::endl;
+        highestEnergy = 0.;
+      }
+      if (hit.getZPos() > trueLayerZ + layerThickness_[trueLayer] + air_) {
+        trueLayer++;
+        trueLayerZ = hit.getZPos();
+      }
+      layers[layerTag].push_back(hit);
+      if (hit.getEnergy() > highestEnergy) highestEnergy = hit.getEnergy();
+    }
+    layerRhoC_.push_back(highestEnergy/rhocFactor);
+    return layers;
+  }
+
+  std::vector<Density> setup(std::vector<ldmx::EcalHit> hits) {
+    std::vector<Density> densities;
     std::map<std::pair<double, double>, Density> densityMap;
     centroid_ = WorkingEcalCluster();
     if (debug_) std::cout << "--- SETUP ---" << std::endl << "Building densities" << std::endl;
@@ -119,49 +161,75 @@ class CLUE {
         std::cout << "    x: " << x << std::endl;
         std::cout << "    y: " << y << std::endl;
       }
-      std::pair<double, double> coords = {x, y};
+      std::pair<double, double> coords;
+      if (dc_ != 0 && nbrOfLayers_ > 1) {
+        double i = std::ceil(std::abs(x)/dc_);
+        double j = std::ceil(std::abs(y)/dc_);
+        if (x < 0) {
+          i = -i;
+          x = (i + 0.5)*dc_;
+        } else x = (i - 0.5)*dc_;
+        if (y < 0) {
+          j = -j;
+          y = (j + 0.5)*dc_;
+        } else y = (1 - 0.5)*dc_; // set x,y to middle of box
+        coords = {i, j};
+        if (debug_) std::cout << "    Index " << i << ", " << j << "; x: " << x << " y: " << y << std::endl;
+      } else {
+        coords = {x, y};
+      }
       if (densityMap.find(coords) == densityMap.end()) {
-        densityMap.emplace(coords, Density(x, y, dm_));
+        densityMap.emplace(coords, Density(x, y));
         if (debug_) std::cout << "    New density created" << std::endl;
       } else if (debug_) std::cout << "    Found density with x: " << densityMap[coords].x << " y: " << densityMap[coords].y << std::endl;
       densityMap[coords].hits.push_back(hit);
       densityMap[coords].totalEnergy += hit.getEnergy();
+     
       centroid_.add(hit);
     }
 
     // if (debug_) finalClusters_.push_back(centroid_);
   
     // sort according to energy
-    densities_.reserve(densityMap.size());
+    densities.reserve(densityMap.size());
     for (const auto& entry : densityMap) {
-        densities_.push_back(entry.second);
+        densities.push_back(entry.second);
     }
-    std::sort(densities_.begin(), densities_.end(), [](const Density& a, const Density& b) {
+    std::sort(densities.begin(), densities.end(), [](const Density& a, const Density& b) {
         return a.totalEnergy > b.totalEnergy;
     });
     
     if (debug_) std::cout << "Decide parents" << std::endl;
 
     // decide delta and followerOf
-    for (int i = 0; i < densities_.size(); i++) {
-      densities_[i].index = i;
-      if (debug_) std::cout << "  Index: " << i << "; x: " << densities_[i].x << "; y: " << densities_[i].y << "; Energy: " << densities_[i].totalEnergy << std::endl;
+    for (int i = 0; i < densities.size(); i++) {
+      densities[i].index = i;
+      if (debug_) std::cout << "  Index: " << i << "; x: " << densities[i].x << "; y: " << densities[i].y << "; Energy: " << densities[i].totalEnergy << std::endl;
       // loop through all higher energy densities
       for (int j = 0; j < i; j++) {
-        double d = dist(densities_[i].x, densities_[i].y, densities_[j].x, densities_[j].y);
+        double d = dist(densities[i].x, densities[i].y, densities[j].x, densities[j].y);
         // condition energyJ > energyI but this should be baked in as we sorted according to energy
-        if (d < dm_ && d < densities_[i].delta) {
+        if (d < dm_ && d < densities[i].delta) {
           if (debug_) std::cout << "  New parent, index " << j << "; delta: " << d << std::endl;
-          densities_[i].delta = d;
-          densities_[i].followerOf = j;
+          densities[i].delta = d;
+          densities[i].followerOf = j;
         }
       }
     }
+    return densities;
   }
 
-  void clustering() {
+  std::vector<std::vector<ldmx::EcalHit>> clustering(std::vector<Density> densities, int layerTag = -1) {
     if (debug_) std::cout << "--- CLUSTERING ---" << std::endl;
-// stores followers of densities at corr index
+    if (layerTag != -1 && nbrOfLayers_ > 1) {
+      rhoc_ = layerRhoC_[layerTag];
+      if (debug_) std::cout << "Setting rhoc on layer " << layerTag << " to " << rhoc_ << std::endl;
+      if (layerTag*2-1 < radius.size()) {
+        deltac_ = radius[layerTag*2-1];
+        if (debug_) std::cout << "Setting deltac on layer " << layerTag << " to " << deltac_ << std::endl;
+      }
+    }
+    // stores followers of densities at corr index
     bool energyOverload = false;
     double maxEnergy = 10000.;
     clusteringLoops_ = 0;
@@ -170,7 +238,7 @@ class CLUE {
 
     std::vector<std::vector<ldmx::EcalHit>> clusters;
     std::vector<bool> mergedDensities; // index = cluster id
-    mergedDensities.resize(densities_.size());
+    mergedDensities.resize(densities.size());
     do {
       if (energyOverload) {
         deltacMod = deltacMod/1.1;
@@ -185,56 +253,56 @@ class CLUE {
 
       std::stack<int> clusterStack;
       clusters.clear();
-      clusters.reserve(densities_.size());
+      clusters.reserve(densities.size());
       std::vector<double> clusterEnergies;
-      clusterEnergies.reserve(densities_.size());
+      clusterEnergies.reserve(densities.size());
       // stores followers of densities at corr index
       std::vector<std::vector<int>> followers;
-      followers.resize(densities_.size());
+      followers.resize(densities.size());
       
-      for (int i = 0; i < densities_.size(); i++) {
+      for (int i = 0; i < densities.size(); i++) {
         if (debug_) {
-          std::cout << "  Index: " << i << "; x: " << densities_[i].x << "; y: " << densities_[i].y << "; Energy: " << densities_[i].totalEnergy << std::endl;
-          std::cout << "  Parent ID: " << densities_[i].followerOf << "; Delta: " << densities_[i].delta << std::endl;
+          std::cout << "  Index: " << i << "; x: " << densities[i].x << "; y: " << densities[i].y << "; Energy: " << densities[i].totalEnergy << std::endl;
+          std::cout << "  Parent ID: " << densities[i].followerOf << "; Delta: " << densities[i].delta << std::endl;
         }
 
         bool isSeed;
         // if energy has been overloaded and this density belongs to cluster that was overloaded and this density is close enough to event centroid
-        if (deltacMod != deltac_ && mergedDensities[densities_[i].clusterId] 
-            && (densities_[i].x, densities_[i].y, centroid_.centroid().Px(), centroid_.centroid().Py()) < centroidRadius) {
-          isSeed = densities_[i].totalEnergy > rhoc_ && densities_[i].delta > deltacMod;
-        } else isSeed = densities_[i].totalEnergy > rhoc_ && densities_[i].delta > deltac_;
+        if (deltacMod != deltac_ && mergedDensities[densities[i].clusterId] 
+            && (densities[i].x, densities[i].y, centroid_.centroid().Px(), centroid_.centroid().Py()) < centroidRadius) {
+          isSeed = densities[i].totalEnergy > rhoc_ && densities[i].delta > deltacMod;
+        } else isSeed = densities[i].totalEnergy > rhoc_ && densities[i].delta > deltac_;
         if (debug_ && isSeed) std::cout << "  Distance to centroid: " 
-                                        << dist(densities_[i].x, densities_[i].y, centroid_.centroid().Px(), centroid_.centroid().Py()) 
+                                        << dist(densities[i].x, densities[i].y, centroid_.centroid().Px(), centroid_.centroid().Py()) 
                                         << std::endl;
         
-        bool isOutlier = densities_[i].totalEnergy < rhoc_ && densities_[i].delta > deltao_;
+        bool isOutlier = densities[i].totalEnergy < rhoc_ && densities[i].delta > deltao_;
 
-        densities_[i].clusterId = -1;
+        densities[i].clusterId = -1;
         if (isSeed) {
           if (debug_) std::cout << "  SEED, cluster id " << k << std::endl;
-          densities_[i].clusterId = k;
+          densities[i].clusterId = k;
           k++;
           clusterStack.push(i);
-          clusters.push_back(densities_[i].hits);
-          clusterEnergies.push_back(densities_[i].totalEnergy);
+          clusters.push_back(densities[i].hits);
+          clusterEnergies.push_back(densities[i].totalEnergy);
         } else if (!isOutlier) {
           if (debug_) std::cout << "  Follower" << std::endl;
-          int& parentIndex = densities_[i].followerOf;
+          int& parentIndex = densities[i].followerOf;
           if (parentIndex != -1) followers[parentIndex].push_back(i);
           else if (debug_) std::cout << "  HAS PARENT ID -1" << std::endl; // should not happen
         } else if (debug_) std::cout << "  Outlier" << std::endl;
       }
 
       mergedDensities.clear();
-      mergedDensities.resize(densities_.size());
+      mergedDensities.resize(densities.size());
 
       while (clusterStack.size() > 0) {
-        auto& d = densities_[clusterStack.top()];
+        auto& d = densities[clusterStack.top()];
         clusterStack.pop();
         auto& cid = d.clusterId;
         for (const auto& j : followers[d.index]) { // for indices of followers of d
-          auto& f = densities_[j];
+          auto& f = densities[j];
           // set clusterindex of follower to clusterindex of d
           f.clusterId = cid;
           clusterEnergies[cid] += f.totalEnergy;
@@ -252,7 +320,12 @@ class CLUE {
       endwhile:;
     } while (energyOverload);
 
+    return clusters;    
+  }
+
+  void convertToWorkingClusters(std::vector<std::vector<ldmx::EcalHit>> clusters) {
     // Convert to workingecalclusters
+    double temp;
     for (const auto& vec : clusters) {
       auto c = WorkingEcalCluster();
       for (const auto& hit : vec) {
@@ -260,13 +333,13 @@ class CLUE {
       }
       finalClusters_.push_back(c);
       const auto& d = dist(c.centroid().Px(), c.centroid().Py(), centroid_.centroid().Px(), centroid_.centroid().Py());
-      avgCentroidDistance_ += d;
+      temp += d;
       centroidDistances_.push_back(d);
     }
-    avgCentroidDistance_ = avgCentroidDistance_/finalClusters_.size();
+    avgCentroidDistance_ += temp/finalClusters_.size();
   }
 
-  void cluster(std::vector<ldmx::EcalHit> hits, double dc, double rc, double deltac, double deltao, bool debug) {
+  void cluster(std::vector<ldmx::EcalHit> hits, double dc, double rc, double deltac, double deltao, int nbrOfLayers, bool debug) {
     // cutoff distance for local density
     // currently not used
     dc_ = dc;
@@ -279,10 +352,25 @@ class CLUE {
     dm_ = std::max(deltac, deltao);
 
     debug_ = debug;
+    nbrOfLayers_ = nbrOfLayers;
+
+    if (nbrOfLayers_ < 1) nbrOfLayers_ = maxLayers_; // anything below 1 => include all layers
+    else if (nbrOfLayers_ > maxLayers_) nbrOfLayers_ = maxLayers_;
 
     // electronSeparation(hits);
-    setup(hits);
-    clustering();
+    if (nbrOfLayers_ > 1) {
+      const auto& layers = createLayers(hits);
+      for (int i = 0; i < layers.size(); i++) {
+        if (debug_) std::cout << "--- LAYER " << i << " ---" << std::endl;
+        const auto& densities = setup(layers[i]);
+        const auto& clusters = clustering(densities, i);
+        convertToWorkingClusters(clusters);
+      }
+    } else {
+      const auto& densities = setup(hits);
+      const auto& clusters = clustering(densities);
+      convertToWorkingClusters(clusters);
+    }
 
   }
 
@@ -296,7 +384,7 @@ class CLUE {
 
  private:
   int clusteringLoops_;
-
+  
   bool debug_;
 
   double dc_;
@@ -305,12 +393,20 @@ class CLUE {
   double deltao_;
   double dm_;
 
-  double avgCentroidDistance_;
+  int maxLayers_{16}; // layers in Ecal; a bit unsure if this is the correct number (going off layerThickness_ vector)
+  int nbrOfLayers_;
+  double air_{10.};
+  std::vector<double> layerThickness_ = { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5, 10.5 };
+  std::vector<double> layerRhoC_;
+  std::vector<double> layerDeltaC;
+  std::vector<double> radius{5.723387467629167,5.190678018534044,5.927290663506518,6.182560329200212,7.907549398117859,8.606100542857211,10.93381822596916,12.043201938160239,14.784548371508041,16.102403056546482,18.986402399412817,20.224453740305716,23.048820910305643,24.11202594672678,26.765135236851666,27.78700483852502,30.291794353801293,31.409870873194464,33.91006482486666,35.173073672355926,38.172422630271,40.880288341493205,44.696485719120005,49.23802839743545,53.789910813378675,60.87843355562641,66.32931132415688,75.78117972604727,86.04697356716805,96.90360704034346};
+
+  double avgCentroidDistance_{0.};
   std::vector<double> centroidDistances_;
   WorkingEcalCluster centroid_;
 
-  std::vector<Density> densities_;
   std::vector<WorkingEcalCluster> finalClusters_;
+
 };
 }  // namespace ecal
 
