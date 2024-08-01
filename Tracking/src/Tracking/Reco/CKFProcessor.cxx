@@ -422,11 +422,15 @@ void CKFProcessor::produce(framework::Event& event) {
     if (not results.ok()) {
       ldmx_log(debug) << "CKF Fit failed" << std::endl;
       continue;
+    } else {
+      ldmx_log(debug)<<"CKF Fit Success!!!";
     }
 
     // No track found
-    if (tc.size() < trackId + 1) continue;
-
+    if (tc.size() < trackId + 1){
+      ldmx_log(debug)<<"tc.size() = "<<tc.size()<<" < trackId + 1 "<<(trackId+1);
+      continue;
+    }
     ldmx_log(debug) << "Filling track info" << std::endl;
 
     // The track tips are the last measurement index

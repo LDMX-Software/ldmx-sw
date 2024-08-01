@@ -60,10 +60,10 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   perigee_location_ = parameters.getParameter<std::vector<double>>(
       "perigee_location", {-700, 0., 0.});
   pmin_ =
-      parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
-  pmax_ = parameters.getParameter<double>("pmax", 8 * Acts::UnitConstants::GeV);
+       parameters.getParameter<double>("pmin", 0.05 * Acts::UnitConstants::GeV);
+  pmax_ = parameters.getParameter<double>("pmax", 9 * Acts::UnitConstants::GeV);
   d0max_ =
-      parameters.getParameter<double>("d0max", -15. * Acts::UnitConstants::mm);
+      parameters.getParameter<double>("d0max", -45. * Acts::UnitConstants::mm);
   d0min_ =
       parameters.getParameter<double>("d0min", -45. * Acts::UnitConstants::mm);
   z0max_ =
