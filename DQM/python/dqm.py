@@ -623,7 +623,24 @@ class SampleValidation(ldmxcfg.Analyzer) :
         # daughters of hard brem histograms
         self.build1DHistogram("pdgid_hardbremdaughters", "ID of hard brem daughters", 20, 0, 20)
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
-        
+
+class GenieTruthDQM(ldmxcfg.Analyzer) :
+    """Configured GenieTruthDQM python object
+
+    Contains an instance of GenieTruthDQM that
+    has already been configured.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.GenieTruthDQM() )
+    """
+
+    def __init__(self,name='GenieTruthDQM',coll_name="",pass_name="") :
+        super().__init__(name,'dqm::GenieTruthDQM','DQM')
+
+        self.hepmc3CollName = coll_name
+        self.hepmc3PassName = pass_name
 
 ecal_dqm = [
         EcalDigiVerify(),
@@ -671,6 +688,5 @@ trigScint_dqm = [
 trigger_dqm = [
         Trigger()
         ]
-
 
 all_dqm = ecal_dqm + hcal_dqm + recoil_dqm + trigScint_dqm + trigger_dqm
