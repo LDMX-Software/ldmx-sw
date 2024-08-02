@@ -9,7 +9,13 @@ void PFTruthProducer::configure(framework::config::Parameters& ps) {
   primaryCollName_ = ps.getParameter<std::string>("outputPrimaryCollName"); 
   targetCollName_  = ps.getParameter<std::string>("outputTargetCollName"); 
   ecalCollName_	   = ps.getParameter<std::string>("outputEcalCollName"); 
-  hcalCollName_	   = ps.getParameter<std::string>("outputHcalCollName"); 
+  hcalCollName_	   = ps.getParameter<std::string>("outputHcalCollName");
+  // inputs
+  targetSPName_  = ps.getParameter<std::string>("inputTargetSPName", "TargetScoringPlaneHits"); 
+  ecalSPName_    = ps.getParameter<std::string>("inputEcalSPName", "EcalScoringPlaneHits"); 
+  targetSPz_  = ps.getParameter<double>("inputTargetSPz", 0.18); 
+  ecalSPz_    = ps.getParameter<double>("inputEcalSPz", 240); 
+  hcalSPz_    = ps.getParameter<double>("inputHcalSPz", 840); 
 }
 template <class T>
 void sortHits( std::vector<T> spHits){
@@ -21,11 +27,11 @@ void sortHits( std::vector<T> spHits){
 
 void PFTruthProducer::produce(framework::Event& event) {
 
-  if (!event.exists("TargetScoringPlaneHits")) return;
-  if (!event.exists("EcalScoringPlaneHits")) return;
+  if (!event.exists(targetSPName_)) return;
+  if (!event.exists(ecalSPName_)) return;
   if (!event.exists("SimParticles")) return;
-  const auto targSpHits = event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
-  const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits");
+  const auto targSpHits = event.getCollection<ldmx::SimTrackerHit>(targetSPName_);
+  const auto ecalSpHits = event.getCollection<ldmx::SimTrackerHit>(ecalSPName_);
   const auto particle_map = event.getMap<int,ldmx::SimParticle>("SimParticles");
 
   std::map<int, ldmx::SimParticle> primaries;
@@ -42,15 +48,15 @@ void PFTruthProducer::produce(framework::Event& event) {
     }
   }
   for(const auto &spHit : targSpHits){
-    if ( simIDs.count(spHit.getTrackID()) && fabs(0.18-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
+    if ( simIDs.count(spHit.getTrackID()) && fabs(targetSPz_-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
       atTarget.push_back(spHit);
     }
   }
   for(const auto &spHit : ecalSpHits){
-    if ( simIDs.count(spHit.getTrackID()) && fabs(240-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
+    if ( simIDs.count(spHit.getTrackID()) && fabs(ecalSPz_-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
       atEcal.push_back(spHit);
     }
-    if ( simIDs.count(spHit.getTrackID()) && fabs(840-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
+    if ( simIDs.count(spHit.getTrackID()) && fabs(hcalSPz_-spHit.getPosition()[2])<0.1  && spHit.getMomentum()[2] > 0 ){ 
       atHcal.push_back(spHit);
     }
   }

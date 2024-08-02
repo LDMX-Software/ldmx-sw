@@ -21,20 +21,13 @@ void NtupleWriter::produce(framework::Event& event) {
   framework::NtupleManager& n{framework::NtupleManager::getInstance()};
 
   std::string inTag;
-  inTag = "TargetScoringPlaneHits";
+  inTag = "PFTruthTarget";
   if (writeTruth_ && event.exists(inTag)){
     const std::vector<ldmx::SimTrackerHit> hits = event.getCollection<ldmx::SimTrackerHit>(inTag);
-    ldmx::SimTrackerHit h, hMaxEle; // the desired truth hits
+    ldmx::SimTrackerHit h;
     for(const auto& hit : hits){
-      auto xyz = hit.getPosition();
-      if( xyz[2]>0 && xyz[2]<1 ){
-	if(hit.getTrackID()==1) h = hit;
-	if(hit.getPdgID()==11 && (hit.getEnergy() > hMaxEle.getEnergy())) hMaxEle = hit;
-      } else {
-	continue; // select one sp
-      }
+      h = hit; continue;
     }
-    if (h.getPdgID()==0) h = hMaxEle; // save max energy in case track1 isn't found (A')
     std::string coll = "Truth";
     n.setVar(coll+"_e" ,  prec(h.getEnergy()) );
     n.setVar(coll+"_x" , prec(h.getPosition()[0]) );
@@ -44,20 +37,13 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar(coll+"_pz" , prec(h.getMomentum()[2]) );
     n.setVar(coll+"_pdgId", h.getPdgID() );
   }
-  inTag = "EcalScoringPlaneHits";
+  inTag = "PFTruthEcal";
   if (writeTruth_ && event.exists(inTag)){
     const std::vector<ldmx::SimTrackerHit> hits = event.getCollection<ldmx::SimTrackerHit>(inTag);
-    ldmx::SimTrackerHit h, hMaxEle; // the desired truth hits
+    ldmx::SimTrackerHit h;
     for(const auto& hit : hits){
-      auto xyz = hit.getPosition();
-      if( xyz[2]>239.99 && xyz[2]<240.01 ){
-	if(hit.getTrackID()==1) h = hit;
-	if(hit.getPdgID()==11 && (hit.getEnergy() > hMaxEle.getEnergy())) hMaxEle = hit;
-      } else {
-	continue; // select one sp
-      }
+      h = hit; continue;
     }
-    if (h.getPdgID()==0) h = hMaxEle; // save max energy in case track1 isn't found (A')
     std::string coll = "TruthEcal";
     n.setVar(coll+"_e" ,  prec(h.getEnergy()) );
     n.setVar(coll+"_x" , prec(h.getPosition()[0]) );
@@ -68,11 +54,11 @@ void NtupleWriter::produce(framework::Event& event) {
     n.setVar(coll+"_pdgId", h.getPdgID() );
   }
 
+  
   inTag = "ecalTrigSums";
   if (writeEcalSums_ && event.exists(inTag)){
     const auto sums = event.getCollection<TrigEnergySum>(inTag);
-    // const int nEcalLayers = 34;
-    vector<float> energyAfterLayer; // (nEcalLayers, 0.);
+    vector<float> energyAfterLayer;
     for(const auto& sum : sums){
       if (!(sum.energy()>0)) continue;
       if (sum.layer() >= energyAfterLayer.size())
@@ -88,7 +74,6 @@ void NtupleWriter::produce(framework::Event& event) {
   if (writeHcalSums_ && event.exists(inTag)){
     const auto sums = event.getCollection<TrigEnergySum>(inTag);
     const int nHcalLayers = 50;
-    // int nLayers = 0;
     vector<float> energyAfterLayer;// (nHcalLayers, 0.);
     for(const auto& sum : sums){
       if (!(sum.hwEnergy()>0)) continue;

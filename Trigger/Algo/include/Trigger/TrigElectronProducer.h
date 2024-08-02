@@ -54,6 +54,7 @@ class TrigElectronProducer : public framework::Producer {
   
   // name of collection for target scoring plane inputs
   std::string spCollName_;
+  double spCollz_;
   // name of collection for calo cluster inputs
   std::string clusterCollName_;
   // name of collection for electron outputs

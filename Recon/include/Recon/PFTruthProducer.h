@@ -45,6 +45,13 @@ class PFTruthProducer : public framework::Producer {
   std::string targetCollName_;
   std::string ecalCollName_;
   std::string hcalCollName_;
+  // name of input ScoringPlaneHit collections, and z position
+  std::string targetSPName_;
+  std::string ecalSPName_;
+  //std::string hcalSPName_; // reuse ECal
+  double targetSPz_{0};
+  double ecalSPz_{0};
+  double hcalSPz_{0};
 };
 }  // namespace recon
 
