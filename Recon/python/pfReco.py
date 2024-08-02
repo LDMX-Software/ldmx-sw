@@ -59,3 +59,11 @@ class pfTruthProducer(ldmxcfg.Producer) :
         self.outputTargetCollName  = 'PFTruthTarget'
         self.outputEcalCollName    = 'PFTruthEcal'
         self.outputHcalCollName    = 'PFTruthHcal'
+        #
+        #self.inputTargetSPName  = 'TargetScoringPlaneHits'
+        self.inputTargetSPName  = 'TrigScintScoringPlaneHits'
+        self.inputEcalSPName    = 'EcalScoringPlaneHits'
+        #self.inputHcalSPName    = 'PFTruthHcal'
+        self.inputTargetSPz  = 1.837 # for TrigScint
+        self.inputEcalSPz    = 240.
+        self.inputHcalSPz    = 840.

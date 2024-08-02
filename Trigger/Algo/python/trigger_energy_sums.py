@@ -38,7 +38,10 @@ class TrigElectronProducer(Producer) :
     def __init__(self, instance_name = 'myTrigElectronProducer', propMapName="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::TrigElectronProducer','Trigger')
         # self.outPath = outPath
-        self.scoringPlaneCollName = "TargetScoringPlaneHits"
+        # alternatively, "TargetScoringPlaneHits" collection may be used
+        # instead, if a different z position is desired
+        self.scoringPlaneCollName = "TrigScintScoringPlaneHits"
+        self.scoringPlaneCollz = 1.837 # for TrigScint
         self.clusterCollName = "ecalTrigClusters"
         self.eleCollName = "trigElectrons"
         self.propMapName = propMapName
@@ -56,3 +59,7 @@ class PropagationMapWriter(Producer) :
     def __init__(self, instance_name = 'myPropagationMapWriter', outPath="./propagationMap.root") :
         super().__init__(instance_name , 'trigger::PropagationMapWriter','Trigger')
         self.outPath = outPath
+        self.inputTargetSPName  = 'TrigScintScoringPlaneHits'
+        self.inputEcalSPName    = 'EcalScoringPlaneHits'
+        self.inputTargetSPz  = 1.837 # for TrigScint
+        self.inputEcalSPz    = 240.

@@ -7,11 +7,13 @@
 
 #include "TCanvas.h"
 #include "TString.h"
+#include "TGraph.h"
 
 namespace trigger {
 
 void TrigElectronProducer::configure(framework::config::Parameters& ps) {
-  spCollName_ = ps.getParameter<std::string>("scoringPlaneCollName");
+  spCollName_ = ps.getParameter<std::string>("scoringPlaneCollName", "TargetScoringPlaneHits");
+  spCollz_ = ps.getParameter<double>("scoringPlaneCollz", 0.18);
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
   eleCollName_ = ps.getParameter<std::string>("eleCollName");
   propMapName_ = ps.getParameter<std::string>("propMapName");
@@ -32,7 +34,7 @@ void TrigElectronProducer::produce(framework::Event& event) {
     if(hit.getTrackID()!=1) continue;
     if( !(abs(hit.getPdgID())==11) ) continue;
     auto xyz = hit.getPosition();
-    if( xyz[2]<0 || xyz[2]>1 ) continue; // select one sp
+    if( fabs(xyz[2]-spCollz_)>0.1 ) continue; // select one sp
     xT=xyz[0];
     yT=xyz[1];
     // more details:
@@ -49,10 +51,13 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // Events->Draw("Electron_e[0]/Truth_e[0]:Truth_e[0]","Truth_e[0]>500 && Truth_e[0]<3500","prof")
     // --> update fit to use the electron energy at the ecal face (not target) -->
     // Events->Draw("Electron_eClus[0]/TruthEcal_e[0]:TruthEcal_e[0]","TruthEcal_e[0]>500 && TruthEcal_e[0]<3500","prof")
+    // LDMX_Events->Draw("trigElectrons_trig.p4_.fCoordinates.fT[0]/PFTruthTarget_trig.energy_[0]: PFTruthTarget_trig.energy_[0]","PFTruthTarget_trig.energy_[0]>500 && PFTruthTarget_trig.energy_[0]<3500","prof")
     // TF1* func = new TF1("func","[0]/x+[1]",500,3500);
     // htemp->Fit(func)
     // float calib_e = clus.e() / (98.099700/clus.e() + 0.77202700); 
-    float calib_e = clus.e() / (184.103/clus.e() + 0.753756);  // divide by response
+    // float calib_e = clus.e() / (184.103/clus.e() + 0.753756);  // divide by response
+    // float calib_e = clus.e() / (-1.48278e+02/clus.e() + 9.58663e-01);  // May 13, 2024
+    float calib_e = clus.e() / (-2.87820e+01/clus.e() + 9.35428e-01);  // June 12, 2024
 
     
     // const float dX = clus.x() - xT;
@@ -108,13 +113,14 @@ void TrigElectronProducer::onFileClose() {
 void TrigElectronProducer::setupMaps(bool isX) {
   TProfile2D* prof = isX ? propMapx_ : propMapy_;
   const int N = prof->GetXaxis()->GetNbins();
+  bool debugSetup=false;
+  TCanvas c("c","");
   for(int i=1; i<=N; i++){
-    TF1* func = new TF1("func","pol1",-20,20); // going to fit for px/e
+    TF1* func = new TF1("func","pol3",-20,20); // going to fit for px/e
     TProfile* proj = prof->ProfileY("h",i,i);
     proj->Fit("func","q","",-1,1);
-    bool debug=false;
-    if(debug){
-      TCanvas c("c","");
+    if(debugSetup){
+      std::cout << "in the debug part" << std::endl;
       proj->Draw();
       func->Draw("same");
       c.SaveAs( TString::Format("debugFit_%d_%d.pdf",int(isX), i) );
@@ -124,6 +130,23 @@ void TrigElectronProducer::setupMaps(bool isX) {
       fitsX_.push_back(func);
     } else {
       fitsY_.push_back(func);
+    }
+  }
+  if(debugSetup){
+    for(int j=0;j<=10;j++){ // Loop px/pz from -0.5 to +0.5
+      std::vector<float> xvar;
+      std::vector<float> funcVal;
+      for(int i=0; i<N; i++){
+	xvar.push_back(i); // i.e. the energy
+	if(isX){
+	  funcVal.push_back( fitsX_[i]->Eval(-0.5+0.1*j) );
+	} else {
+	  funcVal.push_back( fitsY_[i]->Eval(-0.5+0.1*j) );
+	}
+      }
+      TGraph g(11, xvar.data(), funcVal.data());
+      g.Draw("ALP*");
+      c.SaveAs( TString::Format("ptInterp_%d_%d.pdf",int(isX), j) );
     }
   }
   return;
