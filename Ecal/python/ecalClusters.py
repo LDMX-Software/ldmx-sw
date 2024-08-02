@@ -54,9 +54,11 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         self.build1DHistogram("nLoops", "No of loops for clustering", 50, 0, 400)
         self.build1DHistogram("nClusters", "No of clusters", 20, 0, 20)
         self.build1DHistogram("nHits", "Hits per cluster", 20, 0, 200)
+        self.build1DHistogram("nMixedHits", "Mixed hits per cluster", 20, 0, 200)
         self.build1DHistogram("centroid_distances", "Distance between cluster centroid and event centroid", 20, 0, 200)
         self.build1DHistogram("cluster_energy", "Energy [MeV] per cluster", 100, 0, 10000)
         self.build2DHistogram("seed_weights", "Number of seeds", 20, 0, 100, "Minimum weight", 20, 0, 10)
+        self.build1DHistogram("first_layer_distances", "Distance between hits in first layer", 20, 0, 200)
 
 class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
     """Analyze clustering"""

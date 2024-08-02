@@ -22,4 +22,12 @@ ClassImp(ldmx::EcalCluster)
     }
     setIDs(vecIDs);
   }
+
+  void EcalCluster::addMixedHits(const std::vector<std::pair<EcalHit, double>> hitsVec) {
+    std::vector<std::pair<unsigned int, double>> vecIDs;
+    for (int iHit = 0; iHit < hitsVec.size(); iHit++) {
+      vecIDs.push_back(std::make_pair(hitsVec[iHit].first.getID(), hitsVec[iHit].second));
+    }
+    mixedIDs_ = vecIDs;
+  }
 }  // namespace ldmx

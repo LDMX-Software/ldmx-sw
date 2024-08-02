@@ -52,4 +52,22 @@ void WorkingEcalCluster::add(const WorkingEcalCluster& wc) {
     hits_.push_back(clusterHits[i]);
   }
 }
+
+void WorkingEcalCluster::addMixed(const ldmx::EcalHit& eh, double percentage) {
+  double hitE = eh.getEnergy()*percentage;
+
+  auto hitX = eh.getXPos();
+  auto hitY = eh.getYPos();
+  auto hitZ = eh.getZPos();
+
+  double newE = hitE + centroid_.E();
+  double newCentroidX = (centroid_.Px() * centroid_.E() + hitE * hitX) / newE;
+  double newCentroidY = (centroid_.Py() * centroid_.E() + hitE * hitY) / newE;
+  double newCentroidZ = (centroid_.Pz() * centroid_.E() + hitE * hitZ) / newE;
+
+  centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
+
+  mixedHits_.push_back(std::make_pair(eh, percentage));
+}
+
 }  // namespace ecal
