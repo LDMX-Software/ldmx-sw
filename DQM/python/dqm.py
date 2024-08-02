@@ -172,7 +172,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
         self.build1DHistogram('hit_z', 'Reconstructed Z position in the HCal ({section_name}) [mm]',
                               1000, 0, 6000
                               )
-
+        
 
 
 class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
@@ -616,6 +616,54 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("pdgid_hardbremdaughters", "PDG ID of hard brem daughters", 20, 0, 20)
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters", 200, -1000, 1000)
         
+class PFDQM(ldmxcfg.Analyzer) :
+    def __init__(self,name="pf_dqm"):
+        super().__init__(name,'dqm::PFDQM','DQM')
+
+        self.hcal_rec_coll_name = 'HcalRecHits'
+        self.hcal_rec_pass_name = ''
+        self.ecal_rec_coll_name = 'EcalRecHits'
+        self.ecal_rec_pass_name = ''
+        self.hcal_sim_coll_name = 'HcalSimHits'
+        self.hcal_sim_pass_name = ''
+        self.ecal_sim_coll_name = 'EcalSimHits'
+        self.ecal_sim_pass_name = ''
+
+        # Per hit
+        self.build1DHistogram('hcal_x', 'x [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_y', 'y [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_z', 'z [mm]', 1200, 0,6000)
+        self.build1DHistogram('hcal_hit_time', 'HCal hit time [ns]', 100, -100, 500)
+        self.build1DHistogram('hcal_layer', 'Layer number',100,0,100)
+        # Once per event
+        self.build1DHistogram("hcal_total_energy","Total reconstructed energy in the HCal [MeV]", 1000, 0, 1000)
+        self.build1DHistogram("hcal_total_sim_energy","Total sim energy in the HCal [MeV]", 1000, 0, 1000)
+        self.build2DHistogram('hcal_dx_vs_truthHcal',  'truth x [mm]', 1200, -3000,3000,'reco x [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build2DHistogram('hcal_dy_vs_truthHcal',  'truth y [mm]', 1200, -3000,3000,'reco y [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build2DHistogram('hcal_dx2_vs_truthHcal', 'truth x [mm]', 1200, -3000,3000,'reco x [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build2DHistogram('hcal_dy2_vs_truthHcal', 'truth y [mm]', 1200, -3000,3000,'reco y [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build2DHistogram('hcal_dz_vs_truthHcal',  'truth z [mm]', 1200, 0, 6000,   'reco z [mm]', 1200, 0,6000)
+        self.build1DHistogram('hcal_dx_truthHcal', 'x along bar [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build1DHistogram('hcal_dy_truthHcal', 'y along bar [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build1DHistogram('hcal_dz_truthHcal', 'z along bar [mm]', 1200, 0,6000)
+        self.build1DHistogram('hcal_dx_truthHcal_e', 'x along bar [mm]', 1200, -3000,3000) # e weight
+        self.build1DHistogram('hcal_dy_truthHcal_e', 'y along bar [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_dz_truthHcal_e', 'z along bar [mm]', 1200, 0,6000)
+        self.build1DHistogram('hcal_dx_truthHcal_le', 'x along bar [mm]', 1200, -3000,3000) # loge weight
+        self.build1DHistogram('hcal_dy_truthHcal_le', 'y along bar [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_dz_truthHcal_le', 'z along bar [mm]', 1200, 0,6000)
+
+        self.build1DHistogram('hcal_dx2_truthHcal', 'x perp to bar [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build1DHistogram('hcal_dy2_truthHcal', 'y perp to bar [mm]', 1200, -3000,3000) # wrt sim particle
+        self.build1DHistogram('hcal_dx2_truthHcal_e', 'x perp to bar [mm]', 1200, -3000,3000) # e weight
+        self.build1DHistogram('hcal_dy2_truthHcal_e', 'y perp to bar [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_dx2_truthHcal_le', 'x perp to bar [mm]', 1200, -3000,3000) # loge weight
+        self.build1DHistogram('hcal_dy2_truthHcal_le', 'y perp to bar [mm]', 1200, -3000,3000)
+        self.build1DHistogram('hcal_t', 'HCal average time [ns]', 1000,0,100)
+        self.build1DHistogram('hcal_t_e', 'HCal average time [ns]', 1000,0,100)
+        self.build1DHistogram('hcal_t_le', 'HCal average time [ns]', 1000,0,100)
+        self.build1DHistogram('x_truthHcal', 'x [mm]', 1200, -3000,3000)
+        self.build1DHistogram('y_truthHcal', 'y [mm]', 1200, -3000,3000)
 
 ecal_dqm = [
         EcalDigiVerify(),
