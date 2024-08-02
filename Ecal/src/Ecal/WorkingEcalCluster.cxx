@@ -53,7 +53,7 @@ void WorkingEcalCluster::add(const WorkingEcalCluster& wc) {
   }
 }
 
-void WorkingEcalCluster::addMixed(const ldmx::EcalHit& eh, double percentage) {
+void WorkingEcalCluster::addMixed(const ldmx::EcalHit& eh, float percentage) {
   double hitE = eh.getEnergy()*percentage;
 
   auto hitX = eh.getXPos();
