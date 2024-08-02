@@ -48,10 +48,10 @@ class TargetENProcessFilter : public simcore::UserAction {
 
  private:
   /**
-   * The volume name of the LDMX target 
+   * The volume name of the LDMX target
    *
    * The 'target_PV' volume name is automatically constructed by Geant4's
-   * GDML parser and was found by inspecting the geometry using a 
+   * GDML parser and was found by inspecting the geometry using a
    * visualization. This Physical Volume (PV) is associated with the
    * target parent volume and so it will break if the target parent volume
    * changes its name.

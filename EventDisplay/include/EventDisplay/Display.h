@@ -6,6 +6,18 @@
 #ifndef EVENTDISPLAY_EVENTDISPLAY_H_
 #define EVENTDISPLAY_EVENTDISPLAY_H_
 
+#include <iostream>
+
+#include "EventDisplay/EveDetectorGeometry.h"
+#include "EventDisplay/Objects.h"
+#include "Framework/Event.h"
+#include "Framework/EventFile.h"
+#include "TBranchElement.h"
+#include "TEveBrowser.h"
+#include "TEveElement.h"
+#include "TEveEventManager.h"
+#include "TEveManager.h"
+#include "TEveViewer.h"
 #include "TFile.h"
 #include "TGButton.h"
 #include "TGFrame.h"
@@ -14,22 +26,6 @@
 #include "TRint.h"
 #include "TString.h"
 #include "TTree.h"
-
-#include "TEveBrowser.h"
-#include "TEveElement.h"
-#include "TEveEventManager.h"
-#include "TEveManager.h"
-#include "TEveViewer.h"
-
-#include "TBranchElement.h"
-
-#include "EventDisplay/EveDetectorGeometry.h"
-#include "EventDisplay/Objects.h"
-
-#include "Framework/Event.h"
-#include "Framework/EventFile.h"
-
-#include <iostream>
 
 namespace eventdisplay {
 
@@ -122,9 +118,7 @@ class Display : public TGMainFrame {
   /**
    * Get the text from the input text box
    */
-  std::string getText(TGTextEntry* box) const {
-    return box->GetText();
-  }
+  std::string getText(TGTextEntry* box) const { return box->GetText(); }
 
   /**
    * Templated draw method
@@ -136,17 +130,15 @@ class Display : public TGMainFrame {
       objects_.draw(event_object);
       if (verbose_) {
         std::cout << "[ Display ] : Loaded '" << name
-          << "' into memory as a EVE object." << std::endl;
+                  << "' into memory as a EVE object." << std::endl;
       }
-    } catch(const framework::exception::Exception& e) {
+    } catch (const framework::exception::Exception& e) {
       std::cerr << "[ Display ] : Unable to draw an event object." << std::endl;
       std::cerr << "[" << e.name() << "] : " << e.message() << "\n"
-        << "  at " << e.module() << ":" << e.line() << " in "
-        << e.function() << std::endl;
+                << "  at " << e.module() << ":" << e.line() << " in "
+                << e.function() << std::endl;
     }
   }
-
-
 
  private:
   bool verbose_;  //* verbosity flag
@@ -158,12 +150,12 @@ class Display : public TGMainFrame {
   std::unique_ptr<framework::EventFile> the_file_;
 
   /// name of ecal clusters collection in event tree
-  std::string clustersCollName_ = "ecalClusters"; 
+  std::string clustersCollName_ = "ecalClusters";
   /// name of ecalRecHits collection in event tree
   std::string ecalRecHitsCollName_ = "EcalRecHits";
   /// name of hcalRecHits collection in event tree
   std::string hcalRecHitsCollName_ = "HcalRecHits";
-  /// name of recoil hitss collection in event tree 
+  /// name of recoil hitss collection in event tree
   std::string trackerHitsCollName_ = "RecoilSimHits";
   /// name of ecal sim particles collection in
   std::string ecalSimParticlesCollName_ = "EcalScoringPlaneHits";

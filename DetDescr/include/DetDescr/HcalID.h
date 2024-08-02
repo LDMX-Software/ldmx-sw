@@ -73,7 +73,9 @@ class HcalID : public HcalAbstractID {
    * Get the value of the 'section' field from the ID.
    * @return The value of the 'strip' field.
    */
-  unsigned int getSection() const { return (id_ >> SECTION_SHIFT) & SECTION_MASK; }
+  unsigned int getSection() const {
+    return (id_ >> SECTION_SHIFT) & SECTION_MASK;
+  }
 
   /*
    * Get the value of the 'section' field from the ID.

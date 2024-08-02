@@ -61,8 +61,13 @@ class TrigEnergySum {
    */
   bool operator<(const TrigEnergySum &sum) { return hwEnergy_ < sum.hwEnergy_; }
 
-  void Clear() { energy_=0; hwEnergy_ = 0; layer_=0; module_=0; }
-  
+  void Clear() {
+    energy_ = 0;
+    hwEnergy_ = 0;
+    layer_ = 0;
+    module_ = 0;
+  }
+
   void setLayer(int layer) { layer_ = layer; }
   int layer() const { return layer_; }
 
@@ -75,9 +80,9 @@ class TrigEnergySum {
   void setHwEnergy(int hwEnergy) { hwEnergy_ = hwEnergy; }
   int hwEnergy() const { return hwEnergy_; }
   // inline float pe() const { return hwEnergy_*pe_per_adc_; }
-  // inline float hadEnergy() const { return hwEnergy_*pe_per_adc_*mev_per_pe_*had_sample_frac_; }
+  // inline float hadEnergy() const { return
+  // hwEnergy_*pe_per_adc_*mev_per_pe_*had_sample_frac_; }
 
-  
   /**
    * Print a description of this object.
    */
@@ -121,7 +126,8 @@ class TrigEnergySum {
   // const float had_samp_frac = (20/77.07)/(20/77.07 + 25/16.77); // 0.148266
   // const float em_samp_frac = (20/41.31)/(20/41.31 + 25/1.757); // 0.032906
   // const float samp_frac = (em_samp_frac + 2*had_samp_frac)/3; // 0.109813
-  // const float attn = exp(-1/5.); // 0.818731 5m attenuation length, 1m half-bar
+  // const float attn = exp(-1/5.); // 0.818731 5m attenuation length, 1m
+  // half-bar
 
   /// ROOT Dictionary class definition macro
   ClassDef(TrigEnergySum, 1);

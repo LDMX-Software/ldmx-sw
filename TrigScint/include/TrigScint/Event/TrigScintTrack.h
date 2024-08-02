@@ -88,7 +88,6 @@ class TrigScintTrack {
    */
   float getResidualZ() const { return residualZ_; };
 
-  
   /**
    * Get the (average) pe of the track.
    * @return The cluster pe count averaged over the track.
@@ -113,7 +112,7 @@ class TrigScintTrack {
    */
   float getY() const { return y_; };
 
-    /**
+  /**
    * Get the uncertainty on the x coordinate of the track.
    * @return The uncertainty on the x coordinate of the track in mm [mm].
    */
@@ -208,32 +207,33 @@ class TrigScintTrack {
    * @param x The X position.
    * @param y The Y position.
    */
-  void setPosition(const float x, const float y) { x_ = x ; y_ = y; } ;
+  void setPosition(const float x, const float y) {
+    x_ = x;
+    y_ = y;
+  };
 
   /**
    * Set the uncertainty on the position of the track [mm].
    * @param x The X position uncertainty.
    * @param y The Y position uncertainty.
    */
-  void setSigmaXY(const float sx, const float sy) { sx_ = sx ; sy_ = sy;} 
+  void setSigmaXY(const float sx, const float sy) {
+    sx_ = sx;
+    sy_ = sy;
+  }
 
-  
   /**
    * Set the uncertainty on the position of the track [mm].
    * @param x The X position uncertainty.
    */
-  void setSigmaX(const float sx) { sx_ = sx ;} 
+  void setSigmaX(const float sx) { sx_ = sx; }
 
-  
   /**
    * Set the uncertainty on the position of the track [mm].
    * @param y The Y position uncertainty.
    */
-  void setSigmaY(const float sy) { sy_ = sy;} 
+  void setSigmaY(const float sy) { sy_ = sy; }
 
-  
-
-  
   /**
    * Set the momentum of the particle at the position at which
    * the track took place [GeV].
@@ -302,9 +302,9 @@ class TrigScintTrack {
   std::vector<ldmx::TrigScintCluster> constituents_{0};
 
   /**
-   * The fraction of the energy deposited in the track constituents 
+   * The fraction of the energy deposited in the track constituents
    * that was deposited by a beam electron.
-   * WARNING: this is a "truth" variable and will never be 
+   * WARNING: this is a "truth" variable and will never be
    * measureable in actual data.
    */
   float beamEfrac_{0.};
@@ -314,7 +314,6 @@ class TrigScintTrack {
    */
   float PE_{0.};
 
-  
   /**
    * The X position.
    */
@@ -335,7 +334,6 @@ class TrigScintTrack {
    */
   float sy_{-9999.};
 
-  
   // these below here i don't think i'll use.
 
   /**

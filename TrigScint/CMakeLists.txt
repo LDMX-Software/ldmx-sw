@@ -45,5 +45,5 @@ setup_library(module TrigScint
                            Tools::Tools SimCore::Event
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/TrigScint)
+setup_python(package_name LDMX/TrigScint)
 

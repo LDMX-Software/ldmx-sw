@@ -1,7 +1,7 @@
 /**
  * @file EcalVetoProcessor.h
  * @brief Class that determines if event is vetoable using ECAL hit information
- * @author Owen Colegrove, UCSB
+ * @author Owen Colegrove, Danyi Zhang, Tamas Vami (UCSB)
  */
 
 #ifndef EVENTPROC_ECALVETOPROCESSOR_H_
@@ -14,7 +14,6 @@
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-
 #include "Tools/ONNXRuntime.h"
 
 // ROOT (MIP tracking)
@@ -50,7 +49,8 @@ class EcalVetoProcessor : public framework::Producer {
 
   void produce(framework::Event& event);
 
-  // MIP tracking:  Class for storing hit information for tracking in a convenient way
+  // MIP tracking:  Class for storing hit information for tracking in a
+  // convenient way
   struct HitData {
     int layer;
     TVector3 pos;
@@ -81,9 +81,9 @@ class EcalVetoProcessor : public framework::Producer {
 
   // MIP tracking
   /**
-   * Returns the distance between the lines v and w, with v defined to pass through
-   * the points (v1,v2) (and similarly for w).
-   * 
+   * Returns the distance between the lines v and w, with v defined to pass
+   * through the points (v1,v2) (and similarly for w).
+   *
    * @param[in] v1 An arbitrary point on line v
    * @param[in] v2 A second, distinct point on line v
    * @param[in] w1 An arbitrary point on line w
@@ -92,7 +92,8 @@ class EcalVetoProcessor : public framework::Producer {
    */
   float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
   /**
-   * Return the minimum distance between the point h1 and the line passing through points p1 and p2.
+   * Return the minimum distance between the point h1 and the line passing
+   * through points p1 and p2.
    *
    * @param[in] h1 Point to find the distance to
    * @param[in] p1 An arbitrary point on the line
@@ -131,11 +132,14 @@ class EcalVetoProcessor : public framework::Producer {
   int nStraightTracks_{0};
   /// Number of "linreg" tracks found in the event
   int nLinregTracks_{0};
-  /// First ECal layer in which a hit is found near the photon (currently unused)
+  /// First ECal layer in which a hit is found near the photon (currently
+  /// unused)
   int firstNearPhLayer_{0};
-  /// Angular separation between the projected photon and electron trajectories (currently unused)
+  /// Angular separation between the projected photon and electron trajectories
+  /// (currently unused)
   float epAng_{0};
-  /// Distance between the projected photon and electron trajectories at the ECal face (currently unused)
+  /// Distance between the projected photon and electron trajectories at the
+  /// ECal face (currently unused)
   float epSep_{0};
 
   double bdtCutVal_{0};

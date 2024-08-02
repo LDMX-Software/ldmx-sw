@@ -10,10 +10,9 @@
 // LDMX
 #include "DetDescr/TrigScintID.h"
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/TrigScintHit.h"
-#include "TrigScint/Event/TestBeamHit.h"
 #include "TrigScint/Event/EventReadout.h"
-
+#include "TrigScint/Event/TestBeamHit.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -21,12 +20,11 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-
 namespace trigscint {
 
 /**
  * @class TestBeamHitProducer
- * @brief Organizes digis into TrigScintHits, based on linearized 
+ * @brief Organizes digis into TrigScintHits, based on linearized
  * full event readout from test beam/test stand
 
  */
@@ -75,16 +73,17 @@ class TestBeamHitProducer : public framework::Producer {
 
   /// Total number of samples used in pulse integration
   int pulseWidth_{5};
-  
-  /// Total number of samples used in pulse integration for LYSO (long decay, might need wider window)
+
+  /// Total number of samples used in pulse integration for LYSO (long decay,
+  /// might need wider window)
   int pulseWidthLYSO_{8};
-  
+
   /// Number of instrumented channels in module
   int nInstrumentedChannels_{12};
 
-/// boolean indicating whether we want to apply quality criteria in hit reconstruction
+  /// boolean indicating whether we want to apply quality criteria in hit
+  /// reconstruction
   bool doCleanHits_{false};
-
 };
 
 }  // namespace trigscint

@@ -7,8 +7,8 @@
 
 namespace biasing {
 
-MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(const std::string& name,
-                                                       framework::config::Parameters& parameters)
+MidShowerNuclearBkgdFilter::MidShowerNuclearBkgdFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
   nuclear_processes_ = {"photonNuclear", "electronNuclear"};

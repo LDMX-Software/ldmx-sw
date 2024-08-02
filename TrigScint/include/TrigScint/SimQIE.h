@@ -2,6 +2,7 @@
 #define TRIGSCINT_SIMQIE_H
 
 #include <iostream>
+
 #include "TMath.h"
 #include "TRandom3.h"
 #include "TrigScint/QIEInputPulse.h"
@@ -49,10 +50,10 @@ class SimQIE {
    *
    * @param sf = sampling frequency in MHz
    */
-  void setFreq(const float sf = 40) { tau_ = 1000 / sf; } 
+  void setFreq(const float sf = 40) { tau_ = 1000 / sf; }
 
   /**
-   * Set the number of time samples to analyze. 
+   * Set the number of time samples to analyze.
    *
    * @param maxts No. of time samples to analyze
    */

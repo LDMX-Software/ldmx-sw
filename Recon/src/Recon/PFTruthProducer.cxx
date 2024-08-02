@@ -18,11 +18,9 @@ void PFTruthProducer::configure(framework::config::Parameters& ps) {
   hcalSPz_    = ps.getParameter<double>("inputHcalSPz", 840); 
 }
 template <class T>
-void sortHits( std::vector<T> spHits){
+void sortHits(std::vector<T> spHits) {
   std::sort(spHits.begin(), spHits.end(),
-	    [](T a, T b) {
-	      return a.getEnergy() > b.getEnergy();
-	    });
+            [](T a, T b) { return a.getEnergy() > b.getEnergy(); });
 }
 
 void PFTruthProducer::produce(framework::Event& event) {
@@ -39,10 +37,10 @@ void PFTruthProducer::produce(framework::Event& event) {
   std::vector<ldmx::SimTrackerHit> atTarget;
   std::vector<ldmx::SimTrackerHit> atEcal;
   std::vector<ldmx::SimTrackerHit> atHcal;
-  for(const auto &pm : particle_map){
+  for (const auto &pm : particle_map) {
     const auto &p = pm.second;
     // the only parent of a primary is "track 0"
-    if (p.getParents().size()==1 && p.getParents()[0]==0){
+    if (p.getParents().size() == 1 && p.getParents()[0] == 0) {
       primaries[pm.first] = p;
       simIDs.insert(pm.first);
     }

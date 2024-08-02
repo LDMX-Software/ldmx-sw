@@ -12,9 +12,9 @@
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TProfile2D.h"
 #include "TF1.h"
 #include "TFile.h"
+#include "TProfile2D.h"
 /* #include "ap_fixed.h" */
 /* #include "ap_int.h" */
 
@@ -43,15 +43,15 @@ class TrigElectronProducer : public framework::Producer {
 
   void setupMaps(bool isX);
   float getP(bool isX, float e, float d);
-  float getPx(float e, float d) { return getP(true,e,d); }
-  float getPy(float e, float d) { return getP(false,e,d); }
+  float getPx(float e, float d) { return getP(true, e, d); }
+  float getPy(float e, float d) { return getP(false, e, d); }
 
  private:
   // specific verbosity of this producer
   int verbose_{0};
 
   bool useTargetScoringPlane_{1};
-  
+
   // name of collection for target scoring plane inputs
   std::string spCollName_;
   double spCollz_;
@@ -70,12 +70,17 @@ class TrigElectronProducer : public framework::Producer {
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py
   // ECal/src/EcalRecProducer.cxx
-  /* float gain_ = 320. / 0.1 / 1024;                                    // mV/ADC */
-  /* float mVtoMeV_ = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  // MeV/mV */
+  /* float gain_ = 320. / 0.1 / 1024;                                    //
+   * mV/ADC */
+  /* float mVtoMeV_ = 0.130 / (37000.0 * (0.162 / 1000.) * (1. / 0.1));  //
+   * MeV/mV */
   /* std::vector<float> layerWeights = { */
-  /*     1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630, */
-  /*     9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630, */
-  /*     9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364, */
+  /*     1.675,  2.724,  4.398,  6.039,  7.696,  9.077,  9.630,  9.630,  9.630,
+   */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,  9.630,
+   */
+  /*     9.630,  9.630,  9.630,  9.630,  9.630,  13.497, 17.364, 17.364, 17.364,
+   */
   /*     17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 8.990}; */
   /* float secondOrderEnergyCorrection_ = 4000. / 4010.; */
   /* float mipSiEnergy_ = 0.130; */

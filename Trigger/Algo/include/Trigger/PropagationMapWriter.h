@@ -2,7 +2,6 @@
 #define TRIGGER_PROPAGATIONMAPWRITER_H_
 
 #include "Framework/EventProcessor.h"
-
 #include "TFile.h"
 #include "TH2D.h"
 #include "TProfile2D.h"
@@ -11,14 +10,12 @@ namespace trigger {
 
 /**
  * @class PropagationMapWriter
- * @brief Null algorithm test 
+ * @brief Null algorithm test
  */
-
 
 class PropagationMapWriter : public framework::Producer {
  public:
-  PropagationMapWriter(const std::string& name,
-                           framework::Process& process);
+  PropagationMapWriter(const std::string& name, framework::Process& process);
   virtual void configure(framework::config::Parameters&);
   virtual void produce(framework::Event& event);
   virtual void onProcessStart();
@@ -26,7 +23,7 @@ class PropagationMapWriter : public framework::Producer {
 
  private:
   TFile* outFile_{nullptr};
-  std::string outPath_{"./propagationMap.root"};  
+  std::string outPath_{"./propagationMap.root"};
   TProfile2D* profx_{nullptr};
   TProfile2D* profy_{nullptr};
   TProfile2D* lutx_{nullptr};
@@ -46,4 +43,4 @@ class PropagationMapWriter : public framework::Producer {
 };
 }  // namespace trigger
 
-#endif // TRIGGER_PROPAGATIONMAPWRITER_H_
+#endif  // TRIGGER_PROPAGATIONMAPWRITER_H_

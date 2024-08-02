@@ -137,11 +137,11 @@ void TargetProcessFilter::stepping(const G4Step* step) {
 
     if (G4RunManager::GetRunManager()->GetVerboseLevel() > 1) {
       std::cout << "[ TargetProcessFilter ]: "
-              << G4EventManager::GetEventManager()
-                     ->GetConstCurrentEvent()
-                     ->GetEventID()
-              << " Brem photon produced " << secondaries->size()
-              << " particle via " << processName << " process." << std::endl;
+                << G4EventManager::GetEventManager()
+                       ->GetConstCurrentEvent()
+                       ->GetEventID()
+                << " Brem photon produced " << secondaries->size()
+                << " particle via " << processName << " process." << std::endl;
     }
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);

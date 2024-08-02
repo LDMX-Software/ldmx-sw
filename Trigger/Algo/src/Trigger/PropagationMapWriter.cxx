@@ -6,7 +6,7 @@
 
 namespace trigger {
 PropagationMapWriter::PropagationMapWriter(const std::string& name,
-               framework::Process& process)
+                                           framework::Process& process)
     : Producer(name, process) {}
 
 void PropagationMapWriter::configure(framework::config::Parameters& ps) {
@@ -18,7 +18,6 @@ void PropagationMapWriter::configure(framework::config::Parameters& ps) {
 }
 
 void PropagationMapWriter::produce(framework::Event& event) {
-
   if (!event.exists(targetSPName_)) return;
   const std::vector<ldmx::SimTrackerHit> hitsTarg = event.getCollection<ldmx::SimTrackerHit>(targetSPName_);
   if (!event.exists(ecalSPName_)) return;
@@ -32,9 +31,9 @@ void PropagationMapWriter::produce(framework::Event& event) {
     if( fabs(targetSPz_-xyz[2])>0.1 ) continue; // select one sp
     h1 = hit;
   }
-  for(const auto& hit : hitsEcal){
-    if(!(hit.getTrackID()==1)) continue;
-    if(!(hit.getPdgID()==11)) continue;
+  for (const auto& hit : hitsEcal) {
+    if (!(hit.getTrackID() == 1)) continue;
+    if (!(hit.getPdgID() == 11)) continue;
     auto xyz = hit.getPosition();
     if( fabs(ecalSPz_-xyz[2])>0.01 ) continue; // select one sp
     h2 = hit;
@@ -64,7 +63,7 @@ void PropagationMapWriter::produce(framework::Event& event) {
 
 void PropagationMapWriter::onProcessStart() {
   // auto hdir = getHistoDirectory();
-  outFile_ = new TFile(outPath_.c_str(),"recreate");
+  outFile_ = new TFile(outPath_.c_str(), "recreate");
   outFile_->SetCompressionSettings(209);
   // 100*alg+level
   // 2=LZMA, 9 = max compression

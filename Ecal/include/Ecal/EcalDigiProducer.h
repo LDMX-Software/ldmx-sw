@@ -88,10 +88,10 @@ class EcalDigiProducer : public framework::Producer {
    * When emulating noise in empty channels, do we zero suppress?
    *
    * There are two ways to emulate the noise in the chip:
-   *  1) (with zero suppression) Use the NoiseGenerator to get a list of 
+   *  1) (with zero suppression) Use the NoiseGenerator to get a list of
    *     amplitudes (about 3-5 on avg) and put those noise hits which are
    *     above the readout threshold in random empty channels.
-   *  2) (without zero suppresion) Go through all channels and put 
+   *  2) (without zero suppresion) Go through all channels and put
    *     noise in each channel that doesn't have a real hit in it.
    *     This will mean many channels with have a DIGI below readout
    *     threshold.

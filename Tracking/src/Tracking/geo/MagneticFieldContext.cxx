@@ -9,13 +9,14 @@ namespace tracking::geo {
 const std::string MagneticFieldContext::NAME = "TrackingMagneticFieldContext";
 
 MagneticFieldContext::MagneticFieldContext()
-  : framework::ConditionsObject(NAME) {}
+    : framework::ConditionsObject(NAME) {}
 
 const Acts::MagneticFieldContext& MagneticFieldContext::get() const {
   return magnetic_field_context_;
 }
 
-class MagneticFieldContextProvider : public framework::ConditionsObjectProvider {
+class MagneticFieldContextProvider
+    : public framework::ConditionsObjectProvider {
  public:
   /**
    * Create the context conditions object
@@ -25,10 +26,12 @@ class MagneticFieldContextProvider : public framework::ConditionsObjectProvider 
    * @param[in] parameters configuration parameters from python
    * @param[in] process reference to the running process object
    */
-  MagneticFieldContextProvider(const std::string& name, const std::string& tagname,
+  MagneticFieldContextProvider(const std::string& name,
+                               const std::string& tagname,
                                const framework::config::Parameters& parameters,
-                               framework::Process& process) 
-    : framework::ConditionsObjectProvider(MagneticFieldContext::NAME, tagname, parameters, process) {}
+                               framework::Process& process)
+      : framework::ConditionsObjectProvider(MagneticFieldContext::NAME, tagname,
+                                            parameters, process) {}
 
   /**
    * Get the context as a conditions object
@@ -39,16 +42,14 @@ class MagneticFieldContextProvider : public framework::ConditionsObjectProvider 
    * @param[in] context EventHeader for the event context
    * @returns new context and unlimited interval of validity
    */
-  std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> 
+  std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) final override {
-    return std::make_pair<const framework::ConditionsObject*, framework::ConditionsIOV>(
-        new MagneticFieldContext(),
-        framework::ConditionsIOV(true, true)
-    );
+    return std::make_pair<const framework::ConditionsObject*,
+                          framework::ConditionsIOV>(
+        new MagneticFieldContext(), framework::ConditionsIOV(true, true));
   }
- 
 };
 
-}
+}  // namespace tracking::geo
 
 DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, MagneticFieldContextProvider)

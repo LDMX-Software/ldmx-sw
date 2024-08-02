@@ -27,7 +27,7 @@ namespace biasing {
  *
  */
 class TaggerVetoFilter : public simcore::UserAction {
-public:
+ public:
   /**
    * Constructor.
    *
@@ -68,7 +68,7 @@ public:
     return {simcore::TYPE::STEPPING, simcore::TYPE::EVENT};
   }
 
-private:
+ private:
   /**
    * Did the primary particle enter the tagger region? Reset at the start of
    * each event
@@ -83,8 +83,8 @@ private:
   // entered the tagger region?
   bool reject_primaries_missing_tagger_{true};
 
-}; // TaggerVetoFilter
+};  // TaggerVetoFilter
 
-} // namespace biasing
+}  // namespace biasing
 
-#endif // BIASING_TAGGERVETOFILTER_H
+#endif  // BIASING_TAGGERVETOFILTER_H

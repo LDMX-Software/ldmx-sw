@@ -3,6 +3,9 @@
 Basic python configuration for ldmx-sw application
 """
 
+from pathlib import Path
+
+
 class EventProcessor:
     """An EventProcessor object
 
@@ -18,6 +21,7 @@ class EventProcessor:
         Name (including namespace) of the C++ class that this processor should be
     moduleName : str
         Name of module the C++ class is in (e.g. Ecal or SimCore)
+        or full path to the library that should be loaded
 
     Attributes
     ----------
@@ -36,7 +40,119 @@ class EventProcessor:
         self.className=className
         self.histograms=[]
 
-        Process.addModule(moduleName)
+        if moduleName.endswith('.so'):
+            # assume user passed full path to library
+            Process.addLibrary(moduleName)
+        else:
+            # assume user passed name of module processor is compiled into
+            Process.addModule(moduleName)
+
+
+    @classmethod
+    def from_file(cls, source_file, class_name = None, needs = [], instance_name = None, compile_notice = True, **config_kwargs):
+        """Construct an event processor "in place" from the passed source file
+
+        Since Framework dynamically loads libraries containing processors after
+        the python script has been fully run, we can compile a single-file processor
+        into its own library that can then be loaded and run. This function puts
+        the library next to the source file and only re-compiles if the source file's
+        last modified time is newer than the library (or the library does not exist).
+
+        Note
+        ----
+        Developing processors in this way is incredible inefficient, especially since it
+        does not allow for code to be well organized and split across many files nor does it
+        allow for two processors to share common code.
+        If you find yourself defining more than one `class` within your new C++ processor,
+        it is highly recommended to transition your workflow to including your processor as a
+        part of ldmx-sw so that it can fully benefit from a build system.
+
+        Parameters
+        ----------
+        source_file: str | Path
+            path to source file to build into a processor (can be relative to where config is being run)
+        class_name: str, default is name of source file
+            name of C++ class that is the processor
+            defaults to the name of the source file without an extension
+        needs: list[str]
+            Names of libraries that should be linked to the compiled processor in addition to 'Framework'
+            which is linked be default.
+            For example, one can gain access to the detector ID infrastructure with 'DetDescr'.
+        instance_name: str, default is class_name
+            name to give to instance of this C++ processor
+        compile_notice: bool, default is True
+            print a notice when compilation is triggered
+        config_kwargs: dict[str, Any]
+            configuration parameters to give to the processor
+
+        Examples
+        --------
+        A basic walkthrough is available online. https://ldmx-software.github.io/analysis/ldmx-sw.html
+        
+        If `MyAnalyzer.cxx` contains the class `MyAnalyzer`, then we can put
+
+            p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx') ]
+
+        In our config script to run the analyzer on its own in the sequence.
+        This default configuration only links the Framework library and so the analyzer
+        would only be able to access the Framework and event objects.
+        If you needed another library (for example, the 'DetDescr' library has the ID classes),
+        one can also
+
+            p.sequence = [ ldmxcfg.Analyzer.from_file('MyAnalyzer.cxx', needs = ['DetDescr']) ]
+
+        To inform the compiler that it should link your analyzer with the 'DetDescr' library.
+        **No removal of the library is done** so if you change the `needs` or some other parameter
+        to `from_file` you should also remove the library file (`*.so`) before attempting to re-run.
+
+        Returns
+        -------
+        EventProcessor
+            built from the C++ source file and configured with the passed arguments
+        """
+
+        if not isinstance(source_file, Path):
+            source_file = Path(source_file)
+        if not source_file.is_file():
+            raise ValueError(f'{source_file} is not accessible.')
+
+        src = source_file.resolve()
+
+        if class_name is None:
+            # assume class name is name of file (no extension) if not provided
+            class_name = src.stem
+
+        if instance_name is None:
+            # use class name for instance name if not provided
+            instance_name = class_name
+
+        lib = src.parent / f'lib{src.stem}.so'
+        if not lib.is_file() or src.stat().st_mtime > lib.stat().st_mtime:
+            if compile_notice:
+                print(
+                    f'Processor source file {src} is newer than its compiled library {lib}'
+                    ' (or library does not exist), recompiling...'
+                )
+            import subprocess
+            libs_to_link = set(['Framework']+needs)
+            subprocess.run([
+                'g++', '-fPIC', '-shared', # construct a shared library for dynamic loading
+                '-o', str(lib), str(src), # define output file and input source file
+            ]+[
+                f'-l{lib}' for lib in libs_to_link
+            ]+[
+                '-I/usr/local/include/root', # include ROOT's non-system headers
+                '-I@CMAKE_INSTALL_PREFIX@/include', # include ldmx-sw headers (if non-system)
+                '-L@CMAKE_INSTALL_PREFIX@/lib', # include ldmx-sw libs (if non-system)
+            ], check=True)
+            if compile_notice:
+                print(f'done compiling {src}')
+
+        instance = cls(instance_name, class_name, str(lib))
+        for cfg_name, cfg_val in config_kwargs.items():
+            setattr(instance, cfg_name, cfg_val)
+        return instance
+
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
@@ -328,10 +444,15 @@ class Process:
     lastProcess : Process
         Class-wide reference to the last Process object to be constructed
     maxEvents : int
-        Maximum number events to process
+        Maximum number events to process.
+        If totalEvents is set, this will be ignored.
     maxTriesPerEvent : int
         Maximum number of attempts to make in a row before giving up on an event
         Only used in Production Mode (no input files)
+        If totalEvents is set, this will be ignored.
+    totalEvents : int
+        Number of events we'd like to produce independetly of the number of tries it would take.
+        Both maxEvents and maxTriesPerEvent will be ignored. Be warned about infinite loops!
     run : int
         Run number for this process
     inputFiles : list of strings

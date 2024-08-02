@@ -43,7 +43,7 @@ setup_library(module Ecal
 
 setup_test(dependencies Ecal::Ecal)
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Ecal)
+setup_python(package_name LDMX/Ecal)
 
 setup_data(module Ecal)
 

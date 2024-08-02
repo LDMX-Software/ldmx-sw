@@ -1,5 +1,5 @@
-#ifndef ECAL_ECALRAWENCODER_H_ 
-#define ECAL_ECALRAWENCODER_H_ 
+#ifndef ECAL_ECALRAWENCODER_H_
+#define ECAL_ECALRAWENCODER_H_
 
 //----------//
 //   LDMX   //
@@ -40,7 +40,6 @@ class EcalRawEncoder : public framework::Producer {
   std::string output_name_;
   /// version of HGC ROC we are decoding
   int roc_version_;
-
 };
 }  // namespace ecal
 

@@ -36,8 +36,8 @@ class EcalVetoResult {
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy,
-                    int nStraightTracks, int nLinregTracks, int firstNearPhLayer,
-                    float epAng, float epSep,
+                    int nStraightTracks, int nLinregTracks,
+                    int firstNearPhLayer, float epAng, float epSep,
 
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
@@ -154,11 +154,14 @@ class EcalVetoResult {
   int nStraightTracks_{0};
   /// Number of "linreg" tracks found in the event
   int nLinregTracks_{0};
-  /// Earliest ECal layer in which a hit is found near the projected photon trajectory (currently unused)
+  /// Earliest ECal layer in which a hit is found near the projected photon
+  /// trajectory (currently unused)
   int firstNearPhLayer_{0};
-  /// Angular separation between the projected photon and electron trajectories (currently unused)
+  /// Angular separation between the projected photon and electron trajectories
+  /// (currently unused)
   float epAng_{0};
-  /// Distance between the projected photon and electron trajectories at the ECal face (currently unused)
+  /// Distance between the projected photon and electron trajectories at the
+  /// ECal face (currently unused)
   float epSep_{0};
 
   std::vector<float> electronContainmentEnergy_;
