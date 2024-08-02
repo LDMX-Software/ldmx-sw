@@ -40,9 +40,6 @@ if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
     message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
-# Set the python installation path
-set(PYTHON_PACKAGE_NAME LDMX)
-
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
 set(default_build_type "Release")

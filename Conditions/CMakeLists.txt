@@ -14,4 +14,4 @@ setup_library(module Conditions
 
 setup_test(dependencies Conditions::Conditions)
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Conditions)
+setup_python(package_name LDMX/Conditions)

@@ -1,15 +1,15 @@
 #include "Biasing/MidShowerDiMuonBkgdFilter.h"
 
 #include "G4EventManager.hh"
+#include "G4Gamma.hh"
 #include "G4RunManager.hh"
 #include "G4Step.hh"
-#include "G4Gamma.hh"
 #include "SimCore/UserTrackInformation.h"
 
 namespace biasing {
 
-MidShowerDiMuonBkgdFilter::MidShowerDiMuonBkgdFilter(const std::string& name,
-                                                       framework::config::Parameters& parameters)
+MidShowerDiMuonBkgdFilter::MidShowerDiMuonBkgdFilter(
+    const std::string& name, framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
   /* debug printout
@@ -64,7 +64,7 @@ void MidShowerDiMuonBkgdFilter::stepping(const G4Step* step) {
             << ") "
             << "Track " << track->GetParentID() << " created "
             << track->GetTrackID() << " which went from " << pre_energy
-            << " MeV to " << post_energy << " MeV generating muons." 
+            << " MeV to " << post_energy << " MeV generating muons."
             << std::endl;
    */
   // make sure this track is saved

@@ -2,9 +2,8 @@
 
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Tracking/Sim/TrackingUtils.h"
 #include "Eigen/Dense"
-
+#include "Tracking/Sim/TrackingUtils.h"
 
 /* This processor takes in input a set of 3D space points and builds seedTracks
  * using the ACTS algorithm which is based on the ATLAS 3-space point conformal
@@ -21,8 +20,7 @@ namespace reco {
 SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
                                          framework::Process& process)
     : TrackingGeometryUser(name, process) {
-
-  //TODO REMOVE FROM DEFAULT
+  // TODO REMOVE FROM DEFAULT
   /*
   outputFile_ = new TFile("seeder.root", "RECREATE");
   outputTree_ = new TTree("seeder", "seeder");
@@ -47,7 +45,6 @@ void SeedFinderProcessor::onProcessStart() {
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
-
   // Output seed name
   out_seed_collection_ = parameters.getParameter<std::string>(
       "out_seed_collection", getName() + "SeedTracks");
@@ -55,11 +52,11 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   // Input strip hits
   input_hits_collection_ = parameters.getParameter<std::string>(
       "input_hits_collection", "TaggerSimHits");
-  
+
   // Tagger tracks - only for Recoil Seed finding
   tagger_trks_collection_ = parameters.getParameter<std::string>(
       "tagger_trks_collection", "TaggerTracks");
-  
+
   perigee_location_ = parameters.getParameter<std::vector<double>>(
       "perigee_location", {-700, 0., 0.});
   pmin_ =
@@ -72,23 +69,18 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   z0max_ =
       parameters.getParameter<double>("z0max", 60. * Acts::UnitConstants::mm);
 
-  phicut_ =
-      parameters.getParameter<double>("phicut",0.1);
-  thetacut_ =
-      parameters.getParameter<double>("thetacut",0.2);
+  phicut_ = parameters.getParameter<double>("phicut", 0.1);
+  thetacut_ = parameters.getParameter<double>("thetacut", 0.2);
 
-  loc0cut_ =
-      parameters.getParameter<double>("loc0cut",0.1);
-  loc1cut_ =
-      parameters.getParameter<double>("loc1cut",0.3);
-  
-  
+  loc0cut_ = parameters.getParameter<double>("loc0cut", 0.1);
+  loc1cut_ = parameters.getParameter<double>("loc1cut", 0.3);
+
   strategies_ = parameters.getParameter<std::vector<std::string>>(
       "strategies", {"0,1,2,3,4"});
-  
-  inflate_factors_  = parameters.getParameter<std::vector<double>>(
-      "inflate_factors",{10., 10., 10., 10., 10., 10.});
-  
+
+  inflate_factors_ = parameters.getParameter<std::vector<double>>(
+      "inflate_factors", {10., 10., 10., 10., 10., 10.});
+
   bfield_ = parameters.getParameter<double>("bfield", 1.5);
 }
 
@@ -99,9 +91,8 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   nevents_++;
 
-  //check if SimParticleMap is available for truth matching 
+  // check if SimParticleMap is available for truth matching
   std::map<int, ldmx::SimParticle> particleMap;
-  
 
   const std::vector<ldmx::Measurement> measurements =
       event.getCollection<ldmx::Measurement>(input_hits_collection_);
@@ -110,64 +101,62 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   if (event.exists(tagger_trks_collection_)) {
     tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_);
   }
-  
+
   // Create an unbound surface at the target
-  std::shared_ptr<Acts::Surface> tgt_surf = tracking::sim::utils::unboundSurface(0.);
-  
+  std::shared_ptr<Acts::Surface> tgt_surf =
+      tracking::sim::utils::unboundSurface(0.);
+
   // Create the pseudomeasurements at the target
-  
+
   ldmx::Measurements target_pseudo_meas;
-  
+
   for (auto tagtrk : tagger_tracks) {
-    
     auto ts = tagtrk.getTrackState(ldmx::TrackStateType::AtTarget);
-    
-    // The covariance matrix passed to the pseudo measurement is considered as uncorrelated.
-    // This is an approx that considers that loc-u and loc-v from the track have small correlation.
-    
+
+    // The covariance matrix passed to the pseudo measurement is considered as
+    // uncorrelated. This is an approx that considers that loc-u and loc-v from
+    // the track have small correlation.
+
     if (ts.has_value()) {
-      
-    
       auto trackState = ts.value();
-    
-      
-      Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(trackState.cov);
+
+      Acts::BoundSymMatrix cov =
+          tracking::sim::utils::unpackCov(trackState.cov);
       double locu = trackState.params[0];
       double locv = trackState.params[1];
-      double covuu= cov(Acts::BoundIndices::eBoundLoc0,Acts::BoundIndices::eBoundLoc0);
-      double covvv= cov(Acts::BoundIndices::eBoundLoc1,Acts::BoundIndices::eBoundLoc1);
-      
+      double covuu =
+          cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0);
+      double covvv =
+          cov(Acts::BoundIndices::eBoundLoc1, Acts::BoundIndices::eBoundLoc1);
+
       ldmx::Measurement pseudo_meas;
-      pseudo_meas.setLocalPosition(locu,locv);
-      Acts::Vector3 dummy{0.,0.,0.};
-      Acts::Vector2 local_pos{locu,locv};
-      Acts::Vector3 global_pos = tgt_surf->localToGlobal(geometry_context(),
-                                                         local_pos,
-                                                         dummy);
-      
-      pseudo_meas.setGlobalPosition(global_pos(0),global_pos(1), global_pos(2));
+      pseudo_meas.setLocalPosition(locu, locv);
+      Acts::Vector3 dummy{0., 0., 0.};
+      Acts::Vector2 local_pos{locu, locv};
+      Acts::Vector3 global_pos =
+          tgt_surf->localToGlobal(geometry_context(), local_pos, dummy);
+
+      pseudo_meas.setGlobalPosition(global_pos(0), global_pos(1),
+                                    global_pos(2));
       pseudo_meas.setTime(0.);
-      pseudo_meas.setLocalCovariance(covuu,covvv);
-      
+      pseudo_meas.setLocalCovariance(covuu, covvv);
+
       target_pseudo_meas.push_back(pseudo_meas);
-      
     }
-    
   }
-  
-  if(event.exists("SimParticles")) {
-    particleMap = event.getMap<int,ldmx::SimParticle>("SimParticles");
-    truthMatchingTool_->setup(particleMap,measurements);
+
+  if (event.exists("SimParticles")) {
+    particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles");
+    truthMatchingTool_->setup(particleMap, measurements);
   }
-  
+
   ldmx_log(debug) << "Preparing the strategies";
-  
+
   groups_map.clear();
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
-  if (success) FindSeedsFromMap(seed_tracks,
-                                target_pseudo_meas);
-  
+  if (success) FindSeedsFromMap(seed_tracks, target_pseudo_meas);
+
   /*
   groups_map.clear();
   strategy = {3,4,5,6,7};
@@ -177,10 +166,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   */
   groups_map.clear();
-  //outputTree_->Fill();
+  // outputTree_->Fill();
   ntracks_ += seed_tracks.size();
   event.add(out_seed_collection_, seed_tracks);
-  
 
   auto end = std::chrono::high_resolution_clock::now();
 
@@ -226,10 +214,9 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     const ldmx::Measurements& pmeas_tgt) {
   // Fit a straight line in the non-bending plane and a parabola in the bending
   // plane
-    
 
   const int N = vmeas.size();
-  
+
   // Each measurement is treated as a 3D point, where the v direction is in the
   // center of the strip with sigma equal to the length of the strip / sqrt(12).
   // In this way it's easier to incorporate the tagger track extrapolation to
@@ -279,9 +266,9 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     loc(1) = 0.;
     double uError = sqrt(vmeas[0].getLocalCovariance()[0]);
 
-    //TODO Fix vError for measurements
+    // TODO Fix vError for measurements
     double vError = 40. / sqrt(12);
-        
+
     Acts::ActsMatrix<2, 2> W_i =
         Acts::ActsMatrix<2, 2>::Zero();  // weight matrix
 
@@ -333,21 +320,18 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   Acts::Vector3 seed_mom = p * dir / Acts::UnitConstants::MeV;
   Acts::ActsScalar q =
       B(2) < 0 ? -1 * Acts::UnitConstants::e : +1 * Acts::UnitConstants::e;
-  
-  
+
   // Linear intersection with the perigee line. TODO:: Use propagator instead
   // Project the position on the surface.
   // This is mainly necessary for the perigee surface, where
   // the mean might not fulfill the perigee condition.
-  
+
   auto intersection =
       (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
 
+  Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
+      intersection.intersection.position, seed_mom, q);
 
-  
-  Acts::FreeVector seed_free =
-      tracking::sim::utils::toFreeParameters(intersection.intersection.position, seed_mom, q);
-  
   auto bound_params = Acts::detail::transformFreeToBoundParameters(
                           seed_free, *seed_perigee, geometry_context())
                           .value();
@@ -369,8 +353,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
       inflate_factors_[Acts::eBoundQOverP] * (1. / p) * (1. / p) * sigma_p;
   stddev[Acts::eBoundTime] =
       inflate_factors_[Acts::eBoundTime] * 1000 * Acts::UnitConstants::ns;
-  
-  
+
   Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
 
   ldmx::Track trk = ldmx::Track();
@@ -391,14 +374,11 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // Store the global position and momentum at the perigee
   // TODO:: The eFreePos0 is wrong due to the linear intersection.
   // YZ are ~ correct
-  trk.setPosition(seed_free[Acts::eFreePos0],
-                  seed_free[Acts::eFreePos1],
+  trk.setPosition(seed_free[Acts::eFreePos0], seed_free[Acts::eFreePos1],
                   seed_free[Acts::eFreePos2]);
-  trk.setMomentum(seed_free[Acts::eFreeDir0],
-                  seed_free[Acts::eFreeDir1],
+  trk.setMomentum(seed_free[Acts::eFreeDir0], seed_free[Acts::eFreeDir1],
                   seed_free[Acts::eFreeDir2]);
-  
-  
+
   Acts::BoundTrackParameters seedParameters(seed_perigee,
                                             std::move(bound_params), bound_cov);
 
@@ -438,21 +418,21 @@ void SeedFinderProcessor::LineParabolaToHelix(
 }
 
 void SeedFinderProcessor::onProcessEnd() {
-  //outputFile_->cd();
-  //outputTree_->Write();
-  //outputFile_->Close();
+  // outputFile_->cd();
+  // outputTree_->Write();
+  // outputFile_->Close();
   ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
-  ldmx_log(info) << "Seeds discarded due to multiple hits on layers " << ndoubles_;
+  ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
+                 << ndoubles_;
   ldmx_log(info) << "not enough seed points " << nmissing_;
   ldmx_log(info) << " nfailpmin=" << nfailpmin_;
   ldmx_log(info) << "   nfailpmax=" << nfailpmax_;
   ldmx_log(info) << "   nfaild0max=" << nfaild0max_;
   ldmx_log(info) << "   nfaild0min=" << nfaild0min_;
   ldmx_log(info) << "   nfailphicut=" << nfailphi_;
-  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_; 
+  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
   ldmx_log(info) << "   nfailz0max=" << nfailz0max_;
-  
 }
 
 // Given a strategy, group the hits according to some options
@@ -462,16 +442,15 @@ void SeedFinderProcessor::onProcessEnd() {
 bool SeedFinderProcessor::GroupStrips(
     const std::vector<ldmx::Measurement>& measurements,
     const std::vector<int> strategy) {
-    //    std::cout<<"Using stratedy"<<std::endl;
-    // for (auto& e : strategy) {
-    //  std::cout<<e<<" ";
+  //    std::cout<<"Using stratedy"<<std::endl;
+  // for (auto& e : strategy) {
+  //  std::cout<<e<<" ";
   //}
   // std::cout<<std::endl;
 
   for (auto& meas : measurements) {
-      
-      ldmx_log(debug) << meas<<std::endl;
-      
+    ldmx_log(debug) << meas << std::endl;
+
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
       groups_map[meas.getLayer()].push_back(&meas);
@@ -514,7 +493,7 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
 
   while (it[0] != groups_iter->second.end()) {
     // process the pointed-to elements
-    
+
     /*
       for (int j=0; j<K; j++) {
       const ldmx::Measurement* meas = (*(it[j]));
@@ -527,8 +506,8 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     std::vector<ldmx::Measurement> meas_for_seeds;
     meas_for_seeds.reserve(5);
 
-    ldmx_log(debug)<<" Grouping ";
-    
+    ldmx_log(debug) << " Grouping ";
+
     for (int j = 0; j < K; j++) {
       const ldmx::Measurement* meas = (*(it[j]));
       meas_for_seeds.push_back(*meas);
@@ -536,24 +515,23 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
 
     std::sort(meas_for_seeds.begin(), meas_for_seeds.end(),
               [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
-                  return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
+                return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
               });
-    
+
     if (meas_for_seeds.size() < 5) {
       nmissing_++;
       return;
     }
 
-    ldmx_log(debug)<<"seedTrack";
-    
-    Acts::Vector3 perigee{perigee_location_[0],perigee_location_[1],perigee_location_[2]};
-    
+    ldmx_log(debug) << "seedTrack";
+
+    Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
+                          perigee_location_[2]};
+
     ldmx::Track seedTrack =
-        SeedTracker(meas_for_seeds,
-                    meas_for_seeds.at(2).getGlobalPosition()[0],
-                    perigee,
-                    pmeas);
-    
+        SeedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
+                    perigee, pmeas);
+
     bool fail = false;
 
     // Remove failed fits
@@ -562,12 +540,12 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
       fail = true;
     } else if (1. / abs(seedTrack.getQoP()) > pmax_) {
       nfailpmax_++;
-      fail = true;  
+      fail = true;
     }
 
-    // Remove large part of fake tracks and duplicates with the following cuts for various
-    // compatibility checks.
-    
+    // Remove large part of fake tracks and duplicates with the following cuts
+    // for various compatibility checks.
+
     else if (abs(seedTrack.getZ0()) > z0max_) {
       nfailz0max_++;
       fail = true;
@@ -581,49 +559,49 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
       fail = true;
       nfailphi_++;
     } else if (abs(seedTrack.getTheta() - piover2_) > thetacut_) {
-      fail=true;
+      fail = true;
       nfailtheta_++;
     }
-    
+
     // If I didn't use the target pseudo measurements in the track finding
     // I can use them for compatibility with the tagger track
-    
-    // TODO this should protect against running this check on tagger seeder. This is true
-    // only if this seeder is not run twice on the tagger after already having tagger tracks
-    // available.
-    if (pmeas.size() > 0 ) {
-      
+
+    // TODO this should protect against running this check on tagger seeder.
+    // This is true only if this seeder is not run twice on the tagger after
+    // already having tagger tracks available.
+    if (pmeas.size() > 0) {
       // I can have multiple target pseudo measurements
-      // A seed is rejected if it is found incompatible with all the target extrapolations
-      
+      // A seed is rejected if it is found incompatible with all the target
+      // extrapolations
+
       bool tgt_compatible = false;
       for (auto tgt_pseudomeas : pmeas) {
-        
-        // The d0/z0 are in a frame with the same orientation of the target surface
-        double delta_loc0 = seedTrack.getD0() - tgt_pseudomeas.getLocalPosition()[0];
-        double delta_loc1 = seedTrack.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
-        
-        if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
+        // The d0/z0 are in a frame with the same orientation of the target
+        // surface
+        double delta_loc0 =
+            seedTrack.getD0() - tgt_pseudomeas.getLocalPosition()[0];
+        double delta_loc1 =
+            seedTrack.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
 
+        if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
           // found at least 1 compatible target location
-          tgt_compatible = true; 
+          tgt_compatible = true;
           break;
         }
       }
-    } // pmeas > 0
-        
+    }  // pmeas > 0
+
     if (!fail) {
-      
       if (truthMatchingTool_->configured()) {
         auto truthInfo = truthMatchingTool_->TruthMatch(meas_for_seeds);
         seedTrack.setTrackID(truthInfo.trackID);
         seedTrack.setPdgID(truthInfo.pdgID);
         seedTrack.setTruthProb(truthInfo.truthProb);
       }
-      
+
       seeds.push_back(seedTrack);
     }
-    
+
     else {
       b0_.pop_back();
       b1_.pop_back();
@@ -633,8 +611,8 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
     }
 
     // Go to next combination
-    ldmx_log(debug)<<"Go to the next combination";
-    
+    ldmx_log(debug) << "Go to the next combination";
+
     ++it[K - 1];
     for (int i = K - 1;
          (i > 0) && (it[i] == (std::next(groups_iter, i))->second.end()); --i) {

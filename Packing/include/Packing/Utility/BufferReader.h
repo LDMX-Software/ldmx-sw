@@ -1,8 +1,8 @@
 #ifndef PACKING_BUFFER_H_
 #define PACKING_BUFFER_H_
 
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 namespace packing {
 namespace utility {
@@ -43,9 +43,7 @@ class BufferReader {
    * false if buffer is done being read,
    * true otherwise.
    */
-  operator bool() {
-    return (i_word_ < buffer_.size());
-  }
+  operator bool() { return (i_word_ < buffer_.size()); }
 
   /**
    * Streaming operator
@@ -61,11 +59,10 @@ class BufferReader {
    * @return reference to us
    */
   BufferReader& operator>>(WordType& w) {
-    if (*this)
-      w = next();
+    if (*this) w = next();
     return *this;
   }
- 
+
  private:
   /**
    * Go to next word in buffer.
@@ -77,7 +74,7 @@ class BufferReader {
   WordType next() {
     WordType w{0};
     for (std::size_t i_byte{0}; i_byte < n_bytes_; i_byte++) {
-      w |= (buffer_.at(i_word_+i_byte) << 8*i_byte);
+      w |= (buffer_.at(i_word_ + i_byte) << 8 * i_byte);
     }
     i_word_ += n_bytes_;
     return w;

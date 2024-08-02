@@ -13,8 +13,8 @@ void EcalShowerFeatures::configure(framework::config::Parameters &ps) {
 }
 
 void EcalShowerFeatures::analyze(const framework::Event &event) {
-  auto veto{event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_,
-                                                  ecal_veto_pass_)};
+  auto veto{
+      event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   histograms_.fill("deepest_layer_hit", veto.getDeepestLayerHit());
   histograms_.fill("num_readout_hits", veto.getNReadoutHits());

@@ -2,12 +2,13 @@
 
 namespace recon {
 
-ElectronCounter::ElectronCounter(const std::string& name, framework::Process& process)
+ElectronCounter::ElectronCounter(const std::string& name,
+                                 framework::Process& process)
     : framework::Producer(name, process) {}
 
 ElectronCounter::~ElectronCounter() {}
 
-void ElectronCounter::configure(framework::config::Parameters &parameters) {
+void ElectronCounter::configure(framework::config::Parameters& parameters) {
   inputColl_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");
   outputColl_ = parameters.getParameter<std::string>("output_collection");
@@ -31,7 +32,7 @@ void ElectronCounter::configure(framework::config::Parameters &parameters) {
                   << useSimElectronCount_;
 }
 
-void ElectronCounter::produce(framework::Event &event) {
+void ElectronCounter::produce(framework::Event& event) {
   int nElectrons = -1;
 
   if (useSimElectronCount_) {

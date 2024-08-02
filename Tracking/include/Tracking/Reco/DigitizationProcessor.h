@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Framework/RandomNumberSeedService.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 //--- ACTS ---//
@@ -33,6 +34,14 @@ class DigitizationProcessor : public TrackingGeometryUser {
   void onProcessStart() final override;
 
   void configure(framework::config::Parameters& parameters) final override;
+
+  /**
+   * Before the run starts (but after the conditions are configured)
+   * set up the random seeds for this run.
+   *
+   * @param[in] header RunHeader for this run, unused
+   */
+  void onNewRun(const ldmx::RunHeader& header) final override;
 
   void produce(framework::Event& event);
 

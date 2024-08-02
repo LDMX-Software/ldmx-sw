@@ -8,8 +8,8 @@
 
 // ldmx-sw
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/TrigScintHit.h"
 #include "TrigScint/Event/TestBeamHit.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 namespace ldmx {
 
@@ -48,7 +48,7 @@ class TrigScintCluster {
    */
 
   void addHit(uint idx, const ldmx::TrigScintHit *hit);
-  
+
   /**
    * @param idx The digi collection index of the hit seeding the cluster
    */
@@ -79,7 +79,7 @@ class TrigScintCluster {
   void setIDs(std::vector<unsigned int> &hitIDs) { hitIDs_ = hitIDs; }
 
   /**
-   *The cluster centroid in x,y,z 
+   *The cluster centroid in x,y,z
    * @param x Cluster x coordinate
    * @param y Cluster y coordinate
    * @param z Cluster z coordinate (not implemented)

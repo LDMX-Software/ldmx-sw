@@ -54,4 +54,4 @@ setup_library(module Recon
               sources ${SRC_FILES}
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Recon)
+setup_python(package_name LDMX/Recon)

@@ -7,9 +7,9 @@
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
+#include "Hcal/Event/HcalHit.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
-#include "Hcal/Event/HcalHit.h"
 
 namespace hcal {
 

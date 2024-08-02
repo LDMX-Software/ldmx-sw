@@ -9,6 +9,7 @@
 #define TOOLS_HGCROCTRIGGERCALCULATIONS_H_
 
 #include <map>
+
 #include "Conditions/SimpleTableCondition.h"
 
 namespace ldmx {

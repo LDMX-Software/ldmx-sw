@@ -102,9 +102,9 @@ void Objects::draw(std::vector<ldmx::HcalHit> hits) {
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 100.0);
 
   std::sort(hits.begin(), hits.end(),
-      [](const ldmx::HcalHit& a, const ldmx::HcalHit& b) {
-        return a.getEnergy() < b.getEnergy();
-      });
+            [](const ldmx::HcalHit& a, const ldmx::HcalHit& b) {
+              return a.getEnergy() < b.getEnergy();
+            });
 
   auto hcal_hits = new TEveElementList("HCAL Rec Hits");
   for (const ldmx::HcalHit& hit : hits) {
@@ -217,15 +217,15 @@ void Objects::draw(std::vector<ldmx::SimTrackerHit> hits) {
     // scoring plane ID
 
     std::sort(hits.begin(), hits.end(),
-        [](const ldmx::SimTrackerHit& a, const ldmx::SimTrackerHit& b) {
-          return a.getTrackID() < b.getTrackID();
-        });
+              [](const ldmx::SimTrackerHit& a, const ldmx::SimTrackerHit& b) {
+                return a.getTrackID() < b.getTrackID();
+              });
 
     auto lastUniqueEntry =
-        std::unique(hits.begin(), hits.end(), 
-            [](ldmx::SimTrackerHit& a, ldmx::SimTrackerHit& b) {
-              return a.getTrackID() == b.getTrackID();
-            });
+        std::unique(hits.begin(), hits.end(),
+                    [](ldmx::SimTrackerHit& a, ldmx::SimTrackerHit& b) {
+                      return a.getTrackID() == b.getTrackID();
+                    });
 
     hits.erase(lastUniqueEntry, hits.end());
 
@@ -297,76 +297,72 @@ void Objects::draw(std::vector<ldmx::SimCalorimeterHit> hits) {
 
   TEveRGBAPalette* palette = new TEveRGBAPalette(0, 100.0);
 
-  std::sort(hits.begin(), hits.end(),
+  std::sort(
+      hits.begin(), hits.end(),
       [](const ldmx::SimCalorimeterHit& a, const ldmx::SimCalorimeterHit& b) {
         return a.getEdep() < b.getEdep();
       });
 
   if (id.subdet() == ldmx::SubdetectorIDType::SD_HCAL) {
-  
     auto hcal_hits = new TEveElementList("HCAL Sim Hits");
     for (const ldmx::SimCalorimeterHit& hit : hits) {
-  
       ldmx::HcalID id(hit.getID());
-  
+
       float edep = hit.getEdep();
 
       const UChar_t* rgb = palette->ColorFromValue(edep);
       TColor* aColor = new TColor();
-      Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
+      Int_t color =
+          aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
       auto position{hit.getPosition()};
-  
+
       TString digiName;
-      digiName.Form("%.2f MeV, Section %d, Layer %d, Bar %d, Z %1.5g", hit.getEdep(),
-                    id.section(), id.layer(), id.strip(), position.at(2));
-  
+      digiName.Form("%.2f MeV, Section %d, Layer %d, Bar %d, Z %1.5g",
+                    hit.getEdep(), id.section(), id.layer(), id.strip(),
+                    position.at(2));
+
       TEveGeoShape* eve_hit = EveShapeDrawer::getInstance().drawRectPrism(
-          position.at(0), position.at(1), position.at(2),
-          50., 50., 10.,
-          0, 0, 0, 
-          color, 0, digiName);
-  
+          position.at(0), position.at(1), position.at(2), 50., 50., 10., 0, 0,
+          0, color, 0, digiName);
+
       if (eve_hit) {
         hcal_hits->AddElement(eve_hit);
       }  // successfully created hcal digi hit
-  
+
     }  // loop through sorted hit list
-  
+
     hcal_hits->SetPickableRecursively(1);
     sim_objects_->AddElement(hcal_hits);
-  
+
   } else if (id.subdet() == ldmx::SubdetectorIDType::SD_ECAL) {
-  
     auto ecal_hits = new TEveElementList("ECAL Sim Hits");
     for (const ldmx::SimCalorimeterHit& hit : hits) {
-  
       ldmx::EcalID id(hit.getID());
-  
+
       float edep = hit.getEdep();
 
       const UChar_t* rgb = palette->ColorFromValue(edep);
       TColor* aColor = new TColor();
-      Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
-  
+      Int_t color =
+          aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
+
       TString digiName;
       digiName.Form("%.2f MeV, Module %d, Layer %d, Cell %d", hit.getEdep(),
                     id.module(), id.layer(), id.cell());
 
       auto position{hit.getPosition()};
-  
+
       TEveGeoShape* eve_hit = EveShapeDrawer::getInstance().drawHexPrism(
-          position.at(0), position.at(1), position.at(2),
-          0, 0, 0, 
-          1., 2.,
+          position.at(0), position.at(1), position.at(2), 0, 0, 0, 1., 2.,
           color, 0, digiName);
-  
+
       if (eve_hit) {
         ecal_hits->AddElement(eve_hit);
       }  // successfully created hcal digi hit
-  
+
     }  // loop through sorted hit list
-  
+
     ecal_hits->SetPickableRecursively(1);
     sim_objects_->AddElement(ecal_hits);
 
@@ -375,72 +371,67 @@ void Objects::draw(std::vector<ldmx::SimCalorimeterHit> hits) {
                     "SimCalorimeterHit drawing not implemented for subdet " +
                         std::to_string(int(id.subdet())));
   }
-
 }
 
-void Objects::draw(std::map<int,ldmx::SimParticle> particles) {
+void Objects::draw(std::map<int, ldmx::SimParticle> particles) {
+  static const std::map<int, char*> translation = {
+      {int(ldmx::SimParticle::ProcessType::unknown), "unknown"},
+      {int(ldmx::SimParticle::ProcessType::annihil), "annihil"},
+      {int(ldmx::SimParticle::ProcessType::compt), "compt"},
+      {int(ldmx::SimParticle::ProcessType::conv), "conv"},
+      {int(ldmx::SimParticle::ProcessType::electronNuclear), "electronNuclear"},
+      {int(ldmx::SimParticle::ProcessType::eBrem), "eBrem"},
+      {int(ldmx::SimParticle::ProcessType::eIoni), "eIoni"},
+      {int(ldmx::SimParticle::ProcessType::msc), "msc"},
+      {int(ldmx::SimParticle::ProcessType::phot), "phot"},
+      {int(ldmx::SimParticle::ProcessType::photonNuclear), "photonNuclear"},
+      {int(ldmx::SimParticle::ProcessType::GammaToMuPair), "GammaToMuPair"},
+      {int(ldmx::SimParticle::ProcessType::eDarkBrem), "eDarkBrem"}};
 
-    static const std::map<int,char*> translation = {
-      { int(ldmx::SimParticle::ProcessType::unknown), "unknown" },
-      { int(ldmx::SimParticle::ProcessType::annihil), "annihil" },
-      { int(ldmx::SimParticle::ProcessType::compt), "compt" },
-      { int(ldmx::SimParticle::ProcessType::conv), "conv" },
-      { int(ldmx::SimParticle::ProcessType::electronNuclear), "electronNuclear" },
-      { int(ldmx::SimParticle::ProcessType::eBrem), "eBrem" },
-      { int(ldmx::SimParticle::ProcessType::eIoni), "eIoni" },
-      { int(ldmx::SimParticle::ProcessType::msc), "msc" },
-      { int(ldmx::SimParticle::ProcessType::phot), "phot" },
-      { int(ldmx::SimParticle::ProcessType::photonNuclear), "photonNuclear" },
-      { int(ldmx::SimParticle::ProcessType::GammaToMuPair), "GammaToMuPair" },
-      { int(ldmx::SimParticle::ProcessType::eDarkBrem), "eDarkBrem" }
-    };
+  TString eve_list_name;
+  eve_list_name.Form("SimParticles above %.1f MeV", simThresh_);
+  auto sim_particles = new TEveElementList(eve_list_name);
 
-    
-    TString eve_list_name;
-    eve_list_name.Form("SimParticles above %.1f MeV", simThresh_);
-    auto sim_particles = new TEveElementList(eve_list_name);
+  for (auto const& [track_id, particle] : particles) {
+    // skip if KE is less than threshold
+    if (particle.getEnergy() - particle.getMass() < simThresh_) continue;
 
-    for (auto const& [ track_id, particle] : particles) {
-      // skip if KE is less than threshold
-      if (particle.getEnergy()-particle.getMass() < simThresh_) continue;
+    std::vector<double> pVec = particle.getMomentum();
+    double p =
+        pow(pow(pVec.at(0), 2) + pow(pVec.at(1), 2) + pow(pVec.at(2), 2), 0.5);
 
-      std::vector<double> pVec = particle.getMomentum();
-      double p = pow(pow(pVec.at(0), 2) + pow(pVec.at(1), 2) + pow(pVec.at(2), 2), 0.5);
+    std::vector<double> simStart = particle.getVertex();
+    std::vector<double> simEnd = particle.getEndPoint();
+    std::vector<double> simDir = {0., 0., 0.};
+    for (int i = 0; i < 3; i++) simDir[i] = simEnd.at(i) - simStart.at(i);
 
-      std::vector<double> simStart = particle.getVertex();
-      std::vector<double> simEnd   = particle.getEndPoint();
-      std::vector<double> simDir   = {0.,0.,0.};
-      for (int i=0; i<3; i++) simDir[i] = simEnd.at(i)-simStart.at(i);
+    TEveArrow* simArr =
+        new TEveArrow(simDir.at(0), simDir.at(1), simDir.at(2), simStart.at(0),
+                      simStart.at(1), simStart.at(2));
 
-      TEveArrow* simArr =
-          new TEveArrow(simDir.at(0),simDir.at(1),simDir.at(2),
-                        simStart.at(0),simStart.at(1),simStart.at(2));
+    double r = pow(pow((simDir.at(0)), 2) + pow((simDir.at(1)), 2) +
+                       pow((simDir.at(2)), 2),
+                   0.5);
 
-      double r = pow(
-            pow((simDir.at(0)), 2) 
-          + pow((simDir.at(1)), 2) 
-          + pow((simDir.at(2)), 2),
-          0.5);
+    simArr->SetMainColor(kBlack);
+    simArr->SetTubeR(60 * 0.02 / r);
+    simArr->SetConeL(100 * 0.02 / r);
+    simArr->SetConeR(150 * 0.02 / r);
+    simArr->SetPickable(kTRUE);
 
-      simArr->SetMainColor(kBlack);
-      simArr->SetTubeR(60 * 0.02 / r);
-      simArr->SetConeL(100 * 0.02 / r);
-      simArr->SetConeR(150 * 0.02 / r);
-      simArr->SetPickable(kTRUE);
+    int parent_id = 0;  // for primaries
+    if (not particle.getParents().empty())
+      parent_id = particle.getParents().at(0);
 
-      int parent_id = 0; //for primaries
-      if (not particle.getParents().empty()) parent_id = particle.getParents().at(0);
+    TString name;
+    name.Form("PDG = %d, p = %1.5g MeV/c from track ID %d via %s process",
+              particle.getPdgID(), p, parent_id,
+              translation.at(particle.getProcessType()));
+    simArr->SetElementName(name);
+    sim_particles->AddElement(simArr);
+  }
 
-      TString name;
-      name.Form("PDG = %d, p = %1.5g MeV/c from track ID %d via %s process", 
-          particle.getPdgID(), p, parent_id,
-          translation.at(particle.getProcessType()));
-      simArr->SetElementName(name);
-      sim_particles->AddElement(simArr);
-    }
-
-    sim_objects_->AddElement(sim_particles);
-  
+  sim_objects_->AddElement(sim_particles);
 }
 
 }  // namespace eventdisplay

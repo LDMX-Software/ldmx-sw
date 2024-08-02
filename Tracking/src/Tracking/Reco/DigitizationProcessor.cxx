@@ -52,9 +52,6 @@ void DigitizationProcessor::onProcessStart() {
                                     eThresh, isAnalog);
 
   ldmx_log(info) << "Initialization done" << std::endl;
-
-  // Seed the generator
-  generator_.seed(1);
 }
 
 void DigitizationProcessor::configure(
@@ -71,8 +68,13 @@ void DigitizationProcessor::configure(
   merge_hits_ = parameters.getParameter<bool>("merge_hits", false);
 }
 
-void DigitizationProcessor::produce(framework::Event& event) {
+void DigitizationProcessor::onNewRun(const ldmx::RunHeader& runHeader) {
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+      framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  generator_.seed(rseed.getSeed("Tracking::DigitizationProcessor"));
+}
 
+void DigitizationProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << " Getting the tracking geometry:" << geometry().getTG();
 
   // Mode 0: Load simulated hits and produce smeared 1d measurements
@@ -139,8 +141,9 @@ bool DigitizationProcessor::mergeHits(
     path += edep_hit * hit.getPathLength();
 
     if (hit.getPdgID() != pdgID) {
-      ldmx_log(error) << "ERROR:: Found hits with compatible sensorID and track_id "
-                         "but different PDGID";
+      ldmx_log(error)
+          << "ERROR:: Found hits with compatible sensorID and track_id "
+             "but different PDGID";
       ldmx_log(error) << "TRACKID ==" << hit.getTrackID() << " vs "
                       << sihits[0].getTrackID();
       ldmx_log(error) << "PDGID== " << hit.getPdgID() << " vs " << pdgID;
@@ -216,20 +219,22 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (track_id_ > 0 && sim_hit.getTrackID() != track_id_) continue;
 
       ldmx::Measurement measurement(sim_hit);
-      
+
       // Get the layer ID.
       auto layer_id = tracking::sim::utils::getSensorID(sim_hit);
       measurement.setLayerID(layer_id);
-      
+
       // Get the surface
       auto hit_surface{geometry().getSurface(layer_id)};
 
       if (hit_surface) {
         // Transform from global to local coordinates.
         // hit_surface->toStream(geometry_context(), std::cout);
-        ldmx_log(debug) << "Local to global" << std::endl
-                        << hit_surface->transform(geometry_context()).rotation() << std::endl
-                        << hit_surface->transform(geometry_context()).translation();
+        ldmx_log(debug)
+            << "Local to global" << std::endl
+            << hit_surface->transform(geometry_context()).rotation()
+            << std::endl
+            << hit_surface->transform(geometry_context()).translation();
 
         Acts::Vector3 dummy_momentum;
         Acts::Vector2 local_pos;
@@ -240,8 +245,8 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
 
         try {
           local_pos = hit_surface
-                          ->globalToLocal(geometry_context(), global_pos, dummy_momentum,
-                                          surface_thickness)
+                          ->globalToLocal(geometry_context(), global_pos,
+                                          dummy_momentum, surface_thickness)
                           .value();
         } catch (const std::exception& e) {
           ldmx_log(warn) << "hit not on surface... Skipping.";
@@ -261,8 +266,8 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                                          sigma_v_ * sigma_v_);
 
           // transform to global
-          auto global_pos{
-              hit_surface->localToGlobal(geometry_context(), local_pos, dummy_momentum)};
+          auto global_pos{hit_surface->localToGlobal(
+              geometry_context(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
                                         global_pos(1), global_pos(2));
 
@@ -270,9 +275,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
         measurement.setLocalPosition(local_pos(0), local_pos(1));
         measurements.push_back(measurement);
       }  // hit_surface exists
-      
-    }    // energy cut
-  }      // loop on sim-hits
+
+    }  // energy cut
+  }    // loop on sim-hits
 
   return measurements;
 

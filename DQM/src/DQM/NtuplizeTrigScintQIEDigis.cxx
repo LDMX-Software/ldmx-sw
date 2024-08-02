@@ -42,7 +42,8 @@ void NtuplizeTrigScintQIEDigis::onProcessStart() {
 }
 
 void NtuplizeTrigScintQIEDigis::analyze(const framework::Event& event) {
-  const auto& digis{event.getCollection<trigscint::TrigScintQIEDigis>(input_name_,input_pass_)};
+  const auto& digis{event.getCollection<trigscint::TrigScintQIEDigis>(
+      input_name_, input_pass_)};
   ldmxsw_event_ = event.getEventNumber();
   for (const auto& digi : digis) {
     time_since_spill_ = digi.getTimeSinceSpill();
