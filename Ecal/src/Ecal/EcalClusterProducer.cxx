@@ -60,9 +60,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
     histograms_.fill("nClusters", wcVec.size());
-    const auto& dist = cf.getCentroidDistances();
 
-    for (const auto& d : dist) histograms_.fill("centroid_distances", d);
+    for (const auto& d : cf.getCentroidDistances()) histograms_.fill("centroid_distances", d);
 
     for (const auto& d : cf.getFirstLayerDistances()) histograms_.fill("first_layer_distances", d);
 
