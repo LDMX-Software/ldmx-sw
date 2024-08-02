@@ -97,6 +97,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     double em = 0;
     // double elost = 0;
     const auto& hitIDs = cl.getHitIDs();
+    const auto& mixedHitIDs = cl.getMixedHitIDs();
     for (const auto& id : hitIDs) {
       auto it = hitInfo.find(id);
       if (it != hitInfo.end()) {
@@ -124,6 +125,36 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         // elost += std::get<3>(t);
       }
       clusteredHits++;
+    }
+    for (const auto &[id, percentage] : mixedHitIDs) {
+      auto it = hitInfo.find(id);
+      if (it != hitInfo.end()) {
+        auto it = hitInfo.find(id);
+        if (it != hitInfo.end()) {
+          auto t = it->second;
+          switch(std::get<0>(t)) {
+            // case 0:
+            //   unclear++;
+            //   break;
+            case 1:
+              n1++;
+              break;
+            case 2:
+              n2++;
+              break;
+            case 3:
+              m++;
+              em += (std::get<1>(t) + std::get<2>(t))*percentage;
+              break;
+            default:
+              break;
+          }
+          
+          e1 += std::get<1>(t)*percentage;
+          e2 += std::get<2>(t)*percentage;
+          // elost += std::get<3>(t);
+        }
+      }
     }
     if ((e1 + e2) > 0) {
       double eperc;
