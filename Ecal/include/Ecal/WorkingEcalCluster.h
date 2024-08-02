@@ -24,19 +24,26 @@ class WorkingEcalCluster {
 
   void add(const WorkingEcalCluster& wc);
 
+  void addMixed(const ldmx::EcalHit& eh, double percentage);
+
   const TLorentzVector& centroid() const { return centroid_; }
 
   std::vector<ldmx::EcalHit> getHits() const { return hits_; }
 
-  bool empty() const { return hits_.empty(); }
+  std::vector<std::pair<ldmx::EcalHit, double>> getMixedHits() const { return mixedHits_; }
 
-  void clear() { hits_.clear(); }
+  bool hasMixed() const { return mixedHits_.empty(); }
+
+  bool empty() const { return hits_.empty() && mixedHits_.empty(); }
+
+  void clear() { hits_.clear(); mixedHits_.clear(); }
 
   int getLayer() const { return layer_; }
 
  private:
   int layer_;
   std::vector<ldmx::EcalHit> hits_;
+  std::vector<std::pair<ldmx::EcalHit, double>> mixedHits_;
   TLorentzVector centroid_;
 };
 }  // namespace ecal

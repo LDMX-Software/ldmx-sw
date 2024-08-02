@@ -64,6 +64,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     for (const auto& d : dist) histograms_.fill("centroid_distances", d);
 
+    for (const auto& d : cf.getFirstLayerDistances()) histograms_.fill("first_layer_distances", d);
+
     std::vector<ldmx::EcalCluster> ecalClusters;
     for (int aWC = 0; aWC < wcVec.size(); aWC++) {
       ldmx::EcalCluster cluster;
@@ -72,10 +74,12 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
                             wcVec[aWC].centroid().Py(),
                             wcVec[aWC].centroid().Pz());
-      cluster.setNHits(wcVec[aWC].getHits().size());
+      cluster.setNHits(wcVec[aWC].getHits().size() + wcVec[aWC].getMixedHits().size());
       cluster.addHits(wcVec[aWC].getHits());
+      cluster.addMixedHits(wcVec[aWC].getMixedHits());
 
-      histograms_.fill("nHits", wcVec[aWC].getHits().size());
+      histograms_.fill("nHits", wcVec[aWC].getHits().size() + wcVec[aWC].getMixedHits().size());
+      histograms_.fill("nMixedHits", wcVec[aWC].getMixedHits().size());
       histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
 
       ecalClusters.push_back(cluster);

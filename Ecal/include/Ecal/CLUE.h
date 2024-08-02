@@ -35,6 +35,16 @@ class CLUE {
     // separation distance to density that this is follower of
     double delta;
 
+    // index of density this follower is second closest to
+    int secondFollowerOf;
+    // separation distance to second closest density
+    double secondDelta;
+    int secondClusterId;
+    // distance percentage to cluster 1 (if mixed)
+    double c1p;
+    // distance percentage to cluster 2 (if mixed)
+    double c2p;
+
     int clusterId;
     std::vector<ldmx::EcalHit> hits;
 
@@ -45,7 +55,10 @@ class CLUE {
       index = -1;
       followerOf = -1;
       delta = std::numeric_limits<double>::max();
+      secondFollowerOf = -1;
+      secondDelta = std::numeric_limits<double>::max();
       clusterId = -1;
+      secondClusterId = -1;
       hits = {};
     }
   };
@@ -211,15 +224,22 @@ class CLUE {
         // condition energyJ > energyI but this should be baked in as we sorted according to energy
         if (d < dm_ && d < densities[i].delta) {
           if (debug_) std::cout << "  New parent, index " << j << "; delta: " << d << std::endl;
+          densities[i].secondDelta = densities[i].delta;
+          densities[i].secondFollowerOf = densities[i].followerOf;
           densities[i].delta = d;
           densities[i].followerOf = j;
+        } else if (d < dm_ && d < densities[i].secondDelta) {
+          if (debug_) std::cout << "  New secondary parent, index " << j << "; delta: " << d << std::endl;
+          densities[i].secondDelta = d;
+          densities[i].secondFollowerOf = j;
         }
       }
     }
     return densities;
   }
 
-  std::vector<std::vector<ldmx::EcalHit>> clustering(std::vector<Density> densities, int layerTag = -1) {
+  // std::vector<std::vector<ldmx::EcalHit>> clustering(std::vector<Density> densities, int layerTag = -1) {
+  std::vector<std::vector<Density>> clustering(std::vector<Density> densities, int layerTag = -1) {
     if (debug_) std::cout << "--- CLUSTERING ---" << std::endl;
     if (layerTag != -1 && nbrOfLayers_ > 1) {
       rhoc_ = layerRhoC_[layerTag];
@@ -237,6 +257,7 @@ class CLUE {
     double centroidRadius = 10.;
 
     std::vector<std::vector<ldmx::EcalHit>> clusters;
+    std::vector<std::vector<Density>> densityClusters;
     std::vector<bool> mergedDensities; // index = cluster id
     mergedDensities.resize(densities.size());
     do {
@@ -254,6 +275,8 @@ class CLUE {
       std::stack<int> clusterStack;
       clusters.clear();
       clusters.reserve(densities.size());
+      densityClusters.clear();
+      densityClusters.reserve(densities.size());
       std::vector<double> clusterEnergies;
       clusterEnergies.reserve(densities.size());
       // stores followers of densities at corr index
@@ -285,12 +308,12 @@ class CLUE {
           k++;
           clusterStack.push(i);
           clusters.push_back(densities[i].hits);
+          densityClusters.push_back( { densities[i] } );
           clusterEnergies.push_back(densities[i].totalEnergy);
         } else if (!isOutlier) {
           if (debug_) std::cout << "  Follower" << std::endl;
           int& parentIndex = densities[i].followerOf;
           if (parentIndex != -1) followers[parentIndex].push_back(i);
-          else if (debug_) std::cout << "  HAS PARENT ID -1" << std::endl; // should not happen
         } else if (debug_) std::cout << "  Outlier" << std::endl;
       }
 
@@ -313,14 +336,44 @@ class CLUE {
             goto endwhile;
           }
           clusters[cid].insert(std::end(clusters[cid]), std::begin(f.hits), std::end(f.hits));
+          densityClusters[cid].push_back(f);
           // add follower to stack, so its followers can also get correct clusterindex
           clusterStack.push(j);
         }
-      } 
+      }
+      if (debug_) std::cout << "Looking for mixed hits" << std::endl;
+      for (int i = 0; i < densities.size(); i++) {
+        int& parentIndex = densities[i].followerOf;
+        int& secondParentIndex = densities[i].secondFollowerOf;
+        if (densities[i].clusterId != -1 && secondParentIndex != -1 && densities[secondParentIndex].clusterId != -1 && densities[i].clusterId != densities[secondParentIndex].clusterId) {
+          densities[i].secondClusterId = densities[secondParentIndex].clusterId;
+          if (debug_) std::cout << "Mixed density, part of cluster " << densities[i].clusterId << " and " << densities[i].secondClusterId << std::endl;
+          const std::pair<double, double>& c1 = std::make_pair(static_cast<double>(clusters[densities[i].clusterId][0].getXPos()), static_cast<double>(clusters[densities[i].clusterId][0].getYPos()));
+          const std::pair<double, double>& c2 = std::make_pair(static_cast<double>(clusters[densities[secondParentIndex].clusterId][0].getXPos()), static_cast<double>(clusters[densities[secondParentIndex].clusterId][0].getYPos()));        
+          double dc1 = dist(c1.first, c1.second, densities[i].x, densities[i].y);
+          double dc2 = dist(c2.first, c2.second, densities[i].x, densities[i].y);
+          if (debug_) std::cout << "Distance to c1: " << dc1 << "; c2: " << dc2 << std::endl;
+          if (dc1 + dc2 > 0)  {
+            densities[i].c1p = dc1/(dc1+dc2)*densities[i].totalEnergy;
+            densities[i].c2p = dc2/(dc1+dc2)*densities[i].totalEnergy;
+          }
+        }
+      }
       endwhile:;
     } while (energyOverload);
-
-    return clusters;    
+    // if (layerTag == 0){
+    //   for (int i = 0; i < densities.size(); i++){
+    //     if (densities[i].clusterId == -1) continue;
+    //       for (int j = i + 1; j < densities.size(); j++){
+    //         if (densities[j].clusterId == -1) continue;
+    //         const auto& d = dist(densities[i].x, densities[i].y, densities[j].x, densities[j].y);
+    //         // std::cout << d << std::endl;
+    //         firstLayerDistances_.push_back(d);
+    //       }
+    //     }
+    // }
+    return densityClusters;
+    // return clusters;    
   }
 
   void convertToWorkingClusters(std::vector<std::vector<ldmx::EcalHit>> clusters) {
@@ -337,6 +390,27 @@ class CLUE {
       centroidDistances_.push_back(d);
     }
     avgCentroidDistance_ += temp/finalClusters_.size();
+  }
+
+  void convertDensitiesToWorkingClusters(std::vector<std::vector<Density>> densities) {
+    for (const auto& cluster : densities) {
+      finalClusters_.push_back(WorkingEcalCluster());
+    }
+    for (const auto& cluster : densities) {
+      for (const auto& den : cluster) {
+        if (debug_) std::cout << "Density with cluster ID " << den.clusterId << " and second cluster ID " << den.secondClusterId << std::endl;
+        for (const auto& hit : den.hits) {
+          // oh lawd
+          if (den.secondClusterId != -1) {
+            if (debug_) std::cout << "Adding mixed hit to ecal cluster" << std::endl;
+            finalClusters_[den.clusterId].addMixed(hit, den.c1p);
+            finalClusters_[den.secondClusterId].addMixed(hit, den.c2p);
+          } else {
+            finalClusters_[den.clusterId].add(hit);
+          }
+        }
+      }
+    }
   }
 
   void cluster(std::vector<ldmx::EcalHit> hits, double dc, double rc, double deltac, double deltao, int nbrOfLayers, bool debug) {
@@ -364,12 +438,14 @@ class CLUE {
         if (debug_) std::cout << "--- LAYER " << i << " ---" << std::endl;
         const auto& densities = setup(layers[i]);
         const auto& clusters = clustering(densities, i);
-        convertToWorkingClusters(clusters);
+        // convertToWorkingClusters(clusters);
+        convertDensitiesToWorkingClusters(clusters);
       }
     } else {
       const auto& densities = setup(hits);
       const auto& clusters = clustering(densities);
-      convertToWorkingClusters(clusters);
+      // convertToWorkingClusters(clusters);
+      convertDensitiesToWorkingClusters(clusters);
     }
 
   }
@@ -377,6 +453,8 @@ class CLUE {
   double getAvgCentroidDistance() const { return avgCentroidDistance_; }
 
   std::vector<double> getCentroidDistances() const { return centroidDistances_; }
+
+  std::vector<double> getFirstLayerDistances() const { return firstLayerDistances_; }
 
   int getNLoops() const { return clusteringLoops_; }
 
@@ -393,7 +471,7 @@ class CLUE {
   double deltao_;
   double dm_;
 
-  int maxLayers_{16}; // layers in Ecal; a bit unsure if this is the correct number (going off layerThickness_ vector)
+  int maxLayers_{17}; // layers in Ecal; a bit unsure if this is the correct number (going off layerThickness_ vector)
   int nbrOfLayers_;
   double air_{10.};
   std::vector<double> layerThickness_ = { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5, 10.5 };
@@ -404,6 +482,8 @@ class CLUE {
   double avgCentroidDistance_{0.};
   std::vector<double> centroidDistances_;
   WorkingEcalCluster centroid_;
+
+  std::vector<double> firstLayerDistances_;
 
   std::vector<WorkingEcalCluster> finalClusters_;
 

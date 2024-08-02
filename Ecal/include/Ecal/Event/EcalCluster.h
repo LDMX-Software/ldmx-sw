@@ -38,12 +38,18 @@ class EcalCluster : public ldmx::CaloCluster {
 
   void addHits(const std::vector<ldmx::EcalHit> hitsVec);
 
+  void addMixedHits(const std::vector<std::pair<ldmx::EcalHit, double>> hitsVec);
+
+  std::vector<std::pair<unsigned int, double>> getMixedHitIDs() const { return mixedIDs_; }
+
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 
  private:
   // Could add further ECal-specific info here...
+
+  std::vector<std::pair<unsigned int, double>> mixedIDs_;
 
   ClassDef(EcalCluster, 1);
 };
