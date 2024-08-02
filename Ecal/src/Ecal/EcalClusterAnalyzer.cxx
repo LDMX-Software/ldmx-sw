@@ -95,6 +95,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     double e1 = 0;
     double e2 = 0;
     double em = 0;
+    bool e1Maj = false;
     // double elost = 0;
     const auto& hitIDs = cl.getHitIDs();
     const auto& mixedHitIDs = cl.getMixedHitIDs();
@@ -126,6 +127,8 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       }
       clusteredHits++;
     }
+    double em1 = 0;
+    double em2 = 0;
     for (const auto &[id, percentage] : mixedHitIDs) {
       auto it = hitInfo.find(id);
       if (it != hitInfo.end()) {
@@ -144,14 +147,41 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
               break;
             case 3:
               m++;
-              em += (std::get<1>(t) + std::get<2>(t))*percentage;
+              // em += (std::get<1>(t) + std::get<2>(t))*percentage;
               break;
             default:
               break;
           }
-          
-          e1 += std::get<1>(t)*percentage;
-          e2 += std::get<2>(t)*percentage;
+          em1 = std::get<1>(t);
+          em2 = std::get<2>(t);
+          if (e1 > e2) {
+            histograms_.fill("mixed_hit_accuracy", percentage, em1/(em1+em2));
+            if (percentage < em1/(em1+em2)) {
+              e1 += (em1 + em2)*percentage;
+            } else {
+              double frac = (em1 + em2)*percentage - em1;
+              if (frac < 0) std::cout << "Negative frac" << std::endl;
+              else {
+                e1 += em1;
+                e2 += frac;
+              }
+            }
+          }
+          else {
+            histograms_.fill("mixed_hit_accuracy", percentage, em2/(em1+em2));
+            if (percentage < em2/(em1+em2)) {
+              e2 += (em1 + em2)*percentage;
+            } else {
+              double frac = (em1 + em2)*percentage - em2;
+              if (frac < 0) std::cout << "Negative frac" << std::endl;
+              else {
+                e2 += em2;
+                e1 += frac;
+              }
+            }
+          }
+          // e1 += std::get<1>(t)*percentage;
+          // e2 += std::get<2>(t)*percentage;
           // elost += std::get<3>(t);
         }
       }

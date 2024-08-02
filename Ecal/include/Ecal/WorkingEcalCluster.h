@@ -24,7 +24,7 @@ class WorkingEcalCluster {
 
   void add(const WorkingEcalCluster& wc);
 
-  void addMixed(const ldmx::EcalHit& eh, double percentage);
+  void addMixed(const ldmx::EcalHit& eh, float percentage);
 
   const TLorentzVector& centroid() const { return centroid_; }
 
