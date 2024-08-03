@@ -3,6 +3,8 @@
 #include "SimCore/Event/SimTrackerHit.h"
 // #include "SimCore/Event/SimParticle.h"
 #include "DetDescr/EcalGeometry.h"
+#include "Trigger/Event/TrigCaloCluster.h"
+#include "Trigger/Event/TrigParticle.h"
 #include "TCanvas.h"
 #include "TString.h"
 #include "TGraph.h"
