@@ -1,19 +1,17 @@
 #include "Trigger/TrigEcalClusterProducer.h"
-#include "Trigger/IdealClusterBuilder.h"
-
-#include "Trigger/Event/TrigCaloHit.h"
-#include "Trigger/Event/TrigCaloCluster.h"
 
 #include "DetDescr/EcalGeometry.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
+#include "Trigger/Event/TrigCaloCluster.h"
+#include "Trigger/Event/TrigCaloHit.h"
+#include "Trigger/IdealClusterBuilder.h"
 
 namespace trigger {
 
 void TrigEcalClusterProducer::configure(framework::config::Parameters& ps) {
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
   clusterCollName_ = ps.getParameter<std::string>("clusterCollName");
- 
 }
 
 void TrigEcalClusterProducer::produce(framework::Event& event) {
@@ -32,17 +30,17 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
   for (const auto& trigDigi : ecalTrigDigis) {
     ldmx::EcalTriggerID tid(trigDigi.getId());
     float e = cvt.calc(trigDigi.linearPrimitive(), tid.layer());
-    
+
     // float sie = hgc_compression_factor_ * trigDigi.linearPrimitive() *
     //             gain_ * mVtoMeV_;  // in MeV, before layer corrections
     // float e = (sie / mipSiEnergy_ * layerWeights.at(tid.layer()) + sie) *
     //           secondOrderEnergyCorrection_;
-    
+
     double x, y, z;
     // const auto center_ecalID = geom.centerInTriggerCell(tid);
     // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
     // std::tie(x,y) = geom.globalPosition( tid );
-    std::tie(x,y,z) = geom.globalPosition( tid );
+    std::tie(x, y, z) = geom.globalPosition(tid);
 
     // produce Hit object for clustering class
     Hit hit;
@@ -59,25 +57,25 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 
   // move to once per run
   ClusterGeometry myGeo;
-  if(!myGeo.is_initialized){ 
-    for(int imod=0; imod<7; imod++){
-      for(int icell=0; icell<48; icell++){
+  if (!myGeo.is_initialized) {
+    for (int imod = 0; imod < 7; imod++) {
+      for (int icell = 0; icell < 48; icell++) {
         ldmx::EcalTriggerID id(0, imod, icell);
-        auto [xx,yy,zz] = geom.globalPosition( id );
+        auto [xx, yy, zz] = geom.globalPosition(id);
         myGeo.AddTP(id.raw(), icell, imod, xx, yy);
       }
     }
     myGeo.Initialize();
   }
   IdealClusterBuilder builder;
-  builder.SetClusterGeo( &myGeo );
-  for(const auto& h : hits) builder.AddHit(h);
+  builder.SetClusterGeo(&myGeo);
+  for (const auto& h : hits) builder.AddHit(h);
   // TODO: add options to configure the builder here
   builder.BuildClusters();
   auto clusters = builder.GetClusters();
 
   TrigCaloClusterCollection trigClusters;
-  for (const auto &c : clusters) {
+  for (const auto& c : clusters) {
     TrigCaloCluster t(c.x, c.y, c.z, c.e);
     t.setXYZerr(c.xx, c.yy, c.zz);
     t.setdxdz(c.dxdz);
@@ -88,13 +86,12 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
     t.setLayer(c.layer);
     t.setFirstLayer(c.first_layer);
     t.setLastLayer(c.last_layer);
-    t.setDepth(c.depth);    
-    int nTP=0;
-    if(c.is2D){
+    t.setDepth(c.depth);
+    int nTP = 0;
+    if (c.is2D) {
       nTP = c.hits.size();
     } else {
-      for (const auto & c2d : c.clusters2d)
-        nTP += c2d.hits.size();
+      for (const auto& c2d : c.clusters2d) nTP += c2d.hits.size();
     }
     t.setNTP(nTP);
     trigClusters.push_back(t);

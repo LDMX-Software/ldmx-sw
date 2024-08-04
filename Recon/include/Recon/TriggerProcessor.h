@@ -65,7 +65,7 @@ class TriggerProcessor : public framework::Producer {
   /// The Beam energy [MeV]
   double beamEnergy_;
 
-  /** 
+  /**
    * The trigger mode to run in. Mode zero sums over
    * all cells in layer, while in mode 1 only cells in
    * center module are summed over. (TODO)
@@ -75,8 +75,8 @@ class TriggerProcessor : public framework::Producer {
   /** The first layer of layer sum. */
   int startLayer_{0};
 
-  /** 
-   * The endpoint layer of layer sum. 
+  /**
+   * The endpoint layer of layer sum.
    *
    * **not inclusive** - i.e. this is the last layer that
    * is included in the layer sum.

@@ -58,7 +58,9 @@ class EcalDetectorMap
    * Building a reverse (detector->electronics) map takes extra time
    * and memory so it should be off by default.
    */
-  EcalDetectorMap(const std::string& cell_map, const std::string& motherboard_map, const std::string& layer_map, bool want_d2e);
+  EcalDetectorMap(const std::string& cell_map,
+                  const std::string& motherboard_map,
+                  const std::string& layer_map, bool want_d2e);
 
   /// Provider which loads the map
   friend class EcalDetectorMapLoader;
@@ -124,4 +126,3 @@ class EcalDetectorMap
 }  // namespace ecal
 
 #endif  // ECAL_ECALDETECTORMAP_H_
-

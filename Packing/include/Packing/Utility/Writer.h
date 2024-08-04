@@ -1,8 +1,8 @@
 #ifndef PACKING_UTILITY_WRITER_H_
 #define PACKING_UTILITY_WRITER_H_
 
-#include <iostream> //debuggin
 #include <fstream>
+#include <iostream>  //debuggin
 #include <string>
 #include <type_traits>
 
@@ -23,9 +23,7 @@ class Writer {
    *
    * make sure we don't skip "whitespace"
    */
-  Writer() {
-    file_.unsetf(std::ios::skipws);
-  }
+  Writer() { file_.unsetf(std::ios::skipws); }
 
   /**
    * Open a file with this writer
@@ -43,15 +41,14 @@ class Writer {
    *
    * @param[in] file_name name of file to open
    */
-  Writer(const std::string& file_name) : Writer() {
-    this->open(file_name);
-  }
+  Writer(const std::string& file_name) : Writer() { this->open(file_name); }
 
   /// destructor, close the input file stream
   ~Writer() = default;
 
   /**
-   * Write a certain number of words from the input array to the output file stream.
+   * Write a certain number of words from the input array to the output file
+   * stream.
    *
    * This method is only enabled for integral types so we can safely reinterpret
    * the underlying data as an array of characters.
@@ -61,9 +58,10 @@ class Writer {
    * @param[in] num number of words in array
    * @return *this
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   Writer& write(const WordType* w, std::size_t num) {
-    file_.write(reinterpret_cast<const char*>(w), sizeof(WordType)*num);
+    file_.write(reinterpret_cast<const char*>(w), sizeof(WordType) * num);
     return *this;
   }
 
@@ -76,7 +74,8 @@ class Writer {
    * @param[in] w single word to write out
    * @return *this
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   Writer& operator<<(const WordType& w) {
     return write(&w, 1);
   }
@@ -90,7 +89,8 @@ class Writer {
    * @param[in] vec vector of integral words to write out
    * @return *this
    */
-  template <typename WordType, std::enable_if_t<std::is_integral<WordType>::value,bool> = true>
+  template <typename WordType,
+            std::enable_if_t<std::is_integral<WordType>::value, bool> = true>
   Writer& operator<<(const std::vector<WordType>& vec) {
     return write(vec.data(), vec.size());
   }
@@ -109,7 +109,8 @@ class Writer {
    * @param[in] o object to write out
    * @return *this
    */
-  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  template <typename ObjectType,
+            std::enable_if_t<std::is_class<ObjectType>::value, bool> = true>
   Writer& operator<<(const ObjectType& o) {
     return o.write(*this);
   }
@@ -124,9 +125,11 @@ class Writer {
    * @param[in] vec vector of objects to write out
    * @return *this
    */
-  template <typename ObjectType, std::enable_if_t<std::is_class<ObjectType>::value,bool> = true>
+  template <typename ObjectType,
+            std::enable_if_t<std::is_class<ObjectType>::value, bool> = true>
   Writer& operator<<(const std::vector<ObjectType>& vec) {
-    for (auto const& o : vec) if (!o.write(*this)) return *this;
+    for (auto const& o : vec)
+      if (!o.write(*this)) return *this;
     return *this;
   }
 
@@ -137,9 +140,7 @@ class Writer {
    *
    * @return true if stream is in fail state
    */
-  bool operator!() const {
-    return file_.fail();
-  }
+  bool operator!() const { return file_.fail(); }
 
   /**
    * Check if writer is in a good/bad state
@@ -148,9 +149,7 @@ class Writer {
    *
    * @return true if stream is in good state
    */
-  operator bool() const {
-    return !file_.fail();
-  }
+  operator bool() const { return !file_.fail(); }
 
  private:
   /// file stream we are writing to

@@ -46,26 +46,26 @@ namespace ldmx {
  * when they only know the cell ID. This class can also do this conversion.
  *
  * ## ORIENTATION ASSUMPTIONS:
- * - modules and cells have opposite orientation. i.e. if modules are corner-side
- *   down, then cells are flat-side down.
+ * - modules and cells have opposite orientation. i.e. if modules are
+ * corner-side down, then cells are flat-side down.
  *
  * ## SOME GEOMETRY:
  * - hexagons have two radii:
  *   - r (half of flat-to-flat width) and R (half of corner-to-corner width).
  *   - r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
- * - for seven ecal modules oriented flat-side-down, 
+ * - for seven ecal modules oriented flat-side-down,
  *   maximum x and y extents are:
  *   - deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
  *   - deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
- *   - where g is uniform gap width between modules, 
+ *   - where g is uniform gap width between modules,
  *     and primed variables correspond to modules.
  *
- * Since the whole hexagon flower has changed orientation since previous versions
- * of the detector (which we wish to still support), I am defining an extra set of 
- * axes with respect to the flower itself. Below I have drawn the ECal hexagon i
- * flower and defined two axes: p (through the "pointy sides") and q (through the 
- * "flat sides"). In some versions of the ECal flower, p == x and q == y while
- * in others p == -y and q == x.
+ * Since the whole hexagon flower has changed orientation since previous
+ * versions of the detector (which we wish to still support), I am defining an
+ * extra set of axes with respect to the flower itself. Below I have drawn the
+ * ECal hexagon i flower and defined two axes: p (through the "pointy sides")
+ * and q (through the "flat sides"). In some versions of the ECal flower, p == x
+ * and q == y while in others p == -y and q == x.
  *
  *          ^
  *          | q axis
@@ -78,13 +78,14 @@ namespace ldmx {
  *        \__/
  *
  * Now we can define a process for determining the cellular IDs.
- * - Define a mapping of cell IDs within a module (center of module is the origin)
+ * - Define a mapping of cell IDs within a module (center of module is the
+ * origin)
  *   - Use TH2Poly to do the Hexagon tiling in p,q space
  * - Define center of modules with respect to center of layer in p,q space
  *   - currently this is assumed to be the same within all layers BUT will
  *     depend on geometry parameters like the gap between modules
  * - Define center of layers (INCLUDING x,y position)
- *   - some versions of the geometry shift layers off the z axis to 
+ *   - some versions of the geometry shift layers off the z axis to
  *     cover the gaps between modules
  *   - Will need to handle the conversion between x,y and p,q axes
  *
@@ -156,12 +157,12 @@ class EcalGeometry : public framework::ConditionsObject {
    * auto [x,y,z] = geometry.getPosition(id);
    * ```
    */
-  std::tuple<double,double,double> getPosition(EcalID id) const;
+  std::tuple<double, double, double> getPosition(EcalID id) const;
 
   /**
    * Get a cell's position within a module
    */
-  std::pair<double,double> getPositionInModule(int cell_id) const;
+  std::pair<double, double> getPositionInModule(int cell_id) const;
 
   /**
    * Get the z-coordinate given the layer id
@@ -200,7 +201,9 @@ class EcalGeometry : public framework::ConditionsObject {
    * @note This assumes that all modules are the full high-density
    * hexagons from CMS (no triangles!)
    */
-  int getNumCellsPerModule() const { return cell_id_in_module_.GetNumberOfBins(); }
+  int getNumCellsPerModule() const {
+    return cell_id_in_module_.GetNumberOfBins();
+  }
 
   /**
    * Get the Nearest Neighbors of the input ID
@@ -210,7 +213,8 @@ class EcalGeometry : public framework::ConditionsObject {
    */
   std::vector<EcalID> getNN(EcalID id) const {
     auto list = NNMap_.at(EcalID(0, id.module(), id.cell()));
-    for (auto& flat : list) flat = EcalID(id.layer(), flat.module(), flat.cell());
+    for (auto& flat : list)
+      flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
   }
 
@@ -236,7 +240,8 @@ class EcalGeometry : public framework::ConditionsObject {
    */
   std::vector<EcalID> getNNN(EcalID id) const {
     auto list = NNNMap_.at(EcalID(0, id.module(), id.cell()));
-    for (auto& flat : list) flat = EcalID(id.layer(), flat.module(), flat.cell());
+    for (auto& flat : list)
+      flat = EcalID(id.layer(), flat.module(), flat.cell());
     return list;
   }
 
@@ -292,11 +297,11 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * @return pointer to member variable cell_id_in_module_
    */
-  TH2Poly* getCellPolyMap() const { 
+  TH2Poly* getCellPolyMap() const {
     for (auto const& [cell_id, cell_center] : cell_pos_in_module_) {
       cell_id_in_module_.Fill(cell_center.first, cell_center.second, cell_id);
     }
-    return &cell_id_in_module_; 
+    return &cell_id_in_module_;
   }
 
   static EcalGeometry* debugMake(const framework::config::Parameters& p) {
@@ -393,7 +398,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * neighbors by seeing which cells are within multiples of the cellular radius
    * of each other.
    *
-   * @note We require two cells to be in the same layer in order to be nearest 
+   * @note We require two cells to be in the same layer in order to be nearest
    * neighbors or next-nearest neighbors.
    *
    * @param[in] cellModulePostionMap_ map of cells to cell centers relative to
@@ -461,8 +466,9 @@ class EcalGeometry : public framework::ConditionsObject {
   double moduleR_{0};
 
   /**
-   * indicator of geometry orientation 
-   * if true, flower shape's corners side (ie: side with two modules) is at the top
+   * indicator of geometry orientation
+   * if true, flower shape's corners side (ie: side with two modules) is at the
+   * top
    */
   bool cornersSideUp_;
 
@@ -522,7 +528,7 @@ class EcalGeometry : public framework::ConditionsObject {
    * Position of layer centers in world coordinates
    * (uses layer ID as key)
    */
-  std::map<int, std::tuple<double,double,double>> layer_pos_xy_;
+  std::map<int, std::tuple<double, double, double>> layer_pos_xy_;
 
   /**
    * Postion of module centers relative to the center of the layer
@@ -549,10 +555,10 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * Uses EcalID with layer set to zero as key.
    */
-  std::map<EcalID, std::pair<double,double>> cell_pos_in_layer_;
+  std::map<EcalID, std::pair<double, double>> cell_pos_in_layer_;
 
   /**
-   * Position of cell centers relative to world geometry 
+   * Position of cell centers relative to world geometry
    *
    * This is where we convert p,q (flower) space into x,y (world) space
    * by calculating the z-location as well as including rotations and
@@ -560,10 +566,10 @@ class EcalGeometry : public framework::ConditionsObject {
    *
    * The key is the full EcalID and the value is the x,y,z tuple.
    */
-  std::map<EcalID, std::tuple<double,double, double>> cell_global_pos_;
+  std::map<EcalID, std::tuple<double, double, double>> cell_global_pos_;
 
   /**
-   * Map of cell ID to neighboring cells 
+   * Map of cell ID to neighboring cells
    *
    * The EcalID's in this map all have layer ID set to zero.
    */

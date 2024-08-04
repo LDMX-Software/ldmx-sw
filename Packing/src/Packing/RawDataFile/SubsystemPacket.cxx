@@ -6,7 +6,9 @@
 namespace packing {
 namespace rawdatafile {
 
-SubsystemPacket::SubsystemPacket(uint32_t event, uint16_t id, std::vector<uint32_t> data) : event_{event}, id_{id}, data_{data} {
+SubsystemPacket::SubsystemPacket(uint32_t event, uint16_t id,
+                                 std::vector<uint32_t> data)
+    : event_{event}, id_{id}, data_{data} {
   crc_ok_ = true;
 
   utility::CRC crc;
@@ -16,15 +18,12 @@ SubsystemPacket::SubsystemPacket(uint32_t event, uint16_t id, std::vector<uint32
 }
 
 std::vector<uint32_t> SubsystemPacket::header() const {
-  uint32_t word = ((id_ & utility::mask<16>) << 16)
-        +((data_.size() & utility::mask<15>) << 1)
-        +crc_ok_;
-  return { word, event_ };
+  uint32_t word = ((id_ & utility::mask<16>) << 16) +
+                  ((data_.size() & utility::mask<15>) << 1) + crc_ok_;
+  return {word, event_};
 }
 
-std::vector<uint32_t> SubsystemPacket::tail() const {
-  return { crc_ };
-}
+std::vector<uint32_t> SubsystemPacket::tail() const { return {crc_}; }
 
 utility::Reader& SubsystemPacket::read(utility::Reader& r) {
   uint32_t word;

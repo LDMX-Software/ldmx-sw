@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include <boost/container/flat_map.hpp>
+#include <cstdint>
 
 namespace ActsExamples {
 

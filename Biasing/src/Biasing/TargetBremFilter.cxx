@@ -66,7 +66,8 @@ void TargetBremFilter::stepping(const G4Step* step) {
     return;
 
   /*
-  std::cout << "[TargetBremFilter] : Stepping primary electron in 'target' region into " 
+  std::cout << "[TargetBremFilter] : Stepping primary electron in 'target'
+  region into "
     << track->GetNextVolume()->GetName()
     << std::endl;
    */
@@ -75,7 +76,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * Check if the electron will be exiting the target
    *
    * The 'recoil_PV' volume name is automatically constructed by Geant4's
-   * GDML parser and was found by inspecting the geometry using a 
+   * GDML parser and was found by inspecting the geometry using a
    * visualization. This Physical Volume (PV) is associated with the
    * recoil parent volume and so it will break if the recoil parent volume
    * changes its name.
@@ -84,8 +85,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
    * (e.g. v14), there is a air-gap between the target region and the recoil.
    */
   if (auto volume{track->GetNextVolume()->GetName()};
-      volume.compareTo("recoil_PV") == 0
-      or volume.compareTo("World_PV") == 0) {
+      volume.compareTo("recoil_PV") == 0 or volume.compareTo("World_PV") == 0) {
     // If the recoil electron
     if (track->GetMomentum().mag() >= recoilMaxPThreshold_) {
       track->SetTrackStatus(fKillTrackAndSecondaries);

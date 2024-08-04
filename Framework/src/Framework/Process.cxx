@@ -30,6 +30,7 @@ Process::Process(const framework::config::Parameters &configuration)
 
   maxTries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   eventLimit_ = configuration.getParameter<int>("maxEvents", -1);
+  totalEvents_ = configuration.getParameter<int>("totalEvents", -1);
   logFrequency_ = configuration.getParameter<int>("logFrequency", -1);
   compressionSetting_ =
       configuration.getParameter<int>("compressionSetting", 9);
@@ -202,7 +203,15 @@ void Process::run() {
 
     int totalTries = 0;  // total number of tries for entire run
     int numTries = 0;    // number of tries for the current event number
-    while (n_events_processed < eventLimit_) {
+    int event_limit = eventLimit_;
+    if (totalEvents_ > 0) {
+      // Have a warning at the first event
+      if (numTries == 0)
+        ldmx_log(warn) << "The totalEvents was set, so maxEvents and "
+                          "maxTriesPerEvent will be ignored!";
+      event_limit = totalEvents_;
+    }
+    while (n_events_processed < event_limit) {
       totalTries++;
       numTries++;
 
@@ -223,7 +232,8 @@ void Process::run() {
 
       // we use modulo here insetad of >= because we want to carry
       // the number of tries across the number of events processed boundary
-      if (completed or numTries % maxTries_ == 0) {
+      // totalEvents_ is set let's not exit until that's reached
+      if (completed or (totalEvents_ < 0 and numTries % maxTries_ == 0)) {
         n_events_processed++;                 // increment events made
         NtupleManager::getInstance().fill();  // fill ntuples
       }
@@ -237,6 +247,15 @@ void Process::run() {
     runHeader.setNumTries(totalTries);
     ldmx_log(info) << runHeader;
     outFile.writeRunTree();
+
+    // Give a warning that this filter has very low efficiency
+    if (n_events_processed < totalTries / 10000) {  // integer division is okay
+      ldmx_log(warn)
+          << "Less than 1 event out of every 10k events tried was accepted!";
+      ldmx_log(warn)
+          << "This could be an issue with your filtering and biasing procedure "
+             "since this is incredibly inefficient.";
+    }
 
   } else {
     // there are input files

@@ -3,8 +3,8 @@
  * @brief Test the operation of DetectorID class
  */
 #include <catch2/catch_test_macros.hpp>
-
 #include <sstream>
+
 #include "DetDescr/DetectorID.h"  //headers defining what we will be testing
 #include "DetDescr/DetectorIDInterpreter.h"  //headers defining what we will be testing
 #include "DetDescr/EcalID.h"

@@ -5,10 +5,10 @@
  */
 
 // LDMX
-#include "EventDisplay/Display.h"
-
 #include <memory>
 #include <string>
+
+#include "EventDisplay/Display.h"
 
 /**
  * Print Help Message for ldmx-eve

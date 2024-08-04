@@ -32,7 +32,7 @@ setup_library(module Hcal
               Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Hcal)
+setup_python(package_name LDMX/Hcal)
 
 setup_test(dependencies Hcal::Hcal)
 

@@ -1,4 +1,5 @@
 #include "Recon/SequentialTrigger.h"
+
 #include "Recon/Event/TriggerResult.h"
 
 namespace recon {
@@ -37,7 +38,7 @@ void SequentialTrigger::configure(framework::config::Parameters& ps) {
  * */
 
 void SequentialTrigger::produce(framework::Event& event) {
-  bool hasPassed = not(doOR_) or(doAND_);
+  bool hasPassed = not(doOR_) or (doAND_);
 
   for (int i = 0; i < trigger_list_.size(); i++) {
     // Returns an error is a trigger collection DNE
@@ -58,8 +59,7 @@ void SequentialTrigger::produce(framework::Event& event) {
           break;
         }
       }
-    }
-    catch (...) {
+    } catch (...) {
       std::string errorMessage =
           "Attemping to use non-existing trigger collection " +
           trigger_list_[i] + "_" + trigger_passNames_[i] + " to skim! Exiting.";
@@ -78,6 +78,6 @@ void SequentialTrigger::produce(framework::Event& event) {
   else
     setStorageHint(framework::hint_shouldDrop);
 }
-}
+}  // namespace recon
 
 DECLARE_ANALYZER_NS(recon, SequentialTrigger);

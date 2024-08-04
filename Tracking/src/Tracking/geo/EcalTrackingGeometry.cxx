@@ -404,7 +404,7 @@ Acts::CuboidVolumeBuilder::LayerConfig EcalTrackingGeometry::buildLayerConfig(
       rings.front()->surfaceMaterial()->materialSlab(ploc).thickness();
 
   lcfg.envelopeX = std::array<double, 2>{thickness / 2. + clearance,
-    thickness / 2. + clearance};
+                                         thickness / 2. + clearance};
   lcfg.active = active;
 
   return lcfg;
