@@ -1,7 +1,7 @@
 #ifndef RECON_OVERLAYPRODUCER_H
 #define RECON_OVERLAYPRODUCER_H
 
-//---< C++ StdLib >---// 
+//---< C++ StdLib >---//
 #include <map>
 #include <string>
 #include <vector>

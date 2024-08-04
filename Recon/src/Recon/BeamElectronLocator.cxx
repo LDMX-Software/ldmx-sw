@@ -69,7 +69,7 @@ void BeamElectronLocator::produce(framework::Event &event) {
                           << foundElectrons.getX()
                           << ", y = " << foundElectrons.getY()
                           << "); skip this simhit";
-		}
+        }
         isMatched = true;
         break;  // finding a match means Move on
       }         // if coordinates match something we already found
@@ -88,10 +88,10 @@ void BeamElectronLocator::produce(framework::Event &event) {
       electronInfo.setBarX(bin(pos[0], granularityXmm_, minXmm_, maxXmm_));
       electronInfo.setBarY(bin(pos[1], granularityYmm_, minYmm_, maxYmm_));
       // set coordinates to bin center
-      electronInfo.setBinnedX(minXmm_ + (electronInfo.getBarX() + 0.5) *
-                                            granularityXmm_);
-      electronInfo.setBinnedY(minYmm_ + (electronInfo.getBarY() + 0.5) *
-                                            granularityYmm_);
+      electronInfo.setBinnedX(minXmm_ +
+                              (electronInfo.getBarX() + 0.5) * granularityXmm_);
+      electronInfo.setBinnedY(minYmm_ +
+                              (electronInfo.getBarY() + 0.5) * granularityYmm_);
 
       beamElectronInfo.push_back(electronInfo);
     }
@@ -107,7 +107,7 @@ int BeamElectronLocator::bin(float coordinate, double binWidth, double min,
     n++;
     if (min + n * binWidth > max) {
       // don't go out of bounds, but, still indicate overflow by increasing n
-	  // before breaking
+      // before breaking
       break;
     }
   }

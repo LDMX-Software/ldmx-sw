@@ -94,7 +94,7 @@ set_target_properties(SimCore
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
+setup_python(package_name LDMX/SimCore)
 
 # run all *.py files in test during testing
 setup_test(config_dir test)

@@ -5,6 +5,7 @@
  */
 
 #include "TrigScint/Event/TrigScintQIEDigis.h"
+
 #include <exception>
 #include <iostream>
 ClassImp(trigscint::TrigScintQIEDigis);

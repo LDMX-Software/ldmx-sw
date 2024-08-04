@@ -57,13 +57,13 @@ class CaloCluster {
    * @param energy The total energy of the cluster.
    */
   void setEnergy(double energy) { energy_ = energy; }
-  
+
   /**
    * Sets total number of hits in the cluster.
    * @param nHits The total number of hits.
    */
   void setNHits(int nHits) { nHits_ = nHits; }
-  
+
   /**
    * Sets a sorted vector for the IDs of the hits
    * that make up the cluster.
@@ -92,19 +92,19 @@ class CaloCluster {
     rmsY_ = y;
     rmsZ_ = z;
   }
-  void setDXDZ(double x) { DXDZ_=x; }
+  void setDXDZ(double x) { DXDZ_ = x; }
 
-  void setDYDZ(double x) { DYDZ_=x; }
+  void setDYDZ(double x) { DYDZ_ = x; }
 
-  void setEDXDZ(double x) { errDXDZ_=x; }
+  void setEDXDZ(double x) { errDXDZ_ = x; }
 
-  void setEDYDZ(double x) { errDYDZ_=x; }
-  
+  void setEDYDZ(double x) { errDYDZ_ = x; }
+
   /////////////////////////////////////////////
 
   // energy of cluster
   double getEnergy() const { return energy_; }
-  
+
   // number of hits - equivalent to number of strips
   int getNHits() const { return nHits_; }
 
@@ -132,7 +132,7 @@ class CaloCluster {
   const std::vector<float>& getHitY() const { return hitY_; }
   const std::vector<float>& getHitZ() const { return hitZ_; }
   const std::vector<float>& getHitE() const { return hitE_; }
-  
+
   bool operator<(const CaloCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
@@ -157,7 +157,6 @@ class CaloCluster {
   std::vector<float> hitE_;
 
  private:
-
   ClassDef(CaloCluster, 1);
 };
 }  // namespace ldmx

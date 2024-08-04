@@ -25,8 +25,8 @@
 
 namespace Analysis {
 
-std::tuple<int, const ldmx::SimParticle *>
-getRecoil(const std::map<int, ldmx::SimParticle> &particleMap) {
+std::tuple<int, const ldmx::SimParticle *> getRecoil(
+    const std::map<int, ldmx::SimParticle> &particleMap) {
   // The recoil electron is "produced" in the dark brem geneartion
   for (const auto &[trackID, particle] : particleMap) {
     if (particle.getPdgID() == 11 and
@@ -54,16 +54,16 @@ bool doesParticleHavePNDaughters(
       const auto processType{daughter.getProcessType()};
       if (processType == ldmx::SimParticle::ProcessType::photonNuclear) {
         return true;
-      } // Was it PN?
-    }   // Was it in the map?
+      }  // Was it PN?
+    }    // Was it in the map?
   }
 
   return false;
 }
 
-const ldmx::SimParticle *
-getPNGamma(const std::map<int, ldmx::SimParticle> &particleMap,
-           const ldmx::SimParticle *recoil, const float &energyThreshold) {
+const ldmx::SimParticle *getPNGamma(
+    const std::map<int, ldmx::SimParticle> &particleMap,
+    const ldmx::SimParticle *recoil, const float &energyThreshold) {
   auto recoilDaughters{recoil->getDaughters()};
   for (auto recoilDaughterID : recoilDaughters) {
     // Have we stored the recoil daughter?
@@ -84,4 +84,4 @@ getPNGamma(const std::map<int, ldmx::SimParticle> &particleMap,
   return nullptr;
 }
 
-} // namespace Analysis
+}  // namespace Analysis

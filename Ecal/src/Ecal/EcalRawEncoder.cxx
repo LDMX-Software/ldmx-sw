@@ -1,13 +1,13 @@
-#include <bitset>
-
 #include "Ecal/EcalRawEncoder.h"
+
+#include <bitset>
 
 #include "DetDescr/EcalElectronicsID.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/EcalDetectorMap.h"
 #include "Packing/Utility/BufferReader.h"
-#include "Packing/Utility/Mask.h"
 #include "Packing/Utility/CRC.h"
+#include "Packing/Utility/Mask.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace ecal {
@@ -31,16 +31,16 @@ void EcalRawEncoder::produce(framework::Event& event) {
    */
   static const unsigned int common_mode_channel = roc_version_ == 2 ? 19 : 1;
 
-  auto digis{event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
-  std::vector<
-    std::map<uint16_t,
-      std::map<uint16_t,
-        std::map<uint32_t,uint32_t> // channel to sample
-        > // links
-      > // fpgas
-    > // bunches
-    sorted_samples(digis.getNumSamplesPerDigi());
-  
+  auto digis{
+      event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
+  std::vector<std::map<
+      uint16_t, std::map<uint16_t, std::map<uint32_t, uint32_t>  // channel to
+                                                                 // sample
+                         >                                       // links
+      >                                                          // fpgas
+              >                                                  // bunches
+      sorted_samples(digis.getNumSamplesPerDigi());
+
   /**
    * Translation
    *
@@ -56,7 +56,8 @@ void EcalRawEncoder::produce(framework::Event& event) {
     ldmx::EcalElectronicsID eid{detmap.get(detid)};
 
     for (std::size_t i_bx{0}; i_bx < digis.getNumSamplesPerDigi(); i_bx++) {
-      sorted_samples[i_bx][eid.fiber()][eid.elink()][eid.channel()] = digi.at(i_bx).raw();
+      sorted_samples[i_bx][eid.fiber()][eid.elink()][eid.channel()] =
+          digi.at(i_bx).raw();
     }
   }
 
@@ -71,14 +72,12 @@ void EcalRawEncoder::produce(framework::Event& event) {
    * the header information the calculate the CRC checksums.
    */
   std::vector<uint32_t> buffer;
-  static uint32_t word; // word to use for constructing buffer
+  static uint32_t word;  // word to use for constructing buffer
   uint32_t i_bx{0};
   for (auto const& bunch : sorted_samples) {
-    /**TODO calculate bunch ID, read request, and orbit from sample ID, event number, and run number 
-     * placeholder: 
-     *  bunch ID = event number 
-     *  read request = sample ID
-     *  orbit = run number
+    /**TODO calculate bunch ID, read request, and orbit from sample ID, event
+     * number, and run number placeholder: bunch ID = event number read request
+     * = sample ID orbit = run number
      */
     uint32_t bunch_id = event.getEventNumber();
     uint32_t rreq = i_bx;
@@ -99,12 +98,12 @@ void EcalRawEncoder::produce(framework::Event& event) {
        */
       std::vector<uint32_t> link_lengths;
       for (auto const& [link_id, channels] : links) {
-        link_lengths.push_back(3+1+channels.size()+1);
+        link_lengths.push_back(3 + 1 + channels.size() + 1);
       }
 
       /**
-       * The total FPGA packet includes at least 2 header words, a trailing checksum word,
-       * and a single word for each four links.
+       * The total FPGA packet includes at least 2 header words, a trailing
+       * checksum word, and a single word for each four links.
        *
        * This means we add up the subpacket lengths into subpacket_total
        * and then
@@ -112,7 +111,8 @@ void EcalRawEncoder::produce(framework::Event& event) {
        *  n_linkwords = (nlinks/4+(nlinks%4!=0))
        *  total_length = 2 + n_linkwords + subpacket_total + 1;
        */
-      uint32_t n_linkwords = link_lengths.size()/4 + (link_lengths.size()%4 != 0);
+      uint32_t n_linkwords =
+          link_lengths.size() / 4 + (link_lengths.size() % 4 != 0);
       uint32_t total_length{2 + n_linkwords + 1};
       for (uint32_t const& link_len : link_lengths) {
         total_length += link_len;
@@ -135,17 +135,17 @@ void EcalRawEncoder::produce(framework::Event& event) {
        * ... other listing of links ...
        */
       word = 0;
-      word |= (1 << 12+1+6+8); // version
-      word |= (fpga_id & packing::utility::mask<8>) << 12+1+6; // FPGA
-      word |= (links.size() & packing::utility::mask<6>) << 12+1; // NLINKS
-      word |= (total_length & packing::utility::mask<12>); // LEN TODO
+      word |= (1 << 12 + 1 + 6 + 8);                                 // version
+      word |= (fpga_id & packing::utility::mask<8>) << 12 + 1 + 6;   // FPGA
+      word |= (links.size() & packing::utility::mask<6>) << 12 + 1;  // NLINKS
+      word |= (total_length & packing::utility::mask<12>);           // LEN TODO
       buffer.push_back(word);
       fpga_crc << word;
 
       word = 0;
-      word |= (bunch_id & packing::utility::mask<12>) << 20; // BX ID
-      word |= (rreq & packing::utility::mask<10>) << 10; // RREQ
-      word |= (orbit & packing::utility::mask<10>); // OR
+      word |= (bunch_id & packing::utility::mask<12>) << 20;  // BX ID
+      word |= (rreq & packing::utility::mask<10>) << 10;      // RREQ
+      word |= (orbit & packing::utility::mask<10>);           // OR
       buffer.push_back(word);
       fpga_crc << word;
 
@@ -155,24 +155,26 @@ void EcalRawEncoder::produce(framework::Event& event) {
       for (uint32_t i_linkword{0}; i_linkword < n_linkwords; i_linkword++) {
         word = 0;
         for (uint32_t i_linklen{0}; i_linklen < 4; i_linklen++) {
-          uint32_t i_link = 4*i_linkword + i_linklen;
+          uint32_t i_link = 4 * i_linkword + i_linklen;
           if (i_link <= link_lengths.size()) {
             // we have a link
-            word |= (((0b11 << 6) + (link_lengths.at(i_link) & packing::utility::mask<6>)) << 8*i_linklen);
-          } // do we have a link for this linklen subword?
-        }   // loop through subwords in this word
+            word |= (((0b11 << 6) +
+                      (link_lengths.at(i_link) & packing::utility::mask<6>))
+                     << 8 * i_linklen);
+          }  // do we have a link for this linklen subword?
+        }    // loop through subwords in this word
         buffer.push_back(word);
         fpga_crc << word;
-      } // loop through words
+      }  // loop through words
 
       // fpga lists the links and channels with their corresponding sample
       for (auto const& [link_id, channels] : links) {
         /**
          * Prepare RO Map bitset
          */
-        std::bitset<40> ro_map; //starts as all 0s
-        ro_map.set(0); // special "header" word from ROC
-        ro_map.set(39); // trailing checksum from ROC
+        std::bitset<40> ro_map;  // starts as all 0s
+        ro_map.set(0);           // special "header" word from ROC
+        ro_map.set(39);          // trailing checksum from ROC
         // each link maps the channels that were readout to their sample
         for (auto const& [channel, sample] : channels) {
           ro_map.set(channel);
@@ -208,14 +210,15 @@ void EcalRawEncoder::produce(framework::Event& event) {
         word = 0;
         word |= 0b0101 << 28;
         word |= (bunch_id & packing::utility::mask<12>) << 16;
-        word |= (rreq & packing::utility::mask<6> ) << 10;
+        word |= (rreq & packing::utility::mask<6>) << 10;
         word |= (orbit & packing::utility::mask<3>) << 7;
-        // skipping hamming error bits because we will set them all to false here
+        // skipping hamming error bits because we will set them all to false
+        // here
         word |= 0b0101;
         buffer.push_back(word);
         fpga_crc << word;
         link_crc << word;
-        
+
         /**
          * TODO: Common-Mode Channel
          *  Somewhere in here is where the common-mode channel

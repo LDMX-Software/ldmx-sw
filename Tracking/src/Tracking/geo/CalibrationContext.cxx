@@ -8,8 +8,7 @@ namespace tracking::geo {
 
 const std::string CalibrationContext::NAME = "TrackingCalibrationContext";
 
-CalibrationContext::CalibrationContext()
-  : framework::ConditionsObject(NAME) {}
+CalibrationContext::CalibrationContext() : framework::ConditionsObject(NAME) {}
 
 const Acts::CalibrationContext& CalibrationContext::get() const {
   return calibration_context_;
@@ -25,10 +24,12 @@ class CalibrationContextProvider : public framework::ConditionsObjectProvider {
    * @param[in] parameters configuration parameters from python
    * @param[in] process reference to the running process object
    */
-  CalibrationContextProvider(const std::string& name, const std::string& tagname,
+  CalibrationContextProvider(const std::string& name,
+                             const std::string& tagname,
                              const framework::config::Parameters& parameters,
-                             framework::Process& process) 
-    : framework::ConditionsObjectProvider(CalibrationContext::NAME, tagname, parameters, process) {}
+                             framework::Process& process)
+      : framework::ConditionsObjectProvider(CalibrationContext::NAME, tagname,
+                                            parameters, process) {}
 
   /**
    * Get the context as a conditions object
@@ -39,16 +40,14 @@ class CalibrationContextProvider : public framework::ConditionsObjectProvider {
    * @param[in] context EventHeader for the event context
    * @returns new context and unlimited interval of validity
    */
-  std::pair<const framework::ConditionsObject*, framework::ConditionsIOV> 
+  std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
   getCondition(const ldmx::EventHeader& context) final override {
-    return std::make_pair<const framework::ConditionsObject*, framework::ConditionsIOV>(
-        new CalibrationContext(),
-        framework::ConditionsIOV(true, true)
-    );
+    return std::make_pair<const framework::ConditionsObject*,
+                          framework::ConditionsIOV>(
+        new CalibrationContext(), framework::ConditionsIOV(true, true));
   }
- 
 };
 
-}
+}  // namespace tracking::geo
 
 DECLARE_CONDITIONS_PROVIDER_NS(tracking::geo, CalibrationContextProvider)

@@ -63,7 +63,7 @@ class EcalProcessFilter : public simcore::UserAction {
 
   /// Process to filter
   std::string process_{""};
-  
+
   /// Enable logging
   enableLogging("EcalProcessFilter")
 

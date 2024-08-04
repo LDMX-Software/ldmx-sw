@@ -8,18 +8,17 @@
 #define PFECALCLUSTERPRODUCER_H
 
 // LDMX Framework
-#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
-#include "Framework/Event.h"
-#include "Framework/EventProcessor.h"  //Needed to declare processor
-
 #include "DetDescr/EcalGeometry.h"
-#include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalCluster.h"
+#include "Ecal/Event/EcalHit.h"
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
 #include "Ecal/WorkingCluster.h"
-#include "TGraph.h"
+#include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "TFitResult.h"
+#include "TGraph.h"
 
 namespace recon {
 

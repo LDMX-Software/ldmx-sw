@@ -8,13 +8,12 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "Acts/EventData/SourceLink.hpp"
 #include "Acts/Surfaces/Surface.hpp"
-
 #include "Tracking/Sim/GeometryContainers.h"
 #include "Tracking/Sim/Index.h"
-
-#include <cassert>
 
 namespace ActsExamples {
 

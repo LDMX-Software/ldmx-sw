@@ -21,7 +21,7 @@ setup_library(module Tools
                            ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
 )
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)
+setup_python(package_name LDMX/Tools)
 
 # Add the hgcroc running executable
 add_executable(run-hgcroc ${PROJECT_SOURCE_DIR}/src/Tools/run_hgcroc.cxx)

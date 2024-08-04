@@ -16,10 +16,13 @@
     <img src="https://github.com/LDMX-Software/ldmx-sw/actions/workflows/basic_test.yml/badge.svg" />
 </p>
 
-## Quick Start 
+## Quick Start
 
 - [Install the docker engine](https://docs.docker.com/engine/install/)
 - (on Linux systems) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
+- (on MacOS systems) Make sure `git lfs` is installed. (Test: `git lfs` prints out a help message instead of an error about `lfs` not being found.)
+  - The default installation of `git` that is included with Apple's developer tools does not include `git lfs` which is required by acts to download and unpack one of its own submodules. [GitHub has a nice tutorial](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=mac) on how to install `git lfs` on MacOS.
+  - This is only an issue observed on MacOS systems. Linux repositories (used in WSL and Linux systems) include `git lfs` within their installed versions of `git`.
 - Clone the repo: `git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git`
   - **Note**: You need to [setup an SSH-key with your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) on the computer you are using.
 - Setup the environment (in bash): `source ldmx-sw/scripts/ldmx-env.sh`

@@ -11,9 +11,6 @@
 namespace ldmx {
 class Measurement {
  public:
-
-
-
   /// Default constructor
   Measurement() = default;
 
@@ -111,14 +108,11 @@ class Measurement {
   /// @return The layer number internal to the tracker.
   int getLayer() const { return layer_; }
 
-
   /// Add a trackId to the internal vector
-  void addTrackId(int trkId){trackIds_.push_back(trkId);};
+  void addTrackId(int trkId) { trackIds_.push_back(trkId); };
   /// @return the sim particle IDs that compose the measurement
-  std::vector<unsigned int> getTrackIds(){ return trackIds_;};
+  std::vector<unsigned int> getTrackIds() { return trackIds_; };
 
-  
-  
   /**
    * Overload the stream insertion operator to output a string representation of
    * this Measurement.
@@ -135,8 +129,6 @@ class Measurement {
                                   const Measurement& measurement);
 
  private:
-  
-  
   /// The global position in x (mm).
   float x_{0.};
   /// The global position in x (mm).
@@ -163,12 +155,11 @@ class Measurement {
   int id_{0};
   /// TrackIDs the vector of TrackIDs that form the measurement
   std::vector<unsigned int> trackIds_{};
-  
+
   ClassDef(Measurement, 1);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;
-//typedef std::vector<std::reference_wrapper<const Measurement>> Measurements;
-
+// typedef std::vector<std::reference_wrapper<const Measurement>> Measurements;
 
 }  // namespace ldmx
