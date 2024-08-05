@@ -631,6 +631,8 @@ class VisGenerator(ldmxcfg.Analyzer) :
         super().__init__(name,'dqm::VisGenerator','DQM')
         
         self.includeGroundTruth = True
+        self.originIdAvailable = False # if simulated events contain origin ID (by default they do not)
+        self.nbrOfElectrons = 2 # nbr of electrons in simulation -- only relevant for energy truth calculations
         self.ecalSimHitColl = "EcalSimHits"
         self.ecalSimHitPass = "" #use whatever pass is available
 

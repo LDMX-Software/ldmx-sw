@@ -38,18 +38,32 @@ class EcalCluster : public ldmx::CaloCluster {
 
   void addHits(const std::vector<ldmx::EcalHit> hitsVec);
 
-  void addMixedHits(const std::vector<std::pair<ldmx::EcalHit, double>> hitsVec);
-
-  std::vector<std::pair<unsigned int, double>> getMixedHitIDs() const { return mixedIDs_; }
+  void addFirstLayerHits(const std::vector<ldmx::EcalHit> hitsVec);
 
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 
+  void setFirstLayerCentroidXYZ(double x, double y, double z) {
+    firstLayerCentroidX_ = x;
+    firstLayerCentroidY_ = y;
+    firstLayerCentroidZ_ = z;
+  }
+
+  double getFirstLayerCentroidX() const { return firstLayerCentroidX_; }
+  double getFirstLayerCentroidY() const { return firstLayerCentroidY_; }
+  double getFirstLayerCentroidZ() const { return firstLayerCentroidZ_; }
+
+  std::vector<unsigned int> getFirstLayerHitIDs() const { return firstLayerHitIDs_; }
+
  private:
   // Could add further ECal-specific info here...
 
-  std::vector<std::pair<unsigned int, double>> mixedIDs_;
+  std::vector<unsigned int> firstLayerHitIDs_;
+
+  double firstLayerCentroidX_{0};
+  double firstLayerCentroidY_{0};
+  double firstLayerCentroidZ_{0};
 
   ClassDef(EcalCluster, 1);
 };

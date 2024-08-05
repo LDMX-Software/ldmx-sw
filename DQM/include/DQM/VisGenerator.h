@@ -37,6 +37,12 @@ class VisGenerator : public framework::Analyzer {
     // Include ground truth (simulated) info
     bool includeGroundTruth_;
 
+    // Simulated info has contribs with originID (not available by default)
+    bool originIdAvailable_;
+
+    // Number of electrons in simulation; only relevant for energy calculations
+    int nbrOfElectrons_;
+
     // Collection Name for SimHits
     std::string ecalSimHitColl_;
 

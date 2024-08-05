@@ -13,6 +13,7 @@ namespace dqm {
 
   void VisGenerator::configure(framework::config::Parameters& ps) {
     includeGroundTruth_ = ps.getParameter<bool>("includeGroundTruth");
+    originIdAvailable_ = ps.getParameter<bool>("originIdAvailable");
     ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
     ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
 
@@ -92,10 +93,13 @@ namespace dqm {
           if (includeEcalRecHits_) {
             // These need to be initialized as rechits will have this info
             cluster["ID"] = -1;
-            cluster["originID"] = -1;
-            cluster["E from e1 (%)"] = -1.;
-            cluster["E from e2 (%)"] = -1.;
-            cluster["immediate_child"] = false;
+            if (includeGroundTruth_) {
+              if (originIdAvailable_) cluster["originID"] = -1;
+              else cluster["incidentID"] = -1;
+              cluster["E from e1 (%)"] = -1.;
+              cluster["E from e2 (%)"] = -1.;
+              cluster["immediate_child"] = false;
+            }
             for (auto const& clHitID : cl.getHitIDs()) {
               // map hit id to cluster it belongs to
               auto it = hitToCluster.find(clHitID);
@@ -142,32 +146,56 @@ namespace dqm {
           if (it != ecalSimHits.end()) {
             double e1 = 0;
             double e2 = 0;
+            double eunclear = 0;
             int tag = 0;
             bool immediate_child = true;
-            h["originID"] = json::array();
-            for (int i = 0; i < it->getNumberOfContribs(); i++) {
-              auto c = it->getContrib(i);
-              h["originID"].push_back(c.originID);
-              if (i != 0 && c.originID != tag) tag = 3;
-              else tag = c.originID;
-              if (c.originID == 1) e1 += c.edep;
-              else if (c.originID == 2) e2 += c.edep;
-              if (c.incidentID != 1 && c.incidentID != 2) {
-                immediate_child = false;
+            if (originIdAvailable_) {
+              h["originID"] = json::array();
+              for (int i = 0; i < it->getNumberOfContribs(); i++) {
+                auto c = it->getContrib(i);
+                h["originID"].push_back(c.originID);
+                if (i != 0 && c.originID != tag) tag = 3;
+                else tag = c.originID;
+                if (c.originID == 1) e1 += c.edep;
+                else if (c.originID == 2) e2 += c.edep;
+                if (c.incidentID != 1 && c.incidentID != 2) {
+                  immediate_child = false;
+                }
+              }
+              if (e1+e2 > 0) {
+                h["E from e1 (%)"] = 100.*e1/(e1+e2);
+                h["E from e2 (%)"] = 100.*e2/(e1+e2);
+              }
+            } else {
+              h["incidentID"] = json::array();
+              for (int i = 0; i < it->getNumberOfContribs(); i++) {
+                auto c = it->getContrib(i);
+                h["incidentID"].push_back(c.incidentID);
+                if (i != 0 && c.incidentID != tag) tag = 3;
+                else tag = c.incidentID;
+                if (c.incidentID == 1) e1 += c.edep;
+                else if (c.incidentID == 2) e2 += c.edep;
+                else eunclear += c.edep;
+                if (c.incidentID != 1 && c.incidentID != 2) {
+                  immediate_child = false;
+                }
+              }
+              if (e1+e2+eunclear > 0) {
+                h["E from e1 (%)"] = 100.*e1/(e1+e2+eunclear);
+                h["E from e2 (%)"] = 100.*e2/(e1+e2+eunclear);
+                h["E from e2 (%)"] = 100.*eunclear/(e1+e2+eunclear);
               }
             }
             h["immediate_child"] = immediate_child;
-            if (e1+e2 > 0) {
-              h["E from e1 (%)"] = 100.*e1/(e1+e2);
-              h["E from e2 (%)"] = 100.*e2/(e1+e2);
-            }
+            
             if (visHitOrigin_) {
               clusterHitSize = 2.0;
               json t = json::object();
               t["ID"] = hit.getID();
               t["type"] = "Box";
               t["energy"] = hit.getEnergy();
-              t["originID"] = tag;
+              if (originIdAvailable_) t["originID"] = tag;
+              else t["incidentID"] = tag;
               t["immediate_child"] = immediate_child;
               t["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
                             clusterHitSize, clusterHitSize, clusterHitSize };
@@ -257,80 +285,6 @@ namespace dqm {
     // }
   }
 
-  // void VisGenerator::caloCells(const framework::Event& event, const std::string& eKey) {
-  //   c[eKey]["event number"] = event.getEventNumber();
-  //   c[eKey]["run number"] = runNbr_;
-  //   c[eKey]["Tracks"] = json::object();
-  //   c[eKey]["Tracks"]["ground_truth"] = json::array();
-  //   c[eKey]["PlanarCaloCells"] = json::object();
-  //   if (includeGroundTruth_) {
-  //     c[eKey]["PlanarCaloCells"]["e1"] = json::object();
-  //     c[eKey]["PlanarCaloCells"]["e1"]["plane"] = { 0, 0, 0, 250 };
-  //     c[eKey]["PlanarCaloCells"]["e1"]["cells"] = json::array();
-  //     c[eKey]["PlanarCaloCells"]["e2"] = json::object();
-  //     c[eKey]["PlanarCaloCells"]["e2"]["plane"] = { 0, 0, 0, 0 };
-  //     c[eKey]["PlanarCaloCells"]["e2"]["cells"] = json::array();
-  //     c[eKey]["PlanarCaloCells"]["mixed"] = json::object();
-  //     c[eKey]["PlanarCaloCells"]["mixed"]["plane"] = { 0, 0, 0, -250 };
-  //     c[eKey]["PlanarCaloCells"]["mixed"]["cells"] = json::array();
-  //   } else {
-  //     c[eKey]["PlanarCaloCells"]["Ecal"] = json::object();
-  //     c[eKey]["PlanarCaloCells"]["Ecal"]["plane"] = { 0, 0, 0, 250 };
-  //     c[eKey]["PlanarCaloCells"]["Ecal"]["cells"] = json::array();
-  //   }
-  //   std::vector<ldmx::SimCalorimeterHit> ecalSimHits;
-  //   if (includeGroundTruth_) {
-  //     ecalSimHits = event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_);
-  //   }
-  //   std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
-  //   int cellsize = 2.0;
-  //   for (const auto& hit : ecalRecHits) {
-  //     json h = json::object();
-  //     h["pos"] = { hit.getXPos(), hit.getYPos() };
-  //     h["cellSize"] = cellsize;
-  //     h["energy"] = hit.getEnergy();
-
-  //     if (includeGroundTruth_) {
-  //       auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
-  //       if (it != ecalSimHits.end()) {
-  //         double e1 = 0;
-  //         double e2 = 0;
-  //         int tag = 0;
-  //         bool immediate_child = true;
-  //         h["originID"] = json::array();
-  //         for (int i = 0; i < it->getNumberOfContribs(); i++) {
-  //           auto c = it->getContrib(i);
-  //           h["originID"].push_back(c.originID);
-  //           if (i != 0 && c.originID != tag) tag = 3;
-  //           else tag = c.originID;
-  //           if (c.originID == 1) e1 += c.edep;
-  //           else if (c.originID == 2) e2 += c.edep;
-  //           if (c.incidentID != 1 && c.incidentID != 2) {
-  //             immediate_child = false;
-  //           }
-  //         }
-  //         h["immediate_child"] = immediate_child;
-  //         if (e1+e2 > 0) {
-  //           h["E from e1 (%)"] = 100.*e1/(e1+e2);
-  //           h["E from e2 (%)"] = 100.*e2/(e1+e2);
-  //         }
-  //         if (tag == 1) {
-  //           h["color"] = "0xEADE76";
-  //           c[eKey]["PlanarCaloCells"]["e1"]["cells"].push_back(h);
-  //         } else if (tag == 2) {
-  //           h["color"] = "0x76BDEA";
-  //           c[eKey]["PlanarCaloCells"]["e2"]["cells"].push_back(h);
-  //         } else {
-  //           h["color"] = "0x76EA84";
-  //           c[eKey]["PlanarCaloCells"]["mixed"]["cells"].push_back(h);
-  //         }
-  //         }
-  //     } else {
-  //       c[eKey]["PlanarCaloCells"]["Ecal"]["cells"].push_back(h);
-  //     }
-  //   }
-  // }
-
   void VisGenerator::groundTruthTracks(const framework::Event& event, const std::string& eKey) {
     j[eKey]["Tracks"]["ground_truth_tracks"] = json::array();
     if (visHitOrigin_) {
@@ -352,7 +306,6 @@ namespace dqm {
         if (visHitOrigin_) {
           truth[eKey]["Tracks"]["ground_truth_tracks"].push_back(track);
         }
-        // c[eKey]["Tracks"]["ground_truth"].push_back(track);
       }
     }
   }
@@ -366,12 +319,10 @@ namespace dqm {
     layer[eKey]["run number"] = runNbr_;
     layer[eKey]["Hits"] = json::object();
     std::vector<double> layerThickness = { 2., 3.5, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 5.3, 10.5, 10.5, 10.5, 10.5, 10.5 };
-    // std::vector<double> absorberBefore = { 0., 3., 8., 15.1, 22.2, 29.3, 36.4, 43.5, 50.6, 57.7, 64.8, 71.9, 85.9, 99.9, 113.9, 127.9, 141.9 };
     std::vector<ldmx::EcalHit> ecalRecHits = event.getCollection<ldmx::EcalHit>(ecalRecHitColl_, ecalRecHitPass_);
     std::sort(ecalRecHits.begin(), ecalRecHits.end(), compZ);
     int layerTag = 0;
     double z0 = ecalRecHits[0].getZPos();
-    // double cumulativeZ = ecalRecHits[0].getZPos();
     double layerZ = ecalRecHits[0].getZPos();
     std::string hex = colors[layerTag % colors.size()];
     std::string col = colorstrings[layerTag % colorstrings.size()];
@@ -414,7 +365,6 @@ namespace dqm {
     }
 
     if (visLayers_) extractLayers(event, eKey);
-    // caloCells(event, eKey);
 
     // ----- TRACKS -----
     j[eKey]["Tracks"] = json::object();
@@ -441,10 +391,6 @@ void VisGenerator::onProcessEnd(){
       layerfile << std::setw(2) << layer << std::endl;
       layerfile.close();
     }
-
-    // std::ofstream caloCellFile("calocells.json");
-    // caloCellFile << std::setw(2) << c << std::endl;
-    // caloCellFile.close();
     return;
 };
 
