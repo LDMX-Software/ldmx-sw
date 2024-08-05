@@ -91,4 +91,4 @@ class EcalClusterAnalyzer(ldmxcfg.Analyzer) :
         self.build2DHistogram("distance_purity", "Distance in xy-plane", 20, 0, 220, "Purity %", 10, 50, 100)
         self.build2DHistogram("distance_energy_purity", "Distance in xy-plane", 20, 0, 220, "Energy purity %", 10, 50, 100)
 
-        self.build2DHistogram("mixed_hit_accuracy", "Predicted c1%", 20, 0, 1, "Actual c1%", 20, .5, 1)
+        self.build2DHistogram("mixed_hit_accuracy", "Predicted c1%", 20, 0, 1, "Actual c1%", 20, 0, 1)
