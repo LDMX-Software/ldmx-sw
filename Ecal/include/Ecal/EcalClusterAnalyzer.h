@@ -21,6 +21,8 @@ class EcalClusterAnalyzer : public framework::Analyzer {
     virtual void analyze(const framework::Event& event);
 
   private:
+    int nbrOfElectrons_;
+
     // Collection Name for SimHits
     std::string ecalSimHitColl_;
 

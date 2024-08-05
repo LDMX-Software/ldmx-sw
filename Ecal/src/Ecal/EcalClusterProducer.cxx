@@ -56,14 +56,13 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
     cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_, debug_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
+    std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
     histograms_.fill("nClusters", wcVec.size());
 
     for (const auto& d : cf.getCentroidDistances()) histograms_.fill("centroid_distances", d);
-
-    for (const auto& d : cf.getFirstLayerDistances()) histograms_.fill("first_layer_distances", d);
 
     std::vector<ldmx::EcalCluster> ecalClusters;
     for (int aWC = 0; aWC < wcVec.size(); aWC++) {
@@ -73,12 +72,14 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
                             wcVec[aWC].centroid().Py(),
                             wcVec[aWC].centroid().Pz());
-      cluster.setNHits(wcVec[aWC].getHits().size() + wcVec[aWC].getMixedHits().size());
+      cluster.setFirstLayerCentroidXYZ(fWcVec[aWC].centroid().Px(),
+                            fWcVec[aWC].centroid().Py(),
+                            fWcVec[aWC].centroid().Pz());
+      cluster.setNHits(wcVec[aWC].getHits().size());
       cluster.addHits(wcVec[aWC].getHits());
-      cluster.addMixedHits(wcVec[aWC].getMixedHits());
+      cluster.addFirstLayerHits(fWcVec[aWC].getHits());
 
-      histograms_.fill("nHits", wcVec[aWC].getHits().size() + wcVec[aWC].getMixedHits().size());
-      histograms_.fill("nMixedHits", wcVec[aWC].getMixedHits().size());
+      histograms_.fill("nHits", wcVec[aWC].getHits().size());
       histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
 
       ecalClusters.push_back(cluster);
