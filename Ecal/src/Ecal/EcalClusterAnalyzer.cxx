@@ -127,65 +127,42 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       }
       clusteredHits++;
     }
-    double em1 = 0;
-    double em2 = 0;
+    
     for (const auto &[id, percentage] : mixedHitIDs) {
       auto it = hitInfo.find(id);
       if (it != hitInfo.end()) {
-        auto it = hitInfo.find(id);
-        if (it != hitInfo.end()) {
-          auto t = it->second;
-          switch(std::get<0>(t)) {
-            // case 0:
-            //   unclear++;
-            //   break;
-            case 1:
-              n1++;
-              break;
-            case 2:
-              n2++;
-              break;
-            case 3:
-              m++;
-              // em += (std::get<1>(t) + std::get<2>(t))*percentage;
-              break;
-            default:
-              break;
-          }
-          em1 = std::get<1>(t);
-          em2 = std::get<2>(t);
-          if (e1 > e2) {
-            histograms_.fill("mixed_hit_accuracy", percentage, em1/(em1+em2));
-            if (percentage < em1/(em1+em2)) {
-              e1 += (em1 + em2)*percentage;
-            } else {
-              double frac = (em1 + em2)*percentage - em1;
-              if (frac < 0) std::cout << "Negative frac" << std::endl;
-              else {
-                e1 += em1;
-                e2 += frac;
-              }
-            }
-          }
-          else {
-            histograms_.fill("mixed_hit_accuracy", percentage, em2/(em1+em2));
-            if (percentage < em2/(em1+em2)) {
-              e2 += (em1 + em2)*percentage;
-            } else {
-              double frac = (em1 + em2)*percentage - em2;
-              if (frac < 0) std::cout << "Negative frac" << std::endl;
-              else {
-                e2 += em2;
-                e1 += frac;
-              }
-            }
-          }
-          // e1 += std::get<1>(t)*percentage;
-          // e2 += std::get<2>(t)*percentage;
-          // elost += std::get<3>(t);
+        auto t = it->second;
+        switch(std::get<0>(t)) {
+          // case 0:
+          //   unclear++;
+          //   break;
+          case 1:
+            n1++;
+            break;
+          case 2:
+            n2++;
+            break;
+          case 3:
+            m++;
+            // em += (std::get<1>(t) + std::get<2>(t))*percentage;
+            break;
+          default:
+            break;
         }
+        double em1 = std::get<1>(t);
+        double em2 = std::get<2>(t);
+        if (e1 >= e2) {
+          histograms_.fill("mixed_hit_accuracy", percentage, em1/(em1+em2));
+        } else {
+          histograms_.fill("mixed_hit_accuracy", percentage, em2/(em1+em2));
+        }
+        
+        e1 += std::get<1>(t)*percentage;
+        e2 += std::get<2>(t)*percentage;
+        // elost += std::get<3>(t);
       }
     }
+    
     if ((e1 + e2) > 0) {
       double eperc;
       // double eunfiltered;

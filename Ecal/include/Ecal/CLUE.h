@@ -172,9 +172,14 @@ class CLUE {
     return layers;
   }
 
+  float roundToDecimal(float x, int num_decimal_precision_digits) {
+      float power_of_10 = std::pow(10, num_decimal_precision_digits);
+      return std::round(x * power_of_10)  / power_of_10;
+  }
+
   std::vector<std::shared_ptr<Density>> setup(const std::vector<ldmx::EcalHit>& hits) {
     std::vector<std::shared_ptr<Density>> densities;
-    std::map<std::pair<double, double>, std::shared_ptr<Density>> densityMap;
+    std::map<std::pair<float, float>, std::shared_ptr<Density>> densityMap;
     centroid_ = WorkingEcalCluster();
     if (debug_) std::cout << "--- SETUP ---" << std::endl << "Building densities" << std::endl;
     for (const auto& hit : hits) {
@@ -182,12 +187,14 @@ class CLUE {
       // collapse z dimension
       double x = static_cast<double>(hit.getXPos());
       double y = static_cast<double>(hit.getYPos());
+      float fx = roundToDecimal(hit.getXPos(), 4);
+      float fy = roundToDecimal(hit.getYPos(), 4);
       if (debug_) {
         std::cout << "  New hit" << std::endl;
         std::cout << "    x: " << x << std::endl;
         std::cout << "    y: " << y << std::endl;
       }
-      std::pair<double, double> coords;
+      std::pair<float, float> coords;
       if (dc_ != 0 && nbrOfLayers_ > 1) {
         double i = std::ceil(std::abs(x)/dc_);
         double j = std::ceil(std::abs(y)/dc_);
@@ -202,10 +209,10 @@ class CLUE {
         coords = {i, j};
         if (debug_) std::cout << "    Index " << i << ", " << j << "; x: " << x << " y: " << y << std::endl;
       } else {
-        coords = {x, y};
+        coords = {fx, fy};
       }
       if (densityMap.find(coords) == densityMap.end()) {
-        densityMap.emplace(coords, std::make_shared<Density>(x, y, hit.getXPos(), hit.getYPos()));
+        densityMap.emplace(coords, std::make_shared<Density>(x, y, fx, fy));
         if (debug_) std::cout << "    New density created" << std::endl;
       } else if (debug_) std::cout << "    Found density with x: " << densityMap[coords]->x << " y: " << densityMap[coords]->y << std::endl;
       densityMap[coords]->hits.push_back(hit);
