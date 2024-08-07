@@ -32,6 +32,7 @@ In order to use ldmx-sw, no more dependencies are required!
 Simply choose the version of ldmx-sw you wish to use with your project.
 ```
 mkdir my-project
+cd my-project
 denv init ldmx/pro:v4.0.1 # or some other ldmx-sw version
 ```
 And then you can run ldmx-sw with a configuration script of your choice.
