@@ -325,7 +325,7 @@ class CLUE {
           // set clusterindex of follower to clusterindex of d
           f->clusterId = cid;
           clusterEnergies[cid] += f->totalEnergy;
-          if (clusterEnergies[cid] > maxEnergy && clusteringLoops_ < 100) {
+          if (clusterEnergies[cid] > maxEnergy && deltacMod > 0.5 && clusteringLoops_ < 100) {
             mergedDensities[cid] = true;
             if (!energyOverload && clusteringLoops_ == 99) std::cout << "Merged clusters, max cluster loops hit" << std::endl;
             energyOverload = true;
