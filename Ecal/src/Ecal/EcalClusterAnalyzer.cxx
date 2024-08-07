@@ -157,7 +157,6 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     if (eSum > 0) {
       double eMax = *max_element(e.begin(), e.end());
       histograms_.fill("energy_percentage", 100.*(eMax/eSum));
-      std::cout << 100.*(eMax/eSum) << std::endl;
       if (e[0] > 0.) histograms_.fill("mixed_hit_energy", 100.*(e[0]/eSum));
 
       histograms_.fill("total_energy_vs_hits", eSum, cl.getHitIDs().size());
