@@ -149,7 +149,7 @@ class EventProcessor:
                 print(f'done compiling {src}')
 
         instance = cls(instance_name, class_name, str(lib))
-        for cfg_name, cfg_val in config_kwargs:
+        for cfg_name, cfg_val in config_kwargs.items():
             setattr(instance, cfg_name, cfg_val)
         return instance
 

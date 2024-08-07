@@ -40,6 +40,7 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   recoil_sp_ = parameters.getParameter<double>("recoil_sp", true);
   target_sp_ = parameters.getParameter<double>("tagger_sp", true);
   seedSmearing_ = parameters.getParameter<bool>("seedSmearing", false);
+  max_track_id_ = parameters.getParameter<int>("max_track_id", 5);
 
   ldmx_log(info) << "Seed Smearing is set to " << seedSmearing_;
 
@@ -57,9 +58,18 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
   inflate_factors_ = parameters.getParameter<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
 
-  // In tracking frame
+  // In tracking frame: where do these numbers come from?
+  // These numbers come from approximating the path of the beam up
+  // until it is about to enter the first detector volume (TriggerPad1).
+  // In detector coordinates, (x,y,z) = (-44,0,-880) is _roughly_
+  // where the beam arrives (if no smearing is applied) and we simply
+  // reorder these values so that they are in tracking coordinates.
   beamOrigin_ = parameters.getParameter<std::vector<double>>(
       "beamOrigin", {-880.1, -44., 0.});
+
+  // Skip the tagger or recoil trackers if wanted
+  skip_tagger_ = parameters.getParameter<bool>("skip_tagger", false);
+  skip_recoil_ = parameters.getParameter<bool>("skip_recoil", false);
 }
 
 void TruthSeedProcessor::createTruthTrack(
@@ -143,8 +153,9 @@ void TruthSeedProcessor::createTruthTrack(
 
   if (abs(tgt_surf_center(0) - gen_surf_center(0)) > tol)
     ldmx_log(error) << "Linear extrapolation to a far away surface in B field."
-                    << "This will cause inaccuracies in track parameters"
-                    << std::endl;
+                    << "  This will cause inaccuracies in track parameters"
+                    << "  Distance extrapolated = "
+                    << (tgt_surf_center(0) - gen_surf_center(0)) << std::endl;
 
   auto propBoundState = trk_extrap_->extrapolate(boundTrkPars, target_surface);
 
@@ -318,7 +329,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
   Acts::BoundVector stddev;
 
   if (seed_smearing) {
-    ldmx_log(info) << "Smear track and inflate covariance" << std::endl;
+    ldmx_log(debug) << "Smear track and inflate covariance" << std::endl;
 
     /*
       double sigma_d0     = rel_smearfactors_[Acts::eBoundLoc0]   * tt.getD0();
@@ -373,7 +384,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTime] =
         inflate_factors_[Acts::eBoundTime] * sigma_t * Acts::UnitConstants::ns;
 
-    ldmx_log(info) << stddev << std::endl;
+    ldmx_log(debug) << stddev << std::endl;
 
     std::vector<double> v_seed_params(
         (bound_params).data(),
@@ -525,19 +536,15 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
       event.getCollection<ldmx::SimTrackerHit>(recoil_sim_hits_coll_name_);
 
-  // If sim hit collections are empty throw an exception
-  if (tagger_sim_hits.size() == 0 || recoil_sim_hits.size() == 0) {
-    if (tagger_sim_hits.size() == 0)
-      ldmx_log(error) << "Tagger sim hits collection empty for event "
-                      << event.getEventNumber() << " in run "
-                      << event.getEventHeader().getRun() << std::endl;
-    if (recoil_sim_hits.size() == 0)
-      ldmx_log(error) << "Recoil sim hits collection empty for event "
-                      << event.getEventNumber() << " in run "
-                      << event.getEventHeader().getRun() << std::endl;
-    ldmx_log(error) << "Skip event reconstruction" << std::endl;
-    return;
-  }
+  // If sim hit collections are empty throw a warning
+  if (tagger_sim_hits.size() == 0 && !skip_tagger_)
+    ldmx_log(error) << "Tagger sim hits collection empty for event "
+                    << event.getEventNumber() << " in run "
+                    << event.getEventHeader().getRun() << std::endl;
+  if (recoil_sim_hits.size() == 0 && !skip_recoil_)
+    ldmx_log(error) << "Recoil sim hits collection empty for event "
+                    << event.getEventNumber() << " in run "
+                    << event.getEventHeader().getRun() << std::endl;
 
   // The map stores which track leaves which sim hits
   std::map<int, std::vector<int>> hit_count_map_recoil;
@@ -550,8 +557,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   std::vector<int> recoil_sh_idxs;
   std::unordered_map<int, std::vector<int>> recoil_sh_count_map;
 
-  // We are only interested in the beam electron
-  int idx_taggerhit = -1;
+  std::vector<int> tagger_sh_idxs;
+  std::unordered_map<int, std::vector<int>> tagger_sh_count_map;
 
   // Target scoring hits for Tagger will have Z<0, Recoil scoring hits will have
   // Z>0
@@ -567,16 +574,13 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     if (zhit < 0.) {
       // Tagger selection cuts
       // Negative scoring plane hit, with momentum > p_cut
-      if (p_vec(2) < 0. || p_vec.norm() < p_cut_ || hit.getPdgID() != 11 ||
-          hit.getTrackID() != 1)
+      if (p_vec(2) < 0. || p_vec.norm() < p_cut_) continue;
 
-      {
-        continue;
-      }
+      // Check that the hit was left by a charged particle
+      if (abs(particleMap[hit.getTrackID()].getCharge()) < 1e-8) continue;
 
       if (p_vec.norm() > tagger_p_max) {
-        idx_taggerhit = i_sh;
-        tagger_p_max = p_vec.norm();
+        tagger_sh_count_map[hit.getTrackID()].push_back(i_sh);
       }
     }  // Tagger loop
 
@@ -597,6 +601,23 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   for (std::pair<int, std::vector<int>> element : recoil_sh_count_map) {
     std::sort(
         element.second.begin(), element.second.end(),
+        [&](const int idx1, int idx2) -> bool {
+          const ldmx::SimTrackerHit& hit1 = scoring_hits.at(idx1);
+          const ldmx::SimTrackerHit& hit2 = scoring_hits.at(idx2);
+
+          Acts::Vector3 phit1{hit1.getMomentum()[0], hit1.getMomentum()[1],
+                              hit1.getMomentum()[2]};
+          Acts::Vector3 phit2{hit2.getMomentum()[0], hit2.getMomentum()[1],
+                              hit2.getMomentum()[2]};
+
+          return phit1.norm() > phit2.norm();
+        });
+  }
+
+  // Sort tagger hits.
+  for (auto& [_track_id, hit_indices] : tagger_sh_count_map) {
+    std::sort(
+        hit_indices.begin(), hit_indices.end(),
         [&](const int idx1, int idx2) -> bool {
           const ldmx::SimTrackerHit& hit1 = scoring_hits.at(idx1);
           const ldmx::SimTrackerHit& hit2 = scoring_hits.at(idx2);
@@ -633,34 +654,26 @@ void TruthSeedProcessor::produce(framework::Event& event) {
   auto beamOriginSurface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(beamOrigin_[0], beamOrigin_[1], beamOrigin_[2]))};
 
-  // I found a tagger scoring plane hit
-  if (idx_taggerhit != -1) {
-    const ldmx::SimTrackerHit& hit = scoring_hits.at(idx_taggerhit);
-    const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
+  if (!skip_tagger_) {
+    for (const auto& [track_id, hit_indices] : tagger_sh_count_map) {
+      const ldmx::SimTrackerHit& hit = scoring_hits.at(hit_indices.at(0));
+      const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
 
-    if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
-      ldmx::Track truth_tagger_track;
-      createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
-      truth_tagger_track.setNhits(
-          hit_count_map_tagger[hit.getTrackID()].size());
-      // get track state at the generation point
-      // ldmx::TruthTrack::TrackState ts_beamOrigin(phit,"beam_origin");
-      // propagate track to target
-      // trackExtrapolator(truth_tagger_track, perigee_surface);
-      // truth_tagger_track.addTrackState(ts_beamOrigin);
-      tagger_truth_tracks.push_back(truth_tagger_track);
+      if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
+        ldmx::Track truth_tagger_track;
+        createTruthTrack(phit, hit, truth_tagger_track, targetSurface);
+        truth_tagger_track.setNhits(
+            hit_count_map_tagger[hit.getTrackID()].size());
+        tagger_truth_tracks.push_back(truth_tagger_track);
+
+        if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
+          ldmx::Track beamETruthSeed = TaggerFullSeed(
+              particleMap[hit.getTrackID()], hit.getTrackID(), hit,
+              hit_count_map_tagger, beamOriginSurface, targetUnboundSurface);
+          beam_electrons.push_back(beamETruthSeed);
+        }
+      }
     }
-  }
-
-  // Form the tagger full seed.
-  // TODO This won't work for multiple electrons sample. Fix.
-
-  if (idx_taggerhit != -1) {
-    ldmx::Track beamETruthSeed = TaggerFullSeed(
-        particleMap[1], 1, scoring_hits.at(idx_taggerhit), hit_count_map_tagger,
-        beamOriginSurface, targetUnboundSurface);
-
-    beam_electrons.push_back(beamETruthSeed);
   }
 
   // Recover the EcalScoring hits
@@ -695,7 +708,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
     // Findable particle selection
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
-        foundEcalHit) {
+        foundEcalHit && !skip_recoil_) {
       ldmx::Track truth_recoil_track =
           RecoilFullSeed(particleMap[hit.getTrackID()], hit.getTrackID(), hit,
                          ecal_hit, hit_count_map_recoil, targetSurface,
@@ -727,15 +740,17 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     tagger_truth_seeds.push_back(seed);
   }
 
-  ldmx_log(info) << "Forming seeds from truth" << std::endl;
+  ldmx_log(debug) << "Forming seeds from truth" << std::endl;
   for (auto& tt : recoil_truth_tracks) {
-    ldmx_log(info) << "Smearing truth track" << std::endl;
+    ldmx_log(debug) << "Smearing truth track" << std::endl;
 
     ldmx::Track seed = seedFromTruth(tt, seedSmearing_);
 
     recoil_truth_seeds.push_back(seed);
   }
 
+  // even if skip_tagger/recoil_ is true, still make the collections in the
+  // event
   event.add("beamElectrons", beam_electrons);
   event.add("TaggerTruthTracks", tagger_truth_tracks);
   event.add("RecoilTruthTracks", recoil_truth_tracks);
