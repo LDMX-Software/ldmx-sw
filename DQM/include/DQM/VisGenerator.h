@@ -40,7 +40,7 @@ class VisGenerator : public framework::Analyzer {
     // Simulated info has contribs with originID (not available by default)
     bool originIdAvailable_;
 
-    // Number of electrons in simulation; only relevant for energy calculations
+    // Number of electrons in simulation
     int nbrOfElectrons_;
 
     // Collection Name for SimHits
@@ -68,6 +68,7 @@ class VisGenerator : public framework::Analyzer {
     std::string ecalClusterPass_;
 
     // Generate json file visualizing hit origins
+    // NEEDS ORIGIN ID
     bool visHitOrigin_;
     std::string truthFilename_;
 

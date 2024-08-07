@@ -665,12 +665,19 @@ class VisGenerator(ldmxcfg.Analyzer) :
     def __init__(self,name="VisGenerator") :
         super().__init__(name,'dqm::VisGenerator','DQM')
         
+        # SIMULATION
         self.includeGroundTruth = True
         self.originIdAvailable = False # if simulated events contain origin ID (by default they do not)
         self.nbrOfElectrons = 2 # nbr of electrons in simulation -- only relevant for energy truth calculations
+        
         self.ecalSimHitColl = "EcalSimHits"
         self.ecalSimHitPass = "" #use whatever pass is available
 
+        # Create file visualising hit origin; needs origin ID
+        self.visHitOrigin = False
+        self.truthFilename = "truth.json"
+        
+        # REC
         self.includeEcalRecHits = True
         self.ecalRecHitColl = "EcalRecHits"
         self.ecalRecHitPass = "" #use whatever pass is available
@@ -678,10 +685,8 @@ class VisGenerator(ldmxcfg.Analyzer) :
         self.includeEcalClusters = True
         self.ecalClusterColl = "ecalClusters"
         self.ecalClusterPass = ""
-
-        self.visHitOrigin = False
-        self.truthFilename = "truth.json"
-
+        
+        # Create file visualising ecal layers
         self.visLayers = False
         self.layerFilename = "layers.json"
 
