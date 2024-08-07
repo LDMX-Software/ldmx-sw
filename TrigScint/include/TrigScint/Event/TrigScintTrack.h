@@ -215,6 +215,11 @@ class TrigScintTrack {
   void addConstituent(TrigScintCluster cl) { constituents_.push_back(cl); };
 
   /**
+   * Sets the clusters as the list of track constituents.
+   */
+  void setConstituents(std::vector<TrigScintCluster> cl) {constituents_ = cl; };
+
+  /**
    * Set the position of the track [mm].
    * @param x The X position.
    * @param y The Y position.

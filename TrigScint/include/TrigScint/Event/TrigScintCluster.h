@@ -108,7 +108,7 @@ class TrigScintCluster {
    * @param sy Cluster y coordinate uncertainty
    * @param sz Cluster z coordinate uncertainty
    */
-  void setUncertaintyXYZ(double sx, double sy, double sz) {
+  void setSigmaXYZ(double sx, double sy, double sz) {
     sx_ = sx;
     sy_ = sy;
     sz_ = sz;
@@ -118,6 +118,11 @@ class TrigScintCluster {
    * @param centroid The channel ID centroid
    */
   void setCentroid(double centroid) { centroid_ = centroid; }
+
+  /**
+   * @param maxElectrons The maximum number of possible electrons in cluster
+   */
+  void setMaxElectrons(int maxElectrons) { maxElectrons_ = maxElectrons; }
 
   /** Set time of hit. */
   void setTime(float t) { time_ = t; }
@@ -153,28 +158,31 @@ class TrigScintCluster {
   double getCentroidZ() const { return centroidZ_; }
 
   /** Get cluster centroid in x [mm] */
-  double getPositionX() const {return x_;}
+  double getX() const {return x_;}
 
   /** Get cluster centroid in y [mm] */
-  double getPositionY() const {return y_;}
+  double getY() const {return y_;}
 
   /** Get cluster centroid in z [mm] */
-  double getPositionZ() const {return z_;}
+  double getZ() const {return z_;}
 
   /** Get cluster centroid position uncertainty in x [mm] */
-  double getUncertaintyX() const {return sx_;}
+  double getSigmaX() const {return sx_;}
 
   /** Get cluster centroid position uncertainty in y [mm] */
-  double getUncertaintyY() const {return sy_;}
+  double getSigmaY() const {return sy_;}
 
   /** Get cluster centroid position uncertainty in z [mm] */
-  double getUncertaintyZ() const {return sz_;}
+  double getSigmaZ() const {return sz_;}
 
   /** Get vector of channel IDs of hits forming the cluster */
   const std::vector<unsigned int> &getHitIDs() const { return hitIDs_; }
 
   /** Get the cluster centroid in units of channel nb */
   double getCentroid() const { return centroid_; }
+
+  /** Get the maximum amount of allowed electrons in this cluster */
+  int getMaxElectrons() const {return maxElectrons_; }
 
   bool operator<(const TrigScintCluster &rhs) const {
     return this->getEnergy() < rhs.getEnergy();
@@ -234,6 +242,9 @@ class TrigScintCluster {
   // cluster time: energy weighted average of the times of the hits forming the
   // cluster
   float time_{0.};
+
+  // Maximum amount of allowed electrons in cluster
+  int maxElectrons_{1}; 
 
   /**
    * The ROOT class definition.

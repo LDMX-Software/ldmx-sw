@@ -23,3 +23,18 @@ class ElectronCounter(ldmxcfg.Producer) :
         self.use_simulated_electron_number = False
 electronCounter = ElectronCounter(1, "ElectronCounter")
 
+class ElectronCounter2(ldmxcfg.Producer) :
+    """Configuration for a test beam electron counter combining
+    TS track position information with Ecal cluster position information"""
+
+    def __init__(self, name="ElectronCounter2") :
+        super().__init__(name,'recon::ElectronCounter2','Recon')
+
+        self.input_collections = ["TriggerPadTracksY", "ecalClusters"]
+        self.input_pass_name = ""   # Take any pass
+        self.output_collection = "BeamElectronCount2"
+        self.x_tolerance = 0.
+        self.y_tolerance = 0.
+        self.ecal_position_shift_xy = [-4.8158640226/2., 0.]
+        self.ecal_energy_split = [550., 11000., 19000., 27000.]   # Ecal energy limits guessing 1e, 2e, 3e, 4e
+        self.verbose = True
