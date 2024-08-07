@@ -14,8 +14,12 @@ namespace dqm {
   void VisGenerator::configure(framework::config::Parameters& ps) {
     includeGroundTruth_ = ps.getParameter<bool>("includeGroundTruth");
     originIdAvailable_ = ps.getParameter<bool>("originIdAvailable");
+  
     ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
     ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
+
+    visHitOrigin_ = ps.getParameter<bool>("visHitOrigin");
+    truthFilename_ = ps.getParameter<std::string>("truthFilename");
 
     includeEcalRecHits_ = ps.getParameter<bool>("includeEcalRecHits");
     ecalRecHitColl_ = ps.getParameter<std::string>("ecalRecHitColl");
@@ -24,9 +28,6 @@ namespace dqm {
     includeEcalClusters_ = ps.getParameter<bool>("includeEcalClusters");
     ecalClusterColl_ = ps.getParameter<std::string>("ecalClusterColl");
     ecalClusterPass_ = ps.getParameter<std::string>("ecalClusterPass");
-
-    visHitOrigin_ = ps.getParameter<bool>("visHitOrigin");
-    truthFilename_ = ps.getParameter<std::string>("truthFilename");
 
     visLayers_ = ps.getParameter<bool>("visLayers");
     layerFilename_ = ps.getParameter<std::string>("layerFilename");
@@ -95,9 +96,13 @@ namespace dqm {
             cluster["ID"] = -1;
             if (includeGroundTruth_) {
               if (originIdAvailable_) cluster["originID"] = -1;
-              else cluster["incidentID"] = -1;
-              cluster["E from e1 (%)"] = -1.;
-              cluster["E from e2 (%)"] = -1.;
+              else {
+                cluster["incidentID"] = -1;
+                cluster["E from unknown (%)"] = -1.;
+              }
+              for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
+                cluster[std::string("E from e") + std::to_string(i) + " (%)"] = -1.;
+              }
               cluster["immediate_child"] = false;
             }
             for (auto const& clHitID : cl.getHitIDs()) {
@@ -131,8 +136,9 @@ namespace dqm {
       j[eKey]["Hits"][hit_coll_name] = json::array();
 
       if (visHitOrigin_) {
-        truth[eKey]["Hits"]["e1"] = json::array();
-        truth[eKey]["Hits"]["e2"] = json::array();
+        for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
+          truth[eKey]["Hits"][std::string("e") + std::to_string(i)] = json::array();;
+        }
         truth[eKey]["Hits"]["mixed"] = json::array();
       }
 
@@ -144,9 +150,11 @@ namespace dqm {
         if (includeGroundTruth_) {
           auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
           if (it != ecalSimHits.end()) {
-            double e1 = 0;
-            double e2 = 0;
-            double eunclear = 0;
+            std::vector<double> e;
+            e.resize(nbrOfElectrons_+1);
+            double eSum = 0.;
+            // double e1 = 0;
+            // double e2 = 0;
             int tag = 0;
             bool immediate_child = true;
             if (originIdAvailable_) {
@@ -154,36 +162,53 @@ namespace dqm {
               for (int i = 0; i < it->getNumberOfContribs(); i++) {
                 auto c = it->getContrib(i);
                 h["originID"].push_back(c.originID);
-                if (i != 0 && c.originID != tag) tag = 3;
+                if (i != 0 && c.originID != tag) tag = 0;
                 else tag = c.originID;
-                if (c.originID == 1) e1 += c.edep;
-                else if (c.originID == 2) e2 += c.edep;
-                if (c.incidentID != 1 && c.incidentID != 2) {
+                e[c.originID] += c.edep;
+                eSum += c.edep;
+                // if (c.originID == 1) e1 += c.edep;
+                // else if (c.originID == 2) e2 += c.edep;
+                if (c.incidentID > nbrOfElectrons_) {
                   immediate_child = false;
                 }
               }
-              if (e1+e2 > 0) {
-                h["E from e1 (%)"] = 100.*e1/(e1+e2);
-                h["E from e2 (%)"] = 100.*e2/(e1+e2);
-              }
+              // if (eSum > 0) {
+              //   for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
+              //     cluster[std::string("E from e") + std::to_string(i) + " (%)"] = 100.*e[i]/eSum;
+              //   }
+              //   // h["E from e1 (%)"] = 100.*e1/(e1+e2);
+              //   // h["E from e2 (%)"] = 100.*e2/(e1+e2);
+              // }
             } else {
+              double eUnknown = 0.;
               h["incidentID"] = json::array();
               for (int i = 0; i < it->getNumberOfContribs(); i++) {
                 auto c = it->getContrib(i);
                 h["incidentID"].push_back(c.incidentID);
-                if (i != 0 && c.incidentID != tag) tag = 3;
+                if (i != 0 && c.incidentID != tag) tag = 0;
                 else tag = c.incidentID;
-                if (c.incidentID == 1) e1 += c.edep;
-                else if (c.incidentID == 2) e2 += c.edep;
-                else eunclear += c.edep;
-                if (c.incidentID != 1 && c.incidentID != 2) {
+                if (c.incidentID > nbrOfElectrons_) {
+                  eUnknown += c.edep;
                   immediate_child = false;
-                }
+                } else e[c.incidentID] += c.edep;
+                eSum += c.edep;
+                // if (c.incidentID == 1) e1 += c.edep;
+                // else if (c.incidentID == 2) e2 += c.edep;
+                // else eunclear += c.edep;
+                // if (c.incidentID != 1 && c.incidentID != 2) {
+                //   immediate_child = false;
+                // }
               }
-              if (e1+e2+eunclear > 0) {
-                h["E from e1 (%)"] = 100.*e1/(e1+e2+eunclear);
-                h["E from e2 (%)"] = 100.*e2/(e1+e2+eunclear);
-                h["E from e2 (%)"] = 100.*eunclear/(e1+e2+eunclear);
+              if (eSum > 0) {
+                h["E from unknown (%)"] = 100.*eUnknown/eSum;
+                // h["E from e1 (%)"] = 100.*e1/(e1+e2+eunclear);
+                // h["E from e2 (%)"] = 100.*e2/(e1+e2+eunclear);
+                // h["E from e2 (%)"] = 100.*eunclear/(e1+e2+eunclear);
+              }
+            }
+            if (eSum > 0) {
+              for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
+                h[std::string("E from e") + std::to_string(i) + " (%)"] = 100.*e[i]/eSum;
               }
             }
             h["immediate_child"] = immediate_child;
@@ -194,21 +219,23 @@ namespace dqm {
               t["ID"] = hit.getID();
               t["type"] = "Box";
               t["energy"] = hit.getEnergy();
-              if (originIdAvailable_) t["originID"] = tag;
-              else t["incidentID"] = tag;
+              t["originID"] = tag;
               t["immediate_child"] = immediate_child;
               t["pos"] = { hit.getXPos(), hit.getYPos(), hit.getZPos(),
                             clusterHitSize, clusterHitSize, clusterHitSize };
-              if (tag == 1) {
-                t["color"] = "0xEADE76";
-                truth[eKey]["Hits"]["e1"].push_back(t);
-              } else if (tag == 2) {
-                t["color"] = "0x76BDEA";
-                truth[eKey]["Hits"]["e2"].push_back(t);
-              } else {
-                t["color"] = "0x76EA84";
-                truth[eKey]["Hits"]["mixed"].push_back(t);
-              }
+              t["color"] = colors[tag % nbrOfElectrons_];
+              if (tag == 0) truth[eKey]["Hits"]["mixed"].push_back(t);
+              else truth[eKey]["Hits"][std::string("e") + std::to_string(tag)].push_back(t);
+              // if (tag == 1) {
+              //   t["color"] = "0xEADE76";
+              //   truth[eKey]["Hits"]["e1"].push_back(t);
+              // } else if (tag == 2) {
+              //   t["color"] = "0x76BDEA";
+              //   truth[eKey]["Hits"]["e2"].push_back(t);
+              // } else {
+              //   t["color"] = "0x76EA84";
+              //   truth[eKey]["Hits"]["mixed"].push_back(t);
+              // }
             }
           }
         }
@@ -355,6 +382,9 @@ namespace dqm {
     const std::string eKey = "EVENT_KEY_" + std::to_string(event.getEventNumber());
     j[eKey]["event number"] = event.getEventNumber();
     j[eKey]["run number"] = runNbr_;
+
+    // checks
+    if (!originIdAvailable_) visHitOrigin_ = false;
 
     // ----- HITS -----
     j[eKey]["Hits"] = json::object();
