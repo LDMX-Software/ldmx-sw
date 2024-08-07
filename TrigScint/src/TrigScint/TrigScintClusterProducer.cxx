@@ -17,6 +17,8 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   vertBarStartIdx_ = ps.getParameter<int>("vertical_bar_start_index");
   timeTolerance_ = ps.getParameter<double>("time_tolerance");
   padTime_ = ps.getParameter<double>("pad_time");
+  // electronPESeparation_ = ps.getParameter<int>("electron_pe_separation");
+  electronEnergySeparation_ = ps.getParameter<double>("electron_energy_spearation");
 
   // Bar sizes
   barWidth_x_ = ps.getParameter<double>("vertical_bar_width");
@@ -439,6 +441,12 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       cluster.setPE(val_);
       cluster.setTime(time_ / val_);
       cluster.setBeamEfrac(beamE_ / valE_);
+      // if (val_ / v_addedIndices_.size() >= electronPESeparation_) {
+      //   cluster.setMaxElectrons(2);
+      // }
+      if (valE_ / v_addedIndices_.size() > electronEnergySeparation_) {
+        cluster.setMaxElectrons(2);
+      }
 
       centroid_ = 0;
       val_ = 0;
@@ -581,7 +589,7 @@ void TrigScintClusterProducer::setPosition(ldmx::TrigScintCluster &cluster) {
       }
 
       cluster.setPositionXYZ(x,y,z);        // Set cluster centroid position
-      cluster.setUncertaintyXYZ(sx,sy,sz);  // Set uncertainty of cluster position
+      cluster.setSigmaXYZ(sx,sy,sz);        // Set uncertainty of cluster position
 
       return;
 }

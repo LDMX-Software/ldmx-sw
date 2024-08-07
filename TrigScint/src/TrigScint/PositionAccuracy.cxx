@@ -58,17 +58,17 @@ void PositionAccuracy::produce(framework::Event &event) {
             // Define new position difference
             ldmx::PositionDifference clusterDiff;
             // Set x, y, z uncertainties sx, sy, z
-            clusterDiff.setSigmaX(clusterPairs.at(i).getUncertaintyX());
-            clusterDiff.setSigmaY(clusterPairs.at(i).getUncertaintyY());
-            clusterDiff.setSigmaZ(clusterPairs.at(i).getUncertaintyZ());
+            clusterDiff.setSigmaX(clusterPairs.at(i).getSigmaX());
+            clusterDiff.setSigmaY(clusterPairs.at(i).getSigmaY());
+            clusterDiff.setSigmaZ(clusterPairs.at(i).getSigmaZ());
             // Set dx, dy, dz differences
-            clusterDiff.setDx(clusterPairs.at(i).getPositionX() -
+            clusterDiff.setDx(clusterPairs.at(i).getX() -
                                 (beamElectronInfo.at(j).getX() -
                                 padPosition_.at(0)));
-            clusterDiff.setDy(clusterPairs.at(i).getPositionY() -
+            clusterDiff.setDy(clusterPairs.at(i).getY() -
                                 (beamElectronInfo.at(j).getY() -
                                 padPosition_.at(1)));
-            clusterDiff.setDz(clusterPairs.at(i).getPositionZ() -
+            clusterDiff.setDz(clusterPairs.at(i).getZ() -
                                 (beamElectronInfo.at(j).getZ() -
                                 padPosition_.at(2)));
             // Append clusterDiff to positionDifferenceClusters
@@ -131,12 +131,12 @@ std::vector<ldmx::TrigScintCluster> PositionAccuracy::matchXYClusters(std::vecto
             for (int j = 0; j < xClusters.size(); j++) {
                 // Create new cluster with position
                 ldmx::TrigScintCluster newCluster;
-                newCluster.setPositionXYZ(xClusters.at(j).getPositionX(),
-                                        yClusters.at(i).getPositionY(),
-                                        yClusters.at(i).getPositionZ());
-                newCluster.setUncertaintyXYZ(
-                    xClusters.at(j).getUncertaintyX(), yClusters.at(i).getUncertaintyY(),
-                    std::max(xClusters.at(j).getUncertaintyZ(), yClusters.at(i).getUncertaintyZ()));
+                newCluster.setPositionXYZ(xClusters.at(j).getX(),
+                                        yClusters.at(i).getY(),
+                                        yClusters.at(i).getZ());
+                newCluster.setSigmaXYZ(
+                    xClusters.at(j).getSigmaX(), yClusters.at(i).getSigmaY(),
+                    std::max(xClusters.at(j).getSigmaZ(), yClusters.at(i).getSigmaZ()));
                 // Append new cluster to matchedClusters
                 matchedClusters.push_back(newCluster);
             }

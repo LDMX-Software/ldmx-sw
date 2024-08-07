@@ -104,6 +104,10 @@ class TrigScintClusterProducer : public framework::Producer {
   // cluster time (energy weighted based on hit time)
   float time_{0.};
 
+  // Number of photoelectrons needed for an additional electron in cluster
+  // int electronPESeparation_{130};
+  double electronEnergySeparation_{0.55};
+
   // empty map container
   std::map<int, int> hitChannelMap_;
 

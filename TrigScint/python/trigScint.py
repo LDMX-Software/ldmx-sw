@@ -235,6 +235,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPad1Clusters"
         self.verbosity = 0
+        self.electron_energy_spearation = 0.55#130
 
         # Standard values of a TS pad for trigScint geometry in
         # detector ldmx-det-v14-8gevi
@@ -299,8 +300,8 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.verbosity = 0
 
         # Test implementation of sigma_scatt x and y
-        self.sigma_scatt_x = 0.5
-        self.sigma_scatt_y = 0.0
+        self.sigma_scatt_x = 0.25
+        self.sigma_scatt_y = 0.25
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
