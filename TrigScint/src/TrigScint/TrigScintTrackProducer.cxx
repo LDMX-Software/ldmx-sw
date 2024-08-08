@@ -539,40 +539,40 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
         */
         // Determine number of tracks to keep and potentially do a Cluster split
         int numberTracksToKeep = 1;
-        std::vector<ldmx::TrigScintCluster> trackConst = trk.getConstituents();
-        if (trackConst.at(0).getMaxElectrons() == 2 &&
-            trackConst.at(1).getMaxElectrons() == 2 &&
-            trackConst.at(2).getMaxElectrons() == 2) {
-          // Keep two split tracks
-          numberTracksToKeep = 2;
-          // Log that a split is performed
-          if (verbose_ > 0) {
-            ldmx_log(debug) << "2 electrons in track! Splitting track into two with half the number of PE.";
-          }
-          // New tracks
-          ldmx::TrigScintTrack newTrack = trk;
-          // Cluster split
-          std::vector<ldmx::TrigScintCluster> newCluster = trackConst;
-          float newTrackPE = 0;
-          for (uint i = 0; i < trackConst.size(); i++) {
-            // Split PE count
-            newCluster.at(i).setPE(trackConst.at(i).getPE() / 2.);
-            newTrackPE += trackConst.at(i).getPE() / 2.;
-            // Split deposited energy
-            newCluster.at(i).setEnergy(trackConst.at(i).getEnergy() / 2.);
-            // Set maximum electrons in cluster to 1
-            newCluster.at(i).setMaxElectrons(1);
-          }
-          // Set track consituents
-          newTrack.setConstituents(newCluster);
-          // Set new track PE count
-          newTrackPE /= newCluster.size();
-          newTrack.setPE(newTrackPE);
-          // Update track
-          trk = newTrack;
-        } else if (verbose_ > 0) {
-          ldmx_log(debug) << "1 electron in track!";
-        }
+        // std::vector<ldmx::TrigScintCluster> trackConst = trk.getConstituents();
+        // if (trackConst.at(0).getMaxElectrons() == 2 &&
+        //     trackConst.at(1).getMaxElectrons() == 2 &&
+        //     trackConst.at(2).getMaxElectrons() == 2) {
+        //   // Keep two split tracks
+        //   numberTracksToKeep = 2;
+        //   // Log that a split is performed
+        //   if (verbose_ > 0) {
+        //     ldmx_log(debug) << "2 electrons in track! Splitting track into two with half the number of PE.";
+        //   }
+        //   // New tracks
+        //   ldmx::TrigScintTrack newTrack = trk;
+        //   // Cluster split
+        //   std::vector<ldmx::TrigScintCluster> newCluster = trackConst;
+        //   float newTrackPE = 0;
+        //   for (uint i = 0; i < trackConst.size(); i++) {
+        //     // Split PE count
+        //     newCluster.at(i).setPE(trackConst.at(i).getPE() / 2.);
+        //     newTrackPE += trackConst.at(i).getPE() / 2.;
+        //     // Split deposited energy
+        //     newCluster.at(i).setEnergy(trackConst.at(i).getEnergy() / 2.);
+        //     // Set maximum electrons in cluster to 1
+        //     newCluster.at(i).setMaxElectrons(1);
+        //   }
+        //   // Set track consituents
+        //   newTrack.setConstituents(newCluster);
+        //   // Set new track PE count
+        //   newTrackPE /= newCluster.size();
+        //   newTrack.setPE(newTrackPE);
+        //   // Update track
+        //   trk = newTrack;
+        // } else if (verbose_ > 0) {
+        //   ldmx_log(debug) << "1 electron in track!";
+        // }
 
         // Log amount of tracks saved
         if (verbose_ > 0) {
