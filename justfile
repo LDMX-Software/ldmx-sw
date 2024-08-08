@@ -28,6 +28,8 @@ help_message := "shared recipes for ldmx-sw development
 "
 
 # inherited from ldmx-env bash functions
+# we could look into removing this and instead having the denv_workspace be
+# the justfile_directory() itself but that is a larger change than introducing just
 # the denv workspace is colloquially known as LDMX_BASE
 export LDMX_BASE := parent_directory( justfile_directory() )
 
@@ -107,6 +109,8 @@ format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
 # below are the mimics of ldmx <cmd>
+# we could think about removing them if folks are happy with committing to the
+# just-style commands above
 
 # change which image is used for the denv
 use IMAGE:
@@ -128,4 +132,4 @@ setenv +ENVVAR:
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
 
 # re-build ldmx-sw and then run a config
-recompAndFire config_py *ARGS: build (fire config_py ARGS)
+recompFire config_py *ARGS: build (fire config_py ARGS)
