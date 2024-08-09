@@ -111,9 +111,9 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   // for different bins in momentum/angle
   rocFileName_ = parameters.getParameter<std::string>("roc_file");
   if (!std::ifstream(rocFileName_).good()) {
-    EXCEPTION_RAISE("EcalVetoProcessor", "The specified RoC file '" +
-                                             rocFileName_ + 
-                                             "' does not exist!");
+    EXCEPTION_RAISE(
+        "EcalVetoProcessor",
+        "The specified RoC file '" + rocFileName_ + "' does not exist!");
   } else {
     std::ifstream rocfile(rocFileName_);
     std::string line, value;
@@ -123,17 +123,15 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
     std::vector<double> values;
 
     // Read data, line by line
-    while(std::getline(rocfile, line))
-    {
+    while (std::getline(rocfile, line)) {
       std::stringstream ss(line);
       values.clear();
-      while(std::getline(ss, value, ',')){
-        double f_value = (value != "") ? std::stof(value)  : -1.0;
+      while (std::getline(ss, value, ',')) {
+        double f_value = (value != "") ? std::stof(value) : -1.0;
         values.push_back(f_value);
       }
       roc_range_values_.push_back(values);
     }
-
   }
 
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
@@ -272,10 +270,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       recoilP.size()
           ? sqrt(pow(recoilP[0], 2) + pow(recoilP[1], 2) + pow(recoilP[2], 2))
           : -1.0;
-  float recoilTheta = recoilPMag > 0 ? acos(recoilP[2] / recoilPMag) * 180.0 / M_PI : -1.0;
+  float recoilTheta =
+      recoilPMag > 0 ? acos(recoilP[2] / recoilPMag) * 180.0 / M_PI : -1.0;
 
   // Use the appropriate containment radii for the recoil electron
-  std::vector<double> roc_values_bin0(roc_range_values_[0].begin() + 4, 
+  std::vector<double> roc_values_bin0(roc_range_values_[0].begin() + 4,
                                       roc_range_values_[0].end());
   std::vector<double> ele_radii = roc_values_bin0;
   double theta_min, theta_max, p_min, p_max;
@@ -288,24 +287,20 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     p_max = roc_range_values_[i][3];
     inrange = true;
 
-    if (theta_min != -1.0){
+    if (theta_min != -1.0) {
       inrange = inrange && (recoilTheta >= theta_min);
-      // std::cout << "    inrange theta_min: " << inrange << std::endl;
     }
-    if (theta_max != -1.0){
+    if (theta_max != -1.0) {
       inrange = inrange && (recoilTheta < theta_max);
-      // std::cout << "    inrange theta_max: " << inrange << std::endl;
     }
-    if (p_min != -1.0){
+    if (p_min != -1.0) {
       inrange = inrange && (recoilPMag >= p_min);
-      // std::cout << "    inrange p_min: " << inrange << std::endl;
     }
-    if (p_max != -1.0){
+    if (p_max != -1.0) {
       inrange = inrange && (recoilPMag < p_max);
-      // std::cout << "    inrange p_max: " << inrange << std::endl;
     }
     if (inrange) {
-      std::vector<double> roc_values_bini(roc_range_values_[i].begin() + 4, 
+      std::vector<double> roc_values_bini(roc_range_values_[i].begin() + 4,
                                           roc_range_values_[i].end());
       ele_radii = roc_values_bini;
     }
@@ -353,21 +348,36 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> yStdSeg(nsegments, 0.0);
   std::vector<float> layerMeanSeg(nsegments, 0.0);
   std::vector<float> layerStdSeg(nsegments, 0.0);
-  std::vector<std::vector<float>> eContEnergy(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> eContXMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> eContYMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> gContEnergy(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<int>>   gContNHits(nregions, std::vector<int>(nsegments, 0));
-  std::vector<std::vector<float>> gContXMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> gContYMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContEnergy(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<int>>   oContNHits(nregions, std::vector<int>(nsegments, 0));
-  std::vector<std::vector<float>> oContXMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContYMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContXStd(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContYStd(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContLayerMean(nregions, std::vector<float>(nsegments, 0.0));
-  std::vector<std::vector<float>> oContLayerStd(nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> eContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> eContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> eContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> gContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<int>> gContNHits(nregions,
+                                           std::vector<int>(nsegments, 0));
+  std::vector<std::vector<float>> gContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> gContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<int>> oContNHits(nregions,
+                                           std::vector<int>(nsegments, 0));
+  std::vector<std::vector<float>> oContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContXStd(nregions,
+                                            std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContYStd(nregions,
+                                            std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContLayerMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContLayerStd(
+      nregions, std::vector<float>(nsegments, 0.0));
 
   // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
   // hits inside the electron ROC (or all hits in the ECal if the event is
@@ -412,7 +422,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
       // Decide which longitudinal segment the hit is in and add to sums
       for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
-        if (id.layer() >= segLayers[iseg] && id.layer() <= segLayers[iseg+1] - 1) {
+        if (id.layer() >= segLayers[iseg] &&
+            id.layer() <= segLayers[iseg + 1] - 1) {
           energySeg[iseg] += hit.getEnergy();
           xMeanSeg[iseg] += xy_pair.first * hit.getEnergy();
           yMeanSeg[iseg] += xy_pair.second * hit.getEnergy();
@@ -427,7 +438,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
               eContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
             }
             if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
-                distance_photon_trajectory < (ireg + 1) * photon_radii[id.layer()]) {
+                distance_photon_trajectory <
+                    (ireg + 1) * photon_radii[id.layer()]) {
               gContEnergy[ireg][iseg] += hit.getEnergy();
               gContNHits[ireg][iseg] += 1;
               gContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
@@ -444,7 +456,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
             }
           }
         }
-        
       }
 
       // Decide which containment region the hit is in and add to sums
@@ -555,23 +566,28 @@ void EcalVetoProcessor::produce(framework::Event &event) {
             : -1.0;
 
     for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
-      if (id.layer() >= segLayers[iseg] && id.layer() <= segLayers[iseg+1] - 1) {
-        xStdSeg[iseg] += 
+      if (id.layer() >= segLayers[iseg] &&
+          id.layer() <= segLayers[iseg + 1] - 1) {
+        xStdSeg[iseg] +=
             pow((xy_pair.first - xMeanSeg[iseg]), 2) * hit.getEnergy();
-        yStdSeg[iseg] += 
+        yStdSeg[iseg] +=
             pow((xy_pair.second - yMeanSeg[iseg]), 2) * hit.getEnergy();
-        layerStdSeg[iseg] += 
+        layerStdSeg[iseg] +=
             pow((id.layer() - layerMeanSeg[iseg]), 2) * hit.getEnergy();
 
         for (unsigned int ireg = 0; ireg < nregions; ireg++) {
           if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
-              distance_photon_trajectory > (ireg + 1) * photon_radii[id.layer()]) {
+              distance_photon_trajectory >
+                  (ireg + 1) * photon_radii[id.layer()]) {
             oContXStd[ireg][iseg] +=
-                pow((xy_pair.first - oContXMean[ireg][iseg]), 2) * hit.getEnergy();
+                pow((xy_pair.first - oContXMean[ireg][iseg]), 2) *
+                hit.getEnergy();
             oContYStd[ireg][iseg] +=
-                pow((xy_pair.second - oContYMean[ireg][iseg]), 2) * hit.getEnergy();
+                pow((xy_pair.second - oContYMean[ireg][iseg]), 2) *
+                hit.getEnergy();
             oContLayerStd[ireg][iseg] +=
-                pow((id.layer() - oContLayerMean[ireg][iseg]), 2) * hit.getEnergy();
+                pow((id.layer() - oContLayerMean[ireg][iseg]), 2) *
+                hit.getEnergy();
           }
         }
       }
@@ -600,7 +616,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     stdLayerHit_ = 0;
   }
 
-  // Quotient out the total energies from the standard deviations if possible and take root
+  // Quotient out the total energies from the standard deviations if possible
+  // and take root
   for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
     if (energySeg[iseg] > 0) {
       xStdSeg[iseg] = sqrt(xStdSeg[iseg] / energySeg[iseg]);
@@ -609,16 +626,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
     for (unsigned int ireg = 0; ireg < nregions; ireg++) {
       if (oContEnergy[ireg][iseg] > 0) {
-        oContXStd[ireg][iseg] = 
+        oContXStd[ireg][iseg] =
             sqrt(oContXStd[ireg][iseg] / oContEnergy[ireg][iseg]);
-        oContYStd[ireg][iseg] = 
+        oContYStd[ireg][iseg] =
             sqrt(oContYStd[ireg][iseg] / oContEnergy[ireg][iseg]);
-        oContLayerStd[ireg][iseg] = 
+        oContLayerStd[ireg][iseg] =
             sqrt(oContLayerStd[ireg][iseg] / oContEnergy[ireg][iseg]);
       }
     }
   }
-  
+
   for (unsigned int ireg = 0; ireg < nregions; ireg++) {
     if (outsideContainmentEnergy[ireg] > 0) {
       outsideContainmentXstd[ireg] =
@@ -717,7 +734,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     TVector3 e_norm = evec.Unit();
     TVector3 pvec = p_traj_end - p_traj_start;
     TVector3 p_norm = pvec.Unit();
-    epAng_ = acos(epDot) * 180.0 / M_PI;
+    epAng_ = acos(epDot_) * 180.0 / M_PI;
     epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
                   pow(e_traj_start.Y() - p_traj_start.Y(), 2));
   } else {
@@ -736,18 +753,21 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     epDot_ = 1.0;  // default to 1.0 (?)
   }
 
-  // Near photon step:  Find the first layer of the ECal where a hit near the projected
-  // photon trajectory is found
-  // Currently unusued pending further study; performance has dropped between v9 and v12.
-  // Currently used in segmipBDT
-  firstNearPhLayer_ = nEcalLayers_-1;
+  // Near photon step:  Find the first layer of the ECal where a hit near the
+  // projected photon trajectory is found Currently unusued pending further
+  // study; performance has dropped between v9 and v12. Currently used in
+  // segmipBDT
+  firstNearPhLayer_ = nEcalLayers_ - 1;
 
-  if(photon_trajectory.size() != 0) {  //If no photon trajectory, leave this at the default (ECal back)
-    for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
-      float ehDist = sqrt( pow((*it).pos.X() - photon_trajectory[(*it).layer].first,  2)
-                         + pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
-      if(ehDist < 8.7) {
-        nNearPhHits_ ++;
+  if (photon_trajectory.size() !=
+      0) {  // If no photon trajectory, leave this at the default (ECal back)
+    for (std::vector<HitData>::iterator it = trackingHitList.begin();
+         it != trackingHitList.end(); ++it) {
+      float ehDist =
+          sqrt(pow((*it).pos.X() - photon_trajectory[(*it).layer].first, 2) +
+               pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
+      if (ehDist < 8.7) {
+        nNearPhHits_++;
         if ((*it).layer < firstNearPhLayer_) {
           firstNearPhLayer_ = (*it).layer;
         }
@@ -757,7 +777,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // Territories limited to trackingHitList
   TVector3 gToe = (e_traj_start - p_traj_start).Unit();
-  TVector3 origin = p_traj_start + 0.5*8.7*gToe;
+  TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
   if (ele_trajectory.size() > 0) {
     for (auto &hitData : trackingHitList) {
       TVector3 hitPos = hitData.pos;
@@ -766,8 +786,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         photonTerritoryHits_++;
       }
     }
-  }
-  else {
+  } else {
     photonTerritoryHits_ = nReadoutHits_;
   }
 
@@ -1078,21 +1097,23 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
-      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_, photonTerritoryHits_,
-      epAng_, epSep_, epDot_,
-      electronContainmentEnergy, photonContainmentEnergy,
-      outsideContainmentEnergy, outsideContainmentNHits,
-      outsideContainmentXstd, outsideContainmentYstd, 
-      energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg, layerMeanSeg, layerStdSeg,
-      eContEnergy, eContXMean, eContYMean, gContEnergy, gContNHits, gContXMean, gContYMean,
-      oContEnergy, oContNHits, oContXMean, oContYMean, oContXStd, oContYStd, oContLayerMean, oContLayerStd,
+      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_,
+      photonTerritoryHits_, epAng_, epSep_, epDot_, electronContainmentEnergy,
+      photonContainmentEnergy, outsideContainmentEnergy,
+      outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd,
+      energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg, layerMeanSeg,
+      layerStdSeg, eContEnergy, eContXMean, eContYMean, gContEnergy, gContNHits,
+      gContXMean, gContYMean, oContEnergy, oContNHits, oContXMean, oContYMean,
+      oContXStd, oContYStd, oContLayerMean, oContLayerStd,
       ecalLayerEdepReadout_, recoilP, recoilPos);
 
   if (doBdt_) {
     buildBDTFeatureVector(result);
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-    float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
-    // Removing electron-photon separation step, near photon step due to lower v12 performance; may reconsider
+    float pred =
+        rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+    // Removing electron-photon separation step, near photon step due to lower
+    // v12 performance; may reconsider
     bool passesTrackingVeto = (nStraightTracks_ < 3) && (nLinregTracks_ == 0);
     //&&  //Commenting the remainder for now
     //(firstNearPhLayer_ >= 6); //&& (epAng_ > 3.0 || epSep_ > 10.0);
