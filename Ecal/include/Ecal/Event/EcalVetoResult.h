@@ -36,13 +36,12 @@ class EcalVetoResult {
                     float summedTightIso, float maxCellDep, float showerRMS,
                     float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy,
-<<<<<<< HEAD
                     int nStraightTracks, int nLinregTracks,
                     int firstNearPhLayer, float epAng, float epSep,
-=======
-                    int nStraightTracks, int nLinregTracks, int firstNearPhLayer, int nNearPhHits,
-                    int photonTerritoryHits, float epAng, float epSep, float epDot,
->>>>>>> afa63883 (Add new variables for segmip-BDT)
+                    int nStraightTracks, int nLinregTracks,
+                    int firstNearPhLayer, int nNearPhHits,
+                    int photonTerritoryHits, float epAng, float epSep,
+                    float epDot,
 
                     std::vector<float> electronContainmentEnergy,
                     std::vector<float> photonContainmentEnergy,
@@ -51,23 +50,20 @@ class EcalVetoResult {
                     std::vector<float> outsideContainmentXStd,
                     std::vector<float> outsideContainmentYStd,
 
-                    std::vector<float> energySeg,
-                    std::vector<float> xMeanSeg,
-                    std::vector<float> yMeanSeg,
-                    std::vector<float> xStdSeg,
-                    std::vector<float> yStdSeg,
-                    std::vector<float> layerMeanSeg,
+                    std::vector<float> energySeg, std::vector<float> xMeanSeg,
+                    std::vector<float> yMeanSeg, std::vector<float> xStdSeg,
+                    std::vector<float> yStdSeg, std::vector<float> layerMeanSeg,
                     std::vector<float> layerStdSeg,
 
                     std::vector<std::vector<float>> eContEnergy,
                     std::vector<std::vector<float>> eContXMean,
                     std::vector<std::vector<float>> eContYMean,
                     std::vector<std::vector<float>> gContEnergy,
-                    std::vector<std::vector<int>>   gContNHits,
+                    std::vector<std::vector<int>> gContNHits,
                     std::vector<std::vector<float>> gContXMean,
                     std::vector<std::vector<float>> gContYMean,
                     std::vector<std::vector<float>> oContEnergy,
-                    std::vector<std::vector<int>>   oContNHits,
+                    std::vector<std::vector<int>> oContNHits,
                     std::vector<std::vector<float>> oContXMean,
                     std::vector<std::vector<float>> oContYMean,
                     std::vector<std::vector<float>> oContXStd,
@@ -260,15 +256,18 @@ class EcalVetoResult {
   int nStraightTracks_{0};
   /// Number of "linreg" tracks found in the event
   int nLinregTracks_{0};
-  /// Earliest ECal layer in which a hit is found near the projected photon trajectory
+  /// Earliest ECal layer in which a hit is found near the projected photon
+  /// trajectory
   int firstNearPhLayer_{0};
   /// Number of hits near the photon trajectory
   int nNearPhHits_{0};
   /// Number of hits in the photon territory
   int photonTerritoryHits_{0};
-  /// Angular separation between the projected photon and electron trajectories (currently unused)
+  /// Angular separation between the projected photon and electron trajectories
+  /// (currently unused)
   float epAng_{0};
-  /// Distance between the projected photon and electron trajectories at the ECal face
+  /// Distance between the projected photon and electron trajectories at the
+  /// ECal face
   float epSep_{0};
   /// Dot product of the photon and electron momenta unit vectors
   float epDot_{0};

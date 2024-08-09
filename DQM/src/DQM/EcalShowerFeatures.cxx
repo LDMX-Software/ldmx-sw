@@ -36,7 +36,7 @@ void EcalShowerFeatures::analyze(const framework::Event &event) {
   for (const auto &energy : veto.getOutsideContainmentEnergy()) {
     histograms_.fill("out_containment_energy", energy);
   }
-  
+
   return;
 }
 
