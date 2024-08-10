@@ -747,8 +747,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));  // 0);
     p_traj_end = TVector3(
         1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
-    epAng_ =
-        3.0 + 1.0; /*ensures event will not be vetoed by angle/separation cut */
+    /*ensures event will not be vetoed by angle/separation cut */
+    epAng_ = 3.0 + 1.0;
     epSep_ = 10.0 + 1.0;
     epDot_ = 1.0;  // default to 1.0 (?)
   }
