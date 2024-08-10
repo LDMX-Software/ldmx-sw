@@ -37,8 +37,6 @@ class EcalVetoResult {
                     float xStd, float yStd, float avgLayerHit,
                     float stdLayerHit, float ecalBackEnergy,
                     int nStraightTracks, int nLinregTracks,
-                    int firstNearPhLayer, float epAng, float epSep,
-                    int nStraightTracks, int nLinregTracks,
                     int firstNearPhLayer, int nNearPhHits,
                     int photonTerritoryHits, float epAng, float epSep,
                     float epDot,
