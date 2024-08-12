@@ -210,28 +210,28 @@ class EcalVetoResult {
   void setDiscValue(float discValue) { discValue_ = discValue; }
 
   /** Return the momentum of the recoil at the Ecal face. */
-  std::vector<double> getRecoilMomentum() {
+  const std::vector<double> getRecoilMomentum() const {
     return {recoilPx_, recoilPy_, recoilPz_};
   };
 
   /** Return the x position of the recoil at the Ecal face. */
-  double getRecoilX() const { return recoilX_; };
+  const double getRecoilX() const { return recoilX_; };
 
   /** Return the y position of the recoil at the Ecal face. */
-  double getRecoilY() const { return recoilY_; };
+  const double getRecoilY() const { return recoilY_; };
 
   /// Number of straight tracks found
-  int getNStraightTracks() const { return nStraightTracks_; }
+  const int getNStraightTracks() const { return nStraightTracks_; }
 
   /// Number of linear-regression tracks found
-  int getNLinRegTracks() const { return nLinregTracks_; }
+  const int getNLinRegTracks() const { return nLinregTracks_; }
 
-  int getFirstNearPhLayer() const { return firstNearPhLayer_; }
-  int getNNearPhHits() const { return nNearPhHits_; }
-  int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
-  float getEPAng() const { return epAng_; }
-  float getEPSep() const { return epSep_; }
-  float getEPDot() const { return epDot_; }
+  const int getFirstNearPhLayer() const { return firstNearPhLayer_; }
+  const int getNNearPhHits() const { return nNearPhHits_; }
+  const int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
+  const float getEPAng() const { return epAng_; }
+  const float getEPSep() const { return epSep_; }
+  const float getEPDot() const { return epDot_; }
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */
