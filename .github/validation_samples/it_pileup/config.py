@@ -12,7 +12,7 @@ pileupFilePassName="test"
 thisPassName="overlay"
 p=ldmxcfg.Process(thisPassName)
 
-det = 'ldmx-det-v14'
+det = 'ldmx-det-v14-8gev'
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 p.termLogLevel = 0
@@ -95,7 +95,7 @@ p.sequence.extend([
     TrigScintClusterProducer.pad2(),
     TrigScintClusterProducer.pad3(),
     trigScintTrack,
-    count, TriggerProcessor('trigger', 4000.),
+    count, TriggerProcessor('trigger', 8000.),
     dqm.SimObjects(sim_pass=thisPassName),
     ecalDigiVerify,dqm.EcalShowerFeatures(),
         dqm.PhotoNuclearDQM(verbose=False),
