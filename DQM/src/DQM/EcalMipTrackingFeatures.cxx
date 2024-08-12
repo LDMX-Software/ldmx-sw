@@ -13,7 +13,7 @@ void EcalMipTrackingFeatures::configure(framework::config::Parameters &ps) {
 }
 
 void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
-  auto veto{
+  const auto &veto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   histograms_.fill("n_straight_tracks", veto.getNStraightTracks());

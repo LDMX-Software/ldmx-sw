@@ -22,7 +22,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.roc_file = makeRoCPath( 'RoC_v14_8gev' )
         self.beam_energy = 8000.0  # in MeV
         self.cellxy_file = makeCellXYPath()
-        self.disc_cut = 0.99
+        self.disc_cut = 0.99741
         self.collection_name = "EcalVeto"
         self.rec_coll_name = 'EcalRecHits'
         self.rec_pass_name = ''
