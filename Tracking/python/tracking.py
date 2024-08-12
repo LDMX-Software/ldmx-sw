@@ -280,7 +280,9 @@ class TruthSeedProcessor(Producer):
     skip_tagger : bool 
         Ignore the tagger tracker(makes empty collections). 
     skip_recoil : bool 
-        Ignore the recoil tracker(makes empty collections)
+        Ignore the recoil tracker(makes empty collections).
+    max_track_id : double
+        Maximum track ID for a hit to be selected in the target scoring plane.
     """
     def __init__(self, instance_name = "TruthSeedProcessor"):
         super().__init__(instance_name, 'tracking::reco::TruthSeedProcessor',
@@ -299,3 +301,4 @@ class TruthSeedProcessor(Producer):
         self.p_cut_ecal = -1. #MeV
         self.skip_tagger = False
         self.skip_recoil = False
+        self.max_track_id = 5
