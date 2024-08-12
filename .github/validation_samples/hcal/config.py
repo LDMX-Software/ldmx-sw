@@ -4,7 +4,7 @@ p = ldmxcfg.Process('test')
 from LDMX.SimCore import simulator as sim
 mySim = sim.simulator( "mySim" )
 mySim.description = 'Hcal Muons and Neutrons'
-mySim.setDetector( 'ldmx-det-v14' )
+mySim.setDetector( 'ldmx-det-v14-8gev' )
 from LDMX.SimCore import generators as gen
 
 # flat distribution of energy from 1GeV to 4GeV
@@ -13,7 +13,7 @@ from LDMX.SimCore import generators as gen
 ene_ang_pos_cmds = [
         '/gps/ene/type Lin',
         '/gps/ene/min 1 GeV',
-        '/gps/ene/max 4 GeV',
+        '/gps/ene/max 8 GeV',
         '/gps/ene/gradient 0.',
         '/gps/ene/intercept 1.',
         '/gps/ang/type cos',
