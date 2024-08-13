@@ -33,7 +33,7 @@ void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
 
 void EcalPreselectionSkimmer::produce(framework::Event &event) {
   bool passedPreselection{false};
-  auto ecalVeto{
+  const auto &ecalVeto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   // Boolean to check if we pass preselection
@@ -56,6 +56,8 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
   } else {
     setStorageHint(framework::hint_shouldDrop);
   }
+  // Add the boolean to the event
+  event.add("EcalPreselectionDecision", passedPreselection);
 }
 }  // namespace recon
 

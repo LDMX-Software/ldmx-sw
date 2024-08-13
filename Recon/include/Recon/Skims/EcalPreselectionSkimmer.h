@@ -12,27 +12,26 @@
 //----------//
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/AnalysisUtils.h"
 
 namespace recon {
 
 class EcalPreselectionSkimmer : public framework::Producer {
  public:
-  // @param parameters Set of parameters used to configure this processor.
-  virtual void configure(framework::config::Parameters &);
-
   /** Constructor */
   EcalPreselectionSkimmer(const std::string &name, framework::Process &process);
 
   /** Destructor */
   ~EcalPreselectionSkimmer() = default;
 
+  // Configure this processor with a set of parameters passed
+  virtual void configure(framework::config::Parameters &) final;
+
   /**
    * Run the processor and select events that pass pre-selection in ECAL
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  virtual void produce(framework::Event &event) final;
 
  private:
   /// Collection Name for veto object

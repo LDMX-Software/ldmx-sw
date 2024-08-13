@@ -33,8 +33,9 @@ n_straight_tracks_max: int
 
 Examples
 --------
-    from LDMX.Recon.ecalPreselectionSkimmer import ecalPreselectionSkimmer
-    p.sequence.append( ecalPreselectionSkimmer )
+    from LDMX.Recon.ecalPreselectionSkimmer import EcalPreselectionSkimmer
+    ecal_pres_skimmer = EcalPreselectionSkimmer()
+    p.sequence.append( ecal_pres_skimmer )
 """
 
 from LDMX.Framework import ldmxcfg
@@ -42,7 +43,7 @@ from LDMX.Framework import ldmxcfg
 class EcalPreselectionSkimmer(ldmxcfg.Producer) :
     """Configuration for an ECAL-based pre-selection skimmer"""
 
-    def __init__(self, name) :
+    def __init__(self, name = "ecalPreselectionSkimmer") :
         super().__init__(name,'recon::EcalPreselectionSkimmer','Recon')
 
         self.ecal_veto_name = "EcalVeto"
@@ -57,7 +58,3 @@ class EcalPreselectionSkimmer(ldmxcfg.Producer) :
         self.max_cell_dep_max = 9999.
         self.std_layer_hit_max = 9999
         self.n_straight_tracks_max = 9999
-
-
-ecalPreselectionSkimmer = EcalPreselectionSkimmer("ecalPreselectionSkimmer")
-
