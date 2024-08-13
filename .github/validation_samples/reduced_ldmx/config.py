@@ -41,7 +41,7 @@ import LDMX.Hcal.digi as hcal_digi
 
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
-ecalVeto.beam_energy = 4000
+ecalVeto.beam_energy = 4000.
 
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
@@ -74,5 +74,4 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 4000.),
-#        ] + dqm.all_dqm)
-        ])
+       ] + dqm.ecal_dqm)
