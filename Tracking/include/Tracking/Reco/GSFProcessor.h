@@ -19,7 +19,8 @@
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
-#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
+//mg Aug 2024  ... unused? and not in v36
+//#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -93,7 +94,7 @@ using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using MultiStepper = Acts::MultiEigenStepperLoop<>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
-using BetheHeitlerApprox = Acts::Experimental::AtlasBetheHeitlerApprox<6, 5>;
+using BetheHeitlerApprox = Acts::AtlasBetheHeitlerApprox<6, 5>;
 
 namespace tracking {
 namespace reco {
@@ -219,7 +220,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   // The GSF Fitter
-  std::unique_ptr<const Acts::Experimental::GaussianSumFitter<
+  std::unique_ptr<const Acts::GaussianSumFitter<
       GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
       gsf_;
 

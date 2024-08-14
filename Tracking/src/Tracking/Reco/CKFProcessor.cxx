@@ -1,6 +1,7 @@
 #include "Tracking/Reco/CKFProcessor.h"
 
 #include "Acts/EventData/TrackHelpers.hpp"
+#include "Acts/EventData/TrackContainer.hpp"
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
@@ -111,7 +112,8 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = true;
   navCfg.resolveSensitive = true;
-  navCfg.boundaryCheckLayerResolving = false;
+  // mg Aug 2024 boundaryCheckLayerResolving option not in v36
+  //  navCfg.boundaryCheckLayerResolving = false;
   const Acts::Navigator navigator(navCfg);
 
   // Setup the propagators
@@ -150,7 +152,7 @@ void CKFProcessor::produce(framework::Event& event) {
       Acts::getDefaultLogger("LDMX Tracking Geometry Maker", loggingLevel));
 
   // Move this at the start of the producer
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
+  Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::NavigatorPlainOptions,ActionList, AbortList> propagator_options(
       geometry_context(), magnetic_field_context());
 
   propagator_options.pathLimit = std::numeric_limits<double>::max();
@@ -171,12 +173,13 @@ void CKFProcessor::produce(framework::Event& event) {
       propagator_options.actionList.get<Acts::detail::SteppingLogger>();
   sLogger.sterile = true;
   // Set a maximum step size
-  propagator_options.maxStepSize =
+  propagator_options.stepping.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps = propagator_maxSteps_;
 
   // Electron hypothesis
-  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
+  // mg Aug 2024 ... think this is obtained from pdgId ???  I'm not sure actually...
+  //  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
   // #######################//
   // Kalman Filter algorithm//
@@ -242,7 +245,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
     // MG ... make these into bound pararamers at target surface
     // MG ... do I need to extrapolate from perigee to target z?
-    Acts::BoundSymMatrix covMat =
+    Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
     ldmx_log(debug) << "perigee" << std::endl
@@ -256,8 +259,9 @@ void CKFProcessor::produce(framework::Event& event) {
     Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
                                            : Acts::UnitConstants::e;
     // MG ... if the above is at target surface, this should just work
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(seed.getPdgID())))};
     startParameters.push_back(
-        Acts::BoundTrackParameters(perigeeSurface, paramVec, q, covMat));
+			      Acts::BoundTrackParameters(perigeeSurface, paramVec, covMat, Acts::ParticleHypothesis(part)));
 
     seedPDGID.push_back(seed.getPdgID());
 
@@ -289,25 +293,29 @@ void CKFProcessor::produce(framework::Event& event) {
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
-  Acts::CombinatorialKalmanFilterExtensions<Acts::VectorMultiTrajectory>
+  //  Acts::CombinatorialKalmanFilterExtensions<Acts::VectorMultiTrajectory>
+  //ckf_extensions;
+
+  Acts::CombinatorialKalmanFilterExtensions<Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>>
       ckf_extensions;
 
   if (use1Dmeasurements_)
     ckf_extensions.calibrator
-        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
+        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d<Acts::VectorMultiTrajectory>>(
             &calibrator);
 
-  else
-    ckf_extensions.calibrator
-        .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate>(
-            &calibrator);
+  //  else
+  //  ckf_extensions.calibrator
+  //      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate<Acts::VectorMultiTrajectory>>(
+  //          &calibrator);
 
   ckf_extensions.updater.connect<
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &kfUpdater);
-  ckf_extensions.smoother.connect<
-      &Acts::GainMatrixSmoother::operator()<Acts::VectorMultiTrajectory>>(
-      &kfSmoother);
+  //mg Aug 2024....CKFExtensions doesn't have smoother in V36???
+  //  ckf_extensions.smoother.connect<
+  //    &Acts::GainMatrixSmoother::operator()<Acts::VectorMultiTrajectory>>(
+  //    &kfSmoother);
 
   ckf_extensions.measurementSelector
       .connect<&Acts::MeasurementSelector::select<Acts::VectorMultiTrajectory>>(
@@ -401,13 +409,14 @@ void CKFProcessor::produce(framework::Event& event) {
     if (seedPDGID.at(trackId) != 0) {
       int pdgID = seedPDGID.at(trackId);
 
-      if (pdgID == 2212 || pdgID == -2212)
-        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
+      //      if (pdgID == 2212 || pdgID == -2212)
+	// mg Aug 2024 ... v36    options does not have mass
+	//        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
     }
 
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
-                                                 Acts::VectorMultiTrajectory>
+                                                 Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>>
         ckfOptions(geometry_context(), magnetic_field_context(),
                    calibration_context(), sourceLinkAccessorDelegate,
                    ckf_extensions, propagator_options, &(*extr_surface));
@@ -726,7 +735,8 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // information
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
-
+      //mg aug 2024 ... these don't compile using v36 in Acts...figure out later
+      /*
       ldmx_log(debug)
           << "Insert measurement on surface located at::"
           << hit_surface->transform(geometry_context()).translation();
@@ -734,8 +744,8 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
                       << std::endl;
 
       ldmx_log(debug) << "Surface info::"
-                      << std::tie(*hit_surface, geometry_context());
-
+                      << std::tie(*hit_surface, geometry_context());  
+      */
       geoId_sl_map.insert(std::make_pair(hit_surface->geometryId(), idx_sl));
 
     } else

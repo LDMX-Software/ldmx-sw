@@ -51,18 +51,34 @@ class TrackExtrapolatorTool {
    @return optional with BoundTrackParameters
   */
 
+  using PropagatorOptions =
+    typename propagator_t::template Options<ActionList, AbortList>;
+ 
+
+  
   std::optional<Acts::BoundTrackParameters> extrapolate(
       const Acts::BoundTrackParameters pars,
       const std::shared_ptr<Acts::Surface>& target_surface) {
     // Just to make it explicit
     bool boundaryCheck = false;
-    auto intersection = target_surface->intersect(
-        gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
 
-    Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
-    pOptions.direction = intersection.intersection.pathLength >= 0
-                             ? Acts::Direction::Forward
-                             : Acts::Direction::Backward;
+    //    auto intersection = target_surface->intersect(
+    //    gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
+    // mg ... Aug 2024  ...  ACTs in v36 wants a BoundaryTolerence object now instead of boolean
+    //  ... but by default the tolerance is inf  ,  so just remove argument
+    auto intersection = target_surface->intersect(
+						  gctx_, pars.position(gctx_), pars.direction());
+
+
+    PropagatorOptions pOptions(gctx_, mctx_);
+  
+    //    Acts::PropagatorOptions<Acts::StepperPlainOptions, Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
+    //    pOptions.direction = intersection.intersection.pathLength >= 0
+    // mg Aug 2024 .. this is a MultiInterection object now in v36, so uses .interections
+    // which returns a vector ...so might need to pick one (probably first)
+    pOptions.direction = intersection.intersections()[0].pathLength() >= 0
+      ? Acts::Direction::Forward
+      : Acts::Direction::Backward;
 
     auto result = propagator_.propagate(pars, *target_surface, pOptions);
 
@@ -143,8 +159,10 @@ class TrackExtrapolatorTool {
     Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
                              ? 1 * Acts::UnitConstants::e
                              : -1 * Acts::UnitConstants::e;
-
-    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, q, cov);
+    //mg Aug 2024 ... v36 takes the particle...assume electron
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(Acts::PdgParticle::eElectron)))};
+    //    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, q, cov);
+    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov, part);
 
     return extrapolate(sp, target_surface);
   }
@@ -169,15 +187,19 @@ class TrackExtrapolatorTool {
     Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
                              ? 1 * Acts::UnitConstants::e
                              : -1 * Acts::UnitConstants::e;
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(Acts::PdgParticle::eElectron)))};
 
+    //    Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
+    //                                            smoothed, q, cov);
     Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
-                                                smoothed, q, cov);
+                                                smoothed,  cov, part);
 
     // One can also use directly the extrapolate method
 
-    Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
-    pOptions.direction = Acts::Direction::Forward;
-
+    PropagatorOptions pOptions(gctx_, mctx_);
+    //    Acts::PropagatorOptions<Acts::StepperPlainOptions, Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
+    //pOptions.direction = Acts::Direction::Forward;
+    
     auto result =
         propagator_.propagate(state_parameters, *target_surface, pOptions);
 
@@ -203,8 +225,7 @@ class TrackExtrapolatorTool {
                            const std::shared_ptr<Acts::Surface>& target_surface,
                            ldmx::Track::TrackState& ts,
                            ldmx::TrackStateType type) {
-    auto opt_pars = extrapolate(track, target_surface);
-    if (opt_pars) {
+    auto opt_pars = extrapolate(track, target_surface);    if (opt_pars) {
       // Reference point
       Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
       ts.refX = surf_loc(0);

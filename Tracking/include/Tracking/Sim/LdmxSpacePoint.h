@@ -8,7 +8,7 @@
 // sort of sense
 
 // TODO:: The projector should support time as well
-
+// MG Aug 2024  Change all SymMatrix2 to SquareMatrix2 to support ACTs v36
 #include <cmath>
 
 //--- Acts ---//
@@ -102,14 +102,14 @@ class LdmxSpacePoint {
     projector_(1, 1) = 1;
   }
 
-  const Acts::SymMatrix2 getLocalCovariance() const { return local_cov_; };
+  const Acts::SquareMatrix2 getLocalCovariance() const { return local_cov_; };
   const Acts::Vector3 getGlobalPosition() const { return global_pos_; };
   const Acts::Vector2 getLocalPosition() const { return local_pos_; };
 
   Acts::Vector3 global_pos_;
   Acts::Vector2 local_pos_;
   // TODO:: not sure about this
-  Acts::SymMatrix2 local_cov_;
+  Acts::SquareMatrix2 local_cov_;
 
   // Projection matrix from the full space to the (u,v) space.
   // This can be expanded to (u,v,t) space in the case time needs to be added.

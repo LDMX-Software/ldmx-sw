@@ -93,14 +93,14 @@ void Vertexer::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
 
   // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer<VoidPropagator>;
+  using Linearizer = Acts::HelicalTrackLinearizer;
   // Linearizer::Config linearizerConfig(sp_interpolated_bField_,propagator_);
   Linearizer::Config linearizerConfig(bField_, propagator_);
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
   using VertexFitter =
-      Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
+    Acts::FullBilloirVertexFitter;
 
   // Alternatively one can use
   // using VertexFitter =
@@ -108,15 +108,17 @@ void Vertexer::produce(framework::Event& event) {
 
   VertexFitter::Config vertexFitterCfg;
   VertexFitter billoirFitter(vertexFitterCfg);
-
-  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
+  //  mg Aug 2024 .. State doesn't exist in v36 and isn't used here anyway
+  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
   // See
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  // mg Aug 2024 ... VertexingOptions template change in v36
+  Acts::VertexingOptions vfOptions(gctx_, bctx_);
 
   // Retrive the two track collections
 
@@ -157,7 +159,8 @@ void Vertexer::produce(framework::Event& event) {
         tracking::sim::utils::boundTrackParameters(trk, perigeeSurface));
   }
 
-  std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
+  //  std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
+  std::vector<Acts::Vertex> fit_vertices;
 
   for (auto& b_trk_1 : billoir_tracks_1) {
     std::vector<const Acts::BoundTrackParameters*> fit_tracks_ptr;

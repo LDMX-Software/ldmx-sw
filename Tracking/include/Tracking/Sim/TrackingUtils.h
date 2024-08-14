@@ -33,10 +33,12 @@
 
 // --- < ACTS > --- //
 #include "Acts/Definitions/Algebra.hpp"
+#include "Acts/Definitions/PdgParticle.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/Surfaces/PlaneSurface.hpp"
 #include "Tracking/Event/Measurement.h"
 
 namespace tracking {
@@ -140,15 +142,18 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
                                   sigma_v * sigma_v, hit.getID());
 }
 
-inline void flatCov(Acts::BoundSymMatrix cov, std::vector<double>& v_cov) {
+  //BoundSymMatrix doesn't exist in v36  .. use BoundSquareMatrix
+  //  have to change this everywhere ..  I think using BoundSysMatrix was defined
+  // exactly the same as BoundSquareMatrix is now in ACTs
+inline void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov) {
   v_cov.clear();
   v_cov.reserve(cov.rows() * (cov.rows() + 1) / 2);
   for (int i = 0; i < cov.rows(); i++)
     for (int j = i; j < cov.cols(); j++) v_cov.push_back(cov(i, j));
 }
 
-inline Acts::BoundSymMatrix unpackCov(const std::vector<double>& v_cov) {
-  Acts::BoundSymMatrix cov;
+inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
+  Acts::BoundSquareMatrix cov;
   int e{0};
   for (int i = 0; i < cov.rows(); i++)
     for (int j = i; j < cov.cols(); j++) {
@@ -169,7 +174,7 @@ inline Acts::BoundSymMatrix unpackCov(const std::vector<double>& v_cov) {
 
 inline Acts::Vector3 Ldmx2Acts(Acts::Vector3 ldmx_v) {
   // TODO::Move it to a static member
-  Acts::SymMatrix3 acts_rot;
+  Acts::SquareMatrix3 acts_rot;
   acts_rot << 0., 0., 1., 1., 0., 0., 0., 1, 0.;
 
   return acts_rot * ldmx_v;
@@ -221,19 +226,24 @@ inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
 inline Acts::BoundTrackParameters boundTrackParameters(
     const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
   Acts::BoundVector paramVec = boundState(trk);
-  Acts::BoundSymMatrix covMat = unpackCov(trk.getPerigeeCov());
-  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
+  Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
+  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
+  //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
+  // need to add particle hypothesis
+    return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat), part );
 }
 
 inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
-                                      std::shared_ptr<Acts::Surface> surf) {
+                                      std::shared_ptr<Acts::Surface> surf,
+				      int pdgid) {
   Acts::BoundVector paramVec = boundState(ts);
-  Acts::BoundSymMatrix covMat = unpackCov(ts.cov);
-  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat));
+  Acts::BoundSquareMatrix covMat = unpackCov(ts.cov);
+  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),part);
 }
 
 // Return an unbound surface
-inline const std::shared_ptr<Acts::Surface> unboundSurface(double xloc,
+inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(double xloc,
                                                            double yloc = 0.,
                                                            double zloc = 0.) {
   // Define the target surface - be careful:
@@ -256,8 +266,9 @@ inline const std::shared_ptr<Acts::Surface> unboundSurface(double xloc,
 
   // Unbounded surface
   const std::shared_ptr<Acts::PlaneSurface> target_surface =
-      Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+    Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
+  
   return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 }
 
