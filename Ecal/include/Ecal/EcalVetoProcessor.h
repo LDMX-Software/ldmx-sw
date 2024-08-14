@@ -112,6 +112,8 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> mapsx;
   std::vector<float> mapsy;
 
+  std::vector<std::vector<double>> roc_range_values_;
+
   int nEcalLayers_{0};
   int backEcalStartingLayer_{0};
   int nReadoutHits_{0};
@@ -132,24 +134,33 @@ class EcalVetoProcessor : public framework::Producer {
   int nStraightTracks_{0};
   /// Number of "linreg" tracks found in the event
   int nLinregTracks_{0};
-  /// First ECal layer in which a hit is found near the photon (currently
-  /// unused)
+  /// First ECal layer in which a hit is found near the photon
   int firstNearPhLayer_{0};
+  /// Number of hits near the photon trajectory
+  int nNearPhHits_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// (currently unused)
   float epAng_{0};
   /// Distance between the projected photon and electron trajectories at the
-  /// ECal face (currently unused)
+  /// ECal face
   float epSep_{0};
+  /// Dot product of the photon and electron momenta unit vectors
+  float epDot_{0};
+  /// Number of hits in the photon territory
+  int photonTerritoryHits_{0};
 
   double bdtCutVal_{0};
+
+  double beamEnergyMeV_{0};
 
   bool verbose_{false};
   bool doesPassVeto_{false};
 
   std::string bdtFileName_;
   std::string cellFileNamexy_;
+  std::string rocFileName_;
   std::vector<float> bdtFeatures_;
+  std::string featureListName_;
 
   std::string rec_pass_name_;
   std::string rec_coll_name_;
