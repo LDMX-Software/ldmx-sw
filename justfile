@@ -108,6 +108,20 @@ format-cpp *ARGS='-i':
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
+# shellcheck doesn't have a "apply-formatting" option
+# because it really is more of a tidier (its changes could affect code meaning)
+# so only a check is implemented here
+#  ISSUE: the filter implemented here gets all files that are either executable
+#    or have the '.sh' extension. This includes a python script in TrigScint
+#    and some bash-specific scripts as well. Not sure how to handle them.
+# check the scripts for common errors and bugs
+shellcheck:
+    #!/usr/bin/env sh
+    set -exu
+    format_list=$(mktemp)
+    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' > ${format_list}
+    shellcheck --severity style --shell sh $(cat ${format_list})
+
 # below are the mimics of ldmx <cmd>
 # we could think about removing them if folks are happy with committing to the
 # just-style commands above
