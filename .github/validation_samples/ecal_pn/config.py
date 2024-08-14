@@ -23,7 +23,11 @@ p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
-p.termLogLevel = 0
+
+# The Tracking modules produce a lot of helpful messages
+# but (at the debug level) is too much for commiting the gold log
+# into the git working tree on GitHub
+p.termLogLevel = 1
 
 # Load the tracking module
 from LDMX.Tracking import tracking
