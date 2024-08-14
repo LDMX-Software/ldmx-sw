@@ -42,7 +42,7 @@ ClassImp(ldmx::SimCalorimeterHit)
     pdgCodeContribs_.push_back(pdgCode);
     edepContribs_.push_back(edep);
     timeContribs_.push_back(time);
-    originIDContribs_.push_back(originID);
+    originContribs_.push_back(originID);
     edep_ += edep;
     if (time < time_ || time_ == 0) {
       time_ = time;
@@ -57,7 +57,7 @@ ClassImp(ldmx::SimCalorimeterHit)
     contrib.edep = edepContribs_.at(i);
     contrib.time = timeContribs_.at(i);
     contrib.pdgCode = pdgCodeContribs_.at(i);
-    contrib.originID = originIDContribs_.at(i);
+    contrib.originID = originContribs_.at(i);
     return contrib;
   }
 
