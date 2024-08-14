@@ -25,6 +25,7 @@ mySim.generators = [ myGun ]
 p.sequence = [ mySim ]
 p.termLogLevel = 0
 
+import os
 p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
 p.run = int(os.environ['LDMX_RUN_NUMBER'])
 
