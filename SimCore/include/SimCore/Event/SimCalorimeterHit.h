@@ -338,7 +338,7 @@ class SimCalorimeterHit {
   /**
    * The list of origin IDs contributing to the hit.
    */
-  std::vector<int> originIDContribs_;
+  std::vector<int> originContribs_;
 
   /**
    * The number of hit contributions.
