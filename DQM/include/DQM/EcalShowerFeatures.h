@@ -9,7 +9,7 @@ namespace dqm {
 
 /**
  * @class EcalShowerFeatures
- * @brief Generate histograms to check digi pipeline performance
+ * @brief Generate histograms to check shower features
  */
 class EcalShowerFeatures : public framework::Analyzer {
  public:
