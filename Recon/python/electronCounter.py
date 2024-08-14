@@ -36,5 +36,6 @@ class ElectronCounter2(ldmxcfg.Producer) :
         self.x_tolerance = 0.
         self.y_tolerance = 0.
         self.ecal_position_shift_xy = [-4.8158640226/2., 0.]
-        self.ecal_energy_split = [550., 11000., 19000., 27000.]   # Ecal energy limits guessing 1e, 2e, 3e, 4e
+        self.ecal_peak_mean = [7000., 14000., 21500., 29500.] # Ecal mean of peak of 1e, 2e, 3e and 4e total energy distribution
+        self.ts_peak_mean = [85., 170., 255., 340.]           # TS mean of peak of 1e, 2e, 3e, 4e total PE distribution
         self.verbose = True

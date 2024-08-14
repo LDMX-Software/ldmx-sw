@@ -79,7 +79,10 @@ class ElectronCounter2 : public framework::Producer {
   std::vector<double> ecalPosShift_;
 
   // Energy split for electrons in ecal
-  std::vector<double> ecalEnergySplit_;
+  std::vector<double> ecalPeakMean_;
+
+  // PE split for electrons in TS
+  std::vector<double> tsPeakMean_;
 
   // If verbose or not
   bool verbose_{false};
