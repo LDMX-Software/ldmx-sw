@@ -21,7 +21,7 @@
 [ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
 [ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
 [ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
- [ Process ] 1 : RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14, description: Hcal Muons and Neutrons
+ [ Process ] 1 : RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14-8gev, description: Hcal Muons and Neutrons
   intParameters: 
     Included Scoring Planes = 0
     RandomNumberMasterSeed[test] = 1
@@ -38,7 +38,7 @@
     Gen0 Init Cmd 13 = /gps/particle neutron
     Gen0 Init Cmd 14 = /gps/ene/type Lin
     Gen0 Init Cmd 15 = /gps/ene/min 1 GeV
-    Gen0 Init Cmd 16 = /gps/ene/max 4 GeV
+    Gen0 Init Cmd 16 = /gps/ene/max 8 GeV
     Gen0 Init Cmd 17 = /gps/ene/gradient 0.
     Gen0 Init Cmd 18 = /gps/ene/intercept 1.
     Gen0 Init Cmd 19 = /gps/ang/type cos
@@ -49,7 +49,7 @@
     Gen0 Init Cmd 23 = /gps/pos/halfx 500 mm
     Gen0 Init Cmd 24 = /gps/pos/halfy 500 mm
     Gen0 Init Cmd 25 = /gps/source/multiplevertex True
-    Gen0 Init Cmd 3 = /gps/ene/max 4 GeV
+    Gen0 Init Cmd 3 = /gps/ene/max 8 GeV
     Gen0 Init Cmd 4 = /gps/ene/gradient 0.
     Gen0 Init Cmd 5 = /gps/ene/intercept 1.
     Gen0 Init Cmd 6 = /gps/ang/type cos
