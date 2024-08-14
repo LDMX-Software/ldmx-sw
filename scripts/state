@@ -10,8 +10,8 @@
 set -o errexit
 set -o nounset
 
-git submodule foreach --recursive git fetch --tags
-git submodule status --recursive | awk '{
+git submodule foreach git fetch --tags
+git submodule status | awk '{
 # git submodule status returns lines of the form
 #  <commit> <submodule> (<version>)
 # where <version> is either the tag, branch name, or something else
