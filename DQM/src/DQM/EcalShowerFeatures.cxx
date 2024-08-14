@@ -27,6 +27,15 @@ void EcalShowerFeatures::analyze(const framework::Event &event) {
   histograms_.fill("y_std", veto.getYStd());
   histograms_.fill("avg_layer_hit", veto.getAvgLayerHit());
   histograms_.fill("std_layer_hit", veto.getStdLayerHit());
+  for (const auto &energy : veto.getElectronContainmentEnergy()) {
+    histograms_.fill("e_containment_energy", energy);
+  }
+  for (const auto &energy : veto.getPhotonContainmentEnergy()) {
+    histograms_.fill("ph_containment_energy", energy);
+  }
+  for (const auto &energy : veto.getOutsideContainmentEnergy()) {
+    histograms_.fill("out_containment_energy", energy);
+  }
 
   return;
 }

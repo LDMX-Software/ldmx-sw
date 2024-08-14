@@ -1,5 +1,5 @@
-#ifndef DQM_ECALSHOWERFEATURES_H
-#define DQM_ECALSHOWERFEATURES_H
+#ifndef DQM_ECALMIPTRACKINGFEATURES_H
+#define DQM_ECALMIPTRACKINGFEATURES_H
 
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
@@ -8,17 +8,17 @@
 namespace dqm {
 
 /**
- * @class EcalShowerFeatures
- * @brief Generate histograms to check shower features
+ * @class EcalMipTrackingFeatures
+ * @brief Generate histograms to check MIP tracking features
  */
-class EcalShowerFeatures : public framework::Analyzer {
+class EcalMipTrackingFeatures : public framework::Analyzer {
  public:
   /**
    * Constructor
    *
    * Blank Analyzer constructor
    */
-  EcalShowerFeatures(const std::string& name, framework::Process& process)
+  EcalMipTrackingFeatures(const std::string& name, framework::Process& process)
       : framework::Analyzer(name, process) {}
 
   /**
@@ -40,4 +40,4 @@ class EcalShowerFeatures : public framework::Analyzer {
 };
 }  // namespace dqm
 
-#endif /* DQM_ECALSHOWERFEATURES_H */
+#endif /* DQM_ECALMMIPTRACKINGFEATURES_H */
