@@ -284,7 +284,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         std::sqrt(trk_mom[1] * trk_mom[1] + trk_mom[2] * trk_mom[2]);
 
     // Covariance matrix
-    Acts::BoundSymMatrix cov =
+    Acts::BoundSquareMatrix cov =
         tracking::sim::utils::unpackCov(track.getPerigeeCov());
 
     double sigmad0 = sqrt(
@@ -476,7 +476,7 @@ void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
     ldmx::Track::TrackState& TargetState = trk_ts.value();
 
     ldmx_log(debug) << "Unpacking covariance matrix" << std::endl;
-    Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
+    Acts::BoundSquareMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
 
     double sigmaloc0 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0));

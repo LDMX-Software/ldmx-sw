@@ -120,7 +120,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     if (ts.has_value()) {
       auto trackState = ts.value();
 
-      Acts::BoundSymMatrix cov =
+      Acts::BoundSquareMatrix cov =
           tracking::sim::utils::unpackCov(trackState.cov);
       double locu = trackState.params[0];
       double locv = trackState.params[1];
@@ -326,13 +326,21 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // This is mainly necessary for the perigee surface, where
   // the mean might not fulfill the perigee condition.
 
+  //mg  Aug 2024 .. interect has changed, but just remove boundary check
+  // and change intersection to intersections
+  //  auto intersection =
+  //    (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
+
+  //Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
+  //    intersection.intersection.position, seed_mom, q);
+
   auto intersection =
-      (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
+      (*seed_perigee).intersect(geometry_context(), seed_pos, dir);
 
   Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
-      intersection.intersection.position, seed_mom, q);
+								      intersection.intersections()[0].position(), seed_mom, q);
 
-  auto bound_params = Acts::detail::transformFreeToBoundParameters(
+  auto bound_params = Acts::transformFreeToBoundParameters(
                           seed_free, *seed_perigee, geometry_context())
                           .value();
 
@@ -354,7 +362,11 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   stddev[Acts::eBoundTime] =
       inflate_factors_[Acts::eBoundTime] * 1000 * Acts::UnitConstants::ns;
 
-  Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+
+  //mg ... Aug 2024 .. change from SymMatrix to SquareMatrix
+  //  why .asDiagonal? 
+  //  Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();  
+  Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
 
   ldmx::Track trk = ldmx::Track();
   trk.setPerigeeLocation(perigee_location(0), perigee_location(1),
@@ -378,9 +390,9 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                   seed_free[Acts::eFreePos2]);
   trk.setMomentum(seed_free[Acts::eFreeDir0], seed_free[Acts::eFreeDir1],
                   seed_free[Acts::eFreeDir2]);
-
+  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
   Acts::BoundTrackParameters seedParameters(seed_perigee,
-                                            std::move(bound_params), bound_cov);
+                                            std::move(bound_params), bound_cov,part);
 
   return trk;
 }

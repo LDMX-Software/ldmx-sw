@@ -83,12 +83,13 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Acts::MixtureReductionMethod finalReductionMethod;
   // const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
-  Acts::MixtureReductionMethod reductionMethod =
-      Acts::MixtureReductionMethod::eMaxWeight;
-  Acts::MultiEigenStepperLoop multi_stepper(
-      map, reductionMethod,
-      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
+  Acts::ComponentMergeMethod reductionMethod =
+      Acts::ComponentMergeMethod::eMaxWeight;
+//  Acts::MultiEigenStepperLoop multi_stepper(
+//      map, reductionMethod,
+//      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
 
+  Acts::MultiEigenStepperLoop multi_stepper(map);
   // Detailed Stepper
 
   // Acts::MultiEigenStepperLoop multi_stepper(map, finalReductionMethod);
@@ -98,7 +99,6 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = false;
   navCfg.resolveSensitive = true;
-  navCfg.boundaryCheckLayerResolving = false;
   const Acts::Navigator navigator(navCfg);
 
   auto gsf_propagator =
@@ -106,7 +106,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
                     Acts::getDefaultLogger("GSF_PROP", acts_loggingLevel));
 
   BetheHeitlerApprox betheHeitler =
-      Acts::Experimental::makeDefaultBetheHeitlerApprox();
+      Acts::makeDefaultBetheHeitlerApprox();
 
   const auto gsfLogger = Acts::getDefaultLogger("GSF", acts_loggingLevel);
 
@@ -163,7 +163,7 @@ void GSFProcessor::produce(framework::Event& event) {
   // GSF Setup
 
   Acts::GainMatrixUpdater updater;
-  Acts::Experimental::GsfExtensions<Acts::VectorMultiTrajectory> gsf_extensions;
+  Acts::GsfExtensions<Acts::VectorMultiTrajectory> gsf_extensions;
   gsf_extensions.updater.connect<
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &updater);
@@ -174,9 +174,10 @@ void GSFProcessor::produce(framework::Event& event) {
   // Propagator Options
 
   // Move this at the start of the producer
-  Acts::PropagatorOptions<ActionList, AbortList> propagator_options(
+  Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::Navigator,ActionList, AbortList> propagator_options(
       geometry_context(), magnetic_field_context());
 
+  
   propagator_options.pathLimit = std::numeric_limits<double>::max();
 
   // Activate loop protection at some pt value
@@ -208,7 +209,7 @@ void GSFProcessor::produce(framework::Event& event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
 
-  Acts::Experimental::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
+  Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
       geometry_context(),    magnetic_field_context(),
       calibration_context(), gsf_extensions,
       propagator_options,    &(*origin_surface),

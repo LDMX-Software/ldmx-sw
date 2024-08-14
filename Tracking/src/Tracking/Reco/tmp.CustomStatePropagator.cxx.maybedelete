@@ -128,7 +128,7 @@ void CustomStatePropagator::onProcessStart() {
             part_free[Acts::eFreePos2]));
 
     // Transform the free parameters to the bound parameters
-    auto bound_params = Acts::detail::transformFreeToBoundParameters(
+    auto bound_params = Acts::transformFreeToBoundParameters(
                             part_free, *gen_surface, gctx_)
                             .value();
 
@@ -137,7 +137,7 @@ void CustomStatePropagator::onProcessStart() {
 
     // const auto pLogger = Acts::getDefaultLogger("Propagator",
     // Acts::Logging::INFO);
-    Acts::PropagatorOptions<> propagator_options(
+    Acts::PropagatorOptions<Acts::EigenStepper::Options, <>> propagator_options(
         gctx_, bctx_);  //, Acts::LoggerWrapper{*pLogger});
 
     // propagator_options.direction = Acts::Direction::Forward; // should be the
