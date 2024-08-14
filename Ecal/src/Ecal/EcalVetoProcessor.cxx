@@ -26,67 +26,9 @@
 
 namespace ecal {
 
-// arrays holding 68% containment radius per layer for different bins in
-// momentum/angle
-const std::vector<double> radius68_thetalt10_plt500 = {
-    4.045666158618167,  4.086393662224346,  4.359141107602775,
-    4.666549994726691,  5.8569181911416015, 6.559716356124256,
-    8.686967529043072,  10.063482736354674, 13.053528344041274,
-    14.883496407943747, 18.246694748611368, 19.939799900443724,
-    22.984795944506224, 25.14745829663406,  28.329169392203216,
-    29.468032123356345, 34.03271241527079,  35.03747443690781,
-    38.50748727211848,  39.41576583301171,  42.63622296033334,
-    45.41123601592071,  48.618139095742876, 48.11801717451056,
-    53.220539860213655, 58.87753380915155,  66.31550881539764,
-    72.94685877928593,  85.95506228335348,  89.20607201266672,
-    93.34370253818409,  96.59471226749734,  100.7323427930147,
-    103.98335252232795};
-
-const std::vector<double> radius68_thetalt10_pgt500 = {
-    4.081926458777424,  4.099431732299409,  4.262428482867968,
-    4.362017581473145,  4.831341579961153,  4.998346041276382,
-    6.2633736512415705, 6.588371889265881,  8.359969947444522,
-    9.015085558044309,  11.262722588206483, 12.250305471269183,
-    15.00547660437276,  16.187264014640103, 19.573764900578503,
-    20.68072032434797,  24.13797140783321,  25.62942209291236,
-    29.027596514735617, 30.215039667389316, 33.929540248019585,
-    36.12911729771914,  39.184563500620946, 42.02062468386282,
-    46.972125628650204, 47.78214816041894,  55.88428562462974,
-    59.15520134927332,  63.31816666637158,  66.58908239101515,
-    70.75204770811342,  74.022963432757,    78.18592874985525,
-    81.45684447449884};
-
-const std::vector<double> radius68_theta10to20 = {
-    4.0251896715647115, 4.071661598616328,  4.357690094817289,
-    4.760224640141712,  6.002480766325418,  6.667318981016246,
-    8.652513285172342,  9.72379373302137,   12.479492693251478,
-    14.058548828317289, 17.544872909347912, 19.43616066939176,
-    23.594162859513734, 25.197329065282954, 29.55995803074302,
-    31.768946746958296, 35.79247330197688,  37.27810357669942,
-    41.657281051476545, 42.628141392692626, 47.94208483539388,
-    49.9289473559796,   54.604030254423975, 53.958762417361655,
-    53.03339560920388,  57.026277390001425, 62.10810455035879,
-    66.10098633115634,  71.1828134915137,   75.17569527231124,
-    80.25752243266861,  84.25040421346615,  89.33223137382352,
-    93.32511315462106};
-
-const std::vector<double> radius68_thetagt20 = {
-    4.0754238481177705, 4.193693485630508,  5.14209420056253,
-    6.114996249971468,  7.7376807326481645, 8.551663213602291,
-    11.129110612057813, 13.106293737495639, 17.186617323282082,
-    19.970887612094604, 25.04088272634407,  28.853696411302344,
-    34.72538105333071,  40.21218694947545,  46.07344239520299,
-    50.074953583805346, 62.944045771758645, 61.145621459396814,
-    69.86940198299047,  74.82378572939959,  89.4528387422834,
-    93.18228303096758,  92.51751129204555,  98.80228884380018,
-    111.17537347472128, 120.89712563907408, 133.27021026999518,
-    142.99196243434795, 155.36504706526904, 165.08679922962185,
-    177.45988386054293, 187.18163602489574, 199.55472065581682,
-    209.2764728201696};
-
 void EcalVetoProcessor::buildBDTFeatureVector(
     const ldmx::EcalVetoResult &result) {
-  bdtFeatures_.clear();
+  // Base variables
   bdtFeatures_.push_back(result.getNReadoutHits());
   bdtFeatures_.push_back(result.getSummedDet());
   bdtFeatures_.push_back(result.getSummedTightIso());
@@ -95,40 +37,56 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdtFeatures_.push_back(result.getXStd());
   bdtFeatures_.push_back(result.getYStd());
   bdtFeatures_.push_back(result.getAvgLayerHit());
-  bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getStdLayerHit());
-  // MIP tracking (unused but could be uncommented)
-  // bdtFeatures.push_back(result.getNStraightTracks());
-  // bdtFeatures.push_back(result.getNLinregTracks());
-  // bdtFeatures.push_back(result.getFirstNearPhLayer());
-
-  for (int ireg = 0; ireg < result.getElectronContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getElectronContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getPhotonContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getPhotonContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentEnergy().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentEnergy()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentNHits().size();
-       ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentNHits()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentXStd().size(); ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentXStd()[ireg]);
-  }
-  for (int ireg = 0; ireg < result.getOutsideContainmentYStd().size(); ++ireg) {
-    bdtFeatures_.push_back(result.getOutsideContainmentYStd()[ireg]);
-  }
+  bdtFeatures_.push_back(result.getDeepestLayerHit());
   bdtFeatures_.push_back(result.getEcalBackEnergy());
+  // MIP tracking
+  bdtFeatures_.push_back(result.getNStraightTracks());
+  // bdtFeatures_.push_back(result.getNLinregTracks());
+  bdtFeatures_.push_back(result.getFirstNearPhLayer());
+  bdtFeatures_.push_back(result.getNNearPhHits());
+  bdtFeatures_.push_back(result.getPhotonTerritoryHits());
+  bdtFeatures_.push_back(result.getEPSep());
+  bdtFeatures_.push_back(result.getEPDot());
+  // Longitudinal segment variables
+  bdtFeatures_.push_back(result.getEnergySeg()[0]);
+  bdtFeatures_.push_back(result.getXMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getYMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getLayerMeanSeg()[0]);
+  bdtFeatures_.push_back(result.getEnergySeg()[1]);
+  bdtFeatures_.push_back(result.getYMeanSeg()[2]);
+  /// Electron RoC variables
+  bdtFeatures_.push_back(result.getEleContEnergy()[0][0]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[1][0]);
+  bdtFeatures_.push_back(result.getEleContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[0][1]);
+  bdtFeatures_.push_back(result.getEleContEnergy()[1][1]);
+  bdtFeatures_.push_back(result.getEleContYMean()[0][1]);
+  /// Photon RoC variables
+  bdtFeatures_.push_back(result.getPhContNHits()[0][0]);
+  bdtFeatures_.push_back(result.getPhContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getPhContNHits()[0][1]);
+  /// Outside RoC variables
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[1][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[2][0]);
+  bdtFeatures_.push_back(result.getOutContNHits()[0][0]);
+  bdtFeatures_.push_back(result.getOutContXMean()[0][0]);
+  bdtFeatures_.push_back(result.getOutContYMean()[0][0]);
+  bdtFeatures_.push_back(result.getOutContYMean()[1][0]);
+  bdtFeatures_.push_back(result.getOutContYStd()[0][0]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[1][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[2][1]);
+  bdtFeatures_.push_back(result.getOutContLayerMean()[0][1]);
+  bdtFeatures_.push_back(result.getOutContLayerStd()[0][1]);
+  bdtFeatures_.push_back(result.getOutContEnergy()[0][2]);
+  bdtFeatures_.push_back(result.getOutContLayerMean()[0][2]);
 }
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   doBdt_ = parameters.getParameter<bool>("do_bdt");
+  featureListName_ = parameters.getParameter<std::string>("feature_list_name");
   if (doBdt_) {
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
         parameters.getParameter<std::string>("bdt_file"));
@@ -149,12 +107,41 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
     }
   }
 
+  // Read in arrays holding 68% containment radius per layer
+  // for different bins in momentum/angle
+  rocFileName_ = parameters.getParameter<std::string>("roc_file");
+  if (!std::ifstream(rocFileName_).good()) {
+    EXCEPTION_RAISE(
+        "EcalVetoProcessor",
+        "The specified RoC file '" + rocFileName_ + "' does not exist!");
+  } else {
+    std::ifstream rocfile(rocFileName_);
+    std::string line, value;
+
+    // Extract the first line in the file
+    std::getline(rocfile, line);
+    std::vector<double> values;
+
+    // Read data, line by line
+    while (std::getline(rocfile, line)) {
+      std::stringstream ss(line);
+      values.clear();
+      while (std::getline(ss, value, ',')) {
+        double f_value = (value != "") ? std::stof(value) : -1.0;
+        values.push_back(f_value);
+      }
+      roc_range_values_.push_back(values);
+    }
+  }
+
   nEcalLayers_ = parameters.getParameter<int>("num_ecal_layers");
 
   bdtCutVal_ = parameters.getParameter<double>("disc_cut");
   ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
   ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
   ecalLayerTime_.resize(nEcalLayers_, 0);
+
+  beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
 
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
@@ -182,8 +169,11 @@ void EcalVetoProcessor::clearProcessor() {
   nStraightTracks_ = 0;
   nLinregTracks_ = 0;
   firstNearPhLayer_ = 0;
+  nNearPhHits_ = 0;
   epAng_ = 0;
   epSep_ = 0;
+  epDot_ = 0;
+  photonTerritoryHits_ = 0;
 
   std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
   std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -273,24 +263,50 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                                     ? recoilPosAtTarget
                                     : std::vector<float>{0.0, 0.0, 0.0};
     photon_trajectory =
-        getTrajectory({-pvec[0], -pvec[1], 4000.0 - pvec[2]}, posvec);
+        getTrajectory({-pvec[0], -pvec[1], beamEnergyMeV_ - pvec[2]}, posvec);
   }
 
   float recoilPMag =
       recoilP.size()
           ? sqrt(pow(recoilP[0], 2) + pow(recoilP[1], 2) + pow(recoilP[2], 2))
           : -1.0;
-  float recoilTheta = recoilPMag > 0 ? recoilP[2] / recoilPMag : -1.0;
+  float recoilTheta =
+      recoilPMag > 0 ? acos(recoilP[2] / recoilPMag) * 180.0 / M_PI : -1.0;
 
-  std::vector<double> ele_radii = radius68_thetalt10_plt500;
-  if (recoilTheta < 10 && recoilPMag >= 500)
-    ele_radii = radius68_thetalt10_pgt500;
-  else if (recoilTheta >= 10 && recoilTheta < 20)
-    ele_radii = radius68_theta10to20;
-  else if (recoilTheta >= 20)
-    ele_radii = radius68_thetagt20;
-  // Use default binning
-  std::vector<double> photon_radii = radius68_thetalt10_plt500;
+  // Use the appropriate containment radii for the recoil electron
+  std::vector<double> roc_values_bin0(roc_range_values_[0].begin() + 4,
+                                      roc_range_values_[0].end());
+  std::vector<double> ele_radii = roc_values_bin0;
+  double theta_min, theta_max, p_min, p_max;
+  bool inrange;
+
+  for (int i = 0; i < roc_range_values_.size(); i++) {
+    theta_min = roc_range_values_[i][0];
+    theta_max = roc_range_values_[i][1];
+    p_min = roc_range_values_[i][2];
+    p_max = roc_range_values_[i][3];
+    inrange = true;
+
+    if (theta_min != -1.0) {
+      inrange = inrange && (recoilTheta >= theta_min);
+    }
+    if (theta_max != -1.0) {
+      inrange = inrange && (recoilTheta < theta_max);
+    }
+    if (p_min != -1.0) {
+      inrange = inrange && (recoilPMag >= p_min);
+    }
+    if (p_max != -1.0) {
+      inrange = inrange && (recoilPMag < p_max);
+    }
+    if (inrange) {
+      std::vector<double> roc_values_bini(roc_range_values_[i].begin() + 4,
+                                          roc_range_values_[i].end());
+      ele_radii = roc_values_bini;
+    }
+  }
+  // Use default RoC bin for photon
+  std::vector<double> photon_radii = roc_values_bin0;
 
   // Get the collection of digitized Ecal hits from the event.
   const std::vector<ldmx::EcalHit> ecalRecHits =
@@ -322,6 +338,46 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   std::vector<float> outsideContainmentYmean(nregions, 0.0);
   std::vector<float> outsideContainmentXstd(nregions, 0.0);
   std::vector<float> outsideContainmentYstd(nregions, 0.0);
+  // Longitudinal segmentation
+  std::vector<int> segLayers = {0, 6, 17, 34};
+  unsigned int nsegments = segLayers.size() - 1;
+  std::vector<float> energySeg(nsegments, 0.0);
+  std::vector<float> xMeanSeg(nsegments, 0.0);
+  std::vector<float> xStdSeg(nsegments, 0.0);
+  std::vector<float> yMeanSeg(nsegments, 0.0);
+  std::vector<float> yStdSeg(nsegments, 0.0);
+  std::vector<float> layerMeanSeg(nsegments, 0.0);
+  std::vector<float> layerStdSeg(nsegments, 0.0);
+  std::vector<std::vector<float>> eContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> eContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> eContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> gContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<int>> gContNHits(nregions,
+                                           std::vector<int>(nsegments, 0));
+  std::vector<std::vector<float>> gContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> gContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContEnergy(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<int>> oContNHits(nregions,
+                                           std::vector<int>(nsegments, 0));
+  std::vector<std::vector<float>> oContXMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContYMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContXStd(nregions,
+                                            std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContYStd(nregions,
+                                            std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContLayerMean(
+      nregions, std::vector<float>(nsegments, 0.0));
+  std::vector<std::vector<float>> oContLayerStd(
+      nregions, std::vector<float>(nsegments, 0.0));
 
   // MIP tracking:  vector of hits to be used in the MIP tracking algorithm. All
   // hits inside the electron ROC (or all hits in the ECal if the event is
@@ -363,7 +419,46 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                     pow((xy_pair.second - photon_trajectory[id.layer()].second),
                         2))
               : -1.0;
-      // Decide which region a hit goes into and add to sums
+
+      // Decide which longitudinal segment the hit is in and add to sums
+      for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
+        if (id.layer() >= segLayers[iseg] &&
+            id.layer() <= segLayers[iseg + 1] - 1) {
+          energySeg[iseg] += hit.getEnergy();
+          xMeanSeg[iseg] += xy_pair.first * hit.getEnergy();
+          yMeanSeg[iseg] += xy_pair.second * hit.getEnergy();
+          layerMeanSeg[iseg] += id.layer() * hit.getEnergy();
+
+          // Decide which containment region the hit is in and add to sums
+          for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+            if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
+                distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()]) {
+              eContEnergy[ireg][iseg] += hit.getEnergy();
+              eContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+              eContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+            }
+            if (distance_photon_trajectory >= ireg * photon_radii[id.layer()] &&
+                distance_photon_trajectory <
+                    (ireg + 1) * photon_radii[id.layer()]) {
+              gContEnergy[ireg][iseg] += hit.getEnergy();
+              gContNHits[ireg][iseg] += 1;
+              gContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+              gContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+            }
+            if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
+                distance_photon_trajectory >
+                    (ireg + 1) * photon_radii[id.layer()]) {
+              oContEnergy[ireg][iseg] += hit.getEnergy();
+              oContNHits[ireg][iseg] += 1;
+              oContXMean[ireg][iseg] += xy_pair.first * hit.getEnergy();
+              oContYMean[ireg][iseg] += xy_pair.second * hit.getEnergy();
+              oContLayerMean[ireg][iseg] += id.layer() * hit.getEnergy();
+            }
+          }
+        }
+      }
+
+      // Decide which containment region the hit is in and add to sums
       for (unsigned int ireg = 0; ireg < nregions; ireg++) {
         if (distance_ele_trajectory >= ireg * ele_radii[id.layer()] &&
             distance_ele_trajectory < (ireg + 1) * ele_radii[id.layer()])
@@ -416,6 +511,30 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     yMean = 0;
   }
 
+  // If necessary, quotient out the total energy from the means
+  for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
+    if (energySeg[iseg] > 0) {
+      xMeanSeg[iseg] /= energySeg[iseg];
+      yMeanSeg[iseg] /= energySeg[iseg];
+      layerMeanSeg[iseg] /= energySeg[iseg];
+    }
+    for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+      if (eContEnergy[ireg][iseg] > 0) {
+        eContXMean[ireg][iseg] /= eContEnergy[ireg][iseg];
+        eContYMean[ireg][iseg] /= eContEnergy[ireg][iseg];
+      }
+      if (gContEnergy[ireg][iseg] > 0) {
+        gContXMean[ireg][iseg] /= gContEnergy[ireg][iseg];
+        gContYMean[ireg][iseg] /= gContEnergy[ireg][iseg];
+      }
+      if (oContEnergy[ireg][iseg] > 0) {
+        oContXMean[ireg][iseg] /= oContEnergy[ireg][iseg];
+        oContYMean[ireg][iseg] /= oContEnergy[ireg][iseg];
+        oContLayerMean[ireg][iseg] /= oContEnergy[ireg][iseg];
+      }
+    }
+  }
+
   for (unsigned int ireg = 0; ireg < nregions; ireg++) {
     if (outsideContainmentEnergy[ireg] > 0) {
       outsideContainmentXmean[ireg] /= outsideContainmentEnergy[ireg];
@@ -445,6 +564,35 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                    pow((xy_pair.second - photon_trajectory[id.layer()].second),
                        2))
             : -1.0;
+
+    for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
+      if (id.layer() >= segLayers[iseg] &&
+          id.layer() <= segLayers[iseg + 1] - 1) {
+        xStdSeg[iseg] +=
+            pow((xy_pair.first - xMeanSeg[iseg]), 2) * hit.getEnergy();
+        yStdSeg[iseg] +=
+            pow((xy_pair.second - yMeanSeg[iseg]), 2) * hit.getEnergy();
+        layerStdSeg[iseg] +=
+            pow((id.layer() - layerMeanSeg[iseg]), 2) * hit.getEnergy();
+
+        for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+          if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
+              distance_photon_trajectory >
+                  (ireg + 1) * photon_radii[id.layer()]) {
+            oContXStd[ireg][iseg] +=
+                pow((xy_pair.first - oContXMean[ireg][iseg]), 2) *
+                hit.getEnergy();
+            oContYStd[ireg][iseg] +=
+                pow((xy_pair.second - oContYMean[ireg][iseg]), 2) *
+                hit.getEnergy();
+            oContLayerStd[ireg][iseg] +=
+                pow((id.layer() - oContLayerMean[ireg][iseg]), 2) *
+                hit.getEnergy();
+          }
+        }
+      }
+    }
+
     for (unsigned int ireg = 0; ireg < nregions; ireg++) {
       if (distance_ele_trajectory > (ireg + 1) * ele_radii[id.layer()] &&
           distance_photon_trajectory > (ireg + 1) * photon_radii[id.layer()]) {
@@ -466,6 +614,26 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     xStd_ = 0;
     yStd_ = 0;
     stdLayerHit_ = 0;
+  }
+
+  // Quotient out the total energies from the standard deviations if possible
+  // and take root
+  for (unsigned int iseg = 0; iseg < nsegments; iseg++) {
+    if (energySeg[iseg] > 0) {
+      xStdSeg[iseg] = sqrt(xStdSeg[iseg] / energySeg[iseg]);
+      yStdSeg[iseg] = sqrt(yStdSeg[iseg] / energySeg[iseg]);
+      layerStdSeg[iseg] = sqrt(layerStdSeg[iseg] / energySeg[iseg]);
+    }
+    for (unsigned int ireg = 0; ireg < nregions; ireg++) {
+      if (oContEnergy[ireg][iseg] > 0) {
+        oContXStd[ireg][iseg] =
+            sqrt(oContXStd[ireg][iseg] / oContEnergy[ireg][iseg]);
+        oContYStd[ireg][iseg] =
+            sqrt(oContYStd[ireg][iseg] / oContEnergy[ireg][iseg]);
+        oContLayerStd[ireg][iseg] =
+            sqrt(oContLayerStd[ireg][iseg] / oContEnergy[ireg][iseg]);
+      }
+    }
   }
 
   for (unsigned int ireg = 0; ireg < nregions; ireg++) {
@@ -566,10 +734,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     TVector3 e_norm = evec.Unit();
     TVector3 pvec = p_traj_end - p_traj_start;
     TVector3 p_norm = pvec.Unit();
-    // Separation variables are currently unused due to pT bias concerns and low
-    // efficiency May be removed after a more careful MIP tracking study
-    float epDot = e_norm.Dot(p_norm);
-    epAng_ = acos(epDot) * 180.0 / M_PI;
+    epAng_ = acos(epDot_) * 180.0 / M_PI;
     epSep_ = sqrt(pow(e_traj_start.X() - p_traj_start.X(), 2) +
                   pow(e_traj_start.Y() - p_traj_start.Y(), 2));
   } else {
@@ -582,15 +747,17 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     p_traj_start = TVector3(1000, 1000, geometry_->getZPosition(0));  // 0);
     p_traj_end = TVector3(
         1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
-    epAng_ =
-        3.0 + 1.0; /*ensures event will not be vetoed by angle/separation cut */
+    /*ensures event will not be vetoed by angle/separation cut */
+    epAng_ = 3.0 + 1.0;
     epSep_ = 10.0 + 1.0;
+    epDot_ = 1.0;  // default to 1.0 (?)
   }
 
   // Near photon step:  Find the first layer of the ECal where a hit near the
   // projected photon trajectory is found Currently unusued pending further
-  // study; performance has dropped between v9 and v12.
-  firstNearPhLayer_ = geometry_->getZPosition((nEcalLayers_ - 1));
+  // study; performance has dropped between v9 and v12. Currently used in
+  // segmipBDT
+  firstNearPhLayer_ = nEcalLayers_ - 1;
 
   if (photon_trajectory.size() !=
       0) {  // If no photon trajectory, leave this at the default (ECal back)
@@ -599,10 +766,28 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       float ehDist =
           sqrt(pow((*it).pos.X() - photon_trajectory[(*it).layer].first, 2) +
                pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
-      if (ehDist < 8.7 && (*it).layer < firstNearPhLayer_) {
-        firstNearPhLayer_ = (*it).layer;
+      if (ehDist < 8.7) {
+        nNearPhHits_++;
+        if ((*it).layer < firstNearPhLayer_) {
+          firstNearPhLayer_ = (*it).layer;
+        }
       }
     }
+  }
+
+  // Territories limited to trackingHitList
+  TVector3 gToe = (e_traj_start - p_traj_start).Unit();
+  TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
+  if (ele_trajectory.size() > 0) {
+    for (auto &hitData : trackingHitList) {
+      TVector3 hitPos = hitData.pos;
+      TVector3 hitPrime = hitPos - origin;
+      if (hitPrime.Dot(gToe) <= 0) {
+        photonTerritoryHits_++;
+      }
+    }
+  } else {
+    photonTerritoryHits_ = nReadoutHits_;
   }
 
   // Find straight MIP tracks:
@@ -912,15 +1097,21 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
-      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, epAng_, epSep_,
-      electronContainmentEnergy, photonContainmentEnergy,
-      outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd,
-      outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
+      nStraightTracks_, nLinregTracks_, firstNearPhLayer_, nNearPhHits_,
+      photonTerritoryHits_, epAng_, epSep_, epDot_, electronContainmentEnergy,
+      photonContainmentEnergy, outsideContainmentEnergy,
+      outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd,
+      energySeg, xMeanSeg, yMeanSeg, xStdSeg, yStdSeg, layerMeanSeg,
+      layerStdSeg, eContEnergy, eContXMean, eContYMean, gContEnergy, gContNHits,
+      gContXMean, gContYMean, oContEnergy, oContNHits, oContXMean, oContYMean,
+      oContXStd, oContYStd, oContLayerMean, oContLayerStd,
+      ecalLayerEdepReadout_, recoilP, recoilPos);
 
   if (doBdt_) {
     buildBDTFeatureVector(result);
     ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-    float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
+    float pred =
+        rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
     // Removing electron-photon separation step, near photon step due to lower
     // v12 performance; may reconsider
     bool passesTrackingVeto = (nStraightTracks_ < 3) && (nLinregTracks_ == 0);

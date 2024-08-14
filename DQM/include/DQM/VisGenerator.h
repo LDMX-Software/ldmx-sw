@@ -23,9 +23,26 @@ class VisGenerator : public framework::Analyzer {
 
     virtual void analyze(const framework::Event& event);
 
+    void ecalClusterRecHit(const framework::Event& event, const std::string& eKey);
+
+    void groundTruthTracks(const framework::Event& event, const std::string& eKey);
+
+    void extractLayers(const framework::Event& event, const std::string& eKey);
+
+    // void caloCells(const framework::Event& event, const std::string& eKey);
+
     virtual void onProcessEnd();
 
   private:
+    // Include ground truth (simulated) info
+    bool includeGroundTruth_;
+
+    // Simulated info has contribs with originID (not available by default)
+    bool originIdAvailable_;
+
+    // Number of electrons in simulation
+    int nbrOfElectrons_;
+
     // Collection Name for SimHits
     std::string ecalSimHitColl_;
 
@@ -44,10 +61,20 @@ class VisGenerator : public framework::Analyzer {
     // Include ecal clusters
     bool includeEcalClusters_;
 
-    // Collection name for Ecal Clusters
+    // Collection name for ecal clusters
     std::string ecalClusterColl_;
 
+    // Pass name for ecal clusters
     std::string ecalClusterPass_;
+
+    // Generate json file visualizing hit origins
+    // NEEDS ORIGIN ID
+    bool visHitOrigin_;
+    std::string truthFilename_;
+
+     // Generate json file visualizing ecal layers
+    bool visLayers_;
+    std::string layerFilename_;
 
     // Output filename
     std::string filename_;
@@ -57,8 +84,17 @@ class VisGenerator : public framework::Analyzer {
     
     nlohmann::json j;
 
+    nlohmann::json truth;
+
+    nlohmann::json layer;
+
+    // nlohmann::json c;
+
     std::vector<std::string> colors { "0xFFB6C1", "0xFFA500", "0xFFFF00", 
-                                      "0x7FFF00", "0x00FFFF", "0xBC8F8F", "0xFFF0F5", "0x663399"};
+                                      "0x7FFF00", "0x00FFFF", "0x663399"};
+
+    std::vector<std::string> colorstrings { "pink", "orange", "yellow", 
+                                      "green", "blue", "purple"};
 };
 
 }

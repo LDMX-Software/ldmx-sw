@@ -270,17 +270,21 @@ class TruthSeedProcessor(Producer):
     track_id : int
         If positive, select only scoring hits with that particular track ID.
     pz_cut : double
-        Minimum cut on the momentum (MeV) of the seed along the beam axis.
-    p_cut : double
-        Minimum cut on the momentum (MeV) of the seed.
-    p_cut_max : double
+        Minimum cut on the momentum (MeV)of the seed along the beam axis.
+    p_cut : double 
+        Minimum cut on the momentum(MeV) of the seed.
+    p_cut_max : double 
         Maximum cut on the momentum of the seed.
-    p_cut_ecal : double
-        Minimum seed track momentum (MeV) at the ECAL scoring plane
-       
-    
+    p_cut_ecal : double 
+        Minimum seed track momentum(MeV) at the ECAL scoring plane 
+    skip_tagger : bool 
+        Ignore the tagger tracker(makes empty collections). 
+    skip_recoil : bool 
+        Ignore the recoil tracker(makes empty collections).
+    max_track_id : double
+        Maximum track ID for a hit to be selected in the target scoring plane.
     """
-    def __init__(self, instance_name="TruthSeedProcessor"):
+    def __init__(self, instance_name = "TruthSeedProcessor"):
         super().__init__(instance_name, 'tracking::reco::TruthSeedProcessor',
                          'Tracking')
 
@@ -289,9 +293,12 @@ class TruthSeedProcessor(Producer):
         self.recoil_sim_hits_coll_name = 'RecoilSimHits'
         self.tagger_sim_hits_coll_name = 'TaggerSimHits'
         self.n_min_hits = 7
-        self.z_min = -9999.  # mm
+        self.z_min = -9999. #mm
         self.track_id = -9999
-        self.pz_cut = -9999.  # MeV
-        self.p_cut = 0.  # MeV
-        self.p_cut_max = 100000.  # MeV
-        self.p_cut_ecal = -1.  # MeV
+        self.pz_cut = -9999. #MeV
+        self.p_cut = 0. #MeV
+        self.p_cut_max = 100000. #MeV
+        self.p_cut_ecal = -1. #MeV
+        self.skip_tagger = False
+        self.skip_recoil = False
+        self.max_track_id = 5
