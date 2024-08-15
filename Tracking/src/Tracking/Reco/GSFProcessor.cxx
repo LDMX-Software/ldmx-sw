@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Acts/EventData/TrackHelpers.hpp"
 #include "Acts/EventData/SourceLink.hpp"
 
 namespace tracking {
@@ -157,6 +158,7 @@ void GSFProcessor::produce(framework::Event& event) {
   if (!event.exists(trackCollection_)) return;
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
 
+
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
   auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
@@ -242,7 +244,7 @@ void GSFProcessor::produce(framework::Event& event) {
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
       geometry_context(),    magnetic_field_context(),
       calibration_context(), gsf_extensions,
-      propagator_options,    &(*origin_surface),
+      propagator_options,    &(*reference_surface),
       maxComponents_,        weightCutoff_,
       abortOnError_,         disableAllMaterialHandling_};
   */
@@ -377,6 +379,14 @@ void GSFProcessor::produce(framework::Event& event) {
 
     auto gsftrk = tc.getTrack(itrk);
     calculateTrackQuantities(gsftrk);
+    int ntrack_count = 0;
+    for (const auto& trackState : gsftrk.trackStates()) {
+        auto typeFlags = trackState.typeFlags();
+        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+        ntrack_count++;
+        }
+    }
+    //std::cout << "NMEAS? " << ntrack_count << " " << gsftrk.nMeasurements() << std::endl;
 
     const Acts::BoundVector& perigee_pars = gsftrk.parameters();
     const Acts::BoundMatrix& trk_cov = gsftrk.covariance();

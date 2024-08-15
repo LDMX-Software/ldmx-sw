@@ -6,6 +6,8 @@
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
 #include "Tracking/Reco/AmbiguitySolver.h"
+#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
+
 
 
 //--- C++ StdLib ---//
@@ -164,12 +166,39 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup the greedy solver
   tracking::reco::GreedyAmbiguityResolution::Config greedy_config;
-  greedy_config.maximumSharedHits = 1;
+  greedy_config.maximumSharedHits = 3;
   greedy_config.maximumIterations = 1000;
   greedy_config.nMeasurementsMin = min_hits_;
 
   greedy_solver_ = std::make_unique<std::decay_t<decltype(*greedy_solver_)>>(
     greedy_config, Acts::getDefaultLogger("CKF", acts_loggingLevel));
+
+  tracking::reco::ScoreBasedAmbiguityResolution::DetectorConfig score_det_config;
+  score_det_config.hitsScoreWeight = 1;
+  score_det_config.holesScoreWeight = -1;
+  score_det_config.outliersScoreWeight = -1;
+  score_det_config.otherScoreWeight = -1;
+  score_det_config.minHits = 0;
+  score_det_config.maxHits = 14;
+  score_det_config.maxHoles = 1;
+  score_det_config.maxOutliers = 3;
+  score_det_config.maxSharedHits = 2;
+  score_det_config.sharedHitsFlag = true;
+
+  tracking::reco::ScoreBasedAmbiguityResolution::Config score_config;
+  score_config.detectorConfigs.push_back(score_det_config);
+  score_config.minScore = 0;
+  score_config.minScoreSharedTracks = 0;
+  score_config.maxSharedTracksPerMeasurement = 10;
+  score_config.maxShared = 5;
+
+
+  //greedy_config.maximumSharedHits = 1;
+  //#greedy_config.maximumIterations = 1000;
+  //greedy_config.nMeasurementsMin = min_hits_;
+
+  score_based_solver_ = std::make_unique<std::decay_t<decltype(*score_based_solver_)>>(
+    score_config, Acts::getDefaultLogger("CKF", acts_loggingLevel));
 
 }
 
@@ -643,28 +672,42 @@ void CKFProcessor::produce(framework::Event& event) {
   }  // loop seed track parameters
 
   // Setting up ambiguity solver
-  tracking::reco::GreedyAmbiguityResolution::State state;
-  greedy_solver_->computeInitialState(tc, state, &sourceLinkHash, &sourceLinkEquality);
+  if (!use_score_based_solver_) {
+    tracking::reco::GreedyAmbiguityResolution::State state;
+    greedy_solver_->computeInitialState(tc, state, &sourceLinkHash, &sourceLinkEquality);
 
-  greedy_solver_->resolve(state);
-  ldmx_log(debug) << "Resolved to " << state.selectedTracks.size() << " tracks from "
-                           << tc.size() << " " << tracks.size() << " " << all_tracks.size() << " " << startParameters.size()
-                           << " " << failed_fits;
+    greedy_solver_->resolve(state);
+    ldmx_log(debug) << "Resolved to " << state.selectedTracks.size() << " tracks from "
+                           << tc.size() << " " << tracks.size() << " " << state.numberOfTracks;
 
-  // Now saving all of the track info
-  for (auto iTrack : state.selectedTracks) {
-    //std::cout << " Saving good tracks: " << iTrack << std::endl;
-    auto good_track = tc.getTrack(state.trackTips.at(iTrack));
-    auto clean_trk = all_tracks[good_track.index()];
-    if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
-      cleaned_tracks.push_back(clean_trk);
+    // Now saving all of the track info
+    for (auto iTrack : state.selectedTracks) {
+      //std::cout << " Saving good tracks: " << iTrack << std::endl;
+      auto good_track = tc.getTrack(state.trackTips.at(iTrack));
+      auto clean_trk = all_tracks[good_track.index()];
+      if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
+        cleaned_tracks.push_back(clean_trk);
+     }
     }
+  }
+  else {
+    std::vector<std::vector<ScoreBasedAmbiguityResolution::MeasurementInfo>> measurementsPerTracks;
+    std::vector<std::vector<ScoreBasedAmbiguityResolution::TrackFeatures>> trackFeaturesVectors;
+    measurementsPerTracks = score_based_solver_->computeInitialState(
+      tc, &sourceLinkHash, &sourceLinkEquality, trackFeaturesVectors);
+    
+    std::vector<int> goodTracks = score_based_solver_->solveAmbiguity(
+      tc, measurementsPerTracks, trackFeaturesVectors);
 
-    //std::cout << " Comparing Saved Tracks: " << std::endl;
-    //std::cout << good_track.chi2() << " " << all_tracks[good_track.index()].getChi2() << std::endl;
-    //std::cout << good_track.nMeasurements() << " " << all_tracks[good_track.index()].getNhits() << std::endl;
-    //Acts::Vector3 good_track_momentum = good_track.momentum();
-    //std::cout << good_track_momentum(0) << " " << good_track_momentum(1) << " " << good_track_momentum(2) << " " << tracks[iTrack].getMomentum() << std::endl;
+    std::cout << "Finished Score Based Solving!" << std:: endl;
+    for (auto iTrack : goodTracks) {
+      //std::cout << " Saving good tracks: " << iTrack << std::endl;
+      auto good_track = tc.getTrack(iTrack);
+      auto clean_trk = all_tracks[good_track.index()];
+      if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
+        cleaned_tracks.push_back(clean_trk);
+     }
+    }
   }
 
  
@@ -738,6 +781,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
   use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
   min_hits_ = parameters.getParameter<int>("min_hits", 7);
+
+  debug_ = parameters.getParameter<bool>("debug", false);
+  use_score_based_solver_ = parameters.getParameter<bool>("use_score_based_solver", false);
 
   // Ckf specific options
   use_extrapolate_location_ =

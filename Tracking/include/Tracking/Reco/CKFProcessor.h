@@ -63,6 +63,7 @@
 
 //-- Ambiguity Solving --//
 #include "Tracking/Reco/AmbiguitySolver.h"
+#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
 
 // GSF
 //#include "Acts/TrackFitting/GaussianSumFitter.hpp"
@@ -219,6 +220,9 @@ class CKFProcessor final : public TrackingGeometryUser {
   // The Greedy Solver
   std::unique_ptr<const tracking::reco::GreedyAmbiguityResolution> greedy_solver_;
 
+  // The Score Based Solver
+  std::unique_ptr<const tracking::reco::ScoreBasedAmbiguityResolution> score_based_solver_;
+
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
@@ -233,6 +237,8 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   // Keep track on which system this processor is running on
   bool taggerTracking_{true};
+
+  bool use_score_based_solver_{false};
 
 };  // CKFProcessor
 
