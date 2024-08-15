@@ -47,6 +47,11 @@ export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
+[private]
+install-denv:
+    curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
+
+
 # configure how ldmx-sw will be built
 configure *CONFIG:
     denv cmake -B build -S . {{ CONFIG }}

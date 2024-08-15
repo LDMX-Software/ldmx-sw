@@ -14,4 +14,4 @@ jobs:
           just-version: 1.26.0
       - uses: actions/checkout@v4
       - name: run format check on the C++
-        run: just format-cpp --verbose -Werror --dry-run
+        run: just install-denv format-cpp --verbose -Werror --dry-run
