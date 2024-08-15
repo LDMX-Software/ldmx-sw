@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Acts/EventData/TrackHelpers.hpp"
 #include "Acts/EventData/SourceLink.hpp"
 
 namespace tracking {
@@ -126,6 +127,9 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "GSFTracks");
 
+  trackCollection_= parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
+  measCollection_= parameters.getParameter<std::string>("measCollection", "DigiTaggerSimHits");
+
   maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
   abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
   disableAllMaterialHandling_ =
@@ -140,6 +144,8 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   usePerigee_ = parameters.getParameter<bool>("usePerigee", false);
 
   debug_ = parameters.getParameter<bool>("debug", false);
+  taggerTracking_ = parameters.getParameter<bool>("taggerTracking", true);
+
 
   // finalReductionMethod_ =
   // parameters.getParameter<double>("finalReductionMethod",);
@@ -153,6 +159,7 @@ void GSFProcessor::produce(framework::Event& event) {
   // Retrieve the tracks
   if (!event.exists(trackCollection_)) return;
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
+
 
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
@@ -208,10 +215,17 @@ void GSFProcessor::produce(framework::Event& event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
 
+   std::shared_ptr<const Acts::PerigeeSurface> tagger_layer_surface =
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(
+          Acts::Vector3(-700., 0., 0.));
+
+    std::shared_ptr<const Acts::PerigeeSurface> reference_surface = origin_surface;
+    if (taggerTracking_) { reference_surface =  tagger_layer_surface;}
+
   Acts::Experimental::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
       geometry_context(),    magnetic_field_context(),
       calibration_context(), gsf_extensions,
-      propagator_options,    &(*origin_surface),
+      propagator_options,    &(*reference_surface),
       maxComponents_,        weightCutoff_,
       abortOnError_,         disableAllMaterialHandling_};
 
@@ -268,15 +282,50 @@ void GSFProcessor::produce(framework::Event& event) {
     std::shared_ptr<Acts::Surface> beamOrigin_surface =
         tracking::sim::utils::unboundSurface(-700);
 
+    const std::shared_ptr<Acts::Surface> target_surface =
+        tracking::sim::utils::unboundSurface(0.);
+
+    Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
+    // u direction along +Y
+    surf_rotation(1, 0) = 1;
+    // v direction along +Z
+    surf_rotation(2, 1) = 1;
+    // w direction along +X
+    surf_rotation(0, 2) = 1;
+
+    const double ECAL_SCORING_PLANE = 240.5;
+    Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
+    Acts::Translation3 surf_translation(pos);
+    Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+
+    // Unbounded surface
+    const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+
+    Acts::BoundTrackParameters trk_btp_bO = 
+        tracking::sim::utils::boundTrackParameters(track, perigee);
+    if (taggerTracking_) {
+
     if (!track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).has_value()) {
       ldmx_log(warn)
           << "Failed retreiving AtBeamOrigin TrackState for track. Skipping..";
       continue;
     }
-
     auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
-    Acts::BoundTrackParameters trk_btp_bO =
+    trk_btp_bO =
         tracking::sim::utils::btp(ts, beamOrigin_surface);
+    }
+    if (!taggerTracking_) {
+        if (!track.getTrackState(ldmx::TrackStateType::AtTarget).has_value()) {
+      ldmx_log(warn)
+          << "Failed retreiving AtTarget TrackState for track. Skipping..";
+      continue;
+    }
+    auto ts = track.getTrackState(ldmx::TrackStateType::AtTarget).value();
+    trk_btp_bO =
+        tracking::sim::utils::btp(ts, target_surface);
+    }
+
 
     const Acts::BoundVector& trkpars = trk_btp.parameters();
     ldmx_log(debug) << "CKF Track parameters" << std::endl
@@ -315,6 +364,14 @@ void GSFProcessor::produce(framework::Event& event) {
 
     auto gsftrk = tc.getTrack(itrk);
     calculateTrackQuantities(gsftrk);
+    int ntrack_count = 0;
+    for (const auto& trackState : gsftrk.trackStates()) {
+        auto typeFlags = trackState.typeFlags();
+        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+        ntrack_count++;
+        }
+    }
+    //std::cout << "NMEAS? " << ntrack_count << " " << gsftrk.nMeasurements() << std::endl;
 
     const Acts::BoundVector& perigee_pars = gsftrk.parameters();
     const Acts::BoundMatrix& trk_cov = gsftrk.covariance();
@@ -337,16 +394,33 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx::Track trk = ldmx::Track();
 
     // Unbounded surface
-    const std::shared_ptr<Acts::Surface> target_surface =
-        tracking::sim::utils::unboundSurface(0.);
-
+    bool success = false;
+    if (taggerTracking_) {
     ldmx_log(debug) << "Target extrapolation";
     ldmx::Track::TrackState tsAtTarget;
 
-    bool success = trk_extrap_->TrackStateAtSurface(
+    success = trk_extrap_->TrackStateAtSurface(
         gsftrk, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
 
     if (success) trk.addTrackState(tsAtTarget);
+    }
+
+    if (!taggerTracking_) {
+      ldmx_log(debug) << "Ecal Extrapolation";
+      ldmx::Track::TrackState tsAtEcal;
+      success = trk_extrap_->TrackStateAtSurface(gsftrk, ecal_surface, tsAtEcal,
+                                                 ldmx::TrackStateType::AtECAL);
+
+      if (success) {
+        trk.addTrackState(tsAtEcal);
+        ldmx_log(debug) << "Successfully obtained TS at Ecal";
+        ldmx_log(debug) << "Parameters At Ecal:  \n"
+                        << tsAtEcal.params[0] << " " << tsAtEcal.params[1]
+                        << " " << tsAtEcal.params[2] << " "
+                        << tsAtEcal.params[3] << " " << tsAtEcal.params[4];
+      }
+    }
+
 
     trk.setPerigeeLocation(
         perigee_surface.transform(geometry_context()).translation()(0),
@@ -354,6 +428,9 @@ void GSFProcessor::produce(framework::Event& event) {
         perigee_surface.transform(geometry_context()).translation()(2));
 
     trk.setChi2(gsftrk.chi2());
+    //if (taggerTracking_) {std::cout << "MEASUREMENT COUNT: " << gsftrk.nMeasurements() << std::endl;}
+    trk.setNhits(gsftrk.nMeasurements());
+    trk.setNdf(gsftrk.nDoF());
     trk.setPerigeeParameters(
         tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
     std::vector<double> v_trk_cov;

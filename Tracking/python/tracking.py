@@ -188,6 +188,8 @@ class CKFProcessor(Producer):
         self.kf_refit = False
         self.gsf_refit = False
         self.min_hits = 6
+        self.debug = False
+        self.use_score_based_solver = False
 
 
 
@@ -227,14 +229,17 @@ class GSFProcessor(Producer):
 
         self.trackCollection = "TaggerTracks"
         self.measCollection  = "DigiTaggerSimHits"
-        self.maxComponent    = 4
+        self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
-        self.weightCutoff    = 1.0e-4
+        self.weightCutoff    = 1.0e-8
+        self.debug = True
 
         self.propagator_step_size = 200.
         self.propagator_maxSteps  = 1000
         self.field_map = makeFieldMapPath()
+        self.taggerTracking = True
+        self.out_trk_collection = "GSFTracks"
 
         
 
