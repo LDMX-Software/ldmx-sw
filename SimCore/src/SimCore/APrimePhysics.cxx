@@ -45,22 +45,20 @@ APrimePhysics::APrimePhysics(const framework::config::Parameters& params)
 }
 
 void APrimePhysics::ConstructParticle() {
-  auto model{
-      parameters_.getParameter<framework::config::Parameters>("model")};
-  static const std::map<std::string, G4APrime::DecayMode>
-      decay_lut = {
-            {"no_decay", G4APrime::DecayMode::NoDecay},
-            {"flat_decay", G4APrime::DecayMode::FlatDecay},
-            {"geant_decay", G4APrime::DecayMode::GeantDecay}};
-  auto decay_it{
-      decay_lut.find(model.getParameter<std::string>("decay_mode", "no_decay"))};
+  auto model{parameters_.getParameter<framework::config::Parameters>("model")};
+  static const std::map<std::string, G4APrime::DecayMode> decay_lut = {
+      {"no_decay", G4APrime::DecayMode::NoDecay},
+      {"flat_decay", G4APrime::DecayMode::FlatDecay},
+      {"geant_decay", G4APrime::DecayMode::GeantDecay}};
+  auto decay_it{decay_lut.find(
+      model.getParameter<std::string>("decay_mode", "no_decay"))};
   if (decay_it == decay_lut.end()) {
-      EXCEPTION_RAISE(
-          "BadConf",
-          "Unrecognized decay mode '" +
-              model.getParameter<std::string>("decay_mode") +
-              "',"
-              " options are 'no_decay', 'flat_decay', or 'geant_decay'.");
+    EXCEPTION_RAISE(
+        "BadConf",
+        "Unrecognized decay mode '" +
+            model.getParameter<std::string>("decay_mode") +
+            "',"
+            " options are 'no_decay', 'flat_decay', or 'geant_decay'.");
   }
 
   double ap_tau = model.getParameter<double>("ap_tau", -1.0);
@@ -107,12 +105,11 @@ void APrimePhysics::ConstructProcess() {
                        always DB off electrons here */
               ,
               model.getParameter<double>("threshold"),
-              model.getParameter<double>("epsilon"), 
-              scaling_method_it->second,
+              model.getParameter<double>("epsilon"), scaling_method_it->second,
               g4db::G4DarkBreMModel::XsecMethod::Auto,
               model.getParameter<double>("max_R_for_full", 50.0),
               model.getParameter<int>("aprime_lhe_id", 622),
-              true, // always load the library
+              true,  // always load the library
               model.getParameter<bool>("scale_APrime", false),
               model.getParameter<double>("dist_decay_min", 0.0),
               model.getParameter<double>("dist_decay_max", 1.0)),
