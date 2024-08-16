@@ -122,7 +122,7 @@ void TrigPrimResolutionAnalyzer::onProcessStart() {
                      100, 0, 8000, "total trigger / total precision ampl", 100,
                      0.9, 1.1);
   histograms_.create("trig_ampl_v_ampl_total_first20", "Full readout sum [MeV]",
-                     50, 0, 6000, "Trigger / Full readout", 100, 0.95, 1.05);
+                     100, 0, 6000, "Trigger / Full readout", 100, 0.95, 1.05);
   histograms_.create("trig_group", "trigger group total precision hits [MeV]",
                      100, 0, 2000);
   histograms_.create("trig_group_trigger", "trigger group trigger [MeV]", 100,
