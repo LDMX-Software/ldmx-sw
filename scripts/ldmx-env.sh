@@ -37,8 +37,10 @@ __have() {
   command -v ${1} &> /dev/null
 }
 if __have just && __have denv; then
+  # back out of scripts
+  _default_justfile="$( dirname ${BASH_SOURCE[0]} )/../justfile"
   # make alias and leave
-  alias ldmx=just
+  alias ldmx="just -f ${_default_justfile}"
   return 0
 else
   echo "[ldmx-env.sh] [WARNING] The bash functions that you will be using are deprecated."
