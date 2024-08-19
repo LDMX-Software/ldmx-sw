@@ -72,6 +72,7 @@ fire config_py *ARGS:
 # initialize a containerized development environment
 init:
     #!/usr/bin/env sh
+    unset denv_workspace # make sure test looks for the denv
     if denv check --workspace --quiet; then
       echo "\033[32mWorkspace already initialized.\033[0m"
       denv config print
