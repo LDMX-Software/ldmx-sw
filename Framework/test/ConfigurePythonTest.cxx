@@ -163,7 +163,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // was set correctly.
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
-    args[0] = "9000";
+    args[0] = (char *)"9000";
     framework::ConfigurePython cfg(config_file_name_arg, args, 1);
     p = cfg.makeProcess();
 
