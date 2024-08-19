@@ -1,4 +1,6 @@
 #if DETECTORID_BINDINGS_ENABLED
+// This we may be able to remove after boost update
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <boost/python.hpp>
 
 #include "DetDescr/DetectorID.h"
