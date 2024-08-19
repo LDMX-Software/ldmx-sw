@@ -246,8 +246,8 @@ def single_4gev_e_upstream_tagger() :
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -600.8976671223825, 0.0, -6000.0 ],
-        [ 434.54301089006407, 0.0, 3976.8404804302777],
+        [ -43.56748, 0.0, -883.0 ],
+        [ 388.5554, 0.0, 3981.5967 ],
         4.0
     )
 
@@ -286,8 +286,8 @@ def single_1pt2gev_e_upstream_tagger():
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -2083.3707473241993, 0.0, -6000.0 ],
-        [ 425.132266424426, 0.0, 1122.7149711218378],
+        [ -148.95303, 0.0, -883.0 ],
+        [ 388.57147, 0.0, 1135.8867 ],
         1.2
     )
 
@@ -305,8 +305,8 @@ def single_8gev_e_upstream_tagger():
     upstream of the entire detector apparatus.
     """
     return _single_e_upstream_tagger(
-        [ -299.2386690686212, 0.0, -6000.0 ],
-        [ 434.59663056485   , 0.0, 7988.698356992288],
+        [ -21.745876, 0.0, -883.0 ],
+        [ 388.55154, 0.0, 7991.0703],
         8.0
     )
 
