@@ -362,11 +362,13 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   stddev[Acts::eBoundTime] =
       inflate_factors_[Acts::eBoundTime] * 1000 * Acts::UnitConstants::ns;
 
-
+  ldmx_log(debug) << "Making covariance matrix as diagonal matrix with inflated terms";
   //mg ... Aug 2024 .. change from SymMatrix to SquareMatrix
   //  why .asDiagonal? 
   //  Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();  
   Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+
+  ldmx_log(debug) << "...now putting together the seed track ...";
 
   ldmx::Track trk = ldmx::Track();
   trk.setPerigeeLocation(perigee_location(0), perigee_location(1),
@@ -390,10 +392,15 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                   seed_free[Acts::eFreePos2]);
   trk.setMomentum(seed_free[Acts::eFreeDir0], seed_free[Acts::eFreeDir1],
                   seed_free[Acts::eFreeDir2]);
-  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
+ 
+  ldmx_log(debug) << "...making the ParticleHypothesis ...assume electron for now";
+  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    
+  ldmx_log(debug) << "Making BoundTrackParameters seedParameters (is this even used???)";
   Acts::BoundTrackParameters seedParameters(seed_perigee,
-                                            std::move(bound_params), bound_cov,part);
+                                            std::move(bound_params), bound_cov,partHypo);
 
+  ldmx_log(debug)<<"Returning seed track";
   return trk;
 }
 
@@ -536,7 +543,7 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
       return;
     }
 
-    ldmx_log(debug) << "seedTrack";
+    ldmx_log(debug) << "making seedTrack";
 
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};

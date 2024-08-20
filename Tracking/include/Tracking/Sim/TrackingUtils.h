@@ -227,10 +227,11 @@ inline Acts::BoundTrackParameters boundTrackParameters(
     const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
   Acts::BoundVector paramVec = boundState(trk);
   Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
-  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
+  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  //  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
   //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
   // need to add particle hypothesis
-    return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat), part );
+    return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat), partHypo );
 }
 
 inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
@@ -238,8 +239,9 @@ inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
 				      int pdgid) {
   Acts::BoundVector paramVec = boundState(ts);
   Acts::BoundSquareMatrix covMat = unpackCov(ts.cov);
-  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
-  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),part);
+  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  //  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),partHypo);
 }
 
 // Return an unbound surface

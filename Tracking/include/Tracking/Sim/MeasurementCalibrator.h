@@ -61,10 +61,10 @@ class LdmxMeasurementCalibrator {
   void calibrate(
 		 const Acts::GeometryContext& /*gctx*/,
 		 const Acts::CalibrationContext& /*cctx*/,
-		 const ActsExamples::IndexSourceLink& sourceLink/*sourceLink*/,
+		 const SourceLink& genericSourceLink/*sourceLink*/,
 		 traj_t::TrackStateProxy
 		 trackState) const {
-
+    ActsExamples::IndexSourceLink sourceLink{genericSourceLink.get<ActsExamples::IndexSourceLink>()};
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
     assert((sourceLink.index() < m_measurements->size()) and
@@ -108,13 +108,10 @@ class LdmxMeasurementCalibrator {
 		    const Acts::GeometryContext& /*gctx*/,
 		    const Acts::CalibrationContext& /*cctx*/,
 		    //		    const ActsExamples::IndexSourceLink& sourceLink/*sourceLink*/,		    
-		    const Acts::SourceLink& dummySourceLink/*sourceLink*/,
-		    typename traj_t::TrackStateProxy
+		    const Acts::SourceLink& genericSourceLink/*sourceLink*/,
+		    traj_t::TrackStateProxy
 		    trackState) const {
-    // Use by value - life management is not working properly
-    //mg Aug 2024 ... in v36, this is an argument
-    ActsExamples::IndexSourceLink sourceLink =
-      trackState.getUncalibratedSourceLink().template get<ActsExamples::IndexSourceLink>();
+    ActsExamples::IndexSourceLink sourceLink{genericSourceLink.get<ActsExamples::IndexSourceLink>()};
     
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
@@ -122,18 +119,14 @@ class LdmxMeasurementCalibrator {
            "Source link index is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
-    // std::cout<<"calibrate_1d ==> NMeasurements available=" <<
-    // m_measurements->size()<<std::endl;
+      m_measurements->size()<<std::endl;
     auto meas = m_measurements->at(sourceLink.index());
 
-    // You need to explicitly allocate measurements here
-    //mg Aug 2024  ...things have changed quite a bit in v36
     trackState.allocateCalibrated(1);
     auto tsIndexType=trackState.index();
     auto tsCal{trackState.template calibrated<1>()};
     auto tsCalCov{trackState.template calibratedCovariance<1>()};
-    //    auto trackStateIndex=trackState.index();
-    //    trackState.calibrated<1>(tsIndexType).setZero();
+
     tsCal.setZero();
     tsCal(0) = (meas.getLocalPosition())[0];
     tsCalCov.setZero();

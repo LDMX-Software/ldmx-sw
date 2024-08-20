@@ -77,6 +77,9 @@
 
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
+//mg Aug 2024 not sure if these are needed...
+using Updater = Acts::GainMatrixUpdater;
+using Smoother = Acts::GainMatrixSmoother;
 
 using ActionList =
     Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
@@ -167,6 +170,9 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   bool debug_{false};
 
+  //  const std::shared_ptr<Acts::PlaneSurface> target_surface;
+  std::shared_ptr<Acts::PlaneSurface> target_surface;
+  Acts::RotationMatrix3 surf_rotation; 
   // Constant BField
   double bfield_{0};
   // Use constant bfield
