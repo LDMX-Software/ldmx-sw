@@ -5,8 +5,6 @@
 #   - Double curly braces `{{...}}` are used for evaluating `just` variables and functions
 #   - By default, these recipes are run from the directory of this file.
 #     This can be changed but is helpful for us in most recipes.
-#   - just does support splitting recipes across multiple files, but
-#     should be avoided for our use case to keep it as a single reference.
 #
 # other recipe ideas:
 #   - production image building
