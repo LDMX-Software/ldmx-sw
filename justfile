@@ -35,8 +35,10 @@ export LDMX_BASE := parent_directory( justfile_directory() )
 
 # tell denv where the workspace is
 # usually, denv deduces where the workspace is by finding the .denv directory,
-# but we want to set where the denv is so users could (for example) run their
-# ldmx-sw build from within some other denv by invoking fire from just
+# but we want to set where the denv is within the justfile so users could (for example)
+# run their ldmx-sw build from within some other denv by invoking fire from just
+#   just -f path/to/ldmx-sw/justfile fire config.py
+# would run this denv even if there is a denv in the directory where config.py is.
 export denv_workspace := LDMX_BASE
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
@@ -47,6 +49,8 @@ export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
+# this install is private since I'd prefer users knowing what tools they are installing;
+# however, the CI needs to install denv before it can run any testing
 [private]
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
@@ -72,7 +76,13 @@ fire config_py *ARGS:
 # initialize a containerized development environment
 init:
     #!/usr/bin/env sh
-    unset denv_workspace # make sure test looks for the denv
+    # while setting the denv_workspace is helpful for other
+    # commands that can assume the denv is already initialized,
+    # we need to unset this environment variable to make sure
+    # the test is done appropriately.
+    # just makes sure this recipe runs from the directory of
+    # the justfile so we know we are in the correct location.
+    unset denv_workspace
     if denv check --workspace --quiet; then
       echo "\033[32mWorkspace already initialized.\033[0m"
       denv config print
