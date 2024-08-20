@@ -1,3 +1,9 @@
+/**
+ * @file PositionAccuracy.cxx
+ * @brief Class that determines position difference between TrigScint tracks/clusters and found beamElectrons.
+ * @author Erik Lundblad, Lund University
+ */
+
 #include "TrigScint/PositionAccuracy.h"
 #include "TrigScint/Event/PositionDifference.h"
 #include "TrigScint/Event/TrigScintTrack.h"

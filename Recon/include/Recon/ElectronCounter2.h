@@ -1,3 +1,9 @@
+/**
+ * @file ElectronCounter2.h
+ * @brief Class that combines TS and Ecal information for event electron counting.
+ * @author Erik Lundblad, Lund University
+ */
+
 
 #ifndef RECON_ELECTRONCOUNTER2_H
 #define RECON_ELECTRONCOUNTER2_H
