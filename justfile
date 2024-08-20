@@ -20,7 +20,7 @@ help_message := "shared recipes for ldmx-sw development
 
   Multiple commands can be provided at once and they will be run in sequence.
 
-    just configure build test
+    just init configure build test
 
   COMMANDS:
 "
