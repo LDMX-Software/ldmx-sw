@@ -73,7 +73,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   histograms_.fill(title_ + "N_tracks", tracks.size());
 
   ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
-  TrackMonitoring(uniqueTracks, title_, true, true);
+  //  TrackMonitoring(uniqueTracks, title_, true, true);  // for some reason truth matching not working...
+  TrackMonitoring(tracks, title_, true, true);
 
   ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
   // Fakes and duplicates
@@ -272,7 +273,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double trk_theta = track.getTheta();
     double trk_phi = track.getPhi();
     double trk_p = 1. / abs(trk_qop);
-
     std::vector<double> trk_mom = track.getMomentum();
 
     // The transverse momentum in the bending plane
@@ -299,6 +299,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                                Acts::BoundIndices::eBoundQOverP));
     double sigmap = (1. / trk_qop) * (1. / trk_qop) * sigmaqop;
 
+    ldmx_log(debug)<<"fillling "+title+"d0 = "<<trk_d0; 
     histograms_.fill(title + "d0", trk_d0);
     histograms_.fill(title + "z0", trk_z0);
     histograms_.fill(title + "qop", trk_qop);
