@@ -41,6 +41,12 @@ if __have just && __have denv; then
   _default_justfile="$( dirname ${BASH_SOURCE[0]} )/../justfile"
   # make alias and leave
   alias ldmx="just -f ${_default_justfile}"
+  # see https://just.systems/man/en/chapter_55.html
+  # if invoking 'just' directly, you can put the path to ldmx-sw as a prefix
+  # to the command you want to run. The following are all the same.
+  #   just path/to/ldmx-sw/build
+  #   just -f path/to/ldmx-sw/justfile build
+  #   cd path/to/ldmx-sw && just build
   return 0
 else
   echo "[ldmx-env.sh] [WARNING] The bash functions that you will be using are deprecated."
