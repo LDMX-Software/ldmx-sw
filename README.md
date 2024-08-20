@@ -68,7 +68,7 @@ git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git
 ```
 cd ldmx-sw
 just # no arguments prints out the possible options
-just init # initialize a new development environment
+just init # initialize a new development environment (once per clone)
 just configure build test # configure ldmx-sw, build it, then test it
 ```
 
