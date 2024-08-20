@@ -62,8 +62,8 @@
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
 //-- Ambiguity Solving --//
-#include "Tracking/Reco/AmbiguitySolver.h"
-#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
+//#include "Tracking/Reco/AmbiguitySolver.h"
+//#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
 
 // GSF
 //#include "Acts/TrackFitting/GaussianSumFitter.hpp"
@@ -91,7 +91,7 @@ using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
                                             Acts::VectorMultiTrajectory>;
 
-namespace tracking {
+namespace tracking { 
 namespace reco {
 
 class CKFProcessor final : public TrackingGeometryUser {
@@ -145,6 +145,22 @@ class CKFProcessor final : public TrackingGeometryUser {
                               const std::vector<ldmx::Measurement> &ldmxsps)
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  ActsExamples::IndexSourceLink>;
+
+  template <typename geometry_t, typename source_link_hash_t,
+            typename source_link_equality_t>
+  std::vector<std::vector<std::size_t>> computeSharedHits(
+      std::vector<ldmx::Track> tracks,  std::vector<ldmx::Measurement> meas_coll,
+      geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+      source_link_equality_t&& sourceLinkEquality) const;
+
+  /*
+  /// @param a 
+  std::size_t sourceLinkHash(const Acts::SourceLink& a);
+  
+  /// @param a 
+  /// @param b
+  bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b);
+  */
 
   // If we want to dump the tracking geometry
   bool dumpobj_{false};
@@ -218,10 +234,10 @@ class CKFProcessor final : public TrackingGeometryUser {
       trk_extrap_;
 
   // The Greedy Solver
-  std::unique_ptr<const tracking::reco::GreedyAmbiguityResolution> greedy_solver_;
+  //std::unique_ptr<const tracking::reco::GreedyAmbiguityResolution> greedy_solver_;
 
   // The Score Based Solver
-  std::unique_ptr<const tracking::reco::ScoreBasedAmbiguityResolution> score_based_solver_;
+  //std::unique_ptr<const tracking::reco::ScoreBasedAmbiguityResolution> score_based_solver_;
 
   /// n seeds and n tracks
   int nseeds_{0};

@@ -1,61 +1,164 @@
-// This file is part of the Acts project.
-//
-// Copyright (C) 2024 CERN for the benefit of the Acts project
-//
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// Tagger tracker: vol=2 , layer = [2,4,6,8,10,12,14], sensor=[1,2]
+// Recoil tracker: vol=3 , layer = [2,4,6,8,10,12],
+// sensor=[1,2,3,4,5,6,7,8,9,10]
 
 #pragma once
 
-#include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/TrackContainer.hpp"
-#include "Acts/Utilities/Delegate.hpp"
+//--- Framework ---//
+#include "Framework/Configure/Parameters.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/RandomNumberSeedService.h"
+
+//--- C++ ---//
+#include <memory>
+#include <random>
+
+//--- LDMX ---//
+#include "Tracking/Reco/TrackingGeometryUser.h"
+
+//--- ACTS ---//
+
+// Utils and Definitions
+#include "Acts/Definitions/Common.hpp"
+//#include "Acts/Definitions/TrackParametrization.hpp"
+//#include "Acts/Definitions/Units.hpp"
+//#include "Acts/EventData/TrackParameters.hpp"
+//#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
-#include <cstddef>
-#include <map>
-#include <memory>
-#include <string>
-#include <tuple>
-#include <vector>
+// geometry
+#include "Acts/Geometry/GeometryContext.hpp"
 
-#include <boost/container/flat_map.hpp>
-#include <boost/container/flat_set.hpp>
+// magfield
+//#include "Acts/MagneticField/MagneticFieldContext.hpp"
+//#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
-namespace tracking::reco {
+// geometry
+#include <Acts/Geometry/TrackingGeometry.hpp>
 
-/// Generic implementation of the score based ambiguity resolution.
-/// The alhorithm is based on the following steps:
-/// 1) Compute the initial state of the tracks
-/// 2) Compute the score of each track
-/// 3) Removes hits that are not good enough for each track
-/// 4) Remove tracks that have a score below a certain threshold or not have
-/// enough hits
-/// 5) Remove tracks that are not good enough based on cuts Contains method for
-/// data preparations
-class ScoreBasedAmbiguityResolution {
+// propagation testing
+//#include "Acts/MagneticField/ConstantBField.hpp"
+//#include "Acts/Propagator/AbortList.hpp"
+//#include "Acts/Propagator/ActionList.hpp"
+//#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
+//#include "Acts/Propagator/EigenStepper.hpp"
+//#include "Acts/Propagator/MaterialInteractor.hpp"
+//#include "Acts/Propagator/Navigator.hpp"
+//#include "Acts/Propagator/Propagator.hpp"
+//#include "Acts/Propagator/StandardAborters.hpp"
+//#include "Acts/Propagator/detail/SteppingLogger.hpp"
+//#include "Acts/Surfaces/PerigeeSurface.hpp"
+//#include "Acts/Utilities/Logger.hpp"
+
+// Kalman Filter
+
+//#include "Acts/EventData/Measurement.hpp"
+//#include "Acts/EventData/MultiTrajectory.hpp"
+//#include "Acts/EventData/MultiTrajectoryHelpers.hpp"
+//#include "Acts/EventData/VectorTrackContainer.hpp"
+#include "Acts/Geometry/GeometryIdentifier.hpp"
+//#include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
+//#include "Acts/TrackFinding/MeasurementSelector.hpp"
+//#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
+//#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
+//#include "Acts/Utilities/CalibrationContext.hpp"
+
+//--- Refit with backward propagation ---//
+//#include "Acts/TrackFitting/KalmanFitter.hpp"
+
+//-- Ambiguity Solving --//
+//#include "Tracking/Reco/AmbiguitySolver.h"
+//#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
+
+// GSF
+//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
+//#include "Acts/Propagator/MultiEigenStepperLoop.hpp"
+
+//--- Tracking ---//
+#include "Tracking/Event/Measurement.h"
+#include "Tracking/Event/Track.h"
+#include "Tracking/Reco/TrackExtrapolatorTool.h"
+#include "Tracking/Sim/IndexSourceLink.h"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Tracking/Sim/TrackingUtils.h"
+
+//--- Interpolated magnetic field ---//
+#include "Tracking/Sim/BFieldXYZUtils.h"
+
+
+namespace tracking {
+namespace reco {
+
+/**
+ * Minimal example of a processor.
+ *
+ * This processor will loop over all of the ECal hits in an event and
+ * print out their details.
+ */
+class ScoreBasedAmbiguitySolver final : public TrackingGeometryUser {
  public:
-  /// @brief Detector configuration struct : contains the configuration for each detector
-  ///
-  /// The configuration can be saved in a json file and loaded from there.
-  ///
-  struct DetectorConfig {
+  /**
+   * Constructor.
+   *
+   * @param name Name for this instance of the class.
+   * @param process The Process class associated with EventProcessor,
+   * provided by the framework.
+   */
+  ScoreBasedAmbiguitySolver(const std::string &name, framework::Process &process);
+
+  /// Destructor
+  ~ScoreBasedAmbiguitySolver();
+
+  void onProcessStart() override;
+
+  /**
+   * onNewRun is the first function called for each processor
+   * *after* the conditions are fully configured and accessible.
+   * This is where you could create single-processors, multi-event
+   * calculation objects.
+   */
+  void onNewRun(const ldmx::RunHeader &rh) override;
+
+  /**
+   *
+   */
+  void onProcessEnd() override;
+
+  /**
+   * Configure the processor using the given user specified parameters.
+   *
+   * The user specified parameters that are availabed are defined
+   * in the python configuration class. Look at the my_processor.py
+   * module of the EventProc python for the python structure.
+   *
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(framework::config::Parameters &parameters) override;
+
+  /**
+   * Process the event and put new data products into it.
+   *
+   * @param event The event to process.
+   */
+  void produce(framework::Event &event) override;
+
+  private:
+    struct DetectorConfig {
     int hitsScoreWeight = 0;
     int holesScoreWeight = 0;
     int outliersScoreWeight = 0;
     int otherScoreWeight = 0;
 
-    std::size_t minHits = 0;
-    std::size_t maxHits = 0;
-    std::size_t maxHoles = 0;
-    std::size_t maxOutliers = 0;
-    std::size_t maxSharedHits = 0;
+    int minHits = 0;
+    int maxHits = 0;
+    int maxHoles = 0;
+    int maxOutliers = 0;
+    int maxSharedHits = 0;
 
     /// if true, the shared hits are considered as bad hits for this detector
     bool sharedHitsFlag = false;
 
-    std::size_t detectorId = 0;
+    int detectorId = 0;
 
     /// a list of values from  0 to 1, the higher number of hits, higher value
     /// in the list is multiplied to ambuiguity score applied only if
@@ -68,162 +171,101 @@ class ScoreBasedAmbiguityResolution {
     std::vector<double> factorHoles = {1.0};
   };
 
-  /// @brief  TrackFeatures struct : contains the features that are counted for each track.
-  ///
-  /// The trackFeatures is used to compute the score of each track
   struct TrackFeatures {
-    std::size_t nHits = 0;
-    std::size_t nHoles = 0;
-    std::size_t nOutliers = 0;
-    std::size_t nSharedHits = 0;
+    int nHits = 0;
+    int nHoles = 0;
+    int nOutliers = 0;
+    int nSharedHits = 0;
   };
 
-  /// @brief MeasurementInfo : contains the measurement ID and the detector ID
   struct MeasurementInfo {
     std::size_t iMeasurement = 0;
     std::size_t detectorId = 0;
     bool isOutlier = false;
   };
 
-  /// @brief Configuration struct : contains the configuration for the ambiguity resolution.
-  struct Config {
-    std::map<std::size_t, std::size_t> volumeMap = {{0, 0}};
-    std::vector<DetectorConfig> detectorConfigs;
+    std::map<int, int> volumeMap_;
+    std::vector<DetectorConfig> detectorConfigs_;
+    
     /// minimum score for any track
-    double minScore = 0;
+    double minScore_{0};
     /// minimum score for shared tracks
-    double minScoreSharedTracks = 0;
+    double minScoreSharedTracks_{0};
     /// maximum number of shared tracks per measurement
-    std::size_t maxSharedTracksPerMeasurement = 10;
+    int maxSharedTracksPerMeasurement_{10};
     /// maximum number of shared hit per track
-    std::size_t maxShared = 5;
+    int maxShared_{5};
 
-    double pTMin = 0 * Acts::UnitConstants::GeV;
-    double pTMax = 1e5 * Acts::UnitConstants::GeV;
+    double pTMin_{0 * Acts::UnitConstants::GeV};
+    double pTMax_{1e5 * Acts::UnitConstants::GeV};
 
-    double phiMin = -M_PI * Acts::UnitConstants::rad;
-    double phiMax = M_PI * Acts::UnitConstants::rad;
+    double phiMin_{-M_PI * Acts::UnitConstants::rad};
+    double phiMax_{M_PI * Acts::UnitConstants::rad};
 
-    double etaMin = -5;
-    double etaMax = 5;
+    double etaMin_{-5};
+    double etaMax_{5};
 
     // if true, the ambiguity score is computed based on a different function.
-    bool useAmbiguityFunction = false;
-  };
+    bool useAmbiguityFunction_{false};
 
-  /// @brief OptionalCuts struct : contains the optional cuts to be applied.
-  ///
-  /// The optional cuts,weights and score are used to remove tracks that are not
-  /// good enough, based on some criteria. Users are free to add their own cuts
-  /// with the help of this struct.
-  template <typename track_container_t, typename traj_t,
-            template <typename> class holder_t, bool ReadOnly = true>
-  struct OptionalCuts {
-    using OptionalFilter =
-        std::function<bool(const Acts::TrackProxy<track_container_t, traj_t,
-                                                  holder_t, ReadOnly>&)>;
+    bool verbose_{false};
 
-    using OptionalScoreModifier = std::function<void(
-        const Acts::TrackProxy<track_container_t, traj_t, holder_t, ReadOnly>&,
-        double&)>;
-    std::vector<OptionalFilter> cuts = {};
-    std::vector<OptionalScoreModifier> weights = {};
 
-    /// applied only if useAmbiguityFunction is true
-    std::vector<OptionalScoreModifier> scores = {};
-  };
+    std::string out_trk_collection_{"TaggerTracksClean"};
 
-  ScoreBasedAmbiguityResolution(
-      const Config& cfg,
-      std::unique_ptr<const Acts::Logger> logger =
-          Acts::getDefaultLogger("ScoreBasedAmbiguityResolution", Acts::Logging::INFO))
-      : m_cfg{cfg}, m_logger{std::move(logger)} {}
+    std::string trackCollection_{"TaggerTracks"};
 
-  /// Compute the initial state of the tracks.
-  ///
+    std::string measCollection_{"DigiTaggerSimHits"};
+
+    enableLogging("ScoreBasedAmbiguitySolver")
+
   /// @param tracks is the input track container
   /// @param sourceLinkHash is the  source links
   /// @param sourceLinkEquality is the equality function for the source links
   /// @param trackFeaturesVectors is the trackFeatures map from detector ID to trackFeatures
   /// @return a vector of the initial state of the tracks
-  template <typename track_container_t, typename traj_t,
-            template <typename> class holder_t, typename source_link_hash_t,
-            typename source_link_equality_t>
-  std::vector<std::vector<MeasurementInfo>> computeInitialState(
-      const Acts::TrackContainer<track_container_t, traj_t, holder_t>& tracks,
+  template <typename source_link_hash_t, typename source_link_equality_t, typename geometry_t>
+std::vector<std::vector<ScoreBasedAmbiguitySolver::MeasurementInfo>> computeInitialState(
+      std::vector<ldmx::Track> tracks,  std::vector<ldmx::Measurement> meas_coll,
       source_link_hash_t sourceLinkHash,
-      source_link_equality_t sourceLinkEquality,
-      std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors) const;
+      source_link_equality_t sourceLinkEquality, geometry_t& tg, 
+      std::vector<std::vector<ScoreBasedAmbiguitySolver::TrackFeatures>>& trackFeaturesVectors) const;
 
   /// Compute the score of each track.
   ///
   /// @param tracks is the input track container
   /// @param trackFeaturesVectors is the trackFeatures map from detector ID to trackFeatures
-  /// @param optionalCuts is the user defined optional cuts to be applied.
-  /// @return a vector of scores for each track
-  template <typename track_container_t, typename traj_t,
-            template <typename> class holder_t, bool ReadOnly = true>
   std::vector<double> simpleScore(
-      const Acts::TrackContainer<track_container_t, traj_t, holder_t>& tracks,
-      const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors,
-      const OptionalCuts<track_container_t, traj_t, holder_t, ReadOnly>&
-          optionalCuts = {}) const;
+      const std::vector<ldmx::Track> tracks,
+      const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors) const;
 
-  /// Compute the score of each track based on the ambiguity function.
-  ///
+
+  /// @brief Remove tracks that are not good enough
   /// @param tracks is the input track container
-  /// @param trackFeaturesVectors is the trackFeatures map from detector ID to trackFeatures
-  /// @param optionalCuts is the user defined optional cuts to be applied.
-  /// @return a vector of scores for each track
-  template <typename track_container_t, typename traj_t,
-            template <typename> class holder_t, bool ReadOnly = true>
-  std::vector<double> ambiguityScore(
-      const Acts::TrackContainer<track_container_t, traj_t, holder_t>& tracks,
-      const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors,
-      const OptionalCuts<track_container_t, traj_t, holder_t, ReadOnly>&
-          optionalCuts = {}) const;
+  /// @param measurementsPerTrack is the list of measurements for each track
+  /// @param trackFeaturesVectors is the map of detector id to trackFeatures for each track
+  /// @return a vector of IDs of the tracks we want to keep
+  std::vector<int> solveAmbiguity(
+     std::vector<ldmx::Track> tracks,
+    const std::vector<std::vector<ScoreBasedAmbiguitySolver::MeasurementInfo>>& measurementsPerTrack,
+    const std::vector<std::vector<ScoreBasedAmbiguitySolver::TrackFeatures>>& trackFeaturesVectors) const;
 
-  /// Remove hits that are not good enough for each track and removes tracks
-  /// that have a score below a certain threshold or not enough hits.
-  ///
+
   /// @brief Remove tracks that are not good enough based on cuts
   /// @param trackScore is the score of each track
   /// @param trackFeaturesVectors is the trackFeatures map for each track
   /// @param measurementsPerTrack is the list of measurements for each track
   /// @return a vector of IDs of the tracks we want to keep
   std::vector<bool> getCleanedOutTracks(
-      const std::vector<double>& trackScore,
-      const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors,
-      const std::vector<std::vector<MeasurementInfo>>& measurementsPerTrack)
-      const;
+    const std::vector<double>& trackScore,
+    const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors,
+    const std::vector<std::vector<MeasurementInfo>>& measurementsPerTrack)
+    const;
 
-  /// Remove tracks that are bad based on cuts and weighted scores.
-  ///
-  /// @brief Remove tracks that are not good enough
-  /// @param tracks is the input track container
-  /// @param measurementsPerTrack is the list of measurements for each track
-  /// @param trackFeaturesVectors is the map of detector id to trackFeatures for each track
-  /// @param optionalCuts is the optional cuts to be applied
-  /// @return a vector of IDs of the tracks we want to keep
-  template <typename track_container_t, typename traj_t,
-            template <typename> class holder_t, bool ReadOnly = true>
-  std::vector<int> solveAmbiguity(
-      const Acts::TrackContainer<track_container_t, traj_t, holder_t>& tracks,
-      const std::vector<std::vector<MeasurementInfo>>& measurementsPerTrack,
-      const std::vector<std::vector<TrackFeatures>>& trackFeaturesVectors,
-      const OptionalCuts<track_container_t, traj_t, holder_t, ReadOnly>&
-          optionalCuts = {}) const;
+  
 
- private:
-  Config m_cfg;
 
-  /// Logging instance
-  std::unique_ptr<const Acts::Logger> m_logger = nullptr;
+};  // MyProcessor
 
-  /// Private access to logging instance
-  const Acts::Logger& logger() const;
-};
-
-}  // namespace Acts
-
-#include "Tracking/Reco/ScoreBasedAmbiguitySolver.ipp"
+}  // namespace recon
+}

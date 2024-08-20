@@ -307,3 +307,93 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
+
+
+class GreedyAmbiguitySolver(Producer):
+    """ Producer that cleans tracks. 
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ----------
+
+    FILL IN!!
+    """
+    def __init__(self, instance_name = "GreedyAmbiguitySolver"):
+        super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
+                         'Tracking')
+
+        self.maximumSharedHits = 1
+        self.maximumIterations = 1000
+        self.nMeasurementsMin = 7
+        self.out_trk_collection = "TaggerTracksClean"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"
+
+class ScoreBasedAmbiguitySolver(Producer):
+    """ Producer that cleans tracks. 
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ----------
+
+    FILL IN!!
+    """
+    def __init__(self, detectorConfigs = [], instance_name = "ScoreBasedAmbiguitySolver"):
+        super().__init__(instance_name, 'tracking::reco::ScoreBasedAmbiguitySolver',
+                         'Tracking')
+        
+        self.volumeMap = [[0,0]]
+        self.minScore = 0.
+        self.minScoreSharedTracks = 0.
+        self.maxSharedTracksPerMeasurement = 10
+        self.maxShared = 5
+
+        self.pTMin = 0.
+        self.pTMax = 1e5
+        self.phiMin = -3.14
+        self.phiMax = 3.14
+        self.etaMin = -5.
+        self.etaMax = 5.
+        self.useAmbiguityFunction = False
+
+        # List of parameters for every detector
+
+        self.hitsScoreWeight = []
+        self.holesScoreWeight = []
+        self.outliersScoreWeight = []
+        self.otherScoreWeight = []
+
+        self.minHits = []
+        self.maxHits = []
+        self.maxHoles = []
+        self.maxOutliers = []
+        self.maxSharedHits = []
+
+        self.sharedHitsFlag = []
+
+        self.detectorId = []
+        self.factorHits = []
+        self.factorHoles = []
+        
+        self.volumeMap = []
+
+        self.out_trk_collection = "TaggerTracksClean"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"
+
+        self.verbose = False
+
+    def addDetectorConfig(self, volumes, **kwargs):
+        for name, value in kwargs.items():
+            self.__dict__[name].append(value)
+
+        for vol in volumes:
+            self.volumeMap.append([vol, kwargs["detectorId"]])
