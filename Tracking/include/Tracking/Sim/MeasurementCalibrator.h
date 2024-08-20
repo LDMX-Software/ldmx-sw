@@ -61,7 +61,7 @@ class LdmxMeasurementCalibrator {
   void calibrate(
 		 const Acts::GeometryContext& /*gctx*/,
 		 const Acts::CalibrationContext& /*cctx*/,
-		 const SourceLink& genericSourceLink/*sourceLink*/,
+		 const Acts::SourceLink& genericSourceLink/*sourceLink*/,
 		 traj_t::TrackStateProxy
 		 trackState) const {
     ActsExamples::IndexSourceLink sourceLink{genericSourceLink.get<ActsExamples::IndexSourceLink>()};
@@ -119,7 +119,6 @@ class LdmxMeasurementCalibrator {
            "Source link index is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
-      m_measurements->size()<<std::endl;
     auto meas = m_measurements->at(sourceLink.index());
 
     trackState.allocateCalibrated(1);
