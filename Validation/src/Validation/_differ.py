@@ -108,30 +108,46 @@ class Differ :
             All other key-word arguments are passed into each File.plot1d
         """
         fig = plt.figure('differ',figsize=(11,8))
-        ax = fig.subplots()
+        raw_ax, ratio_ax = fig.subplots(
+            nrows = 2,
+            sharex = 'col',
+            height_ratios = [2, 1],
+            gridspec_kw = dict(
+                hspace = 0.05
+            )
+        )
 
+        raw_histograms = []
         for f in self.files :
             try:
-                weights, bins, patches = f.plot1d(ax, column, **hist_kwargs)
+                raw_histograms.append(f.plot1d(raw_ax, column, **hist_kwargs))
             except uproot.KeyInFileError:
                 f.log.warn(f"Key {column} doesn't exist in {self}, skipping")
                 continue
 
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
-        ax.set_yscale(yscale)
-        ax.set_ylim(*ylim)
+        raw_ax.set_ylabel(ylabel)
+        raw_ax.set_yscale(yscale)
+        raw_ax.set_ylim(*ylim)
 
         if 'title' not in legend_kw :
             legend_kw['title'] = self.grp_name
 
+        raw_ax.legend(**legend_kw)
+
+        denominator, bins, _denominator_art = raw_histograms[0]
+        bin_centers = (bins[1:]+bins[:-1])/2
+        for values, _bins, art in raw_histograms[1:]:
+            ratio_ax.plot(
+                bin_centers,
+                values/denominator,
+                color = art[0].get_edgecolor()
+            )
+        
+        ratio_ax.set_xlabel(xlabel)
         if tick_labels is not None:
-            ax.set_xticks((bins[1:]+bins[:-1])/2)
-            ax.set_xticklabels(tick_labels)
-            ax.tick_params(axis='x', rotation=90)
-
-
-        ax.legend(**legend_kw)
+            ratio_ax.set_xticks((bins[1:]+bins[:-1])/2)
+            ratio_ax.set_xticklabels(tick_labels)
+            ratio_ax.tick_params(axis='x', rotation=90)
 
         if out_dir is None :
             plt.show()
