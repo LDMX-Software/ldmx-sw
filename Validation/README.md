@@ -59,6 +59,14 @@ python3 -m Validation -h
 ```
 which should be run with `ldmx` if the module was installed in the container.
 
+For example if you would like to compare the ECAL shower features, put the input histograms into a directory, 
+e.g. `compareDir` with names that are separated with an underscore, e.g. `histo_new.root` and `histo_ref.root`,
+then run the following command.
+```
+ldmx python3 -m Validation compareDir/  --systems ecal.shower_feats
+```
+This will produce plots in the `compareDir` directory and will include "new" and "ref" in the plot legend.
+
 ### In Script
 Similar to the CLI, you can develop your own python script using Validation.
 Simply `import Validation` where you want to be using it.
