@@ -136,6 +136,7 @@ class LdmxMeasurementCalibrator {
     projector(0, 0) = 1.;
     projector(1, 1) = 1.;
     trackState.setProjector(projector.row(0));
+    trackState.setUncalibratedSourceLink(genericSourceLink);
   }
 
   // Function to test the measurement calibrator

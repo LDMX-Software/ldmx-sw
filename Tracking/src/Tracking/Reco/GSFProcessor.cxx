@@ -168,13 +168,13 @@ void GSFProcessor::produce(framework::Event& event) {
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &updater);
   gsf_extensions.calibrator
-      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d>(
+      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d<Acts::VectorMultiTrajectory>>(
           &calibrator);
 
   // Propagator Options
 
   // Move this at the start of the producer
-  Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::Navigator,ActionList, AbortList> propagator_options(
+  Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::NavigatorPlainOptions,ActionList, AbortList> propagator_options(
       geometry_context(), magnetic_field_context());
 
   
@@ -196,12 +196,12 @@ void GSFProcessor::produce(framework::Event& event) {
       propagator_options.actionList.get<Acts::detail::SteppingLogger>();
   sLogger.sterile = true;
   // Set a maximum step size
-  propagator_options.maxStepSize =
+  propagator_options.stepping.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps = propagator_maxSteps_;
 
   // Electron hypothesis
-  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
+  //  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
   // GSF Options, to be moved out of produce loop
 
@@ -209,12 +209,17 @@ void GSFProcessor::produce(framework::Event& event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
 
+  /*
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
       geometry_context(),    magnetic_field_context(),
       calibration_context(), gsf_extensions,
       propagator_options,    &(*origin_surface),
       maxComponents_,        weightCutoff_,
       abortOnError_,         disableAllMaterialHandling_};
+  */
+  Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
+      geometry_context(),    magnetic_field_context(),
+      calibration_context()};
 
   // Output track container
   std::vector<ldmx::Track> out_tracks;
@@ -264,7 +269,7 @@ void GSFProcessor::produce(framework::Event& event) {
             track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
 
     Acts::BoundTrackParameters trk_btp =
-        tracking::sim::utils::boundTrackParameters(track, perigee);
+      tracking::sim::utils::boundTrackParameters(track, perigee);
 
     std::shared_ptr<Acts::Surface> beamOrigin_surface =
         tracking::sim::utils::unboundSurface(-700);
@@ -277,7 +282,7 @@ void GSFProcessor::produce(framework::Event& event) {
 
     auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
     Acts::BoundTrackParameters trk_btp_bO =
-        tracking::sim::utils::btp(ts, beamOrigin_surface);
+      tracking::sim::utils::btp(ts, beamOrigin_surface, 11);//11 == electron PDGid...hardcode for now
 
     const Acts::BoundVector& trkpars = trk_btp.parameters();
     ldmx_log(debug) << "CKF Track parameters" << std::endl
