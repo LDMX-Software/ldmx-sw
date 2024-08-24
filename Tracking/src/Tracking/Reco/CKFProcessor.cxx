@@ -135,7 +135,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = true;
   navCfg.resolveSensitive = true;
- // mg Aug 2024 boundaryCheckLayerResolving option not in v36
+  // mg Aug 2024 boundaryCheckLayerResolving option not in v36
   //  navCfg.boundaryCheckLayerResolving = false;
   const Acts::Navigator navigator(navCfg);
 
@@ -146,8 +146,6 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
           : std::make_unique<CkfPropagator>(
                 stepper, navigator,
                 Acts::getDefaultLogger("ACTS_PROP", acts_loggingLevel));
-
-  // auto gsf_propagator = GsfPropagator(multi_stepper, navigator);
 
   // Setup the finder / fitters
   ckf_ = std::make_unique<std::decay_t<decltype(*ckf_)>>(
@@ -179,8 +177,7 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::NavigatorPlainOptions,ActionList, AbortList> propagator_options(
       geometry_context(), magnetic_field_context());
 
-  propagator_options.pathLimit = std::numeric_limits<double>::max();
-  //  propagator_options.navigation.targetSurface=&(*target_surface);
+  propagator_options.pathLimit = std::numeric_limits<double>::max(); 
   // Activate loop protection at some pt value
   propagator_options.loopProtection =
       false;  //(startParameters.transverseMomentum() < cfg.ptLoopers);
@@ -200,10 +197,6 @@ void CKFProcessor::produce(framework::Event& event) {
   propagator_options.stepping.maxStepSize =
       propagator_step_size_ * Acts::UnitConstants::mm;
   propagator_options.maxSteps = propagator_maxSteps_;
-
-  // Electron hypothesis
-  // mg Aug 2024 ... think this is obtained from pdgId ???  I'm not sure actually...
-  //  propagator_options.mass = 0.511 * Acts::UnitConstants::MeV;
 
   // #######################//
   // Kalman Filter algorithm//
@@ -257,20 +250,15 @@ void CKFProcessor::produce(framework::Event& event) {
   std::vector<int> seedPDGID;
 
   for (auto& seed : seed_tracks) {
-    // Transform the seed track to bound parameters
-    // MG ... make these into pararamers at target surface
+    // Transform the seed track to bound parameters  
     std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
         Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
             seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
 
-    // MG ... make these into pararamers at target surface
-    // MG ... do I need to extrapolate from perigee to target z?
     Acts::BoundVector paramVec;
     paramVec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
 
-    // MG ... make these into bound pararamers at target surface
-    // MG ... do I need to extrapolate from perigee to target z?
     Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
@@ -284,8 +272,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
     Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
                                            : Acts::UnitConstants::e;
-    // MG ... if the above is at target surface, this should just work
-    //    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(seed.getPdgID())))};
     // need to set particle hypothesis...set to electron for now...
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
     startParameters.push_back(
@@ -307,7 +293,6 @@ void CKFProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(seeds - hits).count();
 
   Acts::GainMatrixUpdater kfUpdater;
-  Acts::GainMatrixSmoother kfSmoother;
 
   // configuration for the measurement selector. Empty geometry identifier means
   // applicable to all the detector elements
@@ -321,10 +306,8 @@ void CKFProcessor::produce(framework::Event& event) {
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
-  //  Acts::CombinatorialKalmanFilterExtensions<Acts::VectorMultiTrajectory>
-  //ckf_extensions;
 
-  Acts::CombinatorialKalmanFilterExtensions<Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>>
+  Acts::CombinatorialKalmanFilterExtensions<TrackContainer>
       ckf_extensions;
 
   if (use1Dmeasurements_)
@@ -392,10 +375,10 @@ void CKFProcessor::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Surfaces..." << std::endl;
 
-  //  std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
-  //  Acts::Surface::makeShared<Acts::PerigeeSurface>(
-  //						    Acts::Vector3(0., 0., 0.));
-  // auto extr_surface = &(*origin_surface);
+  std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
+    Acts::Surface::makeShared<Acts::PerigeeSurface>(
+  						    Acts::Vector3(0., 0., 0.));
+  auto extr_surface = &(*origin_surface);
 
   ldmx_log(debug) << "About to run CKF..." << std::endl;
 
@@ -416,31 +399,27 @@ void CKFProcessor::produce(framework::Event& event) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
       int pdgID = seedPDGID.at(trackId);
-
       //      if (pdgID == 2212 || pdgID == -2212)
-	// mg Aug 2024 ... v36    options does not have mass
-	//        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
+      // mg Aug 2024 ... v36    options does not have mass
+      //        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
     }
 
-    //    ldmx_log(debug)<< "geometry_context";
-    
     // Define the CKF options here:
     const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
-						 Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>>
-        ckfOptions( TrackingGeometryUser::geometry_context(),  TrackingGeometryUser::magnetic_field_context(),
-                   TrackingGeometryUser::calibration_context(), sourceLinkAccessorDelegate,
-                   ckf_extensions, propagator_options);
-    // v19 usage...
-    ///        ckfOptions(geometry_context(), magnetic_field_context(),
-    //               TrackingGeometryUser::calibration_context(), sourceLinkAccessorDelegate,
-    //               ckf_extensions, propagator_options, &(*extr_surface));
-
-   
+						 TrackContainer>
+      ckfOptions( TrackingGeometryUser::geometry_context(),  TrackingGeometryUser::magnetic_field_context(),
+		  TrackingGeometryUser::calibration_context(), sourceLinkAccessorDelegate,
+		  ckf_extensions, propagator_options,
+		  true /* multiple scattering */, false /* energy loss */);
+    
     
     ldmx_log(debug) << "Running CKF on seed params "
                     << startParameters.at(trackId).parameters().transpose()
                     << std::endl;
-    
+    ldmx_log(debug)<<"Checking options:  multiple scattering = "
+		   <<ckfOptions.multipleScattering
+		   <<"  energy loss = "
+		   <<ckfOptions.energyLoss; 
     auto results =
         ckf_->findTracks(startParameters.at(trackId), ckfOptions, tc);
     ldmx_log(debug)<<"findTracks returned ... checking if ok";
@@ -450,202 +429,176 @@ void CKFProcessor::produce(framework::Event& event) {
     }
 
     // No track found
-    if (tc.size() < trackId + 1) continue;
-
-    ldmx_log(debug) << "Filling track info" << std::endl;
-
+    //if (tc.size() < trackId + 1) continue;
    
-    ldmx_log(debug) <<"Trying TrackHelpers smoothTracks";
-    //    Acts::smoothTracks<Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>>(geometry_context(),tc);  //from TrackHelpers
-    auto track = tc.getTrack(trackId);
-    ldmx_log(debug) << "got track at trackId = "<<trackId;
-    Acts::smoothTrack(geometry_context(),track);  //from TrackHelpers
-    ldmx_log(debug) << "got smoothed track ... try to extrapolate to target, and maybe assign Track reference surface?";
-  
-    ldmx::Track trk = ldmx::Track();
-    ldmx::Track::TrackState tsAtTarget;
-    bool success = trk_extrap_->TrackStateAtSurface(
-        track, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
-    ldmx_log(debug) << "target extrapolation success??? " << success;
-    if (success) {
-      ldmx_log(debug) << "Successfully obtained TS at target";
-      ldmx_log(debug) << "Parameters At Target:  \n"
-                      << tsAtTarget.params[0] << " " << tsAtTarget.params[1]
-                      << " " << tsAtTarget.params[2] << " "
-                      << tsAtTarget.params[3] << " " << tsAtTarget.params[4];
-
-      trk.addTrackState(tsAtTarget);
-    }
-    // get the BoundTrackParameters at the target
-    // ...use to fill in the Acts::TrackProxy object
-    // This isn't really necessary, since we can take
-    // most everything for making the ldmx::track
-    // from tsAtTarget...maybe useful for something?
-    // -->one thing this does is allow Acts to
-    // calculate the momentum 3-vector for you
-    Acts::BoundTrackParameters boundStateAtTarget=tracking::sim::utils::btp(tsAtTarget, target_surface,11); 
-    track.setReferenceSurface(target_surface);
-    track.parameters()=boundStateAtTarget.parameters();
-    //    track.covariance()=boundStateAtTarget.covariance(); // this doesn't work...type mismatch
-    calculateTrackQuantities(track);
-    ldmx_log(debug) << "Calculated track quantities ";
-
-
-    ldmx_log(debug)<<typeid(track).name();
-    // MG ... if I converted above to target surface, these should be parameters
-    // at target (should change names)
-    const Acts::BoundVector& perigee_pars = track.parameters();
-    const Acts::BoundMatrix& trk_cov = track.covariance();
-    const Acts::Surface& perigee_surface = track.referenceSurface();
-    ldmx_log(debug) << "Got the parameters, covariance, and perigee surface";
-    /*
-    ldmx_log(debug)
-        << "Found track: nMeas " << track.nMeasurements() << std::endl
-        << "Track states " << track.nTrackStates() << std::endl
-        << perigee_pars[Acts::eBoundLoc0] << " "
-        << perigee_pars[Acts::eBoundLoc1] << " "
-        << perigee_pars[Acts::eBoundPhi] << " "
-        << perigee_pars[Acts::eBoundTheta] << " "
-        << perigee_pars[Acts::eBoundQOverP] << std::endl
-        << "Reference Surface" << std::endl
-        << " " << perigee_surface.transform(geometry_context()).translation()(0)
-        << " " << perigee_surface.transform(geometry_context()).translation()(1)
-        << " " << perigee_surface.transform(geometry_context()).translation()(2)
-        << std::endl
-        << "nHoles  " << track.nHoles();
-    */
-
-    ldmx_log(debug)
-      << "Found track: nMeas " << track.nMeasurements();
-    ldmx_log(debug)
-      << "Track states " << track.nTrackStates();
-    ldmx_log(debug)
-      << perigee_pars[Acts::eBoundLoc0];
-    ldmx_log(debug)
-      << perigee_pars[Acts::eBoundLoc1];
-    ldmx_log(debug)
-      << perigee_pars[Acts::eBoundTheta];
-    ldmx_log(debug)
-      << perigee_pars[Acts::eBoundPhi];   
-
-    ldmx_log(debug)<<"setting perigee_surface";    
-    //    trk.setPerigeeLocation(seed_tracks[trackId].getPerigeeX(), seed_tracks[trackId].getPerigeeY(), seed_tracks[trackId].getPerigeeZ());
-    trk.setPerigeeLocation(0,0,0);  // the target...it's not really perigee anymore.  
-    trk.setPerigeeParameters(tsAtTarget.params);
-    trk.setPerigeeCov(tsAtTarget.cov);
-
-    ldmx_log(debug)<<"setting chi2 and nHits:  "<<track.chi2()<<"    "<<track.nMeasurements();
-    trk.setChi2(track.chi2());
-    trk.setNhits(track.nMeasurements());
-    // trk.setNdf(track.nDoF());
-    // TODO Switch back to nDoF when Acts is fixed.
-    trk.setNdf(track.nMeasurements() - 5);
-    trk.setNsharedHits(track.nSharedHits());
-
-    ldmx_log(debug)<<"setting track momentum:  "<<track.momentum();    
-    Acts::Vector3 trk_momentum = track.momentum();
-    trk.setMomentum(trk_momentum(0), trk_momentum(1), trk_momentum(2));
-    ldmx_log(debug)<<"checking track states and adding mearurements";
-    // Add measurements on track
-    for (const auto ts : track.trackStatesReversed()) {
-      // Check TrackStates Quality
-      ldmx_log(debug) << "Checking Track State at location "
-                      << ts.referenceSurface()
-                             .transform(geometry_context())
-                             .translation()
-                             .transpose()
-                      << std::endl;
-
-      ldmx_log(debug) << "Smoothed? " << ts.hasSmoothed() << std::endl;
-      if (ts.hasSmoothed()) {
-        ldmx_log(debug) << "Parameters \n"
-                        << ts.smoothed().transpose() << std::endl;
-        ldmx_log(debug) << "Covariance \n"
-                        << ts.smoothedCovariance() << std::endl;
-      }
-      ldmx_log(debug)<<"setting type flags and adding measurements";
-      // Check if the track state is a measurement
-      auto typeFlags = ts.typeFlags();
-
-      ldmx_log(debug)<<"  is this a measurement plane? "<<typeFlags.test(Acts::TrackStateFlag::MeasurementFlag);
-      if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-	ldmx_log(debug)<<" getting source link for this measurement";
-
-	////   OK, getting the IndexSourceLink this way doesn't work for some reason...
-	////  Unrecognized Exception: bad optional access
-	////  skip for now
-	/*	
-	const ActsExamples::IndexSourceLink sl =
-            ts.getUncalibratedSourceLink().template get<ActsExamples::IndexSourceLink>();
-	ldmx_log(debug)<<" looking up this index in measurements list";
-	ldmx::Measurement ldmx_meas = measurements.at(sl.index());
-        ldmx_log(debug) << "SourceLink Index::" << sl.index();
-        ldmx_log(debug) << "Measurement:\n" << ldmx_meas << "\n";
-	ldmx_log(debug)<<" adding measurement to ldmx::track";
-        trk.addMeasurementIndex(sl.index());
-	*/
-      }
-    }
-    ldmx_log(debug)<<"starting extrapolations";
-    // Extrapolations
-
-    const double ECAL_SCORING_PLANE = 240.5;
-    Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
-    Acts::Translation3 surf_translation(pos);
-    Acts::Transform3 surf_transform(surf_translation * surf_rotation);
-
-    // Unbounded surface
-    const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
-        Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+    auto &tracksFromSeed = results.value();
     
-    // Beam Origin unbounded surface
-    const std::shared_ptr<Acts::Surface> beamOrigin_surface =
-        tracking::sim::utils::unboundSurface(-700);
-   
-    if (taggerTracking_) {
-      ldmx_log(debug) << "Beam Origin Extrapolation";
-      ldmx::Track::TrackState tsAtBeamOrigin;
+    ldmx_log(debug)<<"number of entries in results "<<tracksFromSeed.size();
+    for(auto &track : tracksFromSeed){
+      //do the track smoothing...this is not done in the CKF code anymore
+      Acts::smoothTrack(geometry_context(),track);  //from TrackHelpers
+      // make the empty ldmx::Track() and track state at target
+      ldmx::Track trk = ldmx::Track();
+      ldmx::Track::TrackState tsAtTarget;
+    
+      for (const auto ts : track.trackStatesReversed()) {
+	// Check TrackStates Quality
+	ldmx_log(debug) << "Checking Track State at location "
+			<< ts.referenceSurface()
+	  .transform(geometry_context())
+	  .translation()
+	  .transpose()
+			<< std::endl;
+	
+	ldmx_log(debug) << "Smoothed? " << ts.hasSmoothed() << std::endl;
+	if (ts.hasSmoothed()) {
+	  ldmx_log(debug) << "Parameters \n"
+			  << ts.smoothed().transpose() << std::endl;
+	  ldmx_log(debug) << "Covariance \n"
+			  << ts.smoothedCovariance() << std::endl;
+	}
+
+	// Check if the track state is a measurement
+	auto typeFlags = ts.typeFlags();
+ 
+	if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)
+	    && ts.hasUncalibratedSourceLink()) {
+	  ldmx_log(debug)<<" getting source link for this measurement";
+	  
+	  const ActsExamples::IndexSourceLink sl =
+	    ts.getUncalibratedSourceLink().template get<ActsExamples::IndexSourceLink>();
+
+	  ldmx_log(debug)<<" looking up this index in measurements list";
+	  ldmx::Measurement ldmx_meas = measurements.at(sl.index());
+	  ldmx_log(debug) << "SourceLink Index::" << sl.index();
+	  ldmx_log(debug) << "Measurement:\n" << ldmx_meas << "\n";
+	  ldmx_log(debug)<<" adding measurement to ldmx::track";
+	  trk.addMeasurementIndex(sl.index());
+	  
+	}
+      }
       bool success = trk_extrap_->TrackStateAtSurface(
-          track, beamOrigin_surface, tsAtBeamOrigin,
-          ldmx::TrackStateType::AtBeamOrigin);
-
+						      track, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
+      ldmx_log(debug) << "target extrapolation success??? " << success;
       if (success) {
-        trk.addTrackState(tsAtBeamOrigin);
-        ldmx_log(debug) << "Successfully obtained TS at beam origin";
+	ldmx_log(debug) << "Successfully obtained TS at target";
+	ldmx_log(debug) << "Parameters At Target:  \n"
+			<< tsAtTarget.params[0] << " " << tsAtTarget.params[1]
+			<< " " << tsAtTarget.params[2] << " "
+			<< tsAtTarget.params[3] << " " << tsAtTarget.params[4];
+	
+	trk.addTrackState(tsAtTarget);
+      }
+      // get the BoundTrackParameters at the target
+      // ...use to fill in the Acts::TrackProxy object
+      // This isn't really necessary, since we can take
+      // most everything for making the ldmx::track
+      // from tsAtTarget...maybe useful for something?
+      // -->one thing this does is allow Acts to
+      // calculate the momentum 3-vector for you
+      Acts::BoundTrackParameters boundStateAtTarget=tracking::sim::utils::btp(tsAtTarget, target_surface,11); 
+      track.setReferenceSurface(target_surface);
+      track.parameters()=boundStateAtTarget.parameters();
+
+      ldmx_log(debug)<<typeid(track).name();
+      // These are the parameters at the target surface
+      const Acts::BoundVector& track_pars = track.parameters();
+      const Acts::BoundMatrix& trk_cov = track.covariance();
+      const Acts::Surface& track_surface = track.referenceSurface();
+      ldmx_log(debug) << "Got the parameters, covariance, and perigee surface";      
+
+      ldmx_log(debug)
+	<< "Found track: nMeas " << track.nMeasurements();
+      ldmx_log(debug)
+	<< "Track states " << track.nTrackStates();
+      ldmx_log(debug)
+	<< track_pars[Acts::eBoundLoc0];
+      ldmx_log(debug)
+	<< track_pars[Acts::eBoundLoc1];
+      ldmx_log(debug)
+	<< track_pars[Acts::eBoundTheta];
+      ldmx_log(debug)
+	<< track_pars[Acts::eBoundPhi];   
+      ldmx_log(debug)<< "Reference Surface" << std::endl
+		     << " " << track_surface.transform(geometry_context()).translation()(0)
+		     << " " << track_surface.transform(geometry_context()).translation()(1)
+		     << " " << track_surface.transform(geometry_context()).translation()(2);
+      
+      trk.setPerigeeLocation(0,0,0);  // the target...it's not really perigee anymore.  
+      trk.setPerigeeParameters(tsAtTarget.params);
+      trk.setPerigeeCov(tsAtTarget.cov);
+      
+      ldmx_log(debug)<<"setting chi2 and nHits:  "<<track.chi2()<<"    "<<track.nMeasurements();
+      trk.setChi2(track.chi2());
+      trk.setNhits(track.nMeasurements());
+      // trk.setNdf(track.nDoF());
+      // TODO Switch back to nDoF when Acts is fixed.
+      trk.setNdf(track.nMeasurements() - 5);
+      trk.setNsharedHits(track.nSharedHits());
+      
+      ldmx_log(debug)<<"setting track momentum:  "<<track.momentum();    
+      trk.setMomentum(track.momentum()[0], track.momentum()[1],track.momentum()[2]);
+    
+      ldmx_log(debug)<<"starting extrapolations";
+      // Extrapolations
+      
+      const double ECAL_SCORING_PLANE = 240.5;
+      Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
+      Acts::Translation3 surf_translation(pos);
+      Acts::Transform3 surf_transform(surf_translation * surf_rotation);
+      
+      // Unbounded surface
+      const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
+        Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+      
+      // Beam Origin unbounded surface
+      const std::shared_ptr<Acts::Surface> beamOrigin_surface =
+        tracking::sim::utils::unboundSurface(-700);
+      
+      if (taggerTracking_) {
+	ldmx_log(debug) << "Beam Origin Extrapolation";
+	ldmx::Track::TrackState tsAtBeamOrigin;
+	bool success = trk_extrap_->TrackStateAtSurface(
+							track, beamOrigin_surface, tsAtBeamOrigin,
+							ldmx::TrackStateType::AtBeamOrigin);
+	
+	if (success) {
+	  trk.addTrackState(tsAtBeamOrigin);
+	  ldmx_log(debug) << "Successfully obtained TS at beam origin";
+	}
+      }
+      
+      // Recoil Extrapolation to ECAL only
+      if (!taggerTracking_) {
+	ldmx_log(debug) << "Ecal Extrapolation";
+	ldmx::Track::TrackState tsAtEcal;
+	success = trk_extrap_->TrackStateAtSurface(track, ecal_surface, tsAtEcal,
+						   ldmx::TrackStateType::AtECAL);
+	
+	if (success) {
+	  trk.addTrackState(tsAtEcal);
+	  ldmx_log(debug) << "Successfully obtained TS at Ecal";
+	  ldmx_log(debug) << "Parameters At Ecal:  \n"
+			  << tsAtEcal.params[0] << " " << tsAtEcal.params[1]
+			  << " " << tsAtEcal.params[2] << " "
+			  << tsAtEcal.params[3] << " " << tsAtEcal.params[4];
+	}
+      }
+      
+      // Truth matching
+      if (truthMatchingTool) {
+	auto truthInfo = truthMatchingTool->TruthMatch(trk);
+	trk.setTrackID(truthInfo.trackID);
+	trk.setPdgID(truthInfo.pdgID);
+	trk.setTruthProb(truthInfo.truthProb);
+      }
+      
+      // At least min_hits_ hits and p > 50 MeV
+      if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
+	tracks.push_back(trk);
+	ntracks_++;
       }
     }
-
-    // Recoil Extrapolation to ECAL only
-    if (!taggerTracking_) {
-      ldmx_log(debug) << "Ecal Extrapolation";
-      ldmx::Track::TrackState tsAtEcal;
-      success = trk_extrap_->TrackStateAtSurface(track, ecal_surface, tsAtEcal,
-                                                 ldmx::TrackStateType::AtECAL);
-
-      if (success) {
-        trk.addTrackState(tsAtEcal);
-        ldmx_log(debug) << "Successfully obtained TS at Ecal";
-        ldmx_log(debug) << "Parameters At Ecal:  \n"
-                        << tsAtEcal.params[0] << " " << tsAtEcal.params[1]
-                        << " " << tsAtEcal.params[2] << " "
-                        << tsAtEcal.params[3] << " " << tsAtEcal.params[4];
-      }
-    }
-
-    // Truth matching
-    if (truthMatchingTool) {
-      auto truthInfo = truthMatchingTool->TruthMatch(trk);
-      trk.setTrackID(truthInfo.trackID);
-      trk.setPdgID(truthInfo.pdgID);
-      trk.setTruthProb(truthInfo.truthProb);
-    }
-
-    // At least 8 hits and p > 50 MeV
-    if (trk.getNhits() > min_hits_ && abs(1. / trk.getQoP()) > 0.05) {
-      tracks.push_back(trk);
-      ntracks_++;
-    }
-
   }  // loop seed track parameters
 
   auto result_loop = std::chrono::high_resolution_clock::now();
@@ -766,7 +719,8 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
       // information
 
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), i_meas);
-      //mg aug 2024 ... these don't compile using v36 in Acts...figure out later
+      // mg aug 2024 ... these don't print statements
+      // don't compile using v36 in Acts...figure out later
       /*
       ldmx_log(debug)
           << "Insert measurement on surface located at::"

@@ -86,17 +86,9 @@ using ActionList =
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer, Acts::VectorMultiTrajectory>;
+
 //mg Aug 2024 ... GenericDefaultExtension doesn't seem to exist in v36
-//I don't htink GsfProp is actually used here, so comment out for now
-/*
-using GsfPropagator = Acts::Propagator<
-    Acts::MultiEigenStepperLoop<
-        Acts::StepperExtensionList<
-            Acts::detail::GenericDefaultExtension<double>>,
-        Acts::WeightedComponentReducerLoop, Acts::detail::VoidAuctioneer>,s
-    Acts::Navigator>;
-*/
-//?!
 // using PropagatorOptions =
 //    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
 
@@ -223,12 +215,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<const CkfPropagator> propagator_;
 
   // The CKF
-  //  std::unique_ptr<const Acts::CombinatorialKalmanFilter<
-  //    CkfPropagator, Acts::VectorMultiTrajectory>>
-  //    ckf_;
-  //mg Aug 2024 .. this changed to track container in v36
   std::unique_ptr<const Acts::CombinatorialKalmanFilter<
-		    CkfPropagator, Acts::TrackContainer<Acts::VectorTrackContainer,Acts::VectorMultiTrajectory>>> ckf_;
+		    CkfPropagator,TrackContainer>> ckf_;
 
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
