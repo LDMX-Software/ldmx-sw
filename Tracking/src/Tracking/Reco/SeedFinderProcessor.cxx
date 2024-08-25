@@ -421,7 +421,8 @@ void SeedFinderProcessor::onProcessEnd() {
   // outputFile_->cd();
   // outputTree_->Write();
   // outputFile_->Close();
-  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(4)
+                 << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
   ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
                  << ndoubles_;
