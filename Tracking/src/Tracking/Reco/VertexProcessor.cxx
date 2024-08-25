@@ -190,7 +190,8 @@ void VertexProcessor::onProcessEnd() {
   outfile->Close();
   delete outfile;
 
-  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(4)
+                 << processing_time_ / nevents_ << " ms";
 }
 
 }  // namespace reco
