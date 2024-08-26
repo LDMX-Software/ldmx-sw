@@ -28,9 +28,9 @@ class CLUE {
  public:
 
   struct Density {
-    float fx;
-    float fy;
-    float fz;
+    float x;
+    float y;
+    float z;
     double totalEnergy;
     int index;
 
@@ -38,7 +38,7 @@ class CLUE {
     // set to index of spatially closest density with higher energy; -1 if seed
     int followerOf;
     // separation distance to density that this is follower of
-    float fDelta;
+    float delta;
     float zDelta;
 
     int clusterId; // 2D cluster ID
@@ -49,15 +49,15 @@ class CLUE {
 
     Density() {}
 
-    Density(float fxx, float fyy) : fx(fxx), fy(fyy) {
+    Density(float xx, float yy) : x(xx), y(yy) {
       totalEnergy = 0.;
       index = -1;
       followerOf = -1;
-      fDelta = std::numeric_limits<float>::max();
+      delta = std::numeric_limits<float>::max();
       zDelta = std::numeric_limits<float>::max();
       clusterId = -1;
       layer = -1;
-      fz = 0.;
+      z = 0.;
       hits = {};
     }
   };
@@ -181,39 +181,39 @@ class CLUE {
     if (debug_) std::cout << "--- SETUP ---" << std::endl << "Building densities" << std::endl;
     for (const auto& hit : hits) {
       // collapse z dimension
-      float fx = roundToDecimal(hit.getXPos(), 4);
-      float fy = roundToDecimal(hit.getYPos(), 4);
+      float x = roundToDecimal(hit.getXPos(), 4);
+      float y = roundToDecimal(hit.getYPos(), 4);
       if (debug_) {
         std::cout << "  New hit" << std::endl;
-        std::cout << "    x: " << fx << std::endl;
-        std::cout << "    y: " << fy << std::endl;
+        std::cout << "    x: " << x << std::endl;
+        std::cout << "    y: " << y << std::endl;
       }
       std::pair<float, float> coords;
       if (dc_ != 0 && nbrOfLayers_ > 1) {
         // if more than one layer, divide hits into densities with side dc_
-        double i = std::ceil(std::abs(fx)/dc_);
-        double j = std::ceil(std::abs(fy)/dc_);
-        if (fx < 0) {
+        double i = std::ceil(std::abs(x)/dc_);
+        double j = std::ceil(std::abs(y)/dc_);
+        if (x < 0) {
           i = -i;
-          fx = (i + 0.5)*dc_;
-        } else fx = (i - 0.5)*dc_;
-        if (fy < 0) {
+          x = (i + 0.5)*dc_;
+        } else x = (i - 0.5)*dc_;
+        if (y < 0) {
           j = -j;
-          fy = (j + 0.5)*dc_;
-        } else fy = (1 - 0.5)*dc_; // set x,y to middle of box
+          y = (j + 0.5)*dc_;
+        } else y = (1 - 0.5)*dc_; // set x,y to middle of box
         coords = {i, j};
-        if (debug_) std::cout << "    Index " << i << ", " << j << "; x: " << fx << " y: " << fy << std::endl;
+        if (debug_) std::cout << "    Index " << i << ", " << j << "; x: " << x << " y: " << y << std::endl;
       } else {
         // if just one layer, have all densities with the same x,y be in same density
-        coords = {fx, fy};
+        coords = {x, y};
       }
       if (densityMap.find(coords) == densityMap.end()) {
-        densityMap.emplace(coords, std::make_shared<Density>(fx, fy));
+        densityMap.emplace(coords, std::make_shared<Density>(x, y));
         if (debug_) std::cout << "    New density created" << std::endl;
-      } else if (debug_) std::cout << "    Found density with x: " << densityMap[coords]->fx << " y: " << densityMap[coords]->fy << std::endl;
+      } else if (debug_) std::cout << "    Found density with x: " << densityMap[coords]->x << " y: " << densityMap[coords]->y << std::endl;
       densityMap[coords]->hits.push_back(hit);
       densityMap[coords]->totalEnergy += hit.getEnergy();
-      densityMap[coords]->fz += hit.getZPos();
+      densityMap[coords]->z += hit.getZPos();
      
       eventCentroid_.add(hit);
     }
@@ -232,14 +232,14 @@ class CLUE {
     // decide delta and followerOf
     for (int i = 0; i < densities.size(); i++) {
       densities[i]->index = i;
-      densities[i]->fz = densities[i]->fz/densities[i]->hits.size(); // avg z position
-      if (debug_) std::cout << "  Index: " << i << "; x: " << densities[i]->fx << "; y: " << densities[i]->fy << "; Energy: " << densities[i]->totalEnergy << std::endl;
+      densities[i]->z = densities[i]->z/densities[i]->hits.size(); // avg z position
+      if (debug_) std::cout << "  Index: " << i << "; x: " << densities[i]->x << "; y: " << densities[i]->y << "; Energy: " << densities[i]->totalEnergy << std::endl;
       // loop through all higher energy densities
       for (int j = 0; j < i; j++) {
-        float d = floatDist(densities[i]->fx, densities[i]->fy, densities[j]->fx, densities[j]->fy);
+        float d = floatDist(densities[i]->x, densities[i]->y, densities[j]->x, densities[j]->y);
         // condition energyJ > energyI but this should be baked in as we sorted according to energy
-        if (d < dm_ && d < densities[i]->fDelta) {
-          densities[i]->fDelta = d;
+        if (d < dm_ && d < densities[i]->delta) {
+          densities[i]->delta = d;
           densities[i]->followerOf = j;
           if (debug_) std::cout << "    New parent, index " << j << "; delta: " << std::setprecision(20) << d << std::endl;
         }
@@ -317,23 +317,23 @@ class CLUE {
         // funky line to generalize this function for both 2D and 3D case
         int i = densities[j]->index;
         if (debug_) {
-          std::cout << "  Index: " << i << "; x: " << densities[i]->fx << "; y: " << densities[i]->fy << "; Energy: " << densities[i]->totalEnergy << std::endl;
-          std::cout << "  Parent ID: " << densities[i]->followerOf << "; Delta: " << densities[i]->fDelta << std::endl;
+          std::cout << "  Index: " << i << "; x: " << densities[i]->x << "; y: " << densities[i]->y << "; Energy: " << densities[i]->totalEnergy << std::endl;
+          std::cout << "  Parent ID: " << densities[i]->followerOf << "; Delta: " << densities[i]->delta << std::endl;
         }
 
         bool isSeed;
         if (deltacMod != deltac_ && mergedDensities[densities[i]->clusterId] 
-            && floatDist(densities[i]->fx, densities[i]->fy, eventCentroid_.centroid().Px(), eventCentroid_.centroid().Py()) < centroidRadius) {
+            && floatDist(densities[i]->x, densities[i]->y, eventCentroid_.centroid().Px(), eventCentroid_.centroid().Py()) < centroidRadius) {
           // if energy has been overloaded and this density belongs to cluster that was overloaded and this density is close enough to event centroid
           // use modded delta c
-          isSeed = densities[i]->totalEnergy > rhoc_ && densities[i]->fDelta > deltacMod;
-        } else isSeed = densities[i]->totalEnergy > rhoc_ && densities[i]->fDelta > deltac_;
+          isSeed = densities[i]->totalEnergy > rhoc_ && densities[i]->delta > deltacMod;
+        } else isSeed = densities[i]->totalEnergy > rhoc_ && densities[i]->delta > deltac_;
         
         if (debug_ && isSeed) std::cout << "  Distance to centroid: " 
-                                        << floatDist(densities[i]->fx, densities[i]->fy, eventCentroid_.centroid().Px(), eventCentroid_.centroid().Py()) 
+                                        << floatDist(densities[i]->x, densities[i]->y, eventCentroid_.centroid().Px(), eventCentroid_.centroid().Py()) 
                                         << std::endl;
         
-        bool isOutlier = densities[i]->totalEnergy < rhoc_ && densities[i]->fDelta > deltao_;
+        bool isOutlier = densities[i]->totalEnergy < rhoc_ && densities[i]->delta > deltao_;
 
         densities[i]->clusterId = -1;
         if (isSeed) {
@@ -385,7 +385,7 @@ class CLUE {
       // Overwrite seed densities' properties with cluster properties
       // Might be cleaner to just create new densities for cluster seeds
       for (auto& seed : layerSeeds) {
-        seed->fDelta = std::numeric_limits<float>::max();
+        seed->delta = std::numeric_limits<float>::max();
         seed->hits = clusters[seed->clusterId];
         seed->totalEnergy = clusterEnergies[seed->clusterId];
         seed->index = seedIndex_;
@@ -421,19 +421,19 @@ class CLUE {
             auto& previousLayer = seeds_[layer-depth];
             for (int j = 0; j < previousLayer.size(); j++) {
               // for each seed in previous layer
-              auto d = floatDist(currentLayer[i]->fx, currentLayer[i]->fy, previousLayer[j]->fx, previousLayer[j]->fy);
-              auto dz = std::abs(currentLayer[i]->fz - previousLayer[i]->fz);
+              auto d = floatDist(currentLayer[i]->x, currentLayer[i]->y, previousLayer[j]->x, previousLayer[j]->y);
+              auto dz = std::abs(currentLayer[i]->z - previousLayer[i]->z);
               if (debug_) {
                 std::cout << "      Delta to index " << previousLayer[j]->index << ": " << std::setprecision(20) << d << std::endl;
                 std::cout << "      DeltaZ to index " << previousLayer[j]->index << ": " << std::setprecision(20) << dz << std::endl;
               }
-              if (previousLayer[j]->totalEnergy > currentLayer[i]->totalEnergy && d < currentLayer[i]->fDelta && dz < currentLayer[i]->zDelta) {
+              if (previousLayer[j]->totalEnergy > currentLayer[i]->totalEnergy && d < currentLayer[i]->delta && dz < currentLayer[i]->zDelta) {
                 if (debug_) {
                   std::cout << "      New parent: index " << previousLayer[j]->index << " on layer " << layer-depth << "; energy " << previousLayer[j]->totalEnergy << std::endl;
                   std::cout << "      New delta: " << std::setprecision(20) << d << std::endl;
                   std::cout << "      New deltaZ: " << std::setprecision(20) << dz << std::endl;
                 }
-                currentLayer[i]->fDelta = d;
+                currentLayer[i]->delta = d;
                 currentLayer[i]->zDelta = dz;
                 currentLayer[i]->followerOf = previousLayer[j]->index;
               } else if (previousLayer[j]->totalEnergy < currentLayer[i]->totalEnergy) break;
@@ -442,19 +442,19 @@ class CLUE {
           if (layer + depth < nbrOfLayers_) {
             auto& nextLayer = seeds_[layer+depth];
             for (int j = 0; j < nextLayer.size(); j++) {
-              auto d = floatDist(currentLayer[i]->fx, currentLayer[i]->fy, nextLayer[j]->fx, nextLayer[j]->fy);
-              auto dz = std::abs(currentLayer[i]->fz - nextLayer[i]->fz);
+              auto d = floatDist(currentLayer[i]->x, currentLayer[i]->y, nextLayer[j]->x, nextLayer[j]->y);
+              auto dz = std::abs(currentLayer[i]->z - nextLayer[i]->z);
               if (debug_) {
                 std::cout << "      Delta to index " << nextLayer[j]->index << ": " << std::setprecision(20) << d << std::endl;
                 std::cout << "      DeltaZ to index " << nextLayer[j]->index << ": " << std::setprecision(20) << dz << std::endl;
               }
-              if (nextLayer[j]->totalEnergy > currentLayer[i]->totalEnergy && d < currentLayer[i]->fDelta && dz < currentLayer[i]->zDelta) {
+              if (nextLayer[j]->totalEnergy > currentLayer[i]->totalEnergy && d < currentLayer[i]->delta && dz < currentLayer[i]->zDelta) {
                 if (debug_) {
                   std::cout << "      New parent: index " << nextLayer[j]->index << " on layer " << layer+depth << "; energy " << nextLayer[j]->totalEnergy << std::endl;
                   std::cout << "      New delta: " << std::setprecision(20) << d << std::endl;
                   std::cout << "      New deltaZ: " << std::setprecision(20) << dz << std::endl;
                 }
-                currentLayer[i]->fDelta = d;
+                currentLayer[i]->delta = d;
                 currentLayer[i]->zDelta = dz;
                 currentLayer[i]->followerOf = nextLayer[j]->index;
               } else if (nextLayer[j]->totalEnergy < currentLayer[i]->totalEnergy) break;
