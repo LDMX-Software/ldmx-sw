@@ -659,23 +659,32 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     faceXY[1] = -9999.0;
   }
 
-  int inside = 0;
-  int up = 0;
-  int step = 0;
-  int index;
   float cell_radius = 5.0;
-
-  std::vector<float>::iterator it;
-  it = std::lower_bound(mapsx.begin(), mapsx.end(), faceXY[0]);
-
-  index = std::distance(mapsx.begin(), it);
-
-  if (index == mapsx.size()) {
-    index += -1;
+  // If the electron is outside the ECAL volume in X, return the default -9999.0
+  if (faceXY[0] < mapsx[0] - cell_radius ||
+      faceXY[0] > mapsx.back() + cell_radius) {
+    faceXY[0] != -9999.0;
   }
 
+  bool inside{false};
+  int up{0};
+  int step{0};
+  unsigned int index{0};
+
+  // Make sure the recoil electron is inside the ECAL cells
   if (!recoilP.empty() && faceXY[0] != -9999.0) {
-    while (true) {
+    std::vector<float>::iterator it;
+    // Find the iterator to the closest cell
+    it = std::lower_bound(mapsx.begin(), mapsx.end(), faceXY[0]);
+    // Check how far it is from the first element of the cell map
+    index = std::distance(mapsx.begin(), it);
+    // decrease the index to access the last element
+    if (index == mapsx.size()) {
+      index += -1;
+    }
+    bool underFlow = ((index + step) < 0);
+    bool overFlow = ((index + step) > mapsx.size() - 1);
+    while (underFlow || overFlow) {
       std::vector<double> dis(2);
 
       dis[0] = faceXY[0] - mapsx[index + step];
@@ -684,7 +693,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       float celldis = sqrt(pow(dis[0], 2) + pow(dis[1], 2));
 
       if (celldis <= cell_radius) {
-        inside = 1;
+        inside = true;
         break;
       }
 
