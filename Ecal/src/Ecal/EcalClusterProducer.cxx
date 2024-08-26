@@ -19,50 +19,44 @@ EcalClusterProducer::~EcalClusterProducer() {}
 void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
   cutoff_ = parameters.getParameter<double>("cutoff");
   seedThreshold_ = parameters.getParameter<double>("seedThreshold");
-  growthThreshold_ = parameters.getParameter<double>("growthThreshold");
-  cellFilter_ = parameters.getParameter<double>("cellFilter");
 
   dc_ = parameters.getParameter<double>("dc");
   rhoc_ = parameters.getParameter<double>("rhoc");
   deltac_ = parameters.getParameter<double>("deltac");
   deltao_ = parameters.getParameter<double>("deltao");
 
-  digiCollName_ = parameters.getParameter<std::string>("digiCollName");
-  digisPassName_ = parameters.getParameter<std::string>("digisPassName");
   recHitCollName_ = parameters.getParameter<std::string>("recHitCollName");
+  recHitPassName_ = parameters.getParameter<std::string>("recHitPassName");
   algoCollName_ = parameters.getParameter<std::string>("algoCollName");
   algoName_ = parameters.getParameter<std::string>("algoName");
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
 
   CLUE_ = parameters.getParameter<bool>("CLUE");
   nbrOfLayers_ = parameters.getParameter<int>("nbrOfLayers");
-
+  reclustering_ = parameters.getParameter<bool>("reclustering");
   debug_ = parameters.getParameter<bool>("debug");
-  // fullHistory_ = parameters.getParameter<bool>("fullHistory");
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
 
   std::vector<ldmx::EcalHit> ecalHits =
-      event.getCollection<ldmx::EcalHit>(recHitCollName_, digisPassName_);
-  int nEcalDigis = ecalHits.size();
+      event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_);
 
   // Don't do anything if there are no ECal digis!
-  if (!(nEcalDigis > 0)) {
+  if (!(ecalHits.size() > 0)) {
     return;
   }
   if (CLUE_) {
     CLUE cf;
 
-    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_, debug_);
+    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_, reclustering_, debug_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
     histograms_.fill("nClusters", wcVec.size());
-
-    for (const auto& d : cf.getCentroidDistances()) histograms_.fill("centroid_distances", d);
+    if (reclustering_) histograms_.fill("recluster", cf.getInitialClusterNbr(), wcVec.size());
 
     std::vector<ldmx::EcalCluster> ecalClusters;
     for (int aWC = 0; aWC < wcVec.size(); aWC++) {

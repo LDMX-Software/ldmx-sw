@@ -62,23 +62,20 @@ class EcalClusterProducer : public framework::Producer {
  private:
   double seedThreshold_{0};
   double cutoff_{0};
-  double growthThreshold_{0};
-  double cellFilter_{0};
 
   double dc_{0};
   double rhoc_{0};
   double deltac_{0};
   double deltao_{0};
-
-  std::string digiCollName_;
-  std::string digisPassName_;
+  
   std::string recHitCollName_;
+  std::string recHitPassName_;
   std::string algoCollName_;
   std::string clusterCollName_;
 
   bool CLUE_;
   int nbrOfLayers_;
-
+  bool reclustering_;
   bool debug_;
 
   /** The name of the cluster algorithm used. */

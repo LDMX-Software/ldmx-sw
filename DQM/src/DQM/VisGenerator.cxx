@@ -1,3 +1,7 @@
+/**
+ * @file VisGenerator.cxx
+ */
+
 #include "DQM/VisGenerator.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
@@ -14,6 +18,7 @@ namespace dqm {
   void VisGenerator::configure(framework::config::Parameters& ps) {
     includeGroundTruth_ = ps.getParameter<bool>("includeGroundTruth");
     originIdAvailable_ = ps.getParameter<bool>("originIdAvailable");
+    nbrOfElectrons_ = ps.getParameter<int>("nbrOfElectrons");
   
     ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
     ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
@@ -33,7 +38,16 @@ namespace dqm {
     layerFilename_ = ps.getParameter<std::string>("layerFilename");
     
     filename_ = ps.getParameter<std::string>("filename");
-    runNbr_ = ps.getParameter<int>("runNumber");
+
+    onlyIncludeEvents_ = ps.getParameter<std::vector<int>>("onlyIncludeEvents");
+    // if onlyincludeevents = [ -1 ], user has not given custom parameters -- clear
+    if (onlyIncludeEvents_.size() == 1 && std::find(onlyIncludeEvents_.begin(), onlyIncludeEvents_.end(), -1) != onlyIncludeEvents_.end()) {
+      onlyIncludeEvents_.clear();
+    }
+    // if excludeevents = [ -1 ], user has not given custom parameters -- clear
+    if (excludeEvents_.size() == 1 && std::find(excludeEvents_.begin(), excludeEvents_.end(), -1) != excludeEvents_.end()) {
+      excludeEvents_.clear();
+    }
     return;
   }
 
@@ -67,7 +81,7 @@ namespace dqm {
     float clusterlessHitSize = 1.0;
 
     if (includeEcalClusters_) {
-      // Clusters with zero hits should be removed, this is for debug
+      // Clusters with zero hits should be removed by clusterproducer, this is for debug
       j[eKey]["Hits"]["empty_clusters"] = json::array();
 
       for (auto const& cl : ecalClusters) {
@@ -78,13 +92,6 @@ namespace dqm {
           std::string& hex = colors[clusterID % colors.size()];
           std::string cKey = "cluster_" + std::to_string(clusterID);
           j[eKey]["Hits"][cKey] = json::array();
-          // if (cl.getEnergy() > 1000) {
-          //   clusterSize = 25.;
-          // } else if (cl.getEnergy() > 100) {
-          //   clusterSize = 15.;
-          // } else {
-          //   clusterSize = 5.;
-          // }
           // create centroid object
           cluster["energy"] = cl.getEnergy();
           cluster["color"] = hex;
@@ -136,6 +143,9 @@ namespace dqm {
       j[eKey]["Hits"][hit_coll_name] = json::array();
 
       if (visHitOrigin_) {
+            // double e1 = 0;
+            // double e2 = 0;
+        // make collection for each electron
         for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
           truth[eKey]["Hits"][std::string("e") + std::to_string(i)] = json::array();;
         }
@@ -148,62 +158,46 @@ namespace dqm {
         h["type"] = "Box";
         h["energy"] = hit.getEnergy();
         if (includeGroundTruth_) {
+          // find simhit matching to this rechit
           auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
           if (it != ecalSimHits.end()) {
             std::vector<double> e;
             e.resize(nbrOfElectrons_+1);
             double eSum = 0.;
-            // double e1 = 0;
-            // double e2 = 0;
             int tag = 0;
             bool immediate_child = true;
             if (originIdAvailable_) {
               h["originID"] = json::array();
               for (int i = 0; i < it->getNumberOfContribs(); i++) {
+                // for each contrib
                 auto c = it->getContrib(i);
                 h["originID"].push_back(c.originID);
-                if (i != 0 && c.originID != tag) tag = 0;
+                if (i != 0 && c.originID != tag) tag = 0; // mixed hit
                 else tag = c.originID;
-                e[c.originID] += c.edep;
+                e[c.originID] += c.edep; // add edep to correct electron
                 eSum += c.edep;
-                // if (c.originID == 1) e1 += c.edep;
-                // else if (c.originID == 2) e2 += c.edep;
                 if (c.incidentID > nbrOfElectrons_) {
-                  immediate_child = false;
+                  immediate_child = false; // not an immediate child of initial electrons
                 }
               }
-              // if (eSum > 0) {
-              //   for (int i = 1; i < nbrOfElectrons_ + 1; i++) {
-              //     cluster[std::string("E from e") + std::to_string(i) + " (%)"] = 100.*e[i]/eSum;
-              //   }
-              //   // h["E from e1 (%)"] = 100.*e1/(e1+e2);
-              //   // h["E from e2 (%)"] = 100.*e2/(e1+e2);
-              // }
             } else {
               double eUnknown = 0.;
               h["incidentID"] = json::array();
               for (int i = 0; i < it->getNumberOfContribs(); i++) {
                 auto c = it->getContrib(i);
                 h["incidentID"].push_back(c.incidentID);
-                if (i != 0 && c.incidentID != tag) tag = 0;
+                if (i != 0 && c.incidentID != tag) tag = 0; // mixed hit
                 else tag = c.incidentID;
                 if (c.incidentID > nbrOfElectrons_) {
+                  // if incident != initial electron
+                  // we don't know which electron this contrib comes from
                   eUnknown += c.edep;
                   immediate_child = false;
                 } else e[c.incidentID] += c.edep;
                 eSum += c.edep;
-                // if (c.incidentID == 1) e1 += c.edep;
-                // else if (c.incidentID == 2) e2 += c.edep;
-                // else eunclear += c.edep;
-                // if (c.incidentID != 1 && c.incidentID != 2) {
-                //   immediate_child = false;
-                // }
               }
               if (eSum > 0) {
                 h["E from unknown (%)"] = 100.*eUnknown/eSum;
-                // h["E from e1 (%)"] = 100.*e1/(e1+e2+eunclear);
-                // h["E from e2 (%)"] = 100.*e2/(e1+e2+eunclear);
-                // h["E from e2 (%)"] = 100.*eunclear/(e1+e2+eunclear);
               }
             }
             if (eSum > 0) {
@@ -214,6 +208,7 @@ namespace dqm {
             h["immediate_child"] = immediate_child;
             
             if (visHitOrigin_) {
+              // add hit to truth json
               clusterHitSize = 2.0;
               json t = json::object();
               t["ID"] = hit.getID();
@@ -226,16 +221,6 @@ namespace dqm {
               t["color"] = colors[tag % nbrOfElectrons_];
               if (tag == 0) truth[eKey]["Hits"]["mixed"].push_back(t);
               else truth[eKey]["Hits"][std::string("e") + std::to_string(tag)].push_back(t);
-              // if (tag == 1) {
-              //   t["color"] = "0xEADE76";
-              //   truth[eKey]["Hits"]["e1"].push_back(t);
-              // } else if (tag == 2) {
-              //   t["color"] = "0x76BDEA";
-              //   truth[eKey]["Hits"]["e2"].push_back(t);
-              // } else {
-              //   t["color"] = "0x76EA84";
-              //   truth[eKey]["Hits"]["mixed"].push_back(t);
-              // }
             }
           }
         }
@@ -276,6 +261,7 @@ namespace dqm {
       }
     }
 
+    // For scoring plane hits
     // auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
     // j[eKey]["Hits"]["plane_hits"] = json::array();
     // truth[eKey]["Hits"]["plane_hits"] = json::array();
@@ -378,21 +364,23 @@ namespace dqm {
   }
 
   void VisGenerator::analyze(const framework::Event& event) {
+    // Check if event is in include only or exclude lists
+    if (!onlyIncludeEvents_.empty() && std::find(onlyIncludeEvents_.begin(), onlyIncludeEvents_.end(), event.getEventNumber()) == onlyIncludeEvents_.end()) return;
+    if (!excludeEvents_.empty() && std::find(excludeEvents_.begin(), excludeEvents_.end(), event.getEventNumber()) != excludeEvents_.end()) return;
     // ----- EVENT HEADER -----
     const std::string eKey = "EVENT_KEY_" + std::to_string(event.getEventNumber());
     j[eKey]["event number"] = event.getEventNumber();
     j[eKey]["run number"] = runNbr_;
-
+  
     // checks
-    if (!originIdAvailable_) visHitOrigin_ = false;
+    if (!originIdAvailable_) visHitOrigin_ = false; // cannot vis hit origin if no origin ID available
+    if (includeGroundTruth_ && nbrOfElectrons_ == -1) return; // for ground truth, need nbr of electrons
 
     // ----- HITS -----
     j[eKey]["Hits"] = json::object();
 
     // CLUSTER-RECHIT CONNECTION
-    if (includeEcalClusters_ || includeEcalRecHits_) {
-      ecalClusterRecHit(event, eKey);
-    }
+    if (includeEcalClusters_ || includeEcalRecHits_) ecalClusterRecHit(event, eKey);
 
     if (visLayers_) extractLayers(event, eKey);
 
@@ -400,13 +388,16 @@ namespace dqm {
     j[eKey]["Tracks"] = json::object();
 
     // GROUND TRUTH (SIMULATED) PATHS
-    if (includeGroundTruth_) {
-      groundTruthTracks(event, eKey);
-    }
+    if (includeGroundTruth_) groundTruthTracks(event, eKey);
     return;
   }
 
-void VisGenerator::onProcessEnd(){
+  void VisGenerator::onNewRun(const ldmx::RunHeader &runHeader) {
+    runNbr_ = runHeader.getRunNumber();
+  }
+
+  void VisGenerator::onProcessEnd(){
+    // Write to file
     std::ofstream file(filename_);
     file << std::setw(2) << j << std::endl;
     file.close();
@@ -422,7 +413,7 @@ void VisGenerator::onProcessEnd(){
       layerfile.close();
     }
     return;
-};
+  };
 
 }
 

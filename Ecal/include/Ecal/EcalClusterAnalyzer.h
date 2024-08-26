@@ -1,3 +1,9 @@
+/**
+ * @file EcalClusterAnalyzer.h
+ * @brief Analysis of cluster performance
+ * @author Ella Viirola, Lund University
+ */
+
 #ifndef DQM_ECALCLUSTERANALYZER_H
 #define DQM_ECALCLUSTERANALYZER_H
 
@@ -40,8 +46,6 @@ class EcalClusterAnalyzer : public framework::Analyzer {
 
     // Pass Name for clusters
     std::string clusterPassName_;
-
-    // int depth_;
 };
 
 }

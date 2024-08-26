@@ -31,6 +31,8 @@ class VisGenerator : public framework::Analyzer {
 
     // void caloCells(const framework::Event& event, const std::string& eKey);
 
+    virtual void onNewRun(const ldmx::RunHeader &runHeader);
+
     virtual void onProcessEnd();
 
   private:
@@ -79,8 +81,13 @@ class VisGenerator : public framework::Analyzer {
     // Output filename
     std::string filename_;
 
+    // List of event numbers that should be included
+    std::vector<int> onlyIncludeEvents_;
+    // List of event numbers that should be excluded
+    std::vector<int> excludeEvents_;
+
     // Run number
-    int runNbr_;
+    int runNbr_{1};
     
     nlohmann::json j;
 
@@ -88,11 +95,12 @@ class VisGenerator : public framework::Analyzer {
 
     nlohmann::json layer;
 
-    // nlohmann::json c;
-
+    // Colors available for clusters
     std::vector<std::string> colors { "0xFFB6C1", "0xFFA500", "0xFFFF00", 
                                       "0x7FFF00", "0x00FFFF", "0x663399"};
 
+    // String "translations" for hex colors above
+    // If adding new hex colors, add translation here
     std::vector<std::string> colorstrings { "pink", "orange", "yellow", 
                                       "green", "blue", "purple"};
 };
