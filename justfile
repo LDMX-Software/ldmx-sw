@@ -29,7 +29,8 @@ help_message := "shared recipes for ldmx-sw development
 # we could look into removing this and instead having the denv_workspace be
 # the justfile_directory() itself but that is a larger change than introducing just
 # the denv workspace is colloquially known as LDMX_BASE
-export LDMX_BASE := parent_directory( justfile_directory() )
+
+export LDMX_BASE := parent_directory(justfile_directory())
 
 # tell denv where the workspace is
 # usually, denv deduces where the workspace is by finding the .denv directory,
@@ -37,22 +38,24 @@ export LDMX_BASE := parent_directory( justfile_directory() )
 # run their ldmx-sw build from within some other denv by invoking fire from just
 #   just -f path/to/ldmx-sw/justfile fire config.py
 # would run this denv even if there is a denv in the directory where config.py is.
+
 export denv_workspace := LDMX_BASE
 
 # make sure APPTAINER_CACHEDIR is not in the home directory
 # unless the user has already defined it
 #   just 1.15
+
 export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", LDMX_BASE / ".apptainer")
 
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
 # this install is private since I'd prefer users knowing what tools they are installing;
+
 # however, the CI needs to install denv before it can run any testing
 [private]
 install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
-
 
 # configure how ldmx-sw will be built
 configure *CONFIG:
@@ -67,7 +70,7 @@ test *ARGS:
     cd build && denv ctest {{ ARGS }}
 
 # run ldmx-sw with the input configuration script
-[no-cd] # just 1.9
+[no-cd]
 fire config_py *ARGS:
     denv fire {{ config_py }} {{ ARGS }}
 
@@ -101,6 +104,7 @@ check:
     denv check
 
 # confirm(PROMPT) just 1.23
+
 # remove the build and install directories of ldmx-sw
 [confirm("This will remove the build and install directories. Are you sure?")]
 clean:
@@ -128,6 +132,7 @@ format-just:
 #  ISSUE: the filter implemented here gets all files that are either executable
 #    or have the '.sh' extension. This includes a python script in TrigScint
 #    and some bash-specific scripts as well. Not sure how to handle them.
+
 # check the scripts for common errors and bugs
 shellcheck:
     #!/usr/bin/env sh
@@ -139,6 +144,14 @@ shellcheck:
 # below are the mimics of ldmx <cmd>
 # we could think about removing them if folks are happy with committing to the
 # just-style commands above
+
+# open the ROOT shell within the software environment
+root *ARGS="":
+    denv root {{ ARGS }}
+
+# open a ROOT file with a graphical browser
+rootbrowse FILE:
+    denv rootbrowse {{ FILE }}
 
 # change which image is used for the denv
 use IMAGE:
