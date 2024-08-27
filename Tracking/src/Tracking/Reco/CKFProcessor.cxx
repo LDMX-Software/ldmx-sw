@@ -440,7 +440,7 @@ void CKFProcessor::produce(framework::Event& event) {
       // make the empty ldmx::Track() and track state at target
       ldmx::Track trk = ldmx::Track();
       ldmx::Track::TrackState tsAtTarget;
-    
+      
       for (const auto ts : track.trackStatesReversed()) {
 	// Check TrackStates Quality
 	ldmx_log(debug) << "Checking Track State at location "
@@ -488,17 +488,23 @@ void CKFProcessor::produce(framework::Event& event) {
 			<< tsAtTarget.params[3] << " " << tsAtTarget.params[4];
 	
 	trk.addTrackState(tsAtTarget);
+      } else {
+	ldmx_log(info)<<"Could not extrapolate to target?  Printing track states:  ";
+	ldmx_log(info)<<"        nhits = "<<track.nMeasurements();
+	for (const auto ts : track.trackStatesReversed()) {	  
+	  ldmx_log(info) << "Smoothed? " << ts.hasSmoothed() << std::endl;
+	  if (ts.hasSmoothed()) {
+	    ldmx_log(info) <<"momentum for track state = " <<1/ts.smoothed()[Acts::eBoundQOverP];   
+	    ldmx_log(info) << "Parameters \n"
+			  << ts.smoothed().transpose() << std::endl;
+	  }else{
+	    ldmx_log(info)<<"Track state not smoothed?"; 
+	  }	  
+	}
+	ldmx_log(info)<<"...skipping this track...";
+	continue;
       }
-      // get the BoundTrackParameters at the target
-      // ...use to fill in the Acts::TrackProxy object
-      // This isn't really necessary, since we can take
-      // most everything for making the ldmx::track
-      // from tsAtTarget...maybe useful for something?
-      // -->one thing this does is allow Acts to
-      // calculate the momentum 3-vector for you
-      Acts::BoundTrackParameters boundStateAtTarget=tracking::sim::utils::btp(tsAtTarget, target_surface,11); 
-      track.setReferenceSurface(target_surface);
-      track.parameters()=boundStateAtTarget.parameters();
+   
 
       ldmx_log(debug)<<typeid(track).name();
       // These are the parameters at the target surface
