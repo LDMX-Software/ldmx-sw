@@ -45,6 +45,9 @@ class ParallelWorld : public G4VUserParallelWorld {
   /** The auxiliary GDML info reader. */
   geo::AuxInfoReader* auxInfoReader_{nullptr};
 
+  /// Enable logging
+  enableLogging("ParallelWorld")
+
 };  // ParallelWorld
 }  // namespace simcore
 
