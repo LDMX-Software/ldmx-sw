@@ -73,6 +73,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
   /// interface to conditions to be passed to SDs
   simcore::ConditionsInterface &conditions_interface_;
+
+  /// Enable logging
+  enableLogging("DetectorConstruction")
 };  // DetectorConstruction
 }  // namespace simcore
 

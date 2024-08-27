@@ -24,8 +24,8 @@ void ParallelWorld::ConstructSD() {
 
   for (int index = 0; index < parallelWorldLogical->GetNoDaughters(); index++) {
     G4VPhysicalVolume *physicalVol = parallelWorldLogical->GetDaughter(index);
-    std::cout << "[ ParallelWorld ]: Adding : " << physicalVol->GetName()
-              << " to parallel world." << std::endl;
+    ldmx_log(debug) << "Adding : " << physicalVol->GetName()
+                    << " to parallel world.";
     worldLogical->AddDaughter(physicalVol);
   }
 
