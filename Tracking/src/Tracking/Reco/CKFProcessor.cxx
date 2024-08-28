@@ -506,6 +506,17 @@ void CKFProcessor::produce(framework::Event& event) {
       }
    
 
+      // get the BoundTrackParameters at the target
+      // ...use to fill in the Acts::TrackProxy object
+      // This isn't really necessary, since we can take
+      // most everything for making the ldmx::track
+      // from tsAtTarget...maybe useful for something?
+      // -->one thing this does is allow Acts to
+      // calculate the momentum 3-vector for you
+      Acts::BoundTrackParameters boundStateAtTarget=tracking::sim::utils::btp(tsAtTarget, target_surface,11); 
+      track.setReferenceSurface(target_surface);
+      track.parameters()=boundStateAtTarget.parameters();
+      
       ldmx_log(debug)<<typeid(track).name();
       // These are the parameters at the target surface
       const Acts::BoundVector& track_pars = track.parameters();
