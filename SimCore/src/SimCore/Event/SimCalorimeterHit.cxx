@@ -36,7 +36,7 @@ ClassImp(ldmx::SimCalorimeterHit)
   }
 
   void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode,
-                                     float edep, float time, int originID /*= -1*/) {
+                                     float edep, float time, int originID) {
     incidentIDContribs_.push_back(incidentID);
     trackIDContribs_.push_back(trackID);
     pdgCodeContribs_.push_back(pdgCode);

@@ -21,6 +21,7 @@
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
+#include "Ecal/CLUE.h"
 #include "Ecal/Event/ClusterAlgoResult.h"
 #include "Ecal/Event/EcalCluster.h"
 #include "Ecal/Event/EcalHit.h"
@@ -28,7 +29,6 @@
 #include "Ecal/TemplatedClusterFinder.h"
 #include "Ecal/WorkingCluster.h"
 #include "Ecal/WorkingEcalCluster.h"
-#include "Ecal/CLUE.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -67,7 +67,7 @@ class EcalClusterProducer : public framework::Producer {
   double rhoc_{0};
   double deltac_{0};
   double deltao_{0};
-  
+
   std::string recHitCollName_;
   std::string recHitPassName_;
   std::string algoCollName_;

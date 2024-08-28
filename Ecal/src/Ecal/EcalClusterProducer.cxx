@@ -38,7 +38,6 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
-
   std::vector<ldmx::EcalHit> ecalHits =
       event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_);
 
@@ -49,14 +48,16 @@ void EcalClusterProducer::produce(framework::Event& event) {
   if (CLUE_) {
     CLUE cf;
 
-    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_, reclustering_, debug_);
+    cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_,
+               reclustering_, debug_);
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
     histograms_.fill("nClusters", wcVec.size());
-    if (reclustering_) histograms_.fill("recluster", cf.getInitialClusterNbr(), wcVec.size());
+    if (reclustering_)
+      histograms_.fill("recluster", cf.getInitialClusterNbr(), wcVec.size());
 
     std::vector<ldmx::EcalCluster> ecalClusters;
     for (int aWC = 0; aWC < wcVec.size(); aWC++) {
@@ -64,11 +65,11 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
       cluster.setEnergy(wcVec[aWC].centroid().E());
       cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
-                            wcVec[aWC].centroid().Py(),
-                            wcVec[aWC].centroid().Pz());
+                             wcVec[aWC].centroid().Py(),
+                             wcVec[aWC].centroid().Pz());
       cluster.setFirstLayerCentroidXYZ(fWcVec[aWC].centroid().Px(),
-                            fWcVec[aWC].centroid().Py(),
-                            fWcVec[aWC].centroid().Pz());
+                                       fWcVec[aWC].centroid().Py(),
+                                       fWcVec[aWC].centroid().Pz());
       cluster.setNHits(wcVec[aWC].getHits().size());
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
@@ -123,8 +124,8 @@ void EcalClusterProducer::produce(framework::Event& event) {
 
       cluster.setEnergy(wcVec[aWC].centroid().E());
       cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(),
-                            wcVec[aWC].centroid().Py(),
-                            wcVec[aWC].centroid().Pz());
+                             wcVec[aWC].centroid().Py(),
+                             wcVec[aWC].centroid().Pz());
       cluster.setNHits(wcVec[aWC].getHits().size());
       cluster.addHits(wcVec[aWC].getHits());
 

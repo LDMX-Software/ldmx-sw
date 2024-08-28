@@ -7,7 +7,7 @@
 #ifndef DQM_ECALCLUSTERANALYZER_H
 #define DQM_ECALCLUSTERANALYZER_H
 
-//LDMX Framework
+// LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -19,35 +19,36 @@ namespace ecal {
  */
 
 class EcalClusterAnalyzer : public framework::Analyzer {
-  public:
-    EcalClusterAnalyzer(const std::string& name, framework::Process& process) : Analyzer(name, process) {}
-    
-    virtual void configure(framework::config::Parameters& ps);
+ public:
+  EcalClusterAnalyzer(const std::string& name, framework::Process& process)
+      : Analyzer(name, process) {}
 
-    virtual void analyze(const framework::Event& event);
+  virtual void configure(framework::config::Parameters& ps);
 
-  private:
-    int nbrOfElectrons_;
+  virtual void analyze(const framework::Event& event);
 
-    // Collection Name for SimHits
-    std::string ecalSimHitColl_;
+ private:
+  int nbrOfElectrons_;
 
-    // Pass Name for SimHits
-    std::string ecalSimHitPass_;
+  // Collection Name for SimHits
+  std::string ecalSimHitColl_;
 
-    // Collection Name for RecHits
-    std::string recHitCollName_;
+  // Pass Name for SimHits
+  std::string ecalSimHitPass_;
 
-    // Pass Name for RecHits
-    std::string recHitPassName_;
+  // Collection Name for RecHits
+  std::string recHitCollName_;
 
-    // Collection Name for clusters
-    std::string clusterCollName_;
+  // Pass Name for RecHits
+  std::string recHitPassName_;
 
-    // Pass Name for clusters
-    std::string clusterPassName_;
+  // Collection Name for clusters
+  std::string clusterCollName_;
+
+  // Pass Name for clusters
+  std::string clusterPassName_;
 };
 
-}
+}  // namespace ecal
 
 #endif

@@ -6,15 +6,15 @@
 
 #include "Ecal/EcalClusterAnalyzer.h"
 
-#include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalCluster.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "DetDescr/SimSpecialID.h"
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Ecal/Event/EcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace ecal {
 
@@ -23,7 +23,7 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
 
   ecalSimHitColl_ = ps.getParameter<std::string>("ecalSimHitColl");
   ecalSimHitPass_ = ps.getParameter<std::string>("ecalSimHitPass");
-  
+
   recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
   recHitPassName_ = ps.getParameter<std::string>("recHitPassName");
 
@@ -33,17 +33,23 @@ void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {
 }
 
 void EcalClusterAnalyzer::analyze(const framework::Event& event) {
-  auto ecalRecHits{event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_)};
-  auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(ecalSimHitColl_, ecalSimHitPass_)};
-  auto ecalClusters{event.getCollection<ldmx::EcalCluster>(clusterCollName_, clusterPassName_)};
+  auto ecalRecHits{
+      event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_)};
+  auto ecalSimHits{event.getCollection<ldmx::SimCalorimeterHit>(
+      ecalSimHitColl_, ecalSimHitPass_)};
+  auto ecalClusters{event.getCollection<ldmx::EcalCluster>(clusterCollName_,
+                                                           clusterPassName_)};
 
-  if (ecalClusters.size() == nbrOfElectrons_) histograms_.fill("correctly_predicted_events", 1); // correct
-  else if (ecalClusters.size() < nbrOfElectrons_) histograms_.fill("correctly_predicted_events", 0); // undercounting
-  else if (ecalClusters.size() > nbrOfElectrons_) histograms_.fill("correctly_predicted_events", 2); // overcounting
+  if (ecalClusters.size() == nbrOfElectrons_)
+    histograms_.fill("correctly_predicted_events", 1);  // correct
+  else if (ecalClusters.size() < nbrOfElectrons_)
+    histograms_.fill("correctly_predicted_events", 0);  // undercounting
+  else if (ecalClusters.size() > nbrOfElectrons_)
+    histograms_.fill("correctly_predicted_events", 2);  // overcounting
 
   std::unordered_map<int, std::pair<int, std::vector<double>>> hitInfo;
   hitInfo.reserve(ecalRecHits.size());
-  
+
   double dist;
   if (nbrOfElectrons_ == 2) {
     // Measures distance between two electrons in the ECal scoring plane
@@ -52,9 +58,10 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
     std::vector<float> pos2;
     bool p1 = false;
     bool p2 = false;
-    
-    auto ecalSpHits{event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
-    for (ldmx::SimTrackerHit &spHit : ecalSpHits) {
+
+    auto ecalSpHits{
+        event.getCollection<ldmx::SimTrackerHit>("EcalScoringPlaneHits")};
+    for (ldmx::SimTrackerHit& spHit : ecalSpHits) {
       if (spHit.getTrackID() == 1) {
         pos1 = spHit.getPosition();
         p1 = true;
@@ -63,11 +70,15 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
         p2 = true;
       }
     }
-    if (p1 && p2) dist = std::sqrt(std::pow((pos1[0]-pos2[0]), 2) + std::pow((pos1[1]-pos2[1]), 2));
+    if (p1 && p2)
+      dist = std::sqrt(std::pow((pos1[0] - pos2[0]), 2) +
+                       std::pow((pos1[1] - pos2[1]), 2));
   }
 
   for (const auto& hit : ecalRecHits) {
-    auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(), [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
+    auto it = std::find_if(
+        ecalSimHits.begin(), ecalSimHits.end(),
+        [&hit](const auto& simHit) { return simHit.getID() == hit.getID(); });
     if (it != ecalSimHits.end()) {
       // if found a simhit matching this rechit
       int ancestor = 0;
@@ -75,7 +86,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       bool tagged = false;
       int tag = 0;
       std::vector<double> edep;
-      edep.resize(nbrOfElectrons_+1);
+      edep.resize(nbrOfElectrons_ + 1);
       for (int i = 0; i < it->getNumberOfContribs(); i++) {
         // for each contrib in this simhit
         const auto& c = it->getContrib(i);
@@ -93,7 +104,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       }
       if (!tagged) {
         // if not tagged, hit was from a single electron
-        tag = prevAncestor;        
+        tag = prevAncestor;
       }
       histograms_.fill("ancestors", tag);
       hitInfo.insert({hit.getID(), std::make_pair(tag, edep)});
@@ -119,9 +130,9 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       auto it = hitInfo.find(id);
       if (it != hitInfo.end()) {
         auto t = it->second;
-        auto eId = t.first; // origin electron ID (or 0 for mixed)
-        auto energies = t.second; // energy vector
-        n[eId]++; // increment number of hits coming from this electron
+        auto eId = t.first;        // origin electron ID (or 0 for mixed)
+        auto energies = t.second;  // energy vector
+        n[eId]++;  // increment number of hits coming from this electron
         nSum++;
 
         double hitESum = 0.;
@@ -129,14 +140,16 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
           // loop through energy vector
           if (energies[i] > 0.) {
             hitESum += energies[i];
-            // add energy from electron i in this hit to total energy from electron i in cluster
+            // add energy from electron i in this hit to total energy from
+            // electron i in cluster
             e[i] += energies[i];
           }
         }
-        // if mixed hit, add the total energy of this hit to mixed hit energy counter
+        // if mixed hit, add the total energy of this hit to mixed hit energy
+        // counter
         if (eId == 0) e[0] += hitESum;
         eSum += hitESum;
-      
+
         clusteredHits++;
       }
     }
@@ -145,24 +158,27 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
       // get largest energy contribution
       double eMax = *max_element(e.begin(), e.end());
       // energy purity = largest contribution / all energy
-      histograms_.fill("energy_percentage", 100.*(eMax/eSum)); 
-      if (e[0] > 0.) histograms_.fill("mixed_hit_energy", 100.*(e[0]/eSum));
+      histograms_.fill("energy_percentage", 100. * (eMax / eSum));
+      if (e[0] > 0.) histograms_.fill("mixed_hit_energy", 100. * (e[0] / eSum));
 
       histograms_.fill("total_energy_vs_hits", eSum, cl.getHitIDs().size());
-      histograms_.fill("total_energy_vs_purity", eSum, 100.*(eMax/eSum));
+      histograms_.fill("total_energy_vs_purity", eSum, 100. * (eMax / eSum));
 
-      if (nbrOfElectrons_ == 2)  histograms_.fill("distance_energy_purity", dist, 100.*(eMax/eSum));
+      if (nbrOfElectrons_ == 2)
+        histograms_.fill("distance_energy_purity", dist, 100. * (eMax / eSum));
     }
     if (nSum > 0) {
       double nMax = *max_element(n.begin(), n.end());
-      histograms_.fill("same_ancestor", 100.*(nMax/nSum));
+      histograms_.fill("same_ancestor", 100. * (nMax / nSum));
     }
   }
 
-  histograms_.fill("clusterless_hits", (ecalRecHits.size()-clusteredHits));
+  histograms_.fill("clusterless_hits", (ecalRecHits.size() - clusteredHits));
   histograms_.fill("total_rechits_in_event", ecalRecHits.size());
-  histograms_.fill("clusterless_hits_percentage", 100.*(ecalRecHits.size()-clusteredHits)/ecalRecHits.size());
+  histograms_.fill(
+      "clusterless_hits_percentage",
+      100. * (ecalRecHits.size() - clusteredHits) / ecalRecHits.size());
 }
 
-}
+}  // namespace ecal
 DECLARE_ANALYZER_NS(ecal, EcalClusterAnalyzer)

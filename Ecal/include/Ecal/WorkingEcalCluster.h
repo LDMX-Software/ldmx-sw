@@ -28,7 +28,7 @@ class WorkingEcalCluster {
 
   std::vector<ldmx::EcalHit> getHits() const { return hits_; }
 
-  bool empty() const { return hits_.empty();}
+  bool empty() const { return hits_.empty(); }
 
   void clear() { hits_.clear(); }
 

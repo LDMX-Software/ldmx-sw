@@ -113,11 +113,11 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       hit.updateContrib(contrib_i, edep, time);
     } else {
       int origin{-1};
-      auto map {getTrackMap()};
-      auto incident {map.findIncident(track_id)};
+      auto map{getTrackMap()};
+      auto incident{map.findIncident(track_id)};
       for (int i{1}; i < 6; ++i) {
         if (map.isDescendant(track_id, i, 100)) {
-          origin = i;          
+          origin = i;
           break;
         }
       }

@@ -54,7 +54,9 @@ class EcalCluster : public ldmx::CaloCluster {
   double getFirstLayerCentroidY() const { return firstLayerCentroidY_; }
   double getFirstLayerCentroidZ() const { return firstLayerCentroidZ_; }
 
-  std::vector<unsigned int> getFirstLayerHitIDs() const { return firstLayerHitIDs_; }
+  std::vector<unsigned int> getFirstLayerHitIDs() const {
+    return firstLayerHitIDs_;
+  }
 
  private:
   // Could add further ECal-specific info here...
