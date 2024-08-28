@@ -137,12 +137,13 @@ class Differ :
         denominator, bins, _denominator_art = raw_histograms[0]
         bin_centers = (bins[1:]+bins[:-1])/2
         for values, _bins, art in raw_histograms[1:]:
-            ratio_ax.plot(
+            ratio_ax.scatter(
                 bin_centers,
                 values/denominator,
                 color = art[0].get_edgecolor()
             )
-        
+
+        ratio_ax.set_ylabel('Ratio')
         ratio_ax.set_xlabel(xlabel)
         if tick_labels is not None:
             ratio_ax.set_xticks((bins[1:]+bins[:-1])/2)
