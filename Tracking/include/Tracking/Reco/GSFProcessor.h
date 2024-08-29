@@ -67,6 +67,8 @@
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 #include "Acts/TrackFitting/BetheHeitlerApprox.hpp"
 #include "Acts/TrackFitting/GaussianSumFitter.hpp"
+#include "Acts/TrackFitting/GsfMixtureReduction.hpp"
+
 
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
@@ -240,6 +242,9 @@ class GSFProcessor final : public TrackingGeometryUser {
 
   bool usePerigee_{false};
   bool usePlaneSurface_{false};
+
+  // Keep track on which system this processor is running on
+  bool taggerTracking_{true};
 
   // The Propagators
   std::unique_ptr<const Propagator> propagator_;
