@@ -85,6 +85,7 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 }
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
+  verbose_ = parameters.getParameter<bool>("verbose");
   doBdt_ = parameters.getParameter<bool>("do_bdt");
   featureListName_ = parameters.getParameter<std::string>("feature_list_name");
   if (doBdt_) {
@@ -824,14 +825,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   float cellWidth = 8.7;
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-    int track[34];  // list of hit numbers in track (34 = maximum theoretical
-                    // length)
-    int currenthit;
-    int trackLen;
+    // list of hit numbers in track (34 = maximum theoretical length)
+    int track[34];
+    int currenthit{iHit};
+    int trackLen{1};
 
     track[0] = iHit;
-    currenthit = iHit;
-    trackLen = 1;
 
     // Search for hits to add to the track:
     // repeatedly find hits in the front two layers with same x & y positions
@@ -984,37 +983,40 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
+  // ------------------------------------------------------
   // Linreg tracking:
-
   ldmx_log(debug) << "Finding linreg tracks from " << trackingHitList.size()
                   << " hits";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     int track[34];
-    int trackLen;
-    int currenthit;
-    int hitsInRegion[50];  // Hits being considered at one time
-    int nHitsInRegion;     // Number of hits under consideration
-    TMatrixD svdMatrix(3, 3);
+    int trackLen{0};
+    // Hits being considered at one time
+    // TODO: This is currently not used, but it really should be!
+    // int hitsInRegion[50];
+    // Number of hits under consideration
+    int nHitsInRegion{1};
     TMatrixD Vm(3, 3);
     TMatrixD hdt(3, 3);
     TVector3 slopeVec;
     TVector3 hmean;
     TVector3 hpoint;
-    float r_corr_best;
-    int hitNums_best[3];  // Hit numbers of current best track candidate
+    float r_corr_best{0.0};
     int hitNums[3];
 
-    trackLen = 0;
-    nHitsInRegion = 1;
-    currenthit = iHit;
-    hitsInRegion[0] = iHit;
+    // hitsInRegion[0] = iHit; // TODO
     // Find all hits within 2 cells of the primary hit:
     for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+      // Dont try to put hits on the same layer to the lin-reg track
+      if (trackingHitList[iHit].pos(2) == trackingHitList[jHit].pos(2)) {
+        continue;
+      }
       float dstToHit =
           (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
+      // This distance needs to be optimized in a future study //TODO
+      // Current 2*cellWidth has no particular meaning
       if (dstToHit <= 2 * cellWidth) {
-        hitsInRegion[nHitsInRegion] = jHit;
+        // hitsInRegion[nHitsInRegion] = jHit; // TODO
         nHitsInRegion++;
       }
     }
@@ -1042,13 +1044,21 @@ void EcalVetoProcessor::produce(framework::Event &event) {
           }
         }
 
-        // Perform "linreg" on selected points:
-        TDecompSVD svdObj = TDecompSVD(hdt);
+        // Perform "linreg" on selected points
+        // Calculate the determinant of the matrix
+        double determinant =
+            hdt(0, 0) * (hdt(1, 1) * hdt(2, 2) - hdt(1, 2) * hdt(2, 1)) -
+            hdt(0, 1) * (hdt(1, 0) * hdt(2, 2) - hdt(1, 2) * hdt(2, 0)) +
+            hdt(0, 2) * (hdt(1, 0) * hdt(2, 1) - hdt(1, 1) * hdt(2, 0));
+        // Exit early if the matrix is singular (i.e. det = 0)
+        if (determinant == 0) continue;
+        // Perform matrix decomposition with SVD
+        TDecompSVD svdObj(hdt);
         bool decomposed = svdObj.Decompose();
         if (!decomposed) continue;
 
-        Vm = svdObj.GetV();  // First col of V matrix is the slope of the
-                             // best-fit line
+        // First col of V matrix is the slope of the best-fit line
+        Vm = svdObj.GetV();
         for (int hInd = 0; hInd < 3; hInd++) {
           slopeVec(hInd) = Vm[0][hInd];
         }
@@ -1085,8 +1095,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
             trackLen++;
           }
         }
-      }
-    }
+      }  // end loop on hits in the region
+    }    // end 2nd loop on hits in the region
+
+    // Continue early if not hits on track
+    if (trackLen == 0) continue;
+
     // Ordinarily, additional hits in line w/ track would be added here.
     // However, this doesn't affect the results of the simple veto. Exclude all
     // hits in a found track from further consideration:
@@ -1097,7 +1111,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       }
       iHit--;
     }
-  }
+  }  // end loop on all hits
 
   ldmx_log(debug) << "  MIP tracking completed; found " << nStraightTracks_
                   << " straight tracks and " << nLinregTracks_
