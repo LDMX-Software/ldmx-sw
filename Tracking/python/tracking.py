@@ -231,10 +231,13 @@ class GSFProcessor(Producer):
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
         self.weightCutoff    = 1.0e-4
+        self.debug = True
 
         self.propagator_step_size = 200.
         self.propagator_maxSteps  = 1000
         self.field_map = makeFieldMapPath()
+        self.taggerTracking = True
+        self.out_trk_collection = "GSFTracks"
 
         
 
