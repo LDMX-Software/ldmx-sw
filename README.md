@@ -26,8 +26,29 @@ will need a method for running these containers.
   - Only necessary on personal computers. Shared computing clusters should have `apptainer` installed.
   - (on Linux personal computers) [Manage docker as non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
 - [Install `denv`](https://tomeichlersmith.github.io/denv/getting_started.html#installation)
+```
+curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
+```
+Some folks may see an error about something not being within your `PATH`,
+you just need to update your shell's configuration to look for `denv` within
+that directory.
+A program being "in your `PATH`" can be checked by making sure your shell
+can find it.
+```
+denv help
+```
+The above should printout a help message instead of a "command not found"
+message.
 
-### Users
+Additionally, many folks have gotten used to using `ldmx` as the command
+to put programs into the containerized environment in which case you can
+use the following to add this symlink to your `denv` installation.
+(Note: This requires `denv` to be in your `PATH`!).
+```
+ln -s $(which denv) $(dirname $(which denv))/ldmx
+```
+
+### Using
 In order to use ldmx-sw, no more dependencies are required!
 Simply choose the version of ldmx-sw you wish to use with your project.
 ```
@@ -42,7 +63,7 @@ denv fire my-config.py
 More detail on configuration scripts and analyzing the output files
 is given in the first section of the [online manual](ldmx-software.github.io).
 
-### Developers
+### Developing
 For development, we use a few more tools to help track our changes and share commands
 that we use regularly.
 
@@ -57,7 +78,27 @@ that we use regularly.
 - [Install `just`](https://just.systems/man/en/chapter_5.html)
   - This tool is not required but it is highly encouraged. The recipes we share via the [justfile](justfile) can be run without `just` but are longer to type.
 
-Then, with these additional tools, developers can clone the repository and start development.
+One can install `just` in a similar way to `denv`. Below is an example where the
+destination directory is set to the same one as the default for `denv`.
+```
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh |\
+  bash -s -- --to ~/.local/bin
+```
+Other [package manager options](https://just.systems/man/en/chapter_4.html) are available
+as well.
+You will probably want to make sure `just`'s tab complete is available.
+If you press `just -<Tab><Tab>` and nothing is listed, then the tab complete is
+not present and you must manually install it.
+This can be accomplished by including its completions within your shell's
+configuration script. For example, in `bash`, we would add the following
+to your `~/.bashrc` file.
+```
+eval "$(just --completions bash)"
+```
+If you are not in `bash`, look to your shell's documentation on where to place
+this line. `just` supports many popular shells including `bash`, `zsh`, and `fish`.
+
+With these additional tools, developers can clone the repository and start development.
 ```
 git clone --recursive git@github.com:LDMX-Software/ldmx-sw.git
 ```
