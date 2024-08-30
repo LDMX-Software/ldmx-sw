@@ -42,17 +42,25 @@ if __have just && __have denv; then
   # make alias and leave
   alias ldmx="just -f ${_default_justfile}"
   # see https://just.systems/man/en/chapter_55.html
+
   # if invoking 'just' directly, you can put the path to ldmx-sw as a prefix
   # to the command you want to run. The following are all the same.
   #   just path/to/ldmx-sw/build
   #   just -f path/to/ldmx-sw/justfile build
   #   cd path/to/ldmx-sw && just build
+  
+  # we need to make sure that tab completion for just is loaded
+  if ! type -t _just &> /dev/null; then
+    eval "$(just --completions bash)"
+  fi
+
   # add just tab complete to ldmx alias
   complete -F _just -o bashdefault -o default ldmx
   return 0
 else
   echo "[ldmx-env.sh] [WARNING] The bash functions that you will be using are deprecated."
   echo "  Please install the commands 'denv' and 'just' to update to the new development workflow."
+  echo "  https://github.com/LDMX-Software/ldmx-sw/blob/trunk/README.md"
 fi
 
 
