@@ -42,12 +42,11 @@ class TaggerHitFilter : public simcore::UserAction {
    */
   void stepping(const G4Step* step) final override;
 
-
   /**
    * Action called once tracking of all particles has concluded. This is being
    * used to clear the hit count set in preparation for the next event.
    */
-  void EndOfEventAction(const G4Event* event) final override; 
+  void EndOfEventAction(const G4Event* event) final override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() final override {
@@ -55,14 +54,12 @@ class TaggerHitFilter : public simcore::UserAction {
   }
 
  private:
-
-  void checkAbortEvent(G4Track* track);  
+  void checkAbortEvent(G4Track* track);
 
   /// Set used to keep track which layers were hit by a particle.
   std::set<int> layer_count_;
   /// Total number of hits required to persist an event.
   int layers_hit_{8};
-
 
 };  // TaggerHitFilter
 }  // namespace biasing
