@@ -93,10 +93,10 @@ seederRecoil.input_hits_collection =  digiRecoil.out_collection
 seederRecoil.out_seed_collection = "RecoilRecoSeeds"
 seederRecoil.bfield = 1.5
 seederRecoil.pmin  = 0.1
-seederRecoil.pmax  = 4.
-seederRecoil.d0min = -0.5
-seederRecoil.d0max = 0.5
-seederRecoil.z0max = 10.
+seederRecoil.pmax  = 12.
+seederRecoil.d0min = -40.0
+seederRecoil.d0max = 40.0
+seederRecoil.z0max = 50.
 
 # Producer for running the CKF track finding starting from the found seeds.
 tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
@@ -169,12 +169,11 @@ count.input_pass_name = ''
 from LDMX.DQM import dqm
 from LDMX.Tracking import dqm as tkdqm
 
-# currently this does not fill anything
-#seed_recoil_dqm = tkdqm.TrackingRecoDQM("SeedRecoilTrackerDQM")
-#seed_recoil_dqm.buildHistograms()
-#seed_recoil_dqm.track_collection = seederRecoil.out_seed_collection
-#seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
-#seed_recoil_dqm.title = ""
+seed_recoil_dqm = tkdqm.TrackingRecoDQM("SeedRecoilTrackerDQM")
+seed_recoil_dqm.buildHistograms()
+seed_recoil_dqm.track_collection = seederRecoil.out_seed_collection
+seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
+seed_recoil_dqm.title = ""
 
 recoil_dqm = tkdqm.TrackingRecoDQM("RecoilTrackerDQM")
 recoil_dqm.buildHistograms()
@@ -202,6 +201,6 @@ p.sequence.extend([
         trigScintTrack, 
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(verbose=True),
-#        seed_recoil_dqm,
+        seed_recoil_dqm,
         recoil_dqm,
         ] + dqm.all_dqm)
