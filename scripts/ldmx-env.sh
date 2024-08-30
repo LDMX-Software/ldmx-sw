@@ -47,6 +47,8 @@ if __have just && __have denv; then
   #   just path/to/ldmx-sw/build
   #   just -f path/to/ldmx-sw/justfile build
   #   cd path/to/ldmx-sw && just build
+  # add just tab complete to ldmx alias
+  complete -F _just -o bashdefault -o default ldmx
   return 0
 else
   echo "[ldmx-env.sh] [WARNING] The bash functions that you will be using are deprecated."
