@@ -79,7 +79,7 @@ that we use regularly.
   - This tool is not required but it is highly encouraged. The recipes we share via the [justfile](justfile) can be run without `just` but are longer to type.
 
 One can install `just` in a similar way to `denv`. Below is an example where the
-destination directory is set to the same one as the default for `denv`.
+destination directory is set to the same one as the default for `denv` (`~/.local/bin`).
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh |\
   bash -s -- --to ~/.local/bin
