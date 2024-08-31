@@ -91,7 +91,7 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
 }
 
 EcalID EcalGeometry::getID(double x, double y, double z) const {
-  static const double tolerance = 0.5;  // thickness of Si
+  static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
     if (abs(std::get<2>(layer_xyz) - z) < tolerance) {
@@ -627,6 +627,56 @@ bool EcalGeometry::isInside(double normX, double normY) const {
                      dotProd)
               << std::endl;
   return (dotProd > 0.);
+}
+
+bool EcalGeometry::isFiducialInModule(double x, double y, int layer_id) const {
+  // now assume we know the layer
+  // shift to center of layer
+  // and convert to flower coordinates
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id))},
+      q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
+
+  // deduce module ID
+  //    there are only 7 modules so we just loop through them
+  //    all and pick out the module ID that we are inside of
+
+  int module_id{-1};
+  for (auto const& [mid, module_xy] : module_pos_xy_) {
+    double probe_x{p - module_xy.first}, probe_y{q - module_xy.second};
+    if (cornersSideUp_) rotate(probe_x, probe_y);
+    if (isInside(probe_x / moduleR_, probe_y / moduleR_)) {
+      module_id = mid;
+      break;
+    }
+  }
+
+  if (module_id < 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+bool EcalGeometry::isFiducialInCell(double x, double y, int layer_id,
+                                    int module_id) const {
+  // now assume we know the layer and module
+  // shift to center of layer and then center of module
+  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) -
+           module_pos_xy_.at(module_id).first},
+      q{y - std::get<1>(layer_pos_xy_.at(layer_id)) -
+        module_pos_xy_.at(module_id).second};
+
+  // need to rotate
+  if (cornersSideUp_) rotate(p, q);
+
+  // deduce cell ID
+  int cell_id = cell_id_in_module_.FindBin(p, q) - 1;
+
+  if (cell_id < 0) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 }  // namespace ldmx

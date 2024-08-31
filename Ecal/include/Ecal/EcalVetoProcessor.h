@@ -109,8 +109,6 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<float> ecalLayerEdepRaw_;
   std::vector<float> ecalLayerEdepReadout_;
   std::vector<float> ecalLayerTime_;
-  std::vector<float> mapsx;
-  std::vector<float> mapsy;
 
   std::vector<std::vector<double>> roc_range_values_;
 
@@ -157,7 +155,6 @@ class EcalVetoProcessor : public framework::Producer {
   bool doesPassVeto_{false};
 
   std::string bdtFileName_;
-  std::string cellFileNamexy_;
   std::string rocFileName_;
   std::vector<float> bdtFeatures_;
   std::string featureListName_;

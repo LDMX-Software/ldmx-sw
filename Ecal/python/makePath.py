@@ -33,30 +33,6 @@ def makeBDTPath( BDTname ) :
 
     return fullPath
 
-def makeCellXYPath() :
-    """Get the full path to the installed cell xy text file
-
-    Returns
-    -------
-    str
-        full path to installed data file
-
-    Warnings
-    --------
-    - The need for the cellxy.txt file will be remove in upcoming ldmx-sw versions.
-
-    Examples
-    --------
-        ecalVeto.cellxy_file = makeCellXYPath()
-    """
-
-    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/cellxy.txt'
-    if not os.path.isfile( fullPath ) :
-        print('ERROR: Cell xy text file \'%s\' does not exist.' % ( fullPath ))
-        sys.exit(1)
-
-    return fullPath
-
 def makeRoCPath( RoCname ) :
     """Get the full path to the RoC csv file
 
