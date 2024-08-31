@@ -9,6 +9,7 @@
  * @author Patterson, UCSB
  * @author Tom Eichlersmith, University of Minnesota
  * @author Hongyin Liu, UCSB
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef DETDESCR_ECALGEOMETRY_H_
@@ -307,6 +308,29 @@ class EcalGeometry : public framework::ConditionsObject {
   static EcalGeometry* debugMake(const framework::config::Parameters& p) {
     return new EcalGeometry(p);
   }
+
+  /**
+   * Is the hit based on its x,y global position and layer numbers
+   * fiducial in the module?
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] layer_id integer ID of the layer the hit is in
+   * @return bool if fiducial
+   */
+  bool isFiducialInModule(double x, double y, int layer_id) const;
+
+  /**
+   * Is the hit based on its x,y global position and layer/module numbers
+   * fiducial in the cell?
+   *
+   * @param[in] x global x position [mm]
+   * @param[in] y global y position [mm]
+   * @param[in] layer_id integer ID of the layer the hit is in
+   * @param[in] module_id integer ID of the module the hit is in
+   * @return bool if fiducial
+   */
+  bool isFiducialInCell(double x, double y, int layer_id, int module_id) const;
 
  private:
   /**

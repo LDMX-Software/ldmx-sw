@@ -1,6 +1,7 @@
 #include "Ecal/EcalVetoProcessor.h"
 
 // LDMX
+#include "DetDescr/EcalGeometry.h"
 #include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Recon/Event/EventConstants.h"
@@ -91,21 +92,6 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   if (doBdt_) {
     rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
         parameters.getParameter<std::string>("bdt_file"));
-  }
-
-  cellFileNamexy_ = parameters.getParameter<std::string>("cellxy_file");
-  if (!std::ifstream(cellFileNamexy_).good()) {
-    EXCEPTION_RAISE("EcalVetoProcessor", "The specified x,y cell file '" +
-                                             cellFileNamexy_ +
-                                             "' does not exist!");
-  } else {
-    std::ifstream cellxyfile(cellFileNamexy_);
-    float valuex;
-    float valuey;
-    while (cellxyfile >> valuex >> valuey) {
-      mapsx.push_back(valuex);
-      mapsy.push_back(valuey);
-    }
   }
 
   // Read in arrays holding 68% containment radius per layer
@@ -488,7 +474,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         trackingHitList.push_back(hd);
       }
     }
-  }
+  }  // end loop over rechits
 
   for (const auto &[id, energy] : cellMapTightIso_) {
     if (energy > 0) summedTightIso_ += energy;
@@ -605,7 +591,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
             hit.getEnergy();
       }
     }
-  }
+  }  // end loop over rechits (2nd time)
 
   if (nReadoutHits_ > 0) {
     xStd_ = sqrt(xStd_ / summedDet_);
@@ -646,74 +632,35 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }
 
-  // end loop over sim hits
+  // Find the location of the recoil electron
+  // Ecal face is not where the first layer starts,
+  // defined in DetDescr/python/EcalGeometry.py
+  const float dz_from_face = 7.932;
+  const float drifted_recoil_x =
+      (dz_from_face * (recoilP[0] / recoilP[2])) + recoilPos[0];
+  const float drifted_recoil_y =
+      (dz_from_face * (recoilP[1] / recoilP[2])) + recoilPos[1];
+  const int recoil_layer_index = 0;
 
-  /* Code for fiducial region below */
-
-  std::vector<float> faceXY(2);
-
-  if (!recoilP.empty() && recoilP[2] != 0) {
-    faceXY[0] = ((223.8 - 220.0) * (recoilP[0] / recoilP[2])) + recoilPos[0];
-    faceXY[1] = ((223.8 - 220.0) * (recoilP[1] / recoilP[2])) + recoilPos[1];
-  } else {
-    faceXY[0] = -9999.0;
-    faceXY[1] = -9999.0;
-  }
-
-  float cell_radius = 5.0;
-  // If the electron is outside the ECAL volume in X, return the default -9999.0
-  if (faceXY[0] < mapsx[0] - cell_radius ||
-      faceXY[0] > mapsx.back() + cell_radius) {
-    faceXY[0] != -9999.0;
-  }
-
+  // Check if it's fiducial
   bool inside{false};
-  int up{0};
-  int step{0};
-  unsigned int index{0};
-
-  // Make sure the recoil electron is inside the ECAL cells
-  if (!recoilP.empty() && faceXY[0] != -9999.0) {
-    std::vector<float>::iterator it;
-    // Find the iterator to the closest cell
-    it = std::lower_bound(mapsx.begin(), mapsx.end(), faceXY[0]);
-    // Check how far it is from the first element of the cell map
-    index = std::distance(mapsx.begin(), it);
-    // decrease the index to access the last element
-    if (index == mapsx.size()) {
-      index += -1;
-    }
-    bool underFlow = ((index + step) < 0);
-    bool overFlow = ((index + step) > mapsx.size() - 1);
-    while (underFlow || overFlow) {
-      std::vector<double> dis(2);
-
-      dis[0] = faceXY[0] - mapsx[index + step];
-      dis[1] = faceXY[1] - mapsy[index + step];
-
-      float celldis = sqrt(pow(dis[0], 2) + pow(dis[1], 2));
-
-      if (celldis <= cell_radius) {
-        inside = true;
-        break;
-      }
-
-      if ((abs(dis[0]) > 5 && up == 0) || index + step == mapsx.size() - 1) {
-        up = 1;
-        step = 0;
-      } else if ((abs(dis[0]) > 5 && up == 1) ||
-                 (index + step == 0 && up == 1)) {
-        break;
-      }
-
-      if (up == 0) {
-        step += 1;
-      } else {
-        step += -1;
-      }
-    }
+  // At module level
+  const auto isFiducialInModule = geometry_->isFiducialInModule(
+      drifted_recoil_x, drifted_recoil_y, recoil_layer_index);
+  if (isFiducialInModule) {
+    const auto ecalID = geometry_->getID(drifted_recoil_x, drifted_recoil_y,
+                                         recoil_layer_index);
+    // If fiducial at module level, check at cell level
+    inside =
+        geometry_->isFiducialInCell(drifted_recoil_x, drifted_recoil_y,
+                                    recoil_layer_index, ecalID.getModuleID());
   }
 
+  if (!inside) {
+    ldmx_log(debug) << "This event is non-fiducial in ECAL";
+  }
+
+  // ------------------------------------------------------
   // MIP tracking starts here
 
   /* Goal:  Calculate
@@ -800,6 +747,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     photonTerritoryHits_ = nReadoutHits_;
   }
 
+  // ------------------------------------------------------
   // Find straight MIP tracks:
 
   std::sort(trackingHitList.begin(), trackingHitList.end(),
@@ -971,8 +919,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
   nStraightTracks_ = track_list.size();
   // print the track list
-  ldmx_log(debug) << "Straight tracks found (after merge): "
-                  << nStraightTracks_;
+  ldmx_log(info) << "Straight tracks found (after merge): " << nStraightTracks_;
   for (int track_i = 0; track_i < track_list.size(); track_i++) {
     ldmx_log(debug) << "Track " << track_i << ":";
     for (int hit_i = 0; hit_i < track_list[track_i].size(); hit_i++) {
@@ -985,8 +932,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(debug) << "Finding linreg tracks from " << trackingHitList.size()
-                  << " hits";
+  ldmx_log(info) << "Finding linreg tracks from " << trackingHitList.size()
+                 << " hits";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     int track[34];
@@ -1113,9 +1060,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
   }  // end loop on all hits
 
-  ldmx_log(debug) << "  MIP tracking completed; found " << nStraightTracks_
-                  << " straight tracks and " << nLinregTracks_
-                  << " lin-reg tracks";
+  ldmx_log(info) << "  MIP tracking completed; found " << nStraightTracks_
+                 << " straight tracks and " << nLinregTracks_
+                 << " lin-reg tracks";
 
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
@@ -1202,8 +1149,8 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
     }
   }
   if (sumEdep > 0) showerRMS = showerRMS / sumEdep;
-  return ldmx::EcalID(0, returnCellId.module(),
-                      returnCellId.cell());  // flatten
+  // flatten
+  return ldmx::EcalID(0, returnCellId.module(), returnCellId.cell());
 }
 
 /**
