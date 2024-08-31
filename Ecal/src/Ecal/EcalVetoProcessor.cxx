@@ -771,7 +771,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(debug) << "====== END OF Tracking hit list ======";
   }
 
-  float cellWidth = 8.7;
+  // in v14 that this is 2*4.17 mm
+  float cellWidth = 2 * geometry_->getCellMinR();
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // list of hit numbers in track (34 = maximum theoretical length)
     int track[34];
@@ -919,7 +920,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
   nStraightTracks_ = track_list.size();
   // print the track list
-  ldmx_log(info) << "Straight tracks found (after merge): " << nStraightTracks_;
+  ldmx_log(debug) << "Straight tracks found (after merge): "
+                  << nStraightTracks_;
   for (int track_i = 0; track_i < track_list.size(); track_i++) {
     ldmx_log(debug) << "Track " << track_i << ":";
     for (int hit_i = 0; hit_i < track_list[track_i].size(); hit_i++) {
@@ -932,8 +934,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(info) << "Finding linreg tracks from " << trackingHitList.size()
-                 << " hits";
+  ldmx_log(debug) << "Finding linreg tracks from " << trackingHitList.size()
+                  << " hits";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     int track[34];
@@ -1090,6 +1092,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
     result.setDiscValue(pred);
     ldmx_log(debug) << "  The pred > bdtCutVal = " << (pred > bdtCutVal_);
+
+    // Persist in the event if the recoil ele is fiducial
+    result.setFiducial(inside);
 
     // If the event passes the veto, keep it. Otherwise,
     // drop the event.
