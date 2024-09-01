@@ -83,9 +83,11 @@ class SeedFinderProcessor(Producer):
         self.d0min = 20.
         self.d0max = 20.
         self.z0max = 60.
+        self.phicut = 0.1
+        self.thetacut = 0.2
         self.strategies = []
         self.input_hits_collection = 'TaggerSimHits'
-        self.out_seed_collection = 'SeedTracks'
+        self.out_seed_collection = 'SeedTracks' 
         
 
 class CKFProcessor(Producer):
@@ -190,8 +192,7 @@ class CKFProcessor(Producer):
         self.min_hits = 6
         self.debug = False
         self.use_score_based_solver = False
-
-
+        self.outlier_pval_ = 3.84
 
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
