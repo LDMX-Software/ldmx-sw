@@ -63,15 +63,6 @@ void QIEDecoder::produce(framework::Event &event) {
   ldmx_log(debug) << "QIEDecoder: produce() starts! Event number: "
                   << event.getEventHeader().getEventNumber();
 
-  //	ldmx::EventHeader *eh = (ldmx::EventHeader*)event.getEventHeaderPtr();
-  // eh->setIsRealData(isRealData_); //doesn't help
-
-  /*   // comment for now, requires pushing change ot EventHeader
-  event.getEventHeader().setIsRealData(isRealData_);
-  ldmx_log(debug) << "Decoder bool isRealData = " << isRealData_ << " and after
-  attempt of setting it, event header returns " <<
-  event.getEventHeader().isRealData();
-  */
   // turns out this need to be configurable for now, to read real data
   int nSamp = nSamples_;  // QIEStream::NUM_SAMPLES ;
   ldmx_log(debug) << "num samples = " << nSamp;
@@ -127,18 +118,15 @@ void QIEDecoder::produce(framework::Event &event) {
 
   int sigBitsSkip = 6;  // the first 6 bits are part of something else.
   int divisor = TMath::Power(2, 32 - sigBitsSkip);
-  timeSpill =
-      timeSpill % divisor;  // remove them by taking remainder in division by
-                            // the values of the last skipped bit
-  // timeSpill=timeSpill/spillTimeConv_;
+  // remove them by taking remainder in division by
+  // the values of the last skipped bit
+  timeSpill = timeSpill % divisor;
   ldmx_log(debug) << "After taking it mod 2^" << 32 - sigBitsSkip
                   << " (which is " << divisor << ", spill time is "
                   << timeSpill;
   event.getEventHeader().setIntParameter("timeSinceSpill", timeSpill);
-  //  event.getEventHeader().setTimeSinceSpill(timeSpill); //not working
 
   TTimeStamp *timeStamp = new TTimeStamp(timeEpoch);
-  //  timeStamp->SetNanoSec(timeClock); //not sure about this one...
   event.getEventHeader().setTimestamp(*timeStamp);
 
   // trigger ID event number
@@ -155,9 +143,7 @@ void QIEDecoder::produce(framework::Event &event) {
   }
 
   //  ldmx_log(debug) << " got triggerID " << std::bitset<16>(triggerID) ;
-  //  //eventStream.at(0);
-  ldmx_log(debug) << " got triggerID "
-                  << std::bitset<32>(triggerID);  // eventStream.at(0);
+  ldmx_log(debug) << " got triggerID " << std::bitset<32>(triggerID);
 
   if (triggerID != event.getEventHeader().getEventNumber()) {
     // this probably only applies to digi emulation,
@@ -179,17 +165,18 @@ void QIEDecoder::produce(framework::Event &event) {
   */
   uint8_t flags = eventStream.at(QIEStream::ERROR_POS);
 
-  bool isCIDskipped{(flags >> QIEStream::CID_SKIP_POS) &
-                    mask8<QIEStream::FLAG_SIZE_BITS>::m};
-  bool isCIDunsync{(flags >> QIEStream::CID_UNSYNC_POS) &
-                   mask8<QIEStream::FLAG_SIZE_BITS>::m};
-  bool isCRC1malformed{(flags >> QIEStream::CRC1_ERR_POS) &
-                       mask8<QIEStream::FLAG_SIZE_BITS>::m};
-  bool isCRC0malformed{(flags >> QIEStream::CRC0_ERR_POS) &
-                       mask8<QIEStream::FLAG_SIZE_BITS>::m};
+  bool isCIDskipped{static_cast<bool>((flags >> QIEStream::CID_SKIP_POS) &
+                                      mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  bool isCIDunsync{static_cast<bool>((flags >> QIEStream::CID_UNSYNC_POS) &
+                                     mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  bool isCRC1malformed{static_cast<bool>((flags >> QIEStream::CRC1_ERR_POS) &
+                                         mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  bool isCRC0malformed{static_cast<bool>((flags >> QIEStream::CRC0_ERR_POS) &
+                                         mask8<QIEStream::FLAG_SIZE_BITS>::m)};
   // checksum
-  uint8_t referenceChecksum = 0;  // really, this is just empty for now. TODO>
-                                  // implement a checksum set/get
+  // really, this is just empty for now.
+  // TODO: implement a checksum set/get
+  uint8_t referenceChecksum = 0;
   int checksum{(flags >> QIEStream::CHECKSUM_POS) &
                mask8<QIEStream::CHECKSUM_SIZE_BITS>::
                    m};  // eventStream.at(QIEStream::CRC0_ERR_POS)
