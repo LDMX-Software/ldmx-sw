@@ -796,8 +796,10 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     ldmx_log(debug) << "====== END OF Tracking hit list ======";
   }
 
-  // in v14 that this is 2*4.17 mm
-  float cellWidth = 2 * geometry_->getCellMinR();
+  // in v14 minR is 4.17 mm
+  // while maxR is 4.81 mm
+  float cellWidth = 2 * geometry_->getCellMaxR();
+  std::cout << " cellWidth " << cellWidth << std::endl;
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // list of hit numbers in track (34 = maximum theoretical length)
     int track[34];
