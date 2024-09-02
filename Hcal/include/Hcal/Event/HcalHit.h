@@ -226,7 +226,7 @@ class HcalHit : public ldmx::CalorimeterHit {
   /**
    * The ROOT class definition.
    */
-  ClassDef(HcalHit, 2);
+  ClassDef(HcalHit, 3);
 };
 }  // namespace ldmx
 
