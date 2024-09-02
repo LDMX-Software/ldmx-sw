@@ -200,7 +200,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
   property
   */
 
-  ClassDef(TestBeamHit, 2);
+  ClassDef(TestBeamHit, 3);
 
 };  // TestBeamHit
 
