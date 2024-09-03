@@ -515,10 +515,10 @@ void ScoreBasedAmbiguitySolver::configure(framework::config::Parameters& paramet
 
     useAmbiguityFunction_ =  parameters.getParameter<bool>("useAmbiguityFunction", false);
 
-    std::vector<int> hitsScoreWeight_det = parameters.getParameter<std::vector<int>>("hitsScoreWeight");
-    std::vector<int> holesScoreWeight_det = parameters.getParameter<std::vector<int>>("holesScoreWeight");
-    std::vector<int> outliersScoreWeight_det = parameters.getParameter<std::vector<int>>("outliersScoreWeight");
-    std::vector<int> otherScoreWeight_det = parameters.getParameter<std::vector<int>>("otherScoreWeight");
+    std::vector<double> hitsScoreWeight_det = parameters.getParameter<std::vector<double>>("hitsScoreWeight");
+    std::vector<double> holesScoreWeight_det = parameters.getParameter<std::vector<double>>("holesScoreWeight");
+    std::vector<double> outliersScoreWeight_det = parameters.getParameter<std::vector<double>>("outliersScoreWeight");
+    std::vector<double> otherScoreWeight_det = parameters.getParameter<std::vector<double>>("otherScoreWeight");
 
     std::vector<int> minHits_det = parameters.getParameter<std::vector<int>>("minHits");
     std::vector<int> maxHits_det = parameters.getParameter<std::vector<int>>("maxHits");

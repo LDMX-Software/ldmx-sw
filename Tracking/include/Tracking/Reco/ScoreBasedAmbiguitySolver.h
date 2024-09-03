@@ -144,10 +144,10 @@ class ScoreBasedAmbiguitySolver final : public TrackingGeometryUser {
 
   private:
     struct DetectorConfig {
-    int hitsScoreWeight = 0;
-    int holesScoreWeight = 0;
-    int outliersScoreWeight = 0;
-    int otherScoreWeight = 0;
+    double hitsScoreWeight = 0;
+    double holesScoreWeight = 0;
+    double outliersScoreWeight = 0;
+    double otherScoreWeight = 0;
 
     int minHits = 0;
     int maxHits = 0;
