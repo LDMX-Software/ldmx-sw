@@ -74,6 +74,9 @@ void ElectronCounter2::produce(framework::Event& event) {
     // TODO: Optimise the Energy and PE electron predictions.
     // Known issues:
     //       - PE prediction tends to severly overcount and is pretty much useless atm
+    //          * A probable cause is the wide spread in PE values of a track.
+    //            Sometimes that is good as it can detect merged tracks,
+    //            but it also catches single electron tracks with high PE count.
     //       - Energy prediction is a very good veto, but can probably be tweaked a bit
 
 
@@ -174,8 +177,8 @@ void ElectronCounter2::produce(framework::Event& event) {
         nElectrons = 0;
       }
     }
-    // If Ecal and TS agree and there are tracks/clusters
-    else if (nElectronsTS == nElectronsEcal) {
+    // If Ecal Energy and TS agree and there are tracks/clusters
+    else if (nElectronsTS == (int)std::round(nElectronsEnergy) && nElectronsTS != 0) {
       // TODO: - There are cases where the Ecal and TS guesses the same and it is wrong.
       //         A very common case is that it is a 2e event and both guess 1e. The code
       //         below tries to solve it by looking at if there is way more energy than predicted
@@ -185,20 +188,35 @@ void ElectronCounter2::produce(framework::Event& event) {
 
       // Check if there is risk of undercounting
       // Could lead to overcounting, but can be prevented by increasing energy and PE needed for min electrons
-      if ((nElectronsEnergy - nElectronsTS) > 2. &&
-          (nElectronsPE - nElectronsTS) > 3.) {
-        nElectrons = nElectronsTS + 1;
-      }
-      // Else this is the correct prediction
-      else {
-        nElectrons = nElectronsTS;
-      }
+
+      // if ((nElectronsEnergy - nElectronsTS) > 4. &&
+      //     (nElectronsPE - nElectronsTS) > 6.) {
+      //   nElectrons = nElectronsTS + 2;
+      // } else if ((nElectronsEnergy - nElectronsTS) > 2. &&
+      //     (nElectronsPE - nElectronsTS) > 3.) {
+      //   nElectrons = nElectronsTS + 1;
+      // }
+      // // Else this is the correct prediction
+      // else {
+      //   nElectrons = nElectronsTS;
+      // }
+
+      nElectrons = nElectronsTS;
     }
-    // If Ecal and TS do not agree
+    // If Ecal Energy and TS do not agree
     else {
       // If there are no TS tracks, but Ecal clusters exists
       if (nElectronsTS == 0 && nElectronsEcal != 0) {
-        nElectrons = std::min((int)std::round(nElectronsEnergy), nElectronsEcal);
+        if ((int)std::round(nElectronsEnergy) <= nElectronsEcal) {
+          nElectrons = (int)std::round(nElectronsEnergy);
+        } else {
+          if ((int)std::round(nElectronsEnergy) > 1) {
+            nElectrons = (int)std::round(nElectronsEnergy) - 1;
+          } else {
+            nElectrons = (int)std::round(nElectronsEnergy);
+          }
+        }
+        
       }
       // If there are no Ecal clusters, but TS tracks exists
       else if (nElectronsEcal == 0 && nElectronsTS != 0) {
@@ -212,30 +230,39 @@ void ElectronCounter2::produce(framework::Event& event) {
       // If not same prediction and both non-zero predictions
       // This is probably where the most overcounting could appear
       else {
-        // If TS predicts less than Ecal, probably no overcounting
-        // However undercounting could be a problem
-        if (nElectronsTS < nElectronsEcal) {
+        // If TS predicts less than Ecal Energy,
+        // there could be overcounting in Ecal energy
+        if (nElectronsTS < (int)std::round(nElectronsEnergy)) {
           // Check if TS undercounts and try to catch some of it
           // without overcounting
           // TODO: - change PE TS comparison to >3. instaed of >2. and compare, maybe not needed?
           //       - Optimise. A lot can be done here to reduce undercounting
-          if ((nElectronsEnergy - nElectronsTS) > 2. &&
-              (nElectronsPE - nElectronsTS) > 2.) {
-                nElectrons = nElectronsTS + 1;
+          // if ((nElectronsEnergy - nElectronsTS) > 2. &&
+          //     (nElectronsPE - nElectronsTS) > 2.) {
+          //       nElectrons = nElectronsTS + 1;
+          // } else {
+          //   nElectrons = nElectronsTS;
+          // }
+          if ((int)std::round(nElectronsEnergy) == nElectronsEcal ||
+            (int)std::round(nElectronsEnergy) == (int)std::round(nElectronsPE)) {
+            nElectrons = nElectronsEnergy;
           } else {
             nElectrons = nElectronsTS;
           }
         }
         // If Ecal predicts less than TS, undercounting should not be a problem
         // However overcounting could in extreme cases be a problem
+        // else {
+        //   // Check if TS overcounts
+        //   if ((nElectronsTS - std::round(nElectronsEnergy)) > 0 ||
+        //       (nElectronsTS - std::round(nElectronsPE)) > 0) {
+        //     nElectrons = nElectronsTS - 1;
+        //   } else {
+        //     nElectrons = nElectronsTS;
+        //   }
+        // }
         else {
-          // Check if TS overcounts
-          if ((nElectronsTS - std::round(nElectronsEnergy)) > 0 ||
-              (nElectronsTS - std::round(nElectronsPE)) > 0) {
-            nElectrons = nElectronsTS - 1;
-          } else {
-            nElectrons = nElectronsTS;
-          }
+          nElectrons = nElectronsTS;
         }
       }
     }
