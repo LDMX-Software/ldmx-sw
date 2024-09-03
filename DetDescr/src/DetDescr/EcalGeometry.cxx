@@ -90,7 +90,7 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
     std::cout << "[EcalGeometry] : fully constructed" << std::endl;
 }
 
-EcalID EcalGeometry::getID(double x, double y, double z) const {
+EcalID EcalGeometry::getID(double x, double y, double z, bool fallible) const {
   static const double tolerance = 0.3;  // thickness of Si
   int layer_id{-1};
   for (const auto& [lid, layer_xyz] : layer_pos_xy_) {
@@ -100,14 +100,19 @@ EcalID EcalGeometry::getID(double x, double y, double z) const {
     }
   }
   if (layer_id < 0) {
-    EXCEPTION_RAISE("BadConf", "z = " + std::to_string(z) +
-                                   " mm is not within any"
-                                   " of the configured layers.");
+    if (fallible) {
+      return ldmx::EcalID(0);
+    } else {
+      EXCEPTION_RAISE("BadConf", "z = " + std::to_string(z) +
+                                     " mm is not within any"
+                                     " of the configured layers.");
+    }
   }
-  return getID(x, y, layer_id);
+  return getID(x, y, layer_id, fallible);
 }
 
-EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
+EcalID EcalGeometry::getID(double x, double y, int layer_id,
+                           bool fallible) const {
   // now assume we know the layer
   // shift to center of layer
   // and convert to flower coordinates
@@ -129,21 +134,25 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id) const {
   }
 
   if (module_id < 0) {
-    EXCEPTION_RAISE(
-        "BadConf",
-        TString::Format(
-            "Coordinates relative to layer (p,q) = (%.2f, %.2f) mm "
-            "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
-            "are not inside any module.",
-            p, q, x, y, layer_id)
-            .Data());
+    if (fallible) {
+      return ldmx::EcalID(0);
+    } else {
+      EXCEPTION_RAISE(
+          "BadConf",
+          TString::Format(
+              "Coordinates relative to layer (p,q) = (%.2f, %.2f) mm "
+              "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+              "are not inside any module.",
+              p, q, x, y, layer_id)
+              .Data());
+    }
   }
 
   return getID(x, y, layer_id, module_id);
 }
 
-EcalID EcalGeometry::getID(double x, double y, int layer_id,
-                           int module_id) const {
+EcalID EcalGeometry::getID(double x, double y, int layer_id, int module_id,
+                           bool fallible) const {
   // now assume we know the layer and module
   // shift to center of layer and then center of module
   double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) -
@@ -158,14 +167,18 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id,
   int cell_id = cell_id_in_module_.FindBin(p, q) - 1;
 
   if (cell_id < 0) {
-    EXCEPTION_RAISE(
-        "BadConf",
-        TString::Format(
-            "Relative cell coordinates (%.2f, %.2f) mm "
-            "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
-            "and module = %d are outside module hexagon",
-            p, q, x, y, layer_id, module_id)
-            .Data());
+    if (fallible) {
+      return ldmx::EcalID(0);
+    } else {
+      EXCEPTION_RAISE(
+          "BadConf",
+          TString::Format(
+              "Relative cell coordinates (%.2f, %.2f) mm "
+              "derived from world coordinates (%.2f, %.2f) mm with layer = %d "
+              "and module = %d are outside module hexagon",
+              p, q, x, y, layer_id, module_id)
+              .Data());
+    }
   }
 
   return EcalID(layer_id, module_id, cell_id);
@@ -627,56 +640,6 @@ bool EcalGeometry::isInside(double normX, double normY) const {
                      dotProd)
               << std::endl;
   return (dotProd > 0.);
-}
-
-bool EcalGeometry::isFiducialInModule(double x, double y, int layer_id) const {
-  // now assume we know the layer
-  // shift to center of layer
-  // and convert to flower coordinates
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id))},
-      q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
-
-  // deduce module ID
-  //    there are only 7 modules so we just loop through them
-  //    all and pick out the module ID that we are inside of
-
-  int module_id{-1};
-  for (auto const& [mid, module_xy] : module_pos_xy_) {
-    double probe_x{p - module_xy.first}, probe_y{q - module_xy.second};
-    if (cornersSideUp_) rotate(probe_x, probe_y);
-    if (isInside(probe_x / moduleR_, probe_y / moduleR_)) {
-      module_id = mid;
-      break;
-    }
-  }
-
-  if (module_id < 0) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-bool EcalGeometry::isFiducialInCell(double x, double y, int layer_id,
-                                    int module_id) const {
-  // now assume we know the layer and module
-  // shift to center of layer and then center of module
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) -
-           module_pos_xy_.at(module_id).first},
-      q{y - std::get<1>(layer_pos_xy_.at(layer_id)) -
-        module_pos_xy_.at(module_id).second};
-
-  // need to rotate
-  if (cornersSideUp_) rotate(p, q);
-
-  // deduce cell ID
-  int cell_id = cell_id_in_module_.FindBin(p, q) - 1;
-
-  if (cell_id < 0) {
-    return false;
-  } else {
-    return true;
-  }
 }
 
 }  // namespace ldmx
