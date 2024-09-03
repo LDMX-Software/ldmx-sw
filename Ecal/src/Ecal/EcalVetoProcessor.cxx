@@ -669,20 +669,20 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Check if it's fiducial
   bool inside{false};
   // At module level
-  const auto isFiducialInModule = geometry_->isFiducialInModule(
-      drifted_recoil_x, drifted_recoil_y, recoil_layer_index);
-  if (isFiducialInModule) {
-    const auto ecalID = geometry_->getID(drifted_recoil_x, drifted_recoil_y,
-                                         recoil_layer_index);
+  const auto ecalID = geometry_->getID(drifted_recoil_x, drifted_recoil_y,
+                                       recoil_layer_index, true);
+  if (!ecalID.null()) {
     // If fiducial at module level, check at cell level
-    std::cout << " ecalID " << ecalID << std::endl;
-    inside =
-        geometry_->isFiducialInCell(drifted_recoil_x, drifted_recoil_y,
-                                    recoil_layer_index, ecalID.getModuleID());
+    const auto cellID =
+        geometry_->getID(drifted_recoil_x, drifted_recoil_y, recoil_layer_index,
+                         ecalID.getModuleID(), true);
+    if (!cellID.null()) {
+      inside = true;
+    }
   }
 
   if (!inside) {
-    ldmx_log(debug) << "This event is non-fiducial in ECAL";
+    ldmx_log(info) << "This event is non-fiducial in ECAL";
   }
 
   // ------------------------------------------------------
@@ -799,7 +799,6 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // in v14 minR is 4.17 mm
   // while maxR is 4.81 mm
   float cellWidth = 2 * geometry_->getCellMaxR();
-  std::cout << " cellWidth " << cellWidth << std::endl;
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // list of hit numbers in track (34 = maximum theoretical length)
     int track[34];
