@@ -759,9 +759,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     p_traj_end = TVector3(
         1000, 1000, geometry_->getZPosition((nEcalLayers_ - 1)));  // 1000);
     /*ensures event will not be vetoed by angle/separation cut */
-    epAng_ = 3.0 + 1.0;
-    epSep_ = 10.0 + 1.0;
-    epDot_ = 1.0;  // default to 1.0 (?)
+    epAng_ = 999.;
+    epSep_ = 999.;
+    epDot_ = 999.;
   }
 
   // Near photon step:  Find the first layer of the ECal where a hit near the
