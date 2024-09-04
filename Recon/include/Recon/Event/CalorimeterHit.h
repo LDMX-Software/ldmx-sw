@@ -32,7 +32,7 @@ class CalorimeterHit {
   /**
    * Class destructor.
    */
-  virtual ~CalorimeterHit() {}
+  virtual ~CalorimeterHit() = default;
 
   /**
    * Clear the data in the object.
@@ -167,21 +167,21 @@ class CalorimeterHit {
   float time_{0};
 
   /** X Position of the hit */
-  float xpos_;
+  float xpos_{-9999.};
 
   /** Y Position of the hit */
-  float ypos_;
+  float ypos_{-9999.};
 
   /** Z Position of the hit */
-  float zpos_;
+  float zpos_{-9999.};
 
   /** Is this a noise hit? */
-  bool isNoise_;
+  bool isNoise_{false};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(CalorimeterHit, 1);
+  ClassDef(CalorimeterHit, 2);
 };
 }  // namespace ldmx
 
