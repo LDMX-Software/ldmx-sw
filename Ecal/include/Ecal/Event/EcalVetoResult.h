@@ -80,7 +80,10 @@ class EcalVetoResult {
 
   /** Checks if the event passes the Ecal veto. */
   bool passesVeto() const { return passesVeto_; }
+
   float getDisc() const { return discValue_; }
+
+  bool getFiducial() const { return fiducial_; }
 
   int getDeepestLayerHit() const { return deepestLayerHit_; }
 
@@ -208,6 +211,7 @@ class EcalVetoResult {
 
   void setVetoResult(bool passesVeto) { passesVeto_ = passesVeto; }
   void setDiscValue(float discValue) { discValue_ = discValue; }
+  void setFiducial(bool fiducial) { fiducial_ = fiducial; }
 
   /** Return the momentum of the recoil at the Ecal face. */
   const std::vector<double> getRecoilMomentum() const {
@@ -301,7 +305,11 @@ class EcalVetoResult {
   std::vector<std::vector<float>> oContLayerMean_;
   std::vector<std::vector<float>> oContLayerStd_;
 
+  /** discriminator value from the BDT */
   float discValue_{0};
+
+  /** is the recoil electron fiducial in ECAL?*/
+  bool fiducial_{false};
 
   /** px of recoil electron at the Ecal face. */
   double recoilPx_{-9999};
@@ -320,7 +328,7 @@ class EcalVetoResult {
 
   std::vector<float> ecalLayerEdepReadout_;
 
-  ClassDef(EcalVetoResult, 6);
+  ClassDef(EcalVetoResult, 7);
 };
 }  // namespace ldmx
 

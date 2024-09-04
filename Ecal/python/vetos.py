@@ -14,7 +14,7 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
     def __init__(self,name = 'ecalVeto') :
         super().__init__(name,"ecal::EcalVetoProcessor",'Ecal')
 
-        from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath, makeRoCPath
+        from LDMX.Ecal.makePath import makeBDTPath, makeRoCPath
         self.num_ecal_layers = 34
         self.do_bdt = True
         self.verbose = False
@@ -22,7 +22,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.bdt_file = makeBDTPath( "segmip" )
         self.roc_file = makeRoCPath( 'RoC_v14_8gev' )
         self.beam_energy = 8000.0  # in MeV
-        self.cellxy_file = makeCellXYPath()
         self.disc_cut = 0.99741
         self.collection_name = "EcalVeto"
         self.rec_coll_name = 'EcalRecHits'

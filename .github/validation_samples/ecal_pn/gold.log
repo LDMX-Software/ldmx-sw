@@ -1,172 +1,39 @@
 ---- LDMXSW: Loading configuration --------
-[2024-08-21 14:12:50.409077] [0x00007f9aa6bffbc0] [info]    Seed Smearing is set to false
-[2024-08-21 14:12:50.409135] [0x00007f9aa6bffbc0] [info]     use_extrapolate_location ? true
-[2024-08-21 14:12:50.409139] [0x00007f9aa6bffbc0] [info]     use_seed_perigee ? false
-[2024-08-21 14:12:50.409148] [0x00007f9aa6bffbc0] [info]     use_extrapolate_location ? true
-[2024-08-21 14:12:50.409150] [0x00007f9aa6bffbc0] [info]     use_seed_perigee ? false
-[2024-08-21 14:12:53.670785] [0x00007f9aa6bffbc0] [info]    ElectronCounter is using parameters:  
+[2024-09-03 15:40:56.515722] [0x00007f77739c5bc0] [info]    Seed Smearing is set to false
+[2024-09-03 15:40:56.515785] [0x00007f77739c5bc0] [info]     use_extrapolate_location ? true
+[2024-09-03 15:40:56.515789] [0x00007f77739c5bc0] [info]     use_seed_perigee ? false
+[2024-09-03 15:40:56.515799] [0x00007f77739c5bc0] [info]     use_extrapolate_location ? true
+[2024-09-03 15:40:56.515801] [0x00007f77739c5bc0] [info]     use_seed_perigee ? false
+[2024-09-03 15:40:59.809302] [0x00007f77739c5bc0] [info]    ElectronCounter is using parameters:  
 	input_collection = TriggerPadTracksY 
 	input_pass_name =  
 	output_collection = BeamElectronCount 
 	simulated_electron_number = 1 
 	use_simulated_electron_number = 0
-[2024-08-21 14:12:53.694584] [0x00007f9aa6bffbc0] [info]    Track Collection RecoilTracks
+[2024-09-03 15:40:59.833660] [0x00007f77739c5bc0] [info]    Track Collection RecoilRecoSeeds
 
-[2024-08-21 14:12:53.694607] [0x00007f9aa6bffbc0] [info]    Truth Collection RecoilTruthTracks
+[2024-09-03 15:40:59.833685] [0x00007f77739c5bc0] [info]    Truth Collection RecoilTruthTracks
 
-In TrigScintDQM::configure, got parameters TriggerPad1SimHits and pad1
-In TrigScintDQM::configure, got parameters TriggerPad2SimHits and pad2
-In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
-In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
-In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
-In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
-[2024-08-21 14:12:53.697101] [0x00007f9aa6bffbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
-[2024-08-21 14:12:53.697110] [0x00007f9aa6bffbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
-[2024-08-21 14:12:53.697117] [0x00007f9aa6bffbc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
-[2024-08-21 14:12:53.697129] [0x00007f9aa6bffbc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+[2024-09-03 15:40:59.856148] [0x00007f77739c5bc0] [info]    Track Collection RecoilTracks
+
+[2024-09-03 15:40:59.856172] [0x00007f77739c5bc0] [info]    Truth Collection RecoilTruthTracks
+
+[2024-09-03 15:40:59.858752] [0x00007f77739c5bc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad1SimHits and pad1
+[2024-09-03 15:40:59.858765] [0x00007f77739c5bc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad2SimHits and pad2
+[2024-09-03 15:40:59.858769] [0x00007f77739c5bc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
+[2024-09-03 15:40:59.858774] [0x00007f77739c5bc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
+[2024-09-03 15:40:59.858777] [0x00007f77739c5bc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
+[2024-09-03 15:40:59.858781] [0x00007f77739c5bc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
+[2024-09-03 15:40:59.858786] [0x00007f77739c5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[2024-09-03 15:40:59.858794] [0x00007f77739c5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[2024-09-03 15:40:59.858800] [0x00007f77739c5bc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[2024-09-03 15:40:59.858808] [0x00007f77739c5bc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ RunManager ]: Parallel worlds physics list has been registered.
 [ RunManager ]: Biasing enabled with 1 operator(s).
 [ RunManager ]: Biasing operator 'ecal_bias_pn' set to bias gamma
 [ RunManager ]: Parallel worlds have been enabled.
-[ DetectorConstruction ] : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
-[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
-[ DetectorConstruction ] : Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
-[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintYVolume
-[ DetectorConstruction ] : Attaching hcal_sd to back_hcal_scintXVolume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_0Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_0Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_1Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_1Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_2Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_2Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintX_3Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintY_3Volume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZXVolume
-[ DetectorConstruction ] : Attaching hcal_sd to side_hcal_scintZYVolume
-[ DetectorConstruction ] : Attaching ecal_sd to Si_volume
-[ DetectorConstruction ] : Attaching trig_scint_Target_sd to target
-[ DetectorConstruction ] : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
-[ DetectorConstruction ] : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
-[ DetectorConstruction ] : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_front_back
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_top_bot
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_left_right
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_front_back
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_top_bot
-[ DetectorConstruction ] : Attaching ecal_sp to sp_ecal_left_right
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_front_back
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_top_bot
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_left_right
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_front_back
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_top_bot
-[ DetectorConstruction ] : Attaching hcal_sp to sp_hcal_left_right
-[ DetectorConstruction ] : Attaching target_sp to sp_target
-[ DetectorConstruction ] : Attaching target_sp to sp_target
-[ DetectorConstruction ] : Attaching target_sp to sp_target
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching trigScint_sp to sp_trigScint
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching tracker_sp to sp_recoil
-[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_top_bot
-[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_left_right
-[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_top_bot
-[ DetectorConstruction ] : Attaching magnet_sp to sp_magnet_gap_left_right
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume C_volume_CarbonCoolingPlane
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume nohole_motherboard5_assembly
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume nohole_motherboard6_assembly
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume PCB_volume
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume Glue_volume
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume Si_volume
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume GlueThick_volume
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume CarbonBasePlate_volume
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_0
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_0
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_0
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_1
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_1
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_1
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_2
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_2
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_2
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_3
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_3
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_3
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_4
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_4
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_4
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_5
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_5
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_5
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_6
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_6
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_6
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_7
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_7
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_7
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_8
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_8
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_8
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_9
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_9
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_9
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_10
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_10
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_10
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_11
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_11
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_11
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_12
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_12
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_12
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_13
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_13
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_13
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_14
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_14
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_14
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume strongback_bar_volume_15
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_front_volume_15
-[ DetectorConstruction ]: Attaching biasing operator ecal_bias_pn to volume W_cooling_volume_15
-[ ParallelWorld ]: Adding : sp_target_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_target_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_trigScint_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_recoil_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_magnet_gap_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_magnet_gap_left_right_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_magnet_gap_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_magnet_gap_left_right_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_front_back_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_left_right_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_front_back_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_ecal_left_right_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_front_back_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_left_right_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_front_back_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_top_bot_PV to parallel world.
-[ ParallelWorld ]: Adding : sp_hcal_left_right_PV to parallel world.
 [ XsecBiasingOperator ]: Biasing particles of type gamma
  [ DigitizationProcessor ] 1 : Loading the tracking geometry
  [ DigitizationProcessor ] 1 : Initialization done
@@ -174,12 +41,6 @@ In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
  [ DigitizationProcessorRecoil ] 1 : Initialization done
  [ Tagger_TrackFinder ] 1 : use1Dmeasurements = true
  [ Recoil_TrackFinder ] 1 : use1Dmeasurements = true
-Process starts!
-Process starts!
-Process starts!
-Process starts!
-Process starts!
-Process starts!
  [ Tagger_TrackFinder ] 1 : events processed:1000
  [ Recoil_TrackFinder ] 1 : events processed:1000
  [ Tagger_TrackFinder ] 1 : events processed:2000
@@ -230,7 +91,7 @@ Process starts!
     ldmx-sw revision = 
 }
 [ Simulator ] : Started 1303948 events to produce 10000 events.
- [ SeedFinderProcessor ] 1 : AVG Time/Event: 0.0986296 ms
+ [ SeedFinderProcessor ] 1 : AVG Time/Event: 0.1006 ms
  [ SeedFinderProcessor ] 1 : Total Seeds/Events: 10418/10000
  [ SeedFinderProcessor ] 1 : Seeds discarded due to multiple hits on layers 0
  [ SeedFinderProcessor ] 1 : not enough seed points 0
@@ -241,33 +102,33 @@ Process starts!
  [ SeedFinderProcessor ] 1 :    nfailphicut=0
  [ SeedFinderProcessor ] 1 :    nfailthetacut=159
  [ SeedFinderProcessor ] 1 :    nfailz0max=170
- [ SeedRecoil ] 1 : AVG Time/Event: 0.136037 ms
- [ SeedRecoil ] 1 : Total Seeds/Events: 424/10000
+ [ SeedRecoil ] 1 : AVG Time/Event: 0.1380 ms
+ [ SeedRecoil ] 1 : Total Seeds/Events: 25516/10000
  [ SeedRecoil ] 1 : Seeds discarded due to multiple hits on layers 0
  [ SeedRecoil ] 1 : not enough seed points 0
  [ SeedRecoil ] 1 :  nfailpmin=117668
- [ SeedRecoil ] 1 :    nfailpmax=1976
- [ SeedRecoil ] 1 :    nfaild0max=4683
- [ SeedRecoil ] 1 :    nfaild0min=6334
- [ SeedRecoil ] 1 :    nfailphicut=27
- [ SeedRecoil ] 1 :    nfailthetacut=256
- [ SeedRecoil ] 1 :    nfailz0max=47572
+ [ SeedRecoil ] 1 :    nfailpmax=593
+ [ SeedRecoil ] 1 :    nfaild0max=0
+ [ SeedRecoil ] 1 :    nfaild0min=0
+ [ SeedRecoil ] 1 :    nfailphicut=3095
+ [ SeedRecoil ] 1 :    nfailthetacut=19682
+ [ SeedRecoil ] 1 :    nfailz0max=12386
  [ Tagger_TrackFinder ] 1 : found 10087 tracks  / 10418 nseeds
- [ Tagger_TrackFinder ] 1 : AVG Time/Event: 0.395085 ms
+ [ Tagger_TrackFinder ] 1 : AVG Time/Event: 0.4011 ms
  [ Tagger_TrackFinder ] 1 : Breakdown::
- [ Tagger_TrackFinder ] 1 : setup       Avg Time/Event = 0.00228943 ms
- [ Tagger_TrackFinder ] 1 : hits        Avg Time/Event = 0.0433836 ms
- [ Tagger_TrackFinder ] 1 : seeds       Avg Time/Event = 0.00342895 ms
- [ Tagger_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.00407709 ms
- [ Tagger_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.000160371 ms
- [ Tagger_TrackFinder ] 1 : result_loop Avg Time/Event = 0.339842 ms
+ [ Tagger_TrackFinder ] 1 : setup       Avg Time/Event = 0.0023 ms
+ [ Tagger_TrackFinder ] 1 : hits        Avg Time/Event = 0.0454 ms
+ [ Tagger_TrackFinder ] 1 : seeds       Avg Time/Event = 0.0032 ms
+ [ Tagger_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.0042 ms
+ [ Tagger_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.0002 ms
+ [ Tagger_TrackFinder ] 1 : result_loop Avg Time/Event = 0.3439 ms
  [ Recoil_TrackFinder ] 1 : found 10149 tracks  / 10255 nseeds
- [ Recoil_TrackFinder ] 1 : AVG Time/Event: 0.298821 ms
+ [ Recoil_TrackFinder ] 1 : AVG Time/Event: 0.3128 ms
  [ Recoil_TrackFinder ] 1 : Breakdown::
- [ Recoil_TrackFinder ] 1 : setup       Avg Time/Event = 0.000543621 ms
- [ Recoil_TrackFinder ] 1 : hits        Avg Time/Event = 0.042665 ms
- [ Recoil_TrackFinder ] 1 : seeds       Avg Time/Event = 0.00260774 ms
- [ Recoil_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.00199831 ms
- [ Recoil_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.000136034 ms
- [ Recoil_TrackFinder ] 1 : result_loop Avg Time/Event = 0.250555 ms
+ [ Recoil_TrackFinder ] 1 : setup       Avg Time/Event = 0.0008 ms
+ [ Recoil_TrackFinder ] 1 : hits        Avg Time/Event = 0.0454 ms
+ [ Recoil_TrackFinder ] 1 : seeds       Avg Time/Event = 0.0029 ms
+ [ Recoil_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.0020 ms
+ [ Recoil_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.0001 ms
+ [ Recoil_TrackFinder ] 1 : result_loop Avg Time/Event = 0.2614 ms
 ---- LDMXSW: Event processing complete  --------
