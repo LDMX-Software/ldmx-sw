@@ -59,6 +59,57 @@ def shower_feats(d : Differ, out_dir = None) :
         log.info(f'plotting {col}')
         d.plot1d(col, name, out_dir = out_dir)
 
+@plotter(hist=True,event=False)
+def mip_tracking(d : Differ, out_dir = None) :
+    """Plot ECal MIP tracking features from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_straight_tracks', 'Number of Straight Tracks'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_linreg_tracks', 'Number of Linear Regression Tracks'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_first_near_photon_layer', 'First Near Photon Layer'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_ang', 'Electron Photon Angle [degree]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_sep', 'Electron Photon Separation'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pz', 'Recoil electron p_{z}[MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pt', 'Recoil electron p_{T} [MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_x', 'Recoil electron x[mm]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_y', 'Recoil electron y [mm]'),
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+        
+
+@plotter(hist=True,event=False)
+def veto_results(d : Differ, out_dir = None) :
+    """Plot ECAL veto results from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalVetoResults/EcalVetoResults_bdt_disc', 'BDT discriminating score'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalVetoResults/EcalVetoResults_bdt_disc_log', '-log(1-BDT discriminating score)'),
+        ('EcalVetoResults/EcalVetoResults_fiducial', 'Recoil eletron fiducial')
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+
 @plotter(hist=False,event=True)
 def sim_hits(d : Differ, out_dir = None) :
     """Plot ECal-related validation plots
