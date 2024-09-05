@@ -47,8 +47,8 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_THROWS(EcalID(0x829018));
     REQUIRE_NOTHROW(EcalID(did_ecal));
     REQUIRE_NOTHROW(EcalID(did_ecal.raw()));
-
-    EcalID eid(50, 15, 500);  // choose big values to check collisions
+    // choose big values to check collisions
+    EcalID eid(50, 15, 500);
 
     REQUIRE(eid.raw() == 0x1464f1f4);
 
@@ -89,8 +89,8 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_NOTHROW(HcalID(did_hcal));
     REQUIRE_NOTHROW(HcalID(did_hcal.raw()));
 
-    HcalID hid(HcalID::LEFT, 250,
-               245);  // choose big values to check collisions
+    // choose big values to check collisions
+    HcalID hid(HcalID::LEFT, 250, 245);
 
     REQUIRE(hid.raw() == 0x1813e8f5);
 
@@ -132,10 +132,10 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_NOTHROW(TrackerID(did_tk));
     REQUIRE_NOTHROW(TrackerID(did_tk.raw()));
 
-    TrackerID tid(SD_TRACKER_TAGGER, 250,
-                  30);  // choose big values to check collisions
-    TrackerID tid2(SD_TRACKER_RECOIL, 220,
-                   17);  // choose big values to check collisions
+    // choose big values to check collisions
+    TrackerID tid(SD_TRACKER_TAGGER, 250, 30);
+    // choose big values to check collisions
+    TrackerID tid2(SD_TRACKER_RECOIL, 220, 17);
 
     REQUIRE(tid.raw() == 0x4001efa);
     REQUIRE(tid2.raw() == 0x100011dc);
@@ -173,7 +173,8 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_NOTHROW(TrigScintID(did_ts));
     REQUIRE_NOTHROW(TrigScintID(did_ts.raw()));
 
-    TrigScintID ts_id(250, 245);  // choose big values to check collisions
+    // choose big values to check collisions
+    TrigScintID ts_id(250, 245);
 
     CHECK(ts_id.raw() == 0x800faf5);
 
@@ -209,18 +210,18 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     REQUIRE_NOTHROW(SimSpecialID(did_ss));
     REQUIRE_NOTHROW(SimSpecialID(did_ss.raw()));
 
-    SimSpecialID ssid = SimSpecialID::ScoringPlaneID(
-        3210);  // choose big values to check collisions
-    SimSpecialID ssid2(SimSpecialID::SimSpecialType(9), 0xFEDCB);
+    // choose big values to check collisions
+    SimSpecialID ssid = SimSpecialID::ScoringPlaneID(3210);
+    SimSpecialID ssid2(SimSpecialID::SimSpecialType(1), 0xFEDCB);
 
     CHECK(ssid.raw() == 0x1c400c8a);
-    CHECK(ssid2.raw() == 0x1e4fedcb);
+    CHECK(ssid2.raw() == 0x1c4fedcb);
 
     REQUIRE(ssid.getSubtype() == SimSpecialID::SCORING_PLANE);
-    REQUIRE(ssid2.getSubtype() == 9);
+    REQUIRE(ssid2.getSubtype() == 1);
 
     REQUIRE(ssid.plane() == 3210);
-    REQUIRE(ssid2.plane() == -1);
+    REQUIRE(ssid2.plane() == 3531);
     REQUIRE(ssid.subtypePayload() == 3210);
     REQUIRE(ssid2.subtypePayload() == 0xfedcb);
 
@@ -228,7 +229,7 @@ TEST_CASE("DetectorID", "[DetDescr][functionality]") {
     ss << ssid << ssid2;
 
     REQUIRE(ss.str() ==
-            "SimSpecial(ScoringPlane 3210)SimSpecial(Type 9,1043915)");
+            "SimSpecial(ScoringPlane 3210)SimSpecial(ScoringPlane 3531)");
 
     DetectorIDInterpreter dii(ssid);
 
