@@ -238,8 +238,14 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.ecalRecHitPass = "" #use whatever pass is available
 
         self.build1DHistogram( "num_sim_hits_per_cell" ,
-                "Number SimHits per ECal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
+                "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
         
+        self.build1DHistogram( "num_rec_hits" ,
+                "Number of RecHits" , 100 , 0 , 300 )
+
+        self.build1DHistogram( "num_noise_hits" ,
+                "Number of noisy RecHits" , 100 , 0 , 100 )
+
         self.build1DHistogram( "total_rec_energy"      ,
                 "Total Reconstructed Energy in ECal [MeV]" , 800 , 0. , 8000. )
         

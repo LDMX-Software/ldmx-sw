@@ -7,6 +7,29 @@ import logging
 log = logging.getLogger('ecal')
 
 @plotter(hist=True,event=False)
+def digi_verify(d : Differ, out_dir = None) :
+    """Plot ECal digi verify variables from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalDigiVerify/EcalDigiVerify_num_sim_hits_per_cell', 'Number of SimHits per ECal Cell (excluding empty rec cells)'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalDigiVerify/EcalDigiVerify_num_rec_hits', 'Number of RecHits'),
+        ('EcalDigiVerify/EcalDigiVerify_num_noise_hits', 'Number of noisy RecHits'),
+        ('EcalDigiVerify/EcalDigiVerify_total_rec_energy', 'Total Reconstructed Energy in ECal [MeV]'),
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+
+@plotter(hist=True,event=False)
 def shower_feats(d : Differ, out_dir = None) :
     """Plot ECal shower features from the already created DQM histograms
 

@@ -37,10 +37,16 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
               return lhs.getID() < rhs.getID();
             });
 
-  double totalRecEnergy = 0.;
+  int numRecHits{0};
+  int numNoiseHits{0};
+  double totalRecEnergy{0.};
   for (const ldmx::EcalHit &recHit : ecalRecHits) {
+    numRecHits ++ ;
     // skip anything that digi flagged as noise
-    if (recHit.isNoise()) continue;
+    if (recHit.isNoise()) {
+      numNoiseHits++;
+continue;
+    } 
 
     int rawID = recHit.getID();
 
@@ -63,7 +69,8 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
 
     totalRecEnergy += recHit.getEnergy();
   }
-
+  histograms_.fill("num_rec_hits", numRecHits);
+  histograms_.fill("num_noise_hits", numNoiseHits);
   histograms_.fill("total_rec_energy", totalRecEnergy);
 
   if (totalRecEnergy > 6000.) {
