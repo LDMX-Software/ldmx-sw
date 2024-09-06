@@ -1,33 +1,13 @@
 ---- LDMXSW: Loading configuration --------
-[2024-09-05 14:11:01.684462] [0x00007fcc6ff0ebc0] [info]    Seed Smearing is set to false
-[2024-09-05 14:11:01.684516] [0x00007fcc6ff0ebc0] [info]     use_extrapolate_location ? true
-[2024-09-05 14:11:01.684519] [0x00007fcc6ff0ebc0] [info]     use_seed_perigee ? false
-[2024-09-05 14:11:01.684533] [0x00007fcc6ff0ebc0] [info]     use_extrapolate_location ? true
-[2024-09-05 14:11:01.684538] [0x00007fcc6ff0ebc0] [info]     use_seed_perigee ? false
-[2024-09-05 14:11:04.936275] [0x00007fcc6ff0ebc0] [info]    ElectronCounter is using parameters:  
-	input_collection = TriggerPadTracksY 
-	input_pass_name =  
-	output_collection = BeamElectronCount 
-	simulated_electron_number = 1 
-	use_simulated_electron_number = 0
-[2024-09-05 14:11:04.960251] [0x00007fcc6ff0ebc0] [info]    Track Collection RecoilRecoSeeds
-
-[2024-09-05 14:11:04.960276] [0x00007fcc6ff0ebc0] [info]    Truth Collection RecoilTruthTracks
-
-[2024-09-05 14:11:04.982066] [0x00007fcc6ff0ebc0] [info]    Track Collection RecoilTracks
-
-[2024-09-05 14:11:04.982091] [0x00007fcc6ff0ebc0] [info]    Truth Collection RecoilTruthTracks
-
-[2024-09-05 14:11:04.984543] [0x00007fcc6ff0ebc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad1SimHits and pad1
-[2024-09-05 14:11:04.984556] [0x00007fcc6ff0ebc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad2SimHits and pad2
-[2024-09-05 14:11:04.984560] [0x00007fcc6ff0ebc0] [info]    In TrigScintDQM::configure, got parameters TriggerPad3SimHits and pad3
-[2024-09-05 14:11:04.984565] [0x00007fcc6ff0ebc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad1 and pad1
-[2024-09-05 14:11:04.984570] [0x00007fcc6ff0ebc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad2 and pad2
-[2024-09-05 14:11:04.984576] [0x00007fcc6ff0ebc0] [info]    In TrigScintHitDQM::configure, got parameters trigScintDigisPad3 and pad3
-[2024-09-05 14:11:04.984585] [0x00007fcc6ff0ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
-[2024-09-05 14:11:04.984592] [0x00007fcc6ff0ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
-[2024-09-05 14:11:04.984599] [0x00007fcc6ff0ebc0] [info]    In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
-[2024-09-05 14:11:04.984606] [0x00007fcc6ff0ebc0] [info]    In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
+ [ TruthSeedProcessor ] 1 : Seed Smearing is set to false
+ [ SeedRecoilTrackerDQM ] 1 : Track Collection RecoilRecoSeeds
+ [ SeedRecoilTrackerDQM ] 1 : Truth Collection RecoilTruthTracks
+ [ RecoilTrackerDQM ] 1 : Track Collection RecoilTracks
+ [ RecoilTrackerDQM ] 1 : Truth Collection RecoilTruthTracks
+ [ TrigScintClusterPad1 ] 1 : In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+ [ TrigScintClusterPad2 ] 1 : In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+ [ TrigScintClusterPad3 ] 1 : In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+ [ TrigScintTracks ] 1 : In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ RunManager ]: Parallel worlds physics list has been registered.
@@ -10290,7 +10270,7 @@
     ldmx-sw revision = 
 }
 [ Simulator ] : Started 1303948 events to produce 10000 events.
- [ SeedFinderProcessor ] 1 : AVG Time/Event: 0.0936 ms
+ [ SeedFinderProcessor ] 1 : AVG Time/Event: 0.0980 ms
  [ SeedFinderProcessor ] 1 : Total Seeds/Events: 10418/10000
  [ SeedFinderProcessor ] 1 : Seeds discarded due to multiple hits on layers 0
  [ SeedFinderProcessor ] 1 : not enough seed points 0
@@ -10301,7 +10281,7 @@
  [ SeedFinderProcessor ] 1 :    nfailphicut=0
  [ SeedFinderProcessor ] 1 :    nfailthetacut=159
  [ SeedFinderProcessor ] 1 :    nfailz0max=170
- [ SeedRecoil ] 1 : AVG Time/Event: 0.1329 ms
+ [ SeedRecoil ] 1 : AVG Time/Event: 0.1364 ms
  [ SeedRecoil ] 1 : Total Seeds/Events: 25516/10000
  [ SeedRecoil ] 1 : Seeds discarded due to multiple hits on layers 0
  [ SeedRecoil ] 1 : not enough seed points 0
@@ -10313,21 +10293,21 @@
  [ SeedRecoil ] 1 :    nfailthetacut=19682
  [ SeedRecoil ] 1 :    nfailz0max=12386
  [ Tagger_TrackFinder ] 1 : found 10087 tracks  / 10418 nseeds
- [ Tagger_TrackFinder ] 1 : AVG Time/Event: 0.3877 ms
+ [ Tagger_TrackFinder ] 1 : AVG Time/Event: 0.3939 ms
  [ Tagger_TrackFinder ] 1 : Breakdown::
  [ Tagger_TrackFinder ] 1 : setup       Avg Time/Event = 0.0021 ms
- [ Tagger_TrackFinder ] 1 : hits        Avg Time/Event = 0.0430 ms
+ [ Tagger_TrackFinder ] 1 : hits        Avg Time/Event = 0.0441 ms
  [ Tagger_TrackFinder ] 1 : seeds       Avg Time/Event = 0.0032 ms
- [ Tagger_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.0041 ms
+ [ Tagger_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.0043 ms
  [ Tagger_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.0002 ms
- [ Tagger_TrackFinder ] 1 : result_loop Avg Time/Event = 0.3332 ms
+ [ Tagger_TrackFinder ] 1 : result_loop Avg Time/Event = 0.3382 ms
  [ Recoil_TrackFinder ] 1 : found 10149 tracks  / 10255 nseeds
- [ Recoil_TrackFinder ] 1 : AVG Time/Event: 0.2998 ms
+ [ Recoil_TrackFinder ] 1 : AVG Time/Event: 0.3056 ms
  [ Recoil_TrackFinder ] 1 : Breakdown::
  [ Recoil_TrackFinder ] 1 : setup       Avg Time/Event = 0.0007 ms
- [ Recoil_TrackFinder ] 1 : hits        Avg Time/Event = 0.0424 ms
+ [ Recoil_TrackFinder ] 1 : hits        Avg Time/Event = 0.0451 ms
  [ Recoil_TrackFinder ] 1 : seeds       Avg Time/Event = 0.0027 ms
  [ Recoil_TrackFinder ] 1 : cf_setup    Avg Time/Event = 0.0020 ms
  [ Recoil_TrackFinder ] 1 : ckf_run     Avg Time/Event = 0.0001 ms
- [ Recoil_TrackFinder ] 1 : result_loop Avg Time/Event = 0.2516 ms
+ [ Recoil_TrackFinder ] 1 : result_loop Avg Time/Event = 0.2549 ms
 ---- LDMXSW: Event processing complete  --------
