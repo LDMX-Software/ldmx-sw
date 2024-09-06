@@ -5,7 +5,6 @@ import os
 import re
 
 # external dependencies
-import matplotlib.pyplot as plt
 import matplotlib
 import uproot
 # us
@@ -81,7 +80,7 @@ class Differ :
         grp_name from the constructor.
 
         If out_dir is not provided, we assume we are in a notebook and
-        simply `plt.show()` the figure. If out_dir is not None (i.e. it
+        simply `matplotlib.pyplot.show()` the figure. If out_dir is not None (i.e. it
         was defined), we assume we are in a non-interactive script and
         write the figure to a PDF in the output file and then clear
         the figure.
@@ -107,7 +106,7 @@ class Differ :
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
-        fig = plt.figure('differ',figsize=(11,8))
+        fig = matplotlib.pyplot.figure('differ',figsize=(11,8))
         raw_ax, ratio_ax = fig.subplots(
             nrows = 2,
             sharex = 'col',
@@ -151,7 +150,7 @@ class Differ :
             ratio_ax.tick_params(axis='x', rotation=90)
 
         if out_dir is None :
-            plt.show()
+            matplotlib.pyplot.show()
         else :
             if file_name is None :
                 if isinstance(column, str) :
