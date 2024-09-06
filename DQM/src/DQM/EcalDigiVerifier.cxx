@@ -41,12 +41,12 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   int numNoiseHits{0};
   double totalRecEnergy{0.};
   for (const ldmx::EcalHit &recHit : ecalRecHits) {
-    numRecHits ++ ;
+    numRecHits++;
     // skip anything that digi flagged as noise
     if (recHit.isNoise()) {
       numNoiseHits++;
-continue;
-    } 
+      continue;
+    }
 
     int rawID = recHit.getID();
 
