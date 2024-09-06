@@ -284,8 +284,10 @@ void Process::run() {
           continue;
         } else {
           EXCEPTION_RAISE(
-              "FileErr",
-              "Input file '"+infilename+"' is corrupted (not readable by Framework)."
+              "BadCode",
+              "We should never get here. "
+              "EventFile is corrupted but we aren't skipping corrupted inputs. "
+              "EventFile should be throwing its own exceptions in this case."
           );
         }
       }

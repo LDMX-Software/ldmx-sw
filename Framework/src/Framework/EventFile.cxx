@@ -58,13 +58,28 @@ EventFile::EventFile(const framework::config::Parameters &params,
                                        "' is not readable or does not exist.");
     }
 
+    bool skip_corrupted = params.getParameter<bool>("skipCorruptedInputFiles", false);
+
+    // make sure file is not a zombie file
+    // (i.e. process ended without closing or the file was corrupted some other way)
+    if (file_->IsZombie()) {
+      if (not skip_corrupted) {
+        EXCEPTION_RAISE("FileError", "Input file '" + fileName_ +
+            "' is corrupted. Framework will not attempt to recover this file.");
+      }
+      return;
+    }
+
     // Get the tree name from the configuration
     auto tree_name{params.getParameter<std::string>("tree_name")};
     tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
-    if (!tree_ and not params.getParameter<bool>("skipCorruptedInputFiles", false)) {
-      EXCEPTION_RAISE("FileError", "File '" + fileName_ +
-                                       "' does not have a TTree named '" +
-                                       tree_name + "' in it.");
+    if (!tree_) {
+      if (not skip_corrupted) {
+        EXCEPTION_RAISE("FileError", "File '" + fileName_ +
+                                         "' does not have a TTree named '" +
+                                         tree_name + "' in it.");
+      }
+      return;
     }
     entries_ = tree_->GetEntriesFast();
   }
