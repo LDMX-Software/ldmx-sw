@@ -78,8 +78,8 @@ def mip_tracking(d : Differ, out_dir = None) :
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_first_near_photon_layer', 'First Near Photon Layer'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_ang', 'Electron Photon Angle [degree]'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_sep', 'Electron Photon Separation'),
-        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pz', 'Recoil electron p_{z}[MeV]'),
-        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pt', 'Recoil electron p_{T} [MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pz', 'Recoil electron pz [MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pt', 'Recoil electron pT [MeV]'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_x', 'Recoil electron x[mm]'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_y', 'Recoil electron y [mm]'),
     ]
