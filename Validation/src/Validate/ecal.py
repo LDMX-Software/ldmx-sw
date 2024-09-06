@@ -7,6 +7,29 @@ import logging
 log = logging.getLogger('ecal')
 
 @plotter(hist=True,event=False)
+def digi_verify(d : Differ, out_dir = None) :
+    """Plot ECal digi verify variables from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalDigiVerify/EcalDigiVerify_num_sim_hits_per_cell', 'Number of SimHits per ECal Cell (excluding empty rec cells)'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalDigiVerify/EcalDigiVerify_num_rec_hits', 'Number of RecHits'),
+        ('EcalDigiVerify/EcalDigiVerify_num_noise_hits', 'Number of noisy RecHits'),
+        ('EcalDigiVerify/EcalDigiVerify_total_rec_energy', 'Total Reconstructed Energy in ECal [MeV]'),
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+
+@plotter(hist=True,event=False)
 def shower_feats(d : Differ, out_dir = None) :
     """Plot ECal shower features from the already created DQM histograms
 
@@ -31,6 +54,57 @@ def shower_feats(d : Differ, out_dir = None) :
         ('EcalShowerFeatures/EcalShowerFeatures_y_std', 'Y Standard Deviation [mm]'),
         ('EcalShowerFeatures/EcalShowerFeatures_avg_layer_hit', 'Avg Layer Hit'),
         ('EcalShowerFeatures/EcalShowerFeatures_std_layer_hit', 'Std Dev Layer Hit')
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+
+@plotter(hist=True,event=False)
+def mip_tracking(d : Differ, out_dir = None) :
+    """Plot ECal MIP tracking features from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_straight_tracks', 'Number of Straight Tracks'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_linreg_tracks', 'Number of Linear Regression Tracks'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_first_near_photon_layer', 'First Near Photon Layer'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_ang', 'Electron Photon Angle [degree]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_sep', 'Electron Photon Separation'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pz', 'Recoil electron pz [MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_pt', 'Recoil electron pT [MeV]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_x', 'Recoil electron x[mm]'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_recoil_y', 'Recoil electron y [mm]'),
+    ]
+    for col, name in features :
+        log.info(f'plotting {col}')
+        d.plot1d(col, name, out_dir = out_dir)
+        
+
+@plotter(hist=True,event=False)
+def veto_results(d : Differ, out_dir = None) :
+    """Plot ECAL veto results from the already created DQM histograms
+
+    Parameters
+    ----------
+    d : Differ
+        Differ containing files that are not event files (presumably histogram files)
+    """
+
+    col, name = 'EcalVetoResults/EcalVetoResults_bdt_disc', 'BDT discriminating score'
+    log.info(f'plotting {col}')
+    d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
+
+    features = [
+        ('EcalVetoResults/EcalVetoResults_bdt_disc_log', '-log(1-BDT discriminating score)'),
+        ('EcalVetoResults/EcalVetoResults_fiducial', 'Recoil eletron fiducial')
     ]
     for col, name in features :
         log.info(f'plotting {col}')
