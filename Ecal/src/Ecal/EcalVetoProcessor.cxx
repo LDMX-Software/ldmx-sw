@@ -87,12 +87,10 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 
 void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   verbose_ = parameters.getParameter<bool>("verbose");
-  doBdt_ = parameters.getParameter<bool>("do_bdt");
   featureListName_ = parameters.getParameter<std::string>("feature_list_name");
-  if (doBdt_) {
-    rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
-        parameters.getParameter<std::string>("bdt_file"));
-  }
+  // Load BDT ONNX file
+  rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(
+      parameters.getParameter<std::string>("bdt_file"));
 
   // Read in arrays holding 68% containment radius per layer
   // for different bins in momentum/angle
@@ -1104,37 +1102,28 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       oContXStd, oContYStd, oContLayerMean, oContLayerStd,
       ecalLayerEdepReadout_, recoilP, recoilPos);
 
-  if (doBdt_) {
-    buildBDTFeatureVector(result);
-    ldmx::Ort::FloatArrays inputs({bdtFeatures_});
-    float pred =
-        rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
-    // Removing electron-photon separation step, near photon step due to lower
-    // v12 performance; may reconsider
-    bool passesTrackingVeto = (nStraightTracks_ < 3) && (nLinregTracks_ == 0);
-    //&&  //Commenting the remainder for now
-    //(firstNearPhLayer_ >= 6); //&& (epAng_ > 3.0 || epSep_ > 10.0);
-    result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
-    result.setDiscValue(pred);
-    ldmx_log(debug) << "  The pred > bdtCutVal = " << (pred > bdtCutVal_);
+  buildBDTFeatureVector(result);
+  ldmx::Ort::FloatArrays inputs({bdtFeatures_});
+  float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+  // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
+  // 6)
+  // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
+  bool passesTrackingVeto = (nStraightTracks_ < 3);
+  result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
+  result.setDiscValue(pred);
+  ldmx_log(debug) << "  The pred > bdtCutVal = " << (pred > bdtCutVal_);
 
-    // Persist in the event if the recoil ele is fiducial
-    result.setFiducial(inside);
+  // Persist in the event if the recoil ele is fiducial
+  result.setFiducial(inside);
 
-    // If the event passes the veto, keep it. Otherwise,
-    // drop the event.
-    if (result.passesVeto() && inside) {
-      setStorageHint(framework::hint_shouldKeep);
-    } else {
-      setStorageHint(framework::hint_shouldDrop);
-    }
-  }
-
-  if (inside) {
+  // If the event passes the veto, keep it. Otherwise,
+  // drop the event.
+  if (result.passesVeto()) {
     setStorageHint(framework::hint_shouldKeep);
   } else {
     setStorageHint(framework::hint_shouldDrop);
   }
+
   event.add(collectionName_, result);
 }
 
