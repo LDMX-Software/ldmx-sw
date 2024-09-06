@@ -58,14 +58,17 @@ EventFile::EventFile(const framework::config::Parameters &params,
                                        "' is not readable or does not exist.");
     }
 
-    bool skip_corrupted = params.getParameter<bool>("skipCorruptedInputFiles", false);
+    bool skip_corrupted =
+        params.getParameter<bool>("skipCorruptedInputFiles", false);
 
     // make sure file is not a zombie file
-    // (i.e. process ended without closing or the file was corrupted some other way)
+    // (i.e. process ended without closing or the file was corrupted some other
+    // way)
     if (file_->IsZombie()) {
       if (not skip_corrupted) {
         EXCEPTION_RAISE("FileError", "Input file '" + fileName_ +
-            "' is corrupted. Framework will not attempt to recover this file.");
+                                         "' is corrupted. Framework will not "
+                                         "attempt to recover this file.");
       }
       return;
     }
