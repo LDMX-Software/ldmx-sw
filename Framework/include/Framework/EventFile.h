@@ -96,6 +96,26 @@ class EventFile {
   ~EventFile();
 
   /**
+   * Check if the file we have is corrupted
+   *
+   * The check on if the file is corrupted is only helpful
+   * for input files, but we attempt to have a resonable
+   * definition for output files as well.
+   *
+   * ## Input Files
+   * There are two ways a file can be corrupted and these
+   * may not be mutually exclusive.
+   * 1. The LDMX_Events tree does not exist within it.
+   * 2. The IsZombie flag of the TFile is set
+   *
+   * ## Output Files
+   * For output files, we just check the IsZombie flag
+   * of the TFile. Again, since we are actively writing
+   * to this file, a corruption check is not very stable.
+   */
+  bool isCorrupted() const;
+
+  /**
    * Add a rule for dropping collections from the output.
    *
    * This needs to be called *after* setupEvent.

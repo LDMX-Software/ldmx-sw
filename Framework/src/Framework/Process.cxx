@@ -36,6 +36,8 @@ Process::Process(const framework::config::Parameters &configuration)
       configuration.getParameter<int>("compressionSetting", 9);
   termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
   fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
+  skipCorruptedInputFiles_ =
+      configuration.getParameter<bool>("skipCorruptedInputFiles", false);
 
   inputFiles_ =
       configuration.getParameter<std::vector<std::string>>("inputFiles", {});
@@ -277,6 +279,19 @@ void Process::run() {
     int wasRun = -1;
     for (auto infilename : inputFiles_) {
       EventFile inFile(config_, infilename);
+      if (inFile.isCorrupted()) {
+        if (skipCorruptedInputFiles_) {
+          ldmx_log(warn) << "Input file '" << infilename
+                         << "' was found to be corrupted. Skipping.";
+          continue;
+        } else {
+          EXCEPTION_RAISE(
+              "BadCode",
+              "We should never get here. "
+              "EventFile is corrupted but we aren't skipping corrupted inputs. "
+              "EventFile should be throwing its own exceptions in this case.");
+        }
+      }
 
       ldmx_log(info) << "Opening file " << infilename;
       onFileOpen(inFile);
