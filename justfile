@@ -178,11 +178,12 @@ recompFire config_py *ARGS: build (fire config_py ARGS)
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.
 # We add `--upgrade` to tell `pip` it should overwrite the package if it already has been
-# installed before which is helpful in the case where someone is updating the code and running
-# the new code within the container. The `--target install/python/` arguments tell `pip`
-# where to install the package. This directory is where we currently store our python modules
-# and is where the container expects them to be. The `--no-cache` argument tells `pip` to
-# not use a cache for downloading any dependencies from the internet which is necessary since
-# `pip` will not be able to write to the cache location within the container.
+# # installed before which is helpful in the case where someone is updating the code and running
+# # the new code within the container. The `--target install/python/` arguments tell `pip`
+# # where to install the package. This directory is where we currently store our python modules
+# # and is where the container expects them to be. The `--no-cache` argument tells `pip` to
+# # not use a cache for downloading any dependencies from the internet which is necessary since
+# # `pip` will not be able to write to the cache location within the container.
+# # install the python Validation plotting module
 install-validation:
     denv python3 -m pip install Validation/ --upgrade --target install/python/ --no-cache

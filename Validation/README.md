@@ -5,13 +5,13 @@ Python package focused on comparing two or more "similar" LDMX event or histogra
 ## Installation
 One may use this python module either inside or outside the ldmx-sw development container.
 
-### Inside `ldmx`
+### Inside `ldmx-sw`
 Run the dedicated `just` command to install
 ```
 just install-validation
 ```
 
-### Outside `ldmx`
+### Outside `ldmx-sw`
 Outside container it is helpful to put the Validation module inside a virtual environment.
 This makes it easier to keep track of what you are doing and isolate the dependencies of `Validation`
 from other python packages that may be on your system.
@@ -38,10 +38,8 @@ The Validation module is constructed to do some common tasks quickly on the comm
 Printing out its help message shows how to run it and gives you the details on what
 parameters to provide.
 ```
-cd Validation/src
 denv python3 -m Validate -h
 ```
-which should be run with `ldmx` if the module was installed in the container.
 
 For example if you would like to compare the ECAL shower features, put the input histograms into a directory, 
 e.g. `compareDir` with names that are separated with an underscore, e.g. `histo_new.root` and `histo_ref.root`,
@@ -63,4 +61,3 @@ This can help you develop plots that don't come pre-made within the Validation m
 **If you are developing Validate and testing within a notebook**, you will need to reboot
 the python kernel anytime you wish to test changes to the Validation module. This is necessary
 because Jupyter keeps modules cached in memory during normal running in order to save time
-when re-executing cells with `import` statements.
