@@ -55,7 +55,7 @@ class EcalClusterProducer : public framework::Producer {
    */
   void configure(framework::config::Parameters& parameters) final override;
 
-  virtual void produce(framework::Event& event);
+  virtual void produce(framework::Event& event) final override;
 
  private:
   double seedThreshold_{0};

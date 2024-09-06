@@ -75,7 +75,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
   bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);

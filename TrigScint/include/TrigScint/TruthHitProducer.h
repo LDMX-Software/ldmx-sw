@@ -32,7 +32,7 @@ class TruthHitProducer : public framework::Producer {
   TruthHitProducer(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~TruthHitProducer();
+  ~TruthHitProducer() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
@@ -50,7 +50,7 @@ class TruthHitProducer : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) final override;
 
   /// Class to set the verbosity level.
   // TODO: Make use of the global verbose parameter.

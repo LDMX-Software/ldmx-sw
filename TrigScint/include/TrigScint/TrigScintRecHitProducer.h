@@ -52,7 +52,7 @@ class TrigScintRecHitProducer : public framework::Producer {
    */
   void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
  private:
   /// Class to set the verbosity level.

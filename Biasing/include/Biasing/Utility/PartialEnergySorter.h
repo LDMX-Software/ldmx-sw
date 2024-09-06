@@ -98,7 +98,7 @@ class PartialEnergySorter : public simcore::UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING, simcore::TYPE::STACKING,
             simcore::TYPE::EVENT};
   }

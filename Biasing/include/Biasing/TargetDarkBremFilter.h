@@ -54,7 +54,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
   /**
    * Class destructor.
    */
-  ~TargetDarkBremFilter() {}
+  ~TargetDarkBremFilter() = default;
 
   /**
    * Get the types of actions this class can do
@@ -83,7 +83,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] step current G4Step
    */
-  void stepping(const G4Step* step);
+  void stepping(const G4Step* step) final override;
 
   /**
    * Check flag signaling finding of A', if false,

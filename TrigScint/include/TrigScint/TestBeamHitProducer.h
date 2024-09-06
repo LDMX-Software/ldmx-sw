@@ -42,7 +42,7 @@ class TestBeamHitProducer : public framework::Producer {
    */
   void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
  private:
   /// Set the local verbosity level.

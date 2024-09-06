@@ -43,7 +43,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
    */
   void onNewRun(const ldmx::RunHeader& header) final override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
   /**
    * Does basic digitization of SimTrackerHits. For now, this simply uses the

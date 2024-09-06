@@ -47,7 +47,7 @@ class EcalVetoProcessor : public framework::Producer {
    */
   void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) final override;
 
   // MIP tracking:  Class for storing hit information for tracking in a
   // convenient way

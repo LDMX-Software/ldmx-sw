@@ -56,16 +56,9 @@ class VertexProcessor : public framework::Producer {
   VertexProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~VertexProcessor();
+  ~VertexProcessor() = default;
 
-  /**
-   *
-   */
   void onProcessStart() final override;
-
-  /**
-   *
-   */
   void onProcessEnd() final override;
 
   /**
@@ -80,7 +73,7 @@ class VertexProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event);
+  void produce(framework::Event &event) final override;
 
  private:
   /// The contexts - TODO: they should move to some global location, I guess

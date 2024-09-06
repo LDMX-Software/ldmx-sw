@@ -44,7 +44,7 @@ class CustomStatePropagator : public framework::Producer {
 
   void configure(framework::config::Parameters& parameters) final override;
 
-  void produce(framework::Event& event){};
+  void produce(framework::Event& event) final override{};
 
   void fillTree(int state, int q, const Acts::Vector3 gen_pos,
                 const Acts::Vector3 gen_mom,

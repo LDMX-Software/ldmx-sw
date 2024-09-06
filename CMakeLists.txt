@@ -19,6 +19,8 @@ project(LDMX_SW VERSION 3.1.1
                 LANGUAGES CXX    
 )
 
+set(CMAKE_CXX_STANDARD 17)
+
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 
