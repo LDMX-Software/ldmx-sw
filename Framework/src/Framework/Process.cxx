@@ -48,6 +48,12 @@ Process::Process(const framework::config::Parameters &configuration)
 
   eventHeader_ = 0;
 
+  // set up the logging for this run
+  logging::open(logging::convertLevel(termLevelInt_),
+                logging::convertLevel(fileLevelInt_),
+                logFileName_  // if this is empty string, no file is logged to
+  );
+
   auto run{configuration.getParameter<int>("run", -1)};
   if (run > 0) runForGeneration_ = run;
 
@@ -138,11 +144,6 @@ Process::~Process() {
 
 void Process::run() {
   if (performance_) performance_->absolute_start();
-  // set up the logging for this run
-  logging::open(logging::convertLevel(termLevelInt_),
-                logging::convertLevel(fileLevelInt_),
-                logFileName_  // if this is empty string, no file is logged to
-  );
 
   // Counter to keep track of the number of events that have been
   // procesed
