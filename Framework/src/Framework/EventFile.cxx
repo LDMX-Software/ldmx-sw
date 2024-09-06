@@ -61,7 +61,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
     // Get the tree name from the configuration
     auto tree_name{params.getParameter<std::string>("tree_name")};
     tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
-    if (!tree_) {
+    if (!tree_ and not params.getParameter<bool>("skipCorruptedInputFiles", false)) {
       EXCEPTION_RAISE("FileError", "File '" + fileName_ +
                                        "' does not have a TTree named '" +
                                        tree_name + "' in it.");
@@ -95,6 +95,11 @@ EventFile::~EventFile() {
 
   // Close the file
   file_->Close();
+}
+
+bool EventFile::isCorrupted() const {
+  if (isOutputFile_) return file_->IsZombie();
+  return (!tree_ or file_->IsZombie());
 }
 
 void EventFile::addDrop(const std::string &rule) {
