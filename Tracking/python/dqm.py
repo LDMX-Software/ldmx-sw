@@ -95,7 +95,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                               "Chi2",nbins,0,100)
         self.build1DHistogram("ndf",
                               "ndf",10,0,10)
-        self.build1DHistogram("Chi2/ndf",
+        self.build1DHistogram("Chi2_per_ndf",
                               "Chi2/ndf",nbins,0,10)
         self.build1DHistogram("nShared",
                               "nShared",5,0,5)
@@ -337,7 +337,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "fake nHits",15,0,15)
             self.build1DHistogram("fake_Chi2",
                                   "fake Chi2",100,0,chi2Fake_max)
-            self.build1DHistogram("fake_Chi2/ndf",
+            self.build1DHistogram("fake_Chi2_per_ndf",
                                   "fake Chi2/ndf",100,0,chi2NdfFake_max)
             self.build1DHistogram("fake_nShared",
                                   "fake nShared",5,0,5)
@@ -363,7 +363,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "dup nHits",15,0,15)
             self.build1DHistogram("dup_Chi2",
                                   "dup Chi2",100,0,100)
-            self.build1DHistogram("dup_Chi2/ndf",
+            self.build1DHistogram("dup_Chi2_per_ndf",
                                   "dup Chi2/ndf",100,0,10)
             self.build1DHistogram("dup_nShared",
                                   "dup nShared",5,0,5)
