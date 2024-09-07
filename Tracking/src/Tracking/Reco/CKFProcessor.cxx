@@ -652,7 +652,7 @@ void CKFProcessor::onProcessEnd() {
                  << std::setprecision(3) << profiling_map_["ckf_run"] / nevents_
                  << " ms";
   ldmx_log(info) << "result_loop Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
+                 << std::setprecision(1)
                  << profiling_map_["result_loop"] / nevents_ << " ms";
 }
 
