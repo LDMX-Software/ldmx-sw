@@ -16,7 +16,7 @@ class ReSimulator : public SimulatorBase {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
   /**
    * Run resimulation if the event is part of the requested sets of events to
    * resimulate

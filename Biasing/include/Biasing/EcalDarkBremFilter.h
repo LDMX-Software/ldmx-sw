@@ -63,7 +63,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STACKING, simcore::TYPE::EVENT,
             simcore::TYPE::TRACKING};
   }
@@ -73,7 +73,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param event unused
    */
-  void BeginOfEventAction(const G4Event* event) final override;
+  void BeginOfEventAction(const G4Event* event) override;
 
   /**
    * We return the classification of the track done by the PartialEnergySorter,
@@ -90,7 +90,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) final override;
+      const G4ClassificationOfNewTrack& currentTrackClass) override;
 
   /**
    * When using the PartialEnergySorter,
@@ -102,7 +102,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @see PartialEnergySort::NewStage
    */
-  void NewStage() final override;
+  void NewStage() override;
 
   /**
    * Make sure A' is saved.
@@ -114,7 +114,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param track G4Track to check if it is an A'
    */
-  void PostUserTrackingAction(const G4Track* track) final override;
+  void PostUserTrackingAction(const G4Track* track) override;
 
  private:
   /**

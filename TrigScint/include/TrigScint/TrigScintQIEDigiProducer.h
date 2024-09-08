@@ -56,7 +56,7 @@ class TrigScintQIEDigiProducer : public framework::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Method to produce a collection of QIE digis.

@@ -43,14 +43,14 @@ class TruthHitProducer : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) final override;
+  void produce(framework::Event &event) override;
 
   /// Class to set the verbosity level.
   // TODO: Make use of the global verbose parameter.

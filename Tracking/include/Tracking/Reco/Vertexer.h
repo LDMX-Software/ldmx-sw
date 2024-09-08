@@ -51,12 +51,12 @@ class Vertexer : public framework::Producer {
 
   ~Vertexer() = default;
 
-  void onProcessStart() final override;
-  void onProcessEnd() final override;
+  void onProcessStart() override;
+  void onProcessEnd() override;
 
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
   void TaggerRecoilMonitoring(const std::vector<ldmx::Track>& tagger_tracks,
                               const std::vector<ldmx::Track>& recoil_tracks);

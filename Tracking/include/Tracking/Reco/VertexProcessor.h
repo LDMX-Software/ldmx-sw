@@ -58,22 +58,22 @@ class VertexProcessor : public framework::Producer {
   /// Destructor
   ~VertexProcessor() = default;
 
-  void onProcessStart() final override;
-  void onProcessEnd() final override;
+  void onProcessStart() override;
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) final override;
+  void configure(framework::config::Parameters &parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) final override;
+  void produce(framework::Event &event) override;
 
  private:
   /// The contexts - TODO: they should move to some global location, I guess

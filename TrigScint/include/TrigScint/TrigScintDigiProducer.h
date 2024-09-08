@@ -54,9 +54,9 @@ class TrigScintDigiProducer : public framework::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
   ldmx::TrigScintID generateRandomID(int module);
 

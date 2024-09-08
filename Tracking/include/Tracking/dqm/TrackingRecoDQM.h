@@ -28,7 +28,7 @@ class TrackingRecoDQM : public framework::Analyzer {
   /// Destructor
   ~TrackingRecoDQM() = default;
 
-  void analyze(const framework::Event& event) final override;
+  void analyze(const framework::Event& event) override;
 
   void TrackMonitoring(const std::vector<ldmx::Track>& tracks,
                        const std::string title, const bool& doDetail,
