@@ -40,5 +40,5 @@ Previously used geometries can be found under the `archived` directory. In case 
 ```
 cd ldmx-sw/Detectors/data
 tar -xzf archived/<detector>.tar.gz
-ldmx compile # even if you've already done this before!
+just configure build # even if you've already done this before!
 ```
