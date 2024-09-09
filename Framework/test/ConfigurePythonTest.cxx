@@ -98,7 +98,7 @@ class TestConfig : public framework::Producer {
   }
 
   // I don't do anything.
-  virtual void produce(framework::Event &) {}
+  virtual void produce(framework::Event &) final override {}
 };
 
 /**

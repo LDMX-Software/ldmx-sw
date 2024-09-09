@@ -55,19 +55,19 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   /**
    *
    */
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
   /**
    *
    */
-  void onProcessEnd() final override;
+  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -75,7 +75,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   bool GroupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
