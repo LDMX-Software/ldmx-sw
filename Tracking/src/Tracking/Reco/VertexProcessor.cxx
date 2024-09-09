@@ -13,8 +13,6 @@ VertexProcessor::VertexProcessor(const std::string &name,
                                  framework::Process &process)
     : framework::Producer(name, process) {}
 
-VertexProcessor::~VertexProcessor() {}
-
 void VertexProcessor::onProcessStart() {
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();

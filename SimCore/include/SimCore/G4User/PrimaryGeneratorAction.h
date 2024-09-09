@@ -78,7 +78,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    *
    * @param event The Geant4 event.
    */
-  void GeneratePrimaries(G4Event* event) final override;
+  void GeneratePrimaries(G4Event* event) override;
 
  private:
   /**

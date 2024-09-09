@@ -43,7 +43,7 @@ class GDMLParser : public Parser {
    *
    * @return The world volume.
    */
-  G4VPhysicalVolume *GetWorldVolume() final override;
+  G4VPhysicalVolume *GetWorldVolume() override;
 
   /**
    * Get the name of the parsed detector.
@@ -53,12 +53,12 @@ class GDMLParser : public Parser {
    *
    * @return The name of the detector.
    */
-  std::string getDetectorName() final override { return detector_name_; }
+  std::string getDetectorName() override { return detector_name_; }
 
   /**
    * Parse the detector geometry and read it into memory.
    */
-  void read() final override;
+  void read() override;
 
   /**
    * Create an instance of this parser.

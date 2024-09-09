@@ -34,7 +34,7 @@ class TrigScintSD : public SensitiveDetector {
    * we intentionally exclude volumes with the string 'sp_' in
    * their names.
    */
-  virtual bool isSensDet(G4LogicalVolume* vol) const final override {
+  virtual bool isSensDet(G4LogicalVolume* vol) const override {
     return vol->GetName().contains(vol_name_) and
            not vol->GetName().contains("sp_");
   }
@@ -45,16 +45,16 @@ class TrigScintSD : public SensitiveDetector {
    * @param[in] step The step information.
    * @param[in] history The readout history.
    */
-  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) final override;
+  G4bool ProcessHits(G4Step* step, G4TouchableHistory* history) override;
 
   /**
    * Save our hits collection into the event bus and reset it.
    */
-  virtual void saveHits(framework::Event& event) final override {
+  virtual void saveHits(framework::Event& event) override {
     event.add(collection_name_, hits_);
   }
 
-  virtual void OnFinishedEvent() final override { hits_.clear(); }
+  virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
   /// our collection of hits in this SD

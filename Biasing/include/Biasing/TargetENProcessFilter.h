@@ -34,15 +34,15 @@ class TargetENProcessFilter : public simcore::UserAction {
    * Implementmthe stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * End of event action.
    */
-  void EndOfEventAction(const G4Event*) final override;
+  void EndOfEventAction(const G4Event*) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::EVENT, simcore::TYPE::STEPPING};
   }
 

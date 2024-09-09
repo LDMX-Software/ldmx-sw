@@ -39,12 +39,12 @@ class CustomStatePropagator : public framework::Producer {
   CustomStatePropagator(const std::string& name, framework::Process& process);
   ~CustomStatePropagator();
 
-  void onProcessStart() final override;
-  void onProcessEnd() final override;
+  void onProcessStart() override;
+  void onProcessEnd() override;
 
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event){};
+  void produce(framework::Event& event) override{};
 
   void fillTree(int state, int q, const Acts::Vector3 gen_pos,
                 const Acts::Vector3 gen_mom,

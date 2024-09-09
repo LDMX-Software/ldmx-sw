@@ -158,7 +158,7 @@ class HcalFakeSimHits : public framework::Producer {
       : framework::Producer(name, p) {}
   ~HcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) {
+  void beforeNewRun(ldmx::RunHeader &header) final override {
     header.setDetectorName("ldmx-det-v12");
   }
 

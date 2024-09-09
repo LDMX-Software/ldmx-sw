@@ -112,7 +112,7 @@ namespace simcore {
  * namespace library {
  * class Book : public LibraryEntry {
  *  public :
- *   virtual std::string name() final override {
+ *   virtual std::string name() override {
  *     return "Where the Red Fern Grows";
  *   }
  * };
@@ -128,7 +128,7 @@ namespace simcore {
  * namespace audio {
  * class Podcast : public LibraryEntry {
  *  public :
- *   virtual std::string name() final override {
+ *   virtual std::string name() override {
  *     return "538 Politics Podcast";
  *   }
  * };
@@ -145,7 +145,7 @@ namespace simcore {
  * namespace audio {
  * class Album : public LibraryEntry {
  *  public :
- *   virtual std::string name() final override {
+ *   virtual std::string name() override {
  *     return "Kind of Blue";
  *   }
  * };

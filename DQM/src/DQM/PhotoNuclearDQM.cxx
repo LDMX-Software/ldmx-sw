@@ -98,7 +98,7 @@ void PhotoNuclearDQM::findParticleKinematics(
       hardest_theta = theta;
     }
 
-    if ((pdgID == 2112)) {
+    if (pdgID == 2112) {
       total_neutron_ke += ke;
       neutron_multiplicity++;
       if (hardest_neutron_ke < ke) {

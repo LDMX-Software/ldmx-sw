@@ -46,7 +46,7 @@ class HcalSD : public SensitiveDetector {
    * to contain to "CalorimeterRegion" and b) the volume name contains one of
    * the identifiers in the gdml_identifiers parameter
    */
-  bool isSensDet(G4LogicalVolume* volume) const final override {
+  bool isSensDet(G4LogicalVolume* volume) const override {
     auto region = volume->GetRegion();
     if (region and region->GetName().contains("CalorimeterRegion")) {
       const auto name{volume->GetName()};
@@ -78,16 +78,16 @@ class HcalSD : public SensitiveDetector {
    * @param[in] history The readout history.
    */
   virtual G4bool ProcessHits(G4Step* aStep,
-                             G4TouchableHistory* ROhist) final override;
+                             G4TouchableHistory* ROhist) override;
 
   /**
    * Add our hits to the event bus and then reset the container
    */
-  virtual void saveHits(framework::Event& event) final override {
+  virtual void saveHits(framework::Event& event) override {
     event.add(COLLECTION_NAME, hits_);
   }
 
-  virtual void OnFinishedEvent() final override { hits_.clear(); }
+  virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
   // A list of identifiers used to find out whether or not a given logical

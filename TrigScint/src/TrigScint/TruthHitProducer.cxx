@@ -7,8 +7,6 @@ TruthHitProducer::TruthHitProducer(const std::string &name,
                                    framework::Process &process)
     : Producer(name, process) {}
 
-TruthHitProducer::~TruthHitProducer() {}
-
 void TruthHitProducer::configure(framework::config::Parameters &parameters) {
   inputCollection_ = parameters.getParameter<std::string>("input_collection");
   inputPassName_ = parameters.getParameter<std::string>("input_pass_name");

@@ -31,7 +31,7 @@ class TrackerSD : public SensitiveDetector {
    *
    * @note This is dependent on the naming convention in the GDML!
    */
-  virtual bool isSensDet(G4LogicalVolume* volume) const final override {
+  virtual bool isSensDet(G4LogicalVolume* volume) const override {
     return (volume->GetName().contains("Sensor") and
             volume->GetName().contains(subsystem_));
   }
@@ -47,11 +47,11 @@ class TrackerSD : public SensitiveDetector {
   /**
    * Add the hits to the event and then reset the container
    */
-  virtual void saveHits(framework::Event& event) final override {
+  virtual void saveHits(framework::Event& event) override {
     event.add(collection_name_, hits_);
   }
 
-  virtual void OnFinishedEvent() final override { hits_.clear(); }
+  virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
   /// The name of the subsystem we are apart of

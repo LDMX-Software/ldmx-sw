@@ -18,6 +18,6 @@ class TrackerDigiDQM : public framework::Analyzer {
   /**
    *
    */
-  void analyze(const framework::Event& event) final override;
+  void analyze(const framework::Event& event) override;
 };
 }  // namespace tracking::dqm

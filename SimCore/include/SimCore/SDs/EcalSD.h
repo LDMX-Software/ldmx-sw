@@ -51,7 +51,7 @@ class EcalSD : public SensitiveDetector {
    *
    * @note Dependent on names defined in GDML!
    */
-  virtual bool isSensDet(G4LogicalVolume* vol) const final override {
+  virtual bool isSensDet(G4LogicalVolume* vol) const override {
     auto region = vol->GetRegion();
     if (region and region->GetName().contains("CalorimeterRegion")) {
       return vol->GetName().contains("Si");
@@ -64,17 +64,17 @@ class EcalSD : public SensitiveDetector {
    * @param aStep The step information.
    * @param ROhist The readout history.
    */
-  G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) final override;
+  G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) override;
 
   /**
    * Add our hits to the event bus.
    */
-  virtual void saveHits(framework::Event& event) final override;
+  virtual void saveHits(framework::Event& event) override;
 
   /**
    * Clear the map of hits we have accumulated
    */
-  virtual void OnFinishedEvent() final override { hits_.clear(); }
+  virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
   /// map of hits to add to the event (will be squashed)

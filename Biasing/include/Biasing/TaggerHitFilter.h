@@ -41,16 +41,16 @@ class TaggerHitFilter : public simcore::UserAction {
    *
    * @param[in] step Geant4 step
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * Action called once tracking of all particles has concluded. This is being
    * used to clear the hit count set in preparation for the next event.
    */
-  void EndOfEventAction(const G4Event* event) final override;
+  void EndOfEventAction(const G4Event* event) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING, simcore::TYPE::EVENT};
   }
 

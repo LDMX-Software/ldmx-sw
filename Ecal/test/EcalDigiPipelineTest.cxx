@@ -185,8 +185,8 @@ class EcalFakeSimHits : public framework::Producer {
       : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) {
-    header.setDetectorName("ldmx-det-v12");
+  void beforeNewRun(ldmx::RunHeader &header) final override {
+    header.setDetectorName("ldmx-det-v14-8gev");
   }
 
   void produce(framework::Event &event) final override {
@@ -195,19 +195,11 @@ class EcalFakeSimHits : public framework::Producer {
 
     ldmx::EcalID id(0, 0, 0);
     pretendSimHits[0].setID(id.raw());
-    pretendSimHits[0].addContrib(
-        -1  // incidentID
-        ,
-        -1  // trackID
-        ,
-        0  // pdg ID
-        ,
-        currEnergy_  // edep
-        ,
-        1.  // time - 299mm is about 1ns from target and in middle of ECal
-    );
-    pretendSimHits[0].setPosition(0., 0.,
-                                  299.);  // sim position in middle of ECal
+    // incidentID, trackID, pdg ID, edep, time - 299mm is about 1ns from target
+    // and in middle of ECal
+    pretendSimHits[0].addContrib(-1, -1, 0, currEnergy_, 1.);
+    // sim position in middle of ECal
+    pretendSimHits[0].setPosition(0., 0., 299.);
 
     // needs to be correct collection name
     REQUIRE_NOTHROW(event.add("EcalSimHits", pretendSimHits));

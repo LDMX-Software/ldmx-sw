@@ -31,9 +31,9 @@ class DigitizationProcessor : public TrackingGeometryUser {
   DigitizationProcessor(const std::string& name, framework::Process& process);
   ~DigitizationProcessor() = default;
 
-  void onProcessStart() final override;
+  void onProcessStart() override;
 
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -41,9 +41,9 @@ class DigitizationProcessor : public TrackingGeometryUser {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const ldmx::RunHeader& header) final override;
+  void onNewRun(const ldmx::RunHeader& header) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   /**
    * Does basic digitization of SimTrackerHits. For now, this simply uses the

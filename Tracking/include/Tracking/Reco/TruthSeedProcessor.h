@@ -64,14 +64,14 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    *
    * @param parameters Parameters for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Callback for the EventProcessor to take any necessary action when the
    * processing of events starts. For this class, the callback is used to
    * retrieve the GeometryContext from ACTS.
    */
-  void onProcessStart() final override{};
+  void onProcessStart() override{};
 
   /**
    * onNewRun is the first function called for each processor
@@ -87,7 +87,7 @@ class TruthSeedProcessor : public TrackingGeometryUser {
    *
    * @param event The event containing the collections to process.
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
  private:
   /**

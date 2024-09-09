@@ -54,14 +54,14 @@ class TargetDarkBremFilter : public simcore::UserAction {
   /**
    * Class destructor.
    */
-  ~TargetDarkBremFilter() {}
+  ~TargetDarkBremFilter() = default;
 
   /**
    * Get the types of actions this class can do
    *
    * @return list of action types this class does
    */
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING, simcore::TYPE::EVENT};
   }
 
@@ -70,7 +70,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] e event being started, unused
    */
-  void BeginOfEventAction(const G4Event* e) final override;
+  void BeginOfEventAction(const G4Event* e) override;
 
   /**
    * Looking for A' while primary is stepping.
@@ -83,7 +83,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] step current G4Step
    */
-  void stepping(const G4Step* step);
+  void stepping(const G4Step* step) override;
 
   /**
    * Check flag signaling finding of A', if false,
@@ -91,7 +91,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] event being ended, check if it is already aborted
    */
-  void EndOfEventAction(const G4Event* event) final override;
+  void EndOfEventAction(const G4Event* event) override;
 
  private:
   /**

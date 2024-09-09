@@ -38,7 +38,7 @@ class SteppingAction : public G4UserSteppingAction {
    *
    * @param step The Geant4 step.
    */
-  void UserSteppingAction(const G4Step* step) final override;
+  void UserSteppingAction(const G4Step* step) override;
 
   /**
    * Register a user action of type SteppingAction with this class.

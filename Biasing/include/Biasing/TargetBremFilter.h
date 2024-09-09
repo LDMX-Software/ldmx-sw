@@ -35,14 +35,14 @@ class TargetBremFilter : public simcore::UserAction {
    * Implement the stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * Method called at the end of every event.
    *
    * @param event Geant4 event object.
    */
-  void EndOfEventAction(const G4Event*) final override;
+  void EndOfEventAction(const G4Event*) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -52,10 +52,10 @@ class TargetBremFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) final override;
+      const G4ClassificationOfNewTrack& currentTrackClass) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::EVENT, simcore::TYPE::STACKING,
             simcore::TYPE::STEPPING};
   }

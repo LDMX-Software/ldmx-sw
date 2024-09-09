@@ -38,9 +38,9 @@ class EcalProcessFilter : public simcore::UserAction {
   /// Destructor
   ~EcalProcessFilter();
 
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
-  // void PostUserTrackingAction(const G4Track*) final override;
+  // void PostUserTrackingAction(const G4Track*) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -50,10 +50,10 @@ class EcalProcessFilter : public simcore::UserAction {
    */
   G4ClassificationOfNewTrack ClassifyNewTrack(
       const G4Track* aTrack,
-      const G4ClassificationOfNewTrack& currentTrackClass) final override;
+      const G4ClassificationOfNewTrack& currentTrackClass) override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING};
   }
 

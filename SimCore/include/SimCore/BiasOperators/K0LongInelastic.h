@@ -28,7 +28,7 @@ class K0LongInelastic : public XsecBiasingOperator {
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
       const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+      const G4BiasingProcessInterface* callingProcess) override;
 
   /// Return the process to bias
   std::string getProcessToBias() const override { return "kaon0LInelastic"; }

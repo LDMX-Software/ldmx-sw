@@ -73,7 +73,7 @@ float Bimoid::Max(int id) {
   float b = 50;
   float mx = (a + b) / 2;  // maximum
 
-  while (abs(Derivative(mx, id)) >= 1e-5) {
+  while (std::abs(Derivative(mx, id)) >= 1e-5) {
     if (Derivative(a, id) * Derivative(mx, id) > 0) {
       a = mx;
     } else
