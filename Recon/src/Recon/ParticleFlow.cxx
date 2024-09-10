@@ -395,24 +395,6 @@ void ParticleFlow::produce(framework::Event& event) {
   event.add(outputCollName_, pfCands);
 }
 
-void ParticleFlow::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void ParticleFlow::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void ParticleFlow::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
 void ParticleFlow::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";
   delete eCorr_;

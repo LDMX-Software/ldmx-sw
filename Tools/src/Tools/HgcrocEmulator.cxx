@@ -84,7 +84,8 @@ bool HgcrocEmulator::digitize(
   /// the time here is nominal (zero gives peak if hit.second is zero)
 
   // step 3: go through each BX sample one by one
-  bool doReadout = false;
+  // doReadout is unused, should it be? FIXME
+  // bool doReadout = false;
   bool wasTOA = false;
   for (int iADC = 0; iADC < nADCs_; iADC++) {
     double startBX = (iADC - iSOI_) * clockCycle_ - measTime;
@@ -146,7 +147,8 @@ bool HgcrocEmulator::digitize(
       double tot = charge_deposited / drainRate;
 
       // calculate the index that tot will complete on
-      int num_whole_clocks = int(tot / clockCycle_);
+      // Unused, should it be?
+      // int num_whole_clocks = int(tot / clockCycle_);
 
       // calculate the TDC counts for this tot measurement
       //  internally, the chip uses 12 bits (2^12 = 4096)
