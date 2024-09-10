@@ -30,6 +30,12 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
 
+# Adding ROOT, ACTS, HLT arb prec as "SYSTEM" 
+# which will silence compiler warnings from these 3rd party softwares
+include_directories(SYSTEM /usr/local/include/root)
+include_directories(SYSTEM Tracking/acts/Core/include)
+include_directories(SYSTEM Trigger/HLS_arbitrary_Precision_Types/include)
+
 # If an install location hasn't been set via CMAKE_INSTALL_PREFIX, set it to 
 # a reasonable default ($PWD/install).  
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
