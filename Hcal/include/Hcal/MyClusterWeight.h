@@ -29,12 +29,13 @@ class MyClusterWeight {
     double bZ = b.centroid().Pz();
 
     double dijz;
-    double eFrac;
+    // This is unused, should it be? FIXME
+    // double eFrac;
     if (aE >= bE) {
-      eFrac = bE / aE;  // ratio of energies
-      dijz = bZ - aZ;   // differences in Z
+      // eFrac = bE / aE;  // ratio of energies
+      dijz = bZ - aZ;  // differences in Z
     } else {
-      eFrac = aE / bE;
+      // eFrac = aE / bE;
       dijz = aZ - bZ;
     }
 

@@ -27,8 +27,8 @@ static const double PE_ENERGY = 4.66 / 68;  // 0.069 MeV
  * Conversion between voltage and deposited energy
  * [MeV/mV]
  * 1 PE ~ 5 mV
+ *  static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
  */
-static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
 
 /**
  * Maximum error that a single hit energy/PE
@@ -43,8 +43,8 @@ static const double MeV_per_mV = PE_ENERGY / 5;  // 0.013 MeV/mV
 // static const double MAX_ENERGY_ERROR_DAQ = 4 * PE_ENERGY;
 // static const double MAX_ENERGY_PERCENT_ERROR_DAQ = 0.2;
 static const double MAX_PE_ERROR_DAQ = 40;
-static const double MAX_PE_PERCENT_ERROR_DAQ =
-    0.4;  // large percentage error for now
+// large percentage error for now
+static const double MAX_PE_PERCENT_ERROR_DAQ = 0.4;
 
 /**
  * Maximum error that a single hit position along the bar
@@ -54,9 +54,9 @@ static const double MAX_PE_PERCENT_ERROR_DAQ =
  * Comparing simulated position vs
  * reconstructed position along the bar for even/odd layers in the back Hcal.
  */
-static const double MAX_POSITION_ERROR_DAQ =
-    50. / 2;  // mm // scintillator length/2
-static const double MAX_POSITION_PERCENT_ERROR_DAQ = 0.3;
+// mm // scintillator length/2
+// static const double MAX_POSITION_ERROR_DAQ = 50. / 2;
+// static const double MAX_POSITION_PERCENT_ERROR_DAQ = 0.3;
 
 /**
  * Number of sim hits to create.
@@ -288,23 +288,24 @@ class HcalCheckReconstruction : public framework::Analyzer {
     //           << std::endl;
     // std::cout << "npes " << hit.getPE() << " approx PE " << int(truth_energy
     // / PE_ENERGY)  << std::endl;
-
-    if (id.section() == 0) {
-      double truth_pos, rec_pos;
-      if ((id.layer() % 2) == 1) {
-        truth_pos = simHits.at(0).getPosition()[0];
-        rec_pos = hit.getXPos();
-      } else {
-        truth_pos = simHits.at(0).getPosition()[1];
-        rec_pos = hit.getYPos();
-      }
-      // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
-      // std::endl;
-      // comment position check for now
-      // CHECK_THAT(rec_pos, isCloseEnough(truth_pos, MAX_POSITION_ERROR_DAQ,
-      //                                 MAX_POSITION_PERCENT_ERROR_DAQ));
-    }
-
+    /*
+        if (id.section() == 0) {
+          double truth_pos, rec_pos;
+          if ((id.layer() % 2) == 1) {
+            truth_pos = simHits.at(0).getPosition()[0];
+            rec_pos = hit.getXPos();
+          } else {
+            truth_pos = simHits.at(0).getPosition()[1];
+            rec_pos = hit.getYPos();
+          }
+          // std::cout << "rec pos " << rec_pos << " truth " << truth_pos <<
+          // std::endl;
+          // comment position check for now
+          // CHECK_THAT(rec_pos, isCloseEnough(truth_pos,
+       MAX_POSITION_ERROR_DAQ,
+          //                                 MAX_POSITION_PERCENT_ERROR_DAQ));
+        }
+    */
     return;
   }
 };  // HcalCheckReconstruction
@@ -332,7 +333,7 @@ DECLARE_ANALYZER_NS(hcal::test, HcalCheckReconstruction)
 TEST_CASE("Hcal Digi Pipeline test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_digi_pipeline_test_config.py"};
 
-  char **args;
+  char **args{nullptr};
   framework::ProcessHandle p;
 
   framework::ConfigurePython cfg(config_file, args, 0);
