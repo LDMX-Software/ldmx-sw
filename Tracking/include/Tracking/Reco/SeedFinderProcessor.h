@@ -145,9 +145,6 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<std::string> strategies_{};
   double bfield_{1.5};
 
-  TFile* outputFile_;
-  TTree* outputTree_;
-
   std::vector<float> xhit_;
   std::vector<float> yhit_;
   std::vector<float> zhit_;
@@ -172,7 +169,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   // The measurements groups
 
   std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
-  std::array<const ldmx::Measurement*, 5> groups_array;
+  // groups_array is unused, should it be? FIXME
+  // std::array<const ldmx::Measurement*, 5> groups_array;
 
   // Truth Matching tool
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =

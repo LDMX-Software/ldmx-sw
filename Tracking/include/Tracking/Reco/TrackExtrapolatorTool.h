@@ -99,9 +99,9 @@ class TrackExtrapolatorTool {
   std::optional<Acts::BoundTrackParameters> extrapolate(
       track_t track, const std::shared_ptr<Acts::Surface>& target_surface) {
     // get first and last track state on surface
-    size_t nstates = track.nTrackStates();
-    auto& tsc = track.container().trackStateContainer();
+    // auto& tsc = track.container().trackStateContainer();
     // auto  ts_first  = tsc.getTrackState(0);
+    // size_t nstates = track.nTrackStates();
     // auto  ts_last   = tsc.getTrackState(nstates-1);
     auto outermost = *(track.trackStates().begin());
     auto begin = track.trackStates().begin();
@@ -130,8 +130,8 @@ class TrackExtrapolatorTool {
 
     const auto& surface = ts.referenceSurface();
     const auto& smoothed = ts.smoothed();
-    bool hasSmoothed = ts.hasSmoothed();
-    const auto& filtered = ts.filtered();
+    // bool hasSmoothed = ts.hasSmoothed();
+    // const auto& filtered = ts.filtered();
     const auto& cov = ts.smoothedCovariance();
 
     // std::cout<<"Surface::"<<
@@ -156,8 +156,8 @@ class TrackExtrapolatorTool {
     // Now.. I'm taking whatever it is. I'm not checking here if it is a
     // measurement.
 
-    size_t nstates = track.nTrackStates();
-    auto& tsc = track.container().trackStateContainer();
+    // size_t nstates = track.nTrackStates();
+    // auto& tsc = track.container().trackStateContainer();
     auto begin = track.trackStates().begin();
     auto ts_last = *begin;
     const auto& surface = (ts_last).referenceSurface();

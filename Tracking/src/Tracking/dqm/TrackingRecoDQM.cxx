@@ -62,9 +62,9 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   ldmx_log(debug) << "Do truth comparison::" << doTruthComparison << std::endl;
 
   if (doTruthComparison) {
-    sortTracks(tracks, uniqueTracks, duplicateTracks, fakeTracks);
+    sortTracks(tracks, uniqueTracks_, duplicateTracks_, fakeTracks_);
   } else {
-    uniqueTracks = tracks;
+    uniqueTracks_ = tracks;
   }
 
   ldmx_log(debug) << "Filling histograms " << std::endl;
@@ -73,12 +73,12 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   histograms_.fill(title_ + "N_tracks", tracks.size());
 
   ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
-  TrackMonitoring(uniqueTracks, title_, true, true);
+  TrackMonitoring(uniqueTracks_, title_, true, true);
 
   ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
   // Fakes and duplicates
-  TrackMonitoring(duplicateTracks, title_ + "dup_", false, false);
-  TrackMonitoring(fakeTracks, title_ + "fake_", false, false);
+  TrackMonitoring(duplicateTracks_, title_ + "dup_", false, false);
+  TrackMonitoring(fakeTracks_, title_ + "fake_", false, false);
 
   // Track Extrapolation to Ecal Monitoring
 
@@ -104,9 +104,9 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   // Tagger Recoil Matching
 
   // Clear the vectors
-  uniqueTracks.clear();
-  duplicateTracks.clear();
-  fakeTracks.clear();
+  uniqueTracks_.clear();
+  duplicateTracks_.clear();
+  fakeTracks_.clear();
 }
 
 void TrackingRecoDQM::onProcessEnd() {
@@ -478,31 +478,31 @@ void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
     ldmx_log(debug) << "Unpacking covariance matrix" << std::endl;
     Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
 
-    double sigmaloc0 = sqrt(
+    [[maybe_unused]] double sigmaloc0 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0));
-    double sigmaloc1 = sqrt(
+    [[maybe_unused]] double sigmaloc1 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc1, Acts::BoundIndices::eBoundLoc1));
-    double sigmaphi =
+    [[maybe_unused]] double sigmaphi =
         sqrt(cov(Acts::BoundIndices::eBoundPhi, Acts::BoundIndices::eBoundPhi));
-    double sigmatheta = sqrt(
+    [[maybe_unused]] double sigmatheta = sqrt(
         cov(Acts::BoundIndices::eBoundTheta, Acts::BoundIndices::eBoundTheta));
-    double sigmaqop = sqrt(cov(Acts::BoundIndices::eBoundQOverP,
-                               Acts::BoundIndices::eBoundQOverP));
+    [[maybe_unused]] double sigmaqop = sqrt(cov(
+        Acts::BoundIndices::eBoundQOverP, Acts::BoundIndices::eBoundQOverP));
 
     double trk_qop = track.getQoP();
     double trk_p = 1. / abs(trk_qop);
 
     double track_state_loc0 = TargetState.params[0];
     double track_state_loc1 = TargetState.params[1];
-    double track_state_phi = TargetState.params[2];
-    double track_state_theta = TargetState.params[3];
-    double track_state_p = TargetState.params[4];
+    [[maybe_unused]] double track_state_phi = TargetState.params[2];
+    [[maybe_unused]] double track_state_theta = TargetState.params[3];
+    [[maybe_unused]] double track_state_p = TargetState.params[4];
 
     double truth_state_loc0 = truthTargetState.params[0];
     double truth_state_loc1 = truthTargetState.params[1];
-    double truth_state_phi = truthTargetState.params[2];
-    double truth_state_theta = truthTargetState.params[3];
-    double truth_state_p = truthTargetState.params[4];
+    [[maybe_unused]] double truth_state_phi = truthTargetState.params[2];
+    [[maybe_unused]] double truth_state_theta = truthTargetState.params[3];
+    [[maybe_unused]] double truth_state_p = truthTargetState.params[4];
 
     // Check that the track state is filled
     if (TargetState.params.size() < 5) continue;

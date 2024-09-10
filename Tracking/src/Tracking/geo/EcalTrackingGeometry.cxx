@@ -47,7 +47,8 @@ EcalTrackingGeometry::EcalTrackingGeometry(std::string gdmlfile,
     std::cout << fWorldPhysVol->GetTranslation() << std::endl;
   }
   // Get the logical volume from the world
-  G4LogicalVolume* fWorldLogicalVol = fWorldPhysVol->GetLogicalVolume();
+  // fWorldLogicalVol is unused, should it be? FIXME
+  // G4LogicalVolume* fWorldLogicalVol = fWorldPhysVol->GetLogicalVolume();
 
   if (debug) std::cout << "Loop on world daughters" << std::endl;
 

@@ -77,7 +77,7 @@ class Vertexer : public framework::Producer {
   std::string trk_c_name_1{"TaggerTracks"};
   std::string trk_c_name_2{"RecoilTracks"};
   std::shared_ptr<VoidPropagator> propagator_;
-  double processing_time_{0.};
+  // double processing_time_{0.};
 
   // Monitoring histograms
 

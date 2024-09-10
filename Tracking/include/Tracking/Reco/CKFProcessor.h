@@ -201,7 +201,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::string out_trk_collection_{"Tracks"};
 
   // Mass for the propagator hypothesis in MeV
-  double mass_{0.511};
+  // This is unused, should it be? FIXME
+  // double mass_{0.511};
 
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};

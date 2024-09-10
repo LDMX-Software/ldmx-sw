@@ -133,7 +133,8 @@ class LdmxSpacePoint {
   float m_varianceR;
   float m_varianceZ;
   int m_id;
-  int m_surfaceId;
+  // m_surfaceId is unused, should it be? FIXME
+  // int m_surfaceId;
   int m_layer;
 };
 
