@@ -109,7 +109,8 @@ class TestConfig : public framework::Producer {
  * Sometimes it is helpful to leave the generated files, so
  * maybe we can make the removal optional?
  */
-static bool removeFile(const char *filepath) { return remove(filepath) == 0; }
+// static bool removeFile(const char *filepath) { return remove(filepath) == 0;
+// }
 
 }  // namespace test
 }  // namespace framework
