@@ -37,8 +37,10 @@ ClassImp(ldmx::EcalDigiCollection)
 
       // this is where the word --> measurements translation occurs
 
-      bool firstFlag = ONE_BIT_MASK & (word >> FIRSTFLAG_POS);
-      bool seconFlag = ONE_BIT_MASK & (word >> SECONFLAG_POS);
+      // Unused, should it be? FIXME
+      // bool firstFlag = ONE_BIT_MASK & (word >> FIRSTFLAG_POS);
+      // Unused, should it be? FIXME
+      // bool seconFlag = ONE_BIT_MASK & (word >> SECONFLAG_POS);
       int firstMeas = TEN_BIT_MASK & (word >> FIRSTMEAS_POS);
       int seconMeas = TEN_BIT_MASK & (word >> SECONMEAS_POS);
       int lastMeas = TEN_BIT_MASK & (word);

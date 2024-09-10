@@ -109,7 +109,7 @@ class EcalDigiProducer : public framework::Producer {
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 
   /// Total number of channels in the ECal
-  int nTotalChannels_;
+  [[maybe_unused]] int nTotalChannels_;
 
   /// Conversion from time in ns to ticks of the internal clock
   double ns_;
