@@ -32,7 +32,7 @@ class TargetProcessFilter : public simcore::UserAction {
                       framework::config::Parameters &parameters);
 
   /// Destructor
-  ~TargetProcessFilter();
+  virtual ~TargetProcessFilter() = default;
 
   /**
    * Implementmthe stepping action which performs the target volume biasing.
