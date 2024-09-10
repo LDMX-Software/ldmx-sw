@@ -22,7 +22,7 @@ void urlstatistics(unsigned int& http_requests, unsigned int& http_failures) {
 }
 
 std::unique_ptr<std::istream> urlstream(const std::string& url) {
-  if (url.find("file://") == 0 || url.length() > 0 && url[0] == '/') {
+  if ((url.find("file://") == 0 || url.length() > 0) && (url[0] == '/')) {
     std::string fname = url;
     if (fname.find("file://") == 0)
       fname = url.substr(url.find("file://") + strlen("file://"));
@@ -46,8 +46,9 @@ std::unique_ptr<std::istream> urlstream(const std::string& url) {
       execl("/usr/bin/wget", "wget", "-q", "--no-check-certificate", "-O",
             fname, "-o", "/tmp/wget.log", url.c_str(), (char*)0);
     } else {
-      int wstatus;
-      int wrv = waitpid(apid, &wstatus, 0);
+      int wstatus{9999};
+      // wrv is not used, was it meant to be? FIXME
+      // int wrv = waitpid(apid, &wstatus, 0);
       //      std::cout << "EXITED: " << WIFEXITED(wstatus) << " STATUS: " <<
       //      WEXITSTATUS(wstatus) << std::endl;
       if (WIFEXITED(wstatus) != 1 || WEXITSTATUS(wstatus) != 0) {
