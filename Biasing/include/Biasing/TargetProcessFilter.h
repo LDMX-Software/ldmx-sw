@@ -65,10 +65,6 @@ class TargetProcessFilter : public simcore::UserAction {
   /** Pointer to the current track being processed. */
   G4Track *currentTrack_{nullptr};
 
-  /** Flag indicating if the reaction of intereset occurred. */
-  // It is usused, should it be? FIXME
-  // bool reactionOccurred_{false};
-
   /// The process to bias
   std::string process_{""};
 };

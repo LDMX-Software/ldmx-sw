@@ -8,12 +8,7 @@
 #include "Framework/EventHeader.h"
 
 namespace ecal {
-
-// These are unused, should they be? FIXME
-// static const int LAYERS_MASK = 0xFF;
-// static const int LAYERS_ODDEVEN = 0x02;
 static const int LAYERS_IDENTICAL = 0x01;
-
 static const int MODULES_MASK = 0xFF00;
 static const int INPLANE_IDENTICAL = 0x0100;
 

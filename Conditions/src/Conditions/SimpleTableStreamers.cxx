@@ -19,8 +19,6 @@ static void storeIdFields(unsigned int id, std::ostream& s) {
 
 template <class T, class V>
 void storeT(const T& t, std::ostream& s, bool expandIds) {
-  // buffer is unused, was it meant to be? FIXME
-  // char buffer[100];
   //  write the header line
   s << "\"DetID\"";
   if (expandIds && t.getRowCount() > 0) {

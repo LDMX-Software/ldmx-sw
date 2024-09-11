@@ -30,13 +30,9 @@ class MyClusterWeight {
     double bZ = b.centroid().Pz();
 
     double dijz;
-    // eFrac is set but not used, should it be? FIXME
-    // double eFrac;
     if (aE >= bE) {
-      // eFrac = bE / aE;
       dijz = bZ - aZ;
     } else {
-      // eFrac = aE / bE;
       dijz = aZ - bZ;
     }
 

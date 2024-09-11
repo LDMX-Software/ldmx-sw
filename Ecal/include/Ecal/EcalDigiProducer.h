@@ -109,8 +109,8 @@ class EcalDigiProducer : public framework::Producer {
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
 
   /// Total number of channels in the ECal
-  // Currently unused, should it be? FIXME
-  // int nTotalChannels_;
+  // In a real data, zero-compression scenario the number of channels per event
+  // will change. Unused now, but keeping if for future dev int nTotalChannels_;
 
   /// Conversion from time in ns to ticks of the internal clock
   double ns_;
