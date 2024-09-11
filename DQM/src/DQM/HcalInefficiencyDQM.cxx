@@ -18,7 +18,6 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
   for (const auto &hit : hcalRecHits) {
     const ldmx::HcalID id{static_cast<ldmx::DetectorID::RawValue>(hit.getID())};
     const auto section{id.section()};
-    // const auto z{hit.getZPos()};
     const auto layer{id.layer()};
     if (hitPassesVeto(hit, section)) {
       if (layer < firstLayersHit[section]) {

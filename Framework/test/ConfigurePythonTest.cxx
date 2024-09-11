@@ -98,8 +98,12 @@ class TestConfig : public framework::Producer {
   }
 
   // I don't do anything.
-  virtual void produce(framework::Event &) final override {}
+  virtual void produce(framework::Event &) override {}
 };
+}  // namespace test
+}  // namespace framework
+
+DECLARE_PRODUCER_NS(framework::test, TestConfig)
 
 /**
  * Test for Configure Python class

@@ -47,18 +47,6 @@ static const double MAX_PE_ERROR_DAQ = 40;
 static const double MAX_PE_PERCENT_ERROR_DAQ = 0.4;
 
 /**
- * Maximum error that a single hit position along the bar
- * can be reconstructed with before failing the test
- * if in the back Hcal
- *
- * Comparing simulated position vs
- * reconstructed position along the bar for even/odd layers in the back Hcal.
- */
-// mm // scintillator length/2
-// static const double MAX_POSITION_ERROR_DAQ = 50. / 2;
-// static const double MAX_POSITION_PERCENT_ERROR_DAQ = 0.3;
-
-/**
  * Number of sim hits to create.
  *
  * In this test, we create one sim hit per event,
