@@ -27,16 +27,16 @@ class SingleSubsystemUnpacker : public framework::Producer {
    *
    * @param[in] ps Parameters for configuration
    */
-  void configure(framework::config::Parameters& ps) final override;
+  void configure(framework::config::Parameters& ps) override;
 
   /**
    * Actually do the unpacking/decoding.
    *
    * @param[in,out] event Event bus with raw data where we will put the digis
    */
-  void produce(framework::Event& event) final override;
+  void produce(framework::Event& event) override;
 
-  void beforeNewRun(ldmx::RunHeader& rh) final override;
+  void beforeNewRun(ldmx::RunHeader& rh) override;
 
  private:
   /// number of bytes in each event

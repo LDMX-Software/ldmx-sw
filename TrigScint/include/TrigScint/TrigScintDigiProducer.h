@@ -46,7 +46,7 @@ class TrigScintDigiProducer : public framework::Producer {
 
   TrigScintDigiProducer(const std::string& name, framework::Process& process);
 
-  ~TrigScintDigiProducer();
+  ~TrigScintDigiProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -54,9 +54,9 @@ class TrigScintDigiProducer : public framework::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   ldmx::TrigScintID generateRandomID(int module);
 

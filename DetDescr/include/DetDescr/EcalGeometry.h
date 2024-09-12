@@ -9,6 +9,7 @@
  * @author Patterson, UCSB
  * @author Tom Eichlersmith, University of Minnesota
  * @author Hongyin Liu, UCSB
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef DETDESCR_ECALGEOMETRY_H_
@@ -115,9 +116,17 @@ class EcalGeometry : public framework::ConditionsObject {
    * @param[in] x global x position [mm]
    * @param[in] y global y position [mm]
    * @param[in] z global z position [mm]
-   * @return EcalID of the cell
+   * @param[in] fallible bool to decide if the function should fail
+   * @return EcalID of the cell (null-id if fallible)
+   * Example for fallible use case
+   * ```cpp
+   * auto id = geometry.getID(x, y, z, true);
+   * if (id.null()) {
+   *   // position (x,y) is not contained within a cell in layer at z
+   * }
+   * ```
    */
-  EcalID getID(double x, double y, double z) const;
+  EcalID getID(double x, double y, double z, bool fallible = false) const;
 
   /**
    * Get a cell's ID from its x,y global position and layer number
@@ -128,9 +137,17 @@ class EcalGeometry : public framework::ConditionsObject {
    * @param[in] x global x position [mm]
    * @param[in] y global y position [mm]
    * @param[in] layer_id integer ID of the layer the hit is in
-   * @return EcalID of the cell
+   * @param[in] fallible bool to decide if the function should fail
+   * @return EcalID of the cell (null-id if fallible)
+   * Example for fallible use case
+   * ```cpp
+   * auto id = geometry.getID(x, y, ilayer, true);
+   * if (id.null()) {
+   *    // position (x,y) is not contained within a cell in layer ilayer
+   * }
+   * ```
    */
-  EcalID getID(double x, double y, int layer_id) const;
+  EcalID getID(double x, double y, int layer_id, bool fallible = false) const;
 
   /**
    * Get a cell's ID from its x,y global position and layer/module numbers
@@ -144,9 +161,19 @@ class EcalGeometry : public framework::ConditionsObject {
    * @param[in] y global y position [mm]
    * @param[in] layer_id integer ID of the layer the hit is in
    * @param[in] module_id integer ID of the module the hit is in
-   * @return EcalID of the cell
+   * @param[in] fallible bool to decide if the function should fail
+   * @return EcalID of the cell (null-id if fallible)
+   * Example for fallible use case
+   * ```cpp
+   * auto id = geometry.getID(x, y, ilayer, imodule, true);
+   * if (id.null()) {
+   *    // position (x,y) is not contained within a cell in layer ilayer in
+   * module imodule
+   * }
+   * ```
    */
-  EcalID getID(double x, double y, int layer_id, int module_id) const;
+  EcalID getID(double x, double y, int layer_id, int module_id,
+               bool fallible = false) const;
 
   /**
    * Get a cell's position from its ID number

@@ -35,7 +35,7 @@ class EventReadoutProducer : public framework::Producer {
  public:
   EventReadoutProducer(const std::string& name, framework::Process& process);
 
-  ~EventReadoutProducer();
+  ~EventReadoutProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -43,9 +43,9 @@ class EventReadoutProducer : public framework::Producer {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
  private:
   /// Class to set the verbosity level.

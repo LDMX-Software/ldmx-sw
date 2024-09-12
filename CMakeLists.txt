@@ -9,8 +9,9 @@ get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
 get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
 if ("${srcdir}" STREQUAL "${bindir}")
   message(FATAL_ERROR "ldmx-sw does not support in-source builds.
-  Call 'ldmx cmake ..' from within a 'build/' subdirectory or
-  Tell cmake to use a different build directory with 'ldmx cmake -B build -S .'")
+  Call 'denv cmake ..' from within a 'build/' subdirectory or
+  Tell cmake to use a different build directory with 'denv cmake -B build -S .'
+  'just configure' and 'just build' will do the necessary directory movement for you as well.")
 endif()
 
 # Set the project name
@@ -18,6 +19,8 @@ project(LDMX_SW VERSION 3.1.1
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )
+
+set(CMAKE_CXX_STANDARD 17)
 
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)

@@ -172,7 +172,7 @@ class TruthTrack {
   int pdgID_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(TruthTrack, 1);
+  ClassDef(TruthTrack, 2);
 
 };  // TruthTrack
 

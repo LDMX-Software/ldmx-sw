@@ -1,9 +1,6 @@
 [submodule "docs/doxygen.conf/doxygen-awesome-css"]
 	path = docs/doxygen.conf/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css
-[submodule "SimCore/G4DarkBreM"]
-	path = SimCore/G4DarkBreM
-	url = https://github.com/LDMX-Software/G4DarkBreM.git
 [submodule "Tracking/acts"]
 	path = Tracking/acts
 	url = https://github.com/acts-project/acts
@@ -13,3 +10,6 @@
 [submodule "Trigger/ruckus"]
 	path = Trigger/ruckus
 	url = https://github.com/slaclab/ruckus
+[submodule "SimCore/G4DarkBreM"]
+	path = SimCore/G4DarkBreM
+	url = https://github.com/LDMX-Software/G4DarkBreM.git

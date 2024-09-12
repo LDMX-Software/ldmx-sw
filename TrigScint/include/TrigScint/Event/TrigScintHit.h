@@ -93,7 +93,7 @@ class TrigScintHit : public ldmx::HcalHit {
   float beamEfrac_{0};
 
   float pe_{0};
-  ClassDef(TrigScintHit, 2);
+  ClassDef(TrigScintHit, 3);
 
 };  // TrigScintHit
 

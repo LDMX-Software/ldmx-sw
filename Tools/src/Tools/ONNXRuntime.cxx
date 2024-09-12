@@ -72,7 +72,9 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
     auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
     size_t num_dims = tensor_info.GetDimensionsCount();
     input_node_dims_[input_name].resize(num_dims);
-    tensor_info.GetDimensions(input_node_dims_[input_name].data(), num_dims);
+    const auto input_shape = tensor_info.GetShape();
+    std::copy(input_shape.begin(), input_shape.end(),
+              input_node_dims_[input_name].begin());
 
     // set the batch size to 1 by default
     input_node_dims_[input_name].at(0) = 1;
@@ -94,7 +96,9 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
     auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
     size_t num_dims = tensor_info.GetDimensionsCount();
     output_node_dims_[output_name].resize(num_dims);
-    tensor_info.GetDimensions(output_node_dims_[output_name].data(), num_dims);
+    const auto output_shape = tensor_info.GetShape();
+    std::copy(output_shape.begin(), output_shape.end(),
+              output_node_dims_[output_name].begin());
 
     // the 0th dim depends on the batch size
     output_node_dims_[output_name].at(0) = -1;

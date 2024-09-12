@@ -44,7 +44,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STACKING, simcore::TYPE::STEPPING,
             simcore::TYPE::EVENT};
   }
@@ -54,7 +54,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    *
    * @param[in] event not used
    */
-  void BeginOfEventAction(const G4Event* event) final override;
+  void BeginOfEventAction(const G4Event* event) override;
 
   /**
    * We follow the simulation along each step and check
@@ -72,7 +72,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    *
    * @param[in] step current G4Step
    */
-  void stepping(const G4Step* step) final override;
+  void stepping(const G4Step* step) override;
 
   /**
    * When using the PartialEnergySorter,
@@ -86,7 +86,7 @@ class MidShowerDiMuonBkgdFilter : public simcore::UserAction {
    * @see PartialEnergySort::NewStage
    * @see AbortEvent
    */
-  void NewStage() final override;
+  void NewStage() override;
 
  private:
   /**

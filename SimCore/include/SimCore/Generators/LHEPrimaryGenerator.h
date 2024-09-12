@@ -39,9 +39,9 @@ class LHEPrimaryGenerator : public simcore::PrimaryGenerator {
    * Generate vertices in the Geant4 event.
    * @param anEvent The Geant4 event.
    */
-  void GeneratePrimaryVertex(G4Event* anEvent) final override;
+  void GeneratePrimaryVertex(G4Event* anEvent) override;
 
-  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) final override;
+  void RecordConfig(const std::string& id, ldmx::RunHeader& rh) override;
 
  private:
   /**

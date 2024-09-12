@@ -54,7 +54,7 @@ class ConfigurePython {
    *
    * Does nothing at the moment.
    */
-  ~ConfigurePython() {}
+  ~ConfigurePython() = default;
 
   /**
    * Create a process object based on the python file information

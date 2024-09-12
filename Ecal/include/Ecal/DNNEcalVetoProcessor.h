@@ -27,8 +27,8 @@ class DNNEcalVetoProcessor : public framework::Producer {
  public:
   DNNEcalVetoProcessor(const std::string& name, framework::Process& process);
   virtual ~DNNEcalVetoProcessor() {}
-  void configure(framework::config::Parameters& parameters) final override;
-  void produce(framework::Event& event);
+  void configure(framework::config::Parameters& parameters) override;
+  void produce(framework::Event& event) override;
 
  private:
   /**

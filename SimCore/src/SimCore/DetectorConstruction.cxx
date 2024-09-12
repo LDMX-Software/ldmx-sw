@@ -138,9 +138,8 @@ void DetectorConstruction::ConstructSDandField() {
     // attach to volumes
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
       if (sd->isSensDet(volume)) {
-        std::cout << "[ DetectorConstruction ] : "
-                  << "Attaching " << sd->GetName() << " to "
-                  << volume->GetName() << std::endl;
+        ldmx_log(debug) << "Attaching " << sd->GetName() << " to "
+                        << volume->GetName();
         volume->SetSensitiveDetector(sd);
       }
     }
@@ -149,7 +148,7 @@ void DetectorConstruction::ConstructSDandField() {
   // Biasing operators were created in RunManager::setupPhysics
   //  which is called before G4RunManager::Initialize
   //  which is where this method ends up being called.
-  simcore::XsecBiasingOperator::Factory::get().apply([](auto bop) {
+  simcore::XsecBiasingOperator::Factory::get().apply([&](auto bop) {
     logical_volume_tests::Test includeVolumeTest{nullptr};
     if (bop->getVolumeToBias().compare("ecal") == 0) {
       includeVolumeTest = &logical_volume_tests::isInEcal;
@@ -173,9 +172,8 @@ void DetectorConstruction::ConstructSDandField() {
       auto volume_name = volume->GetName();
       if (includeVolumeTest(volume, bop->getVolumeToBias())) {
         bop->AttachTo(volume);
-        std::cout << "[ DetectorConstruction ]: "
-                  << "Attaching biasing operator " << bop->GetName()
-                  << " to volume " << volume->GetName() << std::endl;
+        ldmx_log(debug) << "Attaching biasing operator " << bop->GetName()
+                        << " to volume " << volume->GetName();
       }  // BOP attached to target or ecal
     }    // loop over volumes
   });    // loop over biasing operators

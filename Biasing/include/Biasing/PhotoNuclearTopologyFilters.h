@@ -54,7 +54,7 @@ class PhotoNuclearTopologyFilter : public simcore::UserAction {
   virtual bool rejectEvent(const std::vector<G4Track*>& secondaries) const = 0;
 
   /// Retrieve the type of actions this class defines
-  std::vector<simcore::TYPE> getTypes() final override {
+  std::vector<simcore::TYPE> getTypes() override {
     return {simcore::TYPE::STEPPING};
   }
 

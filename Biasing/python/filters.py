@@ -247,3 +247,20 @@ class MidShowerDiMuonBkgdFilter(simcfg.UserAction) :
         include.library()
 
         self.threshold = thresh
+
+
+class TaggerHitFilter(simcfg.UserAction): 
+    """ Configuration used to reject off-energy electrons in the tagger tracker.
+    Parameters
+    ----------
+    layers_hit : int
+        Minimum number of tagger layers with a hit needed to persist the event.
+    """
+
+    def __init__(self, layersHit=8) :
+        super().__init__('tagger_hit_filter','biasing::TaggerHitFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.layers_hit = layersHit

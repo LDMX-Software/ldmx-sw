@@ -187,8 +187,6 @@ class TrackExtrapolatorTool {
       return std::nullopt;
   }
 
-  /**
-
   /** Create an ldmx::TrackState to the extrapolated position
    @param Acts::Track
    @param extrapolation surface

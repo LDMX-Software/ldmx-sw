@@ -10,8 +10,6 @@ EventReadoutProducer::EventReadoutProducer(const std::string &name,
                                            framework::Process &process)
     : Producer(name, process) {}
 
-EventReadoutProducer::~EventReadoutProducer() {}
-
 void EventReadoutProducer::configure(
     framework::config::Parameters &parameters) {
   // Configure this instance of the producer

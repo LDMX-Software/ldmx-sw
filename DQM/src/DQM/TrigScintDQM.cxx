@@ -11,7 +11,7 @@ TrigScintDQM::TrigScintDQM(const std::string &name, framework::Process &process)
 TrigScintDQM::~TrigScintDQM() {}
 
 void TrigScintDQM::onProcessStart() {
-  std::cout << "Process starts!" << std::endl;
+  ldmx_log(debug) << "Process starts!";
 
   getHistoDirectory();
 
@@ -42,8 +42,8 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
   hitCollectionName_ = ps.getParameter<std::string>("hit_collection");
   padName_ = ps.getParameter<std::string>("pad");
 
-  std::cout << "In TrigScintDQM::configure, got parameters "
-            << hitCollectionName_ << " and " << padName_ << std::endl;
+  ldmx_log(debug) << "In TrigScintDQM::configure, got parameters "
+                  << hitCollectionName_ << " and " << padName_;
 }
 
 void TrigScintDQM::analyze(const framework::Event &event) {

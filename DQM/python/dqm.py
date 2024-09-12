@@ -238,8 +238,14 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.ecalRecHitPass = "" #use whatever pass is available
 
         self.build1DHistogram( "num_sim_hits_per_cell" ,
-                "Number SimHits per ECal Cell (excluding empty rec cells)" , 20 , 0 , 20 )
+                "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , -0.5 , 19.5 )
         
+        self.build1DHistogram( "num_rec_hits" ,
+                "Number of RecHits" , 100 , -0.5 , 299.5 )
+
+        self.build1DHistogram( "num_noise_hits" ,
+                "Number of noisy RecHits" , 100 , -0.5 , 99.5 )
+
         self.build1DHistogram( "total_rec_energy"      ,
                 "Total Reconstructed Energy in ECal [MeV]" , 800 , 0. , 8000. )
         
@@ -278,6 +284,57 @@ class EcalShowerFeatures(ldmxcfg.Analyzer) :
                 'Avg Layer Hit',40,0.,40.)
         self.build1DHistogram('std_layer_hit',
                 'Std Dev Layer Hit',20,0.,20.)
+        self.build1DHistogram('e_containment_energy',
+                'Electron Containment Energy [MeV]',200,0.,8000.)
+        self.build1DHistogram('ph_containment_energy',
+                'Photon Containment Energy [MeV]',200,0.,8000.)
+        self.build1DHistogram('out_containment_energy',
+                'Outside Containment Energy [MeV]',200,0.,8000.)
+
+class EcalMipTrackingFeatures(ldmxcfg.Analyzer) :
+    """Configured EcalMipTrackingFeatures python object """
+
+    def __init__(self,name="EcalMipTrackingFeatures") :
+        super().__init__(name,'dqm::EcalMipTrackingFeatures','DQM')
+
+        self.ecal_veto_name = 'EcalVeto'
+        self.ecal_veto_pass = ''
+
+        self.build1DHistogram('n_straight_tracks',
+                'Num Straight Tracks',30,-0.5,29.5)
+        self.build1DHistogram('n_linreg_tracks',
+                'Num Linear Regression Tracks',15,-0.5,14.5)
+        self.build1DHistogram('first_near_photon_layer',
+                'First Near Photon Layer',34,-0.5,34.5)
+        self.build1DHistogram('ep_ang',
+                'Electron Photon Angle',90,0.,90.)
+        self.build1DHistogram('ep_sep',
+                'Electron Photon Separation',180,0.,180.)
+        self.build1DHistogram('recoil_pz',
+                'Recoil electron pz',200,-200.,8000.)
+        self.build1DHistogram('recoil_pt',
+                'Recoil electron p_{T}',200,0,2000.)
+        self.build1DHistogram('recoil_x',
+                'Recoil electron x',100,-300.,300.)
+        self.build1DHistogram('recoil_y',
+                'Recoil electron y',100,-300.,300.)
+        
+
+class EcalVetoResults(ldmxcfg.Analyzer) :
+    """Configured EcalMipTrackingFeatures python object """
+
+    def __init__(self,name="EcalVetoResults") :
+        super().__init__(name,'dqm::EcalVetoResults','DQM')
+
+        self.ecal_veto_name = 'EcalVeto'
+        self.ecal_veto_pass = ''
+
+        self.build1DHistogram('bdt_disc',
+                'BDT discriminating score',100,0.,1.)
+        self.build1DHistogram('bdt_disc_log',
+                '-log(1-BDT discriminating score)',100,0.,5.)
+        self.build1DHistogram('fiducial',
+                'Recoil eletron fiducial',2,-0.5,1.5)
 
 class SimObjects(ldmxcfg.Analyzer) :
     """Configuration for sim-level objects to histogram-ize
@@ -644,7 +701,9 @@ class GenieTruthDQM(ldmxcfg.Analyzer) :
 
 ecal_dqm = [
         EcalDigiVerify(),
-        EcalShowerFeatures()
+        EcalShowerFeatures(),
+        EcalMipTrackingFeatures(),
+        EcalVetoResults()
         ]
 
 hcal_dqm = [

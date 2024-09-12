@@ -193,6 +193,11 @@ class Process {
   /** Maximum number of attempts to make before giving up on an event */
   int maxTries_;
 
+  /**
+   * allow the Process to skip input files that are corrupted
+   */
+  bool skipCorruptedInputFiles_;
+
   /** Storage controller */
   StorageControl storageController_;
 

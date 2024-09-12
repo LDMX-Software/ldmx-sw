@@ -9,6 +9,9 @@ jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.26.0
       - uses: actions/checkout@v4
-      - name: run format check
-        run: ./.github/format-check
+      - name: run format check on the C++
+        run: just install-denv init format-cpp --verbose -Werror --dry-run
