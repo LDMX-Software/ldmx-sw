@@ -159,10 +159,10 @@ namespace dqm {
     auto hitnuc_4vec_ptr = hepmc3_ev.attribute<HepMC3::VectorDoubleAttribute>("GENIE.Interaction.HitNucleonP4");
     if(hitnuc_4vec_ptr) {
       auto hitnuc_4vec = hitnuc_4vec_ptr->value();
-      ntuple_.setVar<double>("hitnuc_px", hitnuc_4vec[0]);
-      ntuple_.setVar<double>("hitnuc_py", hitnuc_4vec[1]);
-      ntuple_.setVar<double>("hitnuc_pz", hitnuc_4vec[2]);
-      ntuple_.setVar<double>("hitnuc_e", hitnuc_4vec[3]);
+      ntuple_.setVar<double>("hnuc_px", hitnuc_4vec[0]);
+      ntuple_.setVar<double>("hnuc_py", hitnuc_4vec[1]);
+      ntuple_.setVar<double>("hnuc_pz", hitnuc_4vec[2]);
+      ntuple_.setVar<double>("hnuc_e", hitnuc_4vec[3]);
     }
     //hit quark info
     //note: it's only there for some interaction types!
