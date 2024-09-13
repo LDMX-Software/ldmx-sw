@@ -142,9 +142,9 @@ inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
                                   sigma_v * sigma_v, hit.getID());
 }
 
-  //BoundSymMatrix doesn't exist in v36  .. use BoundSquareMatrix
-  //  have to change this everywhere ..  I think using BoundSysMatrix was defined
-  // exactly the same as BoundSquareMatrix is now in ACTs
+// BoundSymMatrix doesn't exist in v36  .. use BoundSquareMatrix
+//   have to change this everywhere ..  I think using BoundSysMatrix was defined
+//  exactly the same as BoundSquareMatrix is now in ACTs
 inline void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov) {
   v_cov.clear();
   v_cov.reserve(cov.rows() * (cov.rows() + 1) / 2);
@@ -228,26 +228,29 @@ inline Acts::BoundTrackParameters boundTrackParameters(
   Acts::BoundVector paramVec = boundState(trk);
   Acts::BoundSquareMatrix covMat = unpackCov(trk.getPerigeeCov());
   auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
+  //  auto
+  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
   //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
   // need to add particle hypothesis
-    return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat), partHypo );
+  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat),
+                                    partHypo);
 }
 
 inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
                                       std::shared_ptr<Acts::Surface> surf,
-				      int pdgid) {
+                                      int pdgid) {
   Acts::BoundVector paramVec = boundState(ts);
   Acts::BoundSquareMatrix covMat = unpackCov(ts.cov);
   auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
-  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),partHypo);
+  //  auto
+  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  return Acts::BoundTrackParameters(surf, paramVec, std::move(covMat),
+                                    partHypo);
 }
 
 // Return an unbound surface
-inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(double xloc,
-                                                           double yloc = 0.,
-                                                           double zloc = 0.) {
+inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
+    double xloc, double yloc = 0., double zloc = 0.) {
   // Define the target surface - be careful:
   //  x - downstream
   //  y - left (when looking along x)
@@ -268,9 +271,8 @@ inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(double xloc,
 
   // Unbounded surface
   const std::shared_ptr<Acts::PlaneSurface> target_surface =
-    Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+      Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
-  
   return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 }
 

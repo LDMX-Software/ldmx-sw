@@ -85,9 +85,9 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   Acts::ComponentMergeMethod reductionMethod =
       Acts::ComponentMergeMethod::eMaxWeight;
-//  Acts::MultiEigenStepperLoop multi_stepper(
-//      map, reductionMethod,
-//      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
+  //  Acts::MultiEigenStepperLoop multi_stepper(
+  //      map, reductionMethod,
+  //      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
 
   Acts::MultiEigenStepperLoop multi_stepper(map);
   // Detailed Stepper
@@ -105,8 +105,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       GsfPropagator(std::move(multi_stepper), std::move(navigator),
                     Acts::getDefaultLogger("GSF_PROP", acts_loggingLevel));
 
-  BetheHeitlerApprox betheHeitler =
-      Acts::makeDefaultBetheHeitlerApprox();
+  BetheHeitlerApprox betheHeitler = Acts::makeDefaultBetheHeitlerApprox();
 
   const auto gsfLogger = Acts::getDefaultLogger("GSF", acts_loggingLevel);
 
@@ -126,8 +125,10 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   out_trk_collection_ =
       parameters.getParameter<std::string>("out_trk_collection", "GSFTracks");
 
-  trackCollection_= parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
-  measCollection_= parameters.getParameter<std::string>("measCollection", "DigiTaggerSimHits");
+  trackCollection_ =
+      parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
+  measCollection_ = parameters.getParameter<std::string>("measCollection",
+                                                         "DigiTaggerSimHits");
 
   maxComponents_ = parameters.getParameter<int>("maxComponents", 4);
   abortOnError_ = parameters.getParameter<bool>("abortOnError", false);
@@ -171,34 +172,33 @@ void GSFProcessor::produce(framework::Event& event) {
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &updater);
   gsf_extensions.calibrator
-      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d<Acts::VectorMultiTrajectory>>(
-          &calibrator);
+      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate_1d<
+          Acts::VectorMultiTrajectory>>(&calibrator);
 
-    //Surface Accessor
+  // Surface Accessor
   struct SurfaceAccessor {
     const Acts::TrackingGeometry* trackingGeometry;
 
     const Acts::Surface* operator()(const Acts::SourceLink& sourceLink) const {
-      const auto& indexSourceLink = sourceLink.get<ActsExamples::IndexSourceLink>();
+      const auto& indexSourceLink =
+          sourceLink.get<ActsExamples::IndexSourceLink>();
       return trackingGeometry->findSurface(indexSourceLink.geometryId());
     }
   };
-    
-   SurfaceAccessor m_slSurfaceAccessor{tg.getTG().get()};
-   //m_slSurfaceAccessor.trackingGeometry = tg.getTG();
-   gsf_extensions.surfaceAccessor
-          .connect<&SurfaceAccessor::operator()>(
-              &m_slSurfaceAccessor);
-   gsf_extensions.mixtureReducer
-            .connect<&Acts::reduceMixtureLargestWeights>();
+
+  SurfaceAccessor m_slSurfaceAccessor{tg.getTG().get()};
+  // m_slSurfaceAccessor.trackingGeometry = tg.getTG();
+  gsf_extensions.surfaceAccessor.connect<&SurfaceAccessor::operator()>(
+      &m_slSurfaceAccessor);
+  gsf_extensions.mixtureReducer.connect<&Acts::reduceMixtureLargestWeights>();
 
   // Propagator Options
 
   // Move this at the start of the producer
-  Acts::PropagatorOptions<Acts::StepperPlainOptions,Acts::NavigatorPlainOptions,ActionList, AbortList> propagator_options(
-      geometry_context(), magnetic_field_context());
+  Acts::PropagatorOptions<Acts::StepperPlainOptions,
+                          Acts::NavigatorPlainOptions, ActionList, AbortList>
+      propagator_options(geometry_context(), magnetic_field_context());
 
-  
   propagator_options.pathLimit = std::numeric_limits<double>::max();
 
   // Activate loop protection at some pt value
@@ -234,8 +234,11 @@ void GSFProcessor::produce(framework::Event& event) {
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(-700., 0., 0.));
 
-  std::shared_ptr<const Acts::PerigeeSurface> reference_surface = origin_surface;
-    if (taggerTracking_) { reference_surface =  tagger_layer_surface;}
+  std::shared_ptr<const Acts::PerigeeSurface> reference_surface =
+      origin_surface;
+  if (taggerTracking_) {
+    reference_surface = tagger_layer_surface;
+  }
 
   /*
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
@@ -246,17 +249,16 @@ void GSFProcessor::produce(framework::Event& event) {
       abortOnError_,         disableAllMaterialHandling_};
   */
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsfOptions{
-      geometry_context(),    magnetic_field_context(),
-      calibration_context()};
+      geometry_context(), magnetic_field_context(), calibration_context()};
 
-    gsfOptions.extensions = gsf_extensions;
-    gsfOptions.propagatorPlainOptions = propagator_options;
-    gsfOptions.referenceSurface =  &(*reference_surface);
-    gsfOptions.maxComponents = maxComponents_;
-    gsfOptions.weightCutoff = weightCutoff_;
-    gsfOptions.abortOnError = abortOnError_;
-    gsfOptions.disableAllMaterialHandling = disableAllMaterialHandling_;
-    
+  gsfOptions.extensions = gsf_extensions;
+  gsfOptions.propagatorPlainOptions = propagator_options;
+  gsfOptions.referenceSurface = &(*reference_surface);
+  gsfOptions.maxComponents = maxComponents_;
+  gsfOptions.weightCutoff = weightCutoff_;
+  gsfOptions.abortOnError = abortOnError_;
+  gsfOptions.disableAllMaterialHandling = disableAllMaterialHandling_;
+
   // Output track container
   std::vector<ldmx::Track> out_tracks;
 
@@ -305,7 +307,7 @@ void GSFProcessor::produce(framework::Event& event) {
             track.getPerigeeX(), track.getPerigeeY(), track.getPerigeeZ()));
 
     Acts::BoundTrackParameters trk_btp =
-      tracking::sim::utils::boundTrackParameters(track, perigee);
+        tracking::sim::utils::boundTrackParameters(track, perigee);
 
     std::shared_ptr<Acts::Surface> beamOrigin_surface =
         tracking::sim::utils::unboundSurface(-700);
@@ -313,33 +315,32 @@ void GSFProcessor::produce(framework::Event& event) {
     const std::shared_ptr<Acts::Surface> target_surface =
         tracking::sim::utils::unboundSurface(0.);
 
-    const std::shared_ptr<Acts::Surface> ecal_surface = 
+    const std::shared_ptr<Acts::Surface> ecal_surface =
         tracking::sim::utils::unboundSurface(240.5);
 
-     Acts::BoundTrackParameters trk_btp_bO =
+    Acts::BoundTrackParameters trk_btp_bO =
         tracking::sim::utils::boundTrackParameters(track, perigee);
 
     if (taggerTracking_) {
-        if (!track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).has_value()) {
-        ldmx_log(warn)
-            << "Failed retreiving AtBeamOrigin TrackState for track. Skipping..";
+      if (!track.getTrackState(ldmx::TrackStateType::AtBeamOrigin)
+               .has_value()) {
+        ldmx_log(warn) << "Failed retreiving AtBeamOrigin TrackState for "
+                          "track. Skipping..";
         continue;
-        }
+      }
 
-        auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
-        trk_btp_bO =
-            tracking::sim::utils::btp(ts, beamOrigin_surface, 11);//11 == electron PDGid...hardcode for now
-    }
-    else {
-        if (!track.getTrackState(ldmx::TrackStateType::AtTarget).has_value()) {
+      auto ts = track.getTrackState(ldmx::TrackStateType::AtBeamOrigin).value();
+      trk_btp_bO = tracking::sim::utils::btp(
+          ts, beamOrigin_surface,
+          11);  // 11 == electron PDGid...hardcode for now
+    } else {
+      if (!track.getTrackState(ldmx::TrackStateType::AtTarget).has_value()) {
         ldmx_log(warn)
             << "Failed retreiving AtTarget TrackState for track. Skipping..";
         continue;
-        }
-        auto ts = track.getTrackState(ldmx::TrackStateType::AtTarget).value();
-        trk_btp_bO =
-            tracking::sim::utils::btp(ts, target_surface, 11);
-
+      }
+      auto ts = track.getTrackState(ldmx::TrackStateType::AtTarget).value();
+      trk_btp_bO = tracking::sim::utils::btp(ts, target_surface, 11);
     }
     const Acts::BoundVector& trkpars = trk_btp.parameters();
     ldmx_log(debug) << "CKF Track parameters" << std::endl
@@ -401,19 +402,18 @@ void GSFProcessor::produce(framework::Event& event) {
 
     bool success = false;
     if (taggerTracking_) {
-        ldmx_log(debug) << "Target extrapolation";
-        ldmx::Track::TrackState tsAtTarget;
+      ldmx_log(debug) << "Target extrapolation";
+      ldmx::Track::TrackState tsAtTarget;
 
-        success = trk_extrap_->TrackStateAtSurface(
-            gsftrk, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
+      success = trk_extrap_->TrackStateAtSurface(
+          gsftrk, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
 
-        if (success) trk.addTrackState(tsAtTarget);
-    }
-    else {
-        ldmx_log(debug) << "Ecal Extrapolation";
-        ldmx::Track::TrackState tsAtEcal;
-        success = trk_extrap_->TrackStateAtSurface(
-            gsftrk, ecal_surface, tsAtEcal, ldmx::TrackStateType::AtECAL);
+      if (success) trk.addTrackState(tsAtTarget);
+    } else {
+      ldmx_log(debug) << "Ecal Extrapolation";
+      ldmx::Track::TrackState tsAtEcal;
+      success = trk_extrap_->TrackStateAtSurface(gsftrk, ecal_surface, tsAtEcal,
+                                                 ldmx::TrackStateType::AtECAL);
 
       if (success) trk.addTrackState(tsAtEcal);
     }

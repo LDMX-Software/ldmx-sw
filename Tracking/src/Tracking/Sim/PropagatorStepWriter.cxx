@@ -7,7 +7,7 @@
 #include <Acts/Surfaces/Surface.hpp>
 
 #include "Acts/Geometry/DetectorElementBase.hpp"
-//mg ... I don't think these are used, and they are not defined in acts v36
+// mg ... I don't think these are used, and they are not defined in acts v36
 //#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 //#include "Acts/Plugins/Identification/Identifier.hpp"
 
@@ -134,14 +134,14 @@ bool PropagatorStepWriter::WriteSteps(
       // get the identification from the surface first
       if (step.surface) {
         auto geoID = step.surface->geometryId();
-	//        volumeID = geoID.volume();
+        //        volumeID = geoID.volume();
         boundaryID = geoID.boundary();
         layerID = geoID.layer();
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
       }
       // a current volume overwrites the surface tagged one
-      //mg ... v36 Step does not include volume
+      // mg ... v36 Step does not include volume
       //      if (step.volume) {
       //    volumeID = step.volume->geometryId().volume();
       //   }
@@ -150,7 +150,7 @@ bool PropagatorStepWriter::WriteSteps(
       m_approachID.push_back(approachID);
       m_layerID.push_back(layerID);
       m_boundaryID.push_back(boundaryID);
-      //m_volumeID.push_back(volumeID);
+      // m_volumeID.push_back(volumeID);
 
       // kinematic information
       m_x.push_back(step.position.x());
@@ -161,7 +161,8 @@ bool PropagatorStepWriter::WriteSteps(
       m_dy.push_back(direction.y());
       m_dz.push_back(direction.z());
 
-      //      double accuracy = step.stepSize.value(Acts::ConstrainedStep::accuracy());
+      //      double accuracy =
+      //      step.stepSize.value(Acts::ConstrainedStep::accuracy());
       double accuracy = step.stepSize.accuracy();
       double actor = step.stepSize.value(Acts::ConstrainedStep::actor);
       double aborter = step.stepSize.value(Acts::ConstrainedStep::aborter);

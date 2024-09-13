@@ -137,15 +137,15 @@ void TruthSeedProcessor::createTruthTrack(
   // std::endl;
 
   // Transform the parameters to local positions on the perigee surface.
-  auto bound_params{Acts::transformFreeToBoundParameters(
-                        free_params, *gen_surface, gctx_)
-                        .value()};
-  int pdgid = 11; //electron
-  if (charge>0)
-    pdgid=-11; //positron
-  auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
+  auto bound_params{
+      Acts::transformFreeToBoundParameters(free_params, *gen_surface, gctx_)
+          .value()};
+  int pdgid = 11;               // electron
+  if (charge > 0) pdgid = -11;  // positron
+  auto part{Acts::GenericParticleHypothesis(
+      Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
   Acts::BoundTrackParameters boundTrkPars(gen_surface, bound_params,
-                                          std::nullopt,part);
+                                          std::nullopt, part);
 
   // CAUTION:: The target surface should be close to the gen surface
   // Linear propagation to the target surface. I assume 1mm of tolerance
@@ -393,7 +393,8 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
         (bound_params).data(),
         bound_params.data() + bound_params.rows() * bound_params.cols());
 
-    Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundSquareMatrix bound_cov =
+        stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);
@@ -418,7 +419,8 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
     stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
 
-    Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundSquareMatrix bound_cov =
+        stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);

@@ -52,10 +52,8 @@ class TrackExtrapolatorTool {
   */
 
   using PropagatorOptions =
-    typename propagator_t::template Options<ActionList, AbortList>;
- 
+      typename propagator_t::template Options<ActionList, AbortList>;
 
-  
   std::optional<Acts::BoundTrackParameters> extrapolate(
       const Acts::BoundTrackParameters pars,
       const std::shared_ptr<Acts::Surface>& target_surface) {
@@ -64,21 +62,23 @@ class TrackExtrapolatorTool {
 
     //    auto intersection = target_surface->intersect(
     //    gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
-    // mg ... Aug 2024  ...  ACTs in v36 wants a BoundaryTolerence object now instead of boolean
+    // mg ... Aug 2024  ...  ACTs in v36 wants a BoundaryTolerence object now
+    // instead of boolean
     //  ... but by default the tolerance is inf  ,  so just remove argument
-    auto intersection = target_surface->intersect(
-						  gctx_, pars.position(gctx_), pars.direction());
-
+    auto intersection = target_surface->intersect(gctx_, pars.position(gctx_),
+                                                  pars.direction());
 
     PropagatorOptions pOptions(gctx_, mctx_);
-  
-    //    Acts::PropagatorOptions<Acts::StepperPlainOptions, Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
+
+    //    Acts::PropagatorOptions<Acts::StepperPlainOptions,
+    //    Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
     //    pOptions.direction = intersection.intersection.pathLength >= 0
-    // mg Aug 2024 .. this is a MultiInterection object now in v36, so uses .interections
-    // which returns a vector ...so might need to pick one (probably first)
+    // mg Aug 2024 .. this is a MultiInterection object now in v36, so uses
+    // .interections which returns a vector ...so might need to pick one
+    // (probably first)
     pOptions.direction = intersection.intersections()[0].pathLength() >= 0
-      ? Acts::Direction::Forward
-      : Acts::Direction::Backward;
+                             ? Acts::Direction::Forward
+                             : Acts::Direction::Backward;
 
     auto result = propagator_.propagate(pars, *target_surface, pOptions);
 
@@ -136,7 +136,6 @@ class TrackExtrapolatorTool {
 
     const auto& ts = first_dis < last_dis ? innermost : outermost;
 
-
     // Get the BoundTrackStateParameters
 
     const auto& surface = ts.referenceSurface();
@@ -145,25 +144,25 @@ class TrackExtrapolatorTool {
     const auto& filtered = ts.filtered();
     const auto& cov = ts.smoothedCovariance();
 
-    if(debug_){
-      std::cout<<"Surface::"<<
-	surface.transform(gctx_).translation()<<std::endl;
-      if(hasSmoothed) std::cout<<"Smoothed::"<<    smoothed.transpose()<<std::endl;
-      std::cout<<"HasSmoothed::"<< hasSmoothed<<std::endl;
-      std::cout<<"Filtered::"<<    filtered.transpose()<<std::endl;
+    if (debug_) {
+      std::cout << "Surface::" << surface.transform(gctx_).translation()
+                << std::endl;
+      if (hasSmoothed)
+        std::cout << "Smoothed::" << smoothed.transpose() << std::endl;
+      std::cout << "HasSmoothed::" << hasSmoothed << std::endl;
+      std::cout << "Filtered::" << filtered.transpose() << std::endl;
     }
     Acts::ActsScalar q;
-    if(hasSmoothed)
-      q = smoothed[Acts::eBoundQOverP] > 0
-	? 1 * Acts::UnitConstants::e
-	: -1 * Acts::UnitConstants::e;
+    if (hasSmoothed)
+      q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
+                                           : -1 * Acts::UnitConstants::e;
     else
-      q = filtered[Acts::eBoundQOverP] > 0
-	? 1 * Acts::UnitConstants::e
-	: -1 * Acts::UnitConstants::e;
-    //mg Aug 2024 ... v36 takes the particle...assume electron
+      q = filtered[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
+                                           : -1 * Acts::UnitConstants::e;
+    // mg Aug 2024 ... v36 takes the particle...assume electron
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
-    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed,  cov,partHypo);
+    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
+                                  partHypo);
     return extrapolate(sp, target_surface);
   }
 
@@ -187,20 +186,21 @@ class TrackExtrapolatorTool {
     Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
                              ? 1 * Acts::UnitConstants::e
                              : -1 * Acts::UnitConstants::e;
-    //assume electron for now
+    // assume electron for now
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
     //    Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
     //                                            smoothed, q, cov);
     Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
-                                                smoothed,  cov, partHypo);
+                                                smoothed, cov, partHypo);
 
     // One can also use directly the extrapolate method
 
     PropagatorOptions pOptions(gctx_, mctx_);
-    //    Acts::PropagatorOptions<Acts::StepperPlainOptions, Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
-    //pOptions.direction = Acts::Direction::Forward;
-    
+    //    Acts::PropagatorOptions<Acts::StepperPlainOptions,
+    //    Acts::Navigator,ActionList, AbortList> pOptions(gctx_, mctx_);
+    // pOptions.direction = Acts::Direction::Forward;
+
     auto result =
         propagator_.propagate(state_parameters, *target_surface, pOptions);
 
@@ -226,7 +226,8 @@ class TrackExtrapolatorTool {
                            const std::shared_ptr<Acts::Surface>& target_surface,
                            ldmx::Track::TrackState& ts,
                            ldmx::TrackStateType type) {
-    auto opt_pars = extrapolate(track, target_surface);    if (opt_pars) {
+    auto opt_pars = extrapolate(track, target_surface);
+    if (opt_pars) {
       // Reference point
       Acts::Vector3 surf_loc = target_surface->transform(gctx_).translation();
       ts.refX = surf_loc(0);

@@ -17,9 +17,9 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
   trackStates_ =
       parameters.getParameter<std::vector<std::string>>("trackStates", {});
-  measurementCollection_ = parameters.getParameter<std::string>("measurement_collection",
-							       "DigiTaggerSimHits");
-  
+  measurementCollection_ = parameters.getParameter<std::string>(
+      "measurement_collection", "DigiTaggerSimHits");
+
   ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
 
@@ -42,7 +42,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
     return;
   }
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-  auto measurements{event.getCollection<ldmx::Measurement>(measurementCollection_)};
+  auto measurements{
+      event.getCollection<ldmx::Measurement>(measurementCollection_)};
   // The truth track collection
   if (event.exists(truthCollection_)) {
     truthTrackCollection_ = std::make_shared<ldmx::Tracks>(
@@ -101,7 +102,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // Technical Efficiency plots
-  EfficiencyPlots(tracks, measurements,title_);
+  EfficiencyPlots(tracks, measurements, title_);
 
   // Tagger Recoil Matching
 
@@ -115,12 +116,13 @@ void TrackingRecoDQM::onProcessEnd() {
   // Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
 }
 
-void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
-				      const std::vector<ldmx::Measurement>& measurements,
-                                      const std::string& title) {
+void TrackingRecoDQM::EfficiencyPlots(
+    const std::vector<ldmx::Track>& tracks,
+    const std::vector<ldmx::Measurement>& measurements,
+    const std::string& title) {
   // Do all truth track plots - denominator
 
-  histograms_.fill(title+"truth_N_tracks",truthTrackCollection_->size());
+  histograms_.fill(title + "truth_N_tracks", truthTrackCollection_->size());
   for (auto& truth_trk : *(truthTrackCollection_)) {
     double truth_phi = truth_trk.getPhi();
     double truth_d0 = truth_trk.getD0();
@@ -201,7 +203,7 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
 
     // Match not found
     if (!truth_trk) return;
-    
+
     double truth_phi = truth_trk->getPhi();
     double truth_d0 = truth_trk->getD0();
     double truth_z0 = truth_trk->getZ0();
@@ -226,8 +228,10 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title + "match_p", truth_p);
     histograms_.fill(title + "match_qop", truth_qop);
     histograms_.fill(title + "match_beam_angle", truth_beam_angle);
-    for(auto trackHit : track.getMeasurementsIdxs()){
-      histograms_.fill(title+"match_LayersHit",measurements.at(trackHit).getLayer());
+    histograms_.fill(title + "match_nHits", measurements.size());
+    for (auto trackHit : track.getMeasurementsIdxs()) {
+      histograms_.fill(title + "match_LayersHit",
+                       measurements.at(trackHit).getLayer());
     }
 
     // For some particles
@@ -266,14 +270,13 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
       }
     }
   }  // Loop on tracks
-  
+
 }  // Efficiency plots
 
-void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
-				      const std::vector<ldmx::Measurement>& measurements,
-                                      const std::string title,
-                                      const bool& doDetail,
-                                      const bool& doTruth) {
+void TrackingRecoDQM::TrackMonitoring(
+    const std::vector<ldmx::Track>& tracks,
+    const std::vector<ldmx::Measurement>& measurements, const std::string title,
+    const bool& doDetail, const bool& doTruth) {
   for (auto& track : tracks) {
     // Perigee track parameters
     double trk_d0 = track.getD0();
@@ -282,8 +285,9 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
     double trk_theta = track.getTheta();
     double trk_phi = track.getPhi();
     double trk_p = 1. / abs(trk_qop);
-    for(auto trackHit : track.getMeasurementsIdxs()){
-      histograms_.fill(title+"LayersHit",measurements.at(trackHit).getLayer());
+    for (auto trackHit : track.getMeasurementsIdxs()) {
+      histograms_.fill(title + "LayersHit",
+                       measurements.at(trackHit).getLayer());
     }
 
     std::vector<double> trk_mom = track.getMomentum();
@@ -488,7 +492,8 @@ void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
     ldmx::Track::TrackState& TargetState = trk_ts.value();
 
     ldmx_log(debug) << "Unpacking covariance matrix" << std::endl;
-    Acts::BoundSquareMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
+    Acts::BoundSquareMatrix cov =
+        tracking::sim::utils::unpackCov(TargetState.cov);
 
     double sigmaloc0 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0));

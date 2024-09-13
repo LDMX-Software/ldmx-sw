@@ -64,8 +64,7 @@ void VertexProcessor::produce(framework::Event &event) {
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
-  using VertexFitter =
-    Acts::FullBilloirVertexFitter; 
+  using VertexFitter = Acts::FullBilloirVertexFitter;
 
   VertexFitter::Config vertexFitterCfg;
 
@@ -109,9 +108,10 @@ void VertexProcessor::produce(framework::Event &event) {
 
     Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
-    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
+        Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
-							perigeeSurface, paramVec, std::move(covMat),part));
+        perigeeSurface, paramVec, std::move(covMat), part));
   }
 
   // Select exactly 2 tracks
@@ -149,13 +149,13 @@ void VertexProcessor::produce(framework::Event &event) {
 
       Acts::BoundSquareMatrix covMat =
           tracking::sim::utils::unpackCov(seeds.at(iSeed).getPerigeeCov());
-      int pionPdgId=211; //pi+
-      if(seeds.at(iSeed).q()<0)
-	pionPdgId=-211;
-      //BoundTrackParameters needs the particle hypothesis
-      auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
+      int pionPdgId = 211;  // pi+
+      if (seeds.at(iSeed).q() < 0) pionPdgId = -211;
+      // BoundTrackParameters needs the particle hypothesis
+      auto part{Acts::GenericParticleHypothesis(
+          Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
       auto boundSeedParams = Acts::BoundTrackParameters(
-							perigeeSurface, paramVec, std::move(covMat),part);
+          perigeeSurface, paramVec, std::move(covMat), part);
 
       TLorentzVector pion4v;
       pion4v.SetXYZM(boundSeedParams.momentum()(0),

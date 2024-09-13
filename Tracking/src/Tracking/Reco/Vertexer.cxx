@@ -99,8 +99,7 @@ void Vertexer::produce(framework::Event& event) {
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
-  using VertexFitter =
-    Acts::FullBilloirVertexFitter;
+  using VertexFitter = Acts::FullBilloirVertexFitter;
 
   // Alternatively one can use
   // using VertexFitter =
@@ -116,7 +115,8 @@ void Vertexer::produce(framework::Event& event) {
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_,
+  //  bctx_);
   // mg Aug 2024 ... VertexingOptions template change in v36
   Acts::VertexingOptions vfOptions(gctx_, bctx_);
 

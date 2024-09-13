@@ -5,10 +5,10 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
-//Use this instead of CartesianSegmeter I think
-// BinUtility(std::size_t bins, float min, float max, BinningOption opt = open,
-//             BinningValue value = BinningValue::binX,
-//             const Transform3& tForm = Transform3::Identity())
+// Use this instead of CartesianSegmeter I think
+//  BinUtility(std::size_t bins, float min, float max, BinningOption opt = open,
+//              BinningValue value = BinningValue::binX,
+//              const Transform3& tForm = Transform3::Identity())
 using namespace framework;
 
 namespace tracking::reco {
@@ -44,19 +44,20 @@ void DigitizationProcessor::onProcessStart() {
   // Analogue readout
   bool isAnalog = true;
 
-  //mg August 2024...I don't think ndModule are used
-  //and neither CartesianSegmentation or DigitizationModule
-  //are in ACTs v36, so comment these out for now
-  // Cartesian segmentation
-  //auto cSegmentation = std::make_shared<const Acts::CartesianSegmentation>(
-  //      moduleBounds, nbinsx, nbinsy);
+  // mg August 2024...I don't think ndModule are used
+  // and neither CartesianSegmentation or DigitizationModule
+  // are in ACTs v36, so comment these out for now
+  //  Cartesian segmentation
+  // auto cSegmentation = std::make_shared<const Acts::CartesianSegmentation>(
+  //       moduleBounds, nbinsx, nbinsy);
 
   // Negative side readout => TODO Make sure this is correct!
   //  - Ask Paul what does this mean: depending on how local w is oriented
   // TODO: load proper lorentz angle
-  
-  //Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1, lAngle,
-  //                                  eThresh, isAnalog);
+
+  // Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1,
+  // lAngle,
+  //                                   eThresh, isAnalog);
 
   ldmx_log(info) << "Initialization done" << std::endl;
 }

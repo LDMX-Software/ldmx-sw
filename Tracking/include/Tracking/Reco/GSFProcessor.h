@@ -19,7 +19,7 @@
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
-//mg Aug 2024  ... unused? and not in v36
+// mg Aug 2024  ... unused? and not in v36
 //#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
@@ -68,7 +68,6 @@
 #include "Acts/TrackFitting/BetheHeitlerApprox.hpp"
 #include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/TrackFitting/GsfMixtureReduction.hpp"
-
 
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
