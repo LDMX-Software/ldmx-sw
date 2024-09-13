@@ -17,8 +17,6 @@ namespace reco {
 Vertexer::Vertexer(const std::string& name, framework::Process& process)
     : framework::Producer(name, process) {}
 
-Vertexer::~Vertexer() {}
-
 void Vertexer::onProcessStart() {
   // Monitoring plots
 

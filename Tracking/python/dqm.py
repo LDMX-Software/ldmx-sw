@@ -97,7 +97,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                               "Chi2",nbins,0,100)
         self.build1DHistogram("ndf",
                               "ndf",10,0,10)
-        self.build1DHistogram("Chi2/ndf",
+        self.build1DHistogram("Chi2_per_ndf",
                               "Chi2/ndf",nbins,0,10)
         self.build1DHistogram("nShared",
                               "nShared",5,0,5)
@@ -354,7 +354,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "fake_LayersHit",15,0,15)
             self.build1DHistogram("fake_Chi2",
                                   "fake Chi2",100,0,chi2Fake_max)
-            self.build1DHistogram("fake_Chi2/ndf",
+            self.build1DHistogram("fake_Chi2_per_ndf",
                                   "fake Chi2/ndf",100,0,chi2NdfFake_max)
             self.build1DHistogram("fake_nShared",
                                   "fake nShared",5,0,5)
@@ -382,7 +382,7 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "dup_LayersHit",15,0,15)
             self.build1DHistogram("dup_Chi2",
                                   "dup Chi2",100,0,100)
-            self.build1DHistogram("dup_Chi2/ndf",
+            self.build1DHistogram("dup_Chi2_per_ndf",
                                   "dup Chi2/ndf",100,0,10)
             self.build1DHistogram("dup_nShared",
                                   "dup nShared",5,0,5)
@@ -396,14 +396,14 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             #Track states extrapolations
             for trackState in self.trackStates:
                 
-                self.build1DHistogram("trk_"+trackState+"_loc0","trk_ecal_loc0 [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc1","trk_ecal_loc1 [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_X","ecal_sp_hit_X [mm]",200,-50,50)
-                self.build1DHistogram(trackState+"_sp_hit_Y","ecal_sp_hit_Y [mm]",200,-50,50)
-                self.build1DHistogram("trk_"+trackState+"_loc0-sp_hit_X","ecal_diff loc0 and hit_X [mm]",200,-0.2,0.2)
-                self.build1DHistogram("trk_"+trackState+"_loc1-sp_hit_Y","ecal_diff loc1 and hit_Y [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc0","ecal_pulls_of_loc0 [mm]",200,-5,5)
-                self.build1DHistogram(trackState+"_Pulls_of_loc1","ecal_pulls_of_loc1 [mm]",200,-5,5)
+                self.build1DHistogram("trk_"+trackState+"_loc0","trk_"+trackState+"_loc0 [mm]",200,-50,50)
+                self.build1DHistogram("trk_"+trackState+"_loc1","trk_"+trackState+"_loc1 [mm]",200,-50,50)
+                self.build1DHistogram(trackState+"_sp_hit_X",trackState+"_sp_hit_X [mm]",200,-50,50)
+                self.build1DHistogram(trackState+"_sp_hit_Y",trackState+"_sp_hit_Y [mm]",200,-50,50)
+                self.build1DHistogram("trk_"+trackState+"_loc0-sp_hit_X",trackState+"_diff loc0 and hit_X [mm]",200,-0.2,0.2)
+                self.build1DHistogram("trk_"+trackState+"_loc1-sp_hit_Y",trackState+"_diff loc1 and hit_Y [mm]",200,-5,5)
+                self.build1DHistogram(trackState+"_Pulls_of_loc0",trackState+"_pulls_of_loc0 [mm]",200,-5,5)
+                self.build1DHistogram(trackState+"_Pulls_of_loc1",trackState+"_pulls_of_loc1 [mm]",200,-5,5)
            
                 self.build2DHistogram(trackState+"_res_loc0-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc0 [mm]",100,-0.2,0.2)
                 self.build2DHistogram(trackState+"_res_loc1-vs-N_hits","N_hits",  5,6.5,11.5,trackState+"_res_loc1 [mm]",100,-5,5)

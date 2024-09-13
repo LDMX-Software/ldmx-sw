@@ -74,19 +74,19 @@ StringCSVLoader::StringCSVLoader(const std::string& source,
 std::string StringCSVLoader::getNextLine() {
   std::string retval;
   if (rowBegin_ != rowEnd_)
-    if (rowEnd_ == std::string::npos)
+    if (rowEnd_ == std::string::npos) {
       retval = source_.substr(rowBegin_, rowEnd_);
-    else
+    } else {
       retval = source_.substr(rowBegin_, rowEnd_ - rowBegin_);
-
+    }
   // now we look for the follow on.
   // find the first non-end-of-line character
   rowBegin_ = source_.find_first_not_of(linesep_, rowEnd_);
   if (rowBegin_ != std::string::npos) {
     rowEnd_ = source_.find_first_of(linesep_, rowBegin_);
-  } else
+  } else {
     rowEnd_ = std::string::npos;
-
+  }
   return retval;
 }
 

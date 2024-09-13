@@ -28,7 +28,7 @@ class ScoringPlaneSD : public SensitiveDetector {
   /**
    * Check if the input logical volume is a scoring plane we should include.
    */
-  bool isSensDet(G4LogicalVolume* volume) const final override {
+  bool isSensDet(G4LogicalVolume* volume) const override {
     return volume->GetName().contains(match_substr_);
   }
 
@@ -40,8 +40,7 @@ class ScoringPlaneSD : public SensitiveDetector {
    * @param[in] step the step that happened within one of our logical volumes
    * @param[in] hist the touchable history of the step
    */
-  virtual G4bool ProcessHits(G4Step* step,
-                             G4TouchableHistory* hist) final override;
+  virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist) override;
 
   /**
    * We are given the event bus here and we must decide
@@ -49,9 +48,9 @@ class ScoringPlaneSD : public SensitiveDetector {
    *
    * @param[in,out] event event bus to add thing(s) to
    */
-  virtual void saveHits(framework::Event& event) final override;
+  virtual void saveHits(framework::Event& event) override;
 
-  virtual void OnFinishedEvent() final override { hits_.clear(); }
+  virtual void OnFinishedEvent() override { hits_.clear(); }
 
  private:
   /// Substring to match to logical volumes

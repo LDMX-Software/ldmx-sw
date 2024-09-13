@@ -37,7 +37,7 @@ class DarkBremInteraction : public framework::Producer {
    * This is helpful for downstream viewers of the histograms
    * so that ROOT will display the bins properly.
    */
-  virtual void onProcessStart() final override;
+  virtual void onProcessStart() override;
 
   /**
    * extract the kinematics of the dark brem interaction from the SimParticles
@@ -52,7 +52,7 @@ class DarkBremInteraction : public framework::Producer {
    * conserve momentum, so we need to reconstruct the incident particle's
    * 3-momentum and then use the electron mass to calculate its total energy.
    */
-  virtual void produce(framework::Event& e) final override;
+  virtual void produce(framework::Event& e) override;
 
  private:
   /**

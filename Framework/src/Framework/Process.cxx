@@ -36,6 +36,8 @@ Process::Process(const framework::config::Parameters &configuration)
       configuration.getParameter<int>("compressionSetting", 9);
   termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
   fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
+  skipCorruptedInputFiles_ =
+      configuration.getParameter<bool>("skipCorruptedInputFiles", false);
 
   inputFiles_ =
       configuration.getParameter<std::vector<std::string>>("inputFiles", {});
@@ -45,6 +47,12 @@ Process::Process(const framework::config::Parameters &configuration)
       configuration.getParameter<std::vector<std::string>>("keep", {});
 
   eventHeader_ = 0;
+
+  // set up the logging for this run
+  logging::open(logging::convertLevel(termLevelInt_),
+                logging::convertLevel(fileLevelInt_),
+                logFileName_  // if this is empty string, no file is logged to
+  );
 
   auto run{configuration.getParameter<int>("run", -1)};
   if (run > 0) runForGeneration_ = run;
@@ -136,11 +144,6 @@ Process::~Process() {
 
 void Process::run() {
   if (performance_) performance_->absolute_start();
-  // set up the logging for this run
-  logging::open(logging::convertLevel(termLevelInt_),
-                logging::convertLevel(fileLevelInt_),
-                logFileName_  // if this is empty string, no file is logged to
-  );
 
   // Counter to keep track of the number of events that have been
   // procesed
@@ -277,6 +280,19 @@ void Process::run() {
     int wasRun = -1;
     for (auto infilename : inputFiles_) {
       EventFile inFile(config_, infilename);
+      if (inFile.isCorrupted()) {
+        if (skipCorruptedInputFiles_) {
+          ldmx_log(warn) << "Input file '" << infilename
+                         << "' was found to be corrupted. Skipping.";
+          continue;
+        } else {
+          EXCEPTION_RAISE(
+              "BadCode",
+              "We should never get here. "
+              "EventFile is corrupted but we aren't skipping corrupted inputs. "
+              "EventFile should be throwing its own exceptions in this case.");
+        }
+      }
 
       ldmx_log(info) << "Opening file " << infilename;
       onFileOpen(inFile);

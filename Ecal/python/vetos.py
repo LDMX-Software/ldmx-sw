@@ -16,7 +16,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
 
         from LDMX.Ecal.makePath import makeBDTPath, makeRoCPath
         self.num_ecal_layers = 34
-        self.do_bdt = True
         self.verbose = False
         self.feature_list_name = "input"
         self.bdt_file = makeBDTPath( "segmip" )

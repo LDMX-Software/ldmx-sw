@@ -45,7 +45,7 @@ class DarkBrem : public XsecBiasingOperator {
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
       const G4Track* track,
-      const G4BiasingProcessInterface* callingProcess) final override;
+      const G4BiasingProcessInterface* callingProcess) override;
 
   /// Return the name of the process this operator biases
   std::string getProcessToBias() const override {

@@ -334,7 +334,8 @@ void TrackingRecoDQM::TrackMonitoring(
       histograms_.fill(title + "nHits", track.getNhits());
       histograms_.fill(title + "Chi2", track.getChi2());
       histograms_.fill(title + "ndf", track.getNdf());
-      histograms_.fill(title + "Chi2/ndf", track.getChi2() / track.getNdf());
+      histograms_.fill(title + "Chi2_per_ndf",
+                       track.getChi2() / track.getNdf());
       histograms_.fill(title + "nShared", track.getNsharedHits());
 
       histograms_.fill(title + "d0_err", sigmad0);

@@ -69,7 +69,7 @@ class Simulator : public SimulatorBase {
    *
    * @param parameters ParameterSet for configuration.
    */
-  void configure(framework::config::Parameters& parameters) final override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Given a non-const reference to the new RunHeader,
@@ -78,7 +78,7 @@ class Simulator : public SimulatorBase {
    *
    * @param header of new run
    */
-  void beforeNewRun(ldmx::RunHeader& header) final override;
+  void beforeNewRun(ldmx::RunHeader& header) override;
 
   /**
    * Before the run starts (but after the conditions are configured)
@@ -86,17 +86,17 @@ class Simulator : public SimulatorBase {
    *
    * @param[in] header RunHeader for this run, unused
    */
-  void onNewRun(const ldmx::RunHeader& header) final override;
+  void onNewRun(const ldmx::RunHeader& header) override;
 
   /**
    * Run simulation and export results to output event.
    *
    * @param event The event to process.
    */
-  virtual void produce(framework::Event& event) final override;
+  virtual void produce(framework::Event& event) override;
 
   /// Callback called once processing is complete.
-  void onProcessEnd() final override;
+  void onProcessEnd() override;
 
  private:
   /**

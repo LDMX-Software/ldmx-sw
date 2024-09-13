@@ -636,26 +636,26 @@ void CKFProcessor::onProcessStart() {
 void CKFProcessor::onProcessEnd() {
   ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_
                  << " nseeds";
-  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(4)
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Breakdown::";
   ldmx_log(info) << "setup       Avg Time/Event = " << std::fixed
-                 << std::setprecision(4) << profiling_map_["setup"] / nevents_
+                 << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
   ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
-                 << std::setprecision(4) << profiling_map_["hits"] / nevents_
+                 << std::setprecision(3) << profiling_map_["hits"] / nevents_
                  << " ms";
   ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
-                 << std::setprecision(4) << profiling_map_["seeds"] / nevents_
+                 << std::setprecision(3) << profiling_map_["seeds"] / nevents_
                  << " ms";
   ldmx_log(info) << "cf_setup    Avg Time/Event = " << std::fixed
-                 << std::setprecision(4)
+                 << std::setprecision(3)
                  << profiling_map_["ckf_setup"] / nevents_ << " ms";
   ldmx_log(info) << "ckf_run     Avg Time/Event = " << std::fixed
-                 << std::setprecision(4) << profiling_map_["ckf_run"] / nevents_
+                 << std::setprecision(3) << profiling_map_["ckf_run"] / nevents_
                  << " ms";
   ldmx_log(info) << "result_loop Avg Time/Event = " << std::fixed
-                 << std::setprecision(4)
+                 << std::setprecision(1)
                  << profiling_map_["result_loop"] / nevents_ << " ms";
 }
 
