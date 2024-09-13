@@ -194,14 +194,10 @@ class CKFProcessor final : public TrackingGeometryUser {
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005
   // = 7.879 The probability to reject a good measurement is pvalue The
   // probability to reject an outlier is given in NIM A262 (1987) 444-450
-
   double outlier_pval_{3.84};
 
   // The output track collection
   std::string out_trk_collection_{"Tracks"};
-
-  // Mass for the propagator hypothesis in MeV
-  double mass_{0.511};
 
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};

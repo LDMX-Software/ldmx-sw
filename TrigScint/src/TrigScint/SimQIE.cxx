@@ -33,7 +33,6 @@ int SimQIE::Q2ADC(float Charge) {
   if (qq <= edges_[0]) return 0;
   if (qq >= edges_[16]) return 255;
 
-  int ID = 8;
   int a = 0;
   int b = 16;
 
@@ -62,7 +61,8 @@ float SimQIE::ADC2Q(int ADC) {
   for (int i = 1; i < 4; i++) {  // to get the subrange
     if (v1 > nbins_[i]) ss++;
   }
-  int cc = 64 * rr + nbins_[ss];
+  // cc is unused, should it be? FIXME
+  // int cc = 64 * rr + nbins_[ss];
   float temp = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
                sense_[4 * rr + ss] / 2;
   return (temp / gain_);
@@ -73,7 +73,6 @@ float SimQIE::QErr(float Q) {
   if (Q <= edges_[0]) return 0;
   if (Q >= edges_[16]) return 0;
 
-  int ID = 8;
   int a = 0;
   int b = 16;
   while (b - a != 1) {

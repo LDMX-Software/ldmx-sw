@@ -169,10 +169,12 @@ void QIEDecoder::produce(framework::Event &event) {
                                       mask8<QIEStream::FLAG_SIZE_BITS>::m)};
   bool isCIDunsync{static_cast<bool>((flags >> QIEStream::CID_UNSYNC_POS) &
                                      mask8<QIEStream::FLAG_SIZE_BITS>::m)};
-  bool isCRC1malformed{static_cast<bool>((flags >> QIEStream::CRC1_ERR_POS) &
-                                         mask8<QIEStream::FLAG_SIZE_BITS>::m)};
-  bool isCRC0malformed{static_cast<bool>((flags >> QIEStream::CRC0_ERR_POS) &
-                                         mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  // These are unused, should they be? FIXME
+  // bool isCRC1malformed{static_cast<bool>((flags >> QIEStream::CRC1_ERR_POS) &
+  //                                        mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+  // bool isCRC0malformed{static_cast<bool>((flags >> QIEStream::CRC0_ERR_POS) &
+  //                                       mask8<QIEStream::FLAG_SIZE_BITS>::m)};
+
   // checksum
   // really, this is just empty for now.
   // TODO: implement a checksum set/get

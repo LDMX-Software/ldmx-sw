@@ -19,27 +19,24 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   // PE/MIP: 68 (summed over BOTH ends, based on 1808.05219, p38)
   // mV/PE: 5
   // mV/MeV: 72.961 (= 5*68/4.66)
-  const float mV_per_adc = 1.2;
+  //  const float mV_per_adc = 1.2;
   // adc gain
-  const float pe_per_adc = mV_per_adc / 5;
-  const float MeV_per_adc = mV_per_adc / 72.961;
+  // these are unused, should they be? FIXME
+  // const float pe_per_adc = mV_per_adc / 5;
+  // const float MeV_per_adc = mV_per_adc / 72.961;
   // const float samp_frac = 371/4e3; // ad-hoc, from a 4 GeV neutron sample
 
   // interaction length in Fe ('steel') = 16.77 cm (132.1 g/cm2)
   // polystyrene = 77.07 cm (81.7 g/cm2)
   // back hcal is 20mm bar, 25mm absorber
-  const float had_samp_frac =
-      (20 / 77.07) / (20 / 77.07 + 25 / 16.77);  // 0.148266
-  const float em_samp_frac =
-      (20 / 41.31) / (20 / 41.31 + 25 / 1.757);                    // 0.032906
-  const float samp_frac = (em_samp_frac + 2 * had_samp_frac) / 3;  // 0.109813
-  const float attenuation = exp(-1 / 5.);  // 5m attenuation length, 1m half-bar
-
-  const ldmx::HcalGeometry& hcalGeom = getCondition<ldmx::HcalGeometry>(
-      ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
-  const hcal::HcalTriggerGeometry& trigGeom =
-      getCondition<hcal::HcalTriggerGeometry>(
-          hcal::HcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
+  // these are unused, should they be? FIXME
+  // const float had_samp_frac =
+  //    (20 / 77.07) / (20 / 77.07 + 25 / 16.77);  // 0.148266
+  // const float em_samp_frac =
+  //    (20 / 41.31) / (20 / 41.31 + 25 / 1.757);                    // 0.032906
+  // const float samp_frac = (em_samp_frac + 2 * had_samp_frac) / 3;  //
+  // 0.109813 const float attenuation = exp(-1 / 5.);  // 5m attenuation length,
+  // 1m half-bar
 
   // for(auto t : event.searchProducts("","","")) std::cout << t.name() << " "
   // << t.passname() << " " << t.type() << std::endl;
@@ -126,30 +123,6 @@ void TrigHcalEnergySum::produce(framework::Event& event) {
   totalSum.setLayer(-1);
   totalSum.setHwEnergy(total_adc);
   event.add(combinedQuadCollName_ + "Sum", totalSum);
-}
-
-void TrigHcalEnergySum::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigHcalEnergySum::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void TrigHcalEnergySum::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void TrigHcalEnergySum::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
 }
 
 }  // namespace trigger

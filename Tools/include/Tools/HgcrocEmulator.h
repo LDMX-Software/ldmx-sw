@@ -340,14 +340,14 @@ class HgcrocEmulator {
      */
     std::vector<std::pair<double, double>> hits_;
 
+    /// reference to pulse shape function shared by all pulses
+    TF1& pulseFunc_;
+
     /// gain for current chip we are emulating
     double gain_;
 
     /// pedestal for current chip we are emulating
     double pedestal_;
-
-    /// reference to pulse shape function shared by all pulses
-    TF1& pulseFunc_;
 
   };  // CompositePulse
 

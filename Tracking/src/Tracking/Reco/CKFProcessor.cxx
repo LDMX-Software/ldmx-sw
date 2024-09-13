@@ -550,10 +550,9 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "Target extrapolation  ...  this should not change "
                        "anything since track is stored at target plane";
     ldmx::Track::TrackState tsAtTarget;
-    bool success = trk_extrap_->TrackStateAtSurface(
+    bool successAtTarget = trk_extrap_->TrackStateAtSurface(
         track, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
-    ldmx_log(debug) << "target extrapolation success??? " << success;
-    if (success) {
+    if (successAtTarget) {
       ldmx_log(debug) << "Successfully obtained TS at target";
       ldmx_log(debug) << "Parameters At Target:  \n"
                       << tsAtTarget.params[0] << " " << tsAtTarget.params[1]
@@ -565,11 +564,11 @@ void CKFProcessor::produce(framework::Event& event) {
     if (taggerTracking_) {
       ldmx_log(debug) << "Beam Origin Extrapolation";
       ldmx::Track::TrackState tsAtBeamOrigin;
-      bool success = trk_extrap_->TrackStateAtSurface(
+      bool successAtBeam = trk_extrap_->TrackStateAtSurface(
           track, beamOrigin_surface, tsAtBeamOrigin,
           ldmx::TrackStateType::AtBeamOrigin);
 
-      if (success) {
+      if (successAtBeam) {
         trk.addTrackState(tsAtBeamOrigin);
         ldmx_log(debug) << "Successfully obtained TS at beam origin";
       }
@@ -579,10 +578,10 @@ void CKFProcessor::produce(framework::Event& event) {
     if (!taggerTracking_) {
       ldmx_log(debug) << "Ecal Extrapolation";
       ldmx::Track::TrackState tsAtEcal;
-      success = trk_extrap_->TrackStateAtSurface(track, ecal_surface, tsAtEcal,
-                                                 ldmx::TrackStateType::AtECAL);
+      bool successAtEcal = trk_extrap_->TrackStateAtSurface(
+          track, ecal_surface, tsAtEcal, ldmx::TrackStateType::AtECAL);
 
-      if (success) {
+      if (successAtEcal) {
         trk.addTrackState(tsAtEcal);
         ldmx_log(debug) << "Successfully obtained TS at Ecal";
         ldmx_log(debug) << "Parameters At Ecal:  \n"

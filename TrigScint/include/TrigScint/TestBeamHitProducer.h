@@ -32,7 +32,7 @@ class TestBeamHitProducer : public framework::Producer {
  public:
   TestBeamHitProducer(const std::string& name, framework::Process& process);
 
-  ~TestBeamHitProducer();
+  virtual ~TestBeamHitProducer() = default;
 
   /**
    * Callback for the processor to configure itself from the given set
@@ -46,7 +46,6 @@ class TestBeamHitProducer : public framework::Producer {
 
  private:
   /// Set the local verbosity level.
-  bool verbose_{false};
 
   /// Name of the input collection containing the event readout samples
   std::string inputCol_;

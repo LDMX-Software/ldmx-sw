@@ -27,7 +27,7 @@ class Measurement {
               const float& cov_vv = 1.0);
 
   /// Default destructor
-  ~Measurement() = default;
+  virtual ~Measurement() = default;
 
   /**
    * Set the global position i.e. position of the measurement in the detector

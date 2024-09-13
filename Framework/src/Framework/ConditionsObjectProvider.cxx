@@ -9,10 +9,10 @@ namespace framework {
 ConditionsObjectProvider::ConditionsObjectProvider(
     const std::string& objname, const std::string& tagname,
     const framework::config::Parameters& params, Process& process)
-    : process_{process},
+    : theLog_{logging::makeLogger(objname)},
+      process_{process},
       objectName_{objname},
-      tagname_{tagname},
-      theLog_{logging::makeLogger(objname)} {}
+      tagname_{tagname} {}
 
 std::pair<const ConditionsObject*, ConditionsIOV>
 ConditionsObjectProvider::requestParentCondition(

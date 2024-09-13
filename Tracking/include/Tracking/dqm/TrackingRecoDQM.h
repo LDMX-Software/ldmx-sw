@@ -84,11 +84,12 @@ class TrackingRecoDQM : public framework::Analyzer {
 
   // If I have truth information, sort the tracks vector according to their
   // trackID and truthProb
-  std::vector<ldmx::Track>
-      uniqueTracks;  // real tracks (truth_prob > cut), unique
-  std::vector<ldmx::Track>
-      duplicateTracks;  // real tracks (truth_prob > cut), duplicated
-  std::vector<ldmx::Track> fakeTracks;  // fake tracks (truth_prob < cut)
+  // real tracks (truth_prob > cut), unique
+  std::vector<ldmx::Track> uniqueTracks_;
+  // real tracks (truth_prob > cut), duplicated
+  std::vector<ldmx::Track> duplicateTracks_;
+  // fake tracks (truth_prob < cut)
+  std::vector<ldmx::Track> fakeTracks_;
 
   // PID mapping
   std::map<int, int> pidmap;

@@ -185,6 +185,12 @@ void HcalDigiProducer::produce(framework::Event& event) {
                    (section == ldmx::HcalID::HcalSection::RIGHT)) {
           distance_along_bar = position[1];
           distance_ecal = ecal_dy;
+        } else {
+          distance_along_bar = -9999.;
+          EXCEPTION_RAISE(
+              "BadCode",
+              "We should never end up here "
+              "All cases of HCAL considered, end_close is meaningless");
         }
         end_close = (distance_along_bar > half_total_width) ? 0 : 1;
         distance_close = (end_close == 0)

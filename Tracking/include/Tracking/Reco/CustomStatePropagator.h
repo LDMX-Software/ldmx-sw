@@ -76,7 +76,7 @@ class CustomStatePropagator : public framework::Producer {
   std::shared_ptr<TH2F> histo_loc01;
 
   double state_nr{0.};
-  int charge{0};
+  int charge_{0};
   double gen_x{0.};
   double gen_y{0.};
   double gen_z{0.};

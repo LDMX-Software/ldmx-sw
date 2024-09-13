@@ -1177,17 +1177,17 @@ ldmx::EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(
  */
 void EcalVetoProcessor::fillHitMap(
     const std::vector<ldmx::EcalHit> &ecalRecHits,
-    std::map<ldmx::EcalID, float> &cellMap_) {
+    std::map<ldmx::EcalID, float> &cellMap) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     ldmx::EcalID id(hit.getID());
-    cellMap_.emplace(id, hit.getEnergy());
+    cellMap.emplace(id, hit.getEnergy());
   }
 }
 
 void EcalVetoProcessor::fillIsolatedHitMap(
     const std::vector<ldmx::EcalHit> &ecalRecHits, ldmx::EcalID globalCentroid,
-    std::map<ldmx::EcalID, float> &cellMap_,
-    std::map<ldmx::EcalID, float> &cellMapIso_, bool doTight) {
+    std::map<ldmx::EcalID, float> &cellMap,
+    std::map<ldmx::EcalID, float> &cellMapIso, bool doTight) {
   for (const ldmx::EcalHit &hit : ecalRecHits) {
     auto isolatedHit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id(hit.getID());
@@ -1212,7 +1212,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
       cellNbrIds[k] = ldmx::EcalID(id.layer(), cellNbrIds[k].module(),
                                    cellNbrIds[k].cell());
       // look in cell hit map to see if it is there
-      if (cellMap_.find(cellNbrIds[k]) != cellMap_.end()) {
+      if (cellMap.find(cellNbrIds[k]) != cellMap.end()) {
         isolatedHit = std::make_pair(false, cellNbrIds[k]);
         break;
       }
@@ -1221,7 +1221,7 @@ void EcalVetoProcessor::fillIsolatedHitMap(
       continue;
     }
     // Insert isolated hit
-    cellMapIso_.emplace(id, hit.getEnergy());
+    cellMapIso.emplace(id, hit.getEnergy());
   }
 }
 
