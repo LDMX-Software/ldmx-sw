@@ -202,9 +202,6 @@ bool SeedToTrackParamMaker::FitSeedAtlas(
   double y0 = sp[0]->y();
   double z0 = sp[0]->z();
 
-  // r0 is unused, should it be? FIXME
-  // double r0 = sqrt(x0 * x0 + y0 * y0);
-
   double x1 = sp[1]->x() - x0;
   double y1 = sp[1]->y() - y0;
   double x2 = sp[2]->x() - x0;

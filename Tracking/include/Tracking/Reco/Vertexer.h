@@ -49,7 +49,7 @@ class Vertexer : public framework::Producer {
  public:
   Vertexer(const std::string& name, framework::Process& process);
 
-  ~Vertexer() = default;
+  virtual ~Vertexer() = default;
 
   void onProcessStart() override;
   void onProcessEnd() override;
@@ -77,14 +77,12 @@ class Vertexer : public framework::Producer {
   std::string trk_c_name_1{"TaggerTracks"};
   std::string trk_c_name_2{"RecoilTracks"};
   std::shared_ptr<VoidPropagator> propagator_;
-  // double processing_time_{0.};
 
   // Monitoring histograms
-
   TH1F* h_delta_d0;
   TH1F* h_delta_z0;
   TH1F* h_delta_p;
-  ;
+
   TH1F* h_delta_phi;
   TH1F* h_delta_theta;
 
@@ -93,8 +91,6 @@ class Vertexer : public framework::Producer {
 
   TH2F* h_td0_vs_rd0;
   TH2F* h_tz0_vs_rz0;
-
-  // pT and photon direction
 };
 
 }  // namespace reco

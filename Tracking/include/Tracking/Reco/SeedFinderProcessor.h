@@ -167,10 +167,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nfailtheta_{0};
 
   // The measurements groups
-
   std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
-  // groups_array is unused, should it be? FIXME
-  // std::array<const ldmx::Measurement*, 5> groups_array;
 
   // Truth Matching tool
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =
