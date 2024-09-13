@@ -46,8 +46,6 @@ EcalTrackingGeometry::EcalTrackingGeometry(std::string gdmlfile,
     std::cout << "World position" << std::endl;
     std::cout << fWorldPhysVol->GetTranslation() << std::endl;
   }
-  // Get the logical volume from the world
-  G4LogicalVolume* fWorldLogicalVol = fWorldPhysVol->GetLogicalVolume();
 
   if (debug) std::cout << "Loop on world daughters" << std::endl;
 

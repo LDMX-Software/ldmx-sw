@@ -52,9 +52,9 @@ bool GeneralCSVLoader::nextRow() {
       colNames_.swap(line_split);
       continue;
     }
-    if (line_split.size() == colNames_.size())
+    if (line_split.size() == colNames_.size()) {
       rowData_.swap(line_split);
-    else {
+    } else {
       EXCEPTION_RAISE("CSVLineMismatch",
                       "Reading CSV found line with " +
                           std::to_string(line_split.size()) + " in CSV with " +
@@ -73,12 +73,13 @@ StringCSVLoader::StringCSVLoader(const std::string& source,
 
 std::string StringCSVLoader::getNextLine() {
   std::string retval;
-  if (rowBegin_ != rowEnd_)
+  if (rowBegin_ != rowEnd_) {
     if (rowEnd_ == std::string::npos) {
       retval = source_.substr(rowBegin_, rowEnd_);
     } else {
       retval = source_.substr(rowBegin_, rowEnd_ - rowBegin_);
     }
+  }
   // now we look for the follow on.
   // find the first non-end-of-line character
   rowBegin_ = source_.find_first_not_of(linesep_, rowEnd_);

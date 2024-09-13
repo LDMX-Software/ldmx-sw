@@ -98,19 +98,8 @@ class TestConfig : public framework::Producer {
   }
 
   // I don't do anything.
-  virtual void produce(framework::Event &) final override {}
+  virtual void produce(framework::Event &) override {}
 };
-
-/**
- * @func removeFile
- * Deletes the file and returns whether the deletion was successful.
- *
- * This is just a helper function during development.
- * Sometimes it is helpful to leave the generated files, so
- * maybe we can make the removal optional?
- */
-static bool removeFile(const char *filepath) { return remove(filepath) == 0; }
-
 }  // namespace test
 }  // namespace framework
 

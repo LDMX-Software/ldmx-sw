@@ -70,8 +70,8 @@ class EcalVetoProcessor : public framework::Producer {
   /* Function to take loaded hit maps and find isolated hits in them */
   void fillIsolatedHitMap(const std::vector<ldmx::EcalHit>& ecalRecHits,
                           ldmx::EcalID globalCentroid,
-                          std::map<ldmx::EcalID, float>& cellMap_,
-                          std::map<ldmx::EcalID, float>& cellMapIso_,
+                          std::map<ldmx::EcalID, float>& cellMap,
+                          std::map<ldmx::EcalID, float>& cellMapIso,
                           bool doTight = false);
 
   std::vector<XYCoords> getTrajectory(std::vector<double> momentum,
@@ -113,10 +113,8 @@ class EcalVetoProcessor : public framework::Producer {
   std::vector<std::vector<double>> roc_range_values_;
 
   int nEcalLayers_{0};
-  int backEcalStartingLayer_{0};
   int nReadoutHits_{0};
   int deepestLayerHit_{0};
-  int doBdt_{0};
 
   double summedDet_{0};
   double summedTightIso_{0};
@@ -152,7 +150,6 @@ class EcalVetoProcessor : public framework::Producer {
   double beamEnergyMeV_{0};
 
   bool verbose_{false};
-  bool doesPassVeto_{false};
 
   std::string bdtFileName_;
   std::string rocFileName_;

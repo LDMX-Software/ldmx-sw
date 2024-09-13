@@ -29,7 +29,7 @@ void EcalRawEncoder::produce(framework::Event& event) {
   /**
    * Static parameters depending on ROC version
    */
-  static const unsigned int common_mode_channel = roc_version_ == 2 ? 19 : 1;
+  // static const unsigned int common_mode_channel = roc_version_ == 2 ? 19 : 1;
 
   auto digis{
       event.getObject<ldmx::HgcrocDigiCollection>(input_name_, input_pass_)};
@@ -72,7 +72,8 @@ void EcalRawEncoder::produce(framework::Event& event) {
    * the header information the calculate the CRC checksums.
    */
   std::vector<uint32_t> buffer;
-  static uint32_t word;  // word to use for constructing buffer
+  // word to use for constructing buffer
+  static uint32_t word;
   uint32_t i_bx{0};
   for (auto const& bunch : sorted_samples) {
     /**TODO calculate bunch ID, read request, and orbit from sample ID, event
@@ -135,10 +136,11 @@ void EcalRawEncoder::produce(framework::Event& event) {
        * ... other listing of links ...
        */
       word = 0;
-      word |= (1 << 12 + 1 + 6 + 8);                                 // version
-      word |= (fpga_id & packing::utility::mask<8>) << 12 + 1 + 6;   // FPGA
-      word |= (links.size() & packing::utility::mask<6>) << 12 + 1;  // NLINKS
-      word |= (total_length & packing::utility::mask<12>);           // LEN TODO
+
+      word |= (1 << (12 + 1 + 6 + 8));                                // version
+      word |= (fpga_id & packing::utility::mask<8>) << (12 + 1 + 6);  // FPGA
+      word |= (links.size() & packing::utility::mask<6>) << (12 + 1);  // NLINKS
+      word |= (total_length & packing::utility::mask<12>);  // LEN TODO
       buffer.push_back(word);
       fpga_crc << word;
 

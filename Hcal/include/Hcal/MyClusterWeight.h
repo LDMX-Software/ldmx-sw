@@ -29,20 +29,19 @@ class MyClusterWeight {
     double bZ = b.centroid().Pz();
 
     double dijz;
-    double eFrac;
     if (aE >= bE) {
-      eFrac = bE / aE;  // ratio of energies
-      dijz = bZ - aZ;   // differences in Z
+      // differences in Z
+      dijz = bZ - aZ;
     } else {
-      eFrac = aE / bE;
       dijz = aZ - bZ;
     }
 
-    double dijT =
-        pow(pow(aX - bX, 2) + pow(aY - bY, 2), 0.5);  // Transverse Difference
-
-    double weightT = exp(pow(dijT / rmol, 2)) - 1;   // Trans --> massive
-    double weightZ = (exp(abs(dijz) / dzchar) - 1);  // Long
+    // Transverse Difference
+    double dijT = pow(pow(aX - bX, 2) + pow(aY - bY, 2), 0.5);
+    // Trans --> massive
+    double weightT = exp(pow(dijT / rmol, 2)) - 1;
+    // Long
+    double weightZ = (exp(abs(dijz) / dzchar) - 1);
 
     // Return the highest of the two weights
     if (weightT <= weightZ) {

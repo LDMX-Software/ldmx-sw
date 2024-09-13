@@ -39,7 +39,7 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
     std::vector<std::vector<const ldmx::CalorimeterHit*> > all_hit_ptrs =
         cb.runDBSCAN(ptrs, false);
 
-    for (const auto hit_ptrs : all_hit_ptrs) {
+    for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;
       cb.fillClusterInfoFromHits(&cl, hit_ptrs, logEnergyWeight_);
       pfClusters.push_back(cl);
@@ -64,30 +64,6 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
             });
   event.add(clusterCollName_, pfClusters);
   event.add("HcalTotalEnergy" + suffix_, eTotal);
-}
-
-void PFHcalClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFHcalClusterProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
 }
 
 }  // namespace recon

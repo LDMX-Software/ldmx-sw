@@ -47,7 +47,6 @@ class QIEAnalyzer : public framework::Analyzer {
   int startSample_{0};
 
   // plotting stuff
-  int evNb;
   int nEv{200};
   int nChannels{16};
   // int nTrkMax{100};

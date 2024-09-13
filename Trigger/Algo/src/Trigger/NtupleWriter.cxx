@@ -93,9 +93,7 @@ void NtupleWriter::produce(framework::Event& event) {
   inTag = "hcalTrigQuadsBackLayerSums";
   if (writeHcalSums_ && event.exists(inTag)) {
     const auto sums = event.getCollection<TrigEnergySum>(inTag);
-    const int nHcalLayers = 50;
-    // int nLayers = 0;
-    vector<float> energyAfterLayer;  // (nHcalLayers, 0.);
+    vector<float> energyAfterLayer;
     for (const auto& sum : sums) {
       if (!(sum.hwEnergy() > 0)) continue;
       if (sum.layer() >= energyAfterLayer.size())

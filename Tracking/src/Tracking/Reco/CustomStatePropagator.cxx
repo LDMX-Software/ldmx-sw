@@ -37,7 +37,7 @@ void CustomStatePropagator::onProcessStart() {
                                        100, -50, 50, 100, -50, 50);
 
   outTree_->Branch("state_nr", &state_nr);
-  outTree_->Branch("charge", &charge);
+  outTree_->Branch("charge", &charge_);
   outTree_->Branch("gen_x", &gen_x);
   outTree_->Branch("gen_y", &gen_y);
   outTree_->Branch("gen_z", &gen_z);
@@ -208,7 +208,7 @@ void CustomStatePropagator::fillTree(
     int state, int q, const Acts::Vector3 gen_pos, const Acts::Vector3 gen_mom,
     const Acts::BoundTrackParameters& endParams) {
   state_nr = state;
-  charge = q;
+  charge_ = q;
   gen_x = gen_pos(0);
   gen_y = gen_pos(1);
   gen_z = gen_pos(2);

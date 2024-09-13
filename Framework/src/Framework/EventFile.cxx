@@ -14,10 +14,10 @@ EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput, bool isLoopable)
     : fileName_(filename),
-      parent_(parent),
       isOutputFile_(isOutputFile),
       isSingleOutput_(isSingleOutput),
-      isLoopable_(isLoopable) {
+      isLoopable_(isLoopable),
+      parent_(parent) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");

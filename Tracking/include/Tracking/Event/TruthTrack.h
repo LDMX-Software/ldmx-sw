@@ -13,7 +13,7 @@ class TruthTrack {
 
   TruthTrack() = default;
 
-  ~TruthTrack() = default;
+  virtual ~TruthTrack() = default;
   /**
    *
    * Use the vertex position of the SimParticle to extract

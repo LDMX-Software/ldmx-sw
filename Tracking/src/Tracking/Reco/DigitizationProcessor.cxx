@@ -266,10 +266,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                                          sigma_v_ * sigma_v_);
 
           // transform to global
-          auto global_pos{hit_surface->localToGlobal(
+          auto transf_global_pos{hit_surface->localToGlobal(
               geometry_context(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
-                                        global_pos(1), global_pos(2));
+                                        transf_global_pos(1),
+                                        transf_global_pos(2));
 
         }  // do smearing
         measurement.setLocalPosition(local_pos(0), local_pos(1));

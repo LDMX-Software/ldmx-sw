@@ -9,12 +9,6 @@ namespace trigger {
 void DumpFileWriter::configure(framework::config::Parameters& ps) {}
 
 void DumpFileWriter::analyze(const framework::Event& event) {
-  const ecal::EcalTriggerGeometry& geom =
-      getCondition<ecal::EcalTriggerGeometry>(
-          ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-
   if (!event.exists("ecalTrigDigis")) return;
   auto ecalTrigDigis{
       event.getObject<ldmx::HgcrocTrigDigiCollection>("ecalTrigDigis")};
@@ -43,18 +37,6 @@ void DumpFileWriter::analyze(const framework::Event& event) {
 
   myEvent.writeToFile(file);
   evtNo++;
-}
-
-void DumpFileWriter::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void DumpFileWriter::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
 }
 
 void DumpFileWriter::onProcessStart() {

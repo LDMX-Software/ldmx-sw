@@ -19,8 +19,7 @@ static void storeIdFields(unsigned int id, std::ostream& s) {
 
 template <class T, class V>
 void storeT(const T& t, std::ostream& s, bool expandIds) {
-  char buffer[100];
-  // write the header line
+  //  write the header line
   s << "\"DetID\"";
   if (expandIds && t.getRowCount() > 0) {
     storeIdFields(t.getRowId(0), s);
@@ -160,15 +159,15 @@ void loadT(T& table, std::istream& is) {
                                                  ") on line " +
                                                  std::to_string(iline));
     }
-    unsigned int id(0);
+    unsigned int tempId(0);
     std::vector<V> values(table_to_csv.size(), 0);
-    if (iDetID >= 0) id = strtoul(split[iDetID].c_str(), 0, 0);
+    if (iDetID >= 0) tempId = strtoul(split[iDetID].c_str(), 0, 0);
     V dummy(0);
     for (auto icopy : table_to_csv) {
       values[icopy.first] = convert(split[icopy.second], dummy);
     }
-    if (id != 0) {
-      table.add(id, values);
+    if (tempId != 0) {
+      table.add(tempId, values);
     }
   }
 }

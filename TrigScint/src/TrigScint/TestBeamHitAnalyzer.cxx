@@ -138,7 +138,6 @@ void TestBeamHitAnalyzer::onProcessStart() {
                        nEv + 0.5, nChannels, -0.5, nChannels - 0.5);
 
   fillNb = 0;
-  evNb = 0;
 
   return;
 }

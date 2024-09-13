@@ -26,7 +26,6 @@ class NtupleWriter : public framework::Producer {
   std::string tag_{"Events"};
   std::string outPath_{"./ntuple.root"};
   bool writeTruth_{true};
-  bool writeCluster_{true};
   bool writeEle_{true};
   bool writeEcalSums_{true};
   bool writeHcalSums_{true};
