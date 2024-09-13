@@ -14,7 +14,7 @@ HcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("HcalTrigPrimDigiCo
 HcalTrigPrimConditionsHardcode.validForAllRows([ 1 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
                                                  5 , # ADC_THRESHOLD -- current noise is
                                                  1,  # TOT_PEDESTAL -- currently set to match ADC pedestal
-                                                 10000,  # TOT_THRESHOLD -- rather large value...
+                                                 5100.,  # TOT_THRESHOLD 
                                                  # Rounding because trigger primitives shouldn't represent floating point operations.
                                                  # See https://github.com/LDMX-Software/Hcal/issues/66#issuecomment-1719663799
                                                  round(2.5) ] # TOT_GAIN, ratio of recon TOT gain over recon ADC gain
@@ -59,13 +59,13 @@ HcalHgcrocConditionsHardcode=SimpleCSVDoubleTableProvider("HcalHgcrocConditions"
 
 HcalHgcrocConditionsHardcode.validForAllRows([
     1. , #PEDESTAL 
-    0.02*5/1.2, #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 1.2
+    0.02*5/(5100./1023.), #NOISE - 0.02 PE with 1 PE ~ 5mV and gain = 5100./1023.
     12.5, #MEAS_TIME - ns - clock_cycle/2 - defines the point in the BX where an in-time (time=0 in times vector) hit would arrive
-    20., #PAD_CAPACITANCE - pF
+    13/5.1, #PAD_CAPACITANCE - pF
     200., #TOT_MAX - ns - maximum time chip would be in TOT mode
-    10240. / 200., #DRAIN_RATE - fC/ns - dummy value for now
-    1.2, #GAIN - large ADC gain for now - conversion from ADC to mV
+    320000./200., #DRAIN_RATE - fC/ns - to drain maximum charge of 320000fC in 200ns
+    5100./1023., #GAIN - take 160 fC - 13 pC to be the linear range of ADC -> V_{adc_max} = 13pC/13/5.1pF = 5100mV
     1. + 4., #READOUT_THRESHOLD - 4 ADC counts above pedestal
-    1.*1.2 + 1*5, #TOA_THRESHOLD - mV - 1 PE above pedestal ( 1 PE  - 5 mV conversion)
-    10000., #TOT_THRESHOLD - mV - very large for now
+    1.*(5100./1023.) + 1*5, #TOA_THRESHOLD - mV - 1 PE above pedestal ( 1 PE  - 5 mV conversion)
+    5100., #TOT_THRESHOLD - mV - TOT begins at V_{adc_max}
     ])

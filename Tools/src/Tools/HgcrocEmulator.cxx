@@ -49,6 +49,7 @@ bool HgcrocEmulator::digitize(
   // step 0: prepare ourselves for emulation
 
   digiToAdd.clear();  // make sure it is clean
+  pulseRecord_.clear(); // clear pulseRecord
 
   // Configure chip settings based off of table (that may have been passed)
   double totMax = getCondition(channelID, "TOT_MAX");
@@ -101,8 +102,20 @@ bool HgcrocEmulator::digitize(
         continue;  // if this hit wasn't in the current BX, continue...
 
       double vpeak = pulse(hit.second);
+      double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
 
-      if (vpeak > totThreshold) {
+      //std::cout << "DEBUG PRINT - COMPARE IN COMING VOLTAGE AND PULSE FUNC VOLTAGE" << std::endl;
+      //std::cout << "    Incoming peak Voltage: " << vpeak << std::endl;
+      //std::cout << "    Pulse func Voltage: " << bxvolts << std::endl;
+      //std::cout << " " << std::endl;
+
+      //if (vpeak > totThreshold){
+        //startTOT = true;
+        //if (toverTOT < hit.second)
+          //toverTOT = hit.second;  // use the latest time in the window
+      //}
+
+      if (bxvolts > totThreshold){
         startTOT = true;
         if (toverTOT < hit.second)
           toverTOT = hit.second;  // use the latest time in the window
@@ -134,6 +147,8 @@ bool HgcrocEmulator::digitize(
       double charge_deposited =
           (pulse(toverTOT) - gain * pedestal) * padCapacitance;
 
+      double voltaGe = (pulse(toverTOT) - gain * pedestal);
+
       // Measure Time Over Threshold (TOT) by using the drain rate.
       //  1. Use drain rate to see how long it takes for the charge to drain off
       //  2. Translate this into DIGI samples
@@ -153,7 +168,7 @@ bool HgcrocEmulator::digitize(
       //  to measure a maximum of tot Max [ns]
       int tdc_counts = int(tot * 4096 / totMax) + pedestal;
 
-      // were we already over TOA?  TOT is reported in BX where TOA went over
+      // were we already over TOnA?  TOT is reported in BX where TOA went over
       // threshold...
       int toa{0};
       if (wasTOA) {
@@ -176,15 +191,21 @@ bool HgcrocEmulator::digitize(
           toa                     // TOA is third measurement
       );
 
+      // Record in PulseRecord
+      pulseRecord_.clear();
+      pulseRecord_.emplace_back(voltaGe, 0, tdc_counts);
+
       // TODO: properly handle saturation and recovery, eventually.
       // Now just kill everything...
       while (digiToAdd.size() < nADCs_) {
         digiToAdd.emplace_back(true, false,  // flags to mark type of sample
-                               0x3FF, 0x3FF, 0);
+                              0x3FF, 0x3FF, 0);
       }
 
+     for(const auto& digi: digiToAdd)
       return true;  // always readout
-    } else {
+
+    } else { 
       // determine the voltage at the sampling time
       double bxvolts = pulse((iADC - iSOI_) * clockCycle_);
       // add noise if requested
@@ -193,6 +214,12 @@ bool HgcrocEmulator::digitize(
       int adc = bxvolts / gain;
       if (adc < 0) adc = 0;
       if (adc > 1023) adc = 1023;
+
+      // Record in PulseRecord
+      if(adc >= readoutThreshold){
+      //pulseRecord_.clear();
+      pulseRecord_.emplace_back(bxvolts, adc, 0);
+      }
 
       // check for TOA
       int toa(0);
@@ -214,6 +241,7 @@ bool HgcrocEmulator::digitize(
           adc,                    // ADC[t] is the second field
           toa                     // TOA is third measurement
       );
+      
     }  // TOT or ADC Mode
   }    // sampling baskets
 

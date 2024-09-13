@@ -7,6 +7,7 @@
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
+#include "Tools/PulseRecord.h"
 
 //----------//
 //   ROOT   //
@@ -440,6 +441,12 @@ class HgcrocEmulator {
    * @f]
    */
   mutable TF1 pulseFunc_;
+
+  mutable std::vector<ldmx::PulseRecord> pulseRecord_ ;
+
+  //Getter to access pulseRecord_
+  public:
+  const std::vector<ldmx::PulseRecord>& getPulseRecord() const { return pulseRecord_;}
 
 };  // HgcrocEmulator
 
