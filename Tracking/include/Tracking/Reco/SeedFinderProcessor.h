@@ -20,9 +20,6 @@
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-//#include "Acts/Seeding/BinFinder.hpp"  .......   mg...I think these are
-//unused?  they are gone in v36 #include "Acts/Seeding/BinnedSPGroup.hpp"
-//.......   mg...I think these are unused?  they are gone in v36
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Seeding/Seed.hpp"
 #include "Acts/Seeding/SeedFilter.hpp"
