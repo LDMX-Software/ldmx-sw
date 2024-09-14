@@ -58,7 +58,7 @@ class TrackExtrapolatorTool {
       const Acts::BoundTrackParameters pars,
       const std::shared_ptr<Acts::Surface>& target_surface) {
     // Just to make it explicit
-    bool boundaryCheck = false;
+    // bool boundaryCheck = false;
 
     //    auto intersection = target_surface->intersect(
     //    gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
@@ -115,7 +115,6 @@ class TrackExtrapolatorTool {
   std::optional<Acts::BoundTrackParameters> extrapolate(
       track_t track, const std::shared_ptr<Acts::Surface>& target_surface) {
     // get first and last track state on surface
-    size_t nstates = track.nTrackStates();
     auto outermost = *(track.trackStatesReversed().begin());
     auto begin = track.trackStatesReversed().begin();
     std::advance(begin, track.nTrackStates() - 1);
@@ -152,6 +151,7 @@ class TrackExtrapolatorTool {
       std::cout << "HasSmoothed::" << hasSmoothed << std::endl;
       std::cout << "Filtered::" << filtered.transpose() << std::endl;
     }
+/*
     Acts::ActsScalar q;
     if (hasSmoothed)
       q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
@@ -159,6 +159,7 @@ class TrackExtrapolatorTool {
     else
       q = filtered[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
                                            : -1 * Acts::UnitConstants::e;
+*/
     // mg Aug 2024 ... v36 takes the particle...assume electron
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
     Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
@@ -173,7 +174,6 @@ class TrackExtrapolatorTool {
     // Now.. I'm taking whatever it is. I'm not checking here if it is a
     // measurement.
 
-    size_t nstates = track.nTrackStates();
     auto& tsc = track.container().trackStateContainer();
     auto begin = track.trackStates().begin();
     auto ts_last = *begin;
@@ -183,9 +183,9 @@ class TrackExtrapolatorTool {
 
     // Get the BoundTrackStateParameters
 
-    Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
-                             ? 1 * Acts::UnitConstants::e
-                             : -1 * Acts::UnitConstants::e;
+    // Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
+    //                          ? 1 * Acts::UnitConstants::e
+    //                          : -1 * Acts::UnitConstants::e;
     // assume electron for now
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
 

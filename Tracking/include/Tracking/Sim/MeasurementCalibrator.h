@@ -58,7 +58,7 @@ class LdmxMeasurementCalibrator {
   void calibrate(const Acts::GeometryContext& /*gctx*/,
                  const Acts::CalibrationContext& /*cctx*/,
                  const Acts::SourceLink& genericSourceLink /*sourceLink*/,
-                 typename traj_t::TrackStateProxy trackState) const {
+		 typename traj_t::TrackStateProxy trackState) const {
     ActsExamples::IndexSourceLink sourceLink{
         genericSourceLink.get<ActsExamples::IndexSourceLink>()};
     assert(m_measurements and
@@ -70,7 +70,6 @@ class LdmxMeasurementCalibrator {
     auto meas = m_measurements->at(sourceLink.index());
     Acts::Vector2 local_pos{meas.getLocalPosition()[0],
                             meas.getLocalPosition()[1]};
-    auto tsIndexType = trackState.index();
     auto tsCal{trackState.template calibrated<2>()};
     auto tsCalCov{trackState.template calibratedCovariance<2>()};
     tsCal.setZero();
@@ -80,8 +79,8 @@ class LdmxMeasurementCalibrator {
     local_cov(0, 0) = meas.getLocalCovariance()[0];
     local_cov(1, 1) = meas.getLocalCovariance()[1];
     tsCalCov.setZero();
-    tsCalCov.block(0, 0, 2, 2) =
-        local_cov;  // make tsCalCov 2x2 block the local_cov we just set
+     // make tsCalCov 2x2 block the local_cov we just set
+    tsCalCov.block(0, 0, 2, 2) = local_cov; 
 
     Acts::ActsMatrix<2, 6> projector;
     projector.setZero();
@@ -114,7 +113,6 @@ class LdmxMeasurementCalibrator {
     auto meas = m_measurements->at(sourceLink.index());
 
     trackState.allocateCalibrated(1);
-    auto tsIndexType = trackState.index();
     auto tsCal{trackState.template calibrated<1>()};
     auto tsCalCov{trackState.template calibratedCovariance<1>()};
 

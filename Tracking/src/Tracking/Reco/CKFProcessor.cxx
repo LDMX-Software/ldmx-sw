@@ -267,8 +267,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
     ldmx_log(debug) << "cov matrix" << std::endl << covMat << std::endl;
 
-    Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
-                                           : Acts::UnitConstants::e;
     // need to set particle hypothesis...set to electron for now...
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
     startParameters.push_back(
@@ -369,7 +367,6 @@ void CKFProcessor::produce(framework::Event& event) {
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
-  auto extr_surface = &(*origin_surface);
 
   ldmx_log(debug) << "About to run CKF..." << std::endl;
 
@@ -389,10 +386,7 @@ void CKFProcessor::produce(framework::Event& event) {
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
-      int pdgID = seedPDGID.at(trackId);
-      //      if (pdgID == 2212 || pdgID == -2212)
-      // mg Aug 2024 ... v36    options does not have mass
-      //        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
+      // int pdgID = seedPDGID.at(trackId);
     }
 
     // Define the CKF options here:
@@ -516,7 +510,7 @@ void CKFProcessor::produce(framework::Event& event) {
       ldmx_log(debug) << typeid(track).name();
       // These are the parameters at the target surface
       const Acts::BoundVector& track_pars = track.parameters();
-      const Acts::BoundMatrix& trk_cov = track.covariance();
+      // const Acts::BoundMatrix& trk_cov = track.covariance();
       const Acts::Surface& track_surface = track.referenceSurface();
       ldmx_log(debug) << "Got the parameters, covariance, and perigee surface";
 
