@@ -348,8 +348,8 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                   << bound_params;
 
   Acts::BoundVector stddev;
-  double sigma_p =
-      0.75 * p * Acts::UnitConstants::GeV;  // sigma set to 75% of momentum
+  // sigma set to 75% of momentum
+  double sigma_p = 0.75 * p * Acts::UnitConstants::GeV; 
   stddev[Acts::eBoundLoc0] =
       inflate_factors_[Acts::eBoundLoc0] * 2 * Acts::UnitConstants::mm;
   stddev[Acts::eBoundLoc1] =
