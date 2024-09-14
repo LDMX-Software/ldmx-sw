@@ -114,7 +114,6 @@ class LdmxMeasurementCalibrator {
     auto meas = m_measurements->at(sourceLink.index());
 
     trackState.allocateCalibrated(1);
-    auto tsIndexType = trackState.index();
     auto tsCal{trackState.template calibrated<1>()};
     auto tsCalCov{trackState.template calibratedCovariance<1>()};
 
