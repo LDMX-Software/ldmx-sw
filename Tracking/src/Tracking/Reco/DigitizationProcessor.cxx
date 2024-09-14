@@ -19,46 +19,6 @@ DigitizationProcessor::DigitizationProcessor(const std::string& name,
 
 void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
-
-  ldmx_log(info) << "Loading the tracking geometry";
-
-  // Module Bounds => Take them from the tracking geometry TODO
-  auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
-      20.17 * Acts::UnitConstants::mm, 50 * Acts::UnitConstants::mm);
-
-  // I assume 5 APVs
-  int nbinsx = 128 * 5;
-
-  // Strips
-  int nbinsy = 1;
-
-  // Thickness = 0.320 mm
-  double thickness = 0.320 * Acts::UnitConstants::mm;
-
-  // Lorentz angle
-  double lAngle = 0.01;
-
-  // Energy threshold
-  double eThresh = 0.;
-
-  // Analogue readout
-  bool isAnalog = true;
-
-  // mg August 2024...I don't think ndModule are used
-  // and neither CartesianSegmentation or DigitizationModule
-  // are in ACTs v36, so comment these out for now
-  //  Cartesian segmentation
-  // auto cSegmentation = std::make_shared<const Acts::CartesianSegmentation>(
-  //       moduleBounds, nbinsx, nbinsy);
-
-  // Negative side readout => TODO Make sure this is correct!
-  //  - Ask Paul what does this mean: depending on how local w is oriented
-  // TODO: load proper lorentz angle
-
-  // Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1,
-  // lAngle,
-  //                                   eThresh, isAnalog);
-
   ldmx_log(info) << "Initialization done" << std::endl;
 }
 

@@ -154,11 +154,17 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Preparing the strategies";
 
   groups_map.clear();
+  //  set the seeding strategy
+  //  strategy is a list of layers from which to  make the seed
+  //  this must include 5 layers; layer numbering starts at 0.  
   //  std::vector<int> strategy = {9,10,11,12,13};
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
   if (success) FindSeedsFromMap(seed_tracks, target_pseudo_meas);
 
+
+  //  currently, we only use a single strategy but eventually
+  //  we will use more.  Below is an example of how to add them
   /*
   groups_map.clear();
   strategy = {9,10,11,12,13};

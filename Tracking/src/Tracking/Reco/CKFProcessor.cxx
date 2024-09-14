@@ -562,7 +562,7 @@ void CKFProcessor::produce(framework::Event& event) {
       if (taggerTracking_) {
         ldmx_log(debug) << "Beam Origin Extrapolation";
         ldmx::Track::TrackState tsAtBeamOrigin;
-        bool success = trk_extrap_->TrackStateAtSurface(
+        success = trk_extrap_->TrackStateAtSurface(
             track, beamOrigin_surface, tsAtBeamOrigin,
             ldmx::TrackStateType::AtBeamOrigin);
 
