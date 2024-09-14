@@ -58,7 +58,7 @@ class TrackExtrapolatorTool {
       const Acts::BoundTrackParameters pars,
       const std::shared_ptr<Acts::Surface>& target_surface) {
     // Just to make it explicit
-    bool boundaryCheck = false;
+    // bool boundaryCheck = false;
 
     //    auto intersection = target_surface->intersect(
     //    gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
