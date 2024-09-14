@@ -183,9 +183,9 @@ class TrackExtrapolatorTool {
 
     // Get the BoundTrackStateParameters
 
-    Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
-                             ? 1 * Acts::UnitConstants::e
-                             : -1 * Acts::UnitConstants::e;
+    // Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
+    //                          ? 1 * Acts::UnitConstants::e
+    //                          : -1 * Acts::UnitConstants::e;
     // assume electron for now
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
