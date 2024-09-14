@@ -510,7 +510,7 @@ void CKFProcessor::produce(framework::Event& event) {
       ldmx_log(debug) << typeid(track).name();
       // These are the parameters at the target surface
       const Acts::BoundVector& track_pars = track.parameters();
-      const Acts::BoundMatrix& trk_cov = track.covariance();
+      // const Acts::BoundMatrix& trk_cov = track.covariance();
       const Acts::Surface& track_surface = track.referenceSurface();
       ldmx_log(debug) << "Got the parameters, covariance, and perigee surface";
 
