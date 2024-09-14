@@ -369,7 +369,6 @@ void CKFProcessor::produce(framework::Event& event) {
   std::shared_ptr<const Acts::PerigeeSurface> origin_surface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(
           Acts::Vector3(0., 0., 0.));
-  auto extr_surface = &(*origin_surface);
 
   ldmx_log(debug) << "About to run CKF..." << std::endl;
 
