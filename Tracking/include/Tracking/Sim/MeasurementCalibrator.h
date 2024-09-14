@@ -58,7 +58,7 @@ class LdmxMeasurementCalibrator {
   void calibrate(const Acts::GeometryContext& /*gctx*/,
                  const Acts::CalibrationContext& /*cctx*/,
                  const Acts::SourceLink& genericSourceLink /*sourceLink*/,
-                 traj_t::TrackStateProxy trackState) const {
+                typename traj_t::TrackStateProxy trackState) const {
     ActsExamples::IndexSourceLink sourceLink{
         genericSourceLink.get<ActsExamples::IndexSourceLink>()};
     assert(m_measurements and
