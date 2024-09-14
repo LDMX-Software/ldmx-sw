@@ -94,7 +94,9 @@ void Vertexer::produce(framework::Event& event) {
   // Track linearizer in the proximity of the vertex location
   using Linearizer = Acts::HelicalTrackLinearizer;
   // Linearizer::Config linearizerConfig(sp_interpolated_bField_,propagator_);
-  Linearizer::Config linearizerConfig(bField_, propagator_);
+  Linearizer::Config linearizerConfig;
+  linearizerConfig.bField = bField_;
+  linearizerConfig.propagator = propagator_;
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
