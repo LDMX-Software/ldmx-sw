@@ -81,9 +81,9 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
 
   ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
   // Fakes and duplicates
-  TrackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false, false);
+  TrackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false,
+                  false);
   TrackMonitoring(fakeTracks_, measurements, title_ + "fake_", false, false);
-
 
   // Track Extrapolation to Ecal Monitoring
 

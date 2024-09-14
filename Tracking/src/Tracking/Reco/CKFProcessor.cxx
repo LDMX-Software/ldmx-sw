@@ -501,7 +501,6 @@ void CKFProcessor::produce(framework::Event& event) {
         continue;
       }
 
-
       // get the BoundTrackParameters at the target
       // ...use to fill in the Acts::TrackProxy object
       // This isn't really necessary, since we can take
@@ -594,7 +593,6 @@ void CKFProcessor::produce(framework::Event& event) {
                           << " " << tsAtEcal.params[2] << " "
                           << tsAtEcal.params[3] << " " << tsAtEcal.params[4];
         }
-
       }
 
       // Truth matching
