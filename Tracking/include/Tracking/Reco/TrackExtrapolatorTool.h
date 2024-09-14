@@ -151,6 +151,7 @@ class TrackExtrapolatorTool {
       std::cout << "HasSmoothed::" << hasSmoothed << std::endl;
       std::cout << "Filtered::" << filtered.transpose() << std::endl;
     }
+/*
     Acts::ActsScalar q;
     if (hasSmoothed)
       q = smoothed[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
@@ -158,6 +159,7 @@ class TrackExtrapolatorTool {
     else
       q = filtered[Acts::eBoundQOverP] > 0 ? 1 * Acts::UnitConstants::e
                                            : -1 * Acts::UnitConstants::e;
+*/
     // mg Aug 2024 ... v36 takes the particle...assume electron
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
     Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
