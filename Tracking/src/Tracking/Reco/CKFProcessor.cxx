@@ -267,8 +267,6 @@ void CKFProcessor::produce(framework::Event& event) {
 
     ldmx_log(debug) << "cov matrix" << std::endl << covMat << std::endl;
 
-    Acts::ActsScalar q = seed.getQoP() < 0 ? -1 * Acts::UnitConstants::e
-                                           : Acts::UnitConstants::e;
     // need to set particle hypothesis...set to electron for now...
     auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
     startParameters.push_back(
