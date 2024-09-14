@@ -70,7 +70,6 @@ class LdmxMeasurementCalibrator {
     auto meas = m_measurements->at(sourceLink.index());
     Acts::Vector2 local_pos{meas.getLocalPosition()[0],
                             meas.getLocalPosition()[1]};
-    auto tsIndexType = trackState.index();
     auto tsCal{trackState.template calibrated<2>()};
     auto tsCalCov{trackState.template calibratedCovariance<2>()};
     tsCal.setZero();
