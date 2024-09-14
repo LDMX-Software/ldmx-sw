@@ -389,9 +389,6 @@ void CKFProcessor::produce(framework::Event& event) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
       int pdgID = seedPDGID.at(trackId);
-      //      if (pdgID == 2212 || pdgID == -2212)
-      // mg Aug 2024 ... v36    options does not have mass
-      //        propagator_options.mass = 938 * Acts::UnitConstants::MeV;
     }
 
     // Define the CKF options here:
