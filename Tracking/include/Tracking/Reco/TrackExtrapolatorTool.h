@@ -115,7 +115,6 @@ class TrackExtrapolatorTool {
   std::optional<Acts::BoundTrackParameters> extrapolate(
       track_t track, const std::shared_ptr<Acts::Surface>& target_surface) {
     // get first and last track state on surface
-    size_t nstates = track.nTrackStates();
     auto outermost = *(track.trackStatesReversed().begin());
     auto begin = track.trackStatesReversed().begin();
     std::advance(begin, track.nTrackStates() - 1);
