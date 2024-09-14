@@ -47,6 +47,8 @@ void Vertexer::onProcessStart() {
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
+  /*
+   * This is unused now, should it be?
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
@@ -54,6 +56,7 @@ void Vertexer::onProcessStart() {
     // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
     // //zxy
   };
+  */
 
   sp_interpolated_bField_ =
       std::make_shared<InterpolatedMagneticField3>(loadDefaultBField(
@@ -66,13 +69,11 @@ void Vertexer::onProcessStart() {
   std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
             << std::endl;
 
-  auto&& stepper_const = Acts::EigenStepper<>{bField_};
-  auto&& stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
-
   // Set up propagator with void navigator
-
+  // auto&& stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
   // propagator_ = std::make_shared<VoidPropagator>(stepper);
 
+  auto&& stepper_const = Acts::EigenStepper<>{bField_};
   propagator_ = std::make_shared<VoidPropagator>(stepper_const);
 }
 
@@ -88,7 +89,7 @@ void Vertexer::configure(framework::config::Parameters& parameters) {
 
 void Vertexer::produce(framework::Event& event) {
   nevents_++;
-  auto start = std::chrono::high_resolution_clock::now();
+  // auto start = std::chrono::high_resolution_clock::now();
 
   // Track linearizer in the proximity of the vertex location
   using Linearizer = Acts::HelicalTrackLinearizer;
@@ -230,11 +231,12 @@ void Vertexer::TaggerRecoilMonitoring(
   ldmx::Track t_trk = tagger_tracks.at(0);
   ldmx::Track r_trk = recoil_tracks.at(0);
 
-  double t_d0, r_d0;
-  double t_phi, r_phi;
   double t_p, r_p;
-  double t_theta, r_theta;
-  double t_z0, r_z0;
+  // these are unsed, should they be? FIXME
+  // double t_d0, r_d0;
+  // double tt_p_phi, r_phi;
+  // double t_theta, r_theta;
+  // double t_z0, r_z0;
 
   t_p = t_trk.q() / t_trk.getQoP();
   r_p = r_trk.q() / r_trk.getQoP();

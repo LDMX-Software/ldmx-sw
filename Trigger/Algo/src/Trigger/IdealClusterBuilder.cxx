@@ -168,18 +168,17 @@ std::vector<Cluster> IdealClusterBuilder::Build2dClustersLayer(
       c.yy = 0;
       c.zz = 0;
       float sumw = 0;
-      for (auto h : c.hits) {
-        auto hit = h;
+      for (auto hit : c.hits) {
         // if(debug) cout << hit.x << " " << hit.y << " " << hit.z << endl;
-        c.e += h.e;
+        c.e += hit.e;
         // cout << "2d: " << h.e << " " << log(h.e/MIN_TP_ENERGY) << endl;
-        float w = std::max(0., log(h.e / MIN_TP_ENERGY));  // use log-e wgt
-        c.x += h.x * w;
-        c.y += h.y * w;
-        c.z += h.z * w;
-        c.xx += h.x * h.x * w;
-        c.yy += h.y * h.y * w;
-        c.zz += h.z * h.z * w;
+        float w = std::max(0., log(hit.e / MIN_TP_ENERGY));  // use log-e wgt
+        c.x += hit.x * w;
+        c.y += hit.y * w;
+        c.z += hit.z * w;
+        c.xx += hit.x * hit.x * w;
+        c.yy += hit.y * hit.y * w;
+        c.zz += hit.z * hit.z * w;
         sumw += w;
       }
       c.x /= sumw;
@@ -349,7 +348,7 @@ void IdealClusterBuilder::Build3dClusters() {
     c.yy = 0;
     c.zz = 0;
     float sumw = 0;
-    for (auto c2 : c.clusters2d) {
+    for (auto &c2 : c.clusters2d) {
       c.e += c2.e;
       // cout << "3d: " << c2.e << " " << log(c2.e/MIN_TP_ENERGY) << endl;
       float w = std::max(0., log(c2.e / MIN_TP_ENERGY));  // use log-e wgt
@@ -459,7 +458,7 @@ void IdealClusterBuilder::Fit(Cluster &c3) {
   std::vector<float> x;
   std::vector<float> y;
   std::vector<float> z;
-  for (const auto c2 : c3.clusters2d) {
+  for (const auto &c2 : c3.clusters2d) {
     // logE.push_back( log(c2.e) );
     x.push_back(c2.x);
     y.push_back(c2.y);

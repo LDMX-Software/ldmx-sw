@@ -21,6 +21,8 @@ void VertexProcessor::onProcessStart() {
   h_m_truthFilter_ = new TH1F("m_filter", "m", 100, 0., 1.);
   h_m_truth_ = new TH1F("m_truth", "m_truth", 100, 0., 1.);
 
+  /*
+   * this is unused, should it be? FIXME
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
@@ -28,6 +30,7 @@ void VertexProcessor::onProcessStart() {
     // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
     // //zxy
   };
+  */
 
   // Setup a interpolated bfield map
   sp_interpolated_bField_ =
@@ -92,6 +95,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   // TODO:: The perigee surface should be common between all tracks.
   // So should only be created once in principle.
+  // There should be no perigeeSurface2
 
   std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
@@ -135,7 +139,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   if (seeds.size() == 2) {
     for (int iSeed = 0; iSeed < seeds.size(); iSeed++) {
-      std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
+      std::shared_ptr<Acts::PerigeeSurface> perigeeSurface2 =
           Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
               seeds.at(iSeed).getPerigeeX(), seeds.at(iSeed).getPerigeeY(),
               seeds.at(iSeed).getPerigeeZ()));

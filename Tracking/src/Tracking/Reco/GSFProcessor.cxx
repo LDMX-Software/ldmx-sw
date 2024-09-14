@@ -10,12 +10,10 @@ namespace reco {
 GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
     : TrackingGeometryUser(name, process) {}
 
-GSFProcessor::~GSFProcessor() {}
-
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Custom transformation of the interpolated bfield map
   bool debugTransform = false;
-  auto transformPos = [this, debugTransform](const Acts::Vector3& pos) {
+  auto transformPos = [debugTransform](const Acts::Vector3& pos) {
     Acts::Vector3 rot_pos;
     rot_pos(0) = pos(1);
     rot_pos(1) = pos(2);

@@ -85,7 +85,8 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
 }
 
 void SeedFinderProcessor::produce(framework::Event& event) {
-  const auto& tg{geometry()};
+  // tg is unused, should it be? FIXME
+  // const auto& tg{geometry()};
   auto start = std::chrono::high_resolution_clock::now();
   ldmx::Tracks seed_tracks;
 
@@ -219,8 +220,6 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // Fit a straight line in the non-bending plane and a parabola in the bending
   // plane
 
-  const int N = vmeas.size();
-
   // Each measurement is treated as a 3D point, where the v direction is in the
   // center of the strip with sigma equal to the length of the strip / sqrt(12).
   // In this way it's easier to incorporate the tagger track extrapolation to
@@ -280,8 +279,6 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
     W_i(1, 1) = 1. / (vError * vError);
 
     Acts::Vector2 Yprime_i = loc + offset - xoffset;
-
-    Acts::Vector2 yi = W_i * Yprime_i;
     Y += (A_i.transpose()) * W_i * Yprime_i;
 
     Acts::ActsMatrix<2, 5> WA_i = (W_i * A_i);
@@ -299,7 +296,6 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
 
   Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
   Acts::ActsVector<3> ref{0., 0., 0.};
-  LineParabolaToHelix(B, hlx, ref);
 
   double relativePerigeeX = perigee_location(0) - xOrigin;
 
@@ -408,38 +404,6 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   return trk;
 }
 
-// To augment with the covariance matrix.
-// The following formulas only works if the center if x0 where the
-// linear+parabola function is evaluated is 0. It also assumes the axes
-// orientation according to the ACTS needs. phi0 is the angle of the tangent of
-// the track at the perigee. Positive counterclockwise. Theta is positive from
-// the z axis to the bending plane. (pi/2 for tracks along the x axis)
-
-void SeedFinderProcessor::LineParabolaToHelix(
-    const Acts::ActsVector<5> parameters, Acts::ActsVector<5>& helix_parameters,
-    Acts::Vector3 ref) {
-  double R = 0.5 / abs(parameters(2));
-  double xc = R * parameters(1);
-  double p2 = 0.5 * parameters(1) * parameters(1);
-  double factor = parameters(2) < 0 ? -1 : 1;
-  double yc =
-      parameters(0) +
-      factor *
-          (R * (1 - p2));  //+ or minus solution. I chose beta0 - R ( ... ),
-                           // because the curvature is negative for electrons.
-                           // The sign need to be chosen by the sign of B(2)
-  double theta0 = atan2(yc, xc);
-  double k = parameters(2) < 0 ? (-1. / R) : 1. / R;
-  double d0 = R - xc / cos(theta0);
-  double phi0 = theta0 + 1.57079632679;
-  double tanL = parameters(4) * cos(theta0);
-  double theta = 1.57079632679 - atan(tanL);
-  double z0 = parameters(3) + (d0 * tanL * tan(theta0));
-  double qOp = factor / (0.3 * bfield_ * R * 0.001);
-
-  // std::cout<<d0<<" "<<z0<<" "<<phi0<<" "<<theta<<" "<<qOp<<std::endl;
-}
-
 void SeedFinderProcessor::onProcessEnd() {
   // outputFile_->cd();
   // outputTree_->Write();
@@ -495,15 +459,9 @@ bool SeedFinderProcessor::GroupStrips(
 
 void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
                                            const ldmx::Measurements& pmeas) {
-  std::vector<ldmx::Measurement> meas_for_seeds;
-  meas_for_seeds.reserve(5);
-
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
       groups_map.begin();
-  std::vector<const ldmx::Measurement*>::iterator meas_iter;
-
   // Vector of iterators
-
   constexpr size_t K = 5;
   std::vector<std::vector<const ldmx::Measurement*>::iterator> it;
   it.reserve(K);
@@ -599,7 +557,8 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
       // A seed is rejected if it is found incompatible with all the target
       // extrapolations
 
-      bool tgt_compatible = false;
+      // This is set but unused, eventually we will use tagger track position at
+      // target to inform recoil tracking bool tgt_compatible = false;
       for (auto tgt_pseudomeas : pmeas) {
         // The d0/z0 are in a frame with the same orientation of the target
         // surface
@@ -610,7 +569,7 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
 
         if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
           // found at least 1 compatible target location
-          tgt_compatible = true;
+          // tgt_compatible = true;
           break;
         }
       }

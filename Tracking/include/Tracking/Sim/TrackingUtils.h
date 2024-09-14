@@ -128,8 +128,6 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
     const ldmx::SimTrackerHit& hit, unsigned int vol = 2, double sigma_u = 0.05,
     double sigma_v = 1.) {
-  bool debug = false;
-
   unsigned int index = getSensorID(hit);
 
   // Rotate position

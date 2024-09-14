@@ -33,10 +33,6 @@ class DumpFileWriter : public framework::Analyzer {
 
   virtual void analyze(const framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
   virtual void onProcessStart();
 
   virtual void onProcessEnd();
@@ -44,9 +40,6 @@ class DumpFileWriter : public framework::Analyzer {
   typedef ap_ufixed<16, 14> e_t;  // [MeV] (Up to at least 8 GeV)
 
  private:
-  // specific verbosity
-  int verbose_{0};
-
   // From:
   // Tools/python/HgcrocEmulator.py
   // ECal/python/digi.py

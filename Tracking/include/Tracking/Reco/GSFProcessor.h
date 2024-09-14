@@ -111,7 +111,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   GSFProcessor(const std::string &name, framework::Process &process);
 
   /// Destructor
-  ~GSFProcessor();
+  virtual ~GSFProcessor() = default;
 
   /**
    *
@@ -159,21 +159,18 @@ class GSFProcessor final : public TrackingGeometryUser {
   //     ActsExamples::IndexSourceLink>;
 
   // If we want to dump the tracking geometry
-  bool dumpobj_{false};
-
-  int pionstates_{10};
-
-  int nevents_{0};
-
+  // bool dumpobj_{false};
+  // int pionstates_{10};
+  // int nevents_{0};
   // Processing time counter
-  double processing_time_{0.};
+  // double processing_time_{0.};
 
   // time profiling
   std::map<std::string, double> profiling_map_;
 
   // refitting of tracks
-  bool kf_refit_{false};
-  bool gsf_refit_{false};
+  // bool kf_refit_{false};
+  // bool gsf_refit_{false};
 
   bool debug_{false};
 
@@ -183,39 +180,39 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<std::normal_distribution<float>> normal_;
 
   // Constant BField
-  double bfield_{0};
+  // double bfield_{0};
   // Use constant bfield
-  bool const_b_field_{true};
+  // bool const_b_field_{true};
 
   // Remove stereo measurements
-  bool remove_stereo_{false};
+  // bool remove_stereo_{false};
 
   // Use 2d measurements instead of 1D
-  bool use1Dmeasurements_{true};
+  // bool use1Dmeasurements_{true};
 
   // Minimum number of hits on tracks
-  int min_hits_{7};
+  // int min_hits_{7};
 
   // The extrapolation surface
-  bool use_extrapolate_location_{true};
+  // bool use_extrapolate_location_{true};
   std::vector<double> extrapolate_location_{0., 0., 0.};
-  bool use_seed_perigee_{false};
+  // bool use_seed_perigee_{false};
 
   // The measurement collection to use for track reconstruction
   std::string measurement_collection_{"TaggerMeasurements"};
 
-  double outlier_pval_{3.84};
+  // double outlier_pval_{3.84};
 
   // The output track collection
   std::string out_trk_collection_{"GSFTracks"};
 
   // Select the hits using TrackID and pdg_id__
 
-  int track_id_{-1};
-  int pdg_id_{11};
+  // int track_id_{-1};
+  // int pdg_id_{11};
 
   // Mass for the propagator hypothesis in MeV
-  double mass_{0.511};
+  // double mass_{0.511};
 
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};
@@ -240,7 +237,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string field_map_{""};
 
   bool usePerigee_{false};
-  bool usePlaneSurface_{false};
+  // bool usePlaneSurface_{false};
 
   // Keep track on which system this processor is running on
   bool taggerTracking_{true};

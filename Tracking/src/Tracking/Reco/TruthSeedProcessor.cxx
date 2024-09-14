@@ -107,7 +107,6 @@ void TruthSeedProcessor::createTruthTrack(
   // Eigen::Matrix<double, kSize, 1>;
   Acts::Vector3 pos{pos_vec[0], pos_vec[1], pos_vec[2]};
   Acts::Vector3 mom{p_vec[0], p_vec[1], p_vec[2]};
-  double time{0.};
 
   // Rotate the position and momentum into the ACTS frame.
   pos = tracking::sim::utils::Ldmx2Acts(pos);
@@ -699,7 +698,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     // Only take the first entry of the vector: it should be the scoring plane
     // hit with the highest momentum.
     const ldmx::SimTrackerHit& hit = scoring_hits.at(element.second.at(0));
-    const ldmx::SimParticle& phit = particleMap[hit.getTrackID()];
+    [[maybe_unused]] const ldmx::SimParticle& phit =
+        particleMap[hit.getTrackID()];
     ldmx::SimTrackerHit ecal_hit;
 
     bool foundEcalHit = false;

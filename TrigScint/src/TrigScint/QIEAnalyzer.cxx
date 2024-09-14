@@ -199,8 +199,6 @@ void QIEAnalyzer::onProcessStart() {
       new TH2F("hTDCfireChanvsEvent", ";channel with TDC < 63;event number",
                nChannels, -0.5, nChannels - 0.5, nEv, 0, nEv);
 
-  evNb = 0;
-
   ldmx_log(debug) << "done setting up histograms";
 
   return;

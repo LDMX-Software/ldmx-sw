@@ -27,8 +27,6 @@ bool SeedToTrackParamMaker::KarimakiFit(
   double Syr2 = 0., yr2m = 0.;  // <yr^2>
   double Sw = 0.;               // sum of weights
 
-  int n = sp.size();
-
   for (size_t i_sp = 0; i_sp < sp.size(); i_sp++) {
     double x = sp[i_sp]->x() - refPoint[0];
     double y = sp[i_sp]->y() - refPoint[1];
@@ -204,8 +202,6 @@ bool SeedToTrackParamMaker::FitSeedAtlas(
   double y0 = sp[0]->y();
   double z0 = sp[0]->z();
 
-  double r0 = sqrt(x0 * x0 + y0 * y0);
-
   double x1 = sp[1]->x() - x0;
   double y1 = sp[1]->y() - y0;
   double x2 = sp[2]->x() - x0;
@@ -248,19 +244,17 @@ bool SeedToTrackParamMaker::FitSeedAtlas(
   data[5] = -C / (300. * bFieldZ);
 
   /// B in this computation is twice the usual B
-  double b_c = 1 / B;
-  double a_c = -1 * b_c * A;
-  double R = 1. / C;
-
+  // double b_c = 1 / B;
+  // double a_c = -1 * b_c * A;
+  // double R = 1. / C;
   // std::cout<<"(a_c, b_c) = "<<a_c<<","<<b_c<<std::endl;
   // std::cout<<"R="<<R<<std::endl;
 
   // wrt real origin
-  double a_cp = a_c * (a)-b_c * (b) + x0;
-  double b_cp = b_c * (a) + a_c * (b) + y0;
-  double ip = (1. / (2. * R)) * (a_cp * a_cp + b_cp * b_cp - R * R);
-
+  // double a_cp = a_c * (a)-b_c * (b) + x0;
+  // double b_cp = b_c * (a) + a_c * (b) + y0;
   // std::cout<<"SeedToTrackParamMaker
+  // double ip = (1. / (2. * R)) * (a_cp * a_cp + b_cp * b_cp - R * R);
   // (a_cp,b_cp)="<<a_cp<<","<<b_cp<<std::endl; std::cout<<"Ip="<<ip<<std::endl;
 
   /// Return false if the transverse momentum is less than 90% the minimum

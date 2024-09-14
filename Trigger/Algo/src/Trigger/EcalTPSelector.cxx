@@ -8,12 +8,6 @@ void EcalTPSelector::configure(framework::config::Parameters& ps) {
 }
 
 void EcalTPSelector::produce(framework::Event& event) {
-  const ecal::EcalTriggerGeometry& geom =
-      getCondition<ecal::EcalTriggerGeometry>(
-          ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-
   if (!event.exists(tpCollName_)) return;
   auto ecalTrigDigis{
       event.getObject<ldmx::HgcrocTrigDigiCollection>(tpCollName_)};
@@ -137,43 +131,18 @@ void EcalTPSelector::produce(framework::Event& event) {
 
 void EcalTPSelector::decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y,
                               double& z, double& e) {
+  ldmx::EcalTriggerID tid(tp.getId());
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-
-  ldmx::EcalTriggerID tid(tp.getId());
   // const auto center_ecalID = geom.centerInTriggerCell(tid);
+  //  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+  //  ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
   // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
   std::tie(x, y, z) = geom.globalPosition(tid);
   // e = primitiveToEnergy(tp.linearPrimitive(), tid.layer());
   ecalTpToE cvt;
   e = cvt.calc(tp.linearPrimitive(), tid.layer());
-}
-
-void EcalTPSelector::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void EcalTPSelector::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void EcalTPSelector::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void EcalTPSelector::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
 }
 
 }  // namespace trigger
