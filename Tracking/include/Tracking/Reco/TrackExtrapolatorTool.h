@@ -174,7 +174,6 @@ class TrackExtrapolatorTool {
     // Now.. I'm taking whatever it is. I'm not checking here if it is a
     // measurement.
 
-    size_t nstates = track.nTrackStates();
     auto& tsc = track.container().trackStateContainer();
     auto begin = track.trackStates().begin();
     auto ts_last = *begin;
