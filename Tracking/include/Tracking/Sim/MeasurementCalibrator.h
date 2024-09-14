@@ -80,8 +80,8 @@ class LdmxMeasurementCalibrator {
     local_cov(0, 0) = meas.getLocalCovariance()[0];
     local_cov(1, 1) = meas.getLocalCovariance()[1];
     tsCalCov.setZero();
-    tsCalCov.block(0, 0, 2, 2) =
-        local_cov;  // make tsCalCov 2x2 block the local_cov we just set
+     // make tsCalCov 2x2 block the local_cov we just set
+    tsCalCov.block(0, 0, 2, 2) = local_cov; 
 
     Acts::ActsMatrix<2, 6> projector;
     projector.setZero();
