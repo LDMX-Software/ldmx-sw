@@ -386,7 +386,7 @@ void CKFProcessor::produce(framework::Event& event) {
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
-      int pdgID = seedPDGID.at(trackId);
+      // int pdgID = seedPDGID.at(trackId);
     }
 
     // Define the CKF options here:
