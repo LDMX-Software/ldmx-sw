@@ -129,7 +129,7 @@ bool SeedToTrackParamMaker::KarimakiFit(
   double Vphid_m1 = u * (rho * Sgamma - u * Sbeta);
   double Vdd_m1 = rho * (rho * Saa - 2 * u * Salpha) + u * u * Sw;
 
-  Acts::SymMatrix3 kariCov_inv;
+  Acts::SquareMatrix3 kariCov_inv;
 
   // TODO:: This one should be fixed
   kariCov_inv(0, 0) = Vrr_m1;
@@ -145,7 +145,7 @@ bool SeedToTrackParamMaker::KarimakiFit(
   kariCov_inv(0, 2) = Vrhod_m1;
   kariCov_inv(2, 2) = Vdd_m1;
 
-  Acts::SymMatrix3 kariCov = kariCov_inv.inverse();
+  Acts::SquareMatrix3 kariCov = kariCov_inv.inverse();
 
   // Compute the corrections to the estimated parameters
   double sigma = -rho * Sdelta + 2 * u * Saa - d * (1 + u) * Salpha;

@@ -17,6 +17,8 @@ void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
   subdetector_ = parameters.getParameter<std::string>("subdetector", "Tagger");
   trackStates_ =
       parameters.getParameter<std::vector<std::string>>("trackStates", {});
+  measurementCollection_ = parameters.getParameter<std::string>(
+      "measurement_collection", "DigiTaggerSimHits");
 
   ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
   ldmx_log(info) << "Truth Collection " << truthCollection_ << std::endl;
@@ -40,7 +42,8 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
     return;
   }
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-
+  auto measurements{
+      event.getCollection<ldmx::Measurement>(measurementCollection_)};
   // The truth track collection
   if (event.exists(truthCollection_)) {
     truthTrackCollection_ = std::make_shared<ldmx::Tracks>(
@@ -73,12 +76,14 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   histograms_.fill(title_ + "N_tracks", tracks.size());
 
   ldmx_log(debug) << "Track Monitoring on Unique Tracks" << std::endl;
-  TrackMonitoring(uniqueTracks_, title_, true, true);
+
+  TrackMonitoring(uniqueTracks_, measurements, title_, true, true);
 
   ldmx_log(debug) << "Track Monitoring on duplicates and fakes" << std::endl;
   // Fakes and duplicates
-  TrackMonitoring(duplicateTracks_, title_ + "dup_", false, false);
-  TrackMonitoring(fakeTracks_, title_ + "fake_", false, false);
+  TrackMonitoring(duplicateTracks_, measurements, title_ + "dup_", false,
+                  false);
+  TrackMonitoring(fakeTracks_, measurements, title_ + "fake_", false, false);
 
   // Track Extrapolation to Ecal Monitoring
 
@@ -99,7 +104,7 @@ void TrackingRecoDQM::analyze(const framework::Event& event) {
   }
 
   // Technical Efficiency plots
-  EfficiencyPlots(tracks, title_);
+  EfficiencyPlots(tracks, measurements, title_);
 
   // Tagger Recoil Matching
 
@@ -113,10 +118,13 @@ void TrackingRecoDQM::onProcessEnd() {
   // Produce the efficiency plots. (TODO::Switch to TEfficiency instead)
 }
 
-void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
-                                      const std::string& title) {
+void TrackingRecoDQM::EfficiencyPlots(
+    const std::vector<ldmx::Track>& tracks,
+    const std::vector<ldmx::Measurement>& measurements,
+    const std::string& title) {
   // Do all truth track plots - denominator
 
+  histograms_.fill(title + "truth_N_tracks", truthTrackCollection_->size());
   for (auto& truth_trk : *(truthTrackCollection_)) {
     double truth_phi = truth_trk.getPhi();
     double truth_d0 = truth_trk.getD0();
@@ -124,6 +132,8 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     double truth_theta = truth_trk.getTheta();
     double truth_qop = truth_trk.getQoP();
     double truth_p = 1. / abs(truth_trk.getQoP());
+    int truth_nHits = truth_trk.getNhits();
+
     std::vector<double> truth_mom = truth_trk.getMomentum();
 
     // Polar angle
@@ -133,6 +143,7 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
 
     double truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
 
+    histograms_.fill(title + "truth_nHits", truth_nHits);
     histograms_.fill(title + "truth_d0", truth_d0);
     histograms_.fill(title + "truth_z0", truth_z0);
     histograms_.fill(title + "truth_phi", truth_phi);
@@ -211,7 +222,7 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     double truth_beam_angle = std::atan2(truth_pt_beam, truth_mom[0]);
 
     // Fill reco plots for efficiencies - numerator. The quantities are truth
-
+    histograms_.fill(title + "match_prob", trackTruthProb);
     histograms_.fill(title + "match_d0", truth_d0);
     histograms_.fill(title + "match_z0", truth_z0);
     histograms_.fill(title + "match_phi", truth_phi);
@@ -219,6 +230,11 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
     histograms_.fill(title + "match_p", truth_p);
     histograms_.fill(title + "match_qop", truth_qop);
     histograms_.fill(title + "match_beam_angle", truth_beam_angle);
+    histograms_.fill(title + "match_nHits", measurements.size());
+    for (auto trackHit : track.getMeasurementsIdxs()) {
+      histograms_.fill(title + "match_LayersHit",
+                       measurements.at(trackHit).getLayer());
+    }
 
     // For some particles
 
@@ -259,19 +275,22 @@ void TrackingRecoDQM::EfficiencyPlots(const std::vector<ldmx::Track>& tracks,
 
 }  // Efficiency plots
 
-void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
-                                      const std::string title,
-                                      const bool& doDetail,
-                                      const bool& doTruth) {
+void TrackingRecoDQM::TrackMonitoring(
+    const std::vector<ldmx::Track>& tracks,
+    const std::vector<ldmx::Measurement>& measurements, const std::string title,
+    const bool& doDetail, const bool& doTruth) {
   for (auto& track : tracks) {
     // Perigee track parameters
-
     double trk_d0 = track.getD0();
     double trk_z0 = track.getZ0();
     double trk_qop = track.getQoP();
     double trk_theta = track.getTheta();
     double trk_phi = track.getPhi();
     double trk_p = 1. / abs(trk_qop);
+    for (auto trackHit : track.getMeasurementsIdxs()) {
+      histograms_.fill(title + "LayersHit",
+                       measurements.at(trackHit).getLayer());
+    }
 
     std::vector<double> trk_mom = track.getMomentum();
 
@@ -284,7 +303,7 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         std::sqrt(trk_mom[1] * trk_mom[1] + trk_mom[2] * trk_mom[2]);
 
     // Covariance matrix
-    Acts::BoundSymMatrix cov =
+    Acts::BoundSquareMatrix cov =
         tracking::sim::utils::unpackCov(track.getPerigeeCov());
 
     double sigmad0 = sqrt(
@@ -367,7 +386,6 @@ void TrackingRecoDQM::TrackMonitoring(const std::vector<ldmx::Track>& tracks,
         double truth_theta = truth_trk->getTheta();
         double truth_qop = truth_trk->getQoP();
         double truth_p = 1. / abs(truth_trk->getQoP());
-
         std::vector<double> truth_mom = truth_trk->getMomentum();
         // Polar angle
         // The momentum in the plane transverse wrt the beam axis
@@ -477,7 +495,8 @@ void TrackingRecoDQM::TrackStateMonitoring(const ldmx::Tracks& tracks,
     ldmx::Track::TrackState& TargetState = trk_ts.value();
 
     ldmx_log(debug) << "Unpacking covariance matrix" << std::endl;
-    Acts::BoundSymMatrix cov = tracking::sim::utils::unpackCov(TargetState.cov);
+    Acts::BoundSquareMatrix cov =
+        tracking::sim::utils::unpackCov(TargetState.cov);
 
     [[maybe_unused]] double sigmaloc0 = sqrt(
         cov(Acts::BoundIndices::eBoundLoc0, Acts::BoundIndices::eBoundLoc0));
