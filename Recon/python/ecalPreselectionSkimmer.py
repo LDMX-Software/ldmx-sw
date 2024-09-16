@@ -17,11 +17,11 @@ ecal_back_energy_max: double
     Max value for ecal back energy
  n_readout_hits_max: int
     Max value for num readout hits
- shower_rms_max: int
+ shower_rms_max: double 
     Max value for shower rms
- shower_y_std_max: int
+ shower_y_std_max: double
    Max value for shower rms in Y
-shower_x_std_max: int
+shower_x_std_max: double
     Max value for shower rms in X
 max_cell_dep_max: double
     Max value for maximal cell deposition
@@ -29,6 +29,13 @@ std_layer_hit_max: int
     Max value for std layer hits
 n_straight_tracks_max: int
     Max value for num straight tracks
+bdt_disc_min: double
+    Min value for the BDT disc variable
+fiducial_level: int
+    0: don't care if it's fiducial or not, 
+    1: keep fiducial events only, 
+    2: keep non-fid events only
+
 
 
 Examples
@@ -52,9 +59,12 @@ class EcalPreselectionSkimmer(ldmxcfg.Producer) :
         self.summed_tight_iso_max = 9999.
         self.ecal_back_energy_max = 9999.
         self.n_readout_hits_max = 9999
-        self.shower_rms_max = 9999
-        self.shower_y_std_max = 9999
-        self.shower_x_std_max = 9999
+        self.shower_rms_max = 9999.
+        self.shower_y_std_max = 9999.
+        self.shower_x_std_max = 9999.
         self.max_cell_dep_max = 9999.
         self.std_layer_hit_max = 9999
         self.n_straight_tracks_max = 9999
+        self.bdt_disc_min = 0.
+        self.fiducial_level = 0
+
