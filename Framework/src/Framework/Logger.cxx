@@ -35,14 +35,50 @@ logger makeLogger(const std::string &name) {
   return boost::move(lg);
 }
 
+
+/**
+ * Our filter implementation aligning with Boost.Log
+ *
+ * We store a default "fallback" level that is applied to all channels
+ * that do not exist within the custom mapping. If a channel does exist
+ * within the custom mapping, that value is used instead of the default
+ * value.
+ */
+class Filter {
+  level fallback_level_;
+  std::unordered_map<std::string, level> custom_levels_;
+ public:
+  Filter(level fallback, std::unordered_map<std::string, level> custom)
+    : fallback_level_{fallback}, custom_levels_{custom} {}
+  Filter(level fallback) : Filter(fallback, {}) {}
+  bool operator()(log::attribute_value_set const& attrs) {
+    const std::string& channel{*log::extract<std::string>(attrs["Channel"])};
+    const level& msg_level{*log::extract<level>(attrs["Severity"])};
+    auto it = custom_levels_.find(channel);
+    if (it != custom_levels_.end()) {
+      return msg_level >= it->second;
+    }
+    return msg_level >= fallback_level_;
+  }
+};
+
+
 void open(const framework::config::Parameters& p) {
   // some helpful types
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
 
-  level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
   level fileLevel{convertLevel(p.getParameter<int>("fileLevel", 0))};
   std::string filePath{p.getParameter<std::string>("filePath", "")};
+
+  level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
+  const auto& logRules{p.getParameter<std::vector<framework::config::Parameters>>(
+      "logRules", {})};
+  std::unordered_map<std::string, level> custom_levels;
+  for (const auto& logRule : logRules) {
+    custom_levels[logRule.getParameter<std::string>("name")] = 
+      convertLevel(logRule.getParameter<int>("level"));
+  }
 
   // allow our logs to access common attributes, the ones availabe are
   //  "LineID"    : counter increments for each record being made (terminal or
@@ -65,8 +101,7 @@ void open(const framework::config::Parameters& p) {
         boost::make_shared<ourSinkFront_t>(fileBack);
 
     // this is where the logging level is set
-    fileSink->set_filter(log::expressions::attr<level>("Severity") >=
-                         fileLevel);
+    fileSink->set_filter(Filter(fileLevel, custom_levels));
     fileSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
         Formatter::get()(view, os);
     });
@@ -87,7 +122,7 @@ void open(const framework::config::Parameters& p) {
       boost::make_shared<ourSinkFront_t>(termBack);
 
   // translate integer level to enum
-  termSink->set_filter(log::expressions::attr<level>("Severity") >= termLevel);
+  termSink->set_filter(Filter(termLevel, custom_levels));
   // need to wrap formatter in lambda to enforce singleton formatter
   termSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
       Formatter::get()(view, os);
@@ -115,7 +150,7 @@ void Formatter::set(int n) {
 }
 
 void Formatter::operator()(const log::record_view &view, log::formatting_ostream &os) {
-  os << " [ " << log::extract<std::string>("Channel", view) << " ] "
+  os << "[ " << log::extract<std::string>("Channel", view) << " ] "
      << event_number_ << " ";
   /**
    * We _copy_ the value out of the log into our own type

@@ -426,6 +426,17 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         self.seedMode = 'time'
 
 
+class _LogRule:
+    """A single pair holding a channel name and the level it should be logged at
+
+    This class should not be used directly, use the helper functions
+    in Logger instead to define rule sets.
+    """
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
+
+
 class Logger:
     """Configure the logging infrastructure of ldmx-sw
 
@@ -449,12 +460,44 @@ class Logger:
         minimum severity level to print to the file
     filePath: str
         path to file to direct logging to (if not provided, don't open a file for logging)
+    logRules: List[_LogRule]
+        list of custom logging rules that override the default terminal and file levels
     """
 
     def __init__(self):
         self.termLevel = 2 # warnings and above
         self.fileLevel = 0 # everything
         self.filePath  = '' # don't open file for logging
+        self.logRules = []
+
+
+    def custom(self, name, level):
+        """Add a new custom logging rule to the logger
+
+        We automatically get the event processor's instance name
+        if an instance of an event processor is passed.
+
+        Parameters
+        ----------
+        name: str|EventProcessor
+            identification of the logging channel to customize
+        level: int
+            level (and above) messages to print for that channel
+        """
+
+        if isinstance(name, EventProcessor):
+            name = name.instanceName
+        self.logRules.append(_LogRule(name, level))
+
+
+    def debug(self, name):
+        """drop the input channel to the debug level"""
+        self.custom(name, level = 0)
+
+
+    def silence(self, name):
+        """raise the input channel to the error-only level"""
+        self.custom(name, level = 3)
 
     
 class Process:
