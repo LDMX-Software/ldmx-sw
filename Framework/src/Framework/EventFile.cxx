@@ -413,9 +413,13 @@ void EventFile::importRunHeaders() {
     TTreeReaderValue<ldmx::RunHeader> oldRunHeader(oldRunTree, "RunHeader");
     // TODO check that setup went correctly
     while (oldRunTree.Next()) {
-      // copy input run tree into run map
-      runMap_[oldRunHeader->getRunNumber()] =
-          std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+      auto *oldRunHeaderPtr = oldRunHeader.Get();
+      if (oldRunHeaderPtr != nullptr) {
+        // copy input run tree into run map
+        // We should consider moving to a shared_ptr instead of 'new'
+        runMap_[oldRunHeaderPtr->getRunNumber()] =
+            std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+      }
     }
   }
 

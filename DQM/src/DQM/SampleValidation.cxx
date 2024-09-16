@@ -20,7 +20,7 @@ void SampleValidation::analyze(const framework::Event& event) {
 
   std::vector<int> primary_daughters;
 
-  double hard_thresh;
+  double hard_thresh{9999.0};
 
   // Loop over all SimParticles
   for (auto const& it : particle_map) {

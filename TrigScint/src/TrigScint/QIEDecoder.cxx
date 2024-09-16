@@ -256,7 +256,7 @@ void QIEDecoder::produce(framework::Event &event) {
   }
 
   ldmx_log(debug) << "Done reading in header, ADC and TDC for event "
-                  << (unsigned)triggerID;
+                  << triggerID;
   for (std::map<int, std::vector<int>>::iterator itr = ADCmap.begin();
        itr != ADCmap.end(); ++itr) {
     TrigScintQIEDigis digi;

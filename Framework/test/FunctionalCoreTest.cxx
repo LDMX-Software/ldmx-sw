@@ -47,7 +47,7 @@ class TestProducer : public Producer {
 
  public:
   TestProducer(const std::string& name, Process& p) : Producer(name, p) {}
-  ~TestProducer() {}
+  virtual ~TestProducer() = default;
 
   void configure(framework::config::Parameters& p) final override {
     createRunHeader_ = p.getParameter<bool>("createRunHeader");
@@ -58,7 +58,6 @@ class TestProducer : public Producer {
     header.setIntParameter("Should Be Run Number", header.getRunNumber());
     return;
   }
-
   void produce(framework::Event& event) final override {
     int i_event = event.getEventNumber();
 
@@ -72,7 +71,7 @@ class TestProducer : public Producer {
 
     REQUIRE_NOTHROW(event.add("TestCollection", caloHits));
 
-    ldmx::HcalHit maxPEHit;
+    ldmx::HcalHit maxPEHit{};
     maxPEHit.setID(i_event);
 
     ldmx::HcalVetoResult res;
@@ -107,13 +106,14 @@ class TestProducer : public Producer {
 class TestAnalyzer : public Analyzer {
  public:
   TestAnalyzer(const std::string& name, Process& p) : Analyzer(name, p) {}
-  ~TestAnalyzer() {}
+  virtual ~TestAnalyzer() = default;
 
   void onProcessStart() final override {
     REQUIRE_NOTHROW(getHistoDirectory());
     test_hist_ = new TH1F("test_hist_", "Test Histogram", 101, -50, 50);
     test_hist_->SetCanExtend(TH1::kAllAxes);
   }
+
 
   void analyze(const framework::Event& event) final override {
     int i_event = event.getEventNumber();
@@ -284,6 +284,11 @@ class isGoodEventFile : public Catch::Matchers::MatcherBase<std::string> {
 
     // Event tree should _always_ have the ldmx::EventHeader
     TTreeReaderValue<ldmx::EventHeader> header(events, "EventHeader");
+    if (!header.IsValid()) {
+      std::cerr << "Error: EventHeader branch does not exist in the TTree!"
+                << std::endl;
+      return false;
+    }
 
     if (existCollection_) {
       // make sure collection matches pattern

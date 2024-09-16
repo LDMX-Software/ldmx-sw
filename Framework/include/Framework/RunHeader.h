@@ -71,7 +71,8 @@ class RunHeader {
   virtual ~RunHeader() {}
 
   /** @return The run number. */
-  int getRunNumber() const { return runNumber_; }
+  int getRunNumber() const { 
+	  return runNumber_; }
 
   /** @return The name of the detector used to create the events. */
   const std::string &getDetectorName() const { return detectorName_; }

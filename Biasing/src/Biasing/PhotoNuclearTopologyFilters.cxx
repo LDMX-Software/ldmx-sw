@@ -70,7 +70,9 @@ void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
 
   // Once the PN gamma has been procesed, untag it so its not reprocessed
   // again.
-  trackInfo->tagPNGamma(false);
+  if (trackInfo) {
+    trackInfo->tagPNGamma(false);
+  }
 }
 
 }  // namespace biasing

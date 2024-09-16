@@ -98,8 +98,8 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   G4double birksFactor(1.0);
   G4double stepLength = aStep->GetStepLength() / CLHEP::cm;
   // Do not apply Birks for gamma deposits!
-  if (stepLength > 1.0e-6)  // Check, cut if necessary.
-  {
+  // Check, cut if necessary.
+  if (stepLength > 1.0e-6) {
     G4double rho = aStep->GetPreStepPoint()->GetMaterial()->GetDensity() /
                    (CLHEP::g / CLHEP::cm3);
     G4double dedx = edep / (rho * stepLength);  //[MeV*cm^2/g]
@@ -117,11 +117,27 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   ldmx::SimCalorimeterHit& hit{hits_.emplace_back()};
 
   // Get the scintillator solid box
-  G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()
-                                         ->GetTouchableHandle()
-                                         ->GetVolume()
-                                         ->GetLogicalVolume()
-                                         ->GetSolid());
+  G4Box* scint = nullptr;
+
+  if (aStep) {
+    const auto* preStepPoint = aStep->GetPreStepPoint();
+    if (preStepPoint) {
+        const auto& touchableHandle = preStepPoint->GetTouchableHandle();
+	if (touchableHandle) {
+        const auto* volume = touchableHandle->GetVolume();
+
+        if (volume) {
+            const auto* logicalVolume = volume->GetLogicalVolume();
+            if (logicalVolume) {
+                auto* solid = logicalVolume->GetSolid();
+                if (solid) {
+                    scint = static_cast<G4Box*>(solid);
+                }
+            }
+        }
+    }
+    }
+}
 
   // Set the step mid-point as the hit position.
   G4StepPoint* prePoint = aStep->GetPreStepPoint();
