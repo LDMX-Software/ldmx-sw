@@ -221,7 +221,7 @@ void Process::run() {
       storageController_.resetEventState();
       logging::Formatter::set(theEvent.getEventNumber());
 
-      bool completed = process(n_events_processed, theEvent);
+      bool completed = process(n_events_processed, numTries, theEvent);
 
       outFile.nextEvent(storageController_.keepEvent(completed));
 
@@ -352,7 +352,7 @@ void Process::run() {
           }
         }
 
-        event_completed = process(n_events_processed, theEvent);
+        event_completed = process(n_events_processed, 1, theEvent);
 
         if (event_completed) NtupleManager::getInstance().fill();
         NtupleManager::getInstance().clear();
@@ -480,8 +480,10 @@ void Process::newRun(ldmx::RunHeader &header) {
   if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
 }
 
-bool Process::process(int n, Event &event) const {
-  if ((logFrequency_ != -1) && ((n + 1) % logFrequency_ == 0)) {
+bool Process::process(int n, int n_try, Event &event) const {
+  if ((logFrequency_ != -1) && ((n + 1) % logFrequency_ == 0) && (n_try < 2)) {
+    // only printout event counter if we've enabled log frequency, the event
+    // matches the frequency and we are on the first try
     TTimeStamp t;
     ldmx_log(info) << "Processing " << n + 1 << " Run "
                    << event.getEventHeader().getRun() << " Event "
