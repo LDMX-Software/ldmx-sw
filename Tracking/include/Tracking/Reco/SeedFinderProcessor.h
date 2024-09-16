@@ -20,8 +20,6 @@
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/BinFinder.hpp"
-#include "Acts/Seeding/BinnedSPGroup.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Seeding/Seed.hpp"
 #include "Acts/Seeding/SeedFilter.hpp"

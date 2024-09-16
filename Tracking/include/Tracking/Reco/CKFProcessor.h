@@ -19,7 +19,6 @@
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/TrackParameters.hpp"
-#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -76,22 +75,17 @@
 
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
+// mg Aug 2024 not sure if these are needed...
+using Updater = Acts::GainMatrixUpdater;
+using Smoother = Acts::GainMatrixSmoother;
 
 using ActionList =
     Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
 using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
-using GsfPropagator = Acts::Propagator<
-    Acts::MultiEigenStepperLoop<
-        Acts::StepperExtensionList<
-            Acts::detail::GenericDefaultExtension<double>>,
-        Acts::WeightedComponentReducerLoop, Acts::detail::VoidAuctioneer>,
-    Acts::Navigator>;
-
-//?!
-// using PropagatorOptions =
-//    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
+using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
+                                            Acts::VectorMultiTrajectory>;
 
 namespace tracking {
 namespace reco {
@@ -161,8 +155,10 @@ class CKFProcessor final : public TrackingGeometryUser {
   // time profiling
   std::map<std::string, double> profiling_map_;
 
-  bool debug_{false};
+  bool debug_acts_{false};
 
+  std::shared_ptr<Acts::PlaneSurface> target_surface;
+  Acts::RotationMatrix3 surf_rotation;
   // Constant BField
   double bfield_{0};
   // Use constant bfield
@@ -209,8 +205,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<const CkfPropagator> propagator_;
 
   // The CKF
-  std::unique_ptr<const Acts::CombinatorialKalmanFilter<
-      CkfPropagator, Acts::VectorMultiTrajectory>>
+  std::unique_ptr<
+      const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
 
   // Track Extrapolator Tool

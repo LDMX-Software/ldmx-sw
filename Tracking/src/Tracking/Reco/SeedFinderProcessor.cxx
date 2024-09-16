@@ -121,7 +121,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     if (ts.has_value()) {
       auto trackState = ts.value();
 
-      Acts::BoundSymMatrix cov =
+      Acts::BoundSquareMatrix cov =
           tracking::sim::utils::unpackCov(trackState.cov);
       double locu = trackState.params[0];
       double locv = trackState.params[1];
@@ -154,18 +154,24 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Preparing the strategies";
 
   groups_map.clear();
+  //  set the seeding strategy
+  //  strategy is a list of layers from which to  make the seed
+  //  this must include 5 layers; layer numbering starts at 0.
+  //  std::vector<int> strategy = {9,10,11,12,13};
   std::vector<int> strategy = {0, 1, 2, 3, 4};
   bool success = GroupStrips(measurements, strategy);
   if (success) FindSeedsFromMap(seed_tracks, target_pseudo_meas);
 
+  //  currently, we only use a single strategy but eventually
+  //  we will use more.  Below is an example of how to add them
   /*
   groups_map.clear();
-  strategy = {3,4,5,6,7};
+  strategy = {9,10,11,12,13};
   success = GroupStrips(measurements,strategy);
   if (success)
-    FindSeedsFromMap(seed_tracks);
-
+    FindSeedsFromMap(seed_tracks, target_pseudo_meas);
   */
+
   groups_map.clear();
   // outputTree_->Fill();
   ntracks_ += seed_tracks.size();
@@ -208,6 +214,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
 // yOrigin is the location along the beam about which we fit the seed helix
 // perigee_location is where the track parameters will be extracted
+
+// while this takes in a target measurement (from tagger, this is pmeas_tgt)
+// this code doesn't do anything with it yet.
 
 ldmx::Track SeedFinderProcessor::SeedTracker(
     const ldmx::Measurements& vmeas, double xOrigin,
@@ -322,13 +331,21 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   // This is mainly necessary for the perigee surface, where
   // the mean might not fulfill the perigee condition.
 
+  // mg  Aug 2024 .. interect has changed, but just remove boundary check
+  //  and change intersection to intersections
+  //   auto intersection =
+  //     (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
+
+  // Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
+  //     intersection.intersection.position, seed_mom, q);
+
   auto intersection =
-      (*seed_perigee).intersect(geometry_context(), seed_pos, dir, false);
+      (*seed_perigee).intersect(geometry_context(), seed_pos, dir);
 
   Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
-      intersection.intersection.position, seed_mom, q);
+      intersection.intersections()[0].position(), seed_mom, q);
 
-  auto bound_params = Acts::detail::transformFreeToBoundParameters(
+  auto bound_params = Acts::transformFreeToBoundParameters(
                           seed_free, *seed_perigee, geometry_context())
                           .value();
 
@@ -336,6 +353,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
                   << bound_params;
 
   Acts::BoundVector stddev;
+  // sigma set to 75% of momentum
   double sigma_p = 0.75 * p * Acts::UnitConstants::GeV;
   stddev[Acts::eBoundLoc0] =
       inflate_factors_[Acts::eBoundLoc0] * 2 * Acts::UnitConstants::mm;
@@ -350,7 +368,11 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   stddev[Acts::eBoundTime] =
       inflate_factors_[Acts::eBoundTime] * 1000 * Acts::UnitConstants::ns;
 
-  Acts::BoundSymMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+  ldmx_log(debug)
+      << "Making covariance matrix as diagonal matrix with inflated terms";
+  Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+
+  ldmx_log(debug) << "...now putting together the seed track ...";
 
   ldmx::Track trk = ldmx::Track();
   trk.setPerigeeLocation(perigee_location(0), perigee_location(1),
@@ -375,9 +397,15 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   trk.setMomentum(seed_free[Acts::eFreeDir0], seed_free[Acts::eFreeDir1],
                   seed_free[Acts::eFreeDir2]);
 
-  Acts::BoundTrackParameters seedParameters(seed_perigee,
-                                            std::move(bound_params), bound_cov);
+  ldmx_log(debug)
+      << "...making the ParticleHypothesis ...assume electron for now";
+  auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
+  ldmx_log(debug) << "Making BoundTrackParameters seedParameters";
+  Acts::BoundTrackParameters seedParameters(
+      seed_perigee, std::move(bound_params), bound_cov, partHypo);
+
+  ldmx_log(debug) << "Returning seed track";
   return trk;
 }
 
@@ -414,10 +442,11 @@ bool SeedFinderProcessor::GroupStrips(
   // std::cout<<std::endl;
 
   for (auto& meas : measurements) {
-    ldmx_log(debug) << meas << std::endl;
+    ldmx_log(debug) << meas;
 
     if (std::find(strategy.begin(), strategy.end(), meas.getLayer()) !=
         strategy.end()) {
+      ldmx_log(debug) << "Adding measurement from layer = " << meas.getLayer();
       groups_map[meas.getLayer()].push_back(&meas);
     }
 
@@ -482,7 +511,7 @@ void SeedFinderProcessor::FindSeedsFromMap(ldmx::Tracks& seeds,
       return;
     }
 
-    ldmx_log(debug) << "seedTrack";
+    ldmx_log(debug) << "making seedTrack";
 
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};

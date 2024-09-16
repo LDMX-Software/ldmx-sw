@@ -8,17 +8,17 @@
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
 #include "Acts/MagneticField/InterpolatedBFieldMap.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
+#include "Acts/Utilities/AxisFwd.hpp"
+#include "Acts/Utilities/Grid.hpp"
 #include "Acts/Utilities/Interpolation.hpp"
 #include "Acts/Utilities/Result.hpp"
-#include "Acts/Utilities/detail/AxisFwd.hpp"
-#include "Acts/Utilities/detail/Grid.hpp"
 
 static const double DIPOLE_OFFSET = 400.;  // 400 mm
 
-using InterpolatedMagneticField3 =
-    Acts::InterpolatedBFieldMap<Acts::detail::Grid<
-        Acts::Vector3, Acts::detail::EquidistantAxis,
-        Acts::detail::EquidistantAxis, Acts::detail::EquidistantAxis>>;
+using InterpolatedMagneticField3 = Acts::InterpolatedBFieldMap<
+    Acts::Grid<Acts::Vector3, Acts::Axis<Acts::AxisType::Equidistant>,
+               Acts::Axis<Acts::AxisType::Equidistant>,
+               Acts::Axis<Acts::AxisType::Equidistant>>>;
 
 using GenericTransformPos = std::function<Acts::Vector3(const Acts::Vector3&)>;
 using GenericTransformBField =
@@ -113,17 +113,17 @@ inline InterpolatedMagneticField3 rotateFieldMapXYZ(
     nBinsY = 2 * nBinsY - 1;
     nBinsZ = 2 * nBinsZ - 1;
   }
-  Acts::detail::EquidistantAxis xAxis(xMin * lengthUnit, xMax * lengthUnit,
-                                      nBinsX);
-  Acts::detail::EquidistantAxis yAxis(yMin * lengthUnit, yMax * lengthUnit,
-                                      nBinsY);
-  Acts::detail::EquidistantAxis zAxis(zMin * lengthUnit, zMax * lengthUnit,
-                                      nBinsZ);
+  Acts::Axis<Acts::AxisType::Equidistant> xAxis(xMin * lengthUnit,
+                                                xMax * lengthUnit, nBinsX);
+  Acts::Axis<Acts::AxisType::Equidistant> yAxis(yMin * lengthUnit,
+                                                yMax * lengthUnit, nBinsY);
+  Acts::Axis<Acts::AxisType::Equidistant> zAxis(zMin * lengthUnit,
+                                                zMax * lengthUnit, nBinsZ);
   // Create the grid
   using Grid_t =
-      Acts::detail::Grid<Acts::Vector3, Acts::detail::EquidistantAxis,
-                         Acts::detail::EquidistantAxis,
-                         Acts::detail::EquidistantAxis>;
+      Acts::Grid<Acts::Vector3, Acts::Axis<Acts::AxisType::Equidistant>,
+                 Acts::Axis<Acts::AxisType::Equidistant>,
+                 Acts::Axis<Acts::AxisType::Equidistant>>;
   Grid_t grid(
       std::make_tuple(std::move(xAxis), std::move(yAxis), std::move(zAxis)));
 

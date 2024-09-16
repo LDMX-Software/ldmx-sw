@@ -35,13 +35,13 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         self.d0max    = 50# 15.
         self.z0min    = -200#-45.
         self.z0max    = 200# 45.
-        self.phimin   = -2#-0.2
-        self.phimax   = 2#0.2
-        self.thetamin = -2#1.4
-        self.thetamax = 4#1.7
-        self.qopmin   = -50#-10
-        self.qopmax   = 50#10
-        self.pmax     =  8.
+        self.phimin   = -0.1#-0.2
+        self.phimax   = 0.1#0.2
+        self.thetamin = 1.4#1.4
+        self.thetamax = 1.7#1.7
+        self.qopmin   = -10#-10
+        self.qopmax   = 10#10
+        self.pmax     =  10.
 
         self.trackStates = ["ecal","target"]
         self.doTruth= True
@@ -85,12 +85,14 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                               "qOverP [GeV^{-1}]",nbins,qopmin,qopmax)
         
         self.build1DHistogram("pt_bending",
-                              "pT bending plane [GeV]",nbins,-pmax,pmax)
+                              "pT bending plane [GeV]",nbins,0.,pmax)
         self.build1DHistogram("pt_beam",
                               "pT beam axis [GeV]",nbins,0,0.5)
         
         self.build1DHistogram("nHits",
                               "nHits",15,0,15)
+        self.build1DHistogram("LayersHit",
+                              "LayersHit",15,0,15)
         self.build1DHistogram("Chi2",
                               "Chi2",nbins,0,100)
         self.build1DHistogram("ndf",
@@ -102,11 +104,11 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         self.build1DHistogram("nHoles",
                               "nHoles",5,0,5)
         self.build1DHistogram("px",
-                              "pX [GeV]",nbins,-pmax,pmax)
+                              "pX [GeV]",nbins,0.0,pmax)
         self.build1DHistogram("py",
-                              "pY [GeV]",nbins,-pmax,pmax)
+                              "pY [GeV]",nbins,-pmax/20.0,pmax/20.0)
         self.build1DHistogram("pz",
-                              "pZ [GeV]",nbins,-pmax,pmax)
+                              "pZ [GeV]",nbins,-pmax/20.0,pmax/20.0)
         self.build1DHistogram("d0_err",
                               "#sigma_{d0} [mm]",nbins,0,0.2)
         self.build1DHistogram("z0_err",
@@ -209,6 +211,12 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
         
     
         if self.doTruth:
+            self.build1DHistogram("truth_N_tracks",
+                              "truth_N tracks",10,0,10)
+            self.build1DHistogram("truth_nHits",
+                                  "truth nHits", 15, 0,15)
+            self.build1DHistogram("truth_LayersHit",
+                                  "truth_LayersHit",15,0,15)
             self.build1DHistogram("truth_d0",
                                   "truth d0 [mm]", nbins, d0min,d0max)
             self.build1DHistogram("truth_z0",
@@ -281,6 +289,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             
             
             #Efficiency plots
+            self.build1DHistogram("match_prob",
+                                  "reco truth match probability", nbins, 0.0,1.1)
             self.build1DHistogram("match_d0",
                                   "reco match d0 [mm]", nbins, d0min,d0max)
             self.build1DHistogram("match_z0",
@@ -297,6 +307,11 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "angle wrt beam axis", 20, 0, 2)
             self.build1DHistogram("match_PID",
                                   "Particles",8,-4,4)
+            self.build1DHistogram("match_nHits",
+                                  "match nHits",15,0,15)
+            self.build1DHistogram("match_LayersHit",
+                                  "match_LayersHit",15,0,15)
+
 
 
             self.build1DHistogram("match_kminus_p",
@@ -335,6 +350,8 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
                                   "fake qOverP [GeV^{-1}]",nbins,-40,40)
             self.build1DHistogram("fake_nHits",
                                   "fake nHits",15,0,15)
+            self.build1DHistogram("fake_LayersHit",
+                                  "fake_LayersHit",15,0,15)
             self.build1DHistogram("fake_Chi2",
                                   "fake Chi2",100,0,chi2Fake_max)
             self.build1DHistogram("fake_Chi2_per_ndf",
@@ -358,9 +375,11 @@ class TrackingRecoDQM(ldmxcfg.Analyzer):
             self.build1DHistogram("dup_p",
                                   "dup p [GeV]",100,0,pmax)
             self.build1DHistogram("dup_qop",
-                                  "dup qOverP [GeV^{-1}]",nbins,-20,20)
+                                  "dup qOverP [GeV^{-1}]",nbins,qopmin,qopmax)
             self.build1DHistogram("dup_nHits",
                                   "dup nHits",15,0,15)
+            self.build1DHistogram("dup_LayersHit",
+                                  "dup_LayersHit",15,0,15)
             self.build1DHistogram("dup_Chi2",
                                   "dup Chi2",100,0,100)
             self.build1DHistogram("dup_Chi2_per_ndf",

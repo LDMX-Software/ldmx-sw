@@ -353,7 +353,8 @@ EcalTrackingGeometry::convertHexToActsSurface(const G4VPhysicalVolume& phex) {
   surface->assignSurfaceMaterial(
       std::make_shared<Acts::HomogeneousSurfaceMaterial>(silicon_slab));
 
-  surface->toStream(*gctx_, std::cout);
+  //  surface->toStreamImpl(*gctx_, std::cout);
+  surface->toStream(*gctx_);
 
   return surface;
 }

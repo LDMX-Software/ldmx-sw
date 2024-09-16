@@ -51,16 +51,18 @@ class TrackExtrapolatorTool {
    @return optional with BoundTrackParameters
   */
 
+  using PropagatorOptions =
+      typename propagator_t::template Options<ActionList, AbortList>;
+
   std::optional<Acts::BoundTrackParameters> extrapolate(
       const Acts::BoundTrackParameters pars,
       const std::shared_ptr<Acts::Surface>& target_surface) {
-    // Just to make it explicit
-    bool boundaryCheck = false;
-    auto intersection = target_surface->intersect(
-        gctx_, pars.position(gctx_), pars.unitDirection(), boundaryCheck);
+    auto intersection = target_surface->intersect(gctx_, pars.position(gctx_),
+                                                  pars.direction());
 
-    Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
-    pOptions.direction = intersection.intersection.pathLength >= 0
+    PropagatorOptions pOptions(gctx_, mctx_);
+
+    pOptions.direction = intersection.intersections()[0].pathLength() >= 0
                              ? Acts::Direction::Forward
                              : Acts::Direction::Backward;
 
@@ -98,15 +100,15 @@ class TrackExtrapolatorTool {
   template <class track_t>
   std::optional<Acts::BoundTrackParameters> extrapolate(
       track_t track, const std::shared_ptr<Acts::Surface>& target_surface) {
-    auto outermost = *(track.trackStates().begin());
-    auto begin = track.trackStates().begin();
+    // get first and last track state on surface
+    auto outermost = *(track.trackStatesReversed().begin());
+    auto begin = track.trackStatesReversed().begin();
     std::advance(begin, track.nTrackStates() - 1);
     auto innermost = *begin;
 
     // I'm checking which track state is closer to the origin of the target
     // surface to decide from where to start the extrapolation to the surface. I
     // use the coordinate along the beam axis.
-
     double first_dis = std::abs(
         innermost.referenceSurface().transform(gctx_).translation()(0) -
         target_surface->transform(gctx_).translation()(0));
@@ -119,26 +121,26 @@ class TrackExtrapolatorTool {
 
     const auto& ts = first_dis < last_dis ? innermost : outermost;
 
-    // std::cout<<"Selected track state for extrapolation"<<std::endl;
-
     // Get the BoundTrackStateParameters
 
     const auto& surface = ts.referenceSurface();
     const auto& smoothed = ts.smoothed();
+    bool hasSmoothed = ts.hasSmoothed();
+    const auto& filtered = ts.filtered();
     const auto& cov = ts.smoothedCovariance();
 
-    // std::cout<<"Surface::"<<
-    // surface.transform(gctx_).translation()<<std::endl;
-    // std::cout<<"Smoothed::"<<    smoothed.transpose()<<std::endl;
-    // std::cout<<"HasSmoothed::"<< hasSmoothed<<std::endl;
-    // std::cout<<"Filtered::"<<    filtered.transpose()<<std::endl;
-
-    Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
-                             ? 1 * Acts::UnitConstants::e
-                             : -1 * Acts::UnitConstants::e;
-
-    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, q, cov);
-
+    if (debug_) {
+      std::cout << "Surface::" << surface.transform(gctx_).translation()
+                << std::endl;
+      if (hasSmoothed)
+        std::cout << "Smoothed::" << smoothed.transpose() << std::endl;
+      std::cout << "HasSmoothed::" << hasSmoothed << std::endl;
+      std::cout << "Filtered::" << filtered.transpose() << std::endl;
+    }
+    // mg Aug 2024 ... v36 takes the particle...assume electron
+    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    Acts::BoundTrackParameters sp(surface.getSharedPtr(), smoothed, cov,
+                                  partHypo);
     return extrapolate(sp, target_surface);
   }
 
@@ -149,6 +151,7 @@ class TrackExtrapolatorTool {
     // Now.. I'm taking whatever it is. I'm not checking here if it is a
     // measurement.
 
+    auto& tsc = track.container().trackStateContainer();
     auto begin = track.trackStates().begin();
     auto ts_last = *begin;
     const auto& surface = (ts_last).referenceSurface();
@@ -156,19 +159,14 @@ class TrackExtrapolatorTool {
     const auto& cov = (ts_last).smoothedCovariance();
 
     // Get the BoundTrackStateParameters
-
-    Acts::ActsScalar q = smoothed[Acts::eBoundQOverP] > 0
-                             ? 1 * Acts::UnitConstants::e
-                             : -1 * Acts::UnitConstants::e;
+    // assume electron for now
+    auto partHypo{Acts::SinglyChargedParticleHypothesis::electron()};
 
     Acts::BoundTrackParameters state_parameters(surface.getSharedPtr(),
-                                                smoothed, q, cov);
+                                                smoothed, cov, partHypo);
 
     // One can also use directly the extrapolate method
-
-    Acts::PropagatorOptions<ActionList, AbortList> pOptions(gctx_, mctx_);
-    pOptions.direction = Acts::Direction::Forward;
-
+    PropagatorOptions pOptions(gctx_, mctx_);
     auto result =
         propagator_.propagate(state_parameters, *target_surface, pOptions);
 
@@ -177,6 +175,8 @@ class TrackExtrapolatorTool {
     else
       return std::nullopt;
   }
+
+  /**
 
   /** Create an ldmx::TrackState to the extrapolated position
    @param Acts::Track

@@ -60,26 +60,27 @@ void VertexProcessor::produce(framework::Event &event) {
   propagator_ = std::make_shared<VoidPropagator>(stepper);
 
   // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer<VoidPropagator>;
-  Linearizer::Config linearizerConfig(sp_interpolated_bField_, propagator_);
+  using Linearizer = Acts::HelicalTrackLinearizer;
+  Linearizer::Config linearizerConfig;
+  linearizerConfig.bField = sp_interpolated_bField_;
+  linearizerConfig.propagator = propagator_;
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
-  using VertexFitter =
-      Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
+  using VertexFitter = Acts::FullBilloirVertexFitter;
 
   VertexFitter::Config vertexFitterCfg;
 
   VertexFitter billoirFitter(vertexFitterCfg);
 
-  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
+  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
   // See
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  Acts::VertexingOptions vfOptions(gctx_, bctx_);
 
   // Retrieve the track collection
   const std::vector<ldmx::Track> tracks =
@@ -109,11 +110,12 @@ void VertexProcessor::produce(framework::Event &event) {
         tracks.at(iTrack).getPhi(), tracks.at(iTrack).getTheta(),
         tracks.at(iTrack).getQoP(), tracks.at(iTrack).getT();
 
-    Acts::BoundSymMatrix covMat =
+    Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
-
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
+        Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
-        perigeeSurface, paramVec, std::move(covMat)));
+        perigeeSurface, paramVec, std::move(covMat), part));
   }
 
   // Select exactly 2 tracks
@@ -149,11 +151,15 @@ void VertexProcessor::produce(framework::Event &event) {
           seeds.at(iSeed).getPhi(), seeds.at(iSeed).getTheta(),
           seeds.at(iSeed).getQoP(), seeds.at(iSeed).getT();
 
-      Acts::BoundSymMatrix covMat =
+      Acts::BoundSquareMatrix covMat =
           tracking::sim::utils::unpackCov(seeds.at(iSeed).getPerigeeCov());
-
+      int pionPdgId = 211;  // pi+
+      if (seeds.at(iSeed).q() < 0) pionPdgId = -211;
+      // BoundTrackParameters needs the particle hypothesis
+      auto part{Acts::GenericParticleHypothesis(
+          Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
       auto boundSeedParams = Acts::BoundTrackParameters(
-          perigeeSurface2, paramVec, std::move(covMat));
+          perigeeSurface, paramVec, std::move(covMat), part);
 
       TLorentzVector pion4v;
       pion4v.SetXYZM(boundSeedParams.momentum()(0),
