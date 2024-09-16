@@ -46,7 +46,8 @@ Process::Process(const framework::config::Parameters &configuration)
   eventHeader_ = 0;
 
   // set up the logging for this run
-  logging::open(configuration.getParameter<framework::config::Parameters>("logger", {}));
+  logging::open(
+      configuration.getParameter<framework::config::Parameters>("logger", {}));
 
   auto run{configuration.getParameter<int>("run", -1)};
   if (run > 0) runForGeneration_ = run;

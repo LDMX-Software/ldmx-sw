@@ -30,11 +30,10 @@ level convertLevel(int iLvl) {
   return level(iLvl);
 }
 
-logger makeLogger(const std::string &name) {
+logger makeLogger(const std::string& name) {
   logger lg(log::keywords::channel = name);  // already has severity built in
   return boost::move(lg);
 }
-
 
 /**
  * Our filter implementation aligning with Boost.Log
@@ -47,9 +46,10 @@ logger makeLogger(const std::string &name) {
 class Filter {
   level fallback_level_;
   std::unordered_map<std::string, level> custom_levels_;
+
  public:
   Filter(level fallback, std::unordered_map<std::string, level> custom)
-    : fallback_level_{fallback}, custom_levels_{custom} {}
+      : fallback_level_{fallback}, custom_levels_{custom} {}
   Filter(level fallback) : Filter(fallback, {}) {}
   bool operator()(log::attribute_value_set const& attrs) {
     const std::string& channel{*log::extract<std::string>(attrs["Channel"])};
@@ -62,7 +62,6 @@ class Filter {
   }
 };
 
-
 void open(const framework::config::Parameters& p) {
   // some helpful types
   typedef sinks::text_ostream_backend ourSinkBack_t;
@@ -72,12 +71,13 @@ void open(const framework::config::Parameters& p) {
   std::string filePath{p.getParameter<std::string>("filePath", "")};
 
   level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
-  const auto& logRules{p.getParameter<std::vector<framework::config::Parameters>>(
-      "logRules", {})};
+  const auto& logRules{
+      p.getParameter<std::vector<framework::config::Parameters>>("logRules",
+                                                                 {})};
   std::unordered_map<std::string, level> custom_levels;
   for (const auto& logRule : logRules) {
-    custom_levels[logRule.getParameter<std::string>("name")] = 
-      convertLevel(logRule.getParameter<int>("level"));
+    custom_levels[logRule.getParameter<std::string>("name")] =
+        convertLevel(logRule.getParameter<int>("level"));
   }
 
   // allow our logs to access common attributes, the ones availabe are
@@ -102,9 +102,10 @@ void open(const framework::config::Parameters& p) {
 
     // this is where the logging level is set
     fileSink->set_filter(Filter(fileLevel, custom_levels));
-    fileSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
-        Formatter::get()(view, os);
-    });
+    fileSink->set_formatter(
+        [](const log::record_view& view, log::formatting_ostream& os) {
+          Formatter::get()(view, os);
+        });
     core->add_sink(fileSink);
   }  // file set to pass something
 
@@ -124,9 +125,10 @@ void open(const framework::config::Parameters& p) {
   // translate integer level to enum
   termSink->set_filter(Filter(termLevel, custom_levels));
   // need to wrap formatter in lambda to enforce singleton formatter
-  termSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
-      Formatter::get()(view, os);
-  });
+  termSink->set_formatter(
+      [](const log::record_view& view, log::formatting_ostream& os) {
+        Formatter::get()(view, os);
+      });
   core->add_sink(termSink);
 
   return;
@@ -145,11 +147,10 @@ Formatter& Formatter::get() {
   return the_formatter;
 }
 
-void Formatter::set(int n) {
-  Formatter::get().event_number_ = n;
-}
+void Formatter::set(int n) { Formatter::get().event_number_ = n; }
 
-void Formatter::operator()(const log::record_view &view, log::formatting_ostream &os) {
+void Formatter::operator()(const log::record_view& view,
+                           log::formatting_ostream& os) {
   os << "[ " << log::extract<std::string>("Channel", view) << " ] "
      << event_number_ << " ";
   /**

@@ -93,6 +93,7 @@ void close();
 class Formatter {
   int event_number_{0};
   Formatter() = default;
+
  public:
   /// delete the copy constructor
   Formatter(Formatter const&) = delete;
@@ -109,11 +110,11 @@ class Formatter {
   /**
    * format the passed record view into the output stream
    *
-   * The format is 
+   * The format is
    *
    *  [ channel ] severity : message
    */
-  void operator()(const log::record_view &view, log::formatting_ostream &os);
+  void operator()(const log::record_view& view, log::formatting_ostream& os);
 };
 
 }  // namespace logging
