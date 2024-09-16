@@ -49,26 +49,6 @@ enum level {
 level convertLevel(int& iLvl);
 
 /**
- * Severity level to human readable name map
- *
- * Human readable names are the same width in characters
- *
- * We could also add terminal color here if we wanted.
- *
- * @note Not in use right now. boost's extract returns some
- * weird templated type that cannot be implicitly converted to level.
- *
- * We _can_ stream the output to a string stream and use
- * that as the key in our map, but that is lame.
- */
-const std::unordered_map<level, std::string> humanReadableLevel = {
-    {debug, "debug"},
-    {info, "info "},
-    {warn, "warn "},
-    {error, "error"},
-    {fatal, "fatal"}};
-
-/**
  * Short names for boost namespaces
  */
 namespace log = boost::log;
@@ -115,6 +95,40 @@ void open(const level termLevel, const level fileLevel,
  * Close up the logging
  */
 void close();
+
+/**
+ * Our logging formatter
+ *
+ * We use a singleton formatter so that it can hold the current event index
+ * as an attribute and include it within the logs. This is easier than
+ * attempting to update the event number in all of the different logging
+ * sources floating around ldmx-sw.
+ */
+class Formatter {
+  int event_number_{0};
+  Formatter() = default;
+ public:
+  /// delete the copy constructor
+  Formatter(Formatter const&) = delete;
+
+  /// delete the assignment operator
+  void operator=(Formatter const&) = delete;
+
+  /// get reference to the current single Formatter
+  static Formatter& get();
+
+  /// set the event number in the current Formatter
+  static void set(int n);
+
+  /**
+   * format the passed record view into the output stream
+   *
+   * The format is 
+   *
+   *  [ channel ] severity : message
+   */
+  void operator()(const log::record_view &view, log::formatting_ostream &os);
+};
 
 }  // namespace logging
 

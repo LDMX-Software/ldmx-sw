@@ -225,6 +225,7 @@ void Process::run() {
 
       // reset the storage controller state
       storageController_.resetEventState();
+      logging::Formatter::set(theEvent.getEventNumber());
 
       bool completed = process(n_events_processed, theEvent);
 
@@ -339,6 +340,7 @@ void Process::run() {
              (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
         storageController_.resetEventState();
+        logging::Formatter::set(theEvent.getEventNumber());
 
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {

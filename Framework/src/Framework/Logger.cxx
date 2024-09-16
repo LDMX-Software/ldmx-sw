@@ -55,21 +55,9 @@ void open(const level termLevel, const level fileLevel,
     // this is where the logging level is set
     fileSink->set_filter(log::expressions::attr<level>("Severity") >=
                          fileLevel);
-
-    // TODO change format to something helpful
-    // Currently:
-    //  [ Channel ] int severity : message
-    fileSink->set_formatter([](const log::record_view &view,
-                               log::formatting_ostream &os) {
-      os
-          //                            <<
-          //                            log::extract<boost::date_time::int_adapter>(
-          //                            "TimeStamp" , view )
-          << " [ " << log::extract<std::string>("Channel", view) << " ] "
-          << /*humanReadableLevel.at*/ (log::extract<level>("Severity", view))
-          << " : " << view[log::expressions::smessage];
+    fileSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
+        Formatter::get()(view, os);
     });
-
     core->add_sink(fileSink);
   }  // file set to pass something
 
@@ -88,21 +76,10 @@ void open(const level termLevel, const level fileLevel,
 
   // translate integer level to enum
   termSink->set_filter(log::expressions::attr<level>("Severity") >= termLevel);
-
-  // TODO change format to something helpful
-  // Currently:
-  //  [ Channel ](int severity) : message
-  termSink->set_formatter([](const log::record_view &view,
-                             log::formatting_ostream &os) {
-    os
-        //                        <<
-        //                        log::extract<boost::date_time::int_adapter>(
-        //                        "TimeStamp" , view )
-        << " [ " << log::extract<std::string>("Channel", view) << " ] "
-        << /*humanReadableLevel.at*/ (log::extract<level>("Severity", view))
-        << " : " << view[log::expressions::smessage];
+  // need to wrap formatter in lambda to enforce singleton formatter
+  termSink->set_formatter([](const log::record_view &view, log::formatting_ostream &os) {
+      Formatter::get()(view, os);
   });
-
   core->add_sink(termSink);
 
   return;
@@ -114,6 +91,48 @@ void close() {
   log::core::get()->remove_all_sinks();
 
   return;
+}
+
+Formatter& Formatter::get() {
+  static Formatter the_formatter;
+  return the_formatter;
+}
+
+void Formatter::set(int n) {
+  Formatter::get().event_number_ = n;
+}
+
+void Formatter::operator()(const log::record_view &view, log::formatting_ostream &os) {
+  os << " [ " << log::extract<std::string>("Channel", view) << " ] "
+     << event_number_ << " ";
+  /**
+   * We _copy_ the value out of the log into our own type
+   * so that we can compare and convert it into a string.
+   * I expect this copying to be okay since its just a
+   * enum (int equivalent), but its good to be clear
+   */
+  level msg_level = *log::extract<level>("Severity", view);
+  switch (msg_level) {
+    case level::debug:
+      os << "debug";
+      break;
+    case level::info:
+      os << "info ";
+      break;
+    case level::warn:
+      os << "warn ";
+      break;
+    case level::error:
+      os << "error";
+      break;
+    case level::fatal:
+      os << "fatal";
+      break;
+    default:
+      os << "?????";
+      break;
+  }
+  os << ": " << view[log::expressions::smessage];
 }
 
 }  // namespace logging
