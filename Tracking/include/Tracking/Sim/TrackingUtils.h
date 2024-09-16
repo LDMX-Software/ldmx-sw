@@ -38,6 +38,8 @@
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Sim/IndexSourceLink.h"
+
 
 namespace tracking {
 namespace sim {
@@ -126,6 +128,8 @@ inline int getSensorID(const ldmx::SimTrackerHit& hit) {
 inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
     const ldmx::SimTrackerHit& hit, unsigned int vol = 2, double sigma_u = 0.05,
     double sigma_v = 1.) {
+  bool debug = false;
+
   unsigned int index = getSensorID(hit);
 
   // Rotate position
@@ -257,6 +261,18 @@ inline const std::shared_ptr<Acts::Surface> unboundSurface(double xloc,
       Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
   return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+}
+
+// This method returns a source link index
+inline std::size_t sourceLinkHash(const Acts::SourceLink& a) { 
+  return static_cast<std::size_t>(
+      a.get<ActsExamples::IndexSourceLink>().index());
+    }
+
+// This method checks if two source links are equal by index
+inline bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
+  return a.get<ActsExamples::IndexSourceLink>().index() ==
+         b.get<ActsExamples::IndexSourceLink>().index();
 }
 
 }  // namespace utils
