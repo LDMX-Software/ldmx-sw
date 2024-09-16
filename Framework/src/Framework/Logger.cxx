@@ -13,7 +13,16 @@ namespace framework {
 
 namespace logging {
 
-level convertLevel(int &iLvl) {
+/**
+ * Convert an integer to the severity level enum
+ *
+ * Any integer below zero will be set to 0 (debug),
+ * and any integer above four will be set to 4 (fatal).
+ *
+ * @param[in] iLvl integer level to be converted
+ * @return converted enum level
+ */
+level convertLevel(int iLvl) {
   if (iLvl < 0)
     iLvl = 0;
   else if (iLvl > 4)
@@ -26,11 +35,14 @@ logger makeLogger(const std::string &name) {
   return boost::move(lg);
 }
 
-void open(const level termLevel, const level fileLevel,
-          const std::string &fileName) {
+void open(const framework::config::Parameters& p) {
   // some helpful types
   typedef sinks::text_ostream_backend ourSinkBack_t;
   typedef sinks::synchronous_sink<ourSinkBack_t> ourSinkFront_t;
+
+  level termLevel{convertLevel(p.getParameter<int>("termLevel", 4))};
+  level fileLevel{convertLevel(p.getParameter<int>("fileLevel", 0))};
+  std::string filePath{p.getParameter<std::string>("filePath", "")};
 
   // allow our logs to access common attributes, the ones availabe are
   //  "LineID"    : counter increments for each record being made (terminal or
@@ -43,11 +55,11 @@ void open(const level termLevel, const level fileLevel,
   boost::shared_ptr<log::core> core = log::core::get();
 
   // file sink is optional
-  //  don't even make it if no fileName is provided
-  if (not fileName.empty()) {
+  //  don't even make it if no filePath is provided
+  if (not filePath.empty()) {
     boost::shared_ptr<ourSinkBack_t> fileBack =
         boost::make_shared<ourSinkBack_t>();
-    fileBack->add_stream(boost::make_shared<std::ofstream>(fileName));
+    fileBack->add_stream(boost::make_shared<std::ofstream>(filePath));
 
     boost::shared_ptr<ourSinkFront_t> fileSink =
         boost::make_shared<ourSinkFront_t>(fileBack);

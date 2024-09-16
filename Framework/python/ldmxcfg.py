@@ -424,6 +424,38 @@ class RandomNumberSeedService(ConditionsObjectProvider):
     def time(self) :
         """Set master random seed based off of time"""
         self.seedMode = 'time'
+
+
+class Logger:
+    """Configure the logging infrastructure of ldmx-sw
+
+    The "severity level" of messages correspond to the following integers.
+
+        - 0 : Debug
+        - 1 : Information
+        - 2 : Warning
+        - 3 : Error
+        - 4 : Fatal (reserved for program-ending exceptions)
+
+    Whenever a level is specified, messages for that level and any level above
+    it (corresponding to a larger integer) are including when printing out
+    the messages.
+
+    Paramters
+    ---------
+    termLevel: int
+        minimum severity level to print to the terminal
+    fileLevel: int
+        minimum severity level to print to the file
+    filePath: str
+        path to file to direct logging to (if not provided, don't open a file for logging)
+    """
+
+    def __init__(self):
+        self.termLevel = 2 # warnings and above
+        self.fileLevel = 0 # everything
+        self.filePath  = '' # don't open file for logging
+
     
 class Process:
     """Process configuration object
@@ -471,12 +503,8 @@ class Process:
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
-    termLogLevel : int
-        Minimum severity of log messages to print to terminal: 0 (debug) - 4 (fatal)
-    fileLogLevel : int
-        Minimum severity of log messages to print to file: 0 (debug) - 4 (fatal)
-    logFileName : str
-        File to print log messages to, won't setup file logging if this parameter is not set
+    logger : Logger
+        configuration for logging system in ldmx-sw
     conditionsGlobalTag : str
         Global tag for the current generation of conditions
     conditionsObjectProviders : list of ConditionsObjectProviders
@@ -509,6 +537,7 @@ class Process:
         self.skimDefaultIsKeep=True
         self.skimRules=[]
         self.logFrequency=-1
+        self.logger = Logger()
         self.termLogLevel=2 #warnings and above
         self.fileLogLevel=0 #print all messages
         self.logFileName='' #won't setup log file
@@ -521,6 +550,20 @@ class Process:
 
         # needs lastProcess defined to self-register
         self.randomNumberSeedService=RandomNumberSeedService()
+
+
+    def __setattr__(self, key, val):
+        logger_remap = {
+            'termLogLevel' : 'termLevel',
+            'fileLogLevel' : 'fileLevel',
+            'logFileName'  : 'filePath'
+        }
+        if key in logger_remap:
+            setattr(self.logger, logger_remap[key], val)
+            return
+        
+        super().__setattr__(key, val)
+
 
     def addLibrary(lib) :
         """Add a library to the list of dynamically loaded libraries

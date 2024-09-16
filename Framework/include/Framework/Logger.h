@@ -22,6 +22,8 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
+#include "Framework/Configure/Parameters.h"
+
 namespace framework {
 
 namespace logging {
@@ -36,17 +38,6 @@ enum level {
   error,      ///> 3
   fatal       ///> 4
 };
-
-/**
- * Convert an integer to the severity level enum
- *
- * Any integer below zero will be set to 0 (debug),
- * and any integer above four will be set to 4 (fatal).
- *
- * @param[in] iLvl integer level to be converted
- * @return converted enum level
- */
-level convertLevel(int& iLvl);
 
 /**
  * Short names for boost namespaces
@@ -79,17 +70,12 @@ logger makeLogger(const std::string& name);
  * This function setups up the terminal and file sinks.
  * Sets their format and filtering level for this run.
  *
- * @note Will not setup printing log messages to file if fileName is empty
+ * @note Will not setup printing log messages to file if filePath is empty
  * string.
  *
- * @param termLevel minimum level to print to terminal (everything above it is
- * also printed)
- * @param fileLevel minimum level to print to file log (everything above it is
- * also printed)
- * @param fileName name of file to print log to
+ * @param p parameters to configure the logging with
  */
-void open(const level termLevel, const level fileLevel,
-          const std::string& fileName);
+void open(const framework::config::Parameters& p);
 
 /**
  * Close up the logging

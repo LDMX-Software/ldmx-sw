@@ -26,7 +26,6 @@ Process::Process(const framework::config::Parameters &configuration)
 
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
-  logFileName_ = configuration.getParameter<std::string>("logFileName", "");
 
   maxTries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   eventLimit_ = configuration.getParameter<int>("maxEvents", -1);
@@ -34,8 +33,6 @@ Process::Process(const framework::config::Parameters &configuration)
   logFrequency_ = configuration.getParameter<int>("logFrequency", -1);
   compressionSetting_ =
       configuration.getParameter<int>("compressionSetting", 9);
-  termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
-  fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
   skipCorruptedInputFiles_ =
       configuration.getParameter<bool>("skipCorruptedInputFiles", false);
 
@@ -49,10 +46,7 @@ Process::Process(const framework::config::Parameters &configuration)
   eventHeader_ = 0;
 
   // set up the logging for this run
-  logging::open(logging::convertLevel(termLevelInt_),
-                logging::convertLevel(fileLevelInt_),
-                logFileName_  // if this is empty string, no file is logged to
-  );
+  logging::open(configuration.getParameter<framework::config::Parameters>("logger", {}));
 
   auto run{configuration.getParameter<int>("run", -1)};
   if (run > 0) runForGeneration_ = run;
