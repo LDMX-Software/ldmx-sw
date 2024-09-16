@@ -4,6 +4,10 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
+//#include "Tracking/Reco/AmbiguitySolver.h"
+//#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
+
+
 
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
@@ -14,6 +18,16 @@
 
 namespace tracking {
 namespace reco {
+
+//std::size_t sourceLinkHash(const Acts::SourceLink& a) { 
+//  return static_cast<std::size_t>(
+//      a.get<ActsExamples::IndexSourceLink>().index());
+//}
+
+//bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
+//  return a.get<ActsExamples::IndexSourceLink>().index() ==
+//         b.get<ActsExamples::IndexSourceLink>().index();
+//}
 
 CKFProcessor::CKFProcessor(const std::string& name, framework::Process& process)
     : TrackingGeometryUser(name, process) {}
@@ -129,6 +143,45 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       *propagator_, Acts::getDefaultLogger("CKF", acts_loggingLevel));
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_, geometry_context(), magnetic_field_context());
+
+  /*
+  // Setup the greedy solver
+  tracking::reco::GreedyAmbiguityResolution::Config greedy_config;
+  greedy_config.maximumSharedHits = 3;
+  greedy_config.maximumIterations = 1000;
+  greedy_config.nMeasurementsMin = min_hits_;
+
+  greedy_solver_ = std::make_unique<std::decay_t<decltype(*greedy_solver_)>>(
+    greedy_config, Acts::getDefaultLogger("CKF", acts_loggingLevel));
+
+  tracking::reco::ScoreBasedAmbiguityResolution::DetectorConfig score_det_config;
+  score_det_config.hitsScoreWeight = 1;
+  score_det_config.holesScoreWeight = -1;
+  score_det_config.outliersScoreWeight = -1;
+  score_det_config.otherScoreWeight = -1;
+  score_det_config.minHits = 0;
+  score_det_config.maxHits = 14;
+  score_det_config.maxHoles = 1;
+  score_det_config.maxOutliers = 3;
+  score_det_config.maxSharedHits = 2;
+  score_det_config.sharedHitsFlag = true;
+
+  tracking::reco::ScoreBasedAmbiguityResolution::Config score_config;
+  score_config.detectorConfigs.push_back(score_det_config);
+  score_config.minScore = 0;
+  score_config.minScoreSharedTracks = 0;
+  score_config.maxSharedTracksPerMeasurement = 10;
+  score_config.maxShared = 5;
+
+
+  //greedy_config.maximumSharedHits = 1;
+  //#greedy_config.maximumIterations = 1000;
+  //greedy_config.nMeasurementsMin = min_hits_;
+
+  score_based_solver_ = std::make_unique<std::decay_t<decltype(*score_based_solver_)>>(
+    score_config, Acts::getDefaultLogger("CKF", acts_loggingLevel));
+    */
+
 }
 
 void CKFProcessor::produce(framework::Event& event) {
@@ -139,6 +192,12 @@ void CKFProcessor::produce(framework::Event& event) {
   // TODO use global variable instead and call clear;
 
   std::vector<ldmx::Track> tracks;
+
+  std::vector<ldmx::Track> all_tracks;
+
+
+  //std::vector<ldmx::Track> cleaned_tracks;
+
 
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -267,6 +326,7 @@ void CKFProcessor::produce(framework::Event& event) {
   if (startParameters.size() < 1) {
     std::vector<ldmx::Track> empty;
     event.add(out_trk_collection_, empty);
+    //event.add(out_trk_collection_+"Clean", empty);
     return;
   }
 
@@ -396,6 +456,9 @@ void CKFProcessor::produce(framework::Event& event) {
   Acts::VectorMultiTrajectory mtj;
   Acts::TrackContainer tc{vtc, mtj};
 
+  int failed_fits = 0;
+  int prev_tc_size = 0;
+
   for (size_t trackId = 0u; trackId < startParameters.size(); ++trackId) {
     // The seed has a track PdgID associated
     if (seedPDGID.at(trackId) != 0) {
@@ -421,11 +484,14 @@ void CKFProcessor::produce(framework::Event& event) {
 
     if (not results.ok()) {
       ldmx_log(debug) << "CKF Fit failed" << std::endl;
+      failed_fits++;
       continue;
     }
 
     // No track found
-    if (tc.size() < trackId + 1) continue;
+    //if (tc.size() < trackId + 1) continue;
+    if (tc.size() == prev_tc_size) continue;
+    
 
     ldmx_log(debug) << "Filling track info" << std::endl;
 
@@ -435,7 +501,8 @@ void CKFProcessor::produce(framework::Event& event) {
     //                                                        //.container()
     //                                                        //.trackStateContainer();
 
-    auto track = tc.getTrack(trackId);
+    auto track = tc.getTrack(prev_tc_size);
+    prev_tc_size++;
     calculateTrackQuantities(track);
     // MG ... if I converted above to target surface, these should be parameters
     // at target (should change names)
@@ -501,12 +568,19 @@ void CKFProcessor::produce(framework::Event& event) {
       // Check if the track state is a measurement
       auto typeFlags = ts.typeFlags();
       if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
+        
         ActsExamples::IndexSourceLink sl =
             ts.getUncalibratedSourceLink().get<ActsExamples::IndexSourceLink>();
         ldmx::Measurement ldmx_meas = measurements.at(sl.index());
         ldmx_log(debug) << "SourceLink Index::" << sl.index();
         ldmx_log(debug) << "Measurement:\n" << ldmx_meas << "\n";
         trk.addMeasurementIndex(sl.index());
+        if (typeFlags.test(Acts::TrackStateFlag::OutlierFlag)) {
+          trk.addOutlierIndex(sl.index());
+        }
+        if (typeFlags.test(Acts::TrackStateFlag::HoleFlag)) {
+          trk.addHoleIndex(sl.index());
+        }
       }
     }
 
@@ -550,9 +624,10 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "Target extrapolation  ...  this should not change "
                        "anything since track is stored at target plane";
     ldmx::Track::TrackState tsAtTarget;
-    bool successAtTarget = trk_extrap_->TrackStateAtSurface(
+    bool success = trk_extrap_->TrackStateAtSurface(
         track, target_surface, tsAtTarget, ldmx::TrackStateType::AtTarget);
-    if (successAtTarget) {
+    ldmx_log(debug) << "target extrapolation success??? " << success;
+    if (success) {
       ldmx_log(debug) << "Successfully obtained TS at target";
       ldmx_log(debug) << "Parameters At Target:  \n"
                       << tsAtTarget.params[0] << " " << tsAtTarget.params[1]
@@ -564,11 +639,11 @@ void CKFProcessor::produce(framework::Event& event) {
     if (taggerTracking_) {
       ldmx_log(debug) << "Beam Origin Extrapolation";
       ldmx::Track::TrackState tsAtBeamOrigin;
-      bool successAtBeam = trk_extrap_->TrackStateAtSurface(
+      bool success = trk_extrap_->TrackStateAtSurface(
           track, beamOrigin_surface, tsAtBeamOrigin,
           ldmx::TrackStateType::AtBeamOrigin);
 
-      if (successAtBeam) {
+      if (success) {
         trk.addTrackState(tsAtBeamOrigin);
         ldmx_log(debug) << "Successfully obtained TS at beam origin";
       }
@@ -578,10 +653,10 @@ void CKFProcessor::produce(framework::Event& event) {
     if (!taggerTracking_) {
       ldmx_log(debug) << "Ecal Extrapolation";
       ldmx::Track::TrackState tsAtEcal;
-      bool successAtEcal = trk_extrap_->TrackStateAtSurface(
-          track, ecal_surface, tsAtEcal, ldmx::TrackStateType::AtECAL);
+      success = trk_extrap_->TrackStateAtSurface(track, ecal_surface, tsAtEcal,
+                                                 ldmx::TrackStateType::AtECAL);
 
-      if (successAtEcal) {
+      if (success) {
         trk.addTrackState(tsAtEcal);
         ldmx_log(debug) << "Successfully obtained TS at Ecal";
         ldmx_log(debug) << "Parameters At Ecal:  \n"
@@ -604,15 +679,74 @@ void CKFProcessor::produce(framework::Event& event) {
       tracks.push_back(trk);
       ntracks_++;
     }
+    all_tracks.push_back(trk);
+    //std::cout << trackId << std::endl;
 
   }  // loop seed track parameters
 
+  // Calculating Shared Hits
+
+  auto sharedHits =  computeSharedHits(tracks, measurements, tg, tracking::sim::utils::sourceLinkHash, tracking::sim::utils::sourceLinkEquality);
+  for (std::size_t iTrack = 0; iTrack < sharedHits.size(); ++iTrack) {
+    tracks[iTrack].setNsharedHits(sharedHits[iTrack].size());
+    for (auto idx: sharedHits[iTrack]) {
+      tracks[iTrack].addSharedIndex(idx); 
+    }
+    //std::cout << iTrack << " " <<  sharedHits[iTrack] << std::endl;
+  }
+
+  // Setting up ambiguity solver
+
+  /*
+  if (!use_score_based_solver_) {
+    tracking::reco::GreedyAmbiguityResolution::State state;
+    greedy_solver_->computeInitialState(tc, state, &sourceLinkHash, &sourceLinkEquality);
+
+    greedy_solver_->resolve(state);
+    ldmx_log(debug) << "Resolved to " << state.selectedTracks.size() << " tracks from "
+                           << tc.size() << " " << tracks.size() << " " << state.numberOfTracks;
+
+    // Now saving all of the track info
+    for (auto iTrack : state.selectedTracks) {
+      //std::cout << " Saving good tracks: " << iTrack << std::endl;
+      auto good_track = tc.getTrack(state.trackTips.at(iTrack));
+      auto clean_trk = all_tracks[good_track.index()];
+      if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
+        cleaned_tracks.push_back(clean_trk);
+     }
+    }
+  }
+  else {
+    std::vector<std::vector<ScoreBasedAmbiguityResolution::MeasurementInfo>> measurementsPerTracks;
+    std::vector<std::vector<ScoreBasedAmbiguityResolution::TrackFeatures>> trackFeaturesVectors;
+    measurementsPerTracks = score_based_solver_->computeInitialState(
+      tc, &sourceLinkHash, &sourceLinkEquality, trackFeaturesVectors);
+    
+    std::vector<int> goodTracks = score_based_solver_->solveAmbiguity(
+      tc, measurementsPerTracks, trackFeaturesVectors);
+
+    std::cout << "Finished Score Based Solving!" << std:: endl;
+    for (auto iTrack : goodTracks) {
+      //std::cout << " Saving good tracks: " << iTrack << std::endl;
+      auto good_track = tc.getTrack(iTrack);
+      auto clean_trk = all_tracks[good_track.index()];
+      if (clean_trk.getNhits() > min_hits_ && abs(1. / clean_trk.getQoP()) > 0.05) {
+        cleaned_tracks.push_back(clean_trk);
+     }
+    }
+  }
+
+  */
+
+ 
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
 
   // Add the tracks to the event
   event.add(out_trk_collection_, tracks);
+  //event.add(out_trk_collection_+"Clean", cleaned_tracks);
+
 
   auto end = std::chrono::high_resolution_clock::now();
   // long long microseconds =
@@ -632,26 +766,19 @@ void CKFProcessor::onProcessStart() {
 void CKFProcessor::onProcessEnd() {
   ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_
                  << " nseeds";
-  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
-                 << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "AVG Time/Event: " << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Breakdown::";
-  ldmx_log(info) << "setup       Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["setup"] / nevents_
-                 << " ms";
-  ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["hits"] / nevents_
-                 << " ms";
-  ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["seeds"] / nevents_
-                 << " ms";
-  ldmx_log(info) << "cf_setup    Avg Time/Event = " << std::fixed
-                 << std::setprecision(3)
+  ldmx_log(info) << "setup       Avg Time/Event = "
+                 << profiling_map_["setup"] / nevents_ << " ms";
+  ldmx_log(info) << "hits        Avg Time/Event = "
+                 << profiling_map_["hits"] / nevents_ << " ms";
+  ldmx_log(info) << "seeds       Avg Time/Event = "
+                 << profiling_map_["seeds"] / nevents_ << " ms";
+  ldmx_log(info) << "cf_setup    Avg Time/Event = "
                  << profiling_map_["ckf_setup"] / nevents_ << " ms";
-  ldmx_log(info) << "ckf_run     Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["ckf_run"] / nevents_
-                 << " ms";
-  ldmx_log(info) << "result_loop Avg Time/Event = " << std::fixed
-                 << std::setprecision(1)
+  ldmx_log(info) << "ckf_run     Avg Time/Event = "
+                 << profiling_map_["ckf_run"] / nevents_ << " ms";
+  ldmx_log(info) << "result_loop Avg Time/Event = "
                  << profiling_map_["result_loop"] / nevents_ << " ms";
 }
 
@@ -673,6 +800,9 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   remove_stereo_ = parameters.getParameter<bool>("remove_stereo", false);
   use1Dmeasurements_ = parameters.getParameter<bool>("use1Dmeasurements", true);
   min_hits_ = parameters.getParameter<int>("min_hits", 7);
+
+  debug_ = parameters.getParameter<bool>("debug", false);
+  use_score_based_solver_ = parameters.getParameter<bool>("use_score_based_solver", false);
 
   // Ckf specific options
   use_extrapolate_location_ =
@@ -745,6 +875,94 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
 
   return geoId_sl_map;
 }
+
+template <typename geometry_t, typename source_link_hash_t,
+            typename source_link_equality_t>
+std::vector<std::vector<std::size_t>>  CKFProcessor::computeSharedHits(
+      std::vector<ldmx::Track> tracks,  std::vector<ldmx::Measurement> meas_coll,
+      geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+      source_link_equality_t&& sourceLinkEquality) const {
+  
+  auto measurementIndexMap =
+      std::unordered_map<Acts::SourceLink, std::size_t, source_link_hash_t,
+                         source_link_equality_t>(0, sourceLinkHash,
+                                                 sourceLinkEquality);
+
+  std::vector<std::vector<std::size_t>> measurementsPerTrack;
+    boost::container::flat_map<std::size_t,
+                               boost::container::flat_set<std::size_t>>
+        tracksPerMeasurement;
+    std::vector<std::size_t> sharedMeasurementsPerTrack;
+    auto numberOfTracks = 0;
+
+  // Iterate through all input tracks, collect their properties like measurement
+  // count and chi2 and fill the measurement map in order to relate tracks to
+  // each other if they have shared hits.
+  for (const auto& track : tracks) {
+
+    // Kick out tracks that do not fulfill our initial requirements
+   // if (track.getNhits() < nMeasurementsMin_) {
+   //   continue;
+   // }
+
+    std::vector<std::size_t> measurements;
+    for (auto imeas : track.getMeasurementsIdxs()) {
+        auto meas = meas_coll.at(imeas);
+        const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
+        // Store the index source link
+        ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+        Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
+   
+        auto emplace = measurementIndexMap.try_emplace(
+            sourceLink, measurementIndexMap.size());
+        measurements.push_back(emplace.first->second);
+    }
+
+    
+    measurementsPerTrack.push_back(std::move(measurements));
+
+    ++numberOfTracks;
+    }
+
+    // Now we relate measurements to tracks
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      tracksPerMeasurement[iMeasurement].insert(iTrack);
+    }
+  }
+
+  // Finally, we can accumulate the number of shared measurements per track
+  sharedMeasurementsPerTrack =
+      std::vector<std::size_t>(numberOfTracks, 0);
+  
+  std::vector<std::vector<std::size_t>> sharedMeasurementIdxsPerTrack;
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+     std::vector<std::size_t> sharedMeasurementIdxs;
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      if (tracksPerMeasurement[iMeasurement].size() > 1) {
+        ++sharedMeasurementsPerTrack[iTrack];
+        sharedMeasurementIdxs.push_back(iMeasurement);
+      }
+    }
+    sharedMeasurementIdxsPerTrack.push_back(sharedMeasurementIdxs);
+  }
+  return sharedMeasurementIdxsPerTrack;
+}
+
+/*
+
+std::size_t CKFProcessor::sourceLinkHash(const Acts::SourceLink& a) { 
+  return static_cast<std::size_t>(
+      a.get<ActsExamples::IndexSourceLink>().index());
+    }
+
+bool CKFProcessor::sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
+  return a.get<ActsExamples::IndexSourceLink>().index() ==
+         b.get<ActsExamples::IndexSourceLink>().index();
+}
+*/
+
+
 
 }  // namespace reco
 }  // namespace tracking

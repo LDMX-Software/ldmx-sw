@@ -62,6 +62,10 @@
 //--- Refit with backward propagation ---//
 #include "Acts/TrackFitting/KalmanFitter.hpp"
 
+//-- Ambiguity Solving --//
+//#include "Tracking/Reco/AmbiguitySolver.h"
+//#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
+
 // GSF
 //#include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
@@ -93,7 +97,7 @@ using GsfPropagator = Acts::Propagator<
 // using PropagatorOptions =
 //    Acts::DenseStepperPropagatorOptions<ActionList, AbortList>;
 
-namespace tracking {
+namespace tracking { 
 namespace reco {
 
 class CKFProcessor final : public TrackingGeometryUser {
@@ -148,6 +152,22 @@ class CKFProcessor final : public TrackingGeometryUser {
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  ActsExamples::IndexSourceLink>;
 
+  template <typename geometry_t, typename source_link_hash_t,
+            typename source_link_equality_t>
+  std::vector<std::vector<std::size_t>> computeSharedHits(
+      std::vector<ldmx::Track> tracks,  std::vector<ldmx::Measurement> meas_coll,
+      geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+      source_link_equality_t&& sourceLinkEquality) const;
+
+  /*
+  /// @param a 
+  std::size_t sourceLinkHash(const Acts::SourceLink& a);
+  
+  /// @param a 
+  /// @param b
+  bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b);
+  */
+
   // If we want to dump the tracking geometry
   bool dumpobj_{false};
 
@@ -194,10 +214,14 @@ class CKFProcessor final : public TrackingGeometryUser {
   // 1DOF pvalues: 0.1 = 2.706 0.05 = 3.841 0.025 = 5.024 0.01 = 6.635 0.005
   // = 7.879 The probability to reject a good measurement is pvalue The
   // probability to reject an outlier is given in NIM A262 (1987) 444-450
+
   double outlier_pval_{3.84};
 
   // The output track collection
   std::string out_trk_collection_{"Tracks"};
+
+  // Mass for the propagator hypothesis in MeV
+  double mass_{0.511};
 
   // The seed track collection
   std::string seed_coll_name_{"seedTracks"};
@@ -217,6 +241,12 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
       trk_extrap_;
 
+  // The Greedy Solver
+  //std::unique_ptr<const tracking::reco::GreedyAmbiguityResolution> greedy_solver_;
+
+  // The Score Based Solver
+  //std::unique_ptr<const tracking::reco::ScoreBasedAmbiguityResolution> score_based_solver_;
+
   /// n seeds and n tracks
   int nseeds_{0};
   int ntracks_{0};
@@ -231,6 +261,8 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   // Keep track on which system this processor is running on
   bool taggerTracking_{true};
+
+  bool use_score_based_solver_{false};
 
 };  // CKFProcessor
 
