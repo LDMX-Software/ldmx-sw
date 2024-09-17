@@ -3,7 +3,7 @@
 #include "TrigScint/trackproducer.h"
 #include "TrigScint/clusterproducer.h"
 #include "TrigScint/objdef.h"
-#include <iterator>  // std::next
+#include <iterator>  
 #include <map>
 
 namespace trigscint {
@@ -89,7 +89,6 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     clearTrack(outTrk[j]);
   }
   
-  //std::cout<<"I GOT HERE 1"<<std::endl;
   const auto digis1_{
      event.getCollection<ldmx::TrigScintHit>(digis1_collection_, passName_)};
   const auto digis3_{
@@ -97,19 +96,14 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   const auto digis2_{
      event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
 
-  std::cout<<"I GOT HERE 2"<<std::endl;
-  // TODO remove this once verified that the noise overlap bug is gone
-
   int occupied[50];
   for(int i = 0; i<50;i++){
     occupied[i]=-1;
   }
   int count=0;
   for (const auto &digi : digis1_) {
-    std::cout<<"I AM LOOPING IN DIGIS1 "<<digi.getPE()<<" "<<digi.getTime()<<std::endl;
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){//and(digi.getTime()>padTime_+timeTolerance_)) {
-      std::cout<<"I AM LOOPING IN DIGIS1 "<<digi.getPE()<<" "<<digi.getTime()<<std::endl;
+      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -122,7 +116,6 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
 	}
       }else{
 	HPad1[count].bID=(ap_int<12>)(digi.getBarID());
-	std::cout<<(ap_int<12>)(digi.getBarID())<<std::endl;
 	HPad1[count].mID=(ap_int<12>)(digi.getModuleID());
 	HPad1[count].Amp=(ap_int<12>)(digi.getPE());
 	HPad1[count].Time=(ap_int<12>)(digi.getTime());
@@ -132,14 +125,13 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     }
   }
 
-  std::cout<<"I GOT HERE 3"<<std::endl;
   for(int i = 0; i<50;i++){
     occupied[i]=-1;
   }
   count=0;
   for (const auto &digi : digis2_) {
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){//and(digi.getTime()>padTime_+timeTolerance_)) {
+      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -160,14 +152,13 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  //std::cout<<"I GOT HERE 4"<<std::endl;
   for(int i = 0; i<50;i++){
     occupied[i]=-1;
   }
   count=0;
   for (const auto &digi : digis3_) {
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){//and(digi.getTime()>padTime_+timeTolerance_)) {
+      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -189,22 +180,12 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     }
   }
   count=0;
-  std::cout<<"GOT HERE"<<std::endl;
-
-  for(int J=0;J<NHITS;J++){
-    std::cout<<HPad1[J].bID<<" "<<HPad1[J].Amp<<std::endl;
-    std::cout<<HPad2[J].bID<<" "<<HPad2[J].Amp<<std::endl;
-    std::cout<<HPad3[J].bID<<" "<<HPad3[J].Amp<<"\n"<<std::endl;
-  }
 
   int counterN=0;
   Cluster* Point1=clusterproducer_sw(HPad1);
   int topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    //bool Cond=(std::abs(Point1[i].Seed.bID-Point1[i].Sec.bID)<10)or(Point1[1].Sec.bID==-1)or(Point1[1].Sec.bID<50);
-    std::cout<<Point1[i].Seed.Amp<<" "<<Point1[i].Seed.bID<<" "<<Point1[i].Sec.Amp<<" "<<Point1[i].Sec.bID<<std::endl;
     if((Point1[i].Seed.Amp<450)and(Point1[i].Seed.Amp>30)and(Point1[i].Seed.bID<51)and(Point1[i].Seed.bID>=0)and(Point1[i].Sec.Amp<450)and(counterN<NTRK)){
-      std::cout<<Point1[i].Seed.Amp<<" "<<Point1[i].Seed.bID<<" "<<Point1[i].Sec.Amp<<" "<<Point1[i].Sec.bID<<"\n"<<std::endl;
       if(Point1[i].Seed.bID>=topSeed){
       	cpyHit(Pad1[counterN].Seed,Point1[i].Seed);cpyHit(Pad1[counterN].Sec,Point1[i].Sec);
       	calcCent(Pad1[counterN]);
@@ -216,11 +197,8 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Cluster* Point2=clusterproducer_sw(HPad2);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    //bool Cond=(std::abs(Point2[i].Seed.bID-Point2[i].Sec.bID)<10);
-    std::cout<<Point2[i].Seed.Amp<<" "<<Point2[i].Seed.bID<<" "<<Point2[i].Sec.Amp<<" "<<Point2[i].Sec.bID<<std::endl;
     if((Point2[i].Seed.Amp<450)and(Point2[i].Seed.Amp>30)and(Point2[i].Seed.bID<51)and(Point2[i].Seed.bID>=0)and(Point2[i].Sec.Amp<450)){
       if(Point2[i].Seed.bID>=topSeed){
-      	std::cout<<Point2[i].Seed.Amp<<" "<<Point2[i].Seed.bID<<" "<<Point2[i].Sec.Amp<<" "<<Point2[i].Sec.bID<<"\n"<<std::endl;
       	cpyHit(Pad2[i].Seed,Point2[i].Seed);cpyHit(Pad2[i].Sec,Point2[i].Sec);
       	calcCent(Pad2[i]);
 	topSeed=Point2[i].Seed.bID;
@@ -230,12 +208,8 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Cluster* Point3=clusterproducer_sw(HPad3);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    //bool Cond=(std::abs(Point3[i].Seed.bID-Point3[i].Sec.bID)<10);
-    std::cout<<Point3[i].Seed.Amp<<" "<<Point3[i].Seed.bID<<" "<<Point3[i].Sec.Amp<<" "<<Point3[i].Sec.bID<<std::endl;
     if((Point3[i].Seed.Amp<450)and(Point3[i].Seed.Amp>30)and(Point3[i].Seed.bID<51)and(Point3[i].Seed.bID>=0)and(Point3[i].Sec.Amp<450)){
-      std::cout<<"Top Seed "<<topSeed<<std::endl;
       if(Point3[i].Seed.bID>=topSeed){
-      	std::cout<<Point3[i].Seed.Amp<<" "<<Point3[i].Seed.bID<<" "<<Point3[i].Sec.Amp<<" "<<Point3[i].Sec.bID<<"\n"<<std::endl;
       	cpyHit(Pad3[i].Seed,Point3[i].Seed);cpyHit(Pad3[i].Sec,Point3[i].Sec);
       	calcCent(Pad3[i]);
 	topSeed=Point3[i].Seed.bID;
@@ -247,12 +221,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
                     << passName_ << " with " << digis1_.size() << " entries ";
   }
-  std::cout<<"I GOT HERE 5"<<std::endl;
   trackproducer_hw(Pad1,Pad2,Pad3,outTrk,LOOKUP);
-  std::cout<<"I GOT HERE 6"<<std::endl;
   for(int I = 0; I<NTRK; I++){
     if(outTrk[I].Pad1.Seed.Amp>0){
-      std::cout<<outTrk[I].Pad1.Seed.bID<<" "<<outTrk[I].Pad2.Seed.bID<<" "<<outTrk[I].Pad3.Seed.bID<<std::endl;
       ldmx::TrigScintTrack trk = makeTrack(outTrk[I]);
       tracks_.push_back(trk);
     }
