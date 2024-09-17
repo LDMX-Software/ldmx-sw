@@ -122,7 +122,10 @@ void Event::setInputTree(TTree* tree) {
   // find the names of all the existing branches
   TObjArray* branches = inputTree_->GetListOfBranches();
   if (!branches) {
-    EXCEPTION_RAISE("RunHeaderError", "Branch doesnt exists");
+    EXCEPTION_RAISE(
+        "BadInputFile",
+        "Input tree doesn't have a list of branches but still made it to this "
+        "point. This is bad and has never been seen before!");
     return;
   }
   for (int i = 0; i < branches->GetEntriesFast(); i++) {
