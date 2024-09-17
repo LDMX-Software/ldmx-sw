@@ -30,8 +30,16 @@ jobs:
       with:
         submodules: 'recursive'
 
+    - name : Install just
+      uses: extractions/setup-just@v2
+      with:
+          just-version: 1.26.0
+
     - name: Compile and Install ldmx-sw
-      uses: ./.github/actions/setup
+      run: | 
+        just install-denv init configure-force-error
+        just build
+      shell: bash
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
