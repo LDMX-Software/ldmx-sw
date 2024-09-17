@@ -59,7 +59,13 @@ install-denv:
 
 # configure how ldmx-sw will be built
 configure *CONFIG:
-    denv cmake -B build -S . {{ CONFIG }}
+    denv cmake -B build -S .  -DADDITIONAL_WARNINGS=ON  -DENABLE_CLANG_TIDY=ON  {{ CONFIG }}
+
+configure-force-error  *CONFIG:
+    just configure -DWARNINGS_AS_ERRORS=ON  {{ CONFIG }}
+
+configure-clang-lto:
+    denv cmake -B build -S . -DADDITIONAL_WARNINGS=ON  -DENABLE_CLANG_TIDY=ON  -DENABLE_LTO=ON  -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang 
 
 # compile and install ldmx-sw
 build ncpu=num_cpus():
@@ -170,10 +176,12 @@ setenv +ENVVAR:
     denv config env copy {{ ENVVAR }}
 
 # configure and build ldmx-sw
-compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
+compile ncpu=num_cpus() *CONFIG='':
+     (configure CONFIG) (build ncpu)
 
 # re-build ldmx-sw and then run a config
-recompFire config_py *ARGS: build (fire config_py ARGS)
+recompFire config_py *ARGS:
+     (compile) (fire config_py ARGS)
 
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.

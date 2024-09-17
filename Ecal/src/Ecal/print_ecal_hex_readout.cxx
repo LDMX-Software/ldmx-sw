@@ -76,7 +76,7 @@ int main() {
       std::make_pair(+1. * hexCornerRadius * cos(M_PI / 3),
                      -1. * hexCornerRadius * sin(M_PI / 3)),
       std::make_pair(+1. * hexCornerRadius, 0.)};
-  TLine moduleHexBorder;
+  TLine moduleHexBorder{0.,0.,0.,0.};
   moduleHexBorder.SetLineColorAlpha(kRed, 0.5);
   moduleHexBorder.SetLineWidth(2);
   for (int i = 1; i < hexCorners.size(); i++) {

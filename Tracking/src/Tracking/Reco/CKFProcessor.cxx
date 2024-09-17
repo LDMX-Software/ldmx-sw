@@ -327,6 +327,9 @@ void CKFProcessor::produce(framework::Event& event) {
   struct SourceLinkAccIt {
     using BaseIt = decltype(geoId_sl_map.begin());
     BaseIt it;
+    
+    #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 
     using difference_type = typename BaseIt::difference_type;
     using iterator_category = typename BaseIt::iterator_category;
@@ -334,6 +337,7 @@ void CKFProcessor::produce(framework::Event& event) {
     using value_type = Acts::SourceLink;
     using pointer = typename BaseIt::pointer;
     using reference = value_type&;
+#pragma GCC diagnostic pop
 
     SourceLinkAccIt& operator++() {
       ++it;
