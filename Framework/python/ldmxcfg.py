@@ -581,9 +581,6 @@ class Process:
         self.skimRules=[]
         self.logFrequency=-1
         self.logger = Logger()
-        self.termLogLevel=2 #warnings and above
-        self.fileLogLevel=0 #print all messages
-        self.logFileName='' #won't setup log file
         self.compressionSetting=9
         self.histogramFile=''
         self.conditionsGlobalTag='Default'
@@ -604,6 +601,15 @@ class Process:
         if key in logger_remap:
             setattr(self.logger, logger_remap[key], val)
             return
+        elif key == 'logFrequency' and val > 0:
+            # make sure the Process channel is lowered to info
+            # later log rules override earlier ones so we put this
+            # at the front of the list so the user could have overwritten
+            # this if need be
+            # 'Process' needs to match the name given in enableLogging
+            # in include/Framework/Process.h
+            self.logger.logRules.insert(0, _LogRule('Process', level=1))
+            # fall through to set the key=val
         
         super().__setattr__(key, val)
 
