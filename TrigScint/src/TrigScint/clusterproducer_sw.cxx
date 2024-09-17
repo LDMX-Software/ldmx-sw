@@ -12,6 +12,10 @@ Cluster* clusterproducer_sw(Hit inHit[NHITS]){
 
 	Cluster* outClus = new Cluster[NCLUS];
 
+	for(int i = 0;i<NCLUS;++i){
+		clearClus(outClus[i]);	
+	}
+
 	//CLEAR THE MAP
 	for(int i = 0;i<NCHAN;++i){
 		mapL1[i]=-1;

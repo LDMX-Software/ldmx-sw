@@ -44,6 +44,6 @@ setup_library(module TrigScint
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event
 )
-
+target_include_directories(TrigScint PUBLIC ../Trigger/HLS_arbitrary_Precision_Types/include)
 setup_python(package_name LDMX/TrigScint)
 

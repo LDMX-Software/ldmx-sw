@@ -35,15 +35,25 @@ void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
 }
 
 void TrigScintFirmwareTracker::produce(framework::Event &event) {
+  //This processor takes in TS digis and outputs a track collection. It does so using clusterproducer_sw
+  //and trackproducer_hw, which are validated pieces of HLS code (though clusterproducer_sw has had its
+  //instances of pragmas excluded. I will comment on how clusterproducer and trackproducer work more
+  //thouroughly in them respectively, but generally the clusterproducer makes only two hit clusters (as
+  //ready that was all that was made from the original sw) and does so by making a digi map and running
+  //along channels numerically and pairing if possible. The trackproducer takes a LOOKUP array as a LUT
+  //and does track pattern mathcing. This depends on alignment through the A vector below.
 
   if (verbose_) {
     ldmx_log(debug)
         << "TrigScintFirmwareTracker: produce() starts! Event number: "
         << event.getEventHeader().getEventNumber();
   }
-  //I AM FILLING IN THE TRACKING LUT FOR LATER USE
   ap_int<12> A[3]={0,0,0};
   ap_int<12> LOOKUP[NCENT][COMBO][2];
+  
+  //This line fills in the LOOKUP table used for patter matching latter. The array takes in as its first
+  //argument the centroid of a first pad cluster, then the next two take on which track pattern (of ~9)
+  //we are matching to and the last if we are matching to a cluster with two hits
   for(int i = 0; i<NCENT;i++){
     for(int j = 0; j<COMBO; j++){
       LOOKUP[i][j][0]=(i-A[1]+A[0]);LOOKUP[i][j][1]=(i-A[2]+A[0]);
@@ -62,8 +72,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  // looper over digi hits and aggregate energy depositions for each detID
-
+  //Here we instantiate arrays necessary to do the rest of it.
   Hit HPad1[NHITS];
   Hit HPad2[NHITS];
   Hit HPad3[NHITS];
@@ -88,14 +97,22 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   for(int j = 0; j<NTRK; j++){
     clearTrack(outTrk[j]);
   }
-  
+  //I am reading in the three digi collections
   const auto digis1_{
      event.getCollection<ldmx::TrigScintHit>(digis1_collection_, passName_)};
   const auto digis3_{
      event.getCollection<ldmx::TrigScintHit>(digis2_collection_, passName_)};
   const auto digis2_{
      event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
-
+  
+  if (verbose_) {
+    ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
+                    << passName_ << " with " << digis1_.size() << " entries ";
+  }
+  
+  //The next collection of things fill in the firmware hit objects from reading in the
+  //digi collections the necessary information. The firmware hit objects only keep
+  //bID,mID,Time, and PE count.
   int occupied[NCHAN];
   for(int i = 0; i<NCHAN;i++){
     occupied[i]=-1;
@@ -180,7 +197,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     }
   }
   count=0;
-
+  //These next lines here calls clusterproducer_sw(HPad1), which is just the validated firmware module. Since ap_* class
+  //is messy, I had to do some post-call cleanup before looping over the clusters and putting them into Point i
+  //which is feed into track producer
   int counterN=0;
   Cluster* Point1=clusterproducer_sw(HPad1);
   int topSeed=0;
@@ -216,11 +235,10 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-
-   if (verbose_) {
-    ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
-                    << passName_ << " with " << digis1_.size() << " entries ";
-  }
+  //I have stagged the digis into firmware digi objects and paired them into firmware cluster objects, so
+  //at this point I can insert them and the LUT into the trackproducer_hw to create the track collection 
+  //I use makeTrack to revert the firmware track object back into a regular track object for analysis
+  //purposes
   trackproducer_hw(Pad1,Pad2,Pad3,outTrk,LOOKUP);
   for(int I = 0; I<NTRK; I++){
     if(outTrk[I].Pad1.Seed.Amp>0){
@@ -230,10 +248,15 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   event.add(output_collection_, tracks_);
   tracks_.resize(0);
+  /*delete Point1;
+  delete Point2;
+  delete Point3;*/
   return;
 }
 
 ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
+  //This takes a firmware track object and reverts it into an ldmx track object, unfortunately only
+  //retaining that information of the track that is retained in the firmware track.
   ldmx::TrigScintTrack tr;
   float pe = outTrk.Pad1.Seed.Amp+outTrk.Pad1.Sec.Amp;
   pe += outTrk.Pad2.Seed.Amp+outTrk.Pad2.Sec.Amp;
