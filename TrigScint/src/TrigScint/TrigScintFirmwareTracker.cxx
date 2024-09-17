@@ -273,18 +273,6 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
   return tr;
 }
 
-void TrigScintFirmwareTracker::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void TrigScintFirmwareTracker::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace trigscint
 
 DECLARE_PRODUCER_NS(trigscint, TrigScintFirmwareTracker);
