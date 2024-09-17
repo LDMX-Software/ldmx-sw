@@ -22,6 +22,8 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
+#include "Framework/Configure/Parameters.h"
+
 namespace framework {
 
 namespace logging {
@@ -36,37 +38,6 @@ enum level {
   error,      ///> 3
   fatal       ///> 4
 };
-
-/**
- * Convert an integer to the severity level enum
- *
- * Any integer below zero will be set to 0 (debug),
- * and any integer above four will be set to 4 (fatal).
- *
- * @param[in] iLvl integer level to be converted
- * @return converted enum level
- */
-level convertLevel(int& iLvl);
-
-/**
- * Severity level to human readable name map
- *
- * Human readable names are the same width in characters
- *
- * We could also add terminal color here if we wanted.
- *
- * @note Not in use right now. boost's extract returns some
- * weird templated type that cannot be implicitly converted to level.
- *
- * We _can_ stream the output to a string stream and use
- * that as the key in our map, but that is lame.
- */
-const std::unordered_map<level, std::string> humanReadableLevel = {
-    {debug, "debug"},
-    {info, "info "},
-    {warn, "warn "},
-    {error, "error"},
-    {fatal, "fatal"}};
 
 /**
  * Short names for boost namespaces
@@ -99,22 +70,52 @@ logger makeLogger(const std::string& name);
  * This function setups up the terminal and file sinks.
  * Sets their format and filtering level for this run.
  *
- * @note Will not setup printing log messages to file if fileName is empty
+ * @note Will not setup printing log messages to file if filePath is empty
  * string.
  *
- * @param termLevel minimum level to print to terminal (everything above it is
- * also printed)
- * @param fileLevel minimum level to print to file log (everything above it is
- * also printed)
- * @param fileName name of file to print log to
+ * @param p parameters to configure the logging with
  */
-void open(const level termLevel, const level fileLevel,
-          const std::string& fileName);
+void open(const framework::config::Parameters& p);
 
 /**
  * Close up the logging
  */
 void close();
+
+/**
+ * Our logging formatter
+ *
+ * We use a singleton formatter so that it can hold the current event index
+ * as an attribute and include it within the logs. This is easier than
+ * attempting to update the event number in all of the different logging
+ * sources floating around ldmx-sw.
+ */
+class Formatter {
+  int event_number_{0};
+  Formatter() = default;
+
+ public:
+  /// delete the copy constructor
+  Formatter(Formatter const&) = delete;
+
+  /// delete the assignment operator
+  void operator=(Formatter const&) = delete;
+
+  /// get reference to the current single Formatter
+  static Formatter& get();
+
+  /// set the event number in the current Formatter
+  static void set(int n);
+
+  /**
+   * format the passed record view into the output stream
+   *
+   * The format is
+   *
+   *  [ channel ] severity : message
+   */
+  void operator()(const log::record_view& view, log::formatting_ostream& os);
+};
 
 }  // namespace logging
 
