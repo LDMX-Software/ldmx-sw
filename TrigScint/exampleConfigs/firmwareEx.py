@@ -130,10 +130,6 @@ tsClustersTag  =TrigScintClusterProducer.pad2()
 tsClustersUp  =TrigScintClusterProducer.pad1()
 tsClustersDown  =TrigScintClusterProducer.pad3()
 
-if "v12" in version :
-     tsClustersTag.pad_time = -2.
-     tsClustersUp.pad_time = 0.
-     tsClustersDown.pad_time = 0.
 
 tsDigisUp.verbosity=0
 tsClustersUp.verbosity=1
