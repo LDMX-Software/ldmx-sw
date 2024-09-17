@@ -98,10 +98,7 @@ from LDMX.TrigScint.trigScint import TrigScintClusterProducer
 from LDMX.TrigScint.trigScint import trigScintTrack
 from LDMX.TrigScint.trigScint import TrigScintFirmwareTracker
 
-if "v12" in version :
-     tsSimColls=[ "TriggerPadTagSimHits", "TriggerPadUpSimHits", "TriggerPadDnSimHits" ]
-else :
-     tsSimColls=[ "TriggerPad2SimHits", "TriggerPad3SimHits", "TriggerPad1SimHits" ]
+tsSimColls=[ "TriggerPad2SimHits", "TriggerPad3SimHits", "TriggerPad1SimHits" ]
 
 # ecal digi chain
 # ecalDigi   =eDigi.EcalDigiProducer('EcalDigis')
