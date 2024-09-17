@@ -122,22 +122,22 @@ G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
   if (aStep) {
     const auto* preStepPoint = aStep->GetPreStepPoint();
     if (preStepPoint) {
-        const auto& touchableHandle = preStepPoint->GetTouchableHandle();
-	if (touchableHandle) {
+      const auto& touchableHandle = preStepPoint->GetTouchableHandle();
+      if (touchableHandle) {
         const auto* volume = touchableHandle->GetVolume();
 
         if (volume) {
-            const auto* logicalVolume = volume->GetLogicalVolume();
-            if (logicalVolume) {
-                auto* solid = logicalVolume->GetSolid();
-                if (solid) {
-                    scint = static_cast<G4Box*>(solid);
-                }
+          const auto* logicalVolume = volume->GetLogicalVolume();
+          if (logicalVolume) {
+            auto* solid = logicalVolume->GetSolid();
+            if (solid) {
+              scint = static_cast<G4Box*>(solid);
             }
+          }
         }
+      }
     }
-    }
-}
+  }
 
   // Set the step mid-point as the hit position.
   G4StepPoint* prePoint = aStep->GetPreStepPoint();

@@ -75,7 +75,7 @@ class EventHeader {
    * Return the event number.
    * @return The event number.
    */
-  [[clang::no_sanitize("null")]] int getEventNumber() const {
+  int getEventNumber() const {
     return eventNumber_;
   }
 
@@ -249,7 +249,7 @@ class EventHeader {
   /**
    * ROOT class definition.
    */
-  ClassDef(EventHeader, 3);
+  ClassDef(EventHeader, 2);
 };
 
 }  // namespace ldmx
