@@ -35,6 +35,16 @@ logger makeLogger(const std::string& name) {
   return boost::move(lg);
 }
 
+template <typename T>
+const T& safe_extract(log::attribute_value attr) {
+  static const T empty_value = {};
+  auto attr_val = log::extract<T>(attr);
+  if (attr_val) {
+    return *attr_val;
+  }
+  return empty_value;
+}
+
 /**
  * Our filter implementation aligning with Boost.Log
  *
@@ -52,8 +62,8 @@ class Filter {
       : fallback_level_{fallback}, custom_levels_{custom} {}
   Filter(level fallback) : Filter(fallback, {}) {}
   bool operator()(log::attribute_value_set const& attrs) {
-    const std::string& channel{*log::extract<std::string>(attrs["Channel"])};
-    const level& msg_level{*log::extract<level>(attrs["Severity"])};
+    const std::string& channel{safe_extract<std::string>(attrs["Channel"])};
+    const level& msg_level{safe_extract<level>(attrs["Severity"])};
     auto it = custom_levels_.find(channel);
     if (it != custom_levels_.end()) {
       return msg_level >= it->second;
@@ -157,7 +167,7 @@ void Formatter::operator()(const log::record_view& view,
    * We de-reference the value out of the log into our own type
    * so that we can compare and convert it into a string.
    */
-  const level& msg_level = *log::extract<level>("Severity", view);
+  const level& msg_level{safe_extract<level>(view["Severity"])};
   switch (msg_level) {
     case level::debug:
       os << "debug";
