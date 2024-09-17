@@ -154,21 +154,19 @@ void Formatter::operator()(const log::record_view& view,
   os << "[ " << log::extract<std::string>("Channel", view) << " ] "
      << event_number_ << " ";
   /**
-   * We _copy_ the value out of the log into our own type
+   * We de-reference the value out of the log into our own type
    * so that we can compare and convert it into a string.
-   * I expect this copying to be okay since its just a
-   * enum (int equivalent), but its good to be clear
    */
-  level msg_level = *log::extract<level>("Severity", view);
+  const level& msg_level = *log::extract<level>("Severity", view);
   switch (msg_level) {
     case level::debug:
       os << "debug";
       break;
     case level::info:
-      os << "info ";
+      os << " info";
       break;
     case level::warn:
-      os << "warn ";
+      os << " warn";
       break;
     case level::error:
       os << "error";
@@ -177,6 +175,12 @@ void Formatter::operator()(const log::record_view& view,
       os << "fatal";
       break;
     default:
+      // this should never happen since the loggers created
+      // with makeLogger use the level enum and thus check
+      // at compile time that the given level is an good option.
+      // That being said, we leave this in case someone creates
+      // their own logger circumventing makeLogger for whatever
+      // reason and changes the enum defining the severity.
       os << "?????";
       break;
   }
