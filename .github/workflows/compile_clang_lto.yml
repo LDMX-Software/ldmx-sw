@@ -18,10 +18,12 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Compile and Install ldmx-sw
+    - name : Install just
       uses: extractions/setup-just@v2
       with:
-          just-version: 1.26.0 
+          just-version: 1.26.0
+
+    - name: Compile and Install ldmx-sw
       run: | 
         just install-denv init configure-clang-lto
         just build
