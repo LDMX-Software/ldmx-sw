@@ -43,8 +43,7 @@ int SimQIE::Q2ADC(float Charge) {
     } else
       b = (a + b) / 2;
   }
-  return 64 * (int)(a / 4) + nbins_[a % 4] +
-         floor((qq - edges_[a]) / sense_[a]);
+  return 64 * (a / 4) + nbins_[a % 4] + floor((qq - edges_[a]) / sense_[a]);
 }
 
 // Function to convert ADCs back to charge

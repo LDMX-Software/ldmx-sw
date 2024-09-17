@@ -177,8 +177,7 @@ class TrackExtrapolatorTool {
   }
 
   /**
-
-  /** Create an ldmx::TrackState to the extrapolated position
+   ** Create an ldmx::TrackState to the extrapolated position
    @param Acts::Track
    @param extrapolation surface
    @param ldmx::Track::TrackState

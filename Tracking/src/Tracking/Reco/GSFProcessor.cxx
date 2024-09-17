@@ -81,8 +81,8 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // Acts::MixtureReductionMethod finalReductionMethod;
   // const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
-  Acts::ComponentMergeMethod reductionMethod =
-      Acts::ComponentMergeMethod::eMaxWeight;
+  // Acts::ComponentMergeMethod reductionMethod =
+  //    Acts::ComponentMergeMethod::eMaxWeight;
   //  Acts::MultiEigenStepperLoop multi_stepper(
   //      map, reductionMethod,
   //      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));

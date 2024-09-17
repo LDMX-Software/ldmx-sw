@@ -299,7 +299,7 @@ ldmx::Track SeedFinderProcessor::SeedTracker(
   b3_.push_back(B(3));
   b4_.push_back(B(4));
 
-  Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
+  // Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
   Acts::ActsVector<3> ref{0., 0., 0.};
 
   double relativePerigeeX = perigee_location(0) - xOrigin;

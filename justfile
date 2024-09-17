@@ -58,8 +58,16 @@ install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
 # configure how ldmx-sw will be built
+# added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
 configure *CONFIG:
-    denv cmake -B build -S . {{ CONFIG }}
+    denv cmake -B build -S .  -DADDITIONAL_WARNINGS=ON  -DENABLE_CLANG_TIDY=ON  {{ CONFIG }}
+
+# This is the same as just configure but reports all (non-3rd-party) warnings as errors
+configure-force-error *CONFIG: (configure "-DWARNINGS_AS_ERRORS=ON" CONFIG)
+
+# This is an alternative compiler (clang) together with enabling the LTO sanitizer
+# This is very helpful but for now it optimizes away our module linking, use for testing only
+configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
 
 # compile and install ldmx-sw
 build ncpu=num_cpus():
@@ -173,7 +181,7 @@ setenv +ENVVAR:
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
 
 # re-build ldmx-sw and then run a config
-recompFire config_py *ARGS: build (fire config_py ARGS)
+recompFire config_py *ARGS: compile (fire config_py ARGS)
 
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.

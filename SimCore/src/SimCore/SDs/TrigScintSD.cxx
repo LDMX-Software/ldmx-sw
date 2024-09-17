@@ -37,6 +37,9 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
   G4StepPoint* prePoint = step->GetPreStepPoint();
   G4StepPoint* postPoint = step->GetPostStepPoint();
+  if (prePoint == nullptr || postPoint == nullptr) {
+    return false;
+  }
 
   // A Geant4 "touchable" is a way to uniquely identify a particular volume,
   // short for touchable detector element. See the detector definition and
@@ -45,7 +48,9 @@ G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
   // The TouchableHandle is just a reference counted pointer to a
   // G4TouchableHistory object, which is a concrete implementation of a
   // G4Touchable interface.
-  //
+  if (!prePoint->GetTouchableHandle()) {
+    return false;
+  }
   auto touchableHistory{prePoint->GetTouchableHandle()->GetHistory()};
   // Affine transform for converting between local and global coordinates
   auto topTransform{touchableHistory->GetTopTransform()};

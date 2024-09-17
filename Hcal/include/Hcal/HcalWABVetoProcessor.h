@@ -30,7 +30,7 @@ class HcalWABVetoProcessor : public framework::Producer {
   HcalWABVetoProcessor(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  virtual ~HcalWABVetoProcessor();
+  virtual ~HcalWABVetoProcessor() = default;
 
   /**
    * Configure the processor using the given user specified parameters.
