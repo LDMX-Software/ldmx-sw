@@ -285,6 +285,42 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
 
+class TrigScintTrackProducer(ldmxcfg.Producer) :
+    """Configuration for track producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::','TrigScint')
+
+        self.delta_max = 0.75
+        self.tracking_threshold = 0.  #to add in neighboring channels
+        self.seeding_collection = "TriggerPad1Clusters"
+        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
+        self.allow_skip_last_collection = False
+        self.vertical_bar_start_index = 52
+        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
+        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
+        self.horizontal_bar_width = 3.
+        self.horizontal_bar_gap = 0.3
+        self.vertical_bar_width = 3.
+        self.vertical_bar_gap = 0.3
+        self.input_pass_name="" #take any pass
+        self.output_collection="TriggerPadTracks"
+        self.verbosity = 0
+
+class TrigScintFirmwareTracker(ldmxcfg.Producer) :
+    """Configuration for the track producer from the Firmware Tracker"""
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TrigScintFirmwareTracker','TrigScint')
+        self.clustering_threshold=40.0
+        self.digis1_collection='trigScintDigisPad1'
+        self.digis2_collection='trigScintDigisPad2'
+        self.digis3_collection='trigScintDigisPad3'
+        self.input_pass_name=""
+        self.output_collection="TriggerPadTracks"
+        self.verbosity = 0
+        self.time_tolerance = 50.0
+        self.pad_time = -1.5
+
 class QIEAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""
     
