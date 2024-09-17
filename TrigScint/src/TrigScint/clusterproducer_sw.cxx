@@ -3,14 +3,14 @@
 #include "TrigScint/objdef.h"
 #include "TrigScint/clusterproducer.h"
 
-Cluster* clusterproducer_sw(Hit inHit[NHITS]){
+std::unique_ptr<Cluster []> clusterproducer_sw(Hit inHit[NHITS]){
 
 	ap_int<12> SEEDTHR = 30;
 	ap_int<12> CLUSTHR = 30;
 
 	ap_int<12> mapL1[NCHAN];
 
-	Cluster* outClus = new Cluster[NCLUS];
+	std::unique_ptr<Cluster []> outClus(new Cluster[NCLUS]);
 
 	for(int i = 0;i<NCLUS;++i){
 		clearClus(outClus[i]);	

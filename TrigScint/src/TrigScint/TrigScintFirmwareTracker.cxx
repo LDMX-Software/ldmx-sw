@@ -201,7 +201,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   //is messy, I had to do some post-call cleanup before looping over the clusters and putting them into Point i
   //which is feed into track producer
   int counterN=0;
-  Cluster* Point1=clusterproducer_sw(HPad1);
+  std::unique_ptr<Cluster []> Point1=clusterproducer_sw(HPad1);
   int topSeed=0;
   for(int i = 0; i<NCLUS; i++){
     if((Point1[i].Seed.Amp<450)and(Point1[i].Seed.Amp>30)and(Point1[i].Seed.bID<(NCHAN+1))and(Point1[i].Seed.bID>=0)and(Point1[i].Sec.Amp<450)and(counterN<NTRK)){
@@ -213,7 +213,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  Cluster* Point2=clusterproducer_sw(HPad2);
+  std::unique_ptr<Cluster []> Point2=clusterproducer_sw(HPad2);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
     if((Point2[i].Seed.Amp<450)and(Point2[i].Seed.Amp>30)and(Point2[i].Seed.bID<(NCHAN+1))and(Point2[i].Seed.bID>=0)and(Point2[i].Sec.Amp<450)){
@@ -224,7 +224,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  Cluster* Point3=clusterproducer_sw(HPad3);
+  std::unique_ptr<Cluster []> Point3=clusterproducer_sw(HPad3);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
     if((Point3[i].Seed.Amp<450)and(Point3[i].Seed.Amp>30)and(Point3[i].Seed.bID<(NCHAN+1))and(Point3[i].Seed.bID>=0)and(Point3[i].Sec.Amp<450)){
@@ -248,9 +248,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   }
   event.add(output_collection_, tracks_);
   tracks_.resize(0);
-  /*delete Point1;
-  delete Point2;
-  delete Point3;*/
+
   return;
 }
 
