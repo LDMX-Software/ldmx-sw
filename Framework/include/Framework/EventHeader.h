@@ -75,9 +75,7 @@ class EventHeader {
    * Return the event number.
    * @return The event number.
    */
-  int getEventNumber() const {
-    return eventNumber_;
-  }
+  int getEventNumber() const { return eventNumber_; }
 
   /**
    * Return the run number.
