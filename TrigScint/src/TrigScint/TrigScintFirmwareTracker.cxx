@@ -96,14 +96,14 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   const auto digis2_{
      event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
 
-  int occupied[50];
-  for(int i = 0; i<50;i++){
+  int occupied[NCHAN];
+  for(int i = 0; i<NCHAN;i++){
     occupied[i]=-1;
   }
   int count=0;
   for (const auto &digi : digis1_) {
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
+      minThr_)and(digi.getBarID()<=NCHAN)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -125,13 +125,13 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     }
   }
 
-  for(int i = 0; i<50;i++){
+  for(int i = 0; i<NCHAN;i++){
     occupied[i]=-1;
   }
   count=0;
   for (const auto &digi : digis2_) {
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
+      minThr_)and(digi.getBarID()<=NCHAN)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -152,13 +152,13 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  for(int i = 0; i<50;i++){
+  for(int i = 0; i<NCHAN;i++){
     occupied[i]=-1;
   }
   count=0;
   for (const auto &digi : digis3_) {
     if ((digi.getPE() >
-      minThr_)and(digi.getBarID()<=50)and(digi.getBarID()>=0)){
+      minThr_)and(digi.getBarID()<=NCHAN)and(digi.getBarID()>=0)){
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
       int index=count;
@@ -185,7 +185,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Cluster* Point1=clusterproducer_sw(HPad1);
   int topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    if((Point1[i].Seed.Amp<450)and(Point1[i].Seed.Amp>30)and(Point1[i].Seed.bID<51)and(Point1[i].Seed.bID>=0)and(Point1[i].Sec.Amp<450)and(counterN<NTRK)){
+    if((Point1[i].Seed.Amp<450)and(Point1[i].Seed.Amp>30)and(Point1[i].Seed.bID<(NCHAN+1))and(Point1[i].Seed.bID>=0)and(Point1[i].Sec.Amp<450)and(counterN<NTRK)){
       if(Point1[i].Seed.bID>=topSeed){
       	cpyHit(Pad1[counterN].Seed,Point1[i].Seed);cpyHit(Pad1[counterN].Sec,Point1[i].Sec);
       	calcCent(Pad1[counterN]);
@@ -197,7 +197,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Cluster* Point2=clusterproducer_sw(HPad2);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    if((Point2[i].Seed.Amp<450)and(Point2[i].Seed.Amp>30)and(Point2[i].Seed.bID<51)and(Point2[i].Seed.bID>=0)and(Point2[i].Sec.Amp<450)){
+    if((Point2[i].Seed.Amp<450)and(Point2[i].Seed.Amp>30)and(Point2[i].Seed.bID<(NCHAN+1))and(Point2[i].Seed.bID>=0)and(Point2[i].Sec.Amp<450)){
       if(Point2[i].Seed.bID>=topSeed){
       	cpyHit(Pad2[i].Seed,Point2[i].Seed);cpyHit(Pad2[i].Sec,Point2[i].Sec);
       	calcCent(Pad2[i]);
@@ -208,7 +208,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Cluster* Point3=clusterproducer_sw(HPad3);
   topSeed=0;
   for(int i = 0; i<NCLUS; i++){
-    if((Point3[i].Seed.Amp<450)and(Point3[i].Seed.Amp>30)and(Point3[i].Seed.bID<51)and(Point3[i].Seed.bID>=0)and(Point3[i].Sec.Amp<450)){
+    if((Point3[i].Seed.Amp<450)and(Point3[i].Seed.Amp>30)and(Point3[i].Seed.bID<(NCHAN+1))and(Point3[i].Seed.bID>=0)and(Point3[i].Sec.Amp<450)){
       if(Point3[i].Seed.bID>=topSeed){
       	cpyHit(Pad3[i].Seed,Point3[i].Seed);cpyHit(Pad3[i].Sec,Point3[i].Sec);
       	calcCent(Pad3[i]);

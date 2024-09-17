@@ -15,7 +15,7 @@ void trackproducer_hw(Cluster Pad1[NTRK],Cluster Pad2[NCLUS],Cluster Pad3[NCLUS]
 	#pragma HLS ARRAY_PARTITION variable=test complete
 
 	for(int i = 0;i<NTRK;i++){
-		if(2*Pad1[i].Seed.bID>100){continue;}
+		if(2*Pad1[i].Seed.bID>2*NCHAN){continue;}
 		for(int I = 0;I<COMBO; I++){
 			clearTrack(test);
 			if(not(Pad1[i].Seed.Amp>0)){continue;}//Continue if Seed not Satisfied
