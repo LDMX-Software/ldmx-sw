@@ -1,7 +1,7 @@
 #ifndef OBJDEF_H
-#include "TrigScint/ap_int.h"
 #define OBJDEF_H
 
+#include "../../../Trigger/HLS_arbitrary_Precision_Types/include/ap_int.h"
 #define NTIMES 6
 #define NHITS 25
 #define NCLUS 25
