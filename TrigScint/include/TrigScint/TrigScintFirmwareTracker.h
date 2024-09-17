@@ -38,9 +38,6 @@ class TrigScintFirmwareTracker : public framework::Producer {
    * add a hit at index idx to a cluster
    */
 
-  void onProcessStart() override;
-
-  void onProcessEnd() override;
 
  private:
   // collection of clusters produced
