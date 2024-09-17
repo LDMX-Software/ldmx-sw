@@ -11,6 +11,10 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
+#include "Tracking/Event/Track.h"
+#include "Tracking/Event/Measurement.h"
+#include "Recon/Event/TrackDeDxMassEstimate.h"
+
 namespace recon {
 
 /**
@@ -35,6 +39,8 @@ class TrackDeDxMassEstimator : public framework::Producer {
 
   // name of input track collection
   std::string trackCollection_;
+  // name of input measurement collection
+  std::string measCollection_{"DigiTaggerSimHits"};
 
 };  // TrackDeDxMassEstimator
 
