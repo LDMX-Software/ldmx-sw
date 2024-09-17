@@ -28,7 +28,7 @@ jobs:
         submodules: 'recursive'
         ref: ${{ github.event.inputs.branch }}
 
-    - name : Install just
+    - name: Install just
       uses: extractions/setup-just@v2
       with:
           just-version: 1.26.0
