@@ -47,11 +47,21 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
       0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
 
   // Create the ID for the hit.
-  int cpynum = aStep->GetPreStepPoint()
-                   ->GetTouchableHandle()
-                   ->GetHistory()
-                   ->GetVolume(layer_depth)
-                   ->GetCopyNo();
+  int cpynum{0};  // Initialize cpynum to 0
+
+  auto preStepPoint = aStep->GetPreStepPoint();
+  if (preStepPoint) {
+    auto touchableHandle = preStepPoint->GetTouchableHandle();
+    if (touchableHandle) {
+      auto history = touchableHandle->GetHistory();
+      if (history) {
+        auto volume = history->GetVolume(layer_depth);
+        if (volume) {
+          cpynum = volume->GetCopyNo();
+        }
+      }
+    }
+  }
   int layerNumber;
   layerNumber = cpynum / 7;
   int module_position = cpynum % 7;

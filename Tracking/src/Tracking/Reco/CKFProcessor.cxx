@@ -328,12 +328,16 @@ void CKFProcessor::produce(framework::Event& event) {
     using BaseIt = decltype(geoId_sl_map.begin());
     BaseIt it;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+
     using difference_type = typename BaseIt::difference_type;
     using iterator_category = typename BaseIt::iterator_category;
     // using value_type = typename BaseIt::value_type::second_type;
     using value_type = Acts::SourceLink;
     using pointer = typename BaseIt::pointer;
     using reference = value_type&;
+#pragma GCC diagnostic pop
 
     SourceLinkAccIt& operator++() {
       ++it;

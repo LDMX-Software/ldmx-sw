@@ -612,7 +612,8 @@ void TrigScintTrackProducer::matchXYTracks(
   for (auto yitr = yQuadMap.begin(); yitr != yQuadMap.end(); ++yitr) {
     int nYinQuad = yQuadMap.count((*yitr).first);
     int nXinQuad = xQuadMap.count((*yitr).first);
-    float y, sy, x, x1, x2, sx1, sx2, y1, y2, sy1, sy2;
+    float y{-9999.}, sy{-9999.}, x{-9999.}, x1{-9999.}, x2{-9999.}, sx1{-9999.},
+        sx2{-9999.}, y1{-9999.}, y2{-9999.}, sy1{-9999.}, sy2{-9999.};
     // quad midpoint:
     float y0 = (*yitr).first * 8 + sy0;
     float sx =

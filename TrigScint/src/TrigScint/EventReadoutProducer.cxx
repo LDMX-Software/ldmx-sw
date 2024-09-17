@@ -49,7 +49,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     outEvent.setElecID(digi.getElecID());
     outEvent.setTimeSinceSpill(digi.getTimeSinceSpill());
     // elecID increases monotonically with 8 channels per fiber
-    outEvent.setFiberNb((int)(digi.getElecID() / 8));
+    outEvent.setFiberNb(digi.getElecID() / 8);
     if (outEvent.getFiberNb() == fiberToShift_)
       outEvent.setTimeOffset(timeShift_);
 

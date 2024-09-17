@@ -19,8 +19,6 @@ HcalWABVetoProcessor::HcalWABVetoProcessor(const std::string &name,
                                            framework::Process &process)
     : Producer(name, process) {}
 
-HcalWABVetoProcessor::~HcalWABVetoProcessor() {}
-
 void HcalWABVetoProcessor::configure(
     framework::config::Parameters &parameters) {
   maxtotalEnergyCompare_ =
@@ -58,7 +56,7 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
   float totalHCALEnergy{0};
   float totalECALEnergy{0};
   float maxPE{-1000};
-  const ldmx::HcalHit *maxPEHit;
+  const ldmx::HcalHit *maxPEHit = nullptr;
   for (const ldmx::HcalHit &hcalHit : hcalRecHits) {
     if (hcalHit.isNoise() == 0) {
       totalHCALEnergy += hcalHit.getPE();
@@ -67,7 +65,7 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
     // Find the maximum PE in the list
     if (maxPE < hcalHit.getPE()) {
       maxPE = hcalHit.getPE();
-      maxPEHit = &hcalHit;
+      maxPEHit = const_cast<ldmx::HcalHit *>(&hcalHit);
     }
   }
 

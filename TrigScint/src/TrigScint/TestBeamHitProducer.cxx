@@ -94,8 +94,6 @@ void TestBeamHitProducer::produce(framework::Event& event) {
       event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
 
   int evNb = event.getEventNumber();
-  // it is unused, should it be? FIXME
-  // int nChan = channels.size();
   std::vector<trigscint::TestBeamHit> hits;
   for (auto chan : channels) {
     trigscint::TestBeamHit hit;

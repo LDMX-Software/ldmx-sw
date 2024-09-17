@@ -164,7 +164,10 @@ class HistogramHelper {
    * @param val value to fill
    */
   void fill(const std::string& name, const double& val) {
-    dynamic_cast<TH1F*>(this->get(name))->Fill(val, theWeight_);
+    auto hist = dynamic_cast<TH1F*>(this->get(name));
+    if (hist) {
+      hist->Fill(val, theWeight_);
+    }
   }
 
   /**
@@ -177,7 +180,10 @@ class HistogramHelper {
    * @param valy y value to fill
    */
   void fill(const std::string& name, const double& valx, const double& valy) {
-    dynamic_cast<TH2F*>(this->get(name))->Fill(valx, valy, theWeight_);
+    auto hist = dynamic_cast<TH2F*>(this->get(name));
+    if (hist) {
+      hist->Fill(valx, valy, theWeight_);
+    }
   }
 
   /**

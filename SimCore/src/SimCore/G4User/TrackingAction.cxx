@@ -35,7 +35,9 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
           track->GetDynamicParticle()
               ->GetPrimaryParticle()
               ->GetUserInformation());
-      curGenStatus = primaryInfo->getHepEvtStatus();
+      if (primaryInfo) {
+        curGenStatus = primaryInfo->getHepEvtStatus();
+      }
     }
 
     /**
