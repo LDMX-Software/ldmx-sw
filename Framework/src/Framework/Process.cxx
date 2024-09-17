@@ -26,7 +26,6 @@ Process::Process(const framework::config::Parameters &configuration)
 
   passname_ = configuration.getParameter<std::string>("passName", "");
   histoFilename_ = configuration.getParameter<std::string>("histogramFile", "");
-  logFileName_ = configuration.getParameter<std::string>("logFileName", "");
 
   maxTries_ = configuration.getParameter<int>("maxTriesPerEvent", 1);
   eventLimit_ = configuration.getParameter<int>("maxEvents", -1);
@@ -34,8 +33,6 @@ Process::Process(const framework::config::Parameters &configuration)
   logFrequency_ = configuration.getParameter<int>("logFrequency", -1);
   compressionSetting_ =
       configuration.getParameter<int>("compressionSetting", 9);
-  termLevelInt_ = configuration.getParameter<int>("termLogLevel", 2);
-  fileLevelInt_ = configuration.getParameter<int>("fileLogLevel", 0);
   skipCorruptedInputFiles_ =
       configuration.getParameter<bool>("skipCorruptedInputFiles", false);
 
@@ -49,10 +46,8 @@ Process::Process(const framework::config::Parameters &configuration)
   eventHeader_ = 0;
 
   // set up the logging for this run
-  logging::open(logging::convertLevel(termLevelInt_),
-                logging::convertLevel(fileLevelInt_),
-                logFileName_  // if this is empty string, no file is logged to
-  );
+  logging::open(
+      configuration.getParameter<framework::config::Parameters>("logger", {}));
 
   auto run{configuration.getParameter<int>("run", -1)};
   if (run > 0) runForGeneration_ = run;
@@ -225,8 +220,9 @@ void Process::run() {
 
       // reset the storage controller state
       storageController_.resetEventState();
+      logging::Formatter::set(theEvent.getEventNumber());
 
-      bool completed = process(n_events_processed, theEvent);
+      bool completed = process(n_events_processed, numTries, theEvent);
 
       outFile.nextEvent(storageController_.keepEvent(completed));
 
@@ -339,6 +335,7 @@ void Process::run() {
              (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
         // clean up for storage control calculation
         storageController_.resetEventState();
+        logging::Formatter::set(theEvent.getEventNumber());
 
         // notify for new run if necessary
         if (theEvent.getEventHeader().getRun() != wasRun) {
@@ -356,7 +353,7 @@ void Process::run() {
           }
         }
 
-        event_completed = process(n_events_processed, theEvent);
+        event_completed = process(n_events_processed, 1, theEvent);
 
         if (event_completed) NtupleManager::getInstance().fill();
         NtupleManager::getInstance().clear();
@@ -484,8 +481,10 @@ void Process::newRun(ldmx::RunHeader &header) {
   if (performance_) performance_->stop(performance::Callback::onNewRun, 0);
 }
 
-bool Process::process(int n, Event &event) const {
-  if ((logFrequency_ != -1) && ((n + 1) % logFrequency_ == 0)) {
+bool Process::process(int n, int n_try, Event &event) const {
+  if ((logFrequency_ != -1) && ((n + 1) % logFrequency_ == 0) && (n_try < 2)) {
+    // only printout event counter if we've enabled log frequency, the event
+    // matches the frequency and we are on the first try
     TTimeStamp t;
     ldmx_log(info) << "Processing " << n + 1 << " Run "
                    << event.getEventHeader().getRun() << " Event "
