@@ -1,5 +1,5 @@
 
-name: Basic Tests
+name: Build with CLANG using LTO sanitizer 
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
 
 jobs:
-  build-test:
+  build-clang-lto:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw
@@ -23,10 +23,5 @@ jobs:
       with:
           just-version: 1.26.0 
       run: | 
-        just install-denv init configure-force-error
+        just install-denv init configure-clang-lto
         just build
-      shell: bash
-
-    - name: Basic Tests for Functionality
-      run: just test 
-      shell: bash
