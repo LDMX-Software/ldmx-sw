@@ -24,7 +24,13 @@ jobs:
         fetch-depth: 0
 
     - name: Compile and Install ldmx-sw
-      uses: ./.github/actions/setup
+      uses: extractions/setup-just@v2
+      with:
+          just-version: 1.26.0
+      run: |
+        just install-denv init configure-force-error
+        just build
+      shell: bash
 
     - name: Git Gold Histograms from trunk
       run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
