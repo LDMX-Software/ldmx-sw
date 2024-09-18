@@ -5,7 +5,7 @@
 #include "TrigScint/Firmware/clusterproducer.h"
 #include "TrigScint/Firmware/objdef.h"
 
-std::array<Cluster,NCLUS> clusterproducer_sw(Hit inHit[NHITS]) {
+std::array<Cluster, NCLUS> clusterproducer_sw(Hit inHit[NHITS]) {
   ap_int<12> SEEDTHR = 30;
   ap_int<12> CLUSTHR = 30;
 

@@ -223,7 +223,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // post-call cleanup before looping over the clusters and putting them into
   // Point i which is feed into track producer
   int counterN = 0;
-  std::array<Cluster,NCLUS> Point1 = clusterproducer_sw(HPad1);
+  std::array<Cluster, NCLUS> Point1 = clusterproducer_sw(HPad1);
   int topSeed = 0;
   for (int i = 0; i < NCLUS; i++) {
     if ((Point1[i].Seed.Amp < 450) and (Point1[i].Seed.Amp > 30) and
@@ -238,7 +238,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  std::array<Cluster,NCLUS> Point2 = clusterproducer_sw(HPad2);
+  std::array<Cluster, NCLUS> Point2 = clusterproducer_sw(HPad2);
   topSeed = 0;
   for (int i = 0; i < NCLUS; i++) {
     if ((Point2[i].Seed.Amp < 450) and (Point2[i].Seed.Amp > 30) and
@@ -252,7 +252,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  std::array<Cluster,NCLUS> Point3 = clusterproducer_sw(HPad3);
+  std::array<Cluster, NCLUS> Point3 = clusterproducer_sw(HPad3);
   topSeed = 0;
   for (int i = 0; i < NCLUS; i++) {
     if ((Point3[i].Seed.Amp < 450) and (Point3[i].Seed.Amp > 30) and
