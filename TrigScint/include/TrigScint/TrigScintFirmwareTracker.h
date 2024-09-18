@@ -15,7 +15,7 @@
 #include "TrigScint/TrigScintFirmwareTracker.h"
 #include "TrigScint/Event/TrigScintHit.h"
 #include "TrigScint/Event/TrigScintTrack.h"
-#include "TrigScint/objdef.h"
+#include "TrigScint/Firmware/objdef.h"
 
 namespace trigscint {
 

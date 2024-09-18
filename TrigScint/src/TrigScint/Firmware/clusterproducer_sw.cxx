@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
-#include "TrigScint/objdef.h"
-#include "TrigScint/clusterproducer.h"
+#include "TrigScint/Firmware/objdef.h"
+#include "TrigScint/Firmware/clusterproducer.h"
 
 std::unique_ptr<Cluster []> clusterproducer_sw(Hit inHit[NHITS]){
 

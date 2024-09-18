@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
-#include "TrigScint/objdef.h"
-#include "TrigScint/trackproducer.h"
+#include "TrigScint/Firmware/objdef.h"
+#include "TrigScint/Firmware/trackproducer.h"
 
 
 void trackproducer_hw(Cluster Pad1[NTRK],Cluster Pad2[NCLUS],Cluster Pad3[NCLUS],Track outTrk[NTRK],ap_int<12> lookup[NCENT][COMBO][2]){
