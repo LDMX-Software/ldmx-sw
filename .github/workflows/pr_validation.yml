@@ -34,7 +34,7 @@ jobs:
         just build
       shell: bash
 
-    - name: Get Gold Histograms from trunk
+    - name: Git Gold Histograms from trunk
       run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
       shell: bash
 
