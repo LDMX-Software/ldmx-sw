@@ -37,7 +37,7 @@ jobs:
       id: commit
 
     - name: Push changes
-      if: steps.commit.outcome == 'success'
+      if: github.ref != 'refs/heads/trunk' 
       run: |
         git push origin HEAD:${GITHUB_HEAD_REF}
 
