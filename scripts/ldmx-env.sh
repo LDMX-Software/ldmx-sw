@@ -198,6 +198,7 @@ if hash docker &> /dev/null; then
       -e LDMX_BASE \
       -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
       $_envs \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
       $_mounts \
       -u $(id -u ${USER}):$(id -g ${USER}) \
       $LDMX_DOCKER_TAG "$@"
@@ -265,6 +266,7 @@ elif hash singularity &> /dev/null; then
 
   # Run the container
   __ldmx_run() {
+    local csv_list="/tmp/.X11-unix"
     for dir_to_mount in "${LDMX_CONTAINER_MOUNTS[@]}"; do
       csv_list="$dir_to_mount,$csv_list"
     done
