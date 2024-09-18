@@ -1,7 +1,7 @@
 /**
  * @file TrigScintFirmwareTracker.h
- * @brief Clustering of trigger scintillator hits
- * @author Lene Kristian Bryngemark, Stanford University
+ * @brief Tracker made to emulate and stage real firmware, emulates existing ldmx software but has LUT structure.
+ * @author Rory O'Dwyer, Stanford University
  */
 
 #ifndef TRIGSCINT_TRIGSCINTFIRMWARETRACKER_H
@@ -118,4 +118,4 @@ class TrigScintFirmwareTracker : public framework::Producer {
 
 }  // namespace trigscint
 
-#endif /* TRIGSCINT_TRIGSCINTCLUSTERPRODUCER_H */
+#endif /* TRIGSCINT_TRIGSCINTFIRMWARETRACKER_H */
