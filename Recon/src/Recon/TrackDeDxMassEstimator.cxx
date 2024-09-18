@@ -1,5 +1,7 @@
-#include <iostream>
 #include "Recon/TrackDeDxMassEstimator.h"
+
+#include <iostream>
+
 #include "Recon/Event/TrackDeDxMassEstimate.h"
 
 namespace recon {
@@ -9,8 +11,9 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
   fit_res_K_ = ps.getParameter<double>("fit_res_K");
   trackCollection_ =
       ps.getParameter<std::string>("track_collection", "RecoilTracks");
-  
-  ldmx_log(info) << "Track Collection " << trackCollection_ << std::endl;
+
+  ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
+                 << trackCollection_;
 }
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
@@ -19,38 +22,39 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
                     << " not in event" << std::endl;
     return;
   }
-  const std::vector<ldmx::Track> tracks{event.getCollection<ldmx::Track>(trackCollection_)};
+  const std::vector<ldmx::Track> tracks{
+      event.getCollection<ldmx::Track>(trackCollection_)};
 
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
   auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
 
   std::vector<ldmx::TrackDeDxMassEstimate> massEstimates;
-  
+
   // Loop over the collection of tracks
   // for (auto &track : tracks) {
   for (uint i = 0; i < tracks.size(); i++) {
     auto track = tracks.at(i);
     // If track momentum doen't exist, skip
-    if (track.getMomentum().empty()) {
-      ldmx_log(debug) << "Track " << i << " is empty" << std::endl;
+    auto trackMomentum = track.getMomentum();
+    if (trackMomentum.size() == 0) {
+      ldmx_log(debug) << "Track " << i << " is empty";
       continue;
     }
 
+    auto px = trackMomentum[0];
+    auto py = trackMomentum[1];
+    auto pz = trackMomentum[2];
     // Get the track momentum magnitude
-    float p = sqrt(pow(track.getMomentum()[0], 2) 
-                  + pow(track.getMomentum()[1], 2) 
-                  + pow(track.getMomentum()[2], 2));
-    std::cout << "Track " << i << " has momentum " << p << std::endl;
+    float p = sqrt(px * px + py * py + pz * pz);
+    ldmx_log(debug) << "Track " << i << " has momentum " << p;
 
     /// Get the hits associated with the track
     ldmx::TrackDeDxMassEstimate mes;
-    float sum_dedx = 0;
+    float sum_dedx = 0.;
     for (auto imeas : track.getMeasurementsIdxs()) {
       auto meas = measurements.at(imeas);
-      if (meas.getEdep() >= 0)
-        sum_dedx += meas.getEdep();
-
+      if (meas.getEdep() > 0) sum_dedx += meas.getEdep();
     }
     mes.setMass(100.);
     mes.setTrackIndex(i);
@@ -60,7 +64,6 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
 
   // Add the mass estimates to the event
   event.add("TrackDeDxMassEstimate", massEstimates);
-  
 
   // // Loop over the collection of hits and print the hit details
   // for (const ldmx::EcalHit &hit : hits) {

@@ -160,7 +160,7 @@ class Measurement {
   /// TrackIDs the vector of TrackIDs that form the measurement
   std::vector<unsigned int> trackIds_{};
 
-  ClassDef(Measurement, 1);
+  ClassDef(Measurement, 2);
 };  // Measurement
 
 typedef std::vector<Measurement> Measurements;

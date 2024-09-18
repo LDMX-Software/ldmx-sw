@@ -24,19 +24,19 @@ if(BUILD_EVENT_ONLY)
                          class "TriggerResult" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "HgcrocDigiCollection" )
-                       register_event_object( module_path "Recon/Event" 
+  register_event_object( module_path "Recon/Event" 
                          namespace "ldmx" class "HgcrocTrigDigi" 
                          type "collection" )
-                       register_event_object( module_path "Recon/Event" 
+  register_event_object( module_path "Recon/Event" 
                          namespace "ldmx" class "CaloTrigPrim" 
                          type "collection" )
-		       register_event_object(module_path "Recon/Event" namespace "ldmx" 
+  register_event_object(module_path "Recon/Event" namespace "ldmx" 
                         class "PFCandidate" type "collection" )
-		      register_event_object( module_path "Recon/Event" namespace "ldmx"
+  register_event_object( module_path "Recon/Event" namespace "ldmx"
   			class "BeamElectronTruth" type "collection" )
   register_event_object( module_path "Recon/Event" namespace "ldmx" 
                          class "TrackDeDxMassEstimate" type "collection" )
-   setup_library(module Recon name Event
+ setup_library(module Recon name Event
                  dependencies ROOT::Core
                  register_target)
   
