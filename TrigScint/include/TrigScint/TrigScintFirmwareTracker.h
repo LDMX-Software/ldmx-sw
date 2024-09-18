@@ -1,6 +1,7 @@
 /**
  * @file TrigScintFirmwareTracker.h
- * @brief Tracker made to emulate and stage real firmware, emulates existing ldmx software but has LUT structure.
+ * @brief Tracker made to emulate and stage real firmware, emulates existing
+ * ldmx software but has LUT structure.
  * @author Rory O'Dwyer, Stanford University
  */
 
@@ -12,10 +13,10 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "Recon/Event/EventConstants.h"
-#include "TrigScint/TrigScintFirmwareTracker.h"
 #include "TrigScint/Event/TrigScintHit.h"
 #include "TrigScint/Event/TrigScintTrack.h"
 #include "TrigScint/Firmware/objdef.h"
+#include "TrigScint/TrigScintFirmwareTracker.h"
 
 namespace trigscint {
 
@@ -38,7 +39,6 @@ class TrigScintFirmwareTracker : public framework::Producer {
    * add a hit at index idx to a cluster
    */
 
-
  private:
   // collection of clusters produced
   std::vector<ldmx::TrigScintHit> digis1_;
@@ -48,8 +48,6 @@ class TrigScintFirmwareTracker : public framework::Producer {
 
   // collection of clusters produced
   std::vector<ldmx::TrigScintHit> digis3_;
-
-
 
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
@@ -73,10 +71,8 @@ class TrigScintFirmwareTracker : public framework::Producer {
   std::string digis1_collection_;
   std::string digis2_collection_;
   std::string digis3_collection_;
- 
 
   std::vector<ldmx::TrigScintTrack> tracks_;
-
 
   // specific pass name to use for track making
   std::string passName_{""};
