@@ -28,8 +28,16 @@ jobs:
         submodules: 'recursive'
         ref: ${{ github.event.inputs.branch }}
 
+    - name: Install just
+      uses: extractions/setup-just@v2
+      with:
+          just-version: 1.26.0
+
     - name: Compile and Install ldmx-sw
-      uses: ./.github/actions/setup
+      run: | 
+        just install-denv init configure-force-error
+        just build
+      shell: bash
 
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
