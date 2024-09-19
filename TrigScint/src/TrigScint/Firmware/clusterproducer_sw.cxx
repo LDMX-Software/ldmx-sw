@@ -11,7 +11,7 @@ std::array<Cluster, NCLUS> clusterproducer_sw(Hit inHit[NHITS]) {
 
   ap_int<12> mapL1[NCHAN];
 
-  std::array<Cluster,NCLUS> outClus;
+  std::array<Cluster, NCLUS> outClus;
 
   for (int i = 0; i < NCLUS; ++i) {
     clearClus(outClus[i]);
