@@ -162,7 +162,7 @@ if p.maxEvents < logEvents :
      logEvents = p.maxEvents
 p.logFrequency = int( p.maxEvents/logEvents )
 
-json.dumps(p.parameterDump(), indent=2)
+#json.dumps(p.parameterDump(), indent=2)
 
 with open('parameterDump.json', 'w') as outfile:
      json.dump(p.parameterDump(),  outfile, indent=4)

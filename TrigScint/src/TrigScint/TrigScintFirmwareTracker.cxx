@@ -271,6 +271,11 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // into the trackproducer_hw to create the track collection I use makeTrack to
   // revert the firmware track object back into a regular track object for
   // analysis purposes
+  //
+  // NOTE: Pad1 has NTRK instead of NCLUS clusters for a reason: the firmware cannot
+  // facilitate NCLUS many tracks within its alloted bandwidth , we have to put a cut
+  // on them which is facilitated by a cut on the number of clusters in Pad1. Do
+  // not change this.
   trackproducer_hw(Pad1, Pad2, Pad3, outTrk, LOOKUP);
   for (int I = 0; I < NTRK; I++) {
     if (outTrk[I].Pad1.Seed.Amp > 0) {
