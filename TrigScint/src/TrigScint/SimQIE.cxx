@@ -100,8 +100,10 @@ std::vector<int> SimQIE::Out_ADC(QIEInputPulse* pp) {
 int SimQIE::TDC(QIEInputPulse* pp, float T0 = 0) {
   float thr2 = tdc_thr_ / gain_;
   if (pp->Eval(T0) > thr2) return 62;  // when pulse starts high
-  for (float tt = T0; tt < T0 + tau_; tt += 0.1) {
+  float tt = T0;
+  while (tt < T0 + tau_) {
     if (pp->Eval(tt) >= thr2) return ((int)(2 * (tt - T0)));
+    tt += 0.1;
   }
   return 63;  // when pulse remains low all along
 }
