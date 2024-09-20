@@ -116,7 +116,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
 
   if (verbose_) {
     ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
-                    << passName_ << " with " << digis1_.size() << " entries ";
+                    << passName_ << " with " << digis1.size() << " entries ";
   }
 
   // The next collection of things fill in the firmware hit objects from reading
@@ -127,21 +127,20 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   int count = 0;
-  for (const auto &digi : digis1_) {
+  for (const auto &digi : digis1) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad1[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad1[(int)occupied[(int)digi.getBarID()]].bID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad1[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad1[occupied[digi.getBarID()]].bID =
               (ap_int<12>)(digi.getBarID());
-          HPad1[(int)occupied[(int)digi.getBarID()]].mID =
+          HPad1[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad1[(int)occupied[(int)digi.getBarID()]].Amp =
+          HPad1[occupied[digi.getBarID()]].Amp =
               (ap_int<12>)(digi.getPE());
-          HPad1[(int)occupied[(int)digi.getBarID()]].Time =
+          HPad1[occupied[digi.getBarID()]].Time =
               (ap_int<12>)(digi.getTime());
         }
       } else {
@@ -159,21 +158,20 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis2_) {
+  for (const auto &digi : digis2) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad2[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad2[(int)occupied[(int)digi.getBarID()]].bID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad2[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad2[occupied[digi.getBarID()]].bID =
               (ap_int<12>)(digi.getBarID());
-          HPad2[(int)occupied[(int)digi.getBarID()]].mID =
+          HPad2[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad2[(int)occupied[(int)digi.getBarID()]].Amp =
+          HPad2[occupied[digi.getBarID()]].Amp =
               (ap_int<12>)(digi.getPE());
-          HPad2[(int)occupied[(int)digi.getBarID()]].Time =
+          HPad2[occupied[digi.getBarID()]].Time =
               (ap_int<12>)(digi.getTime());
         }
       } else {
@@ -190,21 +188,20 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis3_) {
+  for (const auto &digi : digis3) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad3[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad3[(int)occupied[(int)digi.getBarID()]].bID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad3[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad3[occupied[digi.getBarID()]].bID =
               (ap_int<12>)(digi.getBarID());
-          HPad3[(int)occupied[(int)digi.getBarID()]].mID =
+          HPad3[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad3[(int)occupied[(int)digi.getBarID()]].Amp =
+          HPad3[occupied[digi.getBarID()]].Amp =
               (ap_int<12>)(digi.getPE());
-          HPad3[(int)occupied[(int)digi.getBarID()]].Time =
+          HPad3[occupied[digi.getBarID()]].Time =
               (ap_int<12>)(digi.getTime());
         }
       } else {
