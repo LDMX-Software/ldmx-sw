@@ -107,11 +107,11 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     clearTrack(outTrk[j]);
   }
   // I am reading in the three digi collections
-  const auto digis1_{
+  const auto& digis1{
       event.getCollection<ldmx::TrigScintHit>(digis1_collection_, passName_)};
-  const auto digis3_{
+  const auto& digis2{
       event.getCollection<ldmx::TrigScintHit>(digis2_collection_, passName_)};
-  const auto digis2_{
+  const auto& digis3{
       event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
 
   if (verbose_) {
