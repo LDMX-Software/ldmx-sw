@@ -205,6 +205,25 @@ class Track {
 
   void addTrackState(const ldmx::Track::TrackState& ts) {
     trackStates_.push_back(ts);
+
+    if (ts.ts_type == 1) {
+      trackStateTargetLoc_[0] = ts.refX;
+      trackStateTargetLoc_[1] = ts.refY;
+      trackStateTargetLoc_[2] = ts.refZ;
+
+      trackStateTargetParams_ = ts.params;
+      trackStateTargetCov_ = ts.cov;
+    }
+
+    if (ts.ts_type == 4) {
+      trackStateECalLoc_[0] = ts.refX;
+      trackStateECalLoc_[1] = ts.refY;
+      trackStateECalLoc_[2] = ts.refZ;
+
+      trackStateECalParams_ = ts.params;
+      trackStateECalCov_ = ts.cov;
+
+    }
   };
 
   std::vector<TrackState> getTrackStates() const { return trackStates_; }
@@ -267,6 +286,15 @@ class Track {
 
   // pdgID
   int pdgID_{0};
+
+    // TrackStates leaves
+  std::vector<double> trackStateTargetLoc_{-999., -999., -999.};
+  std::vector<double> trackStateTargetParams_{-999., -999., -999.,-999., -999., -999.};
+  std::vector<double> trackStateTargetCov_;
+
+  std::vector<double> trackStateECalLoc_{-999., -999., -999.};
+  std::vector<double> trackStateECalParams_{-999., -999., -999.,-999., -999., -999.};
+  std::vector<double> trackStateECalCov_;
 
   // Track States
   std::vector<TrackState> trackStates_;

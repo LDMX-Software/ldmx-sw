@@ -1231,6 +1231,7 @@ std::vector<std::pair<float, float>> EcalVetoProcessor::getTrajectory(
     std::vector<double> momentum, std::vector<float> position) {
   std::vector<XYCoords> positions;
   for (int iLayer = 0; iLayer < nEcalLayers_; iLayer++) {
+    //std::cout << iLayer << " " << geometry_->getZPosition(iLayer) << std::endl;
     float posX =
         position[0] + (momentum[0] / momentum[2]) *
                           (geometry_->getZPosition(iLayer) - position[2]);

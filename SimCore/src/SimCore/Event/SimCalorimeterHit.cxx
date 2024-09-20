@@ -16,6 +16,7 @@ ClassImp(ldmx::SimCalorimeterHit)
     pdgCodeContribs_.clear();
     edepContribs_.clear();
     timeContribs_.clear();
+    originContribs_.clear();
 
     nContribs_ = 0;
     id_ = 0;
