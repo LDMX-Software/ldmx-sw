@@ -41,7 +41,7 @@ class TriggerProcessor(ldmxcfg.Producer) :
           
         self.beamEnergy = beamEnergy
         if (self.beamEnergy == 4000.): 
-            self.thresholds = [ 3000., 10000., 17000., 24200. ]
+            self.thresholds = [ 1500., 5000., 8500., 12100. ]
         else:
             self.thresholds = [ 3000., 10790., 18540., 26250. ]
         self.mode = 0
