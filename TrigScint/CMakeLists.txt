@@ -41,7 +41,7 @@ if(BUILD_EVENT_ONLY)
 endif()
 
 setup_library(module TrigScint name Firmware)
-target_include_directories(TrigScint_Firmware PUBLIC ../Trigger/HLS_arbitrary_Precision_Types/include)
+
 setup_library(module TrigScint
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event
