@@ -214,7 +214,6 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  count = 0;
   // These next lines here calls clusterproducer_sw(HPad1), which is just the
   // validated firmware module. Since ap_* class is messy, I had to do some
   // post-call cleanup before looping over the clusters and putting them into
