@@ -17,6 +17,9 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         self.recHitCollName = 'EcalRecHits'
         self.recHitPassName = ''
 
+        self.simHitCollName = 'EcalSimHits'
+        self.simHitPassName = ''
+
         # Name of the cluster collection to make
         self.clusterCollName = "ecalClusters"
 

@@ -10,6 +10,8 @@
 // ldmx-sw
 #include "Ecal/Event/EcalHit.h"
 #include "Recon/Event/CaloCluster.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 
 namespace ldmx {
 
@@ -40,6 +42,8 @@ class EcalCluster : public ldmx::CaloCluster {
 
   void addFirstLayerHits(const std::vector<ldmx::EcalHit> hitsVec);
 
+  void findHitOrigins(const std::vector<ldmx::SimCalorimeterHit>& ecalSimHits);
+
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
@@ -62,6 +66,8 @@ class EcalCluster : public ldmx::CaloCluster {
   // Could add further ECal-specific info here...
 
   std::vector<unsigned int> firstLayerHitIDs_;
+  std::vector<unsigned int> hitOriginIDs_;
+
 
   double firstLayerCentroidX_{0};
   double firstLayerCentroidY_{0};

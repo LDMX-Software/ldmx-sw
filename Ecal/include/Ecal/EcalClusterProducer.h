@@ -70,6 +70,9 @@ class EcalClusterProducer : public framework::Producer {
 
   std::string recHitCollName_;
   std::string recHitPassName_;
+  std::string simHitCollName_;
+  std::string simHitPassName_;
+
   std::string algoCollName_;
   std::string clusterCollName_;
 

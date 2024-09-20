@@ -27,6 +27,10 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 
   recHitCollName_ = parameters.getParameter<std::string>("recHitCollName");
   recHitPassName_ = parameters.getParameter<std::string>("recHitPassName");
+
+  simHitCollName_ = parameters.getParameter<std::string>("simHitCollName");
+  simHitPassName_ = parameters.getParameter<std::string>("simHitPassName");
+
   algoCollName_ = parameters.getParameter<std::string>("algoCollName");
   algoName_ = parameters.getParameter<std::string>("algoName");
   clusterCollName_ = parameters.getParameter<std::string>("clusterCollName");
@@ -40,6 +44,10 @@ void EcalClusterProducer::configure(framework::config::Parameters& parameters) {
 void EcalClusterProducer::produce(framework::Event& event) {
   std::vector<ldmx::EcalHit> ecalHits =
       event.getCollection<ldmx::EcalHit>(recHitCollName_, recHitPassName_);
+  
+  std::vector<ldmx::SimCalorimeterHit> ecalSimHits =
+      event.getCollection<ldmx::SimCalorimeterHit>(simHitCollName_, simHitPassName_);
+
 
   // Don't do anything if there are no ECal digis!
   if (!(ecalHits.size() > 0)) {
@@ -73,6 +81,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.setNHits(wcVec[aWC].getHits().size());
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
+      cluster.findHitOrigins(ecalSimHits);
 
       histograms_.fill("nHits", wcVec[aWC].getHits().size());
       histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());

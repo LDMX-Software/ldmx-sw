@@ -241,6 +241,7 @@ class SimCalorimeterHit {
    * @param pdgCode The PDG code of the actual track.
    * @param edep The energy deposition of the hit [MeV].
    * @param time The time of the hit [ns].
+   * @param originID the Geant4 track ID for the particle's electron parent.
    */
   void addContrib(int incidentID, int trackID, int pdgCode, float edep,
                   float time, int originID = -1);
