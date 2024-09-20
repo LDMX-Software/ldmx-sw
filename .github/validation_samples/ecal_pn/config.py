@@ -211,5 +211,5 @@ p.sequence.extend([
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
-        ])
+        ] + dqm.all_dqm)
 
