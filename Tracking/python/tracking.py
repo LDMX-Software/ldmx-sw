@@ -298,7 +298,8 @@ class TruthSeedProcessor(Producer):
         self.scoring_hits_coll_name = 'TargetScoringPlaneHits'
         self.recoil_sim_hits_coll_name = 'RecoilSimHits'
         self.tagger_sim_hits_coll_name = 'TaggerSimHits'
-        self.n_min_hits = 7
+        self.n_min_hits_tagger = 11
+        self.n_min_hits_recoil = 7
         self.z_min = -9999. #mm
         self.track_id = -9999
         self.pz_cut = -9999. #MeV
