@@ -240,12 +240,6 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Keep track on which system this processor is running on
   bool taggerTracking_{true};
 
-  // Keep track on which system this processor is running on
-  bool taggerTracking_{true};
-
-  // Keep track on which system this processor is running on
-  bool taggerTracking_{true};
-
   // The Propagators
   std::unique_ptr<const Propagator> propagator_;
 
