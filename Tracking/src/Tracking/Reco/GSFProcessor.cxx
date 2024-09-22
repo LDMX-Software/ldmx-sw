@@ -379,14 +379,6 @@ void GSFProcessor::produce(framework::Event& event) {
 
     auto gsftrk = tc.getTrack(itrk);
     calculateTrackQuantities(gsftrk);
-    int ntrack_count = 0;
-    for (const auto& trackState : gsftrk.trackStates()) {
-        auto typeFlags = trackState.typeFlags();
-        if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-        ntrack_count++;
-        }
-    }
-    //std::cout << "NMEAS? " << ntrack_count << " " << gsftrk.nMeasurements() << std::endl;
 
     const Acts::BoundVector& perigee_pars = gsftrk.parameters();
     const Acts::BoundMatrix& trk_cov = gsftrk.covariance();
