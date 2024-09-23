@@ -14,9 +14,9 @@ Attributes:
 track_collection : string
     Name of the track collection used as input
 fit_res_C : float
-    The fitted result of the constant term C
+    The fitted result of the constant term C (unit: MeV/mm)
 fit_res_K : float
-    The fitted result of the factor K of the quadratic term
+    The fitted result of the factor K of the quadratic term (dimentionless)
 
 Examples
 --------
