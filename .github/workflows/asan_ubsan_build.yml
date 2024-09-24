@@ -32,6 +32,11 @@ jobs:
       run: |
         just install-denv init configure-asan-ubsan 
         just build
-        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py 
+        just setenv LDMX_NUM_EVENTS=7500
+        just setenv LDMX_RUN_NUMBER=1
       shell: bash
+
+    - name: Run ecal_pn config
+      run: |
+        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
 
