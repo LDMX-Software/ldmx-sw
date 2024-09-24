@@ -24,9 +24,9 @@
 #define NWORDS 72
 
 struct Digi {
-  int mID, bID;
-  int adc0, adc1, adc2, adc3, adc4, adc5;
-  int tdc0, tdc1, tdc2, tdc3, tdc4, tdc5;
+  int mID{}, bID{};
+  int adc0{}, adc1{}, adc2{}, adc3{}, adc4{}, adc5{};
+  int tdc0{}, tdc1{}, tdc2{}, tdc3{}, tdc4{}, tdc5{};
 };
 inline void clearDigi(Digi& c) {
   c.mID = 0;
@@ -45,8 +45,8 @@ inline void clearDigi(Digi& c) {
   c.tdc5 = 0;
 }
 struct Hit {
-  ap_int<12> mID, bID;
-  ap_int<12> Amp, Time;  // TrigTime;
+  ap_int<12> mID{}, bID{};
+  ap_int<12> Amp{}, Time{};  // TrigTime;
 };
 inline void clearHit(Hit& c) {
   c.mID = 0;
@@ -62,9 +62,9 @@ inline void cpyHit(Hit& c1, Hit& c2) {
 }
 
 struct Cluster {
-  Hit Seed;
-  Hit Sec;
-  ap_int<11> Cent;
+  Hit Seed{};
+  Hit Sec{};
+  ap_int<11> Cent{};
   // int nhits, mID, SeedID;
   // float CentX, CentY, CentZ, Amp, Time, TrigTime;
 };
@@ -89,10 +89,10 @@ inline void cpyCluster(Cluster& c1, Cluster& c2) {
 }
 
 struct Track {
-  Cluster Pad1;
-  Cluster Pad2;
-  Cluster Pad3;
-  ap_int<12> resid;
+  Cluster Pad1{};
+  Cluster Pad2{};
+  Cluster Pad3{};
+  ap_int<12> resid{};
 };
 inline void clearTrack(Track& c) {
   clearClus(c.Pad1);
