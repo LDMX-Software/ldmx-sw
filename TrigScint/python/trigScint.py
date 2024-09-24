@@ -218,6 +218,53 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         rechit.input_collection  = 'trigScintQIEDigisPad3'
         rechit.output_collection = 'trigScintRecHitsPad3'
         return rechit
+    
+
+class AnalyticalRecHitProducer(ldmxcfg.Producer) :
+    """Configuration for rechit producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::AnalyticalRecHitProducer','TrigScint')
+
+        self .mev_per_mip = 0.4   #\
+                                  # >>>both are for converting edep to PEs 
+        self.pe_per_mip = 100.    #/
+        self.pedestal= 6.0        # QIE pedestal value (in fC)
+        self.elec_noise = 1.5     # QIE Electronic noise (in fC)
+        self.gain = 1.e6      # SiPM Gain
+        self.input_collection="trigScintQIEDigisUp"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="trigScintRecHitsUp"
+        self.verbose = False
+        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
+
+        self.input_pulse_shape="Expo" # Name of the input pulse class
+        self.expo_k=0.1          # Inverse of decay time of piece-wise exponential
+        self.expo_tmax=5.0       # Time at which piece-wise exponential peaks
+        self.tdc_thr = 3.4       # Threshold current in uA for TDC latch (as used by QIE)
+        self.qie_sf = 40.        # QIE sampling frequency in MHz
+
+    def pad1() : 
+        """Get the rechit producer for upstream pad"""
+        rechit = AnalyticalRecHitProducer( 'trigScintRecHitsPad1' )
+        rechit.input_collection  = 'trigScintQIEDigisPad1'
+        rechit.output_collection = 'trigScintRecHitsPad1'
+        return rechit
+
+    def pad2() : 
+        """Get the rechit producer for downstream pad"""
+        rechit = AnalyticalRecHitProducer( 'trigScintRecHitsPad2' )
+        rechit.input_collection  = 'trigScintQIEDigisPad2'
+        rechit.output_collection = 'trigScintRecHitsPad2'
+        return rechit
+
+    def pad3() :
+        """Get the rechit producer for tagger pad"""
+        rechit = AnalyticalRecHitProducer( 'trigScintRecHitsPad3' )
+        rechit.input_collection  = 'trigScintQIEDigisPad3'
+        rechit.output_collection = 'trigScintRecHitsPad3'
+        return rechit
+
 
 class TrigScintClusterProducer(ldmxcfg.Producer) :
     """Configuration for cluster producer for Trigger Scintillators"""
