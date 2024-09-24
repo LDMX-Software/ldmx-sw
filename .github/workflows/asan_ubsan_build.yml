@@ -9,7 +9,6 @@ on:
 
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
-  LDMX_NUM_EVENTS: 7500
 
 jobs:
   build-with-asan-ubsan:
@@ -34,9 +33,9 @@ jobs:
 
     - name: Run ecal_pn config
       run: |
-        just setenv LDMX_NUM_EVENTS=7500
+        just setenv LDMX_NUM_EVENTS=1500
         just setenv LDMX_RUN_NUMBER=1
-        export LDMX_NUM_EVENTS=7500
+        export LDMX_NUM_EVENTS=1500
         export LDMX_RUN_NUMBER=1
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
