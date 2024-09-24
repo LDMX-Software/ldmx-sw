@@ -36,6 +36,8 @@ jobs:
       run: |
         just setenv LDMX_NUM_EVENTS=7500
         just setenv LDMX_RUN_NUMBER=1
+        export LDMX_NUM_EVENTS=7500
+        export LDMX_RUN_NUMBER=1
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
 
