@@ -20,7 +20,7 @@
 // common macros and type declarations are now defined in ap_common.h, and
 // ap_private becomes part of it.
 #ifndef __AP_COMMON_H__
-#error "etc/ap_private.h cannot be included directly."
+#error "ap_impl/ap_private.h cannot be included directly."
 #endif
 
 // forward declarations

@@ -17,9 +17,9 @@
 #ifndef __AP_INT_H__
 #define __AP_INT_H__
 
-#include <ap_common.h>
-#include <ap_int_base.h>
-#include <ap_int_ref.h>
+#include <ap_impl/ap_common.h>
+#include <ap_impl/ap_int_base.h>
+#include <ap_impl/ap_int_ref.h>
 
 //---------------------------------------------------------------
 
@@ -316,7 +316,7 @@ INLINE void sc_trace(sc_core::sc_trace_file* tf, const ap_uint<_AP_W>& op,
 }
 #endif // System C sim
 
-#include <ap_int_special.h>
+#include <ap_impl/ap_int_special.h>
 
 #endif // ifndef __AP_INT_H__ else
 

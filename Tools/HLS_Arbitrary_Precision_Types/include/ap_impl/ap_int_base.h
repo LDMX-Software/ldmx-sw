@@ -25,7 +25,7 @@
 #error "C++ is required to include this header file"
 #else
 
-#include <ap_common.h>
+#include "ap_common.h"
 #ifndef __SYNTHESIS__
 #if _AP_ENABLE_HALF_ == 1
 #include <hls_half.h>
