@@ -34,7 +34,7 @@
 
 #ifndef __cplusplus
 #error "C++ is required to include this header file"
-#else // __cplusplus
+#else  // __cplusplus
 
 // for warning on unsupported rounding mode in conversion to float/double.
 #if !defined(__SYNTHESIS__) && __cplusplus >= 201103L && \
@@ -60,7 +60,7 @@
   _AP_ROOT_op_get_range(var, low, high)
 #define _AP_ctype_op_set_range(var, low, high, x) \
   _AP_ROOT_op_set_range(var, low, high, x)
-#else // ifdef __SYNTHESIS__
+#else   // ifdef __SYNTHESIS__
 template <typename _Tp1, typename _Tp2>
 inline bool _AP_ctype_op_get_bit(_Tp1& var, const _Tp2& index) {
   return !!(var & (1ull << (index)));
@@ -89,8 +89,7 @@ inline _Tp1 _AP_ctype_op_set_range(_Tp1& var, const _Tp2& low, const _Tp3& high,
   var |= ((mask & x) << (low));
   return var;
 }
-#endif // ifdef __SYNTHESIS__
-
+#endif  // ifdef __SYNTHESIS__
 
 // trait for letting base class to return derived class.
 // Notice that derived class template is incomplete, and we cannot use
@@ -212,8 +211,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     // Figure out if we can shift instead of multiply
     unsigned shift = (radix == 16 ? 4 : radix == 8 ? 3 : radix == 2 ? 1 : 0);
 
-    //std::cout << "\n\n" << val << "\n";
-    //std::cout << startPos << " " << decPos << " " << endPos << "\n";
+    // std::cout << "\n\n" << val << "\n";
+    // std::cout << startPos << " " << decPos << " " << endPos << "\n";
 
     bool sticky_int = false;
 
@@ -236,13 +235,14 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
       // Add in the digit we just interpreted
       integer_bits += digit;
-      //std::cout << "idigit = " << digit << " " << integer_bits.to_string()
-      //    << "  " << sticky_int <<  "\n";
+      // std::cout << "idigit = " << digit << " " << integer_bits.to_string()
+      //     << "  " << sticky_int <<  "\n";
     }
     integer_bits[AP_MAX(_AP_I, 4) + 4 - 3] =
         integer_bits[AP_MAX(_AP_I, 4) + 4 - 3] | sticky_int;
 
-    ap_fixed_base<AP_MAX(_AP_W - _AP_I, 0) + 4 + 4, 4, false> fractional_bits = 0;
+    ap_fixed_base<AP_MAX(_AP_W - _AP_I, 0) + 4 + 4, 4, false> fractional_bits =
+        0;
     bool sticky = false;
 
     // Traverse the fractional digits from the LSD, dividing by radix as we go.
@@ -262,12 +262,12 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       else
         fractional_bits /= radix;
 
-      //std::cout << "fdigit = " << digit << " " << fractional_bits.to_string()
-      //    << " " << sticky << "\n";
+      // std::cout << "fdigit = " << digit << " " << fractional_bits.to_string()
+      //     << " " << sticky << "\n";
     }
 
-    //std::cout << "Int =" << integer_bits.to_string() << " " <<
-    //    fractional_bits.to_string() << "\n";
+    // std::cout << "Int =" << integer_bits.to_string() << " " <<
+    //     fractional_bits.to_string() << "\n";
 
     fractional_bits[0] = fractional_bits[0] | sticky;
 
@@ -276,7 +276,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     else
       *this = integer_bits + fractional_bits;
 
-    //std::cout << "end = " << this->to_string(16) << "\n";
+    // std::cout << "end = " << this->to_string(16) << "\n";
   }
 
   /// report invalid constrction of ap_fixed_base
@@ -296,7 +296,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 #else
   INLINE void report() {}
-#endif // ifdef __SYNTHESIS__
+#endif  // ifdef __SYNTHESIS__
 
   /// @name helper functions.
   //  @{
@@ -399,8 +399,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
-  INLINE ap_fixed_base(
-      const volatile ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
+  INLINE ap_fixed_base(const volatile ap_fixed_base<
+                       _AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
     operator=(op);
     report();
   }
@@ -425,9 +425,11 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #ifndef NON_C99STRING
   INLINE ap_fixed_base(const char* s, signed char rd = 0) {
     unsigned char radix = rd;
-    std::string str = ap_private_ops::parseString(s, radix); // will guess rd, default 10
-    _AP_ERROR(radix == 0, "ap_fixed_base(const char* \"%s\", %d), str=%s, radix = %d",
-              s, rd, str.c_str(), radix); // TODO remove this check
+    std::string str =
+        ap_private_ops::parseString(s, radix);  // will guess rd, default 10
+    _AP_ERROR(radix == 0,
+              "ap_fixed_base(const char* \"%s\", %d), str=%s, radix = %d", s,
+              rd, str.c_str(), radix);  // TODO remove this check
     fromString(str, radix);
   }
 #else
@@ -435,8 +437,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     ap_int_base<_AP_W, _AP_S> t(s, rd);
     Base::V = t.V;
   }
-#endif // ifndef NON_C99STRING
-#else // ifndef __SYNTHESIS__
+#endif  // ifndef NON_C99STRING
+#else   // ifndef __SYNTHESIS__
   // XXX _ssdm_string2bits only takes const string and const radix.
   // It seems XFORM will do compile time processing of the string.
   INLINE ap_fixed_base(const char* s) {
@@ -451,7 +453,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                       _AP_O, _AP_N, _AP_C99);
     Base::V = t;
   }
-#endif // ifndef __SYNTHESIS__ else
+#endif  // ifndef __SYNTHESIS__ else
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_fixed_base(const ap_bit_ref<_AP_W2, _AP_S2>& op) {
@@ -510,12 +512,12 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   CTOR_FROM_INT(ap_slong, _AP_SIZE_ap_slong, true)
   CTOR_FROM_INT(ap_ulong, _AP_SIZE_ap_slong, false)
 #undef CTOR_FROM_INT
-/*
- * TODO:
- *Theere used to be several funtions which were AP_WEAK.
- *Now they're all INLINE expect ap_fixed_base(double d)
- *Maybe we can use '#pragma HLS inline' instead of INLINE.
- */
+  /*
+   * TODO:
+   *Theere used to be several funtions which were AP_WEAK.
+   *Now they're all INLINE expect ap_fixed_base(double d)
+   *Maybe we can use '#pragma HLS inline' instead of INLINE.
+   */
   AP_WEAK ap_fixed_base(double d) {
     ap_int_base<64, false> ireg;
     ireg.V = doubleToRawBits(d);
@@ -553,17 +555,18 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
           Base::V = isneg ? -1 : 0;
         }
         if ((_AP_Q != AP_TRN) && !((_AP_Q == AP_TRN_ZERO) && !_AP_S2)) {
-          bool qb = (F2 - _AP_F > _AP_W2) ? isneg : (bool)_AP_ROOT_op_get_bit(
-                                                        man.V, F2 - _AP_F - 1);
-          bool r =
-              (F2 > _AP_F + 1)
-                  ? _AP_ROOT_op_get_range(man.V, 0, (F2 - _AP_F - 2 < _AP_W2)
-                                                        ? (F2 - _AP_F - 2)
-                                                        : (_AP_W2 - 1)) != 0
-                  : false;
+          bool qb = (F2 - _AP_F > _AP_W2)
+                        ? isneg
+                        : (bool)_AP_ROOT_op_get_bit(man.V, F2 - _AP_F - 1);
+          bool r = (F2 > _AP_F + 1)
+                       ? _AP_ROOT_op_get_range(man.V, 0,
+                                               (F2 - _AP_F - 2 < _AP_W2)
+                                                   ? (F2 - _AP_F - 2)
+                                                   : (_AP_W2 - 1)) != 0
+                       : false;
           carry = quantization_adjust(qb, r, isneg);
         }
-      } else { // no quantization
+      } else {  // no quantization
         Base::V = man.V;
         if (sh_amt < _AP_W)
           Base::V = Base::V << sh_amt;
@@ -576,7 +579,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
            _AP_I - _AP_S <
                _AP_I2 - _AP_S2 +
                    (QUAN_INC ||
-                    (_AP_S2 && (_AP_O == AP_SAT_SYM))))) { // saturation
+                    (_AP_S2 && (_AP_O == AP_SAT_SYM))))) {  // saturation
         bool deleted_zeros = _AP_S2 ? true : !carry, deleted_ones = true;
         bool neg_src = isneg;
         bool lD = false;
@@ -623,10 +626,9 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         bool overflow = (neg_trg || !deleted_zeros) && !isneg;
         bool underflow = (!neg_trg || !deleted_ones) && neg_src;
         if ((_AP_O == AP_SAT_SYM) && _AP_S2 && _AP_S)
-          underflow |=
-              neg_src &&
-              (_AP_W > 1 ? _AP_ROOT_op_get_range(Base::V, 0, _AP_W - 2) == 0
-                         : true);
+          underflow |= neg_src && (_AP_W > 1 ? _AP_ROOT_op_get_range(
+                                                   Base::V, 0, _AP_W - 2) == 0
+                                             : true);
         overflow_adjust(underflow, overflow, lD, neg_src);
       }
     }
@@ -656,11 +658,10 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE ap_fixed_base& operator=(
       const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
-
     const int _AP_F = _AP_W - _AP_I;
     const int F2 = _AP_W2 - _AP_I2;
     const int QUAN_INC =
-          F2 > _AP_F && !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !_AP_S2));
+        F2 > _AP_F && !(_AP_Q == AP_TRN || (_AP_Q == AP_TRN_ZERO && !_AP_S2));
 
     if (!op) Base::V = 0;
     bool carry = false;
@@ -680,13 +681,16 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         bool qbit = _AP_ROOT_op_get_bit(op.V, F2 - _AP_F - 1);
         // bit after LSB.
         bool qb = (F2 - _AP_F > _AP_W2) ? _AP_S2 && signbit : qbit;
-        enum { hi = ((F2 - _AP_F - 2) < _AP_W2) ? (F2 - _AP_F - 2) : (_AP_W2 - 1) };
+        enum {
+          hi = ((F2 - _AP_F - 2) < _AP_W2) ? (F2 - _AP_F - 2) : (_AP_W2 - 1)
+        };
         // bits after qb.
-        bool r = (F2 > _AP_F + 1) ? (_AP_ROOT_op_get_range(op.V, 0, hi) != 0) : false;
+        bool r = (F2 > _AP_F + 1) ? (_AP_ROOT_op_get_range(op.V, 0, hi) != 0)
+                                  : false;
         carry = quantization_adjust(qb, r, isneg);
       }
     } else {
-      unsigned  sh_amt = _AP_F - F2;
+      unsigned sh_amt = _AP_F - F2;
       // moves bits left, no quantization
       if (sh_amt < _AP_W) {
         if (_AP_W > _AP_W2) {
@@ -706,7 +710,8 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
         ((!_AP_S && _AP_S2) ||
          _AP_I - _AP_S <
              _AP_I2 - _AP_S2 +
-                 (QUAN_INC || (_AP_S2 && _AP_O == AP_SAT_SYM)))) { // saturation
+                 (QUAN_INC ||
+                  (_AP_S2 && _AP_O == AP_SAT_SYM)))) {  // saturation
       bool deleted_zeros = _AP_S2 ? true : !carry;
       bool deleted_ones = true;
       bool neg_src = isneg;
@@ -752,21 +757,22 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       bool overflow = (neg_trg || !deleted_zeros) && !isneg;
       bool underflow = (!neg_trg || !deleted_ones) && neg_src;
       if ((_AP_O == AP_SAT_SYM) && _AP_S2 && _AP_S)
-        underflow |=
-            neg_src &&
-            (_AP_W > 1 ? _AP_ROOT_op_get_range(Base::V, 0, _AP_W - 2) == 0
-                       : true);
+        underflow |= neg_src && (_AP_W > 1 ? _AP_ROOT_op_get_range(
+                                                 Base::V, 0, _AP_W - 2) == 0
+                                           : true);
 
       overflow_adjust(underflow, overflow, lD, neg_src);
     }
     return *this;
-  } // operator= 
+  }  // operator=
 
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE ap_fixed_base& operator=(
-      const volatile ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& op) {
-    operator=(const_cast<const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(op));
+      const volatile ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+                                   _AP_N2>& op) {
+    operator=(const_cast<const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2,
+                                             _AP_O2, _AP_N2>&>(op));
     return *this;
   }
 
@@ -850,20 +856,21 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #endif
     enum { BITS = DOUBLE_MAN + DOUBLE_EXP + 1 };
     if (!Base::V) return 0.0f;
-    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1); ///< sign.
+    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);  ///< sign.
     ap_int_base<_AP_W, false> tmp;
     if (s)
-      tmp.V = -Base::V; // may truncate one bit extra from neg in sim.
+      tmp.V = -Base::V;  // may truncate one bit extra from neg in sim.
     else
       tmp.V = Base::V;
-    int l = tmp.countLeadingZeros(); ///< number of leading zeros.
-    int e = _AP_I - l - 1 + DOUBLE_BIAS; ///< exponent
+    int l = tmp.countLeadingZeros();      ///< number of leading zeros.
+    int e = _AP_I - l - 1 + DOUBLE_BIAS;  ///< exponent
     int lsb_index = _AP_W - l - 1 - DOUBLE_MAN;
     // more than 0.5?
-    bool a = (lsb_index >=2) ?
-        (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0) : 0;
+    bool a = (lsb_index >= 2)
+                 ? (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0)
+                 : 0;
     // round to even
-    a |= (lsb_index >=0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
+    a |= (lsb_index >= 0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
     // ull is at least 64-bit
     ap_ulong m;
     // may actually left shift, ensure buffer is wide enough.
@@ -872,22 +879,21 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                            : (ap_ulong)(tmp.V << (1 - lsb_index));
     } else {
       m = (ap_ulong)tmp.V;
-      m = (lsb_index >= 1) ? (m >> (lsb_index - 1))
-                           : (m << (1 - lsb_index));
+      m = (lsb_index >= 1) ? (m >> (lsb_index - 1)) : (m << (1 - lsb_index));
     }
     m += a;
     m >>= 1;
-    //std::cout << '\n' << std::hex << m << '\n'; // TODO delete this
-    // carry to MSB, increase exponent
+    // std::cout << '\n' << std::hex << m << '\n'; // TODO delete this
+    //  carry to MSB, increase exponent
     if (_AP_ctype_op_get_bit(m, DOUBLE_MAN + 1)) {
       e += 1;
     }
     // set sign and exponent
     m = _AP_ctype_op_set_bit(m, BITS - 1, s);
-    //std::cout << m << '\n'; // TODO delete this
+    // std::cout << m << '\n'; // TODO delete this
     m = _AP_ctype_op_set_range(m, DOUBLE_MAN, DOUBLE_MAN + DOUBLE_EXP - 1, e);
-    //std::cout << std::hex << m << std::dec << std::endl; // TODO delete this
-    // cast to fp
+    // std::cout << std::hex << m << std::dec << std::endl; // TODO delete this
+    //  cast to fp
     return rawBitsToDouble(m);
   }
 
@@ -900,20 +906,21 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #endif
     enum { BITS = FLOAT_MAN + FLOAT_EXP + 1 };
     if (!Base::V) return 0.0f;
-    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1); ///< sign.
+    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);  ///< sign.
     ap_int_base<_AP_W, false> tmp;
     if (s)
-      tmp.V = -Base::V; // may truncate one bit extra from neg in sim.
+      tmp.V = -Base::V;  // may truncate one bit extra from neg in sim.
     else
       tmp.V = Base::V;
-    int l = tmp.countLeadingZeros();  ///< number of leading zeros.
-    int e = _AP_I - l - 1 + FLOAT_BIAS; ///< exponent
+    int l = tmp.countLeadingZeros();     ///< number of leading zeros.
+    int e = _AP_I - l - 1 + FLOAT_BIAS;  ///< exponent
     int lsb_index = _AP_W - l - 1 - FLOAT_MAN;
     // more than 0.5?
-    bool a = (lsb_index >=2) ?
-        (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0) : 0;
+    bool a = (lsb_index >= 2)
+                 ? (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0)
+                 : 0;
     // round to even
-    a |= (lsb_index >=0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
+    a |= (lsb_index >= 0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
     // ul is at least 32-bit
     unsigned long m;
     // may actually left shift, ensure buffer is wide enough.
@@ -922,8 +929,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                            : (unsigned long)(tmp.V << (1 - lsb_index));
     } else {
       m = (unsigned long)tmp.V;
-      m = (lsb_index >= 1) ? (m >> (lsb_index - 1))
-                           : (m << (1 - lsb_index));
+      m = (lsb_index >= 1) ? (m >> (lsb_index - 1)) : (m << (1 - lsb_index));
     }
     m += a;
     m >>= 1;
@@ -946,22 +952,23 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     _AP_WARNING(std::fegetround() != FE_TONEAREST,
                 "Only FE_TONEAREST is supported");
 #endif
-    enum { BITS = HALF_MAN + HALF_EXP + 1 };
+    enum {BITS = HALF_MAN + HALF_EXP + 1};
     if (!Base::V) return 0.0f;
-    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1); ///< sign.
+    bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);  ///< sign.
     ap_int_base<_AP_W, false> tmp;
     if (s)
-      tmp.V = -Base::V; // may truncate one bit extra from neg in sim.
+      tmp.V = -Base::V;  // may truncate one bit extra from neg in sim.
     else
       tmp.V = Base::V;
-    int l = tmp.countLeadingZeros();  ///< number of leading zeros.
-    int e = _AP_I - l - 1 + HALF_BIAS; ///< exponent
+    int l = tmp.countLeadingZeros();    ///< number of leading zeros.
+    int e = _AP_I - l - 1 + HALF_BIAS;  ///< exponent
     int lsb_index = _AP_W - l - 1 - HALF_MAN;
     // more than 0.5?
-    bool a = (lsb_index >=2) ?
-        (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0) : 0;
+    bool a = (lsb_index >= 2)
+                 ? (_AP_ROOT_op_get_range(tmp.V, 0, lsb_index - 2) != 0)
+                 : 0;
     // round to even
-    a |= (lsb_index >=0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
+    a |= (lsb_index >= 0) ? _AP_ROOT_op_get_bit(tmp.V, lsb_index) : 0;
     // short is at least 16-bit
     unsigned short m;
     // may actually left shift, ensure buffer is wide enough.
@@ -970,8 +977,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                            : (unsigned short)(tmp.V << (1 - lsb_index));
     } else {
       m = (unsigned short)tmp.V;
-      m = (lsb_index >= 1) ? (m >> (lsb_index - 1))
-                           : (m << (1 - lsb_index));
+      m = (lsb_index >= 1) ? (m >> (lsb_index - 1)) : (m << (1 - lsb_index));
     }
     m += a;
     m >>= 1;
@@ -1023,7 +1029,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE operator long() const { return (long)to_int(); }
 
   INLINE operator unsigned long() const { return (unsigned long)to_uint(); }
-#endif // ifdef __x86_64__ else
+#endif  // ifdef __x86_64__ else
 
   INLINE operator ap_ulong() const { return to_uint64(); }
 
@@ -1031,12 +1037,10 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   INLINE int length() const { return _AP_W; };
 
-  // bits_to_int64 deleted.
+    // bits_to_int64 deleted.
 #ifndef __SYNTHESIS__
   // Used in autowrap, when _AP_W < 64.
-  INLINE ap_ulong bits_to_uint64() const {
-    return (Base::V).to_uint64();
-  }
+  INLINE ap_ulong bits_to_uint64() const { return (Base::V).to_uint64(); }
 #endif
 
   // Count the number of zeros from the most significant bit
@@ -1099,52 +1103,57 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       const {
     typename RType<_AP_W2, _AP_I2, _AP_S2>::div_base r;
 #ifndef __SYNTHESIS__
-    enum {F2 = _AP_W2-_AP_I2,
-              _W1=AP_MAX(_AP_W + AP_MAX(F2, 0) + ((_AP_S2 && !_AP_S) ? 1 : 0), _AP_W2 + ((_AP_S && !_AP_S2) ? 1 : 0))};
-    ap_int_base<_W1,_AP_S||_AP_S2> dividend,divisior;
-    ap_int_base<_W1,_AP_S> tmp1;
-    ap_int_base<_W1,_AP_S2> tmp2;
+    enum {F2 = _AP_W2 - _AP_I2,
+          _W1 = AP_MAX(_AP_W + AP_MAX(F2, 0) + ((_AP_S2 && !_AP_S) ? 1 : 0),
+                       _AP_W2 + ((_AP_S && !_AP_S2) ? 1 : 0))};
+    ap_int_base<_W1, _AP_S || _AP_S2> dividend, divisior;
+    ap_int_base<_W1, _AP_S> tmp1;
+    ap_int_base<_W1, _AP_S2> tmp2;
     tmp1.V = Base::V;
-    tmp1.V <<= AP_MAX(F2,0);
+    tmp1.V <<= AP_MAX(F2, 0);
     tmp2.V = op2.V;
     dividend = tmp1;
     divisior = tmp2;
-    r.V = ((_AP_S||_AP_S2) ? dividend.V.sdiv(divisior.V): dividend.V.udiv(divisior.V));
+    r.V = ((_AP_S || _AP_S2) ? dividend.V.sdiv(divisior.V)
+                             : dividend.V.udiv(divisior.V));
 #else
-    #ifndef __SC_COMPATIBLE__
-        ap_fixed_base<_AP_W + AP_MAX(_AP_W2 - _AP_I2, 0),_AP_I, _AP_S> t(*this);
-    #else
-        ap_fixed_base<_AP_W + AP_MAX(_AP_W2 - _AP_I2, 0) + AP_MAX(_AP_I2, 0),_AP_I, _AP_S> t(*this);
-    #endif
-        r.V = t.V / op2.V;
-#endif
-/*
-    enum {
-      F2 = _AP_W2 - _AP_I2,
-      shl = AP_MAX(F2, 0) + AP_MAX(_AP_I2, 0),
 #ifndef __SC_COMPATIBLE__
-      shr = AP_MAX(_AP_I2, 0),
+    ap_fixed_base<_AP_W + AP_MAX(_AP_W2 - _AP_I2, 0), _AP_I, _AP_S> t(*this);
 #else
-      shr = 0,
+    ap_fixed_base<_AP_W + AP_MAX(_AP_W2 - _AP_I2, 0) + AP_MAX(_AP_I2, 0), _AP_I,
+                  _AP_S>
+        t(*this);
 #endif
-      W3 = _AP_S2 + _AP_W + shl,
-      S3 = _AP_S || _AP_S2,
-    };
-    ap_int_base<W3, S3> dividend, t;
-    dividend.V = Base::V;
-    // multiply both by (1 << F2), and than do integer division.
-    dividend.V <<= (int) shl;
-#ifdef __SYNTHESIS__
-    // .V's have right signedness, and will have right extending.
-    t.V = dividend.V / op2.V;
-#else
-    // XXX op2 may be wider than dividend, and sdiv and udiv takes the same with
-    // as left hand operand, so data might be truncated by mistake if not
-    // handled here.
-    t.V = S3 ? dividend.V.sdiv(op2.V) : dividend.V.udiv(op2.V);
+    r.V = t.V / op2.V;
 #endif
-    r.V = t.V >> (int) shr;
-*/
+    /*
+        enum {
+          F2 = _AP_W2 - _AP_I2,
+          shl = AP_MAX(F2, 0) + AP_MAX(_AP_I2, 0),
+    #ifndef __SC_COMPATIBLE__
+          shr = AP_MAX(_AP_I2, 0),
+    #else
+          shr = 0,
+    #endif
+          W3 = _AP_S2 + _AP_W + shl,
+          S3 = _AP_S || _AP_S2,
+        };
+        ap_int_base<W3, S3> dividend, t;
+        dividend.V = Base::V;
+        // multiply both by (1 << F2), and than do integer division.
+        dividend.V <<= (int) shl;
+    #ifdef __SYNTHESIS__
+        // .V's have right signedness, and will have right extending.
+        t.V = dividend.V / op2.V;
+    #else
+        // XXX op2 may be wider than dividend, and sdiv and udiv takes the same
+    with
+        // as left hand operand, so data might be truncated by mistake if not
+        // handled here.
+        t.V = S3 ? dividend.V.sdiv(op2.V) : dividend.V.udiv(op2.V);
+    #endif
+        r.V = t.V >> (int) shr;
+    */
     return r;
   }
 
@@ -1411,8 +1420,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE ap_fixed_base& operator<<=(
-      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&
-          sh) {
+      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& sh) {
     *this = operator<<(sh.to_int());
     return *this;
   }
@@ -1437,8 +1445,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE ap_fixed_base& operator>>=(
-      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&
-          sh) {
+      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& sh) {
     *this = operator>>(sh.to_int());
     return *this;
   }
@@ -1455,10 +1462,12 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       return Base::V Sym op2.V;                                                \
     else if (_AP_F > F2)                                                       \
       return Base::V Sym ap_fixed_base<AP_MAX(_AP_W2 + _AP_F - F2, 1), _AP_I2, \
-                                       _AP_S2, _AP_Q2, _AP_O2, _AP_N2>(op2).V; \
+                                       _AP_S2, _AP_Q2, _AP_O2, _AP_N2>(op2)    \
+          .V;                                                                  \
     else                                                                       \
       return ap_fixed_base<AP_MAX(_AP_W + F2 - _AP_F + 1, 1), _AP_I + 1,       \
-                           _AP_S, _AP_Q, _AP_O, _AP_N>(*this).V Sym op2.V;     \
+                           _AP_S, _AP_Q, _AP_O, _AP_N>(*this)                  \
+          .V Sym op2.V;                                                        \
     return false;                                                              \
   }
 
@@ -1644,9 +1653,10 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // print a string representation of this number in the given radix.
   // Radix support is 2, 8, 10, or 16.
   // The result will include a prefix indicating the radix, except for decimal,
-  // where no prefix is needed.  The default is to output a signed representation
-  // of signed numbers, or an unsigned representation  of unsigned numbers.  For
-  // non-decimal formats, this can be changed by the 'sign' argument.
+  // where no prefix is needed.  The default is to output a signed
+  // representation of signed numbers, or an unsigned representation  of
+  // unsigned numbers.  For non-decimal formats, this can be changed by the
+  // 'sign' argument.
 #ifndef __SYNTHESIS__
   std::string to_string(unsigned char radix = 2, bool sign = _AP_S) const {
     // XXX in autosim/autowrap.tcl "(${name}).to_string(2).c_str()" is used to
@@ -1692,8 +1702,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       //    |     |            |
       //    |    W-I           0
       //    W
-      int_part.V = _AP_ROOT_op_get_range(
-          tmp.V, _AP_W - _AP_I, _AP_W);
+      int_part.V = _AP_ROOT_op_get_range(tmp.V, _AP_W - _AP_I, _AP_W);
       str += int_part.to_string(radix, false);
     } else {
       str += prefix;
@@ -1724,7 +1733,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
                             : static_cast<char>(digit - 10 + 'a');
         }
         if (radix == 16)
-          str += "p0"; // C99 Hex constants are required to have an exponent.
+          str += "p0";  // C99 Hex constants are required to have an exponent.
       }
     }
     return str;
@@ -1735,7 +1744,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     return 0;
   }
 #endif
-}; // struct ap_fixed_base.
+};  // struct ap_fixed_base.
 
 template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q, ap_o_mode _AP_O,
           int _AP_N>
@@ -1800,7 +1809,7 @@ INLINE void lshift(
   // wide buffer
   ap_fixed_base<_AP_W3, _AP_I3, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> t;
   t.V = op.V;
-  t.V <<= i; // FIXME overflow?
+  t.V <<= i;  // FIXME overflow?
   // handle quantization and overflow
   ret = t;
 }
@@ -1822,8 +1831,7 @@ INLINE void rshift(
   // wide buffer
   ap_fixed_base<_AP_W3, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> t;
   t.V = op.V;
-  if (sh >= 0)
-    t.V <<= (int) sh;
+  if (sh >= 0) t.V <<= (int)sh;
   t.V >>= i;
   // handle quantization and overflow
   ret = t;
@@ -1916,7 +1924,7 @@ INLINE std::string reduceToPrecision(std::string& input, int precision) {
   if ((int)decPosition > LastNonZeroPos) {
     if (LastNonZeroPos - FirstNonZeroPos + 1 <= precision) return input;
     truncBitPosition = FirstNonZeroPos + precision;
-  } else if ((int)decPosition < FirstNonZeroPos) { // This is pure decimal
+  } else if ((int)decPosition < FirstNonZeroPos) {  // This is pure decimal
     if (LastNonZeroPos - FirstNonZeroPos + 1 <= precision) {
       if (FirstNonZeroPos - decPosition - 1 < 4) {
         return input;
@@ -1981,7 +1989,7 @@ INLINE std::string reduceToPrecision(std::string& input, int precision) {
 
   // Here we wanted to adjust the truncate position and the value
   decPosition = dupInput.find('.');
-  if (decPosition == std::string::npos) // When this is integer
+  if (decPosition == std::string::npos)  // When this is integer
     truncBitPosition = (int)dupInput.length();
   else
     for (truncBitPosition = (int)(dupInput.length() - 1); truncBitPosition >= 0;
@@ -2026,7 +2034,7 @@ INLINE void print(
   if (_AP_I > 0) {
     ap_int_base<_AP_I, _AP_S> p1;
     p1.V = x.V >> (_AP_W - _AP_I);
-    print(p1.V); // print overlaod for .V should exit
+    print(p1.V);  // print overlaod for .V should exit
   } else {
     printf("0");
   }
@@ -2034,10 +2042,10 @@ INLINE void print(
   if (_AP_I < _AP_W) {
     ap_int_base<_AP_W - _AP_I, false> p2;
     p2.V = _AP_ROOT_op_get_range(x.V, 0, _AP_W - _AP_I);
-    print(p2.V, false); // print overlaod for .V should exit
+    print(p2.V, false);  // print overlaod for .V should exit
   }
 }
-#endif // ifndef __SYNTHESIS__
+#endif  // ifndef __SYNTHESIS__
 
 // XXX the following two functions have to exist in synthesis,
 // as some old HLS Video Library code uses the ostream overload,
@@ -2060,13 +2068,12 @@ INLINE std::ostream& operator<<(
   std::string str = x.to_string(10, _AP_S);
   str = reduceToPrecision(str, precision);
   if (width > str.length()) {
-    for (unsigned i = 0; i < width - str.length(); ++i)
-      out << fill;
+    for (unsigned i = 0; i < width - str.length(); ++i) out << fill;
   }
   out << str;
   return out;
 }
-#endif // ifndef __SYNTHESIS__
+#endif  // ifndef __SYNTHESIS__
 
 /// Input streaming
 // -----------------------------------------------------------------------------
@@ -2082,7 +2089,7 @@ INLINE std::istream& operator>>(
   return in;
 }
 #endif
-#endif // ifndef AP_AUTOCC
+#endif  // ifndef AP_AUTOCC
 
 /// Operators mixing Integers with ap_fixed_base
 // -----------------------------------------------------------------------------
@@ -2153,32 +2160,32 @@ INLINE std::istream& operator>>(
     return op.operator ASSIGN_OP(ap_int_base<_AP_W2, _AP_S2>(i_op)); \
   }
 
-#define ALL_AF_OP_WITH_INT(C_TYPE, BITS, SIGN)               \
-  AF_BIN_OP_WITH_INT(+, C_TYPE, (BITS), (SIGN), plus)     \
-  AF_BIN_OP_WITH_INT(-, C_TYPE, (BITS), (SIGN), minus)    \
-  AF_BIN_OP_WITH_INT(*, C_TYPE, (BITS), (SIGN), mult)     \
-  AF_BIN_OP_WITH_INT(/, C_TYPE, (BITS), (SIGN), div)      \
-  AF_BIN_OP_WITH_INT(&, C_TYPE, (BITS), (SIGN), logic)    \
-  AF_BIN_OP_WITH_INT(|, C_TYPE, (BITS), (SIGN), logic)    \
-  AF_BIN_OP_WITH_INT(^, C_TYPE, (BITS), (SIGN), logic)    \
-  AF_BIN_OP_WITH_INT_SF(>>, C_TYPE, (BITS), (SIGN), lhs)  \
-  AF_BIN_OP_WITH_INT_SF(<<, C_TYPE, (BITS), (SIGN), lhs)  \
-                                                          \
-  AF_ASSIGN_OP_WITH_INT(+=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(-=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(*=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(/=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(&=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(|=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT(^=, C_TYPE, (BITS), (SIGN))     \
-  AF_ASSIGN_OP_WITH_INT_SF(>>=, C_TYPE, (BITS), (SIGN)) \
-  AF_ASSIGN_OP_WITH_INT_SF(<<=, C_TYPE, (BITS), (SIGN)) \
-                                                          \
-  AF_REL_OP_WITH_INT(>, C_TYPE, (BITS), (SIGN))           \
-  AF_REL_OP_WITH_INT(<, C_TYPE, (BITS), (SIGN))           \
-  AF_REL_OP_WITH_INT(>=, C_TYPE, (BITS), (SIGN))          \
-  AF_REL_OP_WITH_INT(<=, C_TYPE, (BITS), (SIGN))          \
-  AF_REL_OP_WITH_INT(==, C_TYPE, (BITS), (SIGN))          \
+#define ALL_AF_OP_WITH_INT(C_TYPE, BITS, SIGN)           \
+  AF_BIN_OP_WITH_INT(+, C_TYPE, (BITS), (SIGN), plus)    \
+  AF_BIN_OP_WITH_INT(-, C_TYPE, (BITS), (SIGN), minus)   \
+  AF_BIN_OP_WITH_INT(*, C_TYPE, (BITS), (SIGN), mult)    \
+  AF_BIN_OP_WITH_INT(/, C_TYPE, (BITS), (SIGN), div)     \
+  AF_BIN_OP_WITH_INT(&, C_TYPE, (BITS), (SIGN), logic)   \
+  AF_BIN_OP_WITH_INT(|, C_TYPE, (BITS), (SIGN), logic)   \
+  AF_BIN_OP_WITH_INT(^, C_TYPE, (BITS), (SIGN), logic)   \
+  AF_BIN_OP_WITH_INT_SF(>>, C_TYPE, (BITS), (SIGN), lhs) \
+  AF_BIN_OP_WITH_INT_SF(<<, C_TYPE, (BITS), (SIGN), lhs) \
+                                                         \
+  AF_ASSIGN_OP_WITH_INT(+=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(-=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(*=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(/=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(&=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(|=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT(^=, C_TYPE, (BITS), (SIGN))      \
+  AF_ASSIGN_OP_WITH_INT_SF(>>=, C_TYPE, (BITS), (SIGN))  \
+  AF_ASSIGN_OP_WITH_INT_SF(<<=, C_TYPE, (BITS), (SIGN))  \
+                                                         \
+  AF_REL_OP_WITH_INT(>, C_TYPE, (BITS), (SIGN))          \
+  AF_REL_OP_WITH_INT(<, C_TYPE, (BITS), (SIGN))          \
+  AF_REL_OP_WITH_INT(>=, C_TYPE, (BITS), (SIGN))         \
+  AF_REL_OP_WITH_INT(<=, C_TYPE, (BITS), (SIGN))         \
+  AF_REL_OP_WITH_INT(==, C_TYPE, (BITS), (SIGN))         \
   AF_REL_OP_WITH_INT(!=, C_TYPE, (BITS), (SIGN))
 
 ALL_AF_OP_WITH_INT(bool, 1, false)
@@ -2347,8 +2354,8 @@ INLINE bool operator<=(
   return op2.operator>=(op1);
 }
 
-#endif // ifndef __cplusplus else
+#endif  // ifndef __cplusplus else
 
-#endif // ifndef __AP_FIXED_BASE_H__ else
+#endif  // ifndef __AP_FIXED_BASE_H__ else
 
 // -*- cpp -*-

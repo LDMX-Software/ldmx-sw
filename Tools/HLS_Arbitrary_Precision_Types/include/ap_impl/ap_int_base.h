@@ -30,8 +30,9 @@
 #if _AP_ENABLE_HALF_ == 1
 #include <hls_half.h>
 #endif
-#include <iostream>
 #include <string.h>
+
+#include <iostream>
 #endif
 
 /* ----------------------------------------------------------------
@@ -105,9 +106,13 @@ struct retval<4, false> {
 template <int _AP_W2, bool _AP_S2>
 struct _ap_int_factory;
 template <int _AP_W2>
-struct _ap_int_factory<_AP_W2,true> { typedef ap_int<_AP_W2> type; };
+struct _ap_int_factory<_AP_W2, true> {
+  typedef ap_int<_AP_W2> type;
+};
 template <int _AP_W2>
-struct _ap_int_factory<_AP_W2,false> { typedef ap_uint<_AP_W2> type; };
+struct _ap_int_factory<_AP_W2, false> {
+  typedef ap_uint<_AP_W2> type;
+};
 
 template <int _AP_W, bool _AP_S>
 struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
@@ -142,7 +147,6 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       logic_w = AP_MAX(_AP_W + (_AP_S2 && !_AP_S), _AP_W2 + (_AP_S && !_AP_S2)),
       logic_s = _AP_S || _AP_S2
     };
-
 
     typedef ap_int_base<mult_w, mult_s> mult_base;
     typedef ap_int_base<plus_w, plus_s> plus_base;
@@ -240,7 +244,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
                 "assign NaN to ap integer value");
     // set leading 1.
     man.V = _AP_ROOT_op_set_bit(man.V, FLOAT_MAN, 1);
-    //if (is_neg) man = -man;
+    // if (is_neg) man = -man;
 
     if ((reg.V & 0x7ffffffful) == 0) {
       Base::V = 0;
@@ -288,7 +292,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
                 "assign NaN to ap integer value");
     // set leading 1.
     man.V = _AP_ROOT_op_set_bit(man.V, DOUBLE_MAN, 1);
-    //if (is_neg) man = -man;
+    // if (is_neg) man = -man;
 
     if ((reg.V & 0x7fffffffffffffffull) == 0) {
       Base::V = 0;
@@ -348,8 +352,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
 #ifndef __SYNTHESIS__
   INLINE ap_int_base(const char* s, signed char rd = 0) {
-    if (rd == 0)
-      rd = guess_radix(s);
+    if (rd == 0) rd = guess_radix(s);
     unsigned int length = strlen(s);
     Base::V.fromString(s, length, rd);
   }
@@ -357,14 +360,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   // XXX __builtin_bit_from_string(...) requires const C string and radix.
   INLINE ap_int_base(const char* s) {
     typeof(Base::V) t;
-    _ssdm_string2bits((void*)(&t), (const char*)(s), 10, _AP_W, _AP_S,
-                      AP_TRN, AP_WRAP, 0, _AP_C99);
+    _ssdm_string2bits((void*)(&t), (const char*)(s), 10, _AP_W, _AP_S, AP_TRN,
+                      AP_WRAP, 0, _AP_C99);
     Base::V = t;
   }
   INLINE ap_int_base(const char* s, signed char rd) {
     typeof(Base::V) t;
-    _ssdm_string2bits((void*)(&t), (const char*)(s), rd, _AP_W, _AP_S,
-                      AP_TRN, AP_WRAP, 0, _AP_C99);
+    _ssdm_string2bits((void*)(&t), (const char*)(s), rd, _AP_W, _AP_S, AP_TRN,
+                      AP_WRAP, 0, _AP_C99);
     Base::V = t;
   }
 #endif
@@ -439,7 +442,6 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
     return *this;
   }
 
-
 #define ASSIGN_OP_FROM_INT(Type, Size, Signed) \
   INLINE ap_int_base& operator=(Type op) {     \
     Base::V = op;                              \
@@ -504,9 +506,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
     return *this;
   }
 
-  // FIXME: UG902 has clearly required user to use to_int() to convert to built-in
-  // types, but this implicit conversion is relied on in hls_cordic.h and hls_rsr.h.
-  // For example:
+  // FIXME: UG902 has clearly required user to use to_int() to convert to
+  // built-in types, but this implicit conversion is relied on in hls_cordic.h
+  // and hls_rsr.h. For example:
   //     int d_exp = fps_x.exp - fps_y.exp;
   INLINE operator RetType() const { return (RetType)(Base::V); }
 
@@ -560,8 +562,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   /* x < 0 */
   INLINE bool sign() const {
-    if (_AP_S &&
-        _AP_ROOT_op_get_bit(Base::V, _AP_W - 1))
+    if (_AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1))
       return true;
     else
       return false;
@@ -701,12 +702,12 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   /* Postfix increment, decrement
    * ----------------------------------------------------------------
    */
-  INLINE const typename RType<_AP_W,_AP_S>::arg1 operator++(int) {
+  INLINE const typename RType<_AP_W, _AP_S>::arg1 operator++(int) {
     ap_int_base t = *this;
     operator+=((ap_int_base<1, false>)1);
     return t;
   }
-  INLINE const typename RType<_AP_W,_AP_S>::arg1 operator--(int) {
+  INLINE const typename RType<_AP_W, _AP_S>::arg1 operator--(int) {
     ap_int_base t = *this;
     operator-=((ap_int_base<1, false>)1);
     return t;
@@ -715,7 +716,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   /* Unary arithmetic.
    * ----------------------------------------------------------------
    */
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator+() const { return *this; }
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator+() const { return *this; }
 
   // TODO used to be W>64 only... need check.
   INLINE typename RType<1, false>::minus operator-() const {
@@ -731,7 +732,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
      ----------------------------------------------------------------
   */
   // XXX different from Mentor's ac_int!
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator~() const {
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator~() const {
     ap_int_base<_AP_W, _AP_S> r;
     r.V = ~Base::V;
     return r;
@@ -741,7 +742,8 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
    * ----------------------------------------------------------------
    */
   template <int _AP_W2>
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator<<(const ap_int_base<_AP_W2, true>& op2) const {
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator<<(
+      const ap_int_base<_AP_W2, true>& op2) const {
     bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
     if (isNeg) {
@@ -752,14 +754,16 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 
   template <int _AP_W2>
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator<<(const ap_int_base<_AP_W2, false>& op2) const {
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator<<(
+      const ap_int_base<_AP_W2, false>& op2) const {
     ap_int_base r;
     r.V = Base::V << op2.to_uint();
     return r;
   }
 
   template <int _AP_W2>
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator>>(const ap_int_base<_AP_W2, true>& op2) const {
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator>>(
+      const ap_int_base<_AP_W2, true>& op2) const {
     bool isNeg = _AP_ROOT_op_get_bit(op2.V, _AP_W2 - 1);
     ap_int_base<_AP_W2, false> sh = op2;
     if (isNeg) {
@@ -770,7 +774,8 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   }
 
   template <int _AP_W2>
-  INLINE typename RType<_AP_W,_AP_S>::arg1 operator>>(const ap_int_base<_AP_W2, false>& op2) const {
+  INLINE typename RType<_AP_W, _AP_S>::arg1 operator>>(
+      const ap_int_base<_AP_W2, false>& op2) const {
     ap_int_base r;
     r.V = Base::V >> op2.to_uint();
     return r;
@@ -1021,29 +1026,31 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #ifdef __SYNTHESIS__
     if (_AP_W <= 32) {
       ap_int_base<32, false> t(-1UL), x;
-      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0); // reverse
+      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
       t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x.V);
-      return __builtin_ctz(t.V); // count trailing zeros.
+      return __builtin_ctz(t.V);  // count trailing zeros.
     } else if (_AP_W <= 64) {
       ap_int_base<64, false> t(-1ULL);
       ap_int_base<64, false> x;
-      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0); // reverse
+      x.V = _AP_ROOT_op_get_range(this->V, _AP_W - 1, 0);  // reverse
       t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x.V);
-      return __builtin_ctzll(t.V); // count trailing zeros.
+      return __builtin_ctzll(t.V);  // count trailing zeros.
     } else {
-      enum { __N = (_AP_W + 63) / 64 };
+      enum {__N = (_AP_W + 63) / 64};
       int NZeros = 0;
       int i = 0;
       bool hitNonZero = false;
       for (i = 0; i < __N - 1; ++i) {
         ap_int_base<64, false> t;
-        t.V = _AP_ROOT_op_get_range(this->V, _AP_W - i * 64 - 64, _AP_W - i * 64 - 1);
-        NZeros += hitNonZero ? 0 : __builtin_clzll(t.V); // count leading zeros.
+        t.V = _AP_ROOT_op_get_range(this->V, _AP_W - i * 64 - 64,
+                                    _AP_W - i * 64 - 1);
+        NZeros +=
+            hitNonZero ? 0 : __builtin_clzll(t.V);  // count leading zeros.
         hitNonZero |= (t.V != 0);
       }
       if (!hitNonZero) {
         ap_int_base<64, false> t(-1ULL);
-        enum { REST = (_AP_W - 1) % 64 };
+        enum {REST = (_AP_W - 1) % 64};
         ap_int_base<64, false> x;
         x.V = _AP_ROOT_op_get_range(this->V, 0, REST);
         t.V = _AP_ROOT_op_set_range(t.V, 63 - REST, 63, x.V);
@@ -1054,7 +1061,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 #else
     return (Base::V).countLeadingZeros();
 #endif
-  } // countLeadingZeros
+  }  // countLeadingZeros
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
@@ -1075,7 +1082,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(const ap_range_ref<_AP_W2, _AP_S2> &a2) const {
+      operator,(const ap_range_ref<_AP_W2, _AP_S2>&a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1085,14 +1092,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(ap_range_ref<_AP_W2, _AP_S2> &a2) {
+      operator,(ap_range_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(*this, a2);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
@@ -1100,7 +1107,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2> &a2) const {
+  operator,(ap_int_base<_AP_W2, _AP_S2>&a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this), a2);
@@ -1108,7 +1115,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const ap_int_base<_AP_W2, _AP_S2> &a2) const {
+  operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1117,14 +1124,14 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(*this, a2);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_bit_ref<_AP_W2, _AP_S2> &a2) const {
+  operator,(const ap_bit_ref<_AP_W2, _AP_S2>&a2) const {
     return ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
         const_cast<ap_bit_ref<_AP_W2, _AP_S2>&>(a2));
@@ -1132,7 +1139,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(ap_bit_ref<_AP_W2, _AP_S2> &a2) {
+  operator,(ap_bit_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         *this, a2);
   }
@@ -1140,7 +1147,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
         const_cast<ap_int_base<_AP_W, _AP_S>&>(*this),
@@ -1150,7 +1157,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
     return ap_concat_ref<_AP_W, ap_int_base, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(*this,
                                                                          a2);
@@ -1176,7 +1183,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE ap_concat_ref<
       _AP_W, ap_int_base, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
+  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
     return ap_concat_ref<
         _AP_W, ap_int_base, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
@@ -1203,8 +1210,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE
       ap_concat_ref<_AP_W, ap_int_base, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-      operator,(
-          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
+      operator,(af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
     return ap_concat_ref<
         _AP_W, ap_int_base, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this, a2);
@@ -1241,9 +1247,9 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
   INLINE bool nand_reduce() const { return _AP_ROOT_op_reduce(nand, Base::V); }
   INLINE bool or_reduce() const { return _AP_ROOT_op_reduce(or, Base::V); }
   INLINE bool nor_reduce() const { return !(_AP_ROOT_op_reduce(or, Base::V)); }
-  INLINE bool xor_reduce() const { return _AP_ROOT_op_reduce (xor, Base::V); }
+  INLINE bool xor_reduce() const { return _AP_ROOT_op_reduce(xor, Base::V); }
   INLINE bool xnor_reduce() const {
-    return !(_AP_ROOT_op_reduce (xor, Base::V));
+    return !(_AP_ROOT_op_reduce(xor, Base::V));
   }
 
   /* Output as a string.
@@ -1261,7 +1267,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
     return 0;
   }
 #endif
-}; // struct ap_int_base
+};  // struct ap_int_base
 
 // XXX apcc cannot handle global std::ios_base::Init() brought in by <iostream>
 #ifndef AP_AUTOCC
@@ -1271,15 +1277,15 @@ INLINE std::ostream& operator<<(std::ostream& os,
                                 const ap_int_base<_AP_W, _AP_S>& x) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x.to_string(16); // don't print sign
+    os << x.to_string(16);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x.to_string(8); // don't print sign
+    os << x.to_string(8);  // don't print sign
   } else {
     os << x.to_string(10);
   }
   return os;
 }
-#endif // ifndef __SYNTHESIS__
+#endif  // ifndef __SYNTHESIS__
 
 #ifndef __SYNTHESIS__
 template <int _AP_W, bool _AP_S>
@@ -1287,15 +1293,18 @@ INLINE std::istream& operator>>(std::istream& in,
                                 ap_int_base<_AP_W, _AP_S>& op) {
   std::string str;
   in >> str;
-  const std::ios_base::fmtflags basefield = in.flags() & std::ios_base::basefield;
-  unsigned radix = (basefield == std::ios_base::dec) ? 0 : (
-                     (basefield == std::ios_base::oct) ? 8 : (
-                       (basefield == std::ios_base::hex) ? 16 : 0));
+  const std::ios_base::fmtflags basefield =
+      in.flags() & std::ios_base::basefield;
+  unsigned radix = (basefield == std::ios_base::dec)
+                       ? 0
+                       : ((basefield == std::ios_base::oct)
+                              ? 8
+                              : ((basefield == std::ios_base::hex) ? 16 : 0));
   op = ap_int_base<_AP_W, _AP_S>(str.c_str(), radix);
   return in;
 }
-#endif // ifndef __SYNTHESIS__
-#endif // ifndef AP_AUTOCC
+#endif  // ifndef __SYNTHESIS__
+#endif  // ifndef AP_AUTOCC
 
 /* Operators with another ap_int_base.
  * ----------------------------------------------------------------
@@ -1386,9 +1395,9 @@ OP_BIN_WITH_PTR(-)
   }
 
 #define ALL_OP_WITH_FLOAT(C_TYPE) \
-  OP_BIN_WITH_FLOAT(*, C_TYPE) \
-  OP_BIN_WITH_FLOAT(/, C_TYPE) \
-  OP_BIN_WITH_FLOAT(+, C_TYPE) \
+  OP_BIN_WITH_FLOAT(*, C_TYPE)    \
+  OP_BIN_WITH_FLOAT(/, C_TYPE)    \
+  OP_BIN_WITH_FLOAT(+, C_TYPE)    \
   OP_BIN_WITH_FLOAT(-, C_TYPE)
 
 #if _AP_ENABLE_HALF_ == 1
@@ -1417,7 +1426,7 @@ ALL_OP_WITH_FLOAT(double)
     return op BIN_OP ap_int_base<_AP_W2, _AP_S2>(i_op);                    \
   }
 
-#define ALL_OP_BIN_WITH_INT(C_TYPE, _AP_W2, _AP_S2)    \
+#define ALL_OP_BIN_WITH_INT(C_TYPE, _AP_W2, _AP_S2) \
   OP_BIN_WITH_INT(*, C_TYPE, _AP_W2, _AP_S2, mult)  \
   OP_BIN_WITH_INT(+, C_TYPE, _AP_W2, _AP_S2, plus)  \
   OP_BIN_WITH_INT(-, C_TYPE, _AP_W2, _AP_S2, minus) \
@@ -1444,26 +1453,28 @@ ALL_OP_BIN_WITH_INT(ap_ulong, _AP_SIZE_ap_slong, false)
 #undef ALL_OP_BIN_WITH_INT
 
 // shift operators.
-#define ALL_OP_SHIFT_WITH_INT(C_TYPE, _AP_W2, _AP_S2)    \
-  template <int _AP_W, bool _AP_S>                       \
-  INLINE typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W,_AP_S>::arg1 operator<<(           \
-      const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) { \
-    ap_int_base<_AP_W, _AP_S> r;                         \
-    if (_AP_S2)                                          \
-      r.V = op2 >= 0 ? (op.V << op2) : (op.V >> (-op2)); \
-    else                                                 \
-      r.V = op.V << op2;                                 \
-    return r;                                            \
-  }                                                      \
-  template <int _AP_W, bool _AP_S>                       \
-  INLINE typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W,_AP_S>::arg1 operator>>(           \
-      const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) { \
-    ap_int_base<_AP_W, _AP_S> r;                         \
-    if (_AP_S2)                                          \
-      r.V = op2 >= 0 ? (op.V >> op2) : (op.V << (-op2)); \
-    else                                                 \
-      r.V = op.V >> op2;                                 \
-    return r;                                            \
+#define ALL_OP_SHIFT_WITH_INT(C_TYPE, _AP_W2, _AP_S2)                        \
+  template <int _AP_W, bool _AP_S>                                           \
+  INLINE                                                                     \
+      typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W, _AP_S>::arg1 \
+      operator<<(const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {          \
+    ap_int_base<_AP_W, _AP_S> r;                                             \
+    if (_AP_S2)                                                              \
+      r.V = op2 >= 0 ? (op.V << op2) : (op.V >> (-op2));                     \
+    else                                                                     \
+      r.V = op.V << op2;                                                     \
+    return r;                                                                \
+  }                                                                          \
+  template <int _AP_W, bool _AP_S>                                           \
+  INLINE                                                                     \
+      typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W, _AP_S>::arg1 \
+      operator>>(const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {          \
+    ap_int_base<_AP_W, _AP_S> r;                                             \
+    if (_AP_S2)                                                              \
+      r.V = op2 >= 0 ? (op.V >> op2) : (op.V << (-op2));                     \
+    else                                                                     \
+      r.V = op.V >> op2;                                                     \
+    return r;                                                                \
   }
 
 ALL_OP_SHIFT_WITH_INT(char, 8, CHAR_IS_SIGNED)
@@ -1475,20 +1486,22 @@ ALL_OP_SHIFT_WITH_INT(ap_slong, _AP_SIZE_ap_slong, true)
 
 #undef ALL_OP_SHIFT_WITH_INT
 
-#define ALL_OP_SHIFT_WITH_INT(C_TYPE, _AP_W2, _AP_S2)    \
-  template <int _AP_W, bool _AP_S>                       \
-  INLINE typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W,_AP_S>::arg1 operator<<(           \
-      const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) { \
-    ap_int_base<_AP_W, _AP_S> r;                         \
-    r.V = op.V << op2;                                   \
-    return r;                                            \
-  }                                                      \
-  template <int _AP_W, bool _AP_S>                       \
-  INLINE typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W,_AP_S>::arg1 operator>>(           \
-      const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) { \
-    ap_int_base<_AP_W, _AP_S> r;                         \
-    r.V = op.V >> op2;                                   \
-    return r;                                            \
+#define ALL_OP_SHIFT_WITH_INT(C_TYPE, _AP_W2, _AP_S2)                        \
+  template <int _AP_W, bool _AP_S>                                           \
+  INLINE                                                                     \
+      typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W, _AP_S>::arg1 \
+      operator<<(const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {          \
+    ap_int_base<_AP_W, _AP_S> r;                                             \
+    r.V = op.V << op2;                                                       \
+    return r;                                                                \
+  }                                                                          \
+  template <int _AP_W, bool _AP_S>                                           \
+  INLINE                                                                     \
+      typename ap_int_base<_AP_W, _AP_S>::template RType<_AP_W, _AP_S>::arg1 \
+      operator>>(const ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {          \
+    ap_int_base<_AP_W, _AP_S> r;                                             \
+    r.V = op.V >> op2;                                                       \
+    return r;                                                                \
   }
 ALL_OP_SHIFT_WITH_INT(bool, 1, false)
 ALL_OP_SHIFT_WITH_INT(unsigned char, 8, false)
@@ -1500,11 +1513,11 @@ ALL_OP_SHIFT_WITH_INT(ap_ulong, _AP_SIZE_ap_slong, false)
 #undef ALL_OP_SHIFT_WITH_INT
 
 // compound assign operators.
-#define OP_ASSIGN_WITH_INT(ASSIGN_OP, C_TYPE, _AP_W2, _AP_S2)       \
-  template <int _AP_W, bool _AP_S>                                  \
-  INLINE ap_int_base<_AP_W, _AP_S>& operator ASSIGN_OP(             \
-      ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {                  \
-    return op ASSIGN_OP ap_int_base<_AP_W2, _AP_S2>(op2);           \
+#define OP_ASSIGN_WITH_INT(ASSIGN_OP, C_TYPE, _AP_W2, _AP_S2) \
+  template <int _AP_W, bool _AP_S>                            \
+  INLINE ap_int_base<_AP_W, _AP_S>& operator ASSIGN_OP(       \
+      ap_int_base<_AP_W, _AP_S>& op, C_TYPE op2) {            \
+    return op ASSIGN_OP ap_int_base<_AP_W2, _AP_S2>(op2);     \
   }
 
 // TODO int a; ap_int<16> b; a += b;
@@ -1574,36 +1587,31 @@ ALL_OP_REL_WITH_INT(ap_ulong, _AP_SIZE_ap_slong, false)
 #undef OP_REL_WITH_INT
 #undef ALL_OP_BIN_WITH_INT
 
-#define OP_REL_WITH_DOUBLE_OR_FLOAT(Sym)                            \
-  template <int _AP_W, bool _AP_S>                                  \
-  INLINE bool operator Sym(const ap_int_base<_AP_W, _AP_S>& op1,    \
-                           double op2) {                            \
-    return op1.to_double() Sym op2 ;                                \
-  }                                                                 \
-  template <int _AP_W, bool _AP_S>                                  \
-  INLINE bool operator Sym(double op1,                              \
-                           const ap_int_base<_AP_W, _AP_S>& op2) {  \
-    return op1 Sym op2.to_double() ;                                \
-  }                                                                 \
-  template <int _AP_W, bool _AP_S>                                  \
-  INLINE bool operator Sym(const ap_int_base<_AP_W, _AP_S>& op1,    \
-                           float op2) {                             \
-    return op1.to_double() Sym op2 ;                                \
-  }                                                                 \
-  template <int _AP_W, bool _AP_S>                                  \
-  INLINE bool operator Sym(float op1,                               \
-                           const ap_int_base<_AP_W, _AP_S>& op2) {  \
-    return op1 Sym op2.to_double() ;                                \
+#define OP_REL_WITH_DOUBLE_OR_FLOAT(Sym)                                       \
+  template <int _AP_W, bool _AP_S>                                             \
+  INLINE bool operator Sym(const ap_int_base<_AP_W, _AP_S>& op1, double op2) { \
+    return op1.to_double() Sym op2;                                            \
+  }                                                                            \
+  template <int _AP_W, bool _AP_S>                                             \
+  INLINE bool operator Sym(double op1, const ap_int_base<_AP_W, _AP_S>& op2) { \
+    return op1 Sym op2.to_double();                                            \
+  }                                                                            \
+  template <int _AP_W, bool _AP_S>                                             \
+  INLINE bool operator Sym(const ap_int_base<_AP_W, _AP_S>& op1, float op2) {  \
+    return op1.to_double() Sym op2;                                            \
+  }                                                                            \
+  template <int _AP_W, bool _AP_S>                                             \
+  INLINE bool operator Sym(float op1, const ap_int_base<_AP_W, _AP_S>& op2) {  \
+    return op1 Sym op2.to_double();                                            \
   }
-  OP_REL_WITH_DOUBLE_OR_FLOAT(>)
-  OP_REL_WITH_DOUBLE_OR_FLOAT(<)
-  OP_REL_WITH_DOUBLE_OR_FLOAT(>=)
-  OP_REL_WITH_DOUBLE_OR_FLOAT(<=)
-  OP_REL_WITH_DOUBLE_OR_FLOAT(==)
-  OP_REL_WITH_DOUBLE_OR_FLOAT(!=)
+OP_REL_WITH_DOUBLE_OR_FLOAT(>)
+OP_REL_WITH_DOUBLE_OR_FLOAT(<)
+OP_REL_WITH_DOUBLE_OR_FLOAT(>=)
+OP_REL_WITH_DOUBLE_OR_FLOAT(<=)
+OP_REL_WITH_DOUBLE_OR_FLOAT(==)
+OP_REL_WITH_DOUBLE_OR_FLOAT(!=)
 
 #undef OP_REL_WITH_DOUBLE_OR_FLOAT
-
 
 /* Operators with ap_bit_ref.
  * ------------------------------------------------------------
@@ -1771,7 +1779,6 @@ OP_REL_WITH_BIT(<=)
 
 #undef OP_REL_WITH_BIT
 
-
 /* Operators with ap_concat_ref.
  * ------------------------------------------------------------
  */
@@ -1879,7 +1886,7 @@ OP_REL_WITH_CONCAT(<=)
 
 #undef OP_REL_WITH_CONCAT
 
-#endif // ifndef __cplusplus
-#endif // ifndef __AP_INT_BASE_H__
+#endif  // ifndef __cplusplus
+#endif  // ifndef __AP_INT_BASE_H__
 
 // -*- cpp -*-

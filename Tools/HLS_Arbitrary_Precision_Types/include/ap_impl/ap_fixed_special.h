@@ -29,12 +29,14 @@
 // include.
 // #include <complex>
 namespace std {
-template<typename _Tp> class complex;
+template <typename _Tp>
+class complex;
 }
 
 /*
   TODO: Modernize the code using C++11/C++14
-  1. constexpr http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0415r0.html
+  1. constexpr
+  http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0415r0.html
   2. move constructor
 */
 
@@ -76,15 +78,15 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   complex(const complex<_Up> &__z) : _M_real(__z.real()), _M_imag(__z.imag()) {}
 
 #if __cplusplus >= 201103L
-  const _Tp& real() const { return _M_real; }
-  const _Tp& imag() const { return _M_imag; }
+  const _Tp &real() const { return _M_real; }
+  const _Tp &imag() const { return _M_imag; }
 #else
-  _Tp& real() { return _M_real; }
-  const _Tp& real() const { return _M_real; }
-  _Tp& imag() { return _M_imag; }
-  const _Tp& imag() const { return _M_imag; }
+  _Tp &real() { return _M_real; }
+  const _Tp &real() const { return _M_real; }
+  _Tp &imag() { return _M_imag; }
+  const _Tp &imag() const { return _M_imag; }
 #endif
- 
+
   void real(_Tp __val) { _M_real = __val; }
 
   void imag(_Tp __val) { _M_imag = __val; }
@@ -167,7 +169,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   // Divide this by complex number.
   template <typename _Up>
   complex<_Tp> &operator/=(const complex<_Up> &__z) {
-    complex<_Tp> cj (__z.real(), -__z.imag());
+    complex<_Tp> cj(__z.real(), -__z.imag());
     complex<_Tp> a = (*this) * cj;
     complex<_Tp> b = cj * __z;
     _M_real = a.real() / b.real();
@@ -179,7 +181,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   _Tp _M_real;
   _Tp _M_imag;
 
-}; // class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >
+};  // class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >
 
 /*
    Non-member operations
@@ -192,8 +194,7 @@ template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator==(
     const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__x,
     const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__y) {
-  return __x.real() == __y &&
-         __x.imag() == 0;
+  return __x.real() == __y && __x.imag() == 0;
 }
 
 // Compare ap_fixed with complex number.
@@ -201,8 +202,7 @@ template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator==(
     const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__x,
     const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__y) {
-  return __x == __y.real() &&
-         0 == __y.imag();
+  return __x == __y.real() && 0 == __y.imag();
 }
 
 // Compare complex number with ap_fixed.
@@ -210,8 +210,7 @@ template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator!=(
     const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__x,
     const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__y) {
-  return __x.real() != __y ||
-         __x.imag() != 0;
+  return __x.real() != __y || __x.imag() != 0;
 }
 
 // Compare ap_fixed with complex number.
@@ -219,8 +218,7 @@ template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator!=(
     const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__x,
     const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__y) {
-  return __x != __y.real() ||
-         0 != __y.imag();
+  return __x != __y.real() || 0 != __y.imag();
 }
 
 }  // namespace std

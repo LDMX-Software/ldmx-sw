@@ -63,10 +63,10 @@ struct ap_concat_ref {
 
   // assign op from hls supported C integral types.
   // FIXME disabled to support legacy code directly assign from sc_signal<T>
-  //template <typename T>
-  //INLINE typename _ap_type::enable_if<_ap_type::is_integral<T>::value,
+  // template <typename T>
+  // INLINE typename _ap_type::enable_if<_ap_type::is_integral<T>::value,
   //                                    ap_concat_ref&>::type
-  //operator=(T val) {
+  // operator=(T val) {
   //  ap_int_base<_AP_W1 + _AP_W2, false> tmpVal(val);
   //  return operator=(tmpVal);
   //}
@@ -151,7 +151,7 @@ struct ap_concat_ref {
   template <int _AP_W3, bool _AP_S3>
   INLINE ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
                        ap_range_ref<_AP_W3, _AP_S3> >
-  operator,(const ap_range_ref<_AP_W3, _AP_S3> &a2) {
+  operator,(const ap_range_ref<_AP_W3, _AP_S3>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
                          ap_range_ref<_AP_W3, _AP_S3> >(
         *this, const_cast<ap_range_ref<_AP_W3, _AP_S3>&>(a2));
@@ -160,7 +160,7 @@ struct ap_concat_ref {
   template <int _AP_W3, bool _AP_S3>
   INLINE
       ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3, ap_int_base<_AP_W3, _AP_S3> >
-      operator,(ap_int_base<_AP_W3, _AP_S3> &a2) {
+      operator,(ap_int_base<_AP_W3, _AP_S3>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
                          ap_int_base<_AP_W3, _AP_S3> >(*this, a2);
   }
@@ -168,7 +168,7 @@ struct ap_concat_ref {
   template <int _AP_W3, bool _AP_S3>
   INLINE
       ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3, ap_int_base<_AP_W3, _AP_S3> >
-      operator,(volatile ap_int_base<_AP_W3, _AP_S3> &a2) {
+      operator,(volatile ap_int_base<_AP_W3, _AP_S3>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
                          ap_int_base<_AP_W3, _AP_S3> >(
         *this, const_cast<ap_int_base<_AP_W3, _AP_S3>&>(a2));
@@ -177,7 +177,7 @@ struct ap_concat_ref {
   template <int _AP_W3, bool _AP_S3>
   INLINE
       ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3, ap_int_base<_AP_W3, _AP_S3> >
-      operator,(const ap_int_base<_AP_W3, _AP_S3> &a2) {
+      operator,(const ap_int_base<_AP_W3, _AP_S3>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
                          ap_int_base<_AP_W3, _AP_S3> >(
         *this, const_cast<ap_int_base<_AP_W3, _AP_S3>&>(a2));
@@ -186,7 +186,7 @@ struct ap_concat_ref {
   template <int _AP_W3, bool _AP_S3>
   INLINE
       ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3, ap_int_base<_AP_W3, _AP_S3> >
-      operator,(const volatile ap_int_base<_AP_W3, _AP_S3> &a2) {
+      operator,(const volatile ap_int_base<_AP_W3, _AP_S3>&a2) {
     // FIXME op's life does not seem long enough
     ap_int_base<_AP_W3, _AP_S3> op(a2);
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3,
@@ -196,7 +196,7 @@ struct ap_concat_ref {
 
   template <int _AP_W3, bool _AP_S3>
   INLINE ap_concat_ref<_AP_WR, ap_concat_ref, 1, ap_bit_ref<_AP_W3, _AP_S3> >
-  operator,(const ap_bit_ref<_AP_W3, _AP_S3> &a2) {
+  operator,(const ap_bit_ref<_AP_W3, _AP_S3>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, 1, ap_bit_ref<_AP_W3, _AP_S3> >(
         *this, const_cast<ap_bit_ref<_AP_W3, _AP_S3>&>(a2));
   }
@@ -204,7 +204,7 @@ struct ap_concat_ref {
   template <int _AP_W3, typename _AP_T3, int _AP_W4, typename _AP_T4>
   INLINE ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3 + _AP_W4,
                        ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4> >
-  operator,(const ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4> &a2) {
+  operator,(const ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4>&a2) {
     return ap_concat_ref<_AP_WR, ap_concat_ref, _AP_W3 + _AP_W4,
                          ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4> >(
         *this, const_cast<ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4>&>(a2));
@@ -216,7 +216,7 @@ struct ap_concat_ref {
       _AP_WR, ap_concat_ref, _AP_W3,
       af_range_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3> >
   operator,(
-      const af_range_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3> &a2) {
+      const af_range_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3>&a2) {
     return ap_concat_ref<
         _AP_WR, ap_concat_ref, _AP_W3,
         af_range_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3> >(
@@ -230,8 +230,8 @@ struct ap_concat_ref {
   INLINE
       ap_concat_ref<_AP_WR, ap_concat_ref, 1,
                     af_bit_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3> >
-      operator,(const af_bit_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3>
-                    &a2) {
+      operator,(
+          const af_bit_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3>&a2) {
     return ap_concat_ref<
         _AP_WR, ap_concat_ref, 1,
         af_bit_ref<_AP_W3, _AP_I3, _AP_S3, _AP_Q3, _AP_O3, _AP_N3> >(
@@ -292,7 +292,7 @@ struct ap_concat_ref {
   }
 
   INLINE int length() const { return mbv1.length() + mbv2.length(); }
-}; // struct ap_concat_ref
+};  // struct ap_concat_ref
 
 /* Range (slice) reference.
    ----------------------------------------------------------------
@@ -369,7 +369,7 @@ struct ap_range_ref {
 
   /// assign using string. XXX crucial for cosim.
   INLINE ap_range_ref& operator=(const char* val) {
-    const ap_int_base<_AP_W, false> tmp(val); // XXX figure out radix
+    const ap_int_base<_AP_W, false> tmp(val);  // XXX figure out radix
     d_bv.V = _AP_ROOT_op_set_range(d_bv.V, l_index, h_index, tmp.V);
     return *this;
   }
@@ -437,7 +437,7 @@ struct ap_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-      operator,(const ap_range_ref<_AP_W2, _AP_S2> &a2) {
+      operator,(const ap_range_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2,
                          ap_range_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_range_ref<_AP_W2, _AP_S2>&>(a2));
@@ -446,7 +446,7 @@ struct ap_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-      operator,(ap_int_base<_AP_W2, _AP_S2> &a2) {
+      operator,(ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(*this, a2);
   }
@@ -461,7 +461,7 @@ struct ap_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-      operator,(volatile ap_int_base<_AP_W2, _AP_S2> &a2) {
+      operator,(volatile ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
@@ -470,7 +470,7 @@ struct ap_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-      operator,(const ap_int_base<_AP_W2, _AP_S2> &a2) {
+      operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
@@ -479,7 +479,7 @@ struct ap_range_ref {
   template <int _AP_W2, bool _AP_S2>
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-      operator,(const volatile ap_int_base<_AP_W2, _AP_S2> &a2) {
+      operator,(const volatile ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2,
                          ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
@@ -487,7 +487,7 @@ struct ap_range_ref {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<_AP_W, ap_range_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_bit_ref<_AP_W2, _AP_S2> &a2) {
+  operator,(const ap_bit_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_bit_ref<_AP_W2, _AP_S2>&>(a2));
   }
@@ -495,7 +495,7 @@ struct ap_range_ref {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<_AP_W, ap_range_ref, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
     return ap_concat_ref<_AP_W, ap_range_ref, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
         *this, const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
@@ -521,8 +521,8 @@ struct ap_range_ref {
   INLINE
       ap_concat_ref<_AP_W, ap_range_ref, 1,
                     af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-                    &a2) {
+      operator,(
+          const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
     return ap_concat_ref<
         _AP_W, ap_range_ref, 1,
         af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -697,11 +697,9 @@ struct ap_range_ref {
   }
 #else
   // XXX HLS will delete this in synthesis
-  INLINE char* to_string(signed char radix = 2) const {
-    return 0;
-  }
+  INLINE char* to_string(signed char radix = 2) const { return 0; }
 #endif
-}; // struct ap_range_ref
+};  // struct ap_range_ref
 
 // XXX apcc cannot handle global std::ios_base::Init() brought in by <iostream>
 #ifndef AP_AUTOCC
@@ -711,15 +709,15 @@ INLINE std::ostream& operator<<(std::ostream& os,
                                 const ap_range_ref<_AP_W, _AP_S>& x) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x.to_string(16); // don't print sign
+    os << x.to_string(16);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x.to_string(8); // don't print sign
+    os << x.to_string(8);  // don't print sign
   } else {
     os << x.to_string(10);
   }
   return os;
 }
-#endif // ifndef __SYNTHESIS__
+#endif  // ifndef __SYNTHESIS__
 
 #ifndef __SYNTHESIS__
 template <int _AP_W, bool _AP_S>
@@ -730,8 +728,8 @@ INLINE std::istream& operator>>(std::istream& in,
   op = ap_int_base<_AP_W, _AP_S>(str.c_str());
   return in;
 }
-#endif // ifndef __SYNTHESIS__
-#endif // ifndef AP_AUTOCC
+#endif  // ifndef __SYNTHESIS__
+#endif  // ifndef AP_AUTOCC
 
 /* Bit reference.
    ----------------------------------------------------------------
@@ -761,10 +759,10 @@ struct ap_bit_ref {
   // assign op from hls supported C integral types.
   // FIXME disabled to support sc_signal<bool>.
   // NOTE this used to be unsigned long long.
-  //template <typename T>
-  //INLINE typename _ap_type::enable_if<_ap_type::is_integral<T>::value,
+  // template <typename T>
+  // INLINE typename _ap_type::enable_if<_ap_type::is_integral<T>::value,
   //                                    ap_bit_ref&>::type
-  //operator=(T val) {
+  // operator=(T val) {
   //  d_bv.V = _AP_ROOT_op_set_bit(d_bv.V, d_index, val);
   //  return *this;
   //}
@@ -792,7 +790,7 @@ struct ap_bit_ref {
 #define ASSIGN_WITH_CTYPE_FP(_Tp)                           \
   INLINE ap_bit_ref& operator=(_Tp val) {                   \
     bool tmp_val = val;                                     \
-    d_bv.V = _AP_ROOT_op_set_bit(d_bv.V, d_index,tmp_val);  \
+    d_bv.V = _AP_ROOT_op_set_bit(d_bv.V, d_index, tmp_val); \
     return *this;                                           \
   }
 
@@ -803,7 +801,6 @@ struct ap_bit_ref {
   ASSIGN_WITH_CTYPE_FP(double)
 
 #undef ASSIGN_WITH_CTYPE_FP
-
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_bit_ref& operator=(const ap_int_base<_AP_W2, _AP_S2>& val) {
@@ -848,21 +845,21 @@ struct ap_bit_ref {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >(
         *this, a2);
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(volatile ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(volatile ap_int_base<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(a2));
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(const ap_int_base<_AP_W2, _AP_S2>&a2) {
     ap_int_base<_AP_W2, _AP_S2> op(a2);
     return ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(op));
@@ -870,7 +867,7 @@ struct ap_bit_ref {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >
-  operator,(const volatile ap_int_base<_AP_W2, _AP_S2> &a2) {
+  operator,(const volatile ap_int_base<_AP_W2, _AP_S2>&a2) {
     ap_int_base<_AP_W2, _AP_S2> op(a2);
     return ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_int_base<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_int_base<_AP_W2, _AP_S2>&>(op));
@@ -878,14 +875,14 @@ struct ap_bit_ref {
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >
-  operator,(const ap_range_ref<_AP_W2, _AP_S2> &a2) {
+  operator,(const ap_range_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<1, ap_bit_ref, _AP_W2, ap_range_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_range_ref<_AP_W2, _AP_S2>&>(a2));
   }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE ap_concat_ref<1, ap_bit_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> > operator,(
-      const ap_bit_ref<_AP_W2, _AP_S2> &a2) {
+      const ap_bit_ref<_AP_W2, _AP_S2>&a2) {
     return ap_concat_ref<1, ap_bit_ref, 1, ap_bit_ref<_AP_W2, _AP_S2> >(
         *this, const_cast<ap_bit_ref<_AP_W2, _AP_S2>&>(a2));
   }
@@ -893,7 +890,7 @@ struct ap_bit_ref {
   template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
   INLINE ap_concat_ref<1, ap_bit_ref, _AP_W2 + _AP_W3,
                        ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&a2) {
     return ap_concat_ref<1, ap_bit_ref, _AP_W2 + _AP_W3,
                          ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
         *this, const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
@@ -905,7 +902,7 @@ struct ap_bit_ref {
       1, ap_bit_ref, _AP_W2,
       af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
   operator,(
-      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
+      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
     return ap_concat_ref<
         1, ap_bit_ref, _AP_W2,
         af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
@@ -916,12 +913,14 @@ struct ap_bit_ref {
 
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
-  INLINE ap_concat_ref<1, ap_bit_ref, 1, af_bit_ref<_AP_W2, _AP_I2, _AP_S2,
-                                                    _AP_Q2, _AP_O2, _AP_N2> >
-  operator,(
-      const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-    return ap_concat_ref<1, ap_bit_ref, 1, af_bit_ref<_AP_W2, _AP_I2, _AP_S2,
-                                                      _AP_Q2, _AP_O2, _AP_N2> >(
+  INLINE
+      ap_concat_ref<1, ap_bit_ref, 1,
+                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+      operator,(
+          const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&a2) {
+    return ap_concat_ref<
+        1, ap_bit_ref, 1,
+        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
         *this,
         const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(
             a2));
@@ -959,7 +958,7 @@ struct ap_bit_ref {
   // XXX HLS will delete this in synthesis
   INLINE char* to_string() const { return 0; }
 #endif
-}; // struct ap_bit_ref
+};  // struct ap_bit_ref
 
 /* ap_range_ref with int.
  * ------------------------------------------------------------
@@ -1071,11 +1070,11 @@ REF_BIN_OP_WITH_INT_ARITH(ap_ulong, _AP_SIZE_ap_slong, false)
 #undef REF_BIN_OP_WITH_INT_ARITH
 
 // bitwise and shift operators
-#define REF_BIN_OP_WITH_INT_BITS(C_TYPE, _AP_W2, _AP_S2)     \
-  REF_BIN_OP_WITH_INT(&, logic, C_TYPE, (_AP_W2), (_AP_S2))  \
-  REF_BIN_OP_WITH_INT(|, logic, C_TYPE, (_AP_W2), (_AP_S2))  \
+#define REF_BIN_OP_WITH_INT_BITS(C_TYPE, _AP_W2, _AP_S2)    \
+  REF_BIN_OP_WITH_INT(&, logic, C_TYPE, (_AP_W2), (_AP_S2)) \
+  REF_BIN_OP_WITH_INT(|, logic, C_TYPE, (_AP_W2), (_AP_S2)) \
   REF_BIN_OP_WITH_INT(^, logic, C_TYPE, (_AP_W2), (_AP_S2)) \
-  REF_BIN_OP_WITH_INT(>>, arg1, C_TYPE, (_AP_W2), (_AP_S2))  \
+  REF_BIN_OP_WITH_INT(>>, arg1, C_TYPE, (_AP_W2), (_AP_S2)) \
   REF_BIN_OP_WITH_INT(<<, arg1, C_TYPE, (_AP_W2), (_AP_S2))
 
 REF_BIN_OP_WITH_INT_BITS(bool, 1, false)
@@ -1168,138 +1167,138 @@ SYN_CONCAT_REF_BIN_OP(<<, arg1)
 
 #undef SYN_CONCAT_REF_BIN_OP
 
-#define CONCAT_OP_WITH_INT(C_TYPE, _AP_WI, _AP_SI)                          \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      const ap_int_base<_AP_W, _AP_S> &op1, C_TYPE op2) {                   \
-    ap_int_base<_AP_WI + _AP_W, false> val(op2);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                            \
-    ret <<= _AP_WI;                                                         \
-    if (_AP_SI) {                                                           \
-      val <<= _AP_W;                                                        \
-      val >>= _AP_W;                                                        \
-    }                                                                       \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      C_TYPE op1, const ap_int_base<_AP_W, _AP_S> &op2) {                   \
-    ap_int_base<_AP_WI + _AP_W, false> val(op1);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                            \
-    if (_AP_S) {                                                            \
-      ret <<= _AP_WI;                                                       \
-      ret >>= _AP_WI;                                                       \
-    }                                                                       \
-    ret |= val << _AP_W;                                                    \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      const ap_range_ref<_AP_W, _AP_S> &op1, C_TYPE op2) {                  \
-    ap_int_base<_AP_WI + _AP_W, false> val(op2);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                            \
-    ret <<= _AP_WI;                                                         \
-    if (_AP_SI) {                                                           \
-      val <<= _AP_W;                                                        \
-      val >>= _AP_W;                                                        \
-    }                                                                       \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      C_TYPE op1, const ap_range_ref<_AP_W, _AP_S> &op2) {                  \
-    ap_int_base<_AP_WI + _AP_W, false> val(op1);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                            \
-    int len = op2.length();                                                 \
-    val <<= len;                                                            \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_WI + 1, false> operator,(                          \
-      const ap_bit_ref<_AP_W, _AP_S> &op1, C_TYPE op2) {                    \
-    ap_int_base<_AP_WI + 1, false> val(op2);                                \
-    val[_AP_WI] = op1;                                                      \
-    return val;                                                             \
-  }                                                                         \
-  template <int _AP_W, bool _AP_S>                                          \
-  INLINE ap_int_base<_AP_WI + 1, false> operator,(                          \
-      C_TYPE op1, const ap_bit_ref<_AP_W, _AP_S> &op2) {                    \
-    ap_int_base<_AP_WI + 1, false> val(op1);                                \
-    val <<= 1;                                                              \
-    val[0] = op2;                                                           \
-    return val;                                                             \
-  }                                                                         \
-  template <int _AP_W, typename _AP_T, int _AP_W2, typename _AP_T2>         \
-  INLINE ap_int_base<_AP_W + _AP_W2 + _AP_WI, false> operator,(             \
-      const ap_concat_ref<_AP_W, _AP_T, _AP_W2, _AP_T2> &op1, C_TYPE op2) { \
-    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> val(op2);                  \
-    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> ret(op1);                  \
-    if (_AP_SI) {                                                           \
-      val <<= _AP_W + _AP_W2;                                               \
-      val >>= _AP_W + _AP_W2;                                               \
-    }                                                                       \
-    ret <<= _AP_WI;                                                         \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, typename _AP_T, int _AP_W2, typename _AP_T2>         \
-  INLINE ap_int_base<_AP_W + _AP_W2 + _AP_WI, false> operator,(             \
-      C_TYPE op1, const ap_concat_ref<_AP_W, _AP_T, _AP_W2, _AP_T2> &op2) { \
-    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> val(op1);                  \
-    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> ret(op2);                  \
-    int len = op2.length();                                                 \
-    val <<= len;                                                            \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,              \
-            ap_o_mode _AP_O, int _AP_N>                                     \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> &op1,    \
-      C_TYPE op2) {                                                         \
-    ap_int_base<_AP_WI + _AP_W, false> val(op2);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                            \
-    if (_AP_SI) {                                                           \
-      val <<= _AP_W;                                                        \
-      val >>= _AP_W;                                                        \
-    }                                                                       \
-    ret <<= _AP_WI;                                                         \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,              \
-            ap_o_mode _AP_O, int _AP_N>                                     \
-  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                      \
-      C_TYPE op1,                                                           \
-      const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> &op2) {  \
-    ap_int_base<_AP_WI + _AP_W, false> val(op1);                            \
-    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                            \
-    int len = op2.length();                                                 \
-    val <<= len;                                                            \
-    ret |= val;                                                             \
-    return ret;                                                             \
-  }                                                                         \
-  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,              \
-            ap_o_mode _AP_O, int _AP_N>                                     \
-  INLINE ap_int_base<1 + _AP_WI, false> operator,(                          \
-      const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> &op1,      \
-      C_TYPE op2) {                                                         \
-    ap_int_base<_AP_WI + 1, _AP_SI> val(op2);                               \
-    val[_AP_WI] = op1;                                                      \
-    return val;                                                             \
-  }                                                                         \
-  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,              \
-            ap_o_mode _AP_O, int _AP_N>                                     \
-  INLINE ap_int_base<1 + _AP_WI, false> operator,(                          \
-      C_TYPE op1,                                                           \
-      const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N> &op2) {    \
-    ap_int_base<_AP_WI + 1, _AP_SI> val(op1);                               \
-    val <<= 1;                                                              \
-    val[0] = op2;                                                           \
-    return val;                                                             \
+#define CONCAT_OP_WITH_INT(C_TYPE, _AP_WI, _AP_SI)                         \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      const ap_int_base<_AP_W, _AP_S>&op1, C_TYPE op2) {                   \
+    ap_int_base<_AP_WI + _AP_W, false> val(op2);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                           \
+    ret <<= _AP_WI;                                                        \
+    if (_AP_SI) {                                                          \
+      val <<= _AP_W;                                                       \
+      val >>= _AP_W;                                                       \
+    }                                                                      \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      C_TYPE op1, const ap_int_base<_AP_W, _AP_S>&op2) {                   \
+    ap_int_base<_AP_WI + _AP_W, false> val(op1);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                           \
+    if (_AP_S) {                                                           \
+      ret <<= _AP_WI;                                                      \
+      ret >>= _AP_WI;                                                      \
+    }                                                                      \
+    ret |= val << _AP_W;                                                   \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      const ap_range_ref<_AP_W, _AP_S>&op1, C_TYPE op2) {                  \
+    ap_int_base<_AP_WI + _AP_W, false> val(op2);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                           \
+    ret <<= _AP_WI;                                                        \
+    if (_AP_SI) {                                                          \
+      val <<= _AP_W;                                                       \
+      val >>= _AP_W;                                                       \
+    }                                                                      \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      C_TYPE op1, const ap_range_ref<_AP_W, _AP_S>&op2) {                  \
+    ap_int_base<_AP_WI + _AP_W, false> val(op1);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                           \
+    int len = op2.length();                                                \
+    val <<= len;                                                           \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_WI + 1, false> operator,(                         \
+      const ap_bit_ref<_AP_W, _AP_S>&op1, C_TYPE op2) {                    \
+    ap_int_base<_AP_WI + 1, false> val(op2);                               \
+    val[_AP_WI] = op1;                                                     \
+    return val;                                                            \
+  }                                                                        \
+  template <int _AP_W, bool _AP_S>                                         \
+  INLINE ap_int_base<_AP_WI + 1, false> operator,(                         \
+      C_TYPE op1, const ap_bit_ref<_AP_W, _AP_S>&op2) {                    \
+    ap_int_base<_AP_WI + 1, false> val(op1);                               \
+    val <<= 1;                                                             \
+    val[0] = op2;                                                          \
+    return val;                                                            \
+  }                                                                        \
+  template <int _AP_W, typename _AP_T, int _AP_W2, typename _AP_T2>        \
+  INLINE ap_int_base<_AP_W + _AP_W2 + _AP_WI, false> operator,(            \
+      const ap_concat_ref<_AP_W, _AP_T, _AP_W2, _AP_T2>&op1, C_TYPE op2) { \
+    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> val(op2);                 \
+    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> ret(op1);                 \
+    if (_AP_SI) {                                                          \
+      val <<= _AP_W + _AP_W2;                                              \
+      val >>= _AP_W + _AP_W2;                                              \
+    }                                                                      \
+    ret <<= _AP_WI;                                                        \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, typename _AP_T, int _AP_W2, typename _AP_T2>        \
+  INLINE ap_int_base<_AP_W + _AP_W2 + _AP_WI, false> operator,(            \
+      C_TYPE op1, const ap_concat_ref<_AP_W, _AP_T, _AP_W2, _AP_T2>&op2) { \
+    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> val(op1);                 \
+    ap_int_base<_AP_WI + _AP_W + _AP_W2, _AP_SI> ret(op2);                 \
+    int len = op2.length();                                                \
+    val <<= len;                                                           \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,             \
+            ap_o_mode _AP_O, int _AP_N>                                    \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>&op1,    \
+      C_TYPE op2) {                                                        \
+    ap_int_base<_AP_WI + _AP_W, false> val(op2);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op1);                           \
+    if (_AP_SI) {                                                          \
+      val <<= _AP_W;                                                       \
+      val >>= _AP_W;                                                       \
+    }                                                                      \
+    ret <<= _AP_WI;                                                        \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,             \
+            ap_o_mode _AP_O, int _AP_N>                                    \
+  INLINE ap_int_base<_AP_W + _AP_WI, false> operator,(                     \
+      C_TYPE op1,                                                          \
+      const af_range_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>&op2) {  \
+    ap_int_base<_AP_WI + _AP_W, false> val(op1);                           \
+    ap_int_base<_AP_WI + _AP_W, false> ret(op2);                           \
+    int len = op2.length();                                                \
+    val <<= len;                                                           \
+    ret |= val;                                                            \
+    return ret;                                                            \
+  }                                                                        \
+  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,             \
+            ap_o_mode _AP_O, int _AP_N>                                    \
+  INLINE ap_int_base<1 + _AP_WI, false> operator,(                         \
+      const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>&op1,      \
+      C_TYPE op2) {                                                        \
+    ap_int_base<_AP_WI + 1, _AP_SI> val(op2);                              \
+    val[_AP_WI] = op1;                                                     \
+    return val;                                                            \
+  }                                                                        \
+  template <int _AP_W, int _AP_I, bool _AP_S, ap_q_mode _AP_Q,             \
+            ap_o_mode _AP_O, int _AP_N>                                    \
+  INLINE ap_int_base<1 + _AP_WI, false> operator,(                         \
+      C_TYPE op1,                                                          \
+      const af_bit_ref<_AP_W, _AP_I, _AP_S, _AP_Q, _AP_O, _AP_N>&op2) {    \
+    ap_int_base<_AP_WI + 1, _AP_SI> val(op1);                              \
+    val <<= 1;                                                             \
+    val[0] = op2;                                                          \
+    return val;                                                            \
   }
 
 CONCAT_OP_WITH_INT(bool, 1, false)
@@ -1340,7 +1339,7 @@ CONCAT_SHIFT_WITH_INT(unsigned long, >>)
 CONCAT_SHIFT_WITH_INT(ap_slong, >>)
 CONCAT_SHIFT_WITH_INT(ap_ulong, >>)
 
-#endif // ifndef __cplusplus
-#endif // ifndef __AP_INT_REF_H__
+#endif  // ifndef __cplusplus
+#endif  // ifndef __AP_INT_REF_H__
 
 // -*- cpp -*-

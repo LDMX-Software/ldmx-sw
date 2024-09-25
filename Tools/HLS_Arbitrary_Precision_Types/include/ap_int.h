@@ -157,7 +157,7 @@ struct ap_int : ap_int_base<_AP_W, true> {
     Base::V = op2.V;
   }
 
-}; // struct ap_int.
+};  // struct ap_int.
 
 //---------------------------------------------------------------
 
@@ -295,7 +295,7 @@ struct ap_uint : ap_int_base<_AP_W, false> {
     Base::V = op2.V;
   }
 
-}; // struct ap_uint.
+};  // struct ap_uint.
 
 #define ap_bigint ap_int
 #define ap_biguint ap_uint
@@ -314,11 +314,11 @@ INLINE void sc_trace(sc_core::sc_trace_file* tf, const ap_uint<_AP_W>& op,
                      const std::string& name) {
   if (tf) tf->trace(sc_dt::sc_lv<_AP_W>(op.to_string(2).c_str()), name);
 }
-#endif // System C sim
+#endif  // System C sim
 
 #include <ap_impl/ap_int_special.h>
 
-#endif // ifndef __AP_INT_H__ else
+#endif  // ifndef __AP_INT_H__ else
 
 // FIXME user should include ap_fixed.h when using ap_fixed.
 // to avoid circular inclusion, must check whether this is required by

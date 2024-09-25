@@ -19,7 +19,8 @@
 
 // ----------------------------------------------------------------------
 
-#if !defined(__AP_FIXED_H__) && !defined(__AP_INT_H__) && !defined(__AUTOPILOT_CBE_H__) && !defined(__HLS_HALF_H__)
+#if !defined(__AP_FIXED_H__) && !defined(__AP_INT_H__) && \
+    !defined(__AUTOPILOT_CBE_H__) && !defined(__HLS_HALF_H__)
 #error "Only ap_fixed.h and ap_int.h can be included directly in user code."
 #endif
 
@@ -64,13 +65,13 @@
 #ifndef __SC_COMPATIBLE__
 /// ap_fixed quantification mode
 enum ap_q_mode {
-  AP_RND,         //< rounding to plus infinity
-  AP_RND_ZERO,    //< rounding to zero
-  AP_RND_MIN_INF, //< rounding to minus infinity
-  AP_RND_INF,     //< rounding to infinity
-  AP_RND_CONV,    //< convergent rounding
-  AP_TRN,         //< truncation
-  AP_TRN_ZERO,    //< truncation to zero
+  AP_RND,          //< rounding to plus infinity
+  AP_RND_ZERO,     //< rounding to zero
+  AP_RND_MIN_INF,  //< rounding to minus infinity
+  AP_RND_INF,      //< rounding to infinity
+  AP_RND_CONV,     //< convergent rounding
+  AP_TRN,          //< truncation
+  AP_TRN_ZERO,     //< truncation to zero
 };
 
 // FIXME for legacy code
@@ -82,15 +83,15 @@ enum ap_q_mode {
 #define SC_RND_CONV AP_RND_CONV
 #define SC_TRN AP_TRN
 #define SC_TRN_ZERO AP_TRN_ZERO
-#endif // !defined(SYSTEMC_INCLUDED)
+#endif  // !defined(SYSTEMC_INCLUDED)
 
 /// ap_fixed saturation mode
 enum ap_o_mode {
-  AP_SAT,      //< saturation
-  AP_SAT_ZERO, //< saturation to zero
-  AP_SAT_SYM,  //< symmetrical saturation
-  AP_WRAP,     //< wrap-around (*)
-  AP_WRAP_SM,  //< sign magnitude wrap-around (*)
+  AP_SAT,       //< saturation
+  AP_SAT_ZERO,  //< saturation to zero
+  AP_SAT_SYM,   //< symmetrical saturation
+  AP_WRAP,      //< wrap-around (*)
+  AP_WRAP_SM,   //< sign magnitude wrap-around (*)
 };
 
 // FIXME for legacy code
@@ -100,21 +101,21 @@ enum ap_o_mode {
 #define SC_SAT_SYM AP_SAT_SYM
 #define SC_WRAP AP_WRAP
 #define SC_WRAP_SM AP_WRAP_SM
-#endif // !defined(SYSTEMC_INCLUDED)
+#endif  // !defined(SYSTEMC_INCLUDED)
 
-#else // defined(__SC_COMPATIBLE__)
+#else  // defined(__SC_COMPATIBLE__)
 
 // There will not be sc_fxdefs.h, and the emu should be defined by ap_fixed.
 
 /// ap_fixed quantification mode
 enum ap_q_mode {
-  SC_RND,         //< rounding to plus infinity
-  SC_RND_ZERO,    //< rounding to zero
-  SC_RND_MIN_INF, //< rounding to minus infinity
-  SC_RND_INF,     //< rounding to infinity
-  SC_RND_CONV,    //< convergent rounding
-  SC_TRN,         //< truncation
-  SC_TRN_ZERO,    //< truncation to zero
+  SC_RND,          //< rounding to plus infinity
+  SC_RND_ZERO,     //< rounding to zero
+  SC_RND_MIN_INF,  //< rounding to minus infinity
+  SC_RND_INF,      //< rounding to infinity
+  SC_RND_CONV,     //< convergent rounding
+  SC_TRN,          //< truncation
+  SC_TRN_ZERO,     //< truncation to zero
 };
 
 #define AP_RND SC_RND
@@ -127,11 +128,11 @@ enum ap_q_mode {
 
 /// ap_fixed saturation mode
 enum ap_o_mode {
-  SC_SAT,      //< saturation
-  SC_SAT_ZERO, //< saturation to zero
-  SC_SAT_SYM,  //< symmetrical saturation
-  SC_WRAP,     //< wrap-around (*)
-  SC_WRAP_SM,  //< sign magnitude wrap-around (*)
+  SC_SAT,       //< saturation
+  SC_SAT_ZERO,  //< saturation to zero
+  SC_SAT_SYM,   //< symmetrical saturation
+  SC_WRAP,      //< wrap-around (*)
+  SC_WRAP_SM,   //< sign magnitude wrap-around (*)
 };
 
 #define AP_SAT SC_SAT
@@ -140,7 +141,7 @@ enum ap_o_mode {
 #define AP_WRAP SC_WRAP
 #define AP_WRAP_SM SC_WRAP_SM
 
-#endif // defined(__SC_COMPATIBLE__)
+#endif  // defined(__SC_COMPATIBLE__)
 
 template <int _AP_W, bool _AP_S>
 struct ap_int_base;
@@ -188,16 +189,16 @@ enum BaseMode { AP_BIN = 2, AP_OCT = 8, AP_DEC = 10, AP_HEX = 16 };
 #define SC_OCT 8
 #define SC_DEC 10
 #define SC_HEX 16
-#endif // !defined(SYSTEMC_INCLUDED)
+#endif  // !defined(SYSTEMC_INCLUDED)
 
 // Alias C data types
 #ifdef _MSC_VER
 typedef signed __int64 ap_slong;
 typedef unsigned __int64 ap_ulong;
-#else  // !defined(_MSC_VER)
+#else   // !defined(_MSC_VER)
 typedef signed long long ap_slong;
 typedef unsigned long long ap_ulong;
-#endif // !defined(_MSC_VER)
+#endif  // !defined(_MSC_VER)
 
 enum {
   _AP_SIZE_char = 8,
@@ -207,6 +208,6 @@ enum {
   _AP_SIZE_ap_slong = sizeof(ap_slong) * 8
 };
 
-#endif // !defined(__AP_DECL_H__)
+#endif  // !defined(__AP_DECL_H__)
 
 // -*- cpp -*-

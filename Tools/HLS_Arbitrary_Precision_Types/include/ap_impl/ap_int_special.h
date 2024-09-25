@@ -29,12 +29,14 @@
 // include.
 // #include <complex>
 namespace std {
-template<typename _Tp> class complex;
+template <typename _Tp>
+class complex;
 }
 
 /*
   TODO: Modernize the code using C++11/C++14
-  1. constexpr http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0415r0.html
+  1. constexpr
+  http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0415r0.html
   2. move constructor
 */
 
@@ -76,13 +78,13 @@ class complex<ap_int<_AP_W> > {
   complex(const complex<_Up> &__z) : _M_real(__z.real()), _M_imag(__z.imag()) {}
 
 #if __cplusplus >= 201103L
-  const _Tp& real() const { return _M_real; }
-  const _Tp& imag() const { return _M_imag; }
+  const _Tp &real() const { return _M_real; }
+  const _Tp &imag() const { return _M_imag; }
 #else
-  _Tp& real() { return _M_real; }
-  const _Tp& real() const { return _M_real; }
-  _Tp& imag() { return _M_imag; }
-  const _Tp& imag() const { return _M_imag; }
+  _Tp &real() { return _M_real; }
+  const _Tp &real() const { return _M_real; }
+  _Tp &imag() { return _M_imag; }
+  const _Tp &imag() const { return _M_imag; }
 #endif
 
   void real(_Tp __val) { _M_real = __val; }
@@ -167,7 +169,7 @@ class complex<ap_int<_AP_W> > {
   // Divide this by complex number.
   template <typename _Up>
   complex<_Tp> &operator/=(const complex<_Up> &__z) {
-    complex<_Tp> cj (__z.real(), -__z.imag());
+    complex<_Tp> cj(__z.real(), -__z.imag());
     complex<_Tp> a = (*this) * cj;
     complex<_Tp> b = cj * __z;
     _M_real = a.real() / b.real();
@@ -179,8 +181,7 @@ class complex<ap_int<_AP_W> > {
   _Tp _M_real;
   _Tp _M_imag;
 
-}; // class complex<ap_int<_AP_W> >
-
+};  // class complex<ap_int<_AP_W> >
 
 /*
    Non-member operations
@@ -190,30 +191,30 @@ class complex<ap_int<_AP_W> > {
 */
 // Compare complex number with ap_int.
 template <int _AP_W>
-inline bool operator==(const complex<ap_int<_AP_W> > &__x, const ap_int<_AP_W> &__y) {
-  return __x.real() == __y &&
-         __x.imag() == 0;
+inline bool operator==(const complex<ap_int<_AP_W> > &__x,
+                       const ap_int<_AP_W> &__y) {
+  return __x.real() == __y && __x.imag() == 0;
 }
 
 // Compare ap_int with complex number.
 template <int _AP_W>
-inline bool operator==(const ap_int<_AP_W> &__x, const complex<ap_int<_AP_W> > &__y) {
-  return __x == __y.real() &&
-         0 == __y.imag();
+inline bool operator==(const ap_int<_AP_W> &__x,
+                       const complex<ap_int<_AP_W> > &__y) {
+  return __x == __y.real() && 0 == __y.imag();
 }
 
 // Compare complex number with ap_int.
 template <int _AP_W>
-inline bool operator!=(const complex<ap_int<_AP_W> > &__x, const ap_int<_AP_W> &__y) {
-  return __x.real() != __y ||
-         __x.imag() != 0;
+inline bool operator!=(const complex<ap_int<_AP_W> > &__x,
+                       const ap_int<_AP_W> &__y) {
+  return __x.real() != __y || __x.imag() != 0;
 }
 
 // Compare ap_int with complex number.
 template <int _AP_W>
-inline bool operator!=(const ap_int<_AP_W> &__x, const complex<ap_int<_AP_W> > &__y) {
-  return __x != __y.real() ||
-         0 != __y.imag();
+inline bool operator!=(const ap_int<_AP_W> &__x,
+                       const complex<ap_int<_AP_W> > &__y) {
+  return __x != __y.real() || 0 != __y.imag();
 }
 
 }  // namespace std

@@ -22,12 +22,10 @@
 // Forward declaration of all AP types.
 #include "ap_decl.h"
 
-
 #ifdef __SYNTHESIS__
 #error "The open-source version of AP types does not support synthesis."
-#endif // ifdef __SYNTHESIS__
+#endif  // ifdef __SYNTHESIS__
 #define _AP_ENABLE_HALF_ 0
-
 
 #if _AP_ENABLE_HALF_ == 1
 // Before ap_private definition.
@@ -36,8 +34,8 @@
 typedef __fp16 half;
 #else
 class half;
-#endif // __SYNTHESIS__
-#endif // _AP_ENABLE_HALF_
+#endif  // __SYNTHESIS__
+#endif  // _AP_ENABLE_HALF_
 
 // ----------------------------------------------------------------------
 
@@ -52,8 +50,8 @@ class half;
 #define AP_ASSERT(cond, msg) assert((cond) && (msg))
 #else
 #define AP_ASSERT(cond, msg)
-#endif // ifndef __SYNTHESIS__
-#endif // ifndef AP_ASSERT
+#endif  // ifndef __SYNTHESIS__
+#endif  // ifndef AP_ASSERT
 
 #ifndef __SYNTHESIS__
 // for fprintf messages.
@@ -88,14 +86,14 @@ class half;
     }                                         \
   } while (0)
 
-#else // if !defined(__SYNTHESIS__) && !defined(NDEBUG)
+#else  // if !defined(__SYNTHESIS__) && !defined(NDEBUG)
 
 #define __AP_VOID_CAST static_cast<void>
 #define _AP_DEBUG(cond, ...) (__AP_VOID_CAST(0))
 #define _AP_WARNING(cond, ...) (__AP_VOID_CAST(0))
 #define _AP_ERROR(cond, ...) (__AP_VOID_CAST(0))
 
-#endif // if !defined(__SYNTHESIS__) && !defined(NDEBUG) else
+#endif  // if !defined(__SYNTHESIS__) && !defined(NDEBUG) else
 
 // ----------------------------------------------------------------------
 
@@ -129,7 +127,7 @@ class half;
 // for overload operator<<
 #include <iostream>
 #endif
-#endif // ifndef AP_AUTOCC
+#endif  // ifndef AP_AUTOCC
 
 #ifndef __SYNTHESIS__
 // for string format.
@@ -188,7 +186,7 @@ template <typename _Tp>
 struct remove_const<_Tp const> {
   typedef _Tp type;
 };
-} // namespace _ap_type
+}  // namespace _ap_type
 
 // ----------------------------------------------------------------------
 
@@ -202,7 +200,7 @@ struct remove_const<_Tp const> {
 #endif
 
 static inline unsigned char guess_radix(const char* s) {
-  unsigned char rd = 10; ///< default radix
+  unsigned char rd = 10;  ///< default radix
   const char* p = s;
   // skip neg sign if it exists
   if (p[0] == '-' || p[0] == '+') ++p;
@@ -236,7 +234,7 @@ static inline unsigned char guess_radix(const char* s) {
 #define _AP_ROOT_op_set_range(Val, Lo, Hi, Repl) \
   _ssdm_op_set_range(Val, Lo, Hi, Repl)
 #define _AP_ROOT_op_reduce(Op, Val) _ssdm_op_reduce(Op, Val)
-#else // ifdef __SYNTHESIS__
+#else  // ifdef __SYNTHESIS__
 // Use ap_private for compiler-independent basic data type
 template <int _AP_W, bool _AP_S, bool _AP_C = _AP_W <= 64>
 class ap_private;
@@ -278,7 +276,7 @@ inline _Tp1& _AP_ROOT_op_set_range(_Tp1& Val, const _Tp2& Lo, const _Tp3& Hi,
 #define _AP_ROOT_op_xor_reduce(Val) (Val).xor_reduce()
 // ## is the concatenation in preprocessor:
 #define _AP_ROOT_op_reduce(Op, Val) _AP_ROOT_op_##Op##_reduce(Val)
-#endif // ifdef __SYNTHESIS__ else
+#endif  // ifdef __SYNTHESIS__ else
 
 // ----------------------------------------------------------------------
 
@@ -371,6 +369,6 @@ INLINE half rawBitsToHalf(unsigned short pi) {
 }
 #endif
 
-#endif // ifndef __AP_COMMON_H__
+#endif  // ifndef __AP_COMMON_H__
 
 // -*- cpp -*-

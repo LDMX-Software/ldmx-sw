@@ -24,8 +24,8 @@
 #endif
 
 // forward declarations
-//template <int _AP_W, bool _AP_S, bool _AP_C = _AP_W <= 64>
-//class ap_private; // moved to ap_common.h
+// template <int _AP_W, bool _AP_S, bool _AP_C = _AP_W <= 64>
+// class ap_private; // moved to ap_common.h
 template <int _AP_W, bool _AP_S>
 struct _private_range_ref;
 template <int _AP_W, bool _AP_S>
@@ -71,11 +71,12 @@ template <class DataType>
 DataType INLINE max(DataType a, DataType b) {
   return (a >= b) ? a : b;
 }
-} // namespace AESL_std
+}  // namespace AESL_std
 
 // TODO clean up included headers.
 #include <math.h>
 #include <stdio.h>
+
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -115,7 +116,7 @@ INLINE bool isNegative(const ap_private<_AP_W, true>& a) {
 /// bit.  Ex. CountLeadingZeros_32(0x00F000FF) == 8.
 /// Returns 32 if the word is zero.
 static INLINE unsigned CountLeadingZeros_32(uint32_t Value) {
-  unsigned Count; // result
+  unsigned Count;  // result
 #if __GNUC__ >= 4
 // PowerPC is defined for __builtin_clz(0)
 #if !defined(__ppc__) && !defined(__ppc64__)
@@ -143,7 +144,7 @@ static INLINE unsigned CountLeadingZeros_32(uint32_t Value) {
 /// one bit (64 bit edition.)
 /// Returns 64 if the word is zero.
 static INLINE unsigned CountLeadingZeros_64(uint64_t Value) {
-  unsigned Count; // result
+  unsigned Count;  // result
 #if __GNUC__ >= 4
 // PowerPC is defined for __builtin_clzll(0)
 #if !defined(__ppc__) && !defined(__ppc64__)
@@ -353,7 +354,8 @@ static INLINE uint32_t decode_digit(char cdigit, int radix) {
 }
 
 // Determine the radix of "val".
-static INLINE std::string parseString(const std::string& input, unsigned char& radix) {
+static INLINE std::string parseString(const std::string& input,
+                                      unsigned char& radix) {
   size_t len = input.length();
   if (len == 0) {
     if (radix == 0) radix = 10;
@@ -451,7 +453,7 @@ static INLINE std::string parseString(const std::string& input, unsigned char& r
         ans += hex2Bin(val[i]);
       } else if (radix == 8) {
         ans += oct2Bin(val[i]);
-      } else { // radix == 2
+      } else {  // radix == 2
         ans += val[i];
       }
     }
@@ -503,10 +505,10 @@ static INLINE bool sub_1(uint64_t x[], uint32_t len, uint64_t y) {
     uint64_t __X = x[i];
     x[i] -= y;
     if (y > __X)
-      y = 1; // We have to "borrow 1" from next "digit"
+      y = 1;  // We have to "borrow 1" from next "digit"
     else {
-      y = 0; // No need to borrow
-      break; // Remaining digits are unchanged so exit early
+      y = 0;  // No need to borrow
+      break;  // Remaining digits are unchanged so exit early
     }
   }
   return (y != 0);
@@ -521,9 +523,9 @@ static INLINE bool add_1(uint64_t dest[], uint64_t x[], uint32_t len,
   for (uint32_t i = 0; i < len; ++i) {
     dest[i] = y + x[i];
     if (dest[i] < y)
-      y = 1; // Carry one to next digit.
+      y = 1;  // Carry one to next digit.
     else {
-      y = 0; // No need to carry so exit early
+      y = 0;  // No need to carry so exit early
       break;
     }
   }
@@ -542,7 +544,7 @@ static INLINE bool add(uint64_t* dest, const uint64_t* x, const uint64_t* y,
   uint32_t i;
   for (i = 0; i < len && i < destlen; ++i) {
     uint64_t limit =
-        AESL_std::min(x[i], y[i]); // must come first in case dest == x
+        AESL_std::min(x[i], y[i]);  // must come first in case dest == x
     dest[i] = x[i] + y[i] + carry;
     carry = dest[i] < limit || (carry && dest[i] == limit);
   }
@@ -768,9 +770,9 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
 
       uint64_t result = u_tmp - subtrahend;
       uint32_t k = j + i;
-      u[k++] = (uint32_t)(result & (b - 1)); // subtract low word
-      u[k++] = (uint32_t)((result) >> 32);   // subtract high word
-      while (borrow && k <= m + n) {         // deal with borrow to the left
+      u[k++] = (uint32_t)(result & (b - 1));  // subtract low word
+      u[k++] = (uint32_t)((result) >> 32);    // subtract high word
+      while (borrow && k <= m + n) {          // deal with borrow to the left
         borrow = u[k] == 0;
         u[k]--;
         k++;
@@ -788,9 +790,9 @@ static INLINE void KnuthDiv(uint32_t* u, uint32_t* v, uint32_t* q, uint32_t* r,
     // the true value, and a "borrow" to the left should be remembered.
     //
     if (isNeg) {
-      bool carry = true; // true because b's complement is "complement + 1"
+      bool carry = true;  // true because b's complement is "complement + 1"
       for (uint32_t i = 0; i <= m + n; ++i) {
-        u[i] = ~u[i] + carry; // b's complement
+        u[i] = ~u[i] + carry;  // b's complement
         carry = carry && u[i] == 0;
       }
     }
@@ -898,7 +900,7 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
     __U[i * 2] = (uint32_t)(tmp & mask);
     __U[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
   }
-  __U[m + n] = 0; // this extra word is for "spill" in the Knuth algorithm.
+  __U[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
 
   // Initialize the divisor
   memset(__V, 0, (n) * sizeof(uint32_t));
@@ -1058,7 +1060,7 @@ void divide(const ap_private<_AP_W, _AP_S>& LHS, uint32_t lhsWords,
     __U[i * 2] = tmp & mask;
     __U[i * 2 + 1] = (tmp) >> (sizeof(uint32_t) * 8);
   }
-  __U[m + n] = 0; // this extra word is for "spill" in the Knuth algorithm.
+  __U[m + n] = 0;  // this extra word is for "spill" in the Knuth algorithm.
 
   // Initialize the divisor
   memset(__V, 0, (n) * sizeof(uint32_t));
@@ -1186,16 +1188,17 @@ INLINE ap_private<_AP_W, _AP_S, _AP_C> shl(
   return LHS.shl(shiftAmt);
 }
 
-} // namespace ap_private_ops
+}  // namespace ap_private_ops
 
-#endif // LLVM_SUPPORT_MATHEXTRAS_H
+#endif  // LLVM_SUPPORT_MATHEXTRAS_H
 
 /// This enumeration just provides for internal constants used in this
 /// translation unit.
 enum {
-  MIN_INT_BITS = 1, ///< Minimum number of bits that can be specified
+  MIN_INT_BITS = 1,  ///< Minimum number of bits that can be specified
   ///< Note that this must remain synchronized with IntegerType::MIN_INT_BITS
-  MAX_INT_BITS = (1 << 23) - 1 ///< Maximum number of bits that can be specified
+  MAX_INT_BITS =
+      (1 << 23) - 1  ///< Maximum number of bits that can be specified
   ///< Note that this must remain synchronized with IntegerType::MAX_INT_BITS
 };
 
@@ -1235,7 +1238,10 @@ enum {
 
 #if defined(_MSC_VER)
 #if _MSC_VER < 1400 && !defined(for)
-#define for if (0); else for
+#define for \
+  if (0)    \
+    ;       \
+  else for
 #endif
 typedef unsigned __int64 ap_ulong;
 typedef signed __int64 ap_slong;
@@ -1354,7 +1360,7 @@ class ap_private<_AP_W, _AP_S, true> {
     BitWidth = _AP_W,
     _AP_N = 1,
   };
-  ValType VAL; ///< Used to store the <= 64 bits integer value.
+  ValType VAL;  ///< Used to store the <= 64 bits integer value.
 #ifdef AP_CANARY
   ValType CANARY;
   void check_canary() { assert(CANARY == (ValType)0xDEADBEEFDEADBEEF); }
@@ -1393,33 +1399,34 @@ class ap_private<_AP_W, _AP_S, true> {
   template <int _AP_W1, bool _AP_S1>
   ap_private<_AP_W, _AP_S>& operator=(
       const volatile ap_private<_AP_W1, _AP_S1>& RHS) {
-    VAL = (ValType)(RHS.get_VAL()); // TODO check here about ap_private<W,S,false>
+    VAL = (ValType)(RHS.get_VAL());  // TODO check here about
+                                     // ap_private<W,S,false>
     clearUnusedBits();
     return *this;
   }
 
   void operator=(const ap_private& RHS) volatile {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL(); // No need to check because no harm done by copying.
+    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
     clearUnusedBits();
   }
 
   ap_private& operator=(const ap_private& RHS) {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL(); // No need to check because no harm done by copying.
+    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
     clearUnusedBits();
     return *this;
   }
 
   void operator=(const volatile ap_private& RHS) volatile {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL(); // No need to check because no harm done by copying.
+    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
     clearUnusedBits();
   }
 
   ap_private& operator=(const volatile ap_private& RHS) {
     // Don't do anything for X = X
-    VAL = RHS.get_VAL(); // No need to check because no harm done by copying.
+    VAL = RHS.get_VAL();  // No need to check because no harm done by copying.
     clearUnusedBits();
     return *this;
   }
@@ -1439,18 +1446,18 @@ class ap_private<_AP_W, _AP_S, true> {
     return *this;                                \
   }
 
-ASSIGN_OP_FROM_INT(bool)
-ASSIGN_OP_FROM_INT(char)
-ASSIGN_OP_FROM_INT(signed char)
-ASSIGN_OP_FROM_INT(unsigned char)
-ASSIGN_OP_FROM_INT(short)
-ASSIGN_OP_FROM_INT(unsigned short)
-ASSIGN_OP_FROM_INT(int)
-ASSIGN_OP_FROM_INT(unsigned int)
-ASSIGN_OP_FROM_INT(long)
-ASSIGN_OP_FROM_INT(unsigned long)
-ASSIGN_OP_FROM_INT(ap_slong)
-ASSIGN_OP_FROM_INT(ap_ulong)
+  ASSIGN_OP_FROM_INT(bool)
+  ASSIGN_OP_FROM_INT(char)
+  ASSIGN_OP_FROM_INT(signed char)
+  ASSIGN_OP_FROM_INT(unsigned char)
+  ASSIGN_OP_FROM_INT(short)
+  ASSIGN_OP_FROM_INT(unsigned short)
+  ASSIGN_OP_FROM_INT(int)
+  ASSIGN_OP_FROM_INT(unsigned int)
+  ASSIGN_OP_FROM_INT(long)
+  ASSIGN_OP_FROM_INT(unsigned long)
+  ASSIGN_OP_FROM_INT(ap_slong)
+  ASSIGN_OP_FROM_INT(ap_ulong)
 #if 0
 ASSIGN_OP_FROM_INT(half)
 ASSIGN_OP_FROM_INT(float)
@@ -1460,7 +1467,7 @@ ASSIGN_OP_FROM_INT(double)
 
   // XXX This is a must to prevent pointer being converted to bool.
   INLINE ap_private& operator=(const char* s) {
-    ap_private tmp(s); // XXX direct-initialization, as ctor is explicit.
+    ap_private tmp(s);  // XXX direct-initialization, as ctor is explicit.
     operator=(tmp);
     return *this;
   }
@@ -1483,27 +1490,34 @@ ASSIGN_OP_FROM_INT(double)
     }
 
     if (strStart[0] == '0' && (strStart[1] == 'b' || strStart[1] == 'B')) {
-      //if(radix == 0) radix = 2;
-      _AP_WARNING(radix != 2, "%s seems to have base %d, but %d given.", strStart, 2, radix);
+      // if(radix == 0) radix = 2;
+      _AP_WARNING(radix != 2, "%s seems to have base %d, but %d given.",
+                  strStart, 2, radix);
       strStart += 2;
-      slen -=2;
-    } else if (strStart[0] == '0' && (strStart[1] == 'o' || strStart[1] == 'O')) {
-      //if (radix == 0) radix = 8;
-      _AP_WARNING(radix != 8, "%s seems to have base %d, but %d given.", strStart, 8, radix);
+      slen -= 2;
+    } else if (strStart[0] == '0' &&
+               (strStart[1] == 'o' || strStart[1] == 'O')) {
+      // if (radix == 0) radix = 8;
+      _AP_WARNING(radix != 8, "%s seems to have base %d, but %d given.",
+                  strStart, 8, radix);
       strStart += 2;
-      slen -=2;
-    } else if (strStart[0] == '0' && (strStart[1] == 'x' || strStart[1] == 'X')) {
-      //if (radix == 0) radix = 16;
-      _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.", strStart, 16, radix);
+      slen -= 2;
+    } else if (strStart[0] == '0' &&
+               (strStart[1] == 'x' || strStart[1] == 'X')) {
+      // if (radix == 0) radix = 16;
+      _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.",
+                  strStart, 16, radix);
       strStart += 2;
-      slen -=2;
-    } else if (strStart[0] == '0' && (strStart[1] == 'd' || strStart[1] == 'D')) {
-      //if (radix == 0) radix = 10;
-      _AP_WARNING(radix != 10, "%s seems to have base %d, but %d given.", strStart, 10, radix);
+      slen -= 2;
+    } else if (strStart[0] == '0' &&
+               (strStart[1] == 'd' || strStart[1] == 'D')) {
+      // if (radix == 0) radix = 10;
+      _AP_WARNING(radix != 10, "%s seems to have base %d, but %d given.",
+                  strStart, 10, radix);
       strStart += 2;
-      slen -=2;
+      slen -= 2;
     } else if (radix == 0) {
-      //radix = 2; // XXX default value
+      // radix = 2; // XXX default value
     }
 
     // Check our assumptions here
@@ -1533,8 +1547,8 @@ ASSIGN_OP_FROM_INT(double)
         sscanf(strStart, "%lo", &tmpVAL);
 #else
         sscanf(strStart, "%llo", &tmpVAL);
-#endif //__x86_64__
-#endif //_MSC_VER
+#endif  //__x86_64__
+#endif  //_MSC_VER
         break;
       case 10:
 #ifdef _MSC_VER
@@ -1544,8 +1558,8 @@ ASSIGN_OP_FROM_INT(double)
         sscanf(strStart, "%lu", &tmpVAL);
 #else
         sscanf(strStart, "%llu", &tmpVAL);
-#endif //__x86_64__
-#endif //_MSC_VER
+#endif  //__x86_64__
+#endif  //_MSC_VER
         break;
       case 16:
 #ifdef _MSC_VER
@@ -1555,8 +1569,8 @@ ASSIGN_OP_FROM_INT(double)
         sscanf(strStart, "%lx", &tmpVAL);
 #else
         sscanf(strStart, "%llx", &tmpVAL);
-#endif //__x86_64__
-#endif //_MSC_VER
+#endif  //__x86_64__
+#endif  //_MSC_VER
         break;
       default:
         assert(true && "Unknown radix");
@@ -1640,7 +1654,8 @@ ASSIGN_OP_FROM_INT(double)
   explicit INLINE ap_private(const char* val) {
     set_canary();
     unsigned char radix = 10;
-    std::string str = ap_private_ops::parseString(val, radix); // will set radix.
+    std::string str =
+        ap_private_ops::parseString(val, radix);  // will set radix.
     std::string::size_type pos = str.find('.');
     // trunc all fraction part
     if (pos != std::string::npos) str = str.substr(pos);
@@ -1653,7 +1668,8 @@ ASSIGN_OP_FROM_INT(double)
   INLINE ap_private(const char* val, signed char rd) {
     set_canary();
     unsigned char radix = rd;
-    std::string str = ap_private_ops::parseString(val, radix); // will set radix.
+    std::string str =
+        ap_private_ops::parseString(val, radix);  // will set radix.
     std::string::size_type pos = str.find('.');
     // trunc all fraction part
     if (pos != std::string::npos) str = str.substr(pos);
@@ -1805,30 +1821,33 @@ ASSIGN_OP_FROM_INT(double)
     check_canary();
   }
 
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& ref) {
-//    set_canary();
-//    *this = ref.get();
-//    check_canary();
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_private(
-//      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val) {
-//    set_canary();
-//    *this = ((val.operator ap_private<_AP_W2, false>()));
-//    check_canary();
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_private(
-//      const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val) {
-//    set_canary();
-//    *this = (uint64_t)(bool)val;
-//    check_canary();
-//  }
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&
+  //  ref) {
+  //    set_canary();
+  //    *this = ref.get();
+  //    check_canary();
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_private(
+  //      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&
+  //      val) {
+  //    set_canary();
+  //    *this = ((val.operator ap_private<_AP_W2, false>()));
+  //    check_canary();
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_private(
+  //      const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val)
+  //      {
+  //    set_canary();
+  //    *this = (uint64_t)(bool)val;
+  //    check_canary();
+  //  }
 
   INLINE void write(const ap_private<_AP_W, _AP_S>& op2) volatile {
     *this = (op2);
@@ -2082,7 +2101,7 @@ ASSIGN_OP_FROM_INT(double)
   INLINE ap_private<_AP_W, _AP_S>& set(uint32_t bitPosition) {
     VAL |= (1ULL << (bitPosition));
     clearUnusedBits();
-    return *this; // clearUnusedBits();
+    return *this;  // clearUnusedBits();
   }
 
   INLINE void set() {
@@ -2104,11 +2123,10 @@ ASSIGN_OP_FROM_INT(double)
 #endif
   {
     enum { excess_bits = (_AP_W % 64) ? 64 - _AP_W % 64 : 0 };
-    VAL = (ValType)(
-        _AP_S
-            ? ((((int64_t)VAL) << (excess_bits)) >> (excess_bits))
-            : (excess_bits ? (((uint64_t)VAL) << (excess_bits)) >> (excess_bits)
-                           : (uint64_t)VAL));
+    VAL = (ValType)(_AP_S ? ((((int64_t)VAL) << (excess_bits)) >> (excess_bits))
+                          : (excess_bits ? (((uint64_t)VAL) << (excess_bits)) >>
+                                               (excess_bits)
+                                         : (uint64_t)VAL));
   }
 
   INLINE void clearUnusedBitsToZero(void) {
@@ -2439,11 +2457,11 @@ ASSIGN_OP_FROM_INT(double)
   OP_ASSIGN_AP_2(%)
 #undef OP_ASSIGN_AP_2
 
-/// Bitwise assign: and, or, xor
-//-------------------------------------------------------------
-//    OP_ASSIGN_AP(&)
-//    OP_ASSIGN_AP(^)
-//    OP_ASSIGN_AP(|)
+  /// Bitwise assign: and, or, xor
+  //-------------------------------------------------------------
+  //    OP_ASSIGN_AP(&)
+  //    OP_ASSIGN_AP(^)
+  //    OP_ASSIGN_AP(|)
 
 #define OP_LEFT_SHIFT_CTYPE(TYPE, SIGNED)             \
   INLINE ap_private operator<<(const TYPE op) const { \
@@ -2532,11 +2550,11 @@ ASSIGN_OP_FROM_INT(double)
   /// Shift assign
   //-----------------------------------------------------------------
 
-  //INLINE const ap_private& operator<<=(uint32_t shiftAmt) {
-  //  VAL <<= shiftAmt;
-  //  clearUnusedBits();
-  //  return *this;
-  //}
+  // INLINE const ap_private& operator<<=(uint32_t shiftAmt) {
+  //   VAL <<= shiftAmt;
+  //   clearUnusedBits();
+  //   return *this;
+  // }
 
 #define OP_ASSIGN_AP(Sym)                                                    \
   template <int _AP_W2, bool _AP_S2>                                         \
@@ -2594,17 +2612,17 @@ ASSIGN_OP_FROM_INT(double)
       // different signness but both bitwidth is less than 32
       return lhs.sgt(rhs);
     else
-        // different signness but bigger bitwidth
-        // is greater or equal to 32
-        if (_AP_S)
-      if (_AP_W2 >= _AP_W)
+      // different signness but bigger bitwidth
+      // is greater or equal to 32
+      if (_AP_S)
+        if (_AP_W2 >= _AP_W)
+          return lhs.ugt(rhs);
+        else
+          return lhs.sgt(rhs);
+      else if (_AP_W >= _AP_W2)
         return lhs.ugt(rhs);
       else
         return lhs.sgt(rhs);
-    else if (_AP_W >= _AP_W2)
-      return lhs.ugt(rhs);
-    else
-      return lhs.sgt(rhs);
   }
 
   template <int _AP_W2, bool _AP_S2>
@@ -2687,7 +2705,8 @@ ASSIGN_OP_FROM_INT(double)
   }
 
   template <int _AP_W2, bool _AP_S2>
-  INLINE _private_bit_ref<_AP_W, _AP_S> bit(const ap_private<_AP_W2, _AP_S2>& index) {
+  INLINE _private_bit_ref<_AP_W, _AP_S> bit(
+      const ap_private<_AP_W2, _AP_S2>& index) {
     return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
@@ -2703,182 +2722,192 @@ ASSIGN_OP_FROM_INT(double)
         const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       ap_private<_AP_W2, _AP_S2> >
-//  concat(const ap_private<_AP_W2, _AP_S2>& a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       ap_private<_AP_W2, _AP_S2> >
-//  concat(ap_private<_AP_W2, _AP_S2>& a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(const ap_private<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(const ap_private<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        *this, const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this), a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       _private_range_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         _private_range_ref<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       _private_range_ref<_AP_W2, _AP_S2> >
-//  operator,(_private_range_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         _private_range_ref<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                       _private_bit_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                         _private_bit_ref<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                       _private_bit_ref<_AP_W2, _AP_S2> >
-//  operator,(_private_bit_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                         _private_bit_ref<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(*this,
-//                                                                         a2);
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      _AP_W, ap_private, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-//                &a2) const {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<
-//            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      _AP_W, ap_private, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
-//                                                                       a2);
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<_AP_W, ap_private, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-//                    &a2) const {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, 1,
-//        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(
-//            a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<_AP_W, ap_private, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//      operator,(
-//          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, 1,
-//        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator&(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this & a2.get();
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator|(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this | a2.get();
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator^(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this ^ a2.get();
-//  }
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       ap_private<_AP_W2, _AP_S2> >
+  //  concat(const ap_private<_AP_W2, _AP_S2>& a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       ap_private<_AP_W2, _AP_S2> >
+  //  concat(ap_private<_AP_W2, _AP_S2>& a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(const ap_private<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(const ap_private<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        *this, const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this), a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(ap_private<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       _private_range_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         _private_range_ref<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       _private_range_ref<_AP_W2, _AP_S2> >
+  //  operator,(_private_range_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         _private_range_ref<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                       _private_bit_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                         _private_bit_ref<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                       _private_bit_ref<_AP_W2, _AP_S2> >
+  //  operator,(_private_bit_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                         _private_bit_ref<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>
+  //                         >(*this,
+  //                                                                         a2);
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      _AP_W, ap_private, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //  _AP_N2>
+  //                &a2) const {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<
+  //            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //            _AP_N2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      _AP_W, ap_private, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+  //  &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+  //        >(*this,
+  //                                                                       a2);
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<_AP_W, ap_private, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //      _AP_N2>
+  //                    &a2) const {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, 1,
+  //        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //        _AP_N2>&>(
+  //            a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<_AP_W, ap_private, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(
+  //          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, 1,
+  //        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
+  //        a2);
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator&(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this & a2.get();
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator|(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this | a2.get();
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator^(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this ^ a2.get();
+  //  }
 
   // Reduce operation
   //-----------------------------------------------------------
@@ -2903,7 +2932,7 @@ ASSIGN_OP_FROM_INT(double)
   INLINE std::string to_string(uint8_t radix = 2, bool sign = false) const {
     return toString(radix, radix == 10 ? _AP_S : sign);
   }
-}; // End of class ap_private <_AP_W, _AP_S, true>
+};  // End of class ap_private <_AP_W, _AP_S, true>
 
 template <int _AP_W, bool _AP_S>
 std::string ap_private<_AP_W, _AP_S, true>::toString(uint8_t radix,
@@ -3010,7 +3039,7 @@ std::string ap_private<_AP_W, _AP_S, true>::toString(uint8_t radix,
     }
   return result;
 
-} // End of ap_private<_AP_W, _AP_S, true>::toString()
+}  // End of ap_private<_AP_W, _AP_S, true>::toString()
 
 // bitwidth > 64
 template <int _AP_W, bool _AP_S>
@@ -3097,7 +3126,7 @@ class ap_private<_AP_W, _AP_S, false> {
 
   /// This enum is used to hold the constants we needed for ap_private.
   // uint64_t VAL;    ///< Used to store the <= 64 bits integer value.
-  uint64_t pVal[_AP_N]; ///< Used to store the >64 bits integer value.
+  uint64_t pVal[_AP_N];  ///< Used to store the >64 bits integer value.
 #ifdef AP_CANARY
   uint64_t CANARY;
   INLINE void check_canary() { assert(CANARY == (uint64_t)0xDEADBEEFDEADBEEF); }
@@ -3158,8 +3187,8 @@ class ap_private<_AP_W, _AP_S, false> {
 
   /// This enum is used to hold the constants we needed for ap_private.
   enum {
-    APINT_BITS_PER_WORD = sizeof(uint64_t) * 8, ///< Bits in a word
-    APINT_WORD_SIZE = sizeof(uint64_t)          ///< Byte size of a word
+    APINT_BITS_PER_WORD = sizeof(uint64_t) * 8,  ///< Bits in a word
+    APINT_WORD_SIZE = sizeof(uint64_t)           ///< Byte size of a word
   };
 
   enum {
@@ -3174,7 +3203,8 @@ class ap_private<_AP_W, _AP_S, false> {
   explicit INLINE ap_private(const char* val) {
     set_canary();
     unsigned char radix = 10;
-    std::string str = ap_private_ops::parseString(val, radix); // determine radix.
+    std::string str =
+        ap_private_ops::parseString(val, radix);  // determine radix.
     std::string::size_type pos = str.find('.');
     if (pos != std::string::npos) str = str.substr(pos);
     ap_private ap_private_val(str, radix);
@@ -3186,7 +3216,8 @@ class ap_private<_AP_W, _AP_S, false> {
   INLINE ap_private(const char* val, unsigned char rd) {
     set_canary();
     unsigned char radix = rd;
-    std::string str = ap_private_ops::parseString(val, radix); // determine radix.
+    std::string str =
+        ap_private_ops::parseString(val, radix);  // determine radix.
     std::string::size_type pos = str.find('.');
     if (pos != std::string::npos) str = str.substr(pos);
     ap_private ap_private_val(str, radix);
@@ -3213,41 +3244,44 @@ class ap_private<_AP_W, _AP_S, false> {
     check_canary();
   }
 
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& ref) {
-//    set_canary();
-//    *this = ref.get();
-//    report();
-//    check_canary();
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_private(
-//      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val) {
-//    set_canary();
-//    *this = ((val.operator ap_private<_AP_W2, false>()));
-//    report();
-//    check_canary();
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_private(
-//      const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val) {
-//    set_canary();
-//    *this = (uint64_t)(bool)val;
-//    report();
-//    check_canary();
-//  }
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&
+  //  ref) {
+  //    set_canary();
+  //    *this = ref.get();
+  //    report();
+  //    check_canary();
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_private(
+  //      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&
+  //      val) {
+  //    set_canary();
+  //    *this = ((val.operator ap_private<_AP_W2, false>()));
+  //    report();
+  //    check_canary();
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_private(
+  //      const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val)
+  //      {
+  //    set_canary();
+  //    *this = (uint64_t)(bool)val;
+  //    report();
+  //    check_canary();
+  //  }
 
   /// Simply makes *this a copy of that.
   /// @brief Copy Constructor.
   INLINE ap_private(const ap_private& that) {
-      set_canary();
-      memcpy(pVal, that.get_pVal(), _AP_N * APINT_WORD_SIZE);
-      clearUnusedBits();
-      check_canary();
+    set_canary();
+    memcpy(pVal, that.get_pVal(), _AP_N * APINT_WORD_SIZE);
+    clearUnusedBits();
+    check_canary();
   }
 
   template <int _AP_W1, bool _AP_S1>
@@ -3416,27 +3450,31 @@ class ap_private<_AP_W, _AP_S, false> {
     }
 
     if (str[0] == '0' && (str[1] == 'b' || str[1] == 'B')) {
-      //if(radix == 0) radix = 2;
-      _AP_WARNING(radix != 2, "%s seems to have base %d, but %d given.", str, 2, radix);
+      // if(radix == 0) radix = 2;
+      _AP_WARNING(radix != 2, "%s seems to have base %d, but %d given.", str, 2,
+                  radix);
       str += 2;
-      slen -=2;
+      slen -= 2;
     } else if (str[0] == '0' && (str[1] == 'o' || str[1] == 'O')) {
-      //if (radix == 0) radix = 8;
-      _AP_WARNING(radix != 8, "%s seems to have base %d, but %d given.", str, 8, radix);
+      // if (radix == 0) radix = 8;
+      _AP_WARNING(radix != 8, "%s seems to have base %d, but %d given.", str, 8,
+                  radix);
       str += 2;
-      slen -=2;
+      slen -= 2;
     } else if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-      //if (radix == 0) radix = 16;
-      _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.", str, 16, radix);
+      // if (radix == 0) radix = 16;
+      _AP_WARNING(radix != 16, "%s seems to have base %d, but %d given.", str,
+                  16, radix);
       str += 2;
-      slen -=2;
+      slen -= 2;
     } else if (str[0] == '0' && (str[1] == 'd' || str[1] == 'D')) {
-      //if (radix == 0) radix = 10;
-      _AP_WARNING(radix != 10, "%s seems to have base %d, but %d given.", str, 10, radix);
+      // if (radix == 0) radix = 10;
+      _AP_WARNING(radix != 10, "%s seems to have base %d, but %d given.", str,
+                  10, radix);
       str += 2;
-      slen -=2;
+      slen -= 2;
     } else if (radix == 0) {
-      //radix = 2; // XXX default value
+      // radix = 2; // XXX default value
     }
 
     // Check our assumptions here
@@ -3688,26 +3726,26 @@ class ap_private<_AP_W, _AP_S, false> {
   // Binary Arithmetic
   //-----------------------------------------------------------
 
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator&(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this & a2.get();
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator|(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this | a2.get();
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator^(
-//      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
-//    return *this ^ a2.get();
-//  }
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator&(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this & a2.get();
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator|(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this | a2.get();
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_private<AP_MAX(_AP_W2 + _AP_W3, _AP_W), _AP_S> operator^(
+  //      const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>& a2) {
+  //    return *this ^ a2.get();
+  //  }
 
-/// Arithmetic assign
-//-------------------------------------------------------------
+  /// Arithmetic assign
+  //-------------------------------------------------------------
 
 #define OP_BIN_LOGIC_ASSIGN_AP(Sym)                                            \
   template <int _AP_W1, bool _AP_S1>                                           \
@@ -4169,7 +4207,8 @@ class ap_private<_AP_W, _AP_S, false> {
       const ap_private<_AP_W3, _AP_S3>& LoIdx) const {
     int Hi = HiIdx.to_int();
     int Lo = LoIdx.to_int();
-    return _private_range_ref<_AP_W, _AP_S>(const_cast<ap_private*>(this), Hi, Lo);
+    return _private_range_ref<_AP_W, _AP_S>(const_cast<ap_private*>(this), Hi,
+                                            Lo);
   }
 
   template <int _AP_W2, bool _AP_S2, int _AP_W3, bool _AP_S3>
@@ -4208,7 +4247,8 @@ class ap_private<_AP_W, _AP_S, false> {
   }
 
   template <int _AP_W2, bool _AP_S2>
-  INLINE _private_bit_ref<_AP_W, _AP_S> bit(const ap_private<_AP_W2, _AP_S2>& index) {
+  INLINE _private_bit_ref<_AP_W, _AP_S> bit(
+      const ap_private<_AP_W2, _AP_S2>& index) {
     return _private_bit_ref<_AP_W, _AP_S>(*this, index.to_int());
   }
 
@@ -4224,164 +4264,174 @@ class ap_private<_AP_W, _AP_S, false> {
         const_cast<ap_private<_AP_W, _AP_S>&>(*this), index.to_int());
   }
 
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       ap_private<_AP_W2, _AP_S2> >
-//  concat(ap_private<_AP_W2, _AP_S2>& a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       ap_private<_AP_W2, _AP_S2> >
-//  concat(const ap_private<_AP_W2, _AP_S2>& a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this), a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(const ap_private<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        *this, const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2> >
-//  operator,(const ap_private<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       _private_range_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         _private_range_ref<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                       _private_range_ref<_AP_W2, _AP_S2> >
-//  operator,(_private_range_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
-//                         _private_range_ref<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                       _private_bit_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                         _private_bit_ref<_AP_W2, _AP_S2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                       _private_bit_ref<_AP_W2, _AP_S2> >
-//  operator,(_private_bit_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
-//                         _private_bit_ref<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
-//    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(*this,
-//                                                                         a2);
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      _AP_W, ap_private, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-//                &a2) const {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<
-//            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      _AP_W, ap_private, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
-//                                                                       a2);
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<_AP_W, ap_private, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-//                    &a2) const {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, 1,
-//        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
-//        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(
-//            a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<_AP_W, ap_private, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//      operator,(
-//          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-//    return ap_concat_ref<
-//        _AP_W, ap_private, 1,
-//        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this, a2);
-//  }
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       ap_private<_AP_W2, _AP_S2> >
+  //  concat(ap_private<_AP_W2, _AP_S2>& a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       ap_private<_AP_W2, _AP_S2> >
+  //  concat(const ap_private<_AP_W2, _AP_S2>& a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(ap_private<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this), a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(const ap_private<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        *this, const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private, _AP_W2, ap_private<_AP_W2, _AP_S2>
+  //  > operator,(const ap_private<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_private<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       _private_range_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         _private_range_ref<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                       _private_range_ref<_AP_W2, _AP_S2> >
+  //  operator,(_private_range_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2,
+  //                         _private_range_ref<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                       _private_bit_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                         _private_bit_ref<_AP_W2, _AP_S2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                       _private_bit_ref<_AP_W2, _AP_S2> >
+  //  operator,(_private_bit_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, 1,
+  //                         _private_bit_ref<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  //    return ap_concat_ref<_AP_W, ap_private<_AP_W, _AP_S>, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>
+  //                         >(*this,
+  //                                                                         a2);
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      _AP_W, ap_private, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //  _AP_N2>
+  //                &a2) const {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<
+  //            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //            _AP_N2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      _AP_W, ap_private, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+  //  &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+  //        >(*this,
+  //                                                                       a2);
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<_AP_W, ap_private, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //      _AP_N2>
+  //                    &a2) const {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, 1,
+  //        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        const_cast<ap_private<_AP_W, _AP_S>&>(*this),
+  //        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //        _AP_N2>&>(
+  //            a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<_AP_W, ap_private, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(
+  //          af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, ap_private, 1,
+  //        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(*this,
+  //        a2);
+  //  }
 
   INLINE ap_private<_AP_W, false> get() const {
     ap_private<_AP_W, false> ret(*this);
@@ -4649,7 +4699,7 @@ class ap_private<_AP_W, _AP_S, false> {
   /// from c string.
   // XXX this is a must, to prevent pointer being converted to bool.
   INLINE ap_private& operator=(const char* s) {
-    ap_private tmp(s); // XXX direct initialization, as ctor is explicit.
+    ap_private tmp(s);  // XXX direct initialization, as ctor is explicit.
     operator=(tmp);
     return *this;
   }
@@ -4774,22 +4824,22 @@ class ap_private<_AP_W, _AP_S, false> {
 
     // Compute some values needed by the following shift algorithms
     uint32_t wordShift =
-        shiftAmt % APINT_BITS_PER_WORD;               // bits to shift per word
-    uint32_t offset = shiftAmt / APINT_BITS_PER_WORD; // word offset for shift
-    uint32_t breakWord = _AP_N - 1 - offset;          // last word affected
-    uint32_t bitsInWord = whichBit(BitWidth); // how many bits in last word?
+        shiftAmt % APINT_BITS_PER_WORD;                // bits to shift per word
+    uint32_t offset = shiftAmt / APINT_BITS_PER_WORD;  // word offset for shift
+    uint32_t breakWord = _AP_N - 1 - offset;           // last word affected
+    uint32_t bitsInWord = whichBit(BitWidth);  // how many bits in last word?
     if (bitsInWord == 0) bitsInWord = APINT_BITS_PER_WORD;
 
     // If we are shifting whole words, just move whole words
     if (wordShift == 0) {
       // Move the words containing significant bits
       for (uint32_t i = 0; i <= breakWord; ++i)
-        val[i] = pVal[i + offset]; // move whole word
+        val[i] = pVal[i + offset];  // move whole word
 
       // Adjust the top significant word for sign bit fill, if negative
       if (isNegative())
         if (bitsInWord < APINT_BITS_PER_WORD)
-          val[breakWord] |= ~0ULL << (bitsInWord); // set high bits
+          val[breakWord] |= ~0ULL << (bitsInWord);  // set high bits
     } else {
       // Shift the low order words
       for (uint32_t i = 0; i < breakWord; ++i) {
@@ -4980,7 +5030,7 @@ class ap_private<_AP_W, _AP_S, false> {
     }
 
     // We have to compute it the hard way. Invoke the Knuth divide algorithm.
-    ap_private Quotient(0); // to hold result.
+    ap_private Quotient(0);  // to hold result.
     ap_private_ops::divide(*this, lhsWords, RHS, rhsWords, &Quotient,
                            (ap_private*)0);
     return Quotient;
@@ -5044,8 +5094,8 @@ class ap_private<_AP_W, _AP_S, false> {
     uint32_t lhsBits = getActiveBits();
     uint32_t lhsWords = !lhsBits ? 0 : (whichWord(lhsBits - 1) + 1);
     // Get some facts about the RHS
-    uint32_t rhsWords = 1; //! rhsBits ? 0 : (ap_private<_AP_W,
-                           //! _AP_S>::whichWord(rhsBits - 1) + 1);
+    uint32_t rhsWords = 1;  //! rhsBits ? 0 : (ap_private<_AP_W,
+                            //! _AP_S>::whichWord(rhsBits - 1) + 1);
     assert(rhsWords && "Performing remainder operation by zero ???");
     // Check the degenerate cases
     if (lhsWords == 0) {
@@ -5149,7 +5199,7 @@ class ap_private<_AP_W, _AP_S, false> {
     // Get active bit length of both operands
     uint32_t n1 = getActiveBits();
     uint32_t n2 =
-        64 - ap_private_ops::CountLeadingZeros_64(RHS); // RHS.getActiveBits();
+        64 - ap_private_ops::CountLeadingZeros_64(RHS);  // RHS.getActiveBits();
 
     // If magnitude of LHS is less than RHS, return true.
     if (n1 < n2) return true;
@@ -5531,7 +5581,7 @@ class ap_private<_AP_W, _AP_S, false> {
       else
         return -std::numeric_limits<double>::infinity();
     }
-    exp += 1023; // Increment for 1023 bias
+    exp += 1023;  // Increment for 1023 bias
 
     // Number of bits in mantissa is 52. To obtain the mantissa value, we must
     // extract the high 52 bits from the correct words in pVal.
@@ -5540,7 +5590,7 @@ class ap_private<_AP_W, _AP_S, false> {
     if (hiWord == 0) {
       mantissa = Tmp.get_pVal(0);
       if (n > 52)
-        (mantissa) >>= (n - 52); // shift down, we want the top 52 bits.
+        (mantissa) >>= (n - 52);  // shift down, we want the top 52 bits.
     } else {
       assert(hiWord > 0 && "High word is negative?");
       uint64_t hibits = (Tmp.get_pVal(hiWord))
@@ -5641,7 +5691,7 @@ class ap_private<_AP_W, _AP_S, false> {
   INLINE std::string to_string(uint8_t radix = 16, bool sign = false) const {
     return toString(radix, radix == 10 ? _AP_S : sign);
   }
-}; // End of class ap_private <_AP_W, _AP_S, false>
+};  // End of class ap_private <_AP_W, _AP_S, false>
 
 namespace ap_private_ops {
 
@@ -5749,7 +5799,7 @@ INLINE void clear(ap_private<_AP_W, _AP_S>& a,
   a.clearUnusedBits();
 }
 
-} // End of ap_private_ops namespace
+}  // namespace ap_private_ops
 
 template <int _AP_W, bool _AP_S>
 INLINE std::string ap_private<_AP_W, _AP_S, false>::toString(
@@ -5843,15 +5893,15 @@ INLINE std::string ap_private<_AP_W, _AP_S, false>::toString(
     }
 
   return result;
-} // End of ap_private<_AP_W, _AP_S, false>::toString()
+}  // End of ap_private<_AP_W, _AP_S, false>::toString()
 
 template <int _AP_W, bool _AP_S>
-std::ostream &operator<<(std::ostream &os, const ap_private<_AP_W, _AP_S> &x) {
+std::ostream& operator<<(std::ostream& os, const ap_private<_AP_W, _AP_S>& x) {
   std::ios_base::fmtflags ff = std::cout.flags();
   if (ff & std::cout.hex) {
-    os << x.toString(16, false); // don't print sign
+    os << x.toString(16, false);  // don't print sign
   } else if (ff & std::cout.oct) {
-    os << x.toString(8, false); // don't print sign
+    os << x.toString(8, false);  // don't print sign
   } else {
     os << x.toString(10, _AP_S);
   }
@@ -6124,8 +6174,8 @@ struct _private_range_ref {
                 "negative.",
                 h, l);
     _AP_WARNING(h >= _AP_W || l >= _AP_W,
-                "Higher bound (%d) or lower bound (%d) out of range (%d).", h, l,
-                _AP_W);
+                "Higher bound (%d) or lower bound (%d) out of range (%d).", h,
+                l, _AP_W);
   }
 
   /// compound or assignment.
@@ -6257,7 +6307,7 @@ struct _private_range_ref {
       }
     }
     return *this;
-  } // operator=(const ap_private<>&)
+  }  // operator=(const ap_private<>&)
 
   INLINE _private_range_ref& operator=(unsigned long long val) {
     const ap_private<_AP_W, _AP_S> vval = val;
@@ -6277,19 +6327,20 @@ struct _private_range_ref {
     return operator=(tmpVal);
   }
 
-//  template <int _AP_W3, typename _AP_T3, int _AP_W4, typename _AP_T4>
-//  INLINE _private_range_ref& operator=(
-//      const ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4>& val) {
-//    const ap_private<_AP_W, false> tmpVal(val);
-//    return operator=(tmpVal);
-//  }
+  //  template <int _AP_W3, typename _AP_T3, int _AP_W4, typename _AP_T4>
+  //  INLINE _private_range_ref& operator=(
+  //      const ap_concat_ref<_AP_W3, _AP_T3, _AP_W4, _AP_T4>& val) {
+  //    const ap_private<_AP_W, false> tmpVal(val);
+  //    return operator=(tmpVal);
+  //  }
 
   // TODO from ap_int_base, ap_bit_ref and ap_range_ref.
 
   template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
             ap_o_mode _AP_O2, int _AP_N2>
   INLINE _private_range_ref& operator=(
-      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& val) {
+      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&
+          val) {
     return operator=(val.to_ap_int_base().V);
   }
 
@@ -6307,77 +6358,83 @@ struct _private_range_ref {
     return operator=((unsigned long long)(bool)val);
   }
 
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
-//                       _private_range_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
-//                         _private_range_ref<_AP_W2, _AP_S2> >(
-//        *this, const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
-//                       ap_private<_AP_W2, _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
-//                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
-//  }
-//
-//  INLINE
-//  ap_concat_ref<_AP_W, _private_range_ref, _AP_W, ap_private<_AP_W, _AP_S> >
-//  operator,(ap_private<_AP_W, _AP_S>& a2) {
-//    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W,
-//                         ap_private<_AP_W, _AP_S> >(*this, a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<_AP_W, _private_range_ref, 1,
-//                       _private_bit_ref<_AP_W2, _AP_S2> >
-//  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) {
-//    return ap_concat_ref<_AP_W, _private_range_ref, 1,
-//                         _private_bit_ref<_AP_W2, _AP_S2> >(
-//        *this, const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
-//    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
-//        *this, const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      _AP_W, _private_range_ref, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(
-//      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> &a2) {
-//    return ap_concat_ref<
-//        _AP_W, _private_range_ref, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        *this,
-//        const_cast<
-//            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<_AP_W, _private_range_ref, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
-//                    &a2) {
-//    return ap_concat_ref<
-//        _AP_W, _private_range_ref, 1,
-//        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        *this,
-//        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>&>(
-//            a2));
-//  }
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
+  //                       _private_range_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
+  //                         _private_range_ref<_AP_W2, _AP_S2> >(
+  //        *this, const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
+  //                       ap_private<_AP_W2, _AP_S2> >
+  //  operator,(ap_private<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2,
+  //                         ap_private<_AP_W2, _AP_S2> >(*this, a2);
+  //  }
+  //
+  //  INLINE
+  //  ap_concat_ref<_AP_W, _private_range_ref, _AP_W, ap_private<_AP_W, _AP_S> >
+  //  operator,(ap_private<_AP_W, _AP_S>& a2) {
+  //    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W,
+  //                         ap_private<_AP_W, _AP_S> >(*this, a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<_AP_W, _private_range_ref, 1,
+  //                       _private_bit_ref<_AP_W2, _AP_S2> >
+  //  operator,(const _private_bit_ref<_AP_W2, _AP_S2> &a2) {
+  //    return ap_concat_ref<_AP_W, _private_range_ref, 1,
+  //                         _private_bit_ref<_AP_W2, _AP_S2> >(
+  //        *this, const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<_AP_W, _private_range_ref, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) {
+  //    return ap_concat_ref<_AP_W, _private_range_ref, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
+  //        *this, const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3,
+  //        _AP_T3>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      _AP_W, _private_range_ref, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(
+  //      const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>
+  //      &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, _private_range_ref, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        *this,
+  //        const_cast<
+  //            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //            _AP_N2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<_AP_W, _private_range_ref, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //      _AP_N2>
+  //                    &a2) {
+  //    return ap_concat_ref<
+  //        _AP_W, _private_range_ref, 1,
+  //        af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        *this,
+  //        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //        _AP_N2>&>(
+  //            a2));
+  //  }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE bool operator==(const _private_range_ref<_AP_W2, _AP_S2>& op2) {
@@ -6578,7 +6635,7 @@ struct _private_range_ref {
     for (unsigned i = low; i != high; ++i) ret ^= d_bv[i];
     return ret;
   }
-}; // struct _private_range_ref.
+};  // struct _private_range_ref.
 
 /// Bit reference
 /// Proxy class, which allows bit selection to be used as rvalue(for reading)
@@ -6603,7 +6660,8 @@ struct _private_bit_ref {
     _AP_WARNING(d_index < 0, "Index of bit vector  (%d) cannot be negative.\n",
                 d_index);
     _AP_WARNING(d_index >= _AP_W,
-                "Index of bit vector (%d) out of range (%d).\n", d_index, _AP_W);
+                "Index of bit vector (%d) out of range (%d).\n", d_index,
+                _AP_W);
   }
 
   INLINE operator bool() const { return d_bv.get_bit(d_index); }
@@ -6619,90 +6677,90 @@ struct _private_bit_ref {
     return *this;
   }
 
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2, ap_private<_AP_W2,
-//  _AP_S2> >
-//  operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, _AP_W2, ap_private<_AP_W2,
-//    _AP_S2> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this), a2);
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2,
-//  _private_range_ref<_AP_W2,
-//  _AP_S2> >
-//  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, _AP_W2,
-//    _private_range_ref<_AP_W2,
-//    _AP_S2> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, bool _AP_S2>
-//  INLINE ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref<_AP_W2,
-//  _AP_S2> > operator,(
-//      const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, 1,
-//    _private_bit_ref<_AP_W2, _AP_S2> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
-//  }
-//
-//  INLINE ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref>
-//  operator,(
-//      const _private_bit_ref &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref>(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<_private_bit_ref&>(a2));
-//  }
-//
-//  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
-//  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2 + _AP_W3,
-//                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
-//  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, _AP_W2 + _AP_W3,
-//                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE ap_concat_ref<
-//      1, _private_bit_ref, _AP_W2,
-//      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
-//  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
-//  _AP_N2>
-//                &a2) const {
-//    return ap_concat_ref<
-//        1, _private_bit_ref, _AP_W2,
-//        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<
-//            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
-//            _AP_N2>&>(a2));
-//  }
-//
-//  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
-//            ap_o_mode _AP_O2, int _AP_N2>
-//  INLINE
-//      ap_concat_ref<1, _private_bit_ref, 1,
-//                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
-//                    _AP_N2> >
-//      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
-//      _AP_N2>
-//                    &a2) const {
-//    return ap_concat_ref<1, _private_bit_ref, 1, af_bit_ref<_AP_W2,
-//    _AP_I2, _AP_S2,
-//                                                      _AP_Q2, _AP_O2,
-//                                                      _AP_N2> >(
-//        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
-//        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
-//        _AP_N2>&>(
-//            a2));
-//  }
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2, ap_private<_AP_W2,
+  //  _AP_S2> >
+  //  operator,(ap_private<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, _AP_W2, ap_private<_AP_W2,
+  //    _AP_S2> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this), a2);
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2,
+  //  _private_range_ref<_AP_W2,
+  //  _AP_S2> >
+  //  operator,(const _private_range_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, _AP_W2,
+  //    _private_range_ref<_AP_W2,
+  //    _AP_S2> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_range_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, bool _AP_S2>
+  //  INLINE ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref<_AP_W2,
+  //  _AP_S2> > operator,(
+  //      const _private_bit_ref<_AP_W2, _AP_S2> &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, 1,
+  //    _private_bit_ref<_AP_W2, _AP_S2> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_bit_ref<_AP_W2, _AP_S2>&>(a2));
+  //  }
+  //
+  //  INLINE ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref>
+  //  operator,(
+  //      const _private_bit_ref &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, 1, _private_bit_ref>(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<_private_bit_ref&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, typename _AP_T2, int _AP_W3, typename _AP_T3>
+  //  INLINE ap_concat_ref<1, _private_bit_ref, _AP_W2 + _AP_W3,
+  //                       ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >
+  //  operator,(const ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, _AP_W2 + _AP_W3,
+  //                         ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<ap_concat_ref<_AP_W2, _AP_T2, _AP_W3, _AP_T3>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE ap_concat_ref<
+  //      1, _private_bit_ref, _AP_W2,
+  //      af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >
+  //  operator,(const af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //  _AP_N2>
+  //                &a2) const {
+  //    return ap_concat_ref<
+  //        1, _private_bit_ref, _AP_W2,
+  //        af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<
+  //            af_range_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //            _AP_N2>&>(a2));
+  //  }
+  //
+  //  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,
+  //            ap_o_mode _AP_O2, int _AP_N2>
+  //  INLINE
+  //      ap_concat_ref<1, _private_bit_ref, 1,
+  //                    af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //                    _AP_N2> >
+  //      operator,(const af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //      _AP_N2>
+  //                    &a2) const {
+  //    return ap_concat_ref<1, _private_bit_ref, 1, af_bit_ref<_AP_W2,
+  //    _AP_I2, _AP_S2,
+  //                                                      _AP_Q2, _AP_O2,
+  //                                                      _AP_N2> >(
+  //        const_cast<_private_bit_ref<_AP_W, _AP_S>&>(*this),
+  //        const_cast<af_bit_ref<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2,
+  //        _AP_N2>&>(
+  //            a2));
+  //  }
 
   template <int _AP_W2, bool _AP_S2>
   INLINE bool operator==(const _private_bit_ref<_AP_W2, _AP_S2>& op) const {
@@ -6733,7 +6791,7 @@ struct _private_bit_ref {
   //    return val ? "1" : "0";
   //  }
 
-}; // struct _private_bit_ref.
+};  // struct _private_bit_ref.
 
 // char a[100];
 // char* ptr = a;
@@ -6863,7 +6921,7 @@ OPS_MIX_FLOAT(double)
   OP_BIN_MIX_INT(%, C_TYPE, (_AP_W2), (_AP_S2), mod)     \
   OP_BIN_MIX_INT(&, C_TYPE, (_AP_W2), (_AP_S2), logic)   \
   OP_BIN_MIX_INT(|, C_TYPE, (_AP_W2), (_AP_S2), logic)   \
-  OP_BIN_MIX_INT (^, C_TYPE, (_AP_W2), (_AP_S2), logic)  \
+  OP_BIN_MIX_INT(^, C_TYPE, (_AP_W2), (_AP_S2), logic)   \
   OP_BIN_SHIFT_INT(>>, C_TYPE, (_AP_W2), (_AP_S2), arg1) \
   OP_BIN_SHIFT_INT(<<, C_TYPE, (_AP_W2), (_AP_S2), arg1) \
                                                          \
@@ -7195,6 +7253,6 @@ REF_BIN_OP(<<, arg1)
 //  when both sides are signed.
 //************************************************************************
 
-#endif // ifndef __AP_PRIVATE_H__
+#endif  // ifndef __AP_PRIVATE_H__
 
 // -*- cpp -*-
