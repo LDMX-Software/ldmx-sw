@@ -34,7 +34,6 @@ include(BuildMacros RESULT_VARIABLE build_macros_found)
 # which will silence compiler warnings from these 3rd party softwares
 include_directories(SYSTEM /usr/local/include/root)
 include_directories(SYSTEM Tracking/acts/Core/include)
-include_directories(SYSTEM Trigger/HLS_arbitrary_Precision_Types/include)
 
 # FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
 set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")
