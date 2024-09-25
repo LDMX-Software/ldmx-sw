@@ -442,11 +442,13 @@ class HgcrocEmulator {
    */
   mutable TF1 pulseFunc_;
 
-  mutable std::vector<ldmx::PulseRecord> pulseRecord_ ;
+  mutable std::vector<ldmx::PulseRecord> pulseRecord_;
 
-  //Getter to access pulseRecord_
-  public:
-  const std::vector<ldmx::PulseRecord>& getPulseRecord() const { return pulseRecord_;}
+  // Getter to access pulseRecord_
+ public:
+  const std::vector<ldmx::PulseRecord>& getPulseRecord() const {
+    return pulseRecord_;
+  }
 
 };  // HgcrocEmulator
 

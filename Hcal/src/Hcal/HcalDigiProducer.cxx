@@ -7,9 +7,11 @@
  */
 
 #include "Hcal/HcalDigiProducer.h"
-#include "Tools/PulseRecord.h"
+
 #include <fstream>
+
 #include "Framework/RandomNumberSeedService.h"
+#include "Tools/PulseRecord.h"
 
 namespace hcal {
 
@@ -131,7 +133,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     std::vector<std::pair<double, double>> pulses_posend;
     std::vector<std::pair<double, double>> pulses_negend;
 
-    // For plotting purposes 
+    // For plotting purposes
     std::vector<std::tuple<double, int, int>> DigiToPlot;
     DigiToPlot.clear();
 
@@ -219,8 +221,9 @@ void HcalDigiProducer::produce(framework::Event& event) {
            iContrib++) {
         double voltage = simHit.getContrib(iContrib).edep * MeV_;
 
-        std::cout << "  Energy deposited: " << simHit.getContrib(iContrib).edep << std::endl;
-        
+        std::cout << "  Energy deposited: " << simHit.getContrib(iContrib).edep
+                  << std::endl;
+
         double time =
             simHit.getContrib(iContrib).time;  // global time (t=0ns at target)
         time -= position.at(2) /
@@ -255,36 +258,39 @@ void HcalDigiProducer::produce(framework::Event& event) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
 
-        //for(const auto& digi: hcalDigis){
-        //std::cout << "    DEBUG PRINT 2: " << digi.at(2) << std::endl;
-        //}
-      }  
-      
-      // Recording digitized pulses in PulseRecord 
+        // for(const auto& digi: hcalDigis){
+        // std::cout << "    DEBUG PRINT 2: " << digi.at(2) << std::endl;
+        // }
+      }
+
+      // Recording digitized pulses in PulseRecord
       // Since two pulses are digitized, using existing loop is bit untidy.
       // Access PulseRecord
       if (hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend) &&
-          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)){
-      const auto& pulseRecord = hgcroc_->getPulseRecord();
+          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)) {
+        const auto& pulseRecord = hgcroc_->getPulseRecord();
 
-      for(const auto& record: pulseRecord){
-        DigiToPlot.emplace_back(record.getVolts(), record.getADC(), record.getTOT());
-      }
+        for (const auto& record : pulseRecord) {
+          DigiToPlot.emplace_back(record.getVolts(), record.getADC(),
+                                  record.getTOT());
+        }
       }
 
       if (hgcroc_->digitize(posendID.raw(), pulses_negend, digiToAddNegend) &&
-          hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend)){
-      const auto& pulseRecord = hgcroc_->getPulseRecord();
+          hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend)) {
+        const auto& pulseRecord = hgcroc_->getPulseRecord();
 
-      for(const auto& record: pulseRecord){
-        DigiToPlot.emplace_back(record.getVolts(), record.getADC(), record.getTOT());
-      }
+        for (const auto& record : pulseRecord) {
+          DigiToPlot.emplace_back(record.getVolts(), record.getADC(),
+                                  record.getTOT());
+        }
       }
 
       // Print Voltages, adc/tot values to the same txt file
       std::ofstream dataFile("Voltage_ADC_TOT.txt", std::ios::app);
-      for(const auto& entry: DigiToPlot){
-        dataFile <<std::get<0>(entry) << " " <<std::get<1>(entry) << " " <<std::get<2>(entry) << "\n";
+      for (const auto& entry : DigiToPlot) {
+        dataFile << std::get<0>(entry) << " " << std::get<1>(entry) << " "
+                 << std::get<2>(entry) << "\n";
       }
       dataFile.close();
 
@@ -304,20 +310,22 @@ void HcalDigiProducer::produce(framework::Event& event) {
         if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
-      // Recording digitized pulses in PulseRecord 
-      // Access PulseRecord
-      const auto& pulseRecord = hgcroc_->getPulseRecord();
+        // Recording digitized pulses in PulseRecord
+        // Access PulseRecord
+        const auto& pulseRecord = hgcroc_->getPulseRecord();
 
-      for(const auto& record: pulseRecord){
-        DigiToPlot.emplace_back(record.getVolts(), record.getADC(), record.getTOT());
-      }
+        for (const auto& record : pulseRecord) {
+          DigiToPlot.emplace_back(record.getVolts(), record.getADC(),
+                                  record.getTOT());
+        }
 
-      // Print Voltages, adc/tot values to the same txt file
-      std::ofstream dataFile("Voltage_ADC_TOT.txt", std::ios::app);
-      for(const auto& entry: DigiToPlot){
-        dataFile <<std::get<0>(entry) << " " <<std::get<1>(entry) << " " <<std::get<2>(entry) << "\n";
-      }
-      dataFile.close();
+        // Print Voltages, adc/tot values to the same txt file
+        std::ofstream dataFile("Voltage_ADC_TOT.txt", std::ios::app);
+        for (const auto& entry : DigiToPlot) {
+          dataFile << std::get<0>(entry) << " " << std::get<1>(entry) << " "
+                   << std::get<2>(entry) << "\n";
+        }
+        dataFile.close();
 
       } else {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
@@ -325,20 +333,22 @@ void HcalDigiProducer::produce(framework::Event& event) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
 
-      // Recording digitized pulses in PulseRecord 
-      // Access PulseRecord
-      const auto& pulseRecord = hgcroc_->getPulseRecord();
+        // Recording digitized pulses in PulseRecord
+        // Access PulseRecord
+        const auto& pulseRecord = hgcroc_->getPulseRecord();
 
-      for(const auto& record: pulseRecord){
-        DigiToPlot.emplace_back(record.getVolts(), record.getADC(), record.getTOT());
-      }
+        for (const auto& record : pulseRecord) {
+          DigiToPlot.emplace_back(record.getVolts(), record.getADC(),
+                                  record.getTOT());
+        }
 
-      // Print Voltages, adc/tot values to the same txt file
-      std::ofstream dataFile("Voltage_ADC_TOT.txt", std::ios::app);
-      for(const auto& entry: DigiToPlot){
-        dataFile <<std::get<0>(entry) << " " <<std::get<1>(entry) << " " <<std::get<2>(entry) << "\n";
-      }
-      dataFile.close();
+        // Print Voltages, adc/tot values to the same txt file
+        std::ofstream dataFile("Voltage_ADC_TOT.txt", std::ios::app);
+        for (const auto& entry : DigiToPlot) {
+          dataFile << std::get<0>(entry) << " " << std::get<1>(entry) << " "
+                   << std::get<2>(entry) << "\n";
+        }
+        dataFile.close();
       }
     }
   }
@@ -346,8 +356,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
   /******************************************************************************************
    * Noise Simulation on Empty Channels
    *****************************************************************************************/
-  //bool noise_ = false;
-  //std::cout << "  noise: " << noise_ << std::endl;
+  // bool noise_ = false;
+  // std::cout << "  noise: " << noise_ << std::endl;
   if (noise_) {
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
@@ -424,7 +434,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
     }  // loop over noise amplitudes
 
-  }    // if we should add noise
+  }  // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
 

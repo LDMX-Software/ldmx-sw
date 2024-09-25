@@ -5,22 +5,22 @@
 
 namespace ldmx {
 
-    class PulseRecord {
-        public:
-        // Constructor to initialize Voltage, ADC, and TOT
-        PulseRecord(double volts, int adc, int tot)
-         : volts_(volts), adc_(adc), tot_(tot) {}
+class PulseRecord {
+ public:
+  // Constructor to initialize Voltage, ADC, and TOT
+  PulseRecord(double volts, int adc, int tot)
+      : volts_(volts), adc_(adc), tot_(tot) {}
 
-        // Getters for the recorded data
-        double getVolts() const {return volts_;}
-        int getADC() const { return adc_; }
-        int getTOT() const { return tot_; }
+  // Getters for the recorded data
+  double getVolts() const { return volts_; }
+  int getADC() const { return adc_; }
+  int getTOT() const { return tot_; }
 
-        private:
-        double volts_;
-        int adc_;
-        int tot_;
-    };
-}
+ private:
+  double volts_;
+  int adc_;
+  int tot_;
+};
+}  // namespace ldmx
 
-#endif 
+#endif
