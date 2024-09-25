@@ -53,8 +53,19 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
         << "TrigScintFirmwareTracker: produce() starts! Event number: "
         << event.getEventHeader().getEventNumber();
   }
+
+  // A is the mis-alignment vector
   ap_int<12> A[3] = {0, 0, 0};
   ap_int<12> LOOKUP[NCENT][COMBO][2];
+
+  // Initialize the LOOKUP table to zero
+  for (int i = 0; i < NCENT; ++i) {
+    for (int j = 0; j < COMBO; ++j) {
+      for (int k = 0; k < 2; ++k) {
+        LOOKUP[i][j][k] = ap_int<12>(0);
+      }
+    }
+  }
 
   // This line fills in the LOOKUP table used for patter matching latter. The
   // array takes in as its first argument the centroid of a first pad cluster,
@@ -86,7 +97,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Hit HPad2[NHITS];
   Hit HPad3[NHITS];
 
-  Cluster Pad1[NCLUS];
+  // Pad1 goes with NTRK bc of firmware bandwidth constraints
+  // It is also expected on Pad1 to have 1 cluster per track
+  Cluster Pad1[NTRK];
   Cluster Pad2[NCLUS];
   Cluster Pad3[NCLUS];
   Track outTrk[NTRK];
@@ -265,7 +278,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // clusters in Pad1. Do not change this.
   trackproducer_hw(Pad1, Pad2, Pad3, outTrk, LOOKUP);
   for (int I = 0; I < NTRK; I++) {
-    if (outTrk[I].Pad1.Seed.Amp > 0) {
+    if (outTrk[I].Pad1.Seed.Amp > 0. && outTrk[I].Pad1.Sec.Amp > 0. &&
+        outTrk[I].Pad2.Seed.Amp > 0. && outTrk[I].Pad2.Sec.Amp > 0. &&
+        outTrk[I].Pad3.Seed.Amp > 0. && outTrk[I].Pad3.Sec.Amp > 0.) {
       ldmx::TrigScintTrack trk = makeTrack(outTrk[I]);
       tracks_.push_back(trk);
     }
@@ -281,9 +296,14 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
   // object, unfortunately only retaining that information of the track that is
   // retained in the firmware track.
   ldmx::TrigScintTrack tr;
-  float pe = outTrk.Pad1.Seed.Amp + outTrk.Pad1.Sec.Amp;
-  pe += outTrk.Pad2.Seed.Amp + outTrk.Pad2.Sec.Amp;
-  pe += outTrk.Pad3.Seed.Amp + outTrk.Pad3.Sec.Amp;
+  float pe{0.};
+  float trackCentroid{0.};
+  pe += static_cast<float>(outTrk.Pad1.Seed.Amp) +
+        static_cast<float>(outTrk.Pad1.Sec.Amp);
+  pe += static_cast<float>(outTrk.Pad2.Seed.Amp) +
+        static_cast<float>(outTrk.Pad2.Sec.Amp);
+  pe += static_cast<float>(outTrk.Pad3.Seed.Amp) +
+        static_cast<float>(outTrk.Pad3.Sec.Amp);
   tr.setCentroid(calcTCent(outTrk));
   calcResid(outTrk);
   tr.setPE(pe);
