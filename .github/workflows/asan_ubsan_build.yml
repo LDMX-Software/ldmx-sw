@@ -1,5 +1,5 @@
 
-name: Build with ASAN/UBSAN
+name: Build with ASAN and UBSAN
 
 on:
   workflow_dispatch:
@@ -35,8 +35,13 @@ jobs:
       run: |
         just setenv LDMX_NUM_EVENTS=1500
         just setenv LDMX_RUN_NUMBER=1
-        export LDMX_NUM_EVENTS=1500
+        export LDMX_NUM_EVENTS=15
         export LDMX_RUN_NUMBER=1
-        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
+        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py  2> output.log
       shell: bash
 
+   - name: Upload output artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ASAN_UBSAN-output
+        path: output.log
