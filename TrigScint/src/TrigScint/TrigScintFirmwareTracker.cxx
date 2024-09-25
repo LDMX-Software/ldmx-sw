@@ -297,7 +297,6 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
   // retained in the firmware track.
   ldmx::TrigScintTrack tr;
   float pe{0.};
-  float trackCentroid{0.};
   pe += static_cast<float>(outTrk.Pad1.Seed.Amp) +
         static_cast<float>(outTrk.Pad1.Sec.Amp);
   pe += static_cast<float>(outTrk.Pad2.Seed.Amp) +
