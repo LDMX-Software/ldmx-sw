@@ -4,9 +4,6 @@
 [submodule "Tracking/acts"]
 	path = Tracking/acts
 	url = https://github.com/acts-project/acts
-[submodule "Trigger/HLS_arbitrary_Precision_Types"]
-	path = Trigger/HLS_arbitrary_Precision_Types
-	url = https://github.com/Xilinx/HLS_arbitrary_Precision_Types.git
 [submodule "Trigger/ruckus"]
 	path = Trigger/ruckus
 	url = https://github.com/slaclab/ruckus
