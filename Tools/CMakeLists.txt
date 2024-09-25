@@ -20,6 +20,7 @@ setup_library(module Tools
               dependencies Framework::Framework Recon::Event Conditions::Conditions
                            ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
 )
+target_include_directories(Tools PUBLIC SYSTEM HLS_Arbitrary_Precision_Types/include)
 
 setup_python(package_name LDMX/Tools)
 
