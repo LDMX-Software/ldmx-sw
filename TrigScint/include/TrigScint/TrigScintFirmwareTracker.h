@@ -40,15 +40,6 @@ class TrigScintFirmwareTracker : public framework::Producer {
    */
 
  private:
-  // collection of clusters produced
-  std::vector<ldmx::TrigScintHit> digis1_;
-
-  // collection of clusters produced
-  std::vector<ldmx::TrigScintHit> digis2_;
-
-  // collection of clusters produced
-  std::vector<ldmx::TrigScintHit> digis3_;
-
   // min threshold for adding a hit to a cluster
   double minThr_{0.};
 

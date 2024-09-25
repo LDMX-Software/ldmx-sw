@@ -53,8 +53,19 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
         << "TrigScintFirmwareTracker: produce() starts! Event number: "
         << event.getEventHeader().getEventNumber();
   }
+
+  // A is the mis-alignment vector
   ap_int<12> A[3] = {0, 0, 0};
   ap_int<12> LOOKUP[NCENT][COMBO][2];
+
+  // Initialize the LOOKUP table to zero
+  for (int i = 0; i < NCENT; ++i) {
+    for (int j = 0; j < COMBO; ++j) {
+      for (int k = 0; k < 2; ++k) {
+        LOOKUP[i][j][k] = ap_int<12>(0);
+      }
+    }
+  }
 
   // This line fills in the LOOKUP table used for patter matching latter. The
   // array takes in as its first argument the centroid of a first pad cluster,
@@ -86,7 +97,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   Hit HPad2[NHITS];
   Hit HPad3[NHITS];
 
-  Cluster Pad1[NCLUS];
+  // Pad1 goes with NTRK bc of firmware bandwidth constraints
+  // It is also expected on Pad1 to have 1 cluster per track
+  Cluster Pad1[NTRK];
   Cluster Pad2[NCLUS];
   Cluster Pad3[NCLUS];
   Track outTrk[NTRK];
@@ -107,16 +120,16 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     clearTrack(outTrk[j]);
   }
   // I am reading in the three digi collections
-  const auto digis1_{
+  const auto &digis1{
       event.getCollection<ldmx::TrigScintHit>(digis1_collection_, passName_)};
-  const auto digis3_{
+  const auto &digis2{
       event.getCollection<ldmx::TrigScintHit>(digis2_collection_, passName_)};
-  const auto digis2_{
+  const auto &digis3{
       event.getCollection<ldmx::TrigScintHit>(digis3_collection_, passName_)};
 
   if (verbose_) {
     ldmx_log(debug) << "Got digi collection " << digis1_collection_ << "_"
-                    << passName_ << " with " << digis1_.size() << " entries ";
+                    << passName_ << " with " << digis1.size() << " entries ";
   }
 
   // The next collection of things fill in the firmware hit objects from reading
@@ -127,22 +140,18 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   int count = 0;
-  for (const auto &digi : digis1_) {
+  for (const auto &digi : digis1) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad1[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad1[(int)occupied[(int)digi.getBarID()]].bID =
-              (ap_int<12>)(digi.getBarID());
-          HPad1[(int)occupied[(int)digi.getBarID()]].mID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad1[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad1[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
+          HPad1[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad1[(int)occupied[(int)digi.getBarID()]].Amp =
-              (ap_int<12>)(digi.getPE());
-          HPad1[(int)occupied[(int)digi.getBarID()]].Time =
-              (ap_int<12>)(digi.getTime());
+          HPad1[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
+          HPad1[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
         }
       } else {
         HPad1[count].bID = (ap_int<12>)(digi.getBarID());
@@ -159,22 +168,18 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis2_) {
+  for (const auto &digi : digis2) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad2[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad2[(int)occupied[(int)digi.getBarID()]].bID =
-              (ap_int<12>)(digi.getBarID());
-          HPad2[(int)occupied[(int)digi.getBarID()]].mID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad2[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad2[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
+          HPad2[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad2[(int)occupied[(int)digi.getBarID()]].Amp =
-              (ap_int<12>)(digi.getPE());
-          HPad2[(int)occupied[(int)digi.getBarID()]].Time =
-              (ap_int<12>)(digi.getTime());
+          HPad2[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
+          HPad2[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
         }
       } else {
         HPad2[count].bID = (ap_int<12>)(digi.getBarID());
@@ -190,22 +195,18 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis3_) {
+  for (const auto &digi : digis3) {
     if ((digi.getPE() > minThr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> bID = (ap_int<12>)(digi.getBarID());
       ap_int<12> Amp = (ap_int<12>)(digi.getPE());
-      int index = count;
-      if (occupied[(int)digi.getBarID()] >= 0) {
-        if (HPad3[(int)occupied[(int)digi.getBarID()]].Amp < digi.getPE()) {
-          HPad3[(int)occupied[(int)digi.getBarID()]].bID =
-              (ap_int<12>)(digi.getBarID());
-          HPad3[(int)occupied[(int)digi.getBarID()]].mID =
+      if (occupied[digi.getBarID()] >= 0) {
+        if (HPad3[occupied[digi.getBarID()]].Amp < digi.getPE()) {
+          HPad3[occupied[digi.getBarID()]].bID = (ap_int<12>)(digi.getBarID());
+          HPad3[occupied[digi.getBarID()]].mID =
               (ap_int<12>)(digi.getModuleID());
-          HPad3[(int)occupied[(int)digi.getBarID()]].Amp =
-              (ap_int<12>)(digi.getPE());
-          HPad3[(int)occupied[(int)digi.getBarID()]].Time =
-              (ap_int<12>)(digi.getTime());
+          HPad3[occupied[digi.getBarID()]].Amp = (ap_int<12>)(digi.getPE());
+          HPad3[occupied[digi.getBarID()]].Time = (ap_int<12>)(digi.getTime());
         }
       } else {
         HPad3[count].bID = (ap_int<12>)(digi.getBarID());
@@ -217,7 +218,6 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
       }
     }
   }
-  count = 0;
   // These next lines here calls clusterproducer_sw(HPad1), which is just the
   // validated firmware module. Since ap_* class is messy, I had to do some
   // post-call cleanup before looping over the clusters and putting them into
@@ -278,7 +278,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // clusters in Pad1. Do not change this.
   trackproducer_hw(Pad1, Pad2, Pad3, outTrk, LOOKUP);
   for (int I = 0; I < NTRK; I++) {
-    if (outTrk[I].Pad1.Seed.Amp > 0) {
+    if (outTrk[I].Pad1.Seed.Amp > 0. && outTrk[I].Pad1.Sec.Amp > 0. &&
+        outTrk[I].Pad2.Seed.Amp > 0. && outTrk[I].Pad2.Sec.Amp > 0. &&
+        outTrk[I].Pad3.Seed.Amp > 0. && outTrk[I].Pad3.Sec.Amp > 0.) {
       ldmx::TrigScintTrack trk = makeTrack(outTrk[I]);
       tracks_.push_back(trk);
     }
@@ -294,9 +296,13 @@ ldmx::TrigScintTrack TrigScintFirmwareTracker::makeTrack(Track outTrk) {
   // object, unfortunately only retaining that information of the track that is
   // retained in the firmware track.
   ldmx::TrigScintTrack tr;
-  float pe = outTrk.Pad1.Seed.Amp + outTrk.Pad1.Sec.Amp;
-  pe += outTrk.Pad2.Seed.Amp + outTrk.Pad2.Sec.Amp;
-  pe += outTrk.Pad3.Seed.Amp + outTrk.Pad3.Sec.Amp;
+  float pe{0.};
+  pe += static_cast<float>(outTrk.Pad1.Seed.Amp) +
+        static_cast<float>(outTrk.Pad1.Sec.Amp);
+  pe += static_cast<float>(outTrk.Pad2.Seed.Amp) +
+        static_cast<float>(outTrk.Pad2.Sec.Amp);
+  pe += static_cast<float>(outTrk.Pad3.Seed.Amp) +
+        static_cast<float>(outTrk.Pad3.Sec.Amp);
   tr.setCentroid(calcTCent(outTrk));
   calcResid(outTrk);
   tr.setPE(pe);
