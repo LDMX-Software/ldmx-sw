@@ -40,12 +40,11 @@ if(BUILD_EVENT_ONLY)
 
 endif()
 
-setup_library(module TrigScint name Firmware)
+setup_library(module TrigScint name Firmware dependencies Tools::Tools)
 
 setup_library(module TrigScint
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
-                           Tools::Tools SimCore::Event
-	      Tools::Tools SimCore::Event TrigScint::Firmware
+	                         Tools::Tools SimCore::Event TrigScint::Firmware
 )
 setup_python(package_name LDMX/TrigScint)
 
