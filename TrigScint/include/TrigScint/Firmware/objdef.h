@@ -24,10 +24,11 @@
 #define NWORDS 72
 
 struct Digi {
-  int mID, bID;
-  int adc0, adc1, adc2, adc3, adc4, adc5;
-  int tdc0, tdc1, tdc2, tdc3, tdc4, tdc5;
+  int mID{}, bID{};
+  int adc0{}, adc1{}, adc2{}, adc3{}, adc4{}, adc5{};
+  int tdc0{}, tdc1{}, tdc2{}, tdc3{}, tdc4{}, tdc5{};
 };
+
 inline void clearDigi(Digi& c) {
   c.mID = 0;
   c.bID = 0;
@@ -44,16 +45,19 @@ inline void clearDigi(Digi& c) {
   c.tdc4 = 0;
   c.tdc5 = 0;
 }
+
 struct Hit {
-  ap_int<12> mID, bID;
-  ap_int<12> Amp, Time;  // TrigTime;
+  ap_int<12> mID{}, bID{};
+  ap_int<12> Amp{}, Time{};  // TrigTime;
 };
+
 inline void clearHit(Hit& c) {
   c.mID = 0;
   c.bID = -1;
   c.Amp = 0;
   c.Time = 0;  // c.TrigTime=0.0;
 }
+
 inline void cpyHit(Hit& c1, Hit& c2) {
   c1.mID = c2.mID;
   c1.bID = c2.bID;
@@ -62,55 +66,70 @@ inline void cpyHit(Hit& c1, Hit& c2) {
 }
 
 struct Cluster {
-  Hit Seed;
-  Hit Sec;
-  ap_int<11> Cent;
+  Hit Seed{};
+  Hit Sec{};
+  ap_int<12> Cent{};
   // int nhits, mID, SeedID;
   // float CentX, CentY, CentZ, Amp, Time, TrigTime;
 };
+
 inline void clearClus(Cluster& c) {
   clearHit(c.Seed);
   clearHit(c.Sec);
-  c.Cent = (ap_int<11>)(0);  // clearHit(c.For);
+  c.Cent = (ap_int<12>)(0);  // clearHit(c.For);
 }
+
 inline void calcCent(Cluster& c) {
-  if (c.Seed.Amp > 0) {
-    c.Cent = (ap_int<12>)(10. *
-                          ((float)(c.Seed.Amp * c.Seed.bID +
-                                   c.Sec.Amp * c.Sec.bID)) /
-                          ((float)(c.Seed.Amp + c.Sec.Amp)));
-  } else {
+  // Check if Seed and Sec amplitudes are valid
+  if (c.Seed.Amp <= 0 || c.Sec.Amp <= 0) {
     c.Cent = (ap_int<12>)(0);
+    return;
   }
+
+  if (c.Seed.bID < 0 || c.Sec.bID < 0) {
+    c.Cent = (ap_int<12>)(0);
+    return;
+  }
+
+  // Perform the centroid calculation if all checks passed
+  c.Cent =
+      (ap_int<12>)(10.0f *
+                   ((float)(c.Seed.Amp * c.Seed.bID + c.Sec.Amp * c.Sec.bID)) /
+                   ((float)(c.Seed.Amp + c.Sec.Amp)));
 }
+
 inline void cpyCluster(Cluster& c1, Cluster& c2) {
   cpyHit(c1.Seed, c2.Seed);
   cpyHit(c1.Sec, c2.Sec);
 }
 
 struct Track {
-  Cluster Pad1;
-  Cluster Pad2;
-  Cluster Pad3;
-  ap_int<12> resid;
+  Cluster Pad1{};
+  Cluster Pad2{};
+  Cluster Pad3{};
+  ap_int<12> resid{};
 };
+
 inline void clearTrack(Track& c) {
   clearClus(c.Pad1);
   clearClus(c.Pad2);
   clearClus(c.Pad3);
   c.resid = 5000;
 }
+
 inline ap_int<12> calcTCent(Track& c) {
   calcCent(c.Pad1);
   calcCent(c.Pad2);
   calcCent(c.Pad3);
+
   float one = (float)c.Pad1.Cent;
   float two = (float)c.Pad2.Cent;
   float three = (float)c.Pad3.Cent;
   float mean = (one + two + three) / 3.0;
-  ap_int<12> Cent = (ap_int<10>)((int)(mean));
+  ap_int<12> Cent = (ap_int<12>)((int)(mean));
   return Cent;
 }
+
 inline void calcResid(Track& c) {
   calcCent(c.Pad1);
   calcCent(c.Pad2);
@@ -124,6 +143,7 @@ inline void calcResid(Track& c) {
                                 (three - mean) * (three - mean)) /
                                3.0));
 }
+
 inline void cpyTrack(Track& c1, Track& c2) {
   cpyCluster(c1.Pad1, c2.Pad1);
   cpyCluster(c1.Pad2, c2.Pad2);

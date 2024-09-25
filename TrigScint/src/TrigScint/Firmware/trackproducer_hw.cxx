@@ -8,14 +8,18 @@
 void trackproducer_hw(Cluster Pad1[NTRK], Cluster Pad2[NCLUS],
                       Cluster Pad3[NCLUS], Track outTrk[NTRK],
                       ap_int<12> lookup[NCENT][COMBO][2]) {
+#ifdef TS_NOT_EMULATION
 #pragma HLS ARRAY_PARTITION variable = Pad1 dim = 0 complete
 #pragma HLS ARRAY_PARTITION variable = Pad2 dim = 0 complete
 #pragma HLS ARRAY_PARTITION variable = Pad3 dim = 0 complete
 #pragma HLS ARRAY_PARTITION variable = outTrk dim = 0 complete
 #pragma HLS ARRAY_PARTITION variable = lookup dim = 0 complete
 #pragma HLS PIPELINE II = 10
+#endif
   Track test;
+#ifdef TS_NOT_EMULATION
 #pragma HLS ARRAY_PARTITION variable = test complete
+#endif
 
   // This firmware module loops over first the Pad1 seeds (NTRK) and then the
   // patterns (COMBO) For each seed it check 9 combinations of tracks. These
