@@ -32,16 +32,18 @@ jobs:
       shell: bash
 
     - name: Run ecal_pn config
-      continue-on-error: true
+      #continue-on-error: true
       run: |
         just setenv LDMX_NUM_EVENTS=15
         just setenv LDMX_RUN_NUMBER=1
-        just setenv ASAN_OPTIONS=log_path=output.log
+        #just setenv ASAN_OPTIONS=log_path=output.log
+        just setenv ASAN_OPTIONS=detect_leaks=0
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
 
-    - name: Upload log artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ASAN_UBSAN_output
-        path: output.log*
+      # For the future, we could try to save the output of ASAN/UBSAN
+      #    - name: Upload log artifact
+      #      uses: actions/upload-artifact@v4
+      #      with:
+      #        name: ASAN_UBSAN_output
+      #        path: output.log*
