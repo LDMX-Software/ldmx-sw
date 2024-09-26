@@ -35,7 +35,7 @@ jobs:
       #continue-on-error: true
       run: |
         just setenv LDMX_NUM_EVENTS=15
-        just setenv LDMX_RUN_NUMBER=1
+        just setenv LDMX_RUN_NUMBER=1500
         #just setenv ASAN_OPTIONS=log_path=output.log
         just setenv ASAN_OPTIONS=detect_leaks=0
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
