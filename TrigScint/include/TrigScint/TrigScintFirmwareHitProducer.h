@@ -52,7 +52,6 @@ class TrigScintFirmwareHitProducer : public framework::Producer {
    */
 
  private:
-
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;
 
