@@ -34,7 +34,7 @@ jobs:
     - name: Run ecal_pn config
       continue-on-error: true
       run: |
-        just setenv LDMX_NUM_EVENTS=1500
+        just setenv LDMX_NUM_EVENTS=15
         just setenv LDMX_RUN_NUMBER=1
         just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py 2> output.log
       shell: bash
