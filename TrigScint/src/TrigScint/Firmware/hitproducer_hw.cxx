@@ -7,6 +7,7 @@
 
 void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
                     ap_uint<8> Peds[NHITS]) {
+#ifdef TS_NOT_EMULATION
 #pragma HLS ARRAY_PARTITION variable = FIFO complete
 #pragma HLS ARRAY_PARTITION variable = amplitude complete
 #pragma HLS ARRAY_PARTITION variable = Peds complete
@@ -66,6 +67,7 @@ void hitproducer_hw(ap_uint<14> FIFO[NHITS][5], Hit outHit[NHITS],
 #pragma HLS INTERFACE ap_fifo depth = 16 port = FIFO[49]
 
 #pragma HLS PIPELINE
+#endif
 
   // The QIE11 card takes an analogue SiPM PE count
   // and converts electron counts from it via a piecewise

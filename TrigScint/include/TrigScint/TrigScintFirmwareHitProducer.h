@@ -52,9 +52,6 @@ class TrigScintFirmwareHitProducer : public framework::Producer {
    */
 
  private:
-  /// Class to set the verbosity level.
-  // TODO: Make use of the global verbose parameter.
-  bool verbose_{false};
 
   /// Name of the input collection containing the sim hits
   std::string inputCollection_;

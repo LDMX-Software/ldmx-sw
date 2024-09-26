@@ -19,21 +19,16 @@ void TrigScintFirmwareHitProducer::configure(
   testCollection_ = ps.getParameter<std::string>("test_collection");
   inputPassName_ = ps.getParameter<std::string>("input_pass_name");
   outputCollection_ = ps.getParameter<std::string>("output_collection");
-  verbose_ = ps.getParameter<bool>("verbose");
   sample_of_interest_ = ps.getParameter<int>("sample_of_interest");
-  if (verbose_) {
-    ldmx_log(info) << "In TrigScintFirmwareHitProducer: configure done!";
-    ldmx_log(info) << "\nPedestal: " << pedestal_ << "\nGain: " << gain_
+  ldmx_log(debug) << "In TrigScintFirmwareHitProducer: configure done!";
+  ldmx_log(debug) << "\nPedestal: " << pedestal_ << "\nGain: " << gain_
                    << "\nMEV per MIP: " << mevPerMip_
                    << "\nPE per MIP: " << pePerMip_
                    << "\ninput collection:     " << inputCollection_
                    << "\ntest collection:	" << testCollection_
                    << "\nAre we testing:        " << doTest_
                    << "\nInput pass name:     " << inputPassName_
-                   << "\nOutput collection:    " << outputCollection_
-                   << "\nVerbosity: " << verbose_;
-  }
-
+                   << "\nOutput collection:    " << outputCollection_;
   return;
 }
 
@@ -43,13 +38,11 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   // purpose is to emulate existing reconstruction software in firmware for
   // triggering. I will more fully explain the operation and choices made in
   // hitproducer_hw in hitproducer_hw
-  if (verbose_) {
-    const auto rechits{event.getCollection<ldmx::TrigScintHit>(testCollection_,
+  const auto rechits{event.getCollection<ldmx::TrigScintHit>(testCollection_,
                                                                inputPassName_)};
-    for (const auto &hit : rechits) {
-      ldmx_log(debug) << "Analysis barID: " << hit.getBarID()
-                << ", PE Number: " << hit.getPE();
-    }
+  for (const auto &hit : rechits) {
+    ldmx_log(debug) << "Analysis barID: " << hit.getBarID()
+                    << ", PE Number: " << hit.getPE();
   }
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
       inputCollection_, inputPassName_)};
@@ -75,10 +68,8 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   std::vector<ldmx::TrigScintHit> trigScintHits;
   for (int i = 0; i < NHITS; i++) {
     if (outHit[i].Amp >= 3) {
-      if (verbose_) {
-        ldmx_log(debug) << "Firmware barID: " << outHit[i].bID
-                  << ", PE Number: " << outHit[i].Amp;
-      }
+      ldmx_log(debug) << "Firmware barID: " << outHit[i].bID
+                      << ", PE Number: " << outHit[i].Amp;
       ldmx::TrigScintHit hit;
       hit.setModuleID(outHit[i].mID);
       hit.setBarID(outHit[i].bID);
