@@ -207,9 +207,16 @@ p.sequence.extend([
         ecal_vetos.EcalVetoProcessor(),
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
+        *ts_digis,
+        TrigScintClusterProducer.pad1(),
+        TrigScintClusterProducer.pad2(),
+        TrigScintClusterProducer.pad3(),
+        trigScintTrack,
+        count, TriggerProcessor('trigger', 8000.),
+        dqm.PhotoNuclearDQM(verbose=True),
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
-        ])
+        ] + dqm.all_dqm)
 
