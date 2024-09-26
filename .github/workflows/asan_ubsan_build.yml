@@ -36,13 +36,12 @@ jobs:
       run: |
         just setenv LDMX_NUM_EVENTS=15
         just setenv LDMX_RUN_NUMBER=1
-        just setenv LSAN_OPTIONS=verbosity=1
-        just setenv LSAN_OPTIONS=log_threads=1
-        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py 2> output.log
+        just setenv ASAN_OPTIONS=log_path=output.log
+        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
       shell: bash
 
     - name: Upload log artifact
       uses: actions/upload-artifact@v4
       with:
         name: ASAN_UBSAN_output
-        path: output.log
+        path: output.log*
