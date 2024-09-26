@@ -641,7 +641,7 @@ void CKFProcessor::onProcessEnd() {
                  << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
   ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
-                 << std::setprecision(3) << profiling_map_["hits"] / nevents_
+                 << std::setprecision(2) << profiling_map_["hits"] / nevents_
                  << " ms";
   ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["seeds"] / nevents_
