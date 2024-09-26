@@ -17,3 +17,6 @@ __pycache__/
 Version.h
 EventDisplay/include/EventDisplay/EventDisplayDef.h
 EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
+*.DS_Store
+*.vscode/*
+*__*
