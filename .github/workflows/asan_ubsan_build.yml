@@ -1,0 +1,49 @@
+
+name: Build with ASAN and UBSAN
+
+on:
+  workflow_dispatch:
+  pull_request: 
+    branches: [trunk]
+    types: [opened, ready_for_review]
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  build-with-asan-ubsan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+
+    - name: Install just
+      uses: extractions/setup-just@v2
+      with:
+          just-version: 1.26.0
+ 
+    - name: Compile and Install ldmx-sw
+      run: |
+        just install-denv init configure-asan-ubsan 
+        just build
+      shell: bash
+
+    - name: Run ecal_pn config
+      #continue-on-error: true
+      run: |
+        just setenv LDMX_NUM_EVENTS=15
+        just setenv LDMX_RUN_NUMBER=7500
+        #just setenv ASAN_OPTIONS=log_path=output.log
+        just setenv ASAN_OPTIONS=detect_leaks=0
+        just fire  ${GITHUB_WORKSPACE}/.github/validation_samples/ecal_pn/config.py
+      shell: bash
+
+      # For the future, we could try to save the output of ASAN/UBSAN
+      #    - name: Upload log artifact
+      #      uses: actions/upload-artifact@v4
+      #      with:
+      #        name: ASAN_UBSAN_output
+      #        path: output.log*
