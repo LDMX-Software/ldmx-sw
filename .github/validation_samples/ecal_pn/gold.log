@@ -10,6 +10,10 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ SeedRecoilDQM ] 0  info: Truth Collection RecoilTruthTracks
 [ RecoilDQM ] 0  info: Track Collection RecoilTracks
 [ RecoilDQM ] 0  info: Truth Collection RecoilTruthTracks
+[ TrigScintClusterPad1 ] 0  info: In TrigScintClusterDQM::configure, got parameters TriggerPad1Clusters, pad = pad1, pass = 
+[ TrigScintClusterPad2 ] 0  info: In TrigScintClusterDQM::configure, got parameters TriggerPad2Clusters, pad = pad2, pass = 
+[ TrigScintClusterPad3 ] 0  info: In TrigScintClusterDQM::configure, got parameters TriggerPad3Clusters, pad = pad3, pass = 
+[ TrigScintTracks ] 0  info: In TrigScintTrackDQM::configure, got parameters TriggerPadTracks and 
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
 [ RunManager ]: Parallel worlds physics list has been registered.
@@ -10296,16 +10300,16 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Tagger_TrackFinder ] 10000  info: AVG Time/Event: 0.4 ms
 [ Tagger_TrackFinder ] 10000  info: Breakdown::
 [ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.002 ms
-[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.032 ms
-[ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
-[ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.004 ms
+[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.03 ms
+[ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.005 ms
+[ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.005 ms
 [ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
 [ Tagger_TrackFinder ] 10000  info: result_loop Avg Time/Event = 0.3 ms
 [ Recoil_TrackFinder ] 10000  info: found 9932 tracks  / 10255 nseeds
 [ Recoil_TrackFinder ] 10000  info: AVG Time/Event: 0.2 ms
 [ Recoil_TrackFinder ] 10000  info: Breakdown::
 [ Recoil_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
-[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.036 ms
+[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.04 ms
 [ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
 [ Recoil_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.002 ms
 [ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
