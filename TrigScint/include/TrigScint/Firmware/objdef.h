@@ -2,7 +2,7 @@
 #define OBJDEF_H
 
 #include "ap_int.h"
-#define NTIMES 6
+#define NTIMES 5
 #define NHITS 25
 #define NCLUS 25
 #define NCHAN 50
