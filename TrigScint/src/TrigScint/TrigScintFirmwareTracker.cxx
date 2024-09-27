@@ -62,7 +62,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   for (int i = 0; i < NCENT; ++i) {
     for (int j = 0; j < COMBO; ++j) {
       for (int k = 0; k < 2; ++k) {
-        LOOKUP[i][j][k] = ap_int<12>(0);
+        LOOKUP[i][j][k] = ap_int<12>(-1);
       }
     }
   }
@@ -278,9 +278,9 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
   // clusters in Pad1. Do not change this.
   trackproducer_hw(Pad1, Pad2, Pad3, outTrk, LOOKUP);
   for (int I = 0; I < NTRK; I++) {
-    if (outTrk[I].Pad1.Seed.Amp > 0. && outTrk[I].Pad1.Sec.Amp > 0. &&
-        outTrk[I].Pad2.Seed.Amp > 0. && outTrk[I].Pad2.Sec.Amp > 0. &&
-        outTrk[I].Pad3.Seed.Amp > 0. && outTrk[I].Pad3.Sec.Amp > 0.) {
+    if (outTrk[I].Pad1.Seed.Amp > 0. && outTrk[I].Pad1.Sec.Amp >= 0. &&
+        outTrk[I].Pad2.Seed.Amp > 0. && outTrk[I].Pad2.Sec.Amp >= 0. &&
+        outTrk[I].Pad3.Seed.Amp > 0. && outTrk[I].Pad3.Sec.Amp >= 0.) {
       ldmx::TrigScintTrack trk = makeTrack(outTrk[I]);
       tracks_.push_back(trk);
     }

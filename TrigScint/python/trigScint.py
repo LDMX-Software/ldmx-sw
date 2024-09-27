@@ -219,6 +219,48 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         rechit.output_collection = 'trigScintRecHitsPad3'
         return rechit
 
+class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
+    """Configuration for rechit producer for Trigger Scintillators incorporating validated Firmware, regular and pileUp"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TrigScintFirmwareHitProducer','TrigScint')
+
+        self .mev_per_mip = 0.4   #\
+                                  # >>>both are for converting edep to PEs 
+        self.pe_per_mip = 100.    #/
+        self.pedestal= 6.0        # QIE pedestal value (in fC)
+        self.gain = 1.e6      # SiPM Gain
+        self.input_collection="trigScintQIEDigisPad3"
+        self.test_collection="trigScintRecHitsPad3"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="trigScintFirmHitsPad3"
+        self.verbose = False
+        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
+
+    def pad1() : 
+        """Get the firmware hit producer for first pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad1' )
+        rechit.input_collection  = 'trigScintQIEDigisPad1'
+        rechit.output_collection = 'trigScintFirmHitsPad1'
+        rechit.test_collection = 'trigScintRecHitsPad1'
+        return rechit
+
+    def pad2() : 
+        """Get the firmware hit producer for second pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad2' )
+        rechit.input_collection  = 'trigScintQIEDigisPad2'
+        rechit.output_collection = 'trigScintFirmHitsPad2'
+        rechit.test_collection = 'trigScintRecHitsPad2'
+        return rechit
+
+    def pad3() : 
+        """Get the firmware hit for third pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad3' )
+        rechit.input_collection  = 'trigScintQIEDigisPad3'
+        rechit.output_collection = 'trigScintFirmHitsPad3'
+        rechit.test_collection= 'trigScintRecHitsPad3'
+        return rechit
+
 class TrigScintClusterProducer(ldmxcfg.Producer) :
     """Configuration for cluster producer for Trigger Scintillators"""
 
