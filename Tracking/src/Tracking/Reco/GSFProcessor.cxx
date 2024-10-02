@@ -4,6 +4,8 @@
 
 #include "Acts/EventData/TrackHelpers.hpp"
 #include "Acts/EventData/SourceLink.hpp"
+#include "Acts/Propagator/DirectNavigator.hpp"
+
 
 namespace tracking {
 namespace reco {
@@ -78,31 +80,27 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup the GSF Fitter
 
-  // Stepper
-  // Acts::MixtureReductionMethod finalReductionMethod;
-  // const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
-
-  // Acts::ComponentMergeMethod reductionMethod =
-  //    Acts::ComponentMergeMethod::eMaxWeight;
-  //  Acts::MultiEigenStepperLoop multi_stepper(
-  //      map, reductionMethod,
-  //      Acts::getDefaultLogger("GSF_STEP", acts_loggingLevel));
-
+  // Setting up steppers
   Acts::MultiEigenStepperLoop multi_stepper(map);
-  // Detailed Stepper
+  const auto stepper = Acts::EigenStepper<>{map};
+  MultiStepper directStepper(std::move(map));
 
-  // Acts::MultiEigenStepperLoop multi_stepper(map, finalReductionMethod);
-
-  // Navigator
+  // Setting up navigators
   Acts::Navigator::Config navCfg{geometry().getTG()};
   navCfg.resolveMaterial = true;
   navCfg.resolvePassive = false;
   navCfg.resolveSensitive = true;
   const Acts::Navigator navigator(navCfg);
+  Acts::DirectNavigator directNavigator(Acts::getDefaultLogger("GSF_NAV", acts_loggingLevel));
 
+  // Setting up propagators
   auto gsf_propagator =
       GsfPropagator(std::move(multi_stepper), std::move(navigator),
                     Acts::getDefaultLogger("GSF_PROP", acts_loggingLevel));
+
+  auto gsf_direct_propagator =
+      DirectPropagator(std::move(directStepper), std::move(directNavigator),
+                    Acts::getDefaultLogger("GSF_PROP_DIRECT", acts_loggingLevel));
 
   BetheHeitlerApprox betheHeitler = Acts::makeDefaultBetheHeitlerApprox();
 
@@ -112,7 +110,10 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       std::move(gsf_propagator), std::move(betheHeitler),
       Acts::getDefaultLogger("GSF", acts_loggingLevel));
 
-  const auto stepper = Acts::EigenStepper<>{map};
+  gsf_direct_ = std::make_unique<std::decay_t<decltype(*gsf_direct_)>>(
+      std::move(gsf_direct_propagator), std::move(betheHeitler),
+      Acts::getDefaultLogger("GSF_DIRECT", acts_loggingLevel));
+
   propagator_ = std::make_unique<Propagator>(
       stepper, navigator, Acts::getDefaultLogger("PROP", acts_loggingLevel));
 
@@ -157,7 +158,6 @@ void GSFProcessor::produce(framework::Event& event) {
   // Retrieve the tracks
   if (!event.exists(trackCollection_)) return;
   auto tracks{event.getCollection<ldmx::Track>(trackCollection_)};
-
 
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
@@ -276,6 +276,8 @@ void GSFProcessor::produce(framework::Event& event) {
 
     // std::vector<ActsExamples::IndexSourceLink> fit_trackSourceLinks;
     std::vector<Acts::SourceLink> fit_trackSourceLinks;
+    std::vector<const Acts::Surface*> surfSequence; // For direct propagator
+
 
     for (auto imeas : track.getMeasurementsIdxs()) {
       auto meas = measurements.at(imeas);
@@ -284,6 +286,8 @@ void GSFProcessor::produce(framework::Event& event) {
       // Retrieve the surface
 
       const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
+      surfSequence.push_back(hit_surface);
+
 
       // Store the index source link
       ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
@@ -293,6 +297,7 @@ void GSFProcessor::produce(framework::Event& event) {
     // Reverse the order of the vectors
     std::reverse(measOnTrack.begin(), measOnTrack.end());
     std::reverse(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end());
+    std::reverse(surfSequence.begin(), surfSequence.end());
 
     for (auto m : measOnTrack) {
       ldmx_log(debug) << "Measurement:\n" << m << "\n";
@@ -366,9 +371,13 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << trk_pos_bO(0) << " " << trk_pos_bO(1) << " "
                     << trk_pos_bO(2) << std::endl;
 
+    //auto gsf_refit_result =
+    //    gsf_->fit(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
+    //              trk_btp_bO, gsfOptions, tc);
+
     auto gsf_refit_result =
-        gsf_->fit(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
-                  trk_btp_bO, gsfOptions, tc);
+        gsf_direct_->fit(fit_trackSourceLinks.begin(), fit_trackSourceLinks.end(),
+                  trk_btp_bO, gsfOptions, surfSequence, tc);
 
     if (!gsf_refit_result.ok()) {
       ldmx_log(warn) << "GSF re-fit failed" << std::endl;

@@ -67,6 +67,7 @@
 #include "Acts/TrackFitting/GaussianSumFitter.hpp"
 #include "Acts/TrackFitting/GsfMixtureReduction.hpp"
 
+
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
@@ -93,6 +94,7 @@ using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using MultiStepper = Acts::MultiEigenStepperLoop<>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
+using DirectPropagator = Acts::Propagator<MultiStepper, Acts::DirectNavigator>;
 using BetheHeitlerApprox = Acts::AtlasBetheHeitlerApprox<6, 5>;
 
 namespace tracking {
@@ -219,6 +221,11 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<const Acts::GaussianSumFitter<
       GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
       gsf_;
+
+  // The Direct GSF Fitter
+  std::unique_ptr<const Acts::GaussianSumFitter<
+      DirectPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
+      gsf_direct_;
 
   // Configuration
 
