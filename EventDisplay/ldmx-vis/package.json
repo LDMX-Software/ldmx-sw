@@ -1,0 +1,51 @@
+{
+  "name": "ldmx-vis",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:ldmx-vis": "node dist/ldmx-vis/server/server.mjs"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^17.3.1",
+    "@angular/cdk": "^17.3.1",
+    "@angular/common": "^17.3.1",
+    "@angular/compiler": "^17.3.1",
+    "@angular/core": "^17.3.1",
+    "@angular/forms": "^17.3.1",
+    "@angular/material": "^17.3.1",
+    "@angular/platform-browser": "^17.3.1",
+    "@angular/platform-browser-dynamic": "^17.3.1",
+    "@angular/router": "^17.3.1",
+    "css-element-queries": "^1.2.3",
+    "cypress-plugin-snapshots": "https://github.com/meinaart/cypress-plugin-snapshots.git",
+    "phoenix-event-display": "^2.16.0",
+    "phoenix-ui-components": "^2.16.0",
+    "qrcode": "1.5.3",
+    "rxjs": "^7.8.1",
+    "three": "^0.162.0",
+    "tslib": "^2.6.2",
+    "typescript": "~5.4.3",
+    "zone.js": "^0.14.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.3.1",
+    "@angular/cli": "~17.3.1",
+    "@angular/compiler-cli": "~17.3.1",
+    "@angular/language-service": "^17.3.1",
+    "@types/qrcode": "^1.5.5",
+    "concurrently": "^8.2.2",
+    "cypress": "^13.7.1",
+    "jest": "^29.7.0",
+    "jest-preset-angular": "^14.0.3",
+    "ng-packagr": "^17.3.0",
+    "ts-jest": "^29.1.2"
+  },
+  "peerDependencies": {
+    "jspdf": "*"
+  }
+}
