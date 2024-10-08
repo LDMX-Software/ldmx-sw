@@ -21,12 +21,14 @@ ecal_pres_skimmer.summed_det_max = 9999.
 ecal_pres_skimmer.summed_tight_iso_max = 9999. 
 ecal_pres_skimmer.ecal_back_energy_max = 9999. 
 ecal_pres_skimmer.n_readout_hits_max = 9999
-ecal_pres_skimmer.shower_rms_max = 9999 
-ecal_pres_skimmer.shower_y_std_max = 9999 
-ecal_pres_skimmer.shower_x_std_max = 9999 
+ecal_pres_skimmer.shower_rms_max = 9999. 
+ecal_pres_skimmer.shower_y_std_max = 9999. 
+ecal_pres_skimmer.shower_x_std_max = 9999.
 ecal_pres_skimmer.max_cell_dep_max = 9999. 
 ecal_pres_skimmer.std_layer_hit_max = 9999 
 ecal_pres_skimmer.n_straight_tracks_max = 9999
+ecal_pres_skimmer.bdt_disc_min = 0.
+ecal_pres_skimmer.fiducial_level = 0
 '''
 
 p.sequence =[ecal_pres_skimmer] 

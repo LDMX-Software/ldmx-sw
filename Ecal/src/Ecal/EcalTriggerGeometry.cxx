@@ -8,11 +8,7 @@
 #include "Framework/EventHeader.h"
 
 namespace ecal {
-
-static const int LAYERS_MASK = 0xFF;
 static const int LAYERS_IDENTICAL = 0x01;
-static const int LAYERS_ODDEVEN = 0x02;
-
 static const int MODULES_MASK = 0xFF00;
 static const int INPLANE_IDENTICAL = 0x0100;
 
@@ -47,8 +43,8 @@ EcalTriggerGeometry::EcalTriggerGeometry(int symmetry,
         std::vector<ldmx::EcalID> pids;
         for (int dv = -1; dv <= 1; dv++) {
           for (int du = -1; du <= 1; du++) {
-            ldmx::EcalID pid(0, 0, u + du + dv,
-                             v + dv);  // changes directions here
+            // changes directions here
+            ldmx::EcalID pid(0, 0, u + du + dv, v + dv);
             precision2trigger_[pid] = tid;
             pids.push_back(pid);
           }

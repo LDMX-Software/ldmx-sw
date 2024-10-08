@@ -1,0 +1,29 @@
+
+name: Build with CLANG using LTO sanitizer 
+
+on:
+  push:
+    branches: '**' #all branches
+    tags: 'v*.*.*' #all version tags
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  build-clang-lto:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Install just
+      uses: extractions/setup-just@v2
+      with:
+          just-version: 1.26.0
+
+    - name: Compile and Install ldmx-sw
+      run: | 
+        just install-denv init configure-clang-lto
+        just build

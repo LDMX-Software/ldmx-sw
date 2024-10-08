@@ -17,7 +17,7 @@ void EcalVetoResults::analyze(const framework::Event &event) {
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   histograms_.fill("bdt_disc", veto.getDisc());
-  histograms_.fill("bdt_disc_log", -log(1 - veto.getDisc()));
+  histograms_.fill("bdt_disc_log", -std::log10(1 - veto.getDisc()));
   histograms_.fill("fiducial", veto.getFiducial());
 
   return;

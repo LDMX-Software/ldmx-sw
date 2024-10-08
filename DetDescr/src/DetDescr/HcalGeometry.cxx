@@ -57,9 +57,12 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
         case ScintillatorOrientation::vertical:
           return {globalPosition[2], globalPosition[0], globalPosition[1]};
         default:  // Should not be possible with current geometries
-          break;
+          EXCEPTION_RAISE("InvalidRotation",
+                          "Attempted to rotate into an invalid "
+                          "orientation for a scintillator bar!");
       }
     case ldmx::HcalID::HcalSection::TOP:
+      [[fallthrough]];
     case ldmx::HcalID::HcalSection::BOTTOM:
       switch (orientation) {
         case ScintillatorOrientation::horizontal:
@@ -67,9 +70,12 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
         case ScintillatorOrientation::depth:
           return {globalPosition[1], globalPosition[0], globalPosition[2]};
         default:  // Should not be possible with current geometries
-          break;
+          EXCEPTION_RAISE("InvalidRotation",
+                          "Attempted to rotate into an invalid "
+                          "orientation for a scintillator bar!");
       }
     case ldmx::HcalID::HcalSection::LEFT:
+      [[fallthrough]];
     case ldmx::HcalID::HcalSection::RIGHT:
       switch (orientation) {
         case ScintillatorOrientation::vertical:
@@ -77,15 +83,18 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
         case ScintillatorOrientation::depth:
           return globalPosition;
         default:  // Should not be possible with current geometries
-          break;
+          EXCEPTION_RAISE("InvalidRotation",
+                          "Attempted to rotate into an invalid "
+                          "orientation for a scintillator bar!");
       }
+    default:
+      // Can only reach this part if we somehow didn't match any of the options
+      // above. This could happen if someone introduces a new geometry but
+      // doesn't patch this part.
+      EXCEPTION_RAISE("InvalidRotation",
+                      "Attempted to rotate into an invalid "
+                      "orientation for a scintillator bar!");
   }
-  // Can only reach this part if we somehow didn't match any of the options
-  // above. This could happen if someone introduces a new geometry but doesn't
-  // patch this part.
-  EXCEPTION_RAISE("InvalidRotation",
-                  "Attempted to rotate into an invalid "
-                  "orientation for a scintillator bar!");
 }
 
 HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(

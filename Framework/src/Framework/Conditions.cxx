@@ -21,8 +21,7 @@ void Conditions::createConditionsObjectProvider(
     if (providerMap_.find(provides) != providerMap_.end()) {
       EXCEPTION_RAISE(
           "ConditionAmbiguityException",
-          std::string(
-              "Multiple ConditonsObjectProviders configured to provide ") +
+          "Multiple ConditonsObjectProviders configured to provide " +
               provides);
     }
     providerMap_[provides] = cop;
@@ -62,9 +61,8 @@ const ConditionsObject* Conditions::getConditionPtr(
     auto copptr = providerMap_.find(condition_name);
 
     if (copptr == providerMap_.end()) {
-      EXCEPTION_RAISE(
-          "ConditionUnavailable",
-          std::string("No provider is available for : " + condition_name));
+      EXCEPTION_RAISE("ConditionUnavailable",
+                      "No provider is available for : " + condition_name);
     }
 
     std::pair<const ConditionsObject*, ConditionsIOV> cond =
@@ -73,8 +71,7 @@ const ConditionsObject* Conditions::getConditionPtr(
     if (!cond.first) {
       EXCEPTION_RAISE(
           "ConditionUnavailable",
-          std::string("Null condition returned for requested item : " +
-                      condition_name));
+          "Null condition returned for requested item : " + condition_name);
     }
 
     // first request, create a cache entry

@@ -18,8 +18,6 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
   const ecal::EcalTriggerGeometry& geom =
       getCondition<ecal::EcalTriggerGeometry>(
           ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
 
   if (!event.exists(hitCollName_)) return;
   auto ecalTrigDigis{
@@ -38,6 +36,8 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 
     double x, y, z;
     // const auto center_ecalID = geom.centerInTriggerCell(tid);
+    // const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
+    // ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
     // hexReadout.getCellAbsolutePosition(center_ecalID,x,y,z);
     // std::tie(x,y) = geom.globalPosition( tid );
     std::tie(x, y, z) = geom.globalPosition(tid);
@@ -99,31 +99,6 @@ void TrigEcalClusterProducer::produce(framework::Event& event) {
 
   event.add(clusterCollName_, trigClusters);
 }
-
-void TrigEcalClusterProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void TrigEcalClusterProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace trigger
 
 DECLARE_PRODUCER_NS(trigger, TrigEcalClusterProducer);

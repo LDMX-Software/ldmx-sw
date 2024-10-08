@@ -33,20 +33,9 @@ class TrigEcalEnergySum : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
-
   typedef ap_ufixed<16, 14> e_t;  // [MeV] (Up to at least 8 GeV)
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
   // name of collection for trigHits to be passed as input
   std::string hitCollName_;
 

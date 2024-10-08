@@ -88,12 +88,6 @@ static const double MAX_ENERGY_ERROR_TP = 2 * MIP_SI_ENERGY;
 static const int NUM_TEST_SIM_HITS = 2000;
 
 /**
- * Should the sim/rec/tp energies be ntuplized
- * for your viewing?
- */
-static const bool NTUPLIZE_ENERGIES = true;
-
-/**
  * Our custom energy checker which makes sure that
  * the input energy is "close enough" to the truth
  * energy.
@@ -314,7 +308,7 @@ DECLARE_ANALYZER_NS(ecal::test, EcalCheckEnergyReconstruction)
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
 
-  char **args;
+  char **args{nullptr};
   framework::ProcessHandle p;
 
   framework::ConfigurePython cfg(config_file, args, 0);

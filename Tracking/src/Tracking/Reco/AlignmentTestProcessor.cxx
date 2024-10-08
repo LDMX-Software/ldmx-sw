@@ -52,7 +52,8 @@ void AlignmentTestProcessor::produce(framework::Event& event) {
     std::cout << entry.first << std::endl;
 
     std::cout << "Dumping surfaces information" << std::endl;
-    (entry.second)->toStream(align_gctx, std::cout);
+    //    (entry.second)->toStream(align_gctx, std::cout);
+    (entry.second)->toStream(align_gctx);
   }
 }
 

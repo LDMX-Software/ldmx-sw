@@ -28,8 +28,6 @@ TargetProcessFilter::TargetProcessFilter(
   process_ = parameters.getParameter<std::string>("process");
 }
 
-TargetProcessFilter::~TargetProcessFilter() {}
-
 G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   if (track == currentTrack_) {

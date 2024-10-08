@@ -136,14 +136,15 @@ class Process {
    * Process the input event through the sequence
    * of processors
    *
-   * The input counter for number of events processed is
+   * The input counters (for events and tries) are
    * only used to print the status.
    *
    * @param[in] n counter for number of events processed
+   * @param[in] n_tries counter for number of tries on current event
    * @param[in,out] event reference to event we are going to process
    * @returns true if event was full processed (false if aborted)
    */
-  bool process(int n, Event &event) const;
+  bool process(int n, int n_tries, Event &event) const;
 
   /**
    * Run through the processors and let them know
@@ -180,15 +181,6 @@ class Process {
 
   /** The frequency with which event info is printed. */
   int logFrequency_;
-
-  /** Integer form of logging level to print to terminal */
-  int termLevelInt_;
-
-  /** Integer form of logging level to print to file */
-  int fileLevelInt_;
-
-  /** Name of file to print logging to */
-  std::string logFileName_;
 
   /** Maximum number of attempts to make before giving up on an event */
   int maxTries_;

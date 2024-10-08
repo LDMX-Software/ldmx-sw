@@ -58,9 +58,29 @@ install-denv:
     curl -s https://raw.githubusercontent.com/tomeichlersmith/denv/main/install | sh
 
 # configure how ldmx-sw will be built
-configure *CONFIG:
+# added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
+# base configure command defining how cmake is called, private so only experts call it
+[private]
+configure-base *CONFIG:
     denv cmake -B build -S . {{ CONFIG }}
 
+# default configure of build when developing
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
+
+# configure minimal option for faster compilation
+configure-quick: (configure-base)
+
+# configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
+configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
+
+# This is the same as just configure but reports all (non-3rd-party) warnings as errors
+configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
+
+# Use alternative compiler and enable LTO (test compiling only, won't run properly)
+configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
+
+# Keep debug symbols so running with gdb provides more helpful detail
+configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
 # compile and install ldmx-sw
 build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
@@ -73,6 +93,11 @@ test *ARGS:
 [no-cd]
 fire config_py *ARGS:
     denv fire {{ config_py }} {{ ARGS }}
+
+# run gdb on a config file
+[no-cd]
+debug config_py *ARGS:
+    denv gdb fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
@@ -173,7 +198,7 @@ setenv +ENVVAR:
 compile ncpu=num_cpus() *CONFIG='': (configure CONFIG) (build ncpu)
 
 # re-build ldmx-sw and then run a config
-recompFire config_py *ARGS: build (fire config_py ARGS)
+recompFire config_py *ARGS: compile (fire config_py ARGS)
 
 # install the validation module
 # `python3 -m pip install Validation/` is the standard `pip` install method.

@@ -20,7 +20,7 @@ project(LDMX_SW VERSION 3.1.1
                 LANGUAGES CXX    
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Load additional macros used by this project. 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
@@ -29,6 +29,14 @@ list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
 # 'build_macros_found' will be set to the path of the module.  Otherwise, it
 # is set to NOTFOUND.
 include(BuildMacros RESULT_VARIABLE build_macros_found)
+
+# Adding ROOT, ACTS, HLS arb prec as "SYSTEM" 
+# which will silence compiler warnings from these 3rd party softwares
+include_directories(SYSTEM /usr/local/include/root)
+include_directories(SYSTEM Tracking/acts/Core/include)
+
+# FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
+set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")
 
 # If an install location hasn't been set via CMAKE_INSTALL_PREFIX, set it to 
 # a reasonable default ($PWD/install).  

@@ -182,7 +182,8 @@ class SeedToTrackParamMaker {
     // coordinate (-1.*A/(2*B), 1./(2*B)))
     Acts::Vector3 transDirection(1., A, std::hypot(1, A) * invTanTheta);
     // Transform it back to the original frame
-    Acts::Vector3 direction = rotation * transDirection.normalized();
+    [[maybe_unused]] Acts::Vector3 direction =
+        rotation * transDirection.normalized();
 
     // Initialize the bound parameters vector
     Acts::BoundVector params = Acts::BoundVector::Zero();

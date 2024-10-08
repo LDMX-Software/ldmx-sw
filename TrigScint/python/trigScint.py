@@ -219,6 +219,48 @@ class TrigScintRecHitProducer(ldmxcfg.Producer) :
         rechit.output_collection = 'trigScintRecHitsPad3'
         return rechit
 
+class TrigScintFirmwareHitProducer(ldmxcfg.Producer) :
+    """Configuration for rechit producer for Trigger Scintillators incorporating validated Firmware, regular and pileUp"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TrigScintFirmwareHitProducer','TrigScint')
+
+        self .mev_per_mip = 0.4   #\
+                                  # >>>both are for converting edep to PEs 
+        self.pe_per_mip = 100.    #/
+        self.pedestal= 6.0        # QIE pedestal value (in fC)
+        self.gain = 1.e6      # SiPM Gain
+        self.input_collection="trigScintQIEDigisPad3"
+        self.test_collection="trigScintRecHitsPad3"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="trigScintFirmHitsPad3"
+        self.verbose = False
+        self.sample_of_interest=2 # Sample of interest. Range 0 to 3
+
+    def pad1() : 
+        """Get the firmware hit producer for first pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad1' )
+        rechit.input_collection  = 'trigScintQIEDigisPad1'
+        rechit.output_collection = 'trigScintFirmHitsPad1'
+        rechit.test_collection = 'trigScintRecHitsPad1'
+        return rechit
+
+    def pad2() : 
+        """Get the firmware hit producer for second pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad2' )
+        rechit.input_collection  = 'trigScintQIEDigisPad2'
+        rechit.output_collection = 'trigScintFirmHitsPad2'
+        rechit.test_collection = 'trigScintRecHitsPad2'
+        return rechit
+
+    def pad3() : 
+        """Get the firmware hit for third pad"""
+        rechit = TrigScintRecHitProducer( 'trigScintFirmHitsPad3' )
+        rechit.input_collection  = 'trigScintQIEDigisPad3'
+        rechit.output_collection = 'trigScintFirmHitsPad3'
+        rechit.test_collection= 'trigScintRecHitsPad3'
+        return rechit
+
 class TrigScintClusterProducer(ldmxcfg.Producer) :
     """Configuration for cluster producer for Trigger Scintillators"""
 
@@ -284,6 +326,42 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         self.verbosity = 0
 
 trigScintTrack = TrigScintTrackProducer( "trigScintTrack" )
+
+class TrigScintTrackProducer(ldmxcfg.Producer) :
+    """Configuration for track producer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::','TrigScint')
+
+        self.delta_max = 0.75
+        self.tracking_threshold = 0.  #to add in neighboring channels
+        self.seeding_collection = "TriggerPad1Clusters"
+        self.further_input_collections = ["TriggerPad2Clusters","TriggerPad3Clusters"]
+        self.allow_skip_last_collection = False
+        self.vertical_bar_start_index = 52
+        self.number_horizontal_bars = 24  #16 for x,y segmented geometry only 
+        self.number_vertical_bars = 0     #8 for x,y segmented geometry only
+        self.horizontal_bar_width = 3.
+        self.horizontal_bar_gap = 0.3
+        self.vertical_bar_width = 3.
+        self.vertical_bar_gap = 0.3
+        self.input_pass_name="" #take any pass
+        self.output_collection="TriggerPadTracks"
+        self.verbosity = 0
+
+class TrigScintFirmwareTracker(ldmxcfg.Producer) :
+    """Configuration for the track producer from the Firmware Tracker"""
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::TrigScintFirmwareTracker','TrigScint')
+        self.clustering_threshold=40.0
+        self.digis1_collection='trigScintDigisPad1'
+        self.digis2_collection='trigScintDigisPad2'
+        self.digis3_collection='trigScintDigisPad3'
+        self.input_pass_name=""
+        self.output_collection="TriggerPadTracks"
+        self.verbosity = 0
+        self.time_tolerance = 50.0
+        self.pad_time = -1.5
 
 class QIEAnalyzer(ldmxcfg.Analyzer) :
     """Configuration for linearized QIE analyzer for Trigger Scintillators"""

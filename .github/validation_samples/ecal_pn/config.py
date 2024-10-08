@@ -33,6 +33,9 @@ p.termLogLevel = 1
 from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
 
+from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+trackgeo.get_instance().setDetector('ldmx-det-v14-8gev')
+
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
 # and generated electros for Tagger.
@@ -57,46 +60,46 @@ vSmearing = 0.000001    #mm
 # Smearing Processor - Tagger
 # Runs G4 hit smearing producing measurements in the Tagger tracker.
 # Hits that belong to the same sensor with the same trackID are merged together to reduce combinatorics
-digiTagger = tracking.DigitizationProcessor("DigitizationProcessor")
-digiTagger.hit_collection = "TaggerSimHits"
-digiTagger.out_collection = "DigiTaggerSimHits"
-digiTagger.merge_hits = True
-digiTagger.sigma_u = uSmearing
-digiTagger.sigma_v = vSmearing
+digi_tagger = tracking.DigitizationProcessor("DigitizationProcessor")
+digi_tagger.hit_collection = "TaggerSimHits"
+digi_tagger.out_collection = "DigiTaggerSimHits"
+digi_tagger.merge_hits = True
+digi_tagger.sigma_u = uSmearing
+digi_tagger.sigma_v = vSmearing
 
 # Smearing Processor - Recoil
-digiRecoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
-digiRecoil.hit_collection = "RecoilSimHits"
-digiRecoil.out_collection = "DigiRecoilSimHits"
-digiRecoil.merge_hits = True
-digiRecoil.sigma_u = uSmearing
-digiRecoil.sigma_v = vSmearing
+digi_recoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
+digi_recoil.hit_collection = "RecoilSimHits"
+digi_recoil.out_collection = "DigiRecoilSimHits"
+digi_recoil.merge_hits = True
+digi_recoil.sigma_u = uSmearing
+digi_recoil.sigma_v = vSmearing
 
 # Seed Finder Tagger
 # This runs the track seed finder looking for 5 hits in consecutive sensors and fitting them with a
 # parabola+linear fit. Compatibility with expected particles is checked by looking at the track
 # parameters and the impact parameters at the target or generation point. For the tagger one should look
 # for compatibility with the beam orbit / beam spot
-
-seederTagger = tracking.SeedFinderProcessor()
-seederTagger.input_hits_collection =  digiTagger.out_collection
-seederTagger.out_seed_collection = "TaggerRecoSeeds"
-seederTagger.pmin  = 2.
-seederTagger.pmax  = 12.
-seederTagger.d0min = -60.
-seederTagger.d0max = 0.
+seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
+seeder_tagger.input_hits_collection =  digi_tagger.out_collection
+seeder_tagger.out_seed_collection = "TaggerRecoSeeds"
+seeder_tagger.pmin  = 0.1
+seeder_tagger.pmax  = 10.0
+seeder_tagger.d0min = -45.
+seeder_tagger.d0max = 45.
+seeder_tagger.z0max = 60.
 
 #Seed finder processor - Recoil
-seederRecoil = tracking.SeedFinderProcessor("SeedRecoil")
-seederRecoil.perigee_location = [0.,0.,0.]
-seederRecoil.input_hits_collection =  digiRecoil.out_collection
-seederRecoil.out_seed_collection = "RecoilRecoSeeds"
-seederRecoil.bfield = 1.5
-seederRecoil.pmin  = 0.1
-seederRecoil.pmax  = 12.
-seederRecoil.d0min = -40.0
-seederRecoil.d0max = 40.0
-seederRecoil.z0max = 50.
+seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")
+seeder_recoil.perigee_location = [0.,0.,0.]
+seeder_recoil.input_hits_collection =  digi_recoil.out_collection
+seeder_recoil.out_seed_collection = "RecoilRecoSeeds"
+seeder_recoil.bfield = 1.5
+seeder_recoil.pmin  = 0.1
+seeder_recoil.pmax  = 10.0
+seeder_recoil.d0min = -40.0
+seeder_recoil.d0max = 40.0
+seeder_recoil.z0max = 50.
 
 # Producer for running the CKF track finding starting from the found seeds.
 tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
@@ -105,17 +108,12 @@ tracking_tagger.debug = True
 tracking_tagger.propagator_step_size = 1000.  #mm
 tracking_tagger.bfield = -1.5  #in T #From looking at the BField map
 tracking_tagger.const_b_field = False
-
-#Target location for the CKF extrapolation
-tracking_tagger.seed_coll_name = seederTagger.out_seed_collection
+tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
 tracking_tagger.out_trk_collection = "TaggerTracks"
-
-#smear the hits used for finding/fitting
 tracking_tagger.trackID = -1 #1
 tracking_tagger.pdgID = -9999 #11
-tracking_tagger.measurement_collection = digiTagger.out_collection
-tracking_tagger.min_hits = 5
-
+tracking_tagger.measurement_collection = digi_tagger.out_collection
+tracking_tagger.min_hits = 6
 
 #CKF Options
 tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
@@ -124,17 +122,13 @@ tracking_recoil.debug = True
 tracking_recoil.propagator_step_size = 1000.  #mm
 tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
 tracking_recoil.const_b_field = False
-
-#Target location for the CKF extrapolation
-#tracking_recoil.seed_coll_name = seederRecoil.out_seed_collection
+tracking_recoil.taggerTracking=False
 tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
-
-#smear the hits used for finding/fitting
 tracking_recoil.trackID = -1 #1
 tracking_recoil.pdgID = -9999 #11
-tracking_recoil.measurement_collection = digiRecoil.out_collection
-tracking_recoil.min_hits = 5
+tracking_recoil.measurement_collection = digi_recoil.out_collection
+tracking_recoil.min_hits = 6
 
 # Load the ECAL modules
 import LDMX.Ecal.EcalGeometry
@@ -169,24 +163,43 @@ count.input_pass_name = ''
 from LDMX.DQM import dqm
 from LDMX.Tracking import dqm as tkdqm
 
-seed_recoil_dqm = tkdqm.TrackingRecoDQM("SeedRecoilTrackerDQM")
-seed_recoil_dqm.buildHistograms()
-seed_recoil_dqm.track_collection = seederRecoil.out_seed_collection
+seed_tagger_dqm = tkdqm.TrackingRecoDQM("SeedTaggerDQM")
+seed_tagger_dqm.track_collection = seeder_tagger.out_seed_collection
+seed_tagger_dqm.truth_collection = "TaggerTruthTracks"
+seed_tagger_dqm.title = ""
+seed_tagger_dqm.buildHistograms()
+
+tagger_dqm = tkdqm.TrackingRecoDQM("TaggerDQM")
+tagger_dqm.track_collection = tracking_tagger.out_trk_collection
+tagger_dqm.truth_collection = "TaggerTruthTracks"
+tagger_dqm.trackStates = ["target"]
+tagger_dqm.title = ""
+tagger_dqm.measurement_collection=digi_tagger.out_collection
+tagger_dqm.truth_hit_collection="TaggerSimHits"
+tagger_dqm.buildHistograms()
+
+
+seed_recoil_dqm = tkdqm.TrackingRecoDQM("SeedRecoilDQM")
+seed_recoil_dqm.track_collection = seeder_recoil.out_seed_collection
 seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
 seed_recoil_dqm.title = ""
+seed_recoil_dqm.buildHistograms()
 
-recoil_dqm = tkdqm.TrackingRecoDQM("RecoilTrackerDQM")
-recoil_dqm.buildHistograms()
+recoil_dqm = tkdqm.TrackingRecoDQM("RecoilDQM")
 recoil_dqm.track_collection = tracking_recoil.out_trk_collection
 recoil_dqm.truth_collection = "RecoilTruthTracks"
+recoil_dqm.trackStates = ["ecal","target"]
 recoil_dqm.title = ""
+recoil_dqm.measurement_collection=digi_recoil.out_collection
+recoil_dqm.truth_hit_collection="RecoilSimHits"
+recoil_dqm.buildHistograms()
 
 p.sequence.extend([
-        digiTagger,
-        digiRecoil,
+        digi_tagger,
+        digi_recoil,
         truth_tracking,
-        seederTagger,
-        seederRecoil,
+        seeder_tagger,
+        seeder_recoil,
         tracking_tagger,
         tracking_recoil,
         ecal_digi.EcalDigiProducer(),
@@ -198,9 +211,12 @@ p.sequence.extend([
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
         TrigScintClusterProducer.pad3(),
-        trigScintTrack, 
+        trigScintTrack,
         count, TriggerProcessor('trigger', 8000.),
         dqm.PhotoNuclearDQM(verbose=True),
+        seed_tagger_dqm,
+        tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
         ] + dqm.all_dqm)
+

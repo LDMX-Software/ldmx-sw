@@ -49,7 +49,7 @@ class TestBeamClusterAnalyzer : public framework::Analyzer {
   TH2F* hN2N1;
   TH1F* hNClusters;
   TH1F* hNHits;
-  TH1F* hNhitsInClusters;
+  // TH1F* hNhitsInClusters;
   TH1F* hPEinHits[16];
   TH1F* hPEinClusters[16];
   TH1F* hDeltaCentroids;
