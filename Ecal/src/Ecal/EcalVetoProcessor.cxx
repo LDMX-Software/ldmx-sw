@@ -1089,6 +1089,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
                  << " straight tracks and " << nLinregTracks_
                  << " lin-reg tracks";
 
+  nStraightTracks_ = -1;
   result.setVariables(
       nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
       showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
