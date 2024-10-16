@@ -4,7 +4,7 @@
  * @author Ella Viirola, Lund University
  */
 
-#ifndef ECAL_CLUE_H_
+#ifndef ECAL_CLUE_H_ 
 #define ECAL_CLUE_H_
 
 #include <math.h>
@@ -20,6 +20,7 @@
 
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/WorkingEcalCluster.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace ecal {
 
@@ -44,6 +45,7 @@ class CLUE {
     int layer;
 
     std::vector<ldmx::EcalHit> hits;
+    std::vector<unsigned int> hit_origins;
 
     Density() {}
 
@@ -57,6 +59,45 @@ class CLUE {
       layer = -1;
       z = 0.;
       hits = {};
+    }
+
+    void findHitOrigins(const std::vector<ldmx::SimCalorimeterHit>& ecalSimHits) {
+      std::vector<unsigned int> vecIDs;
+      for (const auto& hit : this->hits) {
+        auto id = hit.getID();
+        int tag = 0;
+        auto it = std::find_if(ecalSimHits.begin(), ecalSimHits.end(),
+          [&](const auto& simHit) { return simHit.getID() == id; });
+
+        if (it != ecalSimHits.end()) {
+          int ancestor = 0;
+          int prevAncestor = 0;
+          bool tagged = false;
+          tag = 0;
+          for (int i = 0; i < it->getNumberOfContribs(); i++) {
+
+            // for each contrib in this simhit
+            const auto& c = it->getContrib(i);
+
+            // get origin electron ID
+            ancestor = c.originID;
+            if (!tagged && i != 0 && prevAncestor != ancestor) {
+              // if origin electron ID does not match previous origin electron ID
+              // this hit has contributions from several electrons, ie mixed case
+              tag = 0;
+              tagged = true;
+            }
+            prevAncestor = ancestor;
+          }
+          if (!tagged) {
+            // if not tagged, hit was from a single electron
+            tag = prevAncestor;
+          }
+        }
+        else {tag = -1;}
+        vecIDs.push_back(tag);
+      }
+      hit_origins = vecIDs; 
     }
   };
 
@@ -627,6 +668,13 @@ class CLUE {
       convertToWorkingClusters(clusters);
     } else {
       auto densities = setup(hits);
+      densities_ = densities;
+      //densities->findHitOrigins();
+      //for (auto& density: densities) {
+      //    densities_.push_back(density->totalEnergy);
+      //    auto count = std::count_if(density->hit_origins.begin(), density->hit_origins.end(),[&](auto const& val){ return val >= 10; });
+      //    if (count >= 1) {densities_secondaries_.push_back(density->totalEnergy);}
+      //}
       auto clusters = clustering(densities, false);
       convertToWorkingClusters(clusters);
     }
@@ -641,6 +689,10 @@ class CLUE {
   int getInitialClusterNbr() const { return initialClusterNbr_; }
 
   std::vector<WorkingEcalCluster> getClusters() const { return finalClusters_; }
+
+  std::vector<std::shared_ptr<Density>> getDensities() const { return densities_; }
+  std::vector<double> getDensitiesSecond() const { return densities_secondaries_; }
+
 
   // First layer centroids are available for potential future combination with
   // TS
@@ -691,6 +743,8 @@ class CLUE {
 
   int seedIndex_{0};
   std::vector<std::vector<std::shared_ptr<Density>>> seeds_;
+  std::vector<std::shared_ptr<Density>> densities_;
+  std::vector<double> densities_secondaries_;
 
   int initialClusterNbr_{-1};
   std::vector<WorkingEcalCluster> finalClusters_;

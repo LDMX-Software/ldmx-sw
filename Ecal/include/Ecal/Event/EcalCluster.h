@@ -44,6 +44,9 @@ class EcalCluster : public ldmx::CaloCluster {
 
   void findHitOrigins(const std::vector<ldmx::SimCalorimeterHit>& ecalSimHits);
 
+  void setDensities(const std::vector<double>& densities) {densities_ = densities;}
+  void setDensitiesSecond(const std::vector<double>& densities) {densities_secondaries_ = densities;}
+
   bool operator<(const EcalCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
@@ -68,6 +71,8 @@ class EcalCluster : public ldmx::CaloCluster {
   std::vector<unsigned int> firstLayerHitIDs_;
   std::vector<unsigned int> hitOriginIDs_;
 
+  std::vector<double> densities_;
+  std::vector<double> densities_secondaries_;
 
   double firstLayerCentroidX_{0};
   double firstLayerCentroidY_{0};
