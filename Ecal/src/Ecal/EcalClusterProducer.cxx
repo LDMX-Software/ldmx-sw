@@ -57,9 +57,20 @@ void EcalClusterProducer::produce(framework::Event& event) {
     CLUE cf;
 
     cf.cluster(ecalHits, dc_, rhoc_, deltac_, deltao_, nbrOfLayers_,
-               reclustering_, debug_);
+               reclustering_, debug_); 
+
     std::vector<WorkingEcalCluster> wcVec = cf.getClusters();
     std::vector<WorkingEcalCluster> fWcVec = cf.getFirstLayerCentroids();
+    std::vector<std::shared_ptr<CLUE::Density>> densities = cf.getDensities();
+    std::vector<double> densities_energy;
+    std::vector<double> densities_secondaries_energy;
+    for (auto& density: densities) {
+       density->findHitOrigins(ecalSimHits);
+       densities_energy.push_back(density->totalEnergy);
+       std::cout << density->totalEnergy << std::endl;
+       auto count = std::count_if(density->hit_origins.begin(), density->hit_origins.end(),[&](auto const& val){ return val >= 10; });
+       if (count >= 1) {densities_secondaries_energy.push_back(density->totalEnergy);}
+    }
 
     auto nLoops = cf.getNLoops();
     histograms_.fill("nLoops", nLoops);
@@ -82,6 +93,12 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.addHits(wcVec[aWC].getHits());
       cluster.addFirstLayerHits(fWcVec[aWC].getHits());
       cluster.findHitOrigins(ecalSimHits);
+
+      if (aWC == 0) {
+        cluster.setDensities(densities_energy);
+        cluster.setDensitiesSecond(densities_secondaries_energy);
+      } 
+
 
       histograms_.fill("nHits", wcVec[aWC].getHits().size());
       histograms_.fill("cluster_energy", wcVec[aWC].centroid().E());
