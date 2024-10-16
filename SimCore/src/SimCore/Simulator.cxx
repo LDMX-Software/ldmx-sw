@@ -15,12 +15,12 @@
 #include "Framework/RandomNumberSeedService.h"
 #include "Framework/Version.h"  //for LDMX_INSTALL path
 
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/Geo/ParserFactory.h"
@@ -28,7 +28,6 @@
 #include "SimCore/SensitiveDetector.h"
 #include "SimCore/UserEventInformation.h"
 #include "SimCore/XsecBiasingOperator.h"
-#include "SimCore/Event/HepMC3GenEvent.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -164,12 +163,12 @@ void Simulator::produce(framework::Event& event) {
     std::cout << gen->Name() << std::endl;
   });
   */
-  
+
   auto event_info = static_cast<UserEventInformation*>(
       runManager_->GetCurrentEvent()->GetUserInformation());
 
   auto hepmc3_events = event_info->getHepMC3GenEvents();
-  for(auto & hepmc3ev : hepmc3_events){
+  for (auto& hepmc3ev : hepmc3_events) {
     hepmc3ev.event_number = event.getEventHeader().getEventNumber();
   }
   event.add("SimHepMC3Events", hepmc3_events);

@@ -1,10 +1,10 @@
 #ifndef SIMCORE_USEREVENTINFORMATION_H
 #define SIMCORE_USEREVENTINFORMATION_H
 
-#include "G4VUserEventInformation.hh"
-
-#include "SimCore/Event/HepMC3GenEvent.h"
 #include <vector>
+
+#include "G4VUserEventInformation.hh"
+#include "SimCore/Event/HepMC3GenEvent.h"
 
 namespace simcore {
 
@@ -120,9 +120,13 @@ class UserEventInformation : public G4VUserEventInformation {
    * @returns true if it was
    */
   bool wasLastStepEN() const { return last_step_en_; }
-  
-  void addHepMC3GenEvent(ldmx::HepMC3GenEvent event) { hepmc3_events_.push_back(event); }
-  std::vector<ldmx::HepMC3GenEvent> getHepMC3GenEvents() { return hepmc3_events_; }
+
+  void addHepMC3GenEvent(ldmx::HepMC3GenEvent event) {
+    hepmc3_events_.push_back(event);
+  }
+  std::vector<ldmx::HepMC3GenEvent> getHepMC3GenEvents() {
+    return hepmc3_events_;
+  }
 
  private:
   /// Total number of brem candidates in the event
@@ -176,8 +180,7 @@ class UserEventInformation : public G4VUserEventInformation {
   /**
    * a collection of HepMC3 event records.
    */
-  std::vector< ldmx::HepMC3GenEvent > hepmc3_events_;
-
+  std::vector<ldmx::HepMC3GenEvent> hepmc3_events_;
 };
 }  // namespace simcore
 

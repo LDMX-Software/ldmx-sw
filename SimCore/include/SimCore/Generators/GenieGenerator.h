@@ -13,7 +13,6 @@
 #include "TRandom.h"
 #include "TRandomGen.h"
 
-
 //------------//
 //   GENIE   //
 //------------//
@@ -23,10 +22,10 @@
 //------------//
 //   LDMX     //
 //------------//
-#include "SimCore/PrimaryGenerator.h"
-
-#include <vector>
 #include <string>
+#include <vector>
+
+#include "SimCore/PrimaryGenerator.h"
 
 // Forward declarations
 class G4Event;
@@ -56,7 +55,8 @@ class GenieGenerator : public simcore::PrimaryGenerator {
    *  tune      : name of GENIE tune
    *  seed      : seed for random generator
    */
-  GenieGenerator(const std::string& name, const framework::config::Parameters& parameters);
+  GenieGenerator(const std::string& name,
+                 const framework::config::Parameters& parameters);
 
   /// Destructor
   ~GenieGenerator();
@@ -98,13 +98,14 @@ class GenieGenerator : public simcore::PrimaryGenerator {
   std::vector<double> xsec_by_target_;
 
   double xsec_total_;
-  
-  void fillConfig(const framework::config::Parameters&);     ///fill the configuration
-  bool validateConfig(); ///simple validation check on configuration params
 
-  void initializeGENIE(); ///GENIE initialization
-  void calculateTotalXS(); ///GENIE initialization
-  
+  void fillConfig(
+      const framework::config::Parameters&);  /// fill the configuration
+  bool validateConfig();  /// simple validation check on configuration params
+
+  void initializeGENIE();   /// GENIE initialization
+  void calculateTotalXS();  /// GENIE initialization
+
 };  // ParticleGun
 
 }  // namespace generators

@@ -38,7 +38,7 @@ class GenieTruthDQM : public framework::Analyzer {
   /**
    * Grab the run number...
    */
-  virtual void onNewRun(const ldmx::RunHeader &runHeader);
+  virtual void onNewRun(const ldmx::RunHeader& runHeader);
 
   /**
    * Fills histograms/ntuples
@@ -53,6 +53,5 @@ class GenieTruthDQM : public framework::Analyzer {
   int run_number_;
 };
 }  // namespace dqm
-
 
 #endif  // DQM_GENIETRUTH_H

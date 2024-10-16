@@ -27,11 +27,11 @@
 #include "SimCore/SimulatorBase.h"
 
 namespace genie {
-    class Interaction;
+class Interaction;
 }
 
 namespace ldmx {
-    class HepMC3GenEvent;
+class HepMC3GenEvent;
 }
 
 class G4UImanager;
