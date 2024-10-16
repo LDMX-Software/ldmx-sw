@@ -22,6 +22,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/RunHeader.h"
 #include "SimCore/Factory.h"
+#include "UserEventInformation.h"
 
 // Forward Declarations
 class G4Event;
@@ -68,6 +69,8 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    * just in case there are other generators
    */
   virtual void RecordConfig(const std::string& id, ldmx::RunHeader& rh) = 0;
+
+  std::string Name() { return name_; }
 
  protected:
   /// Name of the PrimaryGenerator

@@ -15,8 +15,12 @@ find_package(ROOT CONFIG REQUIRED)
 find_package(Boost REQUIRED
              COMPONENTS log)
 
+include_directories( /usr/local/include/GENIE )
+
 option(BUILD_EVENT_ONLY "Build the event library." ON)
 if(BUILD_EVENT_ONLY)
+
+  install(FILES /usr/local/lib/libHepMC3rootIO_rdict.pcm DESTINATION lib)
 
   register_event_object(module_path "SimCore/Event" namespace "ldmx" 
                         class "SimCalorimeterHit" type "collection")
@@ -24,11 +28,17 @@ if(BUILD_EVENT_ONLY)
                         class "SimTrackerHit" type "collection")
   register_event_object(module_path "SimCore/Event" namespace "ldmx"
                         class "SimParticle" type "map" key "int")
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "EventWeights")
+
+  register_event_object(module_path "SimCore/Event" namespace "ldmx"
+      class "HepMC3GenEvent" type "collection")
 
   # Generate the files needed to build the event classes.
   setup_library(module SimCore name Event
-                dependencies ROOT::Core
-                register_target)
+                dependencies ROOT::Core ${GENIE_LIBS} HepMC3 HepMC3rootIO
+                register_target
+		include )
 
   return()
 
@@ -36,6 +46,9 @@ endif()
 
 # Configure Geant4
 setup_geant4_target()
+
+#Configure Genie
+setup_genie_target()
 
 # include dark brem simulation
 add_subdirectory(G4DarkBreM)
@@ -64,12 +77,15 @@ file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Geo/[a-
 setup_library(module SimCore
               dependencies Geant4::Interface
                            ROOT::Physics
+                           ROOT::MathMore
+                           HepMC3
                            Framework::Configure
                            Framework::Framework
                            SimCore::G4User
                            G4DarkBreM
                            DetDescr::DetDescr
                            Boost::log
+			                     log4cpp
                            "${registered_targets}"
               sources ${SRC_FILES})
 
@@ -81,7 +97,12 @@ setup_library(module SimCore
 # Primary Generators library
 setup_library(module SimCore
               name Generators
-              dependencies SimCore::SimCore SimCore::LHE)
+              dependencies SimCore::SimCore SimCore::LHE SimCore::Event ${GENIE_LIBS} HepMC3)
+
+# Reweight Library
+setup_library(module SimCore
+    name Reweight
+    dependencies SimCore::SimCore SimCore::Generators SimCore::Event Framework::Framework ${GENIE_LIBS} HepMC3)
 
 # Sensitive Detectors library
 setup_library(module SimCore

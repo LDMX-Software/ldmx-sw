@@ -193,6 +193,78 @@ class gps(simcfg.PrimaryGenerator) :
         super().__init__(name,'simcore::generators::GeneralParticleSource')
         self.initCommands = initCommands
 
+class genie(simcfg.PrimaryGenerator) :
+    """Simple GENIE generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+
+    Attributes
+    ----------
+    verbosity : int, optional
+        Verbosity flag for this generator
+    energy : float
+        Energy of particle to shoot [GeV]
+    targets : list of int
+        List of target nuclei PDG codes
+    abundances : list of float
+        List of abundances for target nuclei
+    time : double
+        Time to shoot from [ns]
+    position : list of double
+        Position of interaction from [mm]
+    direction : list of double
+        Unit vector direction of incoming electron
+    tune: str
+        Name of GENIE tune to use
+    target_thickness : double
+        Thickness of target to use for generation
+    beam_size : list of double
+        uniform beam size width to use
+
+    Examples
+    --------
+        myGenie = genie( name='myGenie',
+                         energy = 4.0,
+                         targets = [ 1000220480 ],
+                         abundances = [ 1.0 ],
+                         time = 0.0,
+                         position = [0.,0.,0.],
+                         direction = [0.,0.,1.],
+                         tune='G18_02a_00_000',
+                         verbosity=True)
+    """
+
+    def __init__(self,name,
+                     energy=4.0,
+                     targets = [],
+                     target_thickness = 0.3504,
+                     abundances = [],
+                     time = 0.0,
+                     position = [ 0.0, 0.0, 0.0 ],
+                     beam_size = [ 0.0, 0.0 ],
+                     direction = [ 0.0, 0.0, 1.0 ],
+                     tune = 'default',
+                     spline_file = '',
+                     message_threshold_file = "/usr/local/GENIE/Generator/config/Messenger.xml",
+                     verbosity=0 ) :
+        super().__init__( name , "simcore::generators::GenieGenerator" )
+
+        self.energy = energy
+        self.targets = targets
+        self.target_thickness = target_thickness
+        self.abundances = abundances
+        self.time = time
+        self.position = position
+        self.beam_size = beam_size
+        self.direction = direction
+        self.tune = tune
+        self.spline_file = spline_file
+        self.message_threshold_file = message_threshold_file
+        self.verbosity = verbosity
+
 def _single_e_upstream_tagger(position, momentum, energy):
     """Internal helper function for creating electron beam guns upstream of tagger
 
