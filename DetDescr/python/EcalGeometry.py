@@ -124,9 +124,8 @@ class EcalGeometry() :
         eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
         
-        
     def reduced() :
-        eg = EcalGeometry(detectors_valid = ["ldmx-reduced","ldmx-reduced[.].*"],
+        eg = EcalGeometry(detectors_valid = ["ldmx-reduced"],
                 gap = 1.5,
                 layerZPositions = [
                       7.932, 14.532, 32.146, 40.746, 58.110, 67.710
@@ -139,5 +138,19 @@ class EcalGeometry() :
         eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
         return eg
 
+    def reduced_v2() :
+        eg = EcalGeometry(detectors_valid = ["ldmx-reduced-v2"],
+                gap = 1.5,
+                layerZPositions = [
+                      9.932, 22.412, 40.81, 54.556, 71.954, 85.67
+                      ],
+                ecalFrontZ = 240.0,
+                cornersSideUp = True,
+                layer_shift_odd = True,
+                )
+        # shift by a single cell diameter
+        eg.layer_shift_x = 2*eg.moduleMinR / eg.nCellRHeight
+        return eg
+
     def geometries() :
-        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced()]
+        return [EcalGeometry.v9(), EcalGeometry.v12(), EcalGeometry.v13(), EcalGeometry.v14(), EcalGeometry.reduced(), EcalGeometry.reduced_v2()]
