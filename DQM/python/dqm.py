@@ -682,6 +682,51 @@ class SampleValidation(ldmxcfg.Analyzer) :
         self.build1DHistogram("startZ_hardbremdaughters", "Start z position of hard brem daughters  [mm]", 200, -1000, 1000)
         
 
+class VisGenerator(ldmxcfg.Analyzer) :
+
+    def __init__(self,name="VisGenerator") :
+        super().__init__(name,'dqm::VisGenerator','DQM')
+        
+        # --- SIMULATION ---
+        self.includeGroundTruth = True
+        self.originIdAvailable = False # if simulated events contain origin ID (by default they do not)
+        # nbr of electrons in simulation
+        # only relevant for energy truth calculations, but needed for ground truth
+        self.nbrOfElectrons = 2
+        
+        self.ecalSimHitColl = "EcalSimHits"
+        self.ecalSimHitPass = "" #use whatever pass is available
+
+        # Create file visualising hit origin; needs origin ID
+        self.visHitOrigin = False
+        self.truthFilename = "truth.json"
+        
+        # --- RECONSTRUCTION ---
+        self.includeEcalRecHits = True
+        self.ecalRecHitColl = "EcalRecHits"
+        self.ecalRecHitPass = "" #use whatever pass is available
+
+        self.includeEcalClusters = True
+        self.ecalClusterColl = "ecalClusters"
+        self.ecalClusterPass = ""
+        
+        # Create file visualising ecal layers
+        self.visLayers = False
+        self.layerFilename = "layers.json"
+
+        # --- MISC ---
+        self.filename = "vis.json"
+        
+        # List of event numbers to be included in file
+        # If adding event numbers here, ONLY these events will be included
+        # Leave with -1 to get all events
+        self.onlyIncludeEvents = [ -1 ]
+        
+        # List of event numbers to be excluded
+        # Leave with -1 to get all events
+        self.excludeEvents =  [ -1 ]
+
+
 ecal_dqm = [
         EcalDigiVerify(),
         EcalShowerFeatures(),
