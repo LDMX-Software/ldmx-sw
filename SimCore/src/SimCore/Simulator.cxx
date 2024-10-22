@@ -20,6 +20,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
 #include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
 #include "SimCore/G4Session.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/Geo/ParserFactory.h"
@@ -156,6 +157,21 @@ void Simulator::produce(framework::Event& event) {
   updateEventHeader(event_header);
 
   event_header.setStringParameter("eventSeed", stream.str());
+
+  /*
+  PrimaryGenerator::Factory::get().apply([](auto gen){
+    std::cout << gen->Name() << std::endl;
+  });
+  */
+
+  auto event_info = static_cast<UserEventInformation*>(
+      runManager_->GetCurrentEvent()->GetUserInformation());
+
+  auto hepmc3_events = event_info->getHepMC3GenEvents();
+  for (auto& hepmc3ev : hepmc3_events) {
+    hepmc3ev.event_number = event.getEventHeader().getEventNumber();
+  }
+  event.add("SimHepMC3Events", hepmc3_events);
 
   saveTracks(event);
 

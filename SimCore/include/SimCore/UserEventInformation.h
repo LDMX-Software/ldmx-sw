@@ -1,7 +1,11 @@
 #ifndef SIMCORE_USEREVENTINFORMATION_H
 #define SIMCORE_USEREVENTINFORMATION_H
 
+#include <vector>
+
 #include "G4VUserEventInformation.hh"
+#include "SimCore/Event/HepMC3GenEvent.h"
+
 namespace simcore {
 
 /**
@@ -13,7 +17,7 @@ class UserEventInformation : public G4VUserEventInformation {
   UserEventInformation() = default;
 
   /// Destructor
-  virtual ~UserEventInformation() = default;
+  virtual ~UserEventInformation() {}
 
   /// Print the information associated with the track
   void Print() const override;
@@ -117,6 +121,13 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool wasLastStepEN() const { return last_step_en_; }
 
+  void addHepMC3GenEvent(ldmx::HepMC3GenEvent event) {
+    hepmc3_events_.push_back(event);
+  }
+  std::vector<ldmx::HepMC3GenEvent> getHepMC3GenEvents() {
+    return hepmc3_events_;
+  }
+
  private:
   /// Total number of brem candidates in the event
   int bremCandidateCount_{0};
@@ -165,6 +176,11 @@ class UserEventInformation : public G4VUserEventInformation {
    * dark brem did not occur within the event in question.
    */
   double db_material_z_{-1.};
+
+  /**
+   * a collection of HepMC3 event records.
+   */
+  std::vector<ldmx::HepMC3GenEvent> hepmc3_events_;
 };
 }  // namespace simcore
 

@@ -67,6 +67,162 @@ macro(setup_geant4_target)
 
 endmacro()
 
+
+function(add_genie_target gname)
+
+#message(STATUS "Adding library Genie::${gname}")
+
+add_library(Genie::${gname} SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
+set_target_properties(Genie::${gname} PROPERTIES
+  IMPORTED_LOCATION "/usr/local/lib/lib${gname}.so"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/local/include/GENIE"
+)
+endfunction()
+
+macro(setup_genie_target)
+if(NOT DEFINED GENIE_LIBS)
+
+find_package(ROOT CONFIG REQUIRED)
+
+add_genie_target(GFwMsg)
+add_genie_target(GFwReg)
+add_genie_target(GFwAlg)
+add_genie_target(GFwInt)
+add_genie_target(GFwGHEP)
+add_genie_target(GFwNum)
+add_genie_target(GFwUtl)
+add_genie_target(GFwParDat)
+add_genie_target(GFwEG)
+add_genie_target(GFwNtp)
+
+add_genie_target(GPhCmn)
+add_genie_target(GPhDcy)
+add_genie_target(GPhHadTens)
+add_genie_target(GPhMEL)
+add_genie_target(GPhPDF)
+add_genie_target(GPhXSIg)
+add_genie_target(GPhNuclSt)
+add_genie_target(GPhDeEx)
+add_genie_target(GPhHadnz)
+add_genie_target(GPhHadTransp)
+add_genie_target(GPhAMNGXS)
+add_genie_target(GPhAMNGEG)
+add_genie_target(GPhChmXS)
+add_genie_target(GPhCohXS)
+add_genie_target(GPhCohEG)
+add_genie_target(GPhDISXS)
+add_genie_target(GPhDISEG)
+add_genie_target(GPhDfrcXS)
+add_genie_target(GPhDfrcEG)
+add_genie_target(GPhHELptnXS)
+add_genie_target(GPhHELptnEG)
+add_genie_target(GPhIBDXS)
+add_genie_target(GPhIBDEG)
+add_genie_target(GPhMNucXS)
+add_genie_target(GPhMNucEG)
+add_genie_target(GPhNuElXS)
+add_genie_target(GPhNuElEG)
+add_genie_target(GPhQELXS)
+add_genie_target(GPhQELEG)
+add_genie_target(GPhResXS)
+add_genie_target(GPhResEG)
+add_genie_target(GPhStrXS)
+add_genie_target(GPhStrEG)
+add_genie_target(GPhHEDISXS)
+add_genie_target(GPhHEDISEG)
+add_genie_target(GTlFlx)
+add_genie_target(GTlGeo)
+
+add_genie_target(GRwFwk)
+add_genie_target(GRwIO)
+add_genie_target(GRwClc)
+
+add_library(Pythia6 SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
+set_target_properties(Pythia6 PROPERTIES
+  IMPORTED_LOCATION "/usr/local/pythia6/libPythia6.so"
+)
+
+add_library(blas SHARED IMPORTED GLOBAL) # or STATIC instead of SHARED
+set_target_properties(blas PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/x86_64-linux-gnu/libblas.so.3"
+)
+
+#add_library(Genie::Interface INTERFACE IMPORTED GLOBAL)
+#set_property(TARGET Genie::Interface PROPERTY
+#	     INTERFACE_LINK_LIBRARIES
+SET( GENIE_LIBS 
+#	     xml2
+	     log4cpp
+#	     LHAPDF
+#	     Pythia6
+	     gsl
+#	     Genie::GFwMsg
+#	     Genie::GFwReg
+#	     Genie::GFwAlg
+
+    Genie::GRwFwk
+    Genie::GRwClc
+    Genie::GRwIO
+
+    Genie::GFwInt
+#	     Genie::GFwGHEP
+	     Genie::GFwNum
+	     Genie::GFwUtl
+	     Genie::GFwParDat
+	     Genie::GFwEG
+	     Genie::GFwAlg
+	     Genie::GFwGHEP
+	     Genie::GFwMsg
+	     xml2
+	     Genie::GFwReg
+	     ROOT::EG
+	     ROOT::EGPythia6
+	     Pythia6
+	     Genie::GFwNtp
+	     Genie::GPhXSIg
+	     Genie::GPhPDF
+	     Genie::GPhNuclSt
+	     Genie::GPhCmn
+	     Genie::GPhDcy
+	     Genie::GPhHadTransp
+	     Genie::GPhHadnz
+	     Genie::GPhHadTens
+	     Genie::GPhDeEx
+	     Genie::GPhAMNGXS
+	     Genie::GPhAMNGEG
+	     Genie::GPhChmXS
+	     Genie::GPhCohXS
+	     Genie::GPhCohEG
+	     Genie::GPhDISXS
+	     Genie::GPhDISEG
+	     Genie::GPhDfrcXS
+	     Genie::GPhDfrcEG
+	     Genie::GPhHELptnXS
+	     Genie::GPhHELptnEG
+	     Genie::GPhIBDXS
+	     Genie::GPhIBDEG
+	     Genie::GPhMNucXS
+	     Genie::GPhMNucEG
+	     Genie::GPhMEL
+	     Genie::GPhNuElXS
+	     Genie::GPhNuElEG
+	     Genie::GPhQELXS
+	     Genie::GPhQELEG
+	     Genie::GPhResXS
+	     Genie::GPhResEG
+	     Genie::GPhStrXS
+	     Genie::GPhStrEG
+	     Genie::GPhHEDISXS
+	     Genie::GPhHEDISEG
+	     Genie::GTlGeo
+	     Genie::GTlFlx
+    ROOT::MathCore
+    ROOT::MathMore
+	     blas)
+message(STATUS "Setting GENIE_LIBS to ${GENIE_LIBS}")
+endif()
+endmacro()
+
 macro(setup_lcio_target)
 
   # If it doesn't exists, create an imported target for LCIO
@@ -97,7 +253,7 @@ endmacro()
 
 macro(setup_library)
 
-  set(options interface register_target)
+  set(options interface register_target include)
   set(oneValueArgs module name)
   set(multiValueArgs dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
@@ -131,14 +287,19 @@ macro(setup_library)
   # Setup the include directories
   if(setup_library_interface)
     target_include_directories(${library_name}
-                               INTERFACE ${PROJECT_SOURCE_DIR}/include)
+	                       INTERFACE ${PROJECT_SOURCE_DIR}/include)
   else()
     target_include_directories(${library_name}
                                PUBLIC ${PROJECT_SOURCE_DIR}/include)
   endif()
 
   # Setup the targets to link against
-  target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
+  if(setup_library_interface)
+    target_link_libraries(${library_name} INTERFACE ${setup_library_dependencies})
+  else()
+    target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
+  endif()
+  
   enable_sanitizers(${library_name})
   enable_compiler_warnings(${library_name})
   enable_ipo(${library_name})
