@@ -16,7 +16,7 @@ namespace ldmx {
 
 class HepMC3GenEvent : public HepMC3::GenEventData {
  public:
-  // HepMC3GenEvent() : HepMC3::GenEventData() {}
+  // ~HepMC3GenEvent() {}
   // HepMC3GenEvent(const HepMC3::GenEvent& event) : HepMC3::GenEvent(event) {}
 
   void Clear();

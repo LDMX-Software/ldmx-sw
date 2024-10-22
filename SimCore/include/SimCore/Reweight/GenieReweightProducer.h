@@ -99,6 +99,8 @@ class GenieReweightProducer : public framework::Producer {
         return genie::rew::EGSyst::kINukeTwkDial_FrPiProd_N;
       case ldmx::EventWeights::VariationType ::kGENIE_HadrNuclTwkDial_FormZone:
         return genie::rew::EGSyst::kHadrNuclTwkDial_FormZone;
+      default:
+        return genie::rew::EGSyst::kNullSystematic;
     }
     return genie::rew::EGSyst::kNullSystematic;
   }

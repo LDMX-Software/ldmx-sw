@@ -147,7 +147,7 @@ bool GenieGenerator::validateConfig() {
     std::cout << "Will renormalize abundances to unity!" << std::endl;
   }
 
-  for (size_t i_a; i_a < abundances_.size(); ++i_a) {
+  for (size_t i_a=0; i_a < abundances_.size(); ++i_a) {
     abundances_[i_a] = abundances_[i_a] / abundance_sum;
 
     if (verbosity_ > 0)
@@ -164,7 +164,7 @@ bool GenieGenerator::validateConfig() {
               << direction_[2] << ")" << std::endl;
     ret = false;
   }
-  for (size_t i_d; i_d < direction_.size(); ++i_d)
+  for (size_t i_d=0; i_d < direction_.size(); ++i_d)
     direction_[i_d] = direction_[i_d] / std::sqrt(dir_total_sq);
 
   xsec_by_target_.resize(targets_.size(), -999.);
@@ -330,7 +330,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   initial_e.SetPdgCode(11);
   double elec_i_p =
       std::sqrt(energy_ * energy_ -
-                (double)initial_e.GetMass() * (double)initial_e.GetMass());
+                initial_e.GetMass() * initial_e.GetMass());
   initial_e.SetMomentum(elec_i_p * direction_[0], elec_i_p * direction_[1],
                         elec_i_p * direction_[2], energy_);
   TLorentzVector e_p4;
