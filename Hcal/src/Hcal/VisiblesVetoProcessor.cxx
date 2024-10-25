@@ -1,0 +1,202 @@
+#include "Hcal/VisiblesVetoProcessor.h"
+
+// LDMX
+#include "DetDescr/HcalID.h"
+#include "DetDescr/SimSpecialID.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Hcal/Event/HcalHit.h"
+
+// C++
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+
+namespace hcal {
+  void VisiblesVetoProcessor::buildBDTFeatureVector(const ldmx::VisiblesVetoResult &result) {
+    bdtFeatures_.push_back(result.getLayersHit());
+    bdtFeatures_.push_back(result.getXStd());
+    bdtFeatures_.push_back(result.getYStd());
+    bdtFeatures_.push_back(result.getZStd());
+    bdtFeatures_.push_back(result.getXMean());
+    bdtFeatures_.push_back(result.getYMean());
+    bdtFeatures_.push_back(result.getRMean());
+    bdtFeatures_.push_back(result.getIsoHits());
+    bdtFeatures_.push_back(result.getIsoEnergy());
+    bdtFeatures_.push_back(result.getNReadoutHits());
+    bdtFeatures_.push_back(result.getSummedDet());
+    bdtFeatures_.push_back(result.getMeanDistFromPhotonProj());
+  }
+
+  void VisiblesVetoProcessor::configure(framework::config::Parameters &parameters) {
+    verbose_ = parameters.getParameter<bool>("verbose");
+    featureListName_ = parameters.getParameter<std::string>("feature_list_name");
+    // Load BDT ONNX file
+    rt_ = std::make_unique<ldmx::Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
+  }
+
+  void VisiblesVetoProcessor::clearProcessor() {
+    bdtFeatures_.clear();
+
+    nLayersHit_ = 0;
+    xStd_ = 0.;
+    yStd_ = 0.;
+    zStd_ = 0.;
+    xMean_ = 0.;
+    yMean_ = 0.;
+    rMean_ = 0.;
+    isoHits_ = 0;
+    isoEnergy_ = 0.;
+    nReadoutHits = 0;
+    summedDet_ = 0.;
+    rMeanFromPhotonProj_ = 0.;
+  }
+
+  void VisiblesVetoProcessor::produce(framework::Event &event) {
+
+    ldmx::VisiblesVetoResult result;
+
+    clearProcessor();
+
+    auto particle_map{event.getMap<int, ldmx::SimParticle>("SimParticles")};
+    
+    // Get target scoring plane hits for recoil electron
+    // Use this to calculate the projected photon line vector
+    // This currently uses truth-level information, but it should be replaced
+    // by reconstructed tracker information, when available
+    std::vector<double> gamma_p(3);
+    std::vector<float> gamma_x0(3);
+    if (event.exists("TargetScoringPlaneHits")) {
+      std::vector<ldmx::SimTrackerHit> targetSPHits =
+	event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits");
+      for (auto const &it : particle_map) {
+	for (auto const &sphit : targetSPHits) {
+	  if (sphit.getPosition()[2] > 0) {
+	    if (it.first == sphit.getTrackID()) {
+	      if (it.second.getPdgID() == 11 && in_list(it.second.getParents(), 0)) {
+		gamma_x0 = sphit.getPosition();
+		gamma_p[0] = -1*sphit.getMomentum()[0];
+		gamma_p[1] = -1*sphit.getMomentum()[1];
+		gamma_p[2] = 8000 - sphit.getMomentum()[2]; // hard-coded for 8 GeV
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+    // Get Hcal reconstructed hits and loop through them to build features
+    const std::vector<ldmx::HcalHit> hcalRecHits =
+      event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_);
+
+    double zMean = 0.; // need this when calculating zStd_
+    std::vector<int> layersHit;
+    for (const ldmx::HcalHit & hit : hcalRecHits) {
+      if (hit.getEnergy() > 0.) {
+	HcalID detID(hit.getID());
+	if (detID.getSection() == 0) { // looking for hits in the back Hcal
+	  nReadoutHits_ += 1;
+	  double x = hit.getXPos();
+	  double y = hit.getYPos();
+	  double z = hit.getZPos();
+	  double r = sqrt(pow(x,2) + pow(y,2));
+
+	  summedDet_ += hit.getEnergy();
+
+	  xMean_ += x*hit.getEnergy();
+	  yMean_ += y*hit.getEnergy();
+	  zMean  += z*hit.getEnergy();
+	  rMean_ += r*hit.getEnergy();
+
+	  // check if this is a new layer
+	  if (!(std::find(layersHit.begin(), layersHit.end(), detID.getLayerID()) != layersHit.end())) {
+	    layersHit.push_back(detID.getLayerID());
+	  }
+
+	  double x_proj = gamma_x0[0] + (z - gamma_x0[2])*gamma_p[0]/gamma_p[2];
+	  double y_proj = gamma_x0[1] + (z - gamma_x0[2])*gamma_p[1]/gamma_p[2];
+
+	  rMeanFromPhotonProj_ += hit.getEnergy()*sqrt(pow(x-x_proj,2) + pow(y-y_proj,2));
+
+	  // Calculate isolated hits
+	  double closestpoint = 9999.;
+	  for (const ldmx::HcalHit &hit2 : hcalRecHits) {
+	    if (hit2.getEnergy() > 0.) {
+	      HcalID detID2(hit2.getID());
+	      if (detID2.getLayer() == detID.getLayer()) {
+		// Determine if a bar is vertical (along y-axis) or horizontal (along x-axis)
+		// Odd layers have horizontal strips
+		// Even layers have vertical strips
+		if (detID2.getLayer() % 2 == 0) {
+		  if (abs(hit2.getYPos() - y) > 0) {
+		    if (abs(hit2.getYPos() - y) < closestpoint) {
+		      closestpoint = abs(hit2.getYPos() - y);
+		    }
+		  }
+		}
+		else {
+		  if (abs(hit2.getXPos() - x) > 0) {
+		    if (abs(hit2.getXPos() - x) < closestpoint) {
+		      closestpoint = abs(hit2.getXPos() - x);
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+	  if (closestpoint > 50.) {
+	    isoHits_ += 1;
+	    isoEnergy_ += hit.getEnergy();
+	  }
+	}
+      }
+    }
+
+    nLayersHit_ = layersHit.size();
+
+    if (summedDet_ > 0.) {
+      xMean_ /= summedDet_;
+      yMean_ /= summedDet_;
+      zMean  /= summedDet_;
+      rMean_ /= summedDet_;
+
+      rMeanFromPhotonProj_ /= summedDet_;
+    }
+
+    for (const ldmx::HcalHit &hit : hcalRecHits) {
+      if (hit.getEnergy() > 0.) {
+        HcalID detID(hit.getID());
+        if (detID.getSection() == 0) {
+	  xStd_ += hit.getEnergy()*pow(hit.getXPos()-xMean_,2);
+	  yStd_ += hit.getEnergy()*pow(hit.getYPos()-yMean_,2);
+	  zStd_ += hit.getEnergy()*pow(hit.getZPos()-zMean ,2);
+	}
+      }
+    }
+
+    if (summedDet_ > 0.) {
+      xStd_ = sqrt(xStd_/summedDet_);
+      yStd_ = sqrt(yStd_/summedDet_);
+      zStd_ = sqrt(zStd_/summedDet_);
+    }
+
+    result.setVariables(
+			nLayersHit_,
+			xStd_,
+			yStd_,
+			zStd_,
+			xMean_,
+			yMean_,
+			rMean_,
+			isoHits_,
+			isoEnergy_,
+			nReadoutHits_,
+			summedDet_,
+			rMeanFromPhotonProj_);
+
+    buildBDTFeatureVector(result);
+  }
+  
+}
