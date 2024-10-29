@@ -391,23 +391,29 @@ class HCalRawDigi(ldmxcfg.Analyzer) :
 
 class NtuplizeHgcrocDigiCollection(ldmxcfg.Analyzer) :
     def __init__(self,input_name, pedestal_table = None, input_pass = '', 
-            using_eid = None, already_aligned = False,
+            using_eid = None, already_aligned = False, is_simulation = False,
             name = 'ntuplizehgcroc') :
         super().__init__(name,'dqm::NtuplizeHgcrocDigiCollection','DQM')
         self.input_name = input_name
         self.input_pass = input_pass
 
-        if using_eid is None :
-            # deduce if using eid based on presence of HcalDetectorMap in conditions system
-            from LDMX.Framework import ldmxcfg
-            from LDMX.Hcal.DetectorMap import HcalDetectorMap
-            using_eid = True
-            for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
-                if isinstance(cop,HcalDetectorMap) :
-                    using_eid = False
-                    break
-        self.using_eid = using_eid
-        self.already_aligned = already_aligned
+        self.is_simulation = is_simulation
+
+        if is_simulation:
+            self.using_eid = False
+            self.already_aligned = True
+        else:
+            if using_eid is None :
+                # deduce if using eid based on presence of HcalDetectorMap in conditions system
+                from LDMX.Framework import ldmxcfg
+                from LDMX.Hcal.DetectorMap import HcalDetectorMap
+                using_eid = True
+                for cop in ldmxcfg.Process.lastProcess.conditionsObjectProviders :
+                    if isinstance(cop,HcalDetectorMap) :
+                        using_eid = False
+                        break
+            self.using_eid = using_eid
+            self.already_aligned = already_aligned
 
         from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
         if pedestal_table is None :
