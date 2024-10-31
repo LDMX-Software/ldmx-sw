@@ -89,9 +89,11 @@ double HcalRecProducer::getTOA(
   // get toa relative to the startBX
   double toaRelStartBX(0.), maxMeas{0.};
   int toaSample(0), maxSample(0), iADC(0);
+  bool noTOA = true;
   for (int i_sample{0}; i_sample < digi.size(); i_sample++) {
     auto sample{digi.at(i_sample)};
     if (sample.toa() > 0) {
+      noTOA = false;
       toaRelStartBX = sample.toa() * (clock_cycle_ / 1024);  // ns
       // find in which ADC sample the TOA was taken
       toaSample = iADC;
@@ -103,11 +105,20 @@ double HcalRecProducer::getTOA(
     iADC++;
   }
 
+  int sign = 1;
+  if ((maxSample - toaSample) <= 0) {
+    sign = -1;
+  }
+
   // time w.r.t to the peak
-  double toa = (maxSample - toaSample) * clock_cycle_ - toaRelStartBX;
+  double toa = (abs(maxSample - toaSample) * clock_cycle_ - toaRelStartBX)*sign;
 
   // time w.r.t to the SOI
-  toa += ((int)iSOI - maxSample) * clock_cycle_;
+  //toa += ((int)iSOI - maxSample) * clock_cycle_;
+
+  if (noTOA) {
+    toa = 0.;
+  }
 
   return toa;
 }
