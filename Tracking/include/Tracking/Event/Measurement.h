@@ -91,6 +91,8 @@ class Measurement {
 
   /// @return The hit time in ns.
   [[nodiscard]] float getTime() const { return t_; };
+    
+  [[nodiscard]] float getEdep() const { return edep_; };
 
   /**
    * Set the layer ID of the sensor where this measurement took place.
