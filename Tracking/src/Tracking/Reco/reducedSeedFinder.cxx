@@ -178,13 +178,11 @@ std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std:
             double zAvg = (p1[0] * p1[3] + p2[0] * p2[3]) / totalWeight;
             double xAvg = (p1[1] * p1[3] + p2[1] * p2[3]) / totalWeight;
             double yAvg = (p1[2] * p1[3] + p2[2] * p2[3]) / totalWeight;
-
-            // Only include (z, x, y) in mergedHits
             mergedHits.push_back({zAvg, xAvg, yAvg});
         }
     }
     return mergedHits;
-} //weightedAverage
+}
 
 std::tuple<double, double, double, double> ReducedSeedFinder::fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal) {
     double z1 = firstRecoil[0], x1 = firstRecoil[1], y1 = firstRecoil[2];
