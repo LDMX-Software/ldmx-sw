@@ -44,7 +44,7 @@ class DigitizationProcessor(Producer):
         self.hit_collection = 'TaggerSimHits'
         self.out_collection = 'OutputMeasurements'
                 
-class reducedSeedFinder(Producer):
+class ReducedSeedFinder(Producer):
     """ Producer to find Seeds for the reduced geometry track finding
 
     Parameters
@@ -68,8 +68,8 @@ class reducedSeedFinder(Producer):
         The maximum distance on the Ecal First Layer at which we still allow a seed to be saved
     """
 
-    def __init__(self, instance_name="reducedSeedFinder"):
-        super().__init__(instance_name, 'tracking::reco::reducedSeedFinder', 'Tracking')
+    def __init__(self, instance_name="ReducedSeedFinder"):
+        super().__init__(instance_name, 'tracking::reco::ReducedSeedFinder', 'Tracking')
         self.input_hits_collection = 'DigiRecoilSimHits'
         self.input_recHits_collection = 'EcalRecHits'
         self.out_seed_collection = 'ReducedSeedTracks'

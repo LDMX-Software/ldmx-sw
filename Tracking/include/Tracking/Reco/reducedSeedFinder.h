@@ -33,11 +33,13 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
+#include "Tracking/Event/ReducedTrack.h"
+#include "Ecal/Event/EcalHit.h"
 
 namespace tracking {
 namespace reco {
 
-class reducedSeedFinder : public TrackingGeometryUser {
+class ReducedSeedFinder : public TrackingGeometryUser {
 public:
     /**
      * Constructor.
@@ -45,10 +47,10 @@ public:
      * @param name The name of the instance of this object.
      * @param process The process running this producer.
      */
-    reducedSeedFinder(const std::string& name, framework::Process& process);
+    ReducedSeedFinder(const std::string& name, framework::Process& process);
     
     /// Destructor
-    ~reducedSeedFinder();
+    ~ReducedSeedFinder();
     
     /**
      *
@@ -75,10 +77,10 @@ public:
      */
     void produce(framework::Event& event) override;
     
-private:
-    ldmx::reducedTrack SeedTracker(const std::vector<double> recoilOne, const std::vector<double> recoilTwo, const std::vector<double> ecalOne);
+protected:
+    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne);
     
-    std::pair<std::vector<std::array<double, 4>>, std::vector<std::array<double, 4>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection);
+    std::pair<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection);
     std::vector<std::array<double, 3>> weightedAverage(const std::vector<std::array<double, 4>> &layer1, const std::vector<std::array<double, 4>> &layer2);
     std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
     
@@ -110,6 +112,11 @@ private:
     /// loc0 / loc1 cuts
     double loc0cut_{0.1};
     double loc1cut_{0.3};
+    
+    double ecal_uncertainty_{3.87};
+    double ecal_distance_threshold_{10.0};
+    
+    std::vector<double> recoil_uncertainty_{0.006, 0.12};
     
     std::vector<double> zpos_digi_tot_;
     std::vector<double> xpos_digi_tot_;

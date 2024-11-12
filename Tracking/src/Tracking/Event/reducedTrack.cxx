@@ -1,9 +1,9 @@
-#include "Tracking/Event/reducedTrack.h"
+#include "Tracking/Event/ReducedTrack.h"
 
 #include <iostream>
 
-ClassImp(ldmx::reducedTrack)
+ClassImp(ldmx::ReducedTrack)
 
-    namespace ldmx {
-  void reducedTrack::Print() const { std::cout << "print track" << std::endl; }
+namespace ldmx {
+    void ReducedTrack::Print() const { std::cout << "print reduced track" << std::endl; }
 }
