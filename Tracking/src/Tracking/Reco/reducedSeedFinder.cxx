@@ -150,92 +150,91 @@ void reducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
 //  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
 } //onProcessEnd
 
-private:
-    std::pair<std::vector<std::array<double, 4>>, std::vector<std::array<double, 4>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection) {
-        std::vector<std::array<double, 4>> layer1, layer2, layer3, layer4;
-        
-        for (const auto &point : hitCollection) {
-            if (point[0] < 12) layer1.push_back(point);
-            else if (point[0] < 20) layer2.push_back(point);
-            else if (point[0] < 28) layer3.push_back(point);
-            else layer4.push_back(point);
-        }
-        
-        auto firstSensorMergedHits = weightedAverage(layer1, layer2);
-        auto secondSensorMergedHits = weightedAverage(layer3, layer4);
-        
-        return {firstSensorMergedHits, secondSensorMergedHits};
+std::pair<std::vector<std::array<double, 4>>, std::vector<std::array<double, 4>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection) {
+    std::vector<std::array<double, 4>> layer1, layer2, layer3, layer4;
+    
+    for (const auto &point : hitCollection) {
+        if (point[0] < 12) layer1.push_back(point);
+        else if (point[0] < 20) layer2.push_back(point);
+        else if (point[0] < 28) layer3.push_back(point);
+        else layer4.push_back(point);
     }
     
-    std::vector<std::array<double, 3>> weightedAverage(const std::vector<std::array<double, 4>> &layer1,
-                                                       const std::vector<std::array<double, 4>> &layer2) {
-        std::vector<std::array<double, 3>> mergedHits;
-        for (const auto &p1 : layer1) {
-            for (const auto &p2 : layer2) {
-                double totalWeight = p1[3] + p2[3];
-                double zAvg = (p1[0] * p1[3] + p2[0] * p2[3]) / totalWeight;
-                double xAvg = (p1[1] * p1[3] + p2[1] * p2[3]) / totalWeight;
-                double yAvg = (p1[2] * p1[3] + p2[2] * p2[3]) / totalWeight;
-                mergedHits.push_back({zAvg, xAvg, yAvg});
-            }
+    auto firstSensorMergedHits = weightedAverage(layer1, layer2);
+    auto secondSensorMergedHits = weightedAverage(layer3, layer4);
+    
+    return {firstSensorMergedHits, secondSensorMergedHits};
+}
+
+std::vector<std::array<double, 3>> weightedAverage(const std::vector<std::array<double, 4>> &layer1,
+                                                   const std::vector<std::array<double, 4>> &layer2) {
+    std::vector<std::array<double, 3>> mergedHits;
+    for (const auto &p1 : layer1) {
+        for (const auto &p2 : layer2) {
+            double totalWeight = p1[3] + p2[3];
+            double zAvg = (p1[0] * p1[3] + p2[0] * p2[3]) / totalWeight;
+            double xAvg = (p1[1] * p1[3] + p2[1] * p2[3]) / totalWeight;
+            double yAvg = (p1[2] * p1[3] + p2[2] * p2[3]) / totalWeight;
+            mergedHits.push_back({zAvg, xAvg, yAvg});
         }
-        return mergedHits;
     }
+    return mergedHits;
+}
+
+std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal) {
+    double z1 = firstRecoil[0], x1 = firstRecoil[1], y1 = firstRecoil[2];
+    double z2 = secondRecoil[0], x2 = secondRecoil[1], y2 = secondRecoil[2];
+    double z3 = ECal[0], x3 = ECal[1], y3 = ECal[2];
     
-    std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal) {
-        double z1 = firstRecoil[0], x1 = firstRecoil[1], y1 = firstRecoil[2];
-        double z2 = secondRecoil[0], x2 = secondRecoil[1], y2 = secondRecoil[2];
-        double z3 = ECal[0], x3 = ECal[1], y3 = ECal[2];
-        
-        std::array<double, 6> weights = {
-            1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
-            1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
-            1 / pow(ecal_uncertainty_, 2), 1 / pow(ecal_uncertainty_, 2)
-        };
-        
-        Eigen::Matrix<double, 6, 4> A;
-        Eigen::Matrix<double, 6, 1> d, w;
-        A << z1, 1, 0, 0,
-             0, 0, z1, 1,
-             z2, 1, 0, 0,
-             0, 0, z2, 1,
-             z3, 1, 0, 0,
-             0, 0, z3, 1;
-        d << x1, y1, x2, y2, x3, y3;
-        w = Eigen::Matrix<double, 6, 1>(weights.data());
-        
-        Eigen::MatrixXd At_W_A = A.transpose() * w.asDiagonal() * A;
-        Eigen::MatrixXd At_W_d = A.transpose() * w.asDiagonal() * d;
-        Eigen::VectorXd m = At_W_A.ldlt().solve(At_W_d);
-        
-        return {m(0), m(1), m(2), m(3)};
-    } //fit3DLine
+    std::array<double, 6> weights = {
+        1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
+        1 / pow(recoil_uncertainty_[0], 2), 1 / pow(recoil_uncertainty_[1], 2),
+        1 / pow(ecal_uncertainty_, 2), 1 / pow(ecal_uncertainty_, 2)
+    };
     
-    double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2) {
-        return sqrt(pow(point1[1] - point2[1], 2) + pow(point1[2] - point2[2], 2));
-    } //calculateDistance
+    Eigen::Matrix<double, 6, 4> A;
+    Eigen::Matrix<double, 6, 1> d, w;
+    A << z1, 1, 0, 0,
+    0, 0, z1, 1,
+    z2, 1, 0, 0,
+    0, 0, z2, 1,
+    z3, 1, 0, 0,
+    0, 0, z3, 1;
+    d << x1, y1, x2, y2, x3, y3;
+    w = Eigen::Matrix<double, 6, 1>(weights.data());
     
-    double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by) {
-        double chi2_x = 0, chi2_y = 0;
-        chi2_x += pow((ax * firstSensor[0] + bx - firstSensor[1]) / recoil_uncertainty_[0], 2);
-        chi2_y += pow((ay * firstSensor[0] + by - firstSensor[2]) / recoil_uncertainty_[1], 2);
-        
-        chi2_x += pow((ax * secondSensor[0] + bx - secondSensor[1]) / recoil_uncertainty_[0], 2);
-        chi2_y += pow((ay * secondSensor[0] + by - secondSensor[2]) / recoil_uncertainty_[1], 2);
-        
-        chi2_x += pow((ax * ecalHit[0] + bx - ecalHit[1]) / ecal_uncertainty_, 2);
-        chi2_y += pow((ay * ecalHit[0] + by - ecalHit[2]) / ecal_uncertainty_, 2);
-        
-        return chi2_x + chi2_y;
-    } //globalChiSquare
+    Eigen::MatrixXd At_W_A = A.transpose() * w.asDiagonal() * A;
+    Eigen::MatrixXd At_W_d = A.transpose() * w.asDiagonal() * d;
+    Eigen::VectorXd m = At_W_A.ldlt().solve(At_W_d);
     
-    int uniqueSensorsHit(const std::vector<std::array<double, 4>> &digiPoints) {
-        std::unordered_set<int> unique_zs;
-        for (const auto &point : digiPoints) {
-            unique_zs.insert(static_cast<int>(point[0]));
-        }
-        return unique_zs.size();
-    } //uniqueSensorsHit
+    return {m(0), m(1), m(2), m(3)};
+} //fit3DLine
+
+double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2) {
+    return sqrt(pow(point1[1] - point2[1], 2) + pow(point1[2] - point2[2], 2));
+} //calculateDistance
+
+double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by) {
+    double chi2_x = 0, chi2_y = 0;
+    chi2_x += pow((ax * firstSensor[0] + bx - firstSensor[1]) / recoil_uncertainty_[0], 2);
+    chi2_y += pow((ay * firstSensor[0] + by - firstSensor[2]) / recoil_uncertainty_[1], 2);
+    
+    chi2_x += pow((ax * secondSensor[0] + bx - secondSensor[1]) / recoil_uncertainty_[0], 2);
+    chi2_y += pow((ay * secondSensor[0] + by - secondSensor[2]) / recoil_uncertainty_[1], 2);
+    
+    chi2_x += pow((ax * ecalHit[0] + bx - ecalHit[1]) / ecal_uncertainty_, 2);
+    chi2_y += pow((ay * ecalHit[0] + by - ecalHit[2]) / ecal_uncertainty_, 2);
+    
+    return chi2_x + chi2_y;
+} //globalChiSquare
+
+int uniqueSensorsHit(const std::vector<std::array<double, 4>> &digiPoints) {
+    std::unordered_set<int> unique_zs;
+    for (const auto &point : digiPoints) {
+        unique_zs.insert(static_cast<int>(point[0]));
+    }
+    return unique_zs.size();
+} //uniqueSensorsHit
 
 } //namespace reco
 } //namespace tracking
