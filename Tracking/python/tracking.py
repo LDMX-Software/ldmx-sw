@@ -76,6 +76,35 @@ class ReducedSeedFinder(Producer):
         self.recoil_uncertainty = [0.006, 0.12]
         self.ecal_uncertainty = 3.87
         self.ecal_distance_threshold = 15.0
+        
+class ReducedTrackFinder(Producer):
+    """ Producer to find Seeds for the reduced geometry track finding
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ----------
+    input_hits_collection : string
+        The name of the input collection of hits to be used for seed finding.
+    input_recHits_collection : string
+        The name of the input collection of Ecal RecHits (from layer 1) to give a degree of freedom to seed finding.
+    out_seed_collection : string
+        The name of the ouput collection of seeds to be stored.
+    recoil_uncertainty : double
+        The position uncertainty in [x, y] of a recoil tracker double-layer from combining an axial-stereo sensor pair to make one 3D position
+    ecal_uncertainty : double
+        The radius of an ECal hexagonal cell
+    ecal_distance_threshold : double
+        The maximum distance on the Ecal First Layer at which we still allow a seed to be saved
+    """
+
+    def __init__(self, instance_name="ReducedTrackFinder"):
+        super().__init__(instance_name, 'tracking::reco::ReducedTrackFinder', 'Tracking')
+        self.seed_coll_name = 'ReducedSeedTracks'
+        self.out_trk_collection = 'ReducedTracks'
 
 class SeedFinderProcessor(Producer):
     """ Producer to find Seeds for the KF-based track finding.

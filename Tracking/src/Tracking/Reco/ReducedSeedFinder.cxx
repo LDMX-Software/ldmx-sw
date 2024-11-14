@@ -43,46 +43,35 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     const std::vector<ldmx::Measurement> recoilHits = event.getCollection<ldmx::Measurement>(input_hits_collection_);
     const std::vector<ldmx::EcalHit> ecalRecHit = event.getCollection<ldmx::EcalHit>(input_recHits_collection_);
     
-    for (const auto& x_digi : recoilHits) {
-        zpos_digi_tot_.push_back(x_digi.getGlobalPosition()[0]);
-        xpos_digi_tot_.push_back(x_digi.getGlobalPosition()[1]);
-        ypos_digi_tot_.push_back(x_digi.getGlobalPosition()[2]);
-        edep_digi_.push_back(x_digi.getEdep());
-    } //for loop to create digiPoints array
+    std::vector<std::array<double, 4>> digiPoints;
+    std::vector<std::array<double, 3>> firstLayerEcalRecHits;
     
-    // Combine (z, x, y, edep) recoil hits into a 3D position vector
-    for (size_t i = 0; i < zpos_digi_tot_.size(); ++i) {
-        digiPoints_.push_back({zpos_digi_tot_[i], xpos_digi_tot_[i], ypos_digi_tot_[i], edep_digi_[i]});
-    } //for positions in recoil tracker
+    for (const auto& x_digi : recoilHits) {
+        digiPoints.push_back({x_digi.getGlobalPosition()[0], x_digi.getGlobalPosition()[1], x_digi.getGlobalPosition()[2], x_digi.getEdep()});
+    } //for loop to create digiPoints array
     
     for (const auto& x_ecal : ecalRecHit) {
         if (x_ecal.getZPos() < 250) {
-            ecal_end_x_.push_back(x_ecal.getXPos());
-            ecal_end_y_.push_back(x_ecal.getYPos());
-            ecal_end_z_.push_back(x_ecal.getZPos());
+            firstLayerEcalRecHits.push_back({x_ecal.getZPos(), x_ecal.getXPos(), x_ecal.getYPos()});
         } //if first layer of Ecal
     } //for positions in ecalRecHit
-    
-    // Combine (z, x, y) ecalRecHits into a 3D position vector
-    for (size_t i = 0; i < ecal_end_z_.size(); ++i) {
-        firstLayerEcalRecHits_.push_back({ecal_end_z_[i], ecal_end_x_[i], ecal_end_y_[i]});
-    } //for loop to create ecal_endpoint array
-    
+
     // ! Check if we would fit empty seeds !
-    if (digiPoints_.size() < 2 || firstLayerEcalRecHits_.empty() || uniqueSensorsHit(digiPoints_) < 2) {
+    if (digiPoints.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(digiPoints) < 2) {
         nmissing_++;
         ntracks_ += reduced_seed_tracks.size();
-        event.add(out_seed_collection_, reduced_seed_tracks);
         return;
     }
         
-    auto [firstSensor, secondSensor] = combineMultiGlobalHits(digiPoints_);
+    auto [firstSensor, secondSensor] = combineMultiGlobalHits(digiPoints);
     
     for (const auto& firstPoint : firstSensor) {
         for (const auto& secondPoint : secondSensor) {
-            for (const auto& recHit : firstLayerEcalRecHits_) {
+            for (const auto& recHit : firstLayerEcalRecHits) {
                 ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit);
-                reduced_seed_tracks.push_back(seedTrack);
+                if (seedTrack.getChi2() > 0.0) {
+                    reduced_seed_tracks.push_back(seedTrack);
+                }
             } //for recHits
         } //for second recoil tracker
     } //for first recoil tracker
@@ -95,17 +84,8 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     auto diff = end - start;
     processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
     
-    digiPoints_.clear();
-    firstLayerEcalRecHits_.clear();
-    
-    zpos_digi_tot_.clear();
-    xpos_digi_tot_.clear();
-    ypos_digi_tot_.clear();
-    edep_digi_.clear();
-    
-    ecal_end_x_.clear();
-    ecal_end_y_.clear();
-    ecal_end_z_.clear();
+    digiPoints.clear();
+    firstLayerEcalRecHits.clear();
     
 } //produce
 
@@ -114,7 +94,7 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
     auto [ax, bx, ay, by] = fit3DLine(recoilOne, recoilTwo, ecalOne);
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], ax * ecalOne[0] + bx, ay * ecalOne[0] + by};
     double tempDistance = calculateDistance(tempExtrapolatedPoint, ecalOne);
-    
+
     ldmx::ReducedTrack trk = ldmx::ReducedTrack();
 
     if (tempDistance < ecal_distance_threshold_) {
@@ -125,7 +105,7 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
         
         trk.setFirstSensorPosition(recoilOne);
         trk.setSecondSensorPosition(recoilTwo);
-        trk.setEcalLayer1Location(ecalOne);
+        trk.setFirstLayerEcalRecHit(ecalOne);
         trk.setDistancetoEcalRecHit(tempDistance);
         
         trk.setTargetLocation(0.0, bx, by);
@@ -134,9 +114,13 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
         trk.setNhits(3);
         trk.setNdf(1);
         trk.setNsharedHits(0);
+        
+        return trk;
     } //check whether the track is close enough to EcalRecHit
-    
-    return trk;
+    else {
+        trk.setChi2(-1);
+        return trk;
+    } //does not pass the threshold
 }
 
 void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES

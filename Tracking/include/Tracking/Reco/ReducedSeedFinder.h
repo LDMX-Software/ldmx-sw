@@ -98,8 +98,6 @@ protected:
     std::string input_hits_collection_{"DigiRecoilSimHits"};
     /// The name of the tagger Tracks (only for Recoil Seeding)
     std::string input_recHits_collection_{"EcalRecHits"};
-    /// Location of the perigee for the helix track parameters.
-    std::vector<double> perigee_location_{0., 0., 0};
     
     double piover2_{1.5708};
     
@@ -117,18 +115,6 @@ protected:
     double ecal_distance_threshold_{10.0};
     
     std::vector<double> recoil_uncertainty_{0.006, 0.12};
-    
-    std::vector<double> zpos_digi_tot_;
-    std::vector<double> xpos_digi_tot_;
-    std::vector<double> ypos_digi_tot_;
-    std::vector<double> edep_digi_;
-    
-    std::vector<double> ecal_end_x_;
-    std::vector<double> ecal_end_y_;
-    std::vector<double> ecal_end_z_;
-    
-    std::vector<std::array<double, 4>> digiPoints_;
-    std::vector<std::array<double, 3>> firstLayerEcalRecHits_;
     
     // Check failures
     //  long ndoubles_{0};

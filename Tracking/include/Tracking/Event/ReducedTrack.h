@@ -125,25 +125,25 @@ namespace ldmx {
         
     protected:
         //Actual Track Parameters
-        double ax_{0};
-        double ay_{0};
-        double bx_{0};
-        double by_{0};
-        double distance_to_Ecal_{0};
+        double ax_;
+        double ay_;
+        double bx_;
+        double by_;
+        double distance_to_Ecal_;
         
-        std::array<double, 3> firstSensor_{0., 0., 0.};
-        std::array<double, 3> secondSensor_{0., 0., 0.};
-        std::array<double, 3> ecalRecHit_{0., 0., 0.};
+        std::array<double, 3> firstSensor_;
+        std::array<double, 3> secondSensor_;
+        std::array<double, 3> ecalRecHit_;
         
-        int n_hits_{0};
-        int ndf_{0};
-        int n_shared_hits_{0};
-        double chi2_{0};
+        int n_hits_;
+        int ndf_;
+        int n_shared_hits_;
+        double chi2_;
         
         // The target location
-        std::array<double, 3> targetPos_{0., 0., 0.};
+        std::array<double, 3> targetPos_;
         // The ecal first layer position
-        std::array<double, 3> ecalLayer1Pos_{0., 0., 0.};
+        std::array<double, 3> ecalLayer1Pos_;
         
         // ID of the matched particle in the SimParticles map
         //    int trackID_{-1}; COME BACK AND SETUP TRACK ID ONCE YOU CONFIGURE TRUTH STUFF
