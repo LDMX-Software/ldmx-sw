@@ -20,16 +20,7 @@
 #include "TVector3.h"
 
 // For recoil tracking
-// #include "Tracking/Event/Track.h"
-#pragma once
-
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Event.h"
-#include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/TruthTrack.h"
 
 // C++
 #include <map>
@@ -121,9 +112,9 @@ class EcalVetoProcessor : public framework::Producer {
    * @param[in] ts_title The track state title, most likely "ecal"
    * @returns Vector of parameters for a propagated recoil track
    */
-  std::vector<float> trackProp(const ldmx::Tracks& tracks, 
-                             ldmx::TrackStateType ts_type,
-                             const std::string& ts_title);
+  std::vector<float> trackProp(const ldmx::Tracks& tracks,
+                               ldmx::TrackStateType ts_type,
+                               const std::string& ts_title);
 
  private:
   std::map<ldmx::EcalID, float> cellMap_;
@@ -183,7 +174,6 @@ class EcalVetoProcessor : public framework::Producer {
   std::string rec_coll_name_;
   bool recoil_from_tracking_;
   std::string track_collection_;
-  
 
   /** Name of the collection which will containt the results. */
   std::string collectionName_{"EcalVeto"};

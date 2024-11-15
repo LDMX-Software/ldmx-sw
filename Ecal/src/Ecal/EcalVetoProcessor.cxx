@@ -13,9 +13,6 @@
 /*~~~~~~~~~~~*/
 #include "Tools/AnalysisUtils.h"
 
-// For recoil tracking
-#include "Tracking/Event/Track.h"
-
 // C++
 #include <stdlib.h>
 
@@ -246,13 +243,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       }
     }
   }
-// Get recoilPos using recoil tracking
+  // Get recoilPos using recoil tracking
   if (recoil_from_tracking_) {
     auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
-    std::vector<float> recoilTrackStates = trackProp(recoil_tracks, ldmx::TrackStateType::AtECAL, "ecal");
+    std::vector<float> recoilTrackStates =
+        trackProp(recoil_tracks, ldmx::TrackStateType::AtECAL, "ecal");
     // recoilPos defined earlier but redefining now to come from the track state
-    recoilPos[0] = recoilTrackStates[0]; // track_state_loc0
-    recoilPos[1] = recoilTrackStates[1]; // track_state_loc1
+    recoilPos[0] = recoilTrackStates[0];  // track_state_loc0
+    recoilPos[1] = recoilTrackStates[1];  // track_state_loc1
   }
 
   if (verbose_) {
@@ -1274,18 +1272,18 @@ float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
 
-std::vector<float> trackProp(const ldmx::Tracks& tracks, 
-                             ldmx::TrackStateType ts_type,
-                             const std::string& ts_title) {
+std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
+                                                ldmx::TrackStateType ts_type,
+                                                const std::string &ts_title) {
   // Vector to hold the new track state variables
-  std::vector<float> newTrackStates; 
+  std::vector<float> newTrackStates;
 
-  for (auto& track : tracks) {
+  for (auto &track : tracks) {
     // Get track state for ts_type
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
-    if (!trk_ts.has_value()) continue; 
-    ldmx::Track::TrackState& TargetState = trk_ts.value();
+    if (!trk_ts.has_value()) continue;
+    ldmx::Track::TrackState &TargetState = trk_ts.value();
 
     // Check that the track state is filled
     if (TargetState.params.size() < 5) continue;
@@ -1299,13 +1297,12 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
 
     // Break after getting the first valid track state
     // TODO: interface this with CLUE to make sure the propageted track
-    //       has an associated cluster in the ECAL 
+    //       has an associated cluster in the ECAL
     break;
   }
 
   return newTrackStates;
 }
-
 
 }  // namespace ecal
 
