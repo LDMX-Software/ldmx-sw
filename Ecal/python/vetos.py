@@ -25,6 +25,8 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.collection_name = "EcalVeto"
         self.rec_coll_name = 'EcalRecHits'
         self.rec_pass_name = ''
+        self.recoil_from_tracking = False # Will be True soon
+        self.track_collection = 'RecoilTracks'
 
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :

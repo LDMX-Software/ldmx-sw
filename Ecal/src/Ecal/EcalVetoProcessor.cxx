@@ -13,6 +13,9 @@
 /*~~~~~~~~~~~*/
 #include "Tools/AnalysisUtils.h"
 
+// For recoil tracking
+#include "Tracking/Event/Track.h"
+
 // C++
 #include <stdlib.h>
 
@@ -132,6 +135,8 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   collectionName_ = parameters.getParameter<std::string>("collection_name");
   rec_pass_name_ = parameters.getParameter<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.getParameter<std::string>("rec_coll_name");
+  recoil_from_tracking_ = parameters.getParameter<bool>("recoil_from_tracking");
+  track_collection_ = parameters.getParameter<std::string>("track_collection");
 }
 
 void EcalVetoProcessor::clearProcessor() {
@@ -240,6 +245,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         }
       }
     }
+  }
+// Get recoilPos using recoil tracking
+  if (recoil_from_tracking_) {
+    auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
+    std::vector<float> recoilTrackStates = trackProp(recoil_tracks, ldmx::TrackStateType::AtECAL, "ecal");
+    // recoilPos defined earlier but redefining now to come from the track state
+    recoilPos[0] = recoilTrackStates[0]; // track_state_loc0
+    recoilPos[1] = recoilTrackStates[1]; // track_state_loc1
   }
 
   if (verbose_) {
@@ -1260,6 +1273,39 @@ float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1,
 float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
   return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
 }
+
+std::vector<float> trackProp(const ldmx::Tracks& tracks, 
+                             ldmx::TrackStateType ts_type,
+                             const std::string& ts_title) {
+  // Vector to hold the new track state variables
+  std::vector<float> newTrackStates; 
+
+  for (auto& track : tracks) {
+    // Get track state for ts_type
+    auto trk_ts = track.getTrackState(ts_type);
+    // Continue if there's no value
+    if (!trk_ts.has_value()) continue; 
+    ldmx::Track::TrackState& TargetState = trk_ts.value();
+
+    // Check that the track state is filled
+    if (TargetState.params.size() < 5) continue;
+
+    float track_state_loc0 = static_cast<float>(TargetState.params[0]);
+    float track_state_loc1 = static_cast<float>(TargetState.params[1]);
+
+    // Store the new track state variables
+    newTrackStates.push_back(track_state_loc0);
+    newTrackStates.push_back(track_state_loc1);
+
+    // Break after getting the first valid track state
+    // TODO: interface this with CLUE to make sure the propageted track
+    //       has an associated cluster in the ECAL 
+    break;
+  }
+
+  return newTrackStates;
+}
+
 
 }  // namespace ecal
 
