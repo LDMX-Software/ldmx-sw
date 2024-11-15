@@ -245,12 +245,18 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
   // Get recoilPos using recoil tracking
   if (recoil_from_tracking_) {
+    std::vector<float> recoilTrackStates;
+    if (verbose_) {
+      ldmx_log(debug) << "   Propagate recoil tracks to ECAL face";
+    }
+    // Get the recoil track collection
     auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
-    std::vector<float> recoilTrackStates =
-        trackProp(recoil_tracks, ldmx::TrackStateType::AtECAL, "ecal");
-    // recoilPos defined earlier but redefining now to come from the track state
-    recoilPos[0] = recoilTrackStates[0];  // track_state_loc0
-    recoilPos[1] = recoilTrackStates[1];  // track_state_loc1
+
+    ldmx::TrackStateType tsType = ldmx::TrackStateType::AtECAL;
+    recoilTrackStates = trackProp(recoil_tracks, tsType, "ecal");
+    // Redefining recoilPos now to come from the track state
+    // track_state_loc0 is recoilPos[0] and track_state_loc1 is recoilPos[1]
+    recoilPos = recoilTrackStates;
   }
 
   if (verbose_) {
@@ -258,7 +264,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
   // Get projected trajectories for electron and photon
   std::vector<XYCoords> ele_trajectory, photon_trajectory;
-  if (recoilP.size() > 0) {
+  if (!recoilP.empty() && !recoilPos.empty()) {
     ele_trajectory = getTrajectory(recoilP, recoilPos);
     std::vector<double> pvec = recoilPAtTarget.size()
                                    ? recoilPAtTarget
@@ -667,7 +673,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   const float dz_from_face{7.932};
   float drifted_recoil_x{-9999.};
   float drifted_recoil_y{-9999.};
-  if (recoilP.size() > 0) {
+  if (!recoilP.empty()) {
     drifted_recoil_x =
         (dz_from_face * (recoilP[0] / recoilP[2])) + recoilPos[0];
     drifted_recoil_y =
@@ -707,7 +713,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   TVector3 e_traj_end;
   TVector3 p_traj_start;
   TVector3 p_traj_end;
-  if (ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
+  if (!ele_trajectory.empty() && !photon_trajectory.empty()) {
     // Create TVector3s marking the start and endpoints of each projected
     // trajectory
     e_traj_start.SetXYZ(ele_trajectory[0].first, ele_trajectory[0].second,
@@ -751,8 +757,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // segmipBDT
   firstNearPhLayer_ = nEcalLayers_ - 1;
 
-  if (photon_trajectory.size() !=
-      0) {  // If no photon trajectory, leave this at the default (ECal back)
+  // If no photon trajectory, leave this at the default (ECal back)
+  if (!photon_trajectory.empty()) {
     for (std::vector<HitData>::iterator it = trackingHitList.begin();
          it != trackingHitList.end(); ++it) {
       float ehDist =
@@ -770,7 +776,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // Territories limited to trackingHitList
   TVector3 gToe = (e_traj_start - p_traj_start).Unit();
   TVector3 origin = p_traj_start + 0.5 * 8.7 * gToe;
-  if (ele_trajectory.size() > 0) {
+  if (!ele_trajectory.empty()) {
     for (auto &hitData : trackingHitList) {
       TVector3 hitPos = hitData.pos;
       TVector3 hitPrime = hitPos - origin;
@@ -1116,6 +1122,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
+  ldmx_log(debug) << "  BDT was ran, score is " << pred;
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
@@ -1278,6 +1285,10 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
   // Vector to hold the new track state variables
   std::vector<float> newTrackStates;
 
+  // Return if no tracks
+  if (tracks.empty()) return newTrackStates;
+
+  // Otherwise loop on the tracks
   for (auto &track : tracks) {
     // Get track state for ts_type
     auto trk_ts = track.getTrackState(ts_type);
@@ -1294,6 +1305,8 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     // Store the new track state variables
     newTrackStates.push_back(track_state_loc0);
     newTrackStates.push_back(track_state_loc1);
+    // z-position at the ECAL scoring plane
+    newTrackStates.push_back(239.999);
 
     // Break after getting the first valid track state
     // TODO: interface this with CLUE to make sure the propageted track
