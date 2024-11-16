@@ -69,9 +69,10 @@ reducedSeed = tracking.ReducedSeedFinder("ReducedSeedFinder")
 reducedSeed.input_hit_collection = "DigiRecoilSimHits"
 reducedSeed.input_recHits_collection = "EcalRecHits"
 reducedSeed.out_seed_collection = "ReducedSeedTracks"
+#reducedSeed.ecal_distance_threshold = 100.0
 
 reducedTrack = tracking.ReducedTrackFinder("ReducedTrackFinder")
 reducedTrack.seed_coll_name = "ReducedSeedTracks"
-reducedTrack.out_trk_collection = "ReducedTrack"
+reducedTrack.out_trk_collection = "ReducedTracks"
 
 p.sequence.extend([digiRecoil, reducedSeed, reducedTrack])
