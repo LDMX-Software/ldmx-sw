@@ -958,8 +958,9 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(debug) << "Finding linreg tracks from a total of " << trackingHitList.size()
-                  << " hits using a radius of " << linreg_radius_ << " mm";
+  ldmx_log(debug) << "Finding linreg tracks from a total of "
+                  << trackingHitList.size() << " hits using a radius of "
+                  << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // Hits being considered at a given time
@@ -974,7 +975,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     int hitNums[3];
     // From the above which are passing the correlation reqs
     int bestHitNums[3];
-  
+
     hitsInRegion.push_back(iHit);
     // Find all hits within 2 cells of the primary hit:
     for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
@@ -995,16 +996,17 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     bool bestLinRegFound{false};
     if (verbose_) {
       ldmx_log(debug) << "There are " << hitsInRegion.size()
-                  << " hits within a radius of " << linreg_radius_ << " mm";
+                      << " hits within a radius of " << linreg_radius_ << " mm";
     }
     // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hitNums[0] = iHit;
     for (int jHitInReg = 1; jHitInReg < hitsInRegion.size() - 1; jHitInReg++) {
-      // We require (exactly) 3 hits for the lin-reg track building 
+      // We require (exactly) 3 hits for the lin-reg track building
       if (hitsInRegion.size() < 3) break;
       hitNums[1] = hitsInRegion[jHitInReg];
-      for (int kHitReg = jHitInReg + 1; kHitReg < hitsInRegion.size(); kHitReg++) {
+      for (int kHitReg = jHitInReg + 1; kHitReg < hitsInRegion.size();
+           kHitReg++) {
         hitNums[2] = hitsInRegion[kHitReg];
         for (int hInd = 0; hInd < 3; hInd++) {
           // hmean = geometric mean, subtract off from hits to improve SVD
@@ -1080,11 +1082,15 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     nLinregTracks_++;
     ldmx_log(debug) << " Lin-reg track " << nLinregTracks_;
     for (int finalHitIndx = 0; finalHitIndx < 3; finalHitIndx++) {
-    ldmx_log(debug) << "   Hit " << finalHitIndx << " [" << trackingHitList[bestHitNums[finalHitIndx]].pos(0) << ", "
-    << trackingHitList[bestHitNums[finalHitIndx]].pos(1) << ", "
-    << trackingHitList[bestHitNums[finalHitIndx]].pos(2) << "] ";
+      ldmx_log(debug) << "   Hit " << finalHitIndx << " ["
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(0)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(1)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(2)
+                      << "] ";
     }
-    
+
     // Exclude all hits in a found track from further consideration:
     for (int lHit = 0; lHit < 3; lHit++) {
       trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
