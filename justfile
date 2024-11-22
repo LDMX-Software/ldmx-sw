@@ -174,8 +174,10 @@ shellcheck:
     #!/usr/bin/env sh
     set -x
     format_list=$(mktemp)
-    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' > ${format_list}
-    shellcheck --severity style --shell sh $(cat ${format_list})
+    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' \
+      > "${format_list}"
+    xargs --arg-file="${format_list}" \
+      shellcheck --severity style --shell sh
     rm "${format_list}"
 
 # check a script recipe also using shellcheck
