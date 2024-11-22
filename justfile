@@ -102,6 +102,7 @@ debug config_py *ARGS:
 # initialize a containerized development environment
 init:
     #!/usr/bin/env sh
+    set -eu
     denv_major=$(denv version | sed 's/denv v//' | cut -f 1 -d.)
     denv_minor=$(denv version | sed 's/denv v//' | cut -f 2 -d.)
     if [ "${denv_major}" -lt "1" ] || [ "${denv_minor}" -lt "1" ]; then
