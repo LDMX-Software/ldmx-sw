@@ -103,8 +103,8 @@ debug config_py *ARGS:
 init:
     #!/usr/bin/env sh
     denv_major=$(denv version | sed 's/denv v//' | cut -f 1 -d.)
-    denv_minor=$(denv version | set 's/denv v//' | cut -f 2 -d.)
-    if [ "${denv_major}" -lt 1 ] || [ "${denv_minor}" -lt "1" ]; then
+    denv_minor=$(denv version | sed 's/denv v//' | cut -f 2 -d.)
+    if [ "${denv_major}" -lt "1" ] || [ "${denv_minor}" -lt "1" ]; then
       # denv v1.0.X or earlier, manually check for workspace
       # which may print a confusing error from denv when no workspace is found
       unset denv_workspace
@@ -116,15 +116,15 @@ init:
       # the justfile so we know we are in the correct location.
       if denv check --workspace --quiet; then
         echo "\033[32mWorkspace already initialized.\033[0m"
-        denv config print
       else
-        denv init --clean-env --name ldmx ldmx/dev:latest ${LDMX_BASE}
+        denv init --clean-env --name ldmx ldmx/dev:latest "${LDMX_BASE}"
       fi
     else
       # denv v1.1.0 and later has updated denv init to allow us
       # to avoid overwriting quietly
-      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest ${LDMX_BASE}
+      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest "${LDMX_BASE}"
     fi
+    denv config print
 
 # check that the necessary programs for running ldmx-sw are present
 check:
