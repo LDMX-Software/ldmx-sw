@@ -172,10 +172,19 @@ format-just:
 # check the scripts for common errors and bugs
 shellcheck:
     #!/usr/bin/env sh
-    set -exu
+    set -x
     format_list=$(mktemp)
     git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' > ${format_list}
     shellcheck --severity style --shell sh $(cat ${format_list})
+    rm "${format_list}"
+
+# check a script recipe also using shellcheck
+shellcheck-recipe RECIPE:
+    #!/usr/bin/env sh
+    source=$(mktemp)
+    just -n {{ RECIPE }} 2> "${source}"
+    shellcheck --severity style --shell sh "${source}"
+    rm "${source}"
 
 # below are the mimics of ldmx <cmd>
 # we could think about removing them if folks are happy with committing to the
