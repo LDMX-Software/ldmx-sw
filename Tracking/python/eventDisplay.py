@@ -20,8 +20,8 @@ def trackPlotter(tree, event_number, tag, save):
     recoilSimHits = addBranch(tree, 'SimTrackerHit', 'RecoilSimHits_{}'.format(tag))
     digiRecoil = addBranch(tree, 'Measurement', 'DigiRecoilSimHits_{}'.format(tag))
     ecalRecHit = addBranch(tree, 'EcalHit', 'EcalRecHits_{}'.format(tag))
-    #recoil = addBranch(tree, 'ReducedTrack', 'ReducedTracks_{}'.format(tag))
-    recoil = addBranch(tree, 'ReducedTrack', 'ReducedSeedTracks_{}'.format(tag))
+    recoil = addBranch(tree, 'ReducedTrack', 'ReducedTracks_{}'.format(tag))
+    #recoil = addBranch(tree, 'ReducedTrack', 'ReducedSeedTracks_{}'.format(tag))
 
     tree.GetEntry(event_number)
     

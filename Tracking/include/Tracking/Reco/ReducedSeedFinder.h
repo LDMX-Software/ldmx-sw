@@ -78,9 +78,9 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
-    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne);
+    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, const std::vector<std::array<double, 3>> allPoints);
     
-    std::pair<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection);
+    std::tuple<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection);
     std::vector<std::array<double, 3>> weightedAverage(const std::vector<std::array<double, 4>> &layer1, const std::vector<std::array<double, 4>> &layer2);
     std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
     

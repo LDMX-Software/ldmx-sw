@@ -63,12 +63,12 @@ void ReducedSeedFinder::produce(framework::Event& event) {
         return;
     }
         
-    auto [firstSensor, secondSensor] = combineMultiGlobalHits(digiPoints);
+    auto [firstSensor, secondSensor, allHits_noEDEP] = combineMultiGlobalHits(digiPoints);
     
     for (const auto& firstPoint : firstSensor) {
         for (const auto& secondPoint : secondSensor) {
             for (const auto& recHit : firstLayerEcalRecHits) {
-                ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit);
+                ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit, allHits_noEDEP);
                 if (seedTrack.getChi2() > 0.0) {
                     reduced_seed_tracks.push_back(seedTrack);
                 }
@@ -89,7 +89,7 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     
 } //produce
 
-ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne) {
+ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, std::vector<std::array<double, 3>> allPoints) {
     
     auto [ax, bx, ay, by] = fit3DLine(recoilOne, recoilTwo, ecalOne);
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], ax * ecalOne[0] + bx, ay * ecalOne[0] + by};
@@ -103,6 +103,7 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
         trk.setAY(ay);
         trk.setBY(by);
         
+        trk.setAllSensorPoints(allPoints);
         trk.setFirstSensorPosition(recoilOne);
         trk.setSecondSensorPosition(recoilTwo);
         trk.setFirstLayerEcalRecHit(ecalOne);
@@ -134,11 +135,16 @@ void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
     //  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
 } //onProcessEnd
 
-std::pair<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>> ReducedSeedFinder::combineMultiGlobalHits(const std::vector<std::array<double, 4>>& hitCollection) {
+std::tuple<std::vector<std::array<double, 3>>,
+           std::vector<std::array<double, 3>>,
+           std::vector<std::array<double, 3>>>
+ReducedSeedFinder::combineMultiGlobalHits(const std::vector<std::array<double, 4>>& hitCollection) {
     std::vector<std::array<double, 4>> layer1, layer2, layer3, layer4;
+    std::vector<std::array<double, 3>> allPoints;
 
     // Split hits into layers based on z position
     for (const auto& point : hitCollection) {
+        allPoints.push_back({point[0], point[1], point[2]});
         if (point[0] < 12) layer1.push_back(point);
         else if (point[0] < 20) layer2.push_back(point);
         else if (point[0] < 28) layer3.push_back(point);
@@ -149,7 +155,7 @@ std::pair<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>
     auto firstSensorMergedHits = weightedAverage(layer1, layer2);
     auto secondSensorMergedHits = weightedAverage(layer3, layer4);
 
-    return {firstSensorMergedHits, secondSensorMergedHits};
+    return {firstSensorMergedHits, secondSensorMergedHits, allPoints};
 } //combineMultiGlobalHits
 
 std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std::vector<std::array<double, 4>>& layer1, const std::vector<std::array<double, 4>>& layer2) {

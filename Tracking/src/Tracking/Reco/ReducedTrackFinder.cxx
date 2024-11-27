@@ -97,18 +97,15 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
         ldmx::ReducedTrack bestSeed = *bestSeedIt;
         bestTrack.push_back(bestSeed);
 
-        // Remove any seeds that share Recoil sensor points with the best seed
-        auto sensorPoint1 = bestSeed.getFirstSensorPosition();
-        auto sensorPoint2 = bestSeed.getSecondSensorPosition();
-        seedsWithSameRecHit.erase(
-            std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(),
-                           [&](const ldmx::ReducedTrack& seed) {
-                               auto recoilPoint1 = seed.getFirstSensorPosition();
-                               auto recoilPoint2 = seed.getSecondSensorPosition();
-                               return (sensorPoint1 == recoilPoint1 || sensorPoint1 == recoilPoint2 ||
-                                       sensorPoint2 == recoilPoint1 || sensorPoint2 == recoilPoint2);
-                           }),
-            seedsWithSameRecHit.end());
+        // Remove any seeds that share any sensor point with the best seed
+        auto sensorPoints = bestSeed.getAllSensorPoints();
+        seedsWithSameRecHit.erase(std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(), [&](const ldmx::ReducedTrack& seed) {
+                                                        auto seedPoints = seed.getAllSensorPoints();
+                                                        // Check if any sensor point in the seed overlaps with the best seed's points
+                                                        return std::any_of(sensorPoints.begin(), sensorPoints.end(), [&](const auto& point) {
+                                                                return std::find(seedPoints.begin(), seedPoints.end(), point) != seedPoints.end(); });
+                                                }),
+                                  seedsWithSameRecHit.end());
     }
 
     return bestTrack;

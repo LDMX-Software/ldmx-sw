@@ -73,6 +73,12 @@ namespace ldmx {
         void setDistancetoEcalRecHit(double distance) {distance_to_Ecal_ = distance;}
         double getDistanceToRecHit() const { return distance_to_Ecal_; }
         
+        const std::vector<std::array<double, 3>>& getAllSensorPoints() const { return totalSensor_;};
+
+        void setAllSensorPoints(const std::vector<std::array<double, 3>>& sensorPoints) {
+            totalSensor_ = sensorPoints;
+        }
+
         void setFirstSensorPosition(const std::array<double, 3>& firstSensor) {
             firstSensor_ = firstSensor;
         }
@@ -131,6 +137,7 @@ namespace ldmx {
         double by_;
         double distance_to_Ecal_;
         
+        std::vector<std::array<double, 3>> totalSensor_; //! transient for ROOT
         std::array<double, 3> firstSensor_;
         std::array<double, 3> secondSensor_;
         std::array<double, 3> ecalRecHit_;
