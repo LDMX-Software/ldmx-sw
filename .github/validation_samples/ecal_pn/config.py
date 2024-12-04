@@ -18,8 +18,10 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+# p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+# p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.maxEvents = int(200)
+p.run = int(1)
 
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
@@ -176,11 +178,14 @@ seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
 seed_recoil_dqm.title = ""
 
 recoil_dqm = tkdqm.TrackingRecoDQM("RecoilTrackerDQM")
-recoil_dqm.measurement_collection=digi_recoil.out_collection
+recoil_dqm.measurement_collection=digiRecoil.out_collection
 recoil_dqm.buildHistograms()
 recoil_dqm.track_collection = tracking_recoil.out_trk_collection
 recoil_dqm.truth_collection = "RecoilTruthTracks"
 recoil_dqm.title = ""
+
+# Load the mass estimator
+from LDMX.Recon.trackDeDxMassEstimator import recoilTrackMassEstimator
 
 p.sequence.extend([
         digiTagger,
@@ -190,6 +195,7 @@ p.sequence.extend([
         seederRecoil,
         tracking_tagger,
         tracking_recoil,
+        recoilTrackMassEstimator,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
         ecal_vetos.EcalVetoProcessor(),

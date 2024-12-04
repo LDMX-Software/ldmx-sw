@@ -34,15 +34,19 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   std::transform(trackColl.begin(), trackColl.end(), trackColl.begin(), ::tolower);
   if (trackColl.find("tagger") != std::string::npos) {
     trackType = 1;
+    measCollection_ = "DigiTaggerSimHits";
   } else if (trackColl.find("recoil") != std::string::npos) {
     trackType = 2;
+    measCollection_ = "DigiRecoilSimHits";
   } else {
     trackType = -1;
+    measCollection_ = "";
   }
 
   // Retrieve the measurements
   if (!event.exists(measCollection_)) return;
   auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
+  std::cout << "Number of measurements: " << measurements.size() << std::endl;
 
   std::vector<ldmx::TrackDeDxMassEstimate> massEstimates;
 
@@ -63,14 +67,14 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     auto pz = trackMomentum[2] * 1000;
     // Get the track momentum magnitude
     float p = sqrt(px * px + py * py + pz * pz);
-    ldmx_log(debug) << "Track " << i << " has momentum " << p;
-    // std::cout << "Track " << i << " has momentum " << p << std::endl;
+    ldmx_log(debug) << "Track " << i << " has momentum " << p << ", pz " << pz;
+    std::cout << "Track " << i << " has momentum " << p << std::endl;
 
-    float pathLength = si_sensor_thickness_mm * p / abs(pz);  // For now, use global angle
-    // std::cout << "Track " << i << " has p " << p << " MeV and pz " << pz << "MeV" << std::endl;
-    // std::cout << "Track " << i << " has path length " << pathLength << "mm" << std::endl;
+    float pathLength = si_sensor_thickness_mm; //* p / abs(pz);  // For now, use the sensor thickness as the path length
+    std::cout << "Track " << i << " has p " << p << " MeV and pz " << pz << "MeV" << std::endl;
+    std::cout << "Track " << i << " has path length " << pathLength << "mm" << std::endl;
     if (pathLength <= 0) {
-      ldmx_log(debug) << "Track " << i << " has path length " << pathLength << "mm";
+      ldmx_log(debug) << "Track " << i << " has path length " << pathLength << "mm" << " at each hit measurement";
       continue;
     }
 
@@ -78,14 +82,15 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     ldmx::TrackDeDxMassEstimate massEst;
     float sum_dEdx_inv2 = 0.;
     float dEdx;
-    
     int n_mes = 0;
     for (auto imeas : track.getMeasurementsIdxs()) {
+      std::cout << "  Measurement " << n_mes << "has index " << imeas << std::endl;
       auto meas = measurements.at(imeas);
       if (meas.getEdep() >= 0) {
         dEdx = meas.getEdep() / pathLength * 10;  // unit: MeV/cm
-        // std::cout << "  Measurement " << n_mes << " dEdx: " << dEdx 
-                  << ", edep " << meas.getEdep() << std::endl;
+        std::cout << "  Measurement " << n_mes << " dEdx: " << dEdx 
+                  << ", edep " << meas.getEdep() << ", path length " << pathLength
+                  << std::endl;
         sum_dEdx_inv2 += 1. / (dEdx * dEdx);
         n_mes++;
       }
@@ -96,8 +101,16 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
       // std::cout << "Track " << i << " has no dEdx measurements" << std::endl;
       continue;
     }
+
+    if (n_mes == 0) {
+      ldmx_log(debug) << "Track " << i << " has no valid dEdx measurements";
+      // std::cout << "Track " << i << " has no valid dEdx measurements" << std::endl;
+      continue;
+    }
+
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
     float Ih = 1. / sqrt(1. / n_mes * sum_dEdx_inv2);
+    std::cout << "Track " << i << " has Ih " << Ih << std::endl;
 
     float mass = 0.;
     if (Ih > fit_res_C_) {
@@ -105,7 +118,8 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     }
     else {
       ldmx_log(debug) << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_;
-      // std::cout << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_ << std::endl;
+      std::cout << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_ << std::endl;
+      mass = -100.;
     }
 
     massEst.setMass(mass);
