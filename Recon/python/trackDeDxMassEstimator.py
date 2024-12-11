@@ -32,12 +32,9 @@ class trackDeDxMassEstimator(ldmxcfg.Producer) :
     def __init__(self, name="TrackDeDxMassEstimator") :
         super().__init__(name,'recon::TrackDeDxMassEstimator','Recon')
 
-        self.track_collection = "RecoilTracks"  # RecoilTracks or TaggerTracks
+        self.track_collection = "RecoilTruthTracks"
         self.fit_res_C = 3.094
         self.fit_res_K = 1.862
 
 recoilTrackMassEstimator = trackDeDxMassEstimator("RecoilTrackMassEstimator")
-recoilTrackMassEstimator.track_collection = "RecoilTracks"
-
-taggerTrackMassEstimator = trackDeDxMassEstimator("TaggerTrackMassEstimator")
-taggerTrackMassEstimator.track_collection = "TaggerTracks"
+recoilTrackMassEstimator.track_collection = "RecoilTruthTracks"

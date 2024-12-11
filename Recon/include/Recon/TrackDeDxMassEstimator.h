@@ -41,8 +41,9 @@ class TrackDeDxMassEstimator : public framework::Producer {
 
   // name of input track collection
   std::string trackCollection_;
-  // name of input measurement collection
-  std::string measCollection_;
+  
+  // name of input simhit collection
+  std::string simhitCollection_;
 
 };  // TrackDeDxMassEstimator
 

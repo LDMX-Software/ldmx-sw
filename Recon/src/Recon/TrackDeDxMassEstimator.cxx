@@ -13,7 +13,7 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
   fit_res_C_ = ps.getParameter<double>("fit_res_C");
   fit_res_K_ = ps.getParameter<double>("fit_res_K");
   trackCollection_ =
-      ps.getParameter<std::string>("track_collection", "RecoilTracks");
+      ps.getParameter<std::string>("track_collection", "RecoilTruthTracks");
 
   ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
                  << trackCollection_;
@@ -34,91 +34,67 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   std::transform(trackColl.begin(), trackColl.end(), trackColl.begin(), ::tolower);
   if (trackColl.find("tagger") != std::string::npos) {
     trackType = 1;
-    measCollection_ = "DigiTaggerSimHits";
+    simhitCollection_ = "TaggerSimHits";
   } else if (trackColl.find("recoil") != std::string::npos) {
     trackType = 2;
-    measCollection_ = "DigiRecoilSimHits";
+    simhitCollection_ = "RecoilSimHits";
   } else {
-    trackType = -1;
-    measCollection_ = "";
+    trackType = 0;
+    simhitCollection_ = "";
   }
 
-  // Retrieve the measurements
-  if (!event.exists(measCollection_)) return;
-  auto measurements{event.getCollection<ldmx::Measurement>(measCollection_)};
-  std::cout << "Number of measurements: " << measurements.size() << std::endl;
+  // Retrieve the simhits
+  if (!event.exists(simhitCollection_)) return;
+  auto simhits{event.getCollection<ldmx::SimTrackerHit>(simhitCollection_)};
 
   std::vector<ldmx::TrackDeDxMassEstimate> massEstimates;
 
   // Loop over the collection of tracks
-  // for (auto &track : tracks) {
   for (uint i = 0; i < tracks.size(); i++) {
     auto track = tracks.at(i);
     // If track momentum doen't exist, skip
-    auto trackMomentum = track.getMomentum();
-    if (trackMomentum.size() == 0) {
-      ldmx_log(debug) << "Track " << i << " is empty";
-      // std::cout << "Track " << i << " is empty" << std::endl;
+    auto QoP = track.getQoP();
+    if (QoP == 0) {
+      ldmx_log(debug) << "Track " << i << "has zero q/p ";
       continue;
     }
 
-    auto px = trackMomentum[0] * 1000;  // GeV to MeV
-    auto py = trackMomentum[1] * 1000;
-    auto pz = trackMomentum[2] * 1000;
-    // Get the track momentum magnitude
-    float p = sqrt(px * px + py * py + pz * pz);
-    ldmx_log(debug) << "Track " << i << " has momentum " << p << ", pz " << pz;
-    std::cout << "Track " << i << " has momentum " << p << std::endl;
+    float p = 1. / abs(QoP) * 1000;  // unit: MeV
+    ldmx_log(debug) << "Track " << i << " has momentum " << p;
 
-    float pathLength = si_sensor_thickness_mm; //* p / abs(pz);  // For now, use the sensor thickness as the path length
-    std::cout << "Track " << i << " has p " << p << " MeV and pz " << pz << "MeV" << std::endl;
-    std::cout << "Track " << i << " has path length " << pathLength << "mm" << std::endl;
-    if (pathLength <= 0) {
-      ldmx_log(debug) << "Track " << i << " has path length " << pathLength << "mm" << " at each hit measurement";
-      continue;
-    }
-
-    /// Get the hits associated with the track
+    /// Get the hits associated with the truth track
     ldmx::TrackDeDxMassEstimate massEst;
     float sum_dEdx_inv2 = 0.;
     float dEdx;
-    int n_mes = 0;
-    for (auto imeas : track.getMeasurementsIdxs()) {
-      std::cout << "  Measurement " << n_mes << "has index " << imeas << std::endl;
-      auto meas = measurements.at(imeas);
-      if (meas.getEdep() >= 0) {
-        dEdx = meas.getEdep() / pathLength * 10;  // unit: MeV/cm
-        std::cout << "  Measurement " << n_mes << " dEdx: " << dEdx 
-                  << ", edep " << meas.getEdep() << ", path length " << pathLength
-                  << std::endl;
+    float n_simhits = 0;
+    for (auto hit : simhits) {
+      // Check if the hit is associated with the track
+      // std::cout << "hit trackID: " << hit.getTrackID() << ", trackID: " << track.getTrackID() << std::endl;
+      if (hit.getTrackID() != track.getTrackID()) continue;
+      if (hit.getEdep() >= 0 && hit.getPathLength() > 0) {
+        dEdx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
+        // std::cout << "  SimHit " << n_simhits << " dEdx: " << dEdx 
+        //           << ", edep " << hit.getEdep() << ", path length " << hit.getPathLength()
+        //           << std::endl;
         sum_dEdx_inv2 += 1. / (dEdx * dEdx);
-        n_mes++;
+        n_simhits++;
       }
     }  // end of loop over measurements
 
     if (sum_dEdx_inv2 == 0) {
       ldmx_log(debug) << "Track " << i << " has no dEdx measurements";
-      // std::cout << "Track " << i << " has no dEdx measurements" << std::endl;
-      continue;
-    }
-
-    if (n_mes == 0) {
-      ldmx_log(debug) << "Track " << i << " has no valid dEdx measurements";
-      // std::cout << "Track " << i << " has no valid dEdx measurements" << std::endl;
       continue;
     }
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
-    float Ih = 1. / sqrt(1. / n_mes * sum_dEdx_inv2);
-    std::cout << "Track " << i << " has Ih " << Ih << std::endl;
+    float Ih = 1. / sqrt(1. / n_simhits * sum_dEdx_inv2);
 
     float mass = 0.;
     if (Ih > fit_res_C_) {
       mass = p * sqrt((Ih - fit_res_C_) / fit_res_K_);
     }
     else {
-      ldmx_log(debug) << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_;
-      std::cout << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_ << std::endl;
+      ldmx_log(info) << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_;
       mass = -100.;
     }
 
@@ -131,11 +107,6 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   // Add the mass estimates to the event
   event.add("TrackDeDxMassEstimate", massEstimates);
 
-  // // Loop over the collection of hits and print the hit details
-  // for (const ldmx::EcalHit &hit : hits) {
-  //   // Print the hit
-  //   hit.Print();
-  // }
 }
 }  // namespace recon
 
