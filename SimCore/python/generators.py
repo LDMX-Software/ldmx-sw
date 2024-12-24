@@ -321,6 +321,8 @@ def single_8gev_e_upstream_magnet_setEnergy(ene=8.0):
     off-energy beam electrons.  
 
     Note that if an energy != 8gev, the trajectory will be different. 
+    And many electrons with energies sufficiently lower than 8GeV will just curve
+    into the side of the magnet and not reach the target.
 
     Returns
     -------
