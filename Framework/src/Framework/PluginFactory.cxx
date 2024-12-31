@@ -84,18 +84,4 @@ ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(
   return ptr->second.cop_maker(objName, tagname, params, process);
 }
 
-void PluginFactory::loadLibrary(const std::string& libname) {
-  if (librariesLoaded_.find(libname) != librariesLoaded_.end()) {
-    return;  // already loaded
-  }
-
-  void* handle = dlopen(libname.c_str(), RTLD_NOW);
-  if (handle == nullptr) {
-    EXCEPTION_RAISE("LibraryLoadFailure",
-                    "Error loading library '" + libname + "':" + dlerror());
-  }
-
-  librariesLoaded_.insert(libname);
-}
-
 }  // namespace framework

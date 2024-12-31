@@ -86,12 +86,6 @@ class PluginFactory {
       const std::string& tagname, const framework::config::Parameters& params,
       Process& process);
 
-  /**
-   * Load a library.
-   * @param libname The library to load.
-   */
-  void loadLibrary(const std::string& libname);
-
  private:
   /**
    * Constructor
@@ -111,9 +105,6 @@ class PluginFactory {
 
   /** A map of names to processor containers. */
   std::map<std::string, PluginInfo> moduleInfo_;
-
-  /** A set of names of loaded libraries. */
-  std::set<std::string> librariesLoaded_;
 
   /** Factory for creating the plugin objects. */
   static PluginFactory theFactory_;

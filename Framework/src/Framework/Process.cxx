@@ -6,6 +6,8 @@
 #include "Framework/Process.h"
 
 #include <iostream>
+#include <set>
+#include <dlfcn.h>
 
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
@@ -55,9 +57,20 @@ Process::Process(const framework::config::Parameters &configuration)
 
   auto libs{
       configuration.getParameter<std::vector<std::string>>("libraries", {})};
-  std::for_each(libs.begin(), libs.end(), [](auto &lib) {
-    PluginFactory::getInstance().loadLibrary(lib);
-  });
+  std::set<std::string> libraries_loaded;
+  for (const auto& lib : libs) {
+    if (libraries_loaded.find(lib) != libraries_loaded.end()) {
+      continue;
+    }
+    
+    void* handle = dlopen(lib.c_str(), RTLD_NOW);
+    if (handle == nullptr) {
+      EXCEPTION_RAISE("LibraryLoadFailure",
+                      "Error loading library '" + lib + "':" + dlerror());
+    }
+  
+    libraries_loaded.insert(lib);
+  }
 
   storageController_.setDefaultKeep(
       configuration.getParameter<bool>("skimDefaultIsKeep", true));
