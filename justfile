@@ -97,7 +97,7 @@ fire config_py *ARGS:
 # run gdb on a config file
 [no-cd]
 debug config_py *ARGS:
-    denv gdb fire {{ config_py }} {{ ARGS }}
+    denv gdb --args fire {{ config_py }} {{ ARGS }}
 
 # initialize a containerized development environment
 init:
