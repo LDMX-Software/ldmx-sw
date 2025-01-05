@@ -35,6 +35,10 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   iSOI_ = hgcrocParams.getParameter<int>("iSOI");
   noise_ = hgcrocParams.getParameter<bool>("noise");
 
+  //If true, ignore readout threshold
+  //and generate pedestal noise digis in every empty channel
+  digitizeAllChannels_ = ps.getParameter<bool>("digitizeAllChannels");
+
   // collection names
   inputCollName_ = ps.getParameter<std::string>("inputCollName");
   inputPassName_ = ps.getParameter<std::string>("inputPassName");
@@ -62,6 +66,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 }
 
 void HcalDigiProducer::produce(framework::Event& event) {
+
   // Handle seeding on the first event
   if (!noiseGenerator_->hasSeed()) {
     const auto& rseed = getCondition<framework::RandomNumberSeedService>(
@@ -248,8 +253,8 @@ void HcalDigiProducer::produce(framework::Event& event) {
           digiToAddNegend;
       ldmx::HcalDigiID posendID(section, layer, strip, 0);
       ldmx::HcalDigiID negendID(section, layer, strip, 1);
-      if (hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend) &&
-          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)) {
+      if ((hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend) &&
+          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)) or digitizeAllChannels_) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
       }  // Back Hcal needs to digitize both pulses or none
@@ -265,12 +270,12 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
       if (is_posend) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
-        if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd) or digitizeAllChannels_) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       } else {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
-        if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd) or digitizeAllChannels_) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
         }
       }
@@ -281,80 +286,103 @@ void HcalDigiProducer::produce(framework::Event& event) {
    * Noise Simulation on Empty Channels
    *****************************************************************************************/
   if (noise_) {
+
+    std::vector<ldmx::HcalDigiID> channelMap;
     int numChannels = 0;
     for (int section = 0; section < hcalGeometry.getNumSections(); section++) {
       int numChannelsInSection = 0;
-      for (int layer = 1; layer <= hcalGeometry.getNumLayers(section);
-           layer++) {
+      for (int layer = 1; layer <= hcalGeometry.getNumLayers(section); layer++) {
         numChannelsInSection += hcalGeometry.getNumStrips(section, layer);
+        for (int strip = 1; strip <= hcalGeometry.getNumStrips(section, layer); strip++){
+          if (section == ldmx::HcalID::HcalSection::BACK ) {
+            auto detIDend0 = ldmx::HcalDigiID(section, layer, strip, 0);
+            auto detIDend1 = ldmx::HcalDigiID(section, layer, strip, 1);
+            channelMap.push_back(detIDend0);
+            channelMap.push_back(detIDend1);
+            numChannels += 2;
+          }
+          else{
+            auto detID = ldmx::HcalDigiID(section, layer, strip, 0);
+            channelMap.push_back(detID);
+            numChannels++;
+          }
+        }
       }
-      // for back Hcal we have double readout, therefore we multiply the number
-      // of channels by 2.
-      if (section == ldmx::HcalID::HcalSection::BACK) {
-        numChannelsInSection *= 2;
-      }
-      numChannels += numChannelsInSection;
     }
-    int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
-    // noise generator gives us a list of noise amplitudes [mV] that randomly
-    // populate the empty channels and are above the readout threshold
-    auto noiseHitAmplitudes{
-        noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-    std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
-    for (double noiseHit : noiseHitAmplitudes) {
-      // generate detector ID for noise hit
-      // making sure that it is in an empty channel
-      unsigned int noiseID;
-      int sectionID, layerID, stripID, endID;
-      do {
-        sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
-        layerID = noiseInjector_->Integer(hcalGeometry.getNumLayers(sectionID));
-        // set layer to 1 if the generator says it is 0 (geometry map starts
-        // from 1)
-        if (layerID == 0) layerID = 1;
-        stripID = noiseInjector_->Integer(
-            hcalGeometry.getNumStrips(sectionID, layerID));
-        endID = noiseInjector_->Integer(2);
-        if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
-            (sectionID == ldmx::HcalID::HcalSection::LEFT)) {
-          endID = 0;
-        } else if ((sectionID == ldmx::HcalID::HcalSection::BOTTOM) ||
-                   (sectionID == ldmx::HcalID::HcalSection::RIGHT)) {
-          endID = 1;
+
+    if (!digitizeAllChannels_) { //Fast noise sim
+      int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
+      // noise generator gives us a list of noise amplitudes [mV] that randomly
+      // populate the empty channels and are above the readout threshold
+      auto noiseHitAmplitudes{
+          noiseGenerator_->generateNoiseHits(numEmptyChannels)};
+      std::vector<std::pair<double, double>> fake_pulse(1, {0., 0.});
+      for (double noiseHit : noiseHitAmplitudes) {
+        // generate detector ID for noise hit
+        // making sure that it is in an empty channel
+        unsigned int noiseID;
+        int sectionID, layerID, stripID, endID;
+        do {
+          sectionID = noiseInjector_->Integer(hcalGeometry.getNumSections());
+          layerID = noiseInjector_->Integer(hcalGeometry.getNumLayers(sectionID));
+          // set layer to 1 if the generator says it is 0 (geometry map starts
+          // from 1)
+          if (layerID == 0) layerID = 1;
+          stripID = noiseInjector_->Integer(
+              hcalGeometry.getNumStrips(sectionID, layerID));
+          endID = noiseInjector_->Integer(2);
+          if ((sectionID == ldmx::HcalID::HcalSection::TOP) ||
+              (sectionID == ldmx::HcalID::HcalSection::LEFT)) {
+            endID = 0;
+          } else if ((sectionID == ldmx::HcalID::HcalSection::BOTTOM) ||
+                     (sectionID == ldmx::HcalID::HcalSection::RIGHT)) {
+            endID = 1;
+          }
+          auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, endID);
+          noiseID = detID.raw();
+        } while (hitsByID.find(noiseID) != hitsByID.end());
+        hitsByID[noiseID] =
+            std::vector<const ldmx::SimCalorimeterHit*>();  // mark this as used
+
+        // get a time for this noise hit
+        fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
+
+        // noise generator gives the amplitude above the readout threshold
+        // we need to convert it to the amplitude above the pedestal
+        double gain = hgcroc_->gain(noiseID);
+        fake_pulse[0].first = noiseHit +
+                              gain * hgcroc_->readoutThreshold(noiseID) -
+                              gain * hgcroc_->pedestal(noiseID);
+
+        if (sectionID == ldmx::HcalID::HcalSection::BACK) {
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend,
+              digiToAddNegend;
+          ldmx::HcalDigiID posendID(sectionID, layerID, stripID, 0);
+          ldmx::HcalDigiID negendID(sectionID, layerID, stripID, 1);
+          if (hgcroc_->digitize(posendID.raw(), fake_pulse, digiToAddPosend) &&
+              hgcroc_->digitize(negendID.raw(), fake_pulse, digiToAddNegend)) {
+            hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+            hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
+          }
+        } else {
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
+          if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
+            hcalDigis.addDigi(noiseID, digiToAdd);
+          }
         }
-        auto detID = ldmx::HcalDigiID(sectionID, layerID, stripID, endID);
-        noiseID = detID.raw();
-      } while (hitsByID.find(noiseID) != hitsByID.end());
-      hitsByID[noiseID] =
-          std::vector<const ldmx::SimCalorimeterHit*>();  // mark this as used
-
-      // get a time for this noise hit
-      fake_pulse[0].second = noiseInjector_->Uniform(clockCycle_);
-
-      // noise generator gives the amplitude above the readout threshold
-      // we need to convert it to the amplitude above the pedestal
-      double gain = hgcroc_->gain(noiseID);
-      fake_pulse[0].first = noiseHit +
-                            gain * hgcroc_->readoutThreshold(noiseID) -
-                            gain * hgcroc_->pedestal(noiseID);
-
-      if (sectionID == ldmx::HcalID::HcalSection::BACK) {
-        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAddPosend,
-            digiToAddNegend;
-        ldmx::HcalDigiID posendID(sectionID, layerID, stripID, 0);
-        ldmx::HcalDigiID negendID(sectionID, layerID, stripID, 1);
-        if (hgcroc_->digitize(posendID.raw(), fake_pulse, digiToAddPosend) &&
-            hgcroc_->digitize(negendID.raw(), fake_pulse, digiToAddNegend)) {
-          hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
-          hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
-        }
-      } else {
-        std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
-        if (hgcroc_->digitize(noiseID, fake_pulse, digiToAdd)) {
-          hcalDigis.addDigi(noiseID, digiToAdd);
+      }    // loop over noise amplitudes
+    }
+    else{ //If digitizeAllChannels_ == true, add noise digis for all bars without simhits
+      for (auto digiID : channelMap){
+        //Convert from digi ID to det ID (since simhits don't know about different ends of the bar)
+        ldmx::HcalID detid(digiID.section(), digiID.layer(), digiID.strip());
+        unsigned int rawID = detid.raw();
+        if(hitsByID.find(rawID) == hitsByID.end()){
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digi = hgcroc_->noiseDigi(rawID, 0.0);
+          hcalDigis.addDigi(rawID, digi);
         }
       }
-    }  // loop over noise amplitudes
+    }
   }    // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
