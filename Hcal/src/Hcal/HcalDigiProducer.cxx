@@ -295,8 +295,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
         if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
-        }
-        else if(digitizeAllChannels_){
+        } else if (digitizeAllChannels_) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
               hgcroc_->noiseDigi(digiID.raw(), 0.0);
           hcalDigis.addDigi(digiID.raw(), digi);
@@ -305,8 +304,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
         if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
-        }
-        else if(digitizeAllChannels_){
+        } else if (digitizeAllChannels_) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
               hgcroc_->noiseDigi(digiID.raw(), 0.0);
           hcalDigis.addDigi(digiID.raw(), digi);
