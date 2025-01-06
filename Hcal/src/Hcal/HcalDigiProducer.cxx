@@ -252,12 +252,35 @@ void HcalDigiProducer::produce(framework::Event& event) {
           digiToAddNegend;
       ldmx::HcalDigiID posendID(section, layer, strip, 0);
       ldmx::HcalDigiID negendID(section, layer, strip, 1);
-      if ((hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend) &&
-           hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend)) or
-          digitizeAllChannels_) {
+
+      bool posEndActivity =
+          hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend);
+      bool negEndActivity =
+          hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend);
+
+      if (posEndActivity && negEndActivity && !digitizeAllChannels_) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
-      }  // Back Hcal needs to digitize both pulses or none
+      }  // If not digitizeAllChannels == true, Back Hcal needs to digitize both
+         // pulses or none
+
+      if (digitizeAllChannels_) {
+        if (posEndActivity) {
+          hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+        } else {
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
+              hgcroc_->noiseDigi(posendID.raw(), 0.0);
+          hcalDigis.addDigi(posendID.raw(), digi);
+        }
+        if (negEndActivity) {
+          hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
+        } else {
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
+              hgcroc_->noiseDigi(negendID.raw(), 0.0);
+          hcalDigis.addDigi(negendID.raw(), digi);
+        }
+      }
+
     } else {
       bool is_posend = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digiToAdd;
@@ -295,17 +318,18 @@ void HcalDigiProducer::produce(framework::Event& event) {
       for (int layer = 1; layer <= hcalGeometry.getNumLayers(section);
            layer++) {
         numChannelsInSection += hcalGeometry.getNumStrips(section, layer);
-        for (int strip = 1; strip <= hcalGeometry.getNumStrips(section, layer);
+        // Note zero-indexed strip numbering...
+        for (int strip = 0; strip < hcalGeometry.getNumStrips(section, layer);
              strip++) {
           if (section == ldmx::HcalID::HcalSection::BACK) {
-            auto detIDend0 = ldmx::HcalDigiID(section, layer, strip, 0);
-            auto detIDend1 = ldmx::HcalDigiID(section, layer, strip, 1);
-            channelMap.push_back(detIDend0);
-            channelMap.push_back(detIDend1);
+            auto digiIDend0 = ldmx::HcalDigiID(section, layer, strip, 0);
+            auto digiIDend1 = ldmx::HcalDigiID(section, layer, strip, 1);
+            channelMap.push_back(digiIDend0);
+            channelMap.push_back(digiIDend1);
             numChannels += 2;
           } else {
-            auto detID = ldmx::HcalDigiID(section, layer, strip, 0);
-            channelMap.push_back(detID);
+            auto digiID = ldmx::HcalDigiID(section, layer, strip, 0);
+            channelMap.push_back(digiID);
             numChannels++;
           }
         }
@@ -380,11 +404,11 @@ void HcalDigiProducer::produce(framework::Event& event) {
         // Convert from digi ID to det ID (since simhits don't know about
         // different ends of the bar)
         ldmx::HcalID detid(digiID.section(), digiID.layer(), digiID.strip());
-        unsigned int rawID = detid.raw();
-        if (hitsByID.find(rawID) == hitsByID.end()) {
+        unsigned int rawdetID = detid.raw();
+        if (hitsByID.find(rawdetID) == hitsByID.end()) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
-              hgcroc_->noiseDigi(rawID, 0.0);
-          hcalDigis.addDigi(rawID, digi);
+              hgcroc_->noiseDigi(digiID.raw(), 0.0);
+          hcalDigis.addDigi(digiID.raw(), digi);
         }
       }
     }
