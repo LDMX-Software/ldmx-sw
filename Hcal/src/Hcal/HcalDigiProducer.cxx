@@ -293,15 +293,23 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
       if (is_posend) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
-        if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd) or
-            digitizeAllChannels_) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
+        }
+        else if(digitizeAllChannels_){
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
+              hgcroc_->noiseDigi(digiID.raw(), 0.0);
+          hcalDigis.addDigi(digiID.raw(), digi);
         }
       } else {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
-        if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd) or
-            digitizeAllChannels_) {
+        if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
+        }
+        else if(digitizeAllChannels_){
+          std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
+              hgcroc_->noiseDigi(digiID.raw(), 0.0);
+          hcalDigis.addDigi(digiID.raw(), digi);
         }
       }
     }
