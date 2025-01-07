@@ -20,3 +20,8 @@ EventDisplay/include/EventDisplay/EventDisplayLinkDef.h
 *.DS_Store
 *.vscode/*
 *__*
+
+# data files from running configs
+*.root
+# except special files storing test results
+!.github/validation_samples/**.root
