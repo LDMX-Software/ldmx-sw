@@ -311,7 +311,7 @@ def single_8gev_e_upstream_tagger():
     )
 
 
-def single_8gev_beam_pipe(ene = 8.0):
+def single_e_beam_pipe(ene = 8.0):
     """Configure a particle gun to fire an electron of settable energy
     upstream of the tagger tracker.  
 
