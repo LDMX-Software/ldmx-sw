@@ -94,9 +94,9 @@ class HcalDigiProducer(Producer) :
         # avg noise set to 0.02PE
         self.avgNoiseRMS = self.hgcroc.calculateVoltageHcal(0.02)/self.avgGain
 
-        # digitize every channel, by not dropping any pulses
+        # If false, digitize every channel, by not dropping any pulses
         # to e.g. simulate a pedestal measurement
-        self.digitizeAllChannels = False
+        self.zeroSuppression = True
 
         # input and output collection name parameters
         self.inputCollName = 'HcalSimHits'
