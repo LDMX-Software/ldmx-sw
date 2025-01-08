@@ -37,7 +37,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
 
   // If true, ignore readout threshold
   // and generate pedestal noise digis in every empty channel
-  digitizeAllChannels_ = ps.getParameter<bool>("digitizeAllChannels");
+  zeroSuppression_ = ps.getParameter<bool>("zeroSuppression");
 
   // collection names
   inputCollName_ = ps.getParameter<std::string>("inputCollName");
@@ -258,13 +258,13 @@ void HcalDigiProducer::produce(framework::Event& event) {
       bool negEndActivity =
           hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend);
 
-      if (posEndActivity && negEndActivity && !digitizeAllChannels_) {
+      if (posEndActivity && negEndActivity && zeroSuppression_) {
         hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         hcalDigis.addDigi(negendID.raw(), digiToAddNegend);
-      }  // If not digitizeAllChannels == true, Back Hcal needs to digitize both
+      }  // If zeroSuppression == true, Back Hcal needs to digitize both
          // pulses or none
 
-      if (digitizeAllChannels_) {
+      if (!zeroSuppression_) {
         if (posEndActivity) {
           hcalDigis.addDigi(posendID.raw(), digiToAddPosend);
         } else {
@@ -295,7 +295,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         ldmx::HcalDigiID digiID(section, layer, strip, 0);
         if (hgcroc_->digitize(digiID.raw(), pulses_posend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
-        } else if (digitizeAllChannels_) {
+        } else if (!zeroSuppression_) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
               hgcroc_->noiseDigi(digiID.raw(), 0.0);
           hcalDigis.addDigi(digiID.raw(), digi);
@@ -304,7 +304,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         ldmx::HcalDigiID digiID(section, layer, strip, 1);
         if (hgcroc_->digitize(digiID.raw(), pulses_negend, digiToAdd)) {
           hcalDigis.addDigi(digiID.raw(), digiToAdd);
-        } else if (digitizeAllChannels_) {
+        } else if (!zeroSuppression_) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi =
               hgcroc_->noiseDigi(digiID.raw(), 0.0);
           hcalDigis.addDigi(digiID.raw(), digi);
@@ -342,7 +342,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
       }
     }
 
-    if (!digitizeAllChannels_) {  // Fast noise sim
+    if (zeroSuppression_) {  // Fast noise sim
       int numEmptyChannels = numChannels - hcalDigis.getNumDigis();
       // noise generator gives us a list of noise amplitudes [mV] that randomly
       // populate the empty channels and are above the readout threshold
@@ -404,7 +404,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
           }
         }
       }       // loop over noise amplitudes
-    } else {  // If digitizeAllChannels_ == true, add noise digis for all bars
+    } else {  // If zeroSuppression_ == false, add noise digis for all bars
               // without simhits
       for (auto digiID : channelMap) {
         // Convert from digi ID to det ID (since simhits don't know about
