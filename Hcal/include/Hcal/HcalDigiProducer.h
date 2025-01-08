@@ -84,9 +84,9 @@ class HcalDigiProducer : public framework::Producer {
   /// development
   bool noise_{true};
 
-  /// Save digis from all channels, even pure noise in empty bars
+  /// If false, save digis from all channels, even pure noise in empty bars
   /// Helpful when comparing with test beam data
-  bool digitizeAllChannels_;
+  bool zeroSuppression_;
 
   /// Hgcroc Emulator to digitize analog voltage signals
   std::unique_ptr<ldmx::HgcrocEmulator> hgcroc_;
