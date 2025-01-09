@@ -311,6 +311,30 @@ def single_8gev_e_upstream_tagger():
     )
 
 
+def single_e_beam_pipe(ene = 8.0):
+    """Configure a particle gun to fire an electron of settable energy
+    upstream of the tagger tracker.  
+
+    The starting position here is well upstream of the analyzing magnet
+    the position/angle of the gun is such that 8 gev electrons arrive 
+    at the target z=0 at xy=(0,0).  This generator is used to study 
+    off-energy beam electrons.  
+
+    Note that if an energy != 8gev, the trajectory will be different. 
+    And many electrons with energies sufficiently lower than 8GeV will just curve
+    into the side of the magnet and not reach the target.
+
+    Returns
+    -------
+    Instance of a particle gun configured to fire a single 8 GeV electron 
+    upstream of the entire detector apparatus.
+    """
+    return _single_e_upstream_tagger(
+        [ -299.2386690686212, 0.0, -6000.0 ],
+        [ 434.59663056485   , 0.0, 7988.698356992288],
+        ene
+    )
+
 def single_backwards_positron(energy: float):
     """A particle gun configured to shoot positrons backwards (i.e. upstream)
     from the target at the input energy.
