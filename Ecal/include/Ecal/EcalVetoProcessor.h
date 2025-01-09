@@ -148,6 +148,7 @@ class EcalVetoProcessor : public framework::Producer {
   double bdtCutVal_{0};
 
   double beamEnergyMeV_{0};
+  double linreg_radius_{0};
 
   bool verbose_{false};
 
