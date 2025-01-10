@@ -211,3 +211,15 @@ class EcalRecProducer(Producer) :
                 10.915, 10.915, 14.783, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539, 18.539,
                 18.539, 18.539, 9.938
                 ]
+
+    def reduced_v2(self) :
+        """Generated for the reduced v2 geometry
+
+        TODO: The secondOrderEnergyCorrection for this geometry has yet to be calculated,
+        so the v14 secondOrderEnergyCorrection is being used as a placeholder.
+        """
+
+        self.secondOrderEnergyCorrection = 4000. / 3940.5;
+        self.layerWeights = [ 
+                2.312, 5.417, 9.837, 11.910, 11.910, 11.910
+                ]

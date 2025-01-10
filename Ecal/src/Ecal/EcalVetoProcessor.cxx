@@ -127,6 +127,7 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   ecalLayerTime_.resize(nEcalLayers_, 0);
 
   beamEnergyMeV_ = parameters.getParameter<double>("beam_energy");
+  linreg_radius_ = parameters.getParameter<double>("linreg_radius");
 
   // Set the collection name as defined in the configuration
   collectionName_ = parameters.getParameter<std::string>("collection_name");
@@ -957,26 +958,25 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(debug) << "Finding linreg tracks from " << trackingHitList.size()
-                  << " hits";
+  ldmx_log(debug) << "Finding linreg tracks from a total of "
+                  << trackingHitList.size() << " hits using a radius of "
+                  << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-    int track[34];
-    int trackLen{0};
-    // Hits being considered at one time
-    // TODO: This is currently not used, but it really should be!
-    // int hitsInRegion[50];
-    // Number of hits under consideration
-    int nHitsInRegion{1};
+    // Hits being considered at a given time
+    std::vector<int> hitsInRegion;
     TMatrixD Vm(3, 3);
     TMatrixD hdt(3, 3);
     TVector3 slopeVec;
     TVector3 hmean;
     TVector3 hpoint;
     float r_corr_best{0.0};
+    // Temp array having 3 potential hits
     int hitNums[3];
+    // From the above which are passing the correlation reqs
+    int bestHitNums[3];
 
-    // hitsInRegion[0] = iHit; // TODO
+    hitsInRegion.push_back(iHit);
     // Find all hits within 2 cells of the primary hit:
     for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
       // Dont try to put hits on the same layer to the lin-reg track
@@ -985,22 +985,29 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       }
       float dstToHit =
           (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
-      // This distance needs to be optimized in a future study //TODO
-      // Current 2*cellWidth has no particular meaning
-      if (dstToHit <= 2 * cellWidth) {
-        // hitsInRegion[nHitsInRegion] = jHit; // TODO
-        nHitsInRegion++;
+      // This distance optimized to give the best significance
+      // it used to be 2*cellWidth, i.e. 4.81 mm
+      // note, the layers in the back have a separation of 22.3
+      if (dstToHit <= 2 * linreg_radius_) {
+        hitsInRegion.push_back(jHit);
       }
     }
-
+    // Found a track that passed the lin-reg reqs
+    bool bestLinRegFound{false};
+    if (verbose_) {
+      ldmx_log(debug) << "There are " << hitsInRegion.size()
+                      << " hits within a radius of " << linreg_radius_ << " mm";
+    }
     // Look at combinations of hits within the region (do not consider the same
     // combination twice):
     hitNums[0] = iHit;
-    for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
-      if (trackingHitList.size() < 3) break;
-      hitNums[1] = jHit;
-      for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
-        hitNums[2] = kHit;
+    for (int jHitInReg = 1; jHitInReg < hitsInRegion.size() - 1; jHitInReg++) {
+      // We require (exactly) 3 hits for the lin-reg track building
+      if (hitsInRegion.size() < 3) break;
+      hitNums[1] = hitsInRegion[jHitInReg];
+      for (int kHitReg = jHitInReg + 1; kHitReg < hitsInRegion.size();
+           kHitReg++) {
+        hitNums[2] = hitsInRegion[kHitReg];
         for (int hInd = 0; hInd < 3; hInd++) {
           // hmean = geometric mean, subtract off from hits to improve SVD
           // performance
@@ -1060,32 +1067,38 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         // oversensitive doesn't lower performance significantly
         if (r_corr > r_corr_best and r_corr > .6) {
           r_corr_best = r_corr;
-          trackLen = 0;
           // Only looking for 3-hit tracks currently
+          bestLinRegFound = true;
           for (int k = 0; k < 3; k++) {
-            track[k] = hitNums[k];
-            trackLen++;
+            bestHitNums[k] = hitNums[k];
           }
         }
       }  // end loop on hits in the region
     }    // end 2nd loop on hits in the region
 
     // Continue early if not hits on track
-    if (trackLen == 0) continue;
-
-    // Ordinarily, additional hits in line w/ track would be added here.
-    // However, this doesn't affect the results of the simple veto. Exclude all
-    // hits in a found track from further consideration:
-    if (trackLen >= 2) {
-      nLinregTracks_++;
-      for (int kHit = 0; kHit < trackLen; kHit++) {
-        trackingHitList.erase(trackingHitList.begin() + track[kHit]);
-      }
-      iHit--;
+    if (!bestLinRegFound) continue;
+    // Otherwise increase the number of lin-reg tracks
+    nLinregTracks_++;
+    ldmx_log(debug) << " Lin-reg track " << nLinregTracks_;
+    for (int finalHitIndx = 0; finalHitIndx < 3; finalHitIndx++) {
+      ldmx_log(debug) << "   Hit " << finalHitIndx << " ["
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(0)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(1)
+                      << ", "
+                      << trackingHitList[bestHitNums[finalHitIndx]].pos(2)
+                      << "] ";
     }
+
+    // Exclude all hits in a found track from further consideration:
+    for (int lHit = 0; lHit < 3; lHit++) {
+      trackingHitList.erase(trackingHitList.begin() + bestHitNums[lHit]);
+    }
+    iHit--;
   }  // end loop on all hits
 
-  ldmx_log(info) << "  MIP tracking completed; found " << nStraightTracks_
+  ldmx_log(info) << " MIP tracking completed; found " << nStraightTracks_
                  << " straight tracks and " << nLinregTracks_
                  << " lin-reg tracks";
 
@@ -1111,7 +1124,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   bool passesTrackingVeto = (nStraightTracks_ < 3);
   result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
   result.setDiscValue(pred);
-  ldmx_log(debug) << "  The pred > bdtCutVal = " << (pred > bdtCutVal_);
+  ldmx_log(debug) << " The pred > bdtCutVal = " << (pred > bdtCutVal_);
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside);
