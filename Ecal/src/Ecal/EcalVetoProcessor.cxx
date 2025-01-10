@@ -245,18 +245,18 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
   // Get recoilPos using recoil tracking
   if (recoil_from_tracking_) {
-    std::vector<float> recoilTrackStates;
+    std::vector<float> recoil_track_states;
     if (verbose_) {
       ldmx_log(debug) << "   Propagate recoil tracks to ECAL face";
     }
     // Get the recoil track collection
     auto recoil_tracks{event.getCollection<ldmx::Track>(track_collection_)};
 
-    ldmx::TrackStateType tsType = ldmx::TrackStateType::AtECAL;
-    recoilTrackStates = trackProp(recoil_tracks, tsType, "ecal");
+    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    recoil_track_states = trackProp(recoil_tracks, ts_type, "ecal");
     // Redefining recoilPos now to come from the track state
     // track_state_loc0 is recoilPos[0] and track_state_loc1 is recoilPos[1]
-    recoilPos = recoilTrackStates;
+    recoilPos = recoil_track_states;
   }
 
   if (verbose_) {
@@ -1283,10 +1283,10 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
                                                 ldmx::TrackStateType ts_type,
                                                 const std::string &ts_title) {
   // Vector to hold the new track state variables
-  std::vector<float> newTrackStates;
+  std::vector<float> new_track_states;
 
   // Return if no tracks
-  if (tracks.empty()) return newTrackStates;
+  if (tracks.empty()) return new_track_states;
 
   // Otherwise loop on the tracks
   for (auto &track : tracks) {
@@ -1294,19 +1294,19 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
     if (!trk_ts.has_value()) continue;
-    ldmx::Track::TrackState &TargetState = trk_ts.value();
+    ldmx::Track::TrackState &ecal_track_state = trk_ts.value();
 
     // Check that the track state is filled
-    if (TargetState.params.size() < 5) continue;
+    if (ecal_track_state.params.size() < 5) continue;
 
-    float track_state_loc0 = static_cast<float>(TargetState.params[0]);
-    float track_state_loc1 = static_cast<float>(TargetState.params[1]);
+    float track_state_loc0 = static_cast<float>(ecal_track_state.params[0]);
+    float track_state_loc1 = static_cast<float>(ecal_track_state.params[1]);
 
     // Store the new track state variables
-    newTrackStates.push_back(track_state_loc0);
-    newTrackStates.push_back(track_state_loc1);
+    new_track_states.push_back(track_state_loc0);
+    new_track_states.push_back(track_state_loc1);
     // z-position at the ECAL scoring plane
-    newTrackStates.push_back(239.999);
+    new_track_states.push_back(239.999);
 
     // Break after getting the first valid track state
     // TODO: interface this with CLUE to make sure the propageted track
@@ -1314,7 +1314,7 @@ std::vector<float> EcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     break;
   }
 
-  return newTrackStates;
+  return new_track_states;
 }
 
 }  // namespace ecal
