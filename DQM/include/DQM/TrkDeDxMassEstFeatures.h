@@ -34,7 +34,7 @@ class TrkDeDxMassEstFeatures : public framework::Analyzer {
   /// Method executed before processing of events begins.
   void onProcessStart() override;
 
-  private:
+ private:
   /// Collection Name for mass estimate object
   std::string mass_estimate_name_;
 

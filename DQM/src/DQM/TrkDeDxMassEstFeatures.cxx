@@ -13,9 +13,8 @@ void TrkDeDxMassEstFeatures::configure(framework::config::Parameters &ps) {
 }
 
 void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
-  auto massEstimates{
-      event.getCollection<ldmx::TrackDeDxMassEstimate>(mass_estimate_name_,
-                                                       mass_estimate_pass_)};
+  auto massEstimates{event.getCollection<ldmx::TrackDeDxMassEstimate>(
+      mass_estimate_name_, mass_estimate_pass_)};
 
   for (const auto &massEst : massEstimates) {
     histograms_.fill("mass_estimate", massEst.getMass());
@@ -26,9 +25,9 @@ void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
 }
 
 void TrkDeDxMassEstFeatures::onProcessStart() {
-  std::vector<std::string> labels = {"Other",    // 0
-                                     "Tagger",   // 1
-                                     "Recoil",   // 2
+  std::vector<std::string> labels = {"Other",   // 0
+                                     "Tagger",  // 1
+                                     "Recoil",  // 2
                                      ""};
   TH1 *hist = histograms_.get("track_type");
   for (int ilabel{1}; ilabel < labels.size(); ++ilabel) {

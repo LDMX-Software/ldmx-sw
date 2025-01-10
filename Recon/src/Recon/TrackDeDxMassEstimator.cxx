@@ -1,11 +1,12 @@
 // LDMX
 #include "Recon/TrackDeDxMassEstimator.h"
+
 #include "Recon/Event/TrackDeDxMassEstimate.h"
 
 // STL
+#include <algorithm>  // for std::transform
+#include <cctype>     // for ::tolower
 #include <iostream>
-#include <algorithm> // for std::transform
-#include <cctype>    // for ::tolower
 
 namespace recon {
 
@@ -20,7 +21,6 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
 }
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
-  
   if (!event.exists(trackCollection_)) {
     ldmx_log(error) << "ERROR:: trackCollection " << trackCollection_
                     << " not in event" << std::endl;
@@ -28,10 +28,11 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   }
   const std::vector<ldmx::Track> tracks{
       event.getCollection<ldmx::Track>(trackCollection_)};
-  
+
   int trackType;
   std::string trackColl = trackCollection_;
-  std::transform(trackColl.begin(), trackColl.end(), trackColl.begin(), ::tolower);
+  std::transform(trackColl.begin(), trackColl.end(), trackColl.begin(),
+                 ::tolower);
   if (trackColl.find("tagger") != std::string::npos) {
     trackType = 1;
     simhitCollection_ = "TaggerSimHits";
@@ -69,12 +70,14 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     float n_simhits = 0;
     for (auto hit : simhits) {
       // Check if the hit is associated with the track
-      // std::cout << "hit trackID: " << hit.getTrackID() << ", trackID: " << track.getTrackID() << std::endl;
+      // std::cout << "hit trackID: " << hit.getTrackID() << ", trackID: " <<
+      // track.getTrackID() << std::endl;
       if (hit.getTrackID() != track.getTrackID()) continue;
       if (hit.getEdep() >= 0 && hit.getPathLength() > 0) {
         dEdx = hit.getEdep() / hit.getPathLength() * 10;  // unit: MeV/cm
-        // std::cout << "  SimHit " << n_simhits << " dEdx: " << dEdx 
-        //           << ", edep " << hit.getEdep() << ", path length " << hit.getPathLength()
+        // std::cout << "  SimHit " << n_simhits << " dEdx: " << dEdx
+        //           << ", edep " << hit.getEdep() << ", path length " <<
+        //           hit.getPathLength()
         //           << std::endl;
         sum_dEdx_inv2 += 1. / (dEdx * dEdx);
         n_simhits++;
@@ -92,9 +95,9 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     float mass = 0.;
     if (Ih > fit_res_C_) {
       mass = p * sqrt((Ih - fit_res_C_) / fit_res_K_);
-    }
-    else {
-      ldmx_log(info) << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_;
+    } else {
+      ldmx_log(info) << "Track " << i << " has Ih " << Ih
+                     << " which is less than fit_res_C " << fit_res_C_;
       mass = -100.;
     }
 
@@ -106,7 +109,6 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
 
   // Add the mass estimates to the event
   event.add("TrackDeDxMassEstimate", massEstimates);
-
 }
 }  // namespace recon
 
