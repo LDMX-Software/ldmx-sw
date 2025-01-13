@@ -56,18 +56,18 @@ class TrackDeDxMassEstimate {
 
   /**
    * Set the index of the track.
-   * @param trackIndex The index of the track.
+   * @param track_index The index of the track.
    */
-  void setTrackIndex(int trackIndex) { trackIndex_ = trackIndex; }
+  void setTrackIndex(int track_index) { track_index_ = track_index; }
 
   /**
    * Set the type of the track.
-   * @param trackType The type of the track.
+   * @param track_type The type of the track.
    * 1: tagger track, 2: recoil track
    * Possibly consider truth with 0
    * and ECAL with 3
    */
-  void setTrackType(int trackType) { trackType_ = trackType; }
+  void setTrackType(int track_type) { track_type_ = track_type; }
 
   /**
    * Get the estimated mass of the particle/track.
@@ -79,23 +79,23 @@ class TrackDeDxMassEstimate {
    * Get the index of the track.
    * @return The index of the track.
    */
-  int getTrackIndex() const { return trackIndex_; }
+  int getTrackIndex() const { return track_index_; }
 
   /**
    * Get the type of the track.
    * @return The type of the track.
    */
-  int getTrackType() const { return trackType_; }
+  int getTrackType() const { return track_type_; }
 
  private:
   /* The estimated mass of the particle/track */
   double mass_{0.};
 
   /* The index of the track */
-  int trackIndex_{-1};
+  int track_index_{-1};
 
   /* The type of the track */
-  int trackType_{-1};
+  int track_type_{-1};
 
   /**
    * The ROOT class definition.

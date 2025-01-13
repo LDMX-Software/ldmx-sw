@@ -9,15 +9,15 @@ TrackDeDxMassEstimate::~TrackDeDxMassEstimate() { Clear(); }
 
 void TrackDeDxMassEstimate::Clear() {
   mass_ = 0.;
-  trackIndex_ = -1;
-  trackType_ = -1;
+  track_index_ = -1;
+  track_type_ = -1;
 }
 
 void TrackDeDxMassEstimate::Print() const {
   std::cout << "TrackDeDxMassEstimate { "
             << "Mass: " << mass_ << ", "
-            << "Track Index: " << trackIndex_ << ", "
-            << "Track Type: " << trackType_ << " }" << std::endl;
+            << "Track Index: " << track_index_ << ", "
+            << "Track Type: " << track_type_ << " }" << std::endl;
 }
 
 }  // namespace ldmx

@@ -37,13 +37,11 @@ class TrackDeDxMassEstimator : public framework::Producer {
   float fit_res_C_{0.};
   float fit_res_K_{-9999.};
 
-  float si_sensor_thickness_mm{0.32};
-
   // name of input track collection
-  std::string trackCollection_;
+  std::string track_collection_;
   
   // name of input simhit collection
-  std::string simhitCollection_;
+  std::string simhit_collection_;
 
 };  // TrackDeDxMassEstimator
 
