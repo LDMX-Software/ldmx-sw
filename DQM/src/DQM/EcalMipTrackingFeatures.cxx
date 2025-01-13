@@ -17,7 +17,7 @@ void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   histograms_.fill("n_straight_tracks", veto.getNStraightTracks());
-  histograms_.fill("n_linreg_tracks", veto.getNLinRegTracks());
+  histograms_.fill("n_linreg_segments", veto.getNLinRegTracks());
   histograms_.fill("first_near_photon_layer", veto.getFirstNearPhLayer());
   histograms_.fill("ep_ang", veto.getEPAng());
   histograms_.fill("ep_sep", veto.getEPSep());
