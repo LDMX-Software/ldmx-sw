@@ -194,6 +194,10 @@ recoil_dqm.measurement_collection=digi_recoil.out_collection
 recoil_dqm.truth_hit_collection="RecoilSimHits"
 recoil_dqm.buildHistograms()
 
+# Load ecal veto and use tracking in it
+ecalVeto = ecal_vetos.EcalVetoProcessor()
+ecalVeto.recoil_from_tracking = True
+
 p.sequence.extend([
         digi_tagger,
         digi_recoil,
@@ -204,7 +208,7 @@ p.sequence.extend([
         tracking_recoil,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(), 
-        ecal_vetos.EcalVetoProcessor(),
+        ecalVeto,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
         *ts_digis,

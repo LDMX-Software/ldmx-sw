@@ -170,6 +170,8 @@ void EcalVetoResult::setVariables(
     recoilPx_ = recoilP[0];
     recoilPy_ = recoilP[1];
     recoilPz_ = recoilP[2];
+  }
+  if (!recoilPos.empty()) {
     recoilX_ = recoilPos[0];
     recoilY_ = recoilPos[1];
   }
