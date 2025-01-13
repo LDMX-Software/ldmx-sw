@@ -74,7 +74,7 @@ def mip_tracking(d : Differ, out_dir = None) :
     d.plot1d(col, name, out_dir = out_dir, legend_kw = dict(loc='upper left'))
 
     features = [
-        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_linreg_tracks', 'Number of Linear Regression Tracks'),
+        ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_n_linreg_segments', 'Number of Linear Regression Segments'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_first_near_photon_layer', 'First Near Photon Layer'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_ang', 'Electron Photon Angle [degree]'),
         ('EcalMipTrackingFeatures/EcalMipTrackingFeatures_ep_sep', 'Electron Photon Separation'),
