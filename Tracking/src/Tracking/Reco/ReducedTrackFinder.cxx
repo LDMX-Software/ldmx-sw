@@ -66,7 +66,7 @@ void ReducedTrackFinder::onProcessEnd() {
 
 std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector<ldmx::ReducedTrack>& trackSeeds) {
     
-    std::vector<ldmx::ReducedTrack> bestTrack;
+    std::vector<ldmx::ReducedTrack> bestTracks;
     std::map<std::array<double, 3>, std::vector<ldmx::ReducedTrack>> seedsByRecHit;
     
     // Group seeds by their EcalRecHit point
@@ -111,16 +111,15 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
         
         // Store the best seed for this RecHit
         ldmx::ReducedTrack bestSeed = *bestSeedIt;
-        bestTrack.push_back(bestSeed);
+        bestTracks.push_back(bestSeed);
         
         // Add best seed's sensor position to the global used positions set
         auto bestSeedMeasurement = bestSeed.getAllSensorPoints();
         for (auto& positionObject : bestSeedMeasurement) {
             usedSensorPositions.insert(std::make_tuple(positionObject.getGlobalPosition()[0], positionObject.getGlobalPosition()[1], positionObject.getGlobalPosition()[2]));
         }
-        
-        return bestTrack;
     } //for entry loop
+    return bestTracks;
 }
 
 // Helper function to check if a measurement's position is already used
