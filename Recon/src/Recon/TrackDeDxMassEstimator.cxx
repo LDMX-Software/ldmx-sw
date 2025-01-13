@@ -1,11 +1,12 @@
 // LDMX
 #include "Recon/TrackDeDxMassEstimator.h"
+
 #include "Recon/Event/TrackDeDxMassEstimate.h"
 
 // STL
+#include <algorithm>  // for std::transform
+#include <cctype>     // for ::tolower
 #include <iostream>
-#include <algorithm> // for std::transform
-#include <cctype>    // for ::tolower
 
 namespace recon {
 
@@ -88,9 +89,9 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
     float mass = 0.;
     if (Ih > fit_res_C_) {
       mass = p * sqrt((Ih - fit_res_C_) / fit_res_K_);
-    }
-    else {
-      ldmx_log(info) << "Track " << i << " has Ih " << Ih << " which is less than fit_res_C " << fit_res_C_;
+    } else {
+      ldmx_log(info) << "Track " << i << " has Ih " << Ih
+                     << " which is less than fit_res_C " << fit_res_C_;
       mass = -100.;
     }
 

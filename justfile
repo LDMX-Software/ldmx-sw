@@ -59,16 +59,28 @@ install-denv:
 
 # configure how ldmx-sw will be built
 # added ADDITIONAL_WARNINGS and CLANG_TIDY to help improve code quality
-configure *CONFIG:
-    denv cmake -B build -S .  -DADDITIONAL_WARNINGS=ON  -DENABLE_CLANG_TIDY=ON  {{ CONFIG }}
+# base configure command defining how cmake is called, private so only experts call it
+[private]
+configure-base *CONFIG:
+    denv cmake -B build -S . {{ CONFIG }}
+
+# default configure of build when developing
+configure *CONFIG: (configure-base "-DADDITIONAL_WARNINGS=ON -DENABLE_CLANG_TIDY=ON" CONFIG)
+
+# configure minimal option for faster compilation
+configure-quick: (configure-base)
+
+# configure with Address Sanitizer (ASAN) and  UndefinedBehaviorSanitizer (UBSan)
+configure-asan-ubsan: (configure-base "-DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON -DENABLE_SANITIZER_ADDRESS=ON")
 
 # This is the same as just configure but reports all (non-3rd-party) warnings as errors
-configure-force-error *CONFIG: (configure "-DWARNINGS_AS_ERRORS=ON" CONFIG)
+configure-force-error: (configure "-DWARNINGS_AS_ERRORS=ON")
 
-# This is an alternative compiler (clang) together with enabling the LTO sanitizer
-# This is very helpful but for now it optimizes away our module linking, use for testing only
+# Use alternative compiler and enable LTO (test compiling only, won't run properly)
 configure-clang-lto: (configure "-DENABLE_LTO=ON -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang") 
 
+# Keep debug symbols so running with gdb provides more helpful detail
+configure-gdb: (configure-base "-DCMAKE_BUILD_TYPE=Debug")
 # compile and install ldmx-sw
 build ncpu=num_cpus():
     denv cmake --build build --target install -- -j{{ ncpu }}
@@ -82,22 +94,38 @@ test *ARGS:
 fire config_py *ARGS:
     denv fire {{ config_py }} {{ ARGS }}
 
+# run gdb on a config file
+[no-cd]
+debug config_py *ARGS:
+    denv gdb --args fire {{ config_py }} {{ ARGS }}
+
 # initialize a containerized development environment
 init:
     #!/usr/bin/env sh
-    # while setting the denv_workspace is helpful for other
-    # commands that can assume the denv is already initialized,
-    # we need to unset this environment variable to make sure
-    # the test is done appropriately.
-    # just makes sure this recipe runs from the directory of
-    # the justfile so we know we are in the correct location.
-    unset denv_workspace
-    if denv check --workspace --quiet; then
-      echo "\033[32mWorkspace already initialized.\033[0m"
-      denv config print
+    set -eu
+    denv_major=$(denv version | sed 's/denv v//' | cut -f 1 -d.)
+    denv_minor=$(denv version | sed 's/denv v//' | cut -f 2 -d.)
+    if [ "${denv_major}" -lt "1" ] || [ "${denv_minor}" -lt "1" ]; then
+      # denv v1.0.X or earlier, manually check for workspace
+      # which may print a confusing error from denv when no workspace is found
+      unset denv_workspace
+      # while setting the denv_workspace is helpful for other
+      # commands that can assume the denv is already initialized,
+      # we need to unset this environment variable to make sure
+      # the test is done appropriately.
+      # just makes sure this recipe runs from the directory of
+      # the justfile so we know we are in the correct location.
+      if denv check --workspace --quiet; then
+        echo "\033[32mWorkspace already initialized.\033[0m"
+      else
+        denv init --clean-env --name ldmx ldmx/dev:latest "${LDMX_BASE}"
+      fi
     else
-      denv init --clean-env --name ldmx ldmx/dev:latest ${LDMX_BASE}
+      # denv v1.1.0 and later has updated denv init to allow us
+      # to avoid overwriting quietly
+      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest "${LDMX_BASE}"
     fi
+    denv config print
 
 # check that the necessary programs for running ldmx-sw are present
 check:
@@ -144,10 +172,21 @@ format-just:
 # check the scripts for common errors and bugs
 shellcheck:
     #!/usr/bin/env sh
-    set -exu
+    set -x
     format_list=$(mktemp)
-    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' > ${format_list}
-    shellcheck --severity style --shell sh $(cat ${format_list})
+    git ls-tree -r HEAD | awk '{ if ($1 == 100755 || $4 ~ /\.sh/) print $4 }' \
+      > "${format_list}"
+    xargs --arg-file="${format_list}" \
+      shellcheck --severity style --shell sh
+    rm "${format_list}"
+
+# check a script recipe also using shellcheck
+shellcheck-recipe RECIPE:
+    #!/usr/bin/env sh
+    source=$(mktemp)
+    just -n {{ RECIPE }} 2> "${source}"
+    shellcheck --severity style --shell sh "${source}"
+    rm "${source}"
 
 # below are the mimics of ldmx <cmd>
 # we could think about removing them if folks are happy with committing to the

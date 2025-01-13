@@ -1,4 +1,4 @@
-name: Check Format
+name: Apply clang-format
 on:
   push:
     branches:
@@ -9,9 +9,35 @@ jobs:
   clang-format:
     runs-on: ubuntu-latest
     steps:
-      - uses: extractions/setup-just@v2
-        with:
+    - name: Install just
+      uses: extractions/setup-just@v2
+      with:
           just-version: 1.26.0
-      - uses: actions/checkout@v4
-      - name: run format check on the C++
-        run: just install-denv init format-cpp --verbose -Werror --dry-run
+
+    - uses: actions/checkout@v4
+ 
+    - name: Pull latest changes
+      run: |
+        git fetch origin ${GITHUB_HEAD_REF}
+        git checkout ${GITHUB_HEAD_REF}
+        git pull origin ${GITHUB_HEAD_REF}
+
+    - name: Run format check on the C++
+      run: just install-denv init format-cpp
+
+    - name: Set up git user as the bot
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Auto-commit the changes
+      run: |
+        git add .
+        git commit -m "Apply clang-format" || echo "No changes to commit"
+      id: commit
+
+    - name: Push changes
+      if: github.ref != 'refs/heads/trunk' 
+      run: |
+        git push origin HEAD:${GITHUB_HEAD_REF}
+

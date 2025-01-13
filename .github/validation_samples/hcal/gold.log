@@ -1,27 +1,27 @@
 ---- LDMXSW: Loading configuration --------
 ---- LDMXSW: Configuration load complete  --------
 ---- LDMXSW: Starting event processing --------
- [ DetectorConstruction ] 0 : Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
- [ DetectorConstruction ] 0 : Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
- [ DetectorConstruction ] 0 : Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
- [ DetectorConstruction ] 0 : Attaching hcal_sd to back_hcal_scintYVolume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to back_hcal_scintXVolume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintX_0Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintY_0Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintX_1Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintY_1Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintX_2Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintY_2Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintX_3Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintY_3Volume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintZXVolume
- [ DetectorConstruction ] 0 : Attaching hcal_sd to side_hcal_scintZYVolume
- [ DetectorConstruction ] 0 : Attaching ecal_sd to Si_volume
- [ DetectorConstruction ] 0 : Attaching trig_scint_Target_sd to target
- [ DetectorConstruction ] 0 : Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
- [ DetectorConstruction ] 0 : Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
- [ DetectorConstruction ] 0 : Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
- [ Process ] 1 : RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14-8gev, description: Hcal Muons and Neutrons
+[ DetectorConstruction ] 0 debug: Attaching Tagger_TrackerSD to Tagger_active_Sensor_vol
+[ DetectorConstruction ] 0 debug: Attaching Recoil_TrackerSD to Recoil_l14_active_Sensor_vol
+[ DetectorConstruction ] 0 debug: Attaching Recoil_TrackerSD to Recoil_l56_active_Sensor_vol
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to back_hcal_scintYVolume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to back_hcal_scintXVolume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintX_0Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintY_0Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintX_1Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintY_1Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintX_2Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintY_2Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintX_3Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintY_3Volume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintZXVolume
+[ DetectorConstruction ] 0 debug: Attaching hcal_sd to side_hcal_scintZYVolume
+[ DetectorConstruction ] 0 debug: Attaching ecal_sd to Si_volume
+[ DetectorConstruction ] 0 debug: Attaching trig_scint_Target_sd to target
+[ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad1_sd to trigger_pad1_bar_volume
+[ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad2_sd to trigger_pad2_bar_volume
+[ DetectorConstruction ] 0 debug: Attaching trig_scint_Pad3_sd to trigger_pad3_bar_volume
+[ Process ] 10000  info: RunHeader { run: 1, numTries: 10000, detectorName: ldmx-det-v14-8gev, description: Hcal Muons and Neutrons
   intParameters: 
     Included Scoring Planes = 0
     RandomNumberMasterSeed[test] = 1
