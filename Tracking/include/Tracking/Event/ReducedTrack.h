@@ -55,10 +55,6 @@ namespace ldmx {
         void setChi2(double chi2) { chi2_ = chi2; }
         double getChi2() const { return chi2_; }
         
-        //  !! NEEDS TO BE CONFIGURED !!
-        //    void setTrackID(int trackid) { trackID_ = trackid; };
-        //    int getTrackID() const { return trackID_; };
-        
         void setAX(double ax) { ax_ = ax; }
         double getAX() const { return ax_; }
         
@@ -70,9 +66,6 @@ namespace ldmx {
         
         void setBY(double by) { by_ = by; }
         double getBY() const { return by_; }
-        
-        void setAverageTrackID(const double avgTrackID) { avgTrackID_ = avgTrackID; }
-        double getAverageTrackID() const { return avgTrackID_; }
         
         void setDistancetoEcalRecHit(double distance) {distance_to_Ecal_ = distance;}
         double getDistanceToRecHit() const { return distance_to_Ecal_; }
@@ -127,6 +120,15 @@ namespace ldmx {
         double getEcalLayer1X() const { return ecalLayer1Pos_[1]; };
         double getEcalLayer1Y() const { return ecalLayer1Pos_[2]; };
         
+        void setTrackID(int trackid) { trackID_ = trackid; };
+        int getTrackID() const { return trackID_; };
+
+        void setTruthProb(double truthProb) { truthProb_ = truthProb; };
+        double getTruthProb() const { return truthProb_; };
+
+        void setPdgID(int pdgID) { pdgID_ = pdgID; };
+        int getPdgID() const { return pdgID_; };
+        
         // getters -- TODO use an enum instead
         
         //    double getPhi() const { return perigee_pars_[2]; };
@@ -139,7 +141,6 @@ namespace ldmx {
         double bx_;
         double by_;
         double distance_to_Ecal_;
-        double avgTrackID_;
         
         std::vector<ldmx::Measurement> totalSensor_; //! transient for ROOT
         std::array<double, 3> firstSensor_;
@@ -155,6 +156,13 @@ namespace ldmx {
         std::array<double, 3> targetPos_;
         // The ecal first layer position
         std::array<double, 3> ecalLayer1Pos_;
+        
+        // ID of the matched particle in the SimParticles map
+        int trackID_{-1};
+        // Truth probability
+        double truthProb_{0.};
+        // pdgID (truth value)
+        int pdgID_{0};
         
         /// Class declaration needed by the ROOT dictionary.
         ClassDef(ReducedTrack, 1);

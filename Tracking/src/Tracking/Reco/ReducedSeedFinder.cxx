@@ -14,7 +14,9 @@ ReducedSeedFinder::ReducedSeedFinder(const std::string& name, framework::Process
 
 ReducedSeedFinder::~ReducedSeedFinder() {}
 
-void ReducedSeedFinder::onProcessStart() {}
+void ReducedSeedFinder::onProcessStart() {
+    truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
+}
 
 void ReducedSeedFinder::configure(framework::config::Parameters& parameters) {
     // Output seed name
@@ -54,16 +56,22 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     // ! Check if we would fit empty seeds !
     if (recoilHits.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(recoilHits) < 2) {
         nmissing_++;
-        ntracks_ += reduced_seed_tracks.size();
+        nseeds_ += reduced_seed_tracks.size();
         return;
     }
+    
+    std::map<int, ldmx::SimParticle> particleMap;
+    if (event.exists("SimParticles")) {
+      particleMap = event.getMap<int, ldmx::SimParticle>("SimParticles");
+      truthMatchingTool_->setup(particleMap, recoilHits);
+    }
         
-    auto [firstSensor, secondSensor, allHits_noEDEP] = combineMultiGlobalHits(recoilHits);
+    auto [firstSensor, secondSensor] = combineMultiGlobalHits(recoilHits);
     
     for (const auto& firstPoint : firstSensor) {
         for (const auto& secondPoint : secondSensor) {
             for (const auto& recHit : firstLayerEcalRecHits) {
-                ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit, allHits_noEDEP);
+                ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit);
                 if (seedTrack.getChi2() > 0.0) {
                     reduced_seed_tracks.push_back(seedTrack);
                 }
@@ -71,7 +79,7 @@ void ReducedSeedFinder::produce(framework::Event& event) {
         } //for second recoil tracker
     } //for first recoil tracker
     
-    ntracks_ += reduced_seed_tracks.size();
+    nseeds_ += reduced_seed_tracks.size();
     event.add(out_seed_collection_, reduced_seed_tracks);
     
     auto end = std::chrono::high_resolution_clock::now();
@@ -83,9 +91,14 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     
 } //produce
 
-ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, std::vector<ldmx::Measurement> allPoints) {
+ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne) {
+        
+    auto [merged1, layer1, layer2] = recoilOne;
+    auto [merged2, layer3, layer4] = recoilTwo;
     
-    auto [ax, bx, ay, by] = fit3DLine(recoilOne, recoilTwo, ecalOne);
+    std::vector<ldmx::Measurement> allPoints = {layer1, layer2, layer3, layer4};
+    
+    auto [ax, bx, ay, by] = fit3DLine(merged1, merged2, ecalOne);
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], ax * ecalOne[0] + bx, ay * ecalOne[0] + by};
     double tempDistance = calculateDistance(tempExtrapolatedPoint, ecalOne);
 
@@ -98,17 +111,29 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
         trk.setBY(by);
         
         trk.setAllSensorPoints(allPoints);
-        trk.setFirstSensorPosition(recoilOne);
-        trk.setSecondSensorPosition(recoilTwo);
+        trk.setFirstSensorPosition(merged1);
+        trk.setSecondSensorPosition(merged2);
         trk.setFirstLayerEcalRecHit(ecalOne);
         trk.setDistancetoEcalRecHit(tempDistance);
         
         trk.setTargetLocation(0.0, bx, by);
         trk.setEcalLayer1Location(tempExtrapolatedPoint);
-        trk.setChi2(globalChiSquare(recoilOne, recoilTwo, ecalOne, ax, ay, bx, by));
+        trk.setChi2(globalChiSquare(merged1, merged2, ecalOne, ax, ay, bx, by));
         trk.setNhits(3);
         trk.setNdf(1);
         trk.setNsharedHits(0);
+        
+        if (truthMatchingTool_->configured()) {
+            auto truthInfo = truthMatchingTool_->TruthMatch(allPoints);
+            ldmx_log(debug) << "setTrackID: " << truthInfo.trackID << "/";
+            ldmx_log(debug) << "setPdgID: " << truthInfo.pdgID << "/";
+            ldmx_log(debug) << "setTruthProb: " << truthInfo.truthProb << "/";
+            ldmx_log(debug) << "Distance to RecHit: " << tempDistance << "/";
+            
+            trk.setTrackID(truthInfo.trackID);
+            trk.setPdgID(truthInfo.pdgID);
+            trk.setTruthProb(truthInfo.truthProb);
+        }
         
         return trk;
     } //check whether the track is close enough to EcalRecHit
@@ -121,7 +146,7 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> re
 void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
     ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
     << processing_time_ / nevents_ << " ms";
-    ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
+    ldmx_log(info) << "Total Seeds/Events: " << nseeds_ << "/" << nevents_;
     //  ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
     //                 << ndoubles_;
     ldmx_log(info) << "not enough seed points " << nmissing_;
@@ -129,15 +154,13 @@ void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
     //  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
 } //onProcessEnd
 
-std::tuple<std::vector<std::array<double, 3>>,
-           std::vector<std::array<double, 3>>,
-           std::vector<ldmx::Measurement> >
+std::pair< std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>,
+           std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> >
 ReducedSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& hitCollection) {
-    std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4, allPoints;
+    std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4;
 
     // Split hits into layers based on z position
     for (const auto& point : hitCollection) {
-        allPoints.push_back(point);
         if (point.getGlobalPosition()[0] < 12) layer1.push_back(point);
         else if (point.getGlobalPosition()[0] < 20) layer2.push_back(point);
         else if (point.getGlobalPosition()[0] < 28) layer3.push_back(point);
@@ -148,12 +171,12 @@ ReducedSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& 
     auto firstSensorMergedHits = weightedAverage(layer1, layer2);
     auto secondSensorMergedHits = weightedAverage(layer3, layer4);
 
-    return {firstSensorMergedHits, secondSensorMergedHits, allPoints};
+    return {firstSensorMergedHits, secondSensorMergedHits};
 } //combineMultiGlobalHits
 
-std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
+std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> ReducedSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
     
-    std::vector<std::array<double, 3>> mergedHits;
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> mergedHits;
 
     for (const auto& p1 : layer1) {
         for (const auto& p2 : layer2) {
@@ -162,7 +185,7 @@ std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std:
             double zAvg = (p1.getGlobalPosition()[0] * edepL1 + p2.getGlobalPosition()[0] * edepL2) / (edepL1 + edepL2);
             double xAvg = (p1.getGlobalPosition()[1] * edepL1 + p2.getGlobalPosition()[1] * edepL2) / (edepL1 + edepL2);
             double yAvg = (p1.getGlobalPosition()[2] * edepL1 + p2.getGlobalPosition()[2] * edepL2) / (edepL1 + edepL2);
-            mergedHits.push_back({zAvg, xAvg, yAvg});
+            mergedHits.push_back(std::make_tuple(std::array<double, 3>{zAvg, xAvg, yAvg}, p1, p2));
         }
     }
     return mergedHits;

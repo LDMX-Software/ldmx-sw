@@ -43,9 +43,10 @@ void ReducedTrackFinder::produce(framework::Event& event) {
     
     const std::vector<ldmx::ReducedTrack> seed_tracks = event.getCollection<ldmx::ReducedTrack>(seed_coll_name_);
     
-    ldmx_log(debug) << "Number of seeds::" << seed_tracks.size();
+    nseeds_ = seed_tracks.size();
+    ldmx_log(debug) << "Number of seeds::" << nseeds_;
     
-    if (seed_tracks.size() > 0) {
+    if (nseeds_ > 0) {
         reduced_tracks = findTracks(seed_tracks);
     }
     
@@ -113,10 +114,20 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
         ldmx::ReducedTrack bestSeed = *bestSeedIt;
         bestTracks.push_back(bestSeed);
         
+        ldmx_log(debug) << "For RecHit at: ("
+        << recHitPoint[0] << ", "
+        << recHitPoint[1] << ", "
+        << recHitPoint[2] << ")\n";
+        
         // Add best seed's sensor position to the global used positions set
         auto bestSeedMeasurement = bestSeed.getAllSensorPoints();
         for (auto& positionObject : bestSeedMeasurement) {
             usedSensorPositions.insert(std::make_tuple(positionObject.getGlobalPosition()[0], positionObject.getGlobalPosition()[1], positionObject.getGlobalPosition()[2]));
+            ldmx_log(debug) << "We used the following point: ("
+            << positionObject.getGlobalPosition()[0] << ", "
+            << positionObject.getGlobalPosition()[1] << ", "
+            << positionObject.getGlobalPosition()[2] << ")\n";
+            ldmx_log(debug) << "Which gave a track a distance: " << bestSeed.getDistanceToRecHit() << " to the closest ECalRecHit\n";
         }
     } //for entry loop
     return bestTracks;

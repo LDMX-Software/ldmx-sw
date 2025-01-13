@@ -78,20 +78,23 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
-    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, const std::vector<ldmx::Measurement> allPoints);
+    ldmx::ReducedTrack SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne);
     
-    std::tuple< std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>, std::vector<ldmx::Measurement> > combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
-    std::vector<std::array<double, 3>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
+    std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>, std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>> combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
+    
+    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
 
     std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
+    
     double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2);
+    
     double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by);
 
     int uniqueSensorsHit(const std::vector<ldmx::Measurement> &digiPoints);
     
     double processing_time_{0.};
     long nevents_{0};
-    unsigned int ntracks_{0};
+    unsigned int nseeds_{0};
     
     /// The name of the output collection of seeds to be stored.
     std::string out_seed_collection_{"ReducedSeedTracks"};
@@ -122,6 +125,9 @@ protected:
     long nmissing_{0};
     //  long nfailphi_{0};
     //  long nfailtheta_{0};
+    
+    // Truth Matching tool
+    std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ = nullptr;
     
 };  // SeedFinderProcessor
 
