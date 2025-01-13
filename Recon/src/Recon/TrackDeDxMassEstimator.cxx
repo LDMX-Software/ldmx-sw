@@ -21,7 +21,6 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
 }
 
 void TrackDeDxMassEstimator::produce(framework::Event &event) {
-  
   if (!event.exists(track_collection_)) {
     ldmx_log(error) << "ERROR:: track collection " << track_collection_
                     << " not in event" << std::endl;
@@ -29,10 +28,11 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
   }
   const std::vector<ldmx::Track> tracks{
       event.getCollection<ldmx::Track>(track_collection_)};
-  
+
   int track_type;
   std::string track_coll_str = track_collection_;
-  std::transform(track_coll_str.begin(), track_coll_str.end(), track_coll_str.begin(), ::tolower);
+  std::transform(track_coll_str.begin(), track_coll_str.end(),
+                 track_coll_str.begin(), ::tolower);
   if (track_coll_str.find("tagger") != std::string::npos) {
     track_type = 1;
     simhit_collection_ = "TaggerSimHits";
@@ -103,7 +103,6 @@ void TrackDeDxMassEstimator::produce(framework::Event &event) {
 
   // Add the mass estimates to the event
   event.add("TrackDeDxMassEstimate", mass_estimates_);
-
 }
 }  // namespace recon
 

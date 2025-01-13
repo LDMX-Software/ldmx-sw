@@ -253,7 +253,8 @@ ldmx::Track TruthSeedProcessor::TaggerFullSeed(
   //           << smearedTruthTrack.getMomentum()[0] << " "
   //           << smearedTruthTrack.getMomentum()[1] << " "
   //           << smearedTruthTrack.getMomentum()[2] << std::endl;
-  // std::cout << "!!!!! Smeared truth track Q/P: " << smearedTruthTrack.getQoP()
+  // std::cout << "!!!!! Smeared truth track Q/P: " <<
+  // smearedTruthTrack.getQoP()
   //           << std::endl;
   ldmx_log(debug) << "Truth parameters at beam origin" << std::endl;
   for (auto par : truth_track.getPerigeeParameters())
@@ -717,7 +718,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     }
 
     // Findable particle selection
-    // std::cout << "!!! n_recoil_sim_hits found: " << hit_count_map_recoil[hit.getTrackID()].size() << std::endl;
+    // std::cout << "!!! n_recoil_sim_hits found: " <<
+    // hit_count_map_recoil[hit.getTrackID()].size() << std::endl;
     if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_ &&
         foundEcalHit && !skip_recoil_) {
       ldmx::Track truth_recoil_track =
@@ -725,8 +727,12 @@ void TruthSeedProcessor::produce(framework::Event& event) {
                          ecal_hit, hit_count_map_recoil, targetSurface,
                          targetUnboundSurface, ecalSurface);
       // std::cout << "!!! Recoil track created" << std::endl;
-      // std::cout << "!!! Recoil track momentum: " << truth_recoil_track.getMomentum()[0] << " " << truth_recoil_track.getMomentum()[1] << " " << truth_recoil_track.getMomentum()[2] << std::endl;
-      // std::cout << "!!! Hit momentum: " << hit.getMomentum()[0] << " " << hit.getMomentum()[1] << " " << hit.getMomentum()[2] << std::endl;
+      // std::cout << "!!! Recoil track momentum: " <<
+      // truth_recoil_track.getMomentum()[0] << " " <<
+      // truth_recoil_track.getMomentum()[1] << " " <<
+      // truth_recoil_track.getMomentum()[2] << std::endl; std::cout << "!!! Hit
+      // momentum: " << hit.getMomentum()[0] << " " << hit.getMomentum()[1] << "
+      // " << hit.getMomentum()[2] << std::endl;
       recoil_truth_tracks.push_back(truth_recoil_track);
     }
   }

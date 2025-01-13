@@ -13,9 +13,8 @@ void TrkDeDxMassEstFeatures::configure(framework::config::Parameters &ps) {
 }
 
 void TrkDeDxMassEstFeatures::analyze(const framework::Event &event) {
-  auto mass_estimates_{
-      event.getCollection<ldmx::TrackDeDxMassEstimate>(mass_estimate_name_,
-                                                       mass_estimate_pass_)};
+  auto mass_estimates_{event.getCollection<ldmx::TrackDeDxMassEstimate>(
+      mass_estimate_name_, mass_estimate_pass_)};
 
   for (const auto &mass_est_ : mass_estimates_) {
     histograms_.fill("mass_estimate", mass_est_.getMass());

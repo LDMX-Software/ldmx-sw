@@ -39,7 +39,7 @@ class TrackDeDxMassEstimator : public framework::Producer {
 
   // name of input track collection
   std::string track_collection_;
-  
+
   // name of input simhit collection
   std::string simhit_collection_;
 
