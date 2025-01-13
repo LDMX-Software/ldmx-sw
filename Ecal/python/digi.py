@@ -198,13 +198,14 @@ class EcalRecProducer(Producer) :
     def v14(self) :
         """Generated for the v14 geometry
 
-        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV
+        The secondOrderEnergyCorrection is deteremined by generating 1M single 4GeV or 8GeV
         electron events shot directly into the front of the ECal from immediately upstream.
         The mean of the resulting total recon energy is found by fitting a two-sided normal
         distribution (one mean, a low and high deviation) to the histogram.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 3940.5;
+        #self.secondOrderEnergyCorrection = 4000. / 3940.5;
+        self.secondOrderEnergyCorrection = 8000. / 7998.3;
         self.layerWeights = [ 
                 2.312, 4.312, 6.522, 7.490, 8.595, 10.253, 10.915, 10.915, 10.915, 10.915, 10.915,
                 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915, 10.915,
@@ -216,10 +217,10 @@ class EcalRecProducer(Producer) :
         """Generated for the reduced v2 geometry
 
         TODO: The secondOrderEnergyCorrection for this geometry has yet to be calculated,
-        so the v14 secondOrderEnergyCorrection is being used as a placeholder.
+        so unity is being used as a placeholder.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 3940.5;
+        self.secondOrderEnergyCorrection = 1.;
         self.layerWeights = [ 
                 2.312, 5.417, 9.837, 11.910, 11.910, 11.910
                 ]
