@@ -13,6 +13,7 @@
 //   ROOT   //
 //----------//
 #include "TObject.h"
+#include "Measurement.h"
 
 // --- ACTS --- //
 //#include "Acts/Definitions/TrackParametrization.hpp"
@@ -70,12 +71,14 @@ namespace ldmx {
         void setBY(double by) { by_ = by; }
         double getBY() const { return by_; }
         
+        void setAverageTrackID(const double avgTrackID) { avgTrackID_ = avgTrackID; }
+        double getAverageTrackID() const { return avgTrackID_; }
+        
         void setDistancetoEcalRecHit(double distance) {distance_to_Ecal_ = distance;}
         double getDistanceToRecHit() const { return distance_to_Ecal_; }
         
-        const std::vector<std::array<double, 3>>& getAllSensorPoints() const { return totalSensor_;};
-
-        void setAllSensorPoints(const std::vector<std::array<double, 3>>& sensorPoints) {
+        const std::vector<ldmx::Measurement>& getAllSensorPoints() const { return totalSensor_;};
+        void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensorPoints) {
             totalSensor_ = sensorPoints;
         }
 
@@ -136,8 +139,9 @@ namespace ldmx {
         double bx_;
         double by_;
         double distance_to_Ecal_;
+        double avgTrackID_;
         
-        std::vector<std::array<double, 3>> totalSensor_; //! transient for ROOT
+        std::vector<ldmx::Measurement> totalSensor_; //! transient for ROOT
         std::array<double, 3> firstSensor_;
         std::array<double, 3> secondSensor_;
         std::array<double, 3> ecalRecHit_;
@@ -151,9 +155,6 @@ namespace ldmx {
         std::array<double, 3> targetPos_;
         // The ecal first layer position
         std::array<double, 3> ecalLayer1Pos_;
-        
-        // ID of the matched particle in the SimParticles map
-        //    int trackID_{-1}; COME BACK AND SETUP TRACK ID ONCE YOU CONFIGURE TRUTH STUFF
         
         /// Class declaration needed by the ROOT dictionary.
         ClassDef(ReducedTrack, 1);

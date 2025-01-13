@@ -72,6 +72,7 @@ private:
     int eventnr_{0};
     
     std::vector<ldmx::ReducedTrack> findTracks(const std::vector<ldmx::ReducedTrack>& trackSeeds);
+    bool isPositionUsed(const ldmx::Measurement& measurement, const std::set<std::tuple<float, float, float>>& usedSensorPositions);
     
 };  // ReducedTrackFinder
 

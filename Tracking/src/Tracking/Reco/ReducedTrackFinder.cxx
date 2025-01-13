@@ -45,7 +45,10 @@ void ReducedTrackFinder::produce(framework::Event& event) {
     
     ldmx_log(debug) << "Number of seeds::" << seed_tracks.size();
     
-    reduced_tracks = findTracks(seed_tracks);
+    if (seed_tracks.size() > 0) {
+        reduced_tracks = findTracks(seed_tracks);
+    }
+    
     ntracks_ = reduced_tracks.size();
     
     // Add the tracks to the event
@@ -65,53 +68,68 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
     
     std::vector<ldmx::ReducedTrack> bestTrack;
     std::map<std::array<double, 3>, std::vector<ldmx::ReducedTrack>> seedsByRecHit;
-
+    
     // Group seeds by their EcalRecHit point
     for (const auto& seed : trackSeeds) {
         auto recHitPoint = seed.getFirstLayerEcalRecHit();
         seedsByRecHit[recHitPoint].push_back(seed);
-        
-//        for (size_t i = 0; i < recHitPoint.size(); ++i) {
-//            std::cout << "Element " << i << ": " << recHitPoint[i] << std::endl;
-//        }
     }
-
+    
+    std::set<std::tuple<float, float, float>> usedSensorPositions; //Track used sensor positions
+    
     // Process seedsByRecHit: iterate over the sorted keys and find the best seed for each RecHit
     for (auto& entry : seedsByRecHit) {
         const auto& recHitPoint = entry.first;
         auto& seedsWithSameRecHit = entry.second;
         
         ldmx_log(debug) << "Processing RecHit at: ("
-                        << recHitPoint[0] << ", "
-                        << recHitPoint[1] << ", "
-                        << recHitPoint[2] << ")\n";
-
+        << recHitPoint[0] << ", "
+        << recHitPoint[1] << ", "
+        << recHitPoint[2] << ")\n";
+        
+        // Main function to remove seeds with overlapping sensor positions
+        seedsWithSameRecHit.erase( std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(),
+                                                  [&](const ldmx::ReducedTrack& seed) {
+                                                        for (const auto& measurement : seed.getAllSensorPoints()) {
+                                                        // Check if this sensor point's position is already used
+                                                            if (isPositionUsed(measurement, usedSensorPositions)) {
+                                                                return true; // Mark seed for removal
+                                                            } //if
+                                                        } //for
+                                                        return false;}), // Keep the seed if no position overlaps
+                                    seedsWithSameRecHit.end() );
+        
+        // If no valid seeds remain after filtering, skip to next RecHit
+        if (seedsWithSameRecHit.empty()) continue;
+        
         // Find the seed with the lowest chi2 for this RecHit
         auto bestSeedIt = std::min_element(seedsWithSameRecHit.begin(),
                                            seedsWithSameRecHit.end(),
                                            [](const ldmx::ReducedTrack& a, const ldmx::ReducedTrack& b) {
-                                               return a.getChi2() < b.getChi2();
-                                           });
-
+            return a.getChi2() < b.getChi2();
+        });
+        
         // Store the best seed for this RecHit
         ldmx::ReducedTrack bestSeed = *bestSeedIt;
         bestTrack.push_back(bestSeed);
-
-        // Remove any seeds that share any sensor point with the best seed
-        auto sensorPoints = bestSeed.getAllSensorPoints();
-        seedsWithSameRecHit.erase(std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(), [&](const ldmx::ReducedTrack& seed) {
-                                                        auto seedPoints = seed.getAllSensorPoints();
-                                                        // Check if any sensor point in the seed overlaps with the best seed's points
-                                                        return std::any_of(sensorPoints.begin(), sensorPoints.end(), [&](const auto& point) {
-                                                                return std::find(seedPoints.begin(), seedPoints.end(), point) != seedPoints.end(); });
-                                                }),
-                                  seedsWithSameRecHit.end());
-    }
-
-    return bestTrack;
+        
+        // Add best seed's sensor position to the global used positions set
+        auto bestSeedMeasurement = bestSeed.getAllSensorPoints();
+        for (auto& positionObject : bestSeedMeasurement) {
+            usedSensorPositions.insert(std::make_tuple(positionObject.getGlobalPosition()[0], positionObject.getGlobalPosition()[1], positionObject.getGlobalPosition()[2]));
+        }
+        
+        return bestTrack;
+    } //for entry loop
 }
 
-
+// Helper function to check if a measurement's position is already used
+bool ReducedTrackFinder::isPositionUsed(const ldmx::Measurement& measurement,
+                    const std::set<std::tuple<float, float, float>>& usedSensorPositions) {
+    const auto& position = std::make_tuple(measurement.getGlobalPosition()[0], measurement.getGlobalPosition()[1], measurement.getGlobalPosition()[2]);
+    return usedSensorPositions.find(position) != usedSensorPositions.end();
+} //isPositionUsed
+    
 }  // namespace reco
 }  // namespace tracking
 

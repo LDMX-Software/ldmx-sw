@@ -30,7 +30,7 @@ p.maxEvents = 100
 p.run = 200
 
 p.histogramFile = f'hist_reducedAlgoV1Test.root'
-p.outputFiles = [f'events_1_reducedAlgoV1Test.root']
+p.outputFiles = [f'events_100_reducedAlgoV1Test.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions

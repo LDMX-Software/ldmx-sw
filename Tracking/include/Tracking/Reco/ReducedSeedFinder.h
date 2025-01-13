@@ -78,15 +78,16 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
-    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, const std::vector<std::array<double, 3>> allPoints);
+    ldmx::ReducedTrack SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, const std::vector<ldmx::Measurement> allPoints);
     
-    std::tuple<std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>> combineMultiGlobalHits(const std::vector<std::array<double, 4>> &hitCollection);
-    std::vector<std::array<double, 3>> weightedAverage(const std::vector<std::array<double, 4>> &layer1, const std::vector<std::array<double, 4>> &layer2);
+    std::tuple< std::vector<std::array<double, 3>>, std::vector<std::array<double, 3>>, std::vector<ldmx::Measurement> > combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
+    std::vector<std::array<double, 3>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
+
     std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
-    
     double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2);
     double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by);
-    int uniqueSensorsHit(const std::vector<std::array<double, 4>> &digiPoints);
+
+    int uniqueSensorsHit(const std::vector<ldmx::Measurement> &digiPoints);
     
     double processing_time_{0.};
     long nevents_{0};

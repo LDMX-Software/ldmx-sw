@@ -43,12 +43,7 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     const std::vector<ldmx::Measurement> recoilHits = event.getCollection<ldmx::Measurement>(input_hits_collection_);
     const std::vector<ldmx::EcalHit> ecalRecHit = event.getCollection<ldmx::EcalHit>(input_recHits_collection_);
     
-    std::vector<std::array<double, 4>> digiPoints;
     std::vector<std::array<double, 3>> firstLayerEcalRecHits;
-    
-    for (const auto& x_digi : recoilHits) {
-        digiPoints.push_back({x_digi.getGlobalPosition()[0], x_digi.getGlobalPosition()[1], x_digi.getGlobalPosition()[2], x_digi.getEdep()});
-    } //for loop to create digiPoints array
     
     for (const auto& x_ecal : ecalRecHit) {
         if (x_ecal.getZPos() < 250) {
@@ -57,13 +52,13 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     } //for positions in ecalRecHit
 
     // ! Check if we would fit empty seeds !
-    if (digiPoints.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(digiPoints) < 2) {
+    if (recoilHits.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(recoilHits) < 2) {
         nmissing_++;
         ntracks_ += reduced_seed_tracks.size();
         return;
     }
         
-    auto [firstSensor, secondSensor, allHits_noEDEP] = combineMultiGlobalHits(digiPoints);
+    auto [firstSensor, secondSensor, allHits_noEDEP] = combineMultiGlobalHits(recoilHits);
     
     for (const auto& firstPoint : firstSensor) {
         for (const auto& secondPoint : secondSensor) {
@@ -84,12 +79,11 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     auto diff = end - start;
     processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
     
-    digiPoints.clear();
     firstLayerEcalRecHits.clear();
     
 } //produce
 
-ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, std::vector<std::array<double, 3>> allPoints) {
+ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::array<double, 3> recoilOne, const std::array<double, 3> recoilTwo, const std::array<double, 3> ecalOne, std::vector<ldmx::Measurement> allPoints) {
     
     auto [ax, bx, ay, by] = fit3DLine(recoilOne, recoilTwo, ecalOne);
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], ax * ecalOne[0] + bx, ay * ecalOne[0] + by};
@@ -137,17 +131,16 @@ void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
 
 std::tuple<std::vector<std::array<double, 3>>,
            std::vector<std::array<double, 3>>,
-           std::vector<std::array<double, 3>>>
-ReducedSeedFinder::combineMultiGlobalHits(const std::vector<std::array<double, 4>>& hitCollection) {
-    std::vector<std::array<double, 4>> layer1, layer2, layer3, layer4;
-    std::vector<std::array<double, 3>> allPoints;
+           std::vector<ldmx::Measurement> >
+ReducedSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& hitCollection) {
+    std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4, allPoints;
 
     // Split hits into layers based on z position
     for (const auto& point : hitCollection) {
-        allPoints.push_back({point[0], point[1], point[2]});
-        if (point[0] < 12) layer1.push_back(point);
-        else if (point[0] < 20) layer2.push_back(point);
-        else if (point[0] < 28) layer3.push_back(point);
+        allPoints.push_back(point);
+        if (point.getGlobalPosition()[0] < 12) layer1.push_back(point);
+        else if (point.getGlobalPosition()[0] < 20) layer2.push_back(point);
+        else if (point.getGlobalPosition()[0] < 28) layer3.push_back(point);
         else layer4.push_back(point);
     }
 
@@ -158,16 +151,17 @@ ReducedSeedFinder::combineMultiGlobalHits(const std::vector<std::array<double, 4
     return {firstSensorMergedHits, secondSensorMergedHits, allPoints};
 } //combineMultiGlobalHits
 
-std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std::vector<std::array<double, 4>>& layer1, const std::vector<std::array<double, 4>>& layer2) {
+std::vector<std::array<double, 3>> ReducedSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
     
     std::vector<std::array<double, 3>> mergedHits;
 
     for (const auto& p1 : layer1) {
         for (const auto& p2 : layer2) {
-            double totalWeight = p1[3] + p2[3];  // Sum of edep values
-            double zAvg = (p1[0] * p1[3] + p2[0] * p2[3]) / totalWeight;
-            double xAvg = (p1[1] * p1[3] + p2[1] * p2[3]) / totalWeight;
-            double yAvg = (p1[2] * p1[3] + p2[2] * p2[3]) / totalWeight;
+            double edepL1 = p1.getEdep();
+            double edepL2 = p2.getEdep();
+            double zAvg = (p1.getGlobalPosition()[0] * edepL1 + p2.getGlobalPosition()[0] * edepL2) / (edepL1 + edepL2);
+            double xAvg = (p1.getGlobalPosition()[1] * edepL1 + p2.getGlobalPosition()[1] * edepL2) / (edepL1 + edepL2);
+            double yAvg = (p1.getGlobalPosition()[2] * edepL1 + p2.getGlobalPosition()[2] * edepL2) / (edepL1 + edepL2);
             mergedHits.push_back({zAvg, xAvg, yAvg});
         }
     }
@@ -221,13 +215,25 @@ double ReducedSeedFinder::globalChiSquare(const std::array<double, 3> &firstSens
     return chi2_x + chi2_y;
 } //globalChiSquare
 
-int ReducedSeedFinder::uniqueSensorsHit(const std::vector<std::array<double, 4>> &digiPoints) {
-    std::unordered_set<int> unique_zs;
-    for (const auto &point : digiPoints) {
-        unique_zs.insert(static_cast<int>(point[0]));
-    }
-    return unique_zs.size();
-} //uniqueSensorsHit
+int ReducedSeedFinder::uniqueSensorsHit(const std::vector<ldmx::Measurement>& digiPoints) {
+    // Step 1: Create a copy of digiPoints to allow modifications
+    std::vector<ldmx::Measurement> sortedPoints = digiPoints;
+
+    // Step 2: Sort by x-coordinate
+    std::sort(sortedPoints.begin(), sortedPoints.end(),
+              [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
+                  return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
+              });
+
+    // Step 3: Remove duplicates using std::unique
+    auto last = std::unique(sortedPoints.begin(), sortedPoints.end(),
+                            [](const ldmx::Measurement& m1, const ldmx::Measurement& m2) {
+                                return m1.getGlobalPosition()[0] == m2.getGlobalPosition()[0];
+                            });
+
+    // Step 4: Calculate the number of unique elements
+    return std::distance(sortedPoints.begin(), last);
+} // uniqueSensorsHit
 
 } //namespace reco
 } //namespace tracking
