@@ -552,6 +552,30 @@ class RecoilTrackerDQM(ldmxcfg.Analyzer) :
             self.build1DHistogram("tpy%s" % t, "Recoil e^{-} Truth p_{y} (MeV)", 100, -10, 10)
             self.build1DHistogram("tpz%s" % t, "Recoil e^{-} Truth p_{z} (MeV)", 260, -100, 2500)
 
+class TrkDeDxMassEstFeatures(ldmxcfg.Analyzer) :
+    """Configured TrkDeDxMassEstFeatures python object
+    
+    Contains an instance of TrkDeDxMassEstFeatures that
+    has already been configured.
+    
+    Builds the necessary histograms as well.
+    
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.TrkDeDxMassEstFeatures() )
+    """
+
+    def __init__(self,name='TrkDeDxMassEstFeatures') :
+        super().__init__(name, "dqm::TrkDeDxMassEstFeatures",'DQM')
+        
+        self.mass_estimate_name = "TrackDeDxMassEstimate"
+        self.mass_estimate_pass = ""
+        
+        self.build1DHistogram("mass_estimate", "Mass Estimate [MeV]", 100, 0, 2000)
+        self.build1DHistogram("track_type", "Track Type", 3, 0, 3)
+        
+
 class TrigScintSimDQM(ldmxcfg.Analyzer) :
     """Configured TrigScintSimDQM python object
     
@@ -714,6 +738,9 @@ recoil_dqm = [
         RecoilTrackerDQM()
         ]
 
+dEdx_dqm = [
+        TrkDeDxMassEstFeatures()
+        ]
 
 trigScint_dqm = [
     TrigScintSimDQM('TrigScintSimPad1','TriggerPad1SimHits','pad1'),
