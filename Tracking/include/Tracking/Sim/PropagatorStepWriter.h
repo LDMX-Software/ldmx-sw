@@ -58,7 +58,7 @@ class PropagatorStepWriter {
   TTree* m_outputTree;      ///< the output tree
   int m_eventNr;            ///< the event number of
 
-  std::vector<int> m_volumeID;     ///< volume identifier
+  //  std::vector<int> m_volumeID;     ///< volume identifier
   std::vector<int> m_boundaryID;   ///< boundary identifier
   std::vector<int> m_layerID;      ///< layer identifier if
   std::vector<int> m_approachID;   ///< surface identifier

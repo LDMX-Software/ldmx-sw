@@ -38,6 +38,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         from LDMX.Detectors import makePath as mP
+        print("Setting detector for tracking to "+det_name)
         self.detector = mP.makeDetectorPath( det_name )
 
     def __init__(self):
@@ -46,7 +47,7 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         else: 
             super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
             self.debug = False
-            self.setDetector('ldmx-det-v14')
+            self.setDetector('ldmx-det-v14-8gev-no-cals')
             TrackersTrackingGeometryProvider.__instance = self
 
 TrackersTrackingGeometryProvider.get_instance()

@@ -21,7 +21,7 @@ class EcalPreselectionSkimmer : public framework::Producer {
   EcalPreselectionSkimmer(const std::string &name, framework::Process &process);
 
   /** Destructor */
-  ~EcalPreselectionSkimmer() = default;
+  virtual ~EcalPreselectionSkimmer() = default;
 
   // Configure this processor with a set of parameters passed
   virtual void configure(framework::config::Parameters &) final;
@@ -47,17 +47,26 @@ class EcalPreselectionSkimmer : public framework::Producer {
   /// Max value for num readout hits
   int n_readout_hits_max_;
   /// Max value for shower rms
-  int shower_rms_max_;
+  double shower_rms_max_;
   /// Max value for shower rms in Y
-  int shower_y_std_max_;
+  double shower_y_std_max_;
   /// Max value for shower rms in X
-  int shower_x_std_max_;
+  double shower_x_std_max_;
   /// Max value for maximal cell deposition
   double max_cell_dep_max_;
   /// Max value for std layer hits
   int std_layer_hit_max_;
   /// Max value for num straight tracks
   int n_straight_tracks_max_;
+  /// Min value for the BDT disc variable
+  double bdt_disc_min_;
+  /**
+   * Level of interest in fiducial events
+   *  0: don't care if it's fiducial or not,
+   *  1: keep fiducial events only,
+   *  2: keep non-fid events only
+   */
+  int fiducial_level_;
 
 };  // EcalPreselectionSkimmer
 }  // namespace recon

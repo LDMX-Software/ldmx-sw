@@ -9,10 +9,10 @@
 namespace framework {
 
 EventProcessor::EventProcessor(const std::string &name, Process &process)
-    : process_{process},
-      name_{name},
-      histograms_{name},
-      theLog_{logging::makeLogger(name)} {}
+    : histograms_{name},
+      theLog_{logging::makeLogger(name)},
+      process_{process},
+      name_{name} {}
 
 Conditions &EventProcessor::getConditions() const {
   return process_.getConditions();

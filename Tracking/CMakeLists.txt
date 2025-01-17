@@ -51,15 +51,11 @@ if(BUILD_EVENT_ONLY)
 endif()
 
 # since ACTS changes frequently enough, we build it as a submodule of Tracking
-#   here we 'set' some CMake variables that we would have passed to 'cmake' on
+#   here we could 'set' some CMake variables that we would have passed to 'cmake' on
 #   the command line with '-D' if we were building ACTS directly.
-#set(ACTS_BUILD_PLUGIN_DD4HEP ON) # representing geometry with DD4hep right now
-#set(ACTS_BUILD_PLUGIN_TGEO ON) # representing geometry with DD4hep right now
-set(ACTS_BUILD_PLUGIN_IDENTIFICATION ON) #This turns on the identiers
-set(ACTS_BUILD_EXAMPLES OFF)     # don't waste time building examples
-set(CMAKE_CXX_STANDARD 17)       # set C++ standard we use within ldmx-sw
-add_subdirectory(acts)           # now build acts
-#add_subdirectory(acts-dd4hep)
+# for example, disable the building of examples (which is already disabled by default)
+#set(ACTS_BUILD_EXAMPLES OFF)     # don't waste time building examples
+add_subdirectory(acts) # now build acts
 # luckily for us, adding ACTS as a subdirectory produces the same CMake targets
 #   as find_package, so we don't need to do anything else from here on out
 
@@ -79,7 +75,6 @@ setup_library(module Tracking
               dependencies Framework::Configure 
                            Framework::Framework 
                            ActsCore
-                           ActsPluginIdentification
                            Geant4::Interface
                            ROOT::Physics
                            Tracking::Event

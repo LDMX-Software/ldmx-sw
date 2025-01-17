@@ -267,7 +267,7 @@ static std::map<std::string, std::any> getMembers(PyObject* object) {
     }  // python object type
   }    // loop through python dictionary
 
-  return std::move(params);
+  return params;
 }
 
 ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[],

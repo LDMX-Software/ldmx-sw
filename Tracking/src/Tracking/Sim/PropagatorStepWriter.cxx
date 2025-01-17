@@ -7,8 +7,9 @@
 #include <Acts/Surfaces/Surface.hpp>
 
 #include "Acts/Geometry/DetectorElementBase.hpp"
-#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
-#include "Acts/Plugins/Identification/Identifier.hpp"
+// mg ... I don't think these are used, and they are not defined in acts v36
+//#include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
+//#include "Acts/Plugins/Identification/Identifier.hpp"
 
 namespace tracking {
 namespace sim {
@@ -35,7 +36,7 @@ PropagatorStepWriter::PropagatorStepWriter(
 
   // Set the branches
   m_outputTree->Branch("event_nr", &m_eventNr);
-  m_outputTree->Branch("volume_id", &m_volumeID);
+  //  m_outputTree->Branch("volume_id", &m_volumeID);
   m_outputTree->Branch("boundary_id", &m_boundaryID);
   m_outputTree->Branch("layer_id", &m_layerID);
   m_outputTree->Branch("approach_id", &m_approachID);
@@ -105,7 +106,7 @@ bool PropagatorStepWriter::WriteSteps(
   // loop over the step vector of each test propagation in this
   for (auto& steps : stepCollection) {
     // clear the vectors for each collection
-    m_volumeID.clear();
+    //    m_volumeID.clear();
     m_boundaryID.clear();
     m_layerID.clear();
     m_approachID.clear();
@@ -125,7 +126,7 @@ bool PropagatorStepWriter::WriteSteps(
     // loop over single steps
     for (auto& step : steps) {
       // the identification of the step
-      Acts::GeometryIdentifier::Value volumeID = 0;
+      //      Acts::GeometryIdentifier::Value volumeID = 0;
       Acts::GeometryIdentifier::Value boundaryID = 0;
       Acts::GeometryIdentifier::Value layerID = 0;
       Acts::GeometryIdentifier::Value approachID = 0;
@@ -133,22 +134,23 @@ bool PropagatorStepWriter::WriteSteps(
       // get the identification from the surface first
       if (step.surface) {
         auto geoID = step.surface->geometryId();
-        volumeID = geoID.volume();
+        //        volumeID = geoID.volume();
         boundaryID = geoID.boundary();
         layerID = geoID.layer();
         approachID = geoID.approach();
         sensitiveID = geoID.sensitive();
       }
       // a current volume overwrites the surface tagged one
-      if (step.volume) {
-        volumeID = step.volume->geometryId().volume();
-      }
+      // mg ... v36 Step does not include volume
+      //      if (step.volume) {
+      //    volumeID = step.volume->geometryId().volume();
+      //   }
       // now fill
       m_sensitiveID.push_back(sensitiveID);
       m_approachID.push_back(approachID);
       m_layerID.push_back(layerID);
       m_boundaryID.push_back(boundaryID);
-      m_volumeID.push_back(volumeID);
+      // m_volumeID.push_back(volumeID);
 
       // kinematic information
       m_x.push_back(step.position.x());
@@ -159,7 +161,9 @@ bool PropagatorStepWriter::WriteSteps(
       m_dy.push_back(direction.y());
       m_dz.push_back(direction.z());
 
-      double accuracy = step.stepSize.value(Acts::ConstrainedStep::accuracy);
+      //      double accuracy =
+      //      step.stepSize.value(Acts::ConstrainedStep::accuracy());
+      double accuracy = step.stepSize.accuracy();
       double actor = step.stepSize.value(Acts::ConstrainedStep::actor);
       double aborter = step.stepSize.value(Acts::ConstrainedStep::aborter);
       double user = step.stepSize.value(Acts::ConstrainedStep::user);

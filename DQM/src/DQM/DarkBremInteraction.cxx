@@ -111,7 +111,6 @@ void DarkBremInteraction::produce(framework::Event& event) {
 
   double incident_energy = energy(incident_p, recoil->getMass());
   double recoil_energy = energy(recoil_p, recoil->getMass());
-  double visible_energy = (beam->getEnergy() - incident_energy) + recoil_energy;
 
   std::vector<double> ap_vertex{aprime->getVertex()};
   std::string ap_vertex_volume{aprime->getVertexVolume()};

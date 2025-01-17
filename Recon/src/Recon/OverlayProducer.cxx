@@ -184,14 +184,14 @@ void OverlayProducer::produce(framework::Event &event) {
     // sample a poisson distribution, or use mu as fixed number of overlay
     // events
     int nEvsOverlay =
-        doPoissonOOT_ ? (int)rndm_->Poisson(poissonMu_) : (int)poissonMu_;
+        doPoissonOOT_ ? rndm_->Poisson(poissonMu_) : (int)poissonMu_;
 
     // special case: in-time pileup at bunch 0
     if (bunchOffset == 0) {
       if (!doPoissonIT_)
         nEvsOverlay = (int)poissonMu_;          // fix it to the average
       else if (doPoissonIT_ && !doPoissonOOT_)  // then we haven't set this yet
-        nEvsOverlay = (int)rndm_->Poisson(poissonMu_);
+        nEvsOverlay = rndm_->Poisson(poissonMu_);
 
       // paticularly useful in the poisson fluctuated case
       event.getEventHeader().setIntParameter("inTimePU", nEvsOverlay);

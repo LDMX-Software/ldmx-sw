@@ -309,9 +309,8 @@ TEST_CASE("Conditions", "[Conditions]") {
 
     cxt.setRun(128);
 
-    const DoubleTableCondition& httpTable128 =
-        hp->getConditions().getCondition<DoubleTableCondition>(
-            "testbeam22_pedestals");
+    hp->getConditions().getCondition<DoubleTableCondition>(
+        "testbeam22_pedestals");
 
     hp->getConditions().getCondition<DoubleTableCondition>(
         "testbeam22_pedestals");
@@ -331,9 +330,8 @@ TEST_CASE("Conditions", "[Conditions]") {
 
     cxt.setRun(140);
 
-    const DoubleTableCondition& httpTable140 =
-        hp->getConditions().getCondition<DoubleTableCondition>(
-            "testbeam22_pedestals");
+    hp->getConditions().getCondition<DoubleTableCondition>(
+        "testbeam22_pedestals");
 
     conditions::urlstatistics(http_requests[1], http_failures[1]);
     REQUIRE(((http_requests[1] - http_requests[0]) == 2 &&

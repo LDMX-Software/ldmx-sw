@@ -1,5 +1,5 @@
 /**
- * @file FunctionalCoreTest.cxx
+ * @file NtupleManagerTest.cxx
  * @brief Test the operation of Framework processing
  *
  * @author Tom Eichlersmith, University of Minnesota

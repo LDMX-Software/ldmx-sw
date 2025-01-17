@@ -40,31 +40,6 @@ void PFTrackProducer::produce(framework::Event& event) {
             });
   event.add(outputTrackCollName_, pfTracks);
 }
-
-void PFTrackProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFTrackProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFTrackProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFTrackProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace recon
 
 DECLARE_PRODUCER_NS(recon, PFTrackProducer);

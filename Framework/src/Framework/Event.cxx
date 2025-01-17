@@ -121,8 +121,18 @@ void Event::setInputTree(TTree* tree) {
 
   // find the names of all the existing branches
   TObjArray* branches = inputTree_->GetListOfBranches();
+  if (!branches) {
+    EXCEPTION_RAISE(
+        "BadInputFile",
+        "Input tree doesn't have a list of branches but still made it to this "
+        "point. This is bad and has never been seen before!");
+    return;
+  }
   for (int i = 0; i < branches->GetEntriesFast(); i++) {
-    std::string brname = branches->At(i)->GetName();
+    std::string brname;
+    if (branches->At(i)) {
+      brname = branches->At(i)->GetName();
+    }
     if (brname != ldmx::EventHeader::BRANCH) {
       size_t j = brname.find("_");
       auto br = dynamic_cast<TBranchElement*>(branches->At(i));

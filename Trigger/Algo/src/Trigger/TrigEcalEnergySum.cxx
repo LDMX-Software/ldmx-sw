@@ -9,25 +9,16 @@
 namespace trigger {
 
 void TrigEcalEnergySum::configure(framework::config::Parameters& ps) {
-  // std::cout << "c++ configuring TrigEcalEnergySum" << std::endl;
   hitCollName_ = ps.getParameter<std::string>("hitCollName");
 }
 
 void TrigEcalEnergySum::produce(framework::Event& event) {
-  // std::cout << "c++ producing TrigEcalEnergySum" << std::endl;
-
-  const ecal::EcalTriggerGeometry& geom =
-      getCondition<ecal::EcalTriggerGeometry>(
-          ecal::EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
-  const ldmx::EcalGeometry& hexReadout = getCondition<ldmx::EcalGeometry>(
-      ldmx::EcalGeometry::CONDITIONS_OBJECT_NAME);
-
   if (!event.exists(hitCollName_)) return;
   auto ecalTrigDigis{
       event.getObject<ldmx::HgcrocTrigDigiCollection>(hitCollName_)};
 
   // floating point algorithm
-  float total_e = 0;
+  // float total_e = 0;
   // e_t total_e_trunc=0;
 
   // run the firmware (hls) algorithm directly
@@ -45,7 +36,7 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
     //             mVtoMeV;  // in MeV, before layer corrections
     // float e = (sie / mipSiEnergy * layerWeights.at(tid.layer()) + sie) *
     //           secondOrderEnergyCorrection;
-    total_e += e;
+    // total_e += e;
     // total_e_trunc = total_e_trunc + e_t(e);
 
     if (iTP < N_INPUT_TP) {
@@ -59,30 +50,6 @@ void TrigEcalEnergySum::produce(framework::Event& event) {
 
   // std::cout << "Total ECal energy: " << total_e << " MeV (hw: " << energy_hw
   //           << " MeV)" << std::endl;
-}
-
-void TrigEcalEnergySum::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigEcalEnergySum::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void TrigEcalEnergySum::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void TrigEcalEnergySum::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
 }
 
 }  // namespace trigger

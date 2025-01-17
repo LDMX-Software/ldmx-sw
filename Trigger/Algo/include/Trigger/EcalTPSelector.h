@@ -34,23 +34,12 @@ class EcalTPSelector : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
-  virtual void onProcessEnd();
-
   // helpers
   void decodeTP(ldmx::HgcrocTrigDigi tp, double& x, double& y, double& z,
                 double& e);
   /* double primitiveToEnergy(int tp, int layer); */
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
   // name of collection for EcalTPs to be passed as input
   std::string tpCollName_;
   // name of output collection

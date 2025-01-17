@@ -43,22 +43,25 @@ class Timer {
    * The comment beginning with `//!` is what marks this member
    * as "transient" for ROOT  I/O.
    */
-  std::chrono::time_point<clock>
-      begin_;  //! not serialized, just for measurement purposes
+  //! not serialized, just for measurement purposes
+  std::chrono::time_point<clock> begin_;
+
   /**
    * The time_point when the timer is stopped.
    *
    * The comment beginning with `//!` is what marks this member
    * as "transient" for ROOT  I/O.
    */
-  std::chrono::time_point<clock>
-      end_;  //! not serialized, just for measurement purposes
+  //! not serialized, just for measurement purposes
+  std::chrono::time_point<clock> end_;
+
   /**
    * Time stamp for when timer was started in nanoseconds since UNIX epoch
    *
    * Set to -1 if timer was not started
    */
   long int start_time_{-1};
+
   /**
    * Length of time recorded by the timer in seconds
    *
@@ -73,6 +76,8 @@ class Timer {
  public:
   /// create a timer but don't start it yet
   Timer() = default;
+  /// create defualt destructor
+  virtual ~Timer() = default;
   /// reset a timer to un-started state without re-allocating
   void reset();
   /// start the timer

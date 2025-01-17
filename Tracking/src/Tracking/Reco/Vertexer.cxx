@@ -47,6 +47,8 @@ void Vertexer::onProcessStart() {
   gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
+  /*
+   * This is unused now, should it be?
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
@@ -54,6 +56,7 @@ void Vertexer::onProcessStart() {
     // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
     // //zxy
   };
+  */
 
   sp_interpolated_bField_ =
       std::make_shared<InterpolatedMagneticField3>(loadDefaultBField(
@@ -66,13 +69,11 @@ void Vertexer::onProcessStart() {
   std::cout << "Check if nullptr::" << sp_interpolated_bField_.get()
             << std::endl;
 
-  auto&& stepper_const = Acts::EigenStepper<>{bField_};
-  auto&& stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
-
   // Set up propagator with void navigator
-
+  // auto&& stepper = Acts::EigenStepper<>{sp_interpolated_bField_};
   // propagator_ = std::make_shared<VoidPropagator>(stepper);
 
+  auto&& stepper_const = Acts::EigenStepper<>{bField_};
   propagator_ = std::make_shared<VoidPropagator>(stepper_const);
 }
 
@@ -88,17 +89,17 @@ void Vertexer::configure(framework::config::Parameters& parameters) {
 
 void Vertexer::produce(framework::Event& event) {
   nevents_++;
-  auto start = std::chrono::high_resolution_clock::now();
+  // auto start = std::chrono::high_resolution_clock::now();
 
   // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer<VoidPropagator>;
-  // Linearizer::Config linearizerConfig(sp_interpolated_bField_,propagator_);
-  Linearizer::Config linearizerConfig(bField_, propagator_);
+  using Linearizer = Acts::HelicalTrackLinearizer;
+  Linearizer::Config linearizerConfig;
+  linearizerConfig.bField = bField_;
+  linearizerConfig.propagator = propagator_;
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
-  using VertexFitter =
-      Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
+  using VertexFitter = Acts::FullBilloirVertexFitter;
 
   // Alternatively one can use
   // using VertexFitter =
@@ -106,15 +107,18 @@ void Vertexer::produce(framework::Event& event) {
 
   VertexFitter::Config vertexFitterCfg;
   VertexFitter billoirFitter(vertexFitterCfg);
-
-  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
+  //  mg Aug 2024 .. State doesn't exist in v36 and isn't used here anyway
+  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
   // See
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_,
+  //  bctx_);
+  // mg Aug 2024 ... VertexingOptions template change in v36
+  Acts::VertexingOptions vfOptions(gctx_, bctx_);
 
   // Retrive the two track collections
 
@@ -155,7 +159,8 @@ void Vertexer::produce(framework::Event& event) {
         tracking::sim::utils::boundTrackParameters(trk, perigeeSurface));
   }
 
-  std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
+  //  std::vector<Acts::Vertex<Acts::BoundTrackParameters> > fit_vertices;
+  std::vector<Acts::Vertex> fit_vertices;
 
   for (auto& b_trk_1 : billoir_tracks_1) {
     std::vector<const Acts::BoundTrackParameters*> fit_tracks_ptr;
@@ -227,11 +232,12 @@ void Vertexer::TaggerRecoilMonitoring(
   ldmx::Track t_trk = tagger_tracks.at(0);
   ldmx::Track r_trk = recoil_tracks.at(0);
 
-  double t_d0, r_d0;
-  double t_phi, r_phi;
   double t_p, r_p;
-  double t_theta, r_theta;
-  double t_z0, r_z0;
+  // these are unsed, should they be? FIXME
+  // double t_d0, r_d0;
+  // double tt_p_phi, r_phi;
+  // double t_theta, r_theta;
+  // double t_z0, r_z0;
 
   t_p = t_trk.q() / t_trk.getQoP();
   r_p = r_trk.q() / r_trk.getQoP();

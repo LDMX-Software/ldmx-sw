@@ -21,6 +21,8 @@ void VertexProcessor::onProcessStart() {
   h_m_truthFilter_ = new TH1F("m_filter", "m", 100, 0., 1.);
   h_m_truth_ = new TH1F("m_truth", "m_truth", 100, 0., 1.);
 
+  /*
+   * this is unused, should it be? FIXME
   auto localToGlobalBin_xyz = [](std::array<size_t, 3> bins,
                                  std::array<size_t, 3> sizes) {
     return (bins[0] * (sizes[1] * sizes[2]) + bins[1] * sizes[2] +
@@ -28,6 +30,7 @@ void VertexProcessor::onProcessStart() {
     // return (bins[1] * (sizes[2] * sizes[0]) + bins[2] * sizes[0] + bins[0]);
     // //zxy
   };
+  */
 
   // Setup a interpolated bfield map
   sp_interpolated_bField_ =
@@ -57,26 +60,27 @@ void VertexProcessor::produce(framework::Event &event) {
   propagator_ = std::make_shared<VoidPropagator>(stepper);
 
   // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer<VoidPropagator>;
-  Linearizer::Config linearizerConfig(sp_interpolated_bField_, propagator_);
+  using Linearizer = Acts::HelicalTrackLinearizer;
+  Linearizer::Config linearizerConfig;
+  linearizerConfig.bField = sp_interpolated_bField_;
+  linearizerConfig.propagator = propagator_;
   Linearizer linearizer(linearizerConfig);
 
   // Set up Billoir Vertex Fitter
-  using VertexFitter =
-      Acts::FullBilloirVertexFitter<Acts::BoundTrackParameters, Linearizer>;
+  using VertexFitter = Acts::FullBilloirVertexFitter;
 
   VertexFitter::Config vertexFitterCfg;
 
   VertexFitter billoirFitter(vertexFitterCfg);
 
-  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
+  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
 
   // Unconstrained fit
   // See
   // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
   // For constraint implementation
 
-  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_, bctx_);
+  Acts::VertexingOptions vfOptions(gctx_, bctx_);
 
   // Retrieve the track collection
   const std::vector<ldmx::Track> tracks =
@@ -93,6 +97,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   // TODO:: The perigee surface should be common between all tracks.
   // So should only be created once in principle.
+  // There should be no perigeeSurface2
 
   std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
@@ -105,11 +110,12 @@ void VertexProcessor::produce(framework::Event &event) {
         tracks.at(iTrack).getPhi(), tracks.at(iTrack).getTheta(),
         tracks.at(iTrack).getQoP(), tracks.at(iTrack).getT();
 
-    Acts::BoundSymMatrix covMat =
+    Acts::BoundSquareMatrix covMat =
         tracking::sim::utils::unpackCov(tracks.at(iTrack).getPerigeeCov());
-
+    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
+        Acts::PdgParticle(tracks.at(iTrack).getPdgID())))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
-        perigeeSurface, paramVec, std::move(covMat)));
+        perigeeSurface, paramVec, std::move(covMat), part));
   }
 
   // Select exactly 2 tracks
@@ -135,7 +141,7 @@ void VertexProcessor::produce(framework::Event &event) {
 
   if (seeds.size() == 2) {
     for (int iSeed = 0; iSeed < seeds.size(); iSeed++) {
-      std::shared_ptr<Acts::PerigeeSurface> perigeeSurface =
+      std::shared_ptr<Acts::PerigeeSurface> perigeeSurface2 =
           Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
               seeds.at(iSeed).getPerigeeX(), seeds.at(iSeed).getPerigeeY(),
               seeds.at(iSeed).getPerigeeZ()));
@@ -145,11 +151,15 @@ void VertexProcessor::produce(framework::Event &event) {
           seeds.at(iSeed).getPhi(), seeds.at(iSeed).getTheta(),
           seeds.at(iSeed).getQoP(), seeds.at(iSeed).getT();
 
-      Acts::BoundSymMatrix covMat =
+      Acts::BoundSquareMatrix covMat =
           tracking::sim::utils::unpackCov(seeds.at(iSeed).getPerigeeCov());
-
+      int pionPdgId = 211;  // pi+
+      if (seeds.at(iSeed).q() < 0) pionPdgId = -211;
+      // BoundTrackParameters needs the particle hypothesis
+      auto part{Acts::GenericParticleHypothesis(
+          Acts::ParticleHypothesis(Acts::PdgParticle(pionPdgId)))};
       auto boundSeedParams = Acts::BoundTrackParameters(
-          perigeeSurface, paramVec, std::move(covMat));
+          perigeeSurface, paramVec, std::move(covMat), part);
 
       TLorentzVector pion4v;
       pion4v.SetXYZM(boundSeedParams.momentum()(0),
@@ -188,7 +198,7 @@ void VertexProcessor::onProcessEnd() {
   outfile->Close();
   delete outfile;
 
-  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(4)
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(3)
                  << processing_time_ / nevents_ << " ms";
 }
 

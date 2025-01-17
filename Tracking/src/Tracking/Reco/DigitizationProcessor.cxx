@@ -5,6 +5,10 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
+// Use this instead of CartesianSegmeter I think
+//  BinUtility(std::size_t bins, float min, float max, BinningOption opt = open,
+//              BinningValue value = BinningValue::binX,
+//              const Transform3& tForm = Transform3::Identity())
 using namespace framework;
 
 namespace tracking::reco {
@@ -15,42 +19,6 @@ DigitizationProcessor::DigitizationProcessor(const std::string& name,
 
 void DigitizationProcessor::onProcessStart() {
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
-
-  ldmx_log(info) << "Loading the tracking geometry";
-
-  // Module Bounds => Take them from the tracking geometry TODO
-  auto moduleBounds = std::make_shared<const Acts::RectangleBounds>(
-      20.17 * Acts::UnitConstants::mm, 50 * Acts::UnitConstants::mm);
-
-  // I assume 5 APVs
-  int nbinsx = 128 * 5;
-
-  // Strips
-  int nbinsy = 1;
-
-  // Thickness = 0.320 mm
-  double thickness = 0.320 * Acts::UnitConstants::mm;
-
-  // Lorentz angle
-  double lAngle = 0.01;
-
-  // Energy threshold
-  double eThresh = 0.;
-
-  // Analogue readout
-  bool isAnalog = true;
-
-  // Cartesian segmentation
-  auto cSegmentation = std::make_shared<const Acts::CartesianSegmentation>(
-      moduleBounds, nbinsx, nbinsy);
-
-  // Negative side readout => TODO Make sure this is correct!
-  //  - Ask Paul what does this mean: depending on how local w is oriented
-  // TODO: load proper lorentz angle
-
-  Acts::DigitizationModule ndModule(cSegmentation, thickness * 0.5, -1, lAngle,
-                                    eThresh, isAnalog);
-
   ldmx_log(info) << "Initialization done" << std::endl;
 }
 
@@ -266,10 +234,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
                                          sigma_v_ * sigma_v_);
 
           // transform to global
-          auto global_pos{hit_surface->localToGlobal(
+          auto transf_global_pos{hit_surface->localToGlobal(
               geometry_context(), local_pos, dummy_momentum)};
           measurement.setGlobalPosition(measurement.getGlobalPosition()[0],
-                                        global_pos(1), global_pos(2));
+                                        transf_global_pos(1),
+                                        transf_global_pos(2));
 
         }  // do smearing
         measurement.setLocalPosition(local_pos(0), local_pos(1));

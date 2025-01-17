@@ -91,7 +91,7 @@ class PhotoNuclearTopologyFilter : public simcore::UserAction {
    *
    */
   constexpr bool skipCountingParticle(const int pdgcode) const {
-    return !(pdgcode < 10000 || count_light_ions_ && isLightIon(pdgcode));
+    return !(pdgcode < 10000 || (count_light_ions_ && isLightIon(pdgcode)));
   }
 
   constexpr bool isNeutron(const int pdgID) const { return pdgID == 2112; }

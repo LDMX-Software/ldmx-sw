@@ -56,12 +56,14 @@ void EcalRawDecoder::produce(framework::Event& event) {
        */
       uint32_t whole_event_header;
       reader >> whole_event_header;
-      uint32_t version = (whole_event_header >> 28) & packing::utility::mask<4>;
-      uint32_t fpga = (whole_event_header >> 20) & packing::utility::mask<8>;
+      /* event length not currently used but is stored in header as defined by
+      the spec uint32_t version = (whole_event_header >> 28) &
+      packing::utility::mask<4>; uint32_t fpga = (whole_event_header >> 20) &
+      packing::utility::mask<8>; uint32_t eventlen = whole_event_header &
+      packing::utility::mask<16>;
+      */
       uint32_t nsamples =
           (whole_event_header >> 16) & packing::utility::mask<4>;
-      uint32_t eventlen = whole_event_header & packing::utility::mask<16>;
-
       // sample counters
       std::vector<uint32_t> length_per_sample(nsamples, 0);
       for (uint32_t i_sample{0}; i_sample < nsamples; i_sample++) {
@@ -108,16 +110,19 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
     uint32_t fpga = (head1 >> 20) & packing::utility::mask<8>;
     uint32_t nlinks = (head1 >> 14) & packing::utility::mask<6>;
-    uint32_t len = head1 & packing::utility::mask<12>;
+    // total length not used but is available in header as defined by spec
+    // uint32_t len = head1 & packing::utility::mask<12>;
 
     // std::cout << ", fpga: " << fpga << ", nlinks: " << nlinks << ", len: " <<
     // len << std::endl;
     fpga_crc << head2;
     // std::cout << hex(head2) << " : ";
 
-    uint32_t bx_id = (head2 >> 20) & packing::utility::mask<12>;
-    uint32_t rreq = (head2 >> 10) & packing::utility::mask<10>;
-    uint32_t orbit = head2 & packing::utility::mask<10>;
+    // bunch ID (bx), read request (rreq) and orbit counter (orbit) are defined
+    // in header but not used right now uint32_t bx_id = (head2 >> 20) &
+    // packing::utility::mask<12>; uint32_t rreq = (head2 >> 10) &
+    // packing::utility::mask<10>; uint32_t orbit = head2 &
+    // packing::utility::mask<10>;
 
     // std::cout << "bx_id: " << bx_id << ", rreq: " << rreq << ", orbit: " <<
     // orbit << std::endl;
@@ -130,8 +135,11 @@ void EcalRawDecoder::produce(framework::Event& event) {
         // std::cout << hex(w) << " : Four Link Pack " << std::endl;
       }
       uint32_t shift_in_word = 8 * (i_link % 4);
-      bool rid_ok = (w >> (shift_in_word + 7)) & packing::utility::mask<1> == 1;
-      bool cdc_ok = (w >> (shift_in_word + 6)) & packing::utility::mask<1> == 1;
+      // the check sums performed by the HGCROC and downstream chips can
+      // confirm the validity of the data, not used here (yet)
+      // bool rid_ok = ((w >> (shift_in_word + 7)) & packing::utility::mask<1>)
+      // == 1; bool cdc_ok = ((w >> (shift_in_word + 6)) &
+      // packing::utility::mask<1>) == 1;
       length_per_link[i_link] =
           (w >> shift_in_word) & packing::utility::mask<6>;
       // std::cout << "  Link " << i_link << " readout " <<
@@ -155,7 +163,8 @@ void EcalRawDecoder::produce(framework::Event& event) {
       fpga_crc << w;
       link_crc << w;
       uint32_t roc_id = (w >> 16) & packing::utility::mask<16>;
-      bool crc_ok = (w >> 15) & packing::utility::mask<1> == 1;
+      // checksum for this chunk of data can be used to confirm data validity
+      // bool crc_ok = (w >> 15) & packing::utility::mask<1> == 1;
       // std::cout << hex(w) << " : roc_id " << roc_id << ", crc_ok (v2
       // always false) " << std::boolalpha << crc_ok << std::endl;
 
@@ -195,11 +204,17 @@ void EcalRawDecoder::produce(framework::Event& event) {
            * 10101010 | BXID (12) | WADD (9) | 1010
            */
           // std::cout << " : ROC Header";
+          /*
+           * These are unused, but are available as defined by the spec
+           * additionally, we are calculating our own copy of the link checksum
+          for later comparison
+           * if the data packet has readout its own checksum
           link_crc << w;
           uint32_t bx_id = (w >> 16) & packing::utility::mask<12>;
           uint32_t short_event = (w >> 10) & packing::utility::mask<6>;
           uint32_t short_orbit = (w >> 7) & packing::utility::mask<3>;
           uint32_t hamming_errs = (w >> 4) & packing::utility::mask<3>;
+          */
         } else if (channel_id == common_mode_channel) {
           /** Common Mode Channels
            * 10 | 0000000000 | Common Mode ADC 0 (10) | Common Mode ADC 1 (10)
@@ -207,15 +222,17 @@ void EcalRawDecoder::produce(framework::Event& event) {
           link_crc << w;
           // std::cout << " : Common Mode";
         } else if (channel_id == 39) {
+          /*
           // CRC checksum from ROC
           uint32_t crc = w;
-          // std::cout << " : CRC checksum  : " << hex(link_crc.get()) <<
-          // " =? " << hex(crc);
-          /*
-          if (link_crc.get() != crc) {
-            EXCEPTION_RAISE("BadCRC",
-                            "Our calculated link checksum doesn't match the "
-                            "one from raw data.");
+          // std::cout << " : CRC checksum  : " << hex(link_crc.get()) << " =? "
+          << hex(crc);
+          // keeping this there in comment is helpful when the HGCROC is sending
+          along its own CRC checksum of the data for us to compare against.
+          // We had to comment it out because the v2 HGCROC we were using was
+          not sending a checksum and thus the check would always fail. if
+          (link_crc.get() != crc) { EXCEPTION_RAISE("BadCRC", "Our calculated
+          link checksum doesn't match the " "one from raw data.");
           }
           */
         } else {
@@ -258,7 +275,8 @@ void EcalRawDecoder::produce(framework::Event& event) {
 
     // another CRC checksum from FPGA
     reader >> w;
-    uint32_t crc = w;
+    // this word would be the CRC checksum as deteremined by the chip
+    // uint32_t crc = w;
     // std::cout << "FPGA Checksum : " << hex(fpga_crc.get()) << " =? "
     // << hex(crc) << std::endl;
     /* TODO

@@ -20,8 +20,6 @@
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/BinFinder.hpp"
-#include "Acts/Seeding/BinnedSPGroup.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Acts/Seeding/Seed.hpp"
 #include "Acts/Seeding/SeedFilter.hpp"
@@ -145,9 +143,6 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<std::string> strategies_{};
   double bfield_{1.5};
 
-  TFile* outputFile_;
-  TTree* outputTree_;
-
   std::vector<float> xhit_;
   std::vector<float> yhit_;
   std::vector<float> zhit_;
@@ -170,9 +165,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   long nfailtheta_{0};
 
   // The measurements groups
-
   std::map<int, std::vector<const ldmx::Measurement*>> groups_map;
-  std::array<const ldmx::Measurement*, 5> groups_array;
 
   // Truth Matching tool
   std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ =

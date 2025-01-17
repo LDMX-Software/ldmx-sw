@@ -102,17 +102,6 @@ void TrigElectronProducer::produce(framework::Event& event) {
   event.add(eleCollName_, eles);
 }
 
-void TrigElectronProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void TrigElectronProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
 void TrigElectronProducer::setupMaps(bool isX) {
   TProfile2D* prof = isX ? propMapx_ : propMapy_;
   const int N = prof->GetXaxis()->GetNbins();
@@ -145,7 +134,7 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
     if (debug) std::cout << "null pointer" << std::endl;
     return 0;
   }
-  int bin1, bin2;
+  int bin1{-9999}, bin2{-9999};
   bin1 = prof->GetXaxis()->FindBin(e);
   float frac = e - prof->GetXaxis()->GetBinCenter(bin1);
   float diff = fabs(prof->GetXaxis()->GetBinCenter(bin1) -
@@ -173,7 +162,6 @@ float TrigElectronProducer::getP(bool isX, float e, float d) {
 void TrigElectronProducer::onProcessStart() {
   ldmx_log(debug) << "Process starts!";
 
-  auto d = gDirectory;
   TFile* f = new TFile(propMapName_.c_str(), "read");
   propMapx_ = (TProfile2D*)f->Get("profx");
   propMapx_->SetDirectory(0);
