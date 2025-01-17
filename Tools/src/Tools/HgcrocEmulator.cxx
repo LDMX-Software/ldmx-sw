@@ -198,7 +198,7 @@ bool HgcrocEmulator::digitize(
                                0x3FF, 0x3FF, 0);
       }
 
-      for (const auto &digi : digiToAdd) return true;  // always readout
+      return true;  // always readout
 
     } else {
       // determine the voltage at the sampling time

@@ -98,6 +98,11 @@ class HcalDigiProducer(Producer) :
         # to e.g. simulate a pedestal measurement
         self.zeroSuppression = True
 
+        # if True, save pulse shapes to a file
+        self.digiEmulationDebug = False
+        # name of the file to save pulse shapes to
+        self.digiEmulationFile = ""
+
         # input and output collection name parameters
         self.inputCollName = 'HcalSimHits'
         self.inputPassName = ''
