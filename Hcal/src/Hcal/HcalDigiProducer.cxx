@@ -270,7 +270,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
       bool posEndActivity =
           hgcroc_->digitize(posendID.raw(), pulses_posend, digiToAddPosend);
-      if(digiEmulationDebug_){
+      if (digiEmulationDebug_) {
         // Recording digitized pulses in PulseRecord
         const auto& pulseRecord = hgcroc_->getPulseRecord();
         for (const auto& record : pulseRecord) {
@@ -281,7 +281,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
 
       bool negEndActivity =
           hgcroc_->digitize(negendID.raw(), pulses_negend, digiToAddNegend);
-      if(digiEmulationDebug_){
+      if (digiEmulationDebug_) {
         // Recording digitized pulses in PulseRecord
         const auto& pulseRecord = hgcroc_->getPulseRecord();
         for (const auto& record : pulseRecord) {
@@ -290,14 +290,15 @@ void HcalDigiProducer::produce(framework::Event& event) {
         }
       }
 
-      if(digiEmulationDebug_){
+      if (digiEmulationDebug_) {
         // Print Voltages, adc/tot values to the same txt file
         std::ofstream dataFile(digiEmulationFile_, std::ios::app);
         for (const auto& entry : DigiToPlot) {
           dataFile << std::get<0>(entry) << " " << std::get<1>(entry) << " "
                    << std::get<2>(entry) << "\n";
         }
-        //dataFile << "Section: " << section << " Layer: " << layer << " Strip: " << strip << "\n";
+        // dataFile << "Section: " << section << " Layer: " << layer << " Strip:
+        // " << strip << "\n";
         dataFile.close();
       }
 
@@ -501,7 +502,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
 =======
     }
 >>>>>>> trunk
-  }  // if we should add noise
+  }    // if we should add noise
 
   event.add(digiCollName_, hcalDigis);
 
