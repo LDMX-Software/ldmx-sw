@@ -33,7 +33,6 @@ int SimQIE::Q2ADC(float Charge) {
   if (qq <= edges_[0]) return 0;
   if (qq >= edges_[16]) return 255;
 
-  int ID = 8;
   int a = 0;
   int b = 16;
 
@@ -44,8 +43,7 @@ int SimQIE::Q2ADC(float Charge) {
     } else
       b = (a + b) / 2;
   }
-  return 64 * (int)(a / 4) + nbins_[a % 4] +
-         floor((qq - edges_[a]) / sense_[a]);
+  return 64 * (a / 4) + nbins_[a % 4] + floor((qq - edges_[a]) / sense_[a]);
 }
 
 // Function to convert ADCs back to charge
@@ -62,7 +60,8 @@ float SimQIE::ADC2Q(int ADC) {
   for (int i = 1; i < 4; i++) {  // to get the subrange
     if (v1 > nbins_[i]) ss++;
   }
-  int cc = 64 * rr + nbins_[ss];
+  // cc is unused, should it be? FIXME
+  // int cc = 64 * rr + nbins_[ss];
   float temp = edges_[4 * rr + ss] + (v1 - nbins_[ss]) * sense_[4 * rr + ss] +
                sense_[4 * rr + ss] / 2;
   return (temp / gain_);
@@ -73,7 +72,6 @@ float SimQIE::QErr(float Q) {
   if (Q <= edges_[0]) return 0;
   if (Q >= edges_[16]) return 0;
 
-  int ID = 8;
   int a = 0;
   int b = 16;
   while (b - a != 1) {
@@ -102,8 +100,10 @@ std::vector<int> SimQIE::Out_ADC(QIEInputPulse* pp) {
 int SimQIE::TDC(QIEInputPulse* pp, float T0 = 0) {
   float thr2 = tdc_thr_ / gain_;
   if (pp->Eval(T0) > thr2) return 62;  // when pulse starts high
-  for (float tt = T0; tt < T0 + tau_; tt += 0.1) {
+  float tt = T0;
+  while (tt < T0 + tau_) {
     if (pp->Eval(tt) >= thr2) return ((int)(2 * (tt - T0)));
+    tt += 0.1;
   }
   return 63;  // when pulse remains low all along
 }

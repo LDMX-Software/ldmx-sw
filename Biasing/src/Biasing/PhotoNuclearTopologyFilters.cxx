@@ -44,9 +44,9 @@ bool SingleNeutronFilter::rejectEvent(
 PhotoNuclearTopologyFilter::PhotoNuclearTopologyFilter(
     const std::string& name, framework::config::Parameters& parameters)
     : UserAction{name, parameters},
+      count_light_ions_{parameters.getParameter<bool>("count_light_ions")},
       hard_particle_threshold_{
-          parameters.getParameter<double>("hard_particle_threshold")},
-      count_light_ions_{parameters.getParameter<bool>("count_light_ions")} {}
+          parameters.getParameter<double>("hard_particle_threshold")} {}
 
 void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
   // Get the track associated with this step.
@@ -70,7 +70,9 @@ void PhotoNuclearTopologyFilter::stepping(const G4Step* step) {
 
   // Once the PN gamma has been procesed, untag it so its not reprocessed
   // again.
-  trackInfo->tagPNGamma(false);
+  if (trackInfo) {
+    trackInfo->tagPNGamma(false);
+  }
 }
 
 }  // namespace biasing

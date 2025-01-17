@@ -3,6 +3,7 @@
  * @brief Class used to encapsulate the results obtained from
  *        EcalVetoProcessor.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Danyi Zhang, Tamas Almos Vami (UCSB)
  */
 
 #ifndef EVENT_ECALVETORESULT_H_
@@ -27,7 +28,7 @@ class EcalVetoResult {
   EcalVetoResult();
 
   /** Destructor */
-  ~EcalVetoResult();
+  virtual ~EcalVetoResult();
 
   /**
    * Set the sim particle and 'is findable' flag.
@@ -219,23 +220,23 @@ class EcalVetoResult {
   };
 
   /** Return the x position of the recoil at the Ecal face. */
-  const double getRecoilX() const { return recoilX_; };
+  double getRecoilX() const { return recoilX_; };
 
   /** Return the y position of the recoil at the Ecal face. */
-  const double getRecoilY() const { return recoilY_; };
+  double getRecoilY() const { return recoilY_; };
 
   /// Number of straight tracks found
-  const int getNStraightTracks() const { return nStraightTracks_; }
+  int getNStraightTracks() const { return nStraightTracks_; }
 
   /// Number of linear-regression tracks found
-  const int getNLinRegTracks() const { return nLinregTracks_; }
+  int getNLinRegTracks() const { return nLinregTracks_; }
 
-  const int getFirstNearPhLayer() const { return firstNearPhLayer_; }
-  const int getNNearPhHits() const { return nNearPhHits_; }
-  const int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
-  const float getEPAng() const { return epAng_; }
-  const float getEPSep() const { return epSep_; }
-  const float getEPDot() const { return epDot_; }
+  int getFirstNearPhLayer() const { return firstNearPhLayer_; }
+  int getNNearPhHits() const { return nNearPhHits_; }
+  int getPhotonTerritoryHits() const { return photonTerritoryHits_; }
+  float getEPAng() const { return epAng_; }
+  float getEPSep() const { return epSep_; }
+  float getEPDot() const { return epDot_; }
 
  private:
   /** Flag indicating whether the event is vetoed by the Ecal. */

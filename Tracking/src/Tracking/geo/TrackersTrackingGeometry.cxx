@@ -190,7 +190,9 @@ TrackersTrackingGeometry::buildTrackerVolume() {
     if (debug_) {
       std::cout << layer.first << " : surfaces==>" << layer.second.size()
                 << std::endl;
-      for (auto& surface : layer.second) surface->toStream(gctx_, std::cout);
+      //      for (auto& surface : layer.second) surface->toStreamImpl(gctx_,
+      //      std::cout);
+      for (auto& surface : layer.second) surface->toStream(gctx_);
     }
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;

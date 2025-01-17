@@ -141,6 +141,7 @@ class Cluster {
 
 class IdealClusterBuilder {
  public:
+  virtual ~IdealClusterBuilder() = default;
   std::vector<Hit> all_hits{};
   std::vector<Cluster> all_clusters{};
   ClusterGeometry* g;

@@ -7,6 +7,7 @@
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/SourceLink.hpp"
 #include "Acts/EventData/VectorMultiTrajectory.hpp"
+#include "Acts/Utilities/CalibrationContext.hpp"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 #include "Tracking/Sim/LdmxSpacePoint.h"
@@ -53,14 +54,13 @@ class LdmxMeasurementCalibrator {
   /// @tparam parameters_t Track parameters type
   /// @param gctx The geometry context (unused)
   /// @param trackState The track state to calibrate
-  void calibrate(
-      const Acts::GeometryContext& /*gctx*/,
-      Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::TrackStateProxy
-          trackState) const {
-    ActsExamples::IndexSourceLink sourceLink =
-        trackState.getUncalibratedSourceLink()
-            .get<ActsExamples::IndexSourceLink>();
-
+  template <typename traj_t>
+  void calibrate(const Acts::GeometryContext& /*gctx*/,
+                 const Acts::CalibrationContext& /*cctx*/,
+                 const Acts::SourceLink& genericSourceLink /*sourceLink*/,
+                 typename traj_t::TrackStateProxy trackState) const {
+    ActsExamples::IndexSourceLink sourceLink{
+        genericSourceLink.get<ActsExamples::IndexSourceLink>()};
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
     assert((sourceLink.index() < m_measurements->size()) and
@@ -68,20 +68,19 @@ class LdmxMeasurementCalibrator {
            "LdmxMeasurementCalibrator");
 
     auto meas = m_measurements->at(sourceLink.index());
-
-    trackState.calibrated<2>().setZero();
-
     Acts::Vector2 local_pos{meas.getLocalPosition()[0],
                             meas.getLocalPosition()[1]};
-    trackState.calibrated<2>().head<2>() = local_pos;
-    // trackState.data().measdim = 2;
-    trackState.calibratedCovariance<2>().setZero();
-
-    Acts::SymMatrix2 local_cov;
+    auto tsCal{trackState.template calibrated<2>()};
+    auto tsCalCov{trackState.template calibratedCovariance<2>()};
+    tsCal.setZero();
+    tsCal.template head<2>() = local_pos;
+    Acts::SquareMatrix2 local_cov;
     local_cov.setZero();
     local_cov(0, 0) = meas.getLocalCovariance()[0];
     local_cov(1, 1) = meas.getLocalCovariance()[1];
-    trackState.calibratedCovariance<2>().block<2, 2>(0, 0) = local_cov;
+    tsCalCov.setZero();
+    // make tsCalCov 2x2 block the local_cov we just set
+    tsCalCov.block(0, 0, 2, 2) = local_cov;
 
     Acts::ActsMatrix<2, 6> projector;
     projector.setZero();
@@ -97,14 +96,13 @@ class LdmxMeasurementCalibrator {
   /// @tparam parameters_t Track parameters type
   /// @param gctx The geometry context (unused)
   /// @param trackState The track state to calibrate
-  void calibrate_1d(
-      const Acts::GeometryContext& /*gctx*/,
-      Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::TrackStateProxy
-          trackState) const {
-    // Use by value - life management is not working properly
-    ActsExamples::IndexSourceLink sourceLink =
-        trackState.getUncalibratedSourceLink()
-            .get<ActsExamples::IndexSourceLink>();
+  template <typename traj_t>
+  void calibrate_1d(const Acts::GeometryContext& /*gctx*/,
+                    const Acts::CalibrationContext& /*cctx*/,
+                    const Acts::SourceLink& genericSourceLink /*sourceLink*/,
+                    typename traj_t::TrackStateProxy trackState) const {
+    ActsExamples::IndexSourceLink sourceLink{
+        genericSourceLink.get<ActsExamples::IndexSourceLink>()};
 
     assert(m_measurements and
            "Undefined measurement container in LdmxMeasurementCalibrator");
@@ -112,22 +110,23 @@ class LdmxMeasurementCalibrator {
            "Source link index is outside the container bounds in "
            "LdmxMeasurementCalibrator");
 
-    // std::cout<<"calibrate_1d ==> NMeasurements available=" <<
-    // m_measurements->size()<<std::endl;
     auto meas = m_measurements->at(sourceLink.index());
 
-    // You need to explicitly allocate measurements here
     trackState.allocateCalibrated(1);
-    trackState.calibrated<1>().setZero();
-    trackState.calibrated<1>()(0) = (meas.getLocalPosition())[0];
-    trackState.calibratedCovariance<1>().setZero();
-    trackState.calibratedCovariance<1>()(0, 0) = (meas.getLocalCovariance())[0];
+    auto tsCal{trackState.template calibrated<1>()};
+    auto tsCalCov{trackState.template calibratedCovariance<1>()};
+
+    tsCal.setZero();
+    tsCal(0) = (meas.getLocalPosition())[0];
+    tsCalCov.setZero();
+    tsCalCov(0, 0) = (meas.getLocalCovariance())[0];
 
     Acts::ActsMatrix<2, 6> projector;
     projector.setZero();
     projector(0, 0) = 1.;
     projector(1, 1) = 1.;
     trackState.setProjector(projector.row(0));
+    trackState.setUncalibratedSourceLink(genericSourceLink);
   }
 
   // Function to test the measurement calibrator
@@ -136,8 +135,6 @@ class LdmxMeasurementCalibrator {
   void test(const Acts::GeometryContext& /*gctx*/,
             const ActsExamples::IndexSourceLink& sourceLink) const {
     auto meas = m_measurements->at(sourceLink.index());
-    // get the measurement
-    std::cout << "Measurement layer::\n" << meas.getLayer() << std::endl;
 
     Acts::Vector3 global_pos{meas.getGlobalPosition()[0],
                              meas.getGlobalPosition()[1],

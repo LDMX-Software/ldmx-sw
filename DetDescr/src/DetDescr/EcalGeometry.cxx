@@ -19,8 +19,9 @@ static double distance(const std::pair<double, double>& p1,
               (p1.second - p2.second) * (p1.second - p2.second));
 }
 
-static double distance(const std::tuple<double, double, double>& p1,
-                       const std::tuple<double, double, double>& p2) {
+[[maybe_unused]] static double distance(
+    const std::tuple<double, double, double>& p1,
+    const std::tuple<double, double, double>& p2) {
   return sqrt((std::get<0>(p1) - std::get<0>(p2)) *
                   (std::get<0>(p1) - std::get<0>(p2)) +
               (std::get<1>(p1) - std::get<1>(p2)) *

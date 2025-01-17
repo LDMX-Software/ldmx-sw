@@ -48,7 +48,6 @@ class QualityFlagAnalyzer : public framework::Analyzer {
   int startSample_{0};
 
   // plotting stuff
-  int evNb;
   const int nEv{200};
   static constexpr int nChannels{16};
   const int nFlags{6};

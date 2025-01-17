@@ -12,7 +12,6 @@ namespace trigscint {
 TestBeamHitProducer::TestBeamHitProducer(const std::string& name,
                                          framework::Process& process)
     : Producer(name, process) {}
-TestBeamHitProducer::~TestBeamHitProducer() {}
 
 void TestBeamHitProducer::configure(framework::config::Parameters& parameters) {
   inputCol_ = parameters.getParameter<std::string>("inputCollection");
@@ -95,7 +94,6 @@ void TestBeamHitProducer::produce(framework::Event& event) {
       event.getCollection<trigscint::EventReadout>(inputCol_, inputPassName_)};
 
   int evNb = event.getEventNumber();
-  int nChan = channels.size();
   std::vector<trigscint::TestBeamHit> hits;
   for (auto chan : channels) {
     trigscint::TestBeamHit hit;

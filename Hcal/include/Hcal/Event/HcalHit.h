@@ -199,34 +199,34 @@ class HcalHit : public ldmx::CalorimeterHit {
 
  private:
   /** The number of PE estimated for this hit. */
-  float pe_{0};
+  float pe_{0.0};
 
   /** The minimum number of PE estimated for this hit, different from pe_ when
    * you have two ended readout */
-  float minpe_{-99};
+  float minpe_{-99.0};
 
   /// section, layer, strip and end
-  int section_;
-  int layer_;
-  int strip_;
-  int end_;
+  int section_{-99};
+  int layer_{-99};
+  int strip_{-99};
+  int end_{-99};
 
   /// isADC
-  int isADC_;
+  int isADC_{-99};
 
-  double timeDiff_;
-  double position_;
-  double isX_;
+  double timeDiff_{-9999.};
+  double position_{-9999.};
+  double isX_{-9999.};
 
-  double toaPos_;
-  double toaNeg_;
-  double amplitudePos_;
-  double amplitudeNeg_;
+  double toaPos_{-9999.};
+  double toaNeg_{-9999.};
+  double amplitudePos_{-9999.};
+  double amplitudeNeg_{-9999.};
 
   /**
    * The ROOT class definition.
    */
-  ClassDef(HcalHit, 3);
+  ClassDef(HcalHit, 4);
 };
 }  // namespace ldmx
 

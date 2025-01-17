@@ -34,12 +34,6 @@ class ParticleFlow : public framework::Producer {
 
   virtual void produce(framework::Event& event);
 
-  virtual void onFileOpen();
-
-  virtual void onFileClose();
-
-  virtual void onProcessStart();
-
   virtual void onProcessEnd();
 
   void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
@@ -47,9 +41,6 @@ class ParticleFlow : public framework::Producer {
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
  private:
-  // specific verbosity of this producer
-  int verbose_{0};
-
   TGraph* eCorr_{0};
   TGraph* hCorr_{0};
 

@@ -45,12 +45,25 @@ void TaggerHitFilter::stepping(const G4Step* step) {
     return;
 
   // The copy number is used to identify which layer energy was deposited into.
-  auto copy_number{step->GetPreStepPoint()
-                       ->GetTouchableHandle()
-                       ->GetHistory()
-                       ->GetVolume(2)
-                       ->GetCopyNo()};
-
+  int copy_number{0};
+  // Get the pre-step point
+  auto* preStepPoint = step->GetPreStepPoint();
+  if (preStepPoint) {
+    // Get the touchable handle
+    auto touchableHandle = preStepPoint->GetTouchableHandle();
+    if (touchableHandle) {
+      // Get the history
+      auto* history = touchableHandle->GetHistory();
+      if (history) {
+        // Get the volume
+        auto* volumeAtTwo = history->GetVolume(2);
+        if (volumeAtTwo) {
+          // Get the copy number
+          copy_number = volumeAtTwo->GetCopyNo();
+        }
+      }
+    }
+  }
   layer_count_.insert(copy_number);
 }
 

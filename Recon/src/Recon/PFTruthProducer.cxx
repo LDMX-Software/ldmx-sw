@@ -69,31 +69,6 @@ void PFTruthProducer::produce(framework::Event &event) {
   event.add(ecalCollName_, atEcal);
   event.add(hcalCollName_, atHcal);
 }
-
-void PFTruthProducer::onFileOpen() {
-  ldmx_log(debug) << "Opening file!";
-
-  return;
-}
-
-void PFTruthProducer::onFileClose() {
-  ldmx_log(debug) << "Closing file!";
-
-  return;
-}
-
-void PFTruthProducer::onProcessStart() {
-  ldmx_log(debug) << "Process starts!";
-
-  return;
-}
-
-void PFTruthProducer::onProcessEnd() {
-  ldmx_log(debug) << "Process ends!";
-
-  return;
-}
-
 }  // namespace recon
 
 DECLARE_PRODUCER_NS(recon, PFTruthProducer);

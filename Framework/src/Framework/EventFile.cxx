@@ -14,10 +14,10 @@ EventFile::EventFile(const framework::config::Parameters &params,
                      const std::string &filename, EventFile *parent,
                      bool isOutputFile, bool isSingleOutput, bool isLoopable)
     : fileName_(filename),
-      parent_(parent),
       isOutputFile_(isOutputFile),
       isSingleOutput_(isSingleOutput),
-      isLoopable_(isLoopable) {
+      isLoopable_(isLoopable),
+      parent_(parent) {
   if (isOutputFile_) {
     // we are writting out so open the file and make sure it is writable
     file_ = new TFile(fileName_.c_str(), "RECREATE");
@@ -413,9 +413,13 @@ void EventFile::importRunHeaders() {
     TTreeReaderValue<ldmx::RunHeader> oldRunHeader(oldRunTree, "RunHeader");
     // TODO check that setup went correctly
     while (oldRunTree.Next()) {
-      // copy input run tree into run map
-      runMap_[oldRunHeader->getRunNumber()] =
-          std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+      auto *oldRunHeaderPtr = oldRunHeader.Get();
+      if (oldRunHeaderPtr != nullptr) {
+        // copy input run tree into run map
+        // We should consider moving to a shared_ptr instead of 'new'
+        runMap_[oldRunHeaderPtr->getRunNumber()] =
+            std::make_pair(true, new ldmx::RunHeader(*oldRunHeader));
+      }
     }
   }
 

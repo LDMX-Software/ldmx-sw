@@ -78,8 +78,6 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
       std::cout << id << std::endl;
     }
 
-    unsigned int detIDRaw = id.raw();
-
     // check if hits is from beam electron and, if so, add to beamFrac
     for (int i = 0; i < simHit.getNumberOfContribs(); i++) {
       auto contrib = simHit.getContrib(i);
@@ -129,7 +127,6 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   std::vector<ldmx::TrigScintHit> trigScintHits;
 
   // loop over detIDs and simulate number of PEs
-  int ihit = 0;
   for (std::map<ldmx::TrigScintID, float>::iterator it = Edep.begin();
        it != Edep.end(); ++it) {
     ldmx::TrigScintID id(it->first);
@@ -175,9 +172,9 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
   // ------------------------------- Noise simulation -----------------------//
   // ------------------------------------------------------------------------//
-  int numEmptyCells = stripsPerArray_ -
-                      numRecHits;  // only simulating for single array until
-                                   // all arrays are merged into one collection
+  // only simulating for single array until
+  // all arrays are merged into one collection
+  int numEmptyCells = stripsPerArray_ - numRecHits;
   std::vector<double> noiseHits_PE =
       noiseGenerator_->generateNoiseHits(numEmptyCells);
 
