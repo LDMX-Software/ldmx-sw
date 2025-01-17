@@ -57,6 +57,12 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
       if (rawID == simHit.getID()) {
         numSimHits += simHit.getNumberOfContribs();
         totalSimEDep += simHit.getEdep();
+        auto residualX = recHit.getXPos() - simHit.getPosition()[0];
+        auto residualY = recHit.getYPos() - simHit.getPosition()[1];
+        auto residualZ = recHit.getZPos() - simHit.getPosition()[2];
+        histograms_.fill("rec_sim_hit_residual_x", residualX);
+        histograms_.fill("rec_sim_hit_residual_y", residualY);
+        histograms_.fill("rec_sim_hit_residual_z", residualZ);
       } else if (rawID < simHit.getID()) {
         // later sim hits - all done
         break;

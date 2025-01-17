@@ -237,6 +237,15 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
         self.ecalRecHitColl = "EcalRecHits"
         self.ecalRecHitPass = "" #use whatever pass is available
 
+        self.build1DHistogram( "rec_sim_hit_residual_x" ,
+                "RecHit X - SimHit X [mm]" , 30 , -15.0 , 15.0 )
+        
+        self.build1DHistogram( "rec_sim_hit_residual_y" ,
+                "RecHit Y - SimHit Y [mm]" , 30 , -15.0 , 15.0 )
+
+        self.build1DHistogram( "rec_sim_hit_residual_z" ,
+                "RecHit Z - SimHit Z [mm]" , 40 , -20.0 , 20.0 )
+
         self.build1DHistogram( "num_sim_hits_per_cell" ,
                 "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , -0.5 , 19.5 )
         
