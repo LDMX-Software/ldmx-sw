@@ -35,35 +35,48 @@ class HcalVetoResult {
   void Print() const;
 
   /** Checks if the event passes the Hcal veto. */
-  bool passesVeto() const { return passesVeto_; };
+  bool passesVeto() const { return passes_veto_; };
 
   /** @return The maximum PE HcalHit. */
-  ldmx::HcalHit getMaxPEHit() const { return maxPEHit_; }
+  ldmx::HcalHit getMaxPEHit() const { return max_PE_hit_; }
+
+  /** @return The total number of PE. */
+  float getTotalPE() const { return total_PE_; }
 
   /**
    * Sets whether the Hcal veto was passed or not.
    *
-   * @param passesVeto Veto result.
+   * @param passes_veto Veto result.
    */
-  void setVetoResult(const bool& passesVeto = true) {
-    passesVeto_ = passesVeto;
+  void setVetoResult(const bool& passes_veto = true) {
+    passes_veto_ = passes_veto;
   }
 
   /**
    * Set the maximum PE hit.
    *
-   * @param maxPEHit The maximum PE HcalHit
+   * @param max_PE_hit The maximum PE HcalHit
    */
-  void setMaxPEHit(const ldmx::HcalHit maxPEHit) { maxPEHit_ = maxPEHit; }
+  void setMaxPEHit(const ldmx::HcalHit max_PE_hit) { max_PE_hit_ = max_PE_hit; }
+
+  /**
+   * Set the total number of PE.
+   *
+   * @param total_PE The maximum PE HcalHit
+   */
+  void setTotalPE(const float total_PE) { total_PE_ = total_PE; }
 
  private:
   /** Reference to max PE hit. */
-  ldmx::HcalHit maxPEHit_;
+  ldmx::HcalHit max_PE_hit_;
+
+  // Total number of PE
+  float total_PE_{0.0};
 
   /** Flag indicating whether the event passes the Hcal veto. */
-  bool passesVeto_{false};
+  bool passes_veto_{false};
 
-  ClassDef(HcalVetoResult, 2);
+  ClassDef(HcalVetoResult, 3);
 
 };  // HcalVetoResult
 }  // namespace ldmx
