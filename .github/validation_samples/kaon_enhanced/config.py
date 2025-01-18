@@ -223,7 +223,7 @@ ecalVeto.recoil_from_tracking = False
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()
 hcalReco   =hDigi.HcalRecProducer()
-hcalVeto   =hcal.HcalVetoProcessor()
+hcal_veto = hcal.HcalVetoProcessor()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
@@ -305,12 +305,12 @@ p.sequence=[
         simpleTrig, 
         hcalDigi, 
         hcalReco, 
-        hcalVeto,
-        dqm.PhotoNuclearDQM(verbose=False),
+        hcal_veto,
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
+        dqm.PhotoNuclearDQM(verbose=False)
         ]
 
 p.sequence.extend(dqm.all_dqm)

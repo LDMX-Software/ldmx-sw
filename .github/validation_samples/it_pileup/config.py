@@ -238,6 +238,9 @@ p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
 p.logger.custom(recoil_dqm, level = 2)
 
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 p.sequence.extend([
     digi_tagger,
     digi_recoil,
@@ -247,7 +250,7 @@ p.sequence.extend([
     tracking_tagger,
     tracking_recoil,
     ecalDigi, ecalReco, ecalVeto,
-    hcalDigi, hcalReco,
+    hcalDigi, hcalReco, hcal_veto,
     *ts_digis,
     TrigScintClusterProducer.pad1(),
     TrigScintClusterProducer.pad2(),
