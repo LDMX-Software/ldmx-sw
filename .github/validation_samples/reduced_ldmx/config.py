@@ -43,6 +43,7 @@ import LDMX.Hcal.digi as hcal_digi
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
+ecalVeto.recoil_from_tracking = False
 
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer

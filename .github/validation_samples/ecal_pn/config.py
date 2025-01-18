@@ -24,11 +24,6 @@ p.run = int(os.environ['LDMX_RUN_NUMBER'])
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
 
-# The Tracking modules produce a lot of helpful messages
-# but (at the debug level) is too much for commiting the gold log
-# into the git working tree on GitHub
-p.termLogLevel = 1
-
 # Load the tracking module
 from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
@@ -199,6 +194,22 @@ recoil_dqm.buildHistograms()
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.recoil_from_tracking = True
 
+# The Tracking modules produce a lot of helpful messages
+# but (at the debug level) is too much for commiting the gold log
+# into the git working tree on GitHub
+p.termLogLevel = 0
+p.logger.custom(truth_tracking, level = 2)
+p.logger.custom(digi_tagger, level = 2)
+p.logger.custom(digi_recoil, level = 2)
+p.logger.custom(seeder_tagger, level = 2)
+p.logger.custom(seeder_recoil, level = 2)
+p.logger.custom(tracking_tagger, level = 0)
+p.logger.custom(tracking_recoil, level = 0)
+p.logger.custom(seed_tagger_dqm, level = 2)
+p.logger.custom(seed_recoil_dqm, level = 2)
+p.logger.custom(tagger_dqm, level = 2)
+p.logger.custom(recoil_dqm, level = 2)
+
 p.sequence.extend([
         digi_tagger,
         digi_recoil,
@@ -223,5 +234,7 @@ p.sequence.extend([
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
-        ] + dqm.all_dqm)
+        ])
+
+p.sequence.extend(dqm.all_dqm)
 
