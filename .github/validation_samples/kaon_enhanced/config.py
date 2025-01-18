@@ -223,7 +223,6 @@ ecalVeto.recoil_from_tracking = False
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()
 hcalReco   =hDigi.HcalRecProducer()
-hcal_veto = hcal.HcalVetoProcessor()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
@@ -284,6 +283,10 @@ p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
 p.logger.custom(recoil_dqm, level = 2)
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 p.sequence=[ 
         mySim, 
         digi_tagger,
@@ -306,15 +309,19 @@ p.sequence=[
         hcalDigi, 
         hcalReco, 
         hcal_veto,
+<<<<<<< HEAD
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
         dqm.PhotoNuclearDQM(verbose=False)
+=======
+>>>>>>> 74c64257 (Add HCAL veto in the CI configs)
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
+        dqm.PhotoNuclearDQM(verbose=False)
         ]
 
 p.sequence.extend(dqm.all_dqm)

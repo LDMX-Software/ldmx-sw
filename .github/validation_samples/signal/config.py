@@ -23,8 +23,8 @@ p.sequence = [ mySim ]
 import os
 import sys
 
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
+p.maxEvents = 10 #int(os.environ['LDMX_NUM_EVENTS'])
+p.run = 1#int(os.environ['LDMX_RUN_NUMBER'])
 
 p.histogramFile = f'hist.root'
 p.outputFiles = [f'events.root']
@@ -210,6 +210,7 @@ p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
 p.logger.custom(recoil_dqm, level = 2)
 
+# Load HCAL veto
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
