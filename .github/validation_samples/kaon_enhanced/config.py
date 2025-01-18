@@ -218,7 +218,7 @@ trigScintTrack.seeding_collection = tsClustersTag.output_collection
 ecalReco   =eDigi.EcalRecProducer()
 ecalDigi = eDigi.EcalDigiProducer()
 ecalVeto   =vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = True
+ecalVeto.recoil_from_tracking = False
 
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()

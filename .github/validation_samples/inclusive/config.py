@@ -194,7 +194,7 @@ count.input_pass_name = ''
 
 # Load ecal veto and use tracking in it
 ecalVeto = ecal_vetos.EcalVetoProcessor()
-ecalVeto.recoil_from_tracking = True
+ecalVeto.recoil_from_tracking = False
 
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log

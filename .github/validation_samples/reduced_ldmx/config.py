@@ -76,4 +76,6 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 4000.),
-       ] + dqm.ecal_dqm)
+       ])
+
+p.sequence.extend(dqm.all_dqm)

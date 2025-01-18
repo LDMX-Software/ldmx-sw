@@ -166,7 +166,7 @@ for d in ts_digis :
 ecalDigi   =eDigi.EcalDigiProducer('ecalDigis')
 ecalReco   =eDigi.EcalRecProducer('ecalRecon')
 ecalVeto   =vetos.EcalVetoProcessor('ecalVetoBDT')
-ecalVeto.recoil_from_tracking = True
+ecalVeto.recoil_from_tracking = False
 
 ecalDigi.inputCollName  = ecalDigi.inputCollName+overlayStr
 ecalReco.simHitCollName = ecalReco.simHitCollName+overlayStr
