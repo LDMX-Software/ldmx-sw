@@ -2,6 +2,7 @@
  * @file HcalVetoProcessor.h
  * @brief Processor that determines if an event is vetoed by the Hcal.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef __HCAL_HCAL_VETO_PROCESSOR_H__
@@ -15,10 +16,12 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "DetDescr/HcalID.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Tracking/Event/Track.h"
 
 namespace hcal {
 
@@ -44,6 +47,17 @@ class HcalVetoProcessor : public framework::Producer {
    * @param event The event to process.
    */
   void produce(framework::Event &event) override;
+
+  /**
+   * Return a vector of parameters for a propagated recoil track
+   * @param[in] tracks The track collection
+   * @param[in] ts_type The track state type, i.e. tracks state at the mid-HCAL
+   * @param[in] ts_title The track state title, most likely "hcal"
+   * @returns Vector of parameters for a propagated recoil track
+   */
+  std::vector<float> trackProp(const ldmx::Tracks &tracks,
+                               ldmx::TrackStateType ts_type,
+                               const std::string &ts_title);
 
  private:
   /** Total PE threshold. */
@@ -76,6 +90,9 @@ class HcalVetoProcessor : public framework::Producer {
   std::string output_coll_name_;
   std::string input_hit_coll_name_;
   std::string input_hit_pass_name_;
+  bool exclude_recoil_ele_;
+  std::string track_collection_;
+  float dr_from_recoil_max_;
 };  // HcalVetoProcessor
 }  // namespace hcal
 

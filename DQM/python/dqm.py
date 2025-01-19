@@ -183,11 +183,13 @@ class HcalVetoResults(ldmxcfg.Analyzer) :
         self.hcal_veto_pass = ''
 
         self.build1DHistogram('max_pe',
-                'Maximal PE hit', 500, -0.5, 499.5)
+                'Maximal PE hit PE', 500, -0.5, 499.5)
         self.build1DHistogram('total_pe',
-                'Total number of HCAL photo-electrons', 500, -0.5, 1499.5)
+                'Total number of HCAL photo-electrons', 500, -0.5, 2999.5)
         self.build1DHistogram('max_section',
-                'Maximal PE section', 5, -0.5, 4.5)
+                'Maximal PE hit section', 5, -0.5, 4.5)
+        self.build1DHistogram('max_pos_z',
+                'Maximal PE hit postion Z [mm]', 6000, 200., 6200)
         self.build1DHistogram('veto_pass',
                 'Event passed the HCal Veto', 2, -0.5, 1.5)
 

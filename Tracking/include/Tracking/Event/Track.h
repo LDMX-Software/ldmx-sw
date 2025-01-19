@@ -38,7 +38,8 @@ enum TrackStateType {
   AtLastMeasurement = 3,
   AtECAL = 4,
   AtBeamOrigin = 5,
-  Invalid = 6
+  Invalid = 6,
+  AtHCAL = 7
 };
 
 /**
@@ -248,7 +249,7 @@ class Track {
   std::vector<TrackState> trackStates_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 2);
+  ClassDef(Track, 3);
 
 };  // Track
 

@@ -36,7 +36,7 @@ class HcalVetoResults : public framework::Analyzer {
    * Things to do only on process start
    */
   virtual void onProcessStart();
-  
+
   /**
    * Fills histograms
    */
