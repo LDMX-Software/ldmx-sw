@@ -79,7 +79,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
   // fastest, but need to trust module number between GDML and EcalGeometry
   // match
   ldmx::EcalID id =
-      geometry.getID(position[0], position[1], layerNumber, module_position);
+      geometry.getID(position.x(), position.y(), layerNumber, module_position);
 
   // medium, only need to trust z-layer positions in GDML and EcalGeometry match
   //    helpful for debugging any issues where transverse position is not
@@ -96,17 +96,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // hit in empty cell
     auto& hit = hits_[id];
     hit.setID(id.raw());
-    /**
-     * convert position to center of cell position
-     *
-     * This is the behavior that has been done in the past,
-     * although it is completely redundant with the ID information
-     * already deduced. It would probably help us more if we
-     * persisted the actual simulated position of the hit rather
-     * than the cell center; however, that is up for more discussion.
-     */
-    auto [x, y, z] = geometry.getPosition(id);
-    hit.setPosition(x, y, z);
+    hit.setPosition(position.x(), position.y(), position.z());
   }
 
   auto& hit = hits_[id];
