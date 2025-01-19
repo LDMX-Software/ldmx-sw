@@ -11,7 +11,7 @@ start_group Produce Dark Brem Library
 wget https://raw.githubusercontent.com/LDMX-Software/dark-brem-lib-gen/main/env.sh
 source env.sh
 # commented out lines are dbgen's defaults for reference
-#dbgen use latest
+dbgen use v4.6
 #dbgen cache ${HOME} <- only matters for apptainer/singularity
 #dbgen work /tmp
 #dbgen dest $PWD
