@@ -53,7 +53,8 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
       parameters.getParameter<bool>("exclude_recoil_ele", true);
   track_collection_ =
       parameters.getParameter<std::string>("track_collection", "RecoilTracks");
-  dr_from_recoil_max_ = parameters.getParameter<double>("dr_from_recoil_max", 100);
+  dr_from_recoil_max_ =
+      parameters.getParameter<double>("dr_from_recoil_max", 100);
 }
 
 void HcalVetoProcessor::produce(framework::Event &event) {
@@ -131,11 +132,13 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       auto drift_recoil_y = (dZ * (recoil_mom_y / recoil_mom_z)) + recoil_pos_y;
       auto dx = drift_recoil_x - hit_pos_x;
       auto dy = drift_recoil_y - hit_pos_y;
-      auto dR_squared = dx*dx + dy*dy + dZ*dZ;
+      auto dR_squared = dx * dx + dy * dy + dZ * dZ;
       auto dR = sqrt(dR_squared);
-      ldmx_log(info) << "    This hit has PE = " << pe <<  " and dR from ele = " <<  "is " << dR << " mm"; 
+      ldmx_log(info) << "    This hit has PE = " << pe << " and dR from ele = "
+                     << "is " << dR << " mm";
 
-      // Dont consider this hit for max PE hit if it's too close to the recoil electron trajectory 
+      // Dont consider this hit for max PE hit if it's too close to the recoil
+      // electron trajectory
       if (dR < dr_from_recoil_max_) {
         continue;
       }
@@ -150,7 +153,9 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   }
 
   ldmx_log(info) << "There are " << num_valid_hits << " / " << num_total_hits
-                 << " HCal hits read out. " << num_non_recoil_hits << " are not associated with the recoil ele. Total PE of " << total_PE;
+                 << " HCal hits read out. " << num_non_recoil_hits
+                 << " are not associated with the recoil ele. Total PE of "
+                 << total_PE;
   // If the maximum PE found is below threshold, it passes the veto.
   bool passes_veto = (max_PE < total_PE_threshold_);
   ldmx_log(info) << "HCAL veto passed? " << passes_veto;
@@ -195,13 +200,15 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     // param 3 = phi (azimuthal), param 4 = theta (polar)
     // LDMX (global) to ACTS (local) coordinates is (x,y,z) -> (y,z,x)
     // convert qop [1/GeV] to p [MeV]
-    double p_track_state = (-1/hcal_track_state.params[4])*1000; 
+    double p_track_state = (-1 / hcal_track_state.params[4]) * 1000;
     // p * sin(theta) * sin(phi)
-    double recoil_mom_x = p_track_state * sin(hcal_track_state.params[3]) * sin(hcal_track_state.params[2]); 
+    double recoil_mom_x = p_track_state * sin(hcal_track_state.params[3]) *
+                          sin(hcal_track_state.params[2]);
     // p * cos(theta)
-    double recoil_mom_y = p_track_state * cos(hcal_track_state.params[3]); 
+    double recoil_mom_y = p_track_state * cos(hcal_track_state.params[3]);
     // p * sin(theta) * cos(phi)
-    double recoil_mom_z = p_track_state * sin(hcal_track_state.params[3]) * cos(hcal_track_state.params[2]);
+    double recoil_mom_z = p_track_state * sin(hcal_track_state.params[3]) *
+                          cos(hcal_track_state.params[2]);
 
     // Store the new track state variables
     new_track_states.push_back(track_state_loc0);
