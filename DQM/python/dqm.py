@@ -244,7 +244,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
                 "RecHit Y - SimHit Y [mm]" , 30 , -15.0 , 15.0 )
 
         self.build1DHistogram( "rec_sim_hit_residual_z" ,
-                "RecHit Z - SimHit Z [mm]" , 200 , -5.0 , 5.0 )
+                "RecHit Z - SimHit Z [mm]" , 50 , -1.0 , 1.0 )
 
         self.build1DHistogram( "num_sim_hits_per_cell" ,
                 "Number of SimHits per ECal Cell (excluding empty rec cells)" , 20 , -0.5 , 19.5 )
