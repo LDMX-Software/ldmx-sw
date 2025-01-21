@@ -31,7 +31,7 @@ Flower_dz = PCB_dz+Glue_dz+Si_dz+GlueThick_dz+CarbonBasePlate_dz
 bilayer_noabsorber_thickness = FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz + CarbonCoolingPlane_dz + Flower_dz + PCB_Motherboard_Gap + PCB_dz + BackTolerance
 
 # Calculate positions of silicon modules
-first_sc_z_pos = bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz
+first_sc_z_pos = bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + correction_constant
 second_sc_z_pos = bilayer_start + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz + preshower_extra_air + CarbonCoolingPlane_dz + CarbonBasePlate_dz + GlueThick_dz + correction_constant
 calc_layers = [first_sc_z_pos, second_sc_z_pos]
 for i in range(len(bilayer_absorber_cumulative)-1):
