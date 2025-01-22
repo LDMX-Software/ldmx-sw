@@ -49,7 +49,7 @@ truth_tracking.p_cutEcal         = 0. # In MeV
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.termLogLevel = 0
+p.logger.termLevel = 0
 p.logger.custom(truth_tracking, level = 2)
 
 # These smearing quantities are default. We expect around 6um hit resolution in bending plane
@@ -199,7 +199,7 @@ ecalVeto.recoil_from_tracking = False
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.termLogLevel = 0
+p.logger.termLevel = 0
 p.logger.custom(truth_tracking, level = 2)
 p.logger.custom(digi_tagger, level = 2)
 p.logger.custom(digi_recoil, level = 2)
