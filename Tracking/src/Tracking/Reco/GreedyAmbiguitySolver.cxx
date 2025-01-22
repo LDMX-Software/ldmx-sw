@@ -12,7 +12,6 @@ GreedyAmbiguitySolver::GreedyAmbiguitySolver(const std::string& name,
                                              framework::Process& process)
     : TrackingGeometryUser(name, process) {}
 
-GreedyAmbiguitySolver::~GreedyAmbiguitySolver() {}
 
 // Helper Functions
 
@@ -218,8 +217,6 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
                   << " " << tracks.size();
 }
 
-void GreedyAmbiguitySolver::onProcessStart(){};
-void GreedyAmbiguitySolver::onProcessEnd(){};
 
 }  // namespace reco
 }  // namespace tracking

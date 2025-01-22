@@ -280,7 +280,6 @@ void CKFProcessor::produce(framework::Event& event) {
   if (startParameters.size() < 1) {
     std::vector<ldmx::Track> empty;
     event.add(out_trk_collection_, empty);
-    // event.add(out_trk_collection_+"Clean", empty);
     return;
   }
 

@@ -16,59 +16,16 @@
 
 // Utils and Definitions
 #include "Acts/Definitions/Common.hpp"
-//#include "Acts/Definitions/TrackParametrization.hpp"
-//#include "Acts/Definitions/Units.hpp"
-//#include "Acts/EventData/TrackParameters.hpp"
-//#include "Acts/EventData/detail/TransformationFreeToBound.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
 #include "Acts/Geometry/GeometryContext.hpp"
 
-// magfield
-//#include "Acts/MagneticField/MagneticFieldContext.hpp"
-//#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
 // geometry
 #include <Acts/Geometry/TrackingGeometry.hpp>
 
-// propagation testing
-//#include "Acts/MagneticField/ConstantBField.hpp"
-//#include "Acts/Propagator/AbortList.hpp"
-//#include "Acts/Propagator/ActionList.hpp"
-//#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-//#include "Acts/Propagator/EigenStepper.hpp"
-//#include "Acts/Propagator/MaterialInteractor.hpp"
-//#include "Acts/Propagator/Navigator.hpp"
-//#include "Acts/Propagator/Propagator.hpp"
-//#include "Acts/Propagator/StandardAborters.hpp"
-//#include "Acts/Propagator/detail/SteppingLogger.hpp"
-//#include "Acts/Surfaces/PerigeeSurface.hpp"
-//#include "Acts/Utilities/Logger.hpp"
-
-// Kalman Filter
-
-//#include "Acts/EventData/Measurement.hpp"
-//#include "Acts/EventData/MultiTrajectory.hpp"
-//#include "Acts/EventData/MultiTrajectoryHelpers.hpp"
-//#include "Acts/EventData/VectorTrackContainer.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
-//#include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
-//#include "Acts/TrackFinding/MeasurementSelector.hpp"
-//#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
-//#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
-//#include "Acts/Utilities/CalibrationContext.hpp"
-
-//--- Refit with backward propagation ---//
-//#include "Acts/TrackFitting/KalmanFitter.hpp"
-
-//-- Ambiguity Solving --//
-//#include "Tracking/Reco/AmbiguitySolver.h"
-//#include "Tracking/Reco/ScoreBasedAmbiguitySolver.h"
-
-// GSF
-//#include "Acts/TrackFitting/GaussianSumFitter.hpp"
-//#include "Acts/Propagator/MultiEigenStepperLoop.hpp"
 
 //--- Tracking ---//
 #include "Tracking/Event/Measurement.h"
@@ -102,9 +59,8 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   GreedyAmbiguitySolver(const std::string& name, framework::Process& process);
 
   /// Destructor
-  ~GreedyAmbiguitySolver();
+  virtual ~GreedyAmbiguitySolver() = default;
 
-  void onProcessStart() override;
 
   /**
    * onNewRun is the first function called for each processor
@@ -114,10 +70,6 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    */
   void onNewRun(const ldmx::RunHeader& rh) override;
 
-  /**
-   *
-   */
-  void onProcessEnd() override;
 
   /**
    * Configure the processor using the given user specified parameters.
