@@ -16,7 +16,7 @@ myGun.pdgID = 11
 myGun.enablePoisson = False #True   
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
-det = 'ldmx-reduced-v1'
+det = 'ldmx-reduced-v2'
 mySim.setDetector(det, True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun Test Simulation'
@@ -43,6 +43,7 @@ import LDMX.Hcal.digi as hcal_digi
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.num_ecal_layers = 6
 ecalVeto.beam_energy = 4000.
+ecalVeto.recoil_from_tracking = False
 
 from LDMX.TrigScint.trigScint import TrigScintDigiProducer
 from LDMX.TrigScint.trigScint import TrigScintClusterProducer
@@ -75,4 +76,6 @@ p.sequence.extend([
         TrigScintClusterProducer.pad3(),
         trigScintTrack, 
         count, TriggerProcessor('trigger', 4000.),
-       ] + dqm.ecal_dqm)
+       ])
+
+p.sequence.extend(dqm.all_dqm)
