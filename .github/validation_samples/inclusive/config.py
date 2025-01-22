@@ -46,12 +46,6 @@ truth_tracking.p_cut             = 0.05 # In MeV
 truth_tracking.pz_cut            = 0.03
 truth_tracking.p_cutEcal         = 0. # In MeV
 
-# The Tracking modules produce a lot of helpful messages
-# but (at the debug level) is too much for commiting the gold log
-# into the git working tree on GitHub
-p.logger.termLevel = 0
-p.logger.custom(truth_tracking, level = 2)
-
 # These smearing quantities are default. We expect around 6um hit resolution in bending plane
 # v-smearing is actually not used as 1D measurements are used for tracking. These smearing parameters
 # are fed to the digitization producer.
@@ -205,8 +199,8 @@ p.logger.custom(digi_tagger, level = 2)
 p.logger.custom(digi_recoil, level = 2)
 p.logger.custom(seeder_tagger, level = 2)
 p.logger.custom(seeder_recoil, level = 2)
-p.logger.custom(tracking_tagger, level = 0)
-p.logger.custom(tracking_recoil, level = 0)
+p.logger.custom(tracking_tagger, level = 1)
+p.logger.custom(tracking_recoil, level = 1)
 p.logger.custom(seed_tagger_dqm, level = 2)
 p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
