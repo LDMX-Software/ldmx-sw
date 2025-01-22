@@ -209,6 +209,26 @@ p.logger.custom(recoil_dqm, level = 2)
 import LDMX.Hcal.hcal as hcal
 hcal_veto = hcal.HcalVetoProcessor()
 
+# Load ecal veto and use tracking in it
+ecalVeto = ecal_vetos.EcalVetoProcessor()
+ecalVeto.recoil_from_tracking = False
+
+# The Tracking modules produce a lot of helpful messages
+# but (at the debug level) is too much for commiting the gold log
+# into the git working tree on GitHub
+p.logger.termLevel = 0
+p.logger.custom(truth_tracking, level = 2)
+p.logger.custom(digi_tagger, level = 2)
+p.logger.custom(digi_recoil, level = 2)
+p.logger.custom(seeder_tagger, level = 2)
+p.logger.custom(seeder_recoil, level = 2)
+p.logger.custom(tracking_tagger, level = 0)
+p.logger.custom(tracking_recoil, level = 0)
+p.logger.custom(seed_tagger_dqm, level = 2)
+p.logger.custom(seed_recoil_dqm, level = 2)
+p.logger.custom(tagger_dqm, level = 2)
+p.logger.custom(recoil_dqm, level = 2)
+
 p.sequence.extend([
         digi_tagger,
         digi_recoil,

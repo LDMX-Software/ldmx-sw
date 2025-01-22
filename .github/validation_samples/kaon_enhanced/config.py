@@ -311,6 +311,10 @@ p.sequence=[
         seed_recoil_dqm,
         recoil_dqm,
         dqm.PhotoNuclearDQM(verbose=False)
+        seed_tagger_dqm,
+        tagger_dqm,
+        seed_recoil_dqm,
+        recoil_dqm,
         ]
 
 p.sequence.extend(dqm.all_dqm)
