@@ -186,6 +186,8 @@ class HcalVetoResults(ldmxcfg.Analyzer) :
                 'Maximal PE hit PE', 500, -0.5, 499.5)
         self.build1DHistogram('total_pe',
                 'Total number of HCAL photo-electrons', 500, -0.5, 2999.5)
+        self.build1DHistogram('num_valid_hits',
+                'Total number of valid HCAL hits', 500, -0.5, 499.5)
         self.build1DHistogram('max_section',
                 'Maximal PE hit section', 5, -0.5, 4.5)
         self.build1DHistogram('max_pos_z',

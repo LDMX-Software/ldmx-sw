@@ -134,6 +134,13 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       auto dy = drift_recoil_y - hit_pos_y;
       auto dR_squared = dx * dx + dy * dy + dZ * dZ;
       auto dR = sqrt(dR_squared);
+      ldmx_log(info) << "    This hit is at " << hit_pos_x << " / " << hit_pos_y << " /  " << hit_pos_z << " mm";
+      ldmx_log(info) << "    Ele is projected at " << drift_recoil_x << " / " << drift_recoil_y << " /  " << recoil_pos_z - dZ;
+      ldmx_log(info) << "    from " << recoil_pos_x << " / "  << recoil_pos_y << " / " << recoil_pos_z << " / "  << " mm";
+
+
+      ldmx_log(info) << "       Ele had momentum of  " << recoil_mom_x << " / " << recoil_mom_y
+                     << " /  " << recoil_mom_z << " MeV";     
       ldmx_log(info) << "    This hit has PE = " << pe << " and dR from ele = "
                      << "is " << dR << " mm";
 
@@ -164,6 +171,7 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   result.setVetoResult(passes_veto);
   result.setMaxPEHit(*max_PE_hit);
   result.setTotalPE(total_PE);
+  result.setNumValidHits(num_valid_hits);
 
   if (passes_veto) {
     setStorageHint(framework::hint_shouldKeep);
