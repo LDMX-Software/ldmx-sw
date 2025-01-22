@@ -65,25 +65,26 @@ seederTagger = tracking.SeedFinderProcessor("SeedTagger")
 seederTagger.input_hits_collection =  digiTagger.out_collection
 #seederTagger.perigee_location = [0.,0.,0.]
 seederTagger.out_seed_collection = "TaggerRecoSeeds"
-#seederTagger.pmin  = 2.
-seederTagger.pmax  = 9.
-seederTagger.d0min = -60.
-seederTagger.d0max = 60.
-#seederTagger.d0max =  60. #60. # 0
+seederTagger.pmin  = 0.02743004128947902
+seederTagger.pmax  =  63.03941963609926 #4
+seederTagger.d0min =  -36.90755883944579 #-60. #-0.5
+seederTagger.d0max = 31.512252170025366 #60. #0.5
+seederTagger.z0max = 54.622547563516235 #60. #10
+seederTagger.thetacut = 0.2622650393957737
+seederTagger.phicut =  0.8370135051959274
 
 #Seed finder processor - Recoil
 seederRecoil = tracking.SeedFinderProcessor("SeedRecoil")
 seederRecoil.perigee_location = [0.,0.,0.]
 seederRecoil.input_hits_collection =  digiRecoil.out_collection
 seederRecoil.out_seed_collection = "RecoilRecoSeeds"
-#seederRecoil.bfield = 1.5
-seederRecoil.pmin  = 0.49092868011123036
-seederRecoil.pmax  =  98.13998986979094 #4
-seederRecoil.d0min =  -27.14670790136963 #-60. #-0.5
-seederRecoil.d0max = 30.34555944396442 #60. #0.5
-seederRecoil.z0max = 50.601628971164075 #60. #10
-seederRecoil.thetacut = 1.9359243746789738
-seederRecoil.phicut =  0.4895040472097839
+seederRecoil.pmin  =   0.04311669558561525
+seederRecoil.pmax  =  819.0346117063144
+seederRecoil.d0min =  -40.20866044915365
+seederRecoil.d0max = 36.47833845632701
+seederRecoil.z0max = 40.517081118987285
+seederRecoil.thetacut =  1.4783718595311992 
+seederRecoil.phicut =  1.5786029498528924 
 
 
 
@@ -92,19 +93,12 @@ tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
 tracking_tagger.dumpobj = False
 tracking_tagger.debug = False
 tracking_tagger.propagator_step_size = 1000.  #mm
-tracking_tagger.bfield = -1.5  #in T #From looking at the BField map
 tracking_tagger.const_b_field = False
-
-#Target location for the CKF extrapolation
 tracking_tagger.seed_coll_name = "TaggerRecoSeeds" #seederTagger.out_seed_collection #"TaggerTruthSeeds" #
 tracking_tagger.out_trk_collection = "TaggerTracks"
-
-#smear the hits used for finding/fitting
-tracking_tagger.trackID = -1 #1
-tracking_tagger.pdgID = -9999 #11
 tracking_tagger.measurement_collection = digiTagger.out_collection
 tracking_tagger.min_hits = 5
-tracking_tagger.outlier_pval_ = 19.902973014794874
+tracking_tagger.outlier_pval_ = 16.501226781496662
 
 #CKF Options
 tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
@@ -114,17 +108,12 @@ tracking_recoil.propagator_step_size = 1000.  #mm
 tracking_recoil.bfield = -1.5  #in T #From looking at the BField map
 tracking_recoil.const_b_field = False
 tracking_recoil.taggerTracking = False
-
-#Target location for the CKF extrapolation
-#tracking_recoil.seed_coll_name = seederRecoil.out_seed_collection
 tracking_recoil.seed_coll_name = "RecoilRecoSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
-
-#smear the hits used for finding/fitting
-tracking_recoil.trackID = -1 #1
-tracking_recoil.pdgID = -9999 #11
 tracking_recoil.measurement_collection = digiRecoil.out_collection
-tracking_recoil.min_hits = 5
+tracking_recoil.min_hits = 8
+tracking_recoil.outlier_pval_ =  22.165497985508754
+
 
 GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
 GSF_tagger.trackCollection = "TaggerTracksClean"
@@ -153,32 +142,6 @@ greedy_solver_recoil.maximumSharedHits = 2
 greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
 greedy_solver_recoil.trackCollection = "RecoilTracks"
 greedy_solver_recoil.measCollection = "DigiRecoilSimHits"
-
-'''
-
-score_solver_tagger = tracking.ScoreBasedAmbiguitySolver("ScoreSolverTagger")
-score_solver_tagger.addDetectorConfig(volumes = [2,3], hitsScoreWeight = 0,
-                                      holesScoreWeight = -1, outliersScoreWeight = -1,
-                                      otherScoreWeight = -1, minHits = 5, maxHits = 14, maxHoles = 1,
-                                      maxOutliers = 2, maxSharedHits = 2, sharedHitsFlag = True, 
-                                      detectorId = 0, factorHits = [1.0], factorHoles = [1.0])
-
-#score_solver_tagger.addDetectorConfig(volumes = [4], hitsScoreWeight = 1,
-#                                      holesScoreWeight = 1, outliersScoreWeight = 1,
-#                                      otherScoreWeight = 1, minHits = 1, maxHits = 1, maxHoles = 1,
-#                                      maxOutliers = 1, maxSharedHits = 1, sharedHitsFlag = True, 
-#                                    detectorId = 1, factorHits = [1.0], factorHoles = [1.0])
-
-score_solver_tagger.minScore = 1.5
-score_solver_tagger.minScoreSharedTracks = 1.5
-score_solver_tagger.out_trk_collection = "TaggerScoreClean"
-score_solver_tagger.trackCollection = "TaggerTracks"
-score_solver_tagger.measCollection = "DigiTaggerSimHits"
-score_solver_tagger.verbose = True
-score_solver_tagger.etaMin = -100.
-score_solver_tagger.etaMax = 100.
-'''
-  
 
 from LDMX.Tracking import dqm
 digi_dqm = dqm.TrackerDigiDQM()
