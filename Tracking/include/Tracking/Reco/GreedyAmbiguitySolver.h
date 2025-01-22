@@ -81,7 +81,6 @@
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
-
 namespace tracking {
 namespace reco {
 
@@ -100,7 +99,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  GreedyAmbiguitySolver(const std::string &name, framework::Process &process);
+  GreedyAmbiguitySolver(const std::string& name, framework::Process& process);
 
   /// Destructor
   ~GreedyAmbiguitySolver();
@@ -113,7 +112,7 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -129,30 +128,29 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
-  private:
+ private:
+  /// Maximum amount of shared hits per track.
+  std::uint32_t maximumSharedHits_{1};
+  /// Maximum number of iterations
+  std::uint32_t maximumIterations_{1000};
 
-    /// Maximum amount of shared hits per track.
-    std::uint32_t maximumSharedHits_{1};
-    /// Maximum number of iterations
-    std::uint32_t maximumIterations_{1000};
+  /// Minimum number of measurement to form a track.
+  std::size_t nMeasurementsMin_{7};
 
-    /// Minimum number of measurement to form a track.
-    std::size_t nMeasurementsMin_{7};
+  std::string out_trk_collection_{"TaggerTracksClean"};
 
-    std::string out_trk_collection_{"TaggerTracksClean"};
+  std::string trackCollection_{"TaggerTracks"};
 
-    std::string trackCollection_{"TaggerTracks"};
-
-    std::string measCollection_{"DigiTaggerSimHits"};
+  std::string measCollection_{"DigiTaggerSimHits"};
 
   struct State {
     std::size_t numberOfTracks{};
@@ -172,36 +170,41 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   };
 
   /// @param tracks The input track container.
-  /// @param state An empty state object which is expected to be default constructed.
-  /// @param sourceLinkHash A functor to acquire a hash from a given source link.
+  /// @param state An empty state object which is expected to be default
+  /// constructed.
+  /// @param sourceLinkHash A functor to acquire a hash from a given source
+  /// link.
   /// @param sourceLinkEquality A functor to check equality of two source links.
   template <typename geometry_t, typename source_link_hash_t,
             typename source_link_equality_t>
-  void computeInitialState(
-      std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> measurements,
-      State& state, geometry_t& tg, source_link_hash_t&& sourceLinkHash,
-      source_link_equality_t&& sourceLinkEquality) const;
+  void computeInitialState(std::vector<ldmx::Track> tracks,
+                           std::vector<ldmx::Measurement> measurements,
+                           State& state, geometry_t& tg,
+                           source_link_hash_t&& sourceLinkHash,
+                           source_link_equality_t&& sourceLinkEquality) const;
 
   /// Updates the state iteratively by evicting one track after the other until
   /// the final state conditions are met.
   ///
-  /// @param state A state object that was previously filled by the initialization.
+  /// @param state A state object that was previously filled by the
+  /// initialization.
   void resolve(State& state) const;
 
-  /// @param state A state object that was previously filled by the initialization.
+  /// @param state A state object that was previously filled by the
+  /// initialization.
   /// @param iTrack
   void removeTrack(State& state, std::size_t iTrack) const;
 
   /*
-  /// @param a 
+  /// @param a
   std::size_t sourceLinkHash(const Acts::SourceLink& a);
 
-  /// @param a 
+  /// @param a
   /// @param b
   bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b);
   */
 
 };  // MyProcessor
 
-}  // namespace recon
-}
+}  // namespace reco
+}  // namespace tracking
