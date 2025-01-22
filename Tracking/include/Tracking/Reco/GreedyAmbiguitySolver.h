@@ -21,7 +21,6 @@
 // geometry
 #include "Acts/Geometry/GeometryContext.hpp"
 
-
 // geometry
 #include <Acts/Geometry/TrackingGeometry.hpp>
 
@@ -61,7 +60,6 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   /// Destructor
   virtual ~GreedyAmbiguitySolver() = default;
 
-
   /**
    * onNewRun is the first function called for each processor
    * *after* the conditions are fully configured and accessible.
@@ -69,7 +67,6 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    * calculation objects.
    */
   void onNewRun(const ldmx::RunHeader& rh) override;
-
 
   /**
    * Configure the processor using the given user specified parameters.
