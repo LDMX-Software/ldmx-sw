@@ -127,6 +127,21 @@ class Track {
   }
   std::vector<unsigned int> getMeasurementsIdxs() const { return meas_idxs_; }
 
+  void addOutlierIndex(unsigned int measIdx) {
+    outlier_idxs_.push_back(measIdx);
+  }
+  std::vector<unsigned int> getOutlierIdxs() const { return outlier_idxs_; }
+
+  void addHoleIndex(unsigned int measIdx) {
+    hole_idxs_.push_back(measIdx);
+  }
+  std::vector<unsigned int> getHoleIdxs() const { return hole_idxs_; }
+
+  void addSharedIndex(unsigned int measIdx) {
+    shared_idxs_.push_back(measIdx);
+  }
+  std::vector<unsigned int> getSharedIdxs() const { return shared_idxs_; }
+
   /// d_0 z_0 phi_0 theta q/p t
   // void setPerigeeParameters(const Acts::BoundVector& par)  {perigee_pars_ =
   // par; } Acts::BoundVector getPerigeeParameters() {return perigee_pars_;}
@@ -190,6 +205,7 @@ class Track {
 
   void addTrackState(const ldmx::Track::TrackState& ts) {
     trackStates_.push_back(ts);
+
   };
 
   std::vector<TrackState> getTrackStates() const { return trackStates_; }
@@ -235,6 +251,15 @@ class Track {
   // The vector of measurement IDs
   std::vector<unsigned int> meas_idxs_{};
 
+  // The vector of outlier IDs
+  std::vector<unsigned int> outlier_idxs_{};
+
+  // The vector of hole IDs
+  std::vector<unsigned int> hole_idxs_{};
+
+  // The vector of shared hit IDs
+  std::vector<unsigned int> shared_idxs_{};
+
   // ID of the matched particle in the SimParticles map
   int trackID_{-1};
 
@@ -243,6 +268,15 @@ class Track {
 
   // pdgID
   int pdgID_{0};
+
+    // TrackStates leaves
+  std::vector<double> trackStateTargetLoc_{-999., -999., -999.};
+  std::vector<double> trackStateTargetParams_{-999., -999., -999.,-999., -999., -999.};
+  std::vector<double> trackStateTargetCov_;
+
+  std::vector<double> trackStateECalLoc_{-999., -999., -999.};
+  std::vector<double> trackStateECalParams_{-999., -999., -999.,-999., -999., -999.};
+  std::vector<double> trackStateECalCov_;
 
   // Track States
   std::vector<TrackState> trackStates_;
