@@ -1,0 +1,2 @@
+.github/validation_samples/*/gold.log filter=lfs diff=lfs merge=lfs -text
+.github/validation_samples/*/gold.root filter=lfs diff=lfs merge=lfs -text
