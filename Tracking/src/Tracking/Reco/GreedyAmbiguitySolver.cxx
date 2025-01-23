@@ -210,9 +210,10 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   //     initial_state.measurementsPerTrack[iTrack].size() << std::endl;
   // }
 
-    ldmx_log(debug) <<  " " << "Resolved to " << state.selected_tracks.size() << " tracks from "
-                           << " " << tracks.size();
-
+  ldmx_log(debug) << " "
+                  << "Resolved to " << state.selected_tracks.size()
+                  << " tracks from "
+                  << " " << tracks.size();
 }
 
 }  // namespace reco
