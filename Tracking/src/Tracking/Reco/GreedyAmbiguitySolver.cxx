@@ -27,7 +27,7 @@ Acts::SourceLink& b) { return a.get<ActsExamples::IndexSourceLink>().index() ==
 */
 
 void GreedyAmbiguitySolver::removeTrack(State& state,
-                        std::size_t iTrack) const {
+                                        std::size_t iTrack) const {
   for (auto iMeasurement : state.measurements_per_track[iTrack]) {
     state.tracks_per_measurement[iMeasurement].erase(iTrack);
     if (state.tracks_per_measurement[iMeasurement].size() == 1) {
@@ -79,9 +79,9 @@ void GreedyAmbiguitySolver::computeInitialState(
     state.selected_tracks.insert(state.number_of_tracks);
 
     ++state.number_of_tracks;
-    }
+  }
 
-    // Now we relate measurements to tracks
+  // Now we relate measurements to tracks
   for (std::size_t iTrack = 0; iTrack < state.number_of_tracks; ++iTrack) {
     for (auto iMeasurement : state.measurements_per_track[iTrack]) {
       state.tracks_per_measurement[iMeasurement].insert(iTrack);
@@ -127,7 +127,7 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
   for (std::size_t i = 0; i < maximum_iterations_; ++i) {
     // Lazy out if there is nothing to filter on.
     if (state.selected_tracks.empty()) {
-      //ldmx_log(debug) << "no tracks left - exit loop";
+      // ldmx_log(debug) << "no tracks left - exit loop";
       break;
     }
 
@@ -136,9 +136,9 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
     auto maximumSharedMeasurements = *std::max_element(
         state.selected_tracks.begin(), state.selected_tracks.end(),
         sharedMeasurementsComperator);
-    //ldmx_log(debug)  <<
-    //    "maximum shared measurements "
-    //    << state.sharedMeasurementsPerTrack[maximumSharedMeasurements];
+    // ldmx_log(debug)  <<
+    //     "maximum shared measurements "
+    //     << state.sharedMeasurementsPerTrack[maximumSharedMeasurements];
     if (state.shared_measurements_per_track[maximumSharedMeasurements] <
         maximum_shared_hits_) {
       break;
@@ -148,11 +148,12 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
     auto badTrack =
         *std::max_element(state.selected_tracks.begin(),
                           state.selected_tracks.end(), trackComperator);
-    //ldmx_log(debug)  << "remove track "
-    //            << badTrack << " nMeas "
-    //             << state.measurementsPerTrack[badTrack].size() << " nShared "
-    //             << state.sharedMeasurementsPerTrack[badTrack] << " chi2 "
-    //             << state.trackChi2[badTrack] << std::endl;
+    // ldmx_log(debug)  << "remove track "
+    //             << badTrack << " nMeas "
+    //              << state.measurementsPerTrack[badTrack].size() << " nShared
+    //              "
+    //              << state.sharedMeasurementsPerTrack[badTrack] << " chi2 "
+    //              << state.trackChi2[badTrack] << std::endl;
     removeTrack(state, badTrack);
   }
 }
@@ -166,12 +167,14 @@ void GreedyAmbiguitySolver::configure(
   out_trk_collection_ = parameters.getParameter<std::string>(
       "out_trk_collection", "TaggerTracksClean");
 
-    track_collection_= parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
+  track_collection_ =
+      parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
 
-    meas_collection_= parameters.getParameter<std::string>("measCollection", "DigiTaggerSimHits");
+  meas_collection_ = parameters.getParameter<std::string>("measCollection",
+                                                          "DigiTaggerSimHits");
 
-    n_meas_min_ = parameters.getParameter<int>("nMeasurementsMin",5);
-    maximum_shared_hits_ = parameters.getParameter<int>("maximumSharedHits",1);
+  n_meas_min_ = parameters.getParameter<int>("nMeasurementsMin", 5);
+  maximum_shared_hits_ = parameters.getParameter<int>("maximumSharedHits", 1);
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {
@@ -180,23 +183,24 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 
   auto tg{geometry()};
 
-    if (!event.exists(track_collection_)) return;
-    auto tracks{event.getCollection<ldmx::Track>(track_collection_)};
+  if (!event.exists(track_collection_)) return;
+  auto tracks{event.getCollection<ldmx::Track>(track_collection_)};
 
-    if (!event.exists(meas_collection_)) return;
-    auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_)};
+  if (!event.exists(meas_collection_)) return;
+  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_)};
 
   computeInitialState(tracks, measurements, state, tg,
                       tracking::sim::utils::sourceLinkHash,
                       tracking::sim::utils::sourceLinkEquality);
   resolve(state);
 
-    for (auto iTrack : state.selected_tracks) {
-      auto clean_trk = tracks[state.track_tips.at(iTrack)];
-      if (clean_trk.getNhits() > n_meas_min_ && abs(1. / clean_trk.getQoP()) > 0.05) {
-        out_tracks.push_back(clean_trk);
-     }
+  for (auto iTrack : state.selected_tracks) {
+    auto clean_trk = tracks[state.track_tips.at(iTrack)];
+    if (clean_trk.getNhits() > n_meas_min_ &&
+        abs(1. / clean_trk.getQoP()) > 0.05) {
+      out_tracks.push_back(clean_trk);
     }
+  }
 
   event.add(out_trk_collection_, out_tracks);
 
@@ -206,15 +210,16 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
   //     initial_state.measurementsPerTrack[iTrack].size() << std::endl;
   // }
 
-    ldmx_log(debug) <<  " " << "Resolved to " << state.selected_tracks.size() << " tracks from "
-                           << " " << tracks.size();
-
+  ldmx_log(debug) << " "
+                  << "Resolved to " << state.selected_tracks.size()
+                  << " tracks from "
+                  << " " << tracks.size();
 }
 
 void GreedyAmbiguitySolver::onProcessStart(){};
 void GreedyAmbiguitySolver::onProcessEnd(){};
 
-}
-}
+}  // namespace reco
+}  // namespace tracking
 
 DECLARE_PRODUCER_NS(tracking::reco, GreedyAmbiguitySolver)
