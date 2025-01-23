@@ -25,6 +25,8 @@ jobs:
       with:
           just-version: 1.26.0
 
+          
+
     - name: Compile and Install ldmx-sw
       run: | 
         just install-denv init configure-force-error
@@ -81,6 +83,9 @@ jobs:
     needs: [generation]
     runs-on: ubuntu-latest
     steps:
+    - name: Install Git LFS
+      run: git lfs install
+      
     - name: Checkout ldmx-sw
       uses: actions/checkout@v4
       with:
@@ -119,6 +124,9 @@ jobs:
           mv ${sample_d}/hist.root .github/validation_samples/${sample}/gold.root
           mv ${sample_d}/output.log .github/validation_samples/${sample}/gold.log
         done
+        git lfs track ".github/validation_samples/*/gold.log"
+        git lfs track ".github/validation_samples/*/gold.root"
+        git add .gitattributes
         git add .github/validation_samples/*/gold.*
         end_group
         start_group Set Outputs
