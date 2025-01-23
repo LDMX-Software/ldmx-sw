@@ -101,7 +101,7 @@ class LinearTrackFinder(Producer):
         The maximum distance on the Ecal First Layer at which we still allow a seed to be saved
     """
 
-    def __init__(self, instance_name="ReducedTrackFinder"):
+    def __init__(self, instance_name="LinearTrackFinder"):
         super().__init__(instance_name, 'tracking::reco::LinearTrackFinder', 'Tracking')
         self.seed_coll_name = 'LinearRecoilSeedTracks'
         self.out_trk_collection = 'LinearRecoilTracks'
@@ -130,11 +130,11 @@ class LinearTruthTracking(Producer):
         The maximum distance on the Ecal First Layer at which we still allow a seed to be saved
     """
 
-    def __init__(self, instance_name="ReducedSeedFinder"):
+    def __init__(self, instance_name="LinearTruthTracking"):
         super().__init__(instance_name, 'tracking::reco::LinearTruthTracking', 'Tracking')
         self.input_hits_collection = 'DigiRecoilSimHits'
         self.input_recHits_collection = 'EcalRecHits'
-        self.out_track_collection = 'RecoilTruthTracks'
+        self.out_track_collection = 'LinearRecoilTruthTracks'
         self.recoil_truth_uncertainty = [0.006, 0.12]
 
 class SeedFinderProcessor(Producer):

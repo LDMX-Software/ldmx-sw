@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('reduced_algo_v2_test')
+p = ldmxcfg.Process('rLDMX_v2')
 
 p.maxTriesPerEvent = 100
 
@@ -30,7 +30,7 @@ p.maxEvents = 100
 p.run = 200
 
 p.histogramFile = f'hist_reducedAlgoV2_withTruth.root'
-p.outputFiles = [f'events_1_reducedAlgoV2.root']
+p.outputFiles = [f'events_100_rLDMXV2.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
@@ -65,10 +65,10 @@ digiRecoil.merge_hits = True
 digiRecoil.sigma_u = uSmearing
 digiRecoil.sigma_v = vSmearing
 
-#truth_tracking = tracking.ReducedTruthTracking("ReducedTruthTracking")
-#truth_tracking.input_hit_collection = "DigiRecoilSimHits"
-#truth_tracking.input_recHits_collection = "EcalRecHits"
-#truth_tracking.out_track_collection = "ReducedTruthTracks"
+truth_tracking = tracking.LinearTruthTracking("LinearTruthTracking")
+truth_tracking.input_hit_collection = "DigiRecoilSimHits"
+truth_tracking.input_recHits_collection = "EcalRecHits"
+truth_tracking.out_track_collection = "LinearRecoilTruthTracks"
 
 rSeedTracking = tracking.LinearSeedFinder("LinearSeedFinder")
 rSeedTracking.input_hit_collection = "DigiRecoilSimHits"
@@ -80,4 +80,4 @@ rTracking = tracking.LinearTrackFinder("LinearTrackFinder")
 rTracking.seed_coll_name = "LinearRecoilSeedTracks"
 rTracking.out_trk_collection = "LinearRecoilTracks"
 
-p.sequence.extend([digiRecoil, rSeedTracking, rTracking])
+p.sequence.extend([digiRecoil, truth_tracking, rSeedTracking, rTracking])

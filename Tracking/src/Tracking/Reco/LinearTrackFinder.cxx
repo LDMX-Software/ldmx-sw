@@ -50,7 +50,7 @@ void LinearTrackFinder::produce(framework::Event& event) {
         straight_tracks = findTracks(seed_tracks);
     }
     
-    ntracks_ = straight_tracks.size();
+    ntracks_ += straight_tracks.size();
     
     // Add the tracks to the event
     event.add(out_trk_collection_, straight_tracks);
@@ -63,7 +63,7 @@ void LinearTrackFinder::produce(framework::Event& event) {
 }
 
 void LinearTrackFinder::onProcessEnd() {
-    ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_ << " nseeds";
+    ldmx_log(info) << "found " << ntracks_ << " tracks / " << nevents_ << " events.";
     ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1) << processing_time_ / nevents_ << " ms";
 }
 

@@ -97,7 +97,7 @@ protected:
     std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
 
     /// The name of the output collection of seeds to be stored.
-    std::string out_trk_collection_{"RecoilTruthTracks"};
+    std::string out_trk_collection_{"LinearRecoilTruthTracks"};
     /// The name of the input hits collection to use in finding seeds..
     std::string input_hits_collection_{"DigiRecoilSimHits"};
     /// The name of the tagger Tracks (only for Recoil Seeding)

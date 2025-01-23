@@ -20,7 +20,7 @@ void LinearTruthTracking::onProcessStart() {
 
 void LinearTruthTracking::configure(framework::config::Parameters& parameters) {
     // Output seed name
-    out_trk_collection_ = parameters.getParameter<std::string>("out_trk_collection", "RecoilTruthTracks");
+    out_trk_collection_ = parameters.getParameter<std::string>("out_trk_collection", "LinearRecoilTruthTracks");
     
     // Input strip hits
     input_hits_collection_ = parameters.getParameter<std::string>("input_hits_collection", "DigiRecoilSimHits");
@@ -125,10 +125,12 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(const std::vector<ldmx::Me
         }
     }
 
-    trk.setFirstLayerEcalRecHit(*closestRecHit);  // Dereference the pointer to pass by value
-    trk.setDistancetoRecHit(minDistance);
-    trk.setEcalLayer1Location(extrapolatedPoint);
-    
+    if (closestRecHit != nullptr) {
+        trk.setFirstLayerEcalRecHit(*closestRecHit);  // Dereference the pointer to pass by value
+        trk.setDistancetoRecHit(minDistance);
+        trk.setEcalLayer1Location(extrapolatedPoint);
+    }
+
     return trk;
 }
 

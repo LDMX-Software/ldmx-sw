@@ -82,8 +82,8 @@ namespace ldmx {
         }
         std::array<double, 3> getSecondSensorPosition() const { return secondSensor_; };
         
-        void setFirstLayerEcalRecHit(const std::array<double, 3>& ecalRecHit) {
-            ecalRecHit_ = ecalRecHit;
+        void setFirstLayerEcalRecHit(const std::array<double, 3>& ecal_hit) {
+            ecalRecHit_ = ecal_hit;
         }
         std::array<double, 3> getFirstLayerEcalRecHit() const { return ecalRecHit_; };
         
@@ -125,11 +125,6 @@ namespace ldmx {
 
         void setPdgID(int pdgID) { pdgID_ = pdgID; };
         int getPdgID() const { return pdgID_; };
-        
-        // getters -- TODO use an enum instead
-        
-        //    double getPhi() const { return perigee_pars_[2]; };
-        //    double getTheta() const { return perigee_pars_[3]; };
         
     protected:
         //Actual Track Parameters
