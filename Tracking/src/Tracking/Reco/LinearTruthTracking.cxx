@@ -50,7 +50,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
     }
 
 //     ! Check if we would fit empty seeds !
-    if (recoilHits.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(recoilHits) < 2) {
+    if (recoilHits.size() < 2) { // || uniqueSensorsHit(recoilHits) < 2) {
         nmissing_++;
         ntruth_ += straight_truth_tracks.size();
         return;
@@ -62,7 +62,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
         truthPoints = findTruthHits(recoilHits);
     }
     
-    if (truthPoints.size() > 0 and firstLayerEcalRecHits.size() > 0) {
+    if (truthPoints.size() > 0) {
         straight_truth_tracks.push_back(TruthTracker(truthPoints, firstLayerEcalRecHits));
     }
     else {
@@ -107,29 +107,31 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(const std::vector<ldmx::Me
 
     trk.setChi2(globalChiSquare(points, ax, ay, bx, by));
     
-    double ecal_firstLayer_z = ecalPoints[0][0];  // Z position from the first point of ecalPoints
-    
-    std::array<double, 3> extrapolatedPoint = {ecal_firstLayer_z, ax * ecal_firstLayer_z + bx, ay * ecal_firstLayer_z + by};
-    
-    // Initialize closestRecHit and minDistance
-    const std::array<double, 3>* closestRecHit = nullptr;
-    double minDistance = std::numeric_limits<double>::max();
-    
-    // Loop through ecalPoints to find the closest recHit
-    for (const auto& ecalRecHit : ecalPoints) {
-        double tempDistance = calculateDistance(extrapolatedPoint, ecalRecHit);
+    if (ecalPoints.size() > 0) {
+        double ecal_firstLayer_z = ecalPoints[0][0];  // Z position from the first point of ecalPoints
         
-        if (tempDistance < minDistance) {
-            minDistance = tempDistance;
-            closestRecHit = &ecalRecHit; // Update to the closest recHit
+        std::array<double, 3> extrapolatedPoint = {ecal_firstLayer_z, ax * ecal_firstLayer_z + bx, ay * ecal_firstLayer_z + by};
+        
+        // Initialize closestRecHit and minDistance
+        const std::array<double, 3>* closestRecHit = nullptr;
+        double minDistance = std::numeric_limits<double>::max();
+        
+        // Loop through ecalPoints to find the closest recHit
+        for (const auto& ecalRecHit : ecalPoints) {
+            double tempDistance = calculateDistance(extrapolatedPoint, ecalRecHit);
+            
+            if (tempDistance < minDistance) {
+                minDistance = tempDistance;
+                closestRecHit = &ecalRecHit; // Update to the closest recHit
+            }
         }
-    }
-
-    if (closestRecHit != nullptr) {
-        trk.setFirstLayerEcalRecHit(*closestRecHit);  // Dereference the pointer to pass by value
-        trk.setDistancetoRecHit(minDistance);
-        trk.setEcalLayer1Location(extrapolatedPoint);
-    }
+        
+        if (closestRecHit != nullptr) {
+            trk.setFirstLayerEcalRecHit(*closestRecHit);  // Dereference the pointer to pass by value
+            trk.setDistancetoRecHit(minDistance);
+            trk.setEcalLayer1Location(extrapolatedPoint);
+        }
+    } //make sure there are ecalPoints to work with
 
     return trk;
 }
@@ -137,6 +139,7 @@ ldmx::StraightTrack LinearTruthTracking::TruthTracker(const std::vector<ldmx::Me
 void LinearTruthTracking::onProcessEnd() {
     ldmx_log(info) << "AVG Time / Event: " << std::fixed << std::setprecision(1)
         << processing_time_ / nevents_ << " ms";
+    ldmx_log(info) << "Number of Events without enough seed points: " << nmissing_;
     ldmx_log(info) << "Total Truth Tracks / Event: " << ntruth_ << "/" << nevents_;
 } //onProcessEnd
 
