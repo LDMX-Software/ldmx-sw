@@ -271,7 +271,7 @@ recoil_dqm.buildHistograms()
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.logger.termLevel = 0
+p.logger.termLevel = 1
 p.logger.custom(truth_tracking, level = 2)
 p.logger.custom(digi_tagger, level = 2)
 p.logger.custom(digi_recoil, level = 2)
