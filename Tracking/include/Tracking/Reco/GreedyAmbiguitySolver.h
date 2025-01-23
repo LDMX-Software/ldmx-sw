@@ -141,34 +141,34 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
   private:
 
     /// Maximum amount of shared hits per track.
-    std::uint32_t maximumSharedHits_{1};
+    std::uint32_t maximum_shared_hits_{1};
     /// Maximum number of iterations
-    std::uint32_t maximumIterations_{1000};
+    std::uint32_t maximum_iterations_{1000};
 
     /// Minimum number of measurement to form a track.
-    std::size_t nMeasurementsMin_{7};
+    std::size_t n_meas_min_{7};
 
     std::string out_trk_collection_{"TaggerTracksClean"};
 
-    std::string trackCollection_{"TaggerTracks"};
+    std::string track_collection_{"TaggerTracks"};
 
-    std::string measCollection_{"DigiTaggerSimHits"};
+    std::string meas_collection_{"DigiTaggerSimHits"};
 
   struct State {
-    std::size_t numberOfTracks{};
+    std::size_t number_of_tracks{};
 
-    std::vector<int> trackTips;
-    std::vector<float> trackChi2;
-    std::vector<std::vector<std::size_t>> measurementsPerTrack;
+    std::vector<int> track_tips;
+    std::vector<float> track_chi2;
+    std::vector<std::vector<std::size_t>> measurements_per_track;
 
     // TODO consider boost 1.81 unordered_flat_map
     boost::container::flat_map<std::size_t,
                                boost::container::flat_set<std::size_t>>
-        tracksPerMeasurement;
-    std::vector<std::size_t> sharedMeasurementsPerTrack;
+        tracks_per_measurement;
+    std::vector<std::size_t> shared_measurements_per_track;
 
     // TODO consider boost 1.81 unordered_flat_map
-    boost::container::flat_set<std::size_t> selectedTracks;
+    boost::container::flat_set<std::size_t> selected_tracks;
   };
 
   /// @param tracks The input track container.

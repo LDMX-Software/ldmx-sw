@@ -269,20 +269,11 @@ class Track {
   // pdgID
   int pdgID_{0};
 
-    // TrackStates leaves
-  std::vector<double> trackStateTargetLoc_{-999., -999., -999.};
-  std::vector<double> trackStateTargetParams_{-999., -999., -999.,-999., -999., -999.};
-  std::vector<double> trackStateTargetCov_;
-
-  std::vector<double> trackStateECalLoc_{-999., -999., -999.};
-  std::vector<double> trackStateECalParams_{-999., -999., -999.,-999., -999., -999.};
-  std::vector<double> trackStateECalCov_;
-
   // Track States
   std::vector<TrackState> trackStates_;
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(Track, 2);
+  ClassDef(Track, 3);
 
 };  // Track
 
