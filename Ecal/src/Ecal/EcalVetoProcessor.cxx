@@ -975,7 +975,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   // ------------------------------------------------------
   // Linreg tracking:
-  ldmx_log(debug) << "Finding linreg tracks from a total of "
+  ldmx_log(info) << "Finding linreg tracks from a total of "
                   << trackingHitList.size() << " hits using a radius of "
                   << linreg_radius_ << " mm";
 
@@ -1135,14 +1135,14 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   buildBDTFeatureVector(result);
   ldmx::Ort::FloatArrays inputs({bdtFeatures_});
   float pred = rt_->run({featureListName_}, inputs, {"probabilities"})[0].at(1);
-  ldmx_log(debug) << "  BDT was ran, score is " << pred;
+  ldmx_log(info) << " BDT was ran, score is " << pred;
   // Other considerations were (nLinregTracks_ == 0)  && (firstNearPhLayer_ >=
   // 6)
   // && (epAng_ > 3.0 && epAng_ < 900 || epSep_ > 10.0 && epSep_ < 900)
   bool passesTrackingVeto = (nStraightTracks_ < 3);
   result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
   result.setDiscValue(pred);
-  ldmx_log(debug) << " The pred > bdtCutVal = " << (pred > bdtCutVal_);
+  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_) << " and MIP tracking passed = " << passesTrackingVeto;
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside);

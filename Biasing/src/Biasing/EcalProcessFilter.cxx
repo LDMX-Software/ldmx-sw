@@ -166,7 +166,7 @@ void EcalProcessFilter::stepping(const G4Step* step) {
       return;
     }
 
-    ldmx_log(debug) << "[ EcalProcessFilter ]: "
+    ldmx_log(info) << "There were "
                     << G4EventManager::GetEventManager()
                            ->GetConstCurrentEvent()
                            ->GetEventID()

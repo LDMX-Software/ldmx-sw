@@ -62,7 +62,7 @@ void ElectronCounter::produce(framework::Event& event) {
         event.getCollection<ldmx::TrigScintTrack>(inputColl_, inputPassName_);
 
     nElectrons = tracks.size();
-    ldmx_log(debug) << "Found " << tracks.size()
+    ldmx_log(info) << "Found " << tracks.size()
                     << " electrons (tracks) using input collection "
                     << inputColl_ << "_" << inputPassName_;
   }

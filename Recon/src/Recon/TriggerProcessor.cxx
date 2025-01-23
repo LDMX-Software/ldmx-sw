@@ -53,7 +53,7 @@ void TriggerProcessor::produce(framework::Event& event) {
   else
     layerESumCut = layerESumCuts_.at(0) + (nElectrons - 1) * beamEnergy_;
 
-  ldmx_log(debug) << "Got trigger energy cut " << layerESumCut << " for "
+  ldmx_log(info) << "Got trigger energy cut " << layerESumCut << " for "
                   << nElectrons << " electrons counted in the event.";
 
   std::vector<double> layerDigiE(100, 0.0);  // big empty vector..
@@ -83,7 +83,7 @@ void TriggerProcessor::produce(framework::Event& event) {
   }
 
   pass = (layerSum <= layerESumCut);
-  ldmx_log(debug) << "Got trigger energy sum " << layerSum
+  ldmx_log(info) << "Got trigger energy sum " << layerSum
                   << "; and decision is pass = " << pass;
 
   ldmx::TriggerResult result;
