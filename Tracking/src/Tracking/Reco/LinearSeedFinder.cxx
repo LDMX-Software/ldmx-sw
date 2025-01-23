@@ -1,4 +1,4 @@
-#include "Tracking/Reco/ReducedSeedFinder.h"
+#include "Tracking/Reco/LinearSeedFinder.h"
 
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
@@ -9,18 +9,18 @@ namespace tracking {
 namespace reco {
 
 
-ReducedSeedFinder::ReducedSeedFinder(const std::string& name, framework::Process& process)
+LinearSeedFinder::LinearSeedFinder(const std::string& name, framework::Process& process)
 : TrackingGeometryUser(name, process) {}
 
-ReducedSeedFinder::~ReducedSeedFinder() {}
+LinearSeedFinder::~LinearSeedFinder() {}
 
-void ReducedSeedFinder::onProcessStart() {
+void LinearSeedFinder::onProcessStart() {
     truthMatchingTool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
 }
 
-void ReducedSeedFinder::configure(framework::config::Parameters& parameters) {
+void LinearSeedFinder::configure(framework::config::Parameters& parameters) {
     // Output seed name
-    out_seed_collection_ = parameters.getParameter<std::string>("out_seed_collection", getName() + "ReducedSeedTracks");
+    out_seed_collection_ = parameters.getParameter<std::string>("out_seed_collection", getName() + "LinearRecoilSeedTracks");
     
     // Input strip hits
     input_hits_collection_ = parameters.getParameter<std::string>("input_hits_collection", "DigiRecoilSimHits");
@@ -37,9 +37,9 @@ void ReducedSeedFinder::configure(framework::config::Parameters& parameters) {
     ecal_distance_threshold_ = parameters.getParameter<double>("ecal_distance_threshold");
 }
 
-void ReducedSeedFinder::produce(framework::Event& event) {
+void LinearSeedFinder::produce(framework::Event& event) {
     auto start = std::chrono::high_resolution_clock::now();
-    std::vector<ldmx::ReducedTrack> reduced_seed_tracks;
+    std::vector<ldmx::StraightTrack> straight_seed_tracks;
     nevents_++;
     
     const std::vector<ldmx::Measurement> recoilHits = event.getCollection<ldmx::Measurement>(input_hits_collection_);
@@ -56,7 +56,7 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     // ! Check if we would fit empty seeds !
     if (recoilHits.size() < 2 || firstLayerEcalRecHits.empty() || uniqueSensorsHit(recoilHits) < 2) {
         nmissing_++;
-        nseeds_ += reduced_seed_tracks.size();
+        nseeds_ += straight_seed_tracks.size();
         return;
     }
     
@@ -71,16 +71,16 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     for (const auto& firstPoint : firstSensor) {
         for (const auto& secondPoint : secondSensor) {
             for (const auto& recHit : firstLayerEcalRecHits) {
-                ldmx::ReducedTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit);
+                ldmx::StraightTrack seedTrack = SeedTracker(firstPoint, secondPoint, recHit);
                 if (seedTrack.getChi2() > 0.0) {
-                    reduced_seed_tracks.push_back(seedTrack);
+                    straight_seed_tracks.push_back(seedTrack);
                 }
             } //for recHits
         } //for second recoil tracker
     } //for first recoil tracker
     
-    nseeds_ += reduced_seed_tracks.size();
-    event.add(out_seed_collection_, reduced_seed_tracks);
+    nseeds_ += straight_seed_tracks.size();
+    event.add(out_seed_collection_, straight_seed_tracks);
     
     auto end = std::chrono::high_resolution_clock::now();
     
@@ -88,10 +88,11 @@ void ReducedSeedFinder::produce(framework::Event& event) {
     processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
     
     firstLayerEcalRecHits.clear();
+    straight_seed_tracks.clear();
     
 } //produce
 
-ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne) {
+ldmx::StraightTrack LinearSeedFinder::SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne) {
         
     auto [merged1, layer1, layer2] = recoilOne;
     auto [merged2, layer3, layer4] = recoilTwo;
@@ -102,26 +103,25 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::tuple<std::array<do
     std::array<double, 3> tempExtrapolatedPoint = {ecalOne[0], ax * ecalOne[0] + bx, ay * ecalOne[0] + by};
     double tempDistance = calculateDistance(tempExtrapolatedPoint, ecalOne);
 
-    ldmx::ReducedTrack trk = ldmx::ReducedTrack();
+    ldmx::StraightTrack trk = ldmx::StraightTrack();
 
     if (tempDistance < ecal_distance_threshold_) {
-        trk.setAX(ax);
-        trk.setBX(bx);
-        trk.setAY(ay);
-        trk.setBY(by);
+        trk.setSlopeX(ax);
+        trk.setInterceptX(bx);
+        trk.setSlopeY(ay);
+        trk.setInterceptY(by);
         
         trk.setAllSensorPoints(allPoints);
         trk.setFirstSensorPosition(merged1);
         trk.setSecondSensorPosition(merged2);
         trk.setFirstLayerEcalRecHit(ecalOne);
-        trk.setDistancetoEcalRecHit(tempDistance);
+        trk.setDistancetoRecHit(tempDistance);
         
         trk.setTargetLocation(0.0, bx, by);
         trk.setEcalLayer1Location(tempExtrapolatedPoint);
         trk.setChi2(globalChiSquare(merged1, merged2, ecalOne, ax, ay, bx, by));
         trk.setNhits(3);
         trk.setNdf(1);
-        trk.setNsharedHits(0);
         
         if (truthMatchingTool_->configured()) {
             auto truthInfo = truthMatchingTool_->TruthMatch(allPoints);
@@ -143,20 +143,17 @@ ldmx::ReducedTrack ReducedSeedFinder::SeedTracker(const std::tuple<std::array<do
     } //does not pass the threshold
 }
 
-void ReducedSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
+void LinearSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
     ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
     << processing_time_ / nevents_ << " ms";
     ldmx_log(info) << "Total Seeds/Events: " << nseeds_ << "/" << nevents_;
-    //  ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
-    //                 << ndoubles_;
     ldmx_log(info) << "not enough seed points " << nmissing_;
-    //  ldmx_log(info) << "   nfailphicut=" << nfailphi_;
-    //  ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
+
 } //onProcessEnd
 
 std::pair< std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>,
            std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> >
-ReducedSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& hitCollection) {
+LinearSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& hitCollection) {
     std::vector<ldmx::Measurement> layer1, layer2, layer3, layer4;
 
     // Split hits into layers based on z position
@@ -174,7 +171,7 @@ ReducedSeedFinder::combineMultiGlobalHits(const std::vector<ldmx::Measurement>& 
     return {firstSensorMergedHits, secondSensorMergedHits};
 } //combineMultiGlobalHits
 
-std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> ReducedSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
+std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> LinearSeedFinder::weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2) {
     
     std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> mergedHits;
 
@@ -191,7 +188,7 @@ std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measureme
     return mergedHits;
 }
 
-std::tuple<double, double, double, double> ReducedSeedFinder::fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal) {
+std::tuple<double, double, double, double> LinearSeedFinder::fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal) {
     double z1 = firstRecoil[0], x1 = firstRecoil[1], y1 = firstRecoil[2];
     double z2 = secondRecoil[0], x2 = secondRecoil[1], y2 = secondRecoil[2];
     double z3 = ECal[0], x3 = ECal[1], y3 = ECal[2];
@@ -220,11 +217,11 @@ std::tuple<double, double, double, double> ReducedSeedFinder::fit3DLine(const st
     return {m(0), m(1), m(2), m(3)};
 } //fit3DLine
 
-double ReducedSeedFinder::calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2) {
+double LinearSeedFinder::calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2) {
     return sqrt(pow(point1[1] - point2[1], 2) + pow(point1[2] - point2[2], 2));
 } //calculateDistance
 
-double ReducedSeedFinder::globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by) {
+double LinearSeedFinder::globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by) {
     double chi2_x = 0, chi2_y = 0;
     chi2_x += pow((ax * firstSensor[0] + bx - firstSensor[1]) / recoil_uncertainty_[0], 2);
     chi2_y += pow((ay * firstSensor[0] + by - firstSensor[2]) / recoil_uncertainty_[1], 2);
@@ -238,7 +235,7 @@ double ReducedSeedFinder::globalChiSquare(const std::array<double, 3> &firstSens
     return chi2_x + chi2_y;
 } //globalChiSquare
 
-int ReducedSeedFinder::uniqueSensorsHit(const std::vector<ldmx::Measurement>& digiPoints) {
+int LinearSeedFinder::uniqueSensorsHit(const std::vector<ldmx::Measurement>& digiPoints) {
     // Step 1: Create a copy of digiPoints to allow modifications
     std::vector<ldmx::Measurement> sortedPoints = digiPoints;
 
@@ -261,4 +258,4 @@ int ReducedSeedFinder::uniqueSensorsHit(const std::vector<ldmx::Measurement>& di
 } //namespace reco
 } //namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, ReducedSeedFinder);
+DECLARE_PRODUCER_NS(tracking::reco, LinearSeedFinder);

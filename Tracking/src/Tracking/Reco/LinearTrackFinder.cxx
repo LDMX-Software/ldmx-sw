@@ -1,4 +1,4 @@
-#include "Tracking/Reco/ReducedTrackFinder.h"
+#include "Tracking/Reco/LinearTrackFinder.h"
 
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
@@ -17,22 +17,22 @@
 namespace tracking {
 namespace reco {
 
-ReducedTrackFinder::ReducedTrackFinder(const std::string& name, framework::Process& process)
+LinearTrackFinder::LinearTrackFinder(const std::string& name, framework::Process& process)
 : TrackingGeometryUser(name, process) {}
 
-ReducedTrackFinder::~ReducedTrackFinder() {}
+LinearTrackFinder::~LinearTrackFinder() {}
 
-void ReducedTrackFinder::onProcessStart() {}
+void LinearTrackFinder::onProcessStart() {}
 
-void ReducedTrackFinder::configure(framework::config::Parameters& parameters) {
+void LinearTrackFinder::configure(framework::config::Parameters& parameters) {
     // seeds from the event
-    seed_coll_name_ = parameters.getParameter<std::string>("seed_coll_name", "ReducedSeedTracks");
+    seed_coll_name_ = parameters.getParameter<std::string>("seed_coll_name", "LinearRecoilSeedTracks");
     // output track collection
-    out_trk_collection_ = parameters.getParameter<std::string>("out_trk_collection", "ReducedTracks");
+    out_trk_collection_ = parameters.getParameter<std::string>("out_trk_collection", "LinearRecoilTracks");
 }
 
-void ReducedTrackFinder::produce(framework::Event& event) {
-    std::vector<ldmx::ReducedTrack> reduced_tracks;
+void LinearTrackFinder::produce(framework::Event& event) {
+    std::vector<ldmx::StraightTrack> straight_tracks;
     
     auto start = std::chrono::high_resolution_clock::now();
     
@@ -41,34 +41,36 @@ void ReducedTrackFinder::produce(framework::Event& event) {
     
     ldmx_log(debug) << "Retrieve the seeds::" << seed_coll_name_;
     
-    const std::vector<ldmx::ReducedTrack> seed_tracks = event.getCollection<ldmx::ReducedTrack>(seed_coll_name_);
+    const std::vector<ldmx::StraightTrack> seed_tracks = event.getCollection<ldmx::StraightTrack>(seed_coll_name_);
     
     nseeds_ = seed_tracks.size();
     ldmx_log(debug) << "Number of seeds::" << nseeds_;
     
     if (nseeds_ > 0) {
-        reduced_tracks = findTracks(seed_tracks);
+        straight_tracks = findTracks(seed_tracks);
     }
     
-    ntracks_ = reduced_tracks.size();
+    ntracks_ = straight_tracks.size();
     
     // Add the tracks to the event
-    event.add(out_trk_collection_, reduced_tracks);
+    event.add(out_trk_collection_, straight_tracks);
     
     auto end = std::chrono::high_resolution_clock::now();
     auto diff = end - start;
     processing_time_ += std::chrono::duration<double, std::milli>(diff).count();
+    
+    straight_tracks.clear();
 }
 
-void ReducedTrackFinder::onProcessEnd() {
+void LinearTrackFinder::onProcessEnd() {
     ldmx_log(info) << "found " << ntracks_ << " tracks  / " << nseeds_ << " nseeds";
     ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1) << processing_time_ / nevents_ << " ms";
 }
 
-std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector<ldmx::ReducedTrack>& trackSeeds) {
+std::vector<ldmx::StraightTrack> LinearTrackFinder::findTracks(const std::vector<ldmx::StraightTrack>& trackSeeds) {
     
-    std::vector<ldmx::ReducedTrack> bestTracks;
-    std::map<std::array<double, 3>, std::vector<ldmx::ReducedTrack>> seedsByRecHit;
+    std::vector<ldmx::StraightTrack> bestTracks;
+    std::map<std::array<double, 3>, std::vector<ldmx::StraightTrack>> seedsByRecHit;
     
     // Group seeds by their EcalRecHit point
     for (const auto& seed : trackSeeds) {
@@ -90,7 +92,7 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
         
         // Main function to remove seeds with overlapping sensor positions
         seedsWithSameRecHit.erase( std::remove_if(seedsWithSameRecHit.begin(), seedsWithSameRecHit.end(),
-                                                  [&](const ldmx::ReducedTrack& seed) {
+                                                  [&](const ldmx::StraightTrack& seed) {
                                                         for (const auto& measurement : seed.getAllSensorPoints()) {
                                                         // Check if this sensor point's position is already used
                                                             if (isPositionUsed(measurement, usedSensorPositions)) {
@@ -106,12 +108,12 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
         // Find the seed with the lowest chi2 for this RecHit
         auto bestSeedIt = std::min_element(seedsWithSameRecHit.begin(),
                                            seedsWithSameRecHit.end(),
-                                           [](const ldmx::ReducedTrack& a, const ldmx::ReducedTrack& b) {
+                                           [](const ldmx::StraightTrack& a, const ldmx::StraightTrack& b) {
             return a.getChi2() < b.getChi2();
         });
         
         // Store the best seed for this RecHit
-        ldmx::ReducedTrack bestSeed = *bestSeedIt;
+        ldmx::StraightTrack bestSeed = *bestSeedIt;
         bestTracks.push_back(bestSeed);
         
         ldmx_log(debug) << "For RecHit at: ("
@@ -134,7 +136,7 @@ std::vector<ldmx::ReducedTrack> ReducedTrackFinder::findTracks(const std::vector
 }
 
 // Helper function to check if a measurement's position is already used
-bool ReducedTrackFinder::isPositionUsed(const ldmx::Measurement& measurement,
+bool LinearTrackFinder::isPositionUsed(const ldmx::Measurement& measurement,
                     const std::set<std::tuple<float, float, float>>& usedSensorPositions) {
     const auto& position = std::make_tuple(measurement.getGlobalPosition()[0], measurement.getGlobalPosition()[1], measurement.getGlobalPosition()[2]);
     return usedSensorPositions.find(position) != usedSensorPositions.end();
@@ -143,4 +145,4 @@ bool ReducedTrackFinder::isPositionUsed(const ldmx::Measurement& measurement,
 }  // namespace reco
 }  // namespace tracking
 
-DECLARE_PRODUCER_NS(tracking::reco, ReducedTrackFinder)
+DECLARE_PRODUCER_NS(tracking::reco, LinearTrackFinder)

@@ -29,7 +29,7 @@ if(BUILD_EVENT_ONLY)
     
     register_event_object(module_path "Tracking/Event" 
                           namespace "ldmx" 
-                          class "ReducedTrack" type "collection")
+                          class "StraightTrack" type "collection")
 
     register_event_object(module_path "Tracking/Event" 
                           namespace "ldmx" 

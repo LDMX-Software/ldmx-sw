@@ -16,12 +16,12 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/ReducedTrack.h"
+#include "Tracking/Event/StraightTrack.h"
 
 namespace tracking {
 namespace reco {
 
-class ReducedTrackFinder : public TrackingGeometryUser {
+class LinearTrackFinder : public TrackingGeometryUser {
 public:
     /**
      * Constructor.
@@ -29,10 +29,10 @@ public:
      * @param name The name of the instance of this object.
      * @param process The process running this producer.
      */
-    ReducedTrackFinder(const std::string &name, framework::Process &process);
+    LinearTrackFinder(const std::string &name, framework::Process &process);
     
     /// Destructor
-    ~ReducedTrackFinder();
+    ~LinearTrackFinder();
     
     /**
      *
@@ -62,19 +62,19 @@ private:
     double processing_time_{0.};
     
     // The output track collection
-    std::string out_trk_collection_{"ReducedTracks"};
+    std::string out_trk_collection_{"LinearRecoilTracks"};
     
     // The seed track collection
-    std::string seed_coll_name_{"ReducedSeedTracks"};
+    std::string seed_coll_name_{"LinearRecoilSeedTracks"};
     
     int nseeds_{0};
     int ntracks_{0};
     int eventnr_{0};
     
-    std::vector<ldmx::ReducedTrack> findTracks(const std::vector<ldmx::ReducedTrack>& trackSeeds);
+    std::vector<ldmx::StraightTrack> findTracks(const std::vector<ldmx::StraightTrack>& trackSeeds);
     bool isPositionUsed(const ldmx::Measurement& measurement, const std::set<std::tuple<float, float, float>>& usedSensorPositions);
     
-};  // ReducedTrackFinder
+};  // LinearTrackFinder
 
 }  // namespace reco
 }  // namespace tracking

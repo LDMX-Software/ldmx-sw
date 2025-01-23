@@ -1,5 +1,5 @@
-#ifndef TRACKING_EVENT_REDUCEDTRACK_H_
-#define TRACKING_EVENT_REDUCEDTRACK_H_
+#ifndef TRACKING_EVENT_STRAIGHTTRACK_H_
+#define TRACKING_EVENT_STRAIGHTTRACK_H_
 
 //----------------------//
 //   C++ Standard Lib   //
@@ -21,17 +21,17 @@
 
 namespace ldmx {
 
-    class ReducedTrack {
+    class StraightTrack {
     public:
         
-        ReducedTrack() = default;
+        StraightTrack() = default;
         
         /**
          * Destructor.
          *
          * Currently, the destructor does nothing.
          */
-        virtual ~ReducedTrack() = default;
+        virtual ~StraightTrack() = default;
         
         /**
          * Print the string representation of this object.
@@ -49,30 +49,27 @@ namespace ldmx {
         void setNdf(int ndf) { ndf_ = ndf; }
         int getNdf() const { return ndf_; };
         
-        void setNsharedHits(int nsh) { n_shared_hits_ = nsh; }
-        int getNsharedHits() const { return n_shared_hits_; }
-        
         void setChi2(double chi2) { chi2_ = chi2; }
         double getChi2() const { return chi2_; }
         
-        void setAX(double ax) { ax_ = ax; }
-        double getAX() const { return ax_; }
+        void setSlopeX(double slopeX) { slopeX_ = slopeX; }
+        double getSlopeX() const { return slopeX_; }
         
-        void setBX(double bx) { bx_ = bx; }
-        double getBX() const { return bx_; }
+        void setInterceptX(double interceptX) { interceptX_ = interceptX; }
+        double getInterceptX() const { return interceptX_; }
         
-        void setAY(double ay) { ay_ = ay; }
-        double getAY() const { return ay_; }
+        void setSlopeY(double slopeY) { slopeY_ = slopeY; }
+        double getSlopeY() const { return slopeY_; }
         
-        void setBY(double by) { by_ = by; }
-        double getBY() const { return by_; }
+        void setInterceptY(double interceptY) { interceptY_ = interceptY; }
+        double getInterceptY() const { return interceptY_; }
         
-        void setDistancetoEcalRecHit(double distance) {distance_to_Ecal_ = distance;}
-        double getDistanceToRecHit() const { return distance_to_Ecal_; }
+        void setDistancetoRecHit(double distance) {distance_to_RecHit_ = distance;}
+        double getDistanceToRecHit() const { return distance_to_RecHit_; }
         
-        const std::vector<ldmx::Measurement>& getAllSensorPoints() const { return totalSensor_;};
+        const std::vector<ldmx::Measurement>& getAllSensorPoints() const { return bothSensors_;};
         void setAllSensorPoints(const std::vector<ldmx::Measurement>& sensorPoints) {
-            totalSensor_ = sensorPoints;
+            bothSensors_ = sensorPoints;
         }
 
         void setFirstSensorPosition(const std::array<double, 3>& firstSensor) {
@@ -136,20 +133,19 @@ namespace ldmx {
         
     protected:
         //Actual Track Parameters
-        double ax_;
-        double ay_;
-        double bx_;
-        double by_;
-        double distance_to_Ecal_;
+        double slopeX_;
+        double slopeY_;
+        double interceptX_;
+        double interceptY_;
+        double distance_to_RecHit_;
         
-        std::vector<ldmx::Measurement> totalSensor_; //! transient for ROOT
+        std::vector<ldmx::Measurement> bothSensors_;
         std::array<double, 3> firstSensor_;
         std::array<double, 3> secondSensor_;
         std::array<double, 3> ecalRecHit_;
         
         int n_hits_;
         int ndf_;
-        int n_shared_hits_;
         double chi2_;
         
         // The target location
@@ -165,12 +161,12 @@ namespace ldmx {
         int pdgID_{0};
         
         /// Class declaration needed by the ROOT dictionary.
-        ClassDef(ReducedTrack, 1);
+        ClassDef(StraightTrack, 1);
         
     };  // Track
 
-    typedef std::vector<ldmx::ReducedTrack> ReducedTracks;
+    typedef std::vector<ldmx::StraightTrack> StraightTracks;
 
 }  // namespace ldmx
 
-#endif // TRACKING_EVENT_REDUCEDTRACK_H_
+#endif // TRACKING_EVENT_STRAIGHTTRACK_H_

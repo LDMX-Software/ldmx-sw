@@ -18,12 +18,42 @@ def pause():
     
 def trackPlotter(tree, event_number, tag, save):
     recoilSimHits = addBranch(tree, 'SimTrackerHit', 'RecoilSimHits_{}'.format(tag))
-    digiRecoil = addBranch(tree, 'Measurement', 'DigiRecoilSimHits_{}'.format(tag))
     ecalRecHit = addBranch(tree, 'EcalHit', 'EcalRecHits_{}'.format(tag))
-    recoil = addBranch(tree, 'ReducedTrack', 'ReducedTracks_{}'.format(tag))
-    #recoil = addBranch(tree, 'ReducedTrack', 'ReducedSeedTracks_{}'.format(tag))
+    digiRecoil = addBranch(tree, 'Measurement', 'DigiRecoilSimHits_{}'.format(tag))
+#    #recoilTruth = addBranch(tree, 'ReducedTrack', 'ReducedTruthTracks_{}'.format(tag))
+    recoil = addBranch(tree, 'StraightTrack', 'LinearRecoilTracks_{}'.format(tag))
 
     tree.GetEntry(event_number)
+    
+#    for event in tree:
+#        print(dir(event))
+#        break
+#    
+#    branch_name = "DigiRecoilSimHits_reduced_algo_v2_test"
+#    digiRecoil = tree.GetBranch(branch_name)
+#    if digiRecoil:
+#        print(f"Branch '{digiRecoil}' exists and is accessible.")
+#    else:
+#        print(f"Branch '{digiRecoil}' does not exist.")
+#        
+#    for event in tree:
+#        # Check if the branch is accessible in the current event
+#        if hasattr(event, branch_name):
+#            branch_data = getattr(event, branch_name)  # Get the branch data
+#        # Iterate over the vector of ReducedTrack objects
+#            print(dir(branch_data))
+##
+##            for track in branch_data:
+##                # Access the attributes or methods of each track
+##                print(track)  # This will print the track object, modify as needed
+##                print(f"Data in branch '{branch_name}': {branch_data}")
+#        else:
+#            print(f"Branch '{branch_name}' not found in this event.")
+#        
+#    print(type(branch_data))
+    
+#    for branch in tree.GetListOfBranches():
+#        print(f"Branch Name: {branch.GetName()}, Branch Type: {branch.GetClassName()}")
     
     recoilSim_x = []
     recoilSim_y = []
@@ -38,26 +68,36 @@ def trackPlotter(tree, event_number, tag, save):
     ecal_end_z = []
     
     trackParams = []
+    truthTrackParams = []
     
     for particle in recoilSimHits:
+        print("HELLO")
         recoilSim_z.append(particle.getPosition()[2])
         recoilSim_x.append(particle.getPosition()[0])
         recoilSim_y.append(particle.getPosition()[1])
         
     for x_digi in digiRecoil:
+        print("HELLO 2")
         zpos_digi_tot.append(x_digi.getGlobalPosition()[0])
         xpos_digi_tot.append(x_digi.getGlobalPosition()[1])
         ypos_digi_tot.append(x_digi.getGlobalPosition()[2])
-    
+        
     for x_ecal in ecalRecHit:
+        print("HELLO 3")
         if (x_ecal.getZPos() < 250):
             ecal_end_x.append(x_ecal.getXPos())
             ecal_end_y.append(x_ecal.getYPos())
             ecal_end_z.append(x_ecal.getZPos())
             
     for x in recoil:
+        print("HELLo 4")
         trackParams.append((x.getAX(), x.getBX(), x.getAY(), x.getBY(), x.getDistanceToRecHit()))
+        
+#    for x_truth in recoilTruth:
+#        print("HELLO 5")
+#        truthTrackParams.append((x_truth.getAX(), x_truth.getBX(), x_truth.getAY(), x_truth.getBY(), x_truth.getDistanceToRecHit()))
     
+        
     digiPoints = np.column_stack((zpos_digi_tot, xpos_digi_tot, ypos_digi_tot))
     ecalRecHits = np.column_stack((ecal_end_z, ecal_end_x, ecal_end_y))
     recoilSim = np.column_stack((recoilSim_z, recoilSim_x, recoilSim_y))
@@ -80,6 +120,8 @@ def trackPlotter(tree, event_number, tag, save):
     for track in trackParams:
         ax.plot([0.0, ecalRecHits[0][0]], [track[1], track[0]*ecalRecHits[0][0]+track[1]], [track[3], track[2]*ecalRecHits[0][0]+track[3]], 'r--', label=f'Reconstructed Track {i+1}, d_RecHit = {track[4]:.2f} mm')
         i += 1
+    
+    #ax.plot([0.0, ecalRecHits[0][0]], [truthTrackParams[1], truthTrackParams[0]*ecalRecHits[0][0]+truthTrackParams[1]], [truthTrackParams[3], truthTrackParams[2]*ecalRecHits[0][0]+truthTrackParams[3]], color='blue', label=f'Truth Track, d_RecHit = {truthTrackParams[4]:.2f} mm')
 
     x = ecalRecHits[0][0]
     y_range = np.linspace(min(ecalRecHits[:,1]) - 5, max(ecalRecHits[:,1]) + 5, 50)
@@ -125,28 +167,34 @@ def addBranch(tree, ldmx_class, branch_name):
     if tree == None:
         sys.exit('Set tree')
 
-    if ldmx_class == 'EventHeader': branch = r.ldmx.EventHeader()
-    elif ldmx_class == 'EcalVetoResult': branch = r.ldmx.EcalVetoResult()
-    elif ldmx_class == 'HcalVetoResult': branch = r.ldmx.HcalVetoResult()
-    elif ldmx_class == 'TriggerResult': branch = r.ldmx.TriggerResult()
-    elif ldmx_class == 'SimParticle': branch = r.std.map(int, 'ldmx::'+ldmx_class)()
-    else: branch = r.std.vector('ldmx::'+ldmx_class)()
+    if ldmx_class == 'EventHeader':
+        branch = r.ldmx.EventHeader()
+    elif ldmx_class == 'EcalVetoResult':
+        branch = r.ldmx.EcalVetoResult()
+    elif ldmx_class == 'HcalVetoResult':
+        branch = r.ldmx.HcalVetoResult()
+    elif ldmx_class == 'TriggerResult':
+        branch = r.ldmx.TriggerResult()
+    elif ldmx_class == 'SimParticle':
+        branch = r.std.map(int, 'ldmx::'+ldmx_class)()
+    else:
+        branch = r.std.vector('ldmx::'+ldmx_class)()
 
-    tree.SetBranchAddress(branch_name,r.AddressOf(branch))
+    tree.SetBranchAddress(branch_name, r.AddressOf(branch))
 
     return branch
     
 def main():
     tree = r.TChain("LDMX_Events")
-    tree.Add('events_1_reducedAlgoV1Test_seederONLY.root')
+    tree.Add('/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw/events_1_reducedAlgoV2.root')
 
     nentries = tree.GetEntries()
     print("nentries = ", nentries)
     
-    tag = 'reduced_algo_v1_test'
+    tag = 'reduced_algo_v2_test'
     save_loc = '/Users/fdelzanno/Desktop/Incandela/Coding/ldmx-sw'
     
-    trackPlotter(tree, 0, tag, save_loc)
+    trackPlotter(tree, 1, tag, save_loc)
     
 
 if __name__ == "__main__":

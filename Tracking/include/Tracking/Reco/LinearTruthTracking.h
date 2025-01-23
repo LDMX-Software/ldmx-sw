@@ -33,13 +33,13 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/Event/ReducedTrack.h"
+#include "Tracking/Event/StraightTrack.h"
 #include "Ecal/Event/EcalHit.h"
 
 namespace tracking {
 namespace reco {
 
-class ReducedSeedFinder : public TrackingGeometryUser {
+class LinearTruthTracking : public TrackingGeometryUser {
 public:
     /**
      * Constructor.
@@ -47,10 +47,10 @@ public:
      * @param name The name of the instance of this object.
      * @param process The process running this producer.
      */
-    ReducedSeedFinder(const std::string& name, framework::Process& process);
+    LinearTruthTracking(const std::string& name, framework::Process& process);
     
     /// Destructor
-    ~ReducedSeedFinder();
+    ~LinearTruthTracking();
     
     /**
      *
@@ -78,58 +78,35 @@ public:
     void produce(framework::Event& event) override;
     
 protected:
-    ldmx::ReducedTrack SeedTracker(const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilOne, const std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement> recoilTwo, const std::array<double, 3> ecalOne);
+    ldmx::StraightTrack TruthTracker(const std::vector<ldmx::Measurement>& points, std::vector<std::array<double, 3>>& ecalPoints);
     
-    std::pair<std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>, std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>>> combineMultiGlobalHits(const std::vector<ldmx::Measurement> &hitCollection);
-    
-    std::vector<std::tuple<std::array<double, 3>, ldmx::Measurement, ldmx::Measurement>> weightedAverage(const std::vector<ldmx::Measurement>& layer1, const std::vector<ldmx::Measurement>& layer2);
-
-    std::tuple<double, double, double, double> fit3DLine(const std::array<double, 3> &firstRecoil, const std::array<double, 3> &secondRecoil, const std::array<double, 3> &ECal);
-    
+    std::vector<ldmx::Measurement> findTruthHits(const std::vector<ldmx::Measurement>& hitCollection);
+   
     double calculateDistance(const std::array<double, 3> &point1, const std::array<double, 3> &point2);
-    
-    double globalChiSquare(const std::array<double, 3> &firstSensor, const std::array<double, 3> &secondSensor, const std::array<double, 3> &ecalHit, double ax, double ay, double bx, double by);
 
     int uniqueSensorsHit(const std::vector<ldmx::Measurement> &digiPoints);
     
+    std::tuple<double, double, double, double> fit3DLine(const std::vector<ldmx::Measurement>& points);
+    double globalChiSquare(const std::vector<ldmx::Measurement>& points, double ax, double ay, double bx, double by);
+    
     double processing_time_{0.};
     long nevents_{0};
-    unsigned int nseeds_{0};
+    unsigned int ntruth_{0};
+    long nmissing_{0};
     
+    std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
+
     /// The name of the output collection of seeds to be stored.
-    std::string out_seed_collection_{"ReducedSeedTracks"};
+    std::string out_trk_collection_{"RecoilTruthTracks"};
     /// The name of the input hits collection to use in finding seeds..
     std::string input_hits_collection_{"DigiRecoilSimHits"};
     /// The name of the tagger Tracks (only for Recoil Seeding)
     std::string input_recHits_collection_{"EcalRecHits"};
-    
-    double piover2_{1.5708};
-    
-    /// PhiRange
-    double phicut_{0.1};
-    
-    /// ThetaRange
-    double thetacut_{0.2};
-    
-    /// loc0 / loc1 cuts
-    double loc0cut_{0.1};
-    double loc1cut_{0.3};
-    
-    double ecal_uncertainty_{3.87};
-    double ecal_distance_threshold_{10.0};
-    
-    std::vector<double> recoil_uncertainty_{0.006, 0.12};
-    
-    // Check failures
-    //  long ndoubles_{0};
-    long nmissing_{0};
-    //  long nfailphi_{0};
-    //  long nfailtheta_{0};
-    
+       
     // Truth Matching tool
     std::shared_ptr<tracking::sim::TruthMatchingTool> truthMatchingTool_ = nullptr;
     
-};  // SeedFinderProcessor
+};  // LinearTruthTracking
 
 }  // namespace reco
 }  // namespace tracking

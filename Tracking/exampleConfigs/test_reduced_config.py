@@ -1,5 +1,5 @@
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('reduced_algo_v1_test')
+p = ldmxcfg.Process('reduced_algo_v2_test')
 
 p.maxTriesPerEvent = 100
 
@@ -16,7 +16,7 @@ myGun.pdgID = 11
 myGun.enablePoisson = False #True
 
 mySim = sim.simulator( "mySim" ) # Build simulator object
-det = 'ldmx-reduced-v1'
+det = 'ldmx-reduced-v2'
 mySim.setDetector(det, True )
 mySim.beamSpotSmear = [20.,80.,0.]
 mySim.description = 'Reduced ECal Electron Gun (reduced) Tracking Algorithm Test'
@@ -26,11 +26,11 @@ p.sequence = [ mySim ]
 p.termLogLevel = 0
 
 
-p.maxEvents = 1
+p.maxEvents = 100
 p.run = 200
 
-p.histogramFile = f'hist_reducedAlgoV1Test.root'
-p.outputFiles = [f'events_1_reducedAlgoV1Test.root']
+p.histogramFile = f'hist_reducedAlgoV2_withTruth.root'
+p.outputFiles = [f'events_1_reducedAlgoV2.root']
 
 import LDMX.Ecal.EcalGeometry
 import LDMX.Ecal.ecal_hardcoded_conditions
@@ -51,7 +51,7 @@ from LDMX.Tracking import tracking
 from LDMX.Tracking import geo
 
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-trackgeo.get_instance().setDetector('ldmx-reduced-v1')
+trackgeo.get_instance().setDetector('ldmx-reduced-v2')
 
 #smearings
 uSmearing = 0.006       #mm #could bump up to 10 micron if we want
@@ -65,14 +65,19 @@ digiRecoil.merge_hits = True
 digiRecoil.sigma_u = uSmearing
 digiRecoil.sigma_v = vSmearing
 
-reducedSeed = tracking.ReducedSeedFinder("ReducedSeedFinder")
-reducedSeed.input_hit_collection = "DigiRecoilSimHits"
-reducedSeed.input_recHits_collection = "EcalRecHits"
-reducedSeed.out_seed_collection = "ReducedSeedTracks"
+#truth_tracking = tracking.ReducedTruthTracking("ReducedTruthTracking")
+#truth_tracking.input_hit_collection = "DigiRecoilSimHits"
+#truth_tracking.input_recHits_collection = "EcalRecHits"
+#truth_tracking.out_track_collection = "ReducedTruthTracks"
+
+rSeedTracking = tracking.LinearSeedFinder("LinearSeedFinder")
+rSeedTracking.input_hit_collection = "DigiRecoilSimHits"
+rSeedTracking.input_recHits_collection = "EcalRecHits"
+rSeedTracking.out_seed_collection = "LinearRecoilSeedTracks"
 #reducedSeed.ecal_distance_threshold = 100.0
 
-reducedTrack = tracking.ReducedTrackFinder("ReducedTrackFinder")
-reducedTrack.seed_coll_name = "ReducedSeedTracks"
-reducedTrack.out_trk_collection = "ReducedTracks"
+rTracking = tracking.LinearTrackFinder("LinearTrackFinder")
+rTracking.seed_coll_name = "LinearRecoilSeedTracks"
+rTracking.out_trk_collection = "LinearRecoilTracks"
 
-p.sequence.extend([digiRecoil, reducedSeed, reducedTrack])
+p.sequence.extend([digiRecoil, rSeedTracking, rTracking])
