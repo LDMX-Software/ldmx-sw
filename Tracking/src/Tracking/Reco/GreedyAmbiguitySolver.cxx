@@ -211,9 +211,6 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 
 }
 
-void GreedyAmbiguitySolver::onProcessStart(){};
-void GreedyAmbiguitySolver::onProcessEnd(){};
-
 }
 }
 
