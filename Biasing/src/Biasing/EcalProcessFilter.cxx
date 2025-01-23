@@ -167,11 +167,11 @@ void EcalProcessFilter::stepping(const G4Step* step) {
     }
 
     ldmx_log(info) << "There were "
-                    << G4EventManager::GetEventManager()
-                           ->GetConstCurrentEvent()
-                           ->GetEventID()
-                    << " Brem photon produced " << secondaries->size()
-                    << " particle via " << processName << " process.";
+                   << G4EventManager::GetEventManager()
+                          ->GetConstCurrentEvent()
+                          ->GetEventID()
+                   << " Brem photon produced " << secondaries->size()
+                   << " particle via " << processName << " process.";
     trackInfo->tagBremCandidate(false);
     trackInfo->setSaveFlag(true);
     trackInfo->tagPNGamma();

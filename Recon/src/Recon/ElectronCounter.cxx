@@ -63,8 +63,8 @@ void ElectronCounter::produce(framework::Event& event) {
 
     nElectrons = tracks.size();
     ldmx_log(info) << "Found " << tracks.size()
-                    << " electrons (tracks) using input collection "
-                    << inputColl_ << "_" << inputPassName_;
+                   << " electrons (tracks) using input collection "
+                   << inputColl_ << "_" << inputPassName_;
   }
   // add number of electrons to event header. allow for it to be unset (-1)
   event.getEventHeader().setIntParameter("nElectrons", nElectrons);

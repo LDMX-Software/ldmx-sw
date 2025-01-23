@@ -976,8 +976,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   // ------------------------------------------------------
   // Linreg tracking:
   ldmx_log(info) << "Finding linreg tracks from a total of "
-                  << trackingHitList.size() << " hits using a radius of "
-                  << linreg_radius_ << " mm";
+                 << trackingHitList.size() << " hits using a radius of "
+                 << linreg_radius_ << " mm";
 
   for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
     // Hits being considered at a given time
@@ -1142,7 +1142,8 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   bool passesTrackingVeto = (nStraightTracks_ < 3);
   result.setVetoResult(pred > bdtCutVal_ && passesTrackingVeto);
   result.setDiscValue(pred);
-  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_) << " and MIP tracking passed = " << passesTrackingVeto;
+  ldmx_log(info) << " The pred > bdtCutVal = " << (pred > bdtCutVal_)
+                 << " and MIP tracking passed = " << passesTrackingVeto;
 
   // Persist in the event if the recoil ele is fiducial
   result.setFiducial(inside);
