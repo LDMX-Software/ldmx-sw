@@ -42,7 +42,6 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 
-
 namespace tracking {
 namespace sim {
 namespace utils {
@@ -277,13 +276,14 @@ inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
 }
 
 // This method returns a source link index
-inline std::size_t sourceLinkHash(const Acts::SourceLink& a) { 
+inline std::size_t sourceLinkHash(const Acts::SourceLink& a) {
   return static_cast<std::size_t>(
       a.get<ActsExamples::IndexSourceLink>().index());
-    }
+}
 
 // This method checks if two source links are equal by index
-inline bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
+inline bool sourceLinkEquality(const Acts::SourceLink& a,
+                               const Acts::SourceLink& b) {
   return a.get<ActsExamples::IndexSourceLink>().index() ==
          b.get<ActsExamples::IndexSourceLink>().index();
 }

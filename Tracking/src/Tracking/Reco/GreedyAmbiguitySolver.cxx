@@ -2,27 +2,26 @@
 
 #include <algorithm>
 
-#include "Acts/EventData/TrackHelpers.hpp"
 #include "Acts/EventData/SourceLink.hpp"
+#include "Acts/EventData/TrackHelpers.hpp"
 
 namespace tracking {
 namespace reco {
 
-GreedyAmbiguitySolver::GreedyAmbiguitySolver(const std::string& name, framework::Process& process)
+GreedyAmbiguitySolver::GreedyAmbiguitySolver(const std::string& name,
+                                             framework::Process& process)
     : TrackingGeometryUser(name, process) {}
-
-GreedyAmbiguitySolver::~GreedyAmbiguitySolver() {}
 
 // Helper Functions
 
-/*  
-std::size_t GreedyAmbiguitySolver::sourceLinkHash(const Acts::SourceLink& a) { 
+/*
+std::size_t GreedyAmbiguitySolver::sourceLinkHash(const Acts::SourceLink& a) {
   return static_cast<std::size_t>(
       a.get<ActsExamples::IndexSourceLink>().index());
     }
 
-bool GreedyAmbiguitySolver::sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b) {
-  return a.get<ActsExamples::IndexSourceLink>().index() ==
+bool GreedyAmbiguitySolver::sourceLinkEquality(const Acts::SourceLink& a, const
+Acts::SourceLink& b) { return a.get<ActsExamples::IndexSourceLink>().index() ==
          b.get<ActsExamples::IndexSourceLink>().index();
 }
 */
@@ -40,24 +39,22 @@ void GreedyAmbiguitySolver::removeTrack(State& state,
 }
 
 template <typename geometry_t, typename source_link_hash_t,
-            typename source_link_equality_t>
+          typename source_link_equality_t>
 void GreedyAmbiguitySolver::computeInitialState(
-      std::vector<ldmx::Track> tracks,  std::vector<ldmx::Measurement> meas_coll,
-      State& state, geometry_t& tg, source_link_hash_t&& sourceLinkHash,
-      source_link_equality_t&& sourceLinkEquality) const {
-  
+    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+    State& state, geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+    source_link_equality_t&& sourceLinkEquality) const {
   auto measurementIndexMap =
       std::unordered_map<Acts::SourceLink, std::size_t, source_link_hash_t,
                          source_link_equality_t>(0, sourceLinkHash,
                                                  sourceLinkEquality);
 
-   //auto tg{geometry()};
+  // auto tg{geometry()};
   // Iterate through all input tracks, collect their properties like measurement
   // count and chi2 and fill the measurement map in order to relate tracks to
   // each other if they have shared hits.
   state.number_of_tracks = 0;
   for (const auto& track : tracks) {
-
     // Kick out tracks that do not fulfill our initial requirements
     if (track.getNhits() < n_meas_min_) {
       continue;
@@ -65,15 +62,15 @@ void GreedyAmbiguitySolver::computeInitialState(
 
     std::vector<std::size_t> measurements;
     for (auto imeas : track.getMeasurementsIdxs()) {
-        auto meas = meas_coll.at(imeas);
-        const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
-        // Store the index source link
-        ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
-        Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
-   
-        auto emplace = measurementIndexMap.try_emplace(
-            sourceLink, measurementIndexMap.size());
-        measurements.push_back(emplace.first->second);
+      auto meas = meas_coll.at(imeas);
+      const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
+      // Store the index source link
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
+
+      auto emplace = measurementIndexMap.try_emplace(
+          sourceLink, measurementIndexMap.size());
+      measurements.push_back(emplace.first->second);
     }
 
     state.track_tips.push_back(state.number_of_tracks);
@@ -164,9 +161,10 @@ void GreedyAmbiguitySolver::resolve(State& state) const {
 
 void GreedyAmbiguitySolver::onNewRun(const ldmx::RunHeader& rh) {}
 
-void GreedyAmbiguitySolver::configure(framework::config::Parameters& parameters) {
-    out_trk_collection_ =
-      parameters.getParameter<std::string>("out_trk_collection", "TaggerTracksClean");
+void GreedyAmbiguitySolver::configure(
+    framework::config::Parameters& parameters) {
+  out_trk_collection_ = parameters.getParameter<std::string>(
+      "out_trk_collection", "TaggerTracksClean");
 
     track_collection_= parameters.getParameter<std::string>("trackCollection", "TaggerTracks");
 
@@ -177,10 +175,10 @@ void GreedyAmbiguitySolver::configure(framework::config::Parameters& parameters)
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {
-    GreedyAmbiguitySolver::State state;
-    std::vector<ldmx::Track> out_tracks;
+  GreedyAmbiguitySolver::State state;
+  std::vector<ldmx::Track> out_tracks;
 
-    auto tg{geometry()};
+  auto tg{geometry()};
 
     if (!event.exists(track_collection_)) return;
     auto tracks{event.getCollection<ldmx::Track>(track_collection_)};
@@ -188,8 +186,10 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
     if (!event.exists(meas_collection_)) return;
     auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_)};
 
-    computeInitialState(tracks, measurements, state, tg, tracking::sim::utils::sourceLinkHash, tracking::sim::utils::sourceLinkEquality);
-    resolve(state);
+  computeInitialState(tracks, measurements, state, tg,
+                      tracking::sim::utils::sourceLinkHash,
+                      tracking::sim::utils::sourceLinkEquality);
+  resolve(state);
 
     for (auto iTrack : state.selected_tracks) {
       auto clean_trk = tracks[state.track_tips.at(iTrack)];
@@ -198,12 +198,13 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
      }
     }
 
-    event.add(out_trk_collection_, out_tracks);
+  event.add(out_trk_collection_, out_tracks);
 
-
-    //for (auto iTrack : initial_state.selectedTracks) {
-    //    std::cout << event.getEventNumber() << " " << iTrack << " " << initial_state.trackChi2[iTrack] << " " << initial_state.measurementsPerTrack[iTrack].size() << std::endl;
-    //}
+  // for (auto iTrack : initial_state.selectedTracks) {
+  //     std::cout << event.getEventNumber() << " " << iTrack << " " <<
+  //     initial_state.trackChi2[iTrack] << " " <<
+  //     initial_state.measurementsPerTrack[iTrack].size() << std::endl;
+  // }
 
     ldmx_log(debug) <<  " " << "Resolved to " << state.selected_tracks.size() << " tracks from "
                            << " " << tracks.size();
