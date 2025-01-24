@@ -2,6 +2,7 @@
  * @file SimCalorimeterHit.h
  * @brief Class which stores simulated calorimeter hit information
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB : Update with missing getters, Jan 2025
  */
 
 #ifndef SIMCORE_EVENT_SIMCALORIMETERHIT_H_
@@ -273,6 +274,30 @@ class SimCalorimeterHit {
     return this->getTime() < rhs.getTime();
   }
 
+  /**
+   * Get the list of track IDs contributing to the hit.
+   */
+  std::vector<int> getTrackIds() const { return trackIDContribs_; }
+  /**
+   * Get the list of incident IDs contributing to the hit
+   */
+  std::vector<int> getIncidentIds() const { return incidentIDContribs_; }
+
+  /**
+   * Get the list of PDG codes contributing to the hit.
+   */
+  std::vector<int> getPdgIds() const { return pdgCodeContribs_; }
+
+  /**
+   * Get the list of energy depositions contributing to the hit.
+   */
+  std::vector<float> getEdeps() const { return edepContribs_; }
+
+  /**
+   * Get the list of times contributing to the hit.
+   */
+  std::vector<float> getTimes() const { return timeContribs_; }
+
  private:
   /**
    * Member variables used in all calorimeter types
@@ -379,7 +404,7 @@ class SimCalorimeterHit {
   /**
    * ROOT class definition.
    */
-  ClassDef(SimCalorimeterHit, 4)
+  ClassDef(SimCalorimeterHit, 5)
 };
 }  // namespace ldmx
 
