@@ -222,6 +222,10 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
@@ -247,7 +251,7 @@ p.sequence.extend([
     tracking_tagger,
     tracking_recoil,
     ecalDigi, ecalReco, ecalVeto,
-    hcalDigi, hcalReco,
+    hcalDigi, hcalReco, hcal_veto,
     *ts_digis,
     TrigScintClusterProducer.pad1(),
     TrigScintClusterProducer.pad2(),

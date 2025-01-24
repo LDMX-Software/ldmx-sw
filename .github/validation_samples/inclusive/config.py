@@ -190,10 +190,14 @@ count.input_pass_name = ''
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.recoil_from_tracking = False
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.logger.termLevel = 1 
+p.logger.termLevel = 1
 p.logger.custom(truth_tracking, level = 2)
 p.logger.custom(digi_tagger, level = 2)
 p.logger.custom(digi_recoil, level = 2)
@@ -219,6 +223,7 @@ p.sequence.extend([
         ecalVeto,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
+        hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),

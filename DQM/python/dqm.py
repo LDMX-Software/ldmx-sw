@@ -173,7 +173,27 @@ class HCalDQM(ldmxcfg.Analyzer) :
                               1000, 0, 6000
                               )
 
+class HcalVetoResults(ldmxcfg.Analyzer) :
+    """Configured HcalVetoResults python object """
 
+    def __init__(self,name="HcalVetoResults") :
+        super().__init__(name,'dqm::HcalVetoResults','DQM')
+
+        self.hcal_veto_name = 'HcalVeto'
+        self.hcal_veto_pass = ''
+
+        self.build1DHistogram('max_pe',
+                'Maximal PE hit PE', 500, -0.5, 499.5)
+        self.build1DHistogram('total_pe',
+                'Total number of HCAL photo-electrons', 500, -0.5, 2999.5)
+        self.build1DHistogram('num_valid_hits',
+                'Total number of valid HCAL hits', 500, -0.5, 499.5)
+        self.build1DHistogram('max_section',
+                'Maximal PE hit section', 5, -0.5, 4.5)
+        self.build1DHistogram('max_pos_z',
+                'Maximal PE hit postion Z [mm]', 6000, 200., 6200)
+        self.build1DHistogram('veto_pass',
+                'Event passed the HCal Veto', 2, -0.5, 1.5)
 
 class HcalInefficiencyAnalyzer(ldmxcfg.Analyzer):
     def __init__(self,name="HcalInefficiencyAnalyzer", num_sections=5,
@@ -741,6 +761,7 @@ hcal_dqm = [
                 section=4
                 ),
         HcalInefficiencyAnalyzer(),
+        HcalVetoResults(),
   ]
 
 recoil_dqm = [

@@ -223,7 +223,6 @@ ecalVeto.recoil_from_tracking = False
 # HCAL part
 hcalDigi   =hDigi.HcalDigiProducer()
 hcalReco   =hDigi.HcalRecProducer()
-hcalVeto   =hcal.HcalVetoProcessor()
 
 # electron counter for trigger processor 
 eCount = ElectronCounter( 1, "ElectronCounter") # first argument is number of electrons in simulation
@@ -268,6 +267,10 @@ recoil_dqm.measurement_collection=digi_recoil.out_collection
 recoil_dqm.truth_hit_collection="RecoilSimHits"
 recoil_dqm.buildHistograms()
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
@@ -305,12 +308,12 @@ p.sequence=[
         simpleTrig, 
         hcalDigi, 
         hcalReco, 
-        hcalVeto,
-        dqm.PhotoNuclearDQM(verbose=False),
+        hcal_veto,
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,
         recoil_dqm,
+        dqm.PhotoNuclearDQM(verbose=False)
         ]
 
 p.sequence.extend(dqm.all_dqm)
