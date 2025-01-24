@@ -50,7 +50,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   }
   back_min_PE_ = parameters.getParameter<double>("back_min_pe");
   exclude_recoil_ele_ =
-      parameters.getParameter<bool>("exclude_recoil_ele", true);
+      parameters.getParameter<bool>("exclude_recoil_ele", false);
   track_collection_ =
       parameters.getParameter<std::string>("track_collection", "RecoilTracks");
   dr_from_recoil_max_ =
@@ -134,17 +134,17 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       auto dy = drift_recoil_y - hit_pos_y;
       auto dR_squared = dx * dx + dy * dy + dZ * dZ;
       auto dR = sqrt(dR_squared);
-      ldmx_log(info) << "    This hit is at " << hit_pos_x << " / " << hit_pos_y
+      ldmx_log(debug) << "    This hit is at " << hit_pos_x << " / " << hit_pos_y
                      << " /  " << hit_pos_z << " mm";
-      ldmx_log(info) << "    Ele is projected at " << drift_recoil_x << " / "
+      ldmx_log(debug) << "    Ele is projected at " << drift_recoil_x << " / "
                      << drift_recoil_y << " /  " << recoil_pos_z - dZ;
-      ldmx_log(info) << "    from " << recoil_pos_x << " / " << recoil_pos_y
+      ldmx_log(debug) << "    from " << recoil_pos_x << " / " << recoil_pos_y
                      << " / " << recoil_pos_z << " / "
                      << " mm";
 
-      ldmx_log(info) << "       Ele had momentum of  " << recoil_mom_x << " / "
+      ldmx_log(debug) << "       Ele had momentum of  " << recoil_mom_x << " / "
                      << recoil_mom_y << " /  " << recoil_mom_z << " MeV";
-      ldmx_log(info) << "    This hit has PE = " << pe << " and dR from ele = "
+      ldmx_log(debug) << "    This hit has PE = " << pe << " and dR from ele = "
                      << "is " << dR << " mm";
 
       // Dont consider this hit for max PE hit if it's too close to the recoil
