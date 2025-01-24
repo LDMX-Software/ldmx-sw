@@ -83,9 +83,11 @@ class SeedFinderProcessor(Producer):
         self.d0min = 20.
         self.d0max = 20.
         self.z0max = 60.
+        self.phicut = 0.1
+        self.thetacut = 0.2
         self.strategies = []
         self.input_hits_collection = 'TaggerSimHits'
-        self.out_seed_collection = 'SeedTracks'
+        self.out_seed_collection = 'SeedTracks' 
         
 
 class CKFProcessor(Producer):
@@ -188,8 +190,9 @@ class CKFProcessor(Producer):
         self.kf_refit = False
         self.gsf_refit = False
         self.min_hits = 6
-
-
+        self.debug = False
+        self.use_score_based_solver = False
+        self.outlier_pval_ = 3.84
 
 class GSFProcessor(Producer):
     """ Producer that runs Gaussian Sum Fitter on a specific track collection
@@ -224,10 +227,10 @@ class GSFProcessor(Producer):
     def __init__(self, instance_name='GSFProcessor'):
         super().__init__(instance_name, 'tracking::reco::GSFProcessor',
                          'Tracking')
-
+        
         self.trackCollection = "TaggerTracks"
         self.measCollection  = "DigiTaggerSimHits"
-        self.maxComponent    = 4
+        self.maxComponent    = 12
         self.abortOnError    = False
         self.disableAllMaterialHandling = False
         self.weightCutoff    = 1.0e-4
@@ -295,7 +298,8 @@ class TruthSeedProcessor(Producer):
         self.scoring_hits_coll_name = 'TargetScoringPlaneHits'
         self.recoil_sim_hits_coll_name = 'RecoilSimHits'
         self.tagger_sim_hits_coll_name = 'TaggerSimHits'
-        self.n_min_hits = 7
+        self.n_min_hits_tagger = 11
+        self.n_min_hits_recoil = 7
         self.z_min = -9999. #mm
         self.track_id = -9999
         self.pz_cut = -9999. #MeV
@@ -305,3 +309,35 @@ class TruthSeedProcessor(Producer):
         self.skip_tagger = False
         self.skip_recoil = False
         self.max_track_id = 5
+
+
+class GreedyAmbiguitySolver(Producer):
+    """ Producer that cleans duplicate tracks from CKF output. 
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this instance.
+
+    Attributes
+    ----------
+
+    Parameters
+    ----------
+    maximumSharedHits : int
+        Maximum number of shared hits for a track to remain.
+    maximumIterations : int
+        Maximum number of iterations in track cleaning loop.
+    nMeasurementsMin : int
+        Minimum number of hits on a track.
+    """
+    def __init__(self, instance_name = "GreedyAmbiguitySolver"):
+        super().__init__(instance_name, 'tracking::reco::GreedyAmbiguitySolver',
+                         'Tracking')
+
+        self.maximumSharedHits = 1
+        self.maximumIterations = 1000
+        self.nMeasurementsMin = 7
+        self.out_trk_collection = "TaggerTracksClean"
+        self.trackCollection = "TaggerTracks"
+        self.measCollection = "DigiTaggerSimHits"

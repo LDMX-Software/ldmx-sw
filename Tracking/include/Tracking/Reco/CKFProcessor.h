@@ -142,6 +142,13 @@ class CKFProcessor final : public TrackingGeometryUser {
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  ActsExamples::IndexSourceLink>;
 
+  template <typename geometry_t, typename source_link_hash_t,
+            typename source_link_equality_t>
+  std::vector<std::vector<std::size_t>> computeSharedHits(
+      std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+      geometry_t &tg, source_link_hash_t &&sourceLinkHash,
+      source_link_equality_t &&sourceLinkEquality) const;
+
   // If we want to dump the tracking geometry
   bool dumpobj_{false};
 
