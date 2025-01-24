@@ -609,6 +609,18 @@ void CKFProcessor::produce(framework::Event& event) {
     }
   }  // loop seed track parameters
 
+  // Calculating Shared Hits
+
+  auto sharedHits = computeSharedHits(tracks, measurements, tg,
+                                      tracking::sim::utils::sourceLinkHash,
+                                      tracking::sim::utils::sourceLinkEquality);
+  for (std::size_t iTrack = 0; iTrack < sharedHits.size(); ++iTrack) {
+    tracks[iTrack].setNsharedHits(sharedHits[iTrack].size());
+    for (auto idx : sharedHits[iTrack]) {
+      tracks[iTrack].addSharedIndex(idx);
+    }
+  }
+
   auto result_loop = std::chrono::high_resolution_clock::now();
   profiling_map_["result_loop"] +=
       std::chrono::duration<double, std::milli>(result_loop - ckf_run).count();
@@ -641,7 +653,7 @@ void CKFProcessor::onProcessEnd() {
                  << std::setprecision(3) << profiling_map_["setup"] / nevents_
                  << " ms";
   ldmx_log(info) << "hits        Avg Time/Event = " << std::fixed
-                 << std::setprecision(2) << profiling_map_["hits"] / nevents_
+                 << std::setprecision(3) << profiling_map_["hits"] / nevents_
                  << " ms";
   ldmx_log(info) << "seeds       Avg Time/Event = " << std::fixed
                  << std::setprecision(3) << profiling_map_["seeds"] / nevents_
@@ -750,6 +762,75 @@ auto CKFProcessor::makeGeoIdSourceLinkMap(
   }
 
   return geoId_sl_map;
+}
+
+template <typename geometry_t, typename source_link_hash_t,
+          typename source_link_equality_t>
+std::vector<std::vector<std::size_t>> CKFProcessor::computeSharedHits(
+    std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
+    geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+    source_link_equality_t&& sourceLinkEquality) const {
+  auto measurementIndexMap =
+      std::unordered_map<Acts::SourceLink, std::size_t, source_link_hash_t,
+                         source_link_equality_t>(0, sourceLinkHash,
+                                                 sourceLinkEquality);
+
+  std::vector<std::vector<std::size_t>> measurementsPerTrack;
+  boost::container::flat_map<std::size_t,
+                             boost::container::flat_set<std::size_t>>
+      tracksPerMeasurement;
+  std::vector<std::size_t> sharedMeasurementsPerTrack;
+  auto numberOfTracks = 0;
+
+  // Iterate through all input tracks, collect their properties like measurement
+  // count and chi2 and fill the measurement map in order to relate tracks to
+  // each other if they have shared hits.
+  for (const auto& track : tracks) {
+    // Kick out tracks that do not fulfill our initial requirements
+    // if (track.getNhits() < nMeasurementsMin_) {
+    //   continue;
+    // }
+
+    std::vector<std::size_t> measurements;
+    for (auto imeas : track.getMeasurementsIdxs()) {
+      auto meas = meas_coll.at(imeas);
+      const Acts::Surface* hit_surface = tg.getSurface(meas.getLayerID());
+      // Store the index source link
+      ActsExamples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
+      Acts::SourceLink sourceLink = Acts::SourceLink(idx_sl);
+
+      auto emplace = measurementIndexMap.try_emplace(
+          sourceLink, measurementIndexMap.size());
+      measurements.push_back(emplace.first->second);
+    }
+
+    measurementsPerTrack.push_back(std::move(measurements));
+
+    ++numberOfTracks;
+  }
+
+  // Now we relate measurements to tracks
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      tracksPerMeasurement[iMeasurement].insert(iTrack);
+    }
+  }
+
+  // Finally, we can accumulate the number of shared measurements per track
+  sharedMeasurementsPerTrack = std::vector<std::size_t>(numberOfTracks, 0);
+
+  std::vector<std::vector<std::size_t>> sharedMeasurementIdxsPerTrack;
+  for (std::size_t iTrack = 0; iTrack < numberOfTracks; ++iTrack) {
+    std::vector<std::size_t> sharedMeasurementIdxs;
+    for (auto iMeasurement : measurementsPerTrack[iTrack]) {
+      if (tracksPerMeasurement[iMeasurement].size() > 1) {
+        ++sharedMeasurementsPerTrack[iTrack];
+        sharedMeasurementIdxs.push_back(iMeasurement);
+      }
+    }
+    sharedMeasurementIdxsPerTrack.push_back(sharedMeasurementIdxs);
+  }
+  return sharedMeasurementIdxsPerTrack;
 }
 
 }  // namespace reco
