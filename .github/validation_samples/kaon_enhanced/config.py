@@ -267,6 +267,10 @@ recoil_dqm.measurement_collection=digi_recoil.out_collection
 recoil_dqm.truth_hit_collection="RecoilSimHits"
 recoil_dqm.buildHistograms()
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
@@ -282,10 +286,6 @@ p.logger.custom(seed_tagger_dqm, level = 2)
 p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
 p.logger.custom(recoil_dqm, level = 2)
-
-# Load HCAL veto
-import LDMX.Hcal.hcal as hcal
-hcal_veto = hcal.HcalVetoProcessor()
 
 p.sequence=[ 
         mySim, 
@@ -309,14 +309,6 @@ p.sequence=[
         hcalDigi, 
         hcalReco, 
         hcal_veto,
-<<<<<<< HEAD
-        seed_tagger_dqm,
-        tagger_dqm,
-        seed_recoil_dqm,
-        recoil_dqm,
-        dqm.PhotoNuclearDQM(verbose=False)
-=======
->>>>>>> 74c64257 (Add HCAL veto in the CI configs)
         seed_tagger_dqm,
         tagger_dqm,
         seed_recoil_dqm,

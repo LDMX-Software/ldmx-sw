@@ -194,6 +194,10 @@ recoil_dqm.buildHistograms()
 ecalVeto = ecal_vetos.EcalVetoProcessor()
 ecalVeto.recoil_from_tracking = False
 
+# Load HCAL veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
@@ -209,10 +213,6 @@ p.logger.custom(seed_tagger_dqm, level = 2)
 p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
 p.logger.custom(recoil_dqm, level = 2)
-
-# Load HCAL veto
-import LDMX.Hcal.hcal as hcal
-hcal_veto = hcal.HcalVetoProcessor()
 
 p.sequence.extend([
         digi_tagger,
