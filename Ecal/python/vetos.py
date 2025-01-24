@@ -42,7 +42,7 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
 
         self.debug = False
         from LDMX.Ecal.makePath import makeBDTPath
-        self.model_path = makeBDTPath("particlenet_helena")
+        self.model_path = makeBDTPath("particle-net_ecal_v9")
         self.disc_cut = -1.
         self.collection_name = "EcalVetoDNN"
 

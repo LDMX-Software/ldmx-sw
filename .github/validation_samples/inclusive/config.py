@@ -197,14 +197,14 @@ hcal_veto = hcal.HcalVetoProcessor()
 # The Tracking modules produce a lot of helpful messages
 # but (at the debug level) is too much for commiting the gold log
 # into the git working tree on GitHub
-p.logger.termLevel = 0
+p.logger.termLevel = 1
 p.logger.custom(truth_tracking, level = 2)
 p.logger.custom(digi_tagger, level = 2)
 p.logger.custom(digi_recoil, level = 2)
 p.logger.custom(seeder_tagger, level = 2)
 p.logger.custom(seeder_recoil, level = 2)
-p.logger.custom(tracking_tagger, level = 0)
-p.logger.custom(tracking_recoil, level = 0)
+p.logger.custom(tracking_tagger, level = 1)
+p.logger.custom(tracking_recoil, level = 1)
 p.logger.custom(seed_tagger_dqm, level = 2)
 p.logger.custom(seed_recoil_dqm, level = 2)
 p.logger.custom(tagger_dqm, level = 2)
