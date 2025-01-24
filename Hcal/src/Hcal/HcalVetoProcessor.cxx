@@ -134,13 +134,16 @@ void HcalVetoProcessor::produce(framework::Event &event) {
       auto dy = drift_recoil_y - hit_pos_y;
       auto dR_squared = dx * dx + dy * dy + dZ * dZ;
       auto dR = sqrt(dR_squared);
-      ldmx_log(info) << "    This hit is at " << hit_pos_x << " / " << hit_pos_y << " /  " << hit_pos_z << " mm";
-      ldmx_log(info) << "    Ele is projected at " << drift_recoil_x << " / " << drift_recoil_y << " /  " << recoil_pos_z - dZ;
-      ldmx_log(info) << "    from " << recoil_pos_x << " / "  << recoil_pos_y << " / " << recoil_pos_z << " / "  << " mm";
+      ldmx_log(info) << "    This hit is at " << hit_pos_x << " / " << hit_pos_y
+                     << " /  " << hit_pos_z << " mm";
+      ldmx_log(info) << "    Ele is projected at " << drift_recoil_x << " / "
+                     << drift_recoil_y << " /  " << recoil_pos_z - dZ;
+      ldmx_log(info) << "    from " << recoil_pos_x << " / " << recoil_pos_y
+                     << " / " << recoil_pos_z << " / "
+                     << " mm";
 
-
-      ldmx_log(info) << "       Ele had momentum of  " << recoil_mom_x << " / " << recoil_mom_y
-                     << " /  " << recoil_mom_z << " MeV";     
+      ldmx_log(info) << "       Ele had momentum of  " << recoil_mom_x << " / "
+                     << recoil_mom_y << " /  " << recoil_mom_z << " MeV";
       ldmx_log(info) << "    This hit has PE = " << pe << " and dR from ele = "
                      << "is " << dR << " mm";
 
@@ -205,8 +208,9 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     float track_state_loc0 = static_cast<float>(hcal_track_state.params[0]);
     float track_state_loc1 = static_cast<float>(hcal_track_state.params[1]);
 
-    // param 3 = phi (azimuthal), param 4 = theta (polar)
-    // LDMX (global) to ACTS (local) coordinates is (x,y,z) -> (y,z,x)
+    // param 2 = phi (azimuthal), param 3 = theta (polar)
+    // param 4 = QoP
+    // ACTS (local)  to  LDMX (global) coordinates: (y,z,x)->  (x,y,z)
     // convert qop [1/GeV] to p [MeV]
     double p_track_state = (-1 / hcal_track_state.params[4]) * 1000;
     // p * sin(theta) * sin(phi)
@@ -222,7 +226,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
     new_track_states.push_back(track_state_loc0);
     new_track_states.push_back(track_state_loc1);
     // z-position as in the tracking exptrapolation
-    new_track_states.push_back(1000.0);
+    new_track_states.push_back(540.0);
     new_track_states.push_back(recoil_mom_x);
     new_track_states.push_back(recoil_mom_y);
     new_track_states.push_back(recoil_mom_z);

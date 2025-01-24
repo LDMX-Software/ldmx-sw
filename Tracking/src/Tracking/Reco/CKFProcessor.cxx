@@ -558,8 +558,8 @@ void CKFProcessor::produce(framework::Event& event) {
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
 
       // To HCAL
-      // Let's extrapolat to 1000 mm which is where the ecal PN peaks
-      Acts::Vector3 pos_hcal(1000.0, 0., 0.);
+      // Let's extrapolat to 540 mm which is the mid of the side HCAL
+      Acts::Vector3 pos_hcal(540.0, 0., 0.);
       Acts::Translation3 surf_translation_hcal(pos_hcal);
       Acts::Transform3 surf_transform_hcal(surf_translation_hcal *
                                            surf_rotation);
