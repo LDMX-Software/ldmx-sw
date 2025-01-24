@@ -549,15 +549,22 @@ void CKFProcessor::produce(framework::Event& event) {
 
       ldmx_log(debug) << "starting extrapolations";
       // Extrapolations
-
+      // To ECAL
       const double ECAL_SCORING_PLANE = 240.5;
       Acts::Vector3 pos(ECAL_SCORING_PLANE, 0., 0.);
       Acts::Translation3 surf_translation(pos);
       Acts::Transform3 surf_transform(surf_translation * surf_rotation);
-
-      // Unbounded surface
       const std::shared_ptr<Acts::PlaneSurface> ecal_surface =
           Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
+
+      // To HCAL
+      // Let's extrapolat to 540 mm which is the mid of the side HCAL
+      Acts::Vector3 pos_hcal(540.0, 0., 0.);
+      Acts::Translation3 surf_translation_hcal(pos_hcal);
+      Acts::Transform3 surf_transform_hcal(surf_translation_hcal *
+                                           surf_rotation);
+      const std::shared_ptr<Acts::PlaneSurface> hcal_surface =
+          Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform_hcal);
 
       // Beam Origin unbounded surface
       const std::shared_ptr<Acts::Surface> beamOrigin_surface =
@@ -590,6 +597,23 @@ void CKFProcessor::produce(framework::Event& event) {
                           << tsAtEcal.params[0] << " " << tsAtEcal.params[1]
                           << " " << tsAtEcal.params[2] << " "
                           << tsAtEcal.params[3] << " " << tsAtEcal.params[4];
+        }
+      }
+
+      // Recoil Extrapolation to HCAL only
+      if (!taggerTracking_) {
+        ldmx_log(debug) << "Hcal Extrapolation";
+        ldmx::Track::TrackState tsAtHcal;
+        success = trk_extrap_->TrackStateAtSurface(
+            track, hcal_surface, tsAtHcal, ldmx::TrackStateType::AtHCAL);
+
+        if (success) {
+          trk.addTrackState(tsAtHcal);
+          ldmx_log(debug) << "Successfully obtained TS at Hcal";
+          ldmx_log(debug) << "Parameters At Hcal:  \n"
+                          << tsAtHcal.params[0] << " " << tsAtHcal.params[1]
+                          << " " << tsAtHcal.params[2] << " "
+                          << tsAtHcal.params[3] << " " << tsAtHcal.params[4];
         }
       }
 

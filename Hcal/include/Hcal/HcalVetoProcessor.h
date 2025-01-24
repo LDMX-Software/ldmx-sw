@@ -2,6 +2,7 @@
  * @file HcalVetoProcessor.h
  * @brief Processor that determines if an event is vetoed by the Hcal.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tamas Almos Vami, UCSB
  */
 
 #ifndef __HCAL_HCAL_VETO_PROCESSOR_H__
@@ -15,10 +16,12 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "DetDescr/HcalID.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Tracking/Event/Track.h"
 
 namespace hcal {
 
@@ -45,16 +48,27 @@ class HcalVetoProcessor : public framework::Producer {
    */
   void produce(framework::Event &event) override;
 
+  /**
+   * Return a vector of parameters for a propagated recoil track
+   * @param[in] tracks The track collection
+   * @param[in] ts_type The track state type, i.e. tracks state at the mid-HCAL
+   * @param[in] ts_title The track state title, most likely "hcal"
+   * @returns Vector of parameters for a propagated recoil track
+   */
+  std::vector<float> trackProp(const ldmx::Tracks &tracks,
+                               ldmx::TrackStateType ts_type,
+                               const std::string &ts_title);
+
  private:
   /** Total PE threshold. */
-  double totalPEThreshold_{5};
+  double total_PE_threshold_{5};
 
   /** Maximum hit time that should be considered by the veto. */
-  float maxTime_{50};  // ns
+  float max_time_{50};  // ns
 
   /** The minimum number of PE in both bars needed for a hit to be considered in
    * double ended readout mode. */
-  float backMinPE_{1};
+  float back_min_PE_{1};
 
   /*
    * A hit representing the case where we never reach the maxPE condition. This
@@ -71,11 +85,14 @@ class HcalVetoProcessor : public framework::Producer {
    * It contains nonsense values but since they are predictable, they are harder
    * to mistake for real hits. See constructor for the actual values.
    */
-  ldmx::HcalHit defaultMaxHit_;
+  ldmx::HcalHit default_max_hit_;
 
-  std::string outputCollName_;
-  std::string inputHitCollName_;
-  std::string inputHitPassName_;
+  std::string output_coll_name_;
+  std::string input_hit_coll_name_;
+  std::string input_hit_pass_name_;
+  bool exclude_recoil_ele_;
+  std::string track_collection_;
+  float dr_from_recoil_max_;
 };  // HcalVetoProcessor
 }  // namespace hcal
 

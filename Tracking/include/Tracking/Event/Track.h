@@ -38,7 +38,8 @@ enum TrackStateType {
   AtLastMeasurement = 3,
   AtECAL = 4,
   AtBeamOrigin = 5,
-  Invalid = 6
+  Invalid = 6,
+  AtHCAL = 7
 };
 
 /**
