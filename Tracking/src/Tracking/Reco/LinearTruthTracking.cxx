@@ -66,7 +66,7 @@ void LinearTruthTracking::produce(framework::Event& event) {
         straight_truth_tracks.push_back(TruthTracker(truthPoints, firstLayerEcalRecHits));
     }
     else {
-        nmissing_++;
+        nempty_++;
         ntruth_ += straight_truth_tracks.size();
         return;
     }
@@ -140,6 +140,7 @@ void LinearTruthTracking::onProcessEnd() {
     ldmx_log(info) << "AVG Time / Event: " << std::fixed << std::setprecision(1)
         << processing_time_ / nevents_ << " ms";
     ldmx_log(info) << "Number of Events without enough seed points: " << nmissing_;
+    ldmx_log(info) << "Number of Events without trackID == 1 combo: " << nempty_;
     ldmx_log(info) << "Total Truth Tracks / Event: " << ntruth_ << "/" << nevents_;
 } //onProcessEnd
 
@@ -160,7 +161,7 @@ std::vector<ldmx::Measurement> LinearTruthTracking::findTruthHits(const std::vec
                 for (const auto& hit4 : layer4) {
                     std::vector<ldmx::Measurement> combination = {hit1, hit2, hit3, hit4};
                     auto truthInfo = truthMatchingTool_->TruthMatch(combination);
-                    if (truthInfo.trackID == 1.0) {
+                    if (truthInfo.trackID == 1.0 and truthInfo.truthProb == 1.0) {
                         return combination;
                     } //if trackID
                 } //for layer4

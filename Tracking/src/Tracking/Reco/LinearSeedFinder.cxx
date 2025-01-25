@@ -143,7 +143,7 @@ ldmx::StraightTrack LinearSeedFinder::SeedTracker(const std::tuple<std::array<do
     } //does not pass the threshold
 }
 
-void LinearSeedFinder::onProcessEnd() { //HAVE TO FIX THESE VALUES
+void LinearSeedFinder::onProcessEnd() { 
     ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
     << processing_time_ / nevents_ << " ms";
     ldmx_log(info) << "Total Seeds/Events: " << nseeds_ << "/" << nevents_;

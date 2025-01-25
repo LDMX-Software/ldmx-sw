@@ -93,6 +93,7 @@ protected:
     long nevents_{0};
     unsigned int ntruth_{0};
     long nmissing_{0};
+    long nempty_{0};
     
     std::vector<double> recoil_truth_uncertainty_{0.006, 0.12};
 
