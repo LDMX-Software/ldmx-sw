@@ -130,11 +130,15 @@
         </physvol>
       </loop>
 
-      <physvol name="lvTarget_phys">
+      <physvol name="lvTarget_phys" copynumber="3">
         <volumeref ref="lvTarget"/>
         <positionref ref="center"/>
         <rotationref ref="identity"/>
       </physvol>
+
+      <auxiliary auxtype="Region" auxvalue="target" />
+      <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
+      <auxiliary auxtype="DetElem" auxvalue="target"/>
 
     </volume>
 

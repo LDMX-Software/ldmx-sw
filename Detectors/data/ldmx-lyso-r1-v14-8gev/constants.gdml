@@ -35,9 +35,10 @@
   <!-- target box-->
 <constant name="target_dim_x" value="target_bar_dx" />
 <constant name="target_dim_y" value="target_array2_dy" />
-<constant name="target_thickness" value="2*target_bar_thickness + target_bar_gap" />
+<constant name="target_thickness" value="2*target_bar_thickness + target_bar_gap" /> <!-- 1.34 mm -->
 
 <!-- Target positions -->
+  <!-- The LYSO layers are indexed from upstream to downstream. -->
 
   <!-- target array1-->
 <constant name="target_array1_first_bar_y" value="-(number_of_target_bars1 - 1) * (target_bar_dy + target_bar_gap) / 2" />
