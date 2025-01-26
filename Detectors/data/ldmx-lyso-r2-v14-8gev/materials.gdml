@@ -16,7 +16,14 @@
 </element>
 <element Z="74" formula="W" name="W">
   <atom type="A" unit="g/mol" value="183.842"/>
-</element>           
+</element> 
+<element Z="71" formula="Lu" name="Lu">
+  <atom type="A" unit="g/mol" value="174.967"/>
+</element>
+<element Z="39" formula="Y" name="Y">
+  <atom type="A" unit="g/mol" value="88.90585"/>
+</element>
+
 
 <material name="Air" state="gas">
   <MEE unit="eV" value="85.643664635028"/>
