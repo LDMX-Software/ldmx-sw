@@ -34,6 +34,7 @@ collaborators understand what the detector is meant to describe.
 - `ldmx-hcal-prototype-v2.0` : version 2.0 the HCal prototype detector used during testbeam
 - `ldmx-ti-v9` : version 9 of the full LDMX detector for the 4GeV beam but with a Ti target (instead of W)
 - `ldmx-det-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam
+- `ldmx-lyso-r2-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam, but with the target changed to 2 layers of LYSO bars
 
 ### Archived geometries
 Previously used geometries can be found under the `archived` directory. In case you need to use any of these, ran `tar -xf` on them and move them back under `data` and then re-configure and re-install ldmx-sw (all detector directories under `data/` are included in the install location):
