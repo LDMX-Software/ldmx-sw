@@ -16,6 +16,7 @@ if(BUILD_EVENT_ONLY)
     
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalWABResult" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
     register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
