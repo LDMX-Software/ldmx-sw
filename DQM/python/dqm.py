@@ -277,6 +277,21 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
 
         self.build1DHistogram( "total_rec_energy"      ,
                 "Total Reconstructed Energy in ECal [MeV]" , 800 , 0. , 11000. )
+
+        self.build1DHistogram( "num_mod_with_0hits"      ,
+                "Num of modules with 0 hit" , 100 , 140.5 , 240.5 )
+
+        self.build1DHistogram( "num_mod_with_1hits"      ,
+                "Num of modules with 1 hit" , 31 , -0.5 , 30.5 )
+
+        self.build1DHistogram( "num_mod_with_2hits"      ,
+                "Num of modules with 2 hits" , 31 , -0.5 , 30.5 )
+
+        self.build1DHistogram( "num_mod_with_more_than_2hits"      ,
+                "Num of modules with >2 hits" , 31 , -0.5 , 30.5 )
+
+        self.build1DHistogram( "num_hit_if_more_than_2hits"      ,
+                "Num of modules with >2 hits" , 31 , -0.5 , 30.5 )
         
         self.build2DHistogram( "sim_edep__rec_amplitude" ,
                 "Simulated [MeV]" , 1000 , 0. , 50. ,
