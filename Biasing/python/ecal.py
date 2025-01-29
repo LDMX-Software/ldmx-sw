@@ -168,8 +168,7 @@ def gamma_mumu(detector, generator) :
 
     # Set run parameters
     if generator.energy == 8.0:
-          # I dont know what this should be?
-          xsec_bias = 3.E4
+          xsec_bias = 1.E5
           xsec_bias_threshold = 5000.
           tagger_threshold = 7600.
           recoil_max_p = 3000.
