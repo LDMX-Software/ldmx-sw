@@ -102,6 +102,7 @@ jobs:
         start_group Update Gold Label
         echo "Old Label: $(ldmx_gold_label)"
         echo "${GITHUB_REF##refs/tags/}" > ${LDMX_GOLD_LABEL_FILE}
+        echo "${GITHUB_REF##refs/tags/}" > ${LDMX_VERSION_FILE}
         echo "New Label: $(ldmx_gold_label)"
         git add ${LDMX_GOLD_LABEL_FILE}
         end_group

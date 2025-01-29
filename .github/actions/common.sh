@@ -68,7 +68,9 @@ warn() {
 start_group Deduce Common Environment Variables
 export LDMX_GOLD_LABEL_FILE=${GITHUB_WORKSPACE}/.github/actions/validate/gold_label
 export LDMX_BASE=$(cd ${GITHUB_WORKSPACE}/../ && pwd)
+export LDMX_VERSION_FILE=${LDMX_BASE}/VERSION
 echo "LDMX_GOLD_LABEL_FILE=${LDMX_GOLD_LABEL_FILE}"
+echo "LDMX_VERSION_FILE=${LDMX_VERSION_FILE}"
 echo "LDMX_BASE=${LDMX_BASE}"
 end_group
 
