@@ -15,7 +15,10 @@ if ("${srcdir}" STREQUAL "${bindir}")
 endif()
 
 # Set the project name
-project(LDMX_SW VERSION 3.1.1
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
+string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
+string(REGEX REPLACE "^v" "" LDMXSW_VERSION_NUM "${LDMXSW_VERSION}") 
+project(LDMX_SW VERSION ${LDMXSW_VERSION_NUM} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )
