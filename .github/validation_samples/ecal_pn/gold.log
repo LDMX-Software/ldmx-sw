@@ -101587,14 +101587,15 @@ Setting detector for tracking to ldmx-det-v14-8gev
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    ldmx-sw revision = 
+    ldmx-sw revision = b3195994ada82b76b2e540bcca00de8140ed26d5
+    ldmx-sw version = v4.2.5
 }
 [ Simulator ] : Started 1303948 events to produce 10000 events.
 [ Tagger_TrackFinder ] 10000  info: found 9700 tracks  / 10573 nseeds
 [ Tagger_TrackFinder ] 10000  info: AVG Time/Event: 0.4 ms
 [ Tagger_TrackFinder ] 10000  info: Breakdown::
 [ Tagger_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.002 ms
-[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.033 ms
+[ Tagger_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.036 ms
 [ Tagger_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.005 ms
 [ Tagger_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.005 ms
 [ Tagger_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
@@ -101603,7 +101604,7 @@ Setting detector for tracking to ldmx-det-v14-8gev
 [ Recoil_TrackFinder ] 10000  info: AVG Time/Event: 0.3 ms
 [ Recoil_TrackFinder ] 10000  info: Breakdown::
 [ Recoil_TrackFinder ] 10000  info: setup       Avg Time/Event = 0.001 ms
-[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.037 ms
+[ Recoil_TrackFinder ] 10000  info: hits        Avg Time/Event = 0.039 ms
 [ Recoil_TrackFinder ] 10000  info: seeds       Avg Time/Event = 0.004 ms
 [ Recoil_TrackFinder ] 10000  info: cf_setup    Avg Time/Event = 0.002 ms
 [ Recoil_TrackFinder ] 10000  info: ckf_run     Avg Time/Event = 0.000 ms
