@@ -35,7 +35,7 @@ jobs:
       shell: bash
 
     - name: Git Gold Histograms from trunk
-      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
+      run: git checkout origin/trunk -- .github/validation_samples/*/gold.root VERSION
       shell: bash
 
     - name: Package ldmx-sw Into Artifact
