@@ -62,6 +62,10 @@ from LDMX.Recon.simpleTrigger import TriggerProcessor
 count = ElectronCounter(1,'ElectronCounter')
 count.input_pass_name = ''
 
+# Load hcal veto
+import LDMX.Hcal.hcal as hcal
+hcal_veto = hcal.HcalVetoProcessor()
+
 from LDMX.DQM import dqm
 
 p.sequence.extend([
@@ -70,6 +74,7 @@ p.sequence.extend([
         ecalVeto,
         hcal_digi.HcalDigiProducer(),
         hcal_digi.HcalRecProducer(),
+        hcal_veto,
         *ts_digis,
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
