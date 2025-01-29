@@ -15,6 +15,8 @@ if ("${srcdir}" STREQUAL "${bindir}")
 endif()
 
 # Set the project name
+file(READ ${PROJECT_SOURCE_DIR}/VERSION LDMXSW_VERSION)
+string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
 project(LDMX_SW VERSION ${LDMXSW_VERSION} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    

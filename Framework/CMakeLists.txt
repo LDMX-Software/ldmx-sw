@@ -66,8 +66,6 @@ endif()
 message(STATUS "Deduced git SHA: ${GIT_SHA1}")
 
 # Include ldmx-sw version in the Run Header
-file(READ ${PROJECT_SOURCE_DIR}/../VERSION LDMXSW_VERSION)
-string(STRIP "${LDMXSW_VERSION}" LDMXSW_VERSION)
 
 # Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and writes
 # it out to Version.h.
