@@ -37,7 +37,8 @@ RunHeader { run: 1, numTries: 1302446, detectorName: ldmx-det-v14-8gev, descript
     Geant4 revision = 
     Gen0 Class = simcore::generators::ParticleGun
     Gen0 Particle = e-
-    ldmx-sw revision = 
+    ldmx-sw revision = b3195994ada82b76b2e540bcca00de8140ed26d5
+    ldmx-sw version = v4.2.5
 }
 [ OverlayProducer ] 1  info: Starting overlay process with pileup event number 3003 (random event number picked was 3004).
 [ ecalVetoBDT ] 1  info: Finding linreg tracks from a total of 68 hits using a radius of 35 mm
