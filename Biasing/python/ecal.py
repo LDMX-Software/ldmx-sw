@@ -49,24 +49,37 @@ def photo_nuclear( detector, generator ) :
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
     sim.setDetector( detector , True )
-    
+
     # Set run parameters
-    sim.description = "ECal photo-nuclear, xsec bias 450"
+    if generator.energy == 8.0:
+          xsec_bias = 550.
+          xsec_bias_threshold = 5000.
+          tagger_threshold = 7600.
+          recoil_max_p = 3000.
+          brem_min_e = 5000. 
+    else:
+          xsec_bias = 450.
+          xsec_bias_threshold = 2500.
+          tagger_threshold = 3800.
+          recoil_max_p = 1500. 
+          brem_min_e = 2500.
+
+    sim.description = "ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append( generator )
     
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.,only_children_of_primary = True) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias,xsec_bias_threshold,only_children_of_primary = True) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
-            filters.TaggerVetoFilter(),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             # Only consider events where a PN reaction happnes in the ECal
             filters.EcalProcessFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
@@ -85,22 +98,33 @@ def nonfiducial_photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.description = "ECal photo-nuclear, xsec bias 450"
-    sim.beamSpotSmear = [20., 80., 0.] #mm
-    
+    if generator.energy == 8.0:
+          xsec_bias = 550.
+          xsec_bias_threshold = 5000.
+          tagger_threshold = 7600.
+          recoil_max_p = 3000.
+          brem_min_e = 5000.
+    else:
+          xsec_bias = 450.
+          xsec_bias_threshold = 2500.
+          tagger_threshold = 3800.
+          recoil_max_p = 1500.
+          brem_min_e = 2500.
+
+    sim.description = "Non-fiducial ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
     sim.generators.append( generator )
     
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.,only_children_of_primary = True) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias,xsec_bias_threshold,only_children_of_primary = True) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
-            filters.TaggerVetoFilter(),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
             # Only consider events where a hard brem occurs
-            filters.TargetBremFilter(),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             # Only considers events that are Non-Fiducial (Doesn't enter an ECal volume)
             filters.NonFiducialFilter(),
             # Only consider events where a PN reaction happens in the ECal
@@ -143,21 +167,33 @@ def gamma_mumu(detector, generator) :
     sim.setDetector( detector, True )
 
     # Set run parameters
-    sim.description = "gamma --> mu+ mu-, xsec bias 3e4"
-    sim.beamSpotSmear = [20., 80., 0.]
+    if generator.energy == 8.0:
+          # I dont know what this should be?
+          xsec_bias = 3.E4
+          xsec_bias_threshold = 5000.
+          tagger_threshold = 7600.
+          recoil_max_p = 3000.
+          brem_min_e = 5000.
+    else:
+          xsec_bias = 3.E4
+          xsec_bias_threshold = 2500.
+          tagger_threshold = 3800.
+          recoil_max_p = 1500.
+          brem_min_e = 2500.
 
+    sim.description = "gamma --> mu+ mu-, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV"
     sim.generators.append(generator)
 
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.GammaToMuPair('ecal', 3.E4, 2500.) ]
+    sim.biasing_operators = [ bias_operators.GammaToMuPair('ecal', xsec_bias, xsec_bias_threshold) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called
     sim.actions.extend([
-            filters.TaggerVetoFilter(),
-            filters.TargetBremFilter(),
+            filters.TaggerVetoFilter(thresh = tagger_threshold),
+            filters.TargetBremFilter(recoil_max_p = recoil_max_p, brem_min_e = brem_min_e),
             filters.EcalProcessFilter(process='GammaToMuPair'),
             util.TrackProcessFilter.gamma_mumu()
     ])
@@ -174,13 +210,21 @@ def deep_photo_nuclear( detector, generator, bias_threshold, processes, ecal_min
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.description = "deep ECal photo-nuclear, xsec bias 450"
+    # Set run parameters
+    if generator.energy == 8.0:
+          xsec_bias = 550.
+          xsec_bias_threshold = 5000.
+    else:
+          xsec_bias = 450.
+          xsec_bias_threshold = 2500.
+
+    sim.description = "deep ECal photo-nuclear, xsec bias " + str(xsec_bias) + " xsec threshold " + str(xsec_bias_threshold) + " GeV" 
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append( generator )
     
     # Enable and configure the biasing
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.,only_children_of_primary = True, down_bias_conv = False) ]
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',xsec_bias, xsec_bias_threshold, only_children_of_primary = True, down_bias_conv = False) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
