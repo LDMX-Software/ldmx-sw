@@ -15,7 +15,7 @@ if ("${srcdir}" STREQUAL "${bindir}")
 endif()
 
 # Set the project name
-project(LDMX_SW VERSION 3.1.1
+project(LDMX_SW VERSION ${LDMXSW_VERSION} 
                 DESCRIPTION "The Light Dark Matter eXperiment simulation and reconstruction framework." 
                 LANGUAGES CXX    
 )

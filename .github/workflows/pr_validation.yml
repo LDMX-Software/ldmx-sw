@@ -38,6 +38,10 @@ jobs:
       run: git checkout origin/trunk -- .github/validation_samples/*/gold.root .github/actions/validate/gold_label
       shell: bash
 
+    - name: Git VERSION from trunk
+      run: git checkout origin/trunk -- VERSION
+      shell: bash
+
     - name: Package ldmx-sw Into Artifact
       run: tar cf ldmx-sw-package.tar install/ .github/
 
