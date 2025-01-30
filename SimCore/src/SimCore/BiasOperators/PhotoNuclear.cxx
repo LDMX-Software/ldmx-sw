@@ -70,7 +70,7 @@ G4VBiasingOperation* PhotoNuclear::ProposeOccurenceBiasingOperation(
         emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);
     if (emXsecBiased == pnXsecUnbiased_) {
       ldmx_log(debug) << "EM XS = PN unbiased XS! The biasing factor ("
-                     << factor_ << ") is too large";
+                      << factor_ << ") is too large";
     }
 
     emXsecOperation->SetBiasedCrossSection(emXsecBiased);
