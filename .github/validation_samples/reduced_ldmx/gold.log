@@ -164742,8 +164742,8 @@
   stringParameters: 
     Geant4 revision = 
     Gen0 Class = simcore::generators::MultiParticleGunPrimaryGenerator
-    ldmx-sw revision = b3195994ada82b76b2e540bcca00de8140ed26d5
-    ldmx-sw version = v4.2.5
+    ldmx-sw revision = 363d575d79975040fdc30aa9c4bfc4828bbb07ce
+    ldmx-sw version = v4.2.7
 }
 [ Simulator ] : Started 10000 events to produce 10000 events.
 [ trigScintClustersPad1 ] 10000 debug: Process ends!
